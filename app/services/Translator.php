@@ -652,7 +652,7 @@ public static function translate_searchresultsv2($es_searchresult_response){
 				$resultobject->ozonetelno->phone_number = (isset($result['ozonetelno']) && isset($result['ozonetelno']['phone_number'])) ? $result['ozonetelno']['phone_number'] : "";
 				$resultobject->manual_trial_bool = (isset($result['manual_trial_bool'])) ? $result['manual_trial_bool'] : "";
 				$resultobject->ozonetelno->extension = (isset($result['ozonetelno']) && isset($result['ozonetelno']['extension'])) ? $result['ozonetelno']['extension'] : "";
-				$resultobject->flags = $result['flags'];
+				$resultobject->flags = isset($result['flags']) ? $result['flags'] : array();
 				$result['facilities'] = (is_array($result['facilities']) && $result['facilities'] != "") ? $result['facilities'] : [];
 
 				$resultobject->offer_available = "";
