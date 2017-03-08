@@ -1803,13 +1803,13 @@ class FindersController extends \BaseController {
 
 		if(isset($_GET['device_type']) && $_GET['device_type'] == 'android'){
 
-			$items = Service::active()->where('finder_id', $finder_id)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos','trial','membership', 'traction'))->toArray();
+			$items = Service::active()->where('finder_id', $finder_id)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos','trial','membership', 'traction', 'location_id'))->toArray();
 		}else{
 
 			$membership_services = Ratecard::where('finder_id', $finder_id)->orWhere('type','membership')->orWhere('type','packages')->lists('service_id');
 			$membership_services = array_map('intval',$membership_services);
 
-			$items = Service::active()->whereIn('_id',$membership_services)->where('finder_id', $finder_id)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos','trial','membership', 'traction'))->toArray();
+			$items = Service::active()->whereIn('_id',$membership_services)->where('finder_id', $finder_id)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos','trial','membership', 'traction', 'location_id'))->toArray();
 		}
 
 		if(!$items){
@@ -1906,7 +1906,8 @@ class FindersController extends \BaseController {
 				'trial' => (isset($item['trial'])) ? $item['trial'] : "",
 				'offer_icon' => "",
 				'servicecategory_id' => $item['servicecategory_id'],
-				'traction' => $item['traction']
+				'traction' => $item['traction'],
+				'location_id' => $item['location_id']
 			);
 
 
@@ -2048,7 +2049,14 @@ class FindersController extends \BaseController {
 			$cache_key  = $tslug.'-'.$category_slug;
 		}
 
-		Log::info($tslug);
+		$location_id = null;
+		if(isset($_GET['location_id']) && $_GET['location_id'] != ''){
+			Log::info("location exists");
+			$location_id = $_GET['location_id'];
+			$cache_key  = $cache_key.'-'.$location_id;
+		}
+
+		Log::info($cache_key);
 
 
 		$cache_name = "finder_detail_app";
@@ -2344,7 +2352,6 @@ class FindersController extends \BaseController {
 				$data['finder']                         =       $finder;
 
 				$finder = Finder::active()->where('slug','=',$tslug)->first();
-
 				if($finder){
 
 					$data['finder']['services']          =        $this->getTrialSchedule($finder->_id,$finder->category);
@@ -2354,14 +2361,60 @@ class FindersController extends \BaseController {
 					$data['call_for_action_button']      =        "";
 
 					$data['finder']['offer_icon']        =        "";
+					$data['finder']['multiaddress']	     =		  $finder->multiaddress;	
 
 					if(time() >= strtotime(date('2016-12-24 00:00:00')) && (int)$finder['commercial_type'] != 0){
 
 						$data['finder']['offer_icon'] = "http://b.fitn.in/iconsv1/fitmania/offer_avail_red.png";
 					}
-
+					
+					
 					$category_id = Servicecategory::where('slug', $category_slug)->where('parent_id', 0)->first(['_id']);
-					// return $category_id;exit;
+					;
+					function cmp($a, $b)
+		            {
+		            	return $a['traction']['sales'] < $b['traction']['sales'];
+		            }
+
+		        	usort($data['finder']['services'], "cmp");
+
+					if($location_id){
+						$location_id = intval($location_id);
+						$location_id_services =array_where($data['finder']['services'] , function($key, $value) use ($location_id){
+							if($value['location_id'] == $location_id)
+								{
+								 return $value; 
+								}
+						});
+						$non_location_id_services = array_where($data['finder']['services'] , function($key, $value) use ($location_id){
+							if($value['location_id'] != $location_id)
+								{
+								 return $value; 
+								}
+						});
+
+						$data['finder']['services'] = array_merge($location_id_services, $non_location_id_services);
+
+						$location_id_address =array_where($data['finder']['multiaddress'] , function($key, $value) use ($location_id){
+							if($value['location_id'][0] == $location_id)
+								{
+								 return $value; 
+								}
+						});
+
+						$non_location_id_address =array_where($data['finder']['multiaddress'] , function($key, $value) use ($location_id){
+							if($value['location_id'][0] != $location_id)
+								{
+								 return $value; 
+								}
+						});
+
+						$data['finder']['multiaddress'] = array_merge($location_id_address, $non_location_id_address);
+
+					}
+
+					
+
 					
 					$category_slug_services = array();
 					$category_slug_services = array_where($data['finder']['services'] , function($key, $value) use ($category_id){
@@ -2379,16 +2432,9 @@ class FindersController extends \BaseController {
 								}
 						});
 
-					function cmp($a, $b)
-		            {
-		            	return $a['traction']['sales'] < $b['traction']['sales'];
-		            }
+				
 
-		        	usort($category_slug_services, "cmp");
-		        	usort($non_category_slug_services, "cmp");
-		        	
 		        	$data['finder']['services']  = array_merge($category_slug_services, $non_category_slug_services);
-		        	
 
 
 					/*if(isset($data['finder']['services']['offer_icon_vendor'])){
