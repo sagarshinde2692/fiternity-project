@@ -85,9 +85,9 @@ class ServiceController extends \BaseController {
 		$servicefinderid 	= intval($servicedata['finder_id']);
 		$servicedata['locationtags'] = $servicedata['finder']['locationtags'];
 		if($servicecategoryid==180){
-			if($servicedata['meal_type']=='lunch'){
+			if($servicedata['meal_type']=='lunch' && isset($servicedata['finder']['lunchlocationtags'])){
 				$servicedata['locationtags'] = $servicedata['finder']['lunchlocationtags'];
-			}else if($servicedata['meal_type']=='dinner'){
+			}else if($servicedata['meal_type']=='dinner' && isset($servicedata['finder']['dinnerlocationtags'])){
 				$servicedata['locationtags'] = $servicedata['finder']['dinnerlocationtags'];
 			}
 		}
