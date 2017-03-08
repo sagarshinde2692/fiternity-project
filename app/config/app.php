@@ -28,7 +28,6 @@ return array(
 	|
 	*/
 
-<<<<<<< HEAD
 	// 'url' => 'https://a1.fitternity.com',
 	'url' => 'http://apistage.fitn.in',
 	// 'url' => 'http://fitapi.com',
@@ -36,15 +35,6 @@ return array(
 
     // 'website' => 'https://www.fitternity.com',
     'website' => 'http://apistage.fitn.in:1122',
-=======
-	'url' => 'https://a1.fitternity.com',
-	//'url' => 'http://appstg.fitn.in',
-	// 'url' => 'http://fitapi.com',
-
-
-    'website' => 'https://www.fitternity.com',
-    // 'website' => 'http://appstg.fitn.in:8555',
->>>>>>> manualLink
 
 
 	'app' =>array(
