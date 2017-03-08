@@ -2115,7 +2115,7 @@ class CustomerController extends \BaseController {
 		$decoded = $this->customerTokenDecode($jwt_token);
 		$customer_id = $decoded->customer->_id;
 		$request['customer_id'] = $customer_id;
-		Log::info($request['customer_id']);
+		Log::info($jwt_token);
 		$wallet = array();
 
 		$wallet = Customerwallet::where('customer_id',$request['customer_id'])
