@@ -98,7 +98,7 @@ class RewardofferController extends BaseController {
     public function getRewardOffers(){
 
         $data       = Input::json()->all();
-
+        $order              =   array();
         if(isset($data) && isset($data['type']) && $data['type'] == 'workout-session'){
             $rules      =   ['finder_id'=>'required', 'amount'=>'required', 'type'=>'required'];
             $validator  =   Validator::make($data,$rules);
@@ -110,7 +110,6 @@ class RewardofferController extends BaseController {
             $amount             =   (int)$data['amount'];
             $customerReward     =   new CustomerReward();
             $calculation        =   $customerReward->purchaseGame($amount,$finder_id);
-            $order              =   array();
 
             if(isset($data['order_id']) && $data['order_id'] != ""){
 
