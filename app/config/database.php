@@ -49,7 +49,7 @@ return array(
 
 		'mongodb' => array(
 			'driver'   => 'mongodb',
-			'host'     => 'apistage.fitn.in',
+			'host'     => 'localhost',
 			// 'host'     => '52.77.247.239',
 			'port'     => 27017,
 		    'username' => 'fitadmin',
@@ -59,7 +59,7 @@ return array(
 
 		'mongodb2' => array(
 			'driver'   => 'mongodb',
-			'host'     => 'apistage.fitn.in',
+			'host'     => 'localhost',
 			// 'host'     => '52.77.247.239',
 			'port'     => 27017,
 			'database' => 'fitapi',
