@@ -2129,7 +2129,7 @@ class FindersController extends \BaseController {
 			if($finderarr){
 				$finderarr = $finderarr->toArray();
 
-				$finder         =   array_except($finderarr, array('info','finder_coverimage','location_id','category_id','city_id','coverimage','findercollections','categorytags','locationtags','offerings','facilities','blogs'));
+				$finder         =   array_except($finderarr, array('info','finder_coverimage','location_id','category_id','city_id','coverimage','findercollections','categorytags','locationtags','offerings','facilities','blogs','multiaddress'));
 				$coverimage     =   ($finderarr['finder_coverimage'] != '') ? $finderarr['finder_coverimage'] : 'default/'.$finderarr['category_id'].'-'.rand(1, 19).'.jpg';
 				array_set($finder, 'coverimage', $coverimage);
 
