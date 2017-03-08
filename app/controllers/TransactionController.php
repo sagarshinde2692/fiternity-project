@@ -131,7 +131,16 @@ class TransactionController extends \BaseController {
         $data = array_merge($data,$serviceDetail['data']);
 
         if(isset($data['order_id'])){
+
             $old_order_id = $order_id = $data['_id'] = (int)$data['order_id'];
+
+            $order = Order::find((int)$old_order_id);
+
+            $data['repetition'] = 1;
+            if($order && isset($order->repetition)){
+                $data['repetition'] = $order->repetition + 1;
+            }
+
         }else{
             $order_id = $data['_id'] = $data['order_id'] = Order::max('_id') + 1;
         }
@@ -151,9 +160,15 @@ class TransactionController extends \BaseController {
         $mobilehash = "";
         if($data['customer_source'] == "android" || $data['customer_source'] == "ios"){
             $txnid = "MFIT".$data['_id'];
+            if($old_order_id){
+                $txnid = "MFIT".$data['_id']."-R".$data['repetition'];
+            }
             $successurl = $data['customer_source'] == "android" ? Config::get('app.website')."/paymentsuccessandroid" : Config::get('app.website')."/paymentsuccessios";
         }else{
             $txnid = "FIT".$data['_id'];
+            if($old_order_id){
+                $txnid = "FIT".$data['_id']."-R".$data['repetition'];
+            }
             $successurl = $data['type'] == "memberships" ? Config::get('app.website')."/paymentsuccess" : Config::get('app.website')."/paymentsuccesstrial";
         }
         $data['txnid'] = $txnid;
@@ -164,8 +179,6 @@ class TransactionController extends \BaseController {
         $data = $this->unsetData($data);
 
         if(isset($old_order_id)){
-
-            $order = Order::find((int)$old_order_id);
 
             if($order){
                $order->update($data); 
