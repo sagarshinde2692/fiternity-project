@@ -1642,9 +1642,11 @@ class MigrationReverseController extends \BaseController {
                 $service_exists->update(['batches' => $batchesdata]);
             }
 
-            if($service_exists->finder_id){
+            if($service_exists && $service_exists->finder_id){
                 $finder = Finder::on($this->fitadmin)->find(intval($service_exists->finder_id));
-                $this->cacheapi->flushTagKey('finder_detail',$finder->slug);
+                if($finder){
+                    $this->cacheapi->flushTagKey('finder_detail',$finder->slug);
+                }
             }
             
 
