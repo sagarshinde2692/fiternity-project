@@ -2129,7 +2129,7 @@ class FindersController extends \BaseController {
 			if($finderarr){
 				$finderarr = $finderarr->toArray();
 
-				$finder         =   array_except($finderarr, array('info','finder_coverimage','location_id','category_id','city_id','coverimage','findercollections','categorytags','locationtags','offerings','facilities','blogs','multiaddress'));
+				$finder         =   array_except($finderarr, array('info','finder_coverimage','location_id','category_id','city_id','coverimage','findercollections','categorytags','locationtags','offerings','facilities','blogs'));
 				$coverimage     =   ($finderarr['finder_coverimage'] != '') ? $finderarr['finder_coverimage'] : 'default/'.$finderarr['category_id'].'-'.rand(1, 19).'.jpg';
 				array_set($finder, 'coverimage', $coverimage);
 
@@ -2374,6 +2374,11 @@ class FindersController extends \BaseController {
 					$finder['contact']['phone'] = $finder['ozonetelno']['phone_number'];
 					unset($finder['ozonetelno']);
 					unset($finder['contact']['website']);
+				}
+				if(isset($finderarr['multiaddress']) && count($finderarr['multiaddress']) > 0){
+					$finder['multiaddress'] = $finderarr['multiaddress'];
+				}else{
+					$finder['multiaddress'] = array();
 				}
 
 				$data['status']                         =       200;
