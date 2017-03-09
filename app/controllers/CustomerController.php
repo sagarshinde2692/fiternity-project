@@ -552,7 +552,7 @@ class CustomerController extends \BaseController {
 				}
 				return Response::json($response,$response['status']);
 			}elseif($data['identity'] == 'google' || $data['identity'] == 'facebook' || $data['identity'] == 'twitter'){
-				$response = $this->socialLogin($data);
+				$resp = $this->socialLogin($data);
 				$response = $resp["token"];
 				if($resp["popup"]["show_popup"] == "true"){
 					$response["extra"] = $resp["popup"];
