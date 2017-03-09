@@ -160,13 +160,13 @@ class TransactionController extends \BaseController {
         $mobilehash = "";
         if($data['customer_source'] == "android" || $data['customer_source'] == "ios"){
             $txnid = "MFIT".$data['_id'];
-            if($old_order_id){
+            if(isset($old_order_id)){
                 $txnid = "MFIT".$data['_id']."-R".$data['repetition'];
             }
             $successurl = $data['customer_source'] == "android" ? Config::get('app.website')."/paymentsuccessandroid" : Config::get('app.website')."/paymentsuccessios";
         }else{
             $txnid = "FIT".$data['_id'];
-            if($old_order_id){
+            if(isset($old_order_id)){
                 $txnid = "FIT".$data['_id']."-R".$data['repetition'];
             }
             $successurl = $data['type'] == "memberships" ? Config::get('app.website')."/paymentsuccess" : Config::get('app.website')."/paymentsuccesstrial";
