@@ -477,8 +477,12 @@ class CustomerController extends \BaseController {
 						$this->customermailer->register($customer_data);
 
 						Log::info('Customer Register : '.json_encode(array('customer_details' => $customer)));
-
-						return Response::json($this->createToken($customer),200);
+						$response = $this->createToken($customer);
+						$resp = $this->checkIfpopPup($customer);
+						if($resp["show_popup"] == "true"){
+							$response["extra"] = $resp["popup"];
+						}
+						return Response::json($response,200);
 					}
 				}else{
 					$ishullcustomer->name = ucwords($data['name']);
@@ -489,8 +493,12 @@ class CustomerController extends \BaseController {
 					// $this->customermailer->register($ishullcustomer);
 
 					Log::info('Customer Register : '.json_encode(array('customer_details' => $ishullcustomer)));
-
-					return Response::json($this->createToken($ishullcustomer),200);
+					$response = $this->createToken($ishullcustomer);
+					$resp = $this->checkIfpopPup($ishullcustomer);
+					if($resp["show_popup"] == "true"){
+						$response["extra"] = $resp["popup"];
+					}
+					return Response::json($response,200);
 				}	
 			}else{
 
@@ -515,8 +523,12 @@ class CustomerController extends \BaseController {
 				$this->customermailer->register($customer_data);
 
 				Log::info('Customer Register : '.json_encode(array('customer_details' => $customer)));
-
-				return Response::json($this->createToken($customer),200);
+				$response = $this->createToken($customer);
+				$resp = $this->checkIfpopPup($customer);
+				if($resp["show_popup"] == "true"){
+					$response["extra"] = $resp["popup"];
+				}
+				return Response::json($response,200);
 			}
 
 			$account_link = array('email'=>0,'google'=>0,'facebook'=>0,'twitter'=>0);
@@ -533,11 +545,19 @@ class CustomerController extends \BaseController {
 
 			if($data['identity'] == 'email')
 			{
-				$responce = $this->emailLogin($data);
-				return Response::json($responce,$responce['status']);
+				$resp = $this->emailLogin($data);
+				$response = $resp["token"];
+				if($resp["popup"]["show_popup"] == "true"){
+					$response["extra"] = $resp["popup"];
+				}
+				return Response::json($response,$response['status']);
 			}elseif($data['identity'] == 'google' || $data['identity'] == 'facebook' || $data['identity'] == 'twitter'){
-				$responce = $this->socialLogin($data);
-				return Response::json($responce,$responce['status']);
+				$response = $this->socialLogin($data);
+				$response = $resp["token"];
+				if($resp["popup"]["show_popup"] == "true"){
+					$response["extra"] = $resp["popup"];
+				}
+				return Response::json($response,$response['status']);
 			}else{
 				return Response::json(array('status' => 400,'message' => 'The identity is incorrect'),400);
 			}
@@ -591,8 +611,27 @@ class CustomerController extends \BaseController {
 
 		$customer->last_visited = Carbon::now();
 		$customer->update();
+		$resp = $this->checkIfpopPup($customer);
+		return array("token" => $this->createToken($customer), "popup" => $resp);
+	}
 
-		return $this->createToken($customer);
+	public function checkIfpopPup($customer){
+		$resp = array();
+		if($customer["balance"] > 0 || $customer["balance_fitcash_plus"] > 0){
+			$resp["show_popup"] = true;
+			$resp["popup"]["header_image"] = "http://b.fitn.in/iconsv1/global/fitcash.jpg";
+			$resp["popup"]["header_text"] = "Congratulations";
+			if($customer["balance_fitcash_plus"] > 0){
+				$resp["popup"]["text"] = "You have Rs. ".$customer["balance_fitcash_plus"]." in your wallet as FitCash+. You can use this across session and membership bookings at gyms in studios in Mumbai, Bangalore, Pune & Delhi";
+			}else{
+				$resp["popup"]["text"] = "You have Rs. ".$customer["balance"]." in your wallet as FitCash. You can use this across session and membership bookings at gyms in studios in Mumbai, Bangalore, Pune & Delhi";
+			}
+			$resp["popup"]["button"] = "Ok";
+		}else{
+			$resp["show_popup"] = false;
+			$resp["popup"] = array();
+		}
+		return $resp;
 	}
 
 	public function socialLogin($data){
@@ -695,8 +734,9 @@ class CustomerController extends \BaseController {
 
 		$customer->last_visited = Carbon::now();
 		$customer->update();
-
-		return $this->createToken($customer);
+		$resp = $this->checkIfpopPup($customer);
+		return array("token" => $this->createToken($customer), "popup" => $resp);
+		// return $this->createToken($customer);
 	}
 
 	public function socialRegister($data){
