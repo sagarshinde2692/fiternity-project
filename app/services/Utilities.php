@@ -143,7 +143,7 @@ Class Utilities {
                     );
                 }
 
-            }if($request['type'] == "REFUND"){
+            }elseif($request['type'] == "REFUND"){
 
                 $debitAmount = Customerwallet::where('order_id', (int) $request['order_id'])
                 ->where('type', 'DEBIT')
