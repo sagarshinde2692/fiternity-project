@@ -1381,7 +1381,7 @@ class OrderController extends \BaseController {
 
         $orderid = Order::max('_id') + 1;
 
-        if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios','android'])){
+        if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios'])){
 
             if(isset($data['amount_finder'])){
 
