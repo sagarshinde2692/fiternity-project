@@ -350,7 +350,7 @@ class TransactionController extends \BaseController {
             $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount_finder'],$data['finder_id'],'paymentgateway',$data['offer_id'],$data['customer_id']);
         }
 
-        if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios','android'])){
+        if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios'])){
 
             if(isset($data['cashback']) && $data['cashback'] == true){
                 $data['amount'] = $data['amount'] - $data['cashback_detail']['amount_discounted'];
@@ -453,34 +453,99 @@ class TransactionController extends \BaseController {
                 $amount = $data['amount'] - $cashback_detail['amount_discounted'];
             }
 
-            if(isset($data['wallet']) && $data['wallet'] == true){
+            if(!isset($data['repetition'])){
 
-                $wallet_amount = $data['wallet_amount'] = $cashback_detail['only_wallet']['fitcash'] + $cashback_detail['only_wallet']['fitcash_plus'];
+                if(isset($data['wallet']) && $data['wallet'] == true){
 
-                if(isset($data['cashback']) && $data['cashback'] == true){
-                    $wallet_amount = $data['wallet_amount'] = $cashback_detail['discount_and_wallet']['fitcash'] + $cashback_detail['discount_and_wallet']['fitcash_plus'];
+                    $wallet_amount = $data['wallet_amount'] = $cashback_detail['only_wallet']['fitcash'] + $cashback_detail['only_wallet']['fitcash_plus'];
+
+                    if(isset($data['cashback']) && $data['cashback'] == true){
+                        $wallet_amount = $data['wallet_amount'] = $cashback_detail['discount_and_wallet']['fitcash'] + $cashback_detail['discount_and_wallet']['fitcash_plus'];
+                    }
+
+                    $amount = $data['amount'] - $wallet_amount;
+
+                    $req = array(
+                        'customer_id'=>$data['customer_id'],
+                        'order_id'=>$data['order_id'],
+                        'amount'=>$data['wallet_amount'],
+                        'type'=>'DEBIT',
+                        'description'=>'Paid for Order ID: '.$data['order_id'],
+                    );
+                    $walletTransactionResponse = $this->utilities->walletTransaction($req,$data)->getData();
+                    $walletTransactionResponse = (array) $walletTransactionResponse;
+
+                    if($walletTransactionResponse['status'] != 200){
+                        return $walletTransactionResponse;
+                    }
+
+                    // Schedule Check orderfailure and refund wallet amount in that case....
+                    $url = Config::get('app.url').'/orderfailureaction/'.$data['order_id'];
+                    $delay = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addHours(4);
+                    $data['wallet_refund_sidekiq'] = $this->hitURLAfterDelay($url, $delay);
                 }
 
-                $amount = $data['amount'] - $wallet_amount;
+            }else{
 
-                $req = array(
-                    'customer_id'=>$data['customer_id'],
-                    'order_id'=>$data['order_id'],
-                    'amount'=>$data['wallet_amount'],
-                    'type'=>'DEBIT',
-                    'description'=>'Paid for Order ID: '.$data['order_id'],
-                );
-                $walletTransactionResponse = $this->utilities->walletTransaction($req,$data)->getData();
-                $walletTransactionResponse = (array) $walletTransactionResponse;
+                $new_data = Input::json()->all();
 
-                if($walletTransactionResponse['status'] != 200){
-                    return $walletTransactionResponse;
+                if(isset($new_data['wallet']) && $new_data['wallet'] == true){
+
+                    $wallet_amount = $data['wallet_amount'] = $cashback_detail['only_wallet']['fitcash'] + $cashback_detail['only_wallet']['fitcash_plus'];
+
+                    if(isset($data['cashback']) && $data['cashback'] == true){
+                        $wallet_amount = $data['wallet_amount'] = $cashback_detail['discount_and_wallet']['fitcash'] + $cashback_detail['discount_and_wallet']['fitcash_plus'];
+                    }
+
+                    $amount = $data['amount'] - $wallet_amount;
+
+                    $req = array(
+                        'customer_id'=>$data['customer_id'],
+                        'order_id'=>$data['order_id'],
+                        'amount'=>$data['wallet_amount'],
+                        'type'=>'DEBIT',
+                        'description'=>'Paid for Order ID: '.$data['order_id'],
+                    );
+                    $walletTransactionResponse = $this->utilities->walletTransaction($req,$data)->getData();
+                    $walletTransactionResponse = (array) $walletTransactionResponse;
+
+                    if($walletTransactionResponse['status'] != 200){
+                        return $walletTransactionResponse;
+                    }
+
+                    // Schedule Check orderfailure and refund wallet amount in that case....
+                    $url = Config::get('app.url').'/orderfailureaction/'.$data['order_id'];
+                    $delay = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addHours(4);
+                    $data['wallet_refund_sidekiq'] = $this->hitURLAfterDelay($url, $delay);
+
+                }else{
+
+                    if(isset($order['wallet_amount']) && $order['wallet_amount'] != "" && $order['wallet_amount'] != 0){
+
+                        $req = array(
+                            'customer_id'=>$order['customer_id'],
+                            'order_id'=>$order['_id'],
+                            'amount'=>$order['wallet_amount'],
+                            'type'=>'REFUND',
+                            'description'=>'Refund for Order ID: '.$order['_id'],
+                        );
+
+                        $walletTransactionResponse = $this->utilities->walletTransaction($req,$order->toArray())->getData();
+                        $walletTransactionResponse = (array) $walletTransactionResponse;
+
+                        if(isset($order['wallet_refund_sidekiq']) && $order['wallet_refund_sidekiq'] != ''){
+                            try {
+                                $this->sidekiq->delete($order['wallet_refund_sidekiq']);
+                            }catch(\Exception $exception){
+                                Log::error($exception);
+                            }
+                        }
+
+                        $order->unset('wallet');
+                        $order->unset('wallet_amount');
+                    }
+
                 }
-
-                // Schedule Check orderfailure and refund wallet amount in that case....
-                $url = Config::get('app.url').'/orderfailureaction/'.$data['order_id'];
-                $delay = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addHours(4);
-                $data['wallet_refund_sidekiq'] = $this->hitURLAfterDelay($url, $delay);
             }
 
             $data['amount'] = $amount;

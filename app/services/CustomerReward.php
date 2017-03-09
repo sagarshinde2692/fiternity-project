@@ -514,7 +514,7 @@ Class CustomerReward {
 
         $wallet_algo = round(($amount * $commision / 100) * ($wallet_percentage / 100));
 
-        if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios','android'])){
+        if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios'])){
 
             $amount_deducted_from_wallet = ($wallet_algo < $wallet) ? $wallet_algo : round($wallet);
 
