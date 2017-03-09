@@ -480,7 +480,7 @@ class CustomerController extends \BaseController {
 						$response = $this->createToken($customer);
 						$resp = $this->checkIfpopPup($customer);
 						if($resp["show_popup"] == "true"){
-							$response["extra"] = $resp["popup"];
+							$response["extra"] = $resp;
 						}
 						return Response::json($response,200);
 					}
@@ -496,7 +496,7 @@ class CustomerController extends \BaseController {
 					$response = $this->createToken($ishullcustomer);
 					$resp = $this->checkIfpopPup($ishullcustomer);
 					if($resp["show_popup"] == "true"){
-						$response["extra"] = $resp["popup"];
+						$response["extra"] = $resp;
 					}
 					return Response::json($response,200);
 				}	
@@ -526,7 +526,7 @@ class CustomerController extends \BaseController {
 				$response = $this->createToken($customer);
 				$resp = $this->checkIfpopPup($customer);
 				if($resp["show_popup"] == "true"){
-					$response["extra"] = $resp["popup"];
+					$response["extra"] = $resp;
 				}
 				return Response::json($response,200);
 			}
