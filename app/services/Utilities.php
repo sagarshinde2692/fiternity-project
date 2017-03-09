@@ -119,15 +119,59 @@ Class Utilities {
         // Check Duplicacy of transaction request........
         $duplicateRequest = Customerwallet::where('order_id', (int) $request['order_id'])
             ->where('type', $request['type'])
+            ->orderBy('_id','desc')
             ->first();
 
         if($duplicateRequest != ''){
-            return Response::json(
-                array(
-                    'status' => 400,
-                    'message' => 'Request has been already processed'
-                    ),400
-            );
+
+            if($request['type'] == "DEBIT"){
+
+                $debitAmount = Customerwallet::where('order_id', (int) $request['order_id'])
+                ->where('type', 'DEBIT')
+                ->sum('amount');
+
+                $refundAmount = Customerwallet::where('order_id', (int) $request['order_id'])
+                ->where('type', 'REFUND')
+                ->sum('amount');
+
+                if($debitAmount - $refundAmount != 0){
+                    return Response::json(
+                        array(
+                            'status' => 400,
+                            'message' => 'Request has been already processed'
+                            ),400
+                    );
+                }
+
+            }if($request['type'] == "REFUND"){
+
+                $debitAmount = Customerwallet::where('order_id', (int) $request['order_id'])
+                ->where('type', 'DEBIT')
+                ->sum('amount');
+
+                $refundAmount = Customerwallet::where('order_id', (int) $request['order_id'])
+                ->where('type', 'REFUND')
+                ->sum('amount');
+
+                if($debitAmount - $refundAmount <= 0){
+                    return Response::json(
+                        array(
+                            'status' => 400,
+                            'message' => 'Request has been already processed'
+                            ),400
+                    );
+                }
+                
+            }else{
+
+                return Response::json(
+                    array(
+                        'status' => 400,
+                        'message' => 'Request has been already processed'
+                        ),400
+                );
+            }
+            
         }
 
         if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios','android'])){
