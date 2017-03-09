@@ -545,6 +545,7 @@ class HomeController extends BaseController {
                         ['icon'=>$icon_path.'choose-reward.png','text'=>'Claim your selected reward through your User Profile'],
                         ['icon'=>$icon_path.'flash-code.png','text'=>'Flash the code at the studio & kickstart your fitness journey.'],
                     ];
+                    $show_invite = true;
                     break;
                 case 'membershipwithoutpg':
                     $subline = "Your Membership purchase at $finder_name for $service_name($service_duration) from ".date('d-m-y',strtotime($preferred_starting_date))." is confirmed.";
@@ -554,6 +555,7 @@ class HomeController extends BaseController {
                         ['icon'=>$icon_path.'manage-profile.png','text'=>'Access your Profile on Fitternity to keep track of your membership'],
                         ['icon'=>$icon_path.'flash-code.png','text'=>'Flash the code at the studio & kickstart your fitness journey.'],
                     ];
+                    $show_invite = true;
                     break;
                 case 'manualmembership':
                     $subline = "Your Membership request at $finder_name has been received. Please expect a revert shortly.";
