@@ -383,18 +383,23 @@ class FindersController extends \BaseController {
 
 								foreach ($service['serviceratecard'] as $ratekey => $rateval){
 
-									// if(isset($rateval['flags'])){
+									// Removing womens offer ratecards if present
+									if(isset($rateval['flags'])){
 
-									// 	if(isset($rateval['flags']['discother']) && $rateval['flags']['discother'] == true){
-									// 		unset($service['serviceratecard'][$ratekey]);
-									// 		continue;
-									// 	}
+										if(isset($rateval['flags']['discother']) && $rateval['flags']['discother'] == true){
+											if(isset($service['serviceratecard'][$ratekey]['offers']) && count($service['serviceratecard'][$ratekey]['offers']) == 0){
+												unset($service['serviceratecard'][$ratekey]);
+												continue;
+											}
+										}
 
-									// 	if(isset($rateval['flags']['disc25or50']) && $rateval['flags']['disc25or50'] == true){
-									// 		unset($service['serviceratecard'][$ratekey]);
-									// 		continue;
-									// 	}
-									// }
+										if(isset($rateval['flags']['disc25or50']) && $rateval['flags']['disc25or50'] == true){
+											if(isset($service['serviceratecard'][$ratekey]['offers']) && count($service['serviceratecard'][$ratekey]['offers']) == 0){
+												unset($service['serviceratecard'][$ratekey]);
+												continue;
+											}
+										}
+									}
 									if(isset($rateval['flags']) && ((isset($rateval['flags']['disc25or50']) && $rateval['flags']['disc25or50']) || (isset($rateval['flags']['discother']) && $rateval['flags']['discother']))){
 										$finder['offer_icon'] = "https://b.fitn.in/iconsv1/womens-day/women-day-banner.svg";
 										$finder['offer_icon_mob'] = "https://b.fitn.in/iconsv1/womens-day/exclusive.svg";
@@ -2562,8 +2567,26 @@ class FindersController extends \BaseController {
 
 					array_push($ratecardArr, $ratecard);
 				}
-
+				// return $finderservice['ratecard'];
+				// exit;
 				foreach ($finderservice['ratecard'] as $ratecard){
+
+					if(isset($ratecard['flags'])){
+
+						if(isset($ratecard['flags']['discother']) && $ratecard['flags']['discother'] == true){
+							if(isset($ratecard['offers']) && count($ratecard['offers']) == 0){
+								continue;
+							}
+						}
+
+						if(isset($ratecard['flags']['disc25or50']) && $ratecard['flags']['disc25or50'] == true){
+							if(isset($ratecard['offers']) && count($ratecard['offers']) == 0){
+								continue;
+							}
+						}
+					}
+
+
 					array_push($ratecardArr, $ratecard);
 				}
 
