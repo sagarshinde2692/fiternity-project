@@ -814,7 +814,7 @@ class ServiceController extends \BaseController {
         	$data['requested_date'] = $request['requested_date'];
         	$data['trial_booked'] = $this->checkTrialAlreadyBooked($item['finder_id']);
 
-        	if($type == "trialschedules"){
+        	if($type == "trialschedules" &&  !empty($schedules)){
         		$data['schedules'] = $this->checkWorkoutSessionAvailable($schedules);
         	}
 
@@ -825,10 +825,10 @@ class ServiceController extends \BaseController {
 
 
     public function checkWorkoutSessionAvailable($schedules){
-
+    	
     	foreach ($schedules as $key => $value) {
 
-    		$schedules[$key] = [
+    		$schedules[$key]["workout_session"] = [
     			"available" => false,
     			"amount" => 0
     		];
@@ -843,7 +843,7 @@ class ServiceController extends \BaseController {
                     $amount = $ratecard->price;
                 }
 
-    			$schedules[$key] = [
+    			$schedules[$key]["workout_session"] = [
 	    			"available" => true,
 	    			"amount" => $amount
 	    		];
