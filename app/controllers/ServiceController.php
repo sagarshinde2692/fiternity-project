@@ -648,7 +648,11 @@ class ServiceController extends \BaseController {
             	'trial_status'=>$trial_status,
             	'current_available_date_diff'=>0,
             	'popup_message'=>'Slot available is beyond booking range. Select an earlier slot or get in touch with us at '.Config::get('app.contact_us_customer_number'),
-            	'available_message' => "No Slots Available"
+            	'available_message' => "No Slots Available",
+            	'workout_session' => [
+	    			"available" => false,
+	    			"amount" => 0
+	    		]
             );
 
             $slots = array();
@@ -663,6 +667,19 @@ class ServiceController extends \BaseController {
 
             if(count($weekdayslots['slots']) > 0 && isset($ratecard['_id'])){
 
+            	if(isset($ratecard->special_price) && $ratecard->special_price != 0){
+                    $ratecard_price = $ratecard->special_price;
+                }else{
+                    $ratecard_price = $ratecard->price;
+                }
+
+                if($type == "workoutsessionschedules"){
+	            	$service["workout_session"] = [
+		    			"available" => true,
+		    			"amount" => $ratecard_price
+		    		];
+		    	}
+
                 foreach ($weekdayslots['slots'] as $slot) {
 
                     $slot_status 		= 	"available";
@@ -673,7 +690,7 @@ class ServiceController extends \BaseController {
 
                     $vip_trial_amount = 0;
 
-                    if($item['vip_trial'] == "1"){
+                    /*if($item['vip_trial'] == "1"){
 
                         $price = (int) $slot['price'];
 
@@ -689,7 +706,7 @@ class ServiceController extends \BaseController {
                             $vip_trial_amount = 199;
                         }
 
-                    }
+                    }*/
 
                     array_set($slot, 'vip_trial_amount', $vip_trial_amount);
 
@@ -700,6 +717,7 @@ class ServiceController extends \BaseController {
 
                         ($slot_datetime_pass_status == false) ? $slot_passed_flag = false : null;
 
+                        array_set($slot, 'price', $ratecard_price);
                         array_set($slot, 'passed', $slot_datetime_pass_status);
                         array_set($slot, 'service_id', $item['_id']);
                         array_set($slot, 'finder_id', $item['finder_id']);
@@ -794,14 +812,86 @@ class ServiceController extends \BaseController {
 	        $data['count'] = $count;
         	$data['todays_date'] = date("Y-m-d");
         	$data['requested_date'] = $request['requested_date'];
+        	$data['trial_booked'] = $this->checkTrialAlreadyBooked($item['finder_id']);
 
-        	$finder_id = (int)$item['finder_id'];
-        	$service_id = (isset($request['service_id']) && $request['service_id'] != "") ? (int)$request['service_id'] : false;
-
-        	$data = array_merge($data,$this->checkTrial($finder_id,$service_id));
+        	if($type == "trialschedules"){
+        		$data['schedules'] = $this->checkWorkoutSessionAvailable($schedules);
+        	}
 
 	        return Response::json($data,200);
         }
+
+    }
+
+
+    public function checkWorkoutSessionAvailable($schedules){
+
+    	$return = [];
+
+    	foreach ($schedules as $key => $value) {
+
+    		$schedules[$key] = [
+    			"available" => false,
+    			"amount" => 0
+    		];
+
+    		$ratecard = Ratecard::where("service_id",(int)$value["service_id"])->where('type','workout session')->orderBy("_id","desc")->first();
+
+    		if($ratecard){
+
+    			if(isset($ratecard->special_price) && $ratecard->special_price != 0){
+                    $amount = $ratecard->special_price;
+                }else{
+                    $amount = $ratecard->price;
+                }
+
+    			$schedules[$key] = [
+	    			"available" => true,
+	    			"amount" => $amount
+	    		];
+    		}
+
+    	}
+
+    	return $return;
+
+    }
+
+    public function checkTrialAlreadyBooked($finder_id){
+
+    	$return = false;
+
+    	if($finder_id == ""){
+        	return false;
+        }
+
+    	$customer_id = "";
+        $jwt_token = Request::header('Authorization');
+
+        Log::info('jwt_token : '.$jwt_token);
+
+        if($jwt_token == true && $jwt_token != 'null' && $jwt_token != null){
+            $decoded = decode_customer_token();
+            $customer_id = intval($decoded->customer->_id);
+        }
+
+        $booktrial_count = 0;
+
+        if($customer_id != ""){
+
+        	$booktrial_count = Booktrial::where('customer_id', $customer_id)
+                        ->where('finder_id', '=',$finder_id)
+                        ->where('type','booktrials')
+                        ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
+                        ->count();
+        }
+
+        if($booktrial_count > 0){
+
+        	$return = true;
+        }
+
+        return $return;
 
     }
 
