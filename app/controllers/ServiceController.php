@@ -826,8 +826,6 @@ class ServiceController extends \BaseController {
 
     public function checkWorkoutSessionAvailable($schedules){
 
-    	$return = [];
-
     	foreach ($schedules as $key => $value) {
 
     		$schedules[$key] = [
@@ -853,7 +851,7 @@ class ServiceController extends \BaseController {
 
     	}
 
-    	return $return;
+    	return $schedules;
 
     }
 
