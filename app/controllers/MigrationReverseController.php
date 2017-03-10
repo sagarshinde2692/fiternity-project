@@ -711,6 +711,8 @@ class MigrationReverseController extends \BaseController {
                 'categorytags' 			=>  array_unique($new_categorytag_ids_arr),
                 'location_id' 			=>  intval($Finder->location['primary']),
                 'locationtags' 			=>  array_unique($new_locationtag_ids_arr),
+                'lunchlocationtags'     =>  (isset($Finder->location['secondary_lunch']))? $Finder->location['secondary_lunch']:[],
+                'dinnerlocationtags'    =>  (isset($Finder->location['secondary_dinner']))?$Finder->location['secondary_dinner']:[],
                 'offerings' 			=>  array_unique($new_offering_ids_arr),
                 'facilities' 			=>  (isset($Finder->filter['facilities'])) ? array_unique(array_map('intval', $Finder->filter['facilities'])) : [],
                 'lat' 					=>  (isset($Finder->geometry['coordinates'][0])) ? trim($Finder->geometry['coordinates'][0]) : "",
@@ -1003,6 +1005,7 @@ class MigrationReverseController extends \BaseController {
             $insertData['show_on']      =   "1";
             $insertData['created_at']   =   $data['created_at'];
             $insertData['updated_at']   =   $data['updated_at'];
+            $insertData['showOnFront']   =   isset($data['showOnFront']) ? $data['showOnFront'] : true;
 
 //            return $insertData;
 
