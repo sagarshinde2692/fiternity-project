@@ -334,7 +334,7 @@ class FindersController extends \BaseController {
 
 					foreach ($finder['services'] as $service){
 
-						if(!isset($service['showOnFront']) || (isset($service['showOnFront']) && $service['showOnFront'])){
+						if(!isset($service['showOnFront']) || ((isset($service['showOnFront']) && $service['showOnFront']))){
 
 
 
@@ -1828,7 +1828,7 @@ class FindersController extends \BaseController {
 
 		foreach ($items as $k => $item) {
 
-			if(!isset($item['showOnFront']) || (isset($item['showOnFront']) && $item['showOnFront'])){
+			if(!isset($item['showOnFront']) || ((isset($item['showOnFront']) && $item['showOnFront']))){
 				$extra_info = array();
 
 			/*$extra_info[0] = array(
