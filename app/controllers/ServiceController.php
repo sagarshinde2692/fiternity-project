@@ -825,7 +825,7 @@ class ServiceController extends \BaseController {
 
 
     public function checkWorkoutSessionAvailable($schedules){
-    	
+
     	foreach ($schedules as $key => $value) {
 
     		$schedules[$key]["workout_session"] = [
@@ -835,7 +835,7 @@ class ServiceController extends \BaseController {
 
     		$ratecard = Ratecard::where("service_id",(int)$value["service_id"])->where('type','workout session')->orderBy("_id","desc")->first();
 
-    		if($ratecard){
+    		if($ratecard && !empty($value['slots'])){
 
     			if(isset($ratecard->special_price) && $ratecard->special_price != 0){
                     $amount = $ratecard->special_price;
