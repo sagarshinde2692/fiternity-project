@@ -1325,6 +1325,10 @@ class FindersController extends \BaseController {
 
 		$this->cacheapi->flushTagKey('finder_detail',$finder->slug);
 		$this->cacheapi->flushTagKey('review_by_finder_list',$finder->slug);
+		$this->cacheapi->flushTagKey('finder_detail_android',$finder->slug);
+		$this->cacheapi->flushTagKey('finder_detail_android_3_2',$finder->slug);
+		$this->cacheapi->flushTagKey('finder_detail_ios',$finder->slug);
+		$this->cacheapi->flushTagKey('finder_detail_ios_3_2',$finder->slug);
 
 		return Response::json($response, 200);
 	}
