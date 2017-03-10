@@ -230,6 +230,24 @@ class SchedulebooktrialsController extends \BaseController {
                 // array_push($scheduleservices, $service);
             }
         }
+
+        $schedules_sort = array();
+        $schedules_slots_empty = array();
+
+        foreach ($scheduleservices as $key => $value) {
+
+            if(count($value['slots']) > 0){
+                $schedules_sort[] = $value;
+            }else{
+                $schedules_slots_empty[] = $value;
+            }
+
+        }
+
+        $scheduleservices = array();
+
+        $scheduleservices = array_merge($schedules_sort,$schedules_slots_empty);
+        
         return $scheduleservices;
     }
 
@@ -1415,6 +1433,24 @@ class SchedulebooktrialsController extends \BaseController {
                 }
         if(Input::json()->get('status') == 'success') {
 
+            $finder_id = $order['finder_id'];
+            
+            $start_date_last_30_days = date("d-m-Y 00:00:00", strtotime('-31 days',strtotime(date('d-m-Y 00:00:00'))));
+
+            $sales_count_last_30_days = Order::active()->where('finder_id',$finder_id)->where('created_at', '>=', new DateTime($start_date_last_30_days))->count();
+
+            if($sales_count_last_30_days == 0){
+                $mailData=array();
+                $mailData['finder_name']=$order['finder_name'];
+                $mailData['finder_id']=$order['finder_id'];
+                $mailData['finder_city']=$order['finder_city'];
+                $mailData['finder_location']=$order['finder_location'];
+                $mailData['customer_name']=$order['customer_name'];
+                $mailData['customer_email']=$order['customer_email'];
+
+                $sndMail  =   $this->findermailer->sendNoPrevSalesMail($mailData);
+            }
+
             $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->where('customer_source','exists',true)->orderBy('_id','asc')->where('_id','<',$order->_id)->where('finder_id',$order->finder_id)->count();
 
 
@@ -2160,6 +2196,8 @@ class SchedulebooktrialsController extends \BaseController {
                 //send Cashback sms on Paid trial & Healthy tiffin trial
                 if($booktrialdata['type'] == "booktrials" && isset($booktrialdata['amount']) && $booktrialdata['amount'] != "" && $booktrialdata['amount'] > 0){
 
+                    Log::info("---------------------------inside if paidbooktrial queue------------------");
+
                 	$this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
 	                $customer_sms_messageids['instant_cashback'] =  $this->customersms->giveCashbackOnTrialOrderSuccessAndInvite($booktrialdata);
 	            }
@@ -2452,7 +2490,7 @@ class SchedulebooktrialsController extends \BaseController {
             isset($data['customer_email']) ? $customer_email = $data['customer_email'] : null;
             isset($data['customer_phone']) ? $customer_phone = preg_replace("/[^0-9]/", "", $data['customer_phone']) : null;
             $fitcard_user = isset($data['fitcard_user']) ? intval($data['fitcard_user']) : 0;
-            $type = isset($data['type']) ? $type = $data['type'] : '';
+            $type = isset($data['type']) ? $type = $data['type'] : 'booktrials';
 
             $finder_name = (isset($finder['title']) && $finder['title'] != '') ? $finder['title'] : "";
             $finder_slug = (isset($finder['slug']) && $finder['slug'] != '') ? $finder['slug'] : "";

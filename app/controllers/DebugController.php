@@ -597,7 +597,7 @@ class DebugController extends \BaseController {
 			}
 
 
-			$fp = fopen('trials_from_'.$date.'.csv', 'w');
+			$fp = fcache('trials_from_'.$date.'.csv', 'w');
 
 			$header = [];
 
@@ -696,7 +696,7 @@ class DebugController extends \BaseController {
 			}
 
 
-			$fp = fopen('orders_from_'.$date.'.csv', 'w');
+			$fp = fcache('orders_from_'.$date.'.csv', 'w');
 
 			$header = [];
 
@@ -793,7 +793,7 @@ class DebugController extends \BaseController {
 			}
 
 
-			$fp = fopen('fakebuys_from_'.$date.'.csv', 'w');
+			$fp = fcache('fakebuys_from_'.$date.'.csv', 'w');
 
 			$header = [];
 
@@ -876,7 +876,7 @@ class DebugController extends \BaseController {
 			}
 
 
-			$fp = fopen('captures_from_'.$date.'.csv', 'w');
+			$fp = fcache('captures_from_'.$date.'.csv', 'w');
 
 			$header = [];
 
@@ -984,7 +984,7 @@ class DebugController extends \BaseController {
 			}
 			
 
-			$fp = fopen('katchi.csv', 'w');
+			$fp = fcache('katchi.csv', 'w');
 
 
 
@@ -1052,7 +1052,7 @@ class DebugController extends \BaseController {
 
         	$finder = Finder::with(array('category'=>function($query){$query->select('name');}))->with(array('location'=>function($query){$query->select('name');}))->with(array('city'=>function($query){$query->select('_id','name','slug');}))->with(array('ozonetelno'=>function($query){$query->select('finder_id','phone_number','extension','type','_id')->where('status','=','1');}))->whereIn('category_id',$category_id)->get(array('_id','title','commercial_type','business_type','location_id','category_id','contact.phone','city_id'))->toArray();
 
-        	$fp = fopen('finder_ozonetel.csv', 'w');
+        	$fp = fcache('finder_ozonetel.csv', 'w');
 
         	$header = array('Vendor ID','Vendor Name','Category','City','Location','Commercial Type','Business Type','Vendor Number','Ozonetel ID','Ozonetel Account','Ozonetel Number','Ozonetel Extension');
 
@@ -1134,7 +1134,7 @@ class DebugController extends \BaseController {
 
 			/*$finder = Finder::with(array('location'=>function($query){$query->select('name');}))->with(array('ozonetelno'=>function($query){$query->select('finder_id','phone_number','extension','type','_id')->where('status','=','1');}))->get(array('_id','title','commercial_type','business_type','location_id','contact.phone'))->toArray();
 
-			$fp = fopen('finder_ozonetel.csv', 'w');
+			$fp = fcache('finder_ozonetel.csv', 'w');
 
 			$header = array('Vendor ID','Vendor Name','Location','Commercial Type','Business Type','Vendor Number','Ozonetel ID','Ozonetel Account','Ozonetel Number','Ozonetel Extension');
 
@@ -1214,7 +1214,7 @@ class DebugController extends \BaseController {
 
 			$peppertap = Peppertap::where('status',0)->get(array('_id','code'))->toArray();
 
-			$fp = fopen('peppertap_unused_code.csv', 'w');
+			$fp = fcache('peppertap_unused_code.csv', 'w');
 
 			$header = array('ID','Code');
 
@@ -1265,7 +1265,7 @@ class DebugController extends \BaseController {
 
 			$order = Order::with(array('serviceoffer'=>function($query){$query->select('_id','price');}))->whereIn('type',$type)->where(function ($query) { $query->orWhere('status',"1")->orWhere('abondon_status','bought_closed');})->where('coupon_code','exists',true)->get()->toArray();
 
-			$fp = fopen('order_fitmania_coupon.csv', 'w');
+			$fp = fcache('order_fitmania_coupon.csv', 'w');
 
 			$header = array('Order ID','Coupon Code','Amount','Discounted Amount','Customer Name','Customer Email','Customer Number','Vendor ID','Vendor Name','Location');
 
@@ -1337,7 +1337,7 @@ class DebugController extends \BaseController {
 
 			$finders = Finder::active()->whereIn('_id',$finder_id)->with(array('location'=>function($query){$query->select('_id','name');}))->with(array('city'=>function($query){$query->select('_id','name');}))->with(array('category'=>function($query){$query->select('_id','name');}))->orderBy('_id', 'asc')->get()->toArray();
 
-			$fp = fopen('finder_with_direct_payment_enable.csv', 'w');
+			$fp = fcache('finder_with_direct_payment_enable.csv', 'w');
 
 			$header = array('Vendor ID','Vendor Name','Vendor City','Vendor Location','Category','Commercial Type');
 
@@ -1392,7 +1392,7 @@ class DebugController extends \BaseController {
 
 			$finder = Finder::with(array('category'=>function($query){$query->select('name');}))->with(array('location'=>function($query){$query->select('name');}))->with(array('city'=>function($query){$query->select('_id','name','slug');}))->where('status',"1")->where('commercial_type',2)->get(array('_id','title','commercial_type','business_type','location_id','category_id','city_id'))->toArray();
 
-			$fp = fopen('freeSpecialVendor.csv', 'w');
+			$fp = fcache('freeSpecialVendor.csv', 'w');
 
 			$header = array('Vendor ID','Vendor Name','Category','City','Location');
 
@@ -1444,7 +1444,7 @@ class DebugController extends \BaseController {
 
 			$order = Order::whereIn('customer_email',$array)->get()->toArray();
 
-			$fp = fopen('membership_fitmania.csv', 'w');
+			$fp = fcache('membership_fitmania.csv', 'w');
 
 			$header = array('Order ID','Amount','Customer Name','Customer Email','Customer Number','Customer Address','Vendor ID','Vendor Name','Location');
 
@@ -1508,7 +1508,7 @@ class DebugController extends \BaseController {
 
 			$capture = Capture::where('capture_type','reviewposted')->orderBy('_id', 'desc')->get()->toArray();
 
-			$fp = fopen('review_to_win_address.csv', 'w');
+			$fp = fcache('review_to_win_address.csv', 'w');
 
 			$header = array('Customer Name','Customer Mobile','Customer Address');
 
@@ -1591,7 +1591,7 @@ class DebugController extends \BaseController {
 
         	$header = NULL;
         	$data = array();
-        	if (($handle = fopen($filename, 'r')) !== FALSE)
+        	if (($handle = fcache($filename, 'r')) !== FALSE)
         	{
         		while (($row = fgetcsv($handle, 1000, $delimiter)) !== FALSE)
         		{
@@ -1645,7 +1645,7 @@ foreach ($missedcall_no as $key => $value) {
 
 public function top10Finder(){
 
-	ini_set('allow_url_fopen', 'On');
+	ini_set('allow_url_fcache', 'On');
 	ini_set('allow_url_include', 'On');
 
 
@@ -1709,7 +1709,7 @@ public function top10Finder(){
 		}
 	}
 
-	$fp = fopen('top10vendors.csv', 'w');
+	$fp = fcache('top10vendors.csv', 'w');
 
 	$header = array('City Name','City ID','Vendor Name','Vendor ID','Booktrial Count');
 
@@ -1764,7 +1764,7 @@ public function finderWithNoSchedule(){
 
 	$finders = Finder::whereIn('_id',$hesh)->whereNotIn('category_id',$category)->with(array('location'=>function($query){$query->select('_id','name');}))->with(array('city'=>function($query){$query->select('_id','name');}))->with(array('category'=>function($query){$query->select('_id','name');}))->orderBy('_id', 'asc')->get()->toArray();
 
-	$fp = fopen('finder_with_no_schdule.csv', 'w');
+	$fp = fcache('finder_with_no_schdule.csv', 'w');
 	$header = array('Vendor ID','Vendor Name','Vendor City','Vendor Location','Category','Commercial Type','Status');
 
 	foreach ($finders as $key => $value) 
@@ -1888,7 +1888,7 @@ public function finderStatus(){
 		}
 	}
 
-	$fp = fopen('finder_status.csv', 'w');
+	$fp = fcache('finder_status.csv', 'w');
 
 	$header = array('Vendor ID','Vendor Name','Vendor City','Vendor Location','Category','Commercial Type','Status');
 
@@ -2023,7 +2023,7 @@ public function testEmail(){
 		$city_list = array(1,2,3,4,8);
 		//$city_list = array(1);
 		$city_names = array('Mumbai', 'Pune',  'Banglore' ,'Delhi', 'Gurgaon');
-		$fp = fopen('paymentEnabledServices.csv', 'w');
+		$fp = fcache('paymentEnabledServices.csv', 'w');
 		foreach ($city_list as $city)
 		{
 			$finder_documents = Finder::where('status','1')->where('city_id', $city)
@@ -2117,7 +2117,7 @@ public function testEmail(){
 
 	public function BudgetAlgoFinders(){
 
-		$fp = fopen('budgetrangeandvalue.csv', 'w');
+		$fp = fcache('budgetrangeandvalue.csv', 'w');
 		$header = array('FinderId','FinderName','Average_Budget', 'Budget_slab', 'CommercialType','Infrastructure_type','City');
 
 		fputcsv($fp, $header);
@@ -3464,6 +3464,29 @@ public function yes($msg){
 		}
 
 		print_r($return);
+	}
+
+	public function cacheLocations(){
+		$locationTags = Locationtag::where('status', "1")->get(['_id', 'name', 'slug','location_group','lat','lon']);
+		return $locationTags;
+
+	}
+
+	public function cacheFinderCategoryTags($city="mumbai"){
+		// $finderCategoryTags = Findercategorytag::where('status', "1")->get(['_id', 'name', 'slug']);
+		if($city != "all"){
+			$finderCategoryTags = citywise_categories($city);
+		}else{
+			$finderCategoryTags = citywise_categories("all");
+		}
+		return $finderCategoryTags;
+
+	}
+
+	public function cacheOfferings(){
+		$offerings = Offering::where('status', "1")->get(['_id', 'name', 'slug']);
+		return $offerings;
+
 	}
     
 }

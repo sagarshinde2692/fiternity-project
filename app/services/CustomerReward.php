@@ -164,6 +164,8 @@ Class CustomerReward {
                 $this->createMyReward($order);
 
             }elseif(isset($order['type']) && in_array(trim($order['type']),['booktrials','healthytiffintrail']) && isset($order['customer_id']) && isset($order['amount']) ){
+
+                Log::info("---------------------------inside if cashback----------------------------");
 //                var_dump($order);exit;
                 $amounttobeadded        =       intval($order['amount']);
                 $customer_id            =       intval($order['customer_id']);
@@ -405,26 +407,13 @@ Class CustomerReward {
         $jwt_token = Request::header('Authorization');
 
         Log::info('jwt_token : '.$jwt_token);
-
-        $iosdata = Input::json()->all();
-
-        if(isset($iosdata['customer_source']) && $iosdata['customer_source'] == "ios" && $customer_id){
-
-            $customer_wallet = Customerwallet::where('customer_id',(int) $customer_id)->orderBy('_id','desc')->first();
-
-            if($customer_wallet && isset($customer_wallet->balance) && $customer_wallet->balance != ''){
-                $wallet = $customer_wallet->balance;
-            }
-
-            if($customer_wallet && isset($customer_wallet->balance_fitcash_plus) && $customer_wallet->balance_fitcash_plus != ''){
-                $wallet_fitcash_plus = $customer_wallet->balance_fitcash_plus;
-            }
-        }
             
         if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
             $decoded = $this->customerTokenDecode($jwt_token);
             $customer_id = $decoded->customer->_id;
-
+        }
+        
+        if($customer_id){
             $customer_wallet = Customerwallet::where('customer_id',(int) $customer_id)->orderBy('_id','desc')->first();
 
             if($customer_wallet && isset($customer_wallet->balance) && $customer_wallet->balance != ''){
@@ -434,7 +423,6 @@ Class CustomerReward {
             if($customer_wallet && isset($customer_wallet->balance_fitcash_plus) && $customer_wallet->balance_fitcash_plus != ''){
                 $wallet_fitcash_plus = $customer_wallet->balance_fitcash_plus;
             }
-
         }
 
         $wallet_percentage = 27 ;
@@ -526,7 +514,7 @@ Class CustomerReward {
 
         $wallet_algo = round(($amount * $commision / 100) * ($wallet_percentage / 100));
 
-        if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios','android'])){
+        if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios'])){
 
             $amount_deducted_from_wallet = ($wallet_algo < $wallet) ? $wallet_algo : round($wallet);
 
@@ -614,6 +602,67 @@ Class CustomerReward {
 
             return $data;
         }
+
+    }
+
+    public function fitternityDietVendor($amount){
+
+        $finder = Finder::where('title','Fitternity Diet Vendor')->first();
+
+        $finder_id = (int) $finder->_id;
+
+        $service = \Service::where('finder_id',$finder_id)->get();
+
+        $data = [];
+
+        if(count($service) > 0){
+
+            foreach ($service as $service_value) {
+
+                $service_data = [];
+                $service_id = (int) $service_value->_id;
+                $service_data['service_name'] = ucwords($service_value->name);
+                $service_data['service_id'] = $service_id;
+                $service_data['ratecard'] = [];
+
+                $ratecard = \Ratecard::where('service_id',$service_id)->where('finder_id',$finder_id)->get();
+
+                if(count($ratecard) > 0){
+
+                    foreach ($ratecard as $ratecard_value) {
+
+                        $ratecard_data = [];
+
+                        $ratecard_id = $ratecard_value->_id;
+
+                        $ratecard_data['ratecard_id'] = $ratecard_id;
+
+                        if(isset($ratecard_value['special_price']) && $ratecard_value['special_price'] != 0){
+                            $ratecard_data['amount'] = $ratecard_value['special_price'];
+                        }else{
+                            $ratecard_data['amount'] = $ratecard_value['price'];
+                        }
+
+                        if($ratecard_data['amount'] <= 0){
+                            continue;
+                        }
+
+                        $ratecard_data['service_id'] = $service_id;
+
+                        $service_data['ratecard'][] = $ratecard_data;
+
+                    }
+
+                    $data[] = $service_data;
+
+                }else{
+                    continue;
+                }
+
+            }
+        }
+
+        return $data;
 
     }
 

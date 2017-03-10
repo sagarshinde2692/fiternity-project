@@ -545,6 +545,7 @@ class HomeController extends BaseController {
                         ['icon'=>$icon_path.'choose-reward.png','text'=>'Claim your selected reward through your User Profile'],
                         ['icon'=>$icon_path.'flash-code.png','text'=>'Flash the code at the studio & kickstart your fitness journey.'],
                     ];
+                    $show_invite = true;
                     break;
                 case 'membershipwithoutpg':
                     $subline = "Your Membership purchase at $finder_name for $service_name($service_duration) from ".date('d-m-y',strtotime($preferred_starting_date))." is confirmed.";
@@ -554,6 +555,7 @@ class HomeController extends BaseController {
                         ['icon'=>$icon_path.'manage-profile.png','text'=>'Access your Profile on Fitternity to keep track of your membership'],
                         ['icon'=>$icon_path.'flash-code.png','text'=>'Flash the code at the studio & kickstart your fitness journey.'],
                     ];
+                    $show_invite = true;
                     break;
                 case 'manualmembership':
                     $subline = "Your Membership request at $finder_name has been received. Please expect a revert shortly.";
@@ -605,9 +607,9 @@ class HomeController extends BaseController {
                 $popup_message = "Rs ".$itemData['amount']." Fitcash has been added to your wallet";
             }
 
-            if($type == 'workoutsession'){
+            /*if($type == 'workoutsession'){
                 $show_invite = false;
-            }
+            }*/
 
             $resp = [
                 'status'    =>  200,
@@ -837,16 +839,20 @@ class HomeController extends BaseController {
         $location_by_city = $cache ? Cache::tags('location_by_city')->has($city) : false;
         if(!$location_by_city){
             $categorytags = $locations  =	array();
-            $citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
+            if($city != "all"){
+                $citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
+                if(!$citydata){
+                    return $this->responseNotFound('City does not exist');
+                }
 
-            if(!$citydata){
-                return $this->responseNotFound('City does not exist');
+                $city_name 		= 	$citydata['name'];
+                $city_id		= 	(int) $citydata['_id'];
+
+                $locations				= 	Location::active()->whereIn('cities',array($city_id))->orderBy('name')->get(array('name','_id','slug','location_group','lat','lon'));
+            }else{
+                $locations				= 	Location::active()->orderBy('name')->get(array('name','_id','slug','location_group','lat','lon'));
             }
 
-            $city_name 		= 	$citydata['name'];
-            $city_id		= 	(int) $citydata['_id'];
-
-            $locations				= 	Location::active()->whereIn('cities',array($city_id))->orderBy('name')->get(array('name','_id','slug','location_group','lat','lon'));
             $homedata 				= 	array('locations' => $locations );
 
             Cache::tags('location_by_city')->put($city,$homedata,Config::get('cache.cache_time'));

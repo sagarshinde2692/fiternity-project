@@ -34,11 +34,11 @@ Class Utilities {
         }
 
         try {
-            return \Booktrial::
-                where(function ($query) use($customer_email, $customer_phone) {
+            return \Booktrial::where('customer_phone','LIKE','%'.substr($customer_phone, -9).'%')
+                /*where(function ($query) use($customer_email, $customer_phone) {
                     $query->where('customer_email', $customer_email)
                         ->orWhere('customer_phone', $customer_phone);
-                })
+                })*/
                 ->where('finder_id', '=', (int) $finder_id)
                 ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
                 ->get(array('id'));
@@ -119,18 +119,62 @@ Class Utilities {
         // Check Duplicacy of transaction request........
         $duplicateRequest = Customerwallet::where('order_id', (int) $request['order_id'])
             ->where('type', $request['type'])
+            ->orderBy('_id','desc')
             ->first();
 
         if($duplicateRequest != ''){
-            return Response::json(
-                array(
-                    'status' => 400,
-                    'message' => 'Request has been already processed'
-                    ),400
-            );
+
+            if($request['type'] == "DEBIT"){
+
+                $debitAmount = Customerwallet::where('order_id', (int) $request['order_id'])
+                ->where('type', 'DEBIT')
+                ->sum('amount');
+
+                $refundAmount = Customerwallet::where('order_id', (int) $request['order_id'])
+                ->where('type', 'REFUND')
+                ->sum('amount');
+
+                if($debitAmount - $refundAmount != 0){
+                    return Response::json(
+                        array(
+                            'status' => 400,
+                            'message' => 'Request has been already processed'
+                            ),400
+                    );
+                }
+
+            }elseif($request['type'] == "REFUND"){
+
+                $debitAmount = Customerwallet::where('order_id', (int) $request['order_id'])
+                ->where('type', 'DEBIT')
+                ->sum('amount');
+
+                $refundAmount = Customerwallet::where('order_id', (int) $request['order_id'])
+                ->where('type', 'REFUND')
+                ->sum('amount');
+
+                if($debitAmount - $refundAmount <= 0){
+                    return Response::json(
+                        array(
+                            'status' => 400,
+                            'message' => 'Request has been already processed'
+                            ),400
+                    );
+                }
+                
+            }else{
+
+                return Response::json(
+                    array(
+                        'status' => 400,
+                        'message' => 'Request has been already processed'
+                        ),400
+                );
+            }
+            
         }
 
-        if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios','android'])){
+        if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios'])){
 
             $wallet = Customer::where('_id',$customer_id)
                 ->first(array('balance'));
@@ -177,7 +221,7 @@ Class Utilities {
 
             );
 
-        }elseif($data && isset($data['customer_source']) && in_array($data['customer_source'],['ios','android'])){
+        }elseif($data && isset($data['customer_source']) && in_array($data['customer_source'],['ios'])){
 
             $wallet = Customer::where('_id',$customer_id)
                 ->first(array('balance'));
@@ -603,7 +647,7 @@ Class Utilities {
     public function setRedundant($order){
 
         try {
-  
+
             $allOrders = \Order::where('status','!=','1')
                         ->whereIn('type',['memberships','healthytiffinmembership'])
                         ->where('service_id',(int)$order->service_id)
@@ -624,6 +668,7 @@ Class Utilities {
                     $orderData->update();
                 }
             }
+
 
             return "success";
 

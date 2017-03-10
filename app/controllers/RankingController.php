@@ -83,7 +83,7 @@ class RankingController extends \BaseController {
         'method' => 'POST',
         );
 
-       echo es_curl_request($request); 
+       echo "creating an index".es_curl_request($request); 
        sleep(3);
 
         /*
@@ -96,7 +96,7 @@ class RankingController extends \BaseController {
         'method' => 'POST',
         );
 
-      echo es_curl_request($request);   
+      echo "closing an index".es_curl_request($request);   
       sleep(3);
 
       $settings = '{
@@ -207,7 +207,7 @@ class RankingController extends \BaseController {
             'method' => 'PUT',
             );
 
-        echo es_curl_request($request); 
+        echo "setting an index".es_curl_request($request); 
         sleep(3);
 
         /*
@@ -220,7 +220,7 @@ class RankingController extends \BaseController {
             'method' => 'POST',
             );
 
-        echo es_curl_request($request);   
+        echo "open new an index".es_curl_request($request);   
         sleep(3);
 
         $mapping = '{
@@ -236,6 +236,7 @@ class RankingController extends \BaseController {
                     "categorytags" : {"type" : "string","index" : "not_analyzed"},
                     "categorytags_snow" : {"type" : "string", "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
                     "locationtags" : {"type" : "string","index" : "not_analyzed"},
+                    "locationtags_slug" : {"type" : "string","index" : "not_analyzed"},
                     "locationtags_snow" : {"type" : "string", "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
                     "offerings" : {"type" : "string", "index" : "not_analyzed"},
                     "facilities" : {"type" : "string", "index" : "not_analyzed"},
@@ -245,6 +246,12 @@ class RankingController extends \BaseController {
                     "service_category_synonyms" : {"type": "string", "index":"not_analyzed"},
                     "service_category_exact" : {"type": "string", "index":"not_analyzed"},
                     "service_category_snow" : {"type" : "string", "type": "string", "search_analyzer": "simple_analyzer", "index_analyzer": "snowball_analyzer" },
+                    "location_obj" : {"type" : "nested", 
+                        "properties": {
+                            "name" : {"type" : "string", "index" : "not_analyzed"},                    
+                            "slug" : {"type" : "string", "index" : "not_analyzed"}
+                        }
+                    },                    
                     "trials": {
                         "properties": {
                             "day" : {"type" : "string", "index" : "not_analyzed"},
@@ -289,7 +296,7 @@ class RankingController extends \BaseController {
             'method' => 'PUT',
             'postfields' => $postfields_data
             );      
-        echo es_curl_request($request);
+        echo "mapping update an index".es_curl_request($request);
         sleep(3);
 
         /*
@@ -337,13 +344,15 @@ public function IndexRankMongo2Elastic($index_name, $city_id){
     //    ini_set('max_execution_time', 30000);
 //       ini_set('memory_limit', '512M');
        $citykist      =    array(1,2,3,4,8,9);
-       $finder_count_incity = Finder::active()->where('city_id', $city_id)->count();
-       $i_max = intval($finder_count_incity/1000);
+       $finder_count_incity = Finder::active()->count();
+       $i_max = (int) $finder_count_incity/1000;
+        Log::error($finder_count_incity."  - ".$i_max);
        for($i = 0;$i<=$i_max;$i++){
            $skip = $i * 1000;
            $this->chunkIndex($index_name, $city_id,$skip,1000);
        }
 }
+
 public function chunkIndex($index_name, $city_id,$skip,$take){
     ini_set('max_execution_time', 30000);
     ini_set('memory_limit', '512M');
@@ -353,7 +362,7 @@ public function chunkIndex($index_name, $city_id,$skip,$take){
         ->with(array('country'=>function($query){$query->select('name');}))
        ->with(array('city'=>function($query){$query->select('name');}))
        ->with(array('category'=>function($query){$query->select('name','meta');}))
-       ->with(array('location'=>function($query){$query->select('name','locationcluster_id' );}))
+       ->with(array('location'=>function($query){$query->select('name','locationcluster_id','slug');}))
        ->with('categorytags')
        ->with('locationtags')
        ->with('offerings')
@@ -532,6 +541,7 @@ public function chunkIndex($index_name, $city_id,$skip,$take){
 }
 }
 }
+
 public function generateRank($finderDocument = ''){
 
         //$finderCategory = $finderDocument['category'];

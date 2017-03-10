@@ -427,6 +427,9 @@ Route::post('keywordsearchweb', 'GlobalSearchController@keywordSearch');
 Route::post('search/getfinderresults', 'RankingSearchController@getRankedFinderResultsApp');
 Route::post('search/getfinderresultsv2', 'RankingSearchController@getRankedFinderResultsAppv2');
 Route::post('search/getfinderresultsv3', 'RankingSearchController@getRankedFinderResultsAppv3');
+
+Route::post('search/getfinderresultsv4', 'RankingSearchController@getRankedFinderResultsAppv4');
+
 Route::get('buildkeywordcache', 'GlobalSearchController@preparekeywordsearchcache');
 Route::post('keywordsearchwebv1', 'GlobalSearchController@improvedkeywordSearch');
 Route::post('search/searchdirectpefinders', 'RankingSearchController@searchDirectPaymentEnabled');
@@ -820,6 +823,11 @@ Route::get('temp/verifyotp/{temp_id}/{otp}/{email?}/{name?}', array('as' => 'tem
 Route::get('temp/proceedwithoutotp/{temp_id}', array('as' => 'temps.proceedwithoutotp','uses' => 'TempsController@proceedWithoutOtp'));
 Route::get('temp/regenerateotp/{temp_id}', array('as' => 'temps.regenerateotp','uses' => 'TempsController@regenerateOtp'));
 
+/**** Version 1 ****/
+Route::post('temp/addv1', array('as' => 'temps.add','uses' => 'TempsController@addV1'));
+Route::get('temp/verifyotpv1/{temp_id}/{otp}/{email?}/{name?}', array('as' => 'temps.verifyotp','uses' => 'TempsController@verifyOtpV1'));
+Route::get('temp/proceedwithoutotpv1/{temp_id}', array('as' => 'temps.proceedwithoutotp','uses' => 'TempsController@proceedWithoutOtpV1'));
+
 
 /******************  Temp API END HERE************************************************/
 #####################################################################################################
@@ -859,4 +867,20 @@ Route::post('seourl', 'GlobalSearchController@seourl');
 Route::get('email/opened', 'CustomerController@emailOpened');
 
 Route::post('transaction/capture',array('as' => 'transaction.capture','uses' => 'TransactionController@capture'));
+
+Route::get('getfindercategories/{city?}', 'DebugController@cacheFinderCategoryTags');
+
+Route::get('getfinderlocations', 'DebugController@cacheLocations');
+
+Route::get('getsubcategories', 'DebugController@cacheOfferings');
+
 Route::post('transaction/pg',array('as' => 'transaction.pg','uses' => 'TransactionController@pg'));
+
+
+
+Route::post('displayemi','CustomerController@displayEmi');
+
+Route::get('trainer/getavailableslots',array('as' => 'trainer/getavailableslots','uses' => 'TrainerController@getAvailableSlots'));
+Route::group(array('before' => 'validatetoken'), function() {
+	Route::post('trainer/bookslot', array('as' => 'trainer.bookslot','uses' => 'TrainerController@bookSlot'));
+});

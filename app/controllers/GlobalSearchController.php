@@ -788,6 +788,7 @@ catch(Exception $e){
 }
 
 public function newglobalsearch(){
+   
    $type     =         Input::json()->get('type');
    $from     =         Input::json()->get('offset')['from'];
    $size     =         Input::json()->get('offset')['number_of_records'] ? Input::json()->get('offset')['number_of_records'] : 10;
@@ -796,6 +797,18 @@ public function newglobalsearch(){
    $location =         Input::json()->get('location');
    $lat      =         isset($location['lat']) ? $location['lat'] : '';
    $lon      =         isset($location['long']) ? $location['long'] : '';
+   $customer_email = null;
+   $jwt_token = Request::header('Authorization');
+   if($jwt_token){
+        Log::info("inside");
+        $decoded = $this->customerTokenDecode($jwt_token);
+        if($decoded){
+            $customer_email = $decoded->customer->email;
+        }
+        
+   }
+   
+   
         //  $keys    =          array_diff($keys1, array(''));
         $geo_location_filter   =   '';//($lat != '' && $lon != '') ? '{"geo_distance" : {  "distance": "10km","distance_type":"plane", "geolocation":{ "lat":'.$lat. ',"lon":' .$lon. '}}},':'';
         $city_filter =  '{ "term": { "city": "'.$city.'", "_cache": true } },';
@@ -1308,7 +1321,7 @@ $request = array(
 $search_results     =   es_curl_request($request);
 $search_results1    =   json_decode($search_results, true);
 
-$autocompleteresponse = Translator::translate_autocomplete($search_results1, $city);
+$autocompleteresponse = Translator::translate_autocomplete($search_results1, $city, $customer_email);
 $autocompleteresponse->meta->number_of_records = $size;
 $autocompleteresponse->meta->from = $from;
 $autocompleteresponse1 = json_encode($autocompleteresponse, true);
@@ -2040,6 +2053,23 @@ private function _getCategoryRegex($city){
         }
 
         return Response::json($response,$response['status']);
+    }
+
+    public function customerTokenDecode($token){
+
+        $jwt_token = $token;
+
+        $jwt_key = Config::get('app.jwt.key');
+        $jwt_alg = Config::get('app.jwt.alg');
+        try {
+            $decodedToken = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+
+        }catch (Exception $e) {
+            Log::info($e);
+            return null;
+        }
+        
+        return $decodedToken;
     }
 
 }

@@ -74,16 +74,45 @@ class FindersController extends \BaseController {
 
 	}
 
+	
+
 
 
 	public function finderdetail($slug, $cache = true){
-
+		
 		$data   =  array();
 		$tslug  = (string) strtolower($slug);
+		$cache_key = $tslug;
+		
+		$category_slug = null;
+		if(isset($_GET['category_slug']) && $_GET['category_slug'] != ''){
+			Log::info("Category exists");
+			$category_slug = $_GET['category_slug'];
+			$cache_key  = $tslug.'-'.$category_slug;
+		}
+
+		$customer_email = null;
+		if(in_array($tslug, Config::get('app.test_vendors'))){
+			$jwt_token = Request::header('Authorization');
+			if($jwt_token){
+				$decoded = $this->customerTokenDecode($jwt_token);
+				if($decoded){
+					$customer_email = $decoded->customer->email;
+				}
+				if(!in_array($customer_email, Config::get('app.test_page_users'))){
+
+					return Response::json("not found", 404);
+				}
+			}else{
+
+				return Response::json("not found", 404);
+			}
+		}
 
 		$finder_detail = $cache ? Cache::tags('finder_detail')->has($tslug) : false;
 
 		if(!$finder_detail){
+			Log::info("Not cached in detail");
 
 			$finderarr = Finder::active()->where('slug','=',$tslug)
 				->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))
@@ -97,9 +126,12 @@ class FindersController extends \BaseController {
 				->with('facilities')
 				->with(array('ozonetelno'=>function($query){$query->select('*')->where('status','=','1');}))
 				->with(array('services'=>function($query){$query->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))->where('status','=','1')->orderBy('ordering', 'ASC');}))
-				// ->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1')->orderBy('_id', 'DESC')->limit(5);}))
-				->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1')->orderBy('_id', 'DESC');}))
+				->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1')->orderBy('_id', 'DESC')->limit(5);}))
+				// ->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1')->orderBy('_id', 'DESC');}))
 				->first();
+		
+
+			unset($finderarr['ratecards']);
 
 			$finder = null;	
 
@@ -111,6 +143,7 @@ class FindersController extends \BaseController {
 
 				// return  pluck( $finderarr['categorytags'] , array('name', '_id') );
 				$finder         =   array_except($finderarr, array('coverimage','findercollections','categorytags','locationtags','offerings','facilities','services','blogs'));
+
 				$coverimage     =   ($finderarr['coverimage'] != '') ? $finderarr['coverimage'] : 'default/'.$finderarr['category_id'].'-'.rand(1, 4).'.jpg';
 				array_set($finder, 'coverimage', $coverimage);
 
@@ -164,7 +197,9 @@ class FindersController extends \BaseController {
 							if($value['category']['_id'] == 65){ return $value; }
 						}));
 
-//                        return $finder_gym_service; exit;
+
+
+                       // return $finder_gym_service; exit;
 
 						if(isset($finder_gym_service['trialschedules']) && count($finder_gym_service['trialschedules']) > 0){
 							$all_weekdays                       =   $finder_gym_service['active_weekdays'];
@@ -265,7 +300,36 @@ class FindersController extends \BaseController {
 					$finder['associate_finder'] = $associate_finder;
 				}
 
-				array_set($finder, 'services', pluck( $finderarr['services'] , ['_id', 'name', 'lat', 'lon', 'serviceratecard', 'session_type', 'trialschedules', 'workoutsessionschedules', 'workoutsession_active_weekdays', 'active_weekdays', 'workout_tags', 'calorie_burn', 'workout_results', 'short_description', 'photos','service_trainer','timing','category','subcategory','batches','vip_trial','meal_type','trial','membership', 'offer_available', 'showOnFront']));
+
+				$category_slug_services = array();
+				$category_slug_services = array_where($finderarr['services'], function($key, $value) use ($category_slug){
+							if($value['category']['slug'] == $category_slug)
+								{
+								 return $value; 
+								}
+						});
+
+				$non_category_slug_services = array();
+				$non_category_slug_services = array_where($finderarr['services'], function($key, $value) use ($category_slug){
+							if($value['category']['slug'] != $category_slug)
+								{
+								 return $value; 
+								}
+						});
+
+				function cmp($a, $b)
+	            {
+	            	return $a['traction']['sales'] < $b['traction']['sales'];
+	            }
+
+	        	usort($category_slug_services, "cmp");
+	        	usort($non_category_slug_services, "cmp");
+	        	
+	        	$finderarr['services'] = array_merge($category_slug_services, $non_category_slug_services);
+
+
+				
+				array_set($finder, 'services', pluck( $finderarr['services'] , ['_id', 'name', 'lat', 'lon', 'serviceratecard', 'session_type', 'workout_tags', 'calorie_burn', 'workout_results', 'short_description','service_trainer','timing','category','subcategory','batches','vip_trial','meal_type','trial','membership', 'offer_available', 'showOnFront']  ));
 				array_set($finder, 'categorytags', pluck( $finderarr['categorytags'] , array('_id', 'name', 'slug', 'offering_header') ));
 				array_set($finder, 'findercollections', pluck( $finderarr['findercollections'] , array('_id', 'name', 'slug') ));
 				array_set($finder, 'blogs', pluck( $finderarr['blogs'] , array('_id', 'title', 'slug', 'coverimage') ));
@@ -286,42 +350,42 @@ class FindersController extends \BaseController {
 						array_push($photoArr, $photoObj);
 					}
 					array_set($finder, 'photos', $photoArr);
-//                    print_pretty($photoArr);exit;
+// //                    print_pretty($photoArr);exit;
 
-					$service_tags_photo_arr             =   [];
-					$info_tags_photo_arr                =   [];
+// 					$service_tags_photo_arr             =   [];
+// 					$info_tags_photo_arr                =   [];
 
-					if(count($photoArr) > 0 ) {
-						$unique_service_tags_arr    =   array_unique(array_flatten(array_pluck($photoArr, 'servicetags')));
-						$unique_info_tags_arr       =   array_unique(array_flatten(array_pluck($photoArr, 'tags')));
+// 					if(count($photoArr) > 0 ) {
+// 						$unique_service_tags_arr    =   array_unique(array_flatten(array_pluck($photoArr, 'servicetags')));
+// 						$unique_info_tags_arr       =   array_unique(array_flatten(array_pluck($photoArr, 'tags')));
 
-						foreach ($unique_service_tags_arr as $unique_service_tags) {
-							$service_tags_photoObj = [];
-							$service_tags_photoObj['name'] = $unique_service_tags;
-							$service_tags_photos = array_where($photoArr, function ($key, $value) use ($unique_service_tags) {
-								if (in_array($unique_service_tags, $value['servicetags'])) {
-									return $value;
-								}
-							});
-							$service_tags_photoObj['photo'] = array_values($service_tags_photos);
-							array_push($service_tags_photo_arr, $service_tags_photoObj);
-						}
+// 						foreach ($unique_service_tags_arr as $unique_service_tags) {
+// 							$service_tags_photoObj = [];
+// 							$service_tags_photoObj['name'] = $unique_service_tags;
+// 							$service_tags_photos = array_where($photoArr, function ($key, $value) use ($unique_service_tags) {
+// 								if (in_array($unique_service_tags, $value['servicetags'])) {
+// 									return $value;
+// 								}
+// 							});
+// 							$service_tags_photoObj['photo'] = array_values($service_tags_photos);
+// 							array_push($service_tags_photo_arr, $service_tags_photoObj);
+// 						}
 
-						foreach ($unique_info_tags_arr as $unique_info_tags) {
-							$info_tags_photoObj = [];
-							$info_tags_photoObj['name'] = $unique_info_tags;
-							$info_tags_photos = array_where($photoArr, function ($key, $value) use ($unique_info_tags) {
-								if (in_array($unique_info_tags, $value['tags'])) {
-									return $value;
-								}
-							});
-							$info_tags_photoObj['photo'] = array_values($info_tags_photos);
-							array_push($info_tags_photo_arr, $info_tags_photoObj);
-						}
-					}
+// 						foreach ($unique_info_tags_arr as $unique_info_tags) {
+// 							$info_tags_photoObj = [];
+// 							$info_tags_photoObj['name'] = $unique_info_tags;
+// 							$info_tags_photos = array_where($photoArr, function ($key, $value) use ($unique_info_tags) {
+// 								if (in_array($unique_info_tags, $value['tags'])) {
+// 									return $value;
+// 								}
+// 							});
+// 							$info_tags_photoObj['photo'] = array_values($info_tags_photos);
+// 							array_push($info_tags_photo_arr, $info_tags_photoObj);
+// 						}
+// 					}
 
-					array_set($finder, 'photo_service_tags', array_values($service_tags_photo_arr));
-					array_set($finder, 'photo_info_tags', array_values($info_tags_photo_arr));
+// 					array_set($finder, 'photo_service_tags', array_values($service_tags_photo_arr));
+// 					array_set($finder, 'photo_info_tags', array_values($info_tags_photo_arr));
 
 				}
 				// $finder['offer_icon'] = "https://b.fitn.in/iconsv1/womens-day/womens-day-mobile-banner.svg";
@@ -465,20 +529,22 @@ class FindersController extends \BaseController {
 					->active()
 					->where("_id","!=",(int)$finderarr['_id'])
 					->where('city_id',(int)$finderarr['city_id'])
-					->with('offerings')
+					// ->with('offerings')
 					->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 					->with(array('city'=>function($query){$query->select('_id','name','slug');}))
-					->get(['_id','title','slug','brand_id','location_id','city_id','offerings','average_rating','finder_coverimage','coverimage']);
+					->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+					->take(5)
+					->get(['_id','title','slug','brand_id','location_id','city_id','average_rating','finder_coverimage','coverimage', 'category_id']);
 
-					if(count($brandFinder) > 0){
+					// if(count($brandFinder) > 0){
 
-						$brandFinder = $brandFinder->toArray();
+					// 	$brandFinder = $brandFinder->toArray();
 					
-						foreach($brandFinder as $key => $finder1){
-							array_set($brandFinder[$key], 'offerings', pluck( $finder1['offerings'] , array('_id', 'name', 'slug') ));
-						}
+					// 	foreach($brandFinder as $key => $finder1){
+					// 		array_set($brandFinder[$key], 'offerings', pluck( $finder1['offerings'] , array('_id', 'name', 'slug') ));
+					// 	}
 
-					}
+					// }
 
 					$finderarr['brand']['brand_detail'] = $brand;
 					$finderarr['brand']['finder_detail'] = $brandFinder;
@@ -576,14 +642,16 @@ class FindersController extends \BaseController {
 					$nearby_same_category = [];
 					$nearby_other_category = [];
 				}
+
 				$finder['title'] = str_replace('crossfit', 'CrossFit', $finder['title']);
 				$response['statusfinder']                   =       200;
 				$response['finder']                         =       $finder;
 				$response['defination']                     =       ['categorytags' => $categoryTagDefinationArr];
 				$response['nearby_same_category']           =       $nearby_same_category;
 				$response['nearby_other_category']          =       $nearby_other_category;
+				$response['show_reward_banner'] = true;
 
-				Cache::tags('finder_detail')->put($tslug,$response,Config::get('cache.cache_time'));
+				Cache::tags('finder_detail')->put($cache_key,$response,Config::get('cache.cache_time'));
 
 			}else{
 
@@ -596,7 +664,7 @@ class FindersController extends \BaseController {
 
 		}else{
 
-			$response = Cache::tags('finder_detail')->get($tslug);
+			$response = Cache::tags('finder_detail')->get($cache_key);
 		}
 
 		if(Request::header('Authorization')){
@@ -1257,6 +1325,10 @@ class FindersController extends \BaseController {
 
 		$this->cacheapi->flushTagKey('finder_detail',$finder->slug);
 		$this->cacheapi->flushTagKey('review_by_finder_list',$finder->slug);
+		$this->cacheapi->flushTagKey('finder_detail_android',$finder->slug);
+		$this->cacheapi->flushTagKey('finder_detail_android_3_2',$finder->slug);
+		$this->cacheapi->flushTagKey('finder_detail_ios',$finder->slug);
+		$this->cacheapi->flushTagKey('finder_detail_ios_3_2',$finder->slug);
 
 		return Response::json($response, 200);
 	}
@@ -1780,17 +1852,6 @@ class FindersController extends \BaseController {
 	}
 
 
-
-	public function customerTokenDecode($token){
-
-		$jwt_token = $token;
-		$jwt_key = Config::get('app.jwt.key');
-		$jwt_alg = Config::get('app.jwt.alg');
-		$decodedToken = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
-
-		return $decodedToken;
-	}
-
 	public function getTrialSchedule($finder_id,$category){
 
 		$currentDateTime        =   date('Y-m-d');
@@ -1811,13 +1872,15 @@ class FindersController extends \BaseController {
 
 		if(isset($_GET['device_type']) && $_GET['device_type'] == 'android'){
 
-			$items = Service::active()->where('finder_id', $finder_id)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos','trial','membership', 'showOnFront'))->toArray();
+			$items = Service::active()->where('finder_id', $finder_id)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos','trial','membership', 'traction', 'location_id'))->toArray();
+
 		}else{
 
 			$membership_services = Ratecard::where('finder_id', $finder_id)->orWhere('type','membership')->orWhere('type','packages')->lists('service_id');
 			$membership_services = array_map('intval',$membership_services);
 
-			$items = Service::active()->whereIn('_id',$membership_services)->where('finder_id', $finder_id)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos','trial','membership', 'offer_available', 'showOnFront'))->toArray();
+			$items = Service::active()->whereIn('_id',$membership_services)->where('finder_id', $finder_id)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos','trial','membership', 'traction', 'location_id'))->toArray();
+
 		}
 
 		if(!$items){
@@ -1913,7 +1976,10 @@ class FindersController extends \BaseController {
 				'image'=>$photo,
 				'membership' => (isset($item['membership'])) ? $item['membership'] : "",
 				'trial' => (isset($item['trial'])) ? $item['trial'] : "",
-				'offer_icon' => ""
+				'offer_icon' => "",
+				'servicecategory_id' => $item['servicecategory_id'],
+				'traction' => $item['traction'],
+				'location_id' => $item['location_id']
 			);
 
 			if(isset($item['offer_available']) && $item['offer_available'] == true){
@@ -2065,8 +2131,44 @@ class FindersController extends \BaseController {
 
 	public function finderDetailApp($slug, $cache = true){
 
-		$data   =  array();
+		$data   =  array();	
 		$tslug  = (string) strtolower($slug);
+		$cache_key = $tslug;
+
+		$category_slug = null;
+		if(isset($_GET['category_slug']) && $_GET['category_slug'] != ''){
+			Log::info("Category exists");
+			$category_slug = $_GET['category_slug'];
+			$cache_key  = $tslug.'-'.$category_slug;
+		}
+
+		$location_id = null;
+		if(isset($_GET['location_id']) && $_GET['location_id'] != ''){
+			Log::info("location exists");
+			$location_id = $_GET['location_id'];
+			$cache_key  = $cache_key.'-'.$location_id;
+		}
+
+		Log::info($cache_key);
+
+
+		$customer_email = null;
+		if(in_array($tslug, Config::get('app.test_vendors'))){
+			$jwt_token = Request::header('Authorization');
+			if($jwt_token){
+				$decoded = $this->customerTokenDecode($jwt_token);
+				if($decoded){
+					$customer_email = $decoded->customer->email;
+				}
+				if(!in_array($customer_email, Config::get('app.test_page_users'))){
+
+					return Response::json(array("status"=>404), 404);
+				}
+			}else{
+
+				return Response::json(array("status"=>404), 404);
+			}
+		}
 
 		$cache_name = "finder_detail_app";
 
@@ -2087,9 +2189,10 @@ class FindersController extends \BaseController {
 		}
 
 
-		$finder_detail = $cache ? Cache::tags($cache_name)->has($tslug) : false;
+		$finder_detail = $cache ? Cache::tags($cache_name)->has($cache_key) : false;
 
 		if(!$finder_detail){
+			Log::info("Not Cached in app");
 
 			$finderarr = Finder::active()->where('slug','=',$tslug)
 				->with(array('category'=>function($query){$query->select('_id','name','slug','detail_rating');}))
@@ -2102,7 +2205,8 @@ class FindersController extends \BaseController {
 				->with(array('ozonetelno'=>function($query){$query->select('*')->where('status','=','1');}))
 				->with(array('services'=>function($query){$query->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}))
 				->with(array('reviews'=>function($query){$query->select('_id','finder_id','customer_id','rating','description','updated_at')->where('status','=','1')->with(array('customer'=>function($query){$query->select('_id','name','picture')->where('status','=','1');}))->orderBy('_id', 'DESC')->limit(1);}))
-				->first(array('_id','slug','title','lat','lon','category_id','category','location_id','location','city_id','city','categorytags','locationtags','offerings','facilities','coverimage','finder_coverimage','contact','average_rating','photos','info','manual_trial_enable','manual_trial_auto','trial','commercial_type'));
+				->first(array('_id','slug','title','lat','lon','category_id','category','location_id','location','city_id','city','categorytags','locationtags','offerings','facilities','coverimage','finder_coverimage','contact','average_rating','photos','info','manual_trial_enable','manual_trial_auto','trial','commercial_type','multiaddress'));
+
 
 			$finder = false;
 
@@ -2237,11 +2341,14 @@ class FindersController extends \BaseController {
 					array_set($finder, 'open_now', $status);
 				}
 
+				
+
 				array_set($finder, 'services', pluck( $finderarr['services'] , ['_id', 'name', 'lat', 'lon', 'ratecards', 'serviceratecard', 'session_type', 'trialschedules', 'workoutsessionschedules', 'workoutsession_active_weekdays', 'active_weekdays', 'workout_tags', 'short_description', 'photos','service_trainer','timing','category','subcategory','batches','vip_trial','meal_type','trial','membership']  ));
 				array_set($finder, 'categorytags', array_map('ucwords',array_values(array_unique(array_flatten(pluck( $finderarr['categorytags'] , array('name') ))))));
 				array_set($finder, 'locationtags', array_map('ucwords',array_values(array_unique(array_flatten(pluck( $finderarr['locationtags'] , array('name') ))))));
 				array_set($finder, 'offerings', array_map('ucwords',array_values(array_unique(array_flatten(pluck( $finderarr['offerings'] , array('name') ))))));
 				array_set($finder, 'facilities', array_map('ucwords',array_values(array_unique(array_flatten(pluck( $finderarr['facilities'] , array('name') ))))));
+
 
 				try {
 					if(isset($finder['info']['service']) && $finder['info']['service'] != ""){
@@ -2352,12 +2459,17 @@ class FindersController extends \BaseController {
 					unset($finder['ozonetelno']);
 					unset($finder['contact']['website']);
 				}
+				if(isset($finderarr['multiaddress']) && count($finderarr['multiaddress']) > 0){
+					$finder['multiaddress'] = $finderarr['multiaddress'];
+				}else{
+					$finder['multiaddress'] = array();
+				}
 
 				$data['status']                         =       200;
 				$data['finder']                         =       $finder;
 
-				$finder = Finder::active()->where('slug','=',$tslug)->first();
 
+				$finder = Finder::active()->where('slug','=',$tslug)->first();
 				if($finder){
 
 					$data['finder']['services']          =        $this->getTrialSchedule($finder->_id,$finder->category);
@@ -2367,12 +2479,80 @@ class FindersController extends \BaseController {
 					$data['call_for_action_button']      =        "";
 
 					$data['finder']['offer_icon']        =        "";
+					$data['finder']['multiaddress']	     =		  $finder->multiaddress;	
 
 					if(time() >= strtotime(date('2016-12-24 00:00:00')) && (int)$finder['commercial_type'] != 0){
 
 						$data['finder']['offer_icon'] = "https://b.fitn.in/iconsv1/fitmania/offer_avail_red.png";
 					}
+					
+					
+					$category_id = Servicecategory::where('slug', $category_slug)->where('parent_id', 0)->first(['_id']);
+					;
+					function cmp($a, $b)
+		            {
+		            	return $a['traction']['sales'] < $b['traction']['sales'];
+		            }
 
+		        	usort($data['finder']['services'], "cmp");
+
+					if($location_id){
+						$location_id = intval($location_id);
+						$location_id_services =array_where($data['finder']['services'] , function($key, $value) use ($location_id){
+							if($value['location_id'] == $location_id)
+								{
+								 return $value; 
+								}
+						});
+						$non_location_id_services = array_where($data['finder']['services'] , function($key, $value) use ($location_id){
+							if($value['location_id'] != $location_id)
+								{
+								 return $value; 
+								}
+						});
+
+						$data['finder']['services'] = array_merge($location_id_services, $non_location_id_services);
+
+						$location_id_address =array_where($data['finder']['multiaddress'] , function($key, $value) use ($location_id){
+							if($value['location_id'][0] == $location_id)
+								{
+								 return $value; 
+								}
+						});
+
+						$non_location_id_address =array_where($data['finder']['multiaddress'] , function($key, $value) use ($location_id){
+							if($value['location_id'][0] != $location_id)
+								{
+								 return $value; 
+								}
+						});
+
+						$data['finder']['multiaddress'] = array_merge($location_id_address, $non_location_id_address);
+
+					}
+
+					
+
+					
+					$category_slug_services = array();
+					$category_slug_services = array_where($data['finder']['services'] , function($key, $value) use ($category_id){
+							if($value['servicecategory_id'] == $category_id['_id'])
+								{
+								 return $value; 
+								}
+						});
+
+					$non_category_slug_services = array();
+					$non_category_slug_services = array_where($data['finder']['services'] , function($key, $value) use ($category_id){
+							if($value['servicecategory_id'] != $category_id['_id'])
+								{
+								 return $value; 
+								}
+						});
+
+				
+
+		        	$data['finder']['services']  = array_merge($category_slug_services, $non_category_slug_services);
 
 					/*if(isset($data['finder']['services']['offer_icon_vendor'])){
 
@@ -2428,13 +2608,14 @@ class FindersController extends \BaseController {
 
 				}
 
-				$data = Cache::tags($cache_name)->put($tslug, $data, Config::get('cache.cache_time'));
+
+				$data = Cache::tags($cache_name)->put($cache_key, $data, Config::get('cache.cache_time'));
 
 			}
 
 		}
 
-		$finderData = Cache::tags($cache_name)->get($tslug);
+		$finderData = Cache::tags($cache_name)->get($cache_key);
 
 		if(count($finderData) > 0 && isset($finderData['status']) && $finderData['status'] == 200){
 
@@ -2517,7 +2698,7 @@ class FindersController extends \BaseController {
 				unset($finderData['finder']['services_trial']);
 			}
 
-			
+			// $finderData['show_reward_banner'] = true;
 
 		}else{
 
@@ -2579,5 +2760,23 @@ class FindersController extends \BaseController {
 		return $finderservicesArr;
 
 	}
+
+	public function customerTokenDecode($token){
+
+        $jwt_token = $token;
+
+        $jwt_key = Config::get('app.jwt.key');
+        $jwt_alg = Config::get('app.jwt.alg');
+        try {
+            $decodedToken = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+
+        }catch (Exception $e) {
+            Log::info($e);
+            return null;
+        }
+        
+        return $decodedToken;
+    }
+
 
 }
