@@ -607,9 +607,9 @@ class HomeController extends BaseController {
                 $popup_message = "Rs ".$itemData['amount']." Fitcash has been added to your wallet";
             }
 
-            if($type == 'workoutsession'){
+            /*if($type == 'workoutsession'){
                 $show_invite = false;
-            }
+            }*/
 
             $resp = [
                 'status'    =>  200,
