@@ -34,11 +34,11 @@ Class Utilities {
         }
 
         try {
-            return \Booktrial::where('customer_phone','LIKE','%'.substr($customer_phone, -9).'%')
-                /*where(function ($query) use($customer_email, $customer_phone) {
-                    $query->where('customer_email', $customer_email)
-                        ->orWhere('customer_phone', $customer_phone);
-                })*/
+            return \Booktrial::
+                where(function ($query) use($customer_email, $customer_phone) {
+                    $query->orWhere('customer_email', $customer_email)
+                        ->orWhere('customer_phone','LIKE','%'.substr($customer_phone, -9).'%');
+                })
                 ->where('finder_id', '=', (int) $finder_id)
                 ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
                 ->get(array('id'));

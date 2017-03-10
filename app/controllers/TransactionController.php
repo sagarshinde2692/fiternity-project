@@ -739,17 +739,6 @@ class TransactionController extends \BaseController {
             }
         }
 
-        if(isset($data['diet_plan_ratecard_id']) && $data['diet_plan_ratecard_id'] != "" && $data['diet_plan_ratecard_id'] != 0){
-
-            $getDietPlanAmount = $this->getDietPlanAmount($data['diet_plan_ratecard_id']);
-
-            if($getDietPlanAmount['status'] != 200){
-                return $getDietPlanAmount;
-            }
-
-            $data['amount_finder'] = $getDietPlanAmount['amount'] + $data['amount_finder'];
-        }
-
         $data['amount'] = $data['amount_finder'];
 
         $medical_detail                     =   (isset($data['medical_detail']) && $data['medical_detail'] != '') ? $data['medical_detail'] : "";
@@ -1114,22 +1103,5 @@ class TransactionController extends \BaseController {
 
         return Response::json($response,$response['status']);
     }
-
-    public function getDietPlanAmount($ratecard_id){
-        
-        $ratecard = Ratecard::find($ratecard_id);
-
-        if(!$ratecard){
-            return array('status' => 404,'message' => 'Diet Plan Ratecard not found');
-        }
-
-        if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
-            $amount = $ratecard['special_price'];
-        }else{
-            $amount = $ratecard['price'];
-        }
-
-        return array('status' => 200,'amount' => $amount);
-    }
-
+    
 }
