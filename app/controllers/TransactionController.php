@@ -844,6 +844,7 @@ class TransactionController extends \BaseController {
         $data['service_duration_purchase'] =  $data['service_duration'];
         $data['status'] =  '0';
         $data['payment_mode'] =  'paymentgateway';
+        $data['source_of_membership'] =  'real time';
 
         return array('status' => 200,'data' =>$data);
 
