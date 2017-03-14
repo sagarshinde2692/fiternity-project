@@ -615,7 +615,7 @@ class HomeController extends BaseController {
 
             $resp = [
                 'status'    =>  200,
-                'item'      =>  $item,
+                'item'      =>  null,
                 'message'   =>   [
                     'header'    =>  $header,
                     'subline'   =>  $subline,
