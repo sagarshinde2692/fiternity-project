@@ -488,6 +488,7 @@ class HomeController extends BaseController {
                         ['icon'=>$icon_path.'choose-reward.png','text'=>'Choose exciting rewards when you buy'],
                     ];
                     $show_invite = true;
+                    $id_for_invite = $item['booktrial_id'];
                     break;
                 case 'workoutsession':
                     $subline = "Your Workout Session at $finder_name for $service_name on $schedule_date from $schedule_slot has been scheduled";
