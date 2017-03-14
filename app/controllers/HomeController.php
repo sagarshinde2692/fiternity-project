@@ -625,7 +625,8 @@ class HomeController extends BaseController {
                 ],
                 'popup_message' => $popup_message,
                 'show_invite' => $show_invite,
-                'id_for_invite' => $id_for_invite
+                'id_for_invite' => $id_for_invite,
+                'type' => $type
             ];
 
             return Response::json($resp);
