@@ -2318,7 +2318,7 @@ class OrderController extends \BaseController {
             $mobilehash = "";
            
             $data['txnid'] = $txnid;
-            $hash = $this->getHash($data);
+            $hash = getHash($data);
 
             $data = array_merge($data,$hash);
 

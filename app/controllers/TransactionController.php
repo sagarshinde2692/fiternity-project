@@ -173,7 +173,7 @@ class TransactionController extends \BaseController {
             $successurl = $data['type'] == "memberships" ? Config::get('app.website')."/paymentsuccess" : Config::get('app.website')."/paymentsuccesstrial";
         }
         $data['txnid'] = $txnid;
-        $hash = $this->getHash($data);
+        $hash = getHash($data);
 
         $data = array_merge($data,$hash);
 
