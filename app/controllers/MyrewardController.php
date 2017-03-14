@@ -94,6 +94,19 @@ class MyrewardController extends BaseController {
             $myrewards = $myrewards->toArray();
 
             foreach ($myrewards as $key => $value){
+
+                $created_at = date('Y-m-d h:i:s',strtotime($value['created_at']));
+                
+                $validity_date_unix = strtotime($created_at . ' +'.(int)$value['validity_in_days'].' days');
+                $current_date_unix = time();
+
+                $validity_in_days = 0;
+
+                if($validity_date_unix > $current_date_unix){
+                    $validity_in_days = ceil(($validity_date_unix - $current_date_unix)/(60*60*24));
+                }
+
+                $myrewards[$key]['validity_in_days'] = $validity_in_days;
                 
                 if(isset($value['payload']) && isset($value['payload']['amount']) && $value['payload']['amount'] != "" && isset($value['quantity']) && $value['quantity'] != ""){
                     $myrewards[$key]['payload']['amount'] = $value['payload']['amount'] * $value['quantity'];
