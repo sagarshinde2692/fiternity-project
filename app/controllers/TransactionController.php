@@ -53,6 +53,10 @@ class TransactionController extends \BaseController {
 
         $data = Input::json()->all();
 
+        foreach ($data as $key => $value) {
+            $data[$key] = trim($value);
+        }
+
         Log::info('------------transactionCapture---------------',$data);
 
         if(!isset($data['type'])){
