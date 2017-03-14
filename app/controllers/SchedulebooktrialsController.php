@@ -2061,6 +2061,17 @@ class SchedulebooktrialsController extends \BaseController {
                 Log::info('$trialbooked : '.json_encode($trialbooked));
             }
 
+            array_set($orderData, 'status', '1');
+            array_set($orderData, 'order_action', 'bought');
+            array_set($orderData, 'booktrial_id', (int)$booktrialid);
+            array_set($orderData, 'success_date', date('Y-m-d H:i:s',time()));
+
+            if(isset($order->payment_mode) && $order->payment_mode == "paymentgateway"){
+                array_set($orderData, 'secondary_payment_mode', 'payment_gateway_membership');
+            }
+
+            $order->update($orderData);
+
 
             // Give Rewards / Cashback to customer based on selection, on purchase success......
             
