@@ -54,7 +54,10 @@ class TransactionController extends \BaseController {
         $data = Input::json()->all();
 
         foreach ($data as $key => $value) {
-            $data[$key] = trim($value);
+
+            if(is_string($value)){
+                $data[$key] = trim($value);
+            }
         }
 
         Log::info('------------transactionCapture---------------',$data);
