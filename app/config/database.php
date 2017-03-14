@@ -49,8 +49,8 @@ return array(
 
 		'mongodb' => array(
 			'driver'   => 'mongodb',
-			//'host'     => 'localhost',
-			'host'     => '52.77.247.239',
+			'host'     => 'localhost',
+			// 'host'     => '52.77.247.239',
 			'port'     => 27017,
 			'database' => 'fitadmin',
 		    'username' => 'fitadmin',
@@ -59,8 +59,8 @@ return array(
 
 		'mongodb2' => array(
 			'driver'   => 'mongodb',
-			//'host'     => 'localhost',
-			'host'     => '52.77.247.239',
+			'host'     => 'localhost',
+			// 'host'     => '52.77.247.239',
 			'port'     => 27017,
 			'database' => 'fitapi',
 			'username' => 'fitadmin',
