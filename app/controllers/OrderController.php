@@ -2360,7 +2360,10 @@ class OrderController extends \BaseController {
         // return $req;
         // exit(0);
 
-
+        if(isset($req['id_for_invite'])){
+            $req['order_id'] = $req['id_for_invite'];
+        }
+        
         // Request Validations...........
         $rules = [
             'order_id' => 'required|integer|numeric',

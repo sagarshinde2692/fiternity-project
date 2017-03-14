@@ -4584,6 +4584,10 @@ class SchedulebooktrialsController extends \BaseController {
         $req = Input::json()->all();
         Log::info('inviteForTrial',$req);
 
+        if(isset($req['id_for_invite'])){
+            $req['booktrial_id'] = $req['id_for_invite'];
+        }
+
         // Request Validations...........
         $rules = [
             'booktrial_id' => 'required|integer|numeric',

@@ -463,6 +463,7 @@ class HomeController extends BaseController {
             $icon_path  =   "https://b.fitn.in/iconsv1/success-pages/";
             $show_invite = false;
             $id_for_invite = (int) $id;
+            $url = "";
 
             switch ($type) {
 
@@ -476,6 +477,7 @@ class HomeController extends BaseController {
                         ['icon'=>$icon_path.'choose-reward.png','text'=>'Choose exciting rewards when you buy'],
                     ];
                     $show_invite = true;
+                    $url = "invitefortrial";
                     break;
 
                 case 'booktrial':
@@ -489,6 +491,7 @@ class HomeController extends BaseController {
                     ];
                     $show_invite = true;
                     $id_for_invite = (int) $item['booktrial_id'];
+                    $url = "invitefortrial";
                     break;
                 case 'workoutsession':
                     $subline = "Your Workout Session at $finder_name for $service_name on $schedule_date from $schedule_slot has been scheduled";
@@ -500,6 +503,7 @@ class HomeController extends BaseController {
                     ];
                     $show_invite = true;
                     $id_for_invite = (int) $item['booktrial_id'];
+                    $url = "invitefortrial";
                     break;
                 case 'personaltrainertrial':
                     $subline = "Your Session is booked. Hope you and your buddy have great workout.";
@@ -510,6 +514,7 @@ class HomeController extends BaseController {
                         ['icon'=>$icon_path.'attend-workout.png','text'=>'You attend the trial with the trainer basis the appointment'],
                         ['icon'=>$icon_path.'choose-reward.png','text'=>'Get lowest price guarantee & Rewards on purchase'],
                     ];
+                    $url = "";
                     break;
                 case 'manualtrial':
                     $subline = "Your Trial Session request at $finder_name is recieved";
@@ -520,6 +525,7 @@ class HomeController extends BaseController {
                         ['icon'=>$icon_path.'attend-workout.png','text'=>'You attend the trial basis the appointment'],
                         ['icon'=>$icon_path.'choose-reward.png','text'=>'Get lowest price guarantee & Rewards on purchase'],
                     ];
+                    $url = "";
                     break;
                 case 'manualautotrial':
                     $subline = "Your Trial Session request at $finder_name is recieved";
@@ -530,6 +536,7 @@ class HomeController extends BaseController {
                         ['icon'=>$icon_path.'attend-workout.png','text'=>'You attend the trial basis the appointment'],
                         ['icon'=>$icon_path.'choose-reward.png','text'=>'Get lowest price guarantee & Rewards on purchase'],
                     ];
+                    $url = "";
                     break;
                 case 'healthytiffintrial':
                     $subline = "Your Trial request at $finder_name has been received. Please expect a revert shortly.";
@@ -539,6 +546,7 @@ class HomeController extends BaseController {
                         ['icon'=>$icon_path.'get-details.png','text'=> $finder_name.' will get in touch with you'],
                         ['icon'=>$icon_path.'manage-booking.png','text'=>'Your meal will be delivered basis the specifications'],
                     ];
+                    $url = "";
                     break;
                 case 'membershipwithpg':
                     $subline = "Your Membership purchase at $finder_name for $service_name($service_duration) from ".date('d-m-y',strtotime($preferred_starting_date))." is confirmed.";
@@ -549,6 +557,7 @@ class HomeController extends BaseController {
                         ['icon'=>$icon_path.'flash-code.png','text'=>'Flash the code at the studio & kickstart your fitness journey.'],
                     ];
                     $show_invite = true;
+                    $url = "inviteformembership";
                     break;
                 case 'membershipwithoutpg':
                     $subline = "Your Membership purchase at $finder_name for $service_name($service_duration) from ".date('d-m-y',strtotime($preferred_starting_date))." is confirmed.";
@@ -559,6 +568,7 @@ class HomeController extends BaseController {
                         ['icon'=>$icon_path.'flash-code.png','text'=>'Flash the code at the studio & kickstart your fitness journey.'],
                     ];
                     $show_invite = true;
+                    $url = "inviteformembership";
                     break;
                 case 'manualmembership':
                     $subline = "Your Membership request at $finder_name has been received. Please expect a revert shortly.";
@@ -569,6 +579,7 @@ class HomeController extends BaseController {
                         ['icon'=>$icon_path.'manage-booking.png','text'=>'On purchase - Subscription code & membership details shared'],
                         ['icon'=>$icon_path.'flash-code.png','text'=>'Flash the code at the studio & kickstart your fitness journey.'],
                     ];
+                    $url = "";
                     break;
                 case 'healthytiffinmembership':
                     $subline = "Your Membership request at $finder_name for $service_name has been received. Please expect a revert shortly.";
@@ -579,6 +590,7 @@ class HomeController extends BaseController {
                         ['icon'=>$icon_path.'get-details.png','text'=> $finder_name.' will get in touch with you'],
                         ['icon'=>$icon_path.'manage-booking.png','text'=>'Your meal will be delivered basis the specifications'],
                     ];
+                    $url = "";
                     break;
                 case 'personaltrainermembership':
                     $subline = "Your Membership request with $finder_name is captured. ";
@@ -588,6 +600,7 @@ class HomeController extends BaseController {
                         ['icon'=>$icon_path.'manage-profile.png','text'=>'When you buy the membership details will be shared'],
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'On starting date the trainer will reach your location'],
                     ];
+                    $url = "";
                     break;
                 default :
                     $subline = "Your Session has been scheduled";
@@ -598,6 +611,7 @@ class HomeController extends BaseController {
                         ['icon'=>$icon_path.'low-price.png','text'=>'Get lowest price guarantee to buy membership'],
                         ['icon'=>$icon_path.'choose-reward.png','text'=>'Choose exciting rewards when you buy'],
                     ];
+                    $url = "";
                     break;
             }
 
@@ -626,7 +640,7 @@ class HomeController extends BaseController {
                 'popup_message' => $popup_message,
                 'show_invite' => $show_invite,
                 'id_for_invite' => $id_for_invite,
-                'type' => $type
+                'url'=> $url
             ];
 
             return Response::json($resp);
