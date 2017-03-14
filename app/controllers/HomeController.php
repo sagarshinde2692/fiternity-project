@@ -462,7 +462,7 @@ class HomeController extends BaseController {
             $note       =   "Note: If you face any issues or need assistance for the  session - please call us on 022-61222222 and we will resolve it immediately";
             $icon_path  =   "https://b.fitn.in/iconsv1/success-pages/";
             $show_invite = false;
-            $id_for_invite = $id;
+            $id_for_invite = (int) $id;
 
             switch ($type) {
 
@@ -488,7 +488,7 @@ class HomeController extends BaseController {
                         ['icon'=>$icon_path.'choose-reward.png','text'=>'Choose exciting rewards when you buy'],
                     ];
                     $show_invite = true;
-                    $id_for_invite = $item['booktrial_id'];
+                    $id_for_invite = (int) $item['booktrial_id'];
                     break;
                 case 'workoutsession':
                     $subline = "Your Workout Session at $finder_name for $service_name on $schedule_date from $schedule_slot has been scheduled";
@@ -499,7 +499,7 @@ class HomeController extends BaseController {
                         ['icon'=>$icon_path.'attend-workout.png','text'=>'Attend your workout'],
                     ];
                     $show_invite = true;
-                    $id_for_invite = $item['booktrial_id'];
+                    $id_for_invite = (int) $item['booktrial_id'];
                     break;
                 case 'personaltrainertrial':
                     $subline = "Your Session is booked. Hope you and your buddy have great workout.";
