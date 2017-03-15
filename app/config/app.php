@@ -331,6 +331,7 @@ return array(
 	'renewal_customer_number' => '+912261222222',
 	'purchase_fitness_concierge' => 'Sanjay',
 	'purchase_customer_number' => '+912261222222',
+	'order_missed_call_no' => '+912261222222',
 
 	's3_finderurl'  => array(
 		'cover' 			=> 'https://b.fitn.in/f/c/',
