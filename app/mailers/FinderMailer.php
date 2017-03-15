@@ -499,7 +499,21 @@ Class FinderMailer extends Mailer {
 
 		return $this->common($label,$data,$message_data);
 	}
+	
+	public function sendNoPrevSalesMail($data){
 
+		$label = 'NoPrevSalesNotification';
+
+		$user_email = array('pranjalisalvi@fitternity.com','vinichellani@fitternity.com','fitternity.suraj@gmail.com');
+		$user_name = "Fitternity Team";
+
+		$message_data 	= array(
+			'user_email' => $user_email,
+			'user_name' =>  $user_name,
+		);
+
+		return $this->common($label,$data,$message_data);
+	}
 
 	public function common($label,$data,$message_data,$delay = 0){
 		// return($message_data['user_email']);
@@ -513,7 +527,6 @@ Class FinderMailer extends Mailer {
 
 		$template = \Template::where('label',$label)->first();
 
-
 		$email_template = 	$this->bladeCompile($template->email_text,$data);
 		$email_subject = 	$this->bladeCompile($template->email_subject,$data);
 
@@ -525,24 +538,6 @@ Class FinderMailer extends Mailer {
 
 		return $this->sendDbToWorker('vendor',$email_template, $message_data, $label, $delay);
 
-	}
-
-	public function sendNoPrevSalesMail($data){
-
-		// return "Done";
-
-		$label = 'NoPrevSalesNotification';
-
-		
-		$user_email = array('pranjalisalvi@fitternity.com','vinichellani@fitternity.com','fitternity.suraj@gmail.com');
-		$user_name = "Fitternity Team";
-
-		$message_data 	= array(
-			'user_email' => $user_email,
-			'user_name' =>  $user_name,
-		);
-
-		return $this->common($label,$data,$message_data);
 	}
 
 	public function bladeCompile($value, array $args = array())

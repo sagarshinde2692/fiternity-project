@@ -344,7 +344,7 @@ public function IndexRankMongo2Elastic($index_name, $city_id){
     //    ini_set('max_execution_time', 30000);
 //       ini_set('memory_limit', '512M');
        $citykist      =    array(1,2,3,4,8,9);
-       $finder_count_incity = Finder::active()->count();
+       $finder_count_incity = Finder::active()->where('city_id', $city_id)->count();
        $i_max = (int) $finder_count_incity/1000;
         Log::error($finder_count_incity."  - ".$i_max);
        for($i = 0;$i<=$i_max;$i++){
