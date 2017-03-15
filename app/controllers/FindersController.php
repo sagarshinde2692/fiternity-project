@@ -112,7 +112,7 @@ class FindersController extends \BaseController {
 		$finder_detail = $cache ? Cache::tags('finder_detail')->has($tslug) : false;
 
 		if(!$finder_detail){
-			Log::info("Not cached in detail");
+			//Log::info("Not cached in detail");
 
 			$finderarr = Finder::active()->where('slug','=',$tslug)
 				->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))
@@ -2200,7 +2200,7 @@ class FindersController extends \BaseController {
 		$finder_detail = $cache ? Cache::tags($cache_name)->has($cache_key) : false;
 
 		if(!$finder_detail){
-			Log::info("Not Cached in app");
+			//Log::info("Not Cached in app");
 
 			$finderarr = Finder::active()->where('slug','=',$tslug)
 				->with(array('category'=>function($query){$query->select('_id','name','slug','detail_rating');}))

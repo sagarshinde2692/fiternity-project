@@ -1634,7 +1634,7 @@ class CustomerController extends \BaseController {
 	public function getCustomerDetail(){
 
 		$jwt_token = Request::header('Authorization');
-		Log::info($jwt_token);
+		//Log::info($jwt_token);
 		$decoded = $this->customerTokenDecode($jwt_token);
 
 		$customer_id = $decoded->customer->_id;
@@ -1646,7 +1646,7 @@ class CustomerController extends \BaseController {
 	public function getCustomerTransactions(){
 
 		$jwt_token = Request::header('Authorization');
-		Log::info($jwt_token);
+		//Log::info($jwt_token);
 		$decoded = $this->customerTokenDecode($jwt_token);
 		$customer_id = $decoded->customer->_id;
 		$customer_email = $decoded->customer->email;
@@ -2165,7 +2165,7 @@ class CustomerController extends \BaseController {
 		$decoded = $this->customerTokenDecode($jwt_token);
 		$customer_id = $decoded->customer->_id;
 		$request['customer_id'] = $customer_id;
-		Log::info($jwt_token);
+		//Log::info($jwt_token);
 		$wallet = array();
 
 		$wallet = Customerwallet::where('customer_id',$request['customer_id'])
