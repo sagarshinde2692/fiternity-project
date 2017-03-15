@@ -46,7 +46,7 @@ class Translator {
 				else{
 					$area = $value['fields']['location'][0];
 				}
-				Log::info($value['fields']['slug'][0]);
+				//Log::info($value['fields']['slug'][0]);
                 $automodel = new AutocompleteResult();
                 $automodel->keyword = $value['fields']['autosuggestvalue'][0];
                 $automodel->object->id = $value['_id'];
