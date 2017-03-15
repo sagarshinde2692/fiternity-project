@@ -2293,8 +2293,8 @@ if (!function_exists(('getReversehash'))){
         
         $txnid = $data['txnid'];
         $amount = $data['amount'].".00";
-        $productinfo = $data['productinfo'] = $service_name." - ".$finder_name;
-        $productinfo = substr($productinfo,0,100);
+        $productinfo = $service_name." - ".$finder_name;
+        $productinfo = $data['productinfo'] = substr($productinfo,0,100);
         $firstname = $data['customer_name'];
         $email = $data['customer_email'];
         $udf1 = "";
@@ -2341,8 +2341,8 @@ if (!function_exists(('getHash'))){
 
         $txnid = $data['txnid'];
         $amount = $data['amount'];
-        $productinfo = $data['productinfo'] = $service_name." - ".$finder_name;
-        $productinfo = substr($productinfo,0,100);
+        $productinfo = $service_name." - ".$finder_name;
+        $productinfo = $data['productinfo'] = substr($productinfo,0,100);
         $firstname = $data['customer_name'];
         $email = $data['customer_email'];
         $udf1 = "";
