@@ -325,8 +325,8 @@ class FindersController extends \BaseController {
 	            	return $a['traction']['sales'] < $b['traction']['sales'];
 	            }
 
-	        	usort($category_slug_services, "cmp");
-	        	usort($non_category_slug_services, "cmp");
+	        	//usort($category_slug_services, "cmp");
+	        	//usort($non_category_slug_services, "cmp");
 	        	
 	        	$finderarr['services'] = array_merge($category_slug_services, $non_category_slug_services);
 
@@ -2502,7 +2502,7 @@ class FindersController extends \BaseController {
 		            	return $a['traction']['sales'] < $b['traction']['sales'];
 		            }
 
-		        	usort($data['finder']['services'], "cmp");
+		        	//usort($data['finder']['services'], "cmp");
 
 					if($location_id){
 						$location_id = intval($location_id);
