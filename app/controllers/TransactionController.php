@@ -189,6 +189,12 @@ class TransactionController extends \BaseController {
 
         $data = $this->unsetData($data);
 
+        $data['payment_link'] = Config::get('app.website')."paymentlink/".$data['order_id'];
+
+        if(in_array($data['type'],$this->membership_array) && isset($data['ratecard_id']) && $data['ratecard_id'] != ""){
+            $data['payment_link'] = Config::get('app.website')."buy/".$data['finder_slug']."/".$data['service_id']."/".$data['ratecard_id']."/".$data['order_id'];
+        }
+
         if(isset($old_order_id)){
 
             if($order){
