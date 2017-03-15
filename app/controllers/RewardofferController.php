@@ -98,7 +98,7 @@ class RewardofferController extends BaseController {
     public function getRewardOffers(){
 
         $data       = Input::json()->all();
-
+        $order              =   array();
         if(isset($data) && isset($data['type']) && $data['type'] == 'workout-session'){
             $rules      =   ['finder_id'=>'required', 'amount'=>'required', 'type'=>'required'];
             $validator  =   Validator::make($data,$rules);
@@ -110,7 +110,6 @@ class RewardofferController extends BaseController {
             $amount             =   (int)$data['amount'];
             $customerReward     =   new CustomerReward();
             $calculation        =   $customerReward->purchaseGame($amount,$finder_id);
-
 
             if(isset($data['order_id']) && $data['order_id'] != ""){
 
@@ -162,7 +161,14 @@ class RewardofferController extends BaseController {
         $ratecard_id    =   (int)$data['ratecard_id'];
         $ratecard       =   Ratecard::where('_id',$ratecard_id)->where('finder_id',$finder_id)->first();
 
-        if(!$ratecard){
+        if(isset($data['order_id']) && $data['order_id'] != ""){
+            $order_id   = (int) $data['order_id'];
+            $order      = Order::find($order_id);
+            if(isset($order->payment_mode) && $order->payment_mode == "at the studio"){
+                $amount = (int)$data['amount'];
+            }
+        }
+        if(!$ratecard && count($order) == 0){
             $resp   =   array('status' => 401,'message' => "Ratecard Not Present");
             return  Response::json($resp, 401);
         }
@@ -173,13 +179,6 @@ class RewardofferController extends BaseController {
             $amount = $ratecard->price;
         }*/
 
-        if(isset($data['order_id']) && $data['order_id'] != ""){
-            $order_id   = (int) $data['order_id'];
-            $order      = Order::find($order_id);
-            if(isset($order->payment_mode) && $order->payment_mode == "at the studio"){
-                $amount = (int)$data['amount'];
-            }
-        }
 
         $finder                 =   Finder::find($finder_id);
         $findercategory_id      =   intval($finder->category_id);
@@ -370,6 +369,8 @@ class RewardofferController extends BaseController {
             'status'                    =>  200,
             'message'                   => "Rewards offers"
         );
+
+        //$data['diet_plan'] = $customerReward->fitternityDietVendor($amount);
 
         return  Response::json($data, 200);
 

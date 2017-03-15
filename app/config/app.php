@@ -15,7 +15,7 @@ return array(
 	*/
 
 
-	'debug' => FALSE,
+	'debug' => TRUE,
 
 	/*
 	|--------------------------------------------------------------------------
@@ -28,13 +28,14 @@ return array(
 	|
 	*/
 
-	'url' => 'https://a1.fitternity.com',
-	//'url' => 'http://appstg.fitn.in',
+	//'url' => 'https://a1.fitternity.com',
+	'url' => 'http://apistage.fitn.in',
 	// 'url' => 'http://fitapi.com',
 
 
-    'website' => 'https://www.fitternity.com',
-    // 'website' => 'http://appstg.fitn.in:8555',
+
+    // 'website' => 'https://www.fitternity.com',
+    'website' => 'http://apistage.fitn.in:1122',
 
 
 	'app' =>array(
@@ -244,12 +245,21 @@ return array(
 	//will be implemented everywhere in future when other api will be changed
 	/*************************************************************************/
 	//Production
-	'es' =>array(
+	/*'es' =>array(
 		'url'		=> 			'ESAdmin:fitternity2020@54.169.120.141:8050',
 		'host'		=> 			'ESAdmin:fitternity2020@54.169.120.141',
 		'port'		=>			8050,
 		'default_index' => 	'fitternity',
 		'default_type' 	=> 	'finder',
+	),*/
+	//stage
+	'es' =>array(
+	 	'url'		=> 			'139.59.16.74:1243',
+	 	'host'		=> 			'139.59.16.74',
+	 	'port'		=>			1243,
+	 	'default_index' => 	'fitternity',
+	 	'default_type' 	=> 	'finder',
+
 	),
 	//stage
 	// 'es' =>array(
@@ -381,6 +391,262 @@ return array(
         161     => ["burn fat", "endurance", "control breathing", "increase sports performance", "speed", "shape up"],
         184     => ["burn fat","shape up","endurance","flat abs","flexibility","work on all muscle"]
     ],
+
+    'emi_struct'=> array(
+		 	array(
+                "bankCode"=> "EMIA3",
+                "bankName"=> "AXIS",
+                "bankTitle"=>3,
+                "pgId"=> "8",
+                "minval"=> 500,
+                "rate"=>12
+            ),
+            array(
+                "bankCode"=> "EMIA6",
+                "bankName"=> "AXIS",
+                "bankTitle"=>6,
+                "pgId"=> "8",
+                "minval"=> 500,
+                "rate"=>12
+            ),
+            array(
+                "bankCode"=> "EMIA9",
+                "bankName"=> "AXIS",
+                "bankTitle"=>9,
+                "pgId"=> "8",
+                "minval"=> 500,
+                "rate"=>13
+            ),
+            array(
+                "bankCode"=> "EMIA12",
+                "bankName"=> "AXIS",
+                "bankTitle"=> 12,
+                "pgId"=> "8",
+                "minval"=> 500,
+                "rate"=>13
+            ),
+            
+          
+            array(
+                "bankCode"=> "EMI",
+                "bankName"=> "HDFC",
+                "bankTitle"=>3,
+                "pgId"=> "15",
+                "minval"=> 3000,
+                "rate"=>12
+            ),
+            array(
+                "bankCode"=> "EMI6",
+                "bankName"=> "HDFC",
+                "bankTitle"=>6,
+                "pgId"=> "8",
+                "minval"=> 3000,
+                "rate"=>12
+            ),
+            array(
+                "bankCode"=> "EMI9",
+                "bankName"=> "HDFC",
+                "bankTitle"=>9,
+                "pgId"=> "15",
+                "minval"=> 3000,
+                "rate"=>13
+            ),
+          	array(
+                "bankCode"=> "EMI12",
+                "bankName"=> "HDFC",
+                "bankTitle"=> 12,
+                "pgId"=> "8",
+                "minval"=> 3000,
+                "rate"=>13
+            ),
+            array(
+                "bankCode"=> "EMIHS03",
+                "bankName"=> "HSBC",
+                "bankTitle"=>3,
+                "pgId"=> "8",
+                "minval"=> 2000,
+                "rate"=>12.50
+            ),
+            array(
+                "bankCode"=> "EMIHS06",
+                "bankName"=> "HSBC",
+                "bankTitle"=>6,
+                "pgId"=> "8",
+                "minval"=> 2000,
+                "rate"=>12.50
+            ),
+            array(
+                "bankCode"=> "EMIHS09",
+                "bankName"=> "HSBC",
+                "bankTitle"=>9,
+                "pgId"=> "8",
+                "minval"=> 2000,
+                "rate"=>13.50
+            ),
+            array(
+                "bankCode"=> "EMIHS12",
+                "bankName"=> "HSBC",
+                "bankTitle"=> 12,
+                "pgId"=> "8",
+                "minval"=> 2000,
+                "rate"=>13.50
+            ),
+            array(
+                "bankCode"=> "EMIHS18",
+                "bankName"=> "HSBC",
+                "bankTitle"=> 18,
+                "pgId"=> "8",
+                "minval"=> 2000,
+                "rate"=>13.50
+            ),
+            array(
+                "bankCode"=> "EMIIC3",
+                "bankName"=> "ICICI",
+                "bankTitle"=>3,
+                "pgId"=> "8",
+                "minval"=> 1500,
+                "rate"=>13
+            ),
+			array(
+                "bankCode"=> "EMIICP6",
+                "bankName"=> "ICICI",
+                "bankTitle"=>6,
+                "pgId"=> "8",
+                "minval"=> 1500,
+                "rate"=>13
+            ),
+            array(
+                "bankCode"=> "EMIICP6",
+                "bankName"=> "ICICI",
+                "bankTitle"=>9,
+                "pgId"=> "8",
+                "minval"=> 1500,
+                "rate"=>13
+            ),
+            array(
+                "bankCode"=> "EMIIC12",
+                "bankName"=> "ICICI",
+                "bankTitle"=> 12,
+                "pgId"=> "8",
+                "minval"=> 1500,
+                "rate"=>13
+            ),
+            array(
+                "bankCode"=> "EMIIND3",
+                "bankName"=> "INDUS",
+                "bankTitle"=>3,
+                "pgId"=> "8",
+                "minval"=> 2000,
+                "rate"=>13
+            ),
+            array(
+                "bankCode"=> "EMIIND6",
+                "bankName"=> "INDUS",
+                "bankTitle"=>6,
+                "pgId"=> "8",
+                "minval"=> 2000,
+                "rate"=>13
+            ),
+            array(
+                "bankCode"=> "EMIIND9",
+                "bankName"=> "INDUS",
+                "bankTitle"=>9,
+                "pgId"=> "8",
+                "minval"=> 2000,
+                "rate"=>13
+            ),           
+            array(
+                "bankCode"=> "EMIIND12",
+                "bankName"=> "INDUS",
+                "bankTitle"=> 12,
+                "pgId"=> "8",
+                "minval"=> 2000,
+                "rate"=>13
+            ),
+            array(
+                "bankCode"=> "EMIIND18",
+                "bankName"=> "INDUS",
+                "bankTitle"=> 18,
+                "pgId"=> "8",
+                "minval"=> 2000,
+                "rate"=>15
+            ),
+            array(
+                "bankCode"=> "EMIIND24",
+                "bankName"=> "INDUS",
+                "bankTitle"=> 24,
+                "pgId"=> "8",
+                "minval"=> 2000,
+                "rate"=>15
+            ),
+            array(
+                "bankCode"=> "EMIK3",
+                "bankName"=> "KOTAK",
+                "bankTitle"=>3,
+                "pgId"=> "8",
+                "minval"=> 500,
+                "rate"=>12
+            ),
+            array(
+                "bankCode"=> "EMIK6",
+                "bankName"=> "KOTAK",
+                "bankTitle"=>6,
+                "pgId"=> "8",
+                "minval"=> 500,
+                "rate"=>12
+            ),
+            array(
+                "bankCode"=> "EMIK9",
+                "bankName"=> "KOTAK",
+                "bankTitle"=>9,
+                "pgId"=> "8",
+                "minval"=> 500,
+                "rate"=>14
+            ),
+            array(
+                "bankCode"=> "EMIK12",
+                "bankName"=> "KOTAK",
+                "bankTitle"=> 12,
+                "pgId"=> "8",
+                "minval"=> 500,
+                "rate"=>14
+            ),
+            array(
+                "bankCode"=> "SBI03",
+                "bankName"=> "SBI",
+                "bankTitle"=>3,
+                "pgId"=> "8",
+                "minval"=> 2500,
+                "rate"=>14
+            ),
+            array(
+                "bankCode"=> "SBI06",
+                "bankName"=> "SBI",
+                "bankTitle"=>6,
+                "pgId"=> "8",
+                "minval"=> 2500,
+                "rate"=>14
+            ),
+            array(
+                "bankCode"=> "SBI03",
+                "bankName"=> "SBI",
+                "bankTitle"=>9,
+                "pgId"=> "8",
+                "minval"=> 2500,
+                "rate"=>14
+            ),
+            array(
+                "bankCode"=> "SBI06",
+                "bankName"=> "SBI",
+                "bankTitle"=>12,
+                "pgId"=> "8",
+                "minval"=> 2500,
+                "rate"=>14
+            )
+        ),
+    'test_page_users' => ['dhruvsarawagi@fitternity.com', 'utkarshmehrotra@fitternity.com', 'sailismart@fitternity.com'],
+    'test_vendors' => ['fitternity-test-page-bandra-west', 'test-healthy-vendor']
+
 
 
 );

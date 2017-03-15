@@ -35,7 +35,8 @@
 			"app/services",
 			"app/workers",
 			"app/responsemodels",
-			"app/facades"
+			"app/facades",
+			"app/observers"
 		]
 	},
 	"scripts": {

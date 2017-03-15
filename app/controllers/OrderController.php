@@ -146,10 +146,12 @@ class OrderController extends \BaseController {
             return Response::json($resp,401);
         }
 
+
         $hash_verified = $this->utilities->verifyOrder($data,$order);
         
         if($data['status'] == 'success' && $hash_verified){
             // Give Rewards / Cashback to customer based on selection, on purchase success......
+
             $this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
 
             if(isset($order->reward_ids) && !empty($order->reward_ids)){
@@ -409,6 +411,25 @@ class OrderController extends \BaseController {
             }*/
 
             $this->utilities->setRedundant($order);
+
+
+
+            $finder_id = $order['finder_id'];
+            $start_date_last_30_days = date("d-m-Y 00:00:00", strtotime('-31 days',strtotime(date('d-m-Y 00:00:00'))));
+
+            $sales_count_last_30_days = Order::active()->where('finder_id',$finder_id)->where('created_at', '>=', new DateTime($start_date_last_30_days))->count();
+
+            if($sales_count_last_30_days == 0){
+            $mailData=array();
+            $mailData['finder_name']=$order['finder_name'];
+            $mailData['finder_id']=$order['finder_id'];
+            $mailData['finder_city']=$order['finder_city'];
+            $mailData['finder_location']=$order['finder_location'];
+            $mailData['customer_name']=$order['customer_name'];
+            $mailData['customer_email']=$order['customer_email'];
+
+                $sndMail  =   $this->findermailer->sendNoPrevSalesMail($mailData);
+            }
 
             $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
             return Response::json($resp);
@@ -1084,14 +1105,14 @@ class OrderController extends \BaseController {
 
         $customer_id 		=	(isset($data['customer_id']) && $data['customer_id'] != "") ? $data['customer_id'] : $this->autoRegisterCustomer($data);
 
-        if($data['type'] == 'booktrials' ||  $data['type'] == 'healthytiffintrail'||  $data['type'] == 'vip_booktrials'||  $data['type'] == '3daystrial'){
+        if($data['type'] == 'booktrials'/* ||  $data['type'] == 'healthytiffintrail'||  $data['type'] == 'vip_booktrials'||  $data['type'] == '3daystrial'*/){
 
-            // Throw an error if user has already booked a trial for that vendor...
-//            $alreadyBookedTrials = $this->utilities->checkExistingTrialWithFinder($data['customer_email'], $data['customer_phone'], $data['finder_id']);
-//            if(count($alreadyBookedTrials) > 0){
-//                $resp 	= 	array('status' => 403,'message' => "You have already booked a trial for this vendor");
-//                return Response::json($resp,403);
-//            }
+           // Throw an error if user has already booked a trial for that vendor...
+           $alreadyBookedTrials = $this->utilities->checkExistingTrialWithFinder($data['customer_email'], $data['customer_phone'], $data['finder_id']);
+           if(count($alreadyBookedTrials) > 0){
+               $resp 	= 	array('status' => 403,'message' => "You have already booked a trial for this vendor");
+               return Response::json($resp,403);
+           }
 
             // Throw an error if user has already booked a trial on same schedule timestamp..
             if(isset($data['schedule_date'])&&isset($data['schedule_slot'])){
@@ -1360,7 +1381,7 @@ class OrderController extends \BaseController {
 
         $orderid = Order::max('_id') + 1;
 
-        if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios','android'])){
+        if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios'])){
 
             if(isset($data['amount_finder'])){
 
@@ -1511,10 +1532,12 @@ class OrderController extends \BaseController {
         if($countOrder > 0 || $countTrial > 0 || $countCapture > 0){
             array_set($data, 'repeat_customer', 'yes');
         }
-
+        Log::info("Here before create");
         $order 				= 	new Order($data);
         $order->_id 		= 	$orderid;
+        Log::info("Here after create".$order->_id);
         $orderstatus   		= 	$order->save();
+        Log::info("Here after save");
         $resp 	= 	array('status' => 200, 'order' => $order, 'message' => "Transaction details for tmp order :)");
         return Response::json($resp);
 
@@ -2295,7 +2318,7 @@ class OrderController extends \BaseController {
             $mobilehash = "";
            
             $data['txnid'] = $txnid;
-            $hash = $this->getHash($data);
+            $hash = getHash($data);
 
             $data = array_merge($data,$hash);
 
@@ -2337,7 +2360,10 @@ class OrderController extends \BaseController {
         // return $req;
         // exit(0);
 
-
+        if(isset($req['id_for_invite'])){
+            $req['order_id'] = $req['id_for_invite'];
+        }
+        
         // Request Validations...........
         $rules = [
             'order_id' => 'required|integer|numeric',
