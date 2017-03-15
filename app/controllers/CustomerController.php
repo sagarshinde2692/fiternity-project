@@ -546,16 +546,24 @@ class CustomerController extends \BaseController {
 			if($data['identity'] == 'email')
 			{
 				$resp = $this->emailLogin($data);
-				$response = $resp["token"];
-				if($resp["popup"]["show_popup"] == "true"){
-					$response["extra"] = $resp["popup"];
+				if(isset($resp["token"])){
+					$response = $resp["token"];
+					if($resp["popup"]["show_popup"] == "true"){
+						$response["extra"] = $resp["popup"];
+					}
+				}else{
+					$response = $resp;
 				}
 				return Response::json($response,$response['status']);
 			}elseif($data['identity'] == 'google' || $data['identity'] == 'facebook' || $data['identity'] == 'twitter'){
 				$resp = $this->socialLogin($data);
-				$response = $resp["token"];
-				if($resp["popup"]["show_popup"] == "true"){
-					$response["extra"] = $resp["popup"];
+				if(isset($resp["token"])){
+					$response = $resp["token"];
+					if($resp["popup"]["show_popup"] == "true"){
+						$response["extra"] = $resp["popup"];
+					}
+				}else{
+					$response = $resp;
 				}
 				return Response::json($response,$response['status']);
 			}else{
@@ -574,7 +582,7 @@ class CustomerController extends \BaseController {
 		'email' => 'required|email',
 		'password' => 'required'
 		];
-
+		Log::info($data);
 		$validator = Validator::make($data = Input::json()->all(),$rules);
 
 		if($validator->fails()) {
@@ -612,6 +620,7 @@ class CustomerController extends \BaseController {
 		$customer->last_visited = Carbon::now();
 		$customer->update();
 		$resp = $this->checkIfpopPup($customer);
+		
 		return array("token" => $this->createToken($customer), "popup" => $resp);
 	}
 
