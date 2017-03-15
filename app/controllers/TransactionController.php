@@ -1057,7 +1057,7 @@ class TransactionController extends \BaseController {
 
         $payhash_str = $key.'|'.$txnid.'|'.$amount.'|'.$productinfo.'|'.$firstname.'|'.$email.'|'.$udf1.'|'.$udf2.'|'.$udf3.'|'.$udf4.'|'.$udf5.'||||||'.$salt;
         
-        Log::info($payhash_str);
+        // Log::info($payhash_str);
 
         $data['payment_hash'] = hash('sha512', $payhash_str);
 

@@ -2157,7 +2157,7 @@ class FindersController extends \BaseController {
 			$cache_key  = $cache_key.'-'.$location_id;
 		}
 
-		Log::info($cache_key);
+		// Log::info($cache_key);
 
 
 		$customer_email = null;
@@ -2797,7 +2797,7 @@ class FindersController extends \BaseController {
             $decodedToken = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
 
         }catch (Exception $e) {
-            Log::info($e);
+            // Log::info($e);
             return null;
         }
         

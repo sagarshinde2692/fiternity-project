@@ -2146,7 +2146,7 @@ class RankingSearchController extends \BaseController
             $decodedToken = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
 
         }catch (Exception $e) {
-            Log::info($e);
+            // Log::info($e);
             return null;
         }
         
