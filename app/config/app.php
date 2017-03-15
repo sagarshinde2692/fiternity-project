@@ -15,7 +15,7 @@ return array(
 	*/
 
 
-	'debug' => FALSE,
+	'debug' => TRUE,
 
 	/*
 	|--------------------------------------------------------------------------
@@ -28,14 +28,14 @@ return array(
 	|
 	*/
 
-	'url' => 'https://a1.fitternity.com',
-	// 'url' => 'http://apistage.fitn.in',
+	// 'url' => 'https://a1.fitternity.com',
+	'url' => 'http://apistage.fitn.in',
 	// 'url' => 'http://fitapi.com',
 
 
 
-    'website' => 'https://www.fitternity.com',
-    // 'website' => 'http://apistage.fitn.in:1122',
+    // 'website' => 'https://www.fitternity.com',
+    'website' => 'http://apistage.fitn.in:1122',
 
 
 	'app' =>array(
@@ -245,22 +245,22 @@ return array(
 	//will be implemented everywhere in future when other api will be changed
 	/*************************************************************************/
 	//Production
-	'es' =>array(
+	/*'es' =>array(
 		'url'		=> 			'ESAdmin:fitternity2020@54.169.120.141:8050',
 		'host'		=> 			'ESAdmin:fitternity2020@54.169.120.141',
 		'port'		=>			8050,
 		'default_index' => 	'fitternity',
 		'default_type' 	=> 	'finder',
-	),
+	),*/
 	//stage
-	/*'es' =>array(
+	'es' =>array(
 	 	'url'		=> 			'139.59.16.74:1243',
 	 	'host'		=> 			'139.59.16.74',
 	 	'port'		=>			1243,
 	 	'default_index' => 	'fitternity',
 	 	'default_type' 	=> 	'finder',
 
-	),*/
+	),
 	//stage
 	// 'es' =>array(
 	//  	'url'		=> 			'139.59.16.74:1243',
