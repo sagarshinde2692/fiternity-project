@@ -1986,7 +1986,7 @@ class FindersController extends \BaseController {
 				'trial' => (isset($item['trial'])) ? $item['trial'] : "",
 				'offer_icon' => "",
 				'servicecategory_id' => $item['servicecategory_id'],
-				'traction' => $item['traction'],
+				'traction' => isset($item['traction']) ? $item['traction'] : array("trial"=>0,"sales"=>0),
 				'location_id' => $item['location_id']
 			);
 
