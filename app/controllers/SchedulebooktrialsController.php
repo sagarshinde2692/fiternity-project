@@ -1542,7 +1542,22 @@ class SchedulebooktrialsController extends \BaseController {
                 $sndInstantSmsFinder           =    $this->findersms->healthyTiffinMembership($order->toArray());
             }
 
+            if(isset($order->preferred_starting_date) && $order->preferred_starting_date != "" && !isset($order->cutomerSmsPurchaseAfter10Days) && !isset($order->cutomerSmsPurchaseAfter30Days)){
+
+                $preferred_starting_date = $order->preferred_starting_date;
+                
+                $after10days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 10);
+                $after30days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 30);
+
+                $order->cutomerSmsPurchaseAfter10Days = $this->customersms->purchaseAfter10Days($order->toArray(),$after10days);
+                $order->cutomerSmsPurchaseAfter30Days = $this->customersms->purchaseAfter30Days($order->toArray(),$after30days);
+
+                $order->update();
+            }
+
             $this->utilities->setRedundant($order);
+
+            $this->utilities->deleteCommunication($order);
 
             $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
             return Response::json($resp);
@@ -1904,6 +1919,8 @@ class SchedulebooktrialsController extends \BaseController {
             $amount                             =   (isset($order->amount) && $order->amount != '') ? $order->amount : "";
             $amount_finder                      =   (isset($order->amount_finder) && $order->amount_finder != '') ? $order->amount_finder : "";
 
+            $service_link = Config::get('app.website').$finder_slug."/".$service_id."?booktrial_id=".$booktrialid;
+
             $booktrialdata = array(
                 'booktrialid'                   =>      intval($booktrialid),
                 'premium_session'               =>      $premium_session,
@@ -1990,7 +2007,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'trial_count'                   =>      $trial_count,
                 'before_three_month_trial_count' =>     $before_three_month_trial_count,
                 'token'                         =>      random_number_string(),
-                'service_category'              =>      $service_category
+                'service_category'              =>      $service_category,
+                'service_link'                  =>      $service_link
             );
 
             if ($medical_detail != "" && $medication_detail != "") {
@@ -2692,6 +2710,8 @@ class SchedulebooktrialsController extends \BaseController {
 
             $rebook_trial_url         =   $this->rebookTrialUrl($finder_slug, $service_id, $booktrialid);
 
+            $service_link = Config::get('app.website').$finder_slug."/".$service_id."?booktrial_id=".$booktrialid;
+
             $booktrialdata = array(
 
                 'booktrialid'         =>      $booktrialid,
@@ -2778,7 +2798,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'customer_profile_url'         =>       $customer_profile_url,
                 'calorie_burn'                  =>      $calorie_burn,
                 'finder_url'                    =>      $finder_url,
-                'rebook_trial_url'              =>      $rebook_trial_url
+                'rebook_trial_url'              =>      $rebook_trial_url,
+                'service_link'                  =>      $service_link
 
             );
 

@@ -174,7 +174,7 @@ Class Utilities {
             
         }
 
-        if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios'])){
+        /*if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios'])){
 
             $wallet = Customer::where('_id',$customer_id)
                 ->first(array('balance'));
@@ -268,7 +268,7 @@ Class Utilities {
 
             );
 
-        }else{
+        }else{*/
 
             // Get Customer wallet balance........
             $customer = Customer::find($customer_id);
@@ -353,7 +353,7 @@ Class Utilities {
                 ),200
 
             );
-        }
+        //}
     }
 
     

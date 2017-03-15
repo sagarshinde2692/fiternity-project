@@ -53,6 +53,7 @@ class TransactionController extends \BaseController {
 
         $data = Input::json()->all();
 
+
         foreach ($data as $key => $value) {
 
             if(is_string($value)){
@@ -155,6 +156,8 @@ class TransactionController extends \BaseController {
 
         $data['code'] = $data['order_id'].str_random(8);
 
+        $data['service_link'] = Config::get('app.website').$data['finder_slug']."/".$data['service_id']."?order_id=".$data['order_id'];
+
         $cashbackRewardWallet =$this->getCashbackRewardWallet($data,$order);
 
         if($cashbackRewardWallet['status'] != 200){
@@ -225,6 +228,8 @@ class TransactionController extends \BaseController {
         $result['payment_related_details_for_mobile_sdk_hash'] = $mobilehash;
         $result['full_payment_wallet'] = $data['full_payment_wallet'];
 
+        $redisid = Queue::connection('redis')->push('TransactionController@sendCommunication', array('order_id'=>$order_id),'booktrial');
+        $order->update(array('redis_id'=>$redisid));
 
         $resp   =   array(
             'status' => 200,
@@ -357,7 +362,7 @@ class TransactionController extends \BaseController {
             $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount_finder'],$data['finder_id'],'paymentgateway',$data['offer_id'],$data['customer_id']);
         }
 
-        if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios'])){
+        /*if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios'])){
 
             if(isset($data['cashback']) && $data['cashback'] == true){
                 $data['amount'] = $data['amount'] - $data['cashback_detail']['amount_discounted'];
@@ -454,7 +459,7 @@ class TransactionController extends \BaseController {
 
             
 
-        }else{
+        }else{*/
 
             if(isset($data['cashback']) && $data['cashback'] == true){
                 $amount = $data['amount'] - $cashback_detail['amount_discounted'];
@@ -556,12 +561,14 @@ class TransactionController extends \BaseController {
             }
 
             $data['amount'] = $amount;
-        }
+        //}
+
         if($data['amount'] == 0){
             $data['full_payment_wallet'] = true;
         }else{
             $data['full_payment_wallet'] = false;
         }
+        
         if(isset($data['reward_ids'])&& count($data['reward_ids']) > 0) {
             $data['reward_ids']   =  array_map('intval', $data['reward_ids']);
         }
@@ -1111,5 +1118,44 @@ class TransactionController extends \BaseController {
 
         return Response::json($response,$response['status']);
     }
-    
+
+
+    public  function sendCommunication($job,$data){
+
+        $job->delete();
+
+        try {
+
+            $order_id = (int)$data['order_id'];
+
+            $order = Order::find($order_id);
+
+            $nineAM = strtotime(date('Y-m-d 09:00:00'));
+            $ninePM = strtotime(date('Y-m-d 21:00:00'));
+            $now = time();
+
+            if($now <= $nineAM || $now >= $ninePM){
+                $now = strtotime(date('Y-m-d 11:00:00'));
+            }
+
+            $order->cutomerSmsSendPaymentLinkAfter3Days = $this->customersms->sendPaymentLinkAfter3Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+3 days",$now)));
+            $order->cutomerSmsSendPaymentLinkAfter7Days = $this->customersms->sendPaymentLinkAfter7Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+7 days",$now)));
+            $order->cutomerSmsSendPaymentLinkAfter15Days = $this->customersms->sendPaymentLinkAfter15Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+15 days",$now)));
+            $order->cutomerSmsSendPaymentLinkAfter30Days = $this->customersms->sendPaymentLinkAfter30Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+30 days",$now)));
+            $order->cutomerSmsSendPaymentLinkAfter45Days = $this->customersms->sendPaymentLinkAfter45Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+45 days",$now)));
+            $order->notification_status = 'abandon_cart_yes';
+
+            return "success";
+
+            
+        } catch (Exception $e) {
+
+            Log::error($e);
+
+            return "error";
+            
+        }
+
+    }
+
 }

@@ -325,6 +325,12 @@ return array(
 	'contact_us_customer_email' => 'support@fitternity.com',
 	'contact_us_vendor_number' => '+912261222233',
 	'contact_us_customer_number' => '+912261222222',
+	'followup_fitness_concierge' => 'Rohan',
+	'followup_customer_number' => '+912261222222',
+	'renewal_fitness_concierge' => 'Rahul',
+	'renewal_customer_number' => '+912261222222',
+	'purchase_fitness_concierge' => 'Sanjay',
+	'purchase_customer_number' => '+912261222222',
 
 	's3_finderurl'  => array(
 		'cover' 			=> 'https://b.fitn.in/f/c/',
