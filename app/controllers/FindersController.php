@@ -186,7 +186,10 @@ class FindersController extends \BaseController {
 
 					}
 				}
-
+				if(isset($finderarr['category']['name'])){
+					$newcat = newcategorymapping(strtolower($finderarr['category']['name']));
+					$finder["breadcrumb"] = array("link"=>"/".$finderarr['city']['slug']."/".$finderarr['location']['slug']."/".str_replace(" ","-",$newcat));
+				}
 				if(isset($finderarr['category_id']) && $finderarr['category_id'] == 5){
 
 //                    echo "ad";exit;
@@ -2737,7 +2740,7 @@ class FindersController extends \BaseController {
 
 	                $ratecard['cashback_on_trial'] = "";
 
-					if($ratecard_price > 0){
+					if($ratecard_price > 0 && $type == 'trial'){
 						$ratecard['cashback_on_trial'] = "100% Cashback";
 					}
 
