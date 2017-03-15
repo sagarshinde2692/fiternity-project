@@ -666,6 +666,8 @@ Class Utilities {
 
                     $orderData->redundant_order = "1";
                     $orderData->update();
+
+                    $this->deleteCommunication($orderData);
                 }
             }
 
@@ -723,6 +725,136 @@ Class Utilities {
             $order->update();
         }
         return $hash_verified;
+    }
+
+    public function deleteCommunication($order){
+
+        $queue_id = [];
+
+        if((isset($order->redundant_order) && $order->redundant_order == "1") || (isset($order->notification_status) && ($order->notification_status == "link_sent_yes" || $order->notification_status == "abandon_cart_yes"))){
+
+            if((isset($order->cutomerSmsSendPaymentLinkAfter3Days))){
+                try {
+                    $queue_id[] = $order->unset('cutomerSmsSendPaymentLinkAfter3Days');
+                }catch(\Exception $exception){
+                    Log::error($exception);
+                }
+            }
+
+            if((isset($order->cutomerSmsSendPaymentLinkAfter7Days))){
+                try {
+                    $queue_id[] = $order->unset('cutomerSmsSendPaymentLinkAfter7Days');
+                }catch(\Exception $exception){
+                    Log::error($exception);
+                }
+            }
+
+            if((isset($order->cutomerSmsSendPaymentLinkAfter15Days))){
+                try {
+                    $queue_id[] = $order->unset('cutomerSmsSendPaymentLinkAfter15Days');
+                }catch(\Exception $exception){
+                    Log::error($exception);
+                }
+            }
+
+            if((isset($order->cutomerSmsSendPaymentLinkAfter30Days))){
+                try {
+                    $queue_id[] = $order->unset('cutomerSmsSendPaymentLinkAfter30Days');
+                }catch(\Exception $exception){
+                    Log::error($exception);
+                }
+            }
+
+            if((isset($order->cutomerSmsSendPaymentLinkAfter45Days))){
+                try {
+                    $queue_id[] = $order->unset('cutomerSmsSendPaymentLinkAfter45Days');
+                }catch(\Exception $exception){
+                    Log::error($exception);
+                }
+            }
+
+            if($order->status == "1"){
+                $order->update(['notification_status' => 'purchase_yes']);
+            }else{
+
+                if(isset($order->paymentLinkEmailCustomerTiggerCount)){
+                    $order->update(['notification_status' => 'link_sent_no']);
+                }else{
+                    $order->update(['notification_status' => 'abandon_cart_no']);
+                }
+            }
+
+
+        }
+
+        if(isset($order->purchse_booktrial_id) && $order->purchse_booktrial_id != ""){
+
+            $booktrial = Booktrial::find((int)$order->purchse_booktrial_id);
+
+            if($ooktrial){
+                if((isset($booktrial->cutomerSmsPostTrialFollowup1After3Days))){
+                    try {
+                        $queue_id[] = $booktrial->unset('cutomerSmsPostTrialFollowup1After3Days');
+                    }catch(\Exception $exception){
+                        Log::error($exception);
+                    }
+                }
+
+                if((isset($booktrial->cutomerSmsPostTrialFollowup1After7Days))){
+                    try {
+                        $queue_id[] = $booktrial->unset('cutomerSmsPostTrialFollowup1After7Days');
+                    }catch(\Exception $exception){
+                        Log::error($exception);
+                    }
+                }
+
+                if((isset($booktrial->cutomerSmsPostTrialFollowup1After15Days))){
+                    try {
+                        $queue_id[] = $booktrial->unset('cutomerSmsPostTrialFollowup1After15Days');
+                    }catch(\Exception $exception){
+                        Log::error($exception);
+                    }
+                }
+
+                if((isset($booktrial->cutomerSmsPostTrialFollowup1After30Days))){
+                    try {
+                        $queue_id[] = $booktrial->unset('cutomerSmsPostTrialFollowup1After30Days');
+                    }catch(\Exception $exception){
+                        Log::error($exception);
+                    }
+                }
+
+                if((isset($booktrial->cutomerSmsPostTrialFollowup2After3Days))){
+                    try {
+                        $queue_id[] = $booktrial->unset('cutomerSmsPostTrialFollowup2After3Days');
+                    }catch(\Exception $exception){
+                        Log::error($exception);
+                    }
+                }
+
+                if((isset($booktrial->cutomerSmsPostTrialFollowup2After7Days))){
+                    try {
+                        $queue_id[] = $booktrial->unset('cutomerSmsPostTrialFollowup2After7Days');
+                    }catch(\Exception $exception){
+                        Log::error($exception);
+                    }
+                }
+
+                if((isset($booktrial->cutomerSmsPostTrialFollowup2After15Days))){
+                    try {
+                        $queue_id[] = $booktrial->unset('cutomerSmsPostTrialFollowup2After15Days');
+                    }catch(\Exception $exception){
+                        Log::error($exception);
+                    }
+                }
+            }
+        
+        }
+
+        if(!empty($queue_id)){
+            $this->sidekiq->delete($queue_id);
+        }
+
     }
 
 }
