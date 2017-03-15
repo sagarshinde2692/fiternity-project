@@ -22,7 +22,7 @@ class Translator {
 		//empty constructor
 	}
 
-	public static function translate_autocomplete($es_autocomplete_response = array(), $city, $customer_email){
+	public static function translate_autocomplete($es_autocomplete_response = array(), $city, $customer_email = ""){
 		$autcomplete_response = new AutocompleteResponse();
 		if(isset($es_autocomplete_response['error'])){
 			$autcomplete_response->status = 500;
@@ -578,7 +578,7 @@ public static function translate_searchresultsv2($es_searchresult_response){
 }
 
 
-	public static function translate_searchresultsv3($es_searchresult_response,$search_request = array(), $customer_email){
+	public static function translate_searchresultsv3($es_searchresult_response,$search_request = array(), $customer_email = ""){
 		$finderresult_response = new FinderresultResponse();
 
 		$finderresult_response->results->aggregationlist = new \stdClass();
