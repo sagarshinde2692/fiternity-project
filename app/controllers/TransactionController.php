@@ -26,6 +26,7 @@ class TransactionController extends \BaseController {
     protected $findersms;
     protected $utilities;
     protected $customerreward;
+    protected $membership_array;
 
     public function __construct(
         CustomerMailer $customermailer,
@@ -46,6 +47,7 @@ class TransactionController extends \BaseController {
         $this->customerreward       =   $customerreward;
         $this->ordertypes           =   array('memberships','booktrials','workout-session','healthytiffintrail','healthytiffinmembership','3daystrial','vip_booktrials', 'events');
         $this->appOfferDiscount     =   Config::get('app.app.discount');
+        $this->membership_array     =   array('memberships','healthytiffinmembership');
 
     }
 
