@@ -741,11 +741,12 @@ class RankingSearchController extends \BaseController
 
 
         $region = Input::json()->get('regions');
-        if(Input::json()->get('offer_available')){
-            $womens_day = true;    
-        }else{
-            $womens_day = Input::json()->get('womens_day') ? Input::json()->get('womens_day') : false;
-        }
+        // if(Input::json()->get('offer_available')){
+        //     $womens_day = true;    
+        // }else{
+        //     $womens_day = Input::json()->get('womens_day') ? Input::json()->get('womens_day') : false;
+        // }
+        $womens_day = Input::json()->get('womens_day') ? Input::json()->get('womens_day') : false;
         
         $locationCount = 0;
         if(count($region) == 1){
@@ -1168,13 +1169,13 @@ class RankingSearchController extends \BaseController
         $response       =   json_decode($searchresulteresponse1,true);
         if($from == 0 && count(Input::json()->get('offerings')) == 0 && count(Input::json()->get('facilities')) == 0 && count(Input::json()->get('budget')) == 0 && $locationCount == 0){
             $response['campaign'] = array(
-                'image'=>'https://b.fitn.in/iconsv1/womens-day/women_banner_app_50.png',
-                // 'link'=>'fitternity://www.fitternity.com/search/offer_available/true',
-                'link'=>'',
-                'title'=>'FitStart 2017',
-                'height'=>1,
-                'width'=>6,
-                'ratio'=>1/6
+                // 'image'=>'https://b.fitn.in/iconsv1/womens-day/women_banner_app_50.png',
+                // // 'link'=>'fitternity://www.fitternity.com/search/offer_available/true',
+                // 'link'=>'',
+                // 'title'=>'FitStart 2017',
+                // 'height'=>1,
+                // 'width'=>6,
+                // 'ratio'=>1/6
             );
         }
 
