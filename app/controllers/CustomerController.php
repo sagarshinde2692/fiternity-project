@@ -2509,7 +2509,7 @@ class CustomerController extends \BaseController {
 			$result['campaign'] =  new \stdClass();
 			$result['campaign'] = array(
 				'image'=>'http://b.fitn.in/iconsv1/fitmania/sale_banner.png',
-				'link'=>'fitternity://www.fitternity.com/search/offer_available/true',
+				'link'=>'',
 				'title'=>'FitStart 2017',
 				'height'=>1,
 				'width'=>6,
