@@ -250,6 +250,7 @@ Route::group(array('before' => 'validatetoken'), function() {
 	Route::get('customer/gettransformation', array('as' => 'customer.gettransformation','uses' => 'CustomerController@getTransformation'));
 	Route::get('customer/getstayontrack', array('as' => 'customer.getstayontrack','uses' => 'CustomerController@getStayOnTrack'));
 	Route::get('getreferralcode', array('as' => 'customer.referralcode','uses' => 'CustomerController@getReferralCode'));
+	Route::post('referfriend', array('as' => 'customer.referfriend','uses' => 'CustomerController@referFriend'));
 
 });
 
