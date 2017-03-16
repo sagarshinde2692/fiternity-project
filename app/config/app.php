@@ -15,7 +15,7 @@ return array(
 	*/
 
 
-	'debug' => FALSE,
+	'debug' => TRUE,
 
 	/*
 	|--------------------------------------------------------------------------
@@ -28,14 +28,14 @@ return array(
 	|
 	*/
 
-	'url' => 'https://a1.fitternity.com',
+	// 'url' => 'https://a1.fitternity.com',
 	// 'url' => 'http://apistage.fitn.in',
-	// 'url' => 'http://fitapi.com',
+	'url' => 'http://fitapi.com',
 
 
 
-    'website' => 'https://www.fitternity.com',
-    // 'website' => 'http://apistage.fitn.in:1122',
+    // 'website' => 'https://www.fitternity.com',
+    'website' => 'http://apistage.fitn.in:1122',
 
 
 	'app' =>array(

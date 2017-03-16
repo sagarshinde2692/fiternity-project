@@ -3152,5 +3152,10 @@ class CustomerController extends \BaseController {
 	    return $response;
 	}
 
+	public function getReferralCode(){
+		
+			return $response =  array('status' => 200,'message'=>'OTP Created Successfull');
+	}
+
 
 }
