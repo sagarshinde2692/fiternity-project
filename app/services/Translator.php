@@ -948,7 +948,7 @@ public static function translate_searchresultsv2($es_searchresult_response){
 					$resultobject->city_id = isset($result['city_id']) ? $result['city_id'] : $city_array[$result['city']];
 
 					$finder->object = $resultobject;
-					if($resultobject->ratecard_id == ""){
+					if($resultobject->ratecard_id != ""){
 						array_push($vip_trial_response->results->resultlist, $finder);
 					}
 
