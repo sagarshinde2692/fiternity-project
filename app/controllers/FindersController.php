@@ -689,12 +689,13 @@ class FindersController extends \BaseController {
 			$response['trials_detials']              =      [];
 			$response['trials_booked_status']        =      false;
 		}
-		if($response['finder']['offer_icon'] == ""){
-			$response['finder']['offer_icon']        =        "https://b.fitn.in/iconsv1/womens-day/womens-day-mobile-banner.svg";
-		}
-		if($response['finder']['offer_icon_mob'] == "" && (int)$response['finder']['commercial_type'] != 0){
-			$response['finder']['offer_icon_mob']        =        "https://a.fitn.in/fitimages/fitmania/offer_available_sale.svg";
-		}
+		// if($response['finder']['offer_icon'] == ""){
+		// 	$response['finder']['offer_icon']        =        "https://b.fitn.in/iconsv1/womens-day/womens-day-mobile-banner.svg";
+		// }
+		// if($response['finder']['offer_icon_mob'] == "" && (int)$response['finder']['commercial_type'] != 0){
+		// 	$response['finder']['offer_icon_mob']        =        "https://a.fitn.in/fitimages/fitmania/offer_available_sale.svg";
+		// }
+		$response['finder']['offer_icon']        =        "https://a.fitn.in/fitimages/vendor-app-download-badge1.svg";
 
 		// if(time() >= strtotime(date('2016-12-24 00:00:00')) && (int)$response['finder']['commercial_type'] != 0){
 
