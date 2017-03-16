@@ -136,6 +136,14 @@ class TransactionController extends \BaseController {
 
         $data['service_link'] = Config::get('app.website').$data['finder_slug']."/".$data['service_id']."?order_id=".$data['order_id'];
 
+        $data['payment_link'] = Config::get('app.website')."paymentlink/".$data['order_id'];
+
+        if(in_array($data['type'],$this->membership_array) && isset($data['ratecard_id']) && $data['ratecard_id'] != ""){
+            $data['payment_link'] = Config::get('app.website')."buy/".$data['finder_slug']."/".$data['service_id']."/".$data['ratecard_id']."/".$data['order_id'];
+        }
+
+        $data['vendor_link'] = Config::get('app.website').$data['finder_slug'];
+
         $cashbackRewardWallet =$this->getCashbackRewardWallet($data);
 
         if($cashbackRewardWallet['status'] != 200){
