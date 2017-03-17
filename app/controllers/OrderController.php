@@ -412,6 +412,28 @@ class OrderController extends \BaseController {
 
             $this->utilities->setRedundant($order);
 
+            $customer = Customer::where('_id', $order['customer_id'])->first(['referred', ]);
+            if(isset($customer['referred']) && $customer->reffered && $customer->first_transaction){
+                $referrer = Customer::where('_id', $customer->referrer_id)->first();
+                $customer->first_transaction = false;
+                $customer->update();
+                $wallet_data = array(
+                                'customer_id' => $customer->referrer_id,
+                                'amount' => 250,
+                                'type' => "REFERRAL",
+                                'description' => "Referral fitcashplus to referrer",
+                                'order_id' => 0
+                                );
+                $this->utilities->walletTransaction($wallet_data);
+                $url = 'www.fitternity.com/profile/'.$referer->email;
+                $sms_data = array(
+                    'customer_phone'=>$referrer->contact_no,
+                    'friend_name'   =>$customer_name,
+                    'wallet_url'    =>$url
+                    );
+                $referSms = $this->customersms->referralFitcash($sms_data);
+
+            }
 
 
             $finder_id = $order['finder_id'];

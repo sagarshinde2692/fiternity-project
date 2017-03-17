@@ -310,8 +310,7 @@ Class Utilities {
             if($request['type'] == 'REFERRAL'){
                 Log::info("inside referral");
 
-                    $request['balance'] = 0;
-                    $request['balance_fitcash_plus'] = $request['amount'];
+                    $request['balance_fitcash_plus'] = $customer['balance_fitcash_plus'] + $request['amount'];
             }
      
             if($request['type'] == 'DEBIT'){

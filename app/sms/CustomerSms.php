@@ -500,6 +500,15 @@ Class CustomerSms extends VersionNextSms{
 		return $this->common($label,$to,$data);
 	}
 
+	public function referralFitcash($data){
+
+		$label = 'Referral-fitcashplus';
+
+		$to = $data['customer_phone'];
+
+		return $this->common($label,$to,$data);
+	}
+
 	public function common($label,$to,$data,$delay = 0){
 
 		if(isset($data['source']) && $data['source'] == 'cleartrip'){
