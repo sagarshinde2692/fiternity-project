@@ -147,8 +147,8 @@ class TempsController extends \BaseController {
                     $ratecard = Ratecard::find((int) $data['ratecard_id']);
 
                     if($ratecard){
-                        $temp->finder_id = $ratecard->finder_id;
-                        $temp->service_id = $ratecard->service_id;
+                        $temp->finder_id = (int) $ratecard->finder_id;
+                        $temp->service_id = (int) $ratecard->service_id;
                     }
 
                 }
