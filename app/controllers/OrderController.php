@@ -555,7 +555,7 @@ class OrderController extends \BaseController {
         }
         // return $data;
 
-        $customer_id 		=	(Input::json()->get('customer_id')) ? Input::json()->get('customer_id') : $this->autoRegisterCustomer($data);
+        $customer_id 		=	(Input::json()->get('customer_id')) ? Input::json()->get('customer_id') : autoRegisterCustomer($data);
 
         if(trim(Input::json()->get('finder_id')) != '' ){
 
@@ -1103,7 +1103,7 @@ class OrderController extends \BaseController {
         }
         // return $data;
 
-        $customer_id 		=	(isset($data['customer_id']) && $data['customer_id'] != "") ? $data['customer_id'] : $this->autoRegisterCustomer($data);
+        $customer_id 		=	(isset($data['customer_id']) && $data['customer_id'] != "") ? $data['customer_id'] : autoRegisterCustomer($data);
 
         if($data['type'] == 'booktrials'/* ||  $data['type'] == 'healthytiffintrail'||  $data['type'] == 'vip_booktrials'||  $data['type'] == '3daystrial'*/){
 
@@ -2159,7 +2159,7 @@ class OrderController extends \BaseController {
             $data['finder_name'] = $order->finder_name;
             $data['service_name'] = $order->service_name;
 
-            $customer_id = $this->autoRegisterCustomer($data);
+            $customer_id = autoRegisterCustomer($data);
 
             if(isset($data['preferred_starting_date']) && $data['preferred_starting_date']  != ''){
                 if(trim($data['preferred_starting_date']) != '-'){

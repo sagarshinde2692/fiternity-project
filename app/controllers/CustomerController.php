@@ -2236,7 +2236,7 @@ class CustomerController extends \BaseController {
 
 		$customer_info = new CustomerInfo();
 
-		$customer_id = (isset($data['customer_id']) && $data['customer_id'] != "") ? $data['customer_id'] : $this->autoRegisterCustomer($data);
+		$customer_id = (isset($data['customer_id']) && $data['customer_id'] != "") ? $data['customer_id'] : autoRegisterCustomer($data);
 
 		$data['customer_id'] = (int)$customer_id;
 
