@@ -1211,9 +1211,14 @@ class CustomerController extends \BaseController {
 		$orders 			=  	[];
 		$membership_types 		= Config::get('app.membership_types');
 
-		$ordersrs 			= 	Order::active()->where('customer_email','=',$customer_email)->whereIn('type',$membership_types)->where('schedule_date','exists',false)->where(function($query){$query->orWhere('preferred_starting_date','exists',true)->orWhere('start_date','exists',true);})->take($size)->skip($from)->orderBy('_id', 'desc')->get();
+		$orderData 			= 	Order::active()->where('customer_email','=',$customer_email)->whereIn('type',$membership_types)->where('schedule_date','exists',false)->where(function($query){$query->orWhere('preferred_starting_date','exists',true)->orWhere('start_date','exists',true);})->take($size)->skip($from)->orderBy('_id', 'desc')->get();
 
-		foreach ($ordersrs as $key => $value) {
+		$action = [
+			"button_text"=>"Renew Membership",
+			"activity"=>"renew_membership",
+		];
+
+		foreach ($orderData as $key => $value) {
 
 			if(isset($value['finder_id']) && $value['finder_id'] != ''){
 				$finderarr = Finder::active()->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))
@@ -1234,6 +1239,70 @@ class CustomerController extends \BaseController {
 			if(isset($value['amount_customer']) && $value['amount_customer'] != 0){
 				$value['amount'] = $value['amount_customer'];
 			}
+
+			if(isset($value['end_date']) && strtotime($value['end_date']) >= time() && isset($value['duration_day']) && $value['duration_day'] < 360){
+				$action = [
+					"button_text"=>"Upgrade Membership",
+					"activity"=>"upgrade_membership",
+				];
+			}
+
+			if(time() <= strtotime($value['created_at'].'+15 days')){
+				$action = [
+					"button_text"=>"Update Start Date",
+					"activity"=>"update_starting_date",
+				];
+			}
+
+			if(isset($value['duration_day']) && isset($value['start_date'])){
+
+				$renewal_date = array();
+				$validity = (int) $value['duration_day'];
+				$start_date = $value['start_date'];
+
+				if($validity >= 30 && $validity < 90){
+
+					$renewal_date[] = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(7)));
+					$renewal_date[] = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(1)));
+					$renewal_date[] = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->addDays(7)));
+
+				}elseif($validity >= 90 && $validity < 180){
+
+					$renewal_date[] = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(30)));
+					$renewal_date[] = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(15)));
+					$renewal_date[] = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(7)));
+					$renewal_date[] = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(1)));
+
+				}elseif($validity >= 180){
+
+					$renewal_date[] = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(45)));
+					$renewal_date[] = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(30)));
+					$renewal_date[] = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(15)));
+					$renewal_date[] = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(7)));
+					$renewal_date[] = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(1)));
+				}
+
+				$current_date = date('Y-m-d');
+
+				if(in_array($current_date,$renewal_date)){
+
+					$action = [
+						"button_text"=>"Renew Membership",
+						"activity"=>"renew_membership",
+					];
+
+				}
+			}
+
+			/*if(isset($value['end_date']) && strtotime($value['end_date']) <= time()){
+				$action = [
+					"button_text"=>"Renew Membership",
+					"activity"=>"renew_membership",
+				];
+			}*/
+
+
+			$value["action"] = $action;
 
 			array_push($orders, $value);
 
