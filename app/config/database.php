@@ -6,9 +6,14 @@ $username = "";
 $password = "";
 
 //stage
-/*$host = "52.77.247.239";
+/*$host = "localhost";
 $username = "fitadmin";
 $password = "fit1234";*/
+
+//production
+/*$host = "52.77.247.239";
+$username = "";
+$password = "";*/
 
 return array(
 
