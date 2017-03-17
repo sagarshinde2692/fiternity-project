@@ -878,7 +878,7 @@ Route::get('getsubcategories', 'DebugController@cacheOfferings');
 
 Route::post('transaction/pg',array('as' => 'transaction.pg','uses' => 'TransactionController@pg'));
 
-
+Route::get('referral', 'CustomerController@generateReferralCode');
 
 Route::post('displayemi','CustomerController@displayEmi');
 

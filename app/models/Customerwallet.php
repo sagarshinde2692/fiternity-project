@@ -16,7 +16,7 @@ class Customerwallet extends  \Basemodel {
 		'customer_id' => 'required|integer|numeric',
 		'order_id' => 'required|integer|numeric',
 		'amount' => 'required|integer|numeric',
-		'type' => 'in:DEBIT,CREDIT,REFUND,CASHBACK',
+		'type' => 'in:DEBIT,CREDIT,REFUND,CASHBACK,REFERRAL',
 	    'description' => 'required'
 	];
 

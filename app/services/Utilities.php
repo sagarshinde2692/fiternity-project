@@ -95,6 +95,7 @@ Class Utilities {
     public function walletTransaction($request,$data = false){
 
         $customer_id = (int)$request['customer_id'];
+        Log::info($customer_id);
 
         $jwt_token = Request::header('Authorization');
 
@@ -174,7 +175,7 @@ Class Utilities {
             
         }
 
-        if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios'])){
+        if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios']) && $request['type']!='REFERRAL'){
 
             $wallet = Customer::where('_id',$customer_id)
                 ->first(array('balance'));
@@ -305,6 +306,13 @@ Class Utilities {
                 }
 
             }
+
+            if($request['type'] == 'REFERRAL'){
+                Log::info("inside referral");
+
+                    $request['balance'] = 0;
+                    $request['balance_fitcash_plus'] = $request['amount'];
+            }
      
             if($request['type'] == 'DEBIT'){
 
@@ -330,7 +338,7 @@ Class Utilities {
             $max_id = (isset($id) && !empty($id)) ? $id : 0;
             $customerwallet->_id = $max_id + 1;
             $customerwallet->customer_id = $customer_id;
-            $customerwallet->order_id = (int) $request['order_id'];
+            $request['order_id']!=0?$customerwallet->order_id = (int) $request['order_id']:null;
             $customerwallet->type = $request['type'];
             $customerwallet->amount = (int) $request['amount'];
             $customerwallet->balance = (int) $request['balance'];
@@ -723,6 +731,11 @@ Class Utilities {
             $order->update();
         }
         return $hash_verified;
+    }
+
+    public function addFitcash($customer_id, $amount, $type){
+
+        
     }
 
 }

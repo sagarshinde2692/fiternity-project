@@ -471,7 +471,41 @@ class CustomerController extends \BaseController {
 						$customer->identity = $data['identity'];
 						$customer->account_link = $account_link;
 						$customer->status = "1";
+						$customer->referral_code = $this->generateReferralCode($customer->name);
+						if(isset($data['referral_code']) && $data['referral_code']!=''){
+							$referrer = Customer::where('referral_code', $data['referral_code'])->first();
+							if($referrer){
+								$customer->referrer_id = $referrer->_id;
+								$customer->referred = true;
+								if(!isset($referrer->referred_to)){
+									$referrer->referred_to = [];
+								}
+								$referred_to = $referrer->referred_to;
+								array_push($referred_to, $customer->_id);
+								$referrer->referred_to = $referred_to;
+								Log::info($referrer);
+								$updated = $referrer->update();
+								
+								Log::info($updated);
+							}else{
+								return $response = array('status'=>400, 'message'=>'Incorrect referral code');
+							}
+						}else{
+							$customer->referrer_id = 0;
+							$customer->referred = false;
+						}
 						$customer->save();
+						if($referrer){
+							$wallet_data = array(
+								'customer_id' => $customer->_id,
+								'amount' => 250,
+								'type' => "REFERRAL",
+								'description' => "Referral fitcashplus",
+								'order_id' => 0,
+								'balance_fitcash_plus' => 0
+								);
+							$this->utilities->walletTransaction($wallet_data);
+						}
 
 						$customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email'],'password'=>$data['password']);
 						$this->customermailer->register($customer_data);
@@ -488,6 +522,23 @@ class CustomerController extends \BaseController {
 					$ishullcustomer->name = ucwords($data['name']);
 					$ishullcustomer->password = md5($data['password']);
 					$ishullcustomer->ishulluser = 0;
+					$customer->referral_code = $this->generateReferralCode($customer->name);
+					if(isset($data['referral_code'])){
+						$referrer = Customer::where('referral_code', $data['referral_code'])->get();
+						if($referrer){
+							$customer->referrer_id = $referrer->_id;
+							$customer->referred = true;
+							if(!isset($referrer->referred_to)){
+								$referrer->referred_to = [];
+							}
+							$referred_to = $referrer->referred_to;
+							array_push($referred_to, $customer->_id);
+							$referrer->save();
+						}
+					}else{
+						$customer->referrer_id = 0;
+						$customer->referred = false;
+					}
 					$ishullcustomer->update();
 					$customer_data = array('name'=>ucwords($ishullcustomer['name']),'email'=>$ishullcustomer['email'],'password'=>$ishullcustomer['password']);
 					// $this->customermailer->register($ishullcustomer);
@@ -776,7 +827,25 @@ class CustomerController extends \BaseController {
 			$customer->picture = (isset($data['picture'])) ? $data['picture'] : "";
 			$customer->identity = $data['identity'];
 			$customer->account_link = $account_link;
-
+			$customer->referral_code = $this->generateReferralCode($customer->name);
+			if(isset($data['referral_code']) && $data['referral_code']!=''){
+				$referrer = Customer::where('referral_code', $data['referral_code'])->where('status', '1')->get();
+				if($referrer){
+					$customer->referrer_id = $referrer->_id;
+					$customer->referred = true;
+					if(!isset($referrer->referred_to)){
+						$referrer->referred_to = [];
+					}
+					$referred_to = $referrer->referred_to;
+					array_push($referred_to, $customer->_id);
+					$referrer->save();
+				}else{
+					return $response = array('status'=>400, 'message'=>'Incorrect referral code');
+				}
+			}else{
+				$customer->referrer_id = 0;
+				$customer->referred = false;
+			}
 			if($data['identity'] == 'facebook' && isset($data['facebook_id'])){
 				$customer->facebook_id = $data['facebook_id'];
 				$customer->picture = 'https://graph.facebook.com/'.$data['facebook_id'].'/picture?type=large';
@@ -784,11 +853,32 @@ class CustomerController extends \BaseController {
 
 			$customer->status = "1";
 			$customer->save();
+			if($referrer){
+				$wallet_data = array(
+					'customer_id' => $customer->_id,
+					'amount' => 250,
+					'type' => "REFERRAL",
+					'description' => "Referral fitcashplus",
+					'order_id' => 0,
+					'balance_fitcash_plus' => 0
+					);
+				$this->utilities->walletTransaction($wallet_data);
+			}
 
 			$response = array('status' => 200,'customer'=>$customer);
 		}
 
 		return $response;
+	}
+
+	public function generateReferralCode($name){
+		$referral_code = substr(implode("", (explode(" ", strtoupper($name)))),0,4)."".rand(100, 999);
+		$exists = Customer::where('referral_code', $referral_code)->where('status', '1')->first();
+		if($exists){
+			return $this->generateReferralCode($name);
+		}else{
+			return $referral_code;
+		}
 	}
 
 	public function createToken($customer){
