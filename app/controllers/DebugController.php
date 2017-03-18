@@ -3488,5 +3488,12 @@ public function yes($msg){
 		return $offerings;
 
 	}
+
+	public function cacheFinders(){
+		Finder::$withoutAppends = true;
+		$finders = Finder::where('status', "1")->get(['_id', 'slug']);
+		return $finders;
+
+	}
     
 }

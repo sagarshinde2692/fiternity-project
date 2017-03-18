@@ -2070,7 +2070,7 @@ class OrderController extends \BaseController {
 
         $payhash_str = $key.'|'.$txnid.'|'.$amount.'|'.$productinfo.'|'.$firstname.'|'.$email.'|'.$udf1.'|'.$udf2.'|'.$udf3.'|'.$udf4.'|'.$udf5.'||||||'.$salt;
         
-        Log::info($payhash_str);
+        // Log::info($payhash_str);
 
         $data['payment_hash'] = hash('sha512', $payhash_str);
 
@@ -2613,9 +2613,9 @@ class OrderController extends \BaseController {
         $payhash_str = $salt.'|success||||||'.$udf5.'|'.$udf4.'|'.$udf3.'|'.$udf2.'|'.$udf1.'|'.$email.'|'.$firstname.'|'.$productinfo.'|'.$amount.'|'.$txnid.'|'.$key;
 //    $payhash_str = "0|".$salt.'|success||||||'.$udf5.'|'.$udf4.'|'.$udf3.'|'.$udf2.'|'.$udf1.'|'.$email.'|'.$firstname.'|'.$productinfo.'|'.$amount.'|'.$txnid.'|'.$key;
         
-        Log::info($payhash_str);
+        // Log::info($payhash_str);
         $data['reverse_hash'] = hash('sha512', $payhash_str);        
-        Log::info($data['reverse_hash']);
+        // Log::info($data['reverse_hash']);
         return $data;
     }
 

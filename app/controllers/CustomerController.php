@@ -1634,7 +1634,7 @@ class CustomerController extends \BaseController {
 	public function getCustomerDetail(){
 
 		$jwt_token = Request::header('Authorization');
-		Log::info($jwt_token);
+		//Log::info($jwt_token);
 		$decoded = $this->customerTokenDecode($jwt_token);
 
 		$customer_id = $decoded->customer->_id;
@@ -1646,7 +1646,7 @@ class CustomerController extends \BaseController {
 	public function getCustomerTransactions(){
 
 		$jwt_token = Request::header('Authorization');
-		Log::info($jwt_token);
+		//Log::info($jwt_token);
 		$decoded = $this->customerTokenDecode($jwt_token);
 		$customer_id = $decoded->customer->_id;
 		$customer_email = $decoded->customer->email;
@@ -2165,7 +2165,7 @@ class CustomerController extends \BaseController {
 		$decoded = $this->customerTokenDecode($jwt_token);
 		$customer_id = $decoded->customer->_id;
 		$request['customer_id'] = $customer_id;
-		Log::info($jwt_token);
+		//Log::info($jwt_token);
 		$wallet = array();
 
 		$wallet = Customerwallet::where('customer_id',$request['customer_id'])
@@ -2494,19 +2494,27 @@ class CustomerController extends \BaseController {
 		$result             = Cache::tags($cache_tag)->get($city);
 		$result['upcoming'] = $upcoming;
 
-		$result['campaign'] =  new \stdClass();
+		// $result['campaign'] =  new \stdClass();
 
-		$result['campaign'] = array(
-			'image'=>'http://b.fitn.in/iconsv1/womens-day/women_banner_app_50.png',
-			'link'=>'fitternity://www.fitternity.com/search/offer_available/true',
-			'title'=>'FitStart 2017',
-			'height'=>1,
-			'width'=>6,
-			'ratio'=>1/6
-		);
+		// $result['campaign'] = array(
+		// 	'image'=>'http://b.fitn.in/iconsv1/womens-day/women_banner_app_50.png',
+		// 	'link'=>'fitternity://www.fitternity.com/search/offer_available/true',
+		// 	'title'=>'FitStart 2017',
+		// 	'height'=>1,
+		// 	'width'=>6,
+		// 	'ratio'=>1/6
+		// );
 
 		if(isset($_REQUEST['device_type']) && $_REQUEST['device_type'] == "ios" ){
-			$result['campaign']['link'] = "";
+			$result['campaign'] =  new \stdClass();
+			$result['campaign'] = array(
+				'image'=>'http://b.fitn.in/iconsv1/fitmania/sale_banner.png',
+				'link'=>'',
+				'title'=>'FitStart 2017',
+				'height'=>1,
+				'width'=>6,
+				'ratio'=>1/6
+			);
 		}
 
 		return Response::json($result);

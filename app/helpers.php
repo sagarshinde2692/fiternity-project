@@ -2266,7 +2266,7 @@ if (!function_exists(('getReversehash'))){
      function getReversehash($data){
 
          Log::info($data);
-        $data['env'] = 1;
+        // $data['env'] = 1;
 
         $env = (isset($data['env']) && $data['env'] == 1) ? "stage" : "production";
 
@@ -2315,7 +2315,7 @@ if (!function_exists(('getReversehash'))){
         
         Log::info($payhash_str);
         $data['reverse_hash'] = hash('sha512', $payhash_str);        
-        Log::info($data['reverse_hash']);
+        Log::info("Reverse Hash".$data['reverse_hash']);
         return $data;
     }
 }
@@ -2372,7 +2372,7 @@ if (!function_exists(('getHash'))){
 
 if (!function_exists(('getpayTMhash'))){
      function getpayTMhash($data){
-Log::info($data);
+// Log::info($data);
 
         $data['service_name'] = trim($data['service_name']);
         $data['finder_name'] = trim($data['finder_name']);
@@ -2396,9 +2396,9 @@ Log::info($data);
         $payhash_str = $salt.'|success||||||'.'|'.$email.'|'.$firstname.'|'.$productinfo.'|'.$amount.'|'.$txnid.'|'.$key;
 //    $payhash_str = "0|".$salt.'|success||||||'.$udf5.'|'.$udf4.'|'.$udf3.'|'.$udf2.'|'.$udf1.'|'.$email.'|'.$firstname.'|'.$productinfo.'|'.$amount.'|'.$txnid.'|'.$key;
         
-        Log::info($payhash_str);
+        // Log::info($payhash_str);
         $data['reverse_hash'] = hash('sha512', $payhash_str);        
-        Log::info($data['paytm_hash']);
+        // Log::info($data['paytm_hash']);
         return $data;
     }
 }

@@ -711,8 +711,8 @@ Class Utilities {
                 }
             }else{
                 $hashreverse = getReversehash($order);
-                Log::info($data["verify_hash"]);
-                Log::info($hashreverse['reverse_hash']);
+                // Log::info($data["verify_hash"]);
+                // Log::info($hashreverse['reverse_hash']);
                 if($data["verify_hash"] == $hashreverse['reverse_hash']){
                     $hash_verified = true;
                 }else{

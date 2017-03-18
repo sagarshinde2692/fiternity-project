@@ -874,6 +874,8 @@ Route::get('getfinderlocations', 'DebugController@cacheLocations');
 
 Route::get('getsubcategories', 'DebugController@cacheOfferings');
 
+Route::get('getfinders', 'DebugController@cacheFinders');
+
 Route::post('transaction/pg',array('as' => 'transaction.pg','uses' => 'TransactionController@pg'));
 
 
