@@ -411,9 +411,12 @@ class OrderController extends \BaseController {
             }*/
 
             $this->utilities->setRedundant($order);
-
-            $customer = Customer::where('_id', $order['customer_id'])->first(['referred', ]);
-            if(isset($customer['referred']) && $customer->reffered && $customer->first_transaction){
+            Log::info("Customer for referral");
+            $customer = Customer::where('_id', $order['customer_id'])->first(['referred', 'referrer_id', 'first_transaction']);
+            Log::info($customer);
+            
+            if(isset($customer['referred']) && $customer['referred'] && $customer['first_transaction']){
+                Log::info("inside first transaction");
                 $referrer = Customer::where('_id', $customer->referrer_id)->first();
                 $customer->first_transaction = false;
                 $customer->update();
@@ -425,10 +428,10 @@ class OrderController extends \BaseController {
                                 'order_id' => 0
                                 );
                 $this->utilities->walletTransaction($wallet_data);
-                $url = 'www.fitternity.com/profile/'.$referer->email;
+                $url = 'www.fitternity.com/profile/'.$referrer->email;
                 $sms_data = array(
                     'customer_phone'=>$referrer->contact_no,
-                    'friend_name'   =>$customer_name,
+                    // 'friend_name'   =>$customer_name,
                     'wallet_url'    =>$url
                     );
                 $referSms = $this->customersms->referralFitcash($sms_data);
