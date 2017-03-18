@@ -82,6 +82,18 @@ class FindersController extends \BaseController {
 		
 		$data   =  array();
 		$tslug  = (string) strtolower($slug);
+
+		if($tslug == "default" && isset($_GET['vendor_id']) && $_GET['vendor_id'] != ""){
+
+			$vendor = Finder::find((int)$_GET['vendor_id'],["slug"]);
+
+			if($vendor){
+				$tslug = $vendor->slug;
+			}else{
+				return Response::json(array("status"=>404), 404);
+			}
+		}
+		
 		$cache_key = $tslug;
 		
 		$category_slug = null;
@@ -2153,6 +2165,19 @@ class FindersController extends \BaseController {
 
 		$data   =  array();	
 		$tslug  = (string) strtolower($slug);
+
+
+		if($tslug == "default" && isset($_GET['vendor_id']) && $_GET['vendor_id'] != ""){
+
+			$vendor = Finder::find((int)$_GET['vendor_id'],["slug"]);
+
+			if($vendor){
+				$tslug = $vendor->slug;
+			}else{
+				return Response::json(array("status"=>404), 404);
+			}
+		}
+
 		$cache_key = $tslug;
 
 		$category_slug = null;
