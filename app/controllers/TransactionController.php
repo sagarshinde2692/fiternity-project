@@ -191,7 +191,7 @@ class TransactionController extends \BaseController {
         }
 
         if(isset($_GET['app_version']) && $_GET['app_version'] != ""){
-            $data["app_version"] = trim((float)$_GET['app_version']);
+            $data["app_version"] = (float)$_GET['app_version'];
         }
 
         if(isset($old_order_id)){
