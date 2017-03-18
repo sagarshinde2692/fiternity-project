@@ -288,7 +288,7 @@ class TransactionController extends \BaseController {
 
             }
 
-            if($order->status == "1" && isset($data['upgrade_membership']) && $data['upgrade_membership'] == true){
+            if($order->status == "1" && isset($data['updrage_membership']) && $data['updrage_membership'] == "requested"){
 
                 $data['upgrade'] = ["requested"=>time()];
             }
