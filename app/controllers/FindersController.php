@@ -2214,7 +2214,7 @@ class FindersController extends \BaseController {
 				->with(array('ozonetelno'=>function($query){$query->select('*')->where('status','=','1');}))
 				->with(array('services'=>function($query){$query->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}))
 				->with(array('reviews'=>function($query){$query->select('_id','finder_id','customer_id','rating','description','updated_at')->where('status','=','1')->with(array('customer'=>function($query){$query->select('_id','name','picture')->where('status','=','1');}))->orderBy('_id', 'DESC')->limit(1);}))
-				->first(array('_id','slug','title','lat','lon','category_id','category','location_id','location','city_id','city','categorytags','locationtags','offerings','facilities','coverimage','finder_coverimage','contact','average_rating','photos','info','manual_trial_enable','manual_trial_auto','trial','commercial_type','multiaddress'));
+				->first(array('_id','slug','title','lat','lon','category_id','category','location_id','location','city_id','city','categorytags','locationtags','offerings','facilities','coverimage','finder_coverimage','contact','average_rating','photos','info','manual_trial_enable','manual_trial_auto','trial','commercial_type','multiaddress','membership'));
 
 
 			$finder = false;
@@ -2661,6 +2661,11 @@ class FindersController extends \BaseController {
 			
 			}
 
+			if(isset($finderData['finder']['trial']) && $finderData['finder']['trial'] == "disable" ){
+				$finderData['call_for_action_button'] = "";
+				$finderData['finder']['pay_per_session'] = false;
+			}
+
 			$device_type = ['ios','android'];
 
 			if(isset($_GET['device_type']) && in_array($_GET['device_type'], $device_type) && isset($_GET['app_version']) && (float)$_GET['app_version'] >= 3.2 && isset($finderData['finder']['services']) && count($finderData['finder']['services']) > 0){
@@ -2688,12 +2693,22 @@ class FindersController extends \BaseController {
 					$disable_button = [];
 					foreach ($finderData['finder']['services'] as $key => $value) {
 
+						if(isset($finderData['finder']['trial']) && $finderData['finder']['trial'] == "disable" ){
+							$finderData['finder']['services'][$key]['trial'] = "disable";
+							$value["trial"] == "disable";
+						}
+
+						if(isset($finderData['finder']['membership']) && $finderData['finder']['membership'] == "disable" ){
+
+							$finderData['finder']['services'][$key]['membership'] = "disable";
+							$value["membership"] == "disable";
+						}
+
 						if(isset($value["trial"]) && $value["trial"] == "disable"){
 							$disable_button[] = "true";
 						}else{
 							$disable_button[] = "false";
 						}
-
 					}
 
 					if(!in_array("false", $disable_button)){
