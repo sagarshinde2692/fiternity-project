@@ -238,6 +238,9 @@ class TransactionController extends \BaseController {
 
     public function update(){
 
+        $jwt_token = Request::header('Authorization');
+        $decoded = $this->customerTokenDecode($jwt_token);
+
         $rules = array(
             "customer_email"=>"email|required",
             "order_id"=>"numeric|required"
@@ -263,8 +266,8 @@ class TransactionController extends \BaseController {
                 return Response::json($resp,$resp["status"]);
             }
 
-            if($order->customer_email != $data['customer_email']){
-                $resp   =   array("status" => 401,"message" => "Invalid Email");
+            if($order->customeremail != $decoded->customer->email){
+                $resp   =   array("status" => 401,"message" => "Invalid Customer");
                 return Response::json($resp,$resp["status"]);
             }
 
