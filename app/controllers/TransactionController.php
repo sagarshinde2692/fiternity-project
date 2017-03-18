@@ -365,7 +365,7 @@ class TransactionController extends \BaseController {
             $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount_finder'],$data['finder_id'],'paymentgateway',$data['offer_id'],$data['customer_id']);
         }
 
-        if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios']) && isset($_GET['app_version']) && ((float)$_GET['app_version'] < 3.3) ){
+        if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios']) && isset($_GET['app_version']) && ((float)$_GET['app_version'] <= 3.2) ){
 
             if(isset($data['cashback']) && $data['cashback'] == true){
                 $data['amount'] = $data['amount'] - $data['cashback_detail']['amount_discounted'];
