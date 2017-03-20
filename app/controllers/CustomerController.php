@@ -1202,110 +1202,121 @@ class CustomerController extends \BaseController {
 	}
 
 
-	public function orderHistory($customer_email, $from = '', $size = ''){
+	public function orderHistory($customer_email,$offset = 0, $limit = 10){
 		
 		$customer_email		= 	$customer_email;	
-		$from 				=	($from != '') ? intval($from) : 0;
-		$size 				=	($size != '') ? intval($size) : 10;
+		$offset 			=	intval($offset);
+		$limit 				=	intval($limit);
 
 		$orders 			=  	[];
 		$membership_types 		= Config::get('app.membership_types');
 
-		$orderData 			= 	Order::active()->where('customer_email','=',$customer_email)->whereIn('type',$membership_types)->where('schedule_date','exists',false)->where(function($query){$query->orWhere('preferred_starting_date','exists',true)->orWhere('start_date','exists',true);})->take($size)->skip($from)->orderBy('_id', 'desc')->get();
+		$orderData 			= 	Order::active()->where('customer_email','=',$customer_email)->whereIn('type',$membership_types)->where('schedule_date','exists',false)->where(function($query){$query->orWhere('preferred_starting_date','exists',true)->orWhere('start_date','exists',true);})->skip($offset)->take($limit)->orderBy('_id', 'desc')->get();
 
 		$action = [
 			"button_text"=>"Renew Membership",
 			"activity"=>"renew_membership",
+			"color"=> "#EF1C26",
+			"info" => "Renew Membership"
 		];
 
-		foreach ($orderData as $key => $value) {
+		if(count($orderData) > 0){
 
-			if(isset($value['finder_id']) && $value['finder_id'] != ''){
-				$finderarr = Finder::active()->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))
-				->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
-				->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-				->find(intval($value['finder_id']),['_id','title','slug','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile','finder_poc_for_customer_name','info','category_id','location_id','city_id','category','location','city','average_rating','total_rating_count']);
-				if($finderarr){
-					$value['finder'] = $finderarr;
-				}
-			}
+			foreach ($orderData as $key => $value) {
 
-			$value['renewal_flag'] = $this->checkRenewal($value);
-
-			if(!isset($value['preferred_starting_date']) && isset($value['start_date'])){
-				$value['preferred_starting_date'] = $value['start_date']; 
-			}
-
-			if(isset($value['amount_customer']) && $value['amount_customer'] != 0){
-				$value['amount'] = $value['amount_customer'];
-			}
-
-			if(isset($value['end_date']) && strtotime($value['end_date']) >= time() && isset($value['duration_day']) && $value['duration_day'] < 360){
-				$action = [
-					"button_text"=>"Upgrade Membership",
-					"activity"=>"upgrade_membership",
-				];
-			}
-
-			if(time() <= strtotime($value['created_at'].'+15 days')){
-				$action = [
-					"button_text"=>"Update Start Date",
-					"activity"=>"update_starting_date",
-				];
-			}
-
-			if(isset($value['duration_day']) && isset($value['start_date'])){
-
-				$renewal_date = array();
-				$validity = (int) $value['duration_day'];
-				$start_date = $value['start_date'];
-
-				if($validity >= 30 && $validity < 90){
-
-					$renewal_date[] = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(7)));
-					$renewal_date[] = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(1)));
-					$renewal_date[] = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->addDays(7)));
-
-				}elseif($validity >= 90 && $validity < 180){
-
-					$renewal_date[] = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(30)));
-					$renewal_date[] = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(15)));
-					$renewal_date[] = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(7)));
-					$renewal_date[] = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(1)));
-
-				}elseif($validity >= 180){
-
-					$renewal_date[] = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(45)));
-					$renewal_date[] = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(30)));
-					$renewal_date[] = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(15)));
-					$renewal_date[] = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(7)));
-					$renewal_date[] = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(1)));
+				if(isset($value['finder_id']) && $value['finder_id'] != ''){
+					$finderarr = Finder::active()->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))
+					->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
+					->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+					->find(intval($value['finder_id']),['_id','title','slug','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile','finder_poc_for_customer_name','info','category_id','location_id','city_id','category','location','city','average_rating','total_rating_count']);
+					if($finderarr){
+						$value['finder'] = $finderarr;
+					}
 				}
 
-				$current_date = date('Y-m-d');
+				$value['renewal_flag'] = $this->checkRenewal($value);
 
-				if(in_array($current_date,$renewal_date)){
+				if(!isset($value['preferred_starting_date']) && isset($value['start_date'])){
+					$value['preferred_starting_date'] = $value['start_date']; 
+				}
 
+				if(isset($value['amount_customer']) && $value['amount_customer'] != 0){
+					$value['amount'] = $value['amount_customer'];
+				}
+
+				if(isset($value['end_date']) && strtotime($value['end_date']) >= time() && isset($value['duration_day']) && $value['duration_day'] < 360){
+					$action = [
+						"button_text"=>"Upgrade Membership",
+						"activity"=>"upgrade_membership",
+						"color"=>"#26ADE5",
+						"info" => "Upgrade Membership"
+					];
+				}
+
+				if(time() <= strtotime($value['created_at'].'+15 days')){
+					$action = [
+						"button_text"=>"Update Start Date",
+						"activity"=>"update_starting_date",
+						"color"=>"#7AB317",
+						"info" => "Update Start Date"
+					];
+				}
+
+				if(isset($value['duration_day']) && isset($value['start_date'])){
+
+					$renewal_date = array();
+					$validity = (int) $value['duration_day'];
+					$start_date = $value['start_date'];
+
+					if($validity >= 30 && $validity < 90){
+
+						$renewal_date[] = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(7)));
+						$renewal_date[] = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(1)));
+						$renewal_date[] = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->addDays(7)));
+
+					}elseif($validity >= 90 && $validity < 180){
+
+						$renewal_date[] = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(30)));
+						$renewal_date[] = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(15)));
+						$renewal_date[] = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(7)));
+						$renewal_date[] = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(1)));
+
+					}elseif($validity >= 180){
+
+						$renewal_date[] = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(45)));
+						$renewal_date[] = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(30)));
+						$renewal_date[] = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(15)));
+						$renewal_date[] = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(7)));
+						$renewal_date[] = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(1)));
+					}
+
+					$current_date = date('Y-m-d');
+
+					if(in_array($current_date,$renewal_date)){
+
+						$action = [
+							"button_text"=>"Renew Membership",
+							"activity"=>"renew_membership",
+							"color"=>"#EF1C26",
+							"info" => "Renew Membership"
+						];
+
+					}
+				}
+
+				/*if(isset($value['end_date']) && strtotime($value['end_date']) <= time()){
 					$action = [
 						"button_text"=>"Renew Membership",
 						"activity"=>"renew_membership",
 					];
+				}*/
 
-				}
+
+				$value["action"] = $action;
+
+				array_push($orders, $value);
+
 			}
-
-			/*if(isset($value['end_date']) && strtotime($value['end_date']) <= time()){
-				$action = [
-					"button_text"=>"Renew Membership",
-					"activity"=>"renew_membership",
-				];
-			}*/
-
-
-			$value["action"] = $action;
-
-			array_push($orders, $value);
-
 		}
 
 		$responseData 		= 	['orders' => $orders,  'message' => 'List for orders'];
@@ -1456,13 +1467,7 @@ class CustomerController extends \BaseController {
 		$jwt_token = Request::header('Authorization');
 		$decoded = $this->customerTokenDecode($jwt_token);
 
-		$orders = array();
-
-		$orders 			= 	Order::where('customer_email',$decoded->customer->email)->where(function($query){$query->orWhere('status',"1")->orWhere('order_action','bought');})->where('type','memberships')->skip($offset)->take($limit)->orderBy('_id', 'desc')->get();
-
-		$response 		= 	['status' => 200, 'orders' => $orders,  'message' => 'List for orders'];
-
-		return Response::json($response, 200);
+		return $this->orderHistory($decoded->customer->_id,$offset,$limit);
 	}
 
 	public function getAllBookmarks(){
