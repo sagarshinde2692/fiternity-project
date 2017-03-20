@@ -242,7 +242,6 @@ class TransactionController extends \BaseController {
         $decoded = $this->customerTokenDecode($jwt_token);
 
         $rules = array(
-            "customer_email"=>"email|required",
             "order_id"=>"numeric|required"
         );
 
