@@ -1270,29 +1270,29 @@ class CustomerController extends \BaseController {
 
 					if($validity >= 30 && $validity < 90){
 
-						$renewal_date[] = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(7)));
-						$renewal_date[] = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(1)));
-						$renewal_date[] = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->addDays(7)));
+						$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-7). "days"));
+						$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-1). "days"));
+						$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity+7). "days"));
 
 					}elseif($validity >= 90 && $validity < 180){
 
-						$renewal_date[] = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(30)));
-						$renewal_date[] = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(15)));
-						$renewal_date[] = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(7)));
-						$renewal_date[] = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(1)));
+						$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-30). "days"));
+						$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-15). "days"));
+						$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-7). "days"));
+						$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-1). "days"));
 
 					}elseif($validity >= 180){
 
-						$renewal_date[] = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(45)));
-						$renewal_date[] = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(30)));
-						$renewal_date[] = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(15)));
-						$renewal_date[] = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(7)));
-						$renewal_date[] = date('Y-m-d', strtotime(\Carbon\Carbon::createFromFormat('Y-m-d', $start_date)->addDays($validity)->subDays(1)));
+						$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-45). "days"));
+						$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-30). "days"));
+						$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-15). "days"));
+						$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-7). "days"));
+						$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-1). "days"));
 					}
 
 					$current_date = date('Y-m-d');
 
-					if(in_array($current_date,$renewal_date)){
+					if(!empty($renewal_date)){
 
 						$action = [
 							"button_text"=>"Renew Membership",
