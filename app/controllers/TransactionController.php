@@ -286,7 +286,7 @@ class TransactionController extends \BaseController {
                 return Response::json($resp,$resp["status"]);
             }
 
-            if($order->customeremail != $decoded->customer->email){
+            if($order->customer_email != $decoded->customer->email){
                 $resp   =   array("status" => 401,"message" => "Invalid Customer");
                 return Response::json($resp,$resp["status"]);
             }
