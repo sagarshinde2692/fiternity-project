@@ -277,6 +277,7 @@ class TransactionController extends \BaseController {
         }else{
 
             $order_id = (int) $data['order_id'];
+            $message = "";
 
             $order = Order::find($order_id);
 
