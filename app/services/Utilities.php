@@ -688,7 +688,7 @@ Class Utilities {
         if((isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin") || $order->pg_type == "PAYTM"){
             if($order->pg_type == "PAYTM"){
                 $hashreverse = getpayTMhash($order);
-                if($data["paytm_hash"] == $hashreverse['reverse_hash']){
+                if($data["verify_hash"] == $hashreverse['reverse_hash']){
                     $hash_verified = true;
                 }else{
                     $hash_verified = false;
