@@ -1213,12 +1213,7 @@ class CustomerController extends \BaseController {
 
 		$orderData 			= 	Order::active()->where('customer_email','=',$customer_email)->whereIn('type',$membership_types)->where('schedule_date','exists',false)->where(function($query){$query->orWhere('preferred_starting_date','exists',true)->orWhere('start_date','exists',true);})->skip($offset)->take($limit)->orderBy('_id', 'desc')->get();
 
-		$action = [
-			"button_text"=>"Renew Membership",
-			"activity"=>"renew_membership",
-			"color"=> "#EF1C26",
-			"info" => "Renew Membership"
-		];
+		$action = null;
 
 		if(count($orderData) > 0){
 
@@ -1292,7 +1287,7 @@ class CustomerController extends \BaseController {
 
 					$current_date = date('Y-m-d');
 
-					if(!empty($renewal_date)){
+					if(in_array($current_date,$renewal_date)){
 
 						$action = [
 							"button_text"=>"Renew Membership",
