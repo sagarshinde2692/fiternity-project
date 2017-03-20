@@ -2273,8 +2273,8 @@ if (!function_exists(('getReversehash'))){
         $data['service_name'] = trim($data['service_name']);
         $data['finder_name'] = trim($data['finder_name']);
 
-        $service_name = preg_replace("/^'|[^A-Za-z0-9 \-]|'$/", '', $data['service_name']);
-        $finder_name = preg_replace("/^'|[^A-Za-z0-9 \-]|'$/", '', $data['finder_name']);
+        $service_name = preg_replace("/^'|[^A-Za-z0-9 \-]|'$/", ' ', $data['service_name']);
+        $finder_name = preg_replace("/^'|[^A-Za-z0-9 \-]|'$/", ' ', $data['finder_name']);
 
         $key = 'gtKFFx';
         $salt = 'eCwWELxi';
@@ -2315,7 +2315,7 @@ if (!function_exists(('getReversehash'))){
         
         Log::info($payhash_str);
         $data['reverse_hash'] = hash('sha512', $payhash_str);        
-        Log::info("Reverse Hash".$data['reverse_hash']);
+        Log::info("Reverse Hash -- ".$data['reverse_hash']);
         return $data;
     }
 }
@@ -2328,8 +2328,8 @@ if (!function_exists(('getHash'))){
         $data['service_name'] = trim($data['service_name']);
         $data['finder_name'] = trim($data['finder_name']);
 
-        $service_name = preg_replace("/^'|[^A-Za-z0-9 \-]|'$/", '', $data['service_name']);
-        $finder_name = preg_replace("/^'|[^A-Za-z0-9 \-]|'$/", '', $data['finder_name']);
+        $service_name = preg_replace("/^'|[^A-Za-z0-9 \-]|'$/", ' ', $data['service_name']);
+        $finder_name = preg_replace("/^'|[^A-Za-z0-9 \-]|'$/", ' ', $data['finder_name']);
 
         $key = 'gtKFFx';
         $salt = 'eCwWELxi';
