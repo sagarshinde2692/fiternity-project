@@ -309,14 +309,20 @@ class TransactionController extends \BaseController {
                 $this->customermailer->sendPgOrderMail($emailData);
                 $this->findermailer->sendPgOrderMail($emailData);
 
+                $message = "Your Preferred Starting date has been change Successfull";
+
             }
 
             if($order->status == "1" && isset($data['updrage_membership']) && $data['updrage_membership'] == "requested"){
 
                 $data['upgrade'] = ["requested"=>time()];
+
+                $order->update($data);
+
+                $message = "Upgrade request has been noted. We will call you shortly.";
             }
 
-            
+            return Response::json(array('status' => 200,'message' => $message),200);
         }
 
     }
