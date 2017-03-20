@@ -2380,6 +2380,9 @@ if (!function_exists(('getpayTMhash'))){
         $service_name = preg_replace("/^'|[^A-Za-z0-9 \-]|'$/", '', $data['service_name']);
         $finder_name = preg_replace("/^'|[^A-Za-z0-9 \-]|'$/", '', $data['finder_name']);
 
+        $productinfo = $service_name." - ".$finder_name;
+        $productinfo = $data['productinfo'] = substr($productinfo,0,100);
+
         $key = 'fitterKEY';
         $salt = '1086fit';
         
