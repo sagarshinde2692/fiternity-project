@@ -1,5 +1,20 @@
 <?php
 
+//local
+// $host = "localhost";
+// $username = "";
+// $password = "";
+
+//stage
+/*$host = "localhost";
+$username = "fitadmin";
+$password = "fit1234";*/
+
+//production
+$host = "52.77.247.239";
+$username = "";
+$password = "";
+
 return array(
 
 	/*
@@ -49,31 +64,30 @@ return array(
 
 		'mongodb' => array(
 			'driver'   => 'mongodb',
-			// 'host'     => 'localhost',
-			'host'     => '52.77.247.239',
+            'host'     => $host,
 			'port'     => 27017,
 			'database' => 'fitadmin',
-		    /*'username' => 'fitadmin',
-		    'password' => 'fit1234'*/
+		    'username' => $username,
+		    'password' => $password
 		),
 
 		'mongodb2' => array(
 			'driver'   => 'mongodb',
-			// 'host'     => 'localhost',
-			'host'     => '52.77.247.239',
+            'host'     => $host,
 			'port'     => 27017,
 			'database' => 'fitapi',
-			/*'username' => 'fitadmin',
-		    'password' => 'fit1234'*/
+            'username' => $username,
+            'password' => $password
 		),
 
 
 		'mongodb3' => array(
 			'driver'   => 'mongodb',
-			// 'host'     => 'localhost',
-			'host'     => '52.77.247.239',
+            'host'     => $host,
 			'port'     => 27017,
-			'database' => 'fitadminnew'
+			'database' => 'fitadminnew',
+            'username' => $username,
+            'password' => $password
 		),
 
 

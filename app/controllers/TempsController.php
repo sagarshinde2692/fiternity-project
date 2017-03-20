@@ -143,6 +143,14 @@ class TempsController extends \BaseController {
 
                 if(isset($data['ratecard_id']) && $data['ratecard_id'] != ""){
                     $temp->ratecard_id = (int) $data['ratecard_id'];
+
+                    $ratecard = Ratecard::find((int) $data['ratecard_id']);
+
+                    if($ratecard){
+                        $temp->finder_id = (int) $ratecard->finder_id;
+                        $temp->service_id = (int) $ratecard->service_id;
+                    }
+
                 }
 
                 if(isset($_GET['device_type']) && $_GET['device_type'] != ""){
