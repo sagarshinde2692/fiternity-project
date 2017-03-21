@@ -238,8 +238,7 @@ class TransactionController extends \BaseController {
 
     public function update(){
 
-        $jwt_token = Request::header('Authorization');
-        $decoded = $this->customerTokenDecode($jwt_token);
+        $decoded = decode_customer_token();
 
         $rules = array(
             "order_id"=>"numeric|required"
@@ -247,15 +246,18 @@ class TransactionController extends \BaseController {
 
         $data = Input::json()->all();
 
+        Log::info("transaction update ----------------",$data);
+
         $validator = Validator::make($data,$rules);
 
         if ($validator->fails()) {
 
-            return Response::json(array('status' => 401,'message' => $this->errorMessage($validator->errors())),401);
+            return Response::json(array('status' => 401,'message' => error_message($validator->errors())),401);
 
         }else{
 
             $order_id = (int) $data['order_id'];
+            $message = "";
 
             $order = Order::find($order_id);
 
@@ -265,7 +267,7 @@ class TransactionController extends \BaseController {
                 return Response::json($resp,$resp["status"]);
             }
 
-            if($order->customeremail != $decoded->customer->email){
+            if($order->customer_email != $decoded->customer->email){
                 $resp   =   array("status" => 401,"message" => "Invalid Customer");
                 return Response::json($resp,$resp["status"]);
             }
@@ -278,7 +280,7 @@ class TransactionController extends \BaseController {
                 $data['preferred_starting_date'] = $preferred_starting_date;
                 $data['end_date'] = date('Y-m-d 00:00:00', strtotime($data['preferred_starting_date']."+ ".($order->duration_day-1)." days"));
 
-                $data['preferred_starting_change_date'] = date();
+                $data['preferred_starting_change_date'] = date("Y-m-d H:i:s");
 
                 $order->update($data);
 
@@ -288,14 +290,20 @@ class TransactionController extends \BaseController {
                 $this->customermailer->sendPgOrderMail($emailData);
                 $this->findermailer->sendPgOrderMail($emailData);
 
+                $message = "Your Preferred Starting date has been change Successfull";
+
             }
 
             if($order->status == "1" && isset($data['updrage_membership']) && $data['updrage_membership'] == "requested"){
 
                 $data['upgrade'] = ["requested"=>time()];
+
+                $order->update($data);
+
+                $message = "Upgrade request has been noted. We will call you shortly.";
             }
 
-            
+            return Response::json(array('status' => 200,'message' => $message),200);
         }
 
     }
