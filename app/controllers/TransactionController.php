@@ -302,7 +302,7 @@ class TransactionController extends \BaseController {
                 $data['preferred_starting_date'] = $preferred_starting_date;
                 $data['end_date'] = date('Y-m-d 00:00:00', strtotime($data['preferred_starting_date']."+ ".($order->duration_day-1)." days"));
 
-                $data['preferred_starting_change_date'] = date();
+                $data['preferred_starting_change_date'] = date("Y-m-d H:i:s");
 
                 $order->update($data);
 
