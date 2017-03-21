@@ -1217,9 +1217,7 @@ class OrderController extends \BaseController {
 
         }
 
-        $code		=	random_numbers(5);
-
-        array_set($data, 'code', $code);
+        
         array_set($data, 'batch_time', '');
         array_set($data, 'source_of_membership', 'real time');
 
@@ -1380,6 +1378,10 @@ class OrderController extends \BaseController {
         }
 
         $orderid = Order::max('_id') + 1;
+
+        $code = $orderid.str_random(8);
+
+        array_set($data, 'code', $code);
 
         if(isset($_GET['device_type']) && $_GET['device_type'] != ""){
             $data["device_type"] = strtolower(trim($_GET['device_type']));
