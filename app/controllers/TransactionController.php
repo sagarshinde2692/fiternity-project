@@ -268,11 +268,13 @@ class TransactionController extends \BaseController {
 
         $data = Input::json()->all();
 
+        Log::info("transaction update ----------------",$data);
+
         $validator = Validator::make($data,$rules);
 
         if ($validator->fails()) {
 
-            return Response::json(array('status' => 401,'message' => $this->errorMessage($validator->errors())),401);
+            return Response::json(array('status' => 401,'message' => error_message($validator->errors())),401);
 
         }else{
 
