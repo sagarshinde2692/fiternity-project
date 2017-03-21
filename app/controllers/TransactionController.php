@@ -53,7 +53,7 @@ class TransactionController extends \BaseController {
 
         $data = Input::json()->all();
 
-        ($data['type'] == "event") ? $data['type'] == "events" : null;
+        ($data['type'] == "event") ? $data['type'] = "events" : null;
 
         foreach ($data as $key => $value) {
 
