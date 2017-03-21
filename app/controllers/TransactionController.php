@@ -258,9 +258,8 @@ class TransactionController extends \BaseController {
     }
 
     public function update(){
-
-        $jwt_token = Request::header('Authorization');
-        $decoded = customerTokenDecode($jwt_token);
+        
+        $decoded = decode_customer_token();
 
         $rules = array(
             "order_id"=>"numeric|required"

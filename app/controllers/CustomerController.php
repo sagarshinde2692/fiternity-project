@@ -1213,7 +1213,6 @@ class CustomerController extends \BaseController {
 
 		$orderData 			= 	Order::active()->where('customer_email','=',$customer_email)->whereIn('type',$membership_types)->where('schedule_date','exists',false)->where(function($query){$query->orWhere('preferred_starting_date','exists',true)->orWhere('start_date','exists',true);})->skip($offset)->take($limit)->orderBy('_id', 'desc')->get();
 
-		$action = null;
 
 		if(count($orderData) > 0){
 
@@ -1239,75 +1238,7 @@ class CustomerController extends \BaseController {
 					$value['amount'] = $value['amount_customer'];
 				}
 
-				if(isset($value['end_date']) && strtotime($value['end_date']) >= time() && isset($value['duration_day']) && $value['duration_day'] < 360){
-					$action = [
-						"button_text"=>"Upgrade Membership",
-						"activity"=>"upgrade_membership",
-						"color"=>"#26ADE5",
-						"info" => "Upgrade Membership"
-					];
-				}
-
-				/*if(time() <= strtotime($value['created_at'].'+15 days')){
-					$action = [
-						"button_text"=>"Update Start Date",
-						"activity"=>"update_starting_date",
-						"color"=>"#7AB317",
-						"info" => "Update Start Date"
-					];
-				}*/
-
-				if(isset($value['duration_day']) && isset($value['start_date'])){
-
-					$renewal_date = array();
-					$validity = (int) $value['duration_day'];
-					$start_date = $value['start_date'];
-
-					if($validity >= 30 && $validity < 90){
-
-						$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-7). "days"));
-						$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-1). "days"));
-						$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity+7). "days"));
-
-					}elseif($validity >= 90 && $validity < 180){
-
-						$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-30). "days"));
-						$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-15). "days"));
-						$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-7). "days"));
-						$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-1). "days"));
-
-					}elseif($validity >= 180){
-
-						$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-45). "days"));
-						$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-30). "days"));
-						$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-15). "days"));
-						$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-7). "days"));
-						$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-1). "days"));
-					}
-
-					$current_date = date('Y-m-d');
-
-					if(in_array($current_date,$renewal_date)){
-
-						$action = [
-							"button_text"=>"Renew Membership",
-							"activity"=>"renew_membership",
-							"color"=>"#EF1C26",
-							"info" => "Renew Membership"
-						];
-
-					}
-				}
-
-				/*if(isset($value['end_date']) && strtotime($value['end_date']) <= time()){
-					$action = [
-						"button_text"=>"Renew Membership",
-						"activity"=>"renew_membership",
-					];
-				}*/
-
-
-				$value["action"] = $action;
+				$value["action"] = $this->getAction($value);
 
 				array_push($orders, $value);
 
@@ -3227,6 +3158,208 @@ class CustomerController extends \BaseController {
 		}
 		$response['bankList'] = $bankList;
 	    return $response;
+	}
+
+
+	{
+    "order_id" : 4484,
+    "service" : {
+        "start_date" : 1456703434,
+        "expiry" : 15324234324,
+        "name" : "Zumba with Sucheta Pal",
+        "duration" : "6 months",
+        "amount" : "5000",
+        "subscription_code" : 82608
+    },
+    "finder" : {
+        "id" : 675,
+        "address" : "Bandra West me kahi ka address",
+        "location" : {
+            "name" : "Bandra West",
+            "longitude" : 123.234,
+            "lattitude" : 345.345435
+        },
+        "cover_image" : "some url"
+    },
+    "extra_info" : {
+        "contact_name" : "Madhuri Dixit",
+        "contact_number" : 9999999999,
+        "what_to_carry" : "Lorem Ipsum",
+        "what_to_expect" : "Lorem Ipsum"
+    },
+    "renew" : {
+        "info" : "Text about what renew is.",
+        "url" : "some url to hit for renew"
+    },
+    "change_date" : {
+        "info" : "Text about changing date.",
+        "url" : "some url to hit to change the date.",
+        "max_date" : "dd-mm-yyyy",
+        "min_date" : "dd-mm-yyyy",
+        "allowed_days" : ["sunday", "wednesday"]
+    },
+    "upgrade_membership": true;,
+    "review" : {
+        "text" : "Current users review",
+        "rating" "current users rating."
+    }
+}
+
+
+
+
+	public function orderDetail($order_id){
+
+		$decoded = decode_customer_token();
+
+		$order_id = (int) $order_id;
+
+		$order = Order::find($order_id);
+
+	    if(!$order){
+
+	        $resp   =   array("status" => 401,"message" => "Order Does Not Exists");
+	        return Response::json($resp,$resp["status"]);
+	    }
+
+	    if($order->customer_email != $decoded->customer->email){
+	        $resp   =   array("status" => 401,"message" => "Invalid Customer");
+	        return Response::json($resp,$resp["status"]);
+	    }
+
+	    $data = [];
+	    $data['order_id'] = $order_id;
+	    $data['start_date'] = strtotime($order->start_date);
+	    $data['end_date'] = strtotime($order->end_date);
+	    $data['service_name'] = $order->service_name;
+	    $data['dutarion'] = $order->service_duration;
+	    $data['subscription_code'] = $order->code;
+	    $data['amount'] = $order->amount;
+
+	    $finder = [];
+	    $finder['id'] = $order->finder_id;
+	    $finder['address'] = $order->finder_address;
+	    $finder['location'] = $order->finder_location;
+	    $finder['geo'] = ["lat"=>$order->finder_lat,"lon"=>$order->finder_lon];
+	    $data['finder'] = $finder;
+
+	    $extra_info = [];
+	    $extra_info['contact_name'] = ($order->finder_poc_for_customer_name) ? $order->finder_poc_for_customer_name : "";
+	    $extra_info['contact_number'] = ($order->finder_poc_for_customer_no) ? $order->finder_poc_for_customer_no : "";
+	    $extra_info['what_to_carry'] = ($order->what_i_should_carry) ? $order->what_i_should_carry : "";
+	    $extra_info['what_to_expect'] = ($order->what_i_should_expect) ? $order->what_i_should_expect : "";
+	    $data['extra_info'] = $extra_info;
+
+	    $data['action'] = $this->getAction($order);
+	    
+	    return Response::json(["status"=>"200","data"=>$data,"message"=>"Order Detail"],200);
+
+	}
+
+
+
+	public function getAction($order){
+
+		$action = null;
+
+		if(isset($order['end_date']) && strtotime($order['end_date']) >= time() && isset($order['duration_day']) && $order['duration_day'] < 360){
+			$action = [
+				"button_text"=>"Upgrade Membership",
+				"activity"=>"upgrade_membership",
+				"color"=>"#26ADE5",
+				"info" => "Upgrade Membership"
+			];
+		}
+
+		if(time() <= strtotime($order['created_at'].'+15 days') && isset($order['start_date']) ){
+
+			$min_date = time();
+			$max_date = strtotime($order['start_date'].'+15 days');
+			$available_days = [];
+
+
+			if(isset($order->batch) && !empty($order->batch)){
+
+				$weekdays = [];
+
+				foreach ($order->batch as $key => $value) {
+					$available_days[] = $value["weekday"];
+					$weekdays[] = strtotime("next ".ucwords($value["weekday"]));
+				}
+
+				foreach ($weekdays as $value) {
+
+					if($value >= time()){
+						$min_date = $value;
+						break;
+					}
+				}
+				
+				$max_date = strtotime("next ".ucwords(array_pop($available_days)),$max_date);
+			}
+
+			$action = [
+				"button_text"=>"Update Start Date",
+				"activity"=>"update_starting_date",
+				"color"=>"#7AB317",
+				"info" => "Update Start Date",
+				"min_date"=> $min_date,
+				"max_date"=> $max_date,
+				"available_days"=> $available_days,
+			];
+		}
+
+		if(isset($order['duration_day']) && isset($order['start_date'])){
+
+			$renewal_date = array();
+			$validity = (int) $order['duration_day'];
+			$start_date = $order['start_date'];
+
+			if($validity >= 30 && $validity < 90){
+
+				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-7). "days"));
+				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-1). "days"));
+				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity+7). "days"));
+
+			}elseif($validity >= 90 && $validity < 180){
+
+				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-30). "days"));
+				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-15). "days"));
+				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-7). "days"));
+				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-1). "days"));
+
+			}elseif($validity >= 180){
+
+				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-45). "days"));
+				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-30). "days"));
+				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-15). "days"));
+				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-7). "days"));
+				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-1). "days"));
+			}
+
+			$current_date = date('Y-m-d');
+
+			if(in_array($current_date,$renewal_date)){
+
+				$action = [
+					"button_text"=>"Renew Membership",
+					"activity"=>"renew_membership",
+					"color"=>"#EF1C26",
+					"info" => "Renew Membership"
+				];
+
+			}
+		}
+
+		/*if(isset($value['end_date']) && strtotime($value['end_date']) <= time()){
+			$action = [
+				"button_text"=>"Renew Membership",
+				"activity"=>"renew_membership",
+			];
+		}*/
+
+		return $action;
+
 	}
 
 
