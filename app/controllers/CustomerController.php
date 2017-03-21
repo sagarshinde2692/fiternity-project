@@ -1248,14 +1248,14 @@ class CustomerController extends \BaseController {
 					];
 				}
 
-				if(time() <= strtotime($value['created_at'].'+15 days')){
+				/*if(time() <= strtotime($value['created_at'].'+15 days')){
 					$action = [
 						"button_text"=>"Update Start Date",
 						"activity"=>"update_starting_date",
 						"color"=>"#7AB317",
 						"info" => "Update Start Date"
 					];
-				}
+				}*/
 
 				if(isset($value['duration_day']) && isset($value['start_date'])){
 
