@@ -236,6 +236,10 @@ abstract Class VersionNextSms {
 
         //return true;
 
+        if(in_array("7506262489",$to)){
+            $delay = 0;
+        }
+
         $sidekiq = new Sidekiq();
 
         if(is_array($delay))
