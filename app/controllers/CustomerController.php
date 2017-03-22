@@ -3227,10 +3227,10 @@ class CustomerController extends \BaseController {
 			];
 		}
 
-		if(time() <= strtotime($order['created_at'].'+15 days') && isset($order['start_date']) ){
+		if(time() <= strtotime($order['created_at'].'+29 days')){
 
-			$min_date = time();
-			$max_date = strtotime($order['start_date'].'+15 days');
+			$min_date = strtotime('+29 days');
+			$max_date = strtotime($order['created_at'].'+29 days');
 			$available_days = null;
 
 
