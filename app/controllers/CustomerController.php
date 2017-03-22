@@ -3243,6 +3243,9 @@ class CustomerController extends \BaseController {
 					$weekdays[] = strtotime("next ".ucwords($value["weekday"]));
 				}
 
+				Log::info("available_days--------",$available_days);
+				Log::info("weekdays--------",$weekdays);
+
 				foreach ($weekdays as $value) {
 
 					if($value >= time()){
