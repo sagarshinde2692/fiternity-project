@@ -3240,7 +3240,7 @@ class CustomerController extends \BaseController {
 
 				foreach ($order->batch as $key => $value) {
 					$available_days[] = $value["weekday"];
-					$weekdays[] = strtotime("next ".ucwords($value["weekday"]));
+					$weekdays[] = strtotime("first ".ucwords($value["weekday"]));
 				}
 
 				Log::info("available_days--------",$available_days);
@@ -3254,7 +3254,7 @@ class CustomerController extends \BaseController {
 					}
 				}
 				
-				$max_date = strtotime("next ".ucwords(array_pop($available_days)),$max_date);
+				$max_date = strtotime("first ".ucwords(array_pop($available_days)),$max_date);
 			}
 
 			$action = [
