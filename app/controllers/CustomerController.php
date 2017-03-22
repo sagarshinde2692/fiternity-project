@@ -3241,7 +3241,7 @@ class CustomerController extends \BaseController {
 
 				foreach ($order->batch as $key => $value) {
 					$available_days[] = $value["weekday"];
-					$minDate[] = $this->closestDate($value["weekday"],$min_date);
+					$minDate[] = $this->closestDate($value["weekday"],time());
 					$maxDate[] = $this->closestDate($value["weekday"],$max_date);
 				}
 
