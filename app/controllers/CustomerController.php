@@ -3197,7 +3197,7 @@ class CustomerController extends \BaseController {
 	    $finderData['address'] = strip_tags($order->finder_address);
 	    $finderData['location'] = $order->finder_location;
 	    $finderData['geo'] = ["lat"=>$order->finder_lat,"lon"=>$order->finder_lon];
-	    $finderData['cover_image'] = ($finder['coverimage'] != '') ? $finder['coverimage'] : 'default/'.$finder['category_id'].'-'.rand(1, 4).'.jpg';
+	    $finderData['cover_image'] = ($finder['coverimage'] != '') ? Config::get('app.s3_finderurl.cover').$finder['coverimage'] : Config::get('app.s3_finderurl.cover').'default/'.$finder['category_id'].'-'.rand(1, 4).'.jpg';
 	    $data['finder'] = $finderData;
 
 	    $extraInfoData = [];
