@@ -3240,13 +3240,13 @@ class CustomerController extends \BaseController {
 
 				foreach ($order->batch as $key => $value) {
 					$available_days[] = $value["weekday"];
-					$weekdays[] = strtotime("first ".ucwords($value["weekday"]));
+					$weekdays[] = $this->closestDate($value["weekday"]);
 				}
 
 				Log::info("available_days--------",$available_days);
 				Log::info("weekdays--------",$weekdays);
 
-				foreach ($weekdays as $value) {
+				foreach ($weekdays as $key => $value) {
 
 					if($value >= time()){
 						$min_date = $value;
@@ -3326,6 +3326,19 @@ class CustomerController extends \BaseController {
 		}*/
 
 		return $action;
+
+	}
+
+	public function closestDate($day){
+
+	    $day = ucfirst($day);
+
+	    if(date('l', time()) == $day)
+	        return time();
+	    else if(abs(time()-strtotime('next '.$day)) < abs(time()-strtotime('last '.$day)))
+	        return strtotime('next '.$day);
+	    else
+	        return strtotime('last '.$day);
 
 	}
 
