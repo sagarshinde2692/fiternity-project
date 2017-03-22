@@ -3219,7 +3219,11 @@ class CustomerController extends \BaseController {
 				"button_text"=>"Upgrade Membership",
 				"activity"=>"upgrade_membership",
 				"color"=>"#26ADE5",
-				"info" => "Upgrade Membership"
+				"info" => "Upgrade Membership",
+				"popup" =>[
+					"title"=>"Upgrade Membership Title",
+					"message"=>"Upgrade Membership Message"
+				]
 			];
 		}
 
@@ -3227,7 +3231,7 @@ class CustomerController extends \BaseController {
 
 			$min_date = time();
 			$max_date = strtotime($order['start_date'].'+15 days');
-			$available_days = [];
+			$available_days = null;
 
 
 			if(isset($order->batch) && !empty($order->batch)){
@@ -3258,6 +3262,10 @@ class CustomerController extends \BaseController {
 				"min_date"=> $min_date,
 				"max_date"=> $max_date,
 				"available_days"=> $available_days,
+				"popup" =>[
+					"title"=>"Upgrade Start Date Title",
+					"message"=>"Upgrade Start Date Message"
+				]
 			];
 		}
 
@@ -3297,7 +3305,11 @@ class CustomerController extends \BaseController {
 					"button_text"=>"Renew Membership",
 					"activity"=>"renew_membership",
 					"color"=>"#EF1C26",
-					"info" => "Renew Membership"
+					"info" => "Renew Membership",
+					"popup" =>[
+						"title"=>"Renew Membership Title",
+						"message"=>"Renew Membership Message"
+					]
 				];
 
 			}
