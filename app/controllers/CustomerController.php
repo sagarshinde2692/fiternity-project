@@ -3229,32 +3229,40 @@ class CustomerController extends \BaseController {
 
 		if(time() <= strtotime($order['created_at'].'+29 days')){
 
-			$min_date = strtotime('+29 days');
+			$min_date = strtotime('+1 days');
 			$max_date = strtotime($order['created_at'].'+29 days');
 			$available_days = null;
 
 
 			if(isset($order->batch) && !empty($order->batch)){
 
-				$weekdays = [];
+				$minDate = [];
+				$maxDate = [];
 
 				foreach ($order->batch as $key => $value) {
 					$available_days[] = $value["weekday"];
-					$weekdays[] = $this->closestDate($value["weekday"]);
+					$minDate[] = $this->closestDate($value["weekday"],$min_date);
+					$maxDate[] = $this->closestDate($value["weekday"],$max_date);
 				}
 
 				Log::info("available_days--------",$available_days);
-				Log::info("weekdays--------",$weekdays);
+				Log::info("minDate--------",$minDate);
+				Log::info("maxDate--------",$maxDate);
 
-				foreach ($weekdays as $key => $value) {
+				foreach ($minDate as $key => $value) {
 
 					if($value > time()){
 						$min_date = $value;
 						break;
 					}
 				}
-				
-				$max_date = strtotime("first ".ucwords(array_pop($available_days)),$max_date);
+
+				foreach ($maxDate as $key => $value) {
+
+					if($value < time()){
+						$max_date = $value;
+					}
+				}
 			}
 
 			$action = [
@@ -3329,13 +3337,14 @@ class CustomerController extends \BaseController {
 
 	}
 
-	public function closestDate($day){
+	public function closestDate($day,$date = false){
 
+		$date = ($date) ? $date : time();
 	    $day = ucfirst($day);
 
-	    if(date('l', time()) == $day)
-	        return time();
-	    else if(abs(time()-strtotime('next '.$day)) < abs(time()-strtotime('last '.$day)))
+	    if(date('l', $date) == $day)
+	        return $date;
+	    else if(abs($date-strtotime('next '.$day)) < abs($date-strtotime('last '.$day)))
 	        return strtotime('next '.$day);
 	    else
 	        return strtotime('last '.$day);
