@@ -3374,7 +3374,7 @@ class CustomerController extends \BaseController {
 
 		            // Send email / SMS to invitees...
 		            $templateData = array(
-		                'referral_code'=>$referrer_name,
+		                'referral_code'=>$customer['referral_code'],
 		                'invitee_name' =>isset($invitee['name'])?$invitee['name']:"",
 		                'invitee_email'=>isset($invitee['email'])?$invitee['email']:null,
 		                'invitee_phone'=>isset($invitee['phone'])?$invitee['phone']:null,
