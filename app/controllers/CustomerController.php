@@ -3248,7 +3248,7 @@ class CustomerController extends \BaseController {
 
 				foreach ($weekdays as $key => $value) {
 
-					if($value >= time()){
+					if($value > time()){
 						$min_date = $value;
 						break;
 					}
