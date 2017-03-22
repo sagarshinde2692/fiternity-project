@@ -743,7 +743,12 @@ class TransactionController extends \BaseController {
 
         $data['offer_id'] = false;
 
-        $offer = Offer::where('ratecard_id',$ratecard['_id'])->where('hidden', false)->where('end_date','>=',new DateTime(date("d-m-Y 00:00:00")))->first();
+        $offer = Offer::where('ratecard_id',$ratecard['_id'])
+                ->where('hidden', false)
+                ->orderBy('order', 'asc')
+                ->where('start_date','<=',new DateTime(date("d-m-Y 00:00:00")))
+                ->where('end_date','>=',new DateTime(date("d-m-Y 00:00:00")))
+                ->first();
 
         if($offer){
             $data['amount_finder'] = $offer->price;
