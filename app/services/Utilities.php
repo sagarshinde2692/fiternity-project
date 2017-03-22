@@ -174,7 +174,7 @@ Class Utilities {
             
         }
 
-        if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios'])){
+        if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios']) && isset($_GET['app_version']) && ((float)$_GET['app_version'] <= 3.2) ){
 
             $wallet = Customer::where('_id',$customer_id)
                 ->first(array('balance'));
@@ -221,7 +221,7 @@ Class Utilities {
 
             );
 
-        }elseif($data && isset($data['customer_source']) && in_array($data['customer_source'],['ios'])){
+        }elseif($data && isset($data['customer_source']) && in_array($data['customer_source'],['ios']) && isset($data['app_version']) && ((float)$data['app_version'] <= 3.2) ){
 
             $wallet = Customer::where('_id',$customer_id)
                 ->first(array('balance'));
@@ -688,7 +688,7 @@ Class Utilities {
         if((isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin") || $order->pg_type == "PAYTM"){
             if($order->pg_type == "PAYTM"){
                 $hashreverse = getpayTMhash($order);
-                if($data["paytm_hash"] == $hashreverse['reverse_hash']){
+                if($data["verify_hash"] == $hashreverse['reverse_hash']){
                     $hash_verified = true;
                 }else{
                     $hash_verified = false;
