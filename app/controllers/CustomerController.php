@@ -3204,6 +3204,21 @@ class CustomerController extends \BaseController {
 	    $data['extra_info'] = $extra_info;
 
 	    $data['action'] = $this->getAction($order);
+
+
+	    $reviewData = null;
+	    $review = Review::active()->where('finder_id',(int)$order->finder_id)->where('customer_id',(int)$order->customer_id)->first();
+
+	    if($review){
+	    	$reviewData[] = [
+	    		"id"=>(int) $review->_id,
+	    		"rating"=>$review->rating,
+	    		"detail_rating"=>$review->detail_rating,
+	    		"description"=>$review->description
+	    	];
+	    }
+
+	    $data['review'] = $reviewData;
 	    
 	    return Response::json($data,200);
 
