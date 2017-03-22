@@ -707,7 +707,7 @@ class SchedulebooktrialsController extends \BaseController {
         $city_id 			       =	(int) Input::json()->get('city_id');
         $finder_name 		       =	Input::json()->get('finder_name');
         $finder				       =	Finder::active()->where('_id','=',intval($finder_id))->first();
-        $customer_id		       = 	$this->autoRegisterCustomer($data);
+        $customer_id		       = 	autoRegisterCustomer($data);
         $customer_name		       = 	$data['customer_name'];
         $customer_email		       = 	$data['customer_email'];
         $customer_phone		       = 	$data['customer_phone'];
@@ -907,7 +907,7 @@ class SchedulebooktrialsController extends \BaseController {
         $finder_names 		       =	Input::json()->get('finder_names');
         $city_id 			       =	(int) Input::json()->get('city_id');
 
-        $customer_id		       = 	$this->autoRegisterCustomer($data);
+        $customer_id		       = 	autoRegisterCustomer($data);
         $customer_name		       = 	(Input::has('customer_name') && Input::json()->get('customer_name') != '') ? Input::json()->get('customer_name') : "";
         $customer_email		       = 	(Input::has('customer_email') && Input::json()->get('customer_email') != '') ? Input::json()->get('customer_email') : "";
         $customer_phone		       = 	(Input::has('customer_phone') && Input::json()->get('customer_phone') != '') ? Input::json()->get('customer_phone') : "";
@@ -1209,7 +1209,7 @@ class SchedulebooktrialsController extends \BaseController {
         }
 
         $orderid 	       =	Order::max('_id') + 1;
-        $customer_id        =	(Input::json()->get('customer_id')) ? Input::json()->get('customer_id') : $this->autoRegisterCustomer($data);
+        $customer_id        =	(Input::json()->get('customer_id')) ? Input::json()->get('customer_id') : autoRegisterCustomer($data);
         array_set($data, 'customer_id', intval($customer_id));
 
         if(isset($data['myreward_id']) && $data['myreward_id'] != ""){
@@ -1339,7 +1339,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             $order_data = $order->toArray();
 
-            $order_data['customer_id'] = (int)$this->autoRegisterCustomer($order_data);
+            $order_data['customer_id'] = (int)autoRegisterCustomer($order_data);
 
             if(isset($order_data['myreward_id']) && $order_data['myreward_id'] != ""){
                 $createMyRewardCapture = $this->customerreward->createMyRewardCapture($order_data);
@@ -1669,7 +1669,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             $order_data = $order->toArray();
 
-            $order_data['customer_id'] = (int)$this->autoRegisterCustomer($order_data);
+            $order_data['customer_id'] = (int)autoRegisterCustomer($order_data);
 
             if(isset($order_data['myreward_id']) && $order_data['myreward_id'] != "" && !empty($order_data['myreward_id'])){
                 $createMyRewardCapture = $this->customerreward->createMyRewardCapture($order_data);
@@ -1738,7 +1738,7 @@ class SchedulebooktrialsController extends \BaseController {
             $trial_count                       =    $this->getTrialCount($finderid);
             $before_three_month_trial_count    =    $this->getBeforeThreeMonthTrialCount($finderid);
 
-            $customer_id 				       =	$this->autoRegisterCustomer($data);
+            $customer_id 				       =	autoRegisterCustomer($data);
             $customer_name 				       =	Input::json()->get('customer_name');
             $customer_email 			       =	Input::json()->get('customer_email');
             $customer_phone 			       =	preg_replace("/[^0-9]/", "", Input::json()->get('customer_phone')) ;Input::json()->get('customer_phone');
@@ -2473,7 +2473,7 @@ class SchedulebooktrialsController extends \BaseController {
             $finder = Finder::with(array('location' => function ($query) {
                 $query->select('_id', 'name', 'slug');
             }))->with('locationtags')->where('_id', '=', $finderid)->first()->toArray();
-            $data['customer_id'] = $customer_id = $this->autoRegisterCustomer($data);
+            $data['customer_id'] = $customer_id = autoRegisterCustomer($data);
 
             $cleartrip_count                   =    $this->getCleartripCount($finderid);
             $trial_count                       =    $this->getTrialCount($finderid);
@@ -3202,7 +3202,7 @@ class SchedulebooktrialsController extends \BaseController {
             $finderid 					       = 	(int) $data['finder_id'];
             $finder 					       = 	Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->where('_id','=',$finderid)->first()->toArray();
 
-            $customer_id = $data['customer_id'] = $this->autoRegisterCustomer($data);
+            $customer_id = $data['customer_id'] = autoRegisterCustomer($data);
 
             $customer_name 				       =	$data['customer_name'];
             $customer_email 			       =	$data['customer_email'];
@@ -5156,7 +5156,7 @@ class SchedulebooktrialsController extends \BaseController {
             return Response::json($resp,$resp['status']);
         }
 
-        $data['customer_id'] = (int)$this->autoRegisterCustomer($data);
+        $data['customer_id'] = (int)autoRegisterCustomer($data);
 
         if(isset($data['myreward_id']) && $data['myreward_id'] != ""){
             $createMyRewardCapture = $this->customerreward->createMyRewardCapture($data);

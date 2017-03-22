@@ -395,6 +395,33 @@ class OrderController extends \BaseController {
             }
 
             $this->utilities->setRedundant($order);
+            Log::info("Customer for referral");
+            $customer = Customer::where('_id', $order['customer_id'])->first(['referred', 'referrer_id', 'first_transaction']);
+            Log::info($customer);
+            
+            if(isset($customer['referred']) && $customer['referred'] && $customer['first_transaction']){
+                Log::info("inside first transaction");
+                $referrer = Customer::where('_id', $customer->referrer_id)->first();
+                $customer->first_transaction = false;
+                $customer->update();
+                $wallet_data = array(
+                                'customer_id' => $customer->referrer_id,
+                                'amount' => 250,
+                                'type' => "REFERRAL",
+                                'description' => "Referral fitcashplus to referrer",
+                                'order_id' => 0
+                                );
+                $this->utilities->walletTransaction($wallet_data);
+                $url = 'www.fitternity.com/profile/'.$referrer->email;
+                $sms_data = array(
+                    'customer_phone'=>$referrer->contact_no,
+                    // 'friend_name'   =>$customer_name,
+                    'wallet_url'    =>$url
+                    );
+                $referSms = $this->customersms->referralFitcash($sms_data);
+
+
+            }
 
             $finder_id = $order['finder_id'];
             $start_date_last_30_days = date("d-m-Y 00:00:00", strtotime('-31 days',strtotime(date('d-m-Y 00:00:00'))));
@@ -539,7 +566,7 @@ class OrderController extends \BaseController {
         }
         // return $data;
 
-        $customer_id 		=	(Input::json()->get('customer_id')) ? Input::json()->get('customer_id') : $this->autoRegisterCustomer($data);
+        $customer_id 		=	(Input::json()->get('customer_id')) ? Input::json()->get('customer_id') : autoRegisterCustomer($data);
 
         if(trim(Input::json()->get('finder_id')) != '' ){
 
@@ -1087,7 +1114,7 @@ class OrderController extends \BaseController {
         }
         // return $data;
 
-        $customer_id 		=	(isset($data['customer_id']) && $data['customer_id'] != "") ? $data['customer_id'] : $this->autoRegisterCustomer($data);
+        $customer_id 		=	(isset($data['customer_id']) && $data['customer_id'] != "") ? $data['customer_id'] : autoRegisterCustomer($data);
 
         if($data['type'] == 'booktrials'/* ||  $data['type'] == 'healthytiffintrail'||  $data['type'] == 'vip_booktrials'||  $data['type'] == '3daystrial'*/){
 
@@ -2143,7 +2170,7 @@ class OrderController extends \BaseController {
             $data['finder_name'] = $order->finder_name;
             $data['service_name'] = $order->service_name;
 
-            $customer_id = $this->autoRegisterCustomer($data);
+            $customer_id = autoRegisterCustomer($data);
 
             if(isset($data['preferred_starting_date']) && $data['preferred_starting_date']  != ''){
                 if(trim($data['preferred_starting_date']) != '-'){
