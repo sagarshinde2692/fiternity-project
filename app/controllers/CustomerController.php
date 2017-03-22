@@ -3191,7 +3191,7 @@ class CustomerController extends \BaseController {
 
 	    $finder = [];
 	    $finder['id'] = $order->finder_id;
-	    $finder['address'] = $order->finder_address;
+	    $finder['address'] = strip_tags($order->finder_address);
 	    $finder['location'] = $order->finder_location;
 	    $finder['geo'] = ["lat"=>$order->finder_lat,"lon"=>$order->finder_lon];
 	    $data['finder'] = $finder;
