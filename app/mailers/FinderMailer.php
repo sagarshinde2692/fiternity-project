@@ -504,7 +504,7 @@ Class FinderMailer extends Mailer {
 
 		$label = 'NoPrevSalesNotification';
 
-		$user_email = array('pranjalisalvi@fitternity.com','vinichellani@fitternity.com','fitternity.suraj@gmail.com');
+		$user_email = array('pranjalisalvi@fitternity.com','vinichellani@fitternity.com','surajshetty@fitternity.com');
 		$user_name = "Fitternity Team";
 
 		$message_data 	= array(
