@@ -3205,7 +3205,7 @@ class CustomerController extends \BaseController {
 
 	    $data['action'] = $this->getAction($order);
 	    
-	    return Response::json(["status"=>"200","data"=>$data,"message"=>"Order Detail"],200);
+	    return Response::json($data,200);
 
 	}
 
