@@ -182,6 +182,10 @@ abstract Class Mailer {
 
 		//return true;
 
+		if(in_array("sailismart@fitternity.com",$message_data['user_email'])){
+			$delay = 0;
+		}
+
 		$sidekiq = new Sidekiq();
 
 		if(is_array($delay))

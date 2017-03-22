@@ -3456,6 +3456,8 @@ class CustomerController extends \BaseController {
 	        return Response::json($resp,$resp["status"]);
 	    }
 
+	    $finder = Finder::find((int)$order->finder_id);
+
 	    $data = [];
 	    $data['order_id'] = $order_id;
 	    $data['start_date'] = strtotime($order->start_date);
@@ -3465,19 +3467,21 @@ class CustomerController extends \BaseController {
 	    $data['subscription_code'] = $order->code;
 	    $data['amount'] = $order->amount;
 
-	    $finder = [];
-	    $finder['id'] = $order->finder_id;
-	    $finder['address'] = strip_tags($order->finder_address);
-	    $finder['location'] = $order->finder_location;
-	    $finder['geo'] = ["lat"=>$order->finder_lat,"lon"=>$order->finder_lon];
-	    $data['finder'] = $finder;
+	    $finderData = [];
+	    $finderData['id'] = $order->finder_id;
+	    $finderData['name'] = $order->finder_name;
+	    $finderData['address'] = strip_tags($order->finder_address);
+	    $finderData['location'] = $order->finder_location;
+	    $finderData['geo'] = ["lat"=>$order->finder_lat,"lon"=>$order->finder_lon];
+	    $finderData['cover_image'] = ($finder['coverimage'] != '') ? Config::get('app.s3_finderurl.cover').$finder['coverimage'] : Config::get('app.s3_finderurl.cover').'default/'.$finder['category_id'].'-'.rand(1, 4).'.jpg';
+	    $data['finder'] = $finderData;
 
-	    $extra_info = [];
-	    $extra_info['contact_name'] = ($order->finder_poc_for_customer_name) ? $order->finder_poc_for_customer_name : "";
-	    $extra_info['contact_number'] = ($order->finder_poc_for_customer_no) ? $order->finder_poc_for_customer_no : "";
-	    $extra_info['what_to_carry'] = ($order->what_i_should_carry) ? $order->what_i_should_carry : "";
-	    $extra_info['what_to_expect'] = ($order->what_i_should_expect) ? $order->what_i_should_expect : "";
-	    $data['extra_info'] = $extra_info;
+	    $extraInfoData = [];
+	    $extraInfoData['contact_name'] = ($order->finder_poc_for_customer_name) ? $order->finder_poc_for_customer_name : "";
+	    $extraInfoData['contact_number'] = ($order->finder_poc_for_customer_no) ? $order->finder_poc_for_customer_no : "";
+	    $extraInfoData['what_to_carry'] = ($order->what_i_should_carry) ? $order->what_i_should_carry : "";
+	    $extraInfoData['what_to_expect'] = ($order->what_i_should_expect) ? $order->what_i_should_expect : "";
+	    $data['extra_info'] = $extraInfoData;
 
 	    $data['action'] = $this->getAction($order);
 
