@@ -3337,7 +3337,7 @@ class CustomerController extends \BaseController {
 
 	}
 
-	public function closestDate($day,$date = false){
+	public function closestDate($day,$date){
 
 		$date = ($date) ? $date : time();
 	    $day = ucfirst($day);
@@ -3345,9 +3345,9 @@ class CustomerController extends \BaseController {
 	    if(date('l', $date) == $day)
 	        return $date;
 	    else if(abs($date-strtotime('next '.$day)) < abs($date-strtotime('last '.$day)))
-	        return strtotime('next '.$day);
+	        return strtotime('next '.$day,$date);
 	    else
-	        return strtotime('last '.$day);
+	        return strtotime('last '.$day,$date);
 
 	}
 
