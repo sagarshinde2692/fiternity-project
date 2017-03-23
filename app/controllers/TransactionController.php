@@ -168,6 +168,8 @@ class TransactionController extends \BaseController {
 
         $data['vendor_link'] = Config::get('app.website').$data['finder_slug'];
 
+        $data['profile_link'] = Config::get('app.website')."profile/".$data['customer_email'];
+
         $cashbackRewardWallet =$this->getCashbackRewardWallet($data,$order);
 
         if($cashbackRewardWallet['status'] != 200){
