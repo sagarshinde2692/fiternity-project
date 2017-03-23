@@ -3223,11 +3223,7 @@ class CustomerController extends \BaseController {
 			
 			if($customer){
 				$referral_code = $customer->referral_code;
-				$data = array(
-					'referral_code' => $referral_code,
-					'message' 		=> 'Refer a friend and get fitcash on his first transaction'
-				);
-				return $response =  array('status' => 200,'data'=>$data);
+				return $response =  array('status' => 200,'referral_code' => $referral_code, 'message' 	=> 'Refer a friend and get fitcash on his first transaction');
 			}else{
 				return $response =  array('status' => 404,'message'=>"Customer not found");
 			}
