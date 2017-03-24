@@ -186,6 +186,14 @@ class TransactionController extends \BaseController {
 
         $data = $this->unsetData($data);
 
+        if(isset($_GET['device_type']) && $_GET['device_type'] != ""){
+            $data["device_type"] = strtolower(trim($_GET['device_type']));
+        }
+
+        if(isset($_GET['app_version']) && $_GET['app_version'] != ""){
+            $data["app_version"] = (float)$_GET['app_version'];
+        }
+
         if(isset($old_order_id)){
 
             if($order){
@@ -357,7 +365,7 @@ class TransactionController extends \BaseController {
             $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount_finder'],$data['finder_id'],'paymentgateway',$data['offer_id'],$data['customer_id']);
         }
 
-        if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios'])){
+        if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios']) && isset($_GET['app_version']) && ((float)$_GET['app_version'] <= 3.2) ){
 
             if(isset($data['cashback']) && $data['cashback'] == true){
                 $data['amount'] = $data['amount'] - $data['cashback_detail']['amount_discounted'];
@@ -735,7 +743,12 @@ class TransactionController extends \BaseController {
 
         $data['offer_id'] = false;
 
-        $offer = Offer::where('ratecard_id',$ratecard['_id'])->where('hidden', false)->where('end_date','>=',new DateTime(date("d-m-Y 00:00:00")))->first();
+        $offer = Offer::where('ratecard_id',$ratecard['_id'])
+                ->where('hidden', false)
+                ->orderBy('order', 'asc')
+                ->where('start_date','<=',new DateTime(date("d-m-Y 00:00:00")))
+                ->where('end_date','>=',new DateTime(date("d-m-Y 00:00:00")))
+                ->first();
 
         if($offer){
             $data['amount_finder'] = $offer->price;

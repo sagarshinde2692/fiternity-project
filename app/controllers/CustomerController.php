@@ -2558,7 +2558,15 @@ class CustomerController extends \BaseController {
 		// );
 
 		if(isset($_REQUEST['device_type']) && $_REQUEST['device_type'] == "ios" ){
-			$result['campaign']['link'] = "";
+			$result['campaign'] =  new \stdClass();
+			$result['campaign'] = array(
+				'image'=>'http://b.fitn.in/iconsv1/fitmania/sale_banner.png',
+				'link'=>'',
+				'title'=>'FitStart 2017',
+				'height'=>1,
+				'width'=>6,
+				'ratio'=>1/6
+			);
 		}
 
 		return Response::json($result);
@@ -3205,7 +3213,6 @@ class CustomerController extends \BaseController {
 	}
 
 	public function getReferralCode(){
-			
 		try{
 			$jwt = Request::header('Authorization');
 			$decoded = $this->customerTokenDecode($jwt);
@@ -3214,9 +3221,10 @@ class CustomerController extends \BaseController {
 			$customer = Customer::where('_id', $id)->first(['referral_code']);
 			
 			if($customer){
-				$referral_code = $customer->referral_code;
-				$share_message = "Use the code $referral_code and get 250 fitcash points";
-				return $response =  array('status' => 200,'referral_code' => $referral_code, 'message' 	=> 'Refer a friend and get fitcash on his first transaction');
+				$referral_code = $customer['referral_code'];
+				$url = "https://www.fitternity.com(dummy_url)";
+				$share_message = "Use the referral code - $referral_code or click on $url and get 250 fitcash points";
+				return $response =  array('status' => 200,'referral_code' => $referral_code, 'message' 	=> 'Refer a friend and get fitcash on his first transaction', 'share_message'=>$share_message);
 			}else{
 				return $response =  array('status' => 404,'message'=>"Customer not found");
 			}
