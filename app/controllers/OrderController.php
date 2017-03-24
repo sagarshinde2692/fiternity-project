@@ -390,7 +390,6 @@ class OrderController extends \BaseController {
                 $this->customersms->purchaseInstant($order->toArray());
                 $order->cutomerSmsPurchaseAfter10Days = $this->customersms->purchaseAfter10Days($order->toArray(),$after10days);
                 $order->cutomerSmsPurchaseAfter30Days = $this->customersms->purchaseAfter30Days($order->toArray(),$after30days);
-                $order->notification_status = 'purchase_yes';
                 $order->update();
 
             }
