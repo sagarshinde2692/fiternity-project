@@ -3472,7 +3472,7 @@ class CustomerController extends \BaseController {
 	}
 
 	public function generateReferralCode($name){
-		$referral_code = substr(implode("", (explode(" ", strtoupper($name)))),0,4)."".rand(100, 999);
+		$referral_code = substr(implode("", (explode(" ", strtoupper($name)))),0,4)."".rand(1000, 9999);
 		$exists = Customer::where('referral_code', $referral_code)->where('status', '1')->first();
 		if($exists){
 			return $this->generateReferralCode($name);
