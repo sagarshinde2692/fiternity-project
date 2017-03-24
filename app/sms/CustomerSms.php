@@ -541,9 +541,9 @@ Class CustomerSms extends VersionNextSms{
 
     }
 
-    public function purchaseConfirm($data){
+    public function purchaseInstant($data){
 
-        $label = 'PurchaseConfirm-Customer';
+        $label = 'PurchaseInstant-Customer';
 
         $to = $data['customer_phone'];
 
