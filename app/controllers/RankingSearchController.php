@@ -2190,7 +2190,7 @@ public function getRankedFinderResultsAppv4()
                 array_push($trialdays,str_replace(" open","",$filter));
             }
             else{
-                array_push($filter,$facilities);
+                array_push($facilities,$filter);
             }
         }
         $object_keys        = array();
