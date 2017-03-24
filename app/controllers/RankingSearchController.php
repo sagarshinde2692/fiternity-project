@@ -2189,9 +2189,9 @@ public function getRankedFinderResultsAppv4()
             if(in_array($filter, $trialdays_filters)){
                 array_push($trialdays,str_replace(" open","",$filter));
             }
-            // else{
-            //     array_push($filter,$facilities);
-            // }
+            else{
+                array_push($filter,$facilities);
+            }
         }
         $object_keys        = array();
 
