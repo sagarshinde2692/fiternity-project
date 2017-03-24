@@ -9,6 +9,7 @@ use JWT;
 use Finder;
 use Request;
 use Log;
+use App\Services\Sidekiq as Sidekiq;
 
 Class Utilities {
 
@@ -870,8 +871,12 @@ Class Utilities {
         
         }
 
+        Log::info("queue_id-----------------",$queue_id);
+
         if(!empty($queue_id)){
-            $this->sidekiq->delete($queue_id);
+
+            $sidekiq = new Sidekiq();
+            $sidekiq->delete($queue_id);
         }
 
     }
