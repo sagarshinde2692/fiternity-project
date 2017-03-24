@@ -158,17 +158,17 @@ class TransactionController extends \BaseController {
 
         $data['code'] = $data['order_id'].str_random(8);
 
-        $data['service_link'] = Config::get('app.website').$data['finder_slug']."/".$data['service_id']."?order_id=".$data['order_id'];
+        $data['service_link'] = Config::get('app.website')."/".$data['finder_slug']."/".$data['service_id']."?order_id=".$data['order_id'];
 
-        $data['payment_link'] = Config::get('app.website')."paymentlink/".$data['order_id'];
+        $data['payment_link'] = Config::get('app.website')."/paymentlink/".$data['order_id'];
 
         if(in_array($data['type'],$this->membership_array) && isset($data['ratecard_id']) && $data['ratecard_id'] != ""){
-            $data['payment_link'] = Config::get('app.website')."buy/".$data['finder_slug']."/".$data['service_id']."/".$data['ratecard_id']."/".$data['order_id'];
+            $data['payment_link'] = Config::get('app.website')."/buy/".$data['finder_slug']."/".$data['service_id']."/".$data['ratecard_id']."/".$data['order_id'];
         }
 
-        $data['vendor_link'] = Config::get('app.website').$data['finder_slug'];
+        $data['vendor_link'] = Config::get('app.website')."/".$data['finder_slug'];
 
-        $data['profile_link'] = Config::get('app.website')."profile/".$data['customer_email'];
+        $data['profile_link'] = Config::get('app.website')."/profile/".$data['customer_email'];
 
         $cashbackRewardWallet =$this->getCashbackRewardWallet($data,$order);
 
@@ -186,13 +186,13 @@ class TransactionController extends \BaseController {
             if(isset($old_order_id)){
                 $txnid = "MFIT".$data['_id']."-R".$data['repetition'];
             }
-            $successurl = $data['customer_source'] == "android" ? Config::get('app.website')."/paymentsuccessandroid" : Config::get('app.website')."/paymentsuccessios";
+            $successurl = $data['customer_source'] == "android" ? Config::get('app.website')."//paymentsuccessandroid" : Config::get('app.website')."//paymentsuccessios";
         }else{
             $txnid = "FIT".$data['_id'];
             if(isset($old_order_id)){
                 $txnid = "FIT".$data['_id']."-R".$data['repetition'];
             }
-            $successurl = $data['type'] == "memberships" ? Config::get('app.website')."/paymentsuccess" : Config::get('app.website')."/paymentsuccesstrial";
+            $successurl = $data['type'] == "memberships" ? Config::get('app.website')."//paymentsuccess" : Config::get('app.website')."//paymentsuccesstrial";
         }
         $data['txnid'] = $txnid;
         $hash = getHash($data);
@@ -201,10 +201,10 @@ class TransactionController extends \BaseController {
 
         $data = $this->unsetData($data);
 
-        $data['payment_link'] = Config::get('app.website')."paymentlink/".$data['order_id'];
+        $data['payment_link'] = Config::get('app.website')."/paymentlink/".$data['order_id'];
 
         if(in_array($data['type'],$this->membership_array) && isset($data['ratecard_id']) && $data['ratecard_id'] != ""){
-            $data['payment_link'] = Config::get('app.website')."buy/".$data['finder_slug']."/".$data['service_id']."/".$data['ratecard_id']."/".$data['order_id'];
+            $data['payment_link'] = Config::get('app.website')."/buy/".$data['finder_slug']."/".$data['service_id']."/".$data['ratecard_id']."/".$data['order_id'];
 
         }
 
