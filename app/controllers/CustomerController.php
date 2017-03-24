@@ -2287,7 +2287,7 @@ class CustomerController extends \BaseController {
 					'info'=>[
 						'title'=>'What is FitCash?',
 						'description' => 'description fitcash',
-						'short_description' => 'short'.\n.'description'.\n.'description'
+						'short_description' => 'short \\n description \\n description'
 					]
 				],
 				'fitcash_plus' => [
@@ -2296,7 +2296,7 @@ class CustomerController extends \BaseController {
 					'info'=>[
 						'title'=>'What is FitCash+?',
 						'description' => 'description',
-						'short_description' => 'short'.\n.'description'.\n.'description'
+						'short_description' => 'short \\n description \\n description'
 					]
 				],
 				),200
