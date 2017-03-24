@@ -1209,15 +1209,24 @@ public static function translate_searchresultsv4($es_searchresult_response,$sear
 					$intersect = array();
 					$found = false;
 					foreach($search_request['regions'] as $loc){
-						foreach($result['multiaddress'] as $regions){
+						$loc = str_replace("-"," ",$loc);
+						foreach($result['multiaddress'] as $key => $regions){
 							if(in_array(strtolower($loc),$regions['location'])){
 								array_push($intersect,$regions);
 								$found = true;
-								break;	
+								unset($result['multiaddress'][$key]);	
+							}
+							if(in_array("Base location",$regions['location'])){
+								$regions['location'] = str_replace("Base location",$result['location'],$regions['location']);
+								Log::info($regions['location']);
+								$result['multiaddress'][$key]['location'] = $regions['location'];
 							}
 						}
+						foreach($result['multiaddress'] as $key => $regions){
+							array_push($intersect,$regions);
+						}
 					}
-					$resultobject->multiaddress = $found ? $intersect : $result['multiaddress'];
+					$resultobject->multiaddress = $intersect;
 				}else{
 					$resultobject->multiaddress = isset($result['multiaddress']) && count($result['multiaddress']) > 0 ? $result['multiaddress'] : array();
 				}
