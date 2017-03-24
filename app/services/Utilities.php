@@ -740,46 +740,46 @@ Class Utilities {
 
         if((isset($order->redundant_order) && $order->redundant_order == "1") || (isset($order->notification_status) && ($order->notification_status == "link_sent_yes" || $order->notification_status == "abandon_cart_yes"))){
 
-            if((isset($order->cutomerSmsSendPaymentLinkAfter3Days))){
+            if((isset($order->customerSmsSendPaymentLinkAfter3Days))){
                 try {
-                    $queue_id[] = $order->unsemerSmsSendPaymentLinkAfter3Days;
-                    $order->unset('cutomerSmsSendPaymentLinkAfter3Days');
+                    $queue_id[] = $order->customerSmsSendPaymentLinkAfter3Days;
+                    $order->unset('customerSmsSendPaymentLinkAfter3Days');
                 }catch(\Exception $exception){
                     Log::error($exception);
                 }
             }
 
-            if((isset($order->cutomerSmsSendPaymentLinkAfter7Days))){
+            if((isset($order->customerSmsSendPaymentLinkAfter7Days))){
                 try {
-                    $queue_id[] = $order->unsemerSmsSendPaymentLinkAfter7Days;
-                    $order->unset('cutomerSmsSendPaymentLinkAfter7Days');
+                    $queue_id[] = $order->customerSmsSendPaymentLinkAfter7Days;
+                    $order->unset('customerSmsSendPaymentLinkAfter7Days');
                 }catch(\Exception $exception){
                     Log::error($exception);
                 }
             }
 
-            if((isset($order->cutomerSmsSendPaymentLinkAfter15Days))){
+            if((isset($order->customerSmsSendPaymentLinkAfter15Days))){
                 try {
-                    $queue_id[] = $order->unsemerSmsSendPaymentLinkAfter15Days;
-                    $order->unset('cutomerSmsSendPaymentLinkAfter15Days');
+                    $queue_id[] = $order->customerSmsSendPaymentLinkAfter15Days;
+                    $order->unset('customerSmsSendPaymentLinkAfter15Days');
                 }catch(\Exception $exception){
                     Log::error($exception);
                 }
             }
 
-            if((isset($order->cutomerSmsSendPaymentLinkAfter30Days))){
+            if((isset($order->customerSmsSendPaymentLinkAfter30Days))){
                 try {
-                    $queue_id[] = $order->unsemerSmsSendPaymentLinkAfter30Days;
-                    $order->unset('cutomerSmsSendPaymentLinkAfter30Days');
+                    $queue_id[] = $order->customerSmsSendPaymentLinkAfter30Days;
+                    $order->unset('customerSmsSendPaymentLinkAfter30Days');
                 }catch(\Exception $exception){
                     Log::error($exception);
                 }
             }
 
-            if((isset($order->cutomerSmsSendPaymentLinkAfter45Days))){
+            if((isset($order->customerSmsSendPaymentLinkAfter45Days))){
                 try {
-                    $queue_id[] = $order->unsemerSmsSendPaymentLinkAfter45Days;
-                    $order->unset('cutomerSmsSendPaymentLinkAfter45Days');
+                    $queue_id[] = $order->customerSmsSendPaymentLinkAfter45Days;
+                    $order->unset('customerSmsSendPaymentLinkAfter45Days');
                 }catch(\Exception $exception){
                     Log::error($exception);
                 }
@@ -804,64 +804,64 @@ Class Utilities {
             $booktrial = Booktrial::find((int)$order->purchse_booktrial_id);
 
             if($ooktrial){
-                if((isset($booktrial->cutomerSmsPostTrialFollowup1After3Days))){
+                if((isset($booktrial->customerSmsPostTrialFollowup1After3Days))){
                     try {
-                        $queue_id[] = $booktrial->cutomerSmsPostTrialFollowup1After3Days;
-                        $booktrial->unset('cutomerSmsPostTrialFollowup1After3Days');
+                        $queue_id[] = $booktrial->customerSmsPostTrialFollowup1After3Days;
+                        $booktrial->unset('customerSmsPostTrialFollowup1After3Days');
                     }catch(\Exception $exception){
                         Log::error($exception);
                     }
                 }
 
-                if((isset($booktrial->cutomerSmsPostTrialFollowup1After7Days))){
+                if((isset($booktrial->customerSmsPostTrialFollowup1After7Days))){
                     try {
-                        $queue_id[] = $booktrial->cutomerSmsPostTrialFollowup1After7Days;
-                        $booktrial->unset('cutomerSmsPostTrialFollowup1After7Days');
+                        $queue_id[] = $booktrial->customerSmsPostTrialFollowup1After7Days;
+                        $booktrial->unset('customerSmsPostTrialFollowup1After7Days');
                     }catch(\Exception $exception){
                         Log::error($exception);
                     }
                 }
 
-                if((isset($booktrial->cutomerSmsPostTrialFollowup1After15Days))){
+                if((isset($booktrial->customerSmsPostTrialFollowup1After15Days))){
                     try {
-                        $queue_id[] = $booktrial->cutomerSmsPostTrialFollowup1After15Days;
-                        $booktrial->unset('cutomerSmsPostTrialFollowup1After15Days');
+                        $queue_id[] = $booktrial->customerSmsPostTrialFollowup1After15Days;
+                        $booktrial->unset('customerSmsPostTrialFollowup1After15Days');
                     }catch(\Exception $exception){
                         Log::error($exception);
                     }
                 }
 
-                if((isset($booktrial->cutomerSmsPostTrialFollowup1After30Days))){
+                if((isset($booktrial->customerSmsPostTrialFollowup1After30Days))){
                     try {
-                        $queue_id[] = $booktrial->cutomerSmsPostTrialFollowup1After30Days;
-                        $booktrial->unset('cutomerSmsPostTrialFollowup1After30Days');
+                        $queue_id[] = $booktrial->customerSmsPostTrialFollowup1After30Days;
+                        $booktrial->unset('customerSmsPostTrialFollowup1After30Days');
                     }catch(\Exception $exception){
                         Log::error($exception);
                     }
                 }
 
-                if((isset($booktrial->cutomerSmsPostTrialFollowup2After3Days))){
+                if((isset($booktrial->customerSmsPostTrialFollowup2After3Days))){
                     try {
-                        $queue_id[] = $booktrial->cutomerSmsPostTrialFollowup2After3Days;
-                        $booktrial->unset('cutomerSmsPostTrialFollowup2After3Days');
+                        $queue_id[] = $booktrial->customerSmsPostTrialFollowup2After3Days;
+                        $booktrial->unset('customerSmsPostTrialFollowup2After3Days');
                     }catch(\Exception $exception){
                         Log::error($exception);
                     }
                 }
 
-                if((isset($booktrial->cutomerSmsPostTrialFollowup2After7Days))){
+                if((isset($booktrial->customerSmsPostTrialFollowup2After7Days))){
                     try {
-                        $queue_id[] = $booktrial->cutomerSmsPostTrialFollowup2After7Days;
-                        $booktrial->unset('cutomerSmsPostTrialFollowup2After7Days');
+                        $queue_id[] = $booktrial->customerSmsPostTrialFollowup2After7Days;
+                        $booktrial->unset('customerSmsPostTrialFollowup2After7Days');
                     }catch(\Exception $exception){
                         Log::error($exception);
                     }
                 }
 
-                if((isset($booktrial->cutomerSmsPostTrialFollowup2After15Days))){
+                if((isset($booktrial->customerSmsPostTrialFollowup2After15Days))){
                     try {
-                        $queue_id[] = $booktrial->cutomerSmsPostTrialFollowup2After15Days;
-                        $booktrial->unset('cutomerSmsPostTrialFollowup2After15Days');
+                        $queue_id[] = $booktrial->customerSmsPostTrialFollowup2After15Days;
+                        $booktrial->unset('customerSmsPostTrialFollowup2After15Days');
                     }catch(\Exception $exception){
                         Log::error($exception);
                     }

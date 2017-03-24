@@ -186,13 +186,13 @@ class TransactionController extends \BaseController {
             if(isset($old_order_id)){
                 $txnid = "MFIT".$data['_id']."-R".$data['repetition'];
             }
-            $successurl = $data['customer_source'] == "android" ? Config::get('app.website')."//paymentsuccessandroid" : Config::get('app.website')."//paymentsuccessios";
+            $successurl = $data['customer_source'] == "android" ? Config::get('app.website')."/paymentsuccessandroid" : Config::get('app.website')."/paymentsuccessios";
         }else{
             $txnid = "FIT".$data['_id'];
             if(isset($old_order_id)){
                 $txnid = "FIT".$data['_id']."-R".$data['repetition'];
             }
-            $successurl = $data['type'] == "memberships" ? Config::get('app.website')."//paymentsuccess" : Config::get('app.website')."//paymentsuccesstrial";
+            $successurl = $data['type'] == "memberships" ? Config::get('app.website')."/paymentsuccess" : Config::get('app.website')."/paymentsuccesstrial";
         }
         $data['txnid'] = $txnid;
         $hash = getHash($data);
@@ -1180,11 +1180,11 @@ class TransactionController extends \BaseController {
                 $now = strtotime(date('Y-m-d 11:00:00'));
             }
 
-            $order->cutomerSmsSendPaymentLinkAfter3Days = $this->customersms->sendPaymentLinkAfter3Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+3 days",$now)));
-            $order->cutomerSmsSendPaymentLinkAfter7Days = $this->customersms->sendPaymentLinkAfter7Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+7 days",$now)));
-            $order->cutomerSmsSendPaymentLinkAfter15Days = $this->customersms->sendPaymentLinkAfter15Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+15 days",$now)));
-            $order->cutomerSmsSendPaymentLinkAfter30Days = $this->customersms->sendPaymentLinkAfter30Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+30 days",$now)));
-            $order->cutomerSmsSendPaymentLinkAfter45Days = $this->customersms->sendPaymentLinkAfter45Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+45 days",$now)));
+            $order->customerSmsSendPaymentLinkAfter3Days = $this->customersms->sendPaymentLinkAfter3Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+3 days",$now)));
+            $order->customerSmsSendPaymentLinkAfter7Days = $this->customersms->sendPaymentLinkAfter7Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+7 days",$now)));
+            $order->customerSmsSendPaymentLinkAfter15Days = $this->customersms->sendPaymentLinkAfter15Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+15 days",$now)));
+            $order->customerSmsSendPaymentLinkAfter30Days = $this->customersms->sendPaymentLinkAfter30Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+30 days",$now)));
+            $order->customerSmsSendPaymentLinkAfter45Days = $this->customersms->sendPaymentLinkAfter45Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+45 days",$now)));
             $order->notification_status = 'abandon_cart_yes';
 
             return "success";
