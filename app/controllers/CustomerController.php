@@ -3215,6 +3215,7 @@ class CustomerController extends \BaseController {
 			
 			if($customer){
 				$referral_code = $customer->referral_code;
+				$share_message = "Use the code $referral_code and get 250 fitcash points";
 				return $response =  array('status' => 200,'referral_code' => $referral_code, 'message' 	=> 'Refer a friend and get fitcash on his first transaction');
 			}else{
 				return $response =  array('status' => 404,'message'=>"Customer not found");
