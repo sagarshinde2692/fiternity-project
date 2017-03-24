@@ -742,7 +742,8 @@ Class Utilities {
 
             if((isset($order->cutomerSmsSendPaymentLinkAfter3Days))){
                 try {
-                    $queue_id[] = $order->unset('cutomerSmsSendPaymentLinkAfter3Days');
+                    $queue_id[] = $order->unsemerSmsSendPaymentLinkAfter3Days;
+                    $order->unset('cutomerSmsSendPaymentLinkAfter3Days');
                 }catch(\Exception $exception){
                     Log::error($exception);
                 }
@@ -750,7 +751,8 @@ Class Utilities {
 
             if((isset($order->cutomerSmsSendPaymentLinkAfter7Days))){
                 try {
-                    $queue_id[] = $order->unset('cutomerSmsSendPaymentLinkAfter7Days');
+                    $queue_id[] = $order->unsemerSmsSendPaymentLinkAfter7Days;
+                    $order->unset('cutomerSmsSendPaymentLinkAfter7Days');
                 }catch(\Exception $exception){
                     Log::error($exception);
                 }
@@ -758,7 +760,8 @@ Class Utilities {
 
             if((isset($order->cutomerSmsSendPaymentLinkAfter15Days))){
                 try {
-                    $queue_id[] = $order->unset('cutomerSmsSendPaymentLinkAfter15Days');
+                    $queue_id[] = $order->unsemerSmsSendPaymentLinkAfter15Days;
+                    $order->unset('cutomerSmsSendPaymentLinkAfter15Days');
                 }catch(\Exception $exception){
                     Log::error($exception);
                 }
@@ -766,7 +769,8 @@ Class Utilities {
 
             if((isset($order->cutomerSmsSendPaymentLinkAfter30Days))){
                 try {
-                    $queue_id[] = $order->unset('cutomerSmsSendPaymentLinkAfter30Days');
+                    $queue_id[] = $order->unsemerSmsSendPaymentLinkAfter30Days;
+                    $order->unset('cutomerSmsSendPaymentLinkAfter30Days');
                 }catch(\Exception $exception){
                     Log::error($exception);
                 }
@@ -774,7 +778,8 @@ Class Utilities {
 
             if((isset($order->cutomerSmsSendPaymentLinkAfter45Days))){
                 try {
-                    $queue_id[] = $order->unset('cutomerSmsSendPaymentLinkAfter45Days');
+                    $queue_id[] = $order->unsemerSmsSendPaymentLinkAfter45Days;
+                    $order->unset('cutomerSmsSendPaymentLinkAfter45Days');
                 }catch(\Exception $exception){
                     Log::error($exception);
                 }
@@ -801,7 +806,8 @@ Class Utilities {
             if($ooktrial){
                 if((isset($booktrial->cutomerSmsPostTrialFollowup1After3Days))){
                     try {
-                        $queue_id[] = $booktrial->unset('cutomerSmsPostTrialFollowup1After3Days');
+                        $queue_id[] = $booktrial->cutomerSmsPostTrialFollowup1After3Days;
+                        $booktrial->unset('cutomerSmsPostTrialFollowup1After3Days');
                     }catch(\Exception $exception){
                         Log::error($exception);
                     }
@@ -809,7 +815,8 @@ Class Utilities {
 
                 if((isset($booktrial->cutomerSmsPostTrialFollowup1After7Days))){
                     try {
-                        $queue_id[] = $booktrial->unset('cutomerSmsPostTrialFollowup1After7Days');
+                        $queue_id[] = $booktrial->cutomerSmsPostTrialFollowup1After7Days;
+                        $booktrial->unset('cutomerSmsPostTrialFollowup1After7Days');
                     }catch(\Exception $exception){
                         Log::error($exception);
                     }
@@ -817,7 +824,8 @@ Class Utilities {
 
                 if((isset($booktrial->cutomerSmsPostTrialFollowup1After15Days))){
                     try {
-                        $queue_id[] = $booktrial->unset('cutomerSmsPostTrialFollowup1After15Days');
+                        $queue_id[] = $booktrial->cutomerSmsPostTrialFollowup1After15Days;
+                        $booktrial->unset('cutomerSmsPostTrialFollowup1After15Days');
                     }catch(\Exception $exception){
                         Log::error($exception);
                     }
@@ -825,7 +833,8 @@ Class Utilities {
 
                 if((isset($booktrial->cutomerSmsPostTrialFollowup1After30Days))){
                     try {
-                        $queue_id[] = $booktrial->unset('cutomerSmsPostTrialFollowup1After30Days');
+                        $queue_id[] = $booktrial->cutomerSmsPostTrialFollowup1After30Days;
+                        $booktrial->unset('cutomerSmsPostTrialFollowup1After30Days');
                     }catch(\Exception $exception){
                         Log::error($exception);
                     }
@@ -833,7 +842,8 @@ Class Utilities {
 
                 if((isset($booktrial->cutomerSmsPostTrialFollowup2After3Days))){
                     try {
-                        $queue_id[] = $booktrial->unset('cutomerSmsPostTrialFollowup2After3Days');
+                        $queue_id[] = $booktrial->cutomerSmsPostTrialFollowup2After3Days;
+                        $booktrial->unset('cutomerSmsPostTrialFollowup2After3Days');
                     }catch(\Exception $exception){
                         Log::error($exception);
                     }
@@ -841,7 +851,8 @@ Class Utilities {
 
                 if((isset($booktrial->cutomerSmsPostTrialFollowup2After7Days))){
                     try {
-                        $queue_id[] = $booktrial->unset('cutomerSmsPostTrialFollowup2After7Days');
+                        $queue_id[] = $booktrial->cutomerSmsPostTrialFollowup2After7Days;
+                        $booktrial->unset('cutomerSmsPostTrialFollowup2After7Days');
                     }catch(\Exception $exception){
                         Log::error($exception);
                     }
@@ -849,7 +860,8 @@ Class Utilities {
 
                 if((isset($booktrial->cutomerSmsPostTrialFollowup2After15Days))){
                     try {
-                        $queue_id[] = $booktrial->unset('cutomerSmsPostTrialFollowup2After15Days');
+                        $queue_id[] = $booktrial->cutomerSmsPostTrialFollowup2After15Days;
+                        $booktrial->unset('cutomerSmsPostTrialFollowup2After15Days');
                     }catch(\Exception $exception){
                         Log::error($exception);
                     }
