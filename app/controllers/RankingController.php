@@ -402,10 +402,11 @@ public function chunkIndex($index_name, $city_id,$skip,$take){
             $services = Ratecard::where('finder_id', $finder_id)->get();
             $ratecard_count = 0;  $average_monthly = 0;
             $direct_payment_enabled_bool = false;
+            $flags = array("disc25or50" => "false","discother" => "false");
             foreach ($services as $service) {
                $direct_payment_enabled_bool = $direct_payment_enabled_bool||($service['direct_payment_enable'] ==='1');
                 //    Offer or ratecard flags
-                $flags = array("disc25or50" => "false","discother" => "false");
+                // $flags = array("disc25or50" => "false","discother" => "false");
                 if(isset($service["flags"])){
                     if($service["flags"]['disc25or50']){
                         $flags["disc25or50"] = true;
