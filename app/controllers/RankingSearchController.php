@@ -2431,7 +2431,8 @@ public function getRankedFinderResultsAppv4()
                         "aggs": {
                             "attrs": {
                             "terms": {
-                                "field": "location_obj.name"
+                                "field": "location_obj.name",
+                                "order" : { "_term" : "asc" }
                             },
                             "aggs": {
                                 "attrsValues": {
