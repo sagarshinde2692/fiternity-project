@@ -2223,8 +2223,8 @@ class CustomerController extends \BaseController {
 		$wallet = Customerwallet::where('customer_id',$request['customer_id'])
 		->where('amount','!=',0)
 		->orderBy('_id', 'DESC')
-		->skip($limit)
-		->take($offset)
+		//->skip($limit)
+		//->take($offset)
 		->get();
 
 		$wallet_balance = 0;
@@ -2238,6 +2238,36 @@ class CustomerController extends \BaseController {
 				if(!isset($value['order_id'])){
 					$wallet[$key]['order_id'] = 0;
 				}
+
+				if(isset($wallet[$key+1])){
+
+					$wallet[$key]['amount_fitcash'] = $value['balance'];
+					$wallet[$key]['amount_fitcash_plus'] = 0;
+
+					/*if(isset($value['balance_fitcash_plus'])){
+
+						$wallet[$key]['amount_fitcash'] = abs($wallet[$key]['balance'] - $wallet[$key]['balance_fitcash_plus']);
+						$wallet[$key]['amount_fitcash_plus'] = 0;
+
+						if(isset($wallet[$key+1]['amount_fitcash_plus'])){
+
+						}
+
+						
+					}*/
+
+
+				}else{
+
+					$wallet[$key]['amount_fitcash'] = $value['amount'];
+					$wallet[$key]['amount_fitcash_plus'] = 0;
+
+					if(isset($value['balance_fitcash_plus'])){
+						$wallet[$key]['amount_fitcash_plus'] = $value['amount'];
+						$wallet[$key]['amount_fitcash'] = 0;
+					}
+				}
+
 			}
 
 			$balance = (isset($wallet[0]['balance']) && $wallet[0]['balance'] != "") ? (int) $wallet[0]['balance'] : 0 ;
@@ -2251,6 +2281,24 @@ class CustomerController extends \BaseController {
 				'status' => 200,
 				'data' => $wallet,
 				'wallet_balance'=>$wallet_balance,
+				'fitcash' => [
+					'title' => 'FITCASH',
+					'balance'=>$balance,
+					'info'=>[
+						'title'=>'What is FitCash?',
+						'description' => 'description fitcash',
+						'short_description' => 'short \n description \n description'
+					]
+				],
+				'fitcash_plus' => [
+					'title' => 'FITCASH+',
+					'balance'=>$balance_fitcash_plus,
+					'info'=>[
+						'title'=>'What is FitCash+?',
+						'description' => 'description',
+						'short_description' => 'short \n description \n description'
+					]
+				],
 				),200
 
 			);
