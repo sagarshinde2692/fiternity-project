@@ -1228,9 +1228,7 @@ class OrderController extends \BaseController {
 
         }
 
-        $code		=	random_numbers(5);
-
-        array_set($data, 'code', $code);
+        
         array_set($data, 'batch_time', '');
         array_set($data, 'source_of_membership', 'real time');
 

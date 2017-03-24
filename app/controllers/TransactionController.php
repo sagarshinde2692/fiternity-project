@@ -205,6 +205,7 @@ class TransactionController extends \BaseController {
 
         if(in_array($data['type'],$this->membership_array) && isset($data['ratecard_id']) && $data['ratecard_id'] != ""){
             $data['payment_link'] = Config::get('app.website')."buy/".$data['finder_slug']."/".$data['service_id']."/".$data['ratecard_id']."/".$data['order_id'];
+
         }
 
         if(isset($old_order_id)){
@@ -398,6 +399,7 @@ class TransactionController extends \BaseController {
         }
 
         /*if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios'])){
+
 
             if(isset($data['cashback']) && $data['cashback'] == true){
                 $data['amount'] = $data['amount'] - $data['cashback_detail']['amount_discounted'];
@@ -777,7 +779,12 @@ class TransactionController extends \BaseController {
 
         $data['offer_id'] = false;
 
-        $offer = Offer::where('ratecard_id',$ratecard['_id'])->where('hidden', false)->where('end_date','>=',new DateTime(date("d-m-Y 00:00:00")))->first();
+        $offer = Offer::where('ratecard_id',$ratecard['_id'])
+                ->where('hidden', false)
+                ->orderBy('order', 'asc')
+                ->where('start_date','<=',new DateTime(date("d-m-Y 00:00:00")))
+                ->where('end_date','>=',new DateTime(date("d-m-Y 00:00:00")))
+                ->first();
 
         if($offer){
             $data['amount_finder'] = $offer->price;
