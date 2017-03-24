@@ -547,7 +547,7 @@ Class CustomerSms extends VersionNextSms{
 
         $to = $data['customer_phone'];
 
-        return $this->common($label,$to,$data,$delay);
+        return $this->common($label,$to,$data);
 
     }
 
