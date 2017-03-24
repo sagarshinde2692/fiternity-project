@@ -771,8 +771,10 @@ if (!function_exists('get_elastic_finder_documentv2')) {
                 $data['service_category_exact']= $arr_service_category_exact;
                 $data['service_category_synonyms']= $arr_service_cat_synonyms;
                 $data['service_category_snow']= $arr_service_cat_synonyms;
-
-
+        $locationtag_object = array();
+        foreach($data['locationtags'] as $loc){
+             array_push($locationtag_object,array("name" => $loc['name'],"slug" => $loc['slug']));
+        }
         $postfields_data = array(
             '_id'                           =>      $data['_id'],
             'alias'                         =>      (isset($data['alias']) && $data['alias'] != '') ? strtolower($data['alias']) : "",
@@ -839,7 +841,7 @@ if (!function_exists('get_elastic_finder_documentv2')) {
             'finder_coverimage_webp' => (isset($data['coverimage']) && $data['coverimage'] != '') ? strtolower( substr($data['coverimage'], 0, -3)."webp"  ) : strtolower($data['finder_coverimage']),
             'finder_coverimage_color' => (isset($data['finder_coverimage_color']) && $data['finder_coverimage_color'] != "") ? $data['finder_coverimage_color'] : "",
             'multiaddress'            => (isset($data['multiaddress'])) ? $data['multiaddress'] : [],
-            'location_obj'            => array("name" => $data['location']['name'],"slug" => $data['location']['slug'])
+            'location_obj'            => $locationtag_object
                 //'trialschedules'                =>      $trialdata,
             );
 
