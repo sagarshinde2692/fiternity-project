@@ -1187,6 +1187,8 @@ class TransactionController extends \BaseController {
             $order->customerSmsSendPaymentLinkAfter45Days = $this->customersms->sendPaymentLinkAfter45Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+45 days",$now)));
             $order->notification_status = 'abandon_cart_yes';
 
+            $order->update;
+
             return "success";
 
             
