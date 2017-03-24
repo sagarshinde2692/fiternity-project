@@ -158,5 +158,4 @@ class Finder extends  \Basemodel {
 		return $this->belongsTo('Brand');
 	}
 
-
 }

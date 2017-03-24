@@ -146,7 +146,6 @@ class FindersController extends \BaseController {
 			unset($finderarr['ratecards']);
 
 			$finder = null;	
-
 			if($finderarr){
 
 				// $ratecards           =   Ratecard::with('serviceoffers')->where('finder_id', intval($finder_id))->orderBy('_id', 'desc')->get();
@@ -162,6 +161,13 @@ class FindersController extends \BaseController {
 						}
 					}
 				}
+
+				// Check if there are any events running on this vendor
+				$finderevent = DbEvent::where('vendors',$finderarr['_id'])
+					->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()) ))
+					->get(array('name','slug','venue','start_date','end_date'));
+				$finderarr['events'] = $finderevent;
+				// End of event check
 
 				// return  pluck( $finderarr['categorytags'] , array('name', '_id') );
 				$finder         =   array_except($finderarr, array('coverimage','findercollections','categorytags','locationtags','offerings','facilities','services','blogs'));
