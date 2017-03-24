@@ -2301,7 +2301,7 @@ public function getRankedFinderResultsAppv4()
             $service_category_synonyms_filters = '
                 {
                     "term": {
-                        "service_category_synonyms": "'.$category.'"
+                        "service_level_data.service_category_synonyms": "'.$category.'"
                     }
                 },';
         }
