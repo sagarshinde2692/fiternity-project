@@ -541,6 +541,16 @@ Class CustomerSms extends VersionNextSms{
 
     }
 
+    public function purchaseConfirm($data){
+
+        $label = 'PurchaseConfirm-Customer';
+
+        $to = $data['customer_phone'];
+
+        return $this->common($label,$to,$data,$delay);
+
+    }
+
     public function purchaseAfter10Days($data,$delay){
 
         $label = 'PurchaseAfter10Days-Customer';
