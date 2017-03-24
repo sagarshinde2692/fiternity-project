@@ -461,11 +461,12 @@ Class CustomerReward {
 
         $wallet_amount = round($amount * $setAlgo['fitcash'] / 100);
 
-        $amount_discounted = round($amount * $setAlgo['discount'] / 100);
+        $amount_discounted = round($amount * $setAlgo['discount'] / 100);   
 
         $wallet_algo = round(($amount * $commision / 100) * ($wallet_percentage / 100));
 
         /*if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ioss'])){
+
 
             $amount_deducted_from_wallet = ($wallet_algo < $wallet) ? $wallet_algo : round($wallet);
 

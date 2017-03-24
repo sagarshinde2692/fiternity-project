@@ -44,6 +44,7 @@ class MigrationReverseController extends \BaseController {
             case 'deleteschedulebyvendor' : $return = $this->deletescheduleByVendorId($id);break;
             case 'deletebatchbyservice' : $return = $this->deleteBatchByServiceId($id);break;
             case 'updateschedulebyserviceidv1' : $return = $this->updatescheduleByServiceIdV1($id);break;
+            case 'brand' : $return = $this->brand($id);break;
 
 
 
@@ -1875,6 +1876,53 @@ class MigrationReverseController extends \BaseController {
 
         echo "done";
 
+    }
+
+    public function brand($id){
+        try{
+            $brand       =   Brand::on($this->fitapi)->find(intval($id));
+
+            $insertData = [
+                'name' =>  trim($brand->name),
+                'status' =>  (isset($brand->hidden) && $brand->hidden === false) ? "1" : "0",
+                'created_at' =>  (isset($brand->created_at)) ? $brand->created_at : $brand->updated_at,
+                'updated_at' =>  $brand->updated_at
+            ];
+
+            $_exists_cnt =   DB::connection($this->fitadmin)->table('brands')->where('_id', intval($id) )->count();
+
+            if($_exists_cnt === 0){
+                $entity         =   new Brand($insertData);
+                $entity->setConnection($this->fitadmin);
+                $entity->_id    =   intval($brand->_id);
+                $entity->save();
+            }else{
+                // $country = Country::on($this->fitadmin)->where('_id', intval($id) )->update($insertData);
+                $brand = Brand::on($this->fitadmin)->find(intval($id));
+                $brand->update($insertData);
+            }
+
+            $vendor_ids = Vendor::where('brand_id', intval($id))->lists('_id');
+            Finder::whereIn('_id', $vendor_ids)->update(['brand_id'=> intval($id)]);
+            Finder::whereNotIn('_id', $vendor_ids)->where('brand_id', intval($id))->update(['brand_id'=> null]);
+            $response = array('status' => 200, 'message' => 'Success');
+
+        }catch(Exception $e){
+
+            Log::error($e);
+
+            $message = array(
+                'type'    => get_class($e),
+                'message' => $e->getMessage(),
+                'file'    => $e->getFile(),
+                'line'    => $e->getLine(),
+            );
+
+            $response = array('status' => 404, 'message' => $message);
+
+        }
+
+        return Response::json($response,$response['status']);
     }
 
 

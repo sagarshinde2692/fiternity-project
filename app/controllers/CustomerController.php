@@ -3213,7 +3213,6 @@ class CustomerController extends \BaseController {
 	}
 
 	public function getReferralCode(){
-			
 		try{
 			$jwt = Request::header('Authorization');
 			$decoded = $this->customerTokenDecode($jwt);
@@ -3222,8 +3221,10 @@ class CustomerController extends \BaseController {
 			$customer = Customer::where('_id', $id)->first(['referral_code']);
 			
 			if($customer){
-				$referral_code = $customer->referral_code;
-				return $response =  array('status' => 200,'referral_code' => $referral_code, 'message' 	=> 'Refer a friend and get fitcash on his first transaction');
+				$referral_code = $customer['referral_code'];
+				$url = "https://www.fitternity.com(dummy_url)";
+				$share_message = "Use the referral code - $referral_code or click on $url and get 250 fitcash points";
+				return $response =  array('status' => 200,'referral_code' => $referral_code, 'message' 	=> 'Refer a friend and get fitcash on his first transaction', 'share_message'=>$share_message);
 			}else{
 				return $response =  array('status' => 404,'message'=>"Customer not found");
 			}
