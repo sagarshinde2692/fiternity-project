@@ -170,7 +170,10 @@ class TransactionController extends \BaseController {
 
         $data['profile_link'] = Config::get('app.website')."/profile/".$data['customer_email'];
 
-        $data['referal_trial_id'] = (int) $data['referal_trial_id'];
+        if(isset($data['referal_trial_id'])){
+            
+            $data['referal_trial_id'] = (int) $data['referal_trial_id'];
+        }
 
         $cashbackRewardWallet =$this->getCashbackRewardWallet($data,$order);
 
