@@ -687,9 +687,12 @@ Class Utilities {
 
             if(count($allBooktrials) > 0){
 
-                foreach ($allBooktrials as $booktrialData) {
+                foreach ($allBooktrials as $booktrial) {
 
-                    $this->deleteCommunication($booktrialData,"trial");
+                    $booktrial->notification_status = "yes";
+                    $booktrial->update();
+
+                    $this->deleteCommunication($booktrial,"trial");
                 }
             }
 
