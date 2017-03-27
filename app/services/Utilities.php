@@ -800,9 +800,9 @@ Class Utilities {
 
         }
 
-        if(isset($order->purchse_booktrial_id) && $order->purchse_booktrial_id != ""){
+        if(isset($order->referal_trial_id) && $order->referal_trial_id != ""){
 
-            $booktrial = Booktrial::find((int)$order->purchse_booktrial_id);
+            $booktrial = Booktrial::find((int)$order->referal_trial_id);
 
             if($ooktrial){
                 if((isset($booktrial->customerSmsPostTrialFollowup1After3Days))){
