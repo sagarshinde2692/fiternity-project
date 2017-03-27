@@ -1942,8 +1942,8 @@ $searchresulteresponse = Translator::translate_searchresultsv4($search_results1,
 $searchresulteresponse->metadata->total_records = intval($search_results1['hits']['total']);
 $searchresulteresponse->metadata->number_of_records = intval($size);
 $searchresulteresponse->metadata->from = intval($from);
-$category = count(search_results1['category']) == 0 ? $this->checkCategory($search_request) : search_results1['category'];
-$location = count(search_results1['regions']) == 0 ? $this->checkLocation($search_request) : search_results1['regions'];
+$category = count($search_request['category']) == 0 ? $this->checkCategory($search_request) : $search_request['category'];
+$location = count($search_request['regions']) == 0 ? $this->checkLocation($search_request) : $search_request['regions'];
 $searchresulteresponse->metadata->request = Input::all();
 $searchresulteresponse->metadata->request['category'] = $category != "" ? array($category) : array();
 $searchresulteresponse->metadata->request['regions'] = $location != "" ? array($location) : array();
