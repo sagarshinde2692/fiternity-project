@@ -680,6 +680,8 @@ Class Utilities {
             }
 
             $allBooktrials = \Booktrial::where('customer_email',$order->customer_email)
+                        ->where('notification_status','exists',true)
+                        ->where('notification_status','yes')
                         ->orderBy('_id','desc')
                         ->get();
 
