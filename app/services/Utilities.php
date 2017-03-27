@@ -804,7 +804,7 @@ Class Utilities {
 
             $booktrial = Booktrial::find((int)$order->referal_trial_id);
 
-            if($ooktrial){
+            if($booktrial){
                 if((isset($booktrial->customerSmsPostTrialFollowup1After3Days))){
                     try {
                         $queue_id[] = $booktrial->customerSmsPostTrialFollowup1After3Days;
