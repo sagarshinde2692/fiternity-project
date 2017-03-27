@@ -2597,7 +2597,7 @@ public function getRankedFinderResultsAppv4()
 
         $search_results     =   es_curl_request($request);
 
-         $search_results1    =   json_decode($search_results, true);
+        $search_results1    =   json_decode($search_results, true);
         $search_request     =   Input::json()->all();
         $searchresulteresponse = Translator::translate_searchresultsv4($search_results1,$search_request,$keys);
         $searchresulteresponse->metadata = $this->getOfferingHeader($category,$location);

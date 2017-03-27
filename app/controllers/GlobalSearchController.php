@@ -9,7 +9,7 @@
 use App\Services\Translator;
 use App\Responsemodels\AutocompleteResponse;
 use App\Responsemodels\FinderresultResponse;
-use \RedisL4;
+// use \RedisL4;
 use App\Services\Cacheapi as Cacheapi;
 
 
@@ -1513,28 +1513,60 @@ $location_facets = ' "filtered_locationtags": {
     }
 },';
 
-$regions_facets = '
-"filtered_locations": { '.$location_bool.', 
-"aggs":
-{ "loccluster": {
-    "terms": {
-        "field": "locationcluster",
-        "min_doc_count":1
-    },
-    "aggs": {
-      "region": {      
-        "terms": {
-            "field": "location",
-            "min_doc_count":1,
-            "size":"500",
-            "order": {
-              "_term": "asc"
-          }
+// $regions_facets = '
+// "filtered_locations": { '.$location_bool.', 
+// "aggs":
+// { "loccluster": {
+//     "terms": {
+//         "field": "locationcluster",
+//         "min_doc_count":1
+//     },
+//     "aggs": {
+//       "region": {      
+//         "terms": {
+//             "field": "location",
+//             "min_doc_count":1,
+//             "size":"500",
+//             "order": {
+//               "_term": "asc"
+//           }
 
-      }
-  }
-}}}
-},';
+//       }
+//   }
+// }}}
+// },';
+$regions_facets = '
+        "filtered_locations": { '.$location_bool.', 
+        "aggs":{ 
+            "loccluster": {
+                    "terms": {
+                        "field": "locationcluster",
+                        "min_doc_count":1
+
+                    },"aggs": {
+                    "region": {
+                        "nested": {
+                            "path": "location_obj"
+                        },
+                        "aggs": {
+                            "attrs": {
+                            "terms": {
+                                "field": "location_obj.name",
+                                "order" : { "_term" : "asc" }
+                            },
+                            "aggs": {
+                                "attrsValues": {
+                                "terms": {
+                                    "field": "location_obj.slug",
+                                    "size": 100
+                                }
+                                }
+                            }
+                            }
+                        }
+                }
+            }}}
+        },';
 
 $facilities_facets = ' "filtered_facilities": {
     '.$facilities_bool.',
@@ -1902,17 +1934,20 @@ $request = array(
     );
 
 $search_results     =   es_curl_request($request);
-$search_results1    =   json_decode($search_results, true);
-$searchresulteresponse = Translator::translate_searchresultskeywordsearch($search_results1);
-$searchresulteresponse->meta->number_of_records = $size;
-$searchresulteresponse->meta->from = $from;
-$searchresulteresponse->meta->sortfield = $sort;
-$searchresulteresponse->meta->sortorder = $order;
-$searchresulteresponse->meta->categoryfilters = $category;
-$searchresulteresponse->meta->locationfilters = $location;
-$searchresulteresponse = $this->CustomResponse($searchresulteresponse, $keys);
-
-
+ $search_results1    =   json_decode($search_results, true);
+$search_request     =   Input::json()->all();
+$searchresulteresponse = Translator::translate_searchresultsv4($search_results1,$search_request,$keys);
+// $searchresulteresponse = Translator::translate_searchresultskeywordsearch($search_results1);
+// $searchresulteresponse->metadata = $this->getOfferingHeader($category,$location);
+$searchresulteresponse->metadata->total_records = intval($search_results1['hits']['total']);
+$searchresulteresponse->metadata->number_of_records = intval($size);
+$searchresulteresponse->metadata->from = intval($from);
+$category = $this->checkCategory($search_request);
+$location = $this->checkLocation($search_request);
+$searchresulteresponse->metadata->request = Input::all();
+$searchresulteresponse->metadata->request['category'] = $category != "" ? array($category) : array();
+$searchresulteresponse->metadata->request['regions'] = $location != "" ? array($location) : array();
+// $searchresulteresponse = $this->CustomResponse($searchresulteresponse, $keys);
 $searchresulteresponse1 = json_encode($searchresulteresponse, true);
 
 $response       =   json_decode($searchresulteresponse1,true);
@@ -1923,6 +1958,33 @@ catch(Exception $e){
    throw $e;
 }
 }
+
+public function checkCategory($request){
+    $string = $request['key'];
+    $categories = citywise_categories("all");
+    foreach ($categories as $url) {
+        //if (strstr($string, $url)) { // mine version
+        if (strpos($string, strtolower($url["name"])) !== FALSE) { // Yoshi version
+            return strtolower($url["slug"]);
+        }
+    }
+    return "";
+}
+
+public function checkLocation($request){
+    $string = $request['key'];
+    $city_id = City::where('name',strtolower($request['city']))->first();
+    $location = Locationtag::where('cities',$city_id['_id'])->get(array('name','slug'));
+    foreach ($location as $url) {
+        //if (strstr($string, $url)) { // mine version
+        if (strpos($string, strtolower($url['name'])) !== FALSE) { // Yoshi version
+            return $url['slug'];
+        }
+    }
+    return "";
+}
+
+
 
 public function CustomResponse($response, $keys) {
 
