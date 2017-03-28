@@ -1352,7 +1352,8 @@ public function improvedkeywordSearch(){
         $sort_clause = '';
         $keys   =         (Input::json()->get('keys')) ? Input::json()->get('keys') : array();
 
-
+        $category[0] = str_replace("-"," ",$category[0]);
+        $location[0] = str_replace("-"," ",$location[0]);
         /*
 
         All static filters and static clause, 
