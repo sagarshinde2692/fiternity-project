@@ -755,8 +755,9 @@ Class Utilities {
     public function deleteCommunication($order){
 
         $queue_id = [];
+        $notification_status = ['renewal_link_sent_no','link_sent_no','abandon_cart_no'];
 
-        if((isset($order->redundant_order) && $order->redundant_order == "1") || (isset($order->notification_status) && ($order->notification_status == "link_sent_yes" || $order->notification_status == "abandon_cart_yes"))){
+        if((isset($order->redundant_order) && $order->redundant_order == "1") || (isset($order->notification_status) && in_array($order->notification_status,$notification_status))){
 
             if((isset($order->customerSmsSendPaymentLinkAfter3Days))){
                 try {
