@@ -335,6 +335,8 @@ return array(
 	'purchase_customer_number' => '+912261222223',
 	'order_missed_call_no' => '+912233010070',
 	'confirm_order_customer_number' => '+912261222230',
+	'renewal_linksent_fitness_concierge' => 'David',
+	'renewal_linksent_customer_number' => '+912261222223',
 
 	's3_finderurl'  => array(
 		'cover' 			=> 'https://b.fitn.in/f/c/',
