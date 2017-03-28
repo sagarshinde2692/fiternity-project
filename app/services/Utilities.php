@@ -789,7 +789,7 @@ Class Utilities {
                 try {
                     $queue_id[] = $order->customerSmsSendPaymentLinkAfter30Days;
                     $order->unset('customerSmsSendPaymentLinkAfter30Days');
-                }catch(\Exception $exception){
+                }catch(\Exception $exception){  
                     Log::error($exception);
                 }
             }
@@ -803,6 +803,60 @@ Class Utilities {
                 }
             }
 
+            if((isset($order->customerSmsRenewalLinkSentBefore15Days))){
+                try {
+                    $queue_id[] = $order->customerSmsRenewalLinkSentBefore15Days;
+                    $order->unset('customerSmsRenewalLinkSentBefore15Days');
+                }catch(\Exception $exception){
+                    Log::error($exception);
+                }
+            }
+
+            if((isset($order->customerSmsRenewalLinkSentBefore7Days))){
+                try {
+                    $queue_id[] = $order->customerSmsRenewalLinkSentBefore7Days;
+                    $order->unset('customerSmsRenewalLinkSentBefore7Days');
+                }catch(\Exception $exception){
+                    Log::error($exception);
+                }
+            }
+
+            if((isset($order->customerSmsRenewalLinkSentBefore1Days))){
+                try {
+                    $queue_id[] = $order->customerSmsRenewalLinkSentBefore1Days;
+                    $order->unset('customerSmsRenewalLinkSentBefore1Days');
+                }catch(\Exception $exception){
+                    Log::error($exception);
+                }
+            }
+
+            if((isset($order->customerSmsRenewalLinkSentAfter7Days))){
+                try {
+                    $queue_id[] = $order->customerSmsRenewalLinkSentAfter7Days;
+                    $order->unset('customerSmsRenewalLinkSentAfter7Days');
+                }catch(\Exception $exception){
+                    Log::error($exception);
+                }
+            }
+
+            if((isset($order->customerSmsRenewalLinkSentAfter15Days))){
+                try {
+                    $queue_id[] = $order->customerSmsRenewalLinkSentAfter15Days;
+                    $order->unset('customerSmsRenewalLinkSentAfter15Days');
+                }catch(\Exception $exception){
+                    Log::error($exception);
+                }
+            }
+
+            if((isset($order->customerSmsRenewalLinkSentAfter30Days))){
+                try {
+                    $queue_id[] = $order->customerSmsRenewalLinkSentAfter30Days;
+                    $order->unset('customerSmsRenewalLinkSentAfter30Days');
+                }catch(\Exception $exception){
+                    Log::error($exception);
+                }
+            }
+
             if($order->status == "1"){
                 $order->update(['notification_status' => 'purchase_yes']);
             }else{
@@ -811,6 +865,10 @@ Class Utilities {
                     $order->update(['notification_status' => 'link_sent_no']);
                 }else{
                     $order->update(['notification_status' => 'abandon_cart_no']);
+                }
+
+                if(isset($order->renewalPaymentLinkCustomerTiggerCount)){
+                    $order->update(['notification_status' => 'renewal_link_sent_no']);
                 }
             }
 
