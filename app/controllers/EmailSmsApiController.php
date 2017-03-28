@@ -489,7 +489,7 @@ class EmailSmsApiController extends \BaseController {
         $jwt_token = Request::header('Authorization');
 
         if($jwt_token){
-            
+
             $decoded = decode_customer_token();
 
             $data['customer_id'] = $decoded->customer->_id;
@@ -505,7 +505,7 @@ class EmailSmsApiController extends \BaseController {
         }
 
         if(isset($data['customer_phone']) && $data['customer_phone'] != ""){
-            $data['phone'] = $$data['mobile'] = $data['customer_phone'];
+            $data['phone'] = $data['mobile'] = $data['customer_phone'];
         }
 
         if(isset($data['mobile']) && $data['mobile'] != ""){
