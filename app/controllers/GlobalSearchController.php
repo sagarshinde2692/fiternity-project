@@ -1351,9 +1351,12 @@ public function improvedkeywordSearch(){
         $servicecategory =   Input::json()->get('servicecategory') ? Input::json()->get('servicecategory') : array();
         $sort_clause = '';
         $keys   =         (Input::json()->get('keys')) ? Input::json()->get('keys') : array();
-
-        $category[0] = str_replace("-"," ",$category[0]);
-        $location[0] = str_replace("-"," ",$location[0]);
+        if(count($category) > 0){
+            $category[0] = str_replace("-"," ",$category[0]);
+        }
+        if(count($location) > 0){
+            $location[0] = str_replace("-"," ",$location[0]);
+        }
         /*
 
         All static filters and static clause, 
