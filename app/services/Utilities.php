@@ -696,6 +696,23 @@ Class Utilities {
                 }
             }
 
+            $allCaptures = \Capture::where('customer_email',$order->customer_email)
+                        ->where('notification_status','exists',true)
+                        ->where('notification_status','yes')
+                        ->orderBy('_id','desc')
+                        ->get();
+
+            if(count($allCaptures) > 0){
+
+                foreach ($allCaptures as $capture) {
+
+                    $capture->notification_status = "no";
+                    $capture->update();
+
+                    $this->deleteCaptureCommunication($capture);
+                }
+            }
+
 
             return "success";
 
@@ -799,6 +816,15 @@ Class Utilities {
                 try {
                     $queue_id[] = $order->customerSmsSendPaymentLinkAfter45Days;
                     $order->unset('customerSmsSendPaymentLinkAfter45Days');
+                }catch(\Exception $exception){
+                    Log::error($exception);
+                }
+            }
+
+            if((isset($order->customerSmsRenewalLinkSentBefore30Days))){
+                try {
+                    $queue_id[] = $order->customerSmsRenewalLinkSentBefore30Days;
+                    $order->unset('customerSmsRenewalLinkSentBefore30Days');
                 }catch(\Exception $exception){
                     Log::error($exception);
                 }
@@ -956,6 +982,54 @@ Class Utilities {
             try {
                 $queue_id[] = $booktrial->customerSmsPostTrialFollowup2After30Days;
                 $booktrial->unset('customerSmsPostTrialFollowup2After30Days');
+            }catch(\Exception $exception){
+                Log::error($exception);
+            }
+        }
+
+        if(!empty($queue_id)){
+
+            $sidekiq = new Sidekiq();
+            $sidekiq->delete($queue_id);
+        }
+
+    }
+
+    public function deleteCaptureCommunication($capture){
+
+        $queue_id = [];
+
+        if((isset($capture->customerSmsPostCaptureFollowup2After3Days))){
+            try {
+                $queue_id[] = $capture->customerSmsPostCaptureFollowup2After3Days;
+                $capture->unset('customerSmsPostCaptureFollowup2After3Days');
+            }catch(\Exception $exception){
+                Log::error($exception);
+            }
+        }
+
+        if((isset($capture->customerSmsPostCaptureFollowup2After7Days))){
+            try {
+                $queue_id[] = $capture->customerSmsPostCaptureFollowup2After7Days;
+                $capture->unset('customerSmsPostCaptureFollowup2After7Days');
+            }catch(\Exception $exception){
+                Log::error($exception);
+            }
+        }
+
+        if((isset($capture->customerSmsPostCaptureFollowup2After15Days))){
+            try {
+                $queue_id[] = $capture->customerSmsPostCaptureFollowup2After15Days;
+                $capture->unset('customerSmsPostCaptureFollowup2After15Days');
+            }catch(\Exception $exception){
+                Log::error($exception);
+            }
+        }
+
+        if((isset($capture->customerSmsPostCaptureFollowup2After30Days))){
+            try {
+                $queue_id[] = $capture->customerSmsPostCaptureFollowup2After30Days;
+                $capture->unset('customerSmsPostCaptureFollowup2After30Days');
             }catch(\Exception $exception){
                 Log::error($exception);
             }
