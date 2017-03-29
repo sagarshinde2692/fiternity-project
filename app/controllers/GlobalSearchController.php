@@ -1354,9 +1354,9 @@ public function improvedkeywordSearch(){
         if(count($category) > 0){
             $category[0] = str_replace("-"," ",$category[0]);
         }
-        if(count($location) > 0){
-            $location[0] = str_replace("-"," ",$location[0]);
-        }
+        // if(count($location) > 0){
+        //     $location[0] = str_replace("-"," ",$location[0]);
+        // }
         /*
 
         All static filters and static clause, 
@@ -1395,7 +1395,7 @@ public function improvedkeywordSearch(){
         }
 
         if(sizeof($location) > 0){
-         $regions_filter = '{"terms" : {  "locationtags": ["'.strtolower(implode('","', $location)).'"]}},';
+         $regions_filter = '{"terms" : {  "locationtags_slug": ["'.strtolower(implode('","', $location)).'"]}},';
      }
     
     
@@ -1480,7 +1480,7 @@ if($mustfilter_post != ''){
         "bool" : {'.$filtervalue_post.'}
     }';
 }
-$location_facets_filter = trim($city_filter,',');
+$location_facets_filter = trim($city_filter.$regions_filter,',');
 $facilities_facets_filter = trim($city_filter.$regions_filter.$geo_location_filter.$category_filter, ',');
 $offerings_facets_filter = trim($city_filter.$regions_filter.$facilities_filter.$geo_location_filter.$category_filter, ',');
 $budgets_facets_filter = trim($city_filter.$regions_filter.$facilities_filter.$offerings_filter.$geo_location_filter.$category_filter, ',');
@@ -1508,7 +1508,7 @@ $location_facets = ' "filtered_locationtags": {
     "aggs": {
         "locationstags": {
             "terms": {
-                "field": "locationtags",                    
+                "field": "locationtags_slug",                    
                 "min_doc_count": 1,
                 "size": 500,
                 "order":{"_term": "asc"}
@@ -1550,18 +1550,18 @@ $regions_facets = '
                     },"aggs": {
                     "region": {
                         "nested": {
-                            "path": "location_obj"
+                            "path": "main_location_obj"
                         },
                         "aggs": {
                             "attrs": {
                             "terms": {
-                                "field": "location_obj.name",
+                                "field": "main_location_obj.name",
                                 "order" : { "_term" : "asc" }
                             },
                             "aggs": {
                                 "attrsValues": {
                                 "terms": {
-                                    "field": "location_obj.slug",
+                                    "field": "main_location_obj.slug",
                                     "size": 100
                                 }
                                 }
@@ -1929,7 +1929,7 @@ $query = '{
     }'.$filters_post.$sort_clause.'
 }';
 
-// return $query;
+// return json_decode($query,true);
 $request = array(
     'url' => Config::get('app.es.url')."/fitternity_finder/finder/_search",
     'port' => Config::get('app.es.port'),
@@ -1938,7 +1938,7 @@ $request = array(
     );
 
 $search_results     =   es_curl_request($request);
- $search_results1    =   json_decode($search_results, true);
+$search_results1    =   json_decode($search_results, true);
 $search_request     =   Input::json()->all();
 $searchresulteresponse = Translator::translate_searchresultsv4($search_results1,$search_request,$keys);
 // $searchresulteresponse = Translator::translate_searchresultskeywordsearch($search_results1);

@@ -841,7 +841,8 @@ if (!function_exists('get_elastic_finder_documentv2')) {
             'finder_coverimage_webp' => (isset($data['coverimage']) && $data['coverimage'] != '') ? strtolower( substr($data['coverimage'], 0, -3)."webp"  ) : strtolower($data['finder_coverimage']),
             'finder_coverimage_color' => (isset($data['finder_coverimage_color']) && $data['finder_coverimage_color'] != "") ? $data['finder_coverimage_color'] : "",
             'multiaddress'            => (isset($data['multiaddress'])) ? $data['multiaddress'] : [],
-            'location_obj'            => $locationtag_object
+            'location_obj'            => $locationtag_object,
+            'main_location_obj'       => (isset($data['location'])) ? array("name"=>$data['location']['name'],"slug"=>$data['location']['slug']) : array()
                 //'trialschedules'                =>      $trialdata,
             );
 
