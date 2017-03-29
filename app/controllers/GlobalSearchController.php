@@ -1961,7 +1961,7 @@ $searchresulteresponse1 = json_encode($searchresulteresponse, true);
 
 $response       =   json_decode($searchresulteresponse1,true);
 
-Log::info('------------------keywordsearchwebv1 response ----------------',$response);
+//Log::info('------------------keywordsearchwebv1 response ----------------',$data);
 
 return Response::json($response);
 }
