@@ -2321,7 +2321,9 @@ class CustomerController extends \BaseController {
 					array(
 						'status' => 200,
 						'balance' => $customer_balance,
-						'transaction_allowed' => $customer_balance
+						'transaction_allowed' => $customer_balance,
+						'fitcash' => $balance,
+						'fitcash_plus' => $balance_fitcash_plus
 					),200
 				);
 	}
