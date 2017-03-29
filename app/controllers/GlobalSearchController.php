@@ -1561,6 +1561,8 @@ $regions_facets = '
                             "attrs": {
                             "terms": {
                                 "field": "main_location_obj.name",
+                                "min_doc_count":1,
+                                "size":"500",
                                 "order" : { "_term" : "asc" }
                             },
                             "aggs": {
