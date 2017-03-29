@@ -251,6 +251,12 @@ class RankingController extends \BaseController {
                             "name" : {"type" : "string", "index" : "not_analyzed"},                    
                             "slug" : {"type" : "string", "index" : "not_analyzed"}
                         }
+                    },
+                    "main_location_obj" : {"type" : "nested", 
+                        "properties": {
+                            "name" : {"type" : "string", "index" : "not_analyzed"},                    
+                            "slug" : {"type" : "string", "index" : "not_analyzed"}
+                        }
                     },                    
                     "trials": {
                         "properties": {
