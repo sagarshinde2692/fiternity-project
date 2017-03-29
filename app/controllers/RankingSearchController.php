@@ -2426,18 +2426,20 @@ public function getRankedFinderResultsAppv4()
                     },"aggs": {
                     "region": {
                         "nested": {
-                            "path": "location_obj"
+                            "path": "main_location_obj"
                         },
                         "aggs": {
                             "attrs": {
                             "terms": {
-                                "field": "location_obj.name",
+                                "field": "main_location_obj.name",
+                                "min_doc_count":1,
+                                "size":"500",
                                 "order" : { "_term" : "asc" }
                             },
                             "aggs": {
                                 "attrsValues": {
                                 "terms": {
-                                    "field": "location_obj.slug",
+                                    "field": "main_location_obj.slug",
                                     "size": 100
                                 }
                                 }
@@ -2447,6 +2449,29 @@ public function getRankedFinderResultsAppv4()
                 }
             }}}
         },';
+
+//         $regions_facets = '
+//     "filtered_locations": { '.$location_bool.', 
+//     "aggs":
+//     { "loccluster": {
+//         "terms": {
+//             "field": "locationcluster",
+//             "min_doc_count":1
+
+//         },"aggs": {
+//           "region": {
+//             "terms": {
+//                 "field": "location",
+//                 "min_doc_count":1,
+//                 "size":"500",
+//                 "order": {
+//                   "_term": "asc"
+//               }
+
+//           }
+//       }
+//   }}}
+// },';
 
 
         $locationtags_facets = ' 
