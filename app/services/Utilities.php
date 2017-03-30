@@ -774,7 +774,7 @@ Class Utilities {
         $queue_id = [];
         $notification_status = ['renewal_link_sent_no','link_sent_no','abandon_cart_no'];
 
-        if((isset($order->redundant_order) && $order->redundant_order == "1") || (isset($order->notification_status) && in_array($order->notification_status,$notification_status))){
+        if($order->status == "1" || (isset($order->redundant_order) && $order->redundant_order == "1") || (isset($order->notification_status) && in_array($order->notification_status,$notification_status))){
 
             if((isset($order->customerSmsSendPaymentLinkAfter3Days))){
                 try {
