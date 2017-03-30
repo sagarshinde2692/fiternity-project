@@ -3587,7 +3587,7 @@ public function yes($msg){
 		
 	public function vendorReverseMigrate()
 	{
-		$vendorIds = [];
+		$vendorIds = [1939,5988];
 		$ch = curl_init();
 		foreach($vendorIds as $vendorId){
 			$url = Config::get('app.url').'/reverse/migration/vendor/'.$vendorId;
