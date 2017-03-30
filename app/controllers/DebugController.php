@@ -18,9 +18,12 @@ use \Pubnub\Pubnub as Pubnub;
 
 class DebugController extends \BaseController {
 
+	public $fitapi;
+
 	public function __construct(FinderMailer $findermailer) {
 
 		$this->findermailer						=	$findermailer;
+		$this->fitapi = 'mongodb2';
 
 	}
 
