@@ -2241,7 +2241,7 @@ class CustomerController extends \BaseController {
 
 				if(isset($wallet[$key+1])){
 
-					$wallet[$key]['amount_fitcash'] = $value['balance'];
+					$wallet[$key]['amount_fitcash'] = $value['amount'];
 					$wallet[$key]['amount_fitcash_plus'] = 0;
 
 					if(isset($value['balance_fitcash_plus'])){
