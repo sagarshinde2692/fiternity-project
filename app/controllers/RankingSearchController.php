@@ -2302,12 +2302,14 @@ public function getRankedFinderResultsAppv4()
                 },';
         }
         $service_category_synonyms_filters = '';
+        $serviceCat = "";
         if(($category !== '')&&($category !== 'fitness studios'))
-        $serviceCat = $category;
-        if($category == "gyms"){
-            $serviceCat = "gym";
-        }
         {
+            $serviceCat = "";
+            $serviceCat = $category;
+            if($category == "gyms"){
+                $serviceCat = "gym";
+            }
             $service_category_synonyms_filters = '
                 {
                     "term": {
