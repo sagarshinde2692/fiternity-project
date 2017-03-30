@@ -3488,5 +3488,241 @@ public function yes($msg){
 		return $offerings;
 
 	}
+
+
+
+	public function serviceToVendorMigration(){
+
+		try{
+
+			$serviceToFinder =[
+			"5" => 35,
+			"2" => 7,
+			"1" => 6,
+			"3" => 8,
+			"4" => 11,
+			"19" => 12,
+			"86" => 14,
+			"111" => 32,
+			"114" => 36,
+			"123" => 10,
+			"152" => 9,
+			"154" => 44,
+			"168" => 45,
+			"180" => 42,
+			"184" => 41
+			];
+			Service::$withoutAppends=true;
+			
+			// $vendorServices = Vendorservice::where('hidden',false)->get(['category','vendor_id']);
+			$vendorServices = Vendorservice::where('hidden',false)->get(['category','vendor_id']);
+			// return $service;
+			// exit(0);
+			$vendorsChanged=array();
+			foreach ($vendorServices as $key => $value) {
+				// return $value;
+				// exit(0);
+
+				if(isset($serviceToFinder[$value['category']['primary']]) && isset($value['vendor_id'])){
+					$vendorCategoryId = $serviceToFinder[$value['category']['primary']];
+					// return $vendorServiceId;
+					// exit(0);
+					$vendorCategory = Vendorcategory::where('_id', $vendorCategoryId)->first(['vendors']);
+					// return $vendorServiceCategory;
+					// exit(0);
+					// $key = array_search($value['vendor_id'], $vendorCategory['vendors']);
+					// return gettype($key);
+					// exit(0);
+					// if(!is_int($key)){
+						// return $value['vendor_id'];
+						// exit(0);
+						$vendor = Vendor::find((int) $value['vendor_id']);
+						// return $vendor;
+						// exit(0);
+						$key = array_search($vendorCategoryId, $vendor['vendorcategory']['secondary']);
+						// return gettype($key);
+						// exit(0);
+						if(!is_int($key)){
+							// print_r("inside");
+							array_push($vendorsChanged, (int) $value['vendor_id']);
+							$vendorCategory = $vendor['vendorcategory'];
+							array_push($vendorCategory['secondary'], $vendorCategoryId);
+							$vendor->vendorcategory = $vendorCategory;
+							$vendor->update();
+							// $url = Config::get('app.url').'/reverse/migration/vendor/'.$value['vendor_id'];
+							// // return $url;
+							// // exit(0);
+							// $ch = curl_init();
+							// curl_setopt($ch, CURLOPT_URL, $url);
+							// $result = curl_exec($ch);
+							// curl_close($ch);
+							// return gettype($result);
+							// exit(0);
+						}
+					// }
+ 				
+				}
+				Log::info("Done for ".$value);
+			}
+			return array('status'=>'done','Vendors'=>$vendorsChanged);
+		}catch(Exception $exception){
+
+			$message = array(
+	        	'type'    => get_class($exception),
+	           	'message' => $exception->getMessage(),
+	           	'file'    => $exception->getFile(),
+	            'line'    => $exception->getLine(),
+	        );
+
+	        Log::error($exception);
+
+			return array('status'=>'fail','error_message'=>$message);
+		}
+
+		// print_r($return);
+	}
+		
+	public function vendorReverseMigrate()
+	{
+		$vendorIds = [];
+		$ch = curl_init();
+		foreach($vendorIds as $vendorId){
+			$url = Config::get('app.url').'/reverse/migration/vendor/'.$vendorId;
+			curl_setopt($ch, CURLOPT_URL, $url);
+			$result = curl_exec($ch);
+			Log::info("Done for vendor Id".$vendorId);
+		}
+		
+		curl_close($ch);	
+	}
+
+	public function subCatToOfferings()
+	{
+		
+		try{
+			
+			$subCatToOffering =[
+				"82"=>[462, 463, 464, 465, 466, 467],
+				"77"=>[251],
+				"79"=>[252],
+				"88"=>[253],
+				"116"=>[469],
+				"93"=>[250],
+				"94"=>[346],
+				"110"=>[12],
+				"96"=>[468],
+				"97"=>[456],
+				"20"=>[334],
+				"21"=>[65],
+				"13"=>[260],
+				"12"=>[259],
+				"6"=>[294],
+				"8"=>[293],
+				"11"=>[337],
+				"134"=>[476],
+				"14"=>[40],
+				"28"=>[35],
+				"26"=>[36],
+				"16"=>[32],
+				"25"=>[41],
+				"17"=>[39],
+				"15"=>[34],
+				"18"=>[31],
+				"27"=>[38],
+				"22"=>[33],
+				"23"=>[37],
+				"24"=>[274],
+				"142"=>[477],
+				"30"=>[326],
+				"29"=>[342],
+				"32"=>[322],
+				"38"=>[312],
+				"41"=>[333],
+				"48"=>[319],
+				"51"=>[324],
+				"53"=>[320],
+				"54"=>[315],
+				"56"=>[479],
+				"100"=>[480],
+				"83"=>[361],
+				"19"=>[362],
+				"17"=>[367],
+				"138"=>[363],
+				"40"=>[316],
+				"35"=>[321]
+
+			];
+
+			$subCatIds = array_keys($subCatToOffering);
+			// return $subCatIds;
+			// exit(0);
+			Service::$withoutAppends=true;
+			Log::info("inside subcat to offering");
+			
+			// $vendorServices = Vendorservice::where('hidden',false)->get(['category','vendor_id']);
+			$vendorServices = Vendorservice::where('hidden',false)->whereIn('category.secondary',$subCatIds)->get(['category','vendor_id']);
+			// return $vendorServices;
+			// exit(0);
+			$vendorsChanged=array();
+			foreach ($vendorServices as $key => $value) {
+				// return $value;
+				// exit(0);
+
+				if(isset($subCatToOffering[$value['category']['secondary']]) && isset($value['vendor_id'])){
+					// return $value;
+					// exit(0);
+					$offeringIds = $subCatToOffering[$value['category']['secondary']];
+					// return $offeringIds;
+					// exit(0);
+					foreach($offeringIds as $offeringId){
+						$offering = Offering::on($this->fitapi)->where('_id', $offeringId)->first(['vendors']);
+						// return $offering;
+						// continue;
+						// $key = array_search($value['vendor_id'], $offering['vendors']);
+						// return gettype($key);
+						// exit(0);
+						// if(!is_int($key)){
+							// return $value['vendor_id'];
+							// exit(0);
+							$vendor = Vendor::find((int) $value['vendor_id']);
+							// return $vendor;
+							// exit(0);
+							$key = array_search($offeringId, $vendor['filter']['offerings']);
+							// return gettype($key);
+							// exit(0);
+							if(!is_int($key)){
+								// return $vendor;
+								// exit(0);
+								// print_r("inside");
+								array_push($vendorsChanged, (int) $value['vendor_id']);
+								$filter = $vendor['filter'];
+								array_push($filter['offerings'], $offeringId);
+								$vendor->filter = $filter;
+								$vendor->update();
+							}
+						// }
+						Log::info("Done for service Id ".$value." offering Id :".$offeringId);
+					}
+					// return $vendorServiceId;
+					// exit(0);
+					
+ 				
+				}
+			}
+			return array('status'=>'done','Vendors'=>$vendorsChanged);
+		}catch(Exception $exception){
+
+			$message = array(
+	        	'type'    => get_class($exception),
+	           	'message' => $exception->getMessage(),
+	           	'file'    => $exception->getFile(),
+	            'line'    => $exception->getLine(),
+	        );
+
+	        Log::error($exception);
+
+			return array('status'=>'fail','error_message'=>$message);
+		}
+	}
     
 }
