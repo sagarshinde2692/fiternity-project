@@ -2244,17 +2244,15 @@ class CustomerController extends \BaseController {
 					$wallet[$key]['amount_fitcash'] = $value['balance'];
 					$wallet[$key]['amount_fitcash_plus'] = 0;
 
-					/*if(isset($value['balance_fitcash_plus'])){
+					if(isset($value['balance_fitcash_plus'])){
 
-						$wallet[$key]['amount_fitcash'] = abs($wallet[$key]['balance'] - $wallet[$key]['balance_fitcash_plus']);
+						$wallet[$key]['amount_fitcash'] = abs($wallet[$key]['balance'] - $wallet[$key+1]['balance']);
 						$wallet[$key]['amount_fitcash_plus'] = 0;
 
 						if(isset($wallet[$key+1]['amount_fitcash_plus'])){
-
+							$wallet[$key]['amount_fitcash_plus'] = abs($wallet[$key]['balance_fitcash_plus'] - $wallet[$key+1]['balance_fitcash_plus']);
 						}
-
-						
-					}*/
+					}
 
 
 				}else{
