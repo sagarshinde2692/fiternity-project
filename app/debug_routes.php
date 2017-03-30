@@ -2655,3 +2655,16 @@ Route::get('updatefinderspecialoffertag', function (){
 		
 	 }
  });
+
+
+
+
+ ##################################################################################################
+/*******************  Service to vendor category APIs ************************************************/
+
+Route::get('servicetovendormigration', 'DebugController@serviceToVendorMigration');
+Route::get('subcattoofferingsmigration', 'DebugController@subCatToOfferings');
+Route::get('reversemigratevendors', 'DebugController@vendorReverseMigrate');
+
+/******************  Service to vendor category API END HERE************************************************/
+#####################################################################################################
