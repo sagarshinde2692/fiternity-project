@@ -2297,11 +2297,15 @@ public function getRankedFinderResultsAppv4()
         }
         $service_category_synonyms_filters = '';
         if(($category !== '')&&($category !== 'fitness studios'))
+        $serviceCat = $category;
+        if($category == "gyms"){
+            $serviceCat = "gym";
+        }
         {
             $service_category_synonyms_filters = '
                 {
                     "term": {
-                        "service_level_data.service_category_synonyms": "'.$category.'"
+                        "service_level_data.service_category_synonyms": "'.$serviceCat.'"
                     }
                 },';
         }
