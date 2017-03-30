@@ -2226,11 +2226,11 @@ public function getRankedFinderResultsAppv4()
                 }]';
         }
         $geo_location_filter   =   ($lat != '' && $lon != '') ? '{"geo_distance" : {  "distance": "10km","distance_type":"plane", "geolocation":{ "lat":'.$lat. ',"lon":' .$lon. '}}},':'';
-        $free_trial_enable     = Input::json()->get('free_trial_enable');
+        $free_trial_enable     = Input::json()->get('trial_enable');
         $trial_filter          = '';
 
         if(intval($free_trial_enable) == 1){
-            $trial_filter      =  Input::json()->get('free_trial_enable') ? '{"term" : { "free_trial_enable" : '.intval($free_trial_enable).',"_cache": true }},' : '';
+            $trial_filter      =  Input::json()->get('trial_enable') ? '{"term" : { "free_trial_enable" : '.intval($free_trial_enable).',"_cache": true }},' : '';
         }
         // $vip_trial_filter =  Input::json()->get('vip_trial') ? '{"terms" : { "vip_trial" : ['.$vip_trial.'],"_cache": true }},' : '';
 //    $vip_trial_filter =  '{"terms" : { "vip_trial" : ['.$vip_trial.'],"_cache": true }},';

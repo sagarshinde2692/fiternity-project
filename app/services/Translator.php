@@ -1198,7 +1198,7 @@ public static function translate_searchresultsv4($es_searchresult_response,$sear
 
 				$resultobject->offer_available 	= "";
 				if(in_array($result['commercial_type'],["1","2","3"])){
-					$resultobject->offer_available = "http://b.fitn.in/iconsv1/fitmania/offer_avail_red.png";
+					$resultobject->offer_available = "https://b.fitn.in/iconsv1/fitmania/offer_avail_red.png";
 				}else{
 					$resultobject->offer_available = "";
 				}
