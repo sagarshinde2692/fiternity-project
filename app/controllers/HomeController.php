@@ -675,12 +675,14 @@ class HomeController extends BaseController {
                 "number_of_records":0},
                 "sort":{"sortfield":"popularity",
                 "order":"desc"},
-                "trialdays":[]
+                "trialdays":[],
+                "with_locationtags": 1,
+                "keys":["name"]
             }';
 
 
             $payload            =   json_decode($jsonData, true);
-            $url                =   $this->api_url."search/getfinderresultsv2";
+            $url                =   $this->api_url."search/getfinderresultsv4";
             $response           =   json_decode($this->client->post($url,['json'=>$payload])->getBody()->getContents(), true);
             $aggregationlist    =   (isset($response['results']['aggregationlist']) && $response['results']['aggregationlist']['locationtags']) ? $response['results']['aggregationlist']['locationtags'] : [];
 

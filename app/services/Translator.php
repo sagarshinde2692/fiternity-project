@@ -1407,16 +1407,15 @@ public static function translate_searchresultsv4($es_searchresult_response,$sear
 		// 	$offval->count = $off['doc_count'];
 		// 	array_push($finderresult_response->results->aggregationlist->vip_trial, $offval);
 		// }
-
-	// 	$finderresult_response->results->aggregationlist->locationtags = array();
-
-	
-	// foreach ($aggs['filtered_locationtags']['offerings']['buckets'] as $off){
-	// 	$offval = new \stdClass();
-	// 	$offval->key = $off['key'];
-	// 	$offval->count = $off['doc_count'];
-	// 	array_push($finderresult_response->results->aggregationlist->locationtags, $offval);
-	// }
+		if(isset($search_request['with_locationtags']) && $search_request['with_locationtags'] == 1){
+			$finderresult_response->results->aggregationlist->locationtags = array();
+			foreach ($aggs['filtered_locationtags']['offerings']['buckets'] as $off){
+				$offval = new \stdClass();
+				$offval->key = $off['key'];
+				$offval->count = $off['doc_count'];
+				array_push($finderresult_response->results->aggregationlist->locationtags, $offval);
+			}
+		}
 
 	
 	if(isset($aggs['filtered_trials']['level1'])){
