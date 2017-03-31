@@ -3579,7 +3579,7 @@ class CustomerController extends \BaseController {
 			$available_days = null;
 
 
-			if(isset($order->batch) && !empty($order->batch)){
+			if(isset($order->batch) && !empty($order->batch) && is_array($order->batch)){
 
 				$minDate = [];
 				$maxDate = [];
