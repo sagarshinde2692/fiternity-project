@@ -4843,20 +4843,24 @@ class SchedulebooktrialsController extends \BaseController {
                 $walletData = array(
                     "customer_id"=> $customer_id,
                     "amount"=> $cashback_amount,
+                    "amount_fitcash" => $cashback_amount,
+                    "amount_fitcash_plus" => 0,
                     "type"=>'CASHBACK',
                     "balance"=>	$customer_balance,
                     "description"=>'CASHBACK ON Invite amount - '.$cashback_amount
                 );
 
+                $this->utilities->walletTransaction($req,$order->toArray());
+
                 // return $walletData;
 
-                $wallet               	=   new \CustomerWallet($walletData);
+                /*$wallet               	=   new \CustomerWallet($walletData);
                 $last_insertion_id      =   \CustomerWallet::max('_id');
                 $last_insertion_id      =   isset($last_insertion_id) ? $last_insertion_id :0;
                 $wallet->_id          	=   ++ $last_insertion_id;
                 $wallet->save();
 
-                $customer_update 	=	\Customer::where('_id', $customer_id)->update(['balance' => intval($customer_balance)]);
+                $customer_update 	=	\Customer::where('_id', $customer_id)->update(['balance' => intval($customer_balance)]);*/
 
             }
         }

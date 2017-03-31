@@ -483,6 +483,8 @@ class CustomerController extends \BaseController {
 							$wallet_data = array(
 								'customer_id' => $customer->_id,
 								'amount' => 250,
+								'amount_fitcash' => 0,
+								'amount_fitcash_plus' => 250,
 								'type' => "REFERRAL",
 								'description' => "Referral fitcashplus",
 								'order_id' => 0
@@ -829,6 +831,8 @@ class CustomerController extends \BaseController {
 				$wallet_data = array(
 					'customer_id' => $customer->_id,
 					'amount' => 250,
+					'amount_fitcash' => 0,
+					'amount_fitcash_plus' => 250,
 					'type' => "REFERRAL",
 					'description' => "Referral fitcashplus",
 					'order_id' => 0,
@@ -3002,65 +3006,66 @@ class CustomerController extends \BaseController {
 			}
 
 			$customer_update 	=	Customer::where('_id', $customer_id)->push('applied_promotion_codes', $code, true);
-			$amounttobeadded = 0;
+			$cashback_amount = 0;
 			if($customer_update){
 				// switch($code){
-				// 	case "fitgift" :  $amounttobeadded = 2000;
+				// 	case "fitgift" :  $cashback_amount = 2000;
 				// 	break;
-				// 	case "in2017" :  $amounttobeadded = 2000;
+				// 	case "in2017" :  $cashback_amount = 2000;
                 //     break;
 				// }
-				$amounttobeadded = $fitcashcode['amount'];
+				$cashback_amount = $fitcashcode['amount'];
 				$customer 	=	Customer::find($customer_id);				
 
 
 				$customerwallet 		= 		Customerwallet::where('customer_id',$customer_id)->orderBy('_id', 'desc')->first();
 				if($customerwallet){
-					$customer_balance 	=	$customerwallet['balance'] + $amounttobeadded;				
+					$customer_balance 	=	$customerwallet['balance'] + $cashback_amount;				
 					$customer_balance_fitcashplus = $customerwallet['balance_fitcash_plus'];
 				}else{
-					$customer_balance 	=	 $amounttobeadded;
+					$customer_balance 	=	 $cashback_amount;
 					$customer_balance_fitcashplus = 0;
 				}
 				
-				$cashback_amount 	=	$amounttobeadded;
 				$walletData = array(
 					"customer_id"=> $customer_id,
 					"amount"=> $cashback_amount,
+					"amount_fitcash" => $cashback_amount,
+                    "amount_fitcash_plus" => 0,
 					"type"=>'CASHBACK',
 					"code"=>	$code,
 					"balance"=>	$customer_balance,
 					"balance_fitcash_plus"=>$customer_balance_fitcashplus,
 					"description"=>'CASHBACK ON Promotion amount - '.$cashback_amount
 					);
+
 				if($fitcashcode['type'] == "restricted"){
 					$walletData["vendor_id"] = $fitcashcode['vendor_id'];
-					$vb = array("vendor_id"=>$fitcashcode['vendor_id'],"balance"=>$amounttobeadded);
+					$vb = array("vendor_id"=>$fitcashcode['vendor_id'],"balance"=>$cashback_amount);
 					$customer_update = Customer::where('_id', $customer_id)->push('vendor_balance', $vb, true);
 				}
+
 				if($fitcashcode['type'] == "fitcashplus"){
+
 					$walletData["type"] = "FITCASHPLUS";
+					$walletData["amount_fitcash"] = 0;
+					$walletData["amount_fitcash_plus"] = $cashback_amount;
+
 					if($customerwallet){
 						$walletData["balance"] = $customerwallet['balance'];
-						$walletData["balance_fitcash_plus"] = $customerwallet['balance_fitcash_plus'] + $amounttobeadded;				
+						$walletData["balance_fitcash_plus"] = $customerwallet['balance_fitcash_plus'] + $cashback_amount;				
 					}else{
 						$walletData["balance"] = 0;
-						$walletData["balance_fitcash_plus"] = $amounttobeadded;
+						$walletData["balance_fitcash_plus"] = $cashback_amount;
 					}
+
 					$walletData["description"] = "Added Fitcash Plus on PROMOTION Rs - ".$cashback_amount;
 				}
-				$customer_balance = $walletData["balance"];
-				$customer_balance_fitcashplus = $walletData["balance_fitcash_plus"];
-				// return $walletData;
 
-				$wallet               	=   new CustomerWallet($walletData);
-				$last_insertion_id      =   CustomerWallet::max('_id');
-				$last_insertion_id      =   isset($last_insertion_id) ? $last_insertion_id :0;
-				$wallet->_id          	=   ++ $last_insertion_id;
-				$wallet->save();
-				$customer_update 	=	Customer::where('_id', $customer_id)->update(['balance' => intval($customer_balance),'balance_fitcash_plus' => intval($customer_balance_fitcashplus)]);
+				
+				$this->utilities->walletTransaction($walletData);
 
-				$resp 	= 	array('status' => 200,'message' => "Thank you. Rs ".$amounttobeadded." has been successfully added to your fitcash wallet", 'walletdata' => $wallet);
+				$resp 	= 	array('status' => 200,'message' => "Thank you. Rs ".$cashback_amount." has been successfully added to your fitcash wallet", 'walletdata' => $walletData);
 				return  Response::json($resp, 200);	
 			}
 		}
