@@ -502,6 +502,10 @@ class EmailSmsApiController extends \BaseController {
             $order = Order::find((int) $data['order_id']);
             $data['vendor_id'] = $data['finder_id'] = $order->finder_id;
             $data['vendor_name'] = $data['finder_name'] = $order->finder_name;
+
+            if("capture_type" == "renew-membership"){
+                $order->update(["renew_membership"=>"requested"]);
+            }
         }
 
         if(isset($data['customer_phone']) && $data['customer_phone'] != ""){
