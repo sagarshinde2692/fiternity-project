@@ -287,6 +287,10 @@ Class Utilities {
                 $request['balance'] = ((int) $customer['balance'] + abs($request['amount']));
             }
 
+            if($request['type'] == 'CASHBACK'){
+                $request['balance'] = ((int) $customer['balance'] + abs($request['amount']));
+            }
+
             if($request['type'] == 'REFUND'){
 
                 $request['balance'] = ((int) $customer['balance'] + abs($request['amount']));
