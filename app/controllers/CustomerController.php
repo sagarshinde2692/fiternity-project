@@ -1295,6 +1295,7 @@ class CustomerController extends \BaseController {
 				}
 
 				$value["action"] = $this->getAction($value);
+				$value["feedback"]["info"] = "Share your experience at ".ucwords($value->finder_name)." and we will make sure they are notified with it";
 
 				array_push($orders, $value);
 
@@ -3559,20 +3560,20 @@ class CustomerController extends \BaseController {
 
 		$action = null;
 
-		if(isset($order['end_date']) && strtotime($order['end_date']) >= time() && isset($order['duration_day']) && $order['duration_day'] < 360){
+		if(time() <= strtotime($order['start_date'].'+15 days') && isset($order['end_date']) && strtotime($order['end_date']) >= time() && isset($order['duration_day']) && $order['duration_day'] <= 180){
 			$action = [
 				"button_text"=>"Upgrade Membership",
 				"activity"=>"upgrade_membership",
 				"color"=>"#26ADE5",
-				"info" => "Upgrade Membership",
+				"info" => "Commit yourself for a longer duration. Upgrade your current membership with insider discounts and other benefits.",
 				"popup" =>[
-					"title"=>"Upgrade Membership Title",
-					"message"=>"Upgrade Membership Message"
+					"title"=>"Upgrade Membership",
+					"message"=>"Upgrade Membership"
 				]
 			];
 		}
 
-		if(time() <= strtotime($order['created_at'].'+29 days')){
+		if(time() <= strtotime($order['created_at'].'+10 days')){
 
 			$min_date = strtotime('+1 days');
 			$max_date = strtotime($order['created_at'].'+29 days');
@@ -3611,16 +3612,16 @@ class CustomerController extends \BaseController {
 			}
 
 			$action = [
-				"button_text"=>"Update Start Date",
+				"button_text"=>"Change Start Date",
 				"activity"=>"update_starting_date",
 				"color"=>"#7AB317",
-				"info" => "Update Start Date",
+				"info" => "Don't miss even a single day workout. Change your membership start date basis your convenience.",
 				"min_date"=> $min_date,
 				"max_date"=> $max_date,
 				"available_days"=> $available_days,
 				"popup" =>[
-					"title"=>"Upgrade Start Date Title",
-					"message"=>"Upgrade Start Date Message"
+					"title"=>"Change Start Date",
+					"message"=>"Change Start Date"
 				]
 			];
 		}
@@ -3630,46 +3631,36 @@ class CustomerController extends \BaseController {
 			$renewal_date = array();
 			$validity = (int) $order['duration_day'];
 			$start_date = $order['start_date'];
-			$current_date = date('Y-m-d');
 
 			if($validity >= 30 && $validity < 90){
 
-				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-7). "days"));
-				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-1). "days"));
-				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity+7). "days"));
-				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity+15). "days"));
-				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity+30). "days"));
+				$min_date = strtotime($start_date ."+ ".($validity-7). "days");
+				$max_date = strtotime($start_date ."+ ".($validity+30). "days");
 
 			}elseif($validity >= 90 && $validity < 180){
 
-				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-15). "days"));
-				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-7). "days"));
-				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-1). "days"));
-				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity+7). "days"));
-				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity+15). "days"));
-				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity+30). "days"));
+				$min_date = strtotime($start_date ."+ ".($validity-15). "days");
+				$max_date = strtotime($start_date ."+ ".($validity+30). "days");
 
 			}elseif($validity >= 180){
 				
-				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-30). "days"));
-				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-15). "days"));
-				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-7). "days"));
-				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-1). "days"));
-				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity+7). "days"));
-				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity+15). "days"));
-				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity+30). "days"));
+				$min_date = strtotime($start_date ."+ ".($validity-30). "days");
+				$max_date = strtotime($start_date ."+ ".($validity+30). "days");
+
 			}
 
-			if(in_array($current_date,$renewal_date)){
+			if(isset($min_date) && isset($max_date) && $min_date >= time() && time() <= $max_date){
+
+				$days_to_go = $max_date - time() / 86400;
 
 				$action = [
 					"button_text"=>"Renew Membership",
 					"activity"=>"renew_membership",
 					"color"=>"#EF1C26",
-					"info" => "Renew Membership",
+					"info" => $days_to_go." days to go for your membership to end. Renew your membership with the lowest price and assured rewards",
 					"popup" =>[
-						"title"=>"Renew Membership Title",
-						"message"=>"Renew Membership Message"
+						"title"=>"Renew Membership",
+						"message"=>"Renew Membership"
 					]
 				];
 
