@@ -3573,7 +3573,7 @@ class CustomerController extends \BaseController {
 			];
 		}
 
-		if(time() <= strtotime($order['created_at'].'+10 days')){
+		if(time() <= strtotime($order['start_date'].'+10 days')){
 
 			$min_date = strtotime('+1 days');
 			$max_date = strtotime($order['created_at'].'+29 days');
@@ -3649,7 +3649,7 @@ class CustomerController extends \BaseController {
 
 			}
 
-			if(isset($min_date) && isset($max_date) && $min_date <= time() && time() >= $max_date){
+			if(isset($min_date) && isset($max_date) && $min_date >= time() && time() <= $max_date){
 
 				$days_to_go = ceil(($max_date - time()) / 86400);
 
