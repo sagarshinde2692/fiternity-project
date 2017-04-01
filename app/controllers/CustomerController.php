@@ -3630,30 +3630,35 @@ class CustomerController extends \BaseController {
 			$renewal_date = array();
 			$validity = (int) $order['duration_day'];
 			$start_date = $order['start_date'];
+			$current_date = date('Y-m-d');
 
 			if($validity >= 30 && $validity < 90){
 
 				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-7). "days"));
 				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-1). "days"));
 				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity+7). "days"));
+				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity+15). "days"));
+				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity+30). "days"));
 
 			}elseif($validity >= 90 && $validity < 180){
 
-				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-30). "days"));
 				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-15). "days"));
 				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-7). "days"));
 				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-1). "days"));
+				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity+7). "days"));
+				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity+15). "days"));
+				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity+30). "days"));
 
 			}elseif($validity >= 180){
-
-				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-45). "days"));
+				
 				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-30). "days"));
 				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-15). "days"));
 				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-7). "days"));
 				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-1). "days"));
+				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity+7). "days"));
+				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity+15). "days"));
+				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity+30). "days"));
 			}
-
-			$current_date = date('Y-m-d');
 
 			if(in_array($current_date,$renewal_date)){
 
