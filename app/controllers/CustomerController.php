@@ -2289,7 +2289,7 @@ class CustomerController extends \BaseController {
 					'balance'=>$balance,
 					'info'=>[
 						'title'=>'What is FitCash?',
-						'description' => 'description fitcash',
+						'description' => 'Earn FitCash with every transaction you do on Fitternity. You redeem upto 10% of the booking amount in each transaction. FitCash can be used for any booking or purchase on Fitternity ranging from workout sessions, memberships and healthy tiffin subscriptions',
 						'short_description' => "short"."\n"."description"."\n"."description"
 					]
 				],
@@ -2298,7 +2298,7 @@ class CustomerController extends \BaseController {
 					'balance'=>$balance_fitcash_plus,
 					'info'=>[
 						'title'=>'What is FitCash+?',
-						'description' => 'description',
+						'description' => 'With FitCash Plus there is no restriction on redeeming - you can use the entire amount in your transaction! FitCash can be used for any booking or purchase on Fitternity ranging from workout sessions, memberships and healthy tiffin subscriptions.',
 						'short_description' => "short"."\n"."description"."\n"."description"
 					]
 				],
