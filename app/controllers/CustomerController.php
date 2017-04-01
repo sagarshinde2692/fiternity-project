@@ -1295,7 +1295,7 @@ class CustomerController extends \BaseController {
 				}
 
 				$value["action"] = $this->getAction($value);
-				$value["feedback"]["info"] = "Share your experience at and we will make sure they are notified with it";
+				$value["feedback"] = ["info"=>"Share your experience at ".ucwords($finderarr->title)." and we will make sure they are notified with it"];
 
 				array_push($orders, $value);
 
