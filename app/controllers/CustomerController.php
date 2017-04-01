@@ -3649,7 +3649,7 @@ class CustomerController extends \BaseController {
 
 			}
 
-			if(isset($min_date) && isset($max_date) && $min_date >= time() && time() <= $max_date){
+			if(isset($min_date) && isset($max_date) && time() >= $min_date  && time() <= $max_date){
 
 				$days_to_go = ceil(($max_date - time()) / 86400);
 
