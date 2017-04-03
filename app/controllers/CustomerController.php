@@ -1394,7 +1394,7 @@ class CustomerController extends \BaseController {
 		$jwt_token = Request::header('Authorization');
 		$decoded = $this->customerTokenDecode($jwt_token);
 
-		return $this->orderHistory($decoded->customer->_id,$offset,$limit);
+		return $this->orderHistory($decoded->customer->email,$offset,$limit);
 	}
 
 	public function getAllBookmarks(){
@@ -3210,7 +3210,7 @@ class CustomerController extends \BaseController {
 		$response['bankList'] = $bankList;
 	    return $response;
 	}
-	
+
 
 	public function orderDetail($order_id){
 
