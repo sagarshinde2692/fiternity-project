@@ -3210,54 +3210,7 @@ class CustomerController extends \BaseController {
 		$response['bankList'] = $bankList;
 	    return $response;
 	}
-
-
-	{
-    "order_id" : 4484,
-    "service" : {
-        "start_date" : 1456703434,
-        "expiry" : 15324234324,
-        "name" : "Zumba with Sucheta Pal",
-        "duration" : "6 months",
-        "amount" : "5000",
-        "subscription_code" : 82608
-    },
-    "finder" : {
-        "id" : 675,
-        "address" : "Bandra West me kahi ka address",
-        "location" : {
-            "name" : "Bandra West",
-            "longitude" : 123.234,
-            "lattitude" : 345.345435
-        },
-        "cover_image" : "some url"
-    },
-    "extra_info" : {
-        "contact_name" : "Madhuri Dixit",
-        "contact_number" : 9999999999,
-        "what_to_carry" : "Lorem Ipsum",
-        "what_to_expect" : "Lorem Ipsum"
-    },
-    "renew" : {
-        "info" : "Text about what renew is.",
-        "url" : "some url to hit for renew"
-    },
-    "change_date" : {
-        "info" : "Text about changing date.",
-        "url" : "some url to hit to change the date.",
-        "max_date" : "dd-mm-yyyy",
-        "min_date" : "dd-mm-yyyy",
-        "allowed_days" : ["sunday", "wednesday"]
-    },
-    "upgrade_membership": true;,
-    "review" : {
-        "text" : "Current users review",
-        "rating" "current users rating."
-    }
-}
-
-
-
+	
 
 	public function orderDetail($order_id){
 
