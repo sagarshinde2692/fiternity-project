@@ -883,4 +883,6 @@ Route::post('displayemi','CustomerController@displayEmi');
 Route::get('trainer/getavailableslots',array('as' => 'trainer/getavailableslots','uses' => 'TrainerController@getAvailableSlots'));
 Route::group(array('before' => 'validatetoken'), function() {
 	Route::post('trainer/bookslot', array('as' => 'trainer.bookslot','uses' => 'TrainerController@bookSlot'));
+	Route::post('transaction/update',array('as' => 'transaction.update','uses' => 'TransactionController@update'));
+	Route::get('customer/orderdetail/{order_id}',array('as' => 'customer.orderdetail','uses' => 'CustomerController@orderDetail'));
 });

@@ -1288,7 +1288,8 @@ class FindersController extends \BaseController {
 			'uploads' => (isset($data['uploads'])) ? $data['uploads'] : [],
 			'booktrial_id' => (isset($data['booktrialid'])) ? intval($data['booktrialid']) : '',
 			'source' => (isset($data['source'])) ? $data['source'] : 'customer',
-			'status' => '1'
+			'status' => '1',
+			'order_id' => (isset($data['order_id'])) ? intval($data['order_id']) : '',
 		];
 
 		(isset($_GET['device_type']) && $_GET['device_type'] != "") ? $reviewdata['source'] = strtolower($_GET['device_type']) : null ;

@@ -486,6 +486,56 @@ class EmailSmsApiController extends \BaseController {
             }
         }
 
+        $jwt_token = Request::header('Authorization');
+
+        if($jwt_token){
+
+            $decoded = decode_customer_token();
+
+            $data['customer_id'] = $decoded->customer->_id;
+            $data['customer_name'] = $decoded->customer->name;
+            $data['customer_email'] = $decoded->customer->email;
+            $data['customer_phone'] = $decoded->customer->contact_no;
+        }
+
+        if(isset($data['order_id']) && $data['order_id'] != ""){
+            $order = Order::find((int) $data['order_id']);
+            $data['vendor_id'] = $data['finder_id'] = $order->finder_id;
+            $data['vendor_name'] = $data['finder_name'] = $order->finder_name;
+
+            if($data["capture_type"] == "renew-membership"){
+                $order->update(["renew_membership"=>"requested"]);
+            }
+        }
+
+        if(isset($data['customer_phone']) && $data['customer_phone'] != ""){
+            $data['phone'] = $data['mobile'] = $data['customer_phone'];
+        }
+
+        if(isset($data['mobile']) && $data['mobile'] != ""){
+            $data['customer_phone'] = $data['phone'] = $data['mobile'];
+        }
+
+        if(isset($data['customer_name']) && $data['customer_name'] != ""){
+            $data['name'] = $data['customer_name'];
+        }
+
+        if(isset($data['customer_email']) && $data['customer_email'] != ""){
+            $data['email'] = $data['customer_email'];
+        }
+
+        if(isset($data['phone']) && $data['phone'] != ""){
+            $data['customer_phone'] = $data['mobile'] = $data['phone'];
+        }
+
+        if(isset($data['name']) && $data['name'] != ""){
+            $data['customer_name'] = $data['name'];
+        }
+
+        if(isset($data['email']) && $data['email'] != ""){
+            $data['customer_email'] = $data['email'];
+        }
+
         array_set($data, 'capture_status', 'yet to connect');
 
         if(isset($data['preferred_starting_date']) && $data['preferred_starting_date'] != "" && $data['preferred_starting_date'] != "-"){

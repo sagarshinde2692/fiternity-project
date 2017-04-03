@@ -130,11 +130,14 @@ Class CustomerReward {
                     "customer_id"=>$order['customer_id'],
                     "order_id"=>$order['_id'],
                     "amount"=>$cashback_amount,
+                    "amount_fitcash" => $cashback_amount,
+                    "amount_fitcash_plus" => 0,
                     "type"=>'CASHBACK',
                     "description"=>'CASHBACK ON PURCHASE - '.$cashback_amount
                 );
 
-                $utilities->walletTransaction($req);
+                $utilities->walletTransaction($req,$order->toArray());
+                
                 $order->update(array('cashback_amount'=>$cashback_amount));
 
             }elseif(isset($order['reward_id']) && is_array($order['reward_id']) && !empty($order['reward_id'])){
@@ -169,11 +172,13 @@ Class CustomerReward {
                     "order_id"=>$order['_id'],
                     "customer_id"=> intval($order['customer_id']),
                     "amount"=> intval($order['amount']),
+                    "amount_fitcash" => intval($order['amount']),
+                    "amount_fitcash_plus" => 0,
                     "type"=>'CASHBACK',
                     "description"=>'CASHBACK ON Paid Booktrial amount - '.intval($order['amount'])
                 );
 
-                $utilities->walletTransaction($walletData);
+                $utilities->walletTransaction($walletData,$order->toArray());
 
             }elseif(isset($order['type']) && $order['type'] == 'events' && isset($order['customer_id']) && isset($order['amount']) && isset($order['ticket_id']) && in_array(intval($order['ticket_id']), $valid_ticket_ids )){
 
@@ -181,11 +186,13 @@ Class CustomerReward {
                     "order_id"=>$order['_id'],
                     "customer_id"=> intval($order['customer_id']),
                     "amount"=> intval($order['amount']),
+                    "amount_fitcash" => intval($order['amount']),
+                    "amount_fitcash_plus" => 0,
                     "type"=>'CASHBACK',
                     "description"=>'CASHBACK ON Events Tickets amount - '.intval($order['amount'])
                 );
 
-                $utilities->walletTransaction($walletData);
+                $utilities->walletTransaction($walletData,$order->toArray());
             }
             
         }

@@ -246,55 +246,72 @@ class TransactionController extends \BaseController {
 
     public function update(){
 
+        $decoded = decode_customer_token();
+
         $rules = array(
-            "customer_name"=>"required",
-            "customer_email"=>"email|required",
-            "customer_phone"=>"required",
-            "payment_mode"=>"required",
             "order_id"=>"numeric|required"
         );
 
         $data = Input::json()->all();
 
+        Log::info("transaction update ----------------",$data);
+
         $validator = Validator::make($data,$rules);
 
         if ($validator->fails()) {
 
-            return Response::json(array('status' => 401,'message' => $this->errorMessage($validator->errors())),401);
+            return Response::json(array('status' => 401,'message' => error_message($validator->errors())),401);
 
         }else{
 
             $order_id = (int) $data['order_id'];
-
-            $order = array();
+            $message = "";
 
             $order = Order::find($order_id);
 
-            if(count($order) < 1){
+            if(!$order){
 
                 $resp   =   array("status" => 401,"message" => "Order Does Not Exists");
                 return Response::json($resp,$resp["status"]);
             }
 
-            if(isset($order->status) && $order->status == '1' && isset($order->order_action) && $order->order_action == 'bought'){
-
-                $resp   =   array("status" => 401,"message" => "You have purchased this membership");
+            if($order->customer_email != $decoded->customer->email){
+                $resp   =   array("status" => 401,"message" => "Invalid Customer");
                 return Response::json($resp,$resp["status"]);
             }
 
-            if(isset($order->cashback) && $order->cashback == true && isset($order->status) && $order->status == "1"){
+            if($order->status == "1" && isset($data['preferred_starting_date']) && $data['preferred_starting_date']  != '' && $data['preferred_starting_date']  != '-'){
 
-                $resp   =   array("status" => 401,"message" => "We have already received your request");
-                return Response::json($resp,$resp["status"]);
+                $preferred_starting_date = date('Y-m-d 00:00:00', strtotime($data['preferred_starting_date']));
+
+                $data['start_date'] = $preferred_starting_date;
+                $data['preferred_starting_date'] = $preferred_starting_date;
+                $data['end_date'] = date('Y-m-d 00:00:00', strtotime($data['preferred_starting_date']."+ ".($order->duration_day-1)." days"));
+
+                $data['preferred_starting_change_date'] = date("Y-m-d H:i:s");
+
+                $order->update($data);
+
+                $emailData = $order->toArray();
+                $emailData['preferred_starting_updated'] = true;
+
+                $this->customermailer->sendPgOrderMail($emailData);
+                $this->findermailer->sendPgOrderMail($emailData);
+
+                $message = "Your Preferred Starting date has been change Successfull";
+
             }
 
-            if(isset($order->reward_ids) && count($order->reward_ids) > 0 && isset($order->status) && $order->status == "1"){
+            if($order->status == "1" && isset($data['updrage_membership']) && $data['updrage_membership'] == "requested"){
 
-                $resp   =   array("status" => 401,"message" => "We have already received your request");
-                return Response::json($resp,$resp["status"]);
+                $data['upgrade'] = ["requested"=>time()];
+
+                $order->update($data);
+
+                $message = "Upgrade request has been noted. We will call you shortly.";
             }
 
-
+            return Response::json(array('status' => 200,'message' => $message),200);
         }
 
     }
@@ -384,6 +401,8 @@ class TransactionController extends \BaseController {
                         'customer_id'=>$data['customer_id'],
                         'order_id'=>$data['order_id'],
                         'amount'=>$data['wallet_amount'],
+                        'amount_fitcash' => $data['wallet_amount'],
+                        'amount_fitcash_plus' => 0,
                         'type'=>'DEBIT',
                         'description'=>'Paid for Order ID: '.$data['order_id'],
                     );
@@ -414,6 +433,8 @@ class TransactionController extends \BaseController {
                         'customer_id'=>$data['customer_id'],
                         'order_id'=>$data['order_id'],
                         'amount'=>$data['wallet_amount'],
+                        'amount_fitcash' => $data['wallet_amount'],
+                        'amount_fitcash_plus' => 0,
                         'type'=>'DEBIT',
                         'description'=>'Paid for Order ID: '.$data['order_id'],
                     );
@@ -474,8 +495,14 @@ class TransactionController extends \BaseController {
 
                     $wallet_amount = $data['wallet_amount'] = $cashback_detail['only_wallet']['fitcash'] + $cashback_detail['only_wallet']['fitcash_plus'];
 
+                    $fitcash = $cashback_detail['only_wallet']['fitcash'];
+                    $fitcash_plus = $cashback_detail['only_wallet']['fitcash_plus'];
+
                     if(isset($data['cashback']) && $data['cashback'] == true){
                         $wallet_amount = $data['wallet_amount'] = $cashback_detail['discount_and_wallet']['fitcash'] + $cashback_detail['discount_and_wallet']['fitcash_plus'];
+
+                        $fitcash = $cashback_detail['discount_and_wallet']['fitcash'];
+                        $fitcash_plus = $cashback_detail['discount_and_wallet']['fitcash_plus'];
                     }
 
                     $amount = $data['amount'] - $wallet_amount;
@@ -484,6 +511,8 @@ class TransactionController extends \BaseController {
                         'customer_id'=>$data['customer_id'],
                         'order_id'=>$data['order_id'],
                         'amount'=>$data['wallet_amount'],
+                        'amount_fitcash' => $fitcash,
+                        'amount_fitcash_plus' => $fitcash_plus,
                         'type'=>'DEBIT',
                         'description'=>'Paid for Order ID: '.$data['order_id'],
                     );
@@ -508,8 +537,14 @@ class TransactionController extends \BaseController {
 
                     $wallet_amount = $data['wallet_amount'] = $cashback_detail['only_wallet']['fitcash'] + $cashback_detail['only_wallet']['fitcash_plus'];
 
+                    $fitcash = $cashback_detail['only_wallet']['fitcash'];
+                    $fitcash_plus = $cashback_detail['only_wallet']['fitcash_plus'];
+
                     if(isset($data['cashback']) && $data['cashback'] == true){
                         $wallet_amount = $data['wallet_amount'] = $cashback_detail['discount_and_wallet']['fitcash'] + $cashback_detail['discount_and_wallet']['fitcash_plus'];
+
+                        $fitcash = $cashback_detail['discount_and_wallet']['fitcash'];
+                        $fitcash_plus = $cashback_detail['discount_and_wallet']['fitcash_plus'];
                     }
 
                     $amount = $data['amount'] - $wallet_amount;
@@ -518,6 +553,8 @@ class TransactionController extends \BaseController {
                         'customer_id'=>$data['customer_id'],
                         'order_id'=>$data['order_id'],
                         'amount'=>$data['wallet_amount'],
+                        'amount_fitcash' => $fitcash,
+                        'amount_fitcash_plus' => $fitcash_plus,
                         'type'=>'DEBIT',
                         'description'=>'Paid for Order ID: '.$data['order_id'],
                     );
