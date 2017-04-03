@@ -2159,7 +2159,7 @@ class RankingSearchController extends \BaseController
 public function getRankedFinderResultsAppv4()
     {
         $startTimeOfAPI = time();
-        Log::info("Api started at : ".$startTimeOfAPI);
+        // Log::info("Api started at : ".$startTimeOfAPI);
         $searchParams       = array();
         $facetssize         =  $this->facetssize;
         $rankField          = 'rankv2';
@@ -2176,9 +2176,9 @@ public function getRankedFinderResultsAppv4()
         $lat                =         (isset($locat['lat'])) ? $locat['lat']  : '';
         $lon                =         (isset($locat['long'])) ? $locat['long']  : '';
         $keys               =         (Input::json()->get('keys')) ? Input::json()->get('keys') : array();
-        Log::info("category being searched : ".time());
+        // Log::info("category being searched : ".time());
         $category           = newcategorymapping(Input::json()->get('category'));
-        Log::info("category being searched ended : ".time());
+        // Log::info("category being searched ended : ".time());
         $trial_time_from    = Input::json()->get('session-start-time') !== null ? Input::json()->get('session-start-time') : '';
         $trial_time_to      = Input::json()->get('session-end-time') !== null ? Input::json()->get('session-end-time') : '';
         $region             = Input::json()->get('regions');
@@ -2200,7 +2200,7 @@ public function getRankedFinderResultsAppv4()
         $object_keys        = array();
 
         $locationCount = 0;
-        Log::info("Location being searched : ".time());
+        // Log::info("Location being searched : ".time());
         if(count($region) == 1){
             $region_slug = str_replace(' ', '-',strtolower(trim($region[0])));
             $locationCount = Location::where('slug',$region_slug)->count();
@@ -2213,10 +2213,10 @@ public function getRankedFinderResultsAppv4()
             $lon = "";
             $locationCount = count($region);
         }
-        Log::info("Location being searched over : ".time());
+        // Log::info("Location being searched over : ".time());
         $offering_regex = $this->_getOfferingRegex($category);
         $must_not_filter = '';
-        Log::info("Search query building : ".time());
+        // Log::info("Search query building : ".time());
         if($category === ''){
             $must_not_filter = ',
                 "must_not": [{
@@ -2613,7 +2613,7 @@ public function getRankedFinderResultsAppv4()
             "aggs": {'.$facetsvalue.'},
             '.$filters_post.$sort.'
         }';
-        Log::info("Search query building done : ".time());
+        // Log::info("Search query building done : ".time());
 
 //    return json_decode($body,true);
 
@@ -2633,11 +2633,11 @@ public function getRankedFinderResultsAppv4()
 //     );
 
         $search_results     =   es_curl_request($request);
-        Log::info("Response from ES : ".time());
+        // Log::info("Response from ES : ".time());
         $search_results1    =   json_decode($search_results, true);
         $search_request     =   Input::json()->all();
         $searchresulteresponse = Translator::translate_searchresultsv4($search_results1,$search_request,$keys);
-        Log::info("Response from Translator : ".time());
+        // Log::info("Response from Translator : ".time());
         $searchresulteresponse->metadata = $this->getOfferingHeader($category,$location);
         $searchresulteresponse->metadata['total_records'] = intval($search_results1['hits']['total']);
         $searchresulteresponse->metadata['number_of_records'] = intval($size);
@@ -2661,7 +2661,7 @@ public function getRankedFinderResultsAppv4()
             );
         }
         $timetaken = time() - $startTimeOfAPI;
-        Log::info("Total Time taken : ".$timetaken);
+        // Log::info("Total Time taken : ".$timetaken);
         return Response::json($response);
 
     }
