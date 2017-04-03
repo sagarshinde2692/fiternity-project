@@ -204,6 +204,8 @@ Class Utilities {
             $customerwallet->order_id = (int) $request['order_id'];
             $customerwallet->type = $request['type'];
             $customerwallet->amount = (int) $request['amount'];
+            $customerwallet->amount_fitcash = (int)$request['amount'];
+            $customerwallet->amount_fitcash_plus = 0;
             $customerwallet->balance = (int) $request['balance'];
             isset($request['description']) ? $customerwallet->description = $request['description'] : null;
             $customerwallet->save();
@@ -251,6 +253,8 @@ Class Utilities {
             $customerwallet->order_id = (int) $request['order_id'];
             $customerwallet->type = $request['type'];
             $customerwallet->amount = (int) $request['amount'];
+            $customerwallet->amount_fitcash = (int)$request['amount'];
+            $customerwallet->amount_fitcash_plus = 0;
             $customerwallet->balance = (int) $request['balance'];
             isset($request['description']) ? $customerwallet->description = $request['description'] : null;
             $customerwallet->save();
@@ -289,6 +293,9 @@ Class Utilities {
 
                 $request['balance'] = ((int) $customer['balance'] + abs($request['amount']));
 
+                $request['amount_fitcash'] = $request['amount'];
+                $request['amount_fitcash_plus'] = 0;
+
                 if($data && isset($data['cashback_detail']) && isset($data['cashback_detail']['only_wallet']) && isset($data['cashback_detail']['discount_and_wallet'])){
 
                     $cashback_detail = $data['cashback_detail'];
@@ -296,10 +303,16 @@ Class Utilities {
                     $request['balance'] = $customer['balance'] + $cashback_detail['only_wallet']['fitcash'];
                     $request['balance_fitcash_plus'] = $customer['balance_fitcash_plus'] + $cashback_detail['only_wallet']['fitcash_plus'];
 
+                    $request['amount_fitcash'] = $cashback_detail['only_wallet']['fitcash'];
+                    $request['amount_fitcash_plus'] = $cashback_detail['only_wallet']['fitcash_plus'];
+
                     if(isset($data['cashback']) && $data['cashback'] == true){
 
                         $request['balance'] = $customer['balance'] + $cashback_detail['discount_and_wallet']['fitcash'];
                         $request['balance_fitcash_plus'] = $customer['balance_fitcash_plus'] + $cashback_detail['discount_and_wallet']['fitcash_plus'];
+
+                        $request['amount_fitcash'] = $cashback_detail['discount_and_wallet']['fitcash'];
+                        $request['amount_fitcash_plus'] = $cashback_detail['discount_and_wallet']['fitcash_plus'];
                     }
 
                 }
@@ -317,10 +330,16 @@ Class Utilities {
                 $request['balance'] = $customer['balance'] - $cashback_detail['only_wallet']['fitcash'];
                 $request['balance_fitcash_plus'] = $customer['balance_fitcash_plus'] - $cashback_detail['only_wallet']['fitcash_plus'];
 
+                $request['amount_fitcash'] = $cashback_detail['only_wallet']['fitcash'];
+                $request['amount_fitcash_plus'] = $cashback_detail['only_wallet']['fitcash_plus'];
+
                 if(isset($data['cashback']) && $data['cashback'] == true){
 
                     $request['balance'] = $customer['balance'] - $cashback_detail['discount_and_wallet']['fitcash'];
                     $request['balance_fitcash_plus'] = $customer['balance_fitcash_plus'] - $cashback_detail['discount_and_wallet']['fitcash_plus'];
+
+                    $request['amount_fitcash'] = $cashback_detail['discount_and_wallet']['fitcash'];
+                    $request['amount_fitcash_plus'] = $cashback_detail['discount_and_wallet']['fitcash_plus'];
                 }
             }
 
@@ -330,11 +349,20 @@ Class Utilities {
             $max_id = (isset($id) && !empty($id)) ? $id : 0;
             $customerwallet->_id = $max_id + 1;
             $customerwallet->customer_id = $customer_id;
-            $customerwallet->order_id = (int) $request['order_id'];
+            ($request['order_id'] != 0) ? $customerwallet->order_id = (int) $request['order_id'] : null;
             $customerwallet->type = $request['type'];
             $customerwallet->amount = (int) $request['amount'];
             $customerwallet->balance = (int) $request['balance'];
             $customerwallet->balance_fitcash_plus = (int) $request['balance_fitcash_plus'];
+
+            if(isset($request['amount_fitcash'])){
+                $customerwallet->amount_fitcash = (int)$request['amount_fitcash'];
+            }
+
+            if(isset($request['amount_fitcash_plus'])){
+                $customerwallet->amount_fitcash_plus = (int)$request['amount_fitcash_plus'];
+            }
+
             isset($request['description']) ? $customerwallet->description = $request['description'] : null;
             $customerwallet->save();
 

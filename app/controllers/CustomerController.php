@@ -1213,6 +1213,7 @@ class CustomerController extends \BaseController {
 
 		$orderData 			= 	Order::active()->where('customer_email','=',$customer_email)->whereIn('type',$membership_types)->where('schedule_date','exists',false)->where(function($query){$query->orWhere('preferred_starting_date','exists',true)->orWhere('start_date','exists',true);})->skip($offset)->take($limit)->orderBy('_id', 'desc')->get();
 
+
 		if(count($orderData) > 0){
 
 			foreach ($orderData as $key => $value) {
@@ -1238,6 +1239,7 @@ class CustomerController extends \BaseController {
 				}
 
 				$value["action"] = $this->getAction($value);
+				$value["feedback"] = ["info"=>"Share your experience at ".ucwords($finderarr->title)." and we will make sure they are notified with it"];
 
 				array_push($orders, $value);
 
@@ -2170,8 +2172,8 @@ class CustomerController extends \BaseController {
 		$wallet = Customerwallet::where('customer_id',$request['customer_id'])
 		->where('amount','!=',0)
 		->orderBy('_id', 'DESC')
-		->skip($limit)
-		->take($offset)
+		//->skip($limit)
+		//->take($offset)
 		->get();
 
 		$wallet_balance = 0;
@@ -2185,6 +2187,34 @@ class CustomerController extends \BaseController {
 				if(!isset($value['order_id'])){
 					$wallet[$key]['order_id'] = 0;
 				}
+
+				if(isset($wallet[$key+1])){
+
+					$wallet[$key]['amount_fitcash'] = $value['amount'];
+					$wallet[$key]['amount_fitcash_plus'] = 0;
+
+					if(isset($value['balance_fitcash_plus'])){
+
+						$wallet[$key]['amount_fitcash'] = abs($wallet[$key]['balance'] - $wallet[$key+1]['balance']);
+						$wallet[$key]['amount_fitcash_plus'] = 0;
+
+						if(isset($wallet[$key+1]['balance_fitcash_plus'])){
+							$wallet[$key]['amount_fitcash_plus'] = abs($wallet[$key]['balance_fitcash_plus'] - $wallet[$key+1]['balance_fitcash_plus']);
+						}
+					}
+
+
+				}else{
+
+					$wallet[$key]['amount_fitcash'] = $value['amount'];
+					$wallet[$key]['amount_fitcash_plus'] = 0;
+
+					if(isset($value['balance_fitcash_plus'])){
+						$wallet[$key]['amount_fitcash_plus'] = $value['amount'];
+						$wallet[$key]['amount_fitcash'] = 0;
+					}
+				}
+
 			}
 
 			$balance = (isset($wallet[0]['balance']) && $wallet[0]['balance'] != "") ? (int) $wallet[0]['balance'] : 0 ;
@@ -2198,6 +2228,24 @@ class CustomerController extends \BaseController {
 				'status' => 200,
 				'data' => $wallet,
 				'wallet_balance'=>$wallet_balance,
+				'fitcash' => [
+					'title' => 'FITCASH',
+					'balance'=>$balance,
+					'info'=>[
+						'title'=>'What is FitCash?',
+						'description' => 'Earn FitCash with every transaction you do on Fitternity. You redeem upto 10% of the booking amount in each transaction. FitCash can be used for any booking or purchase on Fitternity ranging from workout sessions, memberships and healthy tiffin subscriptions',
+						'short_description' => "short"."\n"."description"."\n"."description"
+					]
+				],
+				'fitcash_plus' => [
+					'title' => 'FITCASH+',
+					'balance'=>$balance_fitcash_plus,
+					'info'=>[
+						'title'=>'What is FitCash+?',
+						'description' => 'With FitCash Plus there is no restriction on redeeming - you can use the entire amount in your transaction! FitCash can be used for any booking or purchase on Fitternity ranging from workout sessions, memberships and healthy tiffin subscriptions.',
+						'short_description' => "short"."\n"."description"."\n"."description"
+					]
+				],
 				),200
 
 			);
@@ -2220,7 +2268,9 @@ class CustomerController extends \BaseController {
 					array(
 						'status' => 200,
 						'balance' => $customer_balance,
-						'transaction_allowed' => $customer_balance
+						'transaction_allowed' => $customer_balance,
+						'fitcash' => $balance,
+						'fitcash_plus' => $balance_fitcash_plus
 					),200
 				);
 	}
@@ -2901,69 +2951,71 @@ class CustomerController extends \BaseController {
 			}
 
 			$customer_update 	=	Customer::where('_id', $customer_id)->push('applied_promotion_codes', $code, true);
-			$amounttobeadded = 0;
+			$cashback_amount = 0;
 			if($customer_update){
 				// switch($code){
-				// 	case "fitgift" :  $amounttobeadded = 2000;
+				// 	case "fitgift" :  $cashback_amount = 2000;
 				// 	break;
-				// 	case "in2017" :  $amounttobeadded = 2000;
+				// 	case "in2017" :  $cashback_amount = 2000;
                 //     break;
 				// }
-				$amounttobeadded = $fitcashcode['amount'];
+				$cashback_amount = $fitcashcode['amount'];
 				$customer 	=	Customer::find($customer_id);				
 
 
 				$customerwallet 		= 		Customerwallet::where('customer_id',$customer_id)->orderBy('_id', 'desc')->first();
 				if($customerwallet){
-					$customer_balance 	=	$customerwallet['balance'] + $amounttobeadded;				
+					$customer_balance 	=	$customerwallet['balance'] + $cashback_amount;				
 					$customer_balance_fitcashplus = $customerwallet['balance_fitcash_plus'];
 				}else{
-					$customer_balance 	=	 $amounttobeadded;
+					$customer_balance 	=	 $cashback_amount;
 					$customer_balance_fitcashplus = 0;
 				}
 				
-				$cashback_amount 	=	$amounttobeadded;
 				$walletData = array(
 					"customer_id"=> $customer_id,
 					"amount"=> $cashback_amount,
+					"amount_fitcash" => $cashback_amount,
+                    "amount_fitcash_plus" => 0,
 					"type"=>'CASHBACK',
 					"code"=>	$code,
 					"balance"=>	$customer_balance,
 					"balance_fitcash_plus"=>$customer_balance_fitcashplus,
 					"description"=>'CASHBACK ON Promotion amount - '.$cashback_amount
 					);
+
 				if($fitcashcode['type'] == "restricted"){
 					$walletData["vendor_id"] = $fitcashcode['vendor_id'];
-					$vb = array("vendor_id"=>$fitcashcode['vendor_id'],"balance"=>$amounttobeadded);
+					$vb = array("vendor_id"=>$fitcashcode['vendor_id'],"balance"=>$cashback_amount);
 					$customer_update = Customer::where('_id', $customer_id)->push('vendor_balance', $vb, true);
 				}
+
 				if($fitcashcode['type'] == "fitcashplus"){
+
 					$walletData["type"] = "FITCASHPLUS";
+					$walletData["amount_fitcash"] = 0;
+					$walletData["amount_fitcash_plus"] = $cashback_amount;
+
 					if($customerwallet){
 						$walletData["balance"] = $customerwallet['balance'];
-						$walletData["balance_fitcash_plus"] = $customerwallet['balance_fitcash_plus'] + $amounttobeadded;				
+						$walletData["balance_fitcash_plus"] = $customerwallet['balance_fitcash_plus'] + $cashback_amount;				
 					}else{
 						$walletData["balance"] = 0;
-						$walletData["balance_fitcash_plus"] = $amounttobeadded;
+						$walletData["balance_fitcash_plus"] = $cashback_amount;
 					}
+
 					$walletData["description"] = "Added Fitcash Plus on PROMOTION Rs - ".$cashback_amount;
 				}
-				$customer_balance = $walletData["balance"];
-				$customer_balance_fitcashplus = $walletData["balance_fitcash_plus"];
-				// return $walletData;
 
-				$wallet               	=   new CustomerWallet($walletData);
-				$last_insertion_id      =   CustomerWallet::max('_id');
-				$last_insertion_id      =   isset($last_insertion_id) ? $last_insertion_id :0;
-				$wallet->_id          	=   ++ $last_insertion_id;
-				$wallet->save();
-				$customer_update 	=	Customer::where('_id', $customer_id)->update(['balance' => intval($customer_balance),'balance_fitcash_plus' => intval($customer_balance_fitcashplus)]);
+				
+				$this->utilities->walletTransaction($walletData);
 
-				$resp 	= 	array('status' => 200,'message' => "Thank you. Rs ".$amounttobeadded." has been successfully added to your fitcash wallet", 'walletdata' => $wallet);
+				$resp 	= 	array('status' => 200,'message' => "Thank you. Rs ".$cashback_amount." has been successfully added to your fitcash wallet", 'walletdata' => $walletData);
 				return  Response::json($resp, 200);	
 			}
 		}
 	}
+
 
 	public function emailOpened(){
 
@@ -3226,6 +3278,8 @@ class CustomerController extends \BaseController {
 	        return Response::json($resp,$resp["status"]);
 	    }
 
+	    $finder = Finder::find((int)$order->finder_id);
+
 	    $data = [];
 	    $data['order_id'] = $order_id;
 	    $data['start_date'] = strtotime($order->start_date);
@@ -3235,80 +3289,116 @@ class CustomerController extends \BaseController {
 	    $data['subscription_code'] = $order->code;
 	    $data['amount'] = $order->amount;
 
-	    $finder = [];
-	    $finder['id'] = $order->finder_id;
-	    $finder['address'] = $order->finder_address;
-	    $finder['location'] = $order->finder_location;
-	    $finder['geo'] = ["lat"=>$order->finder_lat,"lon"=>$order->finder_lon];
-	    $data['finder'] = $finder;
+	    $finderData = [];
+	    $finderData['id'] = $order->finder_id;
+	    $finderData['name'] = $order->finder_name;
+	    $finderData['address'] = strip_tags($order->finder_address);
+	    $finderData['location'] = $order->finder_location;
+	    $finderData['geo'] = ["lat"=>$order->finder_lat,"lon"=>$order->finder_lon];
+	    $finderData['cover_image'] = ($finder['coverimage'] != '') ? Config::get('app.s3_finderurl.cover').$finder['coverimage'] : Config::get('app.s3_finderurl.cover').'default/'.$finder['category_id'].'-'.rand(1, 4).'.jpg';
+	    $data['finder'] = $finderData;
 
-	    $extra_info = [];
-	    $extra_info['contact_name'] = ($order->finder_poc_for_customer_name) ? $order->finder_poc_for_customer_name : "";
-	    $extra_info['contact_number'] = ($order->finder_poc_for_customer_no) ? $order->finder_poc_for_customer_no : "";
-	    $extra_info['what_to_carry'] = ($order->what_i_should_carry) ? $order->what_i_should_carry : "";
-	    $extra_info['what_to_expect'] = ($order->what_i_should_expect) ? $order->what_i_should_expect : "";
-	    $data['extra_info'] = $extra_info;
+	    $extraInfoData = [];
+	    $extraInfoData['contact_name'] = ($order->finder_poc_for_customer_name) ? $order->finder_poc_for_customer_name : "";
+	    $extraInfoData['contact_number'] = ($order->finder_poc_for_customer_no) ? $order->finder_poc_for_customer_no : "";
+	    $extraInfoData['what_to_carry'] = ($order->what_i_should_carry) ? $order->what_i_should_carry : "";
+	    $extraInfoData['what_to_expect'] = ($order->what_i_should_expect) ? $order->what_i_should_expect : "";
+	    $data['extra_info'] = $extraInfoData;
 
 	    $data['action'] = $this->getAction($order);
+
+
+	    $reviewData = null;
+	    $review = Review::active()->where('finder_id',(int)$order->finder_id)->where('customer_id',(int)$order->customer_id)->first();
+
+	    if($review){
+	    	$reviewData[] = [
+	    		"id"=>(int) $review->_id,
+	    		"rating"=>$review->rating,
+	    		"detail_rating"=>$review->detail_rating,
+	    		"description"=>$review->description
+	    	];
+	    }
+
+	    $data['review'] = $reviewData;
 	    
-	    return Response::json(["status"=>"200","data"=>$data,"message"=>"Order Detail"],200);
+	    return Response::json($data,200);
 
 	}
-
 
 
 	public function getAction($order){
 
 		$action = null;
 
-		if(isset($order['end_date']) && strtotime($order['end_date']) >= time() && isset($order['duration_day']) && $order['duration_day'] < 360){
+
+		if(!isset($order->updrage_membership) && time() <= strtotime($order['start_date'].'+16 days') && isset($order['end_date']) && strtotime($order['end_date']) >= time() && isset($order['duration_day']) && $order['duration_day'] <= 180){
 			$action = [
 				"button_text"=>"Upgrade Membership",
 				"activity"=>"upgrade_membership",
 				"color"=>"#26ADE5",
-				"info" => "Upgrade Membership"
+				"info" => "Commit yourself for a longer duration. Upgrade your current membership with insider discounts and other benefits.",
+				"popup" =>[
+					"title"=>"Upgrade Membership",
+					"message"=>"Upgrade Membership"
+				]
 			];
 		}
 
-		if(time() <= strtotime($order['created_at'].'+15 days') && isset($order['start_date']) ){
+		if(!isset($order->preferred_starting_updated) && time() <= strtotime($order['start_date'].'+11 days')){
 
-			$min_date = time();
-			$max_date = strtotime($order['start_date'].'+15 days');
-			$available_days = [];
+			$min_date = strtotime('+1 days');
+			$max_date = strtotime($order['created_at'].'+29 days');
+			$available_days = null;
 
 
-			if(isset($order->batch) && !empty($order->batch)){
+			if(isset($order->batch) && !empty($order->batch) && is_array($order->batch)){
 
-				$weekdays = [];
+				$minDate = [];
+				$maxDate = [];
 
 				foreach ($order->batch as $key => $value) {
 					$available_days[] = $value["weekday"];
-					$weekdays[] = strtotime("next ".ucwords($value["weekday"]));
+					$minDate[] = $this->closestDate($value["weekday"],time());
+					$maxDate[] = $this->closestDate($value["weekday"],$max_date);
 				}
 
-				foreach ($weekdays as $value) {
+				Log::info("available_days--------",$available_days);
+				Log::info("minDate--------",$minDate);
+				Log::info("maxDate--------",$maxDate);
 
-					if($value >= time()){
+				foreach ($minDate as $key => $value) {
+
+					if($value > time()){
 						$min_date = $value;
 						break;
 					}
 				}
-				
-				$max_date = strtotime("next ".ucwords(array_pop($available_days)),$max_date);
+
+				foreach ($maxDate as $key => $value) {
+
+					if($value < time()){
+						$max_date = $value;
+					}
+				}
 			}
 
 			$action = [
-				"button_text"=>"Update Start Date",
+				"button_text"=>"Change Start Date",
 				"activity"=>"update_starting_date",
 				"color"=>"#7AB317",
-				"info" => "Update Start Date",
+				"info" => "Don't miss even a single day workout. Change your membership start date basis your convenience.",
 				"min_date"=> $min_date,
 				"max_date"=> $max_date,
 				"available_days"=> $available_days,
+				"popup" =>[
+					"title"=>"Change Start Date",
+					"message"=>"Change Start Date"
+				]
 			];
 		}
 
-		if(isset($order['duration_day']) && isset($order['start_date'])){
+		if(!isset($order->renew_membership) && isset($order['duration_day']) && isset($order['start_date'])){
 
 			$renewal_date = array();
 			$validity = (int) $order['duration_day'];
@@ -3316,48 +3406,54 @@ class CustomerController extends \BaseController {
 
 			if($validity >= 30 && $validity < 90){
 
-				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-7). "days"));
-				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-1). "days"));
-				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity+7). "days"));
+				$min_date = strtotime($start_date ."+ ".($validity-7). "days");
+				$max_date = strtotime($start_date ."+ ".($validity+30). "days");
 
 			}elseif($validity >= 90 && $validity < 180){
 
-				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-30). "days"));
-				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-15). "days"));
-				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-7). "days"));
-				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-1). "days"));
+				$min_date = strtotime($start_date ."+ ".($validity-15). "days");
+				$max_date = strtotime($start_date ."+ ".($validity+30). "days");
 
 			}elseif($validity >= 180){
+				
+				$min_date = strtotime($start_date ."+ ".($validity-30). "days");
+				$max_date = strtotime($start_date ."+ ".($validity+30). "days");
 
-				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-45). "days"));
-				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-30). "days"));
-				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-15). "days"));
-				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-7). "days"));
-				$renewal_date[] = date('Y-m-d', strtotime($start_date ."+ ".($validity-1). "days"));
 			}
 
-			$current_date = date('Y-m-d');
+			if(isset($min_date) && isset($max_date) && time() >= $min_date  && time() <= $max_date){
 
-			if(in_array($current_date,$renewal_date)){
+				$days_to_go = ceil(($max_date - time()) / 86400);
 
 				$action = [
 					"button_text"=>"Renew Membership",
 					"activity"=>"renew_membership",
 					"color"=>"#EF1C26",
-					"info" => "Renew Membership"
+					"info" => $days_to_go." days to go for your membership to end. Renew your membership with the lowest price and assured rewards",
+					"popup" =>[
+						"title"=>"Renew Membership",
+						"message"=>"Renew Membership"
+					]
 				];
 
 			}
 		}
 
-		/*if(isset($value['end_date']) && strtotime($value['end_date']) <= time()){
-			$action = [
-				"button_text"=>"Renew Membership",
-				"activity"=>"renew_membership",
-			];
-		}*/
-
 		return $action;
+
+	}
+
+	public function closestDate($day,$date){
+
+		$date = ($date) ? $date : time();
+	    $day = ucfirst($day);
+
+	    if(date('l', $date) == $day)
+	        return $date;
+	    else if(abs($date-strtotime('next '.$day)) < abs($date-strtotime('last '.$day)))
+	        return strtotime('next '.$day,$date);
+	    else
+	        return strtotime('last '.$day,$date);
 
 	}
 

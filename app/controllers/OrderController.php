@@ -1394,10 +1394,15 @@ class OrderController extends \BaseController {
 
             if(isset($data['wallet_amount']) && $data['wallet_amount'] > 0){
 
+                $fitcash_plus = 0;
+                $fitcash = $data['wallet_amount'];
+
                 $req = array(
                     'customer_id'=>$customer_id,
                     'order_id'=>$orderid,
                     'amount'=>$data['wallet_amount'],
+                    'amount_fitcash' => $fitcash,
+                    'amount_fitcash_plus' => $fitcash_plus,
                     'type'=>'DEBIT',
                     'description'=>'Paid for Order ID: '.$orderid,
                 );
@@ -1425,14 +1430,21 @@ class OrderController extends \BaseController {
 
                     $wallet_amount = $data['wallet_amount'] = $cashback_detail['only_wallet']['fitcash'] + $cashback_detail['only_wallet']['fitcash_plus'];
 
+                    $fitcash_plus = $cashback_detail['only_wallet']['fitcash_plus'];
+                    $fitcash = $cashback_detail['only_wallet']['fitcash'];
+
                     if(isset($data['cashback']) && $data['cashback'] == true){
                         $wallet_amount = $data['wallet_amount'] = $cashback_detail['discount_and_wallet']['fitcash'] + $cashback_detail['discount_and_wallet']['fitcash_plus'];
+                        $fitcash_plus = $cashback_detail['discount_and_wallet']['fitcash_plus'];
+                        $fitcash = $cashback_detail['discount_and_wallet']['fitcash'];
                     }
 
                     $req = array(
                         'customer_id'=>$customer_id,
                         'order_id'=>$orderid,
                         'amount'=>$wallet_amount,
+                        'amount_fitcash' => $fitcash,
+                        'amount_fitcash_plus' => $fitcash_plus,
                         'type'=>'DEBIT',
                         'description'=>'Paid for Order ID: '.$orderid,
                     );
@@ -2239,8 +2251,14 @@ class OrderController extends \BaseController {
 
                     $wallet_amount = $data['wallet_amount'] = $cashback_detail['only_wallet']['fitcash'] + $cashback_detail['only_wallet']['fitcash_plus'];
 
+                    $fitcash = $cashback_detail['only_wallet']['fitcash'];
+                    $fitcash_plus = $cashback_detail['only_wallet']['fitcash_plus'];
+
                     if(isset($data['cashback']) && $data['cashback'] == true){
                         $wallet_amount = $data['wallet_amount'] = $cashback_detail['discount_and_wallet']['fitcash'] + $cashback_detail['discount_and_wallet']['fitcash_plus'];
+
+                        $fitcash = $cashback_detail['discount_and_wallet']['fitcash'];
+                        $fitcash_plus = $cashback_detail['discount_and_wallet']['fitcash_plus'];    
                     }
 
                     $data['amount'] = $data['amount'] - $data['wallet_amount'];
@@ -2249,6 +2267,8 @@ class OrderController extends \BaseController {
                         'customer_id'=>$customer_id,
                         'order_id'=>$order_id,
                         'amount'=>$wallet_amount,
+                        'amount_fitcash' => $fitcash,
+                        'amount_fitcash_plus' => $fitcash_plus,
                         'type'=>'DEBIT',
                         'description'=>'Paid for Order ID: '.$order_id,
                     );

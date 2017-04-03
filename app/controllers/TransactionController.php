@@ -393,6 +393,8 @@ class TransactionController extends \BaseController {
                         'customer_id'=>$data['customer_id'],
                         'order_id'=>$data['order_id'],
                         'amount'=>$data['wallet_amount'],
+                        'amount_fitcash' => $data['wallet_amount'],
+                        'amount_fitcash_plus' => 0,
                         'type'=>'DEBIT',
                         'description'=>'Paid for Order ID: '.$data['order_id'],
                     );
@@ -423,6 +425,8 @@ class TransactionController extends \BaseController {
                         'customer_id'=>$data['customer_id'],
                         'order_id'=>$data['order_id'],
                         'amount'=>$data['wallet_amount'],
+                        'amount_fitcash' => $data['wallet_amount'],
+                        'amount_fitcash_plus' => 0,
                         'type'=>'DEBIT',
                         'description'=>'Paid for Order ID: '.$data['order_id'],
                     );
@@ -483,8 +487,14 @@ class TransactionController extends \BaseController {
 
                     $wallet_amount = $data['wallet_amount'] = $cashback_detail['only_wallet']['fitcash'] + $cashback_detail['only_wallet']['fitcash_plus'];
 
+                    $fitcash = $cashback_detail['only_wallet']['fitcash'];
+                    $fitcash_plus = $cashback_detail['only_wallet']['fitcash_plus'];
+
                     if(isset($data['cashback']) && $data['cashback'] == true){
                         $wallet_amount = $data['wallet_amount'] = $cashback_detail['discount_and_wallet']['fitcash'] + $cashback_detail['discount_and_wallet']['fitcash_plus'];
+
+                        $fitcash = $cashback_detail['discount_and_wallet']['fitcash'];
+                        $fitcash_plus = $cashback_detail['discount_and_wallet']['fitcash_plus'];
                     }
 
                     $amount = $data['amount'] - $wallet_amount;
@@ -493,6 +503,8 @@ class TransactionController extends \BaseController {
                         'customer_id'=>$data['customer_id'],
                         'order_id'=>$data['order_id'],
                         'amount'=>$data['wallet_amount'],
+                        'amount_fitcash' => $fitcash,
+                        'amount_fitcash_plus' => $fitcash_plus,
                         'type'=>'DEBIT',
                         'description'=>'Paid for Order ID: '.$data['order_id'],
                     );
@@ -517,8 +529,14 @@ class TransactionController extends \BaseController {
 
                     $wallet_amount = $data['wallet_amount'] = $cashback_detail['only_wallet']['fitcash'] + $cashback_detail['only_wallet']['fitcash_plus'];
 
+                    $fitcash = $cashback_detail['only_wallet']['fitcash'];
+                    $fitcash_plus = $cashback_detail['only_wallet']['fitcash_plus'];
+
                     if(isset($data['cashback']) && $data['cashback'] == true){
                         $wallet_amount = $data['wallet_amount'] = $cashback_detail['discount_and_wallet']['fitcash'] + $cashback_detail['discount_and_wallet']['fitcash_plus'];
+
+                        $fitcash = $cashback_detail['discount_and_wallet']['fitcash'];
+                        $fitcash_plus = $cashback_detail['discount_and_wallet']['fitcash_plus'];
                     }
 
                     $amount = $data['amount'] - $wallet_amount;
@@ -527,6 +545,8 @@ class TransactionController extends \BaseController {
                         'customer_id'=>$data['customer_id'],
                         'order_id'=>$data['order_id'],
                         'amount'=>$data['wallet_amount'],
+                        'amount_fitcash' => $fitcash,
+                        'amount_fitcash_plus' => $fitcash_plus,
                         'type'=>'DEBIT',
                         'description'=>'Paid for Order ID: '.$data['order_id'],
                     );
@@ -752,7 +772,12 @@ class TransactionController extends \BaseController {
 
         $data['offer_id'] = false;
 
-        $offer = Offer::where('ratecard_id',$ratecard['_id'])->where('hidden', false)->where('end_date','>=',new DateTime(date("d-m-Y 00:00:00")))->first();
+        $offer = Offer::where('ratecard_id',$ratecard['_id'])
+                ->where('hidden', false)
+                ->orderBy('order', 'asc')
+                ->where('start_date','<=',new DateTime(date("d-m-Y 00:00:00")))
+                ->where('end_date','>=',new DateTime(date("d-m-Y 00:00:00")))
+                ->first();
 
         if($offer){
             $data['amount_finder'] = $offer->price;
