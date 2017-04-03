@@ -2182,6 +2182,8 @@ class CustomerController extends \BaseController {
 		->get();
 
 		$wallet_balance = 0;
+		$balance = 0;
+		$balance_fitcash_plus = 0;
 
 		if(count($wallet) > 0){
 
