@@ -261,7 +261,7 @@ class TempsController extends \BaseController {
             $ratecard_id = "";
             $finder_id = "";
             $amount = "";
-            $cashback = new \stdClass();
+            $cashback = null;
             $customer_id = "";
 
             if(isset($temp->ratecard_id) && $temp->ratecard_id != ""){
