@@ -3559,6 +3559,7 @@ class CustomerController extends \BaseController {
 	public function getAction($order){
 
 		$action = null;
+		
 
 		if(!isset($order->updrage_membership) && time() <= strtotime($order['start_date'].'+16 days') && isset($order['end_date']) && strtotime($order['end_date']) >= time() && isset($order['duration_day']) && $order['duration_day'] <= 180){
 			$action = [
