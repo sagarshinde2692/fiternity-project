@@ -138,6 +138,18 @@ class FindersController extends \BaseController {
 
 				// $ratecards           =   Ratecard::with('serviceoffers')->where('finder_id', intval($finder_id))->orderBy('_id', 'desc')->get();
 				$finderarr = $finderarr->toArray();
+
+				if(!empty($finderarr['reviews'])){
+
+					foreach ($finderarr['reviews'] as $rev_key => $rev_value) {
+
+						if($rev_value['customer'] == null){
+
+							$finderarr['reviews'][$rev_key]['customer'] = array("id"=>0,"name"=>"A Fitternity User","picture"=>"");
+						}
+					}
+				}
+
 				// Check if there are any events running on this vendor
 				$finderevent = DbEvent::where('vendors',$finderarr['_id'])
 					->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()) ))
@@ -2226,6 +2238,17 @@ class FindersController extends \BaseController {
 
 			if($finderarr){
 				$finderarr = $finderarr->toArray();
+
+				if(!empty($finderarr['reviews'])){
+
+					foreach ($finderarr['reviews'] as $rev_key => $rev_value) {
+
+						if($rev_value['customer'] == null){
+
+							$finderarr['reviews'][$rev_key]['customer'] = array("id"=>0,"name"=>"A Fitternity User","picture"=>"");
+						}
+					}
+				}
 
 				$finder         =   array_except($finderarr, array('info','finder_coverimage','location_id','category_id','city_id','coverimage','findercollections','categorytags','locationtags','offerings','facilities','blogs'));
 				$coverimage     =   ($finderarr['finder_coverimage'] != '') ? $finderarr['finder_coverimage'] : 'default/'.$finderarr['category_id'].'-'.rand(1, 19).'.jpg';
