@@ -342,6 +342,8 @@ return array(
 	'direct_customer_number' => '+912261222230',
 	'cancel_trial_missed_call_vendor' => "+912261222230",
 	'n-3_customer_number' => "+912261222230",
+	'n-3_confirm_customer_number' => "+912261222205",
+	'n+2_feedback_customer_number' => "+912261222219",
 
 	's3_finderurl'  => array(
 		'cover' 			=> 'https://b.fitn.in/f/c/',
