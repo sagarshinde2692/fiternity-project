@@ -1922,7 +1922,7 @@ class SchedulebooktrialsController extends \BaseController {
             $amount_finder                      =   (isset($order->amount_finder) && $order->amount_finder != '') ? $order->amount_finder : "";
 
             $service_link = Config::get('app.website').$finder_slug."/".$service_id."?booktrial_id=".$booktrialid;
-            $srp_link = Config::get('app.weburl').$finder_city."/fitness/".$finder_location;
+            $srp_link = Config::get('app.website').$finder_city."/fitness/".$finder_location;
 
             $booktrialdata = array(
                 'booktrialid'                   =>      intval($booktrialid),
@@ -2723,7 +2723,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             $service_link = Config::get('app.website').$finder_slug."/".$service_id."?booktrial_id=".$booktrialid;
 
-            $srp_link = Config::get('app.weburl').$finder_city."/fitness/".$finder_location;
+            $srp_link = Config::get('app.website').$finder_city."/fitness/".$finder_location;
 
             $booktrialdata = array(
 
