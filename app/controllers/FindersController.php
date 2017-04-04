@@ -2874,17 +2874,39 @@ class FindersController extends \BaseController {
     }
 
 
-    public function getVendorDetailRating($finder_id){
+    public function getDetailRating(){
 
-    	$finder_id = (int) $finder_id;
+    	$request = $_REQUEST;
 
-    	$finder = Finder::find($finder_id,array('_id','category_id'));
-
-    	if(!$finder){
-    		return Response::json(["message"=>"Vendor not found","status"=>404], 404);
+    	if(!isset($request['finder_id']) && !isset($request['category_id'])){
+    		return Response::json(array('status'=>401,'message'=>'finder or category is required'),401);
     	}
 
-    	$category = Findercategory::find((int)$finder->category_id,array('_id','name','slug','detail_rating'));
+    	$category_id = "";
+
+    	if(isset($request["finder_id"]) && $request["finder_id"] != ""){
+
+	    	$finder_id = (int) $request["finder_id"];
+
+	    	$finder = Finder::find($finder_id,array('_id','category_id'));
+
+	    	if(!$finder){
+	    		return Response::json(["message"=>"Vendor not found","status"=>404], 404);
+	    	}
+
+	    	$category_id = (int)$finder->category_id;
+	    }
+
+	    if(isset($request["category_id"]) && $request["category_id"] != ""){
+
+	    	$category_id = (int) $request["category_id"];
+	    }
+
+	    if($category_id == ""){
+	    	return Response::json(["message"=>"Category ID Missing","status"=>404], 404);
+	    }
+
+	    $category = Findercategory::find($category_id,array('_id','name','slug','detail_rating'));
 
     	if(!$category){
     		return Response::json(["message"=>"Category not found","status"=>404], 404);
