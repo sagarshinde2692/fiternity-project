@@ -2884,7 +2884,7 @@ class FindersController extends \BaseController {
     		return Response::json(["message"=>"Vendor not found","status"=>404], 404);
     	}
 
-    	$category = Category::find((int)$finder->category_id,array('_id','name','slug','detail_rating'));
+    	$category = Findercategory::find((int)$finder->category_id,array('_id','name','slug','detail_rating'));
 
     	if(!$category){
     		return Response::json(["message"=>"Category not found","status"=>404], 404);
