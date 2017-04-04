@@ -577,7 +577,7 @@ class GlobalPushController extends \BaseController
 
     Log::info("in servicecategorylocations.......");
 
-    // ini_set('max_execution_time', 300000);
+    ini_set('max_execution_time', 300000);
 
     $indexed_docs = array();
 
