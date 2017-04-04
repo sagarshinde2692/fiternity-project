@@ -2236,6 +2236,14 @@ class CustomerController extends \BaseController {
 
 		if(count($wallet) > 0){
 
+			$debit_array = [
+			    "CASHBACK",
+			    "REFUND",
+			    "FITCASHPLUS",
+			    "REFERRAL",
+			    "CREDIT",
+			];
+
 			$wallet = $wallet->toArray();
 
 			foreach ($wallet as $key => $value) {
@@ -2244,6 +2252,12 @@ class CustomerController extends \BaseController {
 					$wallet[$key]['order_id'] = 0;
 				}
 
+				$wallet[$key]["debit_credit"] = "debit";
+
+				if(in_array($value["type"],$debit_array)){
+					$wallet[$key]["debit_credit"] = "credit";
+				}
+				
 				if(isset($wallet[$key+1])){
 
 					$wallet[$key]['amount_fitcash'] = $value['amount'];
