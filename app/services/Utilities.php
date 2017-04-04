@@ -275,20 +275,21 @@ Class Utilities {
             // Get Customer wallet balance........
             $customer = Customer::find($customer_id);
 
-            !($customer && isset($customer['balance'])) ? $customer['balance'] = 0 : null;
+            (!isset($customer['balance'])) ? $customer['balance'] = 0 : null;
 
-            !($customer && isset($customer['balance_fitcash_plus'])) ? $customer['balance_fitcash_plus'] = 0: null;
+            (!isset($customer['balance_fitcash_plus'])) ? $customer['balance_fitcash_plus'] = 0: null;
+
+            (!isset($request['amount_fitcash'])) ? $request['amount_fitcash'] = 0 : null;
+
+            (!isset($request['amount_fitcash_plus'])) ? $request['amount_fitcash_plus'] = 0: null;
 
             $request['balance'] = (int)$customer['balance'];
             $request['balance_fitcash_plus'] = (int)$customer['balance_fitcash_plus'];
 
-            // Process Action on basis of request........
-            if($request['type'] == 'CREDIT'){
-                $request['balance'] = ((int) $customer['balance'] + abs($request['amount']));
-            }
+            if(in_array($request['type'], ['CASHBACK','FITCASHPLUS','REFERRAL','CREDIT'])){
 
-            if($request['type'] == 'CASHBACK'){
-                $request['balance'] = ((int) $customer['balance'] + abs($request['amount']));
+                $request['balance'] = ((int) $customer['balance'] + (int) $request['amount_fitcash']);
+                $request['balance_fitcash_plus'] = ((int) $customer['balance_fitcash_plus'] + (int) $request['amount_fitcash_plus']);
             }
 
             if($request['type'] == 'REFUND'){
@@ -318,16 +319,6 @@ Class Utilities {
                     }
 
                 }
-
-            }
-
-            if($request['type'] == 'REFERRAL'){
-                Log::info("inside referral");
-
-                    $request['balance_fitcash_plus'] = $customer['balance_fitcash_plus'] + $request['amount'];
-
-                    //$request['amount_fitcash'] = 0;
-                    //$request['amount_fitcash_plus'] = $request['amount'];
 
             }
      
@@ -361,19 +352,12 @@ Class Utilities {
             $max_id = (isset($id) && !empty($id)) ? $id : 0;
             $customerwallet->_id = $max_id + 1;
             $customerwallet->customer_id = $customer_id;
-            $request['order_id']!=0?$customerwallet->order_id = (int) $request['order_id']:null;
+            ($request['order_id'] != 0 ) ? $customerwallet->order_id = (int) $request['order_id'] : null;
             $customerwallet->type = $request['type'];
             $customerwallet->amount = (int) $request['amount'];
             $customerwallet->balance = (int) $request['balance'];
-
-            if(isset($request['amount_fitcash'])){
-                $customerwallet->amount_fitcash = (int)$request['amount_fitcash'];
-            }
-
-            if(isset($request['amount_fitcash_plus'])){
-                $customerwallet->amount_fitcash_plus = (int)$request['amount_fitcash_plus'];
-            }
-
+            $customerwallet->amount_fitcash = (int)$request['amount_fitcash'];
+            $customerwallet->amount_fitcash_plus = (int)$request['amount_fitcash_plus'];
             $customerwallet->balance_fitcash_plus = (int) $request['balance_fitcash_plus'];
             isset($request['description']) ? $customerwallet->description = $request['description'] : null;
             $customerwallet->save();

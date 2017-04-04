@@ -2874,7 +2874,28 @@ class FindersController extends \BaseController {
     }
 
 
-    PUBLIC function getFinderReview
+    public function getVendorDetailRating($finder_id){
+
+    	$finder_id = (int) $finder_id;
+
+    	$finder = Finder::find($finder_id,array('_id','category_id'));
+
+    	if(!$finder){
+    		return Response::json(["message"=>"Vendor not found","status"=>404], 404);
+    	}
+
+    	$category = Category::find((int)$finder->category_id,array('_id','name','slug','detail_rating'));
+
+    	if(!$category){
+    		return Response::json(["message"=>"Category not found","status"=>404], 404);
+    	}
+
+    	$category = $category->toArray();
+
+    	$category["status"] = 200;
+
+    	return Response::json($category, 200);
+    }
 
 
 }

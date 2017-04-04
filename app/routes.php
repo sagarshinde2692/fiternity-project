@@ -892,3 +892,7 @@ Route::group(array('before' => 'validatetoken'), function() {
 
 	
 });
+
+Route::get('getvenderdetailrating',array('as' => 'getvenderdetailrating','uses' => 'FindersController@getVendorDetailRating'));
+
+
