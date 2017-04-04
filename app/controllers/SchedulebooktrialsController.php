@@ -1732,7 +1732,7 @@ class SchedulebooktrialsController extends \BaseController {
             }
 
             $finderid 					       = 	(int) Input::json()->get('finder_id');
-            $finder 					       = 	Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->find($finderid);
+            $finder 					       = 	Finder::with(array('city'=>function($query){$query->select('_id','name','slug');}))->with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->find($finderid);
 
             $cleartrip_count                   =    $this->getCleartripCount($finderid);
             $trial_count                       =    $this->getTrialCount($finderid);
@@ -1757,6 +1757,8 @@ class SchedulebooktrialsController extends \BaseController {
             $final_lead_stage = '';
             $final_lead_status = '';
 
+            $finder_city           =    (isset($finder['city']['name']) && $finder['city']['name'] != '') ? $finder['city']['name'] : "";
+            
             $confirmed = array(1,2,3);
 
             if(in_array($finder_commercial_type, $confirmed)){
@@ -1920,6 +1922,7 @@ class SchedulebooktrialsController extends \BaseController {
             $amount_finder                      =   (isset($order->amount_finder) && $order->amount_finder != '') ? $order->amount_finder : "";
 
             $service_link = Config::get('app.website').$finder_slug."/".$service_id."?booktrial_id=".$booktrialid;
+            $srp_link = Config::get('app.weburl').$finder_city."/fitness/".$finder_location;
 
             $booktrialdata = array(
                 'booktrialid'                   =>      intval($booktrialid),
@@ -2008,7 +2011,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'before_three_month_trial_count' =>     $before_three_month_trial_count,
                 'token'                         =>      random_number_string(),
                 'service_category'              =>      $service_category,
-                'service_link'                  =>      $service_link
+                'service_link'                  =>      $service_link,
+                'srp_link'                      =>      $srp_link
             );
 
             if ($medical_detail != "" && $medication_detail != "") {
@@ -2172,6 +2176,8 @@ class SchedulebooktrialsController extends \BaseController {
             $threeHourDiffInMin                =    $currentDateTime->diffInMinutes($scheduleDateTime, false);
             $finderid 					       = 	(int) $data['finder_id'];
 
+            $delayReminderTimeAfter90Min       =    \Carbon\Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->addMinutes(90);
+
             $booktrialdata = Booktrial::findOrFail($booktrialid)->toArray();
             $order = Order::findOrFail($orderid);
             $finder = Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->where('_id','=',$finderid)->first()->toArray();
@@ -2245,7 +2251,7 @@ class SchedulebooktrialsController extends \BaseController {
             if(isset($booktrialdata['source']) && $booktrialdata['source'] != 'cleartrip'){
 
                 //no auto sms (N-3)for paid trial
-                $customer_auto_sms = 'no n-3 for paid trials';//$this->autoSms($booktrialdata,$schedule_date_starttime);
+                $customer_auto_sms = $this->autoSms($booktrialdata,$schedule_date_starttime);
 
                 if($booktrialdata['type'] == 'vip_booktrials'){
                     $myreward = $this->addVIPTrialAsRewardOnVIPPaidTrial($booktrialdata, $orderid);
@@ -2329,7 +2335,7 @@ class SchedulebooktrialsController extends \BaseController {
             if(isset($booktrialdata['source']) && $booktrialdata['source'] != 'cleartrip') {
                 if($booktrialdata['type'] == '3daystrial'){
 
-                    $customer_sms_messageids['after2hour'] = $this->customersms->reminderAfter2Hour3DaysTrial($booktrialdata, $delayReminderTimeAfter2Hour);
+                    $customer_sms_messageids['after2hour'] = $this->customersms->reminderAfter2Hour3DaysTrial($booktrialdata, $delayReminderTimeAfter90Min);
 
                     $customer_email_messageids['after50hour'] = $this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter50Hour);
 
@@ -2342,13 +2348,13 @@ class SchedulebooktrialsController extends \BaseController {
                 }else{
 
                     if($booktrialdata['type'] != "workout-session"){
-                        $sndAfter2HourEmailCustomer                         =   $this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
+                        $sndAfter2HourEmailCustomer                         =   $this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter90Min);
                         $customer_email_messageids['after2hour']            =   $sndAfter2HourEmailCustomer;
 
                         if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
-                            $customer_notification_messageids['after2hour'] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hour);
+                            $customer_notification_messageids['after2hour'] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter90Min);
                         }else{
-                            $customer_sms_messageids['after2hour'] = $this->missedCallReview($booktrialdata, $delayReminderTimeAfter2Hour);
+                            $customer_sms_messageids['after2hour'] = $this->missedCallReview($booktrialdata, $delayReminderTimeAfter90Min);
                         }
                     }
 
@@ -2471,6 +2477,8 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrialid = Booktrial::max('_id') + 1;
             isset($data['finder_id']) ? $finderid = (int)$data['finder_id'] : null;
             $finder = Finder::with(array('location' => function ($query) {
+                $query->select('_id', 'name', 'slug');
+            }))->with(array('city' => function ($query) {
                 $query->select('_id', 'name', 'slug');
             }))->with('locationtags')->where('_id', '=', $finderid)->first()->toArray();
             $data['customer_id'] = $customer_id = autoRegisterCustomer($data);
@@ -2654,6 +2662,9 @@ class SchedulebooktrialsController extends \BaseController {
             $finder_lat		       =	(isset($finder['lat']) && $finder['lat'] != '') ? $finder['lat'] : "";
             $finder_lon		       =	(isset($finder['lon']) && $finder['lon'] != '') ? $finder['lon'] : "";
             $finder_photos	       = 	[];
+
+            $finder_city           =    (isset($finder['city']['name']) && $finder['city']['name'] != '') ? $finder['city']['name'] : "";
+
             if(isset($finder['photos']) && count($finder['photos']) > 0){
                 foreach ($finder['photos'] as $key => $value) {
                     if($key > 2){ continue; }
@@ -2711,6 +2722,8 @@ class SchedulebooktrialsController extends \BaseController {
             $rebook_trial_url         =   $this->rebookTrialUrl($finder_slug, $service_id, $booktrialid);
 
             $service_link = Config::get('app.website').$finder_slug."/".$service_id."?booktrial_id=".$booktrialid;
+
+            $srp_link = Config::get('app.weburl').$finder_city."/fitness/".$finder_location;
 
             $booktrialdata = array(
 
@@ -2799,7 +2812,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'calorie_burn'                  =>      $calorie_burn,
                 'finder_url'                    =>      $finder_url,
                 'rebook_trial_url'              =>      $rebook_trial_url,
-                'service_link'                  =>      $service_link
+                'service_link'                  =>      $service_link,
+                'srp_link'                      =>      $srp_link
 
             );
 
