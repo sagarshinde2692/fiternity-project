@@ -472,7 +472,7 @@ Class CustomerReward {
 
         $wallet_algo = round(($amount * $commision / 100) * ($wallet_percentage / 100));
 
-        /*if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ioss'])){
+        if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios']) && isset($_GET['app_version']) && ((float)$_GET['app_version'] <= 3.2) ){
 
 
             $amount_deducted_from_wallet = ($wallet_algo < $wallet) ? $wallet_algo : round($wallet);
@@ -498,7 +498,7 @@ Class CustomerReward {
 
             return $data;
 
-        }else{*/
+        }else{
 
             //fitcash plus
             $deduct_fitcash_plus = $original_amount;
@@ -560,7 +560,7 @@ Class CustomerReward {
             Log::info('reward_calculation : ',$data);
 
             return $data;
-        //}
+        }
 
     }
 

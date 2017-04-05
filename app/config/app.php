@@ -28,20 +28,15 @@ return array(
 	|
 	*/
 
-	// 'url' => 'https://a1.fitternity.com',
-	'url' => 'http://apistage.fitn.in',
+	'url' => 'https://a1.fitternity.com',
+	// 'url' => 'http://apistage.fitn.in',
 	// 'url' => 'http://fitapi.com',
 
-
-
-
-
-    // 'website' => 'https://www.fitternity.com',
-    'website' => 'http://apistage.fitn.in:1122',
+    'website' => 'https://www.fitternity.com',
+    // 'website' => 'http://apistage.fitn.in:1122',
 
     'download_app_link' => 'https://www.fitternity.com/downloadapp',
-
-
+    
 	'app' =>array(
 		'discount'		=> 			2,
 	),

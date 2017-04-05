@@ -395,36 +395,7 @@ class OrderController extends \BaseController {
             }
 
             $this->utilities->setRedundant($order);
-            Log::info("Customer for referral");
-            $customer = Customer::where('_id', $order['customer_id'])->first(['referred', 'referrer_id', 'first_transaction']);
-            Log::info($customer);
             
-            if(isset($customer['referred']) && $customer['referred'] && $customer['first_transaction']){
-                Log::info("inside first transaction");
-                $referrer = Customer::where('_id', $customer->referrer_id)->first();
-                $customer->first_transaction = false;
-                $customer->update();
-                $wallet_data = array(
-                                'customer_id' => $customer->referrer_id,
-                                'amount' => 250,
-                                'amount_fitcash' => 0,
-                                'amount_fitcash_plus' => 250,
-                                'type' => "REFERRAL",
-                                'description' => "Referral fitcashplus to referrer",
-                                'order_id' => 0
-                                );
-                $this->utilities->walletTransaction($wallet_data);
-                $url = 'www.fitternity.com/profile/'.$referrer->email;
-                $sms_data = array(
-                    'customer_phone'=>$referrer->contact_no,
-                    // 'friend_name'   =>$customer_name,
-                    'wallet_url'    =>$url
-                    );
-                $referSms = $this->customersms->referralFitcash($sms_data);
-
-
-            }
-
             $finder_id = $order['finder_id'];
             $start_date_last_30_days = date("d-m-Y 00:00:00", strtotime('-31 days',strtotime(date('d-m-Y 00:00:00'))));
 
@@ -1392,7 +1363,17 @@ class OrderController extends \BaseController {
 
         $orderid = Order::max('_id') + 1;
 
-        /*if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios'])){
+        array_set($data, 'code', $code);
+
+        if(isset($_GET['device_type']) && $_GET['device_type'] != ""){
+            $data["device_type"] = strtolower(trim($_GET['device_type']));
+        }
+
+        if(isset($_GET['app_version']) && $_GET['app_version'] != ""){
+            $data["app_version"] = (float)$_GET['app_version'];
+        }
+
+        if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios'])){
 
             if(isset($data['amount_finder'])){
 
@@ -1431,8 +1412,8 @@ class OrderController extends \BaseController {
 
             }
 
-        }else{*/
-
+        }else{
+            
             if(isset($data['amount_finder'])){
 
                 if(isset($data['wallet']) && $data['wallet'] == true){
@@ -1472,7 +1453,7 @@ class OrderController extends \BaseController {
                     $data['wallet_refund_sidekiq'] = $this->hitURLAfterDelay($url, $delay);
                 }
             }
-        // }
+        }
 
         if(isset($data['address']) && $data['address'] != ''){
 

@@ -471,26 +471,7 @@ class CustomerController extends \BaseController {
 						$customer->identity = $data['identity'];
 						$customer->account_link = $account_link;
 						$customer->status = "1";
-						$customer->referral_code = $this->generateReferralCode($customer->name);
-						$referral=$this->getReferralData($data, $customer);
-						// if($referral['status']==400){
-						// 	return $referral;
-						// }
 						$customer->save();
-
-						if($referral['status']==200){
-							
-							$wallet_data = array(
-								'customer_id' => $customer->_id,
-								'amount' => 250,
-								'amount_fitcash' => 0,
-								'amount_fitcash_plus' => 250,
-								'type' => "REFERRAL",
-								'description' => "Referral fitcashplus",
-								'order_id' => 0
-								);
-							$this->utilities->walletTransaction($wallet_data);
-						}
 
 						$customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email'],'password'=>$data['password']);
 						$this->customermailer->register($customer_data);
@@ -507,23 +488,6 @@ class CustomerController extends \BaseController {
 					$ishullcustomer->name = ucwords($data['name']);
 					$ishullcustomer->password = md5($data['password']);
 					$ishullcustomer->ishulluser = 0;
-					$customer->referral_code = $this->generateReferralCode($customer->name);
-					if(isset($data['referral_code'])){
-						$referrer = Customer::where('referral_code', $data['referral_code'])->get();
-						if($referrer){
-							$customer->referrer_id = $referrer->_id;
-							$customer->referred = true;
-							if(!isset($referrer->referred_to)){
-								$referrer->referred_to = [];
-							}
-							$referred_to = $referrer->referred_to;
-							array_push($referred_to, $customer->_id);
-							$referrer->save();
-						}
-					}else{
-						$customer->referrer_id = 0;
-						$customer->referred = false;
-					}
 					$ishullcustomer->update();
 					$customer_data = array('name'=>ucwords($ishullcustomer['name']),'email'=>$ishullcustomer['email'],'password'=>$ishullcustomer['password']);
 					// $this->customermailer->register($ishullcustomer);
@@ -812,11 +776,7 @@ class CustomerController extends \BaseController {
 			$customer->picture = (isset($data['picture'])) ? $data['picture'] : "";
 			$customer->identity = $data['identity'];
 			$customer->account_link = $account_link;
-			$customer->referral_code = $this->generateReferralCode($customer->name);
-			$this->getReferralData($data, $customer);
-			// if($referral['status']==400){
-			// 	return $referral;
-			// }
+
 			if($data['identity'] == 'facebook' && isset($data['facebook_id'])){
 				$customer->facebook_id = $data['facebook_id'];
 				$customer->picture = 'https://graph.facebook.com/'.$data['facebook_id'].'/picture?type=large';
@@ -824,22 +784,6 @@ class CustomerController extends \BaseController {
 
 			$customer->status = "1";
 			$customer->save();
-			
-
-			if($referral['status']==200){
-				
-				$wallet_data = array(
-					'customer_id' => $customer->_id,
-					'amount' => 250,
-					'amount_fitcash' => 0,
-					'amount_fitcash_plus' => 250,
-					'type' => "REFERRAL",
-					'description' => "Referral fitcashplus",
-					'order_id' => 0,
-					'balance_fitcash_plus' => 0
-					);
-				$this->utilities->walletTransaction($wallet_data);
-			}
 
 			$response = array('status' => 200,'customer'=>$customer);
 		}
@@ -1295,7 +1239,6 @@ class CustomerController extends \BaseController {
 				}
 
 				$value["action"] = $this->getAction($value);
-				$value["feedback"] = ["info"=>"Share your experience at ".ucwords($finderarr->title)." and we will make sure they are notified with it"];
 
 				if(isset($finderarr->title)){
 					$value["feedback"] = ["info"=>"Share your experience at ".ucwords($finderarr->title)." and we will make sure they are notified with it"];
@@ -2209,7 +2152,7 @@ class CustomerController extends \BaseController {
 
 		$customer_info = new CustomerInfo();
 
-		$customer_id = (isset($data['customer_id']) && $data['customer_id'] != "") ? $data['customer_id'] : autoRegisterCustomer($data);
+		$customer_id = (isset($data['customer_id']) && $data['customer_id'] != "") ? $data['customer_id'] : $this->autoRegisterCustomer($data);
 
 		$data['customer_id'] = (int)$customer_id;
 
@@ -2324,9 +2267,9 @@ class CustomerController extends \BaseController {
 						'short_description' => "short"."\n"."description"."\n"."description"
 					]
 				],
-				),200
-
-			);
+				),
+			200
+		);
 	}
 
 	public function getWalletBalance(){
@@ -3180,7 +3123,6 @@ class CustomerController extends \BaseController {
 		}
 	}
 
-
 	public function emailOpened(){
 
 		$data = $_REQUEST;
@@ -3375,224 +3317,6 @@ class CustomerController extends \BaseController {
 	    return $response;
 	}
 
-	public function getReferralCode(){
-		try{
-			$jwt = Request::header('Authorization');
-			$decoded = $this->customerTokenDecode($jwt);
-			$id = $decoded->customer->_id;
-			Customer::$withoutAppends = true;
-			$customer = Customer::where('_id', $id)->first(['referral_code']);
-			
-			if($customer){
-				$referral_code = $customer['referral_code'];
-				$url = "https://www.fitternity.com(dummy_url)";
-				$share_message = "Use the referral code - $referral_code or click on $url and get 250 fitcash points";
-				return $response =  array('status' => 200,'referral_code' => $referral_code, 'message' 	=> 'Refer a friend and get fitcash on his first transaction', 'share_message'=>$share_message);
-			}else{
-				return $response =  array('status' => 404,'message'=>"Customer not found");
-			}
-			
-
-		}catch(Exception $e){
-			Log::info($e);
-		}
-	}
-
-	public function referFriend(){
-			
-		try{
-			$jwt = Request::header('Authorization');
-			$decoded = $this->customerTokenDecode($jwt);
-			$id = $decoded->customer->_id;
-			Customer::$withoutAppends = true;
-			$customer = Customer::where('_id', $id)->first(['name', 'email', 'contact_no', 'referral_code']);
-			
-			if($customer){
-				$referrer_name = $customer->name;
-				$req = Input::json()->all();
-		        Log::info('referfriend',$req);
-
-		        $rules = [
-		            'invitees' => 'required|array',
-		        ];
-
-		        $validator = Validator::make($req, $rules);
-
-		        if ($validator->fails()) {
-		            return Response::json(
-		                array(
-		                    'status' => 400,
-		                    'message' => $this->errorMessage($validator->errors()
-		                    )),400
-		            );
-		        }
-
-		        // Invitee info validations...........
-		        $inviteesData = [];
-
-		        foreach ($req['invitees'] as $value){
-		        	$inviteeData = [];
-		            if(isset($value['name'])){
-		            	Log::info("Inside name");
-		            	$inviteeData = ['name'=>$value['name']];
-		            }
-
-		            $rules = [
-		                'input' => 'required|string'
-		            ];
-		            $messages = [
-		                'input' => 'invitee email or phone is required'
-		            ];
-		            $validator = Validator::make($value, $rules, $messages);
-
-		            if ($validator->fails()) {
-		                return Response::json(
-		                    array(
-		                        'status' => 400,
-		                        'message' => $this->errorMessage($validator->errors()
-		                        )),400
-		                );
-		            }
-
-		            if(filter_var($value['input'], FILTER_VALIDATE_EMAIL) != '') {
-		                // valid address
-		                $inviteeData = array_add($inviteeData, 'email', $value['input']);
-		            }
-		            else if(filter_var($value['input'], FILTER_VALIDATE_REGEXP, array(
-		                    "options" => array("regexp"=>"/^[2-9]{1}[0-9]{9}$/")
-		                )) != ''){
-		                // valid phone
-		                $inviteeData = array_add($inviteeData, 'phone', $value['input']);
-
-		            }
-		            // return $inviteeData;
-		            array_push($inviteesData, $inviteeData);
-
-		        }	        
-// return $inviteesData;
-
-		        foreach ($inviteesData as $value){
-
-		            $rules = [
-		                'email' => 'required_without:phone|email',
-		                'phone' => 'required_without:email',
-		            ];
-		            $messages = [
-		                'email.required_without' => 'valid invitee email or phone is required',
-		                'phone.required_without' => 'valid invitee email or phone is required'
-		            ];
-		            $validator = Validator::make($value, $rules, $messages);
-
-		            if ($validator->fails()) {
-		                return Response::json(
-		                    array(
-		                        'status' => 400,
-		                        'message' => $this->errorMessage($validator->errors()
-		                        )),400
-		                );
-		            }
-		        }
-
-		        $emails = array_fetch($inviteesData, 'email');
-        		$phones = array_fetch($inviteesData, 'phone');
-
-        		// return $customer->email;
-
-        		if(in_array($customer->email, $emails)) {
-		            return Response::json(
-		                array(
-		                    'status' => 422,
-		                    'message' => 'You cannot invite yourself email'
-		                ),422
-		            );
-		        }
-
-		        if(in_array($customer->contact_no, $phones)) {
-		            return Response::json(
-		                array(
-		                    'status' => 422,
-		                    'message' => 'You cannot invite yourself'
-		                ),422
-		            );
-		        }
-
-		        // return $inviteesData;
-
-		        foreach ($inviteesData as $invitee){
-		            $url = 'www.fitternity.com/buy/';
-		            $shorten_url = new ShortenUrl();
-		            $url = $shorten_url->getShortenUrl($url);
-		            if(!isset($url['status']) ||  $url['status'] != 200){
-		                return Response::json(
-		                    array(
-		                        'status' => 422,
-		                        'message' => 'Unable to Generate Shortren URL'
-		                    ),422
-		                );
-		            }
-		            $url = $url['url'];
-
-		            // Send email / SMS to invitees...
-		            $templateData = array(
-		                'referral_code'=>$customer['referral_code'],
-		                'invitee_name' =>isset($invitee['name'])?$invitee['name']:"",
-		                'invitee_email'=>isset($invitee['email'])?$invitee['email']:null,
-		                'invitee_phone'=>isset($invitee['phone'])?$invitee['phone']:null,
-		                'url' => $url,
-		            );
-		            Log::info($templateData);
-
-
-		            isset($templateData['invitee_email']) ? $this->customermailer->referFriend($templateData) : null;
-		            isset($templateData['invitee_phone']) ? $this->customersms->referFriend($templateData) : null;
-		        }
-
-
-				return $response =  array('status' => 200,'data'=>'Success');
-			}else{
-				return $response =  array('status' => 404,'message'=>"Customer not found");
-			}
-			
-
-		}catch(Exception $e){
-			Log::info($e);
-		}
-	}
-
-	public function getReferralData($data, $customer){
-		if(isset($data['referral_code']) && $data['referral_code']!=''){
-			$referrer = Customer::where('referral_code', $data['referral_code'])->where('status', '1')->first();
-			if($referrer){
-				$customer->referrer_id = $referrer->_id;
-				$customer->referred = true;
-				$customer->first_transaction = true;
-				if(!isset($referrer->referred_to)){
-					$referrer->referred_to = [];
-				}
-				$referred_to = $referrer->referred_to;
-				array_push($referred_to, $customer->_id);
-				$referrer->save();
-				return $response = array('status'=>200);
-			}else{
-				return $response = array('status'=>400, 'message'=>'Incorrect referral code');
-			}
-		}else{
-			$customer->referrer_id = 0;
-			$customer->referred = false;
-			$customer->first_transaction = true;
-			return $response = array('status'=>404);
-		}
-	}
-
-	public function generateReferralCode($name){
-		$referral_code = substr(implode("", (explode(" ", strtoupper($name)))),0,4)."".rand(1000, 9999);
-		$exists = Customer::where('referral_code', $referral_code)->where('status', '1')->first();
-		if($exists){
-			return $this->generateReferralCode($name);
-		}else{
-			return $referral_code;
-		}
-	}
 
 	public function orderDetail($order_id){
 
@@ -3666,8 +3390,8 @@ class CustomerController extends \BaseController {
 
 		$action = null;
 
+
 		if(!isset($order->updrage_membership) && time() >= strtotime($order['start_date'].'+11 days') && time() <= strtotime($order['start_date'].'+31 days') && isset($order['end_date']) && strtotime($order['end_date']) >= time() && isset($order['duration_day']) && $order['duration_day'] <= 180){
-			
 			$action = [
 				"button_text"=>"Upgrade Membership",
 				"activity"=>"upgrade_membership",
