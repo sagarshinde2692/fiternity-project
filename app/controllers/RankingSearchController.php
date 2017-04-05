@@ -2490,17 +2490,32 @@ public function getRankedFinderResultsAppv4()
         "filtered_locationtags": {
             '.$location_bool.',
             "aggs": {
-                "offerings": {
-                    "terms": {
-                        "field": "locationtags",
-                        "min_doc_count": 1,
-                        "size": 500,
-                        "order": {
-                            "_term": "asc"
+            "offerings": {
+                "nested": {
+                    "path": "location_obj"
+                },
+                "aggs": {
+                    "attrs": {
+                        "terms": {
+                            "field": "location_obj.name",
+                            "min_doc_count": 1,
+                            "size": "500",
+                            "order": {
+                                "_term": "asc"
+                            }
+                        },
+                        "aggs": {
+                            "attrsValues": {
+                                "terms": {
+                                    "field": "location_obj.slug",
+                                    "size": 100
+                                }
+                            }
                         }
                     }
                 }
             }
+        }
         },';
 
         $facilities_facets = '
