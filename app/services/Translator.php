@@ -1409,9 +1409,10 @@ public static function translate_searchresultsv4($es_searchresult_response,$sear
 		// }
 		if(isset($search_request['with_locationtags']) && $search_request['with_locationtags'] == 1){
 			$finderresult_response->results->aggregationlist->locationtags = array();
-			foreach ($aggs['filtered_locationtags']['offerings']['buckets'] as $off){
+			foreach ($aggs['filtered_locationtags']['offerings']['attrs']['buckets'] as $off){
 				$offval = new \stdClass();
 				$offval->key = $off['key'];
+				$offval->slug = $off['attrsValues']['buckets'][0]['key'];
 				$offval->count = $off['doc_count'];
 				array_push($finderresult_response->results->aggregationlist->locationtags, $offval);
 			}

@@ -86,7 +86,7 @@ class FindersController extends \BaseController {
 		
 		$category_slug = null;
 		if(isset($_GET['category_slug']) && $_GET['category_slug'] != ''){
-			Log::info("Category exists");
+			// Log::info("Category exists");
 			$category_slug = $_GET['category_slug'];
 			$cache_key  = $tslug.'-'.$category_slug;
 		}
@@ -614,6 +614,7 @@ class FindersController extends \BaseController {
 				$nearby_same_category = array();
 
 				$nearby_same_category       =   Finder::where('category_id','=',$findercategoryid)
+				->where('commercial_type','!=', 0)
 				->where('location_id','=',$finderlocationid)
 				->where('_id','!=',$finderid)
 				->where('status', '=', '1')
@@ -639,6 +640,7 @@ class FindersController extends \BaseController {
 
 				$nearby_other_category      =   Finder::where('category_id','!=',$findercategoryid)
 				->whereNotIn('category_id', $skip_categoryid_finders)
+				->where('commercial_type','!=', 0)
 				->where('location_id','=',$finderlocationid)
 				->where('_id','!=',$finderid)
 				->where('status', '=', '1')
@@ -2163,14 +2165,14 @@ class FindersController extends \BaseController {
 
 		$category_slug = null;
 		if(isset($_GET['category_slug']) && $_GET['category_slug'] != ''){
-			Log::info("Category exists");
+			// Log::info("Category exists");
 			$category_slug = $_GET['category_slug'];
 			$cache_key  = $tslug.'-'.$category_slug;
 		}
 
 		$location_id = null;
 		if(isset($_GET['location_id']) && $_GET['location_id'] != ''){
-			Log::info("location exists");
+			// Log::info("location exists");
 			$location_id = $_GET['location_id'];
 			$cache_key  = $cache_key.'-'.$location_id;
 		}
