@@ -1335,6 +1335,14 @@ class FindersController extends \BaseController {
 
 		$review = Review::where('finder_id', intval($data['finder_id']))->where('customer_id', intval($data['customer_id']))->first();
 
+		if(isset($data['order_id']) && $data['order_id'] != ""){
+			$order = Order::find((int) $data['order_id']);
+
+			if($order){
+				$order->update(["review_added"=>true]);
+			}
+		}
+
 		if($review){
 
 			$review->update($reviewdata);

@@ -1241,9 +1241,13 @@ class CustomerController extends \BaseController {
 				$value["action"] = $this->getAction($value);
 
 				if(isset($finderarr->title)){
-					$value["feedback"] = ["info"=>"Share your experience at ".ucwords($finderarr->title)." and we will make sure they are notified with it"];
+					$value["feedback"] = ["info"=>"Share your experience at ".ucwords($finderarr->title)." and we will make sure they are notified with it","show"=>true];
 				}else{
-					$value["feedback"] = ["info"=>"Share your experience and we will make sure they are notified with it"];
+					$value["feedback"] = ["info"=>"Share your experience and we will make sure they are notified with it","show"=>true];
+				}
+				
+				if(isset($value["review_added"])){
+					$value["feedback"]["show"] = false;
 				}
 
 				array_push($orders, $value);
@@ -3365,6 +3369,16 @@ class CustomerController extends \BaseController {
 	    $data['extra_info'] = $extraInfoData;
 
 	    $data['action'] = $this->getAction($order);
+
+	    if(isset($finder->title)){
+			$data["feedback"] = ["info"=>"Share your experience at ".ucwords($finder->title)." and we will make sure they are notified with it","show"=>true];
+		}else{
+			$data["feedback"] = ["info"=>"Share your experience and we will make sure they are notified with it","show"=>true];
+		}
+
+		if(isset($order["review_added"])){
+			$data["feedback"]["show"] = false;
+		}
 
 
 	    $reviewData = null;
