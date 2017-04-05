@@ -28,14 +28,18 @@ return array(
 	|
 	*/
 
-	'url' => 'https://a1.fitternity.com',
-	// 'url' => 'http://apistage.fitn.in',
+	// 'url' => 'https://a1.fitternity.com',
+	'url' => 'http://apistage.fitn.in',
 	// 'url' => 'http://fitapi.com',
 
 
 
-    'website' => 'https://www.fitternity.com',
-    // 'website' => 'http://apistage.fitn.in:1122',
+
+
+    // 'website' => 'https://www.fitternity.com',
+    'website' => 'http://apistage.fitn.in:1122',
+
+    'download_app_link' => 'https://www.fitternity.com/downloadapp',
 
 
 	'app' =>array(
@@ -316,6 +320,21 @@ return array(
 	'contact_us_customer_email' => 'support@fitternity.com',
 	'contact_us_vendor_number' => '+912261222233',
 	'contact_us_customer_number' => '+912261222222',
+	'followup_fitness_concierge' => 'Rachel',
+	'followup_customer_number' => '+912261222266',
+	'renewal_fitness_concierge' => 'David',
+	'renewal_customer_number' => '+912261222223',
+	'purchase_fitness_concierge' => 'David',
+	'purchase_customer_number' => '+912261222223',
+	'order_missed_call_no' => '+912233010070',
+	'confirm_order_customer_number' => '+912261222230',
+	'renewal_linksent_fitness_concierge' => 'David',
+	'renewal_linksent_customer_number' => '+912261222223',
+	'direct_customer_number' => '+912261222230',
+	'cancel_trial_missed_call_vendor' => "+912261222230",
+	'n-3_customer_number' => "+912261222230",
+	'n-3_confirm_customer_number' => "+912261222205",
+	'n+2_feedback_customer_number' => "+912261222219",
 
 	's3_finderurl'  => array(
 		'cover' 			=> 'https://b.fitn.in/f/c/',

@@ -436,6 +436,18 @@ Class CustomerMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 
+	public function referFriend($data){
+
+		$label = "Refer-friend";
+
+		$message_data 	= array(
+			'user_email' => array($data['invitee_email']),
+			'user_name' => $data['invitee_name']
+		);
+		return $this->common($label,$data,$message_data);
+
+	}
+
 	public function common($label,$data,$message_data,$delay = 0){
 
 		if(isset($data['source']) && $data['source'] == 'cleartrip'){
@@ -447,7 +459,7 @@ Class CustomerMailer extends Mailer {
 		$email_template = 	$this->bladeCompile($template->email_text,$data);
 		$email_subject = 	$this->bladeCompile($template->email_subject,$data);
 
-		$message_data['bcc_emailids'] = ($template->email_bcc != "") ? array_merge(explode(',', $template->email_bcc),array(Config::get('mail.to_mailus'))) : array(Config::get('mail.to_mailus'));
+		// $message_data['bcc_emailids'] = ($template->email_bcc != "") ? array_merge(explode(',', $template->email_bcc),array(Config::get('mail.to_mailus'))) : array(Config::get('mail.to_mailus'));
 
 		$message_data['email_subject'] = $email_subject;
 

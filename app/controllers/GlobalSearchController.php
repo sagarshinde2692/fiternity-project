@@ -1335,6 +1335,11 @@ return Response::json($response);
 
 public function improvedkeywordSearch(){
 
+
+    $data = Input::json()->all();
+
+    Log::info('------------------keywordsearchwebv1 :improved keyword Search----------------',$data);
+
     try {
         $city_name_list = array('mumbai','pune', 'bangalore', 'delhi', 'gurgaon','noida');
         $from    =         Input::json()->get('from') ? Input::json()->get('from') : 0;
@@ -1957,6 +1962,8 @@ $searchresulteresponse->metadata->request['regions'] = $location != "" ? array($
 $searchresulteresponse1 = json_encode($searchresulteresponse, true);
 
 $response       =   json_decode($searchresulteresponse1,true);
+
+//Log::info('------------------keywordsearchwebv1 response ----------------',$data);
 
 return Response::json($response);
 }

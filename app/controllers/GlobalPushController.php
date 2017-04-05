@@ -396,7 +396,7 @@ class GlobalPushController extends \BaseController
   public function pushfinders($index_name, $city_id){
 
     ini_set('max_execution_time', 30000);
-
+    ini_set('memory_limit', '512M');
     $indexdocs = Finder::active()->with(array('country'=>function($query){$query->select('name');}))
         ->with(array('city'=>function($query){$query->select('name');}))
         ->with(array('category'=>function($query){$query->select('name','meta');}))
@@ -416,7 +416,7 @@ class GlobalPushController extends \BaseController
 //      var_dump($indexdocs);
 //      exit();
 
-//      Log::info('I have $indexdocs.......');
+     Log::info('I have $indexdocs.......');
 
 
     foreach ($indexdocs as $data) {
@@ -454,7 +454,7 @@ class GlobalPushController extends \BaseController
 
       $postfields_data = json_encode($postdata);
 
-//        Log::info('$postfields_data for autosuggest.......');
+       Log::info('$postfields_data for autosuggest.......');
 
 
       // $postfields_data    =   json_encode(json_decode($mapping,true));
@@ -469,7 +469,7 @@ class GlobalPushController extends \BaseController
       $user = es_curl_request($request);
 //        Log::info('finder entry in index........');
 
-//        Log::info('done vendors of city ',array($city_id));
+       Log::info('done vendors of city ',array($city_id));
 
     }
   }
@@ -576,7 +576,7 @@ class GlobalPushController extends \BaseController
   public function pushservicecategorylocations($index_name){
 
     Log::info("in servicecategorylocations.......");
-
+    
     // ini_set('max_execution_time', 300000);
 
     $indexed_docs = array();

@@ -380,39 +380,50 @@ class OrderController extends \BaseController {
                 
             }
 
-            /*if(isset($order->preferred_starting_date) && $order->preferred_starting_date != "" && !in_array($finder->category_id, $abundant_category) && $order->type == "memberships" && !isset($order->customer_sms_after3days) && !isset($order->customer_email_after10days)){
+            if(isset($order->preferred_starting_date) && $order->preferred_starting_date != "" && $order->type == "memberships" && !isset($order->cutomerSmsPurchaseAfter10Days) && !isset($order->cutomerSmsPurchaseAfter30Days)){
 
                 $preferred_starting_date = $order->preferred_starting_date;
-                $after3days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 3);
+                
                 $after10days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 10);
+                $after30days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 30);
 
-                $category_slug = "no_category";
-
-                if(isset($order->finder_category_id) && $order->finder_category_id != ""){
-
-                    $finder_category_id = $order->finder_category_id;
-
-                    $category = Findercategory::find((int)$finder_category_id);
-
-                    if($category){
-                        $category_slug = $category->slug;
-                    }
-                }
-
-                $order_data = $order->toArray();
-
-                $order_data['category_array'] = $this->getCategoryImage($category_slug);
-
-                $order->customer_sms_after3days = $this->customersms->orderAfter3Days($order_data,$after3days);
-                $order->customer_email_after10days = $this->customermailer->orderAfter10Days($order_data,$after10days);
-
+                $this->customersms->purchaseInstant($order->toArray());
+                $order->cutomerSmsPurchaseAfter10Days = $this->customersms->purchaseAfter10Days($order->toArray(),$after10days);
+                $order->cutomerSmsPurchaseAfter30Days = $this->customersms->purchaseAfter30Days($order->toArray(),$after30days);
                 $order->update();
 
-            }*/
+            }
 
             $this->utilities->setRedundant($order);
+            Log::info("Customer for referral");
+            $customer = Customer::where('_id', $order['customer_id'])->first(['referred', 'referrer_id', 'first_transaction']);
+            Log::info($customer);
+            
+            if(isset($customer['referred']) && $customer['referred'] && $customer['first_transaction']){
+                Log::info("inside first transaction");
+                $referrer = Customer::where('_id', $customer->referrer_id)->first();
+                $customer->first_transaction = false;
+                $customer->update();
+                $wallet_data = array(
+                                'customer_id' => $customer->referrer_id,
+                                'amount' => 250,
+                                'amount_fitcash' => 0,
+                                'amount_fitcash_plus' => 250,
+                                'type' => "REFERRAL",
+                                'description' => "Referral fitcashplus to referrer",
+                                'order_id' => 0
+                                );
+                $this->utilities->walletTransaction($wallet_data);
+                $url = 'www.fitternity.com/profile/'.$referrer->email;
+                $sms_data = array(
+                    'customer_phone'=>$referrer->contact_no,
+                    // 'friend_name'   =>$customer_name,
+                    'wallet_url'    =>$url
+                    );
+                $referSms = $this->customersms->referralFitcash($sms_data);
 
 
+            }
 
             $finder_id = $order['finder_id'];
             $start_date_last_30_days = date("d-m-Y 00:00:00", strtotime('-31 days',strtotime(date('d-m-Y 00:00:00'))));
@@ -430,6 +441,8 @@ class OrderController extends \BaseController {
 
                 $sndMail  =   $this->findermailer->sendNoPrevSalesMail($mailData);
             }
+
+            $this->utilities->deleteCommunication($order);
 
             $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
             return Response::json($resp);
@@ -555,7 +568,7 @@ class OrderController extends \BaseController {
         }
         // return $data;
 
-        $customer_id 		=	(Input::json()->get('customer_id')) ? Input::json()->get('customer_id') : $this->autoRegisterCustomer($data);
+        $customer_id 		=	(Input::json()->get('customer_id')) ? Input::json()->get('customer_id') : autoRegisterCustomer($data);
 
         if(trim(Input::json()->get('finder_id')) != '' ){
 
@@ -1103,7 +1116,7 @@ class OrderController extends \BaseController {
         }
         // return $data;
 
-        $customer_id 		=	(isset($data['customer_id']) && $data['customer_id'] != "") ? $data['customer_id'] : $this->autoRegisterCustomer($data);
+        $customer_id 		=	(isset($data['customer_id']) && $data['customer_id'] != "") ? $data['customer_id'] : autoRegisterCustomer($data);
 
         if($data['type'] == 'booktrials'/* ||  $data['type'] == 'healthytiffintrail'||  $data['type'] == 'vip_booktrials'||  $data['type'] == '3daystrial'*/){
 
@@ -1379,19 +1392,7 @@ class OrderController extends \BaseController {
 
         $orderid = Order::max('_id') + 1;
 
-        $code = $orderid.str_random(8);
-
-        array_set($data, 'code', $code);
-
-        if(isset($_GET['device_type']) && $_GET['device_type'] != ""){
-            $data["device_type"] = strtolower(trim($_GET['device_type']));
-        }
-
-        if(isset($_GET['app_version']) && $_GET['app_version'] != ""){
-            $data["app_version"] = (float)$_GET['app_version'];
-        }
-
-        if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios'])){
+        /*if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios'])){
 
             if(isset($data['amount_finder'])){
 
@@ -1430,7 +1431,7 @@ class OrderController extends \BaseController {
 
             }
 
-        }else{
+        }else{*/
 
             if(isset($data['amount_finder'])){
 
@@ -1471,7 +1472,7 @@ class OrderController extends \BaseController {
                     $data['wallet_refund_sidekiq'] = $this->hitURLAfterDelay($url, $delay);
                 }
             }
-        }
+        // }
 
         if(isset($data['address']) && $data['address'] != ''){
 
@@ -2181,7 +2182,7 @@ class OrderController extends \BaseController {
             $data['finder_name'] = $order->finder_name;
             $data['service_name'] = $order->service_name;
 
-            $customer_id = $this->autoRegisterCustomer($data);
+            $customer_id = autoRegisterCustomer($data);
 
             if(isset($data['preferred_starting_date']) && $data['preferred_starting_date']  != ''){
                 if(trim($data['preferred_starting_date']) != '-'){
@@ -2265,10 +2266,11 @@ class OrderController extends \BaseController {
                     $fitcash_plus = $cashback_detail['only_wallet']['fitcash_plus'];
 
                     if(isset($data['cashback']) && $data['cashback'] == true){
+
                         $wallet_amount = $data['wallet_amount'] = $cashback_detail['discount_and_wallet']['fitcash'] + $cashback_detail['discount_and_wallet']['fitcash_plus'];
 
                         $fitcash = $cashback_detail['discount_and_wallet']['fitcash'];
-                        $fitcash_plus = $cashback_detail['discount_and_wallet']['fitcash_plus'];    
+                        $fitcash_plus = $cashback_detail['discount_and_wallet']['fitcash_plus'];
                     }
 
                     $data['amount'] = $data['amount'] - $data['wallet_amount'];

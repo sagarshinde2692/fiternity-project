@@ -82,6 +82,18 @@ class FindersController extends \BaseController {
 		
 		$data   =  array();
 		$tslug  = (string) strtolower($slug);
+
+		if($tslug == "default" && isset($_GET['vendor_id']) && $_GET['vendor_id'] != ""){
+
+			$vendor = Finder::find((int)$_GET['vendor_id'],["slug"]);
+
+			if($vendor){
+				$tslug = $vendor->slug;
+			}else{
+				return Response::json(array("status"=>404), 404);
+			}
+		}
+		
 		$cache_key = $tslug;
 		
 		$category_slug = null;
@@ -2159,6 +2171,19 @@ class FindersController extends \BaseController {
 
 		$data   =  array();	
 		$tslug  = (string) strtolower($slug);
+
+
+		if($tslug == "default" && isset($_GET['vendor_id']) && $_GET['vendor_id'] != ""){
+
+			$vendor = Finder::find((int)$_GET['vendor_id'],["slug"]);
+
+			if($vendor){
+				$tslug = $vendor->slug;
+			}else{
+				return Response::json(array("status"=>404), 404);
+			}
+		}
+
 		$cache_key = $tslug;
 
 		$category_slug = null;
@@ -2244,7 +2269,7 @@ class FindersController extends \BaseController {
 					foreach ($finderarr['reviews'] as $rev_key => $rev_value) {
 
 						if($rev_value['customer'] == null){
-
+							
 							$finderarr['reviews'][$rev_key]['customer'] = array("id"=>0,"name"=>"A Fitternity User","picture"=>"https://www.gravatar.com/avatar/0573c7399ef3cf8e1c215cdd730f02ec?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png");
 						}
 					}
@@ -2846,6 +2871,52 @@ class FindersController extends \BaseController {
         }
         
         return $decodedToken;
+    }
+
+
+    public function getDetailRating(){
+
+    	$request = $_REQUEST;
+
+    	if(!isset($request['finder_id']) && !isset($request['category_id'])){
+    		return Response::json(array('status'=>401,'message'=>'finder or category is required'),401);
+    	}
+
+    	$category_id = "";
+
+    	if(isset($request["finder_id"]) && $request["finder_id"] != ""){
+
+	    	$finder_id = (int) $request["finder_id"];
+
+	    	$finder = Finder::find($finder_id,array('_id','category_id'));
+
+	    	if(!$finder){
+	    		return Response::json(["message"=>"Vendor not found","status"=>404], 404);
+	    	}
+
+	    	$category_id = (int)$finder->category_id;
+	    }
+
+	    if(isset($request["category_id"]) && $request["category_id"] != ""){
+
+	    	$category_id = (int) $request["category_id"];
+	    }
+
+	    if($category_id == ""){
+	    	return Response::json(["message"=>"Category ID Missing","status"=>404], 404);
+	    }
+
+	    $category = Findercategory::find($category_id,array('_id','name','slug','detail_rating'));
+
+    	if(!$category){
+    		return Response::json(["message"=>"Category not found","status"=>404], 404);
+    	}
+
+    	$category = $category->toArray();
+
+    	$category["status"] = 200;
+
+    	return Response::json($category, 200);
     }
 
 

@@ -9,6 +9,7 @@ use JWT;
 use Finder;
 use Request;
 use Log;
+use App\Services\Sidekiq as Sidekiq;
 
 Class Utilities {
 
@@ -95,6 +96,7 @@ Class Utilities {
     public function walletTransaction($request,$data = false){
 
         $customer_id = (int)$request['customer_id'];
+        Log::info($customer_id);
 
         $jwt_token = Request::header('Authorization');
 
@@ -174,7 +176,7 @@ Class Utilities {
             
         }
 
-        if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios']) && isset($_GET['app_version']) && ((float)$_GET['app_version'] <= 3.2) ){
+        /*if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios'])){
 
             $wallet = Customer::where('_id',$customer_id)
                 ->first(array('balance'));
@@ -288,21 +290,26 @@ Class Utilities {
 
             );
 
-        }else{
+        }else{*/
 
             // Get Customer wallet balance........
             $customer = Customer::find($customer_id);
 
-            !($customer && isset($customer['balance'])) ? $customer['balance'] = 0 : null;
+            (!isset($customer['balance'])) ? $customer['balance'] = 0 : null;
 
-            !($customer && isset($customer['balance_fitcash_plus'])) ? $customer['balance_fitcash_plus'] = 0: null;
+            (!isset($customer['balance_fitcash_plus'])) ? $customer['balance_fitcash_plus'] = 0: null;
+
+            (!isset($request['amount_fitcash'])) ? $request['amount_fitcash'] = 0 : null;
+
+            (!isset($request['amount_fitcash_plus'])) ? $request['amount_fitcash_plus'] = 0: null;
 
             $request['balance'] = (int)$customer['balance'];
             $request['balance_fitcash_plus'] = (int)$customer['balance_fitcash_plus'];
 
-            // Process Action on basis of request........
-            if($request['type'] == 'CREDIT' || $request['type'] == 'CASHBACK'){
-                $request['balance'] = ((int) $customer['balance'] + abs($request['amount']));
+            if(in_array($request['type'], ['CASHBACK','FITCASHPLUS','REFERRAL','CREDIT'])){
+
+                $request['balance'] = ((int) $customer['balance'] + (int) $request['amount_fitcash']);
+                $request['balance_fitcash_plus'] = ((int) $customer['balance_fitcash_plus'] + (int) $request['amount_fitcash_plus']);
             }
 
             if($request['type'] == 'REFUND'){
@@ -369,20 +376,12 @@ Class Utilities {
             $customerwallet->type = $request['type'];
             $customerwallet->amount = (int) $request['amount'];
             $customerwallet->balance = (int) $request['balance'];
+            $customerwallet->amount_fitcash = (int)$request['amount_fitcash'];
+            $customerwallet->amount_fitcash_plus = (int)$request['amount_fitcash_plus'];
             $customerwallet->balance_fitcash_plus = (int) $request['balance_fitcash_plus'];
-
-            if(isset($request['amount_fitcash'])){
-                $customerwallet->amount_fitcash = (int)$request['amount_fitcash'];
-            }
-
-            if(isset($request['amount_fitcash_plus'])){
-                $customerwallet->amount_fitcash_plus = (int)$request['amount_fitcash_plus'];
-            }
-
             isset($request['description']) ? $customerwallet->description = $request['description'] : null;
             $customerwallet->save();
-
-
+            
             //update customer balance and balance_fitcash_plus
             $customer->balance = (int)$request['balance'];
             $customer->balance_fitcash_plus = (int)$request['balance_fitcash_plus'];
@@ -397,7 +396,7 @@ Class Utilities {
                 ),200
 
             );
-        }
+        //}
     }
 
     
@@ -710,6 +709,42 @@ Class Utilities {
 
                     $orderData->redundant_order = "1";
                     $orderData->update();
+
+                    $this->deleteCommunication($orderData);
+                }
+            }
+
+            $allBooktrials = \Booktrial::where('customer_email',$order->customer_email)
+                        ->where('notification_status','exists',true)
+                        ->where('notification_status','yes')
+                        ->orderBy('_id','desc')
+                        ->get();
+
+            if(count($allBooktrials) > 0){
+
+                foreach ($allBooktrials as $booktrial) {
+
+                    $booktrial->notification_status = "no";
+                    $booktrial->update();
+
+                    $this->deleteTrialCommunication($booktrial);
+                }
+            }
+
+            $allCaptures = \Capture::where('customer_email',$order->customer_email)
+                        ->where('notification_status','exists',true)
+                        ->where('notification_status','yes')
+                        ->orderBy('_id','desc')
+                        ->get();
+
+            if(count($allCaptures) > 0){
+
+                foreach ($allCaptures as $capture) {
+
+                    $capture->notification_status = "no";
+                    $capture->update();
+
+                    $this->deleteCaptureCommunication($capture);
                 }
             }
 
@@ -767,6 +802,280 @@ Class Utilities {
             $order->update();
         }
         return $hash_verified;
+    }
+
+    public function deleteCommunication($order){
+
+        $queue_id = [];
+        $notification_status = ['renewal_link_sent_no','link_sent_no','abandon_cart_no'];
+
+        if($order->status == "1" || (isset($order->redundant_order) && $order->redundant_order == "1") || (isset($order->notification_status) && in_array($order->notification_status,$notification_status))){
+
+            if((isset($order->customerSmsSendPaymentLinkAfter3Days))){
+                try {
+                    $queue_id[] = $order->customerSmsSendPaymentLinkAfter3Days;
+                    $order->unset('customerSmsSendPaymentLinkAfter3Days');
+                }catch(\Exception $exception){
+                    Log::error($exception);
+                }
+            }
+
+            if((isset($order->customerSmsSendPaymentLinkAfter7Days))){
+                try {
+                    $queue_id[] = $order->customerSmsSendPaymentLinkAfter7Days;
+                    $order->unset('customerSmsSendPaymentLinkAfter7Days');
+                }catch(\Exception $exception){
+                    Log::error($exception);
+                }
+            }
+
+            if((isset($order->customerSmsSendPaymentLinkAfter15Days))){
+                try {
+                    $queue_id[] = $order->customerSmsSendPaymentLinkAfter15Days;
+                    $order->unset('customerSmsSendPaymentLinkAfter15Days');
+                }catch(\Exception $exception){
+                    Log::error($exception);
+                }
+            }
+
+            if((isset($order->customerSmsSendPaymentLinkAfter30Days))){
+                try {
+                    $queue_id[] = $order->customerSmsSendPaymentLinkAfter30Days;
+                    $order->unset('customerSmsSendPaymentLinkAfter30Days');
+                }catch(\Exception $exception){  
+                    Log::error($exception);
+                }
+            }
+
+            if((isset($order->customerSmsSendPaymentLinkAfter45Days))){
+                try {
+                    $queue_id[] = $order->customerSmsSendPaymentLinkAfter45Days;
+                    $order->unset('customerSmsSendPaymentLinkAfter45Days');
+                }catch(\Exception $exception){
+                    Log::error($exception);
+                }
+            }
+
+            if((isset($order->customerSmsRenewalLinkSentBefore30Days))){
+                try {
+                    $queue_id[] = $order->customerSmsRenewalLinkSentBefore30Days;
+                    $order->unset('customerSmsRenewalLinkSentBefore30Days');
+                }catch(\Exception $exception){
+                    Log::error($exception);
+                }
+            }
+
+            if((isset($order->customerSmsRenewalLinkSentBefore15Days))){
+                try {
+                    $queue_id[] = $order->customerSmsRenewalLinkSentBefore15Days;
+                    $order->unset('customerSmsRenewalLinkSentBefore15Days');
+                }catch(\Exception $exception){
+                    Log::error($exception);
+                }
+            }
+
+            if((isset($order->customerSmsRenewalLinkSentBefore7Days))){
+                try {
+                    $queue_id[] = $order->customerSmsRenewalLinkSentBefore7Days;
+                    $order->unset('customerSmsRenewalLinkSentBefore7Days');
+                }catch(\Exception $exception){
+                    Log::error($exception);
+                }
+            }
+
+            if((isset($order->customerSmsRenewalLinkSentBefore1Days))){
+                try {
+                    $queue_id[] = $order->customerSmsRenewalLinkSentBefore1Days;
+                    $order->unset('customerSmsRenewalLinkSentBefore1Days');
+                }catch(\Exception $exception){
+                    Log::error($exception);
+                }
+            }
+
+            if((isset($order->customerSmsRenewalLinkSentAfter7Days))){
+                try {
+                    $queue_id[] = $order->customerSmsRenewalLinkSentAfter7Days;
+                    $order->unset('customerSmsRenewalLinkSentAfter7Days');
+                }catch(\Exception $exception){
+                    Log::error($exception);
+                }
+            }
+
+            if((isset($order->customerSmsRenewalLinkSentAfter15Days))){
+                try {
+                    $queue_id[] = $order->customerSmsRenewalLinkSentAfter15Days;
+                    $order->unset('customerSmsRenewalLinkSentAfter15Days');
+                }catch(\Exception $exception){
+                    Log::error($exception);
+                }
+            }
+
+            if((isset($order->customerSmsRenewalLinkSentAfter30Days))){
+                try {
+                    $queue_id[] = $order->customerSmsRenewalLinkSentAfter30Days;
+                    $order->unset('customerSmsRenewalLinkSentAfter30Days');
+                }catch(\Exception $exception){
+                    Log::error($exception);
+                }
+            }
+
+            if($order->status == "1"){
+                $order->update(['notification_status' => 'purchase_yes']);
+            }else{
+
+                if(isset($order->paymentLinkEmailCustomerTiggerCount)){
+                    $order->update(['notification_status' => 'link_sent_no']);
+                }else{
+                    $order->update(['notification_status' => 'abandon_cart_no']);
+                }
+
+                if(isset($order->renewalPaymentLinkCustomerTiggerCount)){
+                    $order->update(['notification_status' => 'renewal_link_sent_no']);
+                }
+            }
+
+
+        }
+
+        if(!empty($queue_id)){
+
+            $sidekiq = new Sidekiq();
+            $sidekiq->delete($queue_id);
+        }
+
+    }
+
+    public function deleteTrialCommunication($booktrial){
+
+        $queue_id = [];
+
+        if((isset($booktrial->customerSmsPostTrialFollowup1After3Days))){
+            try {
+                $queue_id[] = $booktrial->customerSmsPostTrialFollowup1After3Days;
+                $booktrial->unset('customerSmsPostTrialFollowup1After3Days');
+            }catch(\Exception $exception){
+                Log::error($exception);
+            }
+        }
+
+        if((isset($booktrial->customerSmsPostTrialFollowup1After7Days))){
+            try {
+                $queue_id[] = $booktrial->customerSmsPostTrialFollowup1After7Days;
+                $booktrial->unset('customerSmsPostTrialFollowup1After7Days');
+            }catch(\Exception $exception){
+                Log::error($exception);
+            }
+        }
+
+        if((isset($booktrial->customerSmsPostTrialFollowup1After15Days))){
+            try {
+                $queue_id[] = $booktrial->customerSmsPostTrialFollowup1After15Days;
+                $booktrial->unset('customerSmsPostTrialFollowup1After15Days');
+            }catch(\Exception $exception){
+                Log::error($exception);
+            }
+        }
+
+        if((isset($booktrial->customerSmsPostTrialFollowup1After30Days))){
+            try {
+                $queue_id[] = $booktrial->customerSmsPostTrialFollowup1After30Days;
+                $booktrial->unset('customerSmsPostTrialFollowup1After30Days');
+            }catch(\Exception $exception){
+                Log::error($exception);
+            }
+        }
+
+
+        if((isset($booktrial->customerSmsPostTrialFollowup2After3Days))){
+            try {
+                $queue_id[] = $booktrial->customerSmsPostTrialFollowup2After3Days;
+                $booktrial->unset('customerSmsPostTrialFollowup2After3Days');
+            }catch(\Exception $exception){
+                Log::error($exception);
+            }
+        }
+
+        if((isset($booktrial->customerSmsPostTrialFollowup2After7Days))){
+            try {
+                $queue_id[] = $booktrial->customerSmsPostTrialFollowup2After7Days;
+                $booktrial->unset('customerSmsPostTrialFollowup2After7Days');
+            }catch(\Exception $exception){
+                Log::error($exception);
+            }
+        }
+
+        if((isset($booktrial->customerSmsPostTrialFollowup2After15Days))){
+            try {
+                $queue_id[] = $booktrial->customerSmsPostTrialFollowup2After15Days;
+                $booktrial->unset('customerSmsPostTrialFollowup2After15Days');
+            }catch(\Exception $exception){
+                Log::error($exception);
+            }
+        }
+
+        if((isset($booktrial->customerSmsPostTrialFollowup2After30Days))){
+            try {
+                $queue_id[] = $booktrial->customerSmsPostTrialFollowup2After30Days;
+                $booktrial->unset('customerSmsPostTrialFollowup2After30Days');
+            }catch(\Exception $exception){
+                Log::error($exception);
+            }
+        }
+
+        if(!empty($queue_id)){
+
+            $sidekiq = new Sidekiq();
+            $sidekiq->delete($queue_id);
+        }
+
+    }
+
+    public function deleteCaptureCommunication($capture){
+
+        $queue_id = [];
+
+        if((isset($capture->customerSmsPostCaptureFollowup2After3Days))){
+            try {
+                $queue_id[] = $capture->customerSmsPostCaptureFollowup2After3Days;
+                $capture->unset('customerSmsPostCaptureFollowup2After3Days');
+            }catch(\Exception $exception){
+                Log::error($exception);
+            }
+        }
+
+        if((isset($capture->customerSmsPostCaptureFollowup2After7Days))){
+            try {
+                $queue_id[] = $capture->customerSmsPostCaptureFollowup2After7Days;
+                $capture->unset('customerSmsPostCaptureFollowup2After7Days');
+            }catch(\Exception $exception){
+                Log::error($exception);
+            }
+        }
+
+        if((isset($capture->customerSmsPostCaptureFollowup2After15Days))){
+            try {
+                $queue_id[] = $capture->customerSmsPostCaptureFollowup2After15Days;
+                $capture->unset('customerSmsPostCaptureFollowup2After15Days');
+            }catch(\Exception $exception){
+                Log::error($exception);
+            }
+        }
+
+        if((isset($capture->customerSmsPostCaptureFollowup2After30Days))){
+            try {
+                $queue_id[] = $capture->customerSmsPostCaptureFollowup2After30Days;
+                $capture->unset('customerSmsPostCaptureFollowup2After30Days');
+            }catch(\Exception $exception){
+                Log::error($exception);
+            }
+        }
+
+        if(!empty($queue_id)){
+
+            $sidekiq = new Sidekiq();
+            $sidekiq->delete($queue_id);
+        }
+
     }
 
 }

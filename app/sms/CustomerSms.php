@@ -491,6 +491,103 @@ Class CustomerSms extends VersionNextSms{
 
 	}
 
+	public function sendPaymentLinkAfter3Days($data,$delay){
+
+        $label = 'SendPaymentLinkAfter3Days-Customer';
+
+        $to = $data['customer_phone'];
+
+        return $this->common($label,$to,$data,$delay);
+
+    }
+
+    public function sendPaymentLinkAfter7Days($data,$delay){
+
+        $label = 'SendPaymentLinkAfter7Days-Customer';
+
+        $to = $data['customer_phone'];
+
+        return $this->common($label,$to,$data,$delay);
+
+    }
+
+    public function sendPaymentLinkAfter15Days($data,$delay){
+
+        $label = 'SendPaymentLinkAfter15Days-Customer';
+
+        $to = $data['customer_phone'];
+
+        return $this->common($label,$to,$data,$delay);
+
+    }
+
+    public function sendPaymentLinkAfter30Days($data,$delay){
+
+        $label = 'SendPaymentLinkAfter30Days-Customer';
+
+        $to = $data['customer_phone'];
+
+        return $this->common($label,$to,$data,$delay);
+
+    }
+
+    public function sendPaymentLinkAfter45Days($data,$delay){
+
+        $label = 'SendPaymentLinkAfter45Days-Customer';
+
+        $to = $data['customer_phone'];
+
+        return $this->common($label,$to,$data,$delay);
+
+    }
+
+    public function purchaseInstant($data){
+
+        $label = 'PurchaseInstant-Customer';
+
+        $to = $data['customer_phone'];
+
+        return $this->common($label,$to,$data);
+
+    }
+
+    public function purchaseAfter10Days($data,$delay){
+
+        $label = 'PurchaseAfter10Days-Customer';
+
+        $to = $data['customer_phone'];
+
+        return $this->common($label,$to,$data,$delay);
+
+    }
+
+    public function purchaseAfter30Days($data,$delay){
+
+        $label = 'PurchaseAfter30Days-Customer';
+
+        $to = $data['customer_phone'];
+
+        return $this->common($label,$to,$data,$delay);
+
+    }
+	public function referFriend($data){
+
+		$label = 'Refer-friend';
+
+		$to = $data['invitee_phone'];
+
+		return $this->common($label,$to,$data);
+	}
+
+	public function referralFitcash($data){
+
+		$label = 'Referral-fitcashplus';
+
+		$to = $data['customer_phone'];
+
+		return $this->common($label,$to,$data);
+	}
+
 	public function common($label,$to,$data,$delay = 0){
 
 		if(isset($data['source']) && $data['source'] == 'cleartrip'){
