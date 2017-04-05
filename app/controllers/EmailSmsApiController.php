@@ -502,7 +502,7 @@ class EmailSmsApiController extends \BaseController {
             $order = Order::find((int) $data['order_id']);
             $data['vendor_id'] = $data['finder_id'] = $order->finder_id;
             $data['vendor_name'] = $data['finder_name'] = $order->finder_name;
-
+            $data['city_id'] = $order->city_id;
             if($data["capture_type"] == "renew-membership"){
                 $order->update(["renew_membership"=>"requested"]);
             }
@@ -569,7 +569,7 @@ class EmailSmsApiController extends \BaseController {
             'send_bcc_status'   => 1
         );
 
-        $capture_type = array('fitness_canvas');
+        $capture_type = array('fitness_canvas','renew-membership');
 
         if(in_array($data['capture_type'],$capture_type)){
 

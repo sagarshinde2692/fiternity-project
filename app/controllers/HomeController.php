@@ -10,6 +10,7 @@ class HomeController extends BaseController {
 
 
     protected $api_url = "http://a1.fitternity.com/";
+    // protected $api_url = "http://fitapi.com/";
     protected $debug = false;
     protected $client;
 
@@ -692,7 +693,7 @@ class HomeController extends BaseController {
             if(count($aggregationlist) > 0){
                 foreach ($aggregationlist as $key => $location) {
                     if(intval($location['count']) > 0){
-                        $location = ['count' => $location['count'], 'name' => $location['key'], 'slug' => url_slug([$location['key']]) ];
+                        $location = ['count' => $location['count'], 'name' => $location['key'], 'slug' => url_slug([$location['slug']]) ];
                         array_push($locationsArr, $location);
                     }
                 }

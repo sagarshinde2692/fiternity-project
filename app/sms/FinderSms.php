@@ -168,12 +168,21 @@ Class FinderSms extends VersionNextSms{
 
 	public function reminderToConfirmManualTrial ($data,$delay){
 	
-			$label = 'Reminder-To-Confirm-ManualTrial-Finder';
+		$label = 'Reminder-To-Confirm-ManualTrial-Finder';
+
+		$to = explode(',', $data['finder_vcc_mobile']);
+
+		return $this->common($label,$to,$data,$delay);
+	}
+
+	public function changeStartDate ($data){
 	
-			$to = explode(',', $data['finder_vcc_mobile']);
-	
-			return $this->common($label,$to,$data,$delay);
-		}
+		$label = 'ChangeStartDate-Vendor';
+
+		$to = explode(',', $data['finder_vcc_mobile']);
+
+		return $this->common($label,$to,$data);
+	}
 	
 	public function common($label,$to,$data,$delay = 0){
 

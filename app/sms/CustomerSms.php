@@ -442,10 +442,22 @@ Class CustomerSms extends VersionNextSms{
 
 		switch ($data['capture_type']) {
 			case 'fitness_canvas': $label = 'FitnessCanvas-Customer';break;
+			case 'renew-membership': $label = 'RenewMembership-Customer';break;
+			case 'upgrade-membership': $label = 'UpgradeMembership-Customer';break;
 			default:return "no email sms";break;
 		}
 
 		$to = $data['phone'];
+
+		return $this->common($label,$to,$data);
+
+	}
+
+	public function changeStartDate ($data){
+
+		$label = 'ChangeStartDate-Customer';
+
+		$to = $data['customer_phone'];
 
 		return $this->common($label,$to,$data);
 
