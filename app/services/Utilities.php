@@ -769,4 +769,54 @@ Class Utilities {
         return $hash_verified;
     }
 
+    public function addCapture($data){
+
+        if(isset($data['order_id']) && $data['order_id'] != ""){
+            $order = \Order::find((int) $data['order_id']);
+            $data['vendor_id'] = $data['finder_id'] = $order->finder_id;
+            $data['vendor_name'] = $data['finder_name'] = $order->finder_name;
+        }
+
+        if(isset($data['customer_phone']) && $data['customer_phone'] != ""){
+            $data['phone'] = $data['mobile'] = $data['customer_phone'];
+        }
+
+        if(isset($data['mobile']) && $data['mobile'] != ""){
+            $data['customer_phone'] = $data['phone'] = $data['mobile'];
+        }
+
+        if(isset($data['customer_name']) && $data['customer_name'] != ""){
+            $data['name'] = $data['customer_name'];
+        }
+
+        if(isset($data['customer_email']) && $data['customer_email'] != ""){
+            $data['email'] = $data['customer_email'];
+        }
+
+        if(isset($data['phone']) && $data['phone'] != ""){
+            $data['customer_phone'] = $data['mobile'] = $data['phone'];
+        }
+
+        if(isset($data['name']) && $data['name'] != ""){
+            $data['customer_name'] = $data['name'];
+        }
+
+        if(isset($data['email']) && $data['email'] != ""){
+            $data['customer_email'] = $data['email'];
+        }
+
+        array_set($data, 'capture_status', 'yet to connect');
+        array_set($data, 'date',date("h:i:sa"));
+        array_set($data, 'ticket_number',random_numbers(5));
+
+        if(isset($data['finder_id']) && $data['finder_id'] != ""){
+            $data['finder_id'] = (int)$data['finder_id'];
+        }
+
+       \Capture::create($data);
+
+       return "Success";
+
+    }
+
 }

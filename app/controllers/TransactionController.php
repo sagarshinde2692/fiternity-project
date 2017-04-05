@@ -297,6 +297,8 @@ class TransactionController extends \BaseController {
 
                 $this->customermailer->sendPgOrderMail($emailData);
                 $this->findermailer->sendPgOrderMail($emailData);
+                $this->customersms->changeStartDate($emailData);
+                $this->findersms->changeStartDate($emailData);
 
                 $message = "Your Preferred Starting date has been change Successfull";
 
@@ -308,7 +310,26 @@ class TransactionController extends \BaseController {
 
                 $order->update($data);
 
+                $emailData = $order->toArray();
+                $emailData['capture_type'] = "upgrade-membership";
+                $emailData['phone'] = $order->customer_phone;
+
+                $this->customersms->landingPageCallback($emailData);
+
                 $message = "Upgrade request has been noted. We will call you shortly.";
+
+                $captureData = [
+                    "customer_id" => $order->customer_id,
+                    "customer_name" => $order->customer_name,
+                    "customer_email" => $order->customer_email,
+                    "customer_phone" => $order->customer_phone,
+                    "order_id" => $order->order_id,
+                    "finder_id" => $order->finder_id,
+                    "city_id" => $order->city_id,
+                    "capture_type" => "upgrade-membership"
+                ];
+
+                $this->utilities->addCapture($captureData);
             }
 
             return Response::json(array('status' => 200,'message' => $message),200);
