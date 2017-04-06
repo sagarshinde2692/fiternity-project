@@ -1238,7 +1238,7 @@ class CustomerController extends \BaseController {
 					$value['amount'] = $value['amount_customer'];
 				}
 
-				$getAction = $this->getAction($order);
+				$getAction = $this->getAction($orderData);
 
 			    $value["action"] = $getAction["action"];
 			    $value["feedback"] = $getAction["feedback"];
