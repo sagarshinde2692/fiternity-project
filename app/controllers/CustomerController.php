@@ -1238,17 +1238,10 @@ class CustomerController extends \BaseController {
 					$value['amount'] = $value['amount_customer'];
 				}
 
-				$value["action"] = $this->getAction($value);
+				$getAction = $this->getAction($order);
 
-				if(isset($finderarr->title)){
-					$value["feedback"] = ["info"=>"Share your experience at ".ucwords($finderarr->title)." and we will make sure they are notified with it","show"=>true];
-				}else{
-					$value["feedback"] = ["info"=>"Share your experience and we will make sure they are notified with it","show"=>true];
-				}
-				
-				if(isset($value["review_added"])){
-					$value["feedback"]["show"] = false;
-				}
+			    $value["action"] = $getAction["action"];
+			    $value["feedback"] = $getAction["feedback"];
 
 				array_push($orders, $value);
 
@@ -3368,17 +3361,10 @@ class CustomerController extends \BaseController {
 	    $extraInfoData['what_to_expect'] = ($order->what_i_should_expect) ? $order->what_i_should_expect : "";
 	    $data['extra_info'] = $extraInfoData;
 
-	    $data['action'] = $this->getAction($order);
+	    $getAction = $this->getAction($order);
 
-	    if(isset($finder->title)){
-			$data["feedback"] = ["info"=>"Share your experience at ".ucwords($finder->title)." and we will make sure they are notified with it","show"=>true];
-		}else{
-			$data["feedback"] = ["info"=>"Share your experience and we will make sure they are notified with it","show"=>true];
-		}
-
-		if(isset($order["review_added"])){
-			$data["feedback"]["show"] = false;
-		}
+	    $data["action"] = $getAction["action"];
+	    $data["feedback"] = $getAction["feedback"];
 
 
 	    $reviewData = null;
@@ -3512,7 +3498,24 @@ class CustomerController extends \BaseController {
 			}
 		}
 
-		return $action;
+		$feedback = [];
+
+		if(isset($order->finder_name) && $order->finder_name != ""){
+			$feedback = ["info"=>"Share your experience at ".ucwords($order->finder_name)." and we will make sure they are notified with it","show"=>true];
+		}else{
+			$feedback = ["info"=>"Share your experience and we will make sure they are notified with it","show"=>true];
+		}
+		
+		if(isset($value["review_added"])){
+			$feedback["show"] = false;
+		}
+
+		$return = [
+			'action' => $action,
+			'feedback' => $feedback
+		];
+
+		return $return;
 
 	}
 
