@@ -1222,7 +1222,7 @@ class CustomerController extends \BaseController {
 					$finderarr = Finder::active()->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))
 					->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
 					->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-					->find(intval($value['finder_id']),['_id','title','slug','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile','finder_poc_for_customer_name','info','category_id','location_id','city_id','category','location','city','average_rating','total_rating_count']);
+					->find(intval($value['finder_id']),['_id','title','slug','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile','finder_poc_for_customer_name','info','category_id','location_id','city_id','category','location','city','average_rating','total_rating_count','review_added']);
 					if($finderarr){
 						$value['finder'] = $finderarr;
 					}
@@ -1238,17 +1238,10 @@ class CustomerController extends \BaseController {
 					$value['amount'] = $value['amount_customer'];
 				}
 
-				$value["action"] = $this->getAction($value);
+				$getAction = $this->getAction($order);
 
-				if(isset($finderarr->title)){
-					$value["feedback"] = ["info"=>"Share your experience at ".ucwords($finderarr->title)." and we will make sure they are notified with it","show"=>true];
-				}else{
-					$value["feedback"] = ["info"=>"Share your experience and we will make sure they are notified with it","show"=>true];
-				}
-				
-				if(isset($value["review_added"])){
-					$value["feedback"]["show"] = false;
-				}
+			    $value["action"] = $getAction["action"];
+			    $value["feedback"] = $getAction["feedback"];
 
 				array_push($orders, $value);
 
@@ -2191,12 +2184,26 @@ class CustomerController extends \BaseController {
 
 		if(count($wallet) > 0){
 
+			$debit_array = [
+			    "CASHBACK",
+			    "REFUND",
+			    "FITCASHPLUS",
+			    "REFERRAL",
+			    "CREDIT",
+			];
+
 			$wallet = $wallet->toArray();
 
 			foreach ($wallet as $key => $value) {
 
 				if(!isset($value['order_id'])){
 					$wallet[$key]['order_id'] = 0;
+				}
+
+				$wallet[$key]["debit_credit"] = "debit";
+
+				if(in_array($value["type"],$debit_array)){
+					$wallet[$key]["debit_credit"] = "credit";
 				}
 
 				if(isset($wallet[$key+1])){
@@ -2257,10 +2264,11 @@ class CustomerController extends \BaseController {
 						'short_description' => "short"."\n"."description"."\n"."description"
 					]
 				],
-				),200
-
-			);
+				),
+			200
+		);
 	}
+
 
 	public function getWalletBalance(){
 
@@ -3370,18 +3378,10 @@ class CustomerController extends \BaseController {
 	    $extraInfoData['what_to_expect'] = ($order->what_i_should_expect) ? $order->what_i_should_expect : "";
 	    $data['extra_info'] = $extraInfoData;
 
-	    $data['action'] = $this->getAction($order);
+	    $getAction = $this->getAction($order);
 
-	    if(isset($finder->title)){
-			$data["feedback"] = ["info"=>"Share your experience at ".ucwords($finder->title)." and we will make sure they are notified with it","show"=>true];
-		}else{
-			$data["feedback"] = ["info"=>"Share your experience and we will make sure they are notified with it","show"=>true];
-		}
-
-		if(isset($order["review_added"])){
-			$data["feedback"]["show"] = false;
-		}
-
+	    $data["action"] = $getAction["action"];
+	    $data["feedback"] = $getAction["feedback"];
 
 	    $reviewData = null;
 	    $review = Review::active()->where('finder_id',(int)$order->finder_id)->where('customer_id',(int)$order->customer_id)->first();
@@ -3406,7 +3406,6 @@ class CustomerController extends \BaseController {
 
 		$action = null;
 
-
 		if(!isset($order->updrage_membership) && time() >= strtotime($order['start_date'].'+11 days') && time() <= strtotime($order['start_date'].'+31 days') && isset($order['end_date']) && strtotime($order['end_date']) >= time() && isset($order['duration_day']) && $order['duration_day'] <= 180){
 			$action = [
 				"button_text"=>"Upgrade Membership",
@@ -3420,7 +3419,7 @@ class CustomerController extends \BaseController {
 			];
 		}
 
-		if(!isset($order->preferred_starting_updated) && time() <= strtotime($order['start_date'].'+11 days')){
+		if(!isset($order->preferred_starting_change_date) && time() <= strtotime($order['start_date'].'+11 days')){
 
 			$min_date = strtotime('+1 days');
 			$max_date = strtotime($order['created_at'].'+29 days');
@@ -3462,7 +3461,7 @@ class CustomerController extends \BaseController {
 				"button_text"=>"Change Start Date",
 				"activity"=>"update_starting_date",
 				"color"=>"#7AB317",
-				"info" => "Don't miss even a single day workout. Change your membership start date basis your convenience.",
+				"info" => "Don't miss even a single day workout. Change your membership start date basis your convenience. Not applicable, if you have already started with your membership.",
 				"min_date"=> $min_date,
 				"max_date"=> $max_date,
 				"available_days"=> $available_days,
@@ -3504,7 +3503,7 @@ class CustomerController extends \BaseController {
 					"button_text"=>"Renew Membership",
 					"activity"=>"renew_membership",
 					"color"=>"#EF1C26",
-					"info" => $days_to_go." days to go for your membership to end. Renew your membership with the lowest price and assured rewards",
+					"info" => "Renew your membership with the lowest price and assured rewards",
 					"popup" =>[
 						"title"=>"Renew Membership",
 						"message"=>"Renew Membership"
@@ -3514,9 +3513,27 @@ class CustomerController extends \BaseController {
 			}
 		}
 
-		return $action;
+		$feedback = [];
+
+		if(isset($order->finder_name) && $order->finder_name != ""){
+			$feedback = ["info"=>"Share your experience at ".ucwords($order->finder_name)." and we will make sure they are notified with it","show"=>true];
+		}else{
+			$feedback = ["info"=>"Share your experience and we will make sure they are notified with it","show"=>true];
+		}
+		
+		if(isset($value["review_added"])){
+			$feedback["show"] = false;
+		}
+
+		$return = [
+			'action' => $action,
+			'feedback' => $feedback
+		];
+
+		return $return;
 
 	}
+
 
 	public function closestDate($day,$date){
 
