@@ -436,6 +436,7 @@ Class CustomerMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 
+
 	public function referFriend($data){
 
 		$label = "Refer-friend";
@@ -444,10 +445,62 @@ Class CustomerMailer extends Mailer {
 			'user_email' => array($data['invitee_email']),
 			'user_name' => $data['invitee_name']
 		);
+
+		return $this->common($label,$data,$message_data);
+	}
+
+	public function instantSlotBooking($data){
+
+		$label = 'DietPlan-InstantSlotBooking-Customer';
+
+		$message_data 	= array(
+			'user_email' => array($data['customer_email']),
+			'user_name' => $data['customer_name']
+		);
+
 		return $this->common($label,$data,$message_data);
 
 	}
 
+	public function before3HourSlotBooking($data,$delay){
+
+		$label = 'DietPlan-Before3HourSlotBooking-Customer';
+
+		$message_data 	= array(
+			'user_email' => array($data['customer_email']),
+			'user_name' => $data['customer_name']
+		);
+
+		return $this->common($label,$data,$message_data,$dealy);
+
+	}
+
+	public function dietPlanAfter15DaysReviewSlotConfirm($data){
+
+        $label = 'DietPlan-After15DaysReview-SlotConfirm-Customer';
+
+        $message_data 	= array(
+			'user_email' => array($data['customer_email']),
+			'user_name' => $data['customer_name']
+		);
+
+		return $this->common($label,$data,$message_data);
+
+    }
+
+    public function dietPlanAfter15DaysFollowupSlotConfirm($data){
+
+        $label = 'DietPlan-After15DaysFollowup-SlotConfirm-Customer';
+
+        $message_data 	= array(
+			'user_email' => array($data['customer_email']),
+			'user_name' => $data['customer_name']
+		);
+
+		return $this->common($label,$data,$message_data);
+
+    }
+    
 	public function common($label,$data,$message_data,$delay = 0){
 
 		if(isset($data['source']) && $data['source'] == 'cleartrip'){

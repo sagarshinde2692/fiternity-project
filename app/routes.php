@@ -879,12 +879,14 @@ Route::get('getsubcategories', 'DebugController@cacheOfferings');
 Route::get('getfinders', 'DebugController@cacheFinders');
 
 Route::post('transaction/pg',array('as' => 'transaction.pg','uses' => 'TransactionController@pg'));
+Route::post('transaction/success',array('as' => 'transaction.success','uses' => 'TransactionController@success'));
 
 Route::get('referral', 'CustomerController@generateReferralCode');
 
 Route::post('displayemi','CustomerController@displayEmi');
 
-Route::get('trainer/getavailableslots',array('as' => 'trainer/getavailableslots','uses' => 'TrainerController@getAvailableSlots'));
+Route::post('trainer/getavailableslots',array('as' => 'trainer/getavailableslots','uses' => 'TrainerController@getAvailableSlots'));
+
 Route::group(array('before' => 'validatetoken'), function() {
 	Route::post('trainer/bookslot', array('as' => 'trainer.bookslot','uses' => 'TrainerController@bookSlot'));
 	Route::post('transaction/update',array('as' => 'transaction.update','uses' => 'TransactionController@update'));

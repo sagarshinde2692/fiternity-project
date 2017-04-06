@@ -332,6 +332,10 @@ return array(
 	'n-3_customer_number' => "+912261222230",
 	'n-3_confirm_customer_number' => "+912261222205",
 	'n+2_feedback_customer_number' => "+912261222219",
+	'diet_plan_customer_email' => 'nutrition@fitternity.com',
+	'diet_plan_customer_number' => '+912261222230',
+	'diet_plan_trainer_email' => 'nutrition@fitternity.com',
+	'diet_plan_trainer_number' => '+912261222230',
 
 	's3_finderurl'  => array(
 		'cover' 			=> 'https://b.fitn.in/f/c/',
