@@ -37,6 +37,8 @@ return array(
 
     'download_app_link' => 'https://www.fitternity.com/downloadapp',
 
+    'queue' => 'stage',
+
 	'app' =>array(
 		'discount'		=> 			2,
 	),

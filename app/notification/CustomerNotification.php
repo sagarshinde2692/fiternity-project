@@ -14,8 +14,9 @@ Class CustomerNotification extends Notification{
 		}
 
 		$notif_id = (int)$data['_id'];
+		$unique_id = (int)$data['_id'];
 		$notif_type = 'open_trial';
-		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"instant");
+		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"instant","customer_id"=>$data["customer_id"],"unique_id"=>$unique_id);
 
 		return $this->common($label,$data,$notif_id,$notif_type,$notif_object);
 	}
@@ -25,8 +26,9 @@ Class CustomerNotification extends Notification{
 		$label = 'RescheduleTrial-Instant-Customer';
 
 		$notif_id = (int)$data['_id'];
+		$unique_id = (int)$data['_id'];
 		$notif_type = 'open_trial';
-		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"instant");
+		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"instant","customer_id"=>$data["customer_id"],"unique_id"=>$unique_id);
 
 		return $this->common($label,$data,$notif_id,$notif_type,$notif_object);
 	}
@@ -36,8 +38,9 @@ Class CustomerNotification extends Notification{
 		$label = 'AutoTrial-ReminderBefore12Hour-Customer';
 
 		$notif_id = (int)$data['_id'];
+		$unique_id = (int)$data['_id'];
 		$notif_type = 'open_trial';
-		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"n-12");
+		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"n-12","customer_id"=>$data["customer_id"],"unique_id"=>$unique_id,"max_time"=>strtotime($data["schedule_date_time"]));
 		
 		return $this->common($label,$data,$notif_id,$notif_type,$notif_object,$delay);
 	}
@@ -48,8 +51,9 @@ Class CustomerNotification extends Notification{
 		$label = 'AutoTrial-ReminderBefore1Hour-Customer';
 
 		$notif_id = (int)$data['_id'];
+		$unique_id = (int)$data['_id'];
 		$notif_type = 'open_trial';
-		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"n-1");
+		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"n-1","customer_id"=>$data["customer_id"],"unique_id"=>$unique_id,"max_time"=>strtotime($data["schedule_date_time"]));
 		
 		return $this->common($label,$data,$notif_id,$notif_type,$notif_object,$delay);
 	}
@@ -60,8 +64,9 @@ Class CustomerNotification extends Notification{
 		$label = 'AutoTrial-ReminderAfter2Hour-Customer';
 
 		$notif_id = (int)$data['_id'];
+		$unique_id = (int)$data['_id'];
 		$notif_type = 'open_trial';
-		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"n+2");
+		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"n+2","customer_id"=>$data["customer_id"],"unique_id"=>$unique_id);
 		
 		return $this->common($label,$data,$notif_id,$notif_type,$notif_object,$delay);
 	}
@@ -71,8 +76,9 @@ Class CustomerNotification extends Notification{
 		$label = 'Cancel-Trial-Customer';
 
 		$notif_id = (int)$data['_id'];
+		$unique_id = (int)$data['_id'];
 		$notif_type = 'open_trial';
-		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"instant");
+		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"instant","customer_id"=>$data["customer_id"],"unique_id"=>$unique_id);
 		
 		return $this->common($label,$data,$notif_id,$notif_type,$notif_object);
 	}
