@@ -3531,4 +3531,17 @@ class CustomerController extends \BaseController {
 	}
 
 
+	public function notificationTracking($id){
+
+		$notificationTracking = NotificationTracking::find($id);
+
+		if($notificationTracking){
+			return Response::json($notificationTracking,200);
+		}
+
+		return Response::json(["message"=>"Data Not Found"],404);
+
+	}
+
+
 }

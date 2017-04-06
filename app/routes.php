@@ -893,4 +893,6 @@ Route::group(array('before' => 'validatetoken'), function() {
 
 Route::get('getdetailrating',array('as' => 'getdetailrating','uses' => 'FindersController@getDetailRating'));
 
+Route::get('customer/notification/{$id}',array('as' => 'customer.notification','uses' => 'CustomerController@notificationTracking'));
+
 

@@ -1,6 +1,7 @@
 <?PHP namespace App\Notification;
 
 use Config;
+use App\Services\Utilities as Utilities;
 
 Class CustomerNotification extends Notification{
 
@@ -13,8 +14,17 @@ Class CustomerNotification extends Notification{
 			$label = 'VipTrial-Instant-Customer';
 		}
 
+		$notificationData = [
+			"label"=> $label,
+			"time" => "instant",
+			"customer_id" => $data["customer_id"],
+			"booktrial_id" => (int)$data['_id'],
+			"schedule_for" => 0
+		];
+
+
 		$notif_id = (int)$data['_id'];
-		$unique_id = (int)$data['_id'];
+		$unique_id = $this->getUniqueId($notificationData);
 		$notif_type = 'open_trial';
 		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"instant","customer_id"=>$data["customer_id"],"unique_id"=>$unique_id);
 
@@ -25,8 +35,16 @@ Class CustomerNotification extends Notification{
 
 		$label = 'RescheduleTrial-Instant-Customer';
 
+		$notificationData = [
+			"label"=> $label,
+			"time" => "instant",
+			"customer_id" => $data["customer_id"],
+			"booktrial_id" => (int)$data['_id'],
+			"schedule_for" => 0
+		];
+
 		$notif_id = (int)$data['_id'];
-		$unique_id = (int)$data['_id'];
+		$unique_id = $this->getUniqueId($notificationData);
 		$notif_type = 'open_trial';
 		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"instant","customer_id"=>$data["customer_id"],"unique_id"=>$unique_id);
 
@@ -37,8 +55,17 @@ Class CustomerNotification extends Notification{
 
 		$label = 'AutoTrial-ReminderBefore12Hour-Customer';
 
+		$notificationData = [
+			"label"=> $label,
+			"time" => "n-12",
+			"customer_id" => $data["customer_id"],
+			"booktrial_id" => (int)$data['_id'],
+			"max_time"=>strtotime($data["schedule_date_time"]),
+			"schedule_for" => strtotime($delay)
+		];
+
 		$notif_id = (int)$data['_id'];
-		$unique_id = (int)$data['_id'];
+		$unique_id = $this->getUniqueId($notificationData);
 		$notif_type = 'open_trial';
 		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"n-12","customer_id"=>$data["customer_id"],"unique_id"=>$unique_id,"max_time"=>strtotime($data["schedule_date_time"]));
 		
@@ -50,8 +77,17 @@ Class CustomerNotification extends Notification{
 
 		$label = 'AutoTrial-ReminderBefore1Hour-Customer';
 
+		$notificationData = [
+			"label"=> $label,
+			"time" => "n-1",
+			"customer_id" => $data["customer_id"],
+			"booktrial_id" => (int)$data['_id'],
+			"max_time"=>strtotime($data["schedule_date_time"]),
+			"schedule_for" => strtotime($delay)
+		];
+
 		$notif_id = (int)$data['_id'];
-		$unique_id = (int)$data['_id'];
+		$unique_id = $this->getUniqueId($notificationData);
 		$notif_type = 'open_trial';
 		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"n-1","customer_id"=>$data["customer_id"],"unique_id"=>$unique_id,"max_time"=>strtotime($data["schedule_date_time"]));
 		
@@ -63,8 +99,16 @@ Class CustomerNotification extends Notification{
 
 		$label = 'AutoTrial-ReminderAfter2Hour-Customer';
 
+		$notificationData = [
+			"label"=> $label,
+			"time" => "n+2",
+			"customer_id" => $data["customer_id"],
+			"booktrial_id" => (int)$data['_id'],
+			"schedule_for" => strtotime($delay)
+		];
+
 		$notif_id = (int)$data['_id'];
-		$unique_id = (int)$data['_id'];
+		$unique_id = $this->getUniqueId($notificationData);
 		$notif_type = 'open_trial';
 		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"n+2","customer_id"=>$data["customer_id"],"unique_id"=>$unique_id);
 		
@@ -75,8 +119,16 @@ Class CustomerNotification extends Notification{
 
 		$label = 'Cancel-Trial-Customer';
 
+		$notificationData = [
+			"label"=> $label,
+			"time" => "instant",
+			"customer_id" => $data["customer_id"],
+			"booktrial_id" => (int)$data['_id'],
+			"schedule_for" => 0
+		];
+
 		$notif_id = (int)$data['_id'];
-		$unique_id = (int)$data['_id'];
+		$unique_id = $this->getUniqueId($notificationData);
 		$notif_type = 'open_trial';
 		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"instant","customer_id"=>$data["customer_id"],"unique_id"=>$unique_id);
 		
@@ -119,6 +171,15 @@ Class CustomerNotification extends Notification{
 	    $content = ob_get_clean();
 
 	    return $content;
+	}
+
+	public function getUniqueId($data){
+
+		$utilities = new Utilities();
+
+		$notificationTracking = $utilities->addNotificationTracking($data);
+
+		return $notificationTracking->_id;
 	}
 
 

@@ -1129,4 +1129,13 @@ Class Utilities {
 
     }
 
+    public function addNotificationTracking($data){
+
+        $notificationTracking = new \NotificationTracking($data);
+        $notificationTracking->count = 1;
+        $notificationTracking->save();
+
+        return $notificationTracking;
+    }
+
 }
