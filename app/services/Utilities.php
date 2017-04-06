@@ -772,9 +772,20 @@ Class Utilities {
     public function addCapture($data){
 
         if(isset($data['order_id']) && $data['order_id'] != ""){
+
             $order = \Order::find((int) $data['order_id']);
-            $data['vendor_id'] = $data['finder_id'] = $order->finder_id;
-            $data['vendor_name'] = $data['finder_name'] = $order->finder_name;
+
+            if(isset($order->finder_id)){
+                $data['vendor_id'] = $data['finder_id'] = $order->finder_id;
+            }
+
+            if(isset($order->finder_name)){
+                $data['vendor_name'] = $data['finder_name'] = $order->finder_name;
+            }
+
+            if(isset($order->city_id)){
+                $data['city_id'] = $order->city_id;
+            }
         }
 
         if(isset($data['customer_phone']) && $data['customer_phone'] != ""){
