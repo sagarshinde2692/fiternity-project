@@ -3520,7 +3520,7 @@ class CustomerController extends \BaseController {
 			$feedback = ["info"=>"Share your experience and we will make sure they are notified with it","show"=>true];
 		}
 		
-		if(isset($value["review_added"])){
+		if(isset($order["review_added"])){
 			$feedback["show"] = false;
 		}
 
