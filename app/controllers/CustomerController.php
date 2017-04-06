@@ -1238,7 +1238,7 @@ class CustomerController extends \BaseController {
 					$value['amount'] = $value['amount_customer'];
 				}
 
-				$getAction = $this->getAction($order);
+				$getAction = $this->getAction($value);
 
 			    $value["action"] = $getAction["action"];
 			    $value["feedback"] = $getAction["feedback"];
@@ -3401,12 +3401,11 @@ class CustomerController extends \BaseController {
 
 	}
 
-
 	public function getAction($order){
 
 		$action = null;
 
-		if(!isset($order->updrage_membership) && time() >= strtotime($order['start_date'].'+11 days') && time() <= strtotime($order['start_date'].'+31 days') && isset($order['end_date']) && strtotime($order['end_date']) >= time() && isset($order['duration_day']) && $order['duration_day'] <= 180){
+		if(!isset($order->updrage_membership) && isset($order['start_date']) && time() >= strtotime($order['start_date'].'+11 days') && time() <= strtotime($order['start_date'].'+31 days') && isset($order['end_date']) && strtotime($order['end_date']) >= time() && isset($order['duration_day']) && $order['duration_day'] <= 180){
 			$action = [
 				"button_text"=>"Upgrade Membership",
 				"activity"=>"upgrade_membership",
@@ -3419,7 +3418,7 @@ class CustomerController extends \BaseController {
 			];
 		}
 
-		if(!isset($order->preferred_starting_change_date) && time() <= strtotime($order['start_date'].'+11 days')){
+		if(!isset($order->preferred_starting_change_date) && isset($order['start_date']) && time() <= strtotime($order['start_date'].'+11 days')){
 
 			$min_date = strtotime('+1 days');
 			$max_date = strtotime($order['created_at'].'+29 days');
@@ -3533,7 +3532,6 @@ class CustomerController extends \BaseController {
 		return $return;
 
 	}
-
 
 	public function closestDate($day,$date){
 
