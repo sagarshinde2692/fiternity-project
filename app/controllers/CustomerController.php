@@ -1222,7 +1222,7 @@ class CustomerController extends \BaseController {
 					$finderarr = Finder::active()->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))
 					->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
 					->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-					->find(intval($value['finder_id']),['_id','title','slug','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile','finder_poc_for_customer_name','info','category_id','location_id','city_id','category','location','city','average_rating','total_rating_count']);
+					->find(intval($value['finder_id']),['_id','title','slug','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile','finder_poc_for_customer_name','info','category_id','location_id','city_id','category','location','city','average_rating','total_rating_count','review_added']);
 					if($finderarr){
 						$value['finder'] = $finderarr;
 					}
@@ -3418,7 +3418,7 @@ class CustomerController extends \BaseController {
 			];
 		}
 
-		if(!isset($order->preferred_starting_updated) && time() <= strtotime($order['start_date'].'+11 days')){
+		if(!isset($order->preferred_starting_change_date) && time() <= strtotime($order['start_date'].'+11 days')){
 
 			$min_date = strtotime('+1 days');
 			$max_date = strtotime($order['created_at'].'+29 days');
@@ -3460,7 +3460,7 @@ class CustomerController extends \BaseController {
 				"button_text"=>"Change Start Date",
 				"activity"=>"update_starting_date",
 				"color"=>"#7AB317",
-				"info" => "Don't miss even a single day workout. Change your membership start date basis your convenience.",
+				"info" => "Don't miss even a single day workout. Change your membership start date basis your convenience. Not applicable, if you have already started with your membership.",
 				"min_date"=> $min_date,
 				"max_date"=> $max_date,
 				"available_days"=> $available_days,
@@ -3502,7 +3502,7 @@ class CustomerController extends \BaseController {
 					"button_text"=>"Renew Membership",
 					"activity"=>"renew_membership",
 					"color"=>"#EF1C26",
-					"info" => $days_to_go." days to go for your membership to end. Renew your membership with the lowest price and assured rewards",
+					"info" => "Renew your membership with the lowest price and assured rewards",
 					"popup" =>[
 						"title"=>"Renew Membership",
 						"message"=>"Renew Membership"
