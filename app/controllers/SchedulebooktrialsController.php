@@ -4542,6 +4542,47 @@ class SchedulebooktrialsController extends \BaseController {
 
     }
 
+    public function preTrialAction($source = 'customer'){
+
+        $rules = [
+            'booktrial_id' => 'required',
+            'status' => 'required'
+        ];
+
+        $validator = Validator::make($data = Input::json()->all(),$rules);
+
+        if($validator->fails()) {
+            $resp = array('status' => 400,'message' =>$this->errorMessage($validator->errors()));
+            return  Response::json($resp, 400);
+        }
+
+        $booktrial = Booktrial::find(intval($data['booktrial_id']));
+
+        if($booktrial){
+
+            if($source == 'customer'){
+                $booktrial->pre_trial_status = (isset($data['status']) && $data['status'] == true ) ? "attended" : "no show";
+                $booktrial->pre_trial_status_reason = (isset($data['reason']) && $data['reason'] != "") ? $data['reason'] : "";
+            }
+
+            if($source == 'vendor'){
+                $booktrial->trial_attended_finder = (isset($data['status']) && $data['status'] == true ) ? "attended" : "no show";
+                $booktrial->trial_attended_finder_reason = (isset($data['reason']) && $data['reason'] != "") ? $data['reason'] : "";
+            }
+
+            $booktrial->update();
+
+            $resp   =   array('status' => 200,'message' => "Successfull");
+            return  Response::json($resp, 200);
+
+        }else{
+
+            $resp   =   array('status' => 400,'message' => "No Trials Found");
+            return  Response::json($resp, 400);
+        }
+
+    }
+
     public function errorMessage($errors){
 
         $errors = json_decode(json_encode($errors));

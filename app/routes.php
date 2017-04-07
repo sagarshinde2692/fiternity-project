@@ -503,6 +503,7 @@ Route::group(array('before' => 'validatetoken'), function() {
 
 	Route::post('booktrials/reschedule', array('as' => 'customer.rescheduledbooktrial','uses' => 'SchedulebooktrialsController@rescheduledBookTrial'));
 	Route::get('booktrials/{action}/{trialid}', array('as' => 'trial.booktrialaction', 'uses' => 'SchedulebooktrialsController@booktrialAction'));
+	Route::post('pretrialaction/{source}', array('as' => 'trial.pretrialaction', 'uses' => 'SchedulebooktrialsController@preTrialAction'));
 
 });
 
