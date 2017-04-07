@@ -14,84 +14,51 @@ Class CustomerNotification extends Notification{
 			$label = 'VipTrial-Instant-Customer';
 		}
 
-		$notificationData = [
-			"label"=> $label,
-			"time" => "instant",
-			"customer_id" => $data["customer_id"],
-			"booktrial_id" => (int)$data['_id'],
-			"schedule_for" => 0
-		];
-
-
-		$notif_id = (int)$data['_id'];
-		$unique_id = $this->getUniqueId($notificationData);
 		$notif_type = 'open_trial';
-		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"instant","customer_id"=>$data["customer_id"],"unique_id"=>$unique_id);
+		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"instant");
 
-		return $this->common($label,$data,$notif_id,$notif_type,$notif_object);
+		return $this->common($label,$data,$notif_type,$notif_object);
 	}
 
 	public function rescheduledBookTrial ($data){
 
 		$label = 'RescheduleTrial-Instant-Customer';
 
-		$notificationData = [
-			"label"=> $label,
-			"time" => "instant",
-			"customer_id" => $data["customer_id"],
-			"booktrial_id" => (int)$data['_id'],
-			"schedule_for" => 0
-		];
-
-		$notif_id = (int)$data['_id'];
-		$unique_id = $this->getUniqueId($notificationData);
 		$notif_type = 'open_trial';
-		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"instant","customer_id"=>$data["customer_id"],"unique_id"=>$unique_id);
+		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"instant");
 
-		return $this->common($label,$data,$notif_id,$notif_type,$notif_object);
+		return $this->common($label,$data,$notif_type,$notif_object);
 	}
 
 	public function bookTrialReminderBefore12Hour ($data, $delay){
 
 		$label = 'AutoTrial-ReminderBefore12Hour-Customer';
 
-		$notificationData = [
-			"label"=> $label,
-			"time" => "n-12",
-			"customer_id" => $data["customer_id"],
-			"booktrial_id" => (int)$data['_id'],
-			"max_time"=>strtotime($data["schedule_date_time"]),
-			"schedule_for" => strtotime($delay)
-		];
-
-		$notif_id = (int)$data['_id'];
-		$unique_id = $this->getUniqueId($notificationData);
 		$notif_type = 'open_trial';
-		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"n-12","customer_id"=>$data["customer_id"],"unique_id"=>$unique_id,"max_time"=>strtotime($data["schedule_date_time"]));
+		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"n-12","max_time"=>strtotime($data["schedule_date_time"]));
 		
-		return $this->common($label,$data,$notif_id,$notif_type,$notif_object,$delay);
+		return $this->common($label,$data,$notif_type,$notif_object,$delay);
 	}
 
 
 	public function bookTrialReminderBefore1Hour ($data, $delay){
 
 		$label = 'AutoTrial-ReminderBefore1Hour-Customer';
-
-		$notificationData = [
-			"label"=> $label,
-			"time" => "n-1",
-			"customer_id" => $data["customer_id"],
-			"booktrial_id" => (int)$data['_id'],
-			"max_time"=>strtotime($data["schedule_date_time"]),
-			"schedule_for" => strtotime($delay)
-		];
-
-		$notif_id = (int)$data['_id'];
-		$unique_id = $this->getUniqueId($notificationData);
-		$notif_type = 'open_trial';
-		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"n-1","customer_id"=>$data["customer_id"],"unique_id"=>$unique_id,"max_time"=>strtotime($data["schedule_date_time"]));
 		
-		return $this->common($label,$data,$notif_id,$notif_type,$notif_object,$delay);
+		$notif_type = 'open_trial';
+		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"n-1","max_time"=>strtotime($data["schedule_date_time"]));
+		
+		return $this->common($label,$data,$notif_type,$notif_object,$delay);
+	}
+
+	public function bookTrialReminderBefore3Hour ($data, $delay){
+
+		$label = 'AutoTrial-ReminderBefore3Hour-Customer';
+
+		$notif_type = 'open_trial';
+		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"n-3","max_time"=>strtotime($data["schedule_date_time"]));
+		
+		return $this->common($label,$data,$notif_type,$notif_object,$delay);
 	}
 
 
@@ -99,49 +66,152 @@ Class CustomerNotification extends Notification{
 
 		$label = 'AutoTrial-ReminderAfter2Hour-Customer';
 
-		$notificationData = [
-			"label"=> $label,
-			"time" => "n+2",
-			"customer_id" => $data["customer_id"],
-			"booktrial_id" => (int)$data['_id'],
-			"schedule_for" => strtotime($delay)
-		];
-
-		$notif_id = (int)$data['_id'];
-		$unique_id = $this->getUniqueId($notificationData);
 		$notif_type = 'open_trial';
-		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"n+2","customer_id"=>$data["customer_id"],"unique_id"=>$unique_id);
+		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"n+2");
 		
-		return $this->common($label,$data,$notif_id,$notif_type,$notif_object,$delay);
+		return $this->common($label,$data,$notif_type,$notif_object,$delay);
 	}
 
 	public function cancelBookTrial ($data){
 
 		$label = 'Cancel-Trial-Customer';
 
-		$notificationData = [
-			"label"=> $label,
-			"time" => "instant",
-			"customer_id" => $data["customer_id"],
-			"booktrial_id" => (int)$data['_id'],
-			"schedule_for" => 0
-		];
-
-		$notif_id = (int)$data['_id'];
-		$unique_id = $this->getUniqueId($notificationData);
 		$notif_type = 'open_trial';
-		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"instant","customer_id"=>$data["customer_id"],"unique_id"=>$unique_id);
+		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"instant");
 		
-		return $this->common($label,$data,$notif_id,$notif_type,$notif_object);
+		return $this->common($label,$data,$notif_type,$notif_object);
 	}
 
-	public function common($label,$data,$notif_id,$notif_type,$notif_object,$delay = 0){
+
+	public function sendPaymentLinkAfter3Days($data,$delay){
+
+        $label = 'SendPaymentLinkAfter3Days-Customer';
+
+		$notif_type = 'open_order';
+		$notif_object = array('order_id'=>(int)$data['_id'],"time"=>"pl+3");
+		
+		return $this->common($label,$data,$notif_type,$notif_object,$delay);
+
+    }
+
+    public function sendPaymentLinkAfter7Days($data,$delay){
+
+        $label = 'SendPaymentLinkAfter7Days-Customer';
+
+        $notif_type = 'open_order';
+		$notif_object = array('order_id'=>(int)$data['_id'],"time"=>"pl+7");
+		
+		return $this->common($label,$data,$notif_type,$notif_object,$delay);
+
+    }
+
+    public function sendPaymentLinkAfter15Days($data,$delay){
+
+        $label = 'SendPaymentLinkAfter15Days-Customer';
+
+        $notif_type = 'open_order';
+		$notif_object = array('order_id'=>(int)$data['_id'],"time"=>"pl+15");
+		
+		return $this->common($label,$data,$notif_type,$notif_object,$delay);
+
+    }
+
+    public function sendPaymentLinkAfter30Days($data,$delay){
+
+        $label = 'SendPaymentLinkAfter30Days-Customer';
+
+        $notif_type = 'open_order';
+		$notif_object = array('order_id'=>(int)$data['_id'],"time"=>"pl+30");
+		
+		return $this->common($label,$data,$notif_type,$notif_object,$delay);
+
+    }
+
+    public function sendPaymentLinkAfter45Days($data,$delay){
+
+        $label = 'SendPaymentLinkAfter45Days-Customer';
+
+        $notif_type = 'open_order';
+		$notif_object = array('order_id'=>(int)$data['_id'],"time"=>"pl+45");
+		
+		return $this->common($label,$data,$notif_type,$notif_object,$delay);
+
+    }
+
+    public function purchaseInstant($data){
+
+        $label = 'PurchaseInstant-Customer';
+
+        $notif_type = 'open_order';
+		$notif_object = array('order_id'=>(int)$data['_id'],"time"=>"instance");
+		
+		return $this->common($label,$data,$notif_type,$notif_object);
+    }
+
+    public function purchaseAfter10Days($data,$delay){
+
+        $label = 'PurchaseAfter10Days-Customer';
+
+        $notif_type = 'open_order';
+		$notif_object = array('order_id'=>(int)$data['_id'],"time"=>"p+10");
+		
+		return $this->common($label,$data,$notif_type,$notif_object,$delay);
+
+    }
+
+    public function purchaseAfter30Days($data,$delay){
+
+        $label = 'PurchaseAfter30Days-Customer';
+
+        $notif_type = 'open_order';
+		$notif_object = array('order_id'=>(int)$data['_id'],"time"=>"p+30");
+		
+		return $this->common($label,$data,$notif_type,$notif_object,$delay);
+
+    }
+
+	public function common($label,$data,$notif_type,$notif_object,$delay = 0){
+
+		$notificationData = [
+			"label"=> $label,
+			"time" => $notif_object["time"],
+			"customer_id" => $data["customer_id"],
+			"schedule_for" => 0,
+			"max_time"=> null
+		];
+
+		if(isset($notif_object["order_id"])){
+			$notificationData["order_id"] = $notif_object["order_id"];
+		}
+
+		if(isset($notif_object["trial_id"])){
+			$notificationData["booktrial_id"] = $notif_object["order_id"];
+		}
+
+		if($delay != ""){
+			$notificationData["schedule_for"] = strtotime($delay);
+		}
+
+		if(isset($notif_object["max_time"])){
+			$notificationData["max_time"] = $notif_object["max_time"];
+		}
+
+		$unique_id = $this->getUniqueId($notificationData);
+
+		$notif_object["customer_id"] = (int)$data["customer_id"];
+		$notif_object["unique_id"] = $unique_id;
+		$notif_object["title"] = "Check this out!";
+
+
+		$notif_id = (int)$data["_id"];
 
 		$template = \Template::where('label',$label)->first();
 
 		$device_type = $data['device_type'];
 		$to =  array($data['reg_id']);
 		$text = $this->bladeCompile($template->notification_text,$data);
+
+		$notif_object["text"] = $text;
 
 		return $this->sendToWorker($device_type, $to, $text, $notif_id, $notif_type, $notif_object, $label, $delay);
 	}

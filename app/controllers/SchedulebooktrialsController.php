@@ -1553,9 +1553,11 @@ class SchedulebooktrialsController extends \BaseController {
                 $order->cutomerSmsPurchaseAfter10Days = $this->customersms->purchaseAfter10Days($order->toArray(),$after10days);
                 $order->cutomerSmsPurchaseAfter30Days = $this->customersms->purchaseAfter30Days($order->toArray(),$after30days);
 
-                $this->customernotification->purchaseInstant($order->toArray());
-                $order->cutomerNotificationPurchaseAfter10Days = $this->customernotification->purchaseAfter10Days($order->toArray(),$after10days);
-                $order->cutomerNotificationPurchaseAfter30Days = $this->customernotification->purchaseAfter30Days($order->toArray(),$after30days);
+                if(isset($order['gcm_reg_id']) && $order['gcm_reg_id'] != '' && isset($order['device_type']) && $order['device_type'] != ''){
+                    $this->customernotification->purchaseInstant($order->toArray());
+                    $order->cutomerNotificationPurchaseAfter10Days = $this->customernotification->purchaseAfter10Days($order->toArray(),$after10days);
+                    $order->cutomerNotificationPurchaseAfter30Days = $this->customernotification->purchaseAfter30Days($order->toArray(),$after30days);
+                }
 
                 $order->update();
             }
@@ -4299,7 +4301,10 @@ class SchedulebooktrialsController extends \BaseController {
         $booktrial = \Booktrial::find((int) $data['_id']);
         $booktrial->missedcall_batch = $batch;
 
-        $booktrial->customerNotificationReminderBefore3Hour = $this->customernotification->bookTrialReminderBefore3Hour($data,$ozonetel_date);
+        if($booktrial['reg_id'] != '' && $booktrial['device_type'] != ''){
+
+            $booktrial->customerNotificationReminderBefore3Hour = $this->customernotification->bookTrialReminderBefore3Hour($data,$ozonetel_date);
+        }
 
         $booktrial->update();
 

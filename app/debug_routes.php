@@ -53,15 +53,24 @@ Route::get('yes/{msg}','DebugController@yes');
 
 
 // please dont merge in live or production environment
-Route::get('deletetrans/{email}', function ($email){
+Route::get('transaction/delete/{table}/{email}', function ($table,$email){
 
     $emails = ["ankit13.kumar@gmail.com","sailismart@fitternity.com","amrita.ghosh.cipl@gmail.com","utkarshmehrotra@fitternity.com","amritaghosh@fitternity.com","sanjaysahu@fitternity.com","sanajy.id7@gmail.com","gauravravi@fitternity.com","gauravraviji@gmail.com","maheshjadhav@fitternity.com","ut.mehrotra@gmail.com"];
 
     if(in_array($email, $emails)){
 
-        DB::connection('mongodb')->table('booktrials')->where('customer_email', trim($email))->delete();
-        DB::connection('mongodb')->table('orders')->where('customer_email', trim($email))->delete();
-        DB::connection('mongodb')->table('captures')->where('email', trim($email))->delete();
+        if($table == "trial"){
+            DB::connection('mongodb')->table('booktrials')->where('customer_email', trim($email))->delete();
+        }
+
+        if($table == "order"){
+            DB::connection('mongodb')->table('orders')->where('customer_email', trim($email))->delete();
+        }
+
+        if($table == "capture"){
+            DB::connection('mongodb')->table('captures')->where('email', trim($email))->delete();
+        }
+
         echo "valid email";
 
     }else{
@@ -69,7 +78,6 @@ Route::get('deletetrans/{email}', function ($email){
         echo "invalid email";
 
     }
-
 
 });
 
