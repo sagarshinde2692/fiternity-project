@@ -1,7 +1,7 @@
 <?php
 
 //local
-// $host = "localhost";
+$host = "localhost";
 // $username = "";
 // $password = "";
 
@@ -12,8 +12,8 @@ $password = "fit1234";
 
 //production
 // $host = "52.77.247.239";
-// $username = "";
-// $password = "";
+$username = "";
+$password = "";
 
 return array(
 
