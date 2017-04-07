@@ -1676,26 +1676,7 @@ class TransactionController extends \BaseController {
 
         return array('order_id'=>$order_id,'status'=>200,'message'=>'Diet Plan Order Created Sucessfully');
     }
-
-
-    public  function sendCommunication($job,$data){
-
-        $job->delete();
-
-        try {
-
-            $order_id = (int)$data['order_id'];
-
-            $order = Order::find($order_id)->toArray();
-
-
-            
-        } catch (Exception $e) {
-            
-        }
-
-    }
-
+    
     public function getCategoryImage($category = "no_category"){
 
         $category_array['gyms'] = array('personal-trainers'=>'http://email.fitternity.com/229/personal.jpg','sport-nutrition-supliment-stores'=>'http://email.fitternity.com/229/nutrition.jpg','yoga'=>'http://email.fitternity.com/229/yoga.jpg');
