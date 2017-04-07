@@ -15,6 +15,7 @@ use App\Services\Sidekiq as Sidekiq;
 use App\Services\Utilities as Utilities;
 use App\Services\CustomerReward as CustomerReward;
 use App\Services\CustomerInfo as CustomerInfo;
+use App\Sms\CustomerNotification as CustomerNotification;
 
 
 class TransactionController extends \BaseController {
@@ -27,6 +28,7 @@ class TransactionController extends \BaseController {
     protected $utilities;
     protected $customerreward;
     protected $membership_array;
+    protected $customernotification;
 
     public function __construct(
         CustomerMailer $customermailer,
@@ -35,7 +37,8 @@ class TransactionController extends \BaseController {
         FinderMailer $findermailer,
         FinderSms $findersms,
         Utilities $utilities,
-        CustomerReward $customerreward
+        CustomerReward $customerreward,
+        CustomerNotification $customernotification
     ) {
         parent::__construct();
         $this->customermailer       =   $customermailer;
@@ -45,6 +48,7 @@ class TransactionController extends \BaseController {
         $this->findersms            =   $findersms;
         $this->utilities            =   $utilities;
         $this->customerreward       =   $customerreward;
+        $this->customernotification =   $customernotification;
         $this->ordertypes           =   array('memberships','booktrials','workout-session','healthytiffintrail','healthytiffinmembership','3daystrial','vip_booktrials', 'events');
         $this->appOfferDiscount     =   Config::get('app.app.discount');
         $this->membership_array     =   array('memberships','healthytiffinmembership');
@@ -1553,6 +1557,13 @@ class TransactionController extends \BaseController {
             $order->customerSmsSendPaymentLinkAfter15Days = $this->customersms->sendPaymentLinkAfter15Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+15 days",$now)));
             $order->customerSmsSendPaymentLinkAfter30Days = $this->customersms->sendPaymentLinkAfter30Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+30 days",$now)));
             $order->customerSmsSendPaymentLinkAfter45Days = $this->customersms->sendPaymentLinkAfter45Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+45 days",$now)));
+
+            $order->customerNotificationSendPaymentLinkAfter3Days = $this->customernotification->sendPaymentLinkAfter3Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+3 days",$now)));
+            $order->customerNotificationSendPaymentLinkAfter7Days = $this->customernotification->sendPaymentLinkAfter7Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+7 days",$now)));
+            $order->customerNotificationSendPaymentLinkAfter15Days = $this->customernotification->sendPaymentLinkAfter15Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+15 days",$now)));
+            $order->customerNotificationSendPaymentLinkAfter30Days = $this->customernotification->sendPaymentLinkAfter30Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+30 days",$now)));
+            $order->customerNotificationSendPaymentLinkAfter45Days = $this->customernotification->sendPaymentLinkAfter45Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+45 days",$now)));
+
             $order->notification_status = 'abandon_cart_yes';
 
             $order->update;
@@ -1676,7 +1687,7 @@ class TransactionController extends \BaseController {
 
         return array('order_id'=>$order_id,'status'=>200,'message'=>'Diet Plan Order Created Sucessfully');
     }
-    
+
     public function getCategoryImage($category = "no_category"){
 
         $category_array['gyms'] = array('personal-trainers'=>'http://email.fitternity.com/229/personal.jpg','sport-nutrition-supliment-stores'=>'http://email.fitternity.com/229/nutrition.jpg','yoga'=>'http://email.fitternity.com/229/yoga.jpg');

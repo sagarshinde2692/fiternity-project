@@ -16,6 +16,7 @@ use App\Services\Utilities as Utilities;
 use App\Services\CustomerReward as CustomerReward;
 use App\Services\CustomerInfo as CustomerInfo;
 use App\Services\ShortenUrl as ShortenUrl;
+use App\Notification\CustomerNotification as CustomerNotification;
 
 
 class OrderController extends \BaseController {
@@ -27,6 +28,7 @@ class OrderController extends \BaseController {
     protected $findersms;
     protected $utilities;
     protected $customerreward;
+    protected $customernotification;
 
     public function __construct(
         CustomerMailer $customermailer,
@@ -35,7 +37,8 @@ class OrderController extends \BaseController {
         FinderMailer $findermailer,
         FinderSms $findersms,
         Utilities $utilities,
-        CustomerReward $customerreward
+        CustomerReward $customerreward,
+        CustomerNotification $customernotification
     ) {
         parent::__construct();
         $this->customermailer		=	$customermailer;
@@ -45,6 +48,7 @@ class OrderController extends \BaseController {
         $this->findersms 			=	$findersms;
         $this->utilities 			=	$utilities;
         $this->customerreward 		=	$customerreward;
+        $this->customernotification     =   $customernotification;
         $this->ordertypes 		= 	array('memberships','booktrials','fitmaniadealsofday','fitmaniaservice','arsenalmembership','zumbathon','booiaka','zumbaclub','fitmania-dod','fitmania-dow','fitmania-membership-giveaways','womens-day','eefashrof','crossfit-week','workout-session','wonderise','lyfe','healthytiffintrail','healthytiffinmembership','3daystrial','vip_booktrials', 'events','fittinabox');
 
     }
@@ -390,6 +394,11 @@ class OrderController extends \BaseController {
                 $this->customersms->purchaseInstant($order->toArray());
                 $order->cutomerSmsPurchaseAfter10Days = $this->customersms->purchaseAfter10Days($order->toArray(),$after10days);
                 $order->cutomerSmsPurchaseAfter30Days = $this->customersms->purchaseAfter30Days($order->toArray(),$after30days);
+
+                $this->customernotification->purchaseInstant($order->toArray());
+                $order->cutomerNotificationPurchaseAfter10Days = $this->customernotification->purchaseAfter10Days($order->toArray(),$after10days);
+                $order->cutomerNotificationPurchaseAfter30Days = $this->customernotification->purchaseAfter30Days($order->toArray(),$after30days);
+
                 $order->update();
 
             }

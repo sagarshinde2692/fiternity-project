@@ -812,111 +812,66 @@ Class Utilities {
 
         if($order->status == "1" || (isset($order->redundant_order) && $order->redundant_order == "1") || (isset($order->notification_status) && in_array($order->notification_status,$notification_status))){
 
-            if((isset($order->customerSmsSendPaymentLinkAfter3Days))){
-                try {
-                    $queue_id[] = $order->customerSmsSendPaymentLinkAfter3Days;
-                    $order->unset('customerSmsSendPaymentLinkAfter3Days');
-                }catch(\Exception $exception){
-                    Log::error($exception);
-                }
-            }
+            $array = [
+                'customerSmsSendPaymentLinkAfter3Days',
+                'customerSmsSendPaymentLinkAfter7Days',
+                'customerSmsSendPaymentLinkAfter15Days',
+                'customerSmsSendPaymentLinkAfter30Days',
+                'customerSmsSendPaymentLinkAfter45Days',
+                'customerSmsRenewalLinkSentBefore30Days',
+                'customerSmsRenewalLinkSentBefore15Days',
+                'customerSmsRenewalLinkSentBefore7Days',
+                'customerSmsRenewalLinkSentBefore1Days',
+                'customerSmsRenewalLinkSentAfter7Days',
+                'customerSmsRenewalLinkSentAfter15Days',
+                'customerSmsRenewalLinkSentAfter30Days',
+                'customerSmsSendPaymentLinkAfter3Days',
+                'customerSmsSendPaymentLinkAfter7Days',
+                'customerSmsSendPaymentLinkAfter15Days',
+                'customerSmsSendPaymentLinkAfter30Days',
+                'customerSmsSendPaymentLinkAfter45Days',
+                'customerSmsRenewalLinkSentBefore30Days',
+                'customerSmsRenewalLinkSentBefore15Days',
+                'customerSmsRenewalLinkSentBefore7Days',
+                'customerSmsRenewalLinkSentBefore1Days',
+                'customerSmsRenewalLinkSentAfter7Days',
+                'customerSmsRenewalLinkSentAfter15Days',
+                'customerSmsRenewalLinkSentAfter30Days',
+                'customerNotificationSendPaymentLinkAfter3Days',
+                'customerNotificationSendPaymentLinkAfter7Days',
+                'customerNotificationSendPaymentLinkAfter15Days',
+                'customerNotificationSendPaymentLinkAfter30Days',
+                'customerNotificationSendPaymentLinkAfter45Days',
+                'customerNotificationRenewalLinkSentBefore30Days',
+                'customerNotificationRenewalLinkSentBefore15Days',
+                'customerNotificationRenewalLinkSentBefore7Days',
+                'customerNotificationRenewalLinkSentBefore1Days',
+                'customerNotificationRenewalLinkSentAfter7Days',
+                'customerNotificationRenewalLinkSentAfter15Days',
+                'customerNotificationRenewalLinkSentAfter30Days',
+                'customerNotificationSendPaymentLinkAfter3Days',
+                'customerNotificationSendPaymentLinkAfter7Days',
+                'customerNotificationSendPaymentLinkAfter15Days',
+                'customerNotificationSendPaymentLinkAfter30Days',
+                'customerNotificationSendPaymentLinkAfter45Days',
+                'customerNotificationRenewalLinkSentBefore30Days',
+                'customerNotificationRenewalLinkSentBefore15Days',
+                'customerNotificationRenewalLinkSentBefore7Days',
+                'customerNotificationRenewalLinkSentBefore1Days',
+                'customerNotificationRenewalLinkSentAfter7Days',
+                'customerNotificationRenewalLinkSentAfter15Days',
+                'customerNotificationRenewalLinkSentAfter30Days'
+            ];
 
-            if((isset($order->customerSmsSendPaymentLinkAfter7Days))){
-                try {
-                    $queue_id[] = $order->customerSmsSendPaymentLinkAfter7Days;
-                    $order->unset('customerSmsSendPaymentLinkAfter7Days');
-                }catch(\Exception $exception){
-                    Log::error($exception);
-                }
-            }
+            foreach ($array as $value) {
 
-            if((isset($order->customerSmsSendPaymentLinkAfter15Days))){
-                try {
-                    $queue_id[] = $order->customerSmsSendPaymentLinkAfter15Days;
-                    $order->unset('customerSmsSendPaymentLinkAfter15Days');
-                }catch(\Exception $exception){
-                    Log::error($exception);
-                }
-            }
-
-            if((isset($order->customerSmsSendPaymentLinkAfter30Days))){
-                try {
-                    $queue_id[] = $order->customerSmsSendPaymentLinkAfter30Days;
-                    $order->unset('customerSmsSendPaymentLinkAfter30Days');
-                }catch(\Exception $exception){  
-                    Log::error($exception);
-                }
-            }
-
-            if((isset($order->customerSmsSendPaymentLinkAfter45Days))){
-                try {
-                    $queue_id[] = $order->customerSmsSendPaymentLinkAfter45Days;
-                    $order->unset('customerSmsSendPaymentLinkAfter45Days');
-                }catch(\Exception $exception){
-                    Log::error($exception);
-                }
-            }
-
-            if((isset($order->customerSmsRenewalLinkSentBefore30Days))){
-                try {
-                    $queue_id[] = $order->customerSmsRenewalLinkSentBefore30Days;
-                    $order->unset('customerSmsRenewalLinkSentBefore30Days');
-                }catch(\Exception $exception){
-                    Log::error($exception);
-                }
-            }
-
-            if((isset($order->customerSmsRenewalLinkSentBefore15Days))){
-                try {
-                    $queue_id[] = $order->customerSmsRenewalLinkSentBefore15Days;
-                    $order->unset('customerSmsRenewalLinkSentBefore15Days');
-                }catch(\Exception $exception){
-                    Log::error($exception);
-                }
-            }
-
-            if((isset($order->customerSmsRenewalLinkSentBefore7Days))){
-                try {
-                    $queue_id[] = $order->customerSmsRenewalLinkSentBefore7Days;
-                    $order->unset('customerSmsRenewalLinkSentBefore7Days');
-                }catch(\Exception $exception){
-                    Log::error($exception);
-                }
-            }
-
-            if((isset($order->customerSmsRenewalLinkSentBefore1Days))){
-                try {
-                    $queue_id[] = $order->customerSmsRenewalLinkSentBefore1Days;
-                    $order->unset('customerSmsRenewalLinkSentBefore1Days');
-                }catch(\Exception $exception){
-                    Log::error($exception);
-                }
-            }
-
-            if((isset($order->customerSmsRenewalLinkSentAfter7Days))){
-                try {
-                    $queue_id[] = $order->customerSmsRenewalLinkSentAfter7Days;
-                    $order->unset('customerSmsRenewalLinkSentAfter7Days');
-                }catch(\Exception $exception){
-                    Log::error($exception);
-                }
-            }
-
-            if((isset($order->customerSmsRenewalLinkSentAfter15Days))){
-                try {
-                    $queue_id[] = $order->customerSmsRenewalLinkSentAfter15Days;
-                    $order->unset('customerSmsRenewalLinkSentAfter15Days');
-                }catch(\Exception $exception){
-                    Log::error($exception);
-                }
-            }
-
-            if((isset($order->customerSmsRenewalLinkSentAfter30Days))){
-                try {
-                    $queue_id[] = $order->customerSmsRenewalLinkSentAfter30Days;
-                    $order->unset('customerSmsRenewalLinkSentAfter30Days');
-                }catch(\Exception $exception){
-                    Log::error($exception);
+                if((isset($order[$value]))){
+                    try {
+                        $queue_id[] = $order[$value];
+                        $order->unset($value);
+                    }catch(\Exception $exception){
+                        Log::error($exception);
+                    }
                 }
             }
 
@@ -950,76 +905,33 @@ Class Utilities {
 
         $queue_id = [];
 
-        if((isset($booktrial->customerSmsPostTrialFollowup1After3Days))){
-            try {
-                $queue_id[] = $booktrial->customerSmsPostTrialFollowup1After3Days;
-                $booktrial->unset('customerSmsPostTrialFollowup1After3Days');
-            }catch(\Exception $exception){
-                Log::error($exception);
-            }
-        }
+        $array = [
+            'customerSmsPostTrialFollowup1After3Days',
+            'customerSmsPostTrialFollowup1After7Days',
+            'customerSmsPostTrialFollowup1After15Days',
+            'customerSmsPostTrialFollowup1After30Days',
+            'customerSmsPostTrialFollowup2After3Days',
+            'customerSmsPostTrialFollowup2After7Days',
+            'customerSmsPostTrialFollowup2After15Days',
+            'customerSmsPostTrialFollowup2After30Days',
+            'customerNotificationPostTrialFollowup1After3Days',
+            'customerNotificationPostTrialFollowup1After7Days',
+            'customerNotificationPostTrialFollowup1After15Days',
+            'customerNotificationPostTrialFollowup1After30Days',
+            'customerNotificationPostTrialFollowup2After3Days',
+            'customerNotificationPostTrialFollowup2After7Days',
+            'customerNotificationPostTrialFollowup2After15Days',
+            'customerNotificationPostTrialFollowup2After30Days',
+        ];
 
-        if((isset($booktrial->customerSmsPostTrialFollowup1After7Days))){
-            try {
-                $queue_id[] = $booktrial->customerSmsPostTrialFollowup1After7Days;
-                $booktrial->unset('customerSmsPostTrialFollowup1After7Days');
-            }catch(\Exception $exception){
-                Log::error($exception);
-            }
-        }
-
-        if((isset($booktrial->customerSmsPostTrialFollowup1After15Days))){
-            try {
-                $queue_id[] = $booktrial->customerSmsPostTrialFollowup1After15Days;
-                $booktrial->unset('customerSmsPostTrialFollowup1After15Days');
-            }catch(\Exception $exception){
-                Log::error($exception);
-            }
-        }
-
-        if((isset($booktrial->customerSmsPostTrialFollowup1After30Days))){
-            try {
-                $queue_id[] = $booktrial->customerSmsPostTrialFollowup1After30Days;
-                $booktrial->unset('customerSmsPostTrialFollowup1After30Days');
-            }catch(\Exception $exception){
-                Log::error($exception);
-            }
-        }
-
-
-        if((isset($booktrial->customerSmsPostTrialFollowup2After3Days))){
-            try {
-                $queue_id[] = $booktrial->customerSmsPostTrialFollowup2After3Days;
-                $booktrial->unset('customerSmsPostTrialFollowup2After3Days');
-            }catch(\Exception $exception){
-                Log::error($exception);
-            }
-        }
-
-        if((isset($booktrial->customerSmsPostTrialFollowup2After7Days))){
-            try {
-                $queue_id[] = $booktrial->customerSmsPostTrialFollowup2After7Days;
-                $booktrial->unset('customerSmsPostTrialFollowup2After7Days');
-            }catch(\Exception $exception){
-                Log::error($exception);
-            }
-        }
-
-        if((isset($booktrial->customerSmsPostTrialFollowup2After15Days))){
-            try {
-                $queue_id[] = $booktrial->customerSmsPostTrialFollowup2After15Days;
-                $booktrial->unset('customerSmsPostTrialFollowup2After15Days');
-            }catch(\Exception $exception){
-                Log::error($exception);
-            }
-        }
-
-        if((isset($booktrial->customerSmsPostTrialFollowup2After30Days))){
-            try {
-                $queue_id[] = $booktrial->customerSmsPostTrialFollowup2After30Days;
-                $booktrial->unset('customerSmsPostTrialFollowup2After30Days');
-            }catch(\Exception $exception){
-                Log::error($exception);
+        foreach ($array as $value) {
+            if((isset($booktrial[$value]))){
+                try {
+                    $queue_id[] = $booktrial[$value];
+                    $booktrial->unset($value);
+                }catch(\Exception $exception){
+                    Log::error($exception);
+                }
             }
         }
 
@@ -1035,39 +947,25 @@ Class Utilities {
 
         $queue_id = [];
 
-        if((isset($capture->customerSmsPostCaptureFollowup2After3Days))){
-            try {
-                $queue_id[] = $capture->customerSmsPostCaptureFollowup2After3Days;
-                $capture->unset('customerSmsPostCaptureFollowup2After3Days');
-            }catch(\Exception $exception){
-                Log::error($exception);
-            }
-        }
+        $array = [
+            'customerSmsPostCaptureFollowup2After3Days',
+            'customerSmsPostCaptureFollowup2After7Days',
+            'customerSmsPostCaptureFollowup2After15Days',
+            'customerSmsPostCaptureFollowup2After30Days',
+            'customerNotificationPostCaptureFollowup2After3Days',
+            'customerNotificationPostCaptureFollowup2After7Days',
+            'customerNotificationPostCaptureFollowup2After15Days',
+            'customerNotificationPostCaptureFollowup2After30Days',
+        ];
 
-        if((isset($capture->customerSmsPostCaptureFollowup2After7Days))){
-            try {
-                $queue_id[] = $capture->customerSmsPostCaptureFollowup2After7Days;
-                $capture->unset('customerSmsPostCaptureFollowup2After7Days');
-            }catch(\Exception $exception){
-                Log::error($exception);
-            }
-        }
-
-        if((isset($capture->customerSmsPostCaptureFollowup2After15Days))){
-            try {
-                $queue_id[] = $capture->customerSmsPostCaptureFollowup2After15Days;
-                $capture->unset('customerSmsPostCaptureFollowup2After15Days');
-            }catch(\Exception $exception){
-                Log::error($exception);
-            }
-        }
-
-        if((isset($capture->customerSmsPostCaptureFollowup2After30Days))){
-            try {
-                $queue_id[] = $capture->customerSmsPostCaptureFollowup2After30Days;
-                $capture->unset('customerSmsPostCaptureFollowup2After30Days');
-            }catch(\Exception $exception){
-                Log::error($exception);
+        foreach ($array as $value) {
+            if((isset($capture[$value]))){
+                try {
+                    $queue_id[] = $capture[$value];
+                    $capture->unset($value);
+                }catch(\Exception $exception){
+                    Log::error($exception);
+                }
             }
         }
 

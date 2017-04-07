@@ -1549,8 +1549,13 @@ class SchedulebooktrialsController extends \BaseController {
                 $after10days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 10);
                 $after30days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 30);
 
+                $this->customersms->purchaseInstant($order->toArray());
                 $order->cutomerSmsPurchaseAfter10Days = $this->customersms->purchaseAfter10Days($order->toArray(),$after10days);
                 $order->cutomerSmsPurchaseAfter30Days = $this->customersms->purchaseAfter30Days($order->toArray(),$after30days);
+
+                $this->customernotification->purchaseInstant($order->toArray());
+                $order->cutomerNotificationPurchaseAfter10Days = $this->customernotification->purchaseAfter10Days($order->toArray(),$after10days);
+                $order->cutomerNotificationPurchaseAfter30Days = $this->customernotification->purchaseAfter30Days($order->toArray(),$after30days);
 
                 $order->update();
             }
@@ -4293,6 +4298,9 @@ class SchedulebooktrialsController extends \BaseController {
 
         $booktrial = \Booktrial::find((int) $data['_id']);
         $booktrial->missedcall_batch = $batch;
+
+        $booktrial->customerNotificationReminderBefore3Hour = $this->customernotification->bookTrialReminderBefore3Hour($data,$ozonetel_date);
+
         $booktrial->update();
 
         return $this->customersms->missedCallDelay($data,$ozonetel_date);
