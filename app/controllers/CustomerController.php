@@ -3552,7 +3552,7 @@ class CustomerController extends \BaseController {
 
 		$time = $notificationTracking->time;
 
-		$data = arrray();
+		$data = array();
 
 		if(isset($notificationTracking["order_id"])){
 
