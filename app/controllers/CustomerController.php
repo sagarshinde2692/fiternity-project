@@ -3538,11 +3538,63 @@ class CustomerController extends \BaseController {
 		$notificationTracking = NotificationTracking::find($id);
 
 		if($notificationTracking){
-			return Response::json($notificationTracking,200);
+
+			$notificationSwitch = $this->notificationSwitch();
+
+			return Response::json($notificationSwitch,200);
 		}
 
 		return Response::json(["message"=>"Data Not Found"],404);
 
+	}
+
+	public function notificationSwitch($notificationTracking){
+
+		$time = $notificationTracking->time;
+
+		$data = arrray();
+
+		if(isset($notificationTracking["order_id"])){
+
+			$order = Order::find((int)$notificationTracking["order_id"]);
+
+			if($order){
+
+				$data = $order->toArray();
+			}
+
+		}
+
+		if(isset($notificationTracking["booktrial_id"])){
+
+			$booktrial = Booktrial::find((int)$notificationTracking["booktrial_id"]);
+
+			if($booktrial){
+
+				$data = $booktrial->toArray();
+			}
+		}
+
+		$response = array();
+
+		if(!empty($data)){
+
+			switch ($time) {
+				case 'n-3': 
+					$response["finder_name"] = $data["finder_name"];
+					$response["finder_id"] = (int)$data["finder_id"];
+					$response["lat"] = $data["finder_lat"];
+					$response["lon"] = $data["finder_lat"];
+					$response["start_date"] = strtoupper($data["schedule_slot_start_time"]);
+					$response["start_time"] = date("d-m-Y",strtotime($data["schedule_date"]));
+					break;
+				default:
+					break;
+			}
+
+		}
+
+		return $response;
 	}
 
 
