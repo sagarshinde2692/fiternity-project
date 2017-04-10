@@ -3580,7 +3580,23 @@ class CustomerController extends \BaseController {
 		if(!empty($data)){
 
 			switch ($time) {
+				case 'n-12': 
+					$response["finder_name"] = $data["finder_name"];
+					$response["finder_id"] = (int)$data["finder_id"];
+					$response["lat"] = $data["finder_lat"];
+					$response["lon"] = $data["finder_lat"];
+					$response["start_date"] = strtoupper($data["schedule_slot_start_time"]);
+					$response["start_time"] = date("d-m-Y",strtotime($data["schedule_date"]));
+					break;
 				case 'n-3': 
+					$response["finder_name"] = $data["finder_name"];
+					$response["finder_id"] = (int)$data["finder_id"];
+					$response["lat"] = $data["finder_lat"];
+					$response["lon"] = $data["finder_lat"];
+					$response["start_date"] = strtoupper($data["schedule_slot_start_time"]);
+					$response["start_time"] = date("d-m-Y",strtotime($data["schedule_date"]));
+					break;
+				case 'n+2': 
 					$response["finder_name"] = $data["finder_name"];
 					$response["finder_id"] = (int)$data["finder_id"];
 					$response["lat"] = $data["finder_lat"];
