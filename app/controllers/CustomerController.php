@@ -3341,7 +3341,7 @@ class CustomerController extends \BaseController {
 	    $data['start_date'] = strtotime($order->start_date);
 	    $data['end_date'] = strtotime($order->end_date);
 	    $data['service_name'] = $order->service_name;
-	    $data['dutarion'] = $order->service_duration;
+	    $data['duration'] = $order->service_duration;
 	    $data['subscription_code'] = $order->code;
 	    $data['amount'] = $order->amount;
 
