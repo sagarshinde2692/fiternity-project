@@ -3539,7 +3539,7 @@ class CustomerController extends \BaseController {
 
 		if($notificationTracking){
 
-			$notificationSwitch = $this->notificationSwitch();
+			$notificationSwitch = $this->notificationSwitch($notificationTracking);
 
 			return Response::json($notificationSwitch,200);
 		}
