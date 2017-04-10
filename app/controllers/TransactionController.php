@@ -15,7 +15,8 @@ use App\Services\Sidekiq as Sidekiq;
 use App\Services\Utilities as Utilities;
 use App\Services\CustomerReward as CustomerReward;
 use App\Services\CustomerInfo as CustomerInfo;
-use App\Sms\CustomerNotification as CustomerNotification;
+use App\Notification\CustomerNotification as CustomerNotification;
+
 
 
 class TransactionController extends \BaseController {
