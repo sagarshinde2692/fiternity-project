@@ -185,7 +185,7 @@ Class CustomerNotification extends Notification{
 		}
 
 		if(isset($notif_object["trial_id"])){
-			$notificationData["booktrial_id"] = $notif_object["order_id"];
+			$notificationData["booktrial_id"] = $notif_object["booktrial_id"];
 		}
 
 		if($delay != ""){
