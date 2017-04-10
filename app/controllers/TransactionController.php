@@ -257,8 +257,10 @@ class TransactionController extends \BaseController {
         $result['payment_related_details_for_mobile_sdk_hash'] = $mobilehash;
         $result['full_payment_wallet'] = $data['full_payment_wallet'];
 
-        $redisid = Queue::connection('redis')->push('TransactionController@sendCommunication', array('order_id'=>$order_id),'booktrial');
-        $order->update(array('redis_id'=>$redisid));
+        if(in_array($data['type'],$this->membership_array)){
+            $redisid = Queue::connection('redis')->push('TransactionController@sendCommunication', array('order_id'=>$order_id),'booktrial');
+            $order->update(array('redis_id'=>$redisid));
+        }
 
         $resp   =   array(
             'status' => 200,
@@ -710,7 +712,7 @@ class TransactionController extends \BaseController {
         }
 
         $device_type = (isset($data['device_type']) && $data['device_type'] != '') ? $data['device_type'] : "";
-        $gcm_reg_id = (isset($data['gcm_reg_id']) && $data['gcm_reg_id'] != '') ? $data['gcm_reg_id'] : "";
+        $gcm_reg_id = $data["reg_id"] = (isset($data['gcm_reg_id']) && $data['gcm_reg_id'] != '') ? $data['gcm_reg_id'] : "";
 
         if($device_type != '' && $gcm_reg_id != ''){
 
