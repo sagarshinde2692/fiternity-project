@@ -3609,6 +3609,7 @@ class CustomerController extends \BaseController {
 					$response["lon"] = $data["finder_lat"];
 					$response["start_date"] = strtoupper($data["schedule_slot_start_time"]);
 					$response["start_time"] = date("d-m-Y",strtotime($data["schedule_date"]));
+					$response["title"] = "Trial Reminder";
 					break;
 				case 'n-3': 
 					$response["finder_name"] = $data["finder_name"];
@@ -3617,6 +3618,7 @@ class CustomerController extends \BaseController {
 					$response["lon"] = $data["finder_lat"];
 					$response["start_date"] = strtoupper($data["schedule_slot_start_time"]);
 					$response["start_time"] = date("d-m-Y",strtotime($data["schedule_date"]));
+					$response["title"] = "Trial Reminder";
 					break;
 				case 'n+2': 
 					$response["finder_name"] = $data["finder_name"];
@@ -3625,6 +3627,7 @@ class CustomerController extends \BaseController {
 					$response["lon"] = $data["finder_lat"];
 					$response["start_date"] = strtoupper($data["schedule_slot_start_time"]);
 					$response["start_time"] = date("d-m-Y",strtotime($data["schedule_date"]));
+					$response["title"] = "Trial Review";
 					break;
 				default:
 					break;
