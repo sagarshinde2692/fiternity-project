@@ -3557,13 +3557,10 @@ class CustomerController extends \BaseController {
 		$response = array();
 
 		$array = [
-			"label",
 			"time",
 			"customer_id",
 			"schedule_for",
-			"max_time",
-			"booktrial_id",
-			"order_id"
+			"max_time"
 		];
 
 		$response["notification_id"] = $notificationTracking["_id"];
@@ -3581,6 +3578,9 @@ class CustomerController extends \BaseController {
 
 			if($order){
 
+				$response["transaction_id"] = $notificationTracking["order_id"];
+				$response["type"] = $booktrial->type;
+
 				$data = $order->toArray();
 			}
 
@@ -3592,7 +3592,10 @@ class CustomerController extends \BaseController {
 
 			if($booktrial){
 
-				$data = $booktrial->toArray();
+				$response["transaction_id"] = $notificationTracking["booktrial_id"];
+				$response["type"] = $booktrial->type;
+
+				$data = $booktrial->toArray();				
 			}
 		}
 
