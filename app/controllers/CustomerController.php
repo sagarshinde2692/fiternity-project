@@ -3554,6 +3554,27 @@ class CustomerController extends \BaseController {
 
 		$data = array();
 
+		$response = array();
+
+		$array = [
+			"label",
+			"time",
+			"customer_id",
+			"schedule_for",
+			"max_time",
+			"booktrial_id",
+			"order_id"
+		];
+
+		$response["notification_id"] = $notificationTracking["_id"];
+
+		foreach ($array as $value) {
+
+			if(isset($notificationTracking[$value])){
+				$response[$value] = $notificationTracking[$value];
+			}
+		}
+
 		if(isset($notificationTracking["order_id"])){
 
 			$order = Order::find((int)$notificationTracking["order_id"]);
@@ -3574,8 +3595,6 @@ class CustomerController extends \BaseController {
 				$data = $booktrial->toArray();
 			}
 		}
-
-		$response = array();
 
 		if(!empty($data)){
 
