@@ -1317,7 +1317,24 @@ class FindersController extends \BaseController {
 		$rating = $data['rating'];
 		$data["customer_id"] = $decoded->customer->_id;
 		$data['description'] = (isset($data['description'])) ? intval($data['description']) : '';
-		$data['detail_rating'] = [$rating,$rating,$rating,$rating,$rating];
+
+		if(!isset($data['detail_rating'])){
+			$data['detail_rating'] = [$rating,$rating,$rating,$rating,$rating];
+		}
+
+		if(isset($data['notification_id'])){
+			$notificationTracking = NotificationTracking::find($data['notification_id']);
+
+			if(isset($notificationTracking["order_id"])){
+				$data["order_id"] = (int)$notificationTracking["order_id"];
+			}
+
+			if(isset($notificationTracking["booktrial_id"])){
+				$data["booktrial_id"] = (int)$notificationTracking["booktrial_id"];
+			}
+		}
+
+		unset($data['"notification_id']);
 
 		return $this->addReview($data);
 	}
