@@ -172,6 +172,11 @@ Class CustomerNotification extends Notification{
 
 	public function common($label,$data,$notif_type,$notif_object,$delay = 0){
 
+		$template = \Template::where('label',$label)->first();
+		$device_type = $data['device_type'];
+		$to =  array($data['reg_id']);
+		$text = $notificationData["text"] = $this->bladeCompile($template->notification_text,$data);
+
 		$notificationData = [
 			"label"=> $label,
 			"time" => $notif_object["time"],
@@ -201,17 +206,9 @@ Class CustomerNotification extends Notification{
 		$notif_object["customer_id"] = (int)$data["customer_id"];
 		$notif_object["unique_id"] = $unique_id;
 		$notif_object["title"] = "Check this out!";
-
+		$notif_object["text"] = $text;
 
 		$notif_id = (int)$data["_id"];
-
-		$template = \Template::where('label',$label)->first();
-
-		$device_type = $data['device_type'];
-		$to =  array($data['reg_id']);
-		$text = $this->bladeCompile($template->notification_text,$data);
-
-		$notif_object["text"] = $text;
 
 		return $this->sendToWorker($device_type, $to, $text, $notif_id, $notif_type, $notif_object, $label, $delay);
 	}

@@ -3560,7 +3560,8 @@ class CustomerController extends \BaseController {
 			"time",
 			"customer_id",
 			"schedule_for",
-			"max_time"
+			"max_time",
+			"text"
 		];
 
 		$response["notification_id"] = $notificationTracking["_id"];
@@ -3637,7 +3638,7 @@ class CustomerController extends \BaseController {
 					$response["start_time"] = "";
 					$response["start_date"] = "";
 					$response["title"] = "Default Title";
-					
+
 					if(isset($data["schedule_slot_start_time"])){
 						$response["start_time"] = strtoupper($data["schedule_slot_start_time"]);
 					}
