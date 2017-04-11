@@ -1323,6 +1323,7 @@ class FindersController extends \BaseController {
 		}
 
 		if(isset($data['notification_id'])){
+			
 			$notificationTracking = NotificationTracking::find($data['notification_id']);
 
 			if(isset($notificationTracking["order_id"])){
@@ -1332,9 +1333,11 @@ class FindersController extends \BaseController {
 			if(isset($notificationTracking["booktrial_id"])){
 				$data["booktrial_id"] = (int)$notificationTracking["booktrial_id"];
 			}
+
+			unset($data['"notification_id']);
 		}
 
-		unset($data['"notification_id']);
+		
 
 		return $this->addReview($data);
 	}
