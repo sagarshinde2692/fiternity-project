@@ -3581,6 +3581,13 @@ class CustomerController extends \BaseController {
 
 				$response["transaction_id"] = $notificationTracking["order_id"];
 				$response["type"] = $order->type;
+				$response["transaction_type"] = "order";
+
+				$response["service_id"] = (int)$order->service_id;
+
+				if(isset($order->ratecard_id)){
+					$response["ratecard_id"] = (int)$order->ratecard_id;
+				}
 
 				$data = $order->toArray();
 			}
@@ -3595,6 +3602,13 @@ class CustomerController extends \BaseController {
 
 				$response["transaction_id"] = $notificationTracking["booktrial_id"];
 				$response["type"] = $booktrial->type;
+				$response["transaction_type"] = "trial";
+
+				$response["service_id"] = (int)$booktrial->service_id;
+
+				if(isset($booktrial->ratecard_id)){
+					$response["ratecard_id"] = (int)$booktrial->ratecard_id;
+				}
 
 				$data = $booktrial->toArray();				
 			}
