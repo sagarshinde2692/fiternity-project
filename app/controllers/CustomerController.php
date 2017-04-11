@@ -3392,7 +3392,7 @@ class CustomerController extends \BaseController {
 
 		if(/*!isset($order->updrage_membership) && */isset($order['start_date']) && time() >= strtotime($order['start_date'].'+11 days') && time() <= strtotime($order['start_date'].'+31 days') && isset($order['end_date']) && strtotime($order['end_date']) >= time() && isset($order['duration_day']) && $order['duration_day'] <= 180){
 			$action = [
-				"button_text"=>"Upgrade Membership",
+				"button_text"=>"Upgrade",
 				"activity"=>"upgrade_membership",
 				"color"=>"#26ADE5",
 				"info" => "Commit yourself for a longer duration. Upgrade your current membership with insider discounts and other benefits.",
@@ -3442,7 +3442,7 @@ class CustomerController extends \BaseController {
 			}
 
 			$action = [
-				"button_text"=>"Change Start Date",
+				"button_text"=>"Change",
 				"activity"=>"update_starting_date",
 				"color"=>"#7AB317",
 				"info" => "Don't miss even a single day workout. Change your membership start date basis your convenience. Not applicable, if you have already started with your membership.",
@@ -3484,7 +3484,7 @@ class CustomerController extends \BaseController {
 				$days_to_go = ceil(($max_date - time()) / 86400);
 
 				$action = [
-					"button_text"=>"Renew Membership",
+					"button_text"=>"Renew",
 					"activity"=>"renew_membership",
 					"color"=>"#EF1C26",
 					"info" => "Renew your membership with the lowest price and assured rewards",
