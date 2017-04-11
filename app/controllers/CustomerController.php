@@ -3580,7 +3580,7 @@ class CustomerController extends \BaseController {
 			if($order){
 
 				$response["transaction_id"] = $notificationTracking["order_id"];
-				$response["type"] = $booktrial->type;
+				$response["type"] = $order->type;
 
 				$data = $order->toArray();
 			}
