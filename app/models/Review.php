@@ -17,7 +17,7 @@ class Review extends  \Basemodel {
 	    'customer_id' => 'required|integer|numeric',
 	    'rating' => 'required|numeric',
 	    'detail_rating' => 'required',
-	    'description' => 'required'
+	    //'description' => 'required'
 	];
 
 	protected $appends = array('customer');

@@ -1296,10 +1296,40 @@ class FindersController extends \BaseController {
 
 	}
 
-	public function addReview(){
+	public function addReviewCustomer(){
+
+		$jwt_token = Request::header('Authorization');
+		$decoded = $this->customerTokenDecode($jwt_token);
+
+		$rules = [
+		    'finder_id' => 'required|integer|numeric',
+		    'rating' => 'required|numeric'
+		];
+
+		$data = Input::json()->all();
+
+		$validator = Validator::make($data,$rules);
+		if ($validator->fails()) {
+			$response = array('status' => 400, 'message' => 'Could not create a review.', 'errors' => $validator->errors());
+			return Response::json($response, 400);
+		}
+
+		$rating = $data['rating'];
+		$data["customer_id"] = $decoded->customer->_id;
+		$data['description'] = (isset($data['description'])) ? intval($data['description']) : '';
+		$data['detail_rating'] = [$rating,$rating,$rating,$rating,$rating];
+
+		return $this->addReview($data);
+	}
+
+	public function addReview($data = false){
+
+		if(!$data){
+			$data = Input::json()->all();
+		}
 
 		// return Input::json()->all();
-		$validator = Validator::make($data = Input::json()->all(), Review::$rules);
+		$validator = Validator::make($data, Review::$rules);
 		if ($validator->fails()) {
 			$response = array('status' => 400, 'message' => 'Could not create a review.', 'errors' => $validator->errors());
 			return Response::json($response, 400);
