@@ -2269,6 +2269,7 @@ class CustomerController extends \BaseController {
 		);
 	}
 
+
 	public function getWalletBalance(){
 
 		$jwt_token = Request::header('Authorization');
@@ -2575,7 +2576,7 @@ class CustomerController extends \BaseController {
 		if(isset($_REQUEST['device_type']) && $_REQUEST['device_type'] == "ios" ){
 			$result['campaign'] =  new \stdClass();
 			$result['campaign'] = array(
-				'image'=>'http://b.fitn.in/iconsv1/fitmania/sale_banner.png',
+				'image'=>'http://b.fitn.in/iconsv1/offers/generic_banner.png',
 				'link'=>'',
 				'title'=>'FitStart 2017',
 				'height'=>1,
@@ -3366,6 +3367,8 @@ class CustomerController extends \BaseController {
 	    $data["action"] = $getAction["action"];
 	    $data["feedback"] = $getAction["feedback"];
 
+	    $data["action"] = $getAction["action"];
+	    $data["feedback"] = $getAction["feedback"];
 
 	    $reviewData = null;
 	    $review = Review::active()->where('finder_id',(int)$order->finder_id)->where('customer_id',(int)$order->customer_id)->first();
@@ -3384,7 +3387,6 @@ class CustomerController extends \BaseController {
 	    return Response::json($data,200);
 
 	}
-
 
 	public function getAction($order){
 
