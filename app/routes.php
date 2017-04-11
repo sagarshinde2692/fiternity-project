@@ -900,4 +900,6 @@ Route::get('getdetailrating',array('as' => 'getdetailrating','uses' => 'FindersC
 
 Route::get('customer/notification/{id}',array('as' => 'customer.notification','uses' => 'CustomerController@notificationTracking'));
 
+Route::post('addwallet',array('as' => 'transaction.addwallet','uses' => 'TransactionController@addWallet'));
+
 

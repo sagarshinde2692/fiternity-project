@@ -843,6 +843,10 @@ Class Utilities {
                 'customerNotificationNotInterestedAfter15Days',
                 'customerNotificationNotInterestedAfter45Days',
                 'customerNotificationNotInterestedAfter75Days',
+                'customerWalletRenewalLinkSentBefore7Days',
+                'customerWalletRenewalLinkSentBefore1Days',
+                'customerWalletSendPaymentLinkAfter15Days',
+                'customerWalletSendPaymentLinkAfter30Days'
             ];
 
             foreach ($array as $value) {
@@ -909,7 +913,8 @@ Class Utilities {
             'customerNotificationPostTrialFollowup2After30Days',
             'customerNotificationNotInterestedAfter15Days',
             'customerNotificationNotInterestedAfter45Days',
-            'customerNotificationNotInterestedAfter75Days'
+            'customerNotificationNotInterestedAfter75Days',
+            'customerWalletPostTrialFollowup1After15Days'
         ];
 
         foreach ($array as $value) {

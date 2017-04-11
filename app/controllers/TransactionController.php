@@ -1561,13 +1561,15 @@ class TransactionController extends \BaseController {
             $order->customerSmsSendPaymentLinkAfter30Days = $this->customersms->sendPaymentLinkAfter30Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+30 days",$now)));
             $order->customerSmsSendPaymentLinkAfter45Days = $this->customersms->sendPaymentLinkAfter45Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+45 days",$now)));
 
-            $order->customerNotificationSendPaymentLinkAfter3Days = $this->customernotification->sendPaymentLinkAfter3Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+3 days",$now)));
-            $order->customerNotificationSendPaymentLinkAfter7Days = $this->customernotification->sendPaymentLinkAfter7Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+7 days",$now)));
-            $order->customerNotificationSendPaymentLinkAfter15Days = $this->customernotification->sendPaymentLinkAfter15Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+15 days",$now)));
-            $order->customerNotificationSendPaymentLinkAfter30Days = $this->customernotification->sendPaymentLinkAfter30Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+30 days",$now)));
-            $order->customerNotificationSendPaymentLinkAfter45Days = $this->customernotification->sendPaymentLinkAfter45Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+45 days",$now)));
+            if(isset($order['reg_id']) && $order['reg_id'] != "" && isset($order['device_type']) && $order['device_type'] != ""){
+                $order->customerNotificationSendPaymentLinkAfter3Days = $this->customernotification->sendPaymentLinkAfter3Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+3 days",$now)));
+                $order->customerNotificationSendPaymentLinkAfter7Days = $this->customernotification->sendPaymentLinkAfter7Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+7 days",$now)));
+                $order->customerNotificationSendPaymentLinkAfter15Days = $this->customernotification->sendPaymentLinkAfter15Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+15 days",$now)));
+                $order->customerNotificationSendPaymentLinkAfter30Days = $this->customernotification->sendPaymentLinkAfter30Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+30 days",$now)));
+                $order->customerNotificationSendPaymentLinkAfter45Days = $this->customernotification->sendPaymentLinkAfter45Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+45 days",$now)));
+            }
 
-            $url = Config::get('app.url')."customer_id=".$data["customer_id"]."&fitcash=500&order_id=".$order_id;
+            $url = Config::get('app.url')."addwallet/customer_id=".$order["customer_id"]."&action=add_fitcash&amount=500&order_id=".$order_id;
 
             $order->customerWalletSendPaymentLinkAfter15Days = $this->hitURLAfterDelay($url, date('Y-m-d H:i:s', strtotime("+15 days",$now)));
             $order->customerWalletSendPaymentLinkAfter30Days = $this->hitURLAfterDelay($url, date('Y-m-d H:i:s', strtotime("+30 days",$now)));
@@ -1713,6 +1715,56 @@ class TransactionController extends \BaseController {
             return $category_array[$category];
         }else{
             return array('gyms'=>'http://email.fitternity.com/229/gym.jpg','dance'=>'http://email.fitternity.com/229/dance.jpg','yoga'=>'http://email.fitternity.com/229/yoga.jpg');
+        }
+
+    }
+
+    public function addWallet(){
+
+        $data = $_GET;
+
+        $rules = array(
+            'customer_id'=>'required',
+            'amount'=>'required',
+            'action'=>'required|in:add_fitcash,add_fitcash_plus',
+        );
+
+        $validator = Validator::make($data,$rules);
+
+        if ($validator->fails()) {
+            return Response::json(array('status' => 404,'message' => error_message($validator->errors())),404);
+        }
+
+        $req = [];
+
+        $req['customer_id'] = $data['customer_id'];
+        $req['amount'] = $data['amount'];
+
+        if($data['action'] == "add_fitcash"){
+            $req['amount_fitcash'] = $data['amount'];
+            $req['type'] = "CASHBACK";
+            $req['description'] = "Added Fitcash Rs ".$data['amount'];
+        }
+
+        if($data['action'] == "add_fitcash_plus"){
+            $req['amount_fitcash_plus'] = $data['amount'];
+            $req['type'] = "FITCASHPLUS";
+            $req['description'] = "Added Fitcash Plus Rs ".$data['amount'];
+        }
+
+        if(isset($data['order_id'])){
+            $req['order_id'] = (int)$data['order_id'];
+        }
+
+        if(isset($data['booktrial_id'])){
+            $req['booktrial_id'] = (int)$data['booktrial_id'];
+        }
+
+        $walletTransactionResponse = $this->utilities->walletTransaction($req)->getData();
+        $walletTransactionResponse = (array) $walletTransactionResponse;
+
+        if($walletTransactionResponse['status'] != 200){
+            return $walletTransactionResponse;
         }
 
     }
