@@ -188,6 +188,10 @@ class Service extends \Basemodel{
 								$ratecardoffer['offer_text']    =   "";
 								$ratecardoffer['offer_icon']    =   "https://b.fitn.in/iconsv1/womens-day/women-only.png";
 							}
+							if(isset($value['flags']['offerFor']) && $value['flags']['offerFor'] == "student"){
+								$ratecardoffer['offer_text']    =   "";
+								$ratecardoffer['offer_icon']    =   "https://b.fitn.in/iconsv1/offers/students_badge.png";
+							}
 						}
 
                         $today_date     =   new DateTime( date("d-m-Y 00:00:00", time()) );

@@ -2186,14 +2186,18 @@ public function getRankedFinderResultsAppv4()
         $facilities         = Input::json()->get('facilities') == null ? [] : Input::json()->get('facilities');
         $budget             = Input::json()->get('budget');
         $trialdays          = Input::json()->get('trialdays') == null ? [] : Input::json()->get('trialdays');
-        $other_filters          = Input::json()->get('other_filters') == null ? [] : Input::json()->get('other_filters');
+        $other_filters      = Input::json()->get('other_filters') == null ? [] : Input::json()->get('other_filters');
+        $other_flags        = [];
         foreach ($other_filters as $filter){
             // $budget_filters = ["one","two","three","four","five","six"];
             $trialdays_filters = ["sunday","monday","tuesday","wednesday","thursday","friday","saturday","sunday open","monday open","tuesday open","wednesday open","thursday open","friday open","saturday open"];
+            $flags_filters = ["student"];
             if(in_array($filter, $trialdays_filters)){
                 array_push($trialdays,str_replace(" open","",$filter));
             }
-            else{
+            elseif(in_array($filter, $flags_filters)){
+                array_push($other_flags,$filter);
+            }else{
                 array_push($facilities,$filter);
             }
         }
@@ -2250,6 +2254,7 @@ public function getRankedFinderResultsAppv4()
         $facilities_filter      = $facilities ? '{"terms" : {  "facilities": ["'.strtolower(implode('","', $facilities)).'"],"_cache": true}},': '';
         $trials_day_filter      = (($trialdays)) ? '{"terms" : {  "service_weekdays": ["'.strtolower(implode('","', $trialdays)).'"],"_cache": true}},'  : '';
         $trials_day_filterv2    = (($trialdays)) ? '{"terms" : {  "day": ["'.strtolower(implode('","', $trialdays)).'"],"_cache": true}},'  : '';
+        $other_flag_filter         = $other_flags && $other_flags > 0 ? '{"terms" : {  "flags.offerFor": ["'.strtolower(implode('","', $other_flags)).'"],"_cache": true}},': '';
         $trial_range_filter     = '';
 
         if(($trial_time_from !== '')&&($trial_time_to !== '')){
@@ -2343,9 +2348,9 @@ public function getRankedFinderResultsAppv4()
                 },';
         }
         $should_filtervalue     = trim($regions_filter.$region_tags_filter,',');
-        $must_filtervalue       = trim($trial_filter.$commercial_type_filter.$location_filter.$regions_filter.$geo_location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter,',');
+        $must_filtervalue       = trim($trial_filter.$commercial_type_filter.$location_filter.$regions_filter.$geo_location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$other_flag_filter,',');
         if($trials_day_filter !== ''){
-            $must_filtervalue   = trim($trial_filter.$commercial_type_filter.$location_filter.$regions_filter.$geo_location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$service_level_nested_filter,',');
+            $must_filtervalue   = trim($trial_filter.$commercial_type_filter.$location_filter.$regions_filter.$geo_location_filter.$offerings_filter.$facilities_filter.$category_filter.$budget_filter.$other_flag_filter.$service_level_nested_filter,',');
         }
 
         $shouldfilter       = '"should": ['.$should_filtervalue.'],'; //used for location
