@@ -1323,7 +1323,7 @@ class FindersController extends \BaseController {
 		}
 
 		if(isset($data['notification_id'])){
-			
+
 			$notificationTracking = NotificationTracking::find($data['notification_id']);
 
 			if(isset($notificationTracking["order_id"])){
@@ -2251,6 +2251,16 @@ class FindersController extends \BaseController {
 			// Log::info("Category exists");
 			$category_slug = $_GET['category_slug'];
 			$cache_key  = $tslug.'-'.$category_slug;
+		}
+
+		if(isset($_GET['category_id']) && $_GET['category_id'] != ''){
+
+			$finderCateogry = Findercategory::find((int)$_GET['category_id']);
+
+			if($finderCateogry){
+				$category_slug = $finderCateogry->slug;
+				$cache_key  = $tslug.'-'.$category_slug;
+			}
 		}
 
 		$location_id = null;
