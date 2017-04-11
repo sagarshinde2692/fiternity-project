@@ -2255,7 +2255,7 @@ class FindersController extends \BaseController {
 
 		if(isset($_GET['category_id']) && $_GET['category_id'] != ''){
 
-			$finderCateogry = Findercategory::find((int)$_GET['category_id']);
+			$finderCateogry = Findercategory::find((int)$_GET['category_id'],array('_id','name','slug','detail_rating'));
 
 			if($finderCateogry){
 				$category_slug = $finderCateogry->slug;
