@@ -175,7 +175,7 @@ Class CustomerNotification extends Notification{
 		$template = \Template::where('label',$label)->first();
 		$device_type = $data['device_type'];
 		$to =  array($data['reg_id']);
-		$text = $notificationData["text"] = $this->bladeCompile($template->notification_text,$data);
+		$text = $this->bladeCompile($template->notification_text,$data);
 
 		$notificationData = [
 			"label"=> $label,
@@ -200,6 +200,8 @@ Class CustomerNotification extends Notification{
 		if(isset($notif_object["max_time"])){
 			$notificationData["max_time"] = $notif_object["max_time"];
 		}
+
+		$notificationData["text"]  = $text;
 
 		$unique_id = $this->getUniqueId($notificationData);
 
