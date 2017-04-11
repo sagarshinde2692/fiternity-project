@@ -3607,8 +3607,8 @@ class CustomerController extends \BaseController {
 					$response["finder_id"] = (int)$data["finder_id"];
 					$response["lat"] = $data["finder_lat"];
 					$response["lon"] = $data["finder_lat"];
-					$response["start_date"] = strtoupper($data["schedule_slot_start_time"]);
-					$response["start_time"] = date("d-m-Y",strtotime($data["schedule_date"]));
+					$response["start_time"] = strtoupper($data["schedule_slot_start_time"]);
+					$response["start_date"] = date("d-m-Y",strtotime($data["schedule_date"]));
 					$response["title"] = "Trial Reminder";
 					break;
 				case 'n-3': 
@@ -3616,8 +3616,8 @@ class CustomerController extends \BaseController {
 					$response["finder_id"] = (int)$data["finder_id"];
 					$response["lat"] = $data["finder_lat"];
 					$response["lon"] = $data["finder_lat"];
-					$response["start_date"] = strtoupper($data["schedule_slot_start_time"]);
-					$response["start_time"] = date("d-m-Y",strtotime($data["schedule_date"]));
+					$response["start_time"] = strtoupper($data["schedule_slot_start_time"]);
+					$response["start_date"] = date("d-m-Y",strtotime($data["schedule_date"]));
 					$response["title"] = "Trial Reminder";
 					break;
 				case 'n+2': 
@@ -3625,11 +3625,31 @@ class CustomerController extends \BaseController {
 					$response["finder_id"] = (int)$data["finder_id"];
 					$response["lat"] = $data["finder_lat"];
 					$response["lon"] = $data["finder_lat"];
-					$response["start_date"] = strtoupper($data["schedule_slot_start_time"]);
-					$response["start_time"] = date("d-m-Y",strtotime($data["schedule_date"]));
+					$response["start_time"] = strtoupper($data["schedule_slot_start_time"]);
+					$response["start_date"] = date("d-m-Y",strtotime($data["schedule_date"]));
 					$response["title"] = "Trial Review";
 					break;
 				default:
+					$response["finder_name"] = $data["finder_name"];
+					$response["finder_id"] = (int)$data["finder_id"];
+					$response["lat"] = $data["finder_lat"];
+					$response["lon"] = $data["finder_lat"];
+					$response["start_time"] = "";
+					$response["start_date"] = "";
+					$response["title"] = "Default Title";
+					
+					if(isset($data["schedule_slot_start_time"])){
+						$response["start_time"] = strtoupper($data["schedule_slot_start_time"]);
+					}
+
+					if(isset($data["schedule_date"])){
+						$response["start_date"] = date("d-m-Y",strtotime($data["schedule_date"]));
+					}
+
+					if(isset($data["start_date"])){
+						$response["start_date"] = date("d-m-Y",strtotime($data["start_date"]));
+					}
+					
 					break;
 			}
 

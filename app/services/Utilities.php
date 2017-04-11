@@ -825,18 +825,9 @@ Class Utilities {
                 'customerSmsRenewalLinkSentAfter7Days',
                 'customerSmsRenewalLinkSentAfter15Days',
                 'customerSmsRenewalLinkSentAfter30Days',
-                'customerSmsSendPaymentLinkAfter3Days',
-                'customerSmsSendPaymentLinkAfter7Days',
-                'customerSmsSendPaymentLinkAfter15Days',
-                'customerSmsSendPaymentLinkAfter30Days',
-                'customerSmsSendPaymentLinkAfter45Days',
-                'customerSmsRenewalLinkSentBefore30Days',
-                'customerSmsRenewalLinkSentBefore15Days',
-                'customerSmsRenewalLinkSentBefore7Days',
-                'customerSmsRenewalLinkSentBefore1Days',
-                'customerSmsRenewalLinkSentAfter7Days',
-                'customerSmsRenewalLinkSentAfter15Days',
-                'customerSmsRenewalLinkSentAfter30Days',
+                'customerSmsNotInterestedAfter15Days',
+                'customerSmsNotInterestedAfter45Days',
+                'customerSmsNotInterestedAfter75Days',
                 'customerNotificationSendPaymentLinkAfter3Days',
                 'customerNotificationSendPaymentLinkAfter7Days',
                 'customerNotificationSendPaymentLinkAfter15Days',
@@ -849,18 +840,9 @@ Class Utilities {
                 'customerNotificationRenewalLinkSentAfter7Days',
                 'customerNotificationRenewalLinkSentAfter15Days',
                 'customerNotificationRenewalLinkSentAfter30Days',
-                'customerNotificationSendPaymentLinkAfter3Days',
-                'customerNotificationSendPaymentLinkAfter7Days',
-                'customerNotificationSendPaymentLinkAfter15Days',
-                'customerNotificationSendPaymentLinkAfter30Days',
-                'customerNotificationSendPaymentLinkAfter45Days',
-                'customerNotificationRenewalLinkSentBefore30Days',
-                'customerNotificationRenewalLinkSentBefore15Days',
-                'customerNotificationRenewalLinkSentBefore7Days',
-                'customerNotificationRenewalLinkSentBefore1Days',
-                'customerNotificationRenewalLinkSentAfter7Days',
-                'customerNotificationRenewalLinkSentAfter15Days',
-                'customerNotificationRenewalLinkSentAfter30Days'
+                'customerNotificationNotInterestedAfter15Days',
+                'customerNotificationNotInterestedAfter45Days',
+                'customerNotificationNotInterestedAfter75Days',
             ];
 
             foreach ($array as $value) {
@@ -914,6 +896,9 @@ Class Utilities {
             'customerSmsPostTrialFollowup2After7Days',
             'customerSmsPostTrialFollowup2After15Days',
             'customerSmsPostTrialFollowup2After30Days',
+            'customerSmsNotInterestedAfter15Days',
+            'customerSmsNotInterestedAfter45Days',
+            'customerSmsNotInterestedAfter75Days',
             'customerNotificationPostTrialFollowup1After3Days',
             'customerNotificationPostTrialFollowup1After7Days',
             'customerNotificationPostTrialFollowup1After15Days',
@@ -922,6 +907,9 @@ Class Utilities {
             'customerNotificationPostTrialFollowup2After7Days',
             'customerNotificationPostTrialFollowup2After15Days',
             'customerNotificationPostTrialFollowup2After30Days',
+            'customerNotificationNotInterestedAfter15Days',
+            'customerNotificationNotInterestedAfter45Days',
+            'customerNotificationNotInterestedAfter75Days'
         ];
 
         foreach ($array as $value) {
