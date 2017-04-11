@@ -2576,7 +2576,7 @@ class CustomerController extends \BaseController {
 		if(isset($_REQUEST['device_type']) && $_REQUEST['device_type'] == "ios" ){
 			$result['campaign'] =  new \stdClass();
 			$result['campaign'] = array(
-				'image'=>'http://b.fitn.in/iconsv1/fitmania/sale_banner.png',
+				'image'=>'http://b.fitn.in/iconsv1/offers/generic_banner.png',
 				'link'=>'',
 				'title'=>'FitStart 2017',
 				'height'=>1,
