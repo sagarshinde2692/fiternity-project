@@ -1316,7 +1316,7 @@ class FindersController extends \BaseController {
 
 		$rating = $data['rating'];
 		$data["customer_id"] = $decoded->customer->_id;
-		$data['description'] = (isset($data['description'])) ? intval($data['description']) : '';
+		$data['description'] = (isset($data['description'])) ? $data['description'] : '';
 
 		if(!isset($data['detail_rating'])){
 			$data['detail_rating'] = [$rating,$rating,$rating,$rating,$rating];
