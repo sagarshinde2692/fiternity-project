@@ -712,17 +712,17 @@ class TransactionController extends \BaseController {
         }
 
         $device_type = (isset($data['device_type']) && $data['device_type'] != '') ? $data['device_type'] : "";
-        $gcm_reg_id = $data["reg_id"] = (isset($data['gcm_reg_id']) && $data['gcm_reg_id'] != '') ? $data['gcm_reg_id'] : "";
+        $gcm_reg_id = (isset($data['gcm_reg_id']) && $data['gcm_reg_id'] != '') ? $data['gcm_reg_id'] : "";
 
         if($device_type != '' && $gcm_reg_id != ''){
 
-            $reg_data = array();
+            $regData = array();
 
-            $reg_data['customer_id'] = $customer_id;
-            $reg_data['reg_id'] = $gcm_reg_id;
-            $reg_data['type'] = $device_type;
+            $regData['customer_id'] = $data["customer_id"];
+            $regData['reg_id'] = $gcm_reg_id;
+            $regData['type'] = $device_type;
 
-            $this->addRegId($reg_data);
+            $this->utilities->addRegId($regData);
         }
 
         return array('status' => 200,'data' => $data);
@@ -1081,13 +1081,6 @@ class TransactionController extends \BaseController {
         }
 
         return (int) $delay;
-    }
-
-    public function addRegId($data){
-
-        $response = add_reg_id($data);
-
-        return Response::json($response,$response['status']);
     }
 
     public function getRatecardDetail($data){

@@ -733,13 +733,13 @@ class SchedulebooktrialsController extends \BaseController {
 
         if($device_type != '' && $gcm_reg_id != ''){
 
-            $reg_data = array();
+            $regData = array();
 
-            $reg_data['customer_id'] = $customer_id;
-            $reg_data['reg_id'] = $gcm_reg_id;
-            $reg_data['type'] = $device_type;
+            $regData['customer_id'] = $customer_id;
+            $regData['reg_id'] = $gcm_reg_id;
+            $regData['type'] = $device_type;
 
-            $this->addRegId($reg_data);
+            $this->utilities->addRegId($regData);
         }
 
 
@@ -1790,13 +1790,13 @@ class SchedulebooktrialsController extends \BaseController {
 
             if($device_type != '' && $gcm_reg_id != ''){
 
-                $reg_data = array();
+                $regData = array();
 
-                $reg_data['customer_id'] = $customer_id;
-                $reg_data['reg_id'] = $gcm_reg_id;
-                $reg_data['type'] = $device_type;
+                $regData['customer_id'] = $customer_id;
+                $regData['reg_id'] = $gcm_reg_id;
+                $regData['type'] = $device_type;
 
-                $this->addRegId($reg_data);
+                $this->utilities->addRegId($regData);
             }
 
 
@@ -2593,13 +2593,13 @@ class SchedulebooktrialsController extends \BaseController {
 
             if($device_type != '' && $gcm_reg_id != ''){
 
-                $reg_data = array();
+                $regData = array();
 
-                $reg_data['customer_id'] = $customer_id;
-                $reg_data['reg_id'] = $gcm_reg_id;
-                $reg_data['type'] = $device_type;
+                $regData['customer_id'] = $customer_id;
+                $regData['reg_id'] = $gcm_reg_id;
+                $regData['type'] = $device_type;
 
-                $this->addRegId($reg_data);
+                $this->utilities->addRegId($regData);
             }
 
             // $finder_location                 =   (isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
@@ -4352,12 +4352,6 @@ class SchedulebooktrialsController extends \BaseController {
         return $this->customersms->bookTrialReminderAfter2Hour($data, $delayReminderTimeAfter2Hour);
     }
 
-    public function addRegId($data){
-
-        $response = add_reg_id($data);
-
-        return Response::json($response,$response['status']);
-    }
 
     public function booktrialdetail($captureid){
 

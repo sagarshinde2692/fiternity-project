@@ -430,30 +430,43 @@ class CustomerController extends \BaseController {
 	public function register(){
 
 		$data = Input::json()->all();
+
 		$inserted_id = Customer::max('_id') + 1;
+
 		$rules = [
-		'name' => 'required|max:255',
-		'email' => 'required|email|max:255',
-		'password' => 'required|min:6|max:20|confirmed',
-		'password_confirmation' => 'required|min:6|max:20',
-		'contact_no' => 'max:15',
-		'identity' => 'required'
+			'name' => 'required|max:255',
+			'email' => 'required|email|max:255',
+			'password' => 'required|min:6|max:20|confirmed',
+			'password_confirmation' => 'required|min:6|max:20',
+			'contact_no' => 'max:15',
+			'identity' => 'required'
 		];
+
 		$validator = Validator::make($data,$rules);
+
 		$data['email'] = strtolower($data['email']);
+
 		if ($validator->fails()) {
+
 			return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),400);
 		}else{
 
 			$customer = Customer::where('email','=',$data['email'])->where('identity','!=','email')->first();
 			
 			if(empty($customer)){
+
 				$ishullcustomer = Customer::where('email','=',$data['email'])->where('ishulluser',1)->first();
+
 				if(empty($ishullcustomer)){
+
 					$new_validator = Validator::make($data, Customer::$rules);
+
 					if ($new_validator->fails()) {
+
 						return Response::json(array('status' => 400,'message' => $this->errorMessage($new_validator->errors())),400);
+
 					}else{
+
 						$account_link = array('email'=>0,'google'=>0,'facebook'=>0,'twitter'=>0);
 						$account_link[$data['identity']] = 1;
 						$customer = new Customer();
@@ -477,36 +490,45 @@ class CustomerController extends \BaseController {
 						$this->customermailer->register($customer_data);
 
 						Log::info('Customer Register : '.json_encode(array('customer_details' => $customer)));
+
 						$response = $this->createToken($customer);
+
 						$resp = $this->checkIfpopPup($customer);
+
 						if($resp["show_popup"] == "true"){
 							$response["extra"] = $resp;
 						}
-						return Response::json($response,200);
+
+						$customer_id = $customer->_id;
+						
 					}
+
 				}else{
+
 					$ishullcustomer->name = ucwords($data['name']);
 					$ishullcustomer->password = md5($data['password']);
 					$ishullcustomer->ishulluser = 0;
 					$ishullcustomer->update();
 					$customer_data = array('name'=>ucwords($ishullcustomer['name']),'email'=>$ishullcustomer['email'],'password'=>$ishullcustomer['password']);
-					// $this->customermailer->register($ishullcustomer);
 
 					Log::info('Customer Register : '.json_encode(array('customer_details' => $ishullcustomer)));
+
 					$response = $this->createToken($ishullcustomer);
 					$resp = $this->checkIfpopPup($ishullcustomer);
 					if($resp["show_popup"] == "true"){
 						$response["extra"] = $resp;
 					}
-					return Response::json($response,200);
-				}	
+
+					$customer_id = $ishullcustomer->_id;
+					
+				}
+
 			}else{
 
 				$account_link= $customer['account_link'];
 				$account_link[$data['identity']] = 1;
 				$customer->name = ucwords($data['name']) ;
 				$customer->email = $data['email'];
-
 				isset($data['dob']) ? $customer->dob = $data['dob'] : null;
 				isset($data['gender']) ? $customer->gender = $data['gender'] : null;
 				isset($data['fitness_goal']) ? $customer->fitness_goal = $data['fitness_goal'] : null;
@@ -528,11 +550,16 @@ class CustomerController extends \BaseController {
 				if($resp["show_popup"] == "true"){
 					$response["extra"] = $resp;
 				}
-				return Response::json($response,200);
+
+				$customer_id = $customer->_id;
+				
 			}
 
-			$account_link = array('email'=>0,'google'=>0,'facebook'=>0,'twitter'=>0);
-			$account_link[$data['identity']] = 1;
+			$data["customer_id"] = (int)$customer_id;
+
+			$this->addRegId($data);
+
+			return Response::json($response,200);
 		}
 	}
 
@@ -543,9 +570,10 @@ class CustomerController extends \BaseController {
 
 		if(isset($data['identity']) && !empty($data['identity'])){
 
-			if($data['identity'] == 'email')
-			{
+			if($data['identity'] == 'email'){
+
 				$resp = $this->emailLogin($data);
+
 				if(isset($resp["token"])){
 					$response = $resp["token"];
 					if($resp["popup"]["show_popup"] == "true"){
@@ -554,8 +582,20 @@ class CustomerController extends \BaseController {
 				}else{
 					$response = $resp;
 				}
+
+				if($response['status'] == 200 && isset($response['token']) && $response['token'] != ""){
+
+					$customerTokenDecode = $this->customerTokenDecode;
+
+					$data["customer_id"] = (int)$customerTokenDecode->customer->_id;
+
+					$this->addRegId($data);
+				}
+
 				return Response::json($response,$response['status']);
+
 			}elseif($data['identity'] == 'google' || $data['identity'] == 'facebook' || $data['identity'] == 'twitter'){
+
 				$resp = $this->socialLogin($data);
 				if(isset($resp["token"])){
 					$response = $resp["token"];
@@ -565,6 +605,16 @@ class CustomerController extends \BaseController {
 				}else{
 					$response = $resp;
 				}
+
+				if($response['status'] == 200 && isset($response['token']) && $response['token'] != ""){
+
+					$customerTokenDecode = $this->customerTokenDecode;
+
+					$data["customer_id"] = (int)$customerTokenDecode->customer->_id;
+
+					$this->addRegId($data);
+				}
+
 				return Response::json($response,$response['status']);
 			}else{
 				return Response::json(array('status' => 400,'message' => 'The identity is incorrect'),400);
@@ -789,6 +839,25 @@ class CustomerController extends \BaseController {
 		}
 
 		return $response;
+	}
+
+	public function addRegId($data){
+
+		$device_type = (isset($data['device_type']) && $data['device_type'] != '') ? $data['device_type'] : "";
+        $gcm_reg_id = (isset($data['gcm_reg_id']) && $data['gcm_reg_id'] != '') ? $data['gcm_reg_id'] : "";
+
+        if($device_type != '' && $gcm_reg_id != ''){
+
+            $regData = array();
+
+            $regData['customer_id'] = $data["customer_id"];
+            $regData['reg_id'] = $gcm_reg_id;
+            $regData['type'] = $device_type;
+
+            $this->utilities->addRegId($regData);
+        }
+
+        return "success";
 	}
 
 	public function createToken($customer){
@@ -2044,15 +2113,6 @@ class CustomerController extends \BaseController {
 			return Response::json(array('status' => 201,'message' => 'not registered','data'=>$data),201);
 		}
 
-	}
-
-	public function addRegId(){
-
-		$data = Input::json()->all();
-
-		$response = add_reg_id($data);
-
-		return Response::json($response,$response['status']);
 	}
 
 	public function autoRegisterCustomer($data){

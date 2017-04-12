@@ -628,13 +628,13 @@ class OrderController extends \BaseController {
 
         if($device_type != '' && $gcm_reg_id != ''){
 
-            $reg_data = array();
+            $regData = array();
 
-            $reg_data['customer_id'] = $customer_id;
-            $reg_data['reg_id'] = $gcm_reg_id;
-            $reg_data['type'] = $device_type;
+            $regData['customer_id'] = $customer_id;
+            $regData['reg_id'] = $gcm_reg_id;
+            $regData['type'] = $device_type;
 
-            $this->addRegId($reg_data);
+            $this->utilities->addRegId($regData);
         }
 
         //SEND COD EMAIL TO CUSTOMER
@@ -1146,13 +1146,13 @@ class OrderController extends \BaseController {
 
         if($device_type != '' && $gcm_reg_id != ''){
 
-            $reg_data = array();
+            $regData = array();
 
-            $reg_data['customer_id'] = $customer_id;
-            $reg_data['reg_id'] = $gcm_reg_id;
-            $reg_data['type'] = $device_type;
+            $regData['customer_id'] = $customer_id;
+            $regData['reg_id'] = $gcm_reg_id;
+            $regData['type'] = $device_type;
 
-            $this->addRegId($reg_data);
+            $this->utilities->addRegId($regData);
         }
 
         if(isset($postdata['preferred_starting_date']) && $postdata['preferred_starting_date']  != '') {
@@ -1874,17 +1874,6 @@ class OrderController extends \BaseController {
         }
 
     }
-
-    public function addRegId($data){
-
-        $response = add_reg_id($data);
-
-        return Response::json($response,$response['status']);
-    }
-
-
-
-
 
     public function emailToPersonalTrainers (){
 
