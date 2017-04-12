@@ -53,5 +53,8 @@ class Order extends \Basemodel {
 	public function serviceoffer(){
 		return $this->belongsTo('Serviceoffer');
 	}
+	public function trainerslotbooking(){
+		return $this->hasMany('TrainerSlotBooking','order_id');
+	}
 	
 }
