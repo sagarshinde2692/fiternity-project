@@ -200,9 +200,9 @@ class Service extends \Basemodel{
                         array_push($ratecardoffers,$ratecardoffer);
                     }
 					if(isset($value['flags'])){
-						Log::info("in flags");
+						// Log::info("in flags");
 						if(isset($value['flags']['offerFor'])){
-							Log::info("in offerFor");
+							// Log::info("in offerFor");
 							switch($value['flags']['offerFor']){
 								case "student": $ratecardoffers[0]['offer_text']    =   "";
 												$ratecardoffers[0]['offer_icon']    =   "https://b.fitn.in/iconsv1/offers/students_badge.png";	
