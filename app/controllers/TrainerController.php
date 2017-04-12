@@ -230,7 +230,7 @@ class TrainerController extends \BaseController {
 
 
 			$trainer = Trainer::find($data['trainer_id']);
-
+			// return $data['trainer_id'];
 			$data['trainer_name'] = ucwords($trainer->name);
 			$data['trainer_slug'] = $trainer->slug;
 			$data['trainer_email'] = $trainer->contact['email'];
