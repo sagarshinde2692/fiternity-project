@@ -3753,7 +3753,7 @@ public function yes($msg){
 						$data[$field] = $transaction[$field];
 					}
 				}
-				array_push($orderDetails, $data);
+				// array_push($orderDetails, $data);
 
 				$prev_payment = Transaction::where('customer_email', $transaction['customer_email'])
 					->where('created_at', '<', $transaction['created_at'])
@@ -3763,10 +3763,10 @@ public function yes($msg){
 
 				if($prev_payment){
 					$after_trial++;
-					array_push($trialDetails, $data);
+					// array_push($trialDetails, $data);
 					if(isset($transaction['paymentLinkEmailCustomerTiggerCount'])){
 						$after_link++;
-						array_push($linkDetails, $data);
+						// array_push($linkDetails, $data);
 						
 					}
 				}
@@ -3775,9 +3775,9 @@ public function yes($msg){
 				'orders' 	=> $orders,
 				'trials'	=> $after_trial,
 				'link'		=> $after_link,
-				'orderDetails' 	=> $orderDetails,
-				'trialDetails'	=> $trialDetails,
-				'linkDetails'	=> $linkDetails
+				// 'orderDetails' 	=> $orderDetails,
+				// 'trialDetails'	=> $trialDetails,
+				// 'linkDetails'	=> $linkDetails
 			);
 			return $data;	
 	}
@@ -3787,18 +3787,21 @@ public function yes($msg){
 		Service::$withoutAppends = true;
 		$zumba_services = Service::where('servicecategory_id', 19)
 			->where('status', '1')
-			->get(['_id', 'name', 'finder_id'])
+			->lists('_id')
 			;
 
 		$count = 0;
-		$booktrials = Transaction::where('transaction_type', 'Booktrial')->get(['service_name', 'finder_id']);
+		$booktrials = Transaction::where('service_id','exists',true)->where('transaction_type', 'Booktrial')->get(['service_id']);
 
 		foreach($booktrials as $booktrial){
-			foreach($zumba_services as $service){
-				if($booktrial['finder_id']==$service['finder_id'] && strtolower($booktrial['service_name'])==strtolower($service['name'])){
+			if(in_array($booktrial['service_id'],$zumba_services)){
 					$count++;
-				}
+
 			}
+			// foreach($zumba_services as $service){
+			// 	if($booktrial['finder_id']==$service['finder_id'] && strtolower($booktrial['service_name'])==strtolower($service['name'])){
+			// 	}
+			// }
 		}
 		$data = array(
 			'total_booktrials'	=> count($booktrials),
