@@ -888,3 +888,4 @@ Route::group(array('before' => 'validatetoken'), function() {
 });
 
 Route::get('customerorderdata','DebugController@customer_data');
+Route::get('zumbadata','DebugController@zumba_data');

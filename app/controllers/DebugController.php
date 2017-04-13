@@ -3781,5 +3781,20 @@ public function yes($msg){
 			);
 			return $data;	
 	}
+
+
+	public function zumba_data(){
+		// return "hehe";
+		$booktrial  = Transaction::where('transaction_type', 'Booktrial')->count();
+		Service::$withoutAppends = true;
+		$zumba_services = Service::where('servicecategory_id', 19)
+			->where('status', '1')
+			// ->where('_id','<', 500)
+			
+			// ->count()
+			->get(['_id', 'name', 'finder_id'])
+			;
+		return $zumba_services;
+	}
     
 }
