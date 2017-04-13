@@ -209,17 +209,21 @@ class EmailSmsApiController extends \BaseController {
     }
 
     public function SubscribeNewsletter(){
-        $list_id = 'd2a433c826';
+        // $list_id = 'd2a433c826';
         //$list_id = 'cd8d82a9d0';
         $email_address = Input::json()->get('email');
         // $response =  MailchimpWrapper::lists()->subscribe($list_id, array('email'=>$email_address));
         $data = array(
-            'capture_type' => 'newsletter_subscription',
+            'capture_type' => 'newsletter-subscription',
+            'name' => Input::json()->get('name'),
             'email' => $email_address,
+            'phone' => Input::json()->get('phone'),
+            'pincode' => Input::json()->get('pincode')
         );
+
         array_set($data, 'capture_status', 'yet to connect');
+
         $storecapture = Capture::create($data);
-        $response = array('status' => 200,'message' => "Recieved the Request");
         return $response;
     }
 
