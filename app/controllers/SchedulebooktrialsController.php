@@ -4498,7 +4498,6 @@ class SchedulebooktrialsController extends \BaseController {
     public function postTrialAction($source = 'customer'){
 
         $rules = [
-            'booktrial_id' => 'required',
             'status' => 'required'
         ];
 
@@ -4508,8 +4507,15 @@ class SchedulebooktrialsController extends \BaseController {
             $resp = array('status' => 400,'message' =>$this->errorMessage($validator->errors()));
             return  Response::json($resp, 400);
         }
-
-        $booktrial = Booktrial::find(intval($data['booktrial_id']));
+        if(!isset($data['booktrial_id'])){
+            if(isset($data['notification_id'])){
+                $notification = NotificationTracking::where('_id', $data['notification_id'])->first(['booktrial_id']);
+                $booktrial_id = $notification['booktrial_id'];
+            }
+        }else{
+            $booktrial_id = intval($data['booktrial_id']);
+        }
+        $booktrial = Booktrial::find($booktrial_id);
 
         if($booktrial){
 
