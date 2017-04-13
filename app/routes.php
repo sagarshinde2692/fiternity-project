@@ -886,3 +886,5 @@ Route::group(array('before' => 'validatetoken'), function() {
 	Route::post('transaction/update',array('as' => 'transaction.update','uses' => 'TransactionController@update'));
 	Route::get('customer/orderdetail/{order_id}',array('as' => 'customer.orderdetail','uses' => 'CustomerController@orderDetail'));
 });
+
+Route::get('customerorderdata','DebugController@customer_data');

@@ -3727,5 +3727,39 @@ public function yes($msg){
 			return array('status'=>'fail','error_message'=>$message);
 		}
 	}
+
+	public function customer_data()
+	{       
+		$start_date = new DateTime('01-02-2017');
+		$end_date = new DateTime('31-03-2017');
+			$transactions = Transaction::
+			where('transaction_type', 'Order')
+				->where('status', '1')
+				->where('created_at', '>=', $start_date)
+				->where('created_at', '<=', $end_date)
+				->get();
+			$after_trial = 0;
+			$after_link = 0;
+			$orders = count($transactions);
+			foreach($transactions as $transaction){
+
+				$prev_payment = Transaction::where('customer_email', $transaction['customer_email'])
+					->where('created_at', '<', $transaction['created_at'])
+					->where('transaction_type', 'Booktrial')
+					->first();
+				if($prev_payment){
+					$after_trial++;
+					if(isset($transaction['paymentLinkEmailCustomerTiggerCount'])){
+						$after_link++;
+					}
+				}
+			}
+			$data = array(
+				'orders' 	=> $orders,
+				'trials'	=> $after_trial,
+				'link'		=> $after_link
+			);
+			return $data;	
+	}
     
 }
