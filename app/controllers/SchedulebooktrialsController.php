@@ -4514,7 +4514,41 @@ class SchedulebooktrialsController extends \BaseController {
         if($booktrial){
 
             if($source == 'customer'){
-                $booktrial->post_trial_status = (isset($data['status']) && $data['status'] == true ) ? "attended" : "no show";
+
+                switch($data['status']){
+                    case 'attended_buy_membership':
+                    $booktrial->post_trial_status = 'attended';
+                    $booktrial->post_trial_initail_status = 'interested';
+                    break;
+                    case 'attended_still_evaluating':
+                    $booktrial->post_trial_status = 'attended';
+                    $booktrial->post_trial_initail_status = 'interested';
+                    break;
+                    case 'attended_membership_not_interested':
+                    $booktrial->post_trial_status = 'attended';
+                    $booktrial->post_trial_initail_status = 'not_interested';
+                    break;
+                    case 'attended_membership_explore_more':
+                    $booktrial->post_trial_status = 'attended';
+                    $booktrial->post_trial_initail_status = 'other_option';
+                    break;
+                    case 'not_attended':
+                    $booktrial->post_trial_status = 'no show';
+                    $booktrial->post_trial_initail_status = '';
+                    break;
+                    case 'not_attended_reschedule':
+                    $booktrial->post_trial_status = 'no show';
+                    $booktrial->post_trial_initail_status = 'interested';
+                    break;
+                    case 'not_attended_membership':
+                    $booktrial->post_trial_status = 'no show';
+                    $booktrial->post_trial_initail_status = 'interested';
+                    break;
+                    case 'not_attended_other_options':
+                    $booktrial->post_trial_status = 'no show';
+                    $booktrial->post_trial_initail_status = 'other_option';
+                    break;
+                }
                 $booktrial->post_trial_status_reason = (isset($data['reason']) && $data['reason'] != "") ? $data['reason'] : "";
             }
 
@@ -4524,6 +4558,8 @@ class SchedulebooktrialsController extends \BaseController {
             }
 
             $booktrial->update();
+            return $booktrial;
+            exit;
 
             $resp   =   array('status' => 200,'message' => "Successfull");
             return  Response::json($resp, 200);
