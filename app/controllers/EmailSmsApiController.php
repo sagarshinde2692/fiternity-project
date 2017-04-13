@@ -224,7 +224,8 @@ class EmailSmsApiController extends \BaseController {
         array_set($data, 'capture_status', 'yet to connect');
 
         $storecapture = Capture::create($data);
-        return $response;
+        $resp = array('status' => 200,'message' => "Recieved the Request");
+        return Response::json($resp);
     }
 
     public function fivefitnesscustomer(){
