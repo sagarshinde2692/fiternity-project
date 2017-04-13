@@ -218,7 +218,7 @@ class EmailSmsApiController extends \BaseController {
             'name' => Input::json()->get('name'),
             'email' => $email_address,
             'phone' => Input::json()->get('phone'),
-            'pincode' => Input::json()->get('pincode')
+            'city' => Input::json()->get('city')
         );
 
         array_set($data, 'capture_status', 'yet to connect');
