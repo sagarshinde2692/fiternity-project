@@ -3741,23 +3741,43 @@ public function yes($msg){
 			$after_trial = 0;
 			$after_link = 0;
 			$orders = count($transactions);
+			$orderDetails = array();
+			$trialDetails = array();
+			$linkDetails = array();
 			foreach($transactions as $transaction){
+
+				$data = array();
+				$fields = array('finder_name', 'finder_id', 'service_name','service_id', 'amount_finder', 'customer_email', 'customer_phone', 'customer_name');
+				foreach($fields as $field){
+					if(isset($transaction[$field])){
+						$data[$field] = $transaction[$field];
+					}
+				}
+				array_push($orderDetails, $data);
 
 				$prev_payment = Transaction::where('customer_email', $transaction['customer_email'])
 					->where('created_at', '<', $transaction['created_at'])
 					->where('transaction_type', 'Booktrial')
 					->first();
+
+
 				if($prev_payment){
 					$after_trial++;
+					array_push($trialDetails, $data);
 					if(isset($transaction['paymentLinkEmailCustomerTiggerCount'])){
 						$after_link++;
+						array_push($linkDetails, $data);
+						
 					}
 				}
 			}
 			$data = array(
 				'orders' 	=> $orders,
 				'trials'	=> $after_trial,
-				'link'		=> $after_link
+				'link'		=> $after_link,
+				'orderDetails' 	=> $orderDetails,
+				'trialDetails'	=> $trialDetails,
+				'linkDetails'	=> $linkDetails
 			);
 			return $data;	
 	}
