@@ -3784,27 +3784,19 @@ public function yes($msg){
 
 
 	public function zumba_data(){
-		// return "hehe";
-		// $booktrials_count  = Transaction::where('transaction_type', 'Booktrial')->count();
 		Service::$withoutAppends = true;
 		$zumba_services = Service::where('servicecategory_id', 19)
 			->where('status', '1')
-			// ->where('_id','<', 500)
-			
-			// ->count()
 			->get(['_id', 'name', 'finder_id'])
 			;
 
 		$count = 0;
-		// Booktrial::$withoutAppends = true;
 		$booktrials = Transaction::where('transaction_type', 'Booktrial')->get(['service_name', 'finder_id']);
 
 		foreach($booktrials as $booktrial){
 			foreach($zumba_services as $service){
 				if($booktrial['finder_id']==$service['finder_id'] && strtolower($booktrial['service_name'])==strtolower($service['name'])){
 					$count++;
-					// return 'hehe';
-					// exit;
 				}
 			}
 		}
