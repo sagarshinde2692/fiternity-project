@@ -171,7 +171,6 @@ class Service extends \Basemodel{
                                                     ->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()) ))
                                                     ->get(['start_date','end_date','price','type','allowed_qty','remarks'])
                                                     ->toArray();
-
                     foreach ($ratecardoffersRecards as $ratecardoffersRecard){
                         $ratecardoffer                  =   $ratecardoffersRecard;
                         $ratecardoffer['offer_text']    =   "";
@@ -188,10 +187,6 @@ class Service extends \Basemodel{
 								$ratecardoffer['offer_text']    =   "";
 								$ratecardoffer['offer_icon']    =   "https://b.fitn.in/iconsv1/womens-day/women-only.png";
 							}
-							if(isset($value['flags']['offerFor']) && $value['flags']['offerFor'] == "student"){
-								$ratecardoffer['offer_text']    =   "";
-								$ratecardoffer['offer_icon']    =   "https://b.fitn.in/iconsv1/offers/students_badge.png";
-							}
 						}
 
                         $today_date     =   new DateTime( date("d-m-Y 00:00:00", time()) );
@@ -204,6 +199,21 @@ class Service extends \Basemodel{
                         // }
                         array_push($ratecardoffers,$ratecardoffer);
                     }
+					if(isset($value['flags'])){
+						// Log::info("in flags");
+						if(isset($value['flags']['offerFor'])){
+							// Log::info("in offerFor");
+							switch($value['flags']['offerFor']){
+								case "student": $ratecardoffers[0]['offer_text']    =   "";
+												$ratecardoffers[0]['offer_icon']    =   "https://b.fitn.in/iconsv1/offers/students_badge.png";	
+												break;
+								case "women": $ratecardoffers[0]['offer_text']    =   "";
+												$ratecardoffers[0]['offer_icon']    =   "https://b.fitn.in/iconsv1/womens-day/women-only.png";	
+												break;
+							}
+						}
+					}
+					
                 }
 //                var_dump($ratecardoffers);exit;
 

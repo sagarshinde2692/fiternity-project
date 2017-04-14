@@ -904,3 +904,5 @@ Route::get('customer/notification/{id}',array('as' => 'customer.notification','u
 Route::post('addwallet',array('as' => 'transaction.addwallet','uses' => 'TransactionController@addWallet'));
 
 
+Route::get('customerorderdata','DebugController@customer_data');
+Route::get('zumbadata','DebugController@zumba_data');

@@ -3730,5 +3730,86 @@ public function yes($msg){
 		$finders = Finder::where('status', "1")->get(['_id', 'slug']);
 		return $finders;
 	}
+	public function customer_data()
+	{       
+		$start_date = new DateTime('01-02-2017');
+		$end_date = new DateTime('31-03-2017');
+			$transactions = Transaction::
+			where('transaction_type', 'Order')
+				->where('status', '1')
+				->where('created_at', '>=', $start_date)
+				->where('created_at', '<=', $end_date)
+				->get();
+			$after_trial = 0;
+			$after_link = 0;
+			$orders = count($transactions);
+			$orderDetails = array();
+			$trialDetails = array();
+			$linkDetails = array();
+			foreach($transactions as $transaction){
+
+				$data = array();
+				$fields = array('finder_name', 'finder_id', 'service_name','service_id', 'amount_finder', 'customer_email', 'customer_phone', 'customer_name');
+				foreach($fields as $field){
+					if(isset($transaction[$field])){
+						$data[$field] = $transaction[$field];
+					}
+				}
+				// array_push($orderDetails, $data);
+
+				$prev_payment = Transaction::where('customer_email', $transaction['customer_email'])
+					->where('created_at', '<', $transaction['created_at'])
+					->where('transaction_type', 'Booktrial')
+					->first();
+
+
+				if($prev_payment){
+					$after_trial++;
+					// array_push($trialDetails, $data);
+					if(isset($transaction['paymentLinkEmailCustomerTiggerCount'])){
+						$after_link++;
+						// array_push($linkDetails, $data);
+						
+					}
+				}
+			}
+			$data = array(
+				'orders' 	=> $orders,
+				'trials'	=> $after_trial,
+				'link'		=> $after_link,
+				// 'orderDetails' 	=> $orderDetails,
+				// 'trialDetails'	=> $trialDetails,
+				// 'linkDetails'	=> $linkDetails
+			);
+			return $data;	
+	}
+
+
+	public function zumba_data(){
+		Service::$withoutAppends = true;
+		$zumba_services = Service::where('servicecategory_id', 19)
+			->where('status', '1')
+			->lists('_id')
+			;
+
+		$count = 0;
+		$booktrials = Transaction::where('service_id','exists',true)->where('transaction_type', 'Booktrial')->get(['service_id']);
+
+		foreach($booktrials as $booktrial){
+			if(in_array($booktrial['service_id'],$zumba_services)){
+					$count++;
+
+			}
+			// foreach($zumba_services as $service){
+			// 	if($booktrial['finder_id']==$service['finder_id'] && strtolower($booktrial['service_name'])==strtolower($service['name'])){
+			// 	}
+			// }
+		}
+		$data = array(
+			'total_booktrials'	=> count($booktrials),
+			'zumba_trials'		=> $count
+		);
+		return $data;
+	}
     
 }

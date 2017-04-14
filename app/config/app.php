@@ -29,7 +29,6 @@ return array(
 	*/
 
 	// 'url' => 'https://a1.fitternity.com',
-
 	'url' => 'http://apistage.fitn.in',
 	// 'url' => 'http://fitapi.com',
 
@@ -247,21 +246,21 @@ return array(
 	//will be implemented everywhere in future when other api will be changed
 	/*************************************************************************/
 	//Production
-	// 'es' =>array(
-	// 	'url'		=> 			'ESAdmin:fitternity2020@54.169.120.141:8050',
-	// 	'host'		=> 			'ESAdmin:fitternity2020@54.169.120.141',
-	// 	'port'		=>			8050,
-	// 	'default_index' => 	'fitternity',
-	// 	'default_type' 	=> 	'finder',
-	// ),
-	//stage
 	'es' =>array(
-	 	'url'		=> 			'139.59.16.74:1243',
-	 	'host'		=> 			'139.59.16.74',
-	 	'port'		=>			1243,
-	 	'default_index' => 	'fitternity',
-	 	'default_type' 	=> 	'finder',
+		'url'		=> 			'ESAdmin:fitternity2020@54.169.120.141:8050',
+		'host'		=> 			'ESAdmin:fitternity2020@54.169.120.141',
+		'port'		=>			8050,
+		'default_index' => 	'fitternity',
+		'default_type' 	=> 	'finder',
 	),
+	//stage
+	// 'es' =>array(
+	//  	'url'		=> 			'139.59.16.74:1243',
+	//  	'host'		=> 			'139.59.16.74',
+	//  	'port'		=>			1243,
+	//  	'default_index' => 	'fitternity',
+	//  	'default_type' 	=> 	'finder',
+	// ),
 	//local
 	// 'es' =>array(
 	// 	'url'		=> 			'localhost:9200',
@@ -656,7 +655,7 @@ return array(
                 "rate"=>14
             )
         ),
-    'test_page_users' => ['dhruvsarawagi@fitternity.com', 'utkarshmehrotra@fitternity.com', 'sailismart@fitternity.com', 'neha@fitternity.com', 'pranjalisalvi@fitternity.com', 'maheshjadhav@fitternity.com', 'gauravravi@fitternity.com', 'nishankjain@fitternity.com', 'laxanshadesara@fitternity.com','mjmjadhav@gmail.com','gauravraviji@gmail.com','kushagra@webbutterjam.com','beltezzarthong@fitternity.com'],
+    'test_page_users' => ['dhruvsarawagi@fitternity.com', 'utkarshmehrotra@fitternity.com', 'sailismart@fitternity.com', 'neha@fitternity.com', 'pranjalisalvi@fitternity.com', 'maheshjadhav@fitternity.com', 'gauravravi@fitternity.com', 'nishankjain@fitternity.com', 'laxanshadesara@fitternity.com','mjmjadhav@gmail.com','gauravraviji@gmail.com','kushagra@webbutterjam.com','beltezzarthong@fitternity.com', 'rupeshtripathi@fitternity.com'],
     'test_vendors' => ['fitternity-test-page-bandra-west', 'test-healthy-vendor']
 
 
