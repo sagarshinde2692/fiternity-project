@@ -2191,7 +2191,7 @@ class SchedulebooktrialsController extends \BaseController {
             //Send Reminder Notiication (Email, Sms) Before 12 Hour To Customer
             if($currentScheduleDateDiffMin >= (60 * 12)){
 
-                $delayReminderTimeBefore6Hour      =    $scheduleDateTime->subMinutes(60 * 12);
+                $delayReminderTimeBefore12Hour      =    $scheduleDateTime->subMinutes(60 * 12);
 
                 $send_communication["customer_email_before12hour"] = $this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
 
@@ -2215,9 +2215,9 @@ class SchedulebooktrialsController extends \BaseController {
                 $booktrialdata['poc'] = "vendor";
                 $booktrialdata['poc_no'] = $booktrialdata['finder_poc_for_customer_no'];
 
-                $delayReminderTimeBefore6Hour      =    $scheduleDateTime->subMinutes(60 * 3);
+                $delayReminderTimeBefore3Hour      =    $scheduleDateTime->subMinutes(60 * 3);
 
-                $hour = (int) date("G", strtotime($delayReminderTimeBefore6Hour));
+                $hour = (int) date("G", strtotime($delayReminderTimeBefore3Hour));
 
                 if($hour >= 10 && $hour <= 22){
                     $booktrialdata['poc'] = "fitternity";
