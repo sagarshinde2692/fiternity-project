@@ -38,6 +38,15 @@ Class FinderSms extends VersionNextSms{
 		return $this->common($label,$to,$data,$delay);
 	}
 
+	public function bookTrialReminderBefore6Hour ($data, $delay){
+
+		$to = explode(',', $data['finder_vcc_mobile']);
+
+		$label = 'AutoTrial-ReminderBefore6Hour-Vendor';
+
+		return $this->common($label,$to,$data,$delay);
+	}
+
 
 	public function cancelBookTrial ($data){
 
@@ -82,7 +91,7 @@ Class FinderSms extends VersionNextSms{
 
 	public function confirmTrial($data){
 
-		$label = 'Missedcall-Reply-N-3-ConfirmTrial-Vendor';
+		$label = 'AutoTrial-ReminderBefore20Min-Confirm-Vendor';
 		
 		$to = explode(',', $data['finder_vcc_mobile']);
 
@@ -178,6 +187,15 @@ Class FinderSms extends VersionNextSms{
 	public function changeStartDate ($data){
 	
 		$label = 'ChangeStartDate-Vendor';
+
+		$to = explode(',', $data['finder_vcc_mobile']);
+
+		return $this->common($label,$to,$data);
+	}
+
+	public function bookTrialReminderBefore20Min ($data){
+	
+		$label = 'AutoTrial-ReminderBefore20Min-Confirm-Vendor';
 
 		$to = explode(',', $data['finder_vcc_mobile']);
 

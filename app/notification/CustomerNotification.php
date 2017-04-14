@@ -40,6 +40,15 @@ Class CustomerNotification extends Notification{
 		return $this->common($label,$data,$notif_type,$notif_object,$delay);
 	}
 
+	public function bookTrialReminderBefore20Min ($data, $delay){
+
+		$label = 'AutoTrial-ReminderBefore20Min-Customer';
+
+		$notif_type = 'open_trial';
+		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"n-20m","max_time"=>strtotime($data["schedule_date_time"]));
+		
+		return $this->common($label,$data,$notif_type,$notif_object,$delay);
+	}
 
 	public function bookTrialReminderBefore1Hour ($data, $delay){
 

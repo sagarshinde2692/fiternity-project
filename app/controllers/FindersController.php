@@ -1303,7 +1303,8 @@ class FindersController extends \BaseController {
 
 		$rules = [
 		    'finder_id' => 'required|integer|numeric',
-		    'rating' => 'required|numeric'
+		    'rating' => 'required|numeric',
+		    //'description' => 'required'
 		];
 
 		$data = Input::json()->all();

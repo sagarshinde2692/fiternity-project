@@ -45,6 +45,24 @@ Class CustomerSms extends VersionNextSms{
 		return $this->common($label,$to,$data,$delay);
 	}
 
+	public function bookTrialReminderBefore20Min ($data, $delay){
+
+		$label = 'AutoTrial-ReminderBefore20Min-Customer';
+		
+		$to = $data['customer_phone'];
+
+		return $this->common($label,$to,$data,$delay);
+	}
+
+	public function bookTrialReminderBefore3Hour ($data, $delay){
+
+		$label = 'AutoTrial-ReminderBefore3Hour-Customer';
+		
+		$to = $data['customer_phone'];
+
+		return $this->common($label,$to,$data,$delay);
+	}
+
 
 	public function bookTrialReminderAfter2Hour ($data, $delay){
 
@@ -632,6 +650,16 @@ Class CustomerSms extends VersionNextSms{
     public function dietPlanAfter15DaysFollowupSlotConfirm($data){
 
         $label = 'DietPlan-After15DaysFollowup-SlotConfirm-Customer';
+
+        $to = $data['phone'];
+
+        return $this->common($label,$to,$data);
+
+    }
+
+    public function bookTrialCancelByVendor($data){
+
+        $label = 'AutoTrial-CancelByVendor-Customer';
 
         $to = $data['phone'];
 
