@@ -2167,7 +2167,7 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrialdata = $booktrial->toArray();
 
             $currentDateTime 			       =	\Carbon\Carbon::now();
-            $scheduleDateTime 			       =	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $booktrial->schedule_date_time);
+            $scheduleDateTime 			       =	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', strtotime($booktrial->schedule_date_time));
 
             $currentScheduleDateDiffMin = $currentDateTime->diffInHours($scheduleDateTime, false);
 
