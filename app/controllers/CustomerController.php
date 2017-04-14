@@ -846,7 +846,7 @@ class CustomerController extends \BaseController {
 		$data = Input::json()->all();
 
 		$addRegIdData["device_type"] = $data["type"];
-		$addRegIdData["gcm_reg_id"] = $data["req_id"];
+		$addRegIdData["gcm_reg_id"] = $data["reg_id"];
 		$addRegIdData["customer_id"] = $data["customer_id"];
 
 		return $this->addCustomerRegId($addRegIdData);
