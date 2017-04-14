@@ -585,7 +585,7 @@ class CustomerController extends \BaseController {
 
 				if($response['status'] == 200 && isset($response['token']) && $response['token'] != ""){
 
-					$customerTokenDecode = $this->customerTokenDecode;
+					$customerTokenDecode = $this->customerTokenDecode($response['token']);
 
 					$data["customer_id"] = (int)$customerTokenDecode->customer->_id;
 
@@ -608,7 +608,7 @@ class CustomerController extends \BaseController {
 
 				if($response['status'] == 200 && isset($response['token']) && $response['token'] != ""){
 
-					$customerTokenDecode = $this->customerTokenDecode;
+					$customerTokenDecode = $this->customerTokenDecode($response['token']);
 
 					$data["customer_id"] = (int)$customerTokenDecode->customer->_id;
 
