@@ -2258,7 +2258,10 @@ class SchedulebooktrialsController extends \BaseController {
                 $delayReminderTimeBefore20Min      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->subMinutes(20);
 
                 $send_communication["customer_sms_before20Min"] = $this->customersms->bookTrialReminderBefore20Min($booktrialdata, $delayReminderTimeBefore20Min);
-                $send_communication["customer_notification_before20Min"] = $this->customernotification->bookTrialReminderBefore20Min($booktrialdata, $delayReminderTimeBefore20Min);
+
+                if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
+                    $send_communication["customer_notification_before20Min"] = $this->customernotification->bookTrialReminderBefore20Min($booktrialdata, $delayReminderTimeBefore20Min);
+                }
 
                 $booktrial->missedcall_batch = $batch;
             }
@@ -2267,7 +2270,10 @@ class SchedulebooktrialsController extends \BaseController {
 
             $send_communication["customer_sms_after2hour"] = $this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter90Min);
             $send_communication["customer_email_after2hour"] = $this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter90Min);
-            $send_communication["customer_notification_after2hour"] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter90Min);
+
+            if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
+                $send_communication["customer_notification_after2hour"] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter90Min);
+            }
 
             $booktrial->send_communication = $send_communication;
             $booktrial->update();
