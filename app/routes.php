@@ -231,7 +231,8 @@ Route::group(array('before' => 'validatetoken'), function() {
 	Route::get('upcomingtrials',  array('as' => 'customer.upcomingtrials','uses' => 'CustomerController@getUpcomingTrials'));
 	Route::get('customer/myrewards/list/{offset?}/{limit?}',  array('as' => 'customer.listMyRewards','uses' => 'MyrewardController@listMyRewards'));
 	Route::get('customer/myrewardsv1/list/{offset?}/{limit?}',  array('as' => 'customer.listMyRewardsv1','uses' => 'MyrewardController@listMyRewardsV1'));
-
+	Route::get('customer/mydietplan/list',  array('as' => 'customer.listMyDietPlan','uses' => 'CustomerController@listMyDietPlan'));
+	
 	// Route::post('apply/promotioncode', array('as' => 'customer.applypromotioncode','uses' => 'CustomerController@applyPromotionCode'));
 
 	// Wallet APIs...

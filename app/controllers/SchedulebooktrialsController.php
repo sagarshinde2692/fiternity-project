@@ -4421,7 +4421,6 @@ class SchedulebooktrialsController extends \BaseController {
     public function postTrialAction($source = 'customer'){
 
         $rules = [
-            'booktrial_id' => 'required',
             'status' => 'required'
         ];
 
@@ -4431,13 +4430,54 @@ class SchedulebooktrialsController extends \BaseController {
             $resp = array('status' => 400,'message' =>$this->errorMessage($validator->errors()));
             return  Response::json($resp, 400);
         }
-
-        $booktrial = Booktrial::find(intval($data['booktrial_id']));
+        if(!isset($data['booktrial_id'])){
+            if(isset($data['notification_id'])){
+                $notification = NotificationTracking::where('_id', $data['notification_id'])->first(['booktrial_id']);
+                $booktrial_id = $notification['booktrial_id'];
+            }
+        }else{
+            $booktrial_id = intval($data['booktrial_id']);
+        }
+        $booktrial = Booktrial::find($booktrial_id);
 
         if($booktrial){
 
             if($source == 'customer'){
-                $booktrial->post_trial_status = (isset($data['status']) && $data['status'] == true ) ? "attended" : "no show";
+
+                switch($data['status']){
+                    case 'attended_buy_membership':
+                    $booktrial->post_trial_status = 'attended';
+                    $booktrial->post_trial_initail_status = 'interested';
+                    break;
+                    case 'attended_still_evaluating':
+                    $booktrial->post_trial_status = 'attended';
+                    $booktrial->post_trial_initail_status = 'interested';
+                    break;
+                    case 'attended_membership_not_interested':
+                    $booktrial->post_trial_status = 'attended';
+                    $booktrial->post_trial_initail_status = 'not_interested';
+                    break;
+                    case 'attended_membership_explore_more':
+                    $booktrial->post_trial_status = 'attended';
+                    $booktrial->post_trial_initail_status = 'other_option';
+                    break;
+                    case 'not_attended':
+                    $booktrial->post_trial_status = 'no show';
+                    $booktrial->post_trial_initail_status = '';
+                    break;
+                    case 'not_attended_reschedule':
+                    $booktrial->post_trial_status = 'no show';
+                    $booktrial->post_trial_initail_status = 'interested';
+                    break;
+                    case 'not_attended_membership':
+                    $booktrial->post_trial_status = 'no show';
+                    $booktrial->post_trial_initail_status = 'interested';
+                    break;
+                    case 'not_attended_other_options':
+                    $booktrial->post_trial_status = 'no show';
+                    $booktrial->post_trial_initail_status = 'other_option';
+                    break;
+                }
                 $booktrial->post_trial_status_reason = (isset($data['reason']) && $data['reason'] != "") ? $data['reason'] : "";
             }
 
@@ -4447,6 +4487,8 @@ class SchedulebooktrialsController extends \BaseController {
             }
 
             $booktrial->update();
+            return $booktrial;
+            exit;
 
             $resp   =   array('status' => 200,'message' => "Successfull");
             return  Response::json($resp, 200);

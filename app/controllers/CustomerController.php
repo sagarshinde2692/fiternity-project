@@ -3644,6 +3644,12 @@ class CustomerController extends \BaseController {
 				$response["transaction_id"] = $notificationTracking["order_id"];
 				$response["type"] = $order->type;
 				$response["transaction_type"] = "order";
+				$response["finder_name"] = $data["finder_name"];
+				$response["finder_id"] = (int)$data["finder_id"];
+				$response["lat"] = $data["finder_lat"];
+				$response["lon"] = $data["finder_lat"];
+				$response["finder_location"] = $data["finder_location"];
+				
 
 				$response["service_id"] = (int)$order->service_id;
 
@@ -3665,6 +3671,12 @@ class CustomerController extends \BaseController {
 				$response["transaction_id"] = $notificationTracking["booktrial_id"];
 				$response["type"] = $booktrial->type;
 				$response["transaction_type"] = "trial";
+				$response["finder_name"] = $data["finder_name"];
+				$response["finder_id"] = (int)$data["finder_id"];
+				$response["lat"] = $data["finder_lat"];
+				$response["lon"] = $data["finder_lat"];
+				$response["finder_location"] = $data["finder_location"];
+				
 
 				$response["service_id"] = (int)$booktrial->service_id;
 
@@ -3680,37 +3692,21 @@ class CustomerController extends \BaseController {
 
 			switch ($time) {
 				case 'n-12': 
-					$response["finder_name"] = $data["finder_name"];
-					$response["finder_id"] = (int)$data["finder_id"];
-					$response["lat"] = $data["finder_lat"];
-					$response["lon"] = $data["finder_lat"];
 					$response["start_time"] = strtoupper($data["schedule_slot_start_time"]);
 					$response["start_date"] = date("d-m-Y",strtotime($data["schedule_date"]));
 					$response["title"] = "Trial Reminder";
 					break;
 				case 'n-3': 
-					$response["finder_name"] = $data["finder_name"];
-					$response["finder_id"] = (int)$data["finder_id"];
-					$response["lat"] = $data["finder_lat"];
-					$response["lon"] = $data["finder_lat"];
 					$response["start_time"] = strtoupper($data["schedule_slot_start_time"]);
 					$response["start_date"] = date("d-m-Y",strtotime($data["schedule_date"]));
 					$response["title"] = "Trial Reminder";
 					break;
 				case 'n+2': 
-					$response["finder_name"] = $data["finder_name"];
-					$response["finder_id"] = (int)$data["finder_id"];
-					$response["lat"] = $data["finder_lat"];
-					$response["lon"] = $data["finder_lat"];
 					$response["start_time"] = strtoupper($data["schedule_slot_start_time"]);
 					$response["start_date"] = date("d-m-Y",strtotime($data["schedule_date"]));
 					$response["title"] = "Trial Review";
 					break;
 				default:
-					$response["finder_name"] = $data["finder_name"];
-					$response["finder_id"] = (int)$data["finder_id"];
-					$response["lat"] = $data["finder_lat"];
-					$response["lon"] = $data["finder_lat"];
 					$response["start_time"] = "";
 					$response["start_date"] = "";
 					$response["title"] = "Default Title";
@@ -3733,6 +3729,27 @@ class CustomerController extends \BaseController {
 		}
 
 		return $response;
+	}
+
+
+
+
+	// Diet plan Listing
+	public function listMyDietPlan(){
+		$jwt_token  = Request::header('Authorization');
+		$jwt_key = Config::get('app.jwt.key');
+		$jwt_alg = Config::get('app.jwt.alg');
+		$decoded = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+
+		$data['email'] = $decoded->customer->email;
+		$rules = [
+		'email' => 'required|email|max:255'
+		];
+		// return $data['email'];
+		$validator = Validator::make($data, $rules);
+		$current_diet_plan = Order::where('customer_email',$data['email'])->where('type','diet_plan')->with('trainerslotbooking')->orderBy('_id','desc')->first();
+		$resp = array("current_diet_plan"=>$current_diet_plan);
+		return Response::json($resp,200);
 	}
 
 

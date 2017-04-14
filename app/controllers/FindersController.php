@@ -1371,7 +1371,12 @@ class FindersController extends \BaseController {
 
 		(isset($_GET['device_type']) && $_GET['device_type'] != "") ? $reviewdata['source'] = strtolower($_GET['device_type']) : null ;
 
-
+		if(isset($data['booktrialid']) && $data['booktrialid'] != '' && (!isset($data['source']) || $data['source'] != 'admin')){
+			$booktrial = Booktrial::find(intval($data['booktrialid']));
+			$booktrial->post_trial_status = 'attended';
+			$booktrial->update();
+		}
+		
 		$reviewdata['booktrial_id'] = ($reviewdata['booktrial_id'] == "" && isset($data['booktrial_id']) && $data['booktrial_id'] != "") ? intval($data['booktrial_id']) : '';
 
 		if(isset($data['agent_name'])){

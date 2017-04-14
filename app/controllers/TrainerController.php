@@ -49,7 +49,7 @@ class TrainerController extends \BaseController {
             return Response::json(array('status' => 404,'message' => error_message($validator->errors())),404);
         }
 
-		$date = $request['date'];
+		$date = date('d-m-Y',strtotime($request['date']));
 		$customer_id = (int)$request['customer_id'];
 		$order_id = (int)$request['order_id'];
 		$call_for = "first";
@@ -73,6 +73,10 @@ class TrainerController extends \BaseController {
 
 
 
+		$slots = [];
+		$allstarthours = [];
+		$unavailable_slots = 0;
+		$total_slots = 0;
 		if(!empty($schedules)){
 
 			$schedules = $schedules->toArray();
@@ -81,21 +85,23 @@ class TrainerController extends \BaseController {
 
 			foreach ($schedules as $schedule) {
 
-				$slots = [];
 
 				foreach ($schedule['slots'] as $duration) {
 
-					$slots[] = ['slot' => $duration['duration'],'available' => true];
+					$slots[] = ['slot' => $duration['duration'],'available' => true,'trainer_id'=>$schedule['trainer_id'],'start_hour' => $duration['start_time']['hours']];
+					$allstarthours[] = [$duration['start_time']['hours']];
 				}
 
-				$unavailable_slots = 0;
-				$total_slots = count($schedule['slots']);
+				$total_slots += count($schedule['slots']);
 
-				$trainerSlotBooking = TrainerSlotBooking::where('trainer_id',$schedule['trainer_id'])->where('hidden',false)->where('date',$date)->where('day',$weekday)->orderBy('_id','desc')->get();
+				$trainerSlotBooking = TrainerSlotBooking::where('trainer_id',$schedule['trainer_id'])->where('hidden',false)->where('date',$date)->where('weekday',$weekday)->orderBy('_id','desc')->get();
+				// echo $schedule['trainer_id'].$weekday;
+				// print_r($trainerSlotBooking);
+				// echo "<br>";
 
 				if(!empty($trainerSlotBooking)){
 
-					$unavailable_slots = count($trainerSlotBooking);
+					$unavailable_slots += count($trainerSlotBooking);
 
 					foreach ($trainerSlotBooking as $value) {
 
@@ -113,7 +119,11 @@ class TrainerController extends \BaseController {
 				$available_slots = $total_slots - $unavailable_slots;
 
 				$available[] =  $available_slots;
-
+				usort($slots, function($a, $b) { //Sort the array using a user defined function
+					// print_r($a);
+					return $a['start_hour'] > $b['start_hour'];
+				});
+				// $slots = sorting_array($slots, "start_hour", $allstarthours, true);
 				$data[] = [
 					'slots'=>$slots,
 					'total_slots'=>$total_slots,
@@ -131,7 +141,7 @@ class TrainerController extends \BaseController {
 		$response['total_slots'] = (!empty($data)) ? $data[0]['total_slots'] : 0;
 		$response['available_slots'] = (!empty($data)) ? $data[0]['available_slots'] : 0;
 		$response['unavailable_slots'] = (!empty($data)) ? $data[0]['unavailable_slots'] : 0;
-		$response['trainer_id'] = (!empty($data)) ? $data[0]['trainer_id'] : "";
+		// $response['trainer_id'] = (!empty($data)) ? $data[0]['trainer_id'] : "";
 		$response['weekday'] = $weekday;
 		$response['date'] = $date;
 		$response['order_id'] = $order_id;
@@ -220,7 +230,7 @@ class TrainerController extends \BaseController {
 
 
 			$trainer = Trainer::find($data['trainer_id']);
-
+			// return $data['trainer_id'];
 			$data['trainer_name'] = ucwords($trainer->name);
 			$data['trainer_slug'] = $trainer->slug;
 			$data['trainer_email'] = $trainer->contact['email'];
