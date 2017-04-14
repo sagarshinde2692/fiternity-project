@@ -557,7 +557,7 @@ class CustomerController extends \BaseController {
 
 			$data["customer_id"] = (int)$customer_id;
 
-			$this->addRegId($data);
+			$this->addCustomerRegId($data);
 
 			return Response::json($response,200);
 		}
@@ -589,7 +589,7 @@ class CustomerController extends \BaseController {
 
 					$data["customer_id"] = (int)$customerTokenDecode->customer->_id;
 
-					$this->addRegId($data);
+					$this->addCustomerRegId($data);
 				}
 
 				return Response::json($response,$response['status']);
@@ -612,7 +612,7 @@ class CustomerController extends \BaseController {
 
 					$data["customer_id"] = (int)$customerTokenDecode->customer->_id;
 
-					$this->addRegId($data);
+					$this->addCustomerRegId($data);
 				}
 
 				return Response::json($response,$response['status']);
@@ -842,6 +842,17 @@ class CustomerController extends \BaseController {
 	}
 
 	public function addRegId($data){
+
+		$data = Input::json()->all();
+
+		$addRegIdData["device_type"] = $data["type"];
+		$addRegIdData["gcm_reg_id"] = $data["req_id"];
+		$addRegIdData["customer_id"] = $data["customer_id"];
+
+		return $this->addCustomerRegId($addRegIdData);
+	}
+
+	public function addCustomerRegId($data){
 
 		$device_type = (isset($data['device_type']) && $data['device_type'] != '') ? $data['device_type'] : "";
         $gcm_reg_id = (isset($data['gcm_reg_id']) && $data['gcm_reg_id'] != '') ? $data['gcm_reg_id'] : "";
