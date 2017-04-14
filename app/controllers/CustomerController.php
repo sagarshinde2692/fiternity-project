@@ -841,7 +841,7 @@ class CustomerController extends \BaseController {
 		return $response;
 	}
 
-	public function addRegId($data){
+	public function addRegId(){
 
 		$data = Input::json()->all();
 
