@@ -2171,6 +2171,8 @@ class SchedulebooktrialsController extends \BaseController {
 
             $currentScheduleDateDiffMin = $currentDateTime->diffInHours($scheduleDateTime, false);
 
+            Log:info("----------------------------currentScheduleDateDiffMin : ".$currentScheduleDateDiffMin."-----------------------");
+
             $customer_email_messageids 	=  $finder_email_messageids  =	$customer_sms_messageids  =  $finder_sms_messageids  =  $customer_notification_messageids  =  array();
 
             if($booktrial->going_status_txt == "rescheduled"){
