@@ -3657,11 +3657,13 @@ class CustomerController extends \BaseController {
 				$response["transaction_id"] = $notificationTracking["order_id"];
 				$response["type"] = $order->type;
 				$response["transaction_type"] = "order";
-				$response["finder_name"] = $data["finder_name"];
-				$response["finder_id"] = (int)$data["finder_id"];
-				$response["lat"] = $data["finder_lat"];
-				$response["lon"] = $data["finder_lat"];
-				$response["finder_location"] = $data["finder_location"];
+				$response["finder_name"] = $order["finder_name"];
+				$response["finder_id"] = (int)$order["finder_id"];
+				$response["lat"] = $order["finder_lat"];
+				$response["lon"] = $order["finder_lat"];
+				$response["finder_location"] = $order["finder_location"];
+				$response["category_id"] = $order["finder_category_id"];
+				$response["finder_address"] = $order["finder_address"];
 				
 
 				$response["service_id"] = (int)$order->service_id;
@@ -3684,11 +3686,15 @@ class CustomerController extends \BaseController {
 				$response["transaction_id"] = $notificationTracking["booktrial_id"];
 				$response["type"] = $booktrial->type;
 				$response["transaction_type"] = "trial";
-				$response["finder_name"] = $data["finder_name"];
-				$response["finder_id"] = (int)$data["finder_id"];
-				$response["lat"] = $data["finder_lat"];
-				$response["lon"] = $data["finder_lat"];
-				$response["finder_location"] = $data["finder_location"];
+				$response["finder_name"] = $booktrial["finder_name"];
+				$response["finder_id"] = (int)$booktrial["finder_id"];
+				$response["lat"] = $booktrial["finder_lat"];
+				$response["lon"] = $booktrial["finder_lat"];
+				$response["finder_location"] = $booktrial["finder_location"];
+				$response["category_id"] = $booktrial["finder_category_id"];
+				$response["finder_address"] = $booktrial["finder_address"];
+				
+								
 				
 
 				$response["service_id"] = (int)$booktrial->service_id;
@@ -3740,6 +3746,9 @@ class CustomerController extends \BaseController {
 			}
 
 		}
+
+		$response["finder_type"] = getFinderType($response["category_id"]);
+		$response["callback_msg"] = "heh";
 
 		return $response;
 	}

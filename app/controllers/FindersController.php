@@ -2559,19 +2559,20 @@ class FindersController extends \BaseController {
 
 				}
 
-				if($finderarr['category_id'] == 5){
-					$finder['type'] = "gyms";
-				}elseif($finderarr['category_id'] == 42 || $finderarr['category_id'] == 45){
-					$finder['type'] = "healthytiffins";
-				}elseif($finderarr['category_id'] == 41){
-					$finder['type'] = "personaltrainers";
-				}elseif($finderarr['category_id'] == 25){
-					$finder['type'] = "dietitians and nutritionists";
-				}elseif($finderarr['category_id'] == 46){
-					$finder['type'] = "sport nutrition supliment stores";
-				}else{
-					$finder['type'] = "fitnessstudios";
-				}
+				// if($finderarr['category_id'] == 5){
+				// 	$finder['type'] = "gyms";
+				// }elseif($finderarr['category_id'] == 42 || $finderarr['category_id'] == 45){
+				// 	$finder['type'] = "healthytiffins";
+				// }elseif($finderarr['category_id'] == 41){
+				// 	$finder['type'] = "personaltrainers";
+				// }elseif($finderarr['category_id'] == 25){
+				// 	$finder['type'] = "dietitians and nutritionists";
+				// }elseif($finderarr['category_id'] == 46){
+				// 	$finder['type'] = "sport nutrition supliment stores";
+				// }else{
+				// 	$finder['type'] = "fitnessstudios";
+				// }
+				$finder['type'] = getFinderType($finderarr['category_id']);
 
 				$finder['assured']  =   array();
 				$not_assured        =   [41,42,45,25,46,10,26,40];

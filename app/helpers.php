@@ -2429,6 +2429,27 @@ if (!function_exists(('customerTokenDecode'))){
     }
 }
 
+if (!function_exists(('getFinderType'))){
+    function getFinderType($id){
+        if($id == 5){
+            $type = "gyms";
+        }elseif($id == 42 || $id == 45){
+            $type = "healthytiffins";
+        }elseif($id == 41){
+            $type = "personaltrainers";
+        }elseif($id == 25){
+            $type = "dietitians and nutritionists";
+        }elseif($id == 46){
+            $type = "sport nutrition supliment stores";
+        }else{
+            $type = "fitnessstudios";
+        }
+        
+
+        return $type;
+    }
+}
+
 
 
 ?>
