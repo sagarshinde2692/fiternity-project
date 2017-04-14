@@ -849,7 +849,9 @@ class CustomerController extends \BaseController {
 		$addRegIdData["gcm_reg_id"] = $data["reg_id"];
 		$addRegIdData["customer_id"] = $data["customer_id"];
 
-		return $this->addCustomerRegId($addRegIdData);
+		$this->addCustomerRegId($addRegIdData);
+
+		return Response::json(array('status' => 200,'message' => 'success'),200);
 	}
 
 	public function addCustomerRegId($data){
