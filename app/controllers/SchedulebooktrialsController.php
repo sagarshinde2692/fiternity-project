@@ -2168,10 +2168,8 @@ class SchedulebooktrialsController extends \BaseController {
 
             $currentDateTime 			       =	\Carbon\Carbon::now();
             $scheduleDateTime 			       =	\Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)));
-
-            $currentScheduleDateDiffMin = $currentDateTime->diffInHours($scheduleDateTime, false);
-
-            Log:info("----------------------------currentScheduleDateDiffMin : ".$currentScheduleDateDiffMin."-----------------------");
+            
+            $currentScheduleDateDiffMin = $currentDateTime->diffInMinutes($scheduleDateTime, false);
 
             $customer_email_messageids 	=  $finder_email_messageids  =	$customer_sms_messageids  =  $finder_sms_messageids  =  $customer_notification_messageids  =  array();
 
