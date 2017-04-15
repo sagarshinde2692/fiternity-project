@@ -1,14 +1,14 @@
 <?php
 
 //local
-// $host = "localhost";
-// $username = "";
-// $password = "";
+$host = "localhost";
+$username = "";
+$password = "";
 
 //stage
-$host = "localhost";
-$username = "fitadmin";
-$password = "fit1234";
+// $host = "localhost";
+// $username = "fitadmin";
+// $password = "fit1234";
 
 //production
 // $host = "52.77.247.239";
