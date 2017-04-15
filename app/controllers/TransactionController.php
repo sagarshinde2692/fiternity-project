@@ -1562,7 +1562,7 @@ class TransactionController extends \BaseController {
                 $order->customerNotificationSendPaymentLinkAfter45Days = $this->customernotification->sendPaymentLinkAfter45Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+45 days",$now)));
             }
 
-            $url = Config::get('app.url')."addwallet/customer_id=".$order["customer_id"]."&action=add_fitcash&amount=500&order_id=".$order_id;
+            $url = Config::get('app.url')."addwallet?customer_id=".$order["customer_id"]."&action=add_fitcash&amount=500&order_id=".$order_id;
 
             $order->customerWalletSendPaymentLinkAfter15Days = $this->hitURLAfterDelay($url, date('Y-m-d H:i:s', strtotime("+15 days",$now)));
             $order->customerWalletSendPaymentLinkAfter30Days = $this->hitURLAfterDelay($url, date('Y-m-d H:i:s', strtotime("+30 days",$now)));
