@@ -4425,6 +4425,8 @@ class SchedulebooktrialsController extends \BaseController {
     }
 
     public function postTrialAction($source = 'customer'){
+        // return date(time()+(60*60*24));
+        // exit;
 
         $rules = [
             'status' => 'required'
@@ -4483,6 +4485,15 @@ class SchedulebooktrialsController extends \BaseController {
                     $booktrial->post_trial_status = 'no show';
                     $booktrial->post_trial_initail_status = 'other_option';
                     break;
+                    case 'attended_more_info':
+                    $booktrial->post_trial_status = 'attended';
+                    $booktrial->post_trial_initail_status = 'interested';
+                    if(isset($data['followup_date'])){
+                        $booktrial->followup_date = new MongoDate($data['followup_date']);
+                    }else{
+                        $booktrial->followup_date = new MongoDate(strtotime(($booktrial->schedule_date))+(60*60*24*3));
+                    }
+                    break;
                 }
                 $booktrial->post_trial_status_reason = (isset($data['reason']) && $data['reason'] != "") ? $data['reason'] : "";
             }
@@ -4493,8 +4504,6 @@ class SchedulebooktrialsController extends \BaseController {
             }
 
             $booktrial->update();
-            return $booktrial;
-            exit;
 
             $resp   =   array('status' => 200,'message' => "Successfull");
             return  Response::json($resp, 200);
