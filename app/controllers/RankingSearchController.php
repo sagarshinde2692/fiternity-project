@@ -2516,6 +2516,14 @@ public function getRankedFinderResultsAppv4()
                                     "size": 100
                                 }
                             }
+                        },
+                        "aggs": {
+                            "attrsValues": {
+                                "terms": {
+                                    "field": "location_obj.cluster",
+                                    "size": 100
+                                }
+                            }
                         }
                     }
                 }
