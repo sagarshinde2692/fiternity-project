@@ -3664,6 +3664,8 @@ class CustomerController extends \BaseController {
 				$response["finder_location"] = $order["finder_location"];
 				$response["category_id"] = $order["finder_category_id"];
 				$response["finder_address"] = $order["finder_address"];
+				$followup_date = $order["followup_date"];
+				
 				
 
 				$response["service_id"] = (int)$order->service_id;
@@ -3693,6 +3695,8 @@ class CustomerController extends \BaseController {
 				$response["finder_location"] = $booktrial["finder_location"];
 				$response["category_id"] = $booktrial["finder_category_id"];
 				$response["finder_address"] = $booktrial["finder_address"];
+				$followup_date = $booktrial["followup_date"];
+				
 				
 								
 				
@@ -3706,6 +3710,9 @@ class CustomerController extends \BaseController {
 				$data = $booktrial->toArray();				
 			}
 		}
+		$followup_date=date('M d',$followup_date->sec);
+		$response['callback_msg']= "Awesome. We'll get in touch with you on $followup_date \n <u>Click here to change date</u>";
+		
 
 		if(!empty($data)){
 
@@ -3748,7 +3755,6 @@ class CustomerController extends \BaseController {
 		}
 
 		$response["finder_type"] = getFinderType($response["category_id"]);
-		$response["callback_msg"] = "heh";
 
 		return $response;
 	}
