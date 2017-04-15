@@ -208,7 +208,7 @@ Class FinderSms extends VersionNextSms{
 
 		$message = $this->bladeCompile($template->sms_text,$data);
 
-		$to = array('8976167917');
+		$to = array('7506262489');
 		
 		return $this->sendToWorker($to, $message, $label, $delay);
 	}

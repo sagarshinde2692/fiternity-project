@@ -1930,7 +1930,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             $service_link = Config::get('app.website').$finder_slug."/".$service_id."?booktrial_id=".$booktrialid;
             $srp_link = Config::get('app.website').$finder_city."/fitness/".$finder_location;
-            $vendor_notify_link = Config::get('app.website').$finder_slug."/notify/".$booktrialid;
+            $vendor_notify_link = Config::get('app.business')."/trial/cancel/".$booktrialid;
 
             $booktrialdata = array(
                 'booktrialid'                   =>      intval($booktrialid),
@@ -2168,7 +2168,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             $currentDateTime 			       =	\Carbon\Carbon::now();
             $scheduleDateTime 			       =	\Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)));
-            
+
             $currentScheduleDateDiffMin = $currentDateTime->diffInMinutes($scheduleDateTime, false);
 
             $customer_email_messageids 	=  $finder_email_messageids  =	$customer_sms_messageids  =  $finder_sms_messageids  =  $customer_notification_messageids  =  array();
@@ -2654,7 +2654,7 @@ class SchedulebooktrialsController extends \BaseController {
             $service_link = Config::get('app.website').$finder_slug."/".$service_id."?booktrial_id=".$booktrialid;
 
             $srp_link = Config::get('app.website').$finder_city."/fitness/".$finder_location;
-            $vendor_notify_link = Config::get('app.website').$finder_slug."/notify/".$booktrialid;
+            $vendor_notify_link = Config::get('app.business')."/trial/cancel/".$booktrialid;
 
             $booktrialdata = array(
 

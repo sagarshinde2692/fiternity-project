@@ -29,6 +29,7 @@ return array(
 	*/
 
 	// 'url' => 'https://a1.fitternity.com',
+
 	'url' => 'http://apistage.fitn.in',
 	// 'url' => 'http://fitapi.com',
 
@@ -36,6 +37,8 @@ return array(
     'website' => 'http://apistage.fitn.in:2233',
 
     'download_app_link' => 'https://www.fitternity.com/downloadapp',
+
+    'business' => 'https://business.fitternity.com',
 
     'queue' => 'stage',
 
@@ -327,6 +330,8 @@ return array(
 	'confirm_order_customer_number' => '+912261222230',
 	'renewal_linksent_fitness_concierge' => 'David',
 	'renewal_linksent_customer_number' => '+912261222223',
+	'not_interested_fitness_concierge' => 'David',
+	'not_interested_customer_number' => '+912261222223',
 	'direct_customer_number' => '+912261222230',
 	'cancel_trial_missed_call_vendor' => "+912261222230",
 	'n-3_customer_number' => "+912261222230",
@@ -655,7 +660,7 @@ return array(
                 "rate"=>14
             )
         ),
-    'test_page_users' => ['dhruvsarawagi@fitternity.com', 'utkarshmehrotra@fitternity.com', 'sailismart@fitternity.com', 'neha@fitternity.com', 'pranjalisalvi@fitternity.com', 'maheshjadhav@fitternity.com', 'gauravravi@fitternity.com', 'nishankjain@fitternity.com', 'laxanshadesara@fitternity.com','mjmjadhav@gmail.com','gauravraviji@gmail.com','kushagra@webbutterjam.com','beltezzarthong@fitternity.com', 'rupeshtripathi@fitternity.com'],
+    'test_page_users' => ['dhruvsarawagi@fitternity.com', 'utkarshmehrotra@fitternity.com', 'sailismart@fitternity.com', 'neha@fitternity.com', 'pranjalisalvi@fitternity.com', 'maheshjadhav@fitternity.com', 'gauravravi@fitternity.com', 'nishankjain@fitternity.com', 'laxanshadesara@fitternity.com','mjmjadhav@gmail.com','gauravraviji@gmail.com','kushagra@webbutterjam.com','beltezzarthong@fitternity.com'],
     'test_vendors' => ['fitternity-test-page-bandra-west', 'test-healthy-vendor']
 
 
