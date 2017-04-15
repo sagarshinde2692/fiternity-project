@@ -367,6 +367,10 @@ class FindersController extends \BaseController {
 	        	$finderarr['services'] = array_merge($category_slug_services, $non_category_slug_services);
 
 
+				$finderarr['services'] = $this->sortNoMembershipServices($finderarr['services'], 'finderdetail');
+				
+
+
 				
 				array_set($finder, 'services', pluck( $finderarr['services'] , ['_id', 'name', 'lat', 'lon', 'serviceratecard', 'session_type', 'workout_tags', 'calorie_burn', 'workout_results', 'short_description','service_trainer','timing','category','subcategory','batches','vip_trial','meal_type','trial','membership', 'offer_available', 'showOnFront', 'traction']  ));
 				array_set($finder, 'categorytags', pluck( $finderarr['categorytags'] , array('_id', 'name', 'slug', 'offering_header') ));
@@ -2701,6 +2705,8 @@ class FindersController extends \BaseController {
 
 		        	$data['finder']['services']  = array_merge($category_slug_services, $non_category_slug_services);
 
+					$data['finder']['services'] = $this->sortNoMembershipServices($data['finder']['services'], 'finderDetailApp');
+
 					/*if(isset($data['finder']['services']['offer_icon_vendor'])){
 
 						$data['finder']['offer_icon'] = $data['finder']['services']['offer_icon_vendor'];
@@ -2957,6 +2963,44 @@ class FindersController extends \BaseController {
         
         return $decodedToken;
     }
+
+	public function sortNoMembershipServices($serviceArray, $from){
+		if($from == 'finderdetail'){
+			$ratecard_key = 'serviceratecard';
+		}else{
+			$ratecard_key = 'ratecard';
+		}
+		$membership_services = array_where($serviceArray, function($key, $value) use ($ratecard_key){
+			$ratecard_array = $value[$ratecard_key];
+			$membership_exists = false;
+			foreach($ratecard_array as $ratecard){
+				if($ratecard['type']=='membership'){
+					$membership_exists = true;
+				}
+			}
+			if($membership_exists)
+				{
+					return $value; 
+				}
+		});
+
+		$no_membership_services = array_where($serviceArray, function($key, $value) use ($ratecard_key){
+			$ratecard_array = $value[$ratecard_key];
+			$membership_exists = false;
+			foreach($ratecard_array as $ratecard){
+				if($ratecard['type']=='membership'){
+					$membership_exists = true;
+				}
+			}
+			if(!$membership_exists)
+				{
+					return $value; 
+				}
+		});
+
+		return array_merge($membership_services, $no_membership_services);
+
+	}
 
 
     public function getDetailRating(){
