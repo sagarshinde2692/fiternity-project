@@ -1061,16 +1061,8 @@ Class Utilities {
 
             if ($device) {
 
-                $device->delete();
-
-                $device_id = Device::max('_id') + 1;
-                $device = new Device();
-                $device->_id = $device_id;
-                $device->reg_id = $data['reg_id'];
-                $device->customer_id = (isset($data['customer_id']) && $data['customer_id'] != '') ? (int)$data['customer_id'] : '';
-                $device->type = $data['type'];
-                $device->status = "1";
-                $device->save();
+                $device->customer_id = (isset($data['customer_id']) && $data['customer_id'] != '') ? (int)$data['customer_id'] : $device->customer_id;
+                $device->update();
 
             } else {
 
