@@ -847,7 +847,7 @@ class CustomerController extends \BaseController {
 
 		$addRegIdData["device_type"] = $data["type"];
 		$addRegIdData["gcm_reg_id"] = $data["reg_id"];
-		$addRegIdData["customer_id"] = $data["customer_id"];
+		$addRegIdData["customer_id"] = (isset($data["customer_id"]) && $data["customer_id"] != "") ? (int)$data["customer_id"] : "";
 
 		$this->addCustomerRegId($addRegIdData);
 

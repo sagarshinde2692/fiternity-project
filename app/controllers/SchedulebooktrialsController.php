@@ -1930,7 +1930,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             $service_link = Config::get('app.website').$finder_slug."/".$service_id."?booktrial_id=".$booktrialid;
             $srp_link = Config::get('app.website').$finder_city."/fitness/".$finder_location;
-            $vendor_notify_link = Config::get('app.business')."/trial/cancel/".$booktrialid;
+            $vendor_notify_link = Config::get('app.business')."/trial/cancel/".$booktrialid."/".$finderid;
 
             $booktrialdata = array(
                 'booktrialid'                   =>      intval($booktrialid),
@@ -2654,7 +2654,7 @@ class SchedulebooktrialsController extends \BaseController {
             $service_link = Config::get('app.website').$finder_slug."/".$service_id."?booktrial_id=".$booktrialid;
 
             $srp_link = Config::get('app.website').$finder_city."/fitness/".$finder_location;
-            $vendor_notify_link = Config::get('app.business')."/trial/cancel/".$booktrialid;
+            $vendor_notify_link = Config::get('app.business')."/trial/cancel/".$booktrialid."/".$finderid;
 
             $booktrialdata = array(
 
