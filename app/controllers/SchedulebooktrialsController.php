@@ -3728,6 +3728,8 @@ class SchedulebooktrialsController extends \BaseController {
             return Response::json($data, 401);
         }*/
 
+        $this->customersms->bookTrialCancelByVendor($booktrial->toArray());
+
         return $this->cancel($trial_id, 'vendor', $reason);
     }
 
