@@ -578,6 +578,8 @@ class CustomerController extends \BaseController {
 					$response = $resp["token"];
 					if($resp["popup"]["show_popup"] == "true"){
 						$response["extra"] = $resp["popup"];
+					}else{
+						$response["extra"] = array("show_popup" => false);
 					}
 				}else{
 					$response = $resp;
