@@ -1735,7 +1735,7 @@ class TransactionController extends \BaseController {
 
         if($data['action'] == "add_fitcash"){
             $req['amount_fitcash'] = $data['amount'];
-            $req['type'] = "CASHBACK";
+            $req['type'] = "FITCASH";
             $req['description'] = "Added Fitcash Rs ".$data['amount'];
         }
 

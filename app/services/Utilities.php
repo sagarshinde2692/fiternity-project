@@ -1085,15 +1085,21 @@ Class Utilities {
                 $device->status = "1";
                 $device->save();
 
+
                 if(isset($data['customer_id']) && $data['customer_id'] != ''){
 
-                    $addWalletData = [
-                        "customer_id" => $data["customer_id"],
-                        "amount" => 250,
-                        "action" => "add_fitcash_plus"
-                    ];
+                    $booktrial = \Booktrial::where("customer_id",(int)$data['customer_id'])->where('type','booktrials')->count();
 
-                    $this->addWallet($addWalletData);
+                    if(count($booktrial) > 0){
+
+                        $addWalletData = [
+                            "customer_id" => $data["customer_id"],
+                            "amount" => 250,
+                            "action" => "add_fitcash_plus"
+                        ];
+
+                        $this->addWallet($addWalletData);
+                    }
                 }
 
             }
