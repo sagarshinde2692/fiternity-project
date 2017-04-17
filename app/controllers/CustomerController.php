@@ -430,30 +430,43 @@ class CustomerController extends \BaseController {
 	public function register(){
 
 		$data = Input::json()->all();
+
 		$inserted_id = Customer::max('_id') + 1;
+
 		$rules = [
-		'name' => 'required|max:255',
-		'email' => 'required|email|max:255',
-		'password' => 'required|min:6|max:20|confirmed',
-		'password_confirmation' => 'required|min:6|max:20',
-		'contact_no' => 'max:15',
-		'identity' => 'required'
+			'name' => 'required|max:255',
+			'email' => 'required|email|max:255',
+			'password' => 'required|min:6|max:20|confirmed',
+			'password_confirmation' => 'required|min:6|max:20',
+			'contact_no' => 'max:15',
+			'identity' => 'required'
 		];
+
 		$validator = Validator::make($data,$rules);
+
 		$data['email'] = strtolower($data['email']);
+
 		if ($validator->fails()) {
+
 			return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),400);
 		}else{
 
 			$customer = Customer::where('email','=',$data['email'])->where('identity','!=','email')->first();
 			
 			if(empty($customer)){
+
 				$ishullcustomer = Customer::where('email','=',$data['email'])->where('ishulluser',1)->first();
+
 				if(empty($ishullcustomer)){
+
 					$new_validator = Validator::make($data, Customer::$rules);
+
 					if ($new_validator->fails()) {
+
 						return Response::json(array('status' => 400,'message' => $this->errorMessage($new_validator->errors())),400);
+
 					}else{
+
 						$account_link = array('email'=>0,'google'=>0,'facebook'=>0,'twitter'=>0);
 						$account_link[$data['identity']] = 1;
 						$customer = new Customer();
@@ -477,36 +490,45 @@ class CustomerController extends \BaseController {
 						$this->customermailer->register($customer_data);
 
 						Log::info('Customer Register : '.json_encode(array('customer_details' => $customer)));
+
 						$response = $this->createToken($customer);
+
 						$resp = $this->checkIfpopPup($customer);
+
 						if($resp["show_popup"] == "true"){
 							$response["extra"] = $resp;
 						}
-						return Response::json($response,200);
+
+						$customer_id = $customer->_id;
+						
 					}
+
 				}else{
+
 					$ishullcustomer->name = ucwords($data['name']);
 					$ishullcustomer->password = md5($data['password']);
 					$ishullcustomer->ishulluser = 0;
 					$ishullcustomer->update();
 					$customer_data = array('name'=>ucwords($ishullcustomer['name']),'email'=>$ishullcustomer['email'],'password'=>$ishullcustomer['password']);
-					// $this->customermailer->register($ishullcustomer);
 
 					Log::info('Customer Register : '.json_encode(array('customer_details' => $ishullcustomer)));
+
 					$response = $this->createToken($ishullcustomer);
 					$resp = $this->checkIfpopPup($ishullcustomer);
 					if($resp["show_popup"] == "true"){
 						$response["extra"] = $resp;
 					}
-					return Response::json($response,200);
-				}	
+
+					$customer_id = $ishullcustomer->_id;
+					
+				}
+
 			}else{
 
 				$account_link= $customer['account_link'];
 				$account_link[$data['identity']] = 1;
 				$customer->name = ucwords($data['name']) ;
 				$customer->email = $data['email'];
-
 				isset($data['dob']) ? $customer->dob = $data['dob'] : null;
 				isset($data['gender']) ? $customer->gender = $data['gender'] : null;
 				isset($data['fitness_goal']) ? $customer->fitness_goal = $data['fitness_goal'] : null;
@@ -528,11 +550,16 @@ class CustomerController extends \BaseController {
 				if($resp["show_popup"] == "true"){
 					$response["extra"] = $resp;
 				}
-				return Response::json($response,200);
+
+				$customer_id = $customer->_id;
+				
 			}
 
-			$account_link = array('email'=>0,'google'=>0,'facebook'=>0,'twitter'=>0);
-			$account_link[$data['identity']] = 1;
+			$data["customer_id"] = (int)$customer_id;
+
+			$this->addCustomerRegId($data);
+
+			return Response::json($response,200);
 		}
 	}
 
@@ -543,9 +570,10 @@ class CustomerController extends \BaseController {
 
 		if(isset($data['identity']) && !empty($data['identity'])){
 
-			if($data['identity'] == 'email')
-			{
+			if($data['identity'] == 'email'){
+
 				$resp = $this->emailLogin($data);
+
 				if(isset($resp["token"])){
 					$response = $resp["token"];
 					if($resp["popup"]["show_popup"] == "true"){
@@ -554,8 +582,20 @@ class CustomerController extends \BaseController {
 				}else{
 					$response = $resp;
 				}
+
+				if($response['status'] == 200 && isset($response['token']) && $response['token'] != ""){
+
+					$customerTokenDecode = $this->customerTokenDecode($response['token']);
+
+					$data["customer_id"] = (int)$customerTokenDecode->customer->_id;
+
+					$this->addCustomerRegId($data);
+				}
+
 				return Response::json($response,$response['status']);
+
 			}elseif($data['identity'] == 'google' || $data['identity'] == 'facebook' || $data['identity'] == 'twitter'){
+
 				$resp = $this->socialLogin($data);
 				if(isset($resp["token"])){
 					$response = $resp["token"];
@@ -565,6 +605,16 @@ class CustomerController extends \BaseController {
 				}else{
 					$response = $resp;
 				}
+
+				if($response['status'] == 200 && isset($response['token']) && $response['token'] != ""){
+
+					$customerTokenDecode = $this->customerTokenDecode($response['token']);
+
+					$data["customer_id"] = (int)$customerTokenDecode->customer->_id;
+
+					$this->addCustomerRegId($data);
+				}
+
 				return Response::json($response,$response['status']);
 			}else{
 				return Response::json(array('status' => 400,'message' => 'The identity is incorrect'),400);
@@ -789,6 +839,38 @@ class CustomerController extends \BaseController {
 		}
 
 		return $response;
+	}
+
+	public function addRegId(){
+
+		$data = Input::json()->all();
+
+		$addRegIdData["device_type"] = $data["type"];
+		$addRegIdData["gcm_reg_id"] = $data["reg_id"];
+		$addRegIdData["customer_id"] = (isset($data["customer_id"]) && $data["customer_id"] != "") ? (int)$data["customer_id"] : "";
+
+		$this->addCustomerRegId($addRegIdData);
+
+		return Response::json(array('status' => 200,'message' => 'success'),200);
+	}
+
+	public function addCustomerRegId($data){
+
+		$device_type = (isset($data['device_type']) && $data['device_type'] != '') ? $data['device_type'] : "";
+        $gcm_reg_id = (isset($data['gcm_reg_id']) && $data['gcm_reg_id'] != '') ? $data['gcm_reg_id'] : "";
+
+        if($device_type != '' && $gcm_reg_id != ''){
+
+            $regData = array();
+
+            $regData['customer_id'] = $data["customer_id"];
+            $regData['reg_id'] = $gcm_reg_id;
+            $regData['type'] = $device_type;
+
+            $this->utilities->addRegId($regData);
+        }
+
+        return "success";
 	}
 
 	public function createToken($customer){
@@ -2046,15 +2128,6 @@ class CustomerController extends \BaseController {
 
 	}
 
-	public function addRegId(){
-
-		$data = Input::json()->all();
-
-		$response = add_reg_id($data);
-
-		return Response::json($response,$response['status']);
-	}
-
 	public function autoRegisterCustomer($data){
 
 		$customer 		= 	Customer::active()->where('email', $data['customer_email'])->first();
@@ -3036,9 +3109,8 @@ class CustomerController extends \BaseController {
 	}*/
 
 	public function applyPromotionCode(){
-		// return time();
-		// $valid_promotion_codes		=		['fitgift','in2017','befit'];
-		$data 						= 		Input::json()->all();
+
+		$data = Input::json()->all();
 		
 		if(empty(Request::header('Authorization'))){
 			$resp 	= 	array('status' => 400,'message' => "Customer Token Missing");
@@ -3050,9 +3122,9 @@ class CustomerController extends \BaseController {
 			return  Response::json($resp, 400);
 		}
 
-		$code 			= 	trim(strtolower($data['code']));
+		$code = trim(strtolower($data['code']));
 
-		$fitcashcode  = Fitcashcoupon::where('code',$code)->where("expiry",">",time())->first();
+		$fitcashcode = Fitcashcoupon::where('code',$code)->where("expiry",">",time())->first();
 
 
 		if (!isset($fitcashcode) || $fitcashcode == "") {
@@ -3061,6 +3133,7 @@ class CustomerController extends \BaseController {
 		}
 
 		if(Request::header('Authorization')){
+
 			$decoded          				=       decode_customer_token();
 			$customer_id 					= 		intval($decoded->customer->_id);
 
@@ -3072,70 +3145,54 @@ class CustomerController extends \BaseController {
 			}
 
 			$customer_update 	=	Customer::where('_id', $customer_id)->push('applied_promotion_codes', $code, true);
-			$amounttobeadded = 0;
-			if($customer_update){
-				// switch($code){
-				// 	case "fitgift" :  $amounttobeadded = 2000;
-				// 	break;
-				// 	case "in2017" :  $amounttobeadded = 2000;
-                //     break;
-				// }
-				$amounttobeadded = $fitcashcode['amount'];
-				$customer 	=	Customer::find($customer_id);				
+			$cashback_amount = 0;
 
+			if($customer_update){
+
+				$cashback_amount = $fitcashcode['amount'];
+				$customer 	=	Customer::find($customer_id);	
 
 				$customerwallet 		= 		Customerwallet::where('customer_id',$customer_id)->orderBy('_id', 'desc')->first();
 				if($customerwallet){
-					$customer_balance 	=	$customerwallet['balance'] + $amounttobeadded;				
+					$customer_balance 	=	$customerwallet['balance'] + $cashback_amount;				
 					$customer_balance_fitcashplus = $customerwallet['balance_fitcash_plus'];
 				}else{
-					$customer_balance 	=	 $amounttobeadded;
+					$customer_balance 	=	 $cashback_amount;
 					$customer_balance_fitcashplus = 0;
 				}
 				
-				$cashback_amount 	=	$amounttobeadded;
 				$walletData = array(
 					"customer_id"=> $customer_id,
 					"amount"=> $cashback_amount,
+					"amount_fitcash" => $cashback_amount,
+                    "amount_fitcash_plus" => 0,
 					"type"=>'CASHBACK',
 					"code"=>	$code,
-					"balance"=>	$customer_balance,
-					"balance_fitcash_plus"=>$customer_balance_fitcashplus,
 					"description"=>'CASHBACK ON Promotion amount - '.$cashback_amount
-					);
+				);
+
 				if($fitcashcode['type'] == "restricted"){
 					$walletData["vendor_id"] = $fitcashcode['vendor_id'];
-					$vb = array("vendor_id"=>$fitcashcode['vendor_id'],"balance"=>$amounttobeadded);
+					$vb = array("vendor_id"=>$fitcashcode['vendor_id'],"balance"=>$cashback_amount);
 					$customer_update = Customer::where('_id', $customer_id)->push('vendor_balance', $vb, true);
 				}
+
 				if($fitcashcode['type'] == "fitcashplus"){
+
 					$walletData["type"] = "FITCASHPLUS";
-					if($customerwallet){
-						$walletData["balance"] = $customerwallet['balance'];
-						$walletData["balance_fitcash_plus"] = $customerwallet['balance_fitcash_plus'] + $amounttobeadded;				
-					}else{
-						$walletData["balance"] = 0;
-						$walletData["balance_fitcash_plus"] = $amounttobeadded;
-					}
+					$walletData["amount_fitcash"] = 0;
+					$walletData["amount_fitcash_plus"] = $cashback_amount;
 					$walletData["description"] = "Added Fitcash Plus on PROMOTION Rs - ".$cashback_amount;
 				}
-				$customer_balance = $walletData["balance"];
-				$customer_balance_fitcashplus = $walletData["balance_fitcash_plus"];
-				// return $walletData;
 
-				$wallet               	=   new CustomerWallet($walletData);
-				$last_insertion_id      =   CustomerWallet::max('_id');
-				$last_insertion_id      =   isset($last_insertion_id) ? $last_insertion_id :0;
-				$wallet->_id          	=   ++ $last_insertion_id;
-				$wallet->save();
-				$customer_update 	=	Customer::where('_id', $customer_id)->update(['balance' => intval($customer_balance),'balance_fitcash_plus' => intval($customer_balance_fitcashplus)]);
+				$this->utilities->walletTransaction($walletData);
 
-				$resp 	= 	array('status' => 200,'message' => "Thank you. Rs ".$amounttobeadded." has been successfully added to your fitcash wallet", 'walletdata' => $wallet);
+				$resp 	= 	array('status' => 200,'message' => "Thank you. Rs ".$cashback_amount." has been successfully added to your fitcash wallet", 'walletdata' => $walletData);
+
 				return  Response::json($resp, 200);	
 			}
 		}
 	}
-
 
 	public function emailOpened(){
 
@@ -3358,7 +3415,7 @@ class CustomerController extends \BaseController {
 	    $data['start_date'] = strtotime($order->start_date);
 	    $data['end_date'] = strtotime($order->end_date);
 	    $data['service_name'] = $order->service_name;
-	    $data['dutarion'] = $order->service_duration;
+	    $data['duration'] = $order->service_duration;
 	    $data['subscription_code'] = $order->code;
 	    $data['amount'] = $order->amount;
 
@@ -3379,6 +3436,9 @@ class CustomerController extends \BaseController {
 	    $data['extra_info'] = $extraInfoData;
 
 	    $getAction = $this->getAction($order);
+
+	    $data["action"] = $getAction["action"];
+	    $data["feedback"] = $getAction["feedback"];
 
 	    $data["action"] = $getAction["action"];
 	    $data["feedback"] = $getAction["feedback"];
@@ -3407,7 +3467,7 @@ class CustomerController extends \BaseController {
 
 		if(!isset($order->updrage_membership) && isset($order['start_date']) && time() >= strtotime($order['start_date'].'+11 days') && time() <= strtotime($order['start_date'].'+31 days') && isset($order['end_date']) && strtotime($order['end_date']) >= time() && isset($order['duration_day']) && $order['duration_day'] <= 180){
 			$action = [
-				"button_text"=>"Upgrade Membership",
+				"button_text"=>"Upgrade",
 				"activity"=>"upgrade_membership",
 				"color"=>"#26ADE5",
 				"info" => "Commit yourself for a longer duration. Upgrade your current membership with insider discounts and other benefits.",
@@ -3457,7 +3517,7 @@ class CustomerController extends \BaseController {
 			}
 
 			$action = [
-				"button_text"=>"Change Start Date",
+				"button_text"=>"Change",
 				"activity"=>"update_starting_date",
 				"color"=>"#7AB317",
 				"info" => "Don't miss even a single day workout. Change your membership start date basis your convenience. Not applicable, if you have already started with your membership.",
@@ -3499,7 +3559,7 @@ class CustomerController extends \BaseController {
 				$days_to_go = ceil(($max_date - time()) / 86400);
 
 				$action = [
-					"button_text"=>"Renew Membership",
+					"button_text"=>"Renew",
 					"activity"=>"renew_membership",
 					"color"=>"#EF1C26",
 					"info" => "Renew your membership with the lowest price and assured rewards",
@@ -3545,6 +3605,192 @@ class CustomerController extends \BaseController {
 	    else
 	        return strtotime('last '.$day,$date);
 
+	}
+
+
+	public function notificationTracking($id){
+
+		$notificationTracking = NotificationTracking::find($id);
+
+		if($notificationTracking){
+
+			$notificationSwitch = $this->notificationSwitch($notificationTracking);
+
+			return Response::json($notificationSwitch,200);
+		}
+
+		return Response::json(["message"=>"Data Not Found"],404);
+
+	}
+
+	public function notificationSwitch($notificationTracking){
+
+		$time = $notificationTracking->time;
+		
+		$data = array();
+
+		$response = array();
+
+		$array = [
+			"time",
+			"customer_id",
+			"schedule_for",
+			"max_time",
+			"text"
+		];
+
+		$response["notification_id"] = $notificationTracking["_id"];
+
+		foreach ($array as $value) {
+
+			if(isset($notificationTracking[$value])){
+				$response[$value] = $notificationTracking[$value];
+			}
+		}
+
+		if(isset($notificationTracking["order_id"])){
+
+			$order = Order::find((int)$notificationTracking["order_id"]);
+
+			if($order){
+
+				$response["transaction_id"] = $notificationTracking["order_id"];
+				$response["type"] = $order->type;
+				$response["transaction_type"] = "order";
+				$response["finder_name"] = $order["finder_name"];
+				$response["finder_id"] = (int)$order["finder_id"];
+				$response["lat"] = $order["finder_lat"];
+				$response["lon"] = $order["finder_lat"];
+				$response["finder_location"] = $order["finder_location"];
+				$response["category_id"] = $order["finder_category_id"];
+				$response["finder_address"] = $order["finder_address"];
+
+				$response["service_id"] = (int)$order->service_id;
+
+				if(isset($order->ratecard_id)){
+					$response["ratecard_id"] = (int)$order->ratecard_id;
+				}
+
+				$data = $order->toArray();
+			}
+
+		}
+
+		if(isset($notificationTracking["booktrial_id"])){
+
+			$booktrial = Booktrial::find((int)$notificationTracking["booktrial_id"]);
+
+			if($booktrial){
+
+				$response["transaction_id"] = $notificationTracking["booktrial_id"];
+				$response["type"] = $booktrial->type;
+				$response["transaction_type"] = "trial";
+				$response["finder_name"] = $booktrial["finder_name"];
+				$response["finder_id"] = (int)$booktrial["finder_id"];
+				$response["lat"] = $booktrial["finder_lat"];
+				$response["lon"] = $booktrial["finder_lat"];
+				$response["finder_location"] = $booktrial["finder_location"];
+				$response["category_id"] = $booktrial["finder_category_id"];
+				$response["finder_address"] = $booktrial["finder_address"];
+
+				$response["service_id"] = (int)$booktrial->service_id;
+
+				if(isset($booktrial->ratecard_id)){
+					$response["ratecard_id"] = (int)$booktrial->ratecard_id;
+				}
+
+				$data = $booktrial->toArray();				
+			}
+		}
+
+		if(!empty($data)){
+
+			$followup_date = "";
+			
+			if(isset($data["followup_date"])){
+
+				$followup_date = date('M d',strtotime($data["followup_date"]));
+
+			}else{
+
+				$start_date = "";
+				if(isset($data["schedule_date"])){
+					$start_date = date("d-m-Y",strtotime($data["schedule_date"]));
+				}
+
+				if(isset($data["start_date"])){
+					$start_date = date("d-m-Y",strtotime($data["start_date"]));
+				}
+
+				if($start_date != ""){
+					$followup_date = date("M d",strtotime($start_date." +3 days"));
+				}
+			}
+
+			$response['callback_msg']= "Awesome. We'll get in touch with you on $followup_date \n <u>Click here to change date</u>";
+
+			switch ($time) {
+				case 'n-12': 
+					$response["start_time"] = strtoupper($data["schedule_slot_start_time"]);
+					$response["start_date"] = date("d-m-Y",strtotime($data["schedule_date"]));
+					$response["title"] = "Trial Reminder";
+					break;
+				case 'n-3': 
+					$response["start_time"] = strtoupper($data["schedule_slot_start_time"]);
+					$response["start_date"] = date("d-m-Y",strtotime($data["schedule_date"]));
+					$response["title"] = "Trial Reminder";
+					break;
+				case 'n+2': 
+					$response["start_time"] = strtoupper($data["schedule_slot_start_time"]);
+					$response["start_date"] = date("d-m-Y",strtotime($data["schedule_date"]));
+					$response["title"] = "Trial Review";
+					break;
+				default:
+					$response["start_time"] = "";
+					$response["start_date"] = "";
+					$response["title"] = "Default Title";
+
+					if(isset($data["schedule_slot_start_time"])){
+						$response["start_time"] = strtoupper($data["schedule_slot_start_time"]);
+					}
+
+					if(isset($data["schedule_date"])){
+						$response["start_date"] = date("d-m-Y",strtotime($data["schedule_date"]));
+					}
+
+					if(isset($data["start_date"])){
+						$response["start_date"] = date("d-m-Y",strtotime($data["start_date"]));
+					}
+					
+					break;
+			}
+
+		}
+
+		$response["finder_type"] = getFinderType($response["category_id"]);
+
+		return $response;
+	}
+
+
+
+
+	// Diet plan Listing
+	public function listMyDietPlan(){
+		$jwt_token  = Request::header('Authorization');
+		$jwt_key = Config::get('app.jwt.key');
+		$jwt_alg = Config::get('app.jwt.alg');
+		$decoded = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+
+		$data['email'] = $decoded->customer->email;
+		$rules = [
+		'email' => 'required|email|max:255'
+		];
+		// return $data['email'];
+		$validator = Validator::make($data, $rules);
+		$current_diet_plan = Order::where('customer_email',$data['email'])->where('type','diet_plan')->with('trainerslotbooking')->orderBy('_id','desc')->first();
+		$resp = array("current_diet_plan"=>$current_diet_plan);
+		return Response::json($resp,200);
 	}
 
 

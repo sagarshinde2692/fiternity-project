@@ -231,7 +231,8 @@ Route::group(array('before' => 'validatetoken'), function() {
 	Route::get('upcomingtrials',  array('as' => 'customer.upcomingtrials','uses' => 'CustomerController@getUpcomingTrials'));
 	Route::get('customer/myrewards/list/{offset?}/{limit?}',  array('as' => 'customer.listMyRewards','uses' => 'MyrewardController@listMyRewards'));
 	Route::get('customer/myrewardsv1/list/{offset?}/{limit?}',  array('as' => 'customer.listMyRewardsv1','uses' => 'MyrewardController@listMyRewardsV1'));
-
+	Route::get('customer/mydietplan/list',  array('as' => 'customer.listMyDietPlan','uses' => 'CustomerController@listMyDietPlan'));
+	
 	// Route::post('apply/promotioncode', array('as' => 'customer.applypromotioncode','uses' => 'CustomerController@applyPromotionCode'));
 
 	// Wallet APIs...
@@ -249,6 +250,8 @@ Route::group(array('before' => 'validatetoken'), function() {
 
 	Route::get('customer/gettransformation', array('as' => 'customer.gettransformation','uses' => 'CustomerController@getTransformation'));
 	Route::get('customer/getstayontrack', array('as' => 'customer.getstayontrack','uses' => 'CustomerController@getStayOnTrack'));
+	Route::get('getreferralcode', array('as' => 'customer.referralcode','uses' => 'CustomerController@getReferralCode'));
+	Route::post('referfriend', array('as' => 'customer.referfriend','uses' => 'CustomerController@referFriend'));
 
 });
 
@@ -501,6 +504,7 @@ Route::group(array('before' => 'validatetoken'), function() {
 
 	Route::post('booktrials/reschedule', array('as' => 'customer.rescheduledbooktrial','uses' => 'SchedulebooktrialsController@rescheduledBookTrial'));
 	Route::get('booktrials/{action}/{trialid}', array('as' => 'trial.booktrialaction', 'uses' => 'SchedulebooktrialsController@booktrialAction'));
+	Route::post('pretrialaction/{source}', array('as' => 'trial.pretrialaction', 'uses' => 'SchedulebooktrialsController@preTrialAction'));
 
 });
 
@@ -874,18 +878,31 @@ Route::get('getfinderlocations', 'DebugController@cacheLocations');
 
 Route::get('getsubcategories', 'DebugController@cacheOfferings');
 
+Route::get('getfinders', 'DebugController@cacheFinders');
+
 Route::post('transaction/pg',array('as' => 'transaction.pg','uses' => 'TransactionController@pg'));
+Route::post('transaction/success',array('as' => 'transaction.success','uses' => 'TransactionController@success'));
 
-
+Route::get('referral', 'CustomerController@generateReferralCode');
 
 Route::post('displayemi','CustomerController@displayEmi');
 
-Route::get('trainer/getavailableslots',array('as' => 'trainer/getavailableslots','uses' => 'TrainerController@getAvailableSlots'));
+Route::post('trainer/getavailableslots',array('as' => 'trainer/getavailableslots','uses' => 'TrainerController@getAvailableSlots'));
+
 Route::group(array('before' => 'validatetoken'), function() {
 	Route::post('trainer/bookslot', array('as' => 'trainer.bookslot','uses' => 'TrainerController@bookSlot'));
 	Route::post('transaction/update',array('as' => 'transaction.update','uses' => 'TransactionController@update'));
 	Route::get('customer/orderdetail/{order_id}',array('as' => 'customer.orderdetail','uses' => 'CustomerController@orderDetail'));
+	Route::get('customer/orderdetail/{order_id}',array('as' => 'customer.orderdetail','uses' => 'CustomerController@orderDetail'));
+	Route::post('customer/addreview', array('as' => 'finders.addreviewcustomer','uses' => 'FindersController@addReviewCustomer'));
 });
+
+Route::get('getdetailrating',array('as' => 'getdetailrating','uses' => 'FindersController@getDetailRating'));
+
+Route::get('customer/notification/{id}',array('as' => 'customer.notification','uses' => 'CustomerController@notificationTracking'));
+
+Route::post('addwallet',array('as' => 'transaction.addwallet','uses' => 'TransactionController@addWallet'));
+
 
 Route::get('customerorderdata','DebugController@customer_data');
 Route::get('zumbadata','DebugController@zumba_data');
