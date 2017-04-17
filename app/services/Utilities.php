@@ -1135,6 +1135,9 @@ Class Utilities {
         $walletTransactionResponse = $this->walletTransaction($req)->getData();
         $walletTransactionResponse = (array) $walletTransactionResponse;
 
+
+        Log::info("----walletTransactionResponse-----",$walletTransactionResponse);
+
         if($walletTransactionResponse['status'] != 200){
             return "success";
         }
