@@ -319,7 +319,19 @@ class FindersController extends \BaseController {
 					$finder['associate_finder'] = $associate_finder;
 				}
 
+				foreach($finderarr['services'] as $service){
+					if(!isset($service['traction'])){
+						$service['traction'] = array('trials'=>0, 'sales'=>0);
+					}
+				}
 
+				function cmp($a, $b)
+				{
+					return $a['traction']['sales']+$a['traction']['trials']*0.8 < $b['traction']['sales']+$b['traction']['trials']*0.8;
+				}
+
+				usort($finderarr['services'], "cmp");
+				
 				$category_slug_services = array();
 				$category_slug_services = array_where($finderarr['services'], function($key, $value) use ($category_slug){
 							if($value['category']['slug'] == $category_slug)
@@ -336,10 +348,6 @@ class FindersController extends \BaseController {
 								}
 						});
 
-				function cmp($a, $b)
-	            {
-	            	return $a['traction']['sales'] < $b['traction']['sales'];
-	            }
 
 	        	//usort($category_slug_services, "cmp");
 	        	//usort($non_category_slug_services, "cmp");
@@ -347,8 +355,12 @@ class FindersController extends \BaseController {
 	        	$finderarr['services'] = array_merge($category_slug_services, $non_category_slug_services);
 
 
+				$finderarr['services'] = $this->sortNoMembershipServices($finderarr['services'], 'finderdetail');
 				
-				array_set($finder, 'services', pluck( $finderarr['services'] , ['_id', 'name', 'lat', 'lon', 'serviceratecard', 'session_type', 'workout_tags', 'calorie_burn', 'workout_results', 'short_description','service_trainer','timing','category','subcategory','batches','vip_trial','meal_type','trial','membership', 'offer_available', 'showOnFront']  ));
+
+
+				
+				array_set($finder, 'services', pluck( $finderarr['services'] , ['_id', 'name', 'lat', 'lon', 'serviceratecard', 'session_type', 'workout_tags', 'calorie_burn', 'workout_results', 'short_description','service_trainer','timing','category','subcategory','batches','vip_trial','meal_type','trial','membership', 'offer_available', 'showOnFront', 'traction']  ));
 				array_set($finder, 'categorytags', pluck( $finderarr['categorytags'] , array('_id', 'name', 'slug', 'offering_header') ));
 				array_set($finder, 'findercollections', pluck( $finderarr['findercollections'] , array('_id', 'name', 'slug') ));
 				array_set($finder, 'blogs', pluck( $finderarr['blogs'] , array('_id', 'title', 'slug', 'coverimage') ));
@@ -2014,7 +2026,7 @@ class FindersController extends \BaseController {
 				'trial' => (isset($item['trial'])) ? $item['trial'] : "",
 				'offer_icon' => "",
 				'servicecategory_id' => $item['servicecategory_id'],
-				'traction' => isset($item['traction']) ? $item['traction'] : array("trial"=>0,"sales"=>0),
+				'traction' => isset($item['traction']) ? $item['traction'] : array("trials"=>0,"sales"=>0),
 				'location_id' => $item['location_id']
 			);
 
@@ -2538,10 +2550,10 @@ class FindersController extends \BaseController {
 					;
 					function cmp($a, $b)
 		            {
-		            	return $a['traction']['sales'] < $b['traction']['sales'];
+		            	return $a['traction']['sales']+$a['traction']['trials']*0.8 < $b['traction']['sales']+$b['traction']['trials']*0.8;
 		            }
 
-		        	//usort($data['finder']['services'], "cmp");
+		        	usort($data['finder']['services'], "cmp");
 
 					if($location_id){
 						$location_id = intval($location_id);
@@ -2600,6 +2612,8 @@ class FindersController extends \BaseController {
 				
 
 		        	$data['finder']['services']  = array_merge($category_slug_services, $non_category_slug_services);
+
+					$data['finder']['services'] = $this->sortNoMembershipServices($data['finder']['services'], 'finderDetailApp');
 
 					/*if(isset($data['finder']['services']['offer_icon_vendor'])){
 
@@ -2857,6 +2871,44 @@ class FindersController extends \BaseController {
         
         return $decodedToken;
     }
+
+	public function sortNoMembershipServices($serviceArray, $from){
+		if($from == 'finderdetail'){
+			$ratecard_key = 'serviceratecard';
+		}else{
+			$ratecard_key = 'ratecard';
+		}
+		$membership_services = array_where($serviceArray, function($key, $value) use ($ratecard_key){
+			$ratecard_array = $value[$ratecard_key];
+			$membership_exists = false;
+			foreach($ratecard_array as $ratecard){
+				if($ratecard['type']=='membership'){
+					$membership_exists = true;
+				}
+			}
+			if($membership_exists)
+				{
+					return $value; 
+				}
+		});
+
+		$no_membership_services = array_where($serviceArray, function($key, $value) use ($ratecard_key){
+			$ratecard_array = $value[$ratecard_key];
+			$membership_exists = false;
+			foreach($ratecard_array as $ratecard){
+				if($ratecard['type']=='membership'){
+					$membership_exists = true;
+				}
+			}
+			if(!$membership_exists)
+				{
+					return $value; 
+				}
+		});
+
+		return array_merge($membership_services, $no_membership_services);
+
+	}
 
 
 }
