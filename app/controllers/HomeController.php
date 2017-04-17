@@ -758,9 +758,9 @@ class HomeController extends BaseController {
             array_set($footer_finders,  'footer_block6_title', (isset($homepage['footer_block6_title']) && $homepage['footer_block6_title'] != '') ? $homepage['footer_block6_title'] : '');
 
             // Default City vendors
-            // $defaultfinders = Finder::where('city_id',10000)->get(array('title','slug','custom_city','custom_location'))->groupBy('custom_city');
-            // $footerdata 	= 	array('footer_finders' => $footer_finders, 'city_name' => $city_name, 'city_id' => $city_id,'default_vendors'=>$defaultfinders);
-            $footerdata 	= 	array('footer_finders' => $footer_finders, 'city_name' => $city_name, 'city_id' => $city_id);
+            $defaultfinders = Finder::where('city_id',10000)->get(array('title','slug','custom_city','custom_location'))->groupBy('custom_city');
+            $footerdata 	= 	array('footer_finders' => $footer_finders, 'city_name' => $city_name, 'city_id' => $city_id,'default_vendors'=>$defaultfinders);
+            // $footerdata 	= 	array('footer_finders' => $footer_finders, 'city_name' => $city_name, 'city_id' => $city_id);
             Cache::tags('footer_by_city')->put($city, $footerdata, Config::get('cache.cache_time'));
         }
 
