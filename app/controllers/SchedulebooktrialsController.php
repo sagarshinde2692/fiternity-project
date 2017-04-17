@@ -4497,11 +4497,14 @@ class SchedulebooktrialsController extends \BaseController {
                     case 'attended_more_info':
                     $booktrial->post_trial_status = 'attended';
                     $booktrial->post_trial_initail_status = 'interested';
+
                     if(isset($data['followup_date'])){
-                        $booktrial->followup_date = new MongoDate($data['followup_date']);
+
+                        $booktrial->followup_date = date('Y-m-d H:i:s',$data['followup_date']);
                     }else{
-                        $booktrial->followup_date = new MongoDate(strtotime(($booktrial->schedule_date))+(60*60*24*3));
+                        $booktrial->followup_date = date('Y-m-d H:i:s',strtotime($booktrial->schedule_date.' +3 days'));
                     }
+                    
                     break;
                 }
                 $booktrial->post_trial_status_reason = (isset($data['reason']) && $data['reason'] != "") ? $data['reason'] : "";
