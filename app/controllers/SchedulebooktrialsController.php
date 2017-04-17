@@ -2191,7 +2191,7 @@ class SchedulebooktrialsController extends \BaseController {
             //Send Reminder Notiication (Email, Sms) Before 12 Hour To Customer
             if($currentScheduleDateDiffMin >= (60 * 12)){
 
-                $delayReminderTimeBefore12Hour      =    $scheduleDateTime->subMinutes(60 * 12);
+                $delayReminderTimeBefore12Hour      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->subMinutes(60 * 12);
 
                 $send_communication["customer_email_before12hour"] = $this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
 
@@ -2203,7 +2203,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             if($currentScheduleDateDiffMin >= (60 * 6)){
 
-                $delayReminderTimeBefore6Hour      =    $scheduleDateTime->subMinutes(60 * 6);
+                $delayReminderTimeBefore6Hour      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->subMinutes(60 * 6);
 
                 $send_communication["finder_sms_before6hour"] = $this->findersms->bookTrialReminderBefore6Hour($booktrialdata, $delayReminderTimeBefore6Hour);
 
@@ -2215,7 +2215,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $booktrialdata['poc'] = "vendor";
                 $booktrialdata['poc_no'] = $booktrialdata['finder_poc_for_customer_no'];
 
-                $delayReminderTimeBefore3Hour      =    $scheduleDateTime->subMinutes(60 * 3);
+                $delayReminderTimeBefore3Hour      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->subMinutes(60 * 3);
 
                 $hour = (int) date("G", strtotime($delayReminderTimeBefore3Hour));
 
@@ -2255,7 +2255,7 @@ class SchedulebooktrialsController extends \BaseController {
 
                 $booktrialdata['yes'] = $missedcall_no->number;
 
-                $delayReminderTimeBefore20Min      =    $scheduleDateTime->subMinutes(20);
+                $delayReminderTimeBefore20Min      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->subMinutes(20);
 
                 $send_communication["customer_sms_before20Min"] = $this->customersms->bookTrialReminderBefore20Min($booktrialdata, $delayReminderTimeBefore20Min);
 
@@ -2266,7 +2266,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $booktrial->missedcall_batch = $batch;
             }
 
-            $delayReminderTimeAfter90Min      =    $scheduleDateTime->addMinutes(90);
+            $delayReminderTimeAfter90Min      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->addMinutes(90);
 
             $send_communication["customer_sms_after2hour"] = $this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter90Min);
             $send_communication["customer_email_after2hour"] = $this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter90Min);
@@ -4910,7 +4910,8 @@ class SchedulebooktrialsController extends \BaseController {
                     "amount_fitcash_plus" => 0,
                     "type"=>'CASHBACK',
                     "balance"=>	$customer_balance,
-                    "description"=>'CASHBACK ON Invite amount - '.$cashback_amount
+                    "description"=>'CASHBACK ON Invite amount - '.$cashback_amount,
+                    "order_id"=>$order->_id
                 );
 
                 $this->utilities->walletTransaction($req,$walletData);
