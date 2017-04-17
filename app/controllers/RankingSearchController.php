@@ -2497,12 +2497,12 @@ public function getRankedFinderResultsAppv4()
             "aggs": {
             "offerings": {
                 "nested": {
-                    "path": "main_location_obj"
+                    "path": "location_obj"
                 },
                 "aggs": {
                     "attrs": {
                         "terms": {
-                            "field": "main_location_obj.name",
+                            "field": "location_obj.name",
                             "min_doc_count": 1,
                             "size": "500",
                             "order": {
@@ -2510,15 +2510,9 @@ public function getRankedFinderResultsAppv4()
                             }
                         },
                         "aggs": {
-                            "locationslug": {
+                            "attrsValues": {
                                 "terms": {
-                                    "field": "main_location_obj.slug",
-                                    "size": 100
-                                }
-                            },
-                            "locationcluster": {
-                                "terms": {
-                                    "field": "main_location_obj.locationcluster",
+                                    "field": "location_obj.slug",
                                     "size": 100
                                 }
                             }

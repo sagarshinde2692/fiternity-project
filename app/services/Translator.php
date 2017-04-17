@@ -1412,8 +1412,8 @@ public static function translate_searchresultsv4($es_searchresult_response,$sear
 			foreach ($aggs['filtered_locationtags']['offerings']['attrs']['buckets'] as $off){
 				$offval = new \stdClass();
 				$offval->key = $off['key'];
-				$offval->slug = $off['locationslug']['buckets'][0]['key'];
-				$offval->cluster = $off['locationcluster']['buckets'][0]['key'];
+				$offval->slug = $off['attrsValues']['buckets'][0]['key'];
+				//$offval->cluster = $off['locationcluster']['buckets'][0]['key'];
 				$offval->count = $off['doc_count'];
 				array_push($finderresult_response->results->aggregationlist->locationtags, $offval);
 			}
