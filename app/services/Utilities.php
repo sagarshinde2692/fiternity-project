@@ -293,6 +293,8 @@ Class Utilities {
 
         }else{
 
+            Log::info("--request--",$request);
+
             // Get Customer wallet balance........
             $customer = Customer::find($customer_id);
 
