@@ -1110,6 +1110,8 @@ Class Utilities {
 
     public function addWallet($data){
 
+        Log::info("---data---",$data);
+
         $customer_id = (int) $data["customer_id"];
         $amount = $data["amount"];
 
