@@ -4300,6 +4300,15 @@ class SchedulebooktrialsController extends \BaseController {
             return $this->responseNotFound('Request not found');
         }
 
+        $dates = array('schedule_date','schedule_date_time','missedcall_date','customofferorder_expiry_date','followup_date');
+
+        foreach ($dates as $key => $value) {
+
+            if($booktrial[$value] == "" || $booktrial[$value] == "-"){
+                $booktrial->unset($value);
+            }
+        }
+
         $booktrial = $booktrial->toArray();
 
         $unset = array('customer_emailqueuedids','customer_smsqueuedids','customer_notification_messageids','finder_emailqueuedids','finder_smsqueuedids','customer_auto_sms');
