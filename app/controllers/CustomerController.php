@@ -3465,7 +3465,7 @@ class CustomerController extends \BaseController {
 
 		$action = null;
 
-		if(/*!isset($order->updrage_membership) && */isset($order['start_date']) && time() >= strtotime($order['start_date'].'+11 days') && time() <= strtotime($order['start_date'].'+31 days') && isset($order['end_date']) && strtotime($order['end_date']) >= time() && isset($order['duration_day']) && $order['duration_day'] <= 180){
+		if(!isset($order->updrage_membership) && isset($order['start_date']) && time() >= strtotime($order['start_date'].'+11 days') && time() <= strtotime($order['start_date'].'+31 days') && isset($order['end_date']) && strtotime($order['end_date']) >= time() && isset($order['duration_day']) && $order['duration_day'] <= 180){
 			$action = [
 				"button_text"=>"Upgrade",
 				"activity"=>"upgrade_membership",
@@ -3478,7 +3478,7 @@ class CustomerController extends \BaseController {
 			];
 		}
 
-		if(/*!isset($order->preferred_starting_change_date) &&*/ isset($order['start_date']) && time() <= strtotime($order['start_date'].'+11 days')){
+		if(!isset($order->preferred_starting_change_date) && isset($order['start_date']) && time() <= strtotime($order['start_date'].'+11 days')){
 
 			$min_date = strtotime('+1 days');
 			$max_date = strtotime($order['created_at'].'+29 days');
@@ -3531,7 +3531,7 @@ class CustomerController extends \BaseController {
 			];
 		}
 
-		if(/*!isset($order->renew_membership) && */isset($order['duration_day']) && isset($order['start_date'])){
+		if(!isset($order->renew_membership) && isset($order['duration_day']) && isset($order['start_date'])){
 
 			$renewal_date = array();
 			$validity = (int) $order['duration_day'];

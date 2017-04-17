@@ -307,7 +307,7 @@ Class Utilities {
             $request['balance'] = (int)$customer['balance'];
             $request['balance_fitcash_plus'] = (int)$customer['balance_fitcash_plus'];
 
-            if(in_array($request['type'], ['CASHBACK','FITCASHPLUS','REFERRAL','CREDIT'])){
+            if(in_array($request['type'], ['CASHBACK','FITCASHPLUS','REFERRAL','CREDIT','FITCASH'])){
 
                 $request['balance'] = ((int) $customer['balance'] + (int) $request['amount_fitcash']);
                 $request['balance_fitcash_plus'] = ((int) $customer['balance_fitcash_plus'] + (int) $request['amount_fitcash_plus']);
@@ -829,7 +829,7 @@ Class Utilities {
                 'customerSmsNotInterestedAfter15Days',
                 'customerSmsNotInterestedAfter45Days',
                 'customerSmsNotInterestedAfter75Days',
-                'customerNotificationSendPaymentLinkAfter3Days',
+               /* 'customerNotificationSendPaymentLinkAfter3Days',
                 'customerNotificationSendPaymentLinkAfter7Days',
                 'customerNotificationSendPaymentLinkAfter15Days',
                 'customerNotificationSendPaymentLinkAfter30Days',
@@ -843,7 +843,7 @@ Class Utilities {
                 'customerNotificationRenewalLinkSentAfter30Days',
                 'customerNotificationNotInterestedAfter15Days',
                 'customerNotificationNotInterestedAfter45Days',
-                'customerNotificationNotInterestedAfter75Days',
+                'customerNotificationNotInterestedAfter75Days',*/
                 'customerWalletRenewalLinkSentBefore7Days',
                 'customerWalletRenewalLinkSentBefore1Days',
                 'customerWalletSendPaymentLinkAfter15Days',
@@ -904,7 +904,7 @@ Class Utilities {
             'customerSmsNotInterestedAfter15Days',
             'customerSmsNotInterestedAfter45Days',
             'customerSmsNotInterestedAfter75Days',
-            'customerNotificationPostTrialFollowup1After3Days',
+           /* 'customerNotificationPostTrialFollowup1After3Days',
             'customerNotificationPostTrialFollowup1After7Days',
             'customerNotificationPostTrialFollowup1After15Days',
             'customerNotificationPostTrialFollowup1After30Days',
@@ -914,7 +914,7 @@ Class Utilities {
             'customerNotificationPostTrialFollowup2After30Days',
             'customerNotificationNotInterestedAfter15Days',
             'customerNotificationNotInterestedAfter45Days',
-            'customerNotificationNotInterestedAfter75Days',
+            'customerNotificationNotInterestedAfter75Days',*/
             'customerWalletPostTrialFollowup1After15Days'
         ];
 
@@ -946,10 +946,10 @@ Class Utilities {
             'customerSmsPostCaptureFollowup2After7Days',
             'customerSmsPostCaptureFollowup2After15Days',
             'customerSmsPostCaptureFollowup2After30Days',
-            'customerNotificationPostCaptureFollowup2After3Days',
+            /*'customerNotificationPostCaptureFollowup2After3Days',
             'customerNotificationPostCaptureFollowup2After7Days',
             'customerNotificationPostCaptureFollowup2After15Days',
-            'customerNotificationPostCaptureFollowup2After30Days',
+            'customerNotificationPostCaptureFollowup2After30Days',*/
         ];
 
         foreach ($array as $value) {

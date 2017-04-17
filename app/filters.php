@@ -93,8 +93,6 @@ Route::filter('validatetoken',function(){
 
     $data = Request::header('Authorization');
 
-    \Log::info('Authorization-------------'.$data);
-
     if(isset($data) && !empty($data)){
         $jwt_token  =   $data;
         $jwt_key    =   Config::get('app.jwt.key');

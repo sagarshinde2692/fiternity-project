@@ -395,9 +395,11 @@ class OrderController extends \BaseController {
                 $order->cutomerSmsPurchaseAfter10Days = $this->customersms->purchaseAfter10Days($order->toArray(),$after10days);
                 $order->cutomerSmsPurchaseAfter30Days = $this->customersms->purchaseAfter30Days($order->toArray(),$after30days);
 
-                $this->customernotification->purchaseInstant($order->toArray());
-                $order->cutomerNotificationPurchaseAfter10Days = $this->customernotification->purchaseAfter10Days($order->toArray(),$after10days);
-                $order->cutomerNotificationPurchaseAfter30Days = $this->customernotification->purchaseAfter30Days($order->toArray(),$after30days);
+                /*if(isset($order['gcm_reg_id']) && $order['gcm_reg_id'] != '' && isset($order['device_type']) && $order['device_type'] != ''){
+                    $this->customernotification->purchaseInstant($order->toArray());
+                    $order->cutomerNotificationPurchaseAfter10Days = $this->customernotification->purchaseAfter10Days($order->toArray(),$after10days);
+                    $order->cutomerNotificationPurchaseAfter30Days = $this->customernotification->purchaseAfter30Days($order->toArray(),$after30days);
+                }*/
 
                 $order->update();
 
@@ -1371,6 +1373,8 @@ class OrderController extends \BaseController {
         }
 
         $orderid = Order::max('_id') + 1;
+
+        $code = $orderid.str_random(8);
 
         array_set($data, 'code', $code);
 

@@ -742,7 +742,7 @@ class TransactionController extends \BaseController {
             $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount_finder'],$data['finder_id'],'paymentgateway',$data['offer_id'],$data['customer_id']);
         }
 
-        /*if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios'])){
+        if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios'])){
 
 
             if(isset($data['cashback']) && $data['cashback'] == true){
@@ -844,7 +844,7 @@ class TransactionController extends \BaseController {
 
             
 
-        }else{*/
+        }else{
 
             if(isset($data['cashback']) && $data['cashback'] == true){
                 $amount = $data['amount'] - $cashback_detail['amount_discounted'];
@@ -964,7 +964,7 @@ class TransactionController extends \BaseController {
             }
 
             $data['amount'] = $amount;
-        //}
+        }
 
         if($data['amount'] == 0){
             $data['full_payment_wallet'] = true;
@@ -1554,13 +1554,13 @@ class TransactionController extends \BaseController {
             $order->customerSmsSendPaymentLinkAfter30Days = $this->customersms->sendPaymentLinkAfter30Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+30 days",$now)));
             $order->customerSmsSendPaymentLinkAfter45Days = $this->customersms->sendPaymentLinkAfter45Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+45 days",$now)));
 
-            if(isset($order['reg_id']) && $order['reg_id'] != "" && isset($order['device_type']) && $order['device_type'] != ""){
+            /*if(isset($order['reg_id']) && $order['reg_id'] != "" && isset($order['device_type']) && $order['device_type'] != ""){
                 $order->customerNotificationSendPaymentLinkAfter3Days = $this->customernotification->sendPaymentLinkAfter3Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+3 days",$now)));
                 $order->customerNotificationSendPaymentLinkAfter7Days = $this->customernotification->sendPaymentLinkAfter7Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+7 days",$now)));
                 $order->customerNotificationSendPaymentLinkAfter15Days = $this->customernotification->sendPaymentLinkAfter15Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+15 days",$now)));
                 $order->customerNotificationSendPaymentLinkAfter30Days = $this->customernotification->sendPaymentLinkAfter30Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+30 days",$now)));
                 $order->customerNotificationSendPaymentLinkAfter45Days = $this->customernotification->sendPaymentLinkAfter45Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+45 days",$now)));
-            }
+            }*/
 
             $url = Config::get('app.url')."addwallet?customer_id=".$order["customer_id"]."&action=add_fitcash&amount=500&order_id=".$order_id;
 

@@ -711,7 +711,7 @@ class HomeController extends BaseController {
 
 
 
-    public function getFooterByCity($city = 'mumbai',$cache = false){
+    public function getFooterByCity($city = 'mumbai',$cache = true){
 
         $footer_by_city = $cache ? Cache::tags('footer_by_city')->has($city) : false;
 
