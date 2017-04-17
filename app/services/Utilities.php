@@ -1071,7 +1071,7 @@ Class Utilities {
 
             if ($device) {
 
-                if(isset($device->customer_id) && $device->customer != "" && isset($data['customer_id']) && $data['customer_id'] != ''){
+                if(isset($device->customer_id) && $device->customer == "" && isset($data['customer_id']) && $data['customer_id'] != ''){
 
                     $booktrial = \Booktrial::where("customer_id",(int)$data['customer_id'])->where('type','booktrials')->count();
 
