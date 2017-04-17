@@ -3723,7 +3723,7 @@ class CustomerController extends \BaseController {
 				}
 
 				if($start_date != ""){
-					$followup_date = date("M d",strtotime($start_date." + 3 days"));
+					$followup_date = date("M d",strtotime($start_date." +3 days"));
 				}
 			}
 
