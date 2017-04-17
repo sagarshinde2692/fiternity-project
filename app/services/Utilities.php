@@ -123,7 +123,7 @@ Class Utilities {
             );
         }
 
-        if(isset($request['order_id']) && $request['order_id'] != 0){
+        if($request['order_id'] != 0){
 
             // Check Duplicacy of transaction request........
             $duplicateRequest = Customerwallet::where('order_id', (int) $request['order_id'])
@@ -182,7 +182,7 @@ Class Utilities {
                 }
                 
             }
-            
+
         }
 
         if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios']) && isset($_GET['app_version']) && ((float)$_GET['app_version'] <= 3.2) ){
