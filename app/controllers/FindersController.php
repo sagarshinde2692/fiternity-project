@@ -330,7 +330,7 @@ class FindersController extends \BaseController {
 					return $a['traction']['sales']+$a['traction']['trials']*0.8 < $b['traction']['sales']+$b['traction']['trials']*0.8;
 				}
 
-				usort($finderarr['services'], "cmp");
+				// usort($finderarr['services'], "cmp");
 				
 				$category_slug_services = array();
 				$category_slug_services = array_where($finderarr['services'], function($key, $value) use ($category_slug){
@@ -2553,7 +2553,7 @@ class FindersController extends \BaseController {
 		            	return $a['traction']['sales']+$a['traction']['trials']*0.8 < $b['traction']['sales']+$b['traction']['trials']*0.8;
 		            }
 
-		        	usort($data['finder']['services'], "cmp");
+		        	// usort($data['finder']['services'], "cmp");
 
 					if($location_id){
 						$location_id = intval($location_id);
