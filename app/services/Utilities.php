@@ -123,44 +123,56 @@ Class Utilities {
             );
         }
 
-        // Check Duplicacy of transaction request........
-        $duplicateRequest = Customerwallet::where('order_id', (int) $request['order_id'])
-            ->where('type', $request['type'])
-            ->orderBy('_id','desc')
-            ->first();
+        if(isset($request['order_id']) && $request['order_id'] != 0){
 
-        if($duplicateRequest != ''){
+            // Check Duplicacy of transaction request........
+            $duplicateRequest = Customerwallet::where('order_id', (int) $request['order_id'])
+                ->where('type', $request['type'])
+                ->orderBy('_id','desc')
+                ->first();
 
-            if($request['type'] == "DEBIT"){
+            if($duplicateRequest != ''){
 
-                $debitAmount = Customerwallet::where('order_id', (int) $request['order_id'])
-                ->where('type', 'DEBIT')
-                ->sum('amount');
+                if($request['type'] == "DEBIT"){
 
-                $refundAmount = Customerwallet::where('order_id', (int) $request['order_id'])
-                ->where('type', 'REFUND')
-                ->sum('amount');
+                    $debitAmount = Customerwallet::where('order_id', (int) $request['order_id'])
+                    ->where('type', 'DEBIT')
+                    ->sum('amount');
 
-                if($debitAmount - $refundAmount != 0){
-                    return Response::json(
-                        array(
-                            'status' => 400,
-                            'message' => 'Request has been already processed'
-                            ),400
-                    );
-                }
+                    $refundAmount = Customerwallet::where('order_id', (int) $request['order_id'])
+                    ->where('type', 'REFUND')
+                    ->sum('amount');
 
-            }elseif($request['type'] == "REFUND"){
+                    if($debitAmount - $refundAmount != 0){
+                        return Response::json(
+                            array(
+                                'status' => 400,
+                                'message' => 'Request has been already processed'
+                                ),400
+                        );
+                    }
 
-                $debitAmount = Customerwallet::where('order_id', (int) $request['order_id'])
-                ->where('type', 'DEBIT')
-                ->sum('amount');
+                }elseif($request['type'] == "REFUND"){
 
-                $refundAmount = Customerwallet::where('order_id', (int) $request['order_id'])
-                ->where('type', 'REFUND')
-                ->sum('amount');
+                    $debitAmount = Customerwallet::where('order_id', (int) $request['order_id'])
+                    ->where('type', 'DEBIT')
+                    ->sum('amount');
 
-                if($debitAmount - $refundAmount <= 0){
+                    $refundAmount = Customerwallet::where('order_id', (int) $request['order_id'])
+                    ->where('type', 'REFUND')
+                    ->sum('amount');
+
+                    if($debitAmount - $refundAmount <= 0){
+                        return Response::json(
+                            array(
+                                'status' => 400,
+                                'message' => 'Request has been already processed'
+                                ),400
+                        );
+                    }
+                    
+                }else{
+
                     return Response::json(
                         array(
                             'status' => 400,
@@ -169,14 +181,6 @@ Class Utilities {
                     );
                 }
                 
-            }else{
-
-                return Response::json(
-                    array(
-                        'status' => 400,
-                        'message' => 'Request has been already processed'
-                        ),400
-                );
             }
             
         }

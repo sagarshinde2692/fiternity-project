@@ -4913,7 +4913,7 @@ class SchedulebooktrialsController extends \BaseController {
                     "description"=>'CASHBACK ON Invite amount - '.$cashback_amount
                 );
 
-                $this->utilities->walletTransaction($req,$order->toArray());
+                $this->utilities->walletTransaction($req,$walletData);
 
                 // return $walletData;
 
