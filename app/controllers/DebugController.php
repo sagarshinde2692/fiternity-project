@@ -3809,5 +3809,113 @@ public function yes($msg){
 		);
 		return $data;
 	}
+
+	public function booktrial_funnel()
+	{       
+		$start_date = new DateTime('01-02-2017');
+		$end_date = new DateTime('31-02-2017');
+			$transactions = Transaction::where('transaction_type', 'Booktrial')
+				->where('created_at', '>=', $start_date)
+				->where('created_at', '<=', $end_date)
+				->groupBy('customer_email')->lists('customer_email');
+			$orders = Transaction::where('transaction_type', 'Order')
+									->where('status', '1')
+									->where('created_at', '>=', $start_date)
+									->where('type', "memberships")		
+									->whereIn('customer_email',$transactions)
+									->groupBy('customer_email')->lists('customer_email');
+			$nopaymentgateway = Transaction::where('transaction_type', 'Order')
+									->where('status', '1')
+									->where('created_at', '>=', $start_date)
+									->where('type', "memberships")		
+									->whereIn('customer_email',$transactions)
+									->where("payment_mode",'!=', "paymentgateway")
+									->groupBy('customer_email')->lists('customer_email');
+			$query = Transaction::where('transaction_type', 'Order')
+									->where('status', '1')
+									->where('created_at', '>=', $start_date)
+									->where('type', "memberships")		
+									->whereIn('customer_email',$transactions)
+									->where("payment_mode", "paymentgateway");
+			$paymentgateway = $query->groupBy('customer_email')->lists('customer_email'); 
+			$linkSent = $query->where("paymentLinkEmailCustomerTiggerCount", "exists",true)->groupBy('customer_email')->lists('customer_email');
+									
+			return $data = array(
+				'Trials' 	=> count($transactions),
+				'orders_after_trials'	=> count($orders),
+				'did_not_purchase'		=> count($transactions) - count($orders),
+				'offline'				=> count($nopaymentgateway),
+				'online'				=> count($paymentgateway),
+				'link'					=> count($linkSent),
+				'direct'				=> count($paymentgateway) - count($linkSent)
+
+				// 'orderDetails' 	=> $orderDetails,
+				// 'trialDetails'	=> $trialDetails,
+				// 'linkDetails'	=> $linkDetails
+			);	
+	}
+
+	public function order_funnel(){
+		$start_date = new DateTime('01-02-2017');
+		$end_date = new DateTime('31-02-2017');
+		// $fortyfive = new DateTime('01-11-2016');
+		$transactions = Transaction::where('transaction_type', 'Order')
+									->where('status', '1')
+									->where('type', "memberships")		
+									->where('created_at', '>=', $start_date)
+									->where('created_at', '<=', $end_date)
+									->groupBy('customer_email')->lists('customer_email');
+		$transactions2 = Transaction::where('status','!=', '1')
+									// ->where('created_at', '>=', $fortyfive)
+									->where('created_at', '<=', $end_date)
+									->whereIn('customer_email',$transactions)
+									->groupBy('customer_email')
+									->lists('customer_email');
+		return $data = array(
+			"purchases" => count($transactions),
+			"direct_purchases" => count(array_diff($transactions, $transactions2)),
+			"people_who_interacted_in_last_45_days" => count($transactions2)
+		);
+		
+	}
+	public function linksent_funnel()
+	{       
+		$start_date = new DateTime('01-02-2017');
+		$end_date = new DateTime('31-02-2017');
+			$query = Order::
+				where('created_at', '>=', $start_date)
+				->where('created_at', '<=', $end_date)->where("type","memberships");
+
+			$transactions = $query->where("paymentLinkEmailCustomerTiggerCount", "exists",true)->groupBy('customer_email')->lists('customer_email');
+			$link_sent_purchase = Order::
+				where('created_at', '>=', $start_date)
+				->where('created_at', '<=', $end_date)->where("type","memberships")
+										->whereIn('customer_email',$transactions)
+										->where('status', '1')
+										->where("paymentLinkEmailCustomerTiggerCount", "exists",true)
+										// ->groupBy('customer_email')
+										->lists('customer_email');
+			$link_sent_direct_purchase = Order::
+				where('created_at', '>=', $start_date)
+				->where('created_at', '<=', $end_date)->where("type","memberships")->whereIn('customer_email',$transactions)
+												->where('status', '1')
+												->where("paymentLinkEmailCustomerTiggerCount", "exists",false)
+												// ->where("payment_mode", "paymentgateway")
+												->lists('customer_email');
+												// ->groupBy('customer_email');
+			$link_sent_direct_purchase_offline = Order::
+				where('created_at', '>=', $start_date)
+				->where('created_at', '<=', $end_date)->where("type","memberships")->whereIn('customer_email',$transactions)
+														->where('status', '1')
+														->where("paymentLinkEmailCustomerTiggerCount", "exists",false)
+														->where("payment_mode",'!=', "paymentgateway")
+														->groupBy('customer_email')->lists('customer_email');
+			return $data = array(
+				"link_sent" => count($transactions),
+				"link_sent_purchase" => count($link_sent_purchase),
+				"link_sent_direct_purchase" => count($link_sent_direct_purchase),
+				"link_sent_direct_purchase_offline" => count($link_sent_direct_purchase_offline),
+			);
+	}
     
 }

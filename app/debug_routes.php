@@ -2665,6 +2665,8 @@ Route::get('updatefinderspecialoffertag', function (){
 Route::get('servicetovendormigration', 'DebugController@serviceToVendorMigration');
 Route::get('subcattoofferingsmigration', 'DebugController@subCatToOfferings');
 Route::get('reversemigratevendors', 'DebugController@vendorReverseMigrate');
-
+Route::get('booktrialfunnel','DebugController@booktrial_funnel');
+Route::get('orderfunnel','DebugController@order_funnel');
+Route::get('linksentfunnel','DebugController@linksent_funnel');
 /******************  Service to vendor category API END HERE************************************************/
 #####################################################################################################
