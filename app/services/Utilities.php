@@ -1071,8 +1071,26 @@ Class Utilities {
 
             if ($device) {
 
+                if(isset($device->customer_id) && $device->customer != "" && isset($data['customer_id']) && $data['customer_id'] != ''){
+
+                    $booktrial = \Booktrial::where("customer_id",(int)$data['customer_id'])->where('type','booktrials')->count();
+
+                    if(count($booktrial) > 0){
+
+                        $addWalletData = [
+                            "customer_id" => $data["customer_id"],
+                            "amount" => 250,
+                            "action" => "add_fitcash_plus"
+                        ];
+
+                        $this->addWallet($addWalletData);
+                    }
+                }
+
                 $device->customer_id = (isset($data['customer_id']) && $data['customer_id'] != '') ? (int)$data['customer_id'] : $device->customer_id;
                 $device->update();
+
+
 
             } else {
 
