@@ -163,7 +163,7 @@ class TransactionController extends \BaseController {
 
         $data['code'] = $data['order_id'].str_random(8);
 
-        $data['service_link'] = Config::get('app.website')."/".$data['finder_slug']."/".$data['service_id']."?order_id=".$data['order_id'];
+        $data['service_link'] = Config::get('app.website')."/buy/".$data['finder_slug']."/".$data['service_id'];
 
         $data['payment_link'] = Config::get('app.website')."/paymentlink/".$data['order_id'];
 

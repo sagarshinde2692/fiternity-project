@@ -1928,7 +1928,7 @@ class SchedulebooktrialsController extends \BaseController {
             $amount                             =   (isset($order->amount) && $order->amount != '') ? $order->amount : "";
             $amount_finder                      =   (isset($order->amount_finder) && $order->amount_finder != '') ? $order->amount_finder : "";
 
-            $service_link = Config::get('app.website')."/".$finder_slug."/".$service_id."?booktrial_id=".$booktrialid;
+            $service_link = Config::get('app.website')."/buy/".$finder_slug."/".$service_id;
             $srp_link = Config::get('app.website')."/".$finder_city."/fitness/".$finder_location;
             $vendor_notify_link = Config::get('app.business')."/trial/cancel/".$booktrialid."/".$finderid;
 
@@ -2651,7 +2651,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             $rebook_trial_url         =   $this->rebookTrialUrl($finder_slug, $service_id, $booktrialid);
 
-            $service_link = Config::get('app.website')."/".$finder_slug."/".$service_id."?booktrial_id=".$booktrialid;
+            $service_link = Config::get('app.website')."/buy/".$finder_slug."/".$service_id;
 
             $srp_link = Config::get('app.website')."/".$finder_city."/fitness/".$finder_location;
             $vendor_notify_link = Config::get('app.business')."/trial/cancel/".$booktrialid."/".$finderid;
