@@ -2195,9 +2195,9 @@ class SchedulebooktrialsController extends \BaseController {
 
                 $send_communication["customer_email_before12hour"] = $this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
 
-                if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
+                /*if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
                     $send_communication["customer_notification_before12hour"] = $this->customernotification->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
-                }
+                }*/
 
             }
 
@@ -2226,9 +2226,9 @@ class SchedulebooktrialsController extends \BaseController {
 
                 $send_communication["customer_sms_before3hour"] = $this->customersms->bookTrialReminderBefore3Hour($booktrialdata, $delayReminderTimeBefore3Hour);
 
-                if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
+                /*if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
                     $send_communication["customer_notification_before3hour"] = $this->customernotification->bookTrialReminderBefore3Hour($booktrialdata, $delayReminderTimeBefore3Hour);
-                }
+                }*/
 
             }
 
@@ -2259,9 +2259,9 @@ class SchedulebooktrialsController extends \BaseController {
 
                 $send_communication["customer_sms_before20Min"] = $this->customersms->bookTrialReminderBefore20Min($booktrialdata, $delayReminderTimeBefore20Min);
 
-                if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
+                /*if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
                     $send_communication["customer_notification_before20Min"] = $this->customernotification->bookTrialReminderBefore20Min($booktrialdata, $delayReminderTimeBefore20Min);
-                }
+                }*/
 
                 $booktrial->missedcall_batch = $batch;
             }
@@ -2271,9 +2271,9 @@ class SchedulebooktrialsController extends \BaseController {
             $send_communication["customer_sms_after2hour"] = $this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter90Min);
             $send_communication["customer_email_after2hour"] = $this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter90Min);
 
-            if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
+            /*if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
                 $send_communication["customer_notification_after2hour"] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter90Min);
-            }
+            }*/
 
             $booktrial->send_communication = $send_communication;
             $booktrial->update();
@@ -2295,15 +2295,15 @@ class SchedulebooktrialsController extends \BaseController {
             "finder_email_instant",
             "finder_sms_instant",
             "customer_email_before12hour",
-            "customer_notification_before12hour",
+            //"customer_notification_before12hour",
             "finder_sms_before6hour",
             "customer_sms_before3hour",
-            "customer_notification_before3hour",
+            //"customer_notification_before3hour",
             "customer_sms_before20Min",
-            "customer_notification_before20Min",
+           // "customer_notification_before20Min",
             "customer_sms_after2hour",
             "customer_email_after2hour",
-            "customer_notification_after2hour",
+           // "customer_notification_after2hour",
         ];
 
         foreach ($array as $value) {
@@ -4504,7 +4504,7 @@ class SchedulebooktrialsController extends \BaseController {
                     }else{
                         $booktrial->followup_date = date('Y-m-d H:i:s',strtotime($booktrial->schedule_date.' +3 days'));
                     }
-                    
+
                     break;
                 }
                 $booktrial->post_trial_status_reason = (isset($data['reason']) && $data['reason'] != "") ? $data['reason'] : "";
