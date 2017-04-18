@@ -141,7 +141,6 @@ class FindersController extends \BaseController {
 				->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1')->orderBy('_id', 'DESC')->limit(5);}))
 				// ->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1')->orderBy('_id', 'DESC');}))
 				->first();
-		
 
 			unset($finderarr['ratecards']);
 
@@ -527,6 +526,10 @@ class FindersController extends \BaseController {
 										}
 									}
 								}
+							}
+
+							if((isset($finderarr['membership']) && $finderarr['membership'] == 'disable') || isset($service['membership']) && $service['membership'] == 'disable'){
+								$service['offer_available'] = false;
 							}
 
 
@@ -2236,6 +2239,8 @@ class FindersController extends \BaseController {
 				continue ;
 			}
 
+
+
 			array_push($scheduleservices, $service);
 			}
 		}
@@ -2696,6 +2701,12 @@ class FindersController extends \BaseController {
 		        	$data['finder']['services']  = array_merge($category_slug_services, $non_category_slug_services);
 
 					$data['finder']['services'] = $this->sortNoMembershipServices($data['finder']['services'], 'finderDetailApp');
+
+					foreach($data['finder']['services'] as &$serviceObj){
+						if((isset($finder['membership']) && $finder['membership']=='disable') || (isset($serviceObj['membership']) && $serviceObj['membership']=='disable')){
+							$serviceObj['offer_available'] = false;
+						}
+					}
 
 					/*if(isset($data['finder']['services']['offer_icon_vendor'])){
 
