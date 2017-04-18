@@ -1181,14 +1181,15 @@ Class Utilities {
 
     public function getShortenUrl($url){
 
-        $shorten_url    =   new ShortenUrl();
-        $url            =   $shorten_url->getShortenUrl($url);
+        $shortenUrl = new ShortenUrl();
+        $shorten_url = $shortenUrl->getShortenUrl($url);
 
-        if(isset($url['status']) &&  $url['status'] == 200){
-            $profile_url = $url['url'];
+        if(isset($shorten_url['status']) &&  $shorten_url['status'] == 200){
+            $url =  $shorten_url['url'];
         }
 
-        return $profile_url;
+        return $url;
+
     }
 
 }

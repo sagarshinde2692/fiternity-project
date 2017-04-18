@@ -1928,9 +1928,12 @@ class SchedulebooktrialsController extends \BaseController {
             $amount                             =   (isset($order->amount) && $order->amount != '') ? $order->amount : "";
             $amount_finder                      =   (isset($order->amount_finder) && $order->amount_finder != '') ? $order->amount_finder : "";
 
-            $service_link = Config::get('app.website')."/buy/".$finder_slug."/".$service_id;
-            $srp_link = Config::get('app.website')."/".$finder_city."/fitness/".$finder_location;
-            $vendor_notify_link = Config::get('app.business')."/trial/cancel/".$booktrialid."/".$finderid;
+            $service_link = $this->utilities->getShortenUrl(Config::get('app.website')."/buy/".$finder_slug."/".$service_id);
+            $srp_link =  $this->utilities->getShortenUrl(Config::get('app.website')."/".$finder_city."/fitness/".$finder_location);
+            $vendor_notify_link =  $this->utilities->getShortenUrl(Config::get('app.business')."/trial/cancel/".$booktrialid."/".$finderid);
+            $pay_as_you_go_link =  $this->utilities->getShortenUrl(Config::get('app.website')."/workout/".$finder_city."?regions=".$finder_location);
+            $profile_link = $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$customer_email);
+            $vendor_link = $this->utilities->getShortenUrl(Config::get('app.website')."/".$finder_slug);
 
             $booktrialdata = array(
                 'booktrialid'                   =>      intval($booktrialid),
@@ -2022,6 +2025,9 @@ class SchedulebooktrialsController extends \BaseController {
                 'service_link'                  =>      $service_link,
                 'srp_link'                      =>      $srp_link,
                 'vendor_notify_link'            =>      $vendor_notify_link,
+                'pay_as_you_go_link'            =>      $pay_as_you_go_link,
+                'profile_link'                  =>      $profile_link,
+                'vendor_link'                   =>      $vendor_link
             );
 
             if ($medical_detail != "" && $medication_detail != "") {
@@ -2059,8 +2065,39 @@ class SchedulebooktrialsController extends \BaseController {
                 }
             }
 
-            // return $this->customersms->bookTrial($booktrialdata);
-//             return $booktrialdata;
+            //give fitcash plus for first workout session
+            $give_fitcash_plus = true;
+            $allOrderIds = Order::active()->where("customer_id",$customer_id)->where('type','workout-session')->lists("_id");
+
+            if(!empty($allOrderIds)){
+
+                $allOrderIds = array_map("intval", $allOrderIds);
+
+                $customerWalletCount = Customerwallet::where("customer_id",$customer_id)->whereIn("order_id",$allOrderIds)->count();
+
+                $give_fitcash_plus = false;
+
+                if($customerWalletCount == 0){
+                    $give_fitcash_plus = true;
+                }
+            }
+
+            if($give_fitcash_plus && $type == "workout-session"){
+
+                $walletData = array(
+                    "customer_id"=> $customer_id,
+                    "amount"=> 250,
+                    "amount_fitcash" => 0,
+                    "amount_fitcash_plus" => 250,
+                    "type"=>'FITCASHPLUS',
+                    "description"=>'Added Fitcash Plus on Workout Session amount - 250',
+                    "order_id"=>$order->_id
+                );
+
+                $this->utilities->walletTransaction($walletData);
+            }
+
+            $booktrialdata['give_fitcash_plus'] = $give_fitcash_plus;
 
             if(isset($order->booktrial_id)){
 
@@ -2099,6 +2136,37 @@ class SchedulebooktrialsController extends \BaseController {
 
             if(isset($order->payment_mode) && $order->payment_mode == "paymentgateway"){
                 array_set($orderData, 'secondary_payment_mode', 'payment_gateway_membership');
+            }
+
+            $give_fitcash_plus = true;
+            $allOrderIds = Order::where("customer_id",$customer_id)->where('type','workout-session')->lists("_id");
+
+            if(!empty($allOrderIds)){
+
+                $allOrderIds = array_map("intval", $allOrderIds);
+
+                $customerWalletCount = Customerwallet::where("customer_id",$customer_id)->whereIn("order_id",$allOrderIds)->count();
+
+                $give_fitcash_plus = false;
+
+                if($customerWalletCount == 0){
+                    $give_fitcash_plus = true;
+                }
+            }
+
+            if($give_fitcash_plus && $type == "workout-session"){
+
+                $walletData = array(
+                    "customer_id"=> $customer_id,
+                    "amount"=> 250,
+                    "amount_fitcash" => 0,
+                    "amount_fitcash_plus" => 250,
+                    "type"=>'FITCASHPLUS',
+                    "description"=>'Added Fitcash Plus on Workout Session amount - 250',
+                    "order_id"=>$order->_id
+                );
+
+                $this->utilities->walletTransaction($walletData);
             }
 
             $order->update($orderData);
@@ -2656,10 +2724,12 @@ class SchedulebooktrialsController extends \BaseController {
 
             $rebook_trial_url         =   $this->rebookTrialUrl($finder_slug, $service_id, $booktrialid);
 
-            $service_link = Config::get('app.website')."/buy/".$finder_slug."/".$service_id;
-
-            $srp_link = Config::get('app.website')."/".$finder_city."/fitness/".$finder_location;
-            $vendor_notify_link = Config::get('app.business')."/trial/cancel/".$booktrialid."/".$finderid;
+            $service_link = $this->utilities->getShortenUrl(Config::get('app.website')."/buy/".$finder_slug."/".$service_id);
+            $srp_link = $this->utilities->getShortenUrl(Config::get('app.website')."/".$finder_city."/fitness/".$finder_location);
+            $vendor_notify_link = $this->utilities->getShortenUrl(Config::get('app.business')."/trial/cancel/".$booktrialid."/".$finderid);
+            $pay_as_you_go_link = $this->utilities->getShortenUrl(Config::get('app.website')."/workout/".$finder_city."?regions=".$finder_location);
+            $profile_link = $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$customer_email);
+            $vendor_link = $this->utilities->getShortenUrl(Config::get('app.website')."/".$finder_slug);
 
             $booktrialdata = array(
 
@@ -2751,6 +2821,9 @@ class SchedulebooktrialsController extends \BaseController {
                 'service_link'                  =>      $service_link,
                 'srp_link'                      =>      $srp_link,
                 'vendor_notify_link'            =>      $vendor_notify_link,
+                'pay_as_you_go_link'            =>      $pay_as_you_go_link,
+                'profile_link'                  =>      $profile_link,
+                'vendor_link'                   =>      $vendor_link
 
             );
 
@@ -4895,18 +4968,8 @@ class SchedulebooktrialsController extends \BaseController {
 
             if($order && isset($order['customer_id']) && isset($order['amount']) && $order['amount'] > 0 && $order['amount'] != ""){
 
-                $order_amount           =       $order['amount'];
-                $amounttobeadded        =       intval((50/100) * $order_amount);   //50% of order amount
                 $customer_id            =       intval($order['customer_id']);
-
-                $customerwallet 		= 		\Customerwallet::where('customer_id',$customer_id)->orderBy('_id', 'desc')->first();
-                if($customerwallet){
-                    $customer_balance 	=	$customerwallet['balance'] + $amounttobeadded;
-                }else{
-                    $customer_balance 	=	 $amounttobeadded;
-                }
-
-                $cashback_amount 	=	$amounttobeadded;
+                $cashback_amount 	    =	    intval((50/100) * $order['amount']);
 
                 $walletData = array(
                     "customer_id"=> $customer_id,
@@ -4914,12 +4977,11 @@ class SchedulebooktrialsController extends \BaseController {
                     "amount_fitcash" => $cashback_amount,
                     "amount_fitcash_plus" => 0,
                     "type"=>'CASHBACK',
-                    "balance"=>	$customer_balance,
                     "description"=>'CASHBACK ON Invite amount - '.$cashback_amount,
                     "order_id"=>$order->_id
                 );
 
-                $this->utilities->walletTransaction($req,$walletData);
+                $this->utilities->walletTransaction($walletData);
 
                 // return $walletData;
 

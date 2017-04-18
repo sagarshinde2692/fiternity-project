@@ -163,18 +163,6 @@ class TransactionController extends \BaseController {
 
         $data['code'] = $data['order_id'].str_random(8);
 
-        $data['service_link'] = Config::get('app.website')."/buy/".$data['finder_slug']."/".$data['service_id'];
-
-        $data['payment_link'] = Config::get('app.website')."/paymentlink/".$data['order_id'];
-
-        if(in_array($data['type'],$this->membership_array) && isset($data['ratecard_id']) && $data['ratecard_id'] != ""){
-            $data['payment_link'] = Config::get('app.website')."/buy/".$data['finder_slug']."/".$data['service_id']."/".$data['ratecard_id']."/".$data['order_id'];
-        }
-
-        $data['vendor_link'] = Config::get('app.website')."/".$data['finder_slug'];
-
-        $data['profile_link'] = Config::get('app.website')."/profile/".$data['customer_email'];
-
         if(isset($data['referal_trial_id'])){
 
             $data['referal_trial_id'] = (int) $data['referal_trial_id'];
@@ -211,12 +199,17 @@ class TransactionController extends \BaseController {
 
         $data = $this->unsetData($data);
 
-        $data['payment_link'] = Config::get('app.website')."/paymentlink/".$data['order_id'];
+        $data['service_link'] = $this->utilities->getShortenUrl(Config::get('app.website')."/buy/".$data['finder_slug']."/".$data['service_id']);
+
+        $data['payment_link'] = $this->utilities->getShortenUrl(Config::get('app.website')."/paymentlink/".$data['order_id']);
 
         if(in_array($data['type'],$this->membership_array) && isset($data['ratecard_id']) && $data['ratecard_id'] != ""){
-            $data['payment_link'] = Config::get('app.website')."/buy/".$data['finder_slug']."/".$data['service_id']."/".$data['ratecard_id']."/".$data['order_id'];
-
+            $data['payment_link'] = $this->utilities->getShortenUrl(Config::get('app.website')."/buy/".$data['finder_slug']."/".$data['service_id']."/".$data['ratecard_id']."/".$data)['order_id'];
         }
+
+        $data['vendor_link'] = $this->utilities->getShortenUrl(Config::get('app.website')."/".$data['finder_slug']);
+
+        $data['profile_link'] = $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$data['customer_email']);
 
         if(isset($old_order_id)){
 
