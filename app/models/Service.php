@@ -241,7 +241,6 @@ class Service extends \Basemodel{
 									$second_max_validity_ids = $max_validity_ids;
 									$max_validity_ids = [$value['_id']];
 									$max_validity = $validity;
-
 								}else if($validity > $second_max_validity && $validity < $max_validity){
 									$second_max_validity = $validity;
 									$second_max_validity_ids = [$value['_id']];
@@ -288,17 +287,17 @@ class Service extends \Basemodel{
 					}
 				}
 				
-				$max_validity_ids = array_merge($max_validity_ids, $second_max_validity_ids);
 				array_push($ratecards, $value);
 			}
 
 			if(isset($this['offer_available']) && $this->offer_available){
+				$max_validity_ids = array_merge($max_validity_ids, $second_max_validity_ids);
 				foreach($ratecards as &$value){
 					if((in_array($value['_id'], $max_validity_ids))){
 						// Log::info($value);
 						// if($value[])
 						$value['offers'][0]['offer_text'] = '';
-						$value['offers'][0]['offer_icon'] = 'https://b.fitn.in/iconsv1/fitmania/hot_offer_vendorclea.png';
+						$value['offers'][0]['offer_icon'] = 'https://b.fitn.in/iconsv1/fitmania/hot_offer_vendor.png';
 					}
 				}
 			}
