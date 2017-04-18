@@ -2138,37 +2138,6 @@ class SchedulebooktrialsController extends \BaseController {
                 array_set($orderData, 'secondary_payment_mode', 'payment_gateway_membership');
             }
 
-            $give_fitcash_plus = true;
-            $allOrderIds = Order::where("customer_id",$customer_id)->where('type','workout-session')->lists("_id");
-
-            if(!empty($allOrderIds)){
-
-                $allOrderIds = array_map("intval", $allOrderIds);
-
-                $customerWalletCount = Customerwallet::where("customer_id",$customer_id)->whereIn("order_id",$allOrderIds)->count();
-
-                $give_fitcash_plus = false;
-
-                if($customerWalletCount == 0){
-                    $give_fitcash_plus = true;
-                }
-            }
-
-            if($give_fitcash_plus && $type == "workout-session"){
-
-                $walletData = array(
-                    "customer_id"=> $customer_id,
-                    "amount"=> 250,
-                    "amount_fitcash" => 0,
-                    "amount_fitcash_plus" => 250,
-                    "type"=>'FITCASHPLUS',
-                    "description"=>'Added Fitcash Plus on Workout Session amount - 250',
-                    "order_id"=>$order->_id
-                );
-
-                $this->utilities->walletTransaction($walletData);
-            }
-
             $order->update($orderData);
 
 
