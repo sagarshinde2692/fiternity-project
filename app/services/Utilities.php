@@ -10,6 +10,7 @@ use Finder;
 use Request;
 use Log;
 use App\Services\Sidekiq as Sidekiq;
+use App\Services\ShortenUrl as ShortenUrl;
 use Device;
 
 Class Utilities {
@@ -1176,6 +1177,18 @@ Class Utilities {
 
         return "error";
 
+    }
+
+    public function getShortenUrl($url){
+
+        $shorten_url    =   new ShortenUrl();
+        $url            =   $shorten_url->getShortenUrl($url);
+
+        if(isset($url['status']) &&  $url['status'] == 200){
+            $profile_url = $url['url'];
+        }
+
+        return $profile_url;
     }
 
 }
