@@ -587,7 +587,7 @@ class ServiceController extends \BaseController {
 
   
     public function getScheduleByFinderService($request = false,$count = 1){
-
+		return;
     	if(!$request){
 
     		$request = $_REQUEST;
