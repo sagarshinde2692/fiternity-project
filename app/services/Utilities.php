@@ -1072,28 +1072,17 @@ Class Utilities {
 
             if ($device) {
 
-                if(isset($device->customer_id) && $device->customer == "" && isset($data['customer_id']) && $data['customer_id'] != ''){
-
-                    $booktrial = \Booktrial::where("customer_id",(int)$data['customer_id'])->where('type','booktrials')->count();
-
-                    if(count($booktrial) > 0){
-
-                        $addWalletData = [
-                            "customer_id" => $data["customer_id"],
-                            "amount" => 250,
-                            "action" => "add_fitcash_plus"
-                        ];
-
-                        $this->addWallet($addWalletData);
-                    }
-                }
-
                 $device->customer_id = (isset($data['customer_id']) && $data['customer_id'] != '') ? (int)$data['customer_id'] : $device->customer_id;
                 $device->update();
 
-
-
             } else {
+
+                $allDeviceCount = 0;
+
+                if(isset($data['customer_id']) && $data['customer_id'] != ''){
+
+                    $allDeviceCount = Device::where('customer_id', (int)$data['customer_id'])->count();
+                }
 
                 $device_id = Device::max('_id') + 1;
                 $device = new Device();
@@ -1103,9 +1092,8 @@ Class Utilities {
                 $device->type = $data['type'];
                 $device->status = "1";
                 $device->save();
-
-
-                if(isset($data['customer_id']) && $data['customer_id'] != ''){
+                
+                if($allDeviceCount == 0 && isset($data['customer_id']) && $data['customer_id'] != ''){
 
                     $booktrial = \Booktrial::where("customer_id",(int)$data['customer_id'])->where('type','booktrials')->count();
 
@@ -1114,7 +1102,8 @@ Class Utilities {
                         $addWalletData = [
                             "customer_id" => $data["customer_id"],
                             "amount" => 250,
-                            "action" => "add_fitcash_plus"
+                            "action" => "add_fitcash_plus",
+                            "description" => "Added Fitcash Plus Rs 250 on App Download"
                         ];
 
                         $this->addWallet($addWalletData);
@@ -1163,6 +1152,10 @@ Class Utilities {
             $req['amount_fitcash_plus'] = $amount;
             $req['type'] = "FITCASHPLUS";
             $req['description'] = "Added Fitcash Plus Rs ".$amount;
+        }
+
+        if(isset($data['description']) && $data['description'] != ""){
+            $req['description'] = $data['description'];
         }
 
         $walletTransactionResponse = $this->walletTransaction($req)->getData();
