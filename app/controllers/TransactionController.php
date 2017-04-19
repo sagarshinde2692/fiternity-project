@@ -1562,7 +1562,7 @@ class TransactionController extends \BaseController {
 
             $order->notification_status = 'abandon_cart_yes';
 
-            $order->update;
+            $order->update();
 
             return "success";
 
