@@ -2369,6 +2369,10 @@ class FindersController extends \BaseController {
 				$finder['open_now']                     =   false;
 				$finder['open_close_hour_for_week']     =   [];
 
+				if(isset($finderarr['category_id']) && $finderarr['category_id'] != ""){
+					$finder['category_id'] = $finderarr['category_id'];
+				}
+
 				if(isset($finderarr['category_id']) && $finderarr['category_id'] == 5){
 
 
@@ -2467,6 +2471,11 @@ class FindersController extends \BaseController {
 						}// trialschedules
 
 					}
+				}
+
+				if(isset($finderarr['category_id']) && $finderarr['category_id'] == 41){
+					$finder['trial'] = 'disable';
+					$finder['membership'] = 'disable';
 				}
 
 				if($finder['today_opening_hour'] != NULL && $finder['today_closing_hour'] != NULL){
@@ -2848,6 +2857,17 @@ class FindersController extends \BaseController {
 							$finderData['finder']['services'][$key]['membership'] = "disable";
 							$value["membership"] == "disable";
 						}
+
+						//remove book and buy button frompersonal trainer
+						if(isset($finderData['finder']['category_id']) && $finderData['finder']['category_id'] == 41){
+
+							$finderData['finder']['services'][$key]['trial'] = "disable";
+							$value["trial"] == "disable";
+
+							$finderData['finder']['services'][$key]['membership'] = "disable";
+							$value["membership"] == "disable";
+						}
+
 
 						if(isset($value["trial"]) && $value["trial"] == "disable"){
 							$disable_button[] = "true";
