@@ -78,7 +78,7 @@ class FindersController extends \BaseController {
 
 
 
-	public function finderdetail($slug, $cache = true){
+	public function finderdetail($slug, $cache = false){
 		
 		$data   =  array();
 		$tslug  = (string) strtolower($slug);
@@ -2250,7 +2250,7 @@ class FindersController extends \BaseController {
 		return $scheduleservices;
 	}
 
-	public function finderDetailApp($slug, $cache = true){
+	public function finderDetailApp($slug, $cache = false){
 
 		$data   =  array();	
 		$tslug  = (string) strtolower($slug);
@@ -2793,7 +2793,7 @@ class FindersController extends \BaseController {
 					if(isset($customer['bookmarks']) && is_array($customer['bookmarks']) && in_array($finder['_id'],$customer['bookmarks'])){
 						$finderData['finder']['bookmark'] = true;
 					}
-
+					
 					$customer_trials_with_vendors       =       Booktrial::where(function ($query) use($customer_email, $customer_phone) { $query->where('customer_email', $customer_email)->orWhere('customer_phone', $customer_phone);})
 						->where('finder_id', '=', (int) $finder->_id)
 						->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
@@ -2834,10 +2834,8 @@ class FindersController extends \BaseController {
 
 
 				if(!empty($finderData['finder']['services'])){
-
 					$disable_button = [];
 					foreach ($finderData['finder']['services'] as $key => $value) {
-
 						if(isset($finderData['finder']['trial']) && $finderData['finder']['trial'] == "disable" ){
 							$finderData['finder']['services'][$key]['trial'] = "disable";
 							$value["trial"] == "disable";
@@ -2853,6 +2851,15 @@ class FindersController extends \BaseController {
 							$disable_button[] = "true";
 						}else{
 							$disable_button[] = "false";
+						}
+						$finderData['finder']['services'][$key]['pay_per_session'] = false;
+
+						if(isset($finderData['finder']['pay_per_session']) && $finderData['finder']['pay_per_session'] && isset($finderData['finder']['trial']) && $finderData['finder']['trial'] != 'disable' && isset($finderData['finder']['services'][$key]['trial']) && $finderData['finder']['services'][$key]['trial'] != 'disable'){
+							foreach($value['ratecard'] as $ratecard){
+								if($ratecard['type']=='workout session'){
+									$finderData['finder']['services'][$key]['pay_per_session'] = true;
+								}
+							}
 						}
 					}
 
