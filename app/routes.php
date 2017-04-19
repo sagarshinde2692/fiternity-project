@@ -10,10 +10,10 @@ App::error(function(Illuminate\Database\Eloquent\ModelNotFoundException $e){
 	return Response::json('not found',404);
 });
 
-// Event::listen('illuminate.query', function($query)
-// {
-//    Log::info($query);
-// });
+Event::listen('illuminate.query', function($query)
+{
+   Log::info($query);
+});
 
 
 
