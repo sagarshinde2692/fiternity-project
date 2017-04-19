@@ -2251,6 +2251,7 @@ class FindersController extends \BaseController {
 	}
 
 	public function finderDetailApp($slug, $cache = true){
+		return;
 
 		$data   =  array();	
 		$tslug  = (string) strtolower($slug);
