@@ -4,7 +4,7 @@ class Order extends \Basemodel {
 
 	protected $collection = "orders";
 	
-	protected $dates = array('preferred_starting_date','start_date','start_date_starttime','end_date','preferred_payment_date','success_date','pg_date','preferred_starting_change_date','dietplan_start_date','followup_date', 'order_confirmation_date');
+	protected $dates = array('preferred_starting_date','start_date','start_date_starttime','end_date','preferred_payment_date','success_date','pg_date','preferred_starting_change_date','dietplan_start_date','followup_date', 'order_confirmation_customer');
 
 	protected $hidden = array('verify_payment_hash');
 	

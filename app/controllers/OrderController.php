@@ -2338,7 +2338,7 @@ class OrderController extends \BaseController {
             $data = array_merge($data,$hash);
 
             if(isset($data['reward_ids']) && !empty($data['reward_ids']) && isset($data['preferred_payment_date']) && $data['preferred_payment_date']  != ''){
-                $data['order_confirmation_date']= date('Y-m-d H:i:s',time());
+                $data['order_confirmation_customer']= date('Y-m-d H:i:s',time());
             } 
 
             $order->update($data);
