@@ -378,7 +378,7 @@ class FindersController extends \BaseController {
 				array_set($finder, 'locationtags', pluck( $finderarr['locationtags'] , array('_id', 'name', 'slug') ));
 				array_set($finder, 'offerings', pluck( $finderarr['offerings'] , array('_id', 'name', 'slug') ));
 				array_set($finder, 'facilities', pluck( $finderarr['facilities'] , array('_id', 'name', 'slug') ));
-
+				
 			   //return $finderarr['services'];
 
 				if(count($finder['photos']) > 0 ){
@@ -431,14 +431,18 @@ class FindersController extends \BaseController {
 
 				}
 				// $finder['offer_icon'] = "https://b.fitn.in/iconsv1/womens-day/womens-day-mobile-banner.svg";
-
+				$finder['pay_per_session'] = true;
+				if(isset($finder['trial']) && $finder['trial']=='disable'){
+					$finder['pay_per_session'] = false;
+				}
+				$pay_per_session = false;
 				if(count($finder['services']) > 0 ){
 
 					$serviceArr                             =   [];
 					$sericecategorysCalorieArr              =   Config::get('app.calorie_burn_categorywise');
 					$sericecategorysWorkoutResultArr        =   Config::get('app.workout_results_categorywise');
 
-					foreach ($finder['services'] as $service){
+					foreach ($finder['services'] as $key => $service){
 
 						if(!isset($service['showOnFront']) || ((isset($service['showOnFront']) && $service['showOnFront']))){
 
@@ -531,11 +535,26 @@ class FindersController extends \BaseController {
 							if((isset($finderarr['membership']) && $finderarr['membership'] == 'disable') || isset($service['membership']) && $service['membership'] == 'disable'){
 								$service['offer_available'] = false;
 							}
+							
+							$finder['services'][$key]['pay_per_session'] = false;
 
+							if(isset($finder['pay_per_session']) && $finder['pay_per_session'] && isset($finder['trial']) && $finder['trial'] != 'disable' && isset($finder['services'][$key]['trial']) && $finder['services'][$key]['trial'] != 'disable'){
+								foreach($service['serviceratecard'] as $ratecard){
+									if($ratecard['type']=='workout session'){
+										$finder['services'][$key]['pay_per_session'] = true;
+										$pay_per_session = true;
+									}
+								}
+							}
 
+							if(!$pay_per_session){
+								$finder['pay_per_session'] = false;
+							}
 							array_push($serviceArr, $service);
 						}
 					}
+
+
 
 					array_set($finder, 'services', $serviceArr);
 
@@ -2835,6 +2854,7 @@ class FindersController extends \BaseController {
 
 				if(!empty($finderData['finder']['services'])){
 					$disable_button = [];
+					$pay_per_session = false;
 					foreach ($finderData['finder']['services'] as $key => $value) {
 						if(isset($finderData['finder']['trial']) && $finderData['finder']['trial'] == "disable" ){
 							$finderData['finder']['services'][$key]['trial'] = "disable";
@@ -2858,9 +2878,14 @@ class FindersController extends \BaseController {
 							foreach($value['ratecard'] as $ratecard){
 								if($ratecard['type']=='workout session'){
 									$finderData['finder']['services'][$key]['pay_per_session'] = true;
+									$pay_per_session = true;
 								}
 							}
 						}
+					}
+
+					if(!$pay_per_session){
+						$finderData['finder']['pay_per_session'] = false;
 					}
 
 					if(!in_array("false", $disable_button)){
