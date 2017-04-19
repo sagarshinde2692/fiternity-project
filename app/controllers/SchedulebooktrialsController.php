@@ -2099,6 +2099,8 @@ class SchedulebooktrialsController extends \BaseController {
 
             $booktrialdata['give_fitcash_plus'] = $give_fitcash_plus;
 
+            $this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
+
             if(isset($order->booktrial_id)){
 
                 if(isset($order->finder_slug) && isset($order->service_id) && isset($order->booktrial_id) ){
