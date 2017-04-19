@@ -33,7 +33,7 @@ Class ShortenUrl {
             return $error;
         }
 
-        $longUrl = rtrim($longUrl,'/').'/';
+        $longUrl = rtrim($longUrl,'/');
         
         $json = array('longUrl'=>$longUrl);
 
