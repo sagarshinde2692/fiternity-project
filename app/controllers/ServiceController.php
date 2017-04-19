@@ -801,7 +801,7 @@ class ServiceController extends \BaseController {
 
         $schedules = array_merge($schedules_sort_passed_false,$schedules_sort_passed_true,$schedules_slots_empty);
 
-        if(!$flag && $count < 7 && $recursive){
+        if((!$flag && $count < 7 && $recursive) || $slot_passed_flag){
 
         	$count += 1;
 
