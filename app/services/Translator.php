@@ -1218,7 +1218,7 @@ public static function translate_searchresultsv4($es_searchresult_response,$sear
 							}
 							if(in_array("Base location",$regions['location'])){
 								$regions['location'] = str_replace("Base location",$result['location'],$regions['location']);
-								Log::info($regions['location']);
+								// Log::info($regions['location']);
 								$result['multiaddress'][$key]['location'] = $regions['location'];
 							}
 						}
