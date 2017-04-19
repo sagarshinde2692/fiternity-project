@@ -1077,6 +1077,13 @@ Class Utilities {
 
             } else {
 
+                $allDeviceCount = 0;
+
+                if(isset($data['customer_id']) && $data['customer_id'] != ''){
+
+                    $allDeviceCount = Device::where('customer_id', (int)$data['customer_id'])->count();
+                }
+
                 $device_id = Device::max('_id') + 1;
                 $device = new Device();
                 $device->_id = $device_id;
@@ -1085,8 +1092,8 @@ Class Utilities {
                 $device->type = $data['type'];
                 $device->status = "1";
                 $device->save();
-
-                if(isset($data['customer_id']) && $data['customer_id'] != ''){
+                
+                if($allDeviceCount == 0 && isset($data['customer_id']) && $data['customer_id'] != ''){
 
                     $booktrial = \Booktrial::where("customer_id",(int)$data['customer_id'])->where('type','booktrials')->count();
 
