@@ -2315,6 +2315,10 @@ class SchedulebooktrialsController extends \BaseController {
             $send_communication["customer_sms_after2hour"] = $this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter90Min);
             $send_communication["customer_email_after2hour"] = $this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter90Min);
 
+            if($booktrialdata['type'] == "booktrials" && isset($booktrialdata['amount']) && $booktrialdata['amount'] != "" && $booktrialdata['amount'] > 0){
+                $this->customersms->giveCashbackOnTrialOrderSuccessAndInvite($booktrialdata);
+            }
+
             /*if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
                 $send_communication["customer_notification_after2hour"] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter90Min);
             }*/
