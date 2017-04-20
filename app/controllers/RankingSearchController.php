@@ -2634,6 +2634,16 @@ public function getRankedFinderResultsAppv4()
         $facetsvalue = trim($regions_facets.$locationtags_facets.$facilities_facets.$offerings_facets.$budgets_facets.$trialdays_facets.$category_facets,',');
 
         $body = '{
+            "fields": ["_source"],
+    "script_fields":{
+        "distance": {
+          "params": {
+            "lat": '.$lat.',
+            "lon": '.$lon.'
+        },
+        "script": "doc[\'geolocation\'].distanceInKm(lat,lon)"
+    }
+},
             "from": '.$from.',
             "size": '.$size.',
             "aggs": {'.$facetsvalue.'},
@@ -2660,7 +2670,7 @@ public function getRankedFinderResultsAppv4()
 
         $search_results     =   es_curl_request($request);
         // Log::info("Response from ES : ".time());
-        $search_results1    =   json_decode($search_results, true);
+         $search_results1    =   json_decode($search_results, true);
         $search_request     =   Input::json()->all();
         $searchresulteresponse = Translator::translate_searchresultsv4($search_results1,$search_request,$keys);
         // Log::info("Response from Translator : ".time());
