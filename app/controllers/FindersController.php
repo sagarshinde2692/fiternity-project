@@ -78,7 +78,7 @@ class FindersController extends \BaseController {
 
 
 
-	public function finderdetail($slug, $cache = true){
+	public function finderdetail($slug, $cache = false){
 		
 		$data   =  array();
 		$tslug  = (string) strtolower($slug);
@@ -1991,14 +1991,14 @@ class FindersController extends \BaseController {
 
 		if(isset($_GET['device_type']) && $_GET['device_type'] == 'android'){
 
-			$items = Service::active()->where('finder_id', $finder_id)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos','trial','membership', 'traction', 'location_id'))->toArray();
+			$items = Service::active()->where('finder_id', $finder_id)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos','trial','membership', 'traction', 'location_id', 'offer_available'))->toArray();
 
 		}else{
 
 			$membership_services = Ratecard::where('finder_id', $finder_id)->orWhere('type','membership')->orWhere('type','packages')->lists('service_id');
 			$membership_services = array_map('intval',$membership_services);
 
-			$items = Service::active()->whereIn('_id',$membership_services)->where('finder_id', $finder_id)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos','trial','membership', 'traction', 'location_id'))->toArray();
+			$items = Service::active()->whereIn('_id',$membership_services)->where('finder_id', $finder_id)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos','trial','membership', 'traction', 'location_id','offer_available'))->toArray();
 
 		}
 
@@ -2098,7 +2098,8 @@ class FindersController extends \BaseController {
 				'offer_icon' => "",
 				'servicecategory_id' => $item['servicecategory_id'],
 				'traction' => isset($item['traction']) ? $item['traction'] : array("trials"=>0,"sales"=>0),
-				'location_id' => $item['location_id']
+				'location_id' => $item['location_id'],
+				'offer_available' => $item['offer_available']
 			);
 
 			if(isset($item['offer_available']) && $item['offer_available'] == true){
@@ -2113,59 +2114,58 @@ class FindersController extends \BaseController {
 
 				foreach ($item['serviceratecard'] as $ratekey => $rateval){
 
-					
-
-
 					//for ratecards offers
 					$ratecardoffers     =   [];
 
 
+					if(!isset($rateval['offers']) || (isset($rateval['offers']) && count($rateval['offers'])==0)){
+						if(!empty($rateval['_id']) && isset($rateval['_id'])){
+							$ratecardoffersRecards  =   Offer::where('ratecard_id', intval($rateval['_id']))->where('hidden', false)->orderBy('order', 'asc')
+								->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
+								->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()) ))
+								->get(['start_date','end_date','price','type','allowed_qty','remarks'])
+								->toArray();
 
-					if(!empty($rateval['_id']) && isset($rateval['_id'])){
-						$ratecardoffersRecards  =   Offer::where('ratecard_id', intval($rateval['_id']))->where('hidden', false)->orderBy('order', 'asc')
-							->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
-							->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()) ))
-							->get(['start_date','end_date','price','type','allowed_qty','remarks'])
-							->toArray();
 
+							if(count($ratecardoffersRecards) > 0){ 
 
-						if(count($ratecardoffersRecards) > 0){ 
+								$service['offer_icon'] = "https://b.fitn.in/iconsv1/fitmania/mob_offer_ratecard.png";
+								//$offer_icon_vendor = "https://b.fitn.in/iconsv1/fitmania/offer_available_search.png";
+								
+								foreach ($ratecardoffersRecards as $ratecardoffersRecard){
+									$ratecardoffer                  =   $ratecardoffersRecard;
+									$ratecardoffer['offer_text']    =   "";
+									$ratecardoffer['offer_icon']    =   "https://b.fitn.in/iconsv1/fitmania/hot_offer_vendor.png";
 
-							$service['offer_icon'] = "https://b.fitn.in/iconsv1/fitmania/mob_offer_ratecard.png";
-							//$offer_icon_vendor = "https://b.fitn.in/iconsv1/fitmania/offer_available_search.png";
-							
-							foreach ($ratecardoffersRecards as $ratecardoffersRecard){
-								$ratecardoffer                  =   $ratecardoffersRecard;
-								$ratecardoffer['offer_text']    =   "";
-								$ratecardoffer['offer_icon']    =   "https://b.fitn.in/iconsv1/fitmania/hot_offer_vendor.png";
+									if(isset($rateval['flags'])){
 
-								if(isset($rateval['flags'])){
+										if(isset($rateval['flags']['discother']) && $rateval['flags']['discother'] == true){
+											$ratecardoffer['offer_text']    =   "";
+											$ratecardoffer['offer_icon']    =   "https://b.fitn.in/iconsv1/womens-day/women-only.png";
+										}
 
-									if(isset($rateval['flags']['discother']) && $rateval['flags']['discother'] == true){
-										$ratecardoffer['offer_text']    =   "";
-										$ratecardoffer['offer_icon']    =   "https://b.fitn.in/iconsv1/womens-day/women-only.png";
+										if(isset($rateval['flags']['disc25or50']) && $rateval['flags']['disc25or50'] == true){
+											$ratecardoffer['offer_text']    =   "";
+											$ratecardoffer['offer_icon']    =   "https://b.fitn.in/iconsv1/womens-day/women-only.png";
+										}
 									}
 
-									if(isset($rateval['flags']['disc25or50']) && $rateval['flags']['disc25or50'] == true){
-										$ratecardoffer['offer_text']    =   "";
-										$ratecardoffer['offer_icon']    =   "https://b.fitn.in/iconsv1/womens-day/women-only.png";
-									}
+									$today_date     =   new DateTime( date("d-m-Y 00:00:00", time()) );
+									$end_date       =   new DateTime( date("d-m-Y 00:00:00", strtotime("+ 1 days", strtotime($ratecardoffer['end_date']))));
+									$difference     =   $today_date->diff($end_date);
+
+									// if($difference->days <= 5){
+									// 	$ratecardoffer['offer_text']    =   ($difference->d == 1) ? "Expires Today" : "Expires in ".$difference->days." days";
+
+									// }
+									array_push($ratecardoffers,$ratecardoffer);
 								}
-
-								$today_date     =   new DateTime( date("d-m-Y 00:00:00", time()) );
-								$end_date       =   new DateTime( date("d-m-Y 00:00:00", strtotime("+ 1 days", strtotime($ratecardoffer['end_date']))));
-								$difference     =   $today_date->diff($end_date);
-
-								// if($difference->days <= 5){
-								// 	$ratecardoffer['offer_text']    =   ($difference->d == 1) ? "Expires Today" : "Expires in ".$difference->days." days";
-
-								// }
-								array_push($ratecardoffers,$ratecardoffer);
 							}
 						}
 					}
+					
 
-					$rateval['offers']  = $ratecardoffers;
+					count($ratecardoffers)>0 ? $rateval['offers']  = $ratecardoffers: null;
 
 					if(count($ratecardoffers) > 0 && isset($ratecardoffers[0]['price'])){
 
@@ -2201,6 +2201,7 @@ class FindersController extends \BaseController {
 				}
 
 				$service['ratecard'] = $ratecardArr;
+				
 			}
 
 			$time_in_seconds = time_passed_check($item['servicecategory_id']);
@@ -2250,7 +2251,7 @@ class FindersController extends \BaseController {
 		return $scheduleservices;
 	}
 
-	public function finderDetailApp($slug, $cache = true){
+	public function finderDetailApp($slug, $cache = false){
 
 		$data   =  array();	
 		$tslug  = (string) strtolower($slug);
@@ -2634,7 +2635,9 @@ class FindersController extends \BaseController {
 					$data['call_for_action_button']      =        "";
 
 					$data['finder']['offer_icon']        =        "";
-					$data['finder']['multiaddress']	     =		  $finder->multiaddress;	
+					$data['finder']['multiaddress']	     =		  $finder->multiaddress;
+
+					
 
 					if(time() >= strtotime(date('2016-12-24 00:00:00')) && (int)$finder['commercial_type'] != 0){
 
@@ -2708,6 +2711,7 @@ class FindersController extends \BaseController {
 				
 
 		        	$data['finder']['services']  = array_merge($category_slug_services, $non_category_slug_services);
+
 
 					$data['finder']['services'] = $this->sortNoMembershipServices($data['finder']['services'], 'finderDetailApp');
 
@@ -2995,7 +2999,7 @@ class FindersController extends \BaseController {
 			$ratecard_array = $value[$ratecard_key];
 			$membership_exists = false;
 			foreach($ratecard_array as $ratecard){
-				if($ratecard['type']=='membership'){
+				if(isset($ratecard['type']) && $ratecard['type']=='membership'){
 					$membership_exists = true;
 				}
 			}
@@ -3009,7 +3013,7 @@ class FindersController extends \BaseController {
 			$ratecard_array = $value[$ratecard_key];
 			$membership_exists = false;
 			foreach($ratecard_array as $ratecard){
-				if($ratecard['type']=='membership'){
+				if(isset($ratecard['type']) && $ratecard['type']=='membership'){
 					$membership_exists = true;
 				}
 			}
