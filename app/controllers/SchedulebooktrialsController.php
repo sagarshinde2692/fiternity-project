@@ -1765,6 +1765,7 @@ class SchedulebooktrialsController extends \BaseController {
             $final_lead_status = '';
 
             $finder_city           =    (isset($finder['city']['name']) && $finder['city']['name'] != '') ? $finder['city']['name'] : "";
+            $finder_city_slug      =    (isset($finder['city']['slug']) && $finder['city']['slug'] != '') ? $finder['city']['slug'] : "";
             
             $confirmed = array(1,2,3);
 
@@ -1928,10 +1929,12 @@ class SchedulebooktrialsController extends \BaseController {
             $amount                             =   (isset($order->amount) && $order->amount != '') ? $order->amount : "";
             $amount_finder                      =   (isset($order->amount_finder) && $order->amount_finder != '') ? $order->amount_finder : "";
 
+            $finder_location_slug               =   (isset($finder['location']['slug']) && $finder['location']['slug'] != '') ? $finder['location']['slug'] : "";
+
             $service_link = $this->utilities->getShortenUrl(Config::get('app.website')."/buy/".$finder_slug."/".$service_id);
-            $srp_link =  $this->utilities->getShortenUrl(Config::get('app.website')."/".$finder_city."/fitness/".$finder_location);
+            $srp_link =  $this->utilities->getShortenUrl(Config::get('app.website')."/".$finder_city_slug."/".$finder_location_slug."/fitness");
             $vendor_notify_link =  $this->utilities->getShortenUrl(Config::get('app.business')."/trial/cancel/".$booktrialid."/".$finderid);
-            $pay_as_you_go_link =  $this->utilities->getShortenUrl(Config::get('app.website')."/workout/".$finder_city."?regions=".$finder_location);
+            $pay_as_you_go_link =  $this->utilities->getShortenUrl(Config::get('app.website')."/workout/".$finder_city_slug."?regions=".$finder_location_slug);
             $profile_link = $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$customer_email);
             $vendor_link = $this->utilities->getShortenUrl(Config::get('app.website')."/".$finder_slug);
 
@@ -2027,7 +2030,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'vendor_notify_link'            =>      $vendor_notify_link,
                 'pay_as_you_go_link'            =>      $pay_as_you_go_link,
                 'profile_link'                  =>      $profile_link,
-                'vendor_link'                   =>      $vendor_link
+                'vendor_link'                   =>      $vendor_link,
+                'finder_location_slug'          =>      $finder_location_slug
             );
 
             if ($medical_detail != "" && $medication_detail != "") {
@@ -2175,8 +2179,8 @@ class SchedulebooktrialsController extends \BaseController {
             }
 
             $orderid = (int) Input::json()->get('order_id');
-            $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@sendCommunication', array('booktrial_id'=>$booktrialid),'booktrial');
-            $booktrial->update(array('redis_id'=>$redisid));
+            // $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@sendCommunication', array('booktrial_id'=>$booktrialid),'booktrial');
+            // $booktrial->update(array('redis_id'=>$redisid));
 
         }
 
@@ -2642,6 +2646,7 @@ class SchedulebooktrialsController extends \BaseController {
             $finder_photos	       = 	[];
 
             $finder_city           =    (isset($finder['city']['name']) && $finder['city']['name'] != '') ? $finder['city']['name'] : "";
+            $finder_city_slug      =    (isset($finder['city']['slug']) && $finder['city']['slug'] != '') ? $finder['city']['slug'] : "";
 
             if(isset($finder['photos']) && count($finder['photos']) > 0){
                 foreach ($finder['photos'] as $key => $value) {
@@ -2699,10 +2704,12 @@ class SchedulebooktrialsController extends \BaseController {
 
             $rebook_trial_url         =   $this->rebookTrialUrl($finder_slug, $service_id, $booktrialid);
 
+            $finder_location_slug               =   (isset($finder['location']['slug']) && $finder['location']['slug'] != '') ? $finder['location']['slug'] : "";
+
             $service_link = $this->utilities->getShortenUrl(Config::get('app.website')."/buy/".$finder_slug."/".$service_id);
-            $srp_link = $this->utilities->getShortenUrl(Config::get('app.website')."/".$finder_city."/fitness/".$finder_location);
+            $srp_link = $this->utilities->getShortenUrl(Config::get('app.website')."/".$finder_city_slug."/".$finder_location_slug."/fitness");
             $vendor_notify_link = $this->utilities->getShortenUrl(Config::get('app.business')."/trial/cancel/".$booktrialid."/".$finderid);
-            $pay_as_you_go_link = $this->utilities->getShortenUrl(Config::get('app.website')."/workout/".$finder_city."?regions=".$finder_location);
+            $pay_as_you_go_link = $this->utilities->getShortenUrl(Config::get('app.website')."/workout/".$finder_city_slug."?regions=".$finder_location_slug);
             $profile_link = $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$customer_email);
             $vendor_link = $this->utilities->getShortenUrl(Config::get('app.website')."/".$finder_slug);
 
@@ -2798,7 +2805,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'vendor_notify_link'            =>      $vendor_notify_link,
                 'pay_as_you_go_link'            =>      $pay_as_you_go_link,
                 'profile_link'                  =>      $profile_link,
-                'vendor_link'                   =>      $vendor_link
+                'vendor_link'                   =>      $vendor_link,
+                'finder_location_slug'          =>      $finder_location_slug
 
             );
 
