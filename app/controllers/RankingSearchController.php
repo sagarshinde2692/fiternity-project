@@ -2187,6 +2187,7 @@ public function getRankedFinderResultsAppv4()
         $budget             = Input::json()->get('budget');
         $trialdays          = Input::json()->get('trialdays') == null ? [] : Input::json()->get('trialdays');
         $other_filters      = Input::json()->get('other_filters') == null ? [] : Input::json()->get('other_filters');
+        $radial_distance      = Input::json()->get('radius') == null ? "10km" : Input::json()->get('radius');
         $other_flags        = [];
         foreach ($other_filters as $filter){
             // $budget_filters = ["one","two","three","four","five","six"];
@@ -2207,14 +2208,13 @@ public function getRankedFinderResultsAppv4()
         // Log::info("Location being searched : ".time());
         if(count($region) == 1){
             $region_slug = str_replace(' ', '-',strtolower(trim($region[0])));
-            $locationCount = Location::where('slug',$region_slug)->count();
-            if($locationCount > 0){
-                $lat = "";
-                $lon = "";
+            $locationCount = 1;
+            $location_lat_lon = Location::where('slug',$region_slug)->first();
+            if(isset($location_lat_lon)){
+                $lat = $location_lat_lon['lat'];
+                $lon = $location_lat_lon['lon'];
             }
         }else{
-            $lat = "";
-            $lon = "";
             $locationCount = count($region);
         }
         // Log::info("Location being searched over : ".time());
@@ -2235,7 +2235,7 @@ public function getRankedFinderResultsAppv4()
                     }
                 }]';
         }
-        $geo_location_filter   =   ($lat != '' && $lon != '') ? '{"geo_distance" : {  "distance": "10km","distance_type":"plane", "geolocation":{ "lat":'.$lat. ',"lon":' .$lon. '}}},':'';
+        $geo_location_filter   =   ($lat != '' && $lon != '') ? '{"geo_distance" : {  "distance": "'.$radial_distance.'","distance_type":"plane", "geolocation":{ "lat":'.$lat. ',"lon":' .$lon. '}}},':'';
         $free_trial_enable     = Input::json()->get('trial_enable');
         $trial_filter          = '';
 
