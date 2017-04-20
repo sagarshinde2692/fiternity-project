@@ -535,14 +535,15 @@ class FindersController extends \BaseController {
 							if((isset($finderarr['membership']) && $finderarr['membership'] == 'disable') || isset($service['membership']) && $service['membership'] == 'disable'){
 								$service['offer_available'] = false;
 							}
-							
-							$finder['services'][$key]['pay_per_session'] = false;
+							$service['pay_per_session'] = false;
 
-							if(isset($finder['pay_per_session']) && $finder['pay_per_session'] && isset($finder['trial']) && $finder['trial'] != 'disable' && isset($finder['services'][$key]['trial']) && $finder['services'][$key]['trial'] != 'disable'){
+							if(isset($finder['pay_per_session']) && $finder['pay_per_session'] && isset($finder['trial']) && $finder['trial'] != 'disable' && isset($service['trial']) && $service['trial'] != 'disable'){
 								foreach($service['serviceratecard'] as $ratecard){
 									if($ratecard['type']=='workout session'){
-										$finder['services'][$key]['pay_per_session'] = true;
+
+										$service['pay_per_session'] = true;
 										$pay_per_session = true;
+									
 									}
 								}
 							}
