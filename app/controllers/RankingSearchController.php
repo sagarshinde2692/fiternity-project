@@ -2633,8 +2633,7 @@ public function getRankedFinderResultsAppv4()
 
         $facetsvalue = trim($regions_facets.$locationtags_facets.$facilities_facets.$offerings_facets.$budgets_facets.$trialdays_facets.$category_facets,',');
 
-        $body = '{
-            "fields": ["_source"],
+        $distance_calculator = $geo_location_filter == "" ? "" : ' "fields": ["_source"],
     "script_fields":{
         "distance": {
           "params": {
@@ -2643,7 +2642,9 @@ public function getRankedFinderResultsAppv4()
         },
         "script": "doc[\'geolocation\'].distanceInKm(lat,lon)"
     }
-},
+},';
+        $body = '{
+            '.$distance_calculator.'
             "from": '.$from.',
             "size": '.$size.',
             "aggs": {'.$facetsvalue.'},
