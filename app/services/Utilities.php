@@ -9,6 +9,9 @@ use JWT;
 use Finder;
 use Request;
 use Log;
+use App\Services\Sidekiq as Sidekiq;
+use App\Services\ShortenUrl as ShortenUrl;
+use Device;
 
 Class Utilities {
 
@@ -95,6 +98,7 @@ Class Utilities {
     public function walletTransaction($request,$data = false){
 
         $customer_id = (int)$request['customer_id'];
+        Log::info($customer_id);
 
         $jwt_token = Request::header('Authorization');
 
@@ -102,6 +106,10 @@ Class Utilities {
 
             $decoded = $this->customerTokenDecode($jwt_token);
             $customer_id = (int)$decoded->customer->_id;
+        }
+
+        if(!isset($request['order_id'])){
+            $request['order_id'] = 0;
         }
         
         // Validate transaction request........
@@ -116,44 +124,56 @@ Class Utilities {
             );
         }
 
-        // Check Duplicacy of transaction request........
-        $duplicateRequest = Customerwallet::where('order_id', (int) $request['order_id'])
-            ->where('type', $request['type'])
-            ->orderBy('_id','desc')
-            ->first();
+        if($request['order_id'] != 0){
 
-        if($duplicateRequest != ''){
+            // Check Duplicacy of transaction request........
+            $duplicateRequest = Customerwallet::where('order_id', (int) $request['order_id'])
+                ->where('type', $request['type'])
+                ->orderBy('_id','desc')
+                ->first();
 
-            if($request['type'] == "DEBIT"){
+            if($duplicateRequest != ''){
 
-                $debitAmount = Customerwallet::where('order_id', (int) $request['order_id'])
-                ->where('type', 'DEBIT')
-                ->sum('amount');
+                if($request['type'] == "DEBIT"){
 
-                $refundAmount = Customerwallet::where('order_id', (int) $request['order_id'])
-                ->where('type', 'REFUND')
-                ->sum('amount');
+                    $debitAmount = Customerwallet::where('order_id', (int) $request['order_id'])
+                    ->where('type', 'DEBIT')
+                    ->sum('amount');
 
-                if($debitAmount - $refundAmount != 0){
-                    return Response::json(
-                        array(
-                            'status' => 400,
-                            'message' => 'Request has been already processed'
-                            ),400
-                    );
-                }
+                    $refundAmount = Customerwallet::where('order_id', (int) $request['order_id'])
+                    ->where('type', 'REFUND')
+                    ->sum('amount');
 
-            }elseif($request['type'] == "REFUND"){
+                    if($debitAmount - $refundAmount != 0){
+                        return Response::json(
+                            array(
+                                'status' => 400,
+                                'message' => 'Request has been already processed'
+                                ),400
+                        );
+                    }
 
-                $debitAmount = Customerwallet::where('order_id', (int) $request['order_id'])
-                ->where('type', 'DEBIT')
-                ->sum('amount');
+                }elseif($request['type'] == "REFUND"){
 
-                $refundAmount = Customerwallet::where('order_id', (int) $request['order_id'])
-                ->where('type', 'REFUND')
-                ->sum('amount');
+                    $debitAmount = Customerwallet::where('order_id', (int) $request['order_id'])
+                    ->where('type', 'DEBIT')
+                    ->sum('amount');
 
-                if($debitAmount - $refundAmount <= 0){
+                    $refundAmount = Customerwallet::where('order_id', (int) $request['order_id'])
+                    ->where('type', 'REFUND')
+                    ->sum('amount');
+
+                    if($debitAmount - $refundAmount <= 0){
+                        return Response::json(
+                            array(
+                                'status' => 400,
+                                'message' => 'Request has been already processed'
+                                ),400
+                        );
+                    }
+                    
+                }else{
+
                     return Response::json(
                         array(
                             'status' => 400,
@@ -162,16 +182,8 @@ Class Utilities {
                     );
                 }
                 
-            }else{
-
-                return Response::json(
-                    array(
-                        'status' => 400,
-                        'message' => 'Request has been already processed'
-                        ),400
-                );
             }
-            
+
         }
 
         if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios']) && isset($_GET['app_version']) && ((float)$_GET['app_version'] <= 3.2) ){
@@ -290,19 +302,26 @@ Class Utilities {
 
         }else{
 
+            Log::info("--request--",$request);
+
             // Get Customer wallet balance........
             $customer = Customer::find($customer_id);
 
-            !($customer && isset($customer['balance'])) ? $customer['balance'] = 0 : null;
+            (!isset($customer['balance'])) ? $customer['balance'] = 0 : null;
 
-            !($customer && isset($customer['balance_fitcash_plus'])) ? $customer['balance_fitcash_plus'] = 0: null;
+            (!isset($customer['balance_fitcash_plus'])) ? $customer['balance_fitcash_plus'] = 0: null;
+
+            (!isset($request['amount_fitcash'])) ? $request['amount_fitcash'] = 0 : null;
+
+            (!isset($request['amount_fitcash_plus'])) ? $request['amount_fitcash_plus'] = 0: null;
 
             $request['balance'] = (int)$customer['balance'];
             $request['balance_fitcash_plus'] = (int)$customer['balance_fitcash_plus'];
 
-            // Process Action on basis of request........
-            if($request['type'] == 'CREDIT' || $request['type'] == 'CASHBACK'){
-                $request['balance'] = ((int) $customer['balance'] + abs($request['amount']));
+            if(in_array($request['type'], ['CASHBACK','FITCASHPLUS','REFERRAL','CREDIT','FITCASH'])){
+
+                $request['balance'] = ((int) $customer['balance'] + (int) $request['amount_fitcash']);
+                $request['balance_fitcash_plus'] = ((int) $customer['balance_fitcash_plus'] + (int) $request['amount_fitcash_plus']);
             }
 
             if($request['type'] == 'REFUND'){
@@ -369,20 +388,12 @@ Class Utilities {
             $customerwallet->type = $request['type'];
             $customerwallet->amount = (int) $request['amount'];
             $customerwallet->balance = (int) $request['balance'];
+            $customerwallet->amount_fitcash = (int)$request['amount_fitcash'];
+            $customerwallet->amount_fitcash_plus = (int)$request['amount_fitcash_plus'];
             $customerwallet->balance_fitcash_plus = (int) $request['balance_fitcash_plus'];
-
-            if(isset($request['amount_fitcash'])){
-                $customerwallet->amount_fitcash = (int)$request['amount_fitcash'];
-            }
-
-            if(isset($request['amount_fitcash_plus'])){
-                $customerwallet->amount_fitcash_plus = (int)$request['amount_fitcash_plus'];
-            }
-
             isset($request['description']) ? $customerwallet->description = $request['description'] : null;
             $customerwallet->save();
-
-
+            
             //update customer balance and balance_fitcash_plus
             $customer->balance = (int)$request['balance'];
             $customer->balance_fitcash_plus = (int)$request['balance_fitcash_plus'];
@@ -710,6 +721,42 @@ Class Utilities {
 
                     $orderData->redundant_order = "1";
                     $orderData->update();
+
+                    $this->deleteCommunication($orderData);
+                }
+            }
+
+            $allBooktrials = \Booktrial::where('customer_email',$order->customer_email)
+                        ->where('notification_status','exists',true)
+                        ->where('notification_status','yes')
+                        ->orderBy('_id','desc')
+                        ->get();
+
+            if(count($allBooktrials) > 0){
+
+                foreach ($allBooktrials as $booktrial) {
+
+                    $booktrial->notification_status = "no";
+                    $booktrial->update();
+
+                    $this->deleteTrialCommunication($booktrial);
+                }
+            }
+
+            $allCaptures = \Capture::where('customer_email',$order->customer_email)
+                        ->where('notification_status','exists',true)
+                        ->where('notification_status','yes')
+                        ->orderBy('_id','desc')
+                        ->get();
+
+            if(count($allCaptures) > 0){
+
+                foreach ($allCaptures as $capture) {
+
+                    $capture->notification_status = "no";
+                    $capture->update();
+
+                    $this->deleteCaptureCommunication($capture);
                 }
             }
 
@@ -767,6 +814,172 @@ Class Utilities {
             $order->update();
         }
         return $hash_verified;
+    }
+
+
+    public function deleteCommunication($order){
+
+        $queue_id = [];
+        $notification_status = ['renewal_link_sent_no','link_sent_no','abandon_cart_no'];
+
+        if($order->status == "1" || (isset($order->redundant_order) && $order->redundant_order == "1") || (isset($order->notification_status) && in_array($order->notification_status,$notification_status))){
+
+            $array = [
+                'customerSmsSendPaymentLinkAfter3Days',
+                'customerSmsSendPaymentLinkAfter7Days',
+                'customerSmsSendPaymentLinkAfter15Days',
+                'customerSmsSendPaymentLinkAfter30Days',
+                'customerSmsSendPaymentLinkAfter45Days',
+                'customerSmsRenewalLinkSentBefore30Days',
+                'customerSmsRenewalLinkSentBefore15Days',
+                'customerSmsRenewalLinkSentBefore7Days',
+                'customerSmsRenewalLinkSentBefore1Days',
+                'customerSmsRenewalLinkSentAfter7Days',
+                'customerSmsRenewalLinkSentAfter15Days',
+                'customerSmsRenewalLinkSentAfter30Days',
+                'customerSmsNotInterestedAfter15Days',
+                'customerSmsNotInterestedAfter45Days',
+                'customerSmsNotInterestedAfter75Days',
+               /* 'customerNotificationSendPaymentLinkAfter3Days',
+                'customerNotificationSendPaymentLinkAfter7Days',
+                'customerNotificationSendPaymentLinkAfter15Days',
+                'customerNotificationSendPaymentLinkAfter30Days',
+                'customerNotificationSendPaymentLinkAfter45Days',
+                'customerNotificationRenewalLinkSentBefore30Days',
+                'customerNotificationRenewalLinkSentBefore15Days',
+                'customerNotificationRenewalLinkSentBefore7Days',
+                'customerNotificationRenewalLinkSentBefore1Days',
+                'customerNotificationRenewalLinkSentAfter7Days',
+                'customerNotificationRenewalLinkSentAfter15Days',
+                'customerNotificationRenewalLinkSentAfter30Days',
+                'customerNotificationNotInterestedAfter15Days',
+                'customerNotificationNotInterestedAfter45Days',
+                'customerNotificationNotInterestedAfter75Days',*/
+                'customerWalletRenewalLinkSentBefore7Days',
+                'customerWalletRenewalLinkSentBefore1Days',
+                'customerWalletSendPaymentLinkAfter15Days',
+                'customerWalletSendPaymentLinkAfter30Days'
+            ];
+
+            foreach ($array as $value) {
+
+                if((isset($order[$value]))){
+                    try {
+                        $queue_id[] = $order[$value];
+                        $order->unset($value);
+                    }catch(\Exception $exception){
+                        Log::error($exception);
+                    }
+                }
+            }
+
+            if($order->status == "1"){
+                $order->update(['notification_status' => 'purchase_yes']);
+            }else{
+
+                if(isset($order->paymentLinkEmailCustomerTiggerCount)){
+                    $order->update(['notification_status' => 'link_sent_no']);
+                }else{
+                    $order->update(['notification_status' => 'abandon_cart_no']);
+                }
+
+                if(isset($order->renewalPaymentLinkCustomerTiggerCount)){
+                    $order->update(['notification_status' => 'renewal_link_sent_no']);
+                }
+            }
+
+
+        }
+
+        if(!empty($queue_id)){
+
+            $sidekiq = new Sidekiq();
+            $sidekiq->delete($queue_id);
+        }
+
+    }
+
+    public function deleteTrialCommunication($booktrial){
+
+        $queue_id = [];
+
+        $array = [
+            'customerSmsPostTrialFollowup1After3Days',
+            'customerSmsPostTrialFollowup1After7Days',
+            'customerSmsPostTrialFollowup1After15Days',
+            'customerSmsPostTrialFollowup1After30Days',
+            'customerSmsPostTrialFollowup2After3Days',
+            'customerSmsPostTrialFollowup2After7Days',
+            'customerSmsPostTrialFollowup2After15Days',
+            'customerSmsPostTrialFollowup2After30Days',
+            'customerSmsNotInterestedAfter15Days',
+            'customerSmsNotInterestedAfter45Days',
+            'customerSmsNotInterestedAfter75Days',
+           /* 'customerNotificationPostTrialFollowup1After3Days',
+            'customerNotificationPostTrialFollowup1After7Days',
+            'customerNotificationPostTrialFollowup1After15Days',
+            'customerNotificationPostTrialFollowup1After30Days',
+            'customerNotificationPostTrialFollowup2After3Days',
+            'customerNotificationPostTrialFollowup2After7Days',
+            'customerNotificationPostTrialFollowup2After15Days',
+            'customerNotificationPostTrialFollowup2After30Days',
+            'customerNotificationNotInterestedAfter15Days',
+            'customerNotificationNotInterestedAfter45Days',
+            'customerNotificationNotInterestedAfter75Days',*/
+            'customerWalletPostTrialFollowup1After15Days'
+        ];
+
+        foreach ($array as $value) {
+            if((isset($booktrial[$value]))){
+                try {
+                    $queue_id[] = $booktrial[$value];
+                    $booktrial->unset($value);
+                }catch(\Exception $exception){
+                    Log::error($exception);
+                }
+            }
+        }
+
+        if(!empty($queue_id)){
+
+            $sidekiq = new Sidekiq();
+            $sidekiq->delete($queue_id);
+        }
+
+    }
+
+    public function deleteCaptureCommunication($capture){
+
+        $queue_id = [];
+
+        $array = [
+            'customerSmsPostCaptureFollowup2After3Days',
+            'customerSmsPostCaptureFollowup2After7Days',
+            'customerSmsPostCaptureFollowup2After15Days',
+            'customerSmsPostCaptureFollowup2After30Days',
+            /*'customerNotificationPostCaptureFollowup2After3Days',
+            'customerNotificationPostCaptureFollowup2After7Days',
+            'customerNotificationPostCaptureFollowup2After15Days',
+            'customerNotificationPostCaptureFollowup2After30Days',*/
+        ];
+
+        foreach ($array as $value) {
+            if((isset($capture[$value]))){
+                try {
+                    $queue_id[] = $capture[$value];
+                    $capture->unset($value);
+                }catch(\Exception $exception){
+                    Log::error($exception);
+                }
+            }
+        }
+
+        if(!empty($queue_id)){
+
+            $sidekiq = new Sidekiq();
+            $sidekiq->delete($queue_id);
+        }
+        
     }
 
     public function addCapture($data){
@@ -827,6 +1040,148 @@ Class Utilities {
        \Capture::create($data);
 
        return "Success";
+
+    }
+
+    public function addNotificationTracking($data){
+
+        $notificationTracking = new \NotificationTracking($data);
+        $notificationTracking->count = 1;
+        $notificationTracking->save();
+
+        return $notificationTracking;
+    }
+
+    public function addRegId($data){
+
+        try {
+
+            $rules = [
+                'reg_id' => 'required',
+                'type' => 'required',
+            ];
+
+            $validator = Validator::make($data, $rules);
+
+            if ($validator->fails()) {
+
+                return array('status' => 400, 'message' => error_message($validator->errors()));
+            }
+
+            $device = Device::where('reg_id', $data['reg_id'])->orderBy("_id","DESC")->first();
+
+            if ($device) {
+
+                $device->customer_id = (isset($data['customer_id']) && $data['customer_id'] != '') ? (int)$data['customer_id'] : $device->customer_id;
+                $device->update();
+
+            } else {
+
+                $allDeviceCount = 0;
+
+                if(isset($data['customer_id']) && $data['customer_id'] != ''){
+
+                    $allDeviceCount = Device::where('customer_id', (int)$data['customer_id'])->count();
+                }
+
+                $device_id = Device::max('_id') + 1;
+                $device = new Device();
+                $device->_id = $device_id;
+                $device->reg_id = $data['reg_id'];
+                $device->customer_id = (isset($data['customer_id']) && $data['customer_id'] != '') ? (int)$data['customer_id'] : '';
+                $device->type = $data['type'];
+                $device->status = "1";
+                $device->save();
+                
+                if($allDeviceCount == 0 && isset($data['customer_id']) && $data['customer_id'] != ''){
+
+                    $booktrial = \Booktrial::where("customer_id",(int)$data['customer_id'])->where('type','booktrials')->count();
+
+                    if(count($booktrial) > 0){
+
+                        $addWalletData = [
+                            "customer_id" => $data["customer_id"],
+                            "amount" => 250,
+                            "action" => "add_fitcash_plus",
+                            "description" => "Added Fitcash Plus Rs 250 on App Download"
+                        ];
+
+                        $this->addWallet($addWalletData);
+                    }
+                }
+
+            }
+
+            $response = array('status' => 200, 'message' => 'success');
+
+        } catch (Exception $e) {
+
+            $message = array(
+                'type' => get_class($e),
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            );
+
+            $response = array('status' => 400, 'message' => $message['type'] . ' : ' . $message['message'] . ' in ' . $message['file'] . ' on ' . $message['line']);
+
+            Log::error($e);
+
+        }
+
+        return $response;
+    }
+
+    public function addWallet($data){
+
+        Log::info("---data---",$data);
+
+        $customer_id = (int) $data["customer_id"];
+        $amount = $data["amount"];
+
+        $req['customer_id'] = $customer_id;
+        $req['amount'] = $amount;
+
+        if($data['action'] == "add_fitcash"){
+            $req['amount_fitcash'] = $amount;
+            $req['type'] = "FITCASH";
+            $req['description'] = "Added Fitcash Rs ".$amount;
+        }
+
+        if($data['action'] == "add_fitcash_plus"){
+            $req['amount_fitcash_plus'] = $amount;
+            $req['type'] = "FITCASHPLUS";
+            $req['description'] = "Added Fitcash Plus Rs ".$amount;
+        }
+
+        if(isset($data['description']) && $data['description'] != ""){
+            $req['description'] = $data['description'];
+        }
+
+        $walletTransactionResponse = $this->walletTransaction($req)->getData();
+        $walletTransactionResponse = (array) $walletTransactionResponse;
+
+
+        Log::info("----walletTransactionResponse-----",$walletTransactionResponse);
+
+        if($walletTransactionResponse['status'] != 200){
+            return "success";
+        }
+
+        return "error";
+
+    }
+
+    public function getShortenUrl($url){
+
+        $shortenUrl = new ShortenUrl();
+        $shorten_url = $shortenUrl->getShortenUrl($url);
+
+        if(isset($shorten_url['status']) &&  $shorten_url['status'] == 200){
+            $url =  $shorten_url['url'];
+        }
+
+        return $url;
 
     }
 

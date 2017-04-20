@@ -474,6 +474,7 @@ Class CustomerReward {
 
         if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios']) && isset($_GET['app_version']) && ((float)$_GET['app_version'] <= 3.2) ){
 
+
             $amount_deducted_from_wallet = ($wallet_algo < $wallet) ? $wallet_algo : round($wallet);
 
             $final_amount_discount_only = $original_amount - $amount_discounted;
@@ -617,6 +618,67 @@ Class CustomerReward {
         $data['finder_id'] =  $finder_id;
 
         return $data; 
+
+    }
+
+    public function fitternityDietVendor($amount){
+
+        $finder = Finder::where('title','Fitternity Diet Vendor')->first();
+
+        $finder_id = (int) $finder->_id;
+
+        $service = \Service::where('finder_id',$finder_id)->get();
+
+        $data = [];
+
+        if(count($service) > 0){
+
+            foreach ($service as $service_value) {
+
+                $service_data = [];
+                $service_id = (int) $service_value->_id;
+                $service_data['service_name'] = ucwords($service_value->name);
+                $service_data['service_id'] = $service_id;
+                $service_data['ratecard'] = [];
+
+                $ratecard = \Ratecard::where('service_id',$service_id)->where('finder_id',$finder_id)->get();
+
+                if(count($ratecard) > 0){
+
+                    foreach ($ratecard as $ratecard_value) {
+
+                        $ratecard_data = [];
+
+                        $ratecard_id = $ratecard_value->_id;
+
+                        $ratecard_data['ratecard_id'] = $ratecard_id;
+
+                        if(isset($ratecard_value['special_price']) && $ratecard_value['special_price'] != 0){
+                            $ratecard_data['amount'] = $ratecard_value['special_price'];
+                        }else{
+                            $ratecard_data['amount'] = $ratecard_value['price'];
+                        }
+
+                        if($ratecard_data['amount'] <= 0){
+                            continue;
+                        }
+
+                        $ratecard_data['service_id'] = $service_id;
+
+                        $service_data['ratecard'][] = $ratecard_data;
+
+                    }
+
+                    $data[] = $service_data;
+
+                }else{
+                    continue;
+                }
+
+            }
+        }
+
+        return $data;
 
     }
 

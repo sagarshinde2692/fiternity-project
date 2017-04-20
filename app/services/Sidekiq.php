@@ -6,9 +6,7 @@ use \Log;
 
 Class Sidekiq {
     
-    //protected $base_uri = 'http://localhost:3000/'; //local
-    // protected $base_uri = 'http://kick.fitn.in/'; //stage
-    protected $base_uri = 'http://nw.fitn.in/'; //live
+
     protected $debug = false;
     protected $client;
     protected $route_type;
@@ -20,9 +18,9 @@ Class Sidekiq {
     }
 
     public function initClient($debug = false, $base_uri = false) {
-
+        
         $debug = ($debug) ? $debug : $this->debug;
-        $base_uri = ($base_uri) ? $base_uri : $this->base_uri;
+        $base_uri = ($base_uri) ? $base_uri : \Config::get('app.sidekiq_url');
         $this->client = new Client( ['debug' => $debug, 'base_uri' => $base_uri] );
 
     }

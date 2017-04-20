@@ -74,7 +74,7 @@ if(!function_exists('citywise_category')){
 			$cat['delhi'] = array(array("name" => "All Fitness Options","slug" => "fitness"),array("name" => "Gyms","slug" => "gyms"),array("name" => "Yoga","slug" => "yoga-classes"),array("name" => "Zumba","slug" => "zumba-classes"),array("name" => "Cross Functional Training","slug" => "functional-training"),array("name" => "Dance","slug" => "dance-classes"),array("name" => "Fitness Studios","slug" => "fitness-studios"),array("name" => "Pilates","slug" => "pilates-classes"),array("name" => "Mma And Kick Boxing","slug" => "mma-and-kick-boxing-classes"),array("name" => "Marathon Training","slug" => "marathon-training"),array("name" => "Spinning And Indoor Cycling","slug" => "spinning-classes"),array("name" => "Healthy Tiffins","slug" => "healthy-tiffins"),array("name" => "Personal Trainers","slug" => "personal-trainers"),array("name" => "Sport Nutrition Supplement Stores","slug" => "sport-nutrition-supplement-stores"),array("name" => "Aerial Fitness","slug" => "aerial-fitness"),array("name" => "Pre-natal Classes","slug" => "pre-natal-classes"),array("name" => "Kids Fitness","slug" => "kids-fitness-classes"));
 
 			$cat['gurgaon'] = array(array("name" => "All Fitness Options","slug" => "fitness"),array("name" => "Gyms","slug" => "gyms"),array("name" => "Yoga","slug" => "yoga-classes"),array("name" => "Zumba","slug" => "zumba-classes"),array("name" => "Cross Functional Training","slug" => "functional-training"),array("name" => "Dance","slug" => "dance-classes"),array("name" => "Pilates","slug" => "pilates-classes"),array("name" => "MMA And Kick Boxing","slug" => "mma-and-kick-boxing-classes"),array("name" => "Fitness Studios","slug" => "fitness-studios"),array("name" => "Spinning And Indoor Cycling","slug" => "spinning-classes"),array("name" => "Healthy Tiffins","slug" => "healthy-tiffins"),array("name" => "Personal Trainers","slug" => "personal-trainers"),array("name" => "Sport Nutrition Supplement Stores","slug" => "sport-nutrition-supplement-stores"),array("name" => "Aerial Fitness","slug" => "aerial-fitness"),array("name" => "Pre-natal Classes","slug" => "pre-natal-classes"),array("name" => "Kids Fitness","slug" => "kids-fitness-classes"));
-
+            
 			$cat['noida'] = array(array("name" => "All Fitness Options","slug" => "fitness"),array("name" => "Gyms","slug" => "gyms"),array("name" => "Yoga","slug" => "yoga-classes"),array("name" => "Fitness Studios","slug" => "fitness-studios"),array("name" => "Zumba","slug" => "zumba-classes"),array("name" => "Dance","slug" => "dance-classes"),array("name" => "MMA And Kick Boxing","slug" => "mma-and-kick-boxing-classes"),array("name" => "Pre-natal Classes","slug" => "pre-natal-classes"),array("name" => "Kids Fitness","slug" => "kids-fitness-classes"));
 
             $cat['all'] = array(array("name" => "All Fitness Options","slug" => "fitness"),array("name" => "Gyms","slug" => "gyms"),array("name" => "Yoga","slug" => "yoga-classes"),array("name" => "Zumba","slug" => "zumba-classes"),array("name" => "Fitness Studios","slug" => "fitness-studios"),array("name" => "Pilates","slug" => "pilates-classes"),array("name" => "Healthy Tiffins","slug" => "healthy-tiffins"),array("name" => "Cross Functional Training","slug" => "functional-training"),array("name" => "Aerobics","slug" => "aerobics"),array("name" => "MMA And Kick Boxing","slug" => "mma-and-kick-boxing-classes"),array("name" => "Dance","slug" => "dance-classes"),array("name" => "Spinning And Indoor Cycling","slug" => "spinning-classes"),array("name" => "Personal Trainers","slug" => "personal-trainers"),array("name" => "Healthy Snacks And Beverages","slug" => "healthy-snacks-and-beverages"),array("name" => "Marathon Training","slug" => "marathon-training"),array("name" => "Swimming","slug" => "swimming-pools"),array("name" => "Sport Nutrition Supplement Stores","slug" => "sport-nutrition-supplement-stores"),array("name" => "Luxury Hotels","slug" => "luxury-hotels"),array("name" => "Aerial Fitness","slug" => "aerial-fitness"),array("name" => "Pre-natal Classes","slug" => "pre-natal-classes"),array("name" => "Kids Fitness","slug" => "kids-fitness-classes"),array("name" => "Aqua Fitness","slug" => "aqua-fitness"));
@@ -842,7 +842,7 @@ if (!function_exists('get_elastic_finder_documentv2')) {
             'finder_coverimage_color' => (isset($data['finder_coverimage_color']) && $data['finder_coverimage_color'] != "") ? $data['finder_coverimage_color'] : "",
             'multiaddress'            => (isset($data['multiaddress'])) ? $data['multiaddress'] : [],
             'location_obj'            => $locationtag_object,
-            'main_location_obj'       => (isset($data['location'])) ? array("name"=>$data['location']['name'],"slug"=>$data['location']['slug']) : array()
+            'main_location_obj'       => (isset($data['location'])) ? array("name"=>$data['location']['name'],"slug"=>$data['location']['slug'],"locationcluster"=>$locationcluster) : array()
                 //'trialschedules'                =>      $trialdata,
             );
 
@@ -1870,7 +1870,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                             return array('status' => 400, 'message' => error_message($validator->errors()));
                         }
 
-                        $device = Device::where('reg_id', $data['reg_id'])->first();
+                        $device = Device::where('reg_id', $data['reg_id'])->orderBy("_id","DESC")->first();
 
                         if ($device) {
 
@@ -2406,6 +2406,39 @@ if (!function_exists(('getpayTMhash'))){
         $data['reverse_hash'] = hash('sha512', $payhash_str);        
         // Log::info($data['paytm_hash']);
         return $data;
+    }
+}
+
+if (!function_exists(('customerTokenDecode'))){
+    function customerTokenDecode($token){
+
+        $jwt_token = $token;
+        $jwt_key = Config::get('app.jwt.key');
+        $jwt_alg = Config::get('app.jwt.alg');
+        $decodedToken = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+
+        return $decodedToken;
+    }
+}
+
+if (!function_exists(('getFinderType'))){
+    function getFinderType($id){
+        if($id == 5){
+            $type = "gyms";
+        }elseif($id == 42 || $id == 45){
+            $type = "healthytiffins";
+        }elseif($id == 41){
+            $type = "personaltrainers";
+        }elseif($id == 25){
+            $type = "dietitians and nutritionists";
+        }elseif($id == 46){
+            $type = "sport nutrition supliment stores";
+        }else{
+            $type = "fitnessstudios";
+        }
+        
+
+        return $type;
     }
 }
 

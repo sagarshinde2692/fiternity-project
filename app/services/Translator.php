@@ -1218,7 +1218,7 @@ public static function translate_searchresultsv4($es_searchresult_response,$sear
 							}
 							if(in_array("Base location",$regions['location'])){
 								$regions['location'] = str_replace("Base location",$result['location'],$regions['location']);
-								Log::info($regions['location']);
+								// Log::info($regions['location']);
 								$result['multiaddress'][$key]['location'] = $regions['location'];
 							}
 						}
@@ -1413,6 +1413,7 @@ public static function translate_searchresultsv4($es_searchresult_response,$sear
 				$offval = new \stdClass();
 				$offval->key = $off['key'];
 				$offval->slug = $off['attrsValues']['buckets'][0]['key'];
+				//$offval->cluster = $off['locationcluster']['buckets'][0]['key'];
 				$offval->count = $off['doc_count'];
 				array_push($finderresult_response->results->aggregationlist->locationtags, $offval);
 			}

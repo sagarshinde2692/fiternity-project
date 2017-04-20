@@ -3492,8 +3492,6 @@ public function yes($msg){
 
 	}
 
-
-
 	public function serviceToVendorMigration(){
 
 		try{
@@ -3599,8 +3597,7 @@ public function yes($msg){
 		curl_close($ch);	
 	}
 
-	public function subCatToOfferings()
-	{
+	public function subCatToOfferings(){
 		
 		try{
 			
@@ -3728,6 +3725,11 @@ public function yes($msg){
 		}
 	}
 
+	public function cacheFinders(){
+		Finder::$withoutAppends = true;
+		$finders = Finder::where('status', "1")->get(['_id', 'slug']);
+		return $finders;
+	}
 	public function customer_data()
 	{       
 		$start_date = new DateTime('01-02-2017');

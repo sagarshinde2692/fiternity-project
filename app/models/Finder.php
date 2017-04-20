@@ -24,6 +24,16 @@ class Finder extends  \Basemodel {
 	'finder_coverimage' => 'mimes:jpeg,png|image|max:2000',
 	];
 
+	public static $withoutAppends = false;
+
+	protected function getArrayableAppends()
+	{
+		if(self::$withoutAppends){
+			return [];
+		}
+		return parent::getArrayableAppends();
+	}
+
 	public static $update_rules = [
 		'title' => 'sometimes|required|string'
 	];

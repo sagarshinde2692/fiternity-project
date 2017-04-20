@@ -82,6 +82,18 @@ class FindersController extends \BaseController {
 		
 		$data   =  array();
 		$tslug  = (string) strtolower($slug);
+
+		if($tslug == "default" && isset($_GET['vendor_id']) && $_GET['vendor_id'] != ""){
+
+			$vendor = Finder::find((int)$_GET['vendor_id'],["slug"]);
+
+			if($vendor){
+				$tslug = $vendor->slug;
+			}else{
+				return Response::json(array("status"=>404), 404);
+			}
+		}
+		
 		$cache_key = $tslug;
 		
 		$category_slug = null;
@@ -514,6 +526,10 @@ class FindersController extends \BaseController {
 										}
 									}
 								}
+							}
+
+							if((isset($finderarr['membership']) && $finderarr['membership'] == 'disable') || isset($service['membership']) && $service['membership'] == 'disable'){
+								$service['offer_available'] = false;
 							}
 
 
@@ -1295,10 +1311,61 @@ class FindersController extends \BaseController {
 
 	}
 
-	public function addReview(){
+	public function addReviewCustomer(){
+
+		$jwt_token = Request::header('Authorization');
+		$decoded = $this->customerTokenDecode($jwt_token);
+
+		$rules = [
+		    'finder_id' => 'required|integer|numeric',
+		    'rating' => 'required|numeric',
+		    //'description' => 'required'
+		];
+
+		$data = Input::json()->all();
+
+		$validator = Validator::make($data,$rules);
+		if ($validator->fails()) {
+			$response = array('status' => 400, 'message' => 'Could not create a review.', 'errors' => $validator->errors());
+			return Response::json($response, 400);
+		}
+
+		$rating = $data['rating'];
+		$data["customer_id"] = $decoded->customer->_id;
+		$data['description'] = (isset($data['description'])) ? $data['description'] : '';
+
+		if(!isset($data['detail_rating'])){
+			$data['detail_rating'] = [$rating,$rating,$rating,$rating,$rating];
+		}
+
+		if(isset($data['notification_id'])){
+
+			$notificationTracking = NotificationTracking::find($data['notification_id']);
+
+			if(isset($notificationTracking["order_id"])){
+				$data["order_id"] = (int)$notificationTracking["order_id"];
+			}
+
+			if(isset($notificationTracking["booktrial_id"])){
+				$data["booktrial_id"] = (int)$notificationTracking["booktrial_id"];
+			}
+
+			unset($data['"notification_id']);
+		}
+
+		
+
+		return $this->addReview($data);
+	}
+
+	public function addReview($data = false){
+
+		if(!$data){
+			$data = Input::json()->all();
+		}
 
 		// return Input::json()->all();
-		$validator = Validator::make($data = Input::json()->all(), Review::$rules);
+		$validator = Validator::make($data, Review::$rules);
 		if ($validator->fails()) {
 			$response = array('status' => 400, 'message' => 'Could not create a review.', 'errors' => $validator->errors());
 			return Response::json($response, 400);
@@ -1319,7 +1386,12 @@ class FindersController extends \BaseController {
 
 		(isset($_GET['device_type']) && $_GET['device_type'] != "") ? $reviewdata['source'] = strtolower($_GET['device_type']) : null ;
 
-
+		if(isset($data['booktrialid']) && $data['booktrialid'] != '' && (!isset($data['source']) || $data['source'] != 'admin')){
+			$booktrial = Booktrial::find(intval($data['booktrialid']));
+			$booktrial->post_trial_status = 'attended';
+			$booktrial->update();
+		}
+		
 		$reviewdata['booktrial_id'] = ($reviewdata['booktrial_id'] == "" && isset($data['booktrial_id']) && $data['booktrial_id'] != "") ? intval($data['booktrial_id']) : '';
 
 		if(isset($data['agent_name'])){
@@ -1678,7 +1750,7 @@ class FindersController extends \BaseController {
 		$from               =   ($from != '') ? intval($from) : 0;
 		$size               =   ($size != '') ? intval($size) : 10;
 
-		$reviews            =   Review::with(array('finder'=>function($query){$query->select('_id','title','slug','coverimage');}))->active()->where('finder_id','=',$finder_id)->take($size)->skip($from)->orderBy('_id', 'desc')->get();
+		$reviews            =   Review::with(array('finder'=>function($query){$query->select('_id','title','slug','coverimage');}))->active()->where('finder_id','=',$finder_id)->take($size)->skip($from)->orderBy('updated_at', 'desc')->get();
 
 		$remaining_count =  Review::active()->where('finder_id','=',$finder_id)->count() - ($from+$size);
 
@@ -2168,6 +2240,8 @@ class FindersController extends \BaseController {
 				continue ;
 			}
 
+
+
 			array_push($scheduleservices, $service);
 			}
 		}
@@ -2181,6 +2255,19 @@ class FindersController extends \BaseController {
 
 		$data   =  array();	
 		$tslug  = (string) strtolower($slug);
+
+
+		if($tslug == "default" && isset($_GET['vendor_id']) && $_GET['vendor_id'] != ""){
+
+			$vendor = Finder::find((int)$_GET['vendor_id'],["slug"]);
+
+			if($vendor){
+				$tslug = $vendor->slug;
+			}else{
+				return Response::json(array("status"=>404), 404);
+			}
+		}
+
 		$cache_key = $tslug;
 
 		$category_slug = null;
@@ -2266,7 +2353,7 @@ class FindersController extends \BaseController {
 					foreach ($finderarr['reviews'] as $rev_key => $rev_value) {
 
 						if($rev_value['customer'] == null){
-
+							
 							$finderarr['reviews'][$rev_key]['customer'] = array("id"=>0,"name"=>"A Fitternity User","picture"=>"https://www.gravatar.com/avatar/0573c7399ef3cf8e1c215cdd730f02ec?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png");
 						}
 					}
@@ -2282,6 +2369,10 @@ class FindersController extends \BaseController {
 				$finder['today_closing_hour']           =   null;
 				$finder['open_now']                     =   false;
 				$finder['open_close_hour_for_week']     =   [];
+
+				if(isset($finderarr['category_id']) && $finderarr['category_id'] != ""){
+					$finder['category_id'] = $finderarr['category_id'];
+				}
 
 				if(isset($finderarr['category_id']) && $finderarr['category_id'] == 5){
 
@@ -2381,6 +2472,11 @@ class FindersController extends \BaseController {
 						}// trialschedules
 
 					}
+				}
+
+				if(isset($finderarr['category_id']) && $finderarr['category_id'] == 41){
+					$finder['trial'] = 'disable';
+					$finder['membership'] = 'disable';
 				}
 
 				if($finder['today_opening_hour'] != NULL && $finder['today_closing_hour'] != NULL){
@@ -2493,6 +2589,7 @@ class FindersController extends \BaseController {
 				}else{
 					$finder['type'] = "fitnessstudios";
 				}
+				$finder['type'] = getFinderType($finderarr['category_id']);
 
 				$finder['assured']  =   array();
 				$not_assured        =   [41,42,45,25,46,10,26,40];
@@ -2617,6 +2714,12 @@ class FindersController extends \BaseController {
 
 
 					$data['finder']['services'] = $this->sortNoMembershipServices($data['finder']['services'], 'finderDetailApp');
+
+					foreach($data['finder']['services'] as &$serviceObj){
+						if((isset($finder['membership']) && $finder['membership']=='disable') || (isset($serviceObj['membership']) && $serviceObj['membership']=='disable')){
+							$serviceObj['offer_available'] = false;
+						}
+					}
 
 					/*if(isset($data['finder']['services']['offer_icon_vendor'])){
 
@@ -2758,6 +2861,17 @@ class FindersController extends \BaseController {
 							$finderData['finder']['services'][$key]['membership'] = "disable";
 							$value["membership"] == "disable";
 						}
+
+						//remove book and buy button frompersonal trainer
+						if(isset($finderData['finder']['category_id']) && $finderData['finder']['category_id'] == 41){
+
+							$finderData['finder']['services'][$key]['trial'] = "disable";
+							$value["trial"] == "disable";
+
+							$finderData['finder']['services'][$key]['membership'] = "disable";
+							$value["membership"] == "disable";
+						}
+
 
 						if(isset($value["trial"]) && $value["trial"] == "disable"){
 							$disable_button[] = "true";
@@ -2912,6 +3026,52 @@ class FindersController extends \BaseController {
 		return array_merge($membership_services, $no_membership_services);
 
 	}
+
+
+    public function getDetailRating(){
+
+    	$request = $_REQUEST;
+
+    	if(!isset($request['finder_id']) && !isset($request['category_id'])){
+    		return Response::json(array('status'=>401,'message'=>'finder or category is required'),401);
+    	}
+
+    	$category_id = "";
+
+    	if(isset($request["finder_id"]) && $request["finder_id"] != ""){
+
+	    	$finder_id = (int) $request["finder_id"];
+
+	    	$finder = Finder::find($finder_id,array('_id','category_id'));
+
+	    	if(!$finder){
+	    		return Response::json(["message"=>"Vendor not found","status"=>404], 404);
+	    	}
+
+	    	$category_id = (int)$finder->category_id;
+	    }
+
+	    if(isset($request["category_id"]) && $request["category_id"] != ""){
+
+	    	$category_id = (int) $request["category_id"];
+	    }
+
+	    if($category_id == ""){
+	    	return Response::json(["message"=>"Category ID Missing","status"=>404], 404);
+	    }
+
+	    $category = Findercategory::find($category_id,array('_id','name','slug','detail_rating'));
+
+    	if(!$category){
+    		return Response::json(["message"=>"Category not found","status"=>404], 404);
+    	}
+
+    	$category = $category->toArray();
+
+    	$category["status"] = 200;
+
+    	return Response::json($category, 200);
+    }
 
 
 }

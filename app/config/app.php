@@ -15,7 +15,7 @@ return array(
 	*/
 
 
-	'debug' => TRUE,
+	'debug' => FALSE,
 
 	/*
 	|--------------------------------------------------------------------------
@@ -28,15 +28,21 @@ return array(
 	|
 	*/
 
-	'url' => 'https://a1.fitternity.com',
-	// 'url' => 'http://apistage.fitn.in',
-	// 'url' => 'http://fitapi.com',
+	'url' => 'https://a1.fitternity.com', //live
+	// 'url' => 'http://apistage.fitn.in', //stage
+	// 'url' => 'http://fitapi.com', //local
 
+    'website' => 'https://www.fitternity.com', //live
+    // 'website' => 'http://apistage.fitn.in:2233', //stage
 
+    'download_app_link' => 'https://www.fitternity.com/downloadapp',
 
-    'website' => 'https://www.fitternity.com',
-    // 'website' => 'http://apistage.fitn.in:1122',
+    'business' => 'http://business.fitternity.com',
 
+    'sidekiq_url' => 'http://nw.fitn.in/', //live
+   	// 'sidekiq_url' => 'http://kick.fitn.in/', //stage
+
+    'queue' => 'booktrial',
 
 	'app' =>array(
 		'discount'		=> 			2,
@@ -316,6 +322,27 @@ return array(
 	'contact_us_customer_email' => 'support@fitternity.com',
 	'contact_us_vendor_number' => '+912261222233',
 	'contact_us_customer_number' => '+912261222222',
+	'followup_fitness_concierge' => 'Rachel',
+	'followup_customer_number' => '+912261222266',
+	'renewal_fitness_concierge' => 'David',
+	'renewal_customer_number' => '+912261222223',
+	'purchase_fitness_concierge' => 'David',
+	'purchase_customer_number' => '+912261222223',
+	'order_missed_call_no' => '+912233010070',
+	'confirm_order_customer_number' => '+912261222230',
+	'renewal_linksent_fitness_concierge' => 'David',
+	'renewal_linksent_customer_number' => '+912261222223',
+	'not_interested_fitness_concierge' => 'David',
+	'not_interested_customer_number' => '+912261222223',
+	'direct_customer_number' => '+912261222230',
+	'cancel_trial_missed_call_vendor' => "+912261222230",
+	'n-3_customer_number' => "+912261222230",
+	'n-3_confirm_customer_number' => "+912261222205",
+	'n+2_feedback_customer_number' => "+912261222219",
+	'diet_plan_customer_email' => 'nutrition@fitternity.com',
+	'diet_plan_customer_number' => '+912261222230',
+	'diet_plan_trainer_email' => 'nutrition@fitternity.com',
+	'diet_plan_trainer_number' => '+912261222230',
 
 	's3_finderurl'  => array(
 		'cover' 			=> 'https://b.fitn.in/f/c/',
@@ -635,7 +662,7 @@ return array(
                 "rate"=>14
             )
         ),
-    'test_page_users' => ['dhruvsarawagi@fitternity.com', 'utkarshmehrotra@fitternity.com', 'sailismart@fitternity.com', 'neha@fitternity.com', 'pranjalisalvi@fitternity.com', 'maheshjadhav@fitternity.com', 'gauravravi@fitternity.com', 'nishankjain@fitternity.com', 'laxanshadesara@fitternity.com','mjmjadhav@gmail.com','gauravraviji@gmail.com','kushagra@webbutterjam.com','beltezzarthong@fitternity.com', 'rupeshtripathi@fitternity.com'],
+    'test_page_users' => ['dhruvsarawagi@fitternity.com', 'utkarshmehrotra@fitternity.com', 'sailismart@fitternity.com', 'neha@fitternity.com', 'pranjalisalvi@fitternity.com', 'maheshjadhav@fitternity.com', 'gauravravi@fitternity.com', 'nishankjain@fitternity.com', 'laxanshadesara@fitternity.com','mjmjadhav@gmail.com','gauravraviji@gmail.com','kushagra@webbutterjam.com','beltezzarthong@fitternity.com'],
     'test_vendors' => ['fitternity-test-page-bandra-west', 'test-healthy-vendor']
 
 

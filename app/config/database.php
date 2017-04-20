@@ -1,19 +1,22 @@
 <?php
 
 //local
-$host = "localhost";
-$username = "";
-$password = "";
-
-//stage
-/*$host = "localhost";
-$username = "fitadmin";
-$password = "fit1234";*/
-
-//production
-// $host = "52.77.247.239";
+// $host = "localhost";
 // $username = "";
 // $password = "";
+
+//stage
+// $host = "localhost";
+// $username = "fitadmin";
+// $password = "fit1234";
+
+//production
+$host = "54.179.134.14";
+// $username = "fitterAdmin";
+// $password = "Tech!Fitter";
+
+$username = "";
+$password = "";
 
 return array(
 
@@ -68,7 +71,10 @@ return array(
 			'port'     => 27017,
 			'database' => 'fitadmin',
 		    'username' => $username,
-		    'password' => $password
+		    'password' => $password,
+			// 'options' => [
+			// 		'db' => 'admin' // sets the authentication database required by mongo 3
+			// 	]
 		),
 
 		'mongodb2' => array(
@@ -77,18 +83,21 @@ return array(
 			'port'     => 27017,
 			'database' => 'fitapi',
             'username' => $username,
-            'password' => $password
+            'password' => $password,
+			// 'options' => [
+			// 	'db' => 'admin' // sets the authentication database required by mongo 3
+			// ]
 		),
 
 
-		'mongodb3' => array(
-			'driver'   => 'mongodb',
-            'host'     => $host,
-			'port'     => 27017,
-			'database' => 'fitadminnew',
-            'username' => $username,
-            'password' => $password
-		),
+		// 'mongodb3' => array(
+		// 	'driver'   => 'mongodb',
+        //     'host'     => $host,
+		// 	'port'     => 27017,
+		// 	'database' => 'fitadminnew',
+        //     'username' => $username,
+        //     'password' => $password
+		// ),
 
 
 		/*'sqlite' => array(
