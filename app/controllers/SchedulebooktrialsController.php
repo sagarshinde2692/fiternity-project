@@ -2179,8 +2179,8 @@ class SchedulebooktrialsController extends \BaseController {
             }
 
             $orderid = (int) Input::json()->get('order_id');
-            // $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@sendCommunication', array('booktrial_id'=>$booktrialid),'booktrial');
-            // $booktrial->update(array('redis_id'=>$redisid));
+            $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@sendCommunication', array('booktrial_id'=>$booktrialid),'booktrial');
+            $booktrial->update(array('redis_id'=>$redisid));
 
         }
 
