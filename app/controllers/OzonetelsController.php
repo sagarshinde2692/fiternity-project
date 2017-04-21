@@ -224,7 +224,7 @@ class OzonetelsController extends \BaseController {
 			   
 				    	if($ozonetelNoDetails){
 
-				    		if($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time && $this->sunday != "Sunday" && in_array($ozonetelNoDetails->finder->_id, $this->jump_finder_ids)){
+				    		if($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time && $this->sunday != "Sunday" && ( in_array($ozonetelNoDetails->finder->_id, $this->jump_finder_ids) || in_array($ozonetelNoDetails->finder->city_id, [4,8,9]))){
 
 				    			if(in_array($ozonetelNoDetails->finder->commercial_type,[1,3]) || ($ozonetelNoDetails->finder->commercial_type == 2 && in_array($ozonetelNoDetails->finder->_id, $this->free_special_finder))){
 
