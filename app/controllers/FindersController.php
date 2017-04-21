@@ -604,7 +604,10 @@ class FindersController extends \BaseController {
 				}
 
 
-
+				if(isset($finderarr['category_id']) && $finderarr['category_id'] == 41){
+					$finder['trial'] = 'disable';
+					$finder['membership'] = 'disable';
+				}
 
 			}
 
