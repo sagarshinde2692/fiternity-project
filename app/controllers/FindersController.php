@@ -78,7 +78,7 @@ class FindersController extends \BaseController {
 
 
 
-	public function finderdetail($slug, $cache = false){
+	public function finderdetail($slug, $cache = true){
 		
 		$data   =  array();
 		$tslug  = (string) strtolower($slug);
@@ -2251,7 +2251,7 @@ class FindersController extends \BaseController {
 		return $scheduleservices;
 	}
 
-	public function finderDetailApp($slug, $cache = false){
+	public function finderDetailApp($slug, $cache = true){
 
 		$data   =  array();	
 		$tslug  = (string) strtolower($slug);
