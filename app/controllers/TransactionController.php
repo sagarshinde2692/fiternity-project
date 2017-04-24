@@ -211,6 +211,11 @@ class TransactionController extends \BaseController {
 
         $data['profile_link'] = $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$data['customer_email']);
 
+        if(in_array($data['type'],$this->membership_array)){
+            $data["auto_followup_date"] = date('Y-m-d H:i:s', strtotime("+31 days",time()));
+            $data["followup_status"] = "abandon_cart";
+        }
+
         if(isset($old_order_id)){
 
             if($order){

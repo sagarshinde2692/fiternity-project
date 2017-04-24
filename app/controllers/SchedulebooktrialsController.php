@@ -1512,6 +1512,10 @@ class SchedulebooktrialsController extends \BaseController {
             array_set($data, 'order_action', 'bought');
             array_set($data, 'success_date', date('Y-m-d H:i:s',time()));
 
+            array_set($data, 'auto_followup_date', date('Y-m-d H:i:s', strtotime("+7 days",time())));
+            array_set($data, 'followup_status', 'catch_up');
+            array_set($data, 'followup_status_count', 1);
+
             if(isset($order->payment_mode) && $order->payment_mode == "paymentgateway"){
                 array_set($data, 'secondary_payment_mode', 'payment_gateway_membership');
             }
@@ -2328,6 +2332,7 @@ class SchedulebooktrialsController extends \BaseController {
             }*/
 
             $booktrial->send_communication = $send_communication;
+            $booktrial->followup_date_time_auto = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',time()))->addDays(31);
             $booktrial->update();
 
         }catch(\Exception $exception){
