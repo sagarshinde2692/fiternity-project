@@ -86,6 +86,28 @@ if(!function_exists('citywise_category')){
     }
 }
 
+if(!function_exists('getmy_city')){
+    function getmy_city($city){
+        $city = strtolower($city);
+        switch($city){
+            case "mumbai":
+            case "bombay":
+            case "thane":
+            case "navi mumbai":
+                return "mumbai";
+                break;
+            case "delhi":
+            case "new delhi":
+                return "delhi";
+                break;
+            case "bangalore":
+            case "bengaluru":
+                return "bangalore";
+                break;
+            default: return $city;
+        };
+    }
+}
 
 
 

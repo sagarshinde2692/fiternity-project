@@ -589,7 +589,7 @@ class GlobalPushController extends \BaseController
 
       $services = Service::active()
           ->whereNotIn('servicecategory_id', array(111))
-          ->whereNotIn('servicesubcategory_id', array(112))
+          ->whereNotIn('servicesubcategory_id', array(112,1,2,4,5,19,27,65,82,83,85,111,112,114,115,123,124,138,147,152,153,154,155,170,180,184))
           ->where('city_id', (int) $city)
           ->whereIn('finder_id', $finders)
           ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
@@ -1024,7 +1024,7 @@ class GlobalPushController extends \BaseController
 
       $services = Service::active()
           ->whereNotIn('servicecategory_id', array(111))
-          ->whereNotIn('servicesubcategory_id', array(112))
+          ->whereNotIn('servicesubcategory_id', array(112,1,2,4,5,19,27,65,82,83,85,111,112,114,115,123,124,138,147,152,153,154,155,170,180,184))
           ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
           ->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
           ->where('city_id', (int) $city)
