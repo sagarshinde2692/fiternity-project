@@ -417,12 +417,12 @@ class GlobalPushController extends \BaseController
 //      var_dump($indexdocs);
 //      exit();
 
-//      Log::info('I have $indexdocs.......');
+     Log::info('I have $indexdocs.......');
 
 
     foreach ($indexdocs as $data) {
 
-//        Log::info('Processing $indexdocs $data.......');
+       Log::info('Processing $indexdocs $data.......');
 
 
       //Exclude exceptional Finders.........
@@ -434,19 +434,20 @@ class GlobalPushController extends \BaseController
 
       $clusterid = '';
 
-      if(!isset($data['location']['locationcluster_id']))
-      {
-        continue;
-      }
+      // if(!isset($data['location']['locationcluster_id']))
+      // {
+      //   continue;
+      // }
 
-      else
-      {
-        $clusterid  = $data['location']['locationcluster_id'];
-      }
+      // else
+      // {
+      //   $clusterid  = $data['location']['locationcluster_id'];
+      // }
 
-      $locationcluster = Locationcluster::active()->where('_id',$clusterid)->get();
-      $locationcluster->toArray();
-      $cluster = (isset($locationcluster[0]) && isset($locationcluster[0]['name'])) ? $locationcluster[0]['name'] : '';
+      // $locationcluster = Locationcluster::active()->where('_id',$clusterid)->get();
+      // $locationcluster->toArray();
+      // $cluster = (isset($locationcluster[0]) && isset($locationcluster[0]['name'])) ? $locationcluster[0]['name'] : '';
+      $cluster = '';
 
 //        Log::info('$data for autosuggest.......');
 
@@ -455,7 +456,7 @@ class GlobalPushController extends \BaseController
 
       $postfields_data = json_encode($postdata);
 
-//        Log::info('$postfields_data for autosuggest.......');
+       Log::info('$postfields_data for autosuggest.......');
 
 
       // $postfields_data    =   json_encode(json_decode($mapping,true));
@@ -468,9 +469,9 @@ class GlobalPushController extends \BaseController
       );
 
       $user = es_curl_request($request);
-//        Log::info('finder entry in index........');
+       Log::info('finder entry in index........'.$data['_id']);
 
-//        Log::info('done vendors of city ',array($city_id));
+       Log::info('done vendors of city ',array($city_id));
 
     }
   }
