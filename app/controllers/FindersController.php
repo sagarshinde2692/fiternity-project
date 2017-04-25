@@ -78,7 +78,7 @@ class FindersController extends \BaseController {
 
 
 
-	public function finderdetail($slug, $cache = false){
+	public function finderdetail($slug, $cache = true){
 		
 		$data   =  array();
 		$tslug  = (string) strtolower($slug);
@@ -432,7 +432,7 @@ class FindersController extends \BaseController {
 				}
 				// $finder['offer_icon'] = "https://b.fitn.in/iconsv1/womens-day/womens-day-mobile-banner.svg";
 				$finder['pay_per_session'] = true;
-				if(isset($finder['trial']) && $finder['trial']=='disable'){
+				if(isset($finder['trial']) && $finder['trial']=='disable' || $finder['commercial_type']== 0){
 					$finder['pay_per_session'] = false;
 				}
 				$pay_per_session = false;
@@ -2270,7 +2270,7 @@ class FindersController extends \BaseController {
 		return $scheduleservices;
 	}
 
-	public function finderDetailApp($slug, $cache = false){
+	public function finderDetailApp($slug, $cache = true){
 
 		$data   =  array();	
 		$tslug  = (string) strtolower($slug);
@@ -2790,7 +2790,7 @@ class FindersController extends \BaseController {
 		}
 
 		$finderData = Cache::tags($cache_name)->get($cache_key);
-
+		
 		if(count($finderData) > 0 && isset($finderData['status']) && $finderData['status'] == 200){
 
 			$finder = Finder::active()->where('slug','=',$tslug)->first();
@@ -2852,7 +2852,7 @@ class FindersController extends \BaseController {
 					}
 				}
 
-
+				
 				if(!empty($finderData['finder']['services'])){
 					$disable_button = [];
 					$pay_per_session = false;
