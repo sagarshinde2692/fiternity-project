@@ -730,7 +730,7 @@ class TransactionController extends \BaseController {
         $customer_id = $data['customer_id'];
             
         if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
-            $decoded = $this->customerTokenDecode($jwt_token);
+            $decoded = customerTokenDecode($jwt_token);
             $customer_id = $decoded->customer->_id;
         }
 
