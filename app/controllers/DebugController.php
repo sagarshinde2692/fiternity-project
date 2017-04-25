@@ -3919,5 +3919,15 @@ public function yes($msg){
 				"link_sent_direct_purchase_offline" => count($link_sent_direct_purchase_offline),
 			);
 	}
+
+	public function syncsharecustomerno(){
+		$vendors = Vendor::
+		where('commercial.share_customer_no', true)
+		->lists('_id');
+		Finder::whereIn('_id', $vendors)->update(['share_customer_no'=> "1"]);
+		Finder::whereNotIn('_id', $vendors)->update(['share_customer_no'=> "0"]);
+		return "Done";
+
+	}
     
 }
