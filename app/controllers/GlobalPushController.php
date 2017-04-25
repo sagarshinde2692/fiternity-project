@@ -587,19 +587,41 @@ class GlobalPushController extends \BaseController
 
       $finders = Finder::where('city_id', (int) $city)->active()->lists('_id');
 
-      $services = Service::active()
-          ->whereNotIn('servicecategory_id', array(111))
-          ->whereNotIn('servicesubcategory_id', array(112,1,2,4,5,19,27,65,82,83,85,111,112,114,115,123,124,138,147,152,153,154,155,170,180,184))
-          ->where('city_id', (int) $city)
-          ->whereIn('finder_id', $finders)
+
+    $services = Service::raw(function($collection) use($city,$finders){
+
+            $aggregate = [];
+            $match['$match']['servicecategory_id']['$nin'] = array(111);
+            $match['$match']['servicesubcategory_id']['$nin'] = array(112,1,2,4,5,19,27,65,82,83,85,111,112,114,115,123,124,138,147,152,153,154,155,170,180,184);
+            $match['$match']['city_id'] = (int) $city;
+            $match['$match']['status'] = "1";
+            $match['$match']['finder_id']['$in'] = $finders;
+
+            $aggregate[] = $match;
+
+            $group = array(
+              '$group' => array(
+                '_id' => array(
+                  'servicesubcategory_id' => '$servicesubcategory_id',
+                  'location_id'	=> '$location_id'
+                  )
+                )
+              );
+
+            $aggregate[] = $group;
+
+            return $collection->aggregate($aggregate);
+
+          });
+          $services = array_fetch($services['result'],"_id.servicesubcategory_id");
+          // return $services;
+       $services = Service::active()
+          ->whereIn('_id', $services)
           ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
           ->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
           ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
           ->get(array('city_id','city','servicesubcategory_id','subcategory','location','location_id'))
           ->toArray();
-
-//        var_dump($services);
-//        exit();
 
 
       $servicecategories = array();
@@ -1022,15 +1044,55 @@ class GlobalPushController extends \BaseController
 
       $finders = Finder::active()->where('city_id', (int) $city)->lists('_id');
 
-      $services = Service::active()
-          ->whereNotIn('servicecategory_id', array(111))
-          ->whereNotIn('servicesubcategory_id', array(112,1,2,4,5,19,27,65,82,83,85,111,112,114,115,123,124,138,147,152,153,154,155,170,180,184))
+      // $services = Service::active()
+      //     ->whereNotIn('servicecategory_id', array(111))
+      //     ->whereNotIn('servicesubcategory_id', array(112,1,2,4,5,19,27,65,82,83,85,111,112,114,115,123,124,138,147,152,153,154,155,170,180,184))
+      //     ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
+      //     ->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
+      //     ->where('city_id', (int) $city)
+      //     ->whereIn('finder_id', $finders)
+      //     ->get(array('city_id','city','servicesubcategory_id','subcategory'))
+      //     ->toArray();
+
+
+
+      $services = Service::raw(function($collection) use($city,$finders){
+
+            $aggregate = [];
+            $match['$match']['servicecategory_id']['$nin'] = array(111);
+            $match['$match']['servicesubcategory_id']['$nin'] = array(112,1,2,4,5,19,27,65,82,83,85,111,112,114,115,123,124,138,147,152,153,154,155,170,180,184);
+            $match['$match']['city_id'] = (int) $city;
+            $match['$match']['status'] = "1";
+            $match['$match']['finder_id']['$in'] = $finders;
+
+            $aggregate[] = $match;
+
+            $group = array(
+              '$group' => array(
+                '_id' => array(
+                  'servicesubcategory_id' => '$servicesubcategory_id',
+                  'location_id'	=> '$location_id'
+                  )
+                )
+              );
+
+            $aggregate[] = $group;
+
+            return $collection->aggregate($aggregate);
+
+          });
+          $services = array_fetch($services['result'],"_id.servicesubcategory_id");
+          // return $services;
+       $services = Service::active()
+          ->whereIn('_id', $services)
           ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
           ->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
-          ->where('city_id', (int) $city)
-          ->whereIn('finder_id', $finders)
-          ->get(array('city_id','city','servicesubcategory_id','subcategory'))
+          ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+          ->get(array('city_id','city','servicesubcategory_id','subcategory','location','location_id'))
           ->toArray();
+
+
+
 
       $servicecategories = array();
 
