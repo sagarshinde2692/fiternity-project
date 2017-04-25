@@ -397,8 +397,8 @@ class GlobalPushController extends \BaseController
 
     ini_set('max_execution_time', 30000);
     ini_set('memory_limit', '512M');
-
-    $indexdocs = Finder::active()->where('city_id', $city_id)
+    $city_id = (int) $city_id;
+    return $indexdocs = Finder::active()->where('city_id', $city_id)
         ->with(array('country'=>function($query){$query->select('name');}))
         ->with(array('city'=>function($query){$query->select('name');}))
         ->with(array('category'=>function($query){$query->select('name','meta');}))
@@ -412,7 +412,7 @@ class GlobalPushController extends \BaseController
 //          ->take(1000)->skip(0)
         ->take(80000)->skip(0)
         ->timeout(400000000)
-        ->get(array("title","country","city","category","location","categorytags","locationtags","offerings","facilities","slug","business_type","lat","lon"));
+        ->get(array("title","country_id","country","city_id","city","category_id","category","location_id","location","categorytags","locationtags","offerings","facilities","slug","business_type","lat","lon"));
 
 //      var_dump($indexdocs);
 //      exit();

@@ -2683,4 +2683,4 @@ Route::get('linksentfunnel','DebugController@linksent_funnel');
 
 
 // Checking global search
-Route::get('pushservicecategorylocations/{index}', 'GlobalPushController@pushservicecategorylocations');
+Route::get('pushfinders/{index}/{city_id}', 'GlobalPushController@pushfinders');
