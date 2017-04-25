@@ -1933,7 +1933,7 @@ class OrderController extends \BaseController {
     }
 
 
-    public function orderFailureAction($order_id){
+    public function orderFailureAction($order_id,$customer_id = false){
 
         $order = Order::where('_id',(int) $order_id)->where('status',"0")->first();
 
@@ -1956,10 +1956,12 @@ class OrderController extends \BaseController {
             $this->findermailer->orderFailureNotificationToLmd($order_data);
         }
 
+        $customer_id = ($customer_id) ? (int)$customer_id : (int)$order['customer_id'];
+
         // Refund wallet amount if deducted........
         if(isset($order['wallet_amount']) && ((int) $order['wallet_amount']) >= 0){
             $req = array(
-                'customer_id'=>$order['customer_id'],
+                'customer_id'=>$customer_id,
                 'order_id'=>$order_id,
                 'amount'=>$order['wallet_amount'],
                 'type'=>'REFUND',

@@ -725,6 +725,15 @@ class TransactionController extends \BaseController {
 
     public function getCashbackRewardWallet($data,$order){
 
+        $jwt_token = Request::header('Authorization');
+
+        $customer_id = $data['customer_id'];
+            
+        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+            $decoded = $this->customerTokenDecode($jwt_token);
+            $customer_id = $decoded->customer->_id;
+        }
+
         $amount = $data['amount_customer'] = $data['amount'];
 
         if($data['type'] == "memberships" && isset($data['customer_source']) && ($data['customer_source'] == "android" || $data['customer_source'] == "ios")){
@@ -768,7 +777,7 @@ class TransactionController extends \BaseController {
                     }
 
                     // Schedule Check orderfailure and refund wallet amount in that case....
-                    $url = Config::get('app.url').'/orderfailureaction/'.$data['order_id'];
+                    $url = Config::get('app.url').'/orderfailureaction/'.$data['order_id'].'/'.$customer_id;
                     $delay = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addHours(4);
                     $data['wallet_refund_sidekiq'] = $this->hitURLAfterDelay($url, $delay);
 
@@ -800,7 +809,7 @@ class TransactionController extends \BaseController {
                     }
 
                     // Schedule Check orderfailure and refund wallet amount in that case....
-                    $url = Config::get('app.url').'/orderfailureaction/'.$data['order_id'];
+                    $url = Config::get('app.url').'/orderfailureaction/'.$data['order_id'].'/'.$customer_id;
                     $delay = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addHours(4);
                     $data['wallet_refund_sidekiq'] = $this->hitURLAfterDelay($url, $delay);
 
@@ -879,7 +888,7 @@ class TransactionController extends \BaseController {
                     }
 
                     // Schedule Check orderfailure and refund wallet amount in that case....
-                    $url = Config::get('app.url').'/orderfailureaction/'.$data['order_id'];
+                    $url = Config::get('app.url').'/orderfailureaction/'.$data['order_id'].'/'.$customer_id;
                     $delay = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addHours(4);
                     $data['wallet_refund_sidekiq'] = $this->hitURLAfterDelay($url, $delay);
                 }
@@ -922,7 +931,7 @@ class TransactionController extends \BaseController {
                     }
 
                     // Schedule Check orderfailure and refund wallet amount in that case....
-                    $url = Config::get('app.url').'/orderfailureaction/'.$data['order_id'];
+                    $url = Config::get('app.url').'/orderfailureaction/'.$data['order_id'].'/'.$customer_id;
                     $delay = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addHours(4);
                     $data['wallet_refund_sidekiq'] = $this->hitURLAfterDelay($url, $delay);
 
