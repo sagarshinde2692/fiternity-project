@@ -1768,7 +1768,7 @@ class TransactionController extends \BaseController {
 
         $allOrders = Order::active()
                     ->whereIn('type',['memberships','healthytiffinmembership'])
-                    ->where('created_at', '>=', new \DateTime( date("2017-01-15 00:00:00")))
+                    ->where('created_at', '>=', new \DateTime( date("2017-04-15 00:00:00")))
                     ->where('deleteCommunication','exists',false)
                     ->orderBy('_id','desc')
                     ->get();
