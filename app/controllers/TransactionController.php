@@ -1764,4 +1764,30 @@ class TransactionController extends \BaseController {
 
     }
 
+    public function deleteCommunicationOfSuccess(){
+
+        $allOrders = Order::active()
+                    ->whereIn('type',['memberships','healthytiffinmembership'])
+                    ->where('created_at', '>=', new \DateTime( date("2017-01-15 00:00:00")))
+                    ->where('deleteCommunication','exists',false)
+                    ->orderBy('_id','desc')
+                    ->get();
+
+        if(count($allOrders) > 0){
+
+            foreach ($allOrders as $order) {
+
+                $order->update(['deleteCommunication' => true]);
+
+                $this->utilities->deleteCommunication($order);
+                $this->utilities->setRedundant($order);
+            }
+
+            return "success";
+        }
+
+        return "no orders found";
+    
+    }
+
 }
