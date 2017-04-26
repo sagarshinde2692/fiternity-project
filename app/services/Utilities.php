@@ -703,7 +703,7 @@ Class Utilities {
 
         try {
 
-            $allOrders = \Order::where('status','!=','1')
+            $allOrdersLinkSent = \Order::where('status','!=','1')
                         ->whereIn('type',['memberships','healthytiffinmembership'])
                         ->where('service_id',(int)$order->service_id)
                         ->where('finder_id',(int)$order->finder_id)
@@ -715,9 +715,9 @@ Class Utilities {
                         ->orderBy('_id','desc')
                         ->get();
 
-            if(count($allOrders) > 0){
+            if(count($allOrdersLinkSent) > 0){
 
-                foreach ($allOrders as $orderData) {
+                foreach ($allOrdersLinkSent as $orderData) {
 
                     $orderData->redundant_order = "1";
                     $orderData->update();
