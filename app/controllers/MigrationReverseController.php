@@ -770,7 +770,8 @@ class MigrationReverseController extends \BaseController {
                 'updated_at' 							=>  $Finder->updated_at,
                 'custom_city'                           =>  isset($Finder->custom_city) ? $Finder->custom_city : "",
                 'custom_location'                       =>  isset($Finder->custom_location) ? $Finder->custom_location : "",
-                'flags'                                 =>  isset($Finder->flags) ? $Finder->flags : array()
+                'flags'                                 =>  isset($Finder->flags) ? $Finder->flags : array(),
+                'renewal_remark'                        =>  isset($Finder->renewal_remark) ? $Finder->renewal_remark : ""
             ];
 
             $insertData['vip_trial']                    = (isset($Finder->vip_trial) &&  $Finder['vip_trial'] == true ) ? '1' : '0';
