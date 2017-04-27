@@ -2464,6 +2464,27 @@ if (!function_exists(('getFinderType'))){
     }
 }
 
+if(!function_exists(('sort_weekdays'))){
+    function sort_weekdays($arr){
+        $arr4 = array();
+        // return $arr;
+    $arr2=array('monday','tuesday','wednesday','thursday','friday','saturday');
+        //A simple loop that traverses all elements of the template...
+        foreach($arr2 as $v)
+        {
+            //If the value in the template exists as a key in the actual array.. (condition)
+            // return "sdfs".in_array($v,$arr);
+            if(in_array($v,$arr))
+            {
+                array_push($arr4,$v);
+            }
+        }
+
+        //prints the new array
+        return $arr4;
+            }
+}
+
 
 
 ?>

@@ -232,7 +232,8 @@ class FindersController extends \BaseController {
                        // return $finder_gym_service; exit;
 
 						if(isset($finder_gym_service['trialschedules']) && count($finder_gym_service['trialschedules']) > 0){
-							$all_weekdays                       =   $finder_gym_service['active_weekdays'];
+							$all_weekdays                       =   sort_weekdays($finder_gym_service['active_weekdays']);
+							
 							$today_weekday                      =   strtolower(date( "l", time()));
 
 							foreach ($all_weekdays as $weekday){
