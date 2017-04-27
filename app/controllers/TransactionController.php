@@ -321,7 +321,7 @@ class TransactionController extends \BaseController {
                 $this->customersms->changeStartDate($emailData);
                 $this->findersms->changeStartDate($emailData);
 
-                $message = "Your Preferred Starting date has been change Successfull";
+                $message = "Thank you! Your starting date has been changed";
 
             }
 

@@ -605,6 +605,9 @@ class EmailSmsApiController extends \BaseController {
         }
 
         $resp           = array('status' => 200,'capture' =>$storecapture, 'message' => "Recieved the Request");
+        if($data['capture_type'] == "renew-membership"){
+            $resp["message"] = "Thank you for your request. We will curate a renew subscription for you and get back";
+        }
         return Response::json($resp);
     }
 

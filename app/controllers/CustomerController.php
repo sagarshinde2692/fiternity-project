@@ -2602,7 +2602,9 @@ class CustomerController extends \BaseController {
 			$city_name 		= 	$citydata['name'];
 			$city_id		= 	(int) $citydata['_id'];
 
-			$category			= 		Findercategory::active()->where('cities',$city_id)->whereIn('slug',$category_slug)->get(array('name','_id','slug'))->toArray();
+			$category			= 		Findercategory::active()
+													// ->where('cities',$city_id)
+													->whereIn('slug',$category_slug)->get(array('name','_id','slug'))->toArray();
 			
 			$ordered_category = array();
 
