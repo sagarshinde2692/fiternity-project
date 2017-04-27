@@ -2328,12 +2328,12 @@ if (!function_exists(('getReversehash'))){
         $udf4 = "";
         $udf5 = "";
 
-        if(($data['type'] == "booktrials" || $data['type'] == "workout-session" || $data['type'] == "healthytiffintrail") && $data['customer_source'] == "website"){
-            $udf1 = $data['service_name'];
-            // $udf2 = $data['type'] == "healthytiffintrail" ? $data['schedule_date'] : "";
-            // $udf3 = $data['schedule_slot'];
-            $udf4 = $data['finder_id'];
-        }
+        // if(($data['type'] == "booktrials" || $data['type'] == "workout-session" || $data['type'] == "healthytiffintrail") && $data['customer_source'] == "website"){
+        //     $udf1 = $data['service_name'];
+        //     // $udf2 = $data['type'] == "healthytiffintrail" ? $data['schedule_date'] : "";
+        //     // $udf3 = $data['schedule_slot'];
+        //     $udf4 = $data['finder_id'];
+        // }
 
         $payhash_str = $salt.'|success||||||'.$udf5.'|'.$udf4.'|'.$udf3.'|'.$udf2.'|'.$udf1.'|'.$email.'|'.$firstname.'|'.$productinfo.'|'.$amount.'|'.$txnid.'|'.$key;
 //    $payhash_str = "0|".$salt.'|success||||||'.$udf5.'|'.$udf4.'|'.$udf3.'|'.$udf2.'|'.$udf1.'|'.$email.'|'.$firstname.'|'.$productinfo.'|'.$amount.'|'.$txnid.'|'.$key;
