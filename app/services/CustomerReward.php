@@ -552,6 +552,8 @@ Class CustomerReward {
             $data['wallet_amount'] = $wallet_amount;
             $data['algo'] = $setAlgo;
             $data['current_wallet_balance'] = round($wallet + $wallet_fitcash_plus);
+            $data['current_wallet_balance_only_fitcash'] = round($wallet);
+            $data['current_wallet_balance_only_fitcash_plus'] = round($wallet_fitcash_plus);
             //$data['description'] = "Enjoy instant discount of Rs.".$amount_discounted." on this purchase & Fitcash of Rs.".$wallet_amount." for your next purchase (Fitcash is fitternity's cool new wallet)";
             // $data['description'] = "Enjoy Fitcash of Rs.".$wallet_amount." for your next purchase (Fitcash is fitternity's cool new wallet)";
 
