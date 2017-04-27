@@ -1564,7 +1564,7 @@ class TransactionController extends \BaseController {
                 $order->customerNotificationSendPaymentLinkAfter45Days = $this->customernotification->sendPaymentLinkAfter45Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+45 days",$now)));
             }*/
 
-            $url = Config::get('app.url')."addwallet?customer_id=".$order["customer_id"]."&action=add_fitcash&amount=500&order_id=".$order_id;
+            $url = Config::get('app.url')."addwallet?customer_id=".$order["customer_id"]."&action=add_fitcash_plus&amount=500&order_id=".$order_id;
 
             $order->customerWalletSendPaymentLinkAfter15Days = $this->hitURLAfterDelay($url, date('Y-m-d H:i:s', strtotime("+15 days",$now)));
             $order->customerWalletSendPaymentLinkAfter30Days = $this->hitURLAfterDelay($url, date('Y-m-d H:i:s', strtotime("+30 days",$now)));
@@ -1755,12 +1755,28 @@ class TransactionController extends \BaseController {
             $req['booktrial_id'] = (int)$data['booktrial_id'];
         }
 
-        $walletTransactionResponse = $this->utilities->walletTransaction($req)->getData();
-        $walletTransactionResponse = (array) $walletTransactionResponse;
+        $customer = Customer::find((int)$data['customer_id']);
 
-        if($walletTransactionResponse['status'] != 200){
-            return $walletTransactionResponse;
+        if($customer){
+
+            if(!isset($customer->added_fitcash_plus)){
+
+                $walletTransactionResponse = $this->utilities->walletTransaction($req)->getData();
+                $walletTransactionResponse = (array) $walletTransactionResponse;
+
+                if($walletTransactionResponse['status'] != 200){
+
+                    $customer->update(["added_fitcash_plus" => time()]);
+
+                    return $walletTransactionResponse;
+                }
+            }
+
+            return Response::json(array('status' => 401,'message' => 'Error'),401);
         }
+
+        return Response::json(array('status' => 402,'message' => 'Error'),402);
+        
 
     }
 
