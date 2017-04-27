@@ -1764,18 +1764,21 @@ class TransactionController extends \BaseController {
                 $walletTransactionResponse = $this->utilities->walletTransaction($req)->getData();
                 $walletTransactionResponse = (array) $walletTransactionResponse;
 
-                if($walletTransactionResponse['status'] != 200){
+                if($walletTransactionResponse['status'] == 200){
 
                     $customer->update(["added_fitcash_plus" => time()]);
 
-                    return $walletTransactionResponse;
+                    return Response::json(array('status' => 200,'message' => 'Success'),200);
                 }
+
+                return Response::json(array('status' => 401,'message' => 'Error'),401);
+                
             }
 
-            return Response::json(array('status' => 401,'message' => 'Error'),401);
+            return Response::json(array('status' => 402,'message' => 'Error'),402);
         }
 
-        return Response::json(array('status' => 402,'message' => 'Error'),402);
+        return Response::json(array('status' => 403,'message' => 'Error'),403);
         
 
     }
