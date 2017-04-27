@@ -2042,7 +2042,8 @@ class FindersController extends \BaseController {
 				'description'=> (isset($item['short_description']) && count($item['short_description']) > 0) ? strip_tags($item['short_description']) : ""
 			);*/
 
-			unset($items[$k]['short_description']);
+			// unset($items[$k]['short_description']);
+			$items[$k]['short_description_icon'] = "https://b.fitn.in/iconsv1/vendor-page/description.png";
 
 			$sericecategorysCalorieArr = Config::get('app.calorie_burn_categorywise');
 			$category_calorie_burn = 300;
@@ -2059,13 +2060,13 @@ class FindersController extends \BaseController {
 
 			$extra_info[0] = array(
 				'title'=>'Avg. Calorie Burn',
-				'icon'=>'https://b.fitn.in/iconsv1/fitternity-assured/realtime-booking.png',
+				'icon'=>'https://b.fitn.in/iconsv1/vendor-page/calorie.png',
 				'description'=>$category_calorie_burn.' Kcal'
 			);
 
 			$extra_info[1] = array(
 				'title'=>'Results',
-				'icon'=>'https://b.fitn.in/iconsv1/fitternity-assured/realtime-booking.png',
+				'icon'=>'https://b.fitn.in/iconsv1/vendor-page/form.png',
 				'description'=>'Burn Fat | Super Cardio'
 			);
 
@@ -2218,6 +2219,8 @@ class FindersController extends \BaseController {
 								$app_discount_amount = intval($rateval['price'] * ($this->appOfferDiscount/100));
 								$rateval['price'] = $rateval['price'] - $app_discount_amount;
 							}
+							array_push($ratecardArr, $rateval);
+						}else{
 							array_push($ratecardArr, $rateval);
 						}
 					//}

@@ -2678,3 +2678,9 @@ Route::get('orderfunnel','DebugController@order_funnel');
 Route::get('linksentfunnel','DebugController@linksent_funnel');
 /******************  Service to vendor category API END HERE************************************************/
 #####################################################################################################
+
+
+
+
+// Checking global search
+Route::get('pushfinders/{index}/{city_id}', 'GlobalPushController@pushfinders');
