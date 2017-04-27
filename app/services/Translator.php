@@ -668,28 +668,54 @@ public static function translate_searchresultsv2($es_searchresult_response){
 					$intersect = array();
 					$found = false;
 					foreach($search_request['regions'] as $loc){
-						foreach($result['multiaddress'] as $regions){
+						$loc = str_replace("-"," ",$loc);
+						foreach($result['multiaddress'] as $key => $regions){
 							if(in_array(strtolower($loc),$regions['location'])){
 								array_push($intersect,$regions);
 								$found = true;
-								break;	
+								unset($result['multiaddress'][$key]);	
+							}
+							if(in_array("Base location",$regions['location'])){
+								$regions['location'] = str_replace("Base location",$result['location'],$regions['location']);
+								// Log::info($regions['location']);
+								$result['multiaddress'][$key]['location'] = $regions['location'];
 							}
 						}
+						foreach($result['multiaddress'] as $key => $regions){
+							array_push($intersect,$regions);
+						}
 					}
-					$resultobject->multiaddress = $found ? $intersect : $result['multiaddress'];
+					$resultobject->multiaddress = $intersect;
 				}else{
 					$resultobject->multiaddress = isset($result['multiaddress']) && count($result['multiaddress']) > 0 ? $result['multiaddress'] : array();
 				}
-				if(count($search_request) > 0 && ((isset($search_request['womens_day']) && $search_request['womens_day'] == true) ||(isset($search_request['offer_available']) && $search_request['offer_available'] == true) )){
-					// echo "disc25or50".$result['flags']['disc25or50'];
-					// echo "discother".$result['flags']['discother'];
-					if($result['flags']['disc25or50'] == 1){
-						$resultobject->offer_available = "https://b.fitn.in/iconsv1/womens-day/additional-50.png";
-					}
-					if($result['flags']['discother'] == 1){
-						$resultobject->offer_available = "https://b.fitn.in/iconsv1/womens-day/exclusive.png";
-					}
-				}
+				// if(count($search_request) > 0 && isset($search_request['regions']) && count($search_request['regions']) > 0 && !empty($result['multiaddress'])){
+				// 	$multiaddress_locations = array();
+				// 	$intersect = array();
+				// 	$found = false;
+				// 	foreach($search_request['regions'] as $loc){
+				// 		foreach($result['multiaddress'] as $regions){
+				// 			if(in_array(strtolower($loc),$regions['location'])){
+				// 				array_push($intersect,$regions);
+				// 				$found = true;
+				// 				break;	
+				// 			}
+				// 		}
+				// 	}
+				// 	$resultobject->multiaddress = $found ? $intersect : $result['multiaddress'];
+				// }else{
+				// 	$resultobject->multiaddress = isset($result['multiaddress']) && count($result['multiaddress']) > 0 ? $result['multiaddress'] : array();
+				// }
+				// if(count($search_request) > 0 && ((isset($search_request['womens_day']) && $search_request['womens_day'] == true) ||(isset($search_request['offer_available']) && $search_request['offer_available'] == true) )){
+				// 	// echo "disc25or50".$result['flags']['disc25or50'];
+				// 	// echo "discother".$result['flags']['discother'];
+				// 	if($result['flags']['disc25or50'] == 1){
+				// 		$resultobject->offer_available = "https://b.fitn.in/iconsv1/womens-day/additional-50.png";
+				// 	}
+				// 	if($result['flags']['discother'] == 1){
+				// 		$resultobject->offer_available = "https://b.fitn.in/iconsv1/womens-day/exclusive.png";
+				// 	}
+				// }
 
 
 				// Decide vendor type

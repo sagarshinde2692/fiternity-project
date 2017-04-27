@@ -2220,6 +2220,8 @@ class FindersController extends \BaseController {
 								$rateval['price'] = $rateval['price'] - $app_discount_amount;
 							}
 							array_push($ratecardArr, $rateval);
+						}else{
+							array_push($ratecardArr, $rateval);
 						}
 					//}
 				}
