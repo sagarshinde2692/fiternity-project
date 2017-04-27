@@ -721,6 +721,15 @@ Class Utilities {
 
                     $orderData->redundant_order = "1";
                     $orderData->update();
+                    
+                    $array = array('auto_followup_date','auto_followup_date','followup_status_co');
+
+                    foreach ($array as $value){
+
+                        if(isset($orderData[$value])){
+                            $orderData->unset($value);
+                        }
+                    }
 
                     $this->deleteCommunication($orderData);
                 }
