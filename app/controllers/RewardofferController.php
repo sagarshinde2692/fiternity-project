@@ -357,7 +357,7 @@ class RewardofferController extends BaseController {
             'description'=>$calculation['description']
         );
         if($calculation["current_wallet_balance_only_fitcash_plus"] > 0){
-            $cashback["info"] = "You can only pay upto 10% of the booking amount through FitCash. \n\nIt is calculated basis the amount, type and duration of the purchase.  \n\nYour total FitCash balance is Rs. ".$calculation['current_wallet_balance_only_fitcash']."\n\nYour total FitCash Plus balance is Rs. ".$calculation['current_wallet_balance_only_fitcash_plus']." FitCash applicable for this transaction is Rs. ".$calculation['amount_deducted_from_wallet'];
+            $cashback["info"] = "You can only pay upto 10% of the booking amount through FitCash. \n\nIt is calculated basis the amount, type and duration of the purchase.  \n\nYour total FitCash balance is Rs. ".$calculation['current_wallet_balance_only_fitcash']."\n\nYour total FitCash Plus balance is Rs. ".$calculation['current_wallet_balance_only_fitcash']." FitCash applicable for this transaction is Rs. ".$calculation['amount_deducted_from_wallet'];
         }
 
         unset($cashback['calculation']['description']);
