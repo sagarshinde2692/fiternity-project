@@ -215,6 +215,7 @@ Route::post('customer/transformation', array('as' => 'customer.transformation','
 Route::post('sms/downloadapp', array('as' => 'customer.downloadapp','uses' => 'CustomerController@downloadApp'));
 Route::get('app/forceupdate', array('as' => 'customer.forceupdate','uses' => 'CustomerController@forceUpdate'));
 Route::get('app/config', array('as' => 'customer.appconfig','uses' => 'CustomerController@appConfig'));
+Route::post('storecustomerattribution',  array('as' => 'customer.storecustomerattribution','uses' => 'CustomerController@storeCustomerAttribution'));
 
 
 
@@ -245,6 +246,7 @@ Route::group(array('before' => 'validatetoken'), function() {
 	Route::post('apply/promotioncode', array('as' => 'customer.applypromotioncode','uses' => 'CustomerController@applyPromotionCode'));
 
 	Route::get('getwalletbalance',  array('as' => 'customer.getWalletBalance','uses' => 'CustomerController@getWalletBalance'));
+	
 //	Route::post('wallettransaction',  array('as' => 'customer.walletTransaction','uses' => 'CustomerController@walletTransaction'));
 	Route::get('listwalletsummary/{limit?}/{offset?}',  array('as' => 'customer.listWalletSummary','uses' => 'CustomerController@listWalletSummary'));
 	Route::get('getexistingtrialwithfinder/{finder_id?}', array('as' => 'customer.getExistingTrialWithFinder','uses' => 'CustomerController@getExistingTrialWithFinder'));

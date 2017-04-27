@@ -15,7 +15,7 @@ return array(
 	*/
 
 
-	'debug' => FALSE,
+	'debug' => TRUE,
 
 	/*
 	|--------------------------------------------------------------------------
@@ -28,19 +28,19 @@ return array(
 	|
 	*/
 
-	'url' => 'https://a1.fitternity.com', //live
+	// 'url' => 'https://a1.fitternity.com', //live
 	// 'url' => 'http://apistage.fitn.in', //stage
-	// 'url' => 'http://fitapi.com', //local
+	'url' => 'http://fitapi.com', //local
 
-    'website' => 'https://www.fitternity.com', //live
-    // 'website' => 'http://apistage.fitn.in:2233', //stage
+    // 'website' => 'https://www.fitternity.com', //live
+    'website' => 'http://apistage.fitn.in:2233', //stage
 
     'download_app_link' => 'https://www.fitternity.com/downloadapp',
 
     'business' => 'http://business.fitternity.com',
 
-    'sidekiq_url' => 'http://nw.fitn.in/', //live
-   	// 'sidekiq_url' => 'http://kick.fitn.in/', //stage
+    // 'sidekiq_url' => 'http://nw.fitn.in/', //live
+   	'sidekiq_url' => 'http://kick.fitn.in/', //stage
 
     'queue' => 'booktrial',
 
@@ -251,21 +251,21 @@ return array(
 	//will be implemented everywhere in future when other api will be changed
 	/*************************************************************************/
 	//Production
-	'es' =>array(
-		'url'		=> 			'ESAdmin:fitternity2020@54.169.120.141:8050',
-		'host'		=> 			'ESAdmin:fitternity2020@54.169.120.141',
-		'port'		=>			8050,
-		'default_index' => 	'fitternity',
-		'default_type' 	=> 	'finder',
-	),
-	//stage
 	// 'es' =>array(
-	//  	'url'		=> 			'139.59.16.74:1243',
-	//  	'host'		=> 			'139.59.16.74',
-	//  	'port'		=>			1243,
-	//  	'default_index' => 	'fitternity',
-	//  	'default_type' 	=> 	'finder',
+	// 	'url'		=> 			'ESAdmin:fitternity2020@54.169.120.141:8050',
+	// 	'host'		=> 			'ESAdmin:fitternity2020@54.169.120.141',
+	// 	'port'		=>			8050,
+	// 	'default_index' => 	'fitternity',
+	// 	'default_type' 	=> 	'finder',
 	// ),
+	//stage
+	'es' =>array(
+	 	'url'		=> 			'139.59.16.74:1243',
+	 	'host'		=> 			'139.59.16.74',
+	 	'port'		=>			1243,
+	 	'default_index' => 	'fitternity',
+	 	'default_type' 	=> 	'finder',
+	),
 	//local
 	// 'es' =>array(
 	// 	'url'		=> 			'localhost:9200',

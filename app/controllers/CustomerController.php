@@ -3795,5 +3795,52 @@ class CustomerController extends \BaseController {
 		return Response::json($resp,200);
 	}
 
+	public function storeCustomerAttribution(){
+		
+		try{
+
+			$data = Input::all();
+		
+			$rules = Customerattribution::$rules;
+
+			$validator = Validator::make($data,$rules);
+
+			if ($validator->fails()) {
+				return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),400);
+			}
+
+			$attribution_array = $data['attribution'];
+			$last_key = count($attribution_array) - 1;
+			foreach($attribution_array as $key => $attr){
+				$lineitem = array();
+				$lineitem = array_merge($data, $attr);
+				$customerattribution = new Customerattribution($lineitem);
+				$customerattribution->_id = Customerattribution::max('_id')?(Customerattribution::max('_id')+1):1;
+				$customerattribution->visit_date_epoch = $customerattribution->visit_date = ($attr['date']);
+				$customerattribution->bought = $key == $last_key ? true : false;
+				unset($customerattribution->attribution);
+				unset($customerattribution->date);
+				$customerattribution->save();
+			}
+			
+			
+			return Response::json(array('status'=>200, 'message'=>'Attribution created succesfully'));
+
+		}catch(Exception $exception){
+
+            $message = array(
+                'type'    => get_class($exception),
+                'message' => $exception->getMessage(),
+                'file'    => $exception->getFile(),
+                'line'    => $exception->getLine(),
+            );
+
+            Log::error($exception);
+
+            return array('status'=>'fail','error_message'=>$message);
+        }
+		
+	}
+
 
 }
