@@ -3985,11 +3985,11 @@ public function yes($msg){
 
 			foreach ($numbers as $key => $contact_no) {
 
-				$ozonetelCapture = Ozonetelcapture::where('created_at', '>=', new DateTime(date("2017-01-01 00:00:00")))
+				/*$ozonetelCapture = Ozonetelcapture::where('created_at', '>=', new DateTime(date("2017-01-01 00:00:00")))
 						->where('finder_id','exists',true)
 						->where('finder_id',$finder_id)
 						->whereIn('customer_cid',$contact_no)
-						->update(['bulk_sms_sent'=>time()]);
+						->update(['bulk_sms_sent'=>time()]);*/
 
 				$sms['sms_type'] = 'transactional';
 				$sms['contact_no'] = $contact_no;
