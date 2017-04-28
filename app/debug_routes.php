@@ -50,6 +50,7 @@ Route::get('unsetstartendservice', 'DebugController@unsetStartEndService');
 
 Route::get('xyz','DebugController@xyz');
 Route::get('yes/{msg}','DebugController@yes');
+Route::get('ozonetelcapturebulksms','DebugController@ozonetelCaptureBulkSms');
 
 
 // please dont merge in live or production environment

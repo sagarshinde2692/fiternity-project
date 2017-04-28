@@ -13,6 +13,7 @@ use App\Mailers\FinderMailer as FinderMailer;
 use App\Mailers\CustomerMailer as CustomerMailer;
 use App\Services\Sidekiq as Sidekiq;
 use App\Services\Bulksms as Bulksms;
+use App\Services\Utilities as Utilities;
 
 use \Pubnub\Pubnub as Pubnub;
 
@@ -3929,5 +3930,83 @@ public function yes($msg){
 		return "Done";
 
 	}
+
+	public function ozonetelCaptureBulkSms(){
+
+		ini_set('memory_limit','512M');
+		ini_set('max_execution_time', 300);
+
+		$utilities = new Utilities();
+
+		$finder_ids = Ozonetelcapture::where('created_at', '>=', new DateTime(date("2017-01-01 00:00:00")))
+						->where('finder_id','exists',true)
+						->where('customer_cid','exists',true)
+						->where('bulk_sms_sent','exists',false)
+						->lists('finder_id');
+
+		$finder_ids = array_map("intval",array_unique($finder_ids));
+
+		$allFinder = [];
+
+		foreach ($finder_ids as $key => $finder_id) {
+
+			$finder = Finder::with(array('city'=>function($query){$query->select('_id','name','slug');}))->with(array('location'=>function($query){$query->select('_id','name','slug');}))->where('_id',$finder_id)->first();
+
+			$paymentEnableFinderCount = Ratecard::where('direct_payment_enable','1')->where('finder_id',$finder_id)->count();
+
+			$contact_nos = Ozonetelcapture::where('created_at', '>=', new DateTime(date("2017-01-01 00:00:00")))
+						->where('finder_id','exists',true)
+						->where('finder_id',$finder_id)
+						->where('customer_cid','exists',true)
+						->where('bulk_sms_sent','exists',false)
+						->lists('customer_cid');
+
+			$finder_city_slug = $finder->city->slug;
+			$finder_location_slug = $finder->location->slug;
+			$finder_slug = $finder->slug;
+			$srp_link = $utilities->getShortenUrl(Config::get('app.weburl').$finder_city_slug."/".$finder_location_slug."/fitness");
+			$vendor_link = $utilities->getShortenUrl(Config::get('app.weburl').$finder_slug);
+			$finder_name = ucwords($finder->title);
+
+			$message = "This is regarding your enquiry on Fitternity. We have some great offers running for fitness options around you. Get lowest price guaranteed and rewards like fitness kit or diet plan on your purchase. Get Rs 300 in your wallet by applying promocode in your user profile. Code - GETFIT. Explore - ".$srp_link;
+
+			if($paymentEnableFinderCount > 0){
+
+				$message = "This is regarding your enquiry for ".$finder_name." on Fitternity. We have some great offers running for ".$finder_name." and 10000 other fitness providers. Get lowest price guaranteed and rewards like fitness kit or diet plan on your purchase. Get Rs 300 in your wallet by applying promocode in your user profile. Code GETFIT. Buy now - ".$vendor_link;
+			}
+
+			//echo"<pre>";print_r($message);exit;
+
+			$contact_nos = array_unique($contact_nos);
+
+			$numbers = array_chunk($contact_nos, 500);
+
+			$return = [];
+
+			foreach ($numbers as $key => $contact_no) {
+
+				$ozonetelCapture = Ozonetelcapture::where('created_at', '>=', new DateTime(date("2017-01-01 00:00:00")))
+						->where('finder_id','exists',true)
+						->where('finder_id',$finder_id)
+						->whereIn('customer_cid',$contact_no)
+						->update(['bulk_sms_sent'=>time()]);
+
+				$sms['sms_type'] = 'transactional';
+				$sms['contact_no'] = $contact_no;
+				$sms['message'] = $message;
+
+				//$bulkSms = new Bulksms();
+
+				$return[] = $contact_no; //$bulkSms->send($sms);
+			}
+
+			$allFinder[$finder_id] = $return;
+
+		}
+
+		return $allFinder;
+
+	}
+
     
 }
