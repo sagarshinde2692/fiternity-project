@@ -3974,7 +3974,7 @@ public function yes($msg){
 
 				$message = "This is regarding your enquiry for ".$finder_name." on Fitternity. We have some great offers running for ".$finder_name." and 10000 other fitness providers. Get lowest price guaranteed and rewards like fitness kit or diet plan on your purchase. Get Rs 300 in your wallet by applying promocode in your user profile. Code GETFIT. Buy now - ".$vendor_link;
 			}
-			
+
 			$contact_nos = array_unique($contact_nos);
 
 			$numbers = array_chunk($contact_nos, 500);
@@ -4005,6 +4005,268 @@ public function yes($msg){
 		return $allFinder;
 
 	}
+
+	public function orderFollowupQuery($offset,$limit){
+
+		$orders  = Order::active()
+			->whereIn('type',['memberships','healthytiffinmembership'])
+			->where('added_auto_followup_date','exists',false)
+			->where('start_date','exists',true)
+			->where('start_date', '>=', new DateTime(date("2017-01-01 00:00:00")))
+			->where('end_date','exists',true)
+			->where('duration_day','exists',true)
+			->where('duration_day','>=',30)
+			->skip($offset)
+			->take($limit)
+			->get();
+
+		return $orders;
+
+	}
+
+
+	public function orderFollowup(){
+
+		ini_set('memory_limit','512M');
+		ini_set('max_execution_time', 300);
+
+		$offset = 0;
+		$limit = 10;
+
+		$allOrders = $this->orderQuery($offset,$limit);
+
+		while(count($allOrders) != 0){
+
+			foreach ($allOrders as $order) {
+
+				if($order['duration_day'] >= 30 && $order['duration_day'] < 90 && time() <= strtotime("-7 days",strtotime($order['end_date']))){
+
+					if(time() <= strtotime("+7 days",strtotime($order['start_date']))){
+
+						$data['followup_status'] = 'catch_up';
+						$data['followup_status_count'] = 1;
+						$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("+7 days",strtotime($order['start_date'])));
+
+					}elseif(time() <= strtotime("+21 days",strtotime($order['start_date']))){
+
+						$data['followup_status'] = 'catch_up';
+						$data['followup_status_count'] = 2;
+						$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("+21 days",strtotime($order['start_date'])));
+
+					}elseif(time() <= strtotime("-7 days",strtotime($order['end_date']))){
+
+						$data['followup_status'] = 'renewal';
+						$data['followup_status_count'] = 1;
+						$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("-7 days",strtotime($order['end_date'])));
+
+					}elseif(time() <= strtotime("-1 days",strtotime($order['end_date']))){
+
+						$data['followup_status'] = 'renewal';
+						$data['followup_status_count'] = 2;
+						$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("-1 days",strtotime($order['end_date'])));
+
+					}
+
+				}elseif ($order['duration_day'] >= 90 && $order['duration_day'] < 180) {
+
+					if(time() <= strtotime("+7 days",strtotime($order['start_date']))){
+
+						$data['followup_status'] = 'catch_up';
+						$data['followup_status_count'] = 1;
+						$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("+7 days",strtotime($order['start_date'])));
+
+					}elseif(time() <= strtotime("+45 days",strtotime($order['start_date']))){
+
+						$data['followup_status'] = 'catch_up';
+						$data['followup_status_count'] = 2;
+						$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("+45 days",strtotime($order['start_date'])));
+
+					}elseif(time() <= strtotime("-15 days",strtotime($order['end_date']))){
+
+						$data['followup_status'] = 'renewal';
+						$data['followup_status_count'] = 1;
+						$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("-15 days",strtotime($order['end_date'])));
+
+					}elseif(time() <= strtotime("-7 days",strtotime($order['end_date']))){
+
+						$data['followup_status'] = 'renewal';
+						$data['followup_status_count'] = 2;
+						$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("-7 days",strtotime($order['end_date'])));
+
+					}elseif(time() <= strtotime("-1 days",strtotime($order['end_date']))){
+
+						$data['followup_status'] = 'renewal';
+						$data['followup_status_count'] = 3;
+						$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("-1 days",strtotime($order['end_date'])));
+
+					}
+
+				}elseif ($order['duration_day'] >= 180 && $order['duration_day'] < 360) {
+
+					if(time() <= strtotime("+7 days",strtotime($order['start_date']))){
+
+						$data['followup_status'] = 'catch_up';
+						$data['followup_status_count'] = 1;
+						$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("+7 days",strtotime($order['start_date'])));
+
+					}elseif(time() <= strtotime("+45 days",strtotime($order['start_date']))){
+
+						$data['followup_status'] = 'catch_up';
+						$data['followup_status_count'] = 2;
+						$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("+45 days",strtotime($order['start_date'])));
+
+					}elseif(time() <= strtotime("+75 days",strtotime($order['start_date']))){
+
+						$data['followup_status'] = 'catch_up';
+						$data['followup_status_count'] = 3;
+						$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("+75 days",strtotime($order['start_date'])));
+
+					}elseif(time() <= strtotime("-30 days",strtotime($order['end_date']))){
+
+						$data['followup_status'] = 'renewal';
+						$data['followup_status_count'] = 1;
+						$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("-30 days",strtotime($order['end_date'])));
+
+					}elseif(time() <= strtotime("-15 days",strtotime($order['end_date']))){
+
+						$data['followup_status'] = 'renewal';
+						$data['followup_status_count'] = 2;
+						$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("-15 days",strtotime($order['end_date'])));
+
+					}elseif(time() <= strtotime("-7 days",strtotime($order['end_date']))){
+
+						$data['followup_status'] = 'renewal';
+						$data['followup_status_count'] = 3;
+						$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("-7 days",strtotime($order['end_date'])));
+
+					}elseif(time() <= strtotime("-1 days",strtotime($order['end_date']))){
+
+						$data['followup_status'] = 'renewal';
+						$data['followup_status_count'] = 4;
+						$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("-1 days",strtotime($order['end_date'])));
+
+					}
+
+				}elseif ($order['duration_day'] >= 360) {
+
+					if(time() <= strtotime("+7 days",strtotime($order['start_date']))){
+
+						$data['followup_status'] = 'catch_up';
+						$data['followup_status_count'] = 1;
+						$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("+7 days",strtotime($order['start_date'])));
+
+					}elseif(time() <= strtotime("+45 days",strtotime($order['start_date']))){
+
+						$data['followup_status'] = 'catch_up';
+						$data['followup_status_count'] = 2;
+						$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("+45 days",strtotime($order['start_date'])));
+
+					}elseif(time() <= strtotime("+75 days",strtotime($order['start_date']))){
+
+						$data['followup_status'] = 'catch_up';
+						$data['followup_status_count'] = 3;
+						$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("+75 days",strtotime($order['start_date'])));
+
+					}elseif(time() <= strtotime("+165 days",strtotime($order['start_date']))){
+
+						$data['followup_status'] = 'catch_up';
+						$data['followup_status_count'] = 4;
+						$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("+165 days",strtotime($order['start_date'])));
+
+					}elseif(time() <= strtotime("-30 days",strtotime($order['end_date']))){
+
+						$data['followup_status'] = 'renewal';
+						$data['followup_status_count'] = 1;
+						$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("-30 days",strtotime($order['end_date'])));
+
+					}elseif(time() <= strtotime("-15 days",strtotime($order['end_date']))){
+
+						$data['followup_status'] = 'renewal';
+						$data['followup_status_count'] = 2;
+						$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("-15 days",strtotime($order['end_date'])));
+
+					}elseif(time() <= strtotime("-7 days",strtotime($order['end_date']))){
+
+						$data['followup_status'] = 'renewal';
+						$data['followup_status_count'] = 3;
+						$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("-7 days",strtotime($order['end_date'])));
+
+					}elseif(time() <= strtotime("-1 days",strtotime($order['end_date']))){
+
+						$data['followup_status'] = 'renewal';
+						$data['followup_status_count'] = 4;
+						$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("-1 days",strtotime($order['end_date'])));
+
+					}
+				}
+
+				if(!isset($order['auto_followup_date']) && isset($data['auto_followup_date']) && isset($order['followup_date']) && strtotime($order['followup_date']) >= strtotime($data['auto_followup_date'])){
+
+					$data = [];
+
+				}
+
+				$data['added_auto_followup_date'] = time();
+
+				$order->update([$data]);
+			}
+
+			$offset = $offset + 10;
+
+			$allOrders = $this->orderQuery($offset,$limit);
+		}
+
+		return array('status'=>'done');
+	}
+
+
+	public function trialFollowupQuery($offset,$limit){
+
+		$trials  = Booktrial::whereIn('type',['booktrials','workout-session'])
+			->where('final_lead_stage','exists',true)
+			->where('final_lead_stage','post_trial_stage')
+			->where('added_auto_followup_date','exists',false)
+			->where('schedule_date_time','exists',true)
+			->where('schedule_date_time', '>=', new DateTime(date("2017-03-28 00:00:00")))
+			->skip($offset)
+			->take($limit)
+			->get();
+
+		return $trials;
+
+	}
+
+	public function trialFollowup(){
+
+		ini_set('memory_limit','512M');
+		ini_set('max_execution_time', 300);
+
+		$offset = 0;
+		$limit = 10;
+
+		$allTrials = $this->trialFollowupQuery($offset,$limit);
+
+		while(count($allTrials) != 0){
+
+			foreach ($allTrials as $trial) {
+
+				$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("+31 days",strtotime($trial['schedule_date_time'])));
+				$data['added_auto_followup_date'] = time();
+
+				$trial->update($data);
+
+			}
+
+			$offset = $offset + 10;
+
+			$allTrials = $this->trialFollowupQuery($offset,$limit);
+		}
+
+		return array('status'=>'done');
+
+	}
+
+
 
     
 }
