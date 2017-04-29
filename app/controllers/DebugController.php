@@ -3974,9 +3974,7 @@ public function yes($msg){
 
 				$message = "This is regarding your enquiry for ".$finder_name." on Fitternity. We have some great offers running for ".$finder_name." and 10000 other fitness providers. Get lowest price guaranteed and rewards like fitness kit or diet plan on your purchase. Get Rs 300 in your wallet by applying promocode in your user profile. Code GETFIT. Buy now - ".$vendor_link;
 			}
-
-			//echo"<pre>";print_r($message);exit;
-
+			
 			$contact_nos = array_unique($contact_nos);
 
 			$numbers = array_chunk($contact_nos, 500);
@@ -3993,14 +3991,11 @@ public function yes($msg){
 
 				$sms['sms_type'] = 'transactional';
 				$sms['contact_no'] = $contact_no;
-				// $sms['contact_no'] = ["9730401839","7506262489"];
 				$sms['message'] = $message;
 
 				$bulkSms = new Bulksms();
 
-				// $return[] = $contact_no; //$bulkSms->send($sms);
-				$bulkSms->send($sms);
-				exit;
+				$return[] = $bulkSms->send($sms);
 			}
 
 			$allFinder[$finder_id] = $return;
