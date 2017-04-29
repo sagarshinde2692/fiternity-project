@@ -3950,7 +3950,7 @@ public function yes($msg){
 
 		foreach ($finder_ids as $key => $finder_id) {
 
-			$finder = Finder::with(array('city'=>function($query){$query->select('_id','name','slug');}))->with(array('location'=>function($query){$query->select('_id','name','slug');}))->where('_id',$finder_id)->first();
+			$finder = Finder::select('city_id','location_id','title','slug','_id')->where('_id',$finder_id)->with(array('city'=>function($query){$query->select('_id','name','slug');}))->with(array('location'=>function($query){$query->select('_id','name','slug');}))->first();
 
 			$paymentEnableFinderCount = Ratecard::where('direct_payment_enable','1')->where('finder_id',$finder_id)->count();
 
@@ -3964,8 +3964,8 @@ public function yes($msg){
 			$finder_city_slug = $finder->city->slug;
 			$finder_location_slug = $finder->location->slug;
 			$finder_slug = $finder->slug;
-			$srp_link = $utilities->getShortenUrl(Config::get('app.weburl').$finder_city_slug."/".$finder_location_slug."/fitness");
-			$vendor_link = $utilities->getShortenUrl(Config::get('app.weburl').$finder_slug);
+			$srp_link = $utilities->getShortenUrl(Config::get('app.website')."/".$finder_city_slug."/".$finder_location_slug."/fitness");
+			$vendor_link = $utilities->getShortenUrl(Config::get('app.website')."/".$finder_slug);
 			$finder_name = ucwords($finder->title);
 
 			$message = "This is regarding your enquiry on Fitternity. We have some great offers running for fitness options around you. Get lowest price guaranteed and rewards like fitness kit or diet plan on your purchase. Get Rs 300 in your wallet by applying promocode in your user profile. Code - GETFIT. Explore - ".$srp_link;
@@ -3985,19 +3985,22 @@ public function yes($msg){
 
 			foreach ($numbers as $key => $contact_no) {
 
-				/*$ozonetelCapture = Ozonetelcapture::where('created_at', '>=', new DateTime(date("2017-01-01 00:00:00")))
+				$ozonetelCapture = Ozonetelcapture::where('created_at', '>=', new DateTime(date("2017-01-01 00:00:00")))
 						->where('finder_id','exists',true)
 						->where('finder_id',$finder_id)
 						->whereIn('customer_cid',$contact_no)
-						->update(['bulk_sms_sent'=>time()]);*/
+						->update(['bulk_sms_sent'=>time()]);
 
 				$sms['sms_type'] = 'transactional';
 				$sms['contact_no'] = $contact_no;
+				// $sms['contact_no'] = ["9730401839","7506262489"];
 				$sms['message'] = $message;
 
-				//$bulkSms = new Bulksms();
+				$bulkSms = new Bulksms();
 
-				$return[] = $contact_no; //$bulkSms->send($sms);
+				// $return[] = $contact_no; //$bulkSms->send($sms);
+				$bulkSms->send($sms);
+				exit;
 			}
 
 			$allFinder[$finder_id] = $return;
