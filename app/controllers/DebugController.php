@@ -4012,7 +4012,7 @@ public function yes($msg){
 			->whereIn('type',['memberships','healthytiffinmembership'])
 			->where('added_auto_followup_date','exists',false)
 			->where('start_date','exists',true)
-			->where('start_date', '>=', new DateTime(date("2017-01-01 00:00:00")))
+			->where('start_date', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-01-01 00:00:00"))))
 			->where('end_date','exists',true)
 			->where('duration_day','exists',true)
 			->where('duration_day','>=',30)
@@ -4227,11 +4227,11 @@ public function yes($msg){
 			->where('final_lead_stage','post_trial_stage')
 			->where('added_auto_followup_date','exists',false)
 			->where('schedule_date_time','exists',true)
-			->where('schedule_date_time', '>=', new DateTime(date("2017-03-28 00:00:00")))
+			->where('schedule_date_time', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-03-28 00:00:00"))))
 			->skip($offset)
 			->take($limit)
 			->get();
-
+			
 		return $trials;
 
 	}
