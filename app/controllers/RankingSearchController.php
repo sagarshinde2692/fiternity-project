@@ -724,6 +724,7 @@ class RankingSearchController extends \BaseController
         $orderfield  =     (Input::json()->get('sort')) ? Input::json()->get('sort')['sortfield'] : '';
         $order   =         (Input::json()->get('sort')) ? Input::json()->get('sort')['order'] : '';
         $location    =         Input::json()->get('location')['city'] ? strtolower(Input::json()->get('location')['city']): 'mumbai';
+        $location    =      getmy_city($location);
         $vip_trial    =         Input::json()->get('vip_trial') ? array(intval(Input::json()->get('vip_trial'))) : [1,0];
         $vip_trial = implode($vip_trial,',');
         $locat = Input::json()->get('location');
