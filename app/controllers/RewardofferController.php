@@ -335,8 +335,8 @@ class RewardofferController extends BaseController {
                                     $validity_type = 'months';
                                     break;
                                     case 31:
-                                    $validity = 14;
-                                    $validity_type = 'days';
+                                    $validity = 3;
+                                    $validity_type = 'months';
                                     break;
                                     
                                 }
@@ -410,8 +410,10 @@ class RewardofferController extends BaseController {
             'status'                    =>  200,
             'message'                   => "Rewards offers"
         );
-
-        //$data['diet_plan'] = $customerReward->fitternityDietVendor($amount);
+        $data['cross_sell'] = array(
+            'diet_plan' => $customerReward->fitternityDietVendor($amount)
+        );
+        // $data['diet_plan'] = $customerReward->fitternityDietVendor($amount);
 
         return  Response::json($data, 200);
 
