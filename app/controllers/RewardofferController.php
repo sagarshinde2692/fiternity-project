@@ -376,7 +376,7 @@ class RewardofferController extends BaseController {
             'message'                   => "Rewards offers"
         );
 
-        //$data['diet_plan'] = $customerReward->fitternityDietVendor($amount);
+        $data['diet_plan'] = $customerReward->fitternityDietVendor($amount);
 
         return  Response::json($data, 200);
 

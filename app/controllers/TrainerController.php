@@ -58,7 +58,7 @@ class TrainerController extends \BaseController {
 
 		$oldTrainerSlotBooking = TrainerSlotBooking::where('hidden',false)->where('customer_id',$customer_id)->where('order_id',$order_id)->orderBy('_id','desc')->first();
 
-		$schedules_query = Schedule::where('trainer_id','exists',true)->where('day',$weekday);
+		$schedules_query = TrainerSchedule::where('trainer_id','exists',true)->where('day',$weekday);
 
 		if($oldTrainerSlotBooking){
 
@@ -188,7 +188,8 @@ class TrainerController extends \BaseController {
         	$weekday =   strtolower(date( "l",strtotime($date)));
         	$slot = $data['slot'];
         	$slot_explode = explode("-",$data['slot']);
-        	$order_id = (int)$data['order_id'];
+			$data['order_id'] = (int)$data['order_id'];
+        	$order_id = $data['order_id'];
 
         	$order = Order::find($order_id);
 
