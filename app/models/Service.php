@@ -202,11 +202,11 @@ class Service extends \Basemodel{
                         if(isset($ratecardoffer['end_date'])){
                         	$end_date       =   new DateTime( date("d-m-Y 00:00:00", strtotime("+ 1 days", strtotime($ratecardoffer['end_date']))));
                         }
-                        
+
                         $difference     =   $today_date->diff($end_date);
 
                         // if($difference->days <= 5){
-                            $ratecardoffer['offer_text']    =   "";//($difference->d == 1) ? "Expires Today" : "Expires in ".$difference->days." days";
+                            $ratecardoffer['offer_text']    =  ($difference->d == 1) ? "Expires Today" : "Expires in ".$difference->days." days";
 
                         // }
                         array_push($ratecardoffers,$ratecardoffer);
