@@ -197,8 +197,12 @@ class Service extends \Basemodel{
 						}
 
                         $today_date     =   new DateTime( date("d-m-Y 00:00:00", time()) );
-                        // $end_date       =   new DateTime( date("d-m-Y 00:00:00", strtotime("+ 1 days", strtotime($ratecardoffer['end_date']))));
-                        $end_date       =   new DateTime( date("d-m-Y 00:00:00", strtotime("+ 1 days", strtotime("2017-04-30T18:30:00.000Z"))));
+
+                        $end_date       =   new DateTime( date("d-m-Y 00:00:00", strtotime("+ 1 days", strtotime("2017-05-15T18:30:00.000Z"))));
+                        if(isset($ratecardoffer['end_date'])){
+                        	$end_date       =   new DateTime( date("d-m-Y 00:00:00", strtotime("+ 1 days", strtotime($ratecardoffer['end_date']))));
+                        }
+                        
                         $difference     =   $today_date->diff($end_date);
 
                         // if($difference->days <= 5){
