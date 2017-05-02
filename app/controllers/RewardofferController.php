@@ -216,6 +216,8 @@ class RewardofferController extends BaseController {
                     // ->with('rewards')
                     ->orderBy('_id','desc')->first();
 
+                    // return $rewardoffer;
+
             if ($rewardoffer){
                 $rewardoffer = $rewardoffer->toArray();
 
@@ -310,6 +312,39 @@ class RewardofferController extends BaseController {
                             }else{
 
                                 $rewards_value['image'] = "https://b.fitn.in/gamification/reward/".$rewards_value['reward_type'].".jpg";
+                            }
+
+                            if($rewards_value['reward_type'] == "diet_plan"){
+                                $rewards_value['service_id'] = Service::where('name', 'General Fitternity Diet')->first(['_id'])->_id;
+                                switch($rewards_value['_id']){
+                                    case 27:
+                                    $validity = 14;
+                                    $validity_type = 'days';
+                                    
+                                    break;
+                                    case 28:
+                                    $validity = 1;
+                                    $validity_type = 'months';
+                                    break;
+                                    case 29:
+                                    $validity = 2;
+                                    $validity_type = 'months';
+                                    break;
+                                    case 30:
+                                    $validity = 3;
+                                    $validity_type = 'months';
+                                    break;
+                                    case 31:
+                                    $validity = 14;
+                                    $validity_type = 'days';
+                                    break;
+                                    
+                                }
+
+                                $diet_ratecard = Ratecard::where('service_id', $rewards_value['service_id'])->where('validity', $validity)->where('validity_type', $validity_type)->first(['_id']);
+                                if($diet_ratecard){
+                                    $rewards_value['ratecard_id'] = $diet_ratecard['_id'];
+                                }
                             }
 
                             if($rewards_value['reward_type'] == $reward_type_order_value){
