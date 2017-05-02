@@ -103,6 +103,14 @@ class TransactionController extends \BaseController {
             $rules = array_merge($rules,$membership_rules);
         }
 
+        if($data['type'] == 'diet_plan'){
+            $diet_plan_rules = array(
+                'offering_type'=>'required'
+            );
+
+            $rules = array_merge($rules,$diet_plan_rules);
+        }
+
         $validator = Validator::make($data,$rules);
 
         if ($validator->fails()) {
@@ -658,7 +666,7 @@ class TransactionController extends \BaseController {
         }
 
         if(isset($order->diet_plan_ratecard_id) && $order->diet_plan_ratecard_id != "" && $order->diet_plan_ratecard_id != 0){
-
+            
             $generaterDietPlanOrder = $this->generaterDietPlanOrder($order->toArray());
 
             if($generaterDietPlanOrder['status'] != 200){
@@ -666,8 +674,12 @@ class TransactionController extends \BaseController {
             }
 
             $order->diet_plan_order_id = $generaterDietPlanOrder['order_id'];
-
             $order->update();
+
+        }
+
+        if(isset($order->type) && $order->type == "diet_plan"){
+            return $generaterDietPlanOrder = $this->createDietPlanOrder($order->toArray());
         }
 
         $resp   =   array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
@@ -1635,7 +1647,7 @@ class TransactionController extends \BaseController {
         $data['city_id'] =  $order['city_id'];
         $data['city_name'] =  $order['city_name'];
         $data['city_slug'] = $order['city_slug'];
-        $data['offering_type'] = "cross_sell";
+        $data['offering_type'] = (isset($order['offering_type']) && $order['offering_type']!="") ? $order['offering_type']: "cross_sell";
         $data['renewal'] = "no";
         $data['final_assessment'] = "no";
 
@@ -1813,6 +1825,64 @@ class TransactionController extends \BaseController {
 
         return "no orders found";
     
+    }
+
+    public function createDietPlanOrder($data){
+        Log::info('inside createDietPlanOrder');
+        $data['renewal'] = "no";
+        $data['final_assessment'] = "no";
+
+        array_set($data, 'status', '1');
+        array_set($data, 'order_action', 'bought');
+        array_set($data, 'success_date', date('Y-m-d H:i:s',time()));
+
+        $customerDetail = $this->getCustomerDetail($data);
+
+        if($customerDetail['status'] != 200){
+            return $customerDetail;
+        }
+
+        $data = array_merge($data,$customerDetail['data']); 
+          
+        $ratecardDetail = $this->getRatecardDetail($data);
+
+        if($ratecardDetail['status'] != 200){
+            return $ratecardDetail;
+        }
+
+        $data = array_merge($data,$ratecardDetail['data']);
+
+        $ratecard_id = (int) $data['ratecard_id'];
+        $finder_id = (int) $data['finder_id'];
+        $service_id = (int) $data['service_id'];
+
+        $finderDetail = $this->getFinderDetail($finder_id);
+
+        if($finderDetail['status'] != 200){
+            return $finderDetail;
+        }
+
+        $data = array_merge($data,$finderDetail['data']);
+
+        $serviceDetail = $this->getServiceDetail($service_id);
+
+        if($serviceDetail['status'] != 200){
+            return $serviceDetail;
+        }
+
+        $data = array_merge($data,$serviceDetail['data']);
+
+        $data = $this->unsetData($data);
+
+        $data['status'] = "1";
+        $data['order_action'] = "bought";
+        $data['success_date'] = date('Y-m-d H:i:s',time());
+
+        $order = Order::FindOrFail($data['_id']);
+        $order->update($data);
+        $order_id = $order->_id;
+
+        return array('order_id'=>$order_id,'status'=>200,'message'=>'Diet Plan Order Created Sucessfully');
     }
 
 }
