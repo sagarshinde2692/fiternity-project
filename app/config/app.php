@@ -45,7 +45,7 @@ return array(
     'queue' => 'booktrial',
 
 	'app' =>array(
-		'discount'		=> 			5,
+		'discount'		=> 			2,
 	),
 
 	/*

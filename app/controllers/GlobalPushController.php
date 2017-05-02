@@ -396,9 +396,9 @@ class GlobalPushController extends \BaseController
   public function pushfinders($index_name, $city_id){
 
     ini_set('max_execution_time', 30000);
-    ini_set('memory_limit', '512M');
+    // ini_set('memory_limit', '512M');
     $city_id = (int) $city_id;
-    return $indexdocs = Finder::active()->where('city_id', $city_id)
+    $indexdocs = Finder::active()->where('city_id', $city_id)
         ->with(array('country'=>function($query){$query->select('name');}))
         ->with(array('city'=>function($query){$query->select('name');}))
         ->with(array('category'=>function($query){$query->select('name','meta');}))
