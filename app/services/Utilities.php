@@ -699,6 +699,37 @@ Class Utilities {
 
     }
 
+
+    public function removeOrderCommunication($order){
+
+        $allOrders = \Order::where('status','!=','1')
+                        ->whereIn('type',['memberships','healthytiffinmembership'])
+                        ->where('service_id',(int)$order->service_id)
+                        ->where('finder_id',(int)$order->finder_id)
+                        ->where('customer_email',$order->customer_email)
+                        ->where('created_at', '>=', new \DateTime( date("d-m-Y 00:00:00", strtotime("-44 days"))))
+                        ->orderBy('_id','desc')
+                        ->get();
+
+        if(count($allOrders) > 0){
+
+            foreach ($allOrders as $orderData) {
+
+                $array = array('auto_followup_date','auto_followup_date','followup_status_count','followup_date');
+
+                foreach ($array as $value){
+
+                    if(isset($orderData[$value])){
+                        $orderData->unset($value);
+                    }
+                }
+
+                $this->deleteCommunication($orderData);
+            }
+        }
+
+    }
+
     public function setRedundant($order){
 
         try {
@@ -735,23 +766,8 @@ Class Utilities {
                 }
             }
 
-            $allOrders = \Order::where('status','!=','1')
-                        ->whereIn('type',['memberships','healthytiffinmembership'])
-                        ->where('service_id',(int)$order->service_id)
-                        ->where('finder_id',(int)$order->finder_id)
-                        ->where('customer_email',$order->customer_email)
-                        ->where('created_at', '>=', new \DateTime( date("d-m-Y 00:00:00", strtotime("-44 days"))))
-                        ->orderBy('_id','desc')
-                        ->get();
-
-            if(count($allOrders) > 0){
-
-                foreach ($allOrders as $orderData) {
-
-                    $this->deleteCommunication($orderData);
-                }
-            }
-
+            $this->removeOrderCommunication($order);
+            
             $allBooktrials = \Booktrial::where('customer_email',$order->customer_email)
                         ->where('notification_status','exists',true)
                         ->where('notification_status','yes')

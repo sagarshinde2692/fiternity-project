@@ -4039,7 +4039,7 @@ public function yes($msg){
 
 			foreach ($allOrders as $order) {
 
-				if($order['duration_day'] >= 30 && $order['duration_day'] < 90 && time() <= strtotime("-7 days",strtotime($order['end_date']))){
+				if($order['duration_day'] >= 30 && $order['duration_day'] < 90){
 
 					if(time() <= strtotime("+7 days",strtotime($order['start_date']))){
 
@@ -4208,7 +4208,7 @@ public function yes($msg){
 
 				$data['added_auto_followup_date'] = time();
 
-				$order->update([$data]);
+				$order->update($data);
 			}
 
 			$offset = $offset + 10;
@@ -4227,7 +4227,7 @@ public function yes($msg){
 			->where('final_lead_stage','post_trial_stage')
 			->where('added_auto_followup_date','exists',false)
 			->where('schedule_date_time','exists',true)
-			->where('schedule_date_time', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-03-28 00:00:00"))))
+			->where('schedule_date_time', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-04-01 00:00:00"))))
 			->skip($offset)
 			->take($limit)
 			->get();
@@ -4251,6 +4251,13 @@ public function yes($msg){
 			foreach ($allTrials as $trial) {
 
 				$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("+31 days",strtotime($trial['schedule_date_time'])));
+
+				if(!isset($trial['auto_followup_date']) && isset($data['auto_followup_date']) && isset($trial['followup_date']) && strtotime($trial['followup_date']) >= strtotime($data['auto_followup_date'])){
+
+					$data = [];
+
+				}
+
 				$data['added_auto_followup_date'] = time();
 
 				$trial->update($data);

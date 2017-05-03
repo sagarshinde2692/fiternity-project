@@ -1548,6 +1548,8 @@ class TransactionController extends \BaseController {
 
             $order = Order::find($order_id);
 
+            $this->utilities->removeOrderCommunication($order);
+
             $nineAM = strtotime(date('Y-m-d 09:00:00'));
             $ninePM = strtotime(date('Y-m-d 21:00:00'));
             $now = time();
