@@ -4006,8 +4006,51 @@ public function yes($msg){
 
 	}
 
-	public function orderFollowupQuery($offset,$limit){
 
+	public function durationDayStringQuery($offset,$limit){
+
+		$orders  = Order::where('duration_day','type',2)
+			->where('duration_day','!=',"")
+			->skip($offset)
+			->take($limit)
+			->get();
+
+		return $orders;
+	}
+
+	public function durationDayString(){
+
+		ini_set('memory_limit','512M');
+		ini_set('max_execution_time', 300);
+
+		$offset = 0;
+		$limit = 10;
+
+		$allOrders = $this->durationDayStringQuery($offset,$limit);
+
+		while(count($allOrders) != 0){
+
+			echo $offset;
+
+			foreach ($allOrders as $order) {
+
+				$duration_day = intval($order['duration_day']);
+
+				DB::table('orders')->where('_id', (int)$order->_id)->update(['duration_day' =>$duration_day]);
+
+			}
+
+			$offset = $offset + 10;
+
+			$allOrders = $this->durationDayStringQuery($offset,$limit);
+		}
+
+		return array('status'=>'done');
+
+	}
+
+	public function orderFollowupQuery($offset,$limit){
+		
 		$orders  = Order::active()
 			->whereIn('type',['memberships','healthytiffinmembership'])
 			->where('added_auto_followup_date','exists',false)
@@ -4033,9 +4076,11 @@ public function yes($msg){
 		$offset = 0;
 		$limit = 10;
 
-		$allOrders = $this->orderQuery($offset,$limit);
+		$allOrders = $this->orderFollowupQuery($offset,$limit);
 
 		while(count($allOrders) != 0){
+
+			echo $offset;
 
 			foreach ($allOrders as $order) {
 
@@ -4213,7 +4258,7 @@ public function yes($msg){
 
 			$offset = $offset + 10;
 
-			$allOrders = $this->orderQuery($offset,$limit);
+			$allOrders = $this->orderFollowupQuery($offset,$limit);
 		}
 
 		return array('status'=>'done');
@@ -4247,6 +4292,8 @@ public function yes($msg){
 		$allTrials = $this->trialFollowupQuery($offset,$limit);
 
 		while(count($allTrials) != 0){
+
+			echo $offset;
 
 			foreach ($allTrials as $trial) {
 

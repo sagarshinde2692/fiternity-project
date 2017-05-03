@@ -53,6 +53,7 @@ Route::get('yes/{msg}','DebugController@yes');
 Route::get('ozonetelcapturebulksms','DebugController@ozonetelCaptureBulkSms');
 Route::get('orderfollowup','DebugController@orderFollowup');
 Route::get('trialfollowup','DebugController@trialFollowup');
+Route::get('durationdaystring','DebugController@durationDayString');
 
 
 // please dont merge in live or production environment
