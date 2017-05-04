@@ -343,6 +343,7 @@ return array(
 	'diet_plan_customer_number' => '+912261222230',
 	'diet_plan_trainer_email' => 'nutrition@fitternity.com',
 	'diet_plan_trainer_number' => '+912261222230',
+	'direct_vendor_number' => '+912261222233',
 
 	's3_finderurl'  => array(
 		'cover' 			=> 'https://b.fitn.in/f/c/',
