@@ -887,13 +887,17 @@ class OzonetelsController extends \BaseController {
 			$ozonetel_capture->update();
 
 			//send sms on call to customer
-			if($ozonetel_capture->call_status == 'answered' || $ozonetel_capture->call_status == 'not_answered' || $data['event'] == 'Disconnect' && isset($ozonetel_capture->finder_commercial_type) && !isset($ozonetel_capture->customer_ozonetel_capture_sms)){
+			if($ozonetel_capture->call_status == 'answered' || $ozonetel_capture->call_status == 'not_answered' || $data['event'] == 'Disconnect' && isset($ozonetel_capture->finder_commercial_type) && !isset($ozonetel_capture->sms_send)){
+
+				$ozonetel_capture->sms_send = true;
+
+				$ozonetel_capture->update();
 
 				$ozonetel_capture->customer_ozonetel_capture_sms = $this->customersms->ozonetelCapture($ozonetel_capture->toArray());
 
-				if(!$call_jump && isset($data['finder_vcc_mobile']) && $data['finder_vcc_mobile'] != ""){
+				/*if(!$call_jump && isset($data['finder_vcc_mobile']) && $data['finder_vcc_mobile'] != ""){
 					$ozonetel_capture->finder_ozonetel_capture_sms = $this->findersms->ozonetelCapture($ozonetel_capture->toArray());
-				}
+				}*/
 				
 				$ozonetel_capture->update();
 			}
