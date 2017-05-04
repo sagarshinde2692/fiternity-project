@@ -14,7 +14,7 @@ use App\Sms\CustomerSms as CustomerSms;
 use App\Sms\FinderSms as FinderSms;
 use App\Services\ShortenUrl as ShortenUrl;
 use App\Services\Sidekiq as Sidekiq;
-
+use App\Services\Utilities as Utilities;
 use Guzzle\Http\Client;
 
 class OzonetelsController extends \BaseController {
@@ -31,17 +31,26 @@ class OzonetelsController extends \BaseController {
     protected $jump_fitternity_no;
     protected $sunday;
     protected $free_special_finder;
+    protected $utilities;
 
     protected   $jump_fitternity_no2;
 
 
-	public function __construct(OzonetelResponse $ozonetelResponse,OzonetelCollectDtmf $ozonetelCollectDtmf,OzontelOutboundCall $ozontelOutboundCall,CustomerSms $customersms,FinderSms $findersms) {
+	public function __construct(
+		OzonetelResponse $ozonetelResponse,
+		OzonetelCollectDtmf $ozonetelCollectDtmf,
+		OzontelOutboundCall $ozontelOutboundCall,
+		CustomerSms $customersms,
+		FinderSms $findersms,
+		Utilities $utilities
+	) {
 
 		$this->ozonetelResponse			=	$ozonetelResponse;
 		$this->ozonetelCollectDtmf		=	$ozonetelCollectDtmf;
 		$this->ozontelOutboundCall		=	$ozontelOutboundCall;
 		$this->customersms 				=	$customersms;
 		$this->findersms 				=	$findersms;
+		$this->utilities            	=   $utilities;
 
 		$mumbai = [14,40,61,138,142,143,147,166,171,179,223,303,307,328,329,380,417,424,442,449,530,561,566,569,570,575,579,590,596,602,608,613,625,647,648,667,718,735,736,823,827,841,862,877,878,881,889,900,926,927,941,966,975,978,979,980,984,987,988,998,1013,1026,1029,1030,1031,1034,1035,1038,1040,1041,1068,1069,1154,1215,1219,1233,1242,1257,1258,1259,1260,1261,1262,1263,1266,1309,1330,1332,1380,1388,1393,1395,1414,1421,1427,1431,1484,1490,1493,1495,1496,1501,1505,1510,1513,1518,1522,1523,1554,1579,1580,1581,1582,1583,1584,1602,1604,1605,1606,1607,1613,1623,1630,1642,1656,1664,1671,1673,1676,1677,1690,1691,1705,1706,1732,1739,1747,1764,1766,1771,1783,1813,1837,1873,1928,1938,1939,1986,2209,2235,2236,2242,2244,2257,2281,2309,2421,2501,2545,2806,2818,2821,2824,2828,2833,2844,2848,2864,2865,3006,3382,3451,3579,3856,4141,4142,4416,4528,4530,4534,4586,4678,4679,4680,4693,4742,4749,4773,5387,5529,5570,5585,5684,5939,5979,6009,6036,6049,6058,6081,6082,6095,6126,6129,6133,6134,6138,6140,6143,6144,6151,6162,6179,6233,6259,6289,6291,6297,6377,6461,6466,6468,6511,6532,6543,6587,6784,6820,6893,6907,6910,6914,6916,6932,6946,7036,7054,7064,7215,7224,7319,7341,7388,7407,7438,7442,7444,7451,7456,7480,7525,7532,7656,7661,7696,7697,7724,7792,7866,7875,7878,7896,8021,8546,8554,8842,8852,8859,8861,8892,8910,8932,9040,9111,9124,9187,9246,9336,9340,9365,9370,9378,9398,9404,9414,9419,9420,9427,9432,9436,9439,9452,9459,9476,9485,9518,9575,9671,9751,9752,9870,9872,9877,9909,9922,9932,9935,9942,9943,9946,9948,9984,9994,10081,10119,10136,10465,10485,10486,10508,10515,10565,10567,10571,10752,10768,10927,10946,10965,10966,10967,10968];
 
@@ -812,18 +821,14 @@ class OzonetelsController extends \BaseController {
 					$data['finder_commercial_type'] = $ozonetel_capture->finder_commercial_type = (int)$finder['commercial_type'];
 					$data['finder_location'] = $ozonetel_capture->finder_location = ucwords($finder['location']['name']);
 					$data['finder_city'] = $ozonetel_capture->finder_city = ucwords($finder['city']['name']);
+					$data['finder_vcc_mobile'] = $ozonetel_capture->finder_vcc_mobile = (isset($finder['finder_vcc_mobile']) && $finder['finder_vcc_mobile'] != '') ? $finder['finder_vcc_mobile'] : "";
 
-					$finder_url = ($finder['commercial_type'] != 0) ? "www.fitternity.com/".$finder['slug'] : "www.fitternity.com/".$finder['city']['slug']."/fitness/".$finder['location']['slug'];
+					$finder_url = ($finder['commercial_type'] != 0) ? "www.fitternity.com/".$finder['slug'] : "www.fitternity.com/".$finder['city']['slug']."/".$finder['location']['slug']."/fitness";
 
-					$shorten_url = new ShortenUrl();
+					$data['finder_url'] = $ozonetel_capture->finder_url = $this->utilities->getShortenUrl($finder_url);
 
-		            $url = $shorten_url->getShortenUrl($finder_url);
-
-		            if(isset($url['status']) &&  $url['status'] == 200){
-		                $finder_url = $url['url'];
-		            }
-
-					$data['finder_url'] = $ozonetel_capture->finder_url = $finder_url;
+					$data['srp_link'] = $ozonetel_capture->srp_link =  $this->utilities->getShortenUrl(Config::get('app.website')."/".$finder['city']['slug']."/".$finder['location']['slug']."/fitness");
+					$data['vendor_link'] = $ozonetel_capture->vendor_link = $this->utilities->getShortenUrl(Config::get('app.website')."/".$finder['slug']);
 
 				}
 			}
@@ -882,23 +887,15 @@ class OzonetelsController extends \BaseController {
 			$ozonetel_capture->update();
 
 			//send sms on call to customer
-			if($ozonetel_capture->call_status == 'answered' || $ozonetel_capture->call_status == 'not_answered' || $data['event'] == 'Disconnect' && isset($ozonetel_capture->finder_commercial_type) && $ozonetel_capture->finder_commercial_type != 0){
+			if($ozonetel_capture->call_status == 'answered' || $ozonetel_capture->call_status == 'not_answered' || $data['event'] == 'Disconnect' && isset($ozonetel_capture->finder_commercial_type) && !isset($ozonetel_capture->customer_ozonetel_capture_sms)){
 
-				if(!isset($ozonetel_capture->ozonetel_capture_sms)){
+				$ozonetel_capture->customer_ozonetel_capture_sms = $this->customersms->ozonetelCapture($ozonetel_capture->toArray());
 
-					if($call_jump){
-
-						if($ozonetel_capture->call_status != 'answered'){
-							$ozonetel_capture->ozonetel_capture_sms = $this->customersms->ozonetelCapture($ozonetel_capture->toArray());
-						}
-						
-					}else{
-
-						$ozonetel_capture->ozonetel_capture_sms = $this->customersms->ozonetelCapture($ozonetel_capture->toArray());
-					}
-
-					$ozonetel_capture->update();
+				if(!$call_jump && isset($data['finder_vcc_mobile']) && $data['finder_vcc_mobile'] != ""){
+					$ozonetel_capture->finder_ozonetel_capture_sms = $this->findersms->ozonetelCapture($ozonetel_capture->toArray());
 				}
+				
+				$ozonetel_capture->update();
 			}
 
 			return $ozonetel_capture;
