@@ -35,7 +35,7 @@ return array(
     'website' => 'https://www.fitternity.com', //live
     // 'website' => 'http://apistage.fitn.in:2233', //stage
 
-    'download_app_link' => 'https://www.fitternity.com/downloadapp',
+    'download_app_link' => 'https://goo.gl/sP81To',//https://www.fitternity.com/downloadapp',
 
     'business' => 'http://business.fitternity.com',
 
