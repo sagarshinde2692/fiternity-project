@@ -339,7 +339,7 @@ class FindersController extends \BaseController {
 
 				function cmp($a, $b)
 				{
-					return $a['traction']['sales']+$a['traction']['trials']*0.8 < $b['traction']['sales']+$b['traction']['trials']*0.8;
+					return $a['traction']['sales']+$a['traction']['trials']*0.8 <= $b['traction']['sales']+$b['traction']['trials']*0.8;
 				}
 
 				usort($finderarr['services'], "cmp");
@@ -2677,7 +2677,7 @@ class FindersController extends \BaseController {
 					;
 					function cmp($a, $b)
 		            {
-		            	return $a['traction']['sales']+$a['traction']['trials']*0.8 < $b['traction']['sales']+$b['traction']['trials']*0.8;
+		            	return $a['traction']['sales']+$a['traction']['trials']*0.8 <= $b['traction']['sales']+$b['traction']['trials']*0.8;
 		            }
 
 		        	usort($data['finder']['services'], "cmp");
