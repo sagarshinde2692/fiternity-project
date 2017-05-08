@@ -3143,10 +3143,18 @@ class CustomerController extends \BaseController {
 			$customer_id 					= 		intval($decoded->customer->_id);
 
 			$already_applied_promotion 		= 		Customer::where('_id',$customer_id)->whereIn('applied_promotion_codes',[$code])->count();
-
+			
 			if($already_applied_promotion > 0){
 				$resp 	= 	array('status' => 400,'message' => "You have already applied promotion code");
 				return  Response::json($resp, 400);
+			}
+
+			if (isset($fitcashcode->quantity) && $fitcashcode->quantity != "") {
+				$already_applied_promotion 		= 		Customer::whereIn('applied_promotion_codes',[$code])->count();
+				if($already_applied_promotion >= $fitcashcode->quantity){
+					$resp 	= 	array('status' => 404,'message' => "Promotion code already used by other customers");
+					return Response::json($resp,404);
+				}
 			}
 
 			$customer_update 	=	Customer::where('_id', $customer_id)->push('applied_promotion_codes', $code, true);
