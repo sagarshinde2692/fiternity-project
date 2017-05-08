@@ -33,12 +33,8 @@ return array(
 	'url' => 'http://fitapi.com', //local
 
     // 'website' => 'https://www.fitternity.com', //live
-<<<<<<< HEAD
-    'website' => 'http://apistage.fitn.in:2233', //stage
-=======
     // 'website' => 'http://apistage.fitn.in:2233', //stage
     'website' => 'http://localhost:3000', //stage
->>>>>>> dietplan
 
     'download_app_link' => 'https://www.fitternity.com/downloadapp',
 
