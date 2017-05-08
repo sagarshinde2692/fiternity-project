@@ -3824,7 +3824,7 @@ class CustomerController extends \BaseController {
 			$can_book = false;
 			if($total_sessions_over < $total_sessions){
 				$can_book = $days_passed_last_session >= (14*($sessions_lapsed_before_now+1)-2) && $days_passed_last_session <= (14*($sessions_lapsed_before_now+1)+2);
-				if(!$can_book){
+				if($can_book == false){
 					$current_diet_plan->booking_opens_on = date("d-m-Y", ($last_session_booked + (60*60*24*(14*($sessions_lapsed_before_now+1)-2))));
 				}
 			}
