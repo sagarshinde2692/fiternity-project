@@ -2206,6 +2206,7 @@ public function getRankedFinderResultsAppv4()
 
         $locationCount = 0;
         // Log::info("Location being searched : ".time());
+        $regionsInRequest = Input::json()->get('regions');
         if(count($region) == 1){
             $region_slug = str_replace(' ', '-',strtolower(trim($region[0])));
             $locationCount = 1;
@@ -2213,6 +2214,14 @@ public function getRankedFinderResultsAppv4()
             if(isset($location_lat_lon)){
                 $lat = $location_lat_lon['lat'];
                 $lon = $location_lat_lon['lon'];
+            }else{
+                $location_cluster = Locationcluster::where('slug',$region_slug)->with('locations')->first();
+                if(isset($location_cluster)){
+                    $regionsInRequest = array();
+                    foreach($location_cluster['locations'] as $locs){
+                        array_push($regionsInRequest,$locs['slug']);
+                    }
+                }
             }
         }else{
             $locationCount = count($region);
@@ -2248,7 +2257,7 @@ public function getRankedFinderResultsAppv4()
         $commercial_type_filter = Input::json()->get('commercial_type') ? '{"terms" : {  "commercial_type": ['.implode(',', Input::json()->get('commercial_type')).'],"_cache": true}},': '';
         $category_filter        = $category ? '{"terms" : {  "categorytags": ["'.strtolower($category).'"],"_cache": true}},': '';
         $budget_filter          = $budget ? '{"terms" : {  "price_range": ["'.strtolower(implode('","', $budget)).'"],"_cache": true}},': '';
-        $regions_filter         = Input::json()->get('regions') && $locationCount > 0 ? '{"terms" : {  "locationtags_slug": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
+        $regions_filter         = $regionsInRequest && $locationCount > 0 ? '{"terms" : {  "locationtags_slug": ["'.strtolower(implode('","', $regionsInRequest)).'"],"_cache": true}},': '';
         $region_tags_filter     = Input::json()->get('regions') && $locationCount > 0 ? '{"terms" : {  "region_tags": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
         $offerings_filter       = $offerings ? '{"terms" : {  "offerings": ["'.strtolower(implode('","', $offerings)).'"],"_cache": true}},': '';
         $facilities_filter      = $facilities ? '{"terms" : {  "facilities": ["'.strtolower(implode('","', $facilities)).'"],"_cache": true}},': '';
