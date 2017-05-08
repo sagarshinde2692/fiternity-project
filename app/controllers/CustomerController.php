@@ -3798,26 +3798,27 @@ class CustomerController extends \BaseController {
 		if(isset($current_diet_plan)){
 			$total_sessions = $current_diet_plan['duration'];
 			$sessions_booked = count($current_diet_plan['trainerslotbookings']);
-			$last_session_booked = strtotime($current_diet_plan['trainerslotbookings'][0]['date']);
-			
-			$sessions_lapsed_before_last_interaction = 0;
-			if(isset($current_diet_plan->last_interaction_date)){
-				$last_interaction_date = $current_diet_plan['last_interaction_date'];
-				$sessions_lapsed_before_last_interaction = intval(floor(((strtotime($last_interaction_date)-$last_session_booked)/(60*60*24) - 3)/14));
-			}
-			$days_passed_last_session = (time()-$last_session_booked)/(60*60*24);
-			$sessions_lapsed_before_now = intval(floor(($days_passed_last_session - 3)/14));
-			$sessions_lapsed_after_last_interaction = $sessions_lapsed_before_now - $sessions_lapsed_before_last_interaction;
-			// return $sessions_lapsed_before_last_interaction;
-			if($sessions_lapsed_after_last_interaction>0){
-				$current_diet_plan->sessions_lapsed = isset($current_diet_plan->sessions_lapsed) ? ($current_diet_plan->sessions_lapsed + $sessions_lapsed_after_last_interaction) : $sessions_lapsed_after_last_interaction;
-			}
-			
-			$last_interaction_date = date('d-m-Y', time());
-			
+			if(count($current_diet_plan['trainerslotbookings']) > 0){
+				$last_session_booked = strtotime($current_diet_plan['trainerslotbookings'][0]['date']);
+				$sessions_lapsed_before_last_interaction = 0;
+				if(isset($current_diet_plan->last_interaction_date)){
+					$last_interaction_date = $current_diet_plan['last_interaction_date'];
+					$sessions_lapsed_before_last_interaction = intval(floor(((strtotime($last_interaction_date)-$last_session_booked)/(60*60*24) - 3)/14));
+				}
+				$days_passed_last_session = (time()-$last_session_booked)/(60*60*24);
+				$sessions_lapsed_before_now = intval(floor(($days_passed_last_session - 3)/14));
+				$sessions_lapsed_after_last_interaction = $sessions_lapsed_before_now - $sessions_lapsed_before_last_interaction;
+				// return $sessions_lapsed_before_last_interaction;
+				if($sessions_lapsed_after_last_interaction>0){
+					$current_diet_plan->sessions_lapsed = isset($current_diet_plan->sessions_lapsed) ? ($current_diet_plan->sessions_lapsed + $sessions_lapsed_after_last_interaction) : $sessions_lapsed_after_last_interaction;
+				}
+				
+				$last_interaction_date = date('d-m-Y', time());
+				
 
-			$current_diet_plan->last_interaction_date = $last_interaction_date;
-			$current_diet_plan->update();
+				$current_diet_plan->last_interaction_date = $last_interaction_date;
+				$current_diet_plan->update();
+			}
 
 			$total_sessions_over = $sessions_booked + (isset($current_diet_plan->sessions_lapsed)?$current_diet_plan->sessions_lapsed:0);
 			$can_book = false;
