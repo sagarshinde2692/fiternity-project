@@ -3795,11 +3795,12 @@ class CustomerController extends \BaseController {
 		$validator = Validator::make($data, $rules);
 		$current_diet_plan = Order::where('customer_email',$data['email'])->where('type','diet_plan')->with(array('trainerslotbookings'=>function($query){$query->orderBy('_id','desc');}))->orderBy('_id','desc')->first();
 		// $trainerslotBookings = TrainerSlotBooking::where('order_id',$current_diet_plan['_id'])->get();
-		$can_book = true;
 		if(isset($current_diet_plan)){
 			$total_sessions = $current_diet_plan['duration'];
 			$sessions_booked = count($current_diet_plan['trainerslotbookings']);
+			
 			if(count($current_diet_plan['trainerslotbookings']) > 0){
+				$can_book = false;
 				$last_session_booked = strtotime($current_diet_plan['trainerslotbookings'][0]['date']);
 				$sessions_lapsed_before_last_interaction = 0;
 				if(isset($current_diet_plan->last_interaction_date)){
@@ -3836,6 +3837,8 @@ class CustomerController extends \BaseController {
 					}
 				}
 
+			}else{
+				$can_book = true;
 			}
 			$current_diet_plan->can_book = $can_book;
 		}else{
