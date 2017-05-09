@@ -1579,6 +1579,12 @@ class TransactionController extends \BaseController {
 
             $order->notification_status = 'abandon_cart_yes';
 
+            if(isset($order['start_date'])){
+
+                $order->auto_followup_date = date('Y-m-d H:i:s', strtotime("+31 days",strtotime($order['start_date'])));
+                $order->followup_status = "abandon_cart";
+            }
+
             $order->update();
 
             return "success";

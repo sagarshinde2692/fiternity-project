@@ -715,7 +715,7 @@ Class Utilities {
 
             foreach ($allOrders as $orderData) {
 
-                $array = array('auto_followup_date','auto_followup_date','followup_status_count','followup_date');
+                $array = array('auto_followup_date','followup_status_count','followup_date');
 
                 foreach ($array as $value){
 
@@ -753,7 +753,7 @@ Class Utilities {
                     $orderData->redundant_order = "1";
                     $orderData->update();
                     
-                    $array = array('auto_followup_date','auto_followup_date','followup_status_count','followup_date');
+                    $array = array('auto_followup_date','followup_status_count','followup_date');
 
                     foreach ($array as $value){
 
