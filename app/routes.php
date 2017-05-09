@@ -398,7 +398,7 @@ Route::get('updatescheduleinsearch/{finderid}','ServiceRankingController@UpdateS
 ########################################################################################
 /************************KYU SECTION START HERE****************************************/
 Route::post('pushkyuevent', 'KYUController@pushkyuevent');
-Route::get('migratedatatoclevertap', 'KYUController@migratedatatoclevertap');
+// Route::get('migratedatatoclevertap', 'KYUController@migratedatatoclevertap');
 Route::get('getvendorview/{vendor_id}/{start_date?}/{end_date?}','KYUController@getvendorviewcount');
 Route::post('getcitywiseviews','KYUController@getcitywiseviews');
 //Route::get('getfacebookadsconversion','KYUController@getfacebookadsconversion');
@@ -796,7 +796,7 @@ Route::get('v1/rollingautosuggestindex', 'GlobalPushController@rollingbuildautos
 ####################################################################################################
 /**********************************Moengage Migration COntroller***********************************/
 
-Route::get('migratedatatomoenagage', 'MigrationsController@migratedatatomoenagage');
+// Route::get('migratedatatomoenagage', 'MigrationsController@migratedatatomoenagage');
 
 
 /********************************Moengage Migration Controller*************************************/
