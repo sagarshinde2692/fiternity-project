@@ -707,6 +707,7 @@ Class Utilities {
                         ->where('service_id',(int)$order->service_id)
                         ->where('finder_id',(int)$order->finder_id)
                         ->where('customer_email',$order->customer_email)
+                        ->where('_id','!=',(int)$order->_id)
                         ->where('created_at', '>=', new \DateTime( date("d-m-Y 00:00:00", strtotime("-44 days"))))
                         ->orderBy('_id','desc')
                         ->get();
@@ -714,6 +715,9 @@ Class Utilities {
         if(count($allOrders) > 0){
 
             foreach ($allOrders as $orderData) {
+
+                $orderData->redundant_order = "1";
+                $orderData->update();
 
                 $array = array('auto_followup_date','followup_status_count','followup_date');
 
@@ -739,6 +743,7 @@ Class Utilities {
                         ->where('service_id',(int)$order->service_id)
                         ->where('finder_id',(int)$order->finder_id)
                         ->where('customer_email',$order->customer_email)
+                        ->where('_id','!=',(int)$order->_id)
                         ->where('created_at', '>=', new \DateTime( date("d-m-Y 00:00:00", strtotime("-44 days"))))
                         ->where('paymentLinkEmailCustomerTiggerCount','exists',true)
                         ->where('paymentLinkEmailCustomerTiggerCount','>',0)
