@@ -916,4 +916,6 @@ Route::get('addwallet',array('as' => 'transaction.addwallet','uses' => 'Transact
 Route::get('customerorderdata','DebugController@customer_data');
 Route::get('zumbadata','DebugController@zumba_data');
 Route::get('syncsharecustomerno','DebugController@syncsharecustomerno');
+
+//reverse migration roures
 Route::get('reverse/migration/{colllection}/{id}','MigrationReverseController@byId');
