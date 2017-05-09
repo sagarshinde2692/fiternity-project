@@ -3795,6 +3795,7 @@ class CustomerController extends \BaseController {
 		$validator = Validator::make($data, $rules);
 		$current_diet_plan = Order::where('customer_email',$data['email'])->where('type','diet_plan')->with(array('trainerslotbookings'=>function($query){$query->orderBy('_id','desc');}))->orderBy('_id','desc')->first();
 		// $trainerslotBookings = TrainerSlotBooking::where('order_id',$current_diet_plan['_id'])->get();
+		$can_book = true;
 		if(isset($current_diet_plan)){
 			$total_sessions = $current_diet_plan['duration'];
 			$sessions_booked = count($current_diet_plan['trainerslotbookings']);
@@ -3806,11 +3807,17 @@ class CustomerController extends \BaseController {
 					$sessions_lapsed_before_last_interaction = intval(floor(((strtotime($last_interaction_date)-$last_session_booked)/(60*60*24) - 3)/14));
 				}
 				$days_passed_last_session = (time()-$last_session_booked)/(60*60*24);
-				$sessions_lapsed_before_now = intval(floor(($days_passed_last_session - 3)/14));
-				$sessions_lapsed_after_last_interaction = $sessions_lapsed_before_now - $sessions_lapsed_before_last_interaction;
-				// return $sessions_lapsed_before_last_interaction;
-				if($sessions_lapsed_after_last_interaction>0){
-					$current_diet_plan->sessions_lapsed = isset($current_diet_plan->sessions_lapsed) ? ($current_diet_plan->sessions_lapsed + $sessions_lapsed_after_last_interaction) : $sessions_lapsed_after_last_interaction;
+				
+				$sessions_lapsed_before_now = 0;
+				if($days_passed_last_session>0){
+
+					$sessions_lapsed_before_now = intval(floor(($days_passed_last_session - 3)/14));
+					$sessions_lapsed_after_last_interaction = $sessions_lapsed_before_now - $sessions_lapsed_before_last_interaction;
+
+					if($sessions_lapsed_after_last_interaction>0){
+						$current_diet_plan->sessions_lapsed = isset($current_diet_plan->sessions_lapsed) ? ($current_diet_plan->sessions_lapsed + $sessions_lapsed_after_last_interaction) : $sessions_lapsed_after_last_interaction;
+					}
+
 				}
 				
 				$last_interaction_date = date('d-m-Y', time());
@@ -3818,17 +3825,18 @@ class CustomerController extends \BaseController {
 
 				$current_diet_plan->last_interaction_date = $last_interaction_date;
 				$current_diet_plan->update();
-			}
-
-			$total_sessions_over = $sessions_booked + (isset($current_diet_plan->sessions_lapsed)?$current_diet_plan->sessions_lapsed:0);
-			$can_book = false;
-			if($total_sessions_over < $total_sessions){
-				$can_book = $days_passed_last_session >= (14*($sessions_lapsed_before_now+1)-2) && $days_passed_last_session <= (14*($sessions_lapsed_before_now+1)+2);
-				if($can_book == false){
-					$current_diet_plan->booking_opens_on = date("d-m-Y", ($last_session_booked + (60*60*24*(14*($sessions_lapsed_before_now+1)-2))));
-				}
-			}
+				$total_sessions_over = $sessions_booked + (isset($current_diet_plan->sessions_lapsed)?$current_diet_plan->sessions_lapsed:0);
 			
+				if($total_sessions_over < $total_sessions){
+					if($days_passed_last_session>0){
+						$can_book = $days_passed_last_session >= (14*($sessions_lapsed_before_now+1)-2) && $days_passed_last_session <= (14*($sessions_lapsed_before_now+1)+2);
+					}
+					if(!$can_book){
+						$current_diet_plan->booking_opens_on = date("d-m-Y", ($last_session_booked + (60*60*24*(14*($sessions_lapsed_before_now+1)-2))));
+					}
+				}
+
+			}
 			$current_diet_plan->can_book = $can_book;
 		}else{
 			$current_diet_plan;
