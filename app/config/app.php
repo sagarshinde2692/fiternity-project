@@ -39,13 +39,14 @@ return array(
 
     'business' => 'http://business.fitternity.com',
 
-    'sidekiq_url' => 'http://nw.fitn.in/', //live
+    // 'sidekiq_url' => 'http://nw.fitn.in/', //live
    	// 'sidekiq_url' => 'http://kick.fitn.in/', //stage
 
     'queue' => 'booktrial',
 
 	'app' =>array(
 		'discount'		=> 			2,
+		'discount_excluded_vendors' => [],
 	),
 
 	/*

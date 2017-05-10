@@ -36,7 +36,9 @@ class FindersController extends \BaseController {
 		$this->elasticsearch_default_index      =   Config::get('app.es.default_index');
 		$this->findermailer                     =   $findermailer;
 		$this->cacheapi                     =   $cacheapi;
-		$this->appOfferDiscount 				= Config::get('app.app.discount');;
+		$this->appOfferDiscount 				= Config::get('app.app.discount');
+		$this->appOfferExcludedVendors 				= Config::get('app.app.discount_excluded_vendors');
+		
 	}
 
 
@@ -2213,6 +2215,8 @@ class FindersController extends \BaseController {
 						array_push($ratecardArr, $rateval);
 					}else{*/
 						if($rateval['type'] == 'membership' || $rateval['type'] == 'packages'){
+							$this->appOfferDiscount = in_array($finder_id, $this->appOfferExcludedVendors) ? 0 : $this->appOfferDiscount;
+							
 							if($rateval['special_price'] > 0){
 								$app_discount_amount = intval($rateval['special_price'] * ($this->appOfferDiscount/100));
 								$rateval['special_price'] = $rateval['special_price'] - $app_discount_amount;

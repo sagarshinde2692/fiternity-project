@@ -52,6 +52,8 @@ class TransactionController extends \BaseController {
         $this->customernotification =   $customernotification;
         $this->ordertypes           =   array('memberships','booktrials','workout-session','healthytiffintrail','healthytiffinmembership','3daystrial','vip_booktrials', 'events');
         $this->appOfferDiscount     =   Config::get('app.app.discount');
+        $this->appOfferExcludedVendors 				= Config::get('app.app.discount_excluded_vendors');
+
         $this->membership_array     =   array('memberships','healthytiffinmembership');
 
     }
@@ -743,6 +745,7 @@ class TransactionController extends \BaseController {
         $amount = $data['amount_customer'] = $data['amount'];
 
         if($data['type'] == "memberships" && isset($data['customer_source']) && ($data['customer_source'] == "android" || $data['customer_source'] == "ios")){
+            $this->appOfferDiscount = in_array($data['finder_id'], $this->appOfferExcludedVendors) ? 0 : $this->appOfferDiscount;
             $data['app_discount_amount'] = intval($data['amount'] * ($this->appOfferDiscount/100));
             $amount = $data['amount'] = $data['amount_customer'] = $data['amount'] - $data['app_discount_amount'];
             $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount'],$data['finder_id'],'paymentgateway',$data['offer_id'],$data['customer_id']);

@@ -18,6 +18,8 @@ class TempsController extends \BaseController {
         //parent::__construct();
         $this->customersms              =   $customersms;
         $this->contact_us_customer_number = Config::get('app.contact_us_customer_number');
+        $this->appOfferDiscount 				= Config::get('app.app.discount');
+        $this->appOfferExcludedVendors 				= Config::get('app.app.discount_excluded_vendors');
     }
 
     public function errorMessage($errors){
@@ -395,8 +397,8 @@ class TempsController extends \BaseController {
                 $device_type = ["android","ios"];
 
                 if($temp->action == "memberships" && isset($_GET['device_type']) &&  in_array($_GET['device_type'], $device_type)){
-
-                    $amount = $amount - intval($amount * (Config::get('app.app.discount')/100));
+                    $this->appOfferDiscount = in_array($finder_id, $this->appOfferExcludedVendors) ? 0 : $this->appOfferDiscount;
+                    $amount = $amount - intval($amount * ($this->appOfferDiscount/100));
                 }
 
                 $customerReward     =   new CustomerReward();
