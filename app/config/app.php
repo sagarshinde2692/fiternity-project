@@ -39,7 +39,7 @@ return array(
 
     'business' => 'http://business.fitternity.com',
 
-    // 'sidekiq_url' => 'http://nw.fitn.in/', //live
+    'sidekiq_url' => 'http://nw.fitn.in/', //live
    	// 'sidekiq_url' => 'http://kick.fitn.in/', //stage
 
     'queue' => 'booktrial',
