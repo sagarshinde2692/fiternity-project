@@ -208,7 +208,7 @@ Class FinderSms extends VersionNextSms{
        
        	$to = explode(',', $data['finder_vcc_mobile']);
 
-       	$to = array_merge($to,['7506262489']);
+       	//$to = array_merge($to,['7506262489']);
 
 		return $this->common($label,$to,$data);
 
