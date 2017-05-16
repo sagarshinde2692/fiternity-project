@@ -667,6 +667,46 @@ Class CustomerSms extends VersionNextSms{
 
     }
 
+    public function sendRenewalPaymentLinkBefore7Days($data,$delay){
+
+        $label = 'MembershipRenewalLinkSentBefore7Days-Customer';
+
+        $to = $data['customer_phone'];
+
+        return $this->common($label,$to,$data,$delay);
+
+    }
+
+    public function sendRenewalPaymentLinkBefore1Days($data,$delay){
+
+        $label = 'MembershipRenewalLinkSentBefore1Days-Customer';
+
+        $to = $data['customer_phone'];
+
+        return $this->common($label,$to,$data,$delay);
+
+    }
+
+    public function purchaseFirst($data,$delay){
+
+        $label = 'PurchaseFirst-Customer';
+
+        $to = $data['customer_phone'];
+
+        return $this->common($label,$to,$data,$delay);
+
+    }
+
+    public function postTrialFollowup1After15Days($data,$delay){
+
+        $label = 'PostTrialFollowup1After15Days-Customer';
+
+        $to = $data['customer_phone'];
+
+        return $this->common($label,$to,$data,$delay);
+
+    }
+
 	public function common($label,$to,$data,$delay = 0){
 
 		if(isset($data['source']) && $data['source'] == 'cleartrip'){

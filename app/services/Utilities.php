@@ -12,6 +12,8 @@ use Log;
 use App\Services\Sidekiq as Sidekiq;
 use App\Services\ShortenUrl as ShortenUrl;
 use Device;
+use Wallet;
+use WalletTransaction;
 
 Class Utilities {
 
@@ -96,6 +98,29 @@ Class Utilities {
     }
 
     public function walletTransaction($request,$data = false){
+
+        $jwt_token = Request::header('Authorization');
+
+        Log::info('jwt_token : '.$jwt_token);
+            
+        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+            $decoded = $this->customerTokenDecode($jwt_token);
+            $customer_id = $decoded->customer->_id;
+        }
+
+        $customer = \Customer::find($customer_id);
+
+        if(isset($customer->demonatization)){
+
+            return $this->walletTransactionNew($request);
+
+        }
+
+        return $this->walletTransactionOld($request,$data);
+
+    }
+
+    public function walletTransactionOld($request,$data = false){
 
         $customer_id = (int)$request['customer_id'];
         Log::info($customer_id);
@@ -1213,5 +1238,330 @@ Class Utilities {
         return $url;
 
     }
+
+    public function walletTransactionNew($request){
+
+        $customer_id = (int)$request['customer_id'];
+
+        $jwt_token = Request::header('Authorization');
+
+        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+
+            $decoded = $this->customerTokenDecode($jwt_token);
+            $customer_id = (int)$decoded->customer->_id;
+        }
+
+        $validator = Validator::make($request, Wallet::$rules);
+
+        if ($validator->fails()) {
+            return ['status' => 400,'message' => $this->errorMessage($validator->errors())];
+        }
+
+        $entry = $request['entry'];
+        $type = $request['type'];
+
+        if(isset($request['order_id']) &&  $request['order_id'] != 0){
+
+            // Check Duplicacy of transaction request........
+            $duplicateRequest = WalletTransaction::where('order_id', (int) $request['order_id'])
+                ->where('type', $request['type'])
+                ->orderBy('_id','desc')
+                ->first();
+
+            if($duplicateRequest != ''){
+
+                if($request['type'] == "DEBIT"){
+
+                    $debitAmount = WalletTransaction::where('order_id', (int) $request['order_id'])
+                    ->where('type', 'DEBIT')
+                    ->sum('amount');
+
+                    $refundAmount = WalletTransaction::where('order_id', (int) $request['order_id'])
+                    ->where('type', 'REFUND')
+                    ->sum('amount');
+
+                    if($debitAmount - $refundAmount != 0){
+
+                        return ['status' => 400,'message' => 'Request has been already processed'];
+                    }
+
+                }elseif($request['type'] == "REFUND"){
+
+                    $debitAmount = WalletTransaction::where('order_id', (int) $request['order_id'])
+                    ->where('type', 'DEBIT')
+                    ->sum('amount');
+
+                    $refundAmount = WalletTransaction::where('order_id', (int) $request['order_id'])
+                    ->where('type', 'REFUND')
+                    ->sum('amount');
+
+                    if($debitAmount - $refundAmount <= 0){
+
+                        return ['status' => 400,'message' => 'Request has been already processed'];
+                    }
+                    
+                }else{
+
+                    return ['status' => 400,'message' => 'Request has been already processed'];
+                }
+                
+            }
+
+        }
+
+        if($entry == 'credit'){
+
+            if($type == 'REFUND'){
+
+                $order = \Order::where('status','!=','1')->find((int)$request['order_id'])->toArray();
+
+                $wallet_transaction = $order['wallet_transaction_debit']['wallet_transaction'];
+                $wallet_amount = $order['wallet_transaction_debit']['amount'];
+
+                $group = "";
+
+                foreach ($wallet_transaction as $key => $value) {
+
+                    $wallet = Wallet::find((int)$value['wallet_id']);
+                    $wallet->used = intval($wallet->used - $value['amount']);
+                    $wallet->balance = intval($wallet->balance + $value['amount']);
+
+                    $wallet->update();
+
+                    $data['wallet_id'] = (int)$value['wallet_id'];                 
+                    $data['entry'] = $entry;
+                    $data['type'] = $type;
+                    $data['customer_id'] = $customer_id;
+                    $data['amount'] = intval($value['amount']);
+
+                    if(isset($request['order_id']) && $request['order_id'] != ""){
+
+                        $data['order_id'] = (int)$request['order_id'];
+
+                        $data['description'] = "Refund of Rs ".$value['amount']." for order ".$request['order_id'];
+                    }
+
+                    if(isset($request['trial_id']) && $request['trial_id'] != ""){
+
+                        $data['trial_id'] = (int)$request['trial_id'];
+
+                        $data['description'] = "Refund of Rs ".$value['amount']." for trial ".$request['trial_id'];
+                    }
+
+                    $data['validity'] = 0;
+
+                    if(isset($value['coupon']) && $value['coupon'] != ""){
+                        $data['coupon'] = $value['coupon'];
+                    }
+
+                    $data['description'] = "Refund of Rs ".$value['amount'];
+
+                    if(isset($request['description'])){
+                        $data['description'] = $request['description'];
+                    }
+                    
+                    $walletTransaction = WalletTransaction::create($data);
+
+                    if($group == ""){
+                        $group = $walletTransaction->_id;
+                    }
+
+                    $walletTransaction->update(['group'=>$group]);
+                   
+                }
+
+                return ['status' => 200,'message' => 'Refunded in wallet'];
+
+            }
+
+            //echo"<pre>";print_r($request);exit;
+
+            $wallet = new Wallet();
+            $wallet->_id = (Wallet::max('_id')) ? (int) Wallet::max('_id') + 1 : 1;
+            $wallet->amount = (int)$request['amount'];
+            $wallet->used = 0;
+            $wallet->balance = (int)$request['amount'];
+            $wallet->status = "1";
+            $wallet->entry = $entry;
+            $wallet->customer_id = $customer_id;
+            $wallet->validity = 0;
+            $wallet->type = $type;
+
+            if(isset($request['order_id']) && $request['order_id'] != ""){
+                $wallet->order_id = (int)$request['order_id'];
+            }
+
+            if(isset($request['trial_id']) && $request['trial_id'] != ""){
+                $wallet->trial_id = (int)$request['trial_id'];
+            }
+
+            if(isset($request['coupon']) && $request['coupon'] != ""){
+                $wallet->coupon = $request['coupon'];
+            }
+
+            if(isset($request['validity']) && $request['validity'] != ""){
+                $wallet->validity = $request['validity'];
+            }
+
+            $wallet->save();
+
+            $data['wallet_id'] = $wallet->_id;
+            $data['entry'] = $wallet->entry;
+            $data['type'] = $wallet->type;
+            $data['customer_id'] = $customer_id;
+            $data['amount'] = (int)$request['amount'];
+
+            if(isset($reqiest['order_id']) && $reqiest['order_id'] != ""){
+
+                $data['order_id'] = (int)$reqiest['order_id'];
+
+                $data['description'] = "Added Amount of Rs ".$request['amount']." for Order ".$request['order_id'];
+
+            }
+
+            if(isset($reqiest['trial_id']) && $reqiest['trial_id'] != ""){
+
+                $data['trial_id'] = (int)$reqiest['trial_id'];
+
+                $data['description'] = "Added Amount of Rs ".$request['amount']." for Trial ".$request['trial_id'];
+            }
+            
+            $data['validity'] = $wallet['validity'];
+
+            if(isset($wallet['coupon']) && $wallet['coupon'] != ""){
+                $data['coupon'] = $wallet['coupon'];
+            }
+
+            $data['description'] = "Added Amount of Rs ".$request['amount'];
+
+            if(isset($request['description'])){
+                $data['description'] = $request['description'];
+            }
+
+            $walletTransaction = WalletTransaction::create($data);
+
+            $walletTransaction->update(['group'=>$walletTransaction->_id]);
+
+            return ['status' => 200,'message' => 'Success Added Wallet'];
+
+        }
+
+        if($entry == 'debit'){
+
+            $amount = $request['amount'];
+
+            $allWallets = Wallet::active()->where('customer_id',(int)$customer_id)->where('balance','>',0)->OrderBy('_id','asc')->get();
+
+            if(count($allWallets) > 0){
+
+                $allWalletsValidityZero = [];
+                $allWalletsValidityOther = [];
+
+                foreach ($allWallets as $key => $value){
+
+                    if($value['validity'] == 0){
+                        $allWalletsValidityZero[] = $value;
+                    }else{
+                        $allWalletsValidityOther[] = $value;
+                        $allWalletsValidityDate = $value['validity'];
+                    }
+                }
+
+                $walletData = $allWalletsValidityZero;
+
+                if(count($allWalletsValidityOther) > 0){
+                    array_multisort($allWalletsValidityDate, SORT_ASC, $allWalletsValidityOther);
+                    $walletData = array_merge($allWalletsValidityOther,$allWalletsValidityZero);
+                }
+
+                if(count($walletData) > 0){
+
+                    $amount_used = 0;
+                    $amount_balance = (int)$amount;
+
+                    $walletTransactionDebit = [];
+                    $group = "";
+
+                    foreach ($walletData as $key => $value) {
+
+                        $data['amount'] = (int)$value['balance'];
+
+                        if($value['balance'] >= $amount_balance){
+                            $data['amount'] = (int)$amount_balance;
+                        }
+
+                        $amount_used = intval($amount_used + $data['amount']);
+                        $amount_balance = intval($amount_balance - $data['amount']);
+
+                        $data['wallet_id'] = $value->_id;
+                        $data['entry'] = $entry;
+                        $data['type'] = $request['type'];
+                        $data['customer_id'] = $customer_id;
+
+                        if(isset($request['order_id']) && $request['order_id'] != ""){
+                            $data['order_id'] = (int)$request['order_id'];
+
+                            $data['description'] = "Paid for Order ID: ".$request['order_id'];
+                        }
+
+                        if(isset($request['trial_id']) && $request['trial_id'] != ""){
+                            $data['trial_id'] = (int)$request['trial_id'];
+
+                            $data['description'] = "Paid for Trial ID: ".$request['trial_id'];
+                        }
+
+                        if(isset($value['validity']) && $value['validity'] != ""){
+                            $data['validity'] = $value['validity'];
+                        }
+
+                        if(isset($value['coupon']) && $value['coupon'] != ""){
+                            $data['coupon'] = $value['coupon'];
+                        }
+
+                        $walletTransaction = WalletTransaction::create($data);
+
+                        if($group == ""){
+                            $group = $walletTransaction->_id;
+                        }
+
+                        $walletTransaction->update(['group'=>$group]);
+
+                        $value->used = intval($value->used + $data['amount']);
+                        $value->balance = intval($value->balance - $data['amount']);
+                        $value->update();
+
+                        $walletTransactionDebit[] =  [
+                            'wallet_id' => $value->_id,
+                            'wallet_transaction_id' => $walletTransaction->_id,
+                            'amount' => $data['amount']
+                        ];
+
+                        if($amount_used == $amount){
+                            break;
+                        }
+                        
+                    }
+
+                    if(isset($request['order_id']) && $request['order_id'] != ""){
+
+                        return ['status' => 200,'message' => 'Success Updated Wallet','wallet_transaction_debit'=>['amount'=>$amount,'wallet_transaction'=>$walletTransactionDebit]];
+                    }
+
+                }else{
+
+                    return ['status' => 400,'message' => 'Wallet data not found'];
+                }
+
+            }else{
+
+                return ['status' => 400,'message' => 'Wallet not found'];
+            }
+
+            return ['status' => 200,'message' => 'Success Updated Wallet'];
+        }
+
+        return ['status' => 200,'message' => 'Success'];
+    }
+
 
 }
