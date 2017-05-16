@@ -110,7 +110,7 @@ Class Utilities {
 
         $customer = \Customer::find($customer_id);
 
-        if(isset($customer->demonatization)){
+        if(isset($customer->demonetisation)){
 
             return $this->walletTransactionNew($request);
 
@@ -1241,6 +1241,8 @@ Class Utilities {
 
     public function walletTransactionNew($request){
 
+        $limit = 2500;
+
         $customer_id = (int)$request['customer_id'];
 
         $jwt_token = Request::header('Authorization');
@@ -1561,6 +1563,63 @@ Class Utilities {
         }
 
         return ['status' => 200,'message' => 'Success'];
+    }
+
+    public function demonetisation($order){
+
+        $cap = 2000;
+        $wallet = 0;
+        $wallet_fitcash_plus = 0;
+
+        $customer_id = $order['logged_in_customer_id'];
+
+        $customer = \Customer::find($customer_id);
+
+        if(!isset($customer->demonetisation) && isset($order['wallet_amount']) && $order['amount_finder'] >= 500){
+
+            $customer_wallet = \Customerwallet::where('customer_id',(int) $customer_id)->orderBy('_id','desc')->first();
+
+            if($customer_wallet){
+
+                if( isset($customer_wallet->balance_fitcash_plus) && $customer_wallet->balance_fitcash_plus != ''){
+                    $wallet_fitcash_plus = (int)$customer_wallet->balance_fitcash_plus;
+                }
+
+                if($cap > $order['wallet_amount']){
+                    $cap = $cap - $order['wallet_amount'];
+                }
+
+                if(isset($customer_wallet->balance) && $customer_wallet->balance != '' && $wallet_fitcash_plus < $cap){
+
+                    $wallet = $customer_wallet->balance;
+
+                    if(($wallet + $wallet_fitcash_plus) > $cap){
+
+                        $wallet = $cap - $wallet_fitcash_plus;
+                    }
+                }
+
+                $current_wallet_balance = $wallet + $wallet_fitcash_plus;
+
+                if($current_wallet_balance > 0){
+
+                    $request['customer_id'] = $customer_id;
+                    $request['amount'] = $current_wallet_balance;
+                    $request['entry'] = "credit";
+                    $request['type'] = "CREDIT";
+                    $request['description'] = "Added Fitcash Plus Rs ".$current_wallet_balance;
+
+                    $this->customerWalletTransaction($request);    
+                }
+
+                $customer->update(['demonetisation'=>time()]);
+
+            }
+        }
+
+        return "success";
+
+
     }
 
 

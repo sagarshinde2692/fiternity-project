@@ -694,8 +694,18 @@ class TransactionController extends \BaseController {
     }
 
     public function getCustomerDetail($data){
-
+        
         $customer_id = $data['customer_id'] = autoRegisterCustomer($data);
+
+        $data['logged_in_customer_id'] = $customer_id;
+
+        $jwt_token = Request::header('Authorization');
+
+        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+
+            $decoded = customerTokenDecode($jwt_token);
+            $data['logged_in_customer_id'] = (int)$decoded->customer->_id;
+        }
 
         $customer = Customer::find((int)$customer_id);
 
@@ -1759,7 +1769,7 @@ class TransactionController extends \BaseController {
                 "RL-1" => 150
             ];
 
-            if(isset($customer->demonatization)){
+            if(isset($customer->demonetisation)){
 
                 $wallet_balance = Wallet::active()->where('customer_id',$customer_id)->where('balance','>',0)->sum('balance');
 

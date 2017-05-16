@@ -382,7 +382,7 @@ Class CustomerReward {
 
             $current_wallet_balance = \Wallet::active()->where('customer_id',$customer_id)->where('balance','>',0)->sum('balance');/*
 
-            if(isset($customer->demonatization)){
+            if(isset($customer->demonetisation)){
 
               $current_wallet_balance = \Wallet::active()->where('customer_id',$customer_id)->where('balance','>',0)->sum('balance');   
 
@@ -418,7 +418,7 @@ Class CustomerReward {
 
                     $return = $utilities->customerWalletTransaction($request);
 
-                    $customer->update(['demonatization'=>time()]);
+                    $customer->update(['demonetisation'=>time()]);
 
                 }
 
@@ -745,7 +745,7 @@ Class CustomerReward {
 
         $customer = \Customer::find($customer_id);
 
-        if(isset($customer->demonatization)){
+        if(isset($customer->demonetisation)){
 
             return $this->purchaseGameNew($amount,$finder_id,$payment_mode = "paymentgateway",$offer_id = false,$customer_id = false);
 

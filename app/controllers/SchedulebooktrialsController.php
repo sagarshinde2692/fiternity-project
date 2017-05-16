@@ -1574,6 +1574,8 @@ class SchedulebooktrialsController extends \BaseController {
                 $order->unset('redundant_order');
             }
 
+            $this->utilities->demonetisation($order);
+
             $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
             return Response::json($resp);
         }
@@ -2156,6 +2158,7 @@ class SchedulebooktrialsController extends \BaseController {
             $order->update($orderData);
 
 
+
             // Give Rewards / Cashback to customer based on selection, on purchase success......
             
 
@@ -2196,6 +2199,8 @@ class SchedulebooktrialsController extends \BaseController {
         /*if($trialbooked == true && $campaign != ''){
             $this->attachTrialCampaignToCustomer($customer_id,$campaign,$booktrialid);
         }*/
+
+        $this->utilities->demonetisation($order);
 
         Log::info('Customer Book Trial : '.json_encode(array('book_trial_details' => Booktrial::findOrFail($booktrialid))));
 
