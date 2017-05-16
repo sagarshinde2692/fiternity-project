@@ -2234,96 +2234,145 @@ class CustomerController extends \BaseController {
 
 	}
 
-
-	public function listWalletSummary($limit=0,$offset=10){
-
-		$request = Input::json()->all();
+	public function listWalletSummaryV1($limit=0,$offset=10){
 
 		$jwt_token = Request::header('Authorization');
 		$decoded = $this->customerTokenDecode($jwt_token);
 		$customer_id = $decoded->customer->_id;
-		$request['customer_id'] = $customer_id;
-		//Log::info($jwt_token);
-		$wallet = array();
 
-		$wallet = Customerwallet::where('customer_id',$request['customer_id'])
-		->where('amount','!=',0)
-		->orderBy('_id', 'DESC')
-		//->skip($limit)
-		//->take($offset)
-		->get();
+		$cap = 2000;
+		$wallet_fitcash_plus = 0;
+		$wallet = 0;
 
-		$wallet_balance = 0;
-		$balance = 0;
-		$balance_fitcash_plus = 0;
+		$customer = \Customer::find($customer_id);
 
-		if(count($wallet) > 0){
+        if(isset($customer->demonatization)){
 
-			$debit_array = [
-			    "CASHBACK",
-			    "REFUND",
-			    "FITCASHPLUS",
-			    "REFERRAL",
-			    "CREDIT",
-			];
+          $current_wallet_balance = \Wallet::active()->where('customer_id',$customer_id)->where('balance','>',0)->sum('balance');   
 
-			$wallet = $wallet->toArray();
+        }else{
 
-			foreach ($wallet as $key => $value) {
+            $customer_wallet = \Customerwallet::where('customer_id',(int) $customer_id)->orderBy('_id','desc')->first();
 
-				if(!isset($value['order_id'])){
-					$wallet[$key]['order_id'] = 0;
-				}
+            if($customer_wallet){
 
-				$wallet[$key]["debit_credit"] = "debit";
+                if( isset($customer_wallet->balance_fitcash_plus) && $customer_wallet->balance_fitcash_plus != ''){
+                    $wallet_fitcash_plus = (int)$customer_wallet->balance_fitcash_plus;
+                }
 
-				if(in_array($value["type"],$debit_array)){
-					$wallet[$key]["debit_credit"] = "credit";
-				}
+                if(isset($customer_wallet->balance) && $customer_wallet->balance != '' && $wallet_fitcash_plus < $cap){
 
-				if(isset($wallet[$key+1])){
+                    $wallet = $customer_wallet->balance;
 
-					$wallet[$key]['amount_fitcash'] = $value['amount'];
-					$wallet[$key]['amount_fitcash_plus'] = 0;
+                    if(($wallet + $wallet_fitcash_plus) > $cap){
 
-					if(isset($value['balance_fitcash_plus'])){
+                        $wallet = $cap - $wallet_fitcash_plus;
+                    }
+                }
 
-						$wallet[$key]['amount_fitcash'] = abs($wallet[$key]['balance'] - $wallet[$key+1]['balance']);
-						$wallet[$key]['amount_fitcash_plus'] = 0;
+                $current_wallet_balance = $wallet + $wallet_fitcash_plus;
 
-						if(isset($wallet[$key+1]['balance_fitcash_plus'])){
-							$wallet[$key]['amount_fitcash_plus'] = abs($wallet[$key]['balance_fitcash_plus'] - $wallet[$key+1]['balance_fitcash_plus']);
-						}
+                $utilities = new Utilities;
+
+                $request['customer_id'] = $customer_id;
+                $request['amount'] = $current_wallet_balance;
+                $request['entry'] = "credit";
+                $request['type'] = "CREDIT";
+                $request['description'] = "Added Fitcash Plus Rs ".$current_wallet_balance;
+
+                $return = $utilities->customerWalletTransaction($request);
+
+                $customer->update(['demonatization'=>time()]);
+
+            }
+
+        }
+
+
+        $wallet_summary = [];
+
+		$wallet_balance = Wallet::active()->where('customer_id',$customer_id)->where('balance','>',0)->sum('balance');
+
+		$walletTransaction = WalletTransaction::where('customer_id',$customer_id)->orderBy('updated_at','DESC')->get()->groupBy('group');
+
+		if($walletTransaction){
+
+			$count = 0;
+
+			foreach ($walletTransaction as $group => $transaction) {
+
+				$amount = 0;
+				$validity = "";
+				$description = "";
+				$date = "";
+				$entry = "";
+				$created_at = "";
+				$type = "";
+
+				foreach ($transaction as $key => $value) {
+
+					$amount += $value['amount'];
+
+					if(isset($value['validity']) && $validity != ""){
+						$validity = date('d-m-Y',$value['validity']);
 					}
 
+					if($date == ""){
+						$date = date('d-m-Y',strtotime($value['created_at']));
+					}
 
-				}else{
+					if($description == ""){
+						$description = $value['description'];
+					}
 
-					$wallet[$key]['amount_fitcash'] = $value['amount'];
-					$wallet[$key]['amount_fitcash_plus'] = 0;
+					if($entry == ""){
+						$entry = $value['entry'];
+					}
 
-					if(isset($value['balance_fitcash_plus'])){
-						$wallet[$key]['amount_fitcash_plus'] = $value['amount'];
-						$wallet[$key]['amount_fitcash'] = 0;
+					if($created_at == ""){
+						$created_at = date('d-m-Y H:i:s',strtotime($value['created_at'])); 
+						$updated_at = date('d-m-Y H:i:s',strtotime($value['created_at']));
+					}
+
+					if($type == ""){
+						$type = $value['type'];
 					}
 				}
+
+				$wallet_summary[] = [
+					'_id'=>$count,
+					'customer_id'=>$customer_id,
+					'order_id'=>0,
+					'type'=>$type,
+					'amount'=>$amount,
+					'balance'=>0,
+					'amount_fitcash'=>0,
+					'amount_fitcash_plus'=>$amount,
+					'balance_fitcash_plus'=>0,
+					'description'=>$description,
+					'updated_at'=>$updated_at,
+					'created_at'=>$created_at,
+					'debit_credit'=>$entry
+				];
+
+				$count++;
 
 			}
 
-			$balance = (isset($wallet[0]['balance']) && $wallet[0]['balance'] != "") ? (int) $wallet[0]['balance'] : 0 ;
-			$balance_fitcash_plus = (isset($wallet[0]['balance_fitcash_plus']) && $wallet[0]['balance_fitcash_plus'] != "") ? (int) $wallet[0]['balance_fitcash_plus'] : 0 ;
+		}
 
-			$wallet_balance = $balance + $balance_fitcash_plus;
+		if(count($wallet_summary) > 0){
+			$wallet_summary[0]['balance'] = $wallet_balance;
 		}
 
 		return Response::json(
 			array(
 				'status' => 200,
-				'data' => $wallet,
+				'data' => $wallet_summary,
 				'wallet_balance'=>$wallet_balance,
 				'fitcash' => [
 					'title' => 'FITCASH',
-					'balance'=>$balance,
+					'balance'=>0,
 					'info'=>[
 						'title'=>'What is FitCash?',
 						'description' => 'Earn FitCash with every transaction you do on Fitternity. You redeem upto 10% of the booking amount in each transaction. FitCash can be used for any booking or purchase on Fitternity ranging from workout sessions, memberships and healthy tiffin subscriptions',
@@ -2332,7 +2381,7 @@ class CustomerController extends \BaseController {
 				],
 				'fitcash_plus' => [
 					'title' => 'FITCASH+',
-					'balance'=>$balance_fitcash_plus,
+					'balance'=>$wallet_balance,
 					'info'=>[
 						'title'=>'What is FitCash+?',
 						'description' => 'With FitCash Plus there is no restriction on redeeming - you can use the entire amount in your transaction! FitCash can be used for any booking or purchase on Fitternity ranging from workout sessions, memberships and healthy tiffin subscriptions.',
@@ -2342,6 +2391,227 @@ class CustomerController extends \BaseController {
 				),
 			200
 		);
+
+	}
+
+
+
+	public function listWalletSummary($limit=0,$offset=10){
+
+		$jwt_token = Request::header('Authorization');
+		$decoded = $this->customerTokenDecode($jwt_token);
+		$customer_id = $decoded->customer->_id;
+
+
+		$customer = Customer::find((int)$customer_id);
+
+		if(isset($customer->demonetisation)){
+
+			$wallet_summary = [];
+
+			$wallet_balance = Wallet::active()->where('customer_id',$customer_id)->where('balance','>',0)->sum('balance');
+
+			$walletTransaction = WalletTransaction::where('customer_id',$customer_id)->orderBy('updated_at','DESC')->get()->groupBy('group');
+
+			if($walletTransaction){
+
+				$count = 0;
+
+				foreach ($walletTransaction as $group => $transaction) {
+
+					$amount = 0;
+					$validity = "";
+					$description = "";
+					$date = "";
+					$entry = "";
+					$created_at = "";
+					$type = "";
+
+					foreach ($transaction as $key => $value) {
+
+						$amount += $value['amount'];
+
+						if(isset($value['validity']) && $validity != ""){
+							$validity = date('d-m-Y',$value['validity']);
+						}
+
+						if($date == ""){
+							$date = date('d-m-Y',strtotime($value['created_at']));
+						}
+
+						if($description == ""){
+							$description = $value['description'];
+						}
+
+						if($entry == ""){
+							$entry = $value['entry'];
+						}
+
+						if($created_at == ""){
+							$created_at = date('d-m-Y H:i:s',strtotime($value['created_at'])); 
+							$updated_at = date('d-m-Y H:i:s',strtotime($value['created_at']));
+						}
+
+						if($type == ""){
+							$type = $value['type'];
+						}
+					}
+
+					$wallet_summary[] = [
+						'_id'=>$count,
+						'customer_id'=>$customer_id,
+						'order_id'=>0,
+						'type'=>$type,
+						'amount'=>$amount,
+						'balance'=>0,
+						'amount_fitcash'=>0,
+						'amount_fitcash_plus'=>$amount,
+						'balance_fitcash_plus'=>0,
+						'description'=>$description,
+						'updated_at'=>$updated_at,
+						'created_at'=>$created_at,
+						'debit_credit'=>$entry
+					];
+
+					$count++;
+
+				}
+
+			}
+
+			if(count($wallet_summary) > 0){
+				$wallet_summary[0]['balance'] = $wallet_balance;
+			}
+
+			return Response::json(
+				array(
+					'status' => 200,
+					'data' => $wallet_summary,
+					'wallet_balance'=>$wallet_balance,
+					'fitcash' => [
+						'title' => 'FITCASH',
+						'balance'=>0,
+						'info'=>[
+							'title'=>'What is FitCash?',
+							'description' => 'Earn FitCash with every transaction you do on Fitternity. You redeem upto 10% of the booking amount in each transaction. FitCash can be used for any booking or purchase on Fitternity ranging from workout sessions, memberships and healthy tiffin subscriptions',
+							'short_description' => "short"."\n"."description"."\n"."description"
+						]
+					],
+					'fitcash_plus' => [
+						'title' => 'FITCASH+',
+						'balance'=>$wallet_balance,
+						'info'=>[
+							'title'=>'What is FitCash+?',
+							'description' => 'With FitCash Plus there is no restriction on redeeming - you can use the entire amount in your transaction! FitCash can be used for any booking or purchase on Fitternity ranging from workout sessions, memberships and healthy tiffin subscriptions.',
+							'short_description' => "short"."\n"."description"."\n"."description"
+						]
+					],
+					),
+				200
+			);
+
+		}else{
+
+			$wallet = array();
+			$wallet = Customerwallet::where('customer_id',$customer_id)
+			->where('amount','!=',0)
+			->orderBy('_id', 'DESC')
+			//->skip($limit)
+			//->take($offset)
+			->get();
+
+			$wallet_balance = 0;
+			$balance = 0;
+			$balance_fitcash_plus = 0;
+
+			if(count($wallet) > 0){
+
+				$debit_array = [
+				    "CASHBACK",
+				    "REFUND",
+				    "FITCASHPLUS",
+				    "REFERRAL",
+				    "CREDIT",
+				];
+
+				$wallet = $wallet->toArray();
+
+				foreach ($wallet as $key => $value) {
+
+					if(!isset($value['order_id'])){
+						$wallet[$key]['order_id'] = 0;
+					}
+
+					$wallet[$key]["debit_credit"] = "debit";
+
+					if(in_array($value["type"],$debit_array)){
+						$wallet[$key]["debit_credit"] = "credit";
+					}
+
+					if(isset($wallet[$key+1])){
+
+						$wallet[$key]['amount_fitcash'] = $value['amount'];
+						$wallet[$key]['amount_fitcash_plus'] = 0;
+
+						if(isset($value['balance_fitcash_plus'])){
+
+							$wallet[$key]['amount_fitcash'] = abs($wallet[$key]['balance'] - $wallet[$key+1]['balance']);
+							$wallet[$key]['amount_fitcash_plus'] = 0;
+
+							if(isset($wallet[$key+1]['balance_fitcash_plus'])){
+								$wallet[$key]['amount_fitcash_plus'] = abs($wallet[$key]['balance_fitcash_plus'] - $wallet[$key+1]['balance_fitcash_plus']);
+							}
+						}
+
+
+					}else{
+
+						$wallet[$key]['amount_fitcash'] = $value['amount'];
+						$wallet[$key]['amount_fitcash_plus'] = 0;
+
+						if(isset($value['balance_fitcash_plus'])){
+							$wallet[$key]['amount_fitcash_plus'] = $value['amount'];
+							$wallet[$key]['amount_fitcash'] = 0;
+						}
+					}
+
+				}
+
+				$balance = (isset($wallet[0]['balance']) && $wallet[0]['balance'] != "") ? (int) $wallet[0]['balance'] : 0 ;
+				$balance_fitcash_plus = (isset($wallet[0]['balance_fitcash_plus']) && $wallet[0]['balance_fitcash_plus'] != "") ? (int) $wallet[0]['balance_fitcash_plus'] : 0 ;
+
+				$wallet_balance = $balance + $balance_fitcash_plus;
+			}
+
+			return Response::json(
+				array(
+					'status' => 200,
+					'data' => $wallet,
+					'wallet_balance'=>$wallet_balance,
+					'fitcash' => [
+						'title' => 'FITCASH',
+						'balance'=>$balance,
+						'info'=>[
+							'title'=>'What is FitCash?',
+							'description' => 'Earn FitCash with every transaction you do on Fitternity. You redeem upto 10% of the booking amount in each transaction. FitCash can be used for any booking or purchase on Fitternity ranging from workout sessions, memberships and healthy tiffin subscriptions',
+							'short_description' => "short"."\n"."description"."\n"."description"
+						]
+					],
+					'fitcash_plus' => [
+						'title' => 'FITCASH+',
+						'balance'=>$balance_fitcash_plus,
+						'info'=>[
+							'title'=>'What is FitCash+?',
+							'description' => 'With FitCash Plus there is no restriction on redeeming - you can use the entire amount in your transaction! FitCash can be used for any booking or purchase on Fitternity ranging from workout sessions, memberships and healthy tiffin subscriptions.',
+							'short_description' => "short"."\n"."description"."\n"."description"
+						]
+					],
+					),
+				200
+			);
+
+		}
+		
 	}
 
 
