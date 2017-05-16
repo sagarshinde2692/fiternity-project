@@ -133,6 +133,7 @@ Class CustomerReward {
                     "amount_fitcash" => $cashback_amount,
                     "amount_fitcash_plus" => 0,
                     "type"=>'CASHBACK',
+                    'entry'=>'credit',
                     "description"=>'CASHBACK ON PURCHASE - '.$cashback_amount
                 );
 
@@ -175,6 +176,7 @@ Class CustomerReward {
                     "amount_fitcash" => intval($order['amount']),
                     "amount_fitcash_plus" => 0,
                     "type"=>'CASHBACK',
+                    'entry'=>'credit',
                     "description"=>'CASHBACK ON Paid Booktrial amount - '.intval($order['amount'])
                 );
 
@@ -189,6 +191,7 @@ Class CustomerReward {
                     "amount_fitcash" => intval($order['amount']),
                     "amount_fitcash_plus" => 0,
                     "type"=>'CASHBACK',
+                    'entry'=>'credit',
                     "description"=>'CASHBACK ON Events Tickets amount - '.intval($order['amount'])
                 );
 

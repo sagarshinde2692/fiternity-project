@@ -2103,7 +2103,8 @@ class SchedulebooktrialsController extends \BaseController {
                     "amount_fitcash_plus" => 250,
                     "type"=>'FITCASHPLUS',
                     "description"=>'Added Fitcash Plus on Workout Session amount - 250',
-                    "order_id"=>$order->_id
+                    "order_id"=>$order->_id,
+                    'entry'=>'credit',
                 );
 
                 $this->utilities->walletTransaction($walletData);
@@ -4970,7 +4971,8 @@ class SchedulebooktrialsController extends \BaseController {
                     "amount_fitcash_plus" => 0,
                     "type"=>'CASHBACK',
                     "description"=>'CASHBACK ON Invite amount - '.$cashback_amount,
-                    "order_id"=>$order->_id
+                    "order_id"=>$order->_id,
+                    'entry'=>'credit',
                 );
 
                 $this->utilities->walletTransaction($walletData);

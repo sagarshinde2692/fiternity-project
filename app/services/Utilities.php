@@ -116,12 +116,10 @@ Class Utilities {
         $validator = Validator::make($request, Customerwallet::$rules);
 
         if ($validator->fails()) {
-            return Response::json(
-                array(
-                    'status' => 400,
-                    'message' => $this->errorMessage($validator->errors()
-                    )),400
-            );
+            return array(
+                        'status' => 400,
+                        'message' => $this->errorMessage($validator->errors())
+                    );
         }
 
         if($request['order_id'] != 0){
@@ -145,12 +143,10 @@ Class Utilities {
                     ->sum('amount');
 
                     if($debitAmount - $refundAmount != 0){
-                        return Response::json(
-                            array(
-                                'status' => 400,
-                                'message' => 'Request has been already processed'
-                                ),400
-                        );
+                        return array(
+                                    'status' => 400,
+                                    'message' => 'Request has been already processed'
+                                );
                     }
 
                 }elseif($request['type'] == "REFUND"){
@@ -164,22 +160,18 @@ Class Utilities {
                     ->sum('amount');
 
                     if($debitAmount - $refundAmount <= 0){
-                        return Response::json(
-                            array(
-                                'status' => 400,
-                                'message' => 'Request has been already processed'
-                                ),400
-                        );
+                        return array(
+                                    'status' => 400,
+                                    'message' => 'Request has been already processed'
+                                );
                     }
                     
                 }else{
 
-                    return Response::json(
-                        array(
-                            'status' => 400,
-                            'message' => 'Request has been already processed'
-                            ),400
-                    );
+                    return array(
+                                    'status' => 400,
+                                    'message' => 'Request has been already processed'
+                                );
                 }
                 
             }
@@ -205,7 +197,7 @@ Class Utilities {
                 : null;
             if($request['type'] == 'DEBIT'){
                 if($wallet['balance'] < $request['amount']){
-                    return Response::json(array('status' => 422,'message' => 'Your wallet balance is low for transaction'),422);
+                    return array('status' => 422,'message' => 'Your wallet balance is low for transaction');
                 }
                 else{
                     $request['balance'] = ((int) $wallet['balance'] - abs($request['amount']));
@@ -234,14 +226,11 @@ Class Utilities {
             Customer::where('_id', $customer_id)->update(array('balance' => (int) $request['balance']));
 
             // Response........
-            return Response::json(
-                array(
+            return array(
                     'status' => 200,
                     'message' => 'Transaction successful',
                     'balance' => $request['balance']
-                ),200
-
-            );
+                );
 
         }elseif($data && isset($data['customer_source']) && in_array($data['customer_source'],['ios']) && isset($data['app_version']) && ((float)$data['app_version'] <= 3.2) ){
 
@@ -262,7 +251,7 @@ Class Utilities {
                 : null;
             if($request['type'] == 'DEBIT'){
                 if($wallet['balance'] < $request['amount']){
-                    return Response::json(array('status' => 422,'message' => 'Your wallet balance is low for transaction'),422);
+                    return array('status' => 422,'message' => 'Your wallet balance is low for transaction');
                 }
                 else{
                     $request['balance'] = ((int) $wallet['balance'] - abs($request['amount']));
@@ -291,14 +280,11 @@ Class Utilities {
             Customer::where('_id', $customer_id)->update(array('balance' => (int) $request['balance']));
 
             // Response........
-            return Response::json(
-                array(
+            return array(
                     'status' => 200,
                     'message' => 'Transaction successful',
                     'balance' => $request['balance']
-                ),200
-
-            );
+                );
 
         }else{
 
@@ -357,7 +343,7 @@ Class Utilities {
             if($request['type'] == 'DEBIT'){
 
                 if(($customer['balance']+$customer['balance_fitcash_plus']) < $request['amount']){
-                    return Response::json(array('status' => 422,'message' => 'Your wallet balance is low for transaction'),422);
+                    return array('status' => 422,'message' => 'Your wallet balance is low for transaction');
                 }
 
                 $cashback_detail = $data['cashback_detail'];
@@ -400,14 +386,11 @@ Class Utilities {
             $customer->update();
 
             // Response........
-            return Response::json(
-                array(
+            return array(
                     'status' => 200,
                     'message' => 'Transaction successful',
                     'balance' => $request['balance']
-                ),200
-
-            );
+                );
         }
     }
 
@@ -1205,8 +1188,7 @@ Class Utilities {
             $req['description'] = $data['description'];
         }
 
-        $walletTransactionResponse = $this->walletTransaction($req)->getData();
-        $walletTransactionResponse = (array) $walletTransactionResponse;
+        $walletTransactionResponse = $this->walletTransaction($req);
 
 
         Log::info("----walletTransactionResponse-----",$walletTransactionResponse);

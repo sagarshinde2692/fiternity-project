@@ -3180,7 +3180,8 @@ class CustomerController extends \BaseController {
 					"amount_fitcash" => $cashback_amount,
                     "amount_fitcash_plus" => 0,
 					"type"=>'CASHBACK',
-					"code"=>	$code,
+					"code"=>$code,
+					"entry"=>'credit',
 					"description"=>'CASHBACK ON Promotion amount - '.$cashback_amount
 				);
 

@@ -1,9 +1,9 @@
 <?php
 
 //local
-// $host = "localhost";
-// $username = "";
-// $password = "";
+$host = "localhost";
+$username = "";
+$password = "";
 
 //stage
 // $host = "localhost";
@@ -11,12 +11,9 @@
 // $password = "fit1234";
 
 //production
-$host = "54.179.134.14";
-// $username = "fitterAdmin";
-// $password = "Tech!Fitter";
-
-$username = "";
-$password = "";
+// $host = "54.179.134.14";
+// $username = "";
+// $password = "";
 
 return array(
 

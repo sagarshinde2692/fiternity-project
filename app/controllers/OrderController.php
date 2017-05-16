@@ -1417,13 +1417,14 @@ class OrderController extends \BaseController {
                     'amount_fitcash' => $fitcash,
                     'amount_fitcash_plus' => $fitcash_plus,
                     'type'=>'DEBIT',
+                    'entry'=>'debit',
                     'description'=>'Paid for Order ID: '.$orderid,
                 );
-                $walletTransactionResponse = $this->utilities->walletTransaction($req,$data)->getData();
-                $walletTransactionResponse = (array) $walletTransactionResponse;
+                $walletTransactionResponse = $this->utilities->walletTransaction($req,$data);
+                
 
                 if($walletTransactionResponse['status'] != 200){
-                    return $walletTransactionResponse;
+                    return Response::json($walletTransactionResponse,$walletTransactionResponse['status']);
                 }
 
                 // Schedule Check orderfailure and refund wallet amount in that case....
@@ -1459,13 +1460,14 @@ class OrderController extends \BaseController {
                         'amount_fitcash' => $fitcash,
                         'amount_fitcash_plus' => $fitcash_plus,
                         'type'=>'DEBIT',
+                        'entry'=>'debit',
                         'description'=>'Paid for Order ID: '.$orderid,
                     );
-                    $walletTransactionResponse = $this->utilities->walletTransaction($req,$data)->getData();
-                    $walletTransactionResponse = (array) $walletTransactionResponse;
+                    $walletTransactionResponse = $this->utilities->walletTransaction($req,$data);
+                    
 
                     if($walletTransactionResponse['status'] != 200){
-                        return $walletTransactionResponse;
+                        return Response::json($walletTransactionResponse,$walletTransactionResponse['status']);
                     }
 
                     // Schedule Check orderfailure and refund wallet amount in that case....
@@ -1973,14 +1975,15 @@ class OrderController extends \BaseController {
                 'order_id'=>$order_id,
                 'amount'=>$order['wallet_amount'],
                 'type'=>'REFUND',
+                'entry'=>'credit',
                 'description'=>'Refund for Order ID: '.$order_id,
             );
 
-            $walletTransactionResponse = $this->utilities->walletTransaction($req,$order->toArray())->getData();
-            $walletTransactionResponse = (array) $walletTransactionResponse;
+            $walletTransactionResponse = $this->utilities->walletTransaction($req,$order->toArray());
+            
 
             if($walletTransactionResponse['status'] != 200){
-                return $walletTransactionResponse;
+                return Response::json($walletTransactionResponse,$walletTransactionResponse['status']);
             }
 
             return Response::json(
@@ -2275,13 +2278,14 @@ class OrderController extends \BaseController {
                         'amount_fitcash' => $fitcash,
                         'amount_fitcash_plus' => $fitcash_plus,
                         'type'=>'DEBIT',
+                        'entry'=>'debit',
                         'description'=>'Paid for Order ID: '.$order_id,
                     );
-                    $walletTransactionResponse = $this->utilities->walletTransaction($req,$data)->getData();
-                    $walletTransactionResponse = (array) $walletTransactionResponse;
+                    $walletTransactionResponse = $this->utilities->walletTransaction($req,$data);
+                    
 
                     if($walletTransactionResponse['status'] != 200){
-                        return $walletTransactionResponse;
+                        return Response::json($walletTransactionResponse,$walletTransactionResponse['status']);
                     }
 
                     // Schedule Check orderfailure and refund wallet amount in that case....
