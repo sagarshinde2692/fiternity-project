@@ -3962,5 +3962,74 @@ class CustomerController extends \BaseController {
 		
 	}
 
+	public function getWalletDetails($limit=0,$offset=10){
+
+		$request = Input::json()->all();
+
+		$jwt_token = Request::header('Authorization');
+		$decoded = $this->customerTokenDecode($jwt_token);
+		$customer_id = $decoded->customer->_id;
+
+		$wallet_summary = [];
+
+		$wallet_balance = Wallet::active()->where('customer_id',$customer_id)->where('balance','>',0)->sum('balance');
+
+		$walletTransaction = WalletTransaction::where('customer_id',$customer_id)->orderBy('updated_at','DESC')->get()->groupBy('group');
+
+		if($walletTransaction){
+
+			foreach ($walletTransaction as $group => $transaction) {
+
+				$amount = 0;
+				$validity = "";
+				$description = "";
+				$date = "";
+				$entry = "";
+
+				foreach ($transaction as $key => $value) {
+
+					$amount += $value['amount'];
+
+					if(isset($value['validity']) && $validity != ""){
+						$validity = date('d-m-Y',$value['validity']);
+					}
+
+					if($date == ""){
+						$date = date('d-m-Y',strtotime($value['created_at']));
+					}
+
+					if($description == ""){
+						$description = $value['description'];
+					}
+
+					if($entry == ""){
+						$entry = $value['entry'];
+					}
+				}
+
+				$wallet_summary[] = [
+					'amount'=>$amount,
+					'description'=>$description,
+					'date'=>$date,
+					'validity'=>$validity,
+					'entry'=>$entry
+				];
+
+			}
+
+		}
+
+		return Response::json(
+			array(
+				'status' => 200,
+				'wallet_summary' => $wallet_summary,
+				'wallet_balance'=>$wallet_balance
+				),
+			200
+		);
+
+	}
+
+
 
 }
