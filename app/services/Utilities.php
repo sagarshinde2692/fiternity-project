@@ -100,7 +100,7 @@ Class Utilities {
     public function walletTransaction($request,$data = false){
 
         $customer_id = (int)$request['customer_id'];
-        
+
         $jwt_token = Request::header('Authorization');
 
         Log::info('jwt_token : '.$jwt_token);
@@ -1609,9 +1609,9 @@ Class Utilities {
                     $request['amount'] = $current_wallet_balance;
                     $request['entry'] = "credit";
                     $request['type'] = "CREDIT";
-                    $request['description'] = "Added Fitcash Plus Rs ".$current_wallet_balance;
+                    $request['description'] = "Demonetisation Added Fitcash Plus Rs ".$current_wallet_balance;
 
-                    $this->walletTransaction($request);    
+                    $this->walletTransactionNew($request);    
                 }
 
                 $customer->update(['demonetisation'=>time()]);

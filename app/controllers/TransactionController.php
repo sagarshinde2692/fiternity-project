@@ -1966,7 +1966,7 @@ class TransactionController extends \BaseController {
                 $req['entry'] = "credit";
                 $req['type'] = "FITCASHPLUS";
                 $req['amount_fitcash_plus'] = $data['amount'];
-                $req['description'] = "Added Fitcash Plus Rs ".$amount;
+                $req['description'] = "1 Added Fitcash Plus Rs ".$amount;
 
                 $walletTransactionResponse = $this->utilities->walletTransaction($req);
 
