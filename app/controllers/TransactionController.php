@@ -1750,8 +1750,8 @@ class TransactionController extends \BaseController {
 
             $url = Config::get('app.url')."/addwallet?customer_id=".$order["customer_id"]."&order_id=".$order_id;
 
-            $order->customerWalletSendPaymentLinkAfter15Days = $this->hitURLAfterDelay($url."&time=L+15", date('Y-m-d H:i:s', strtotime("+15 days",$now)));
-            $order->customerWalletSendPaymentLinkAfter30Days = $this->hitURLAfterDelay($url."&time=L+30", date('Y-m-d H:i:s', strtotime("+30 days",$now)));
+            $order->customerWalletSendPaymentLinkAfter15Days = $this->hitURLAfterDelay($url."&time=LPlus15", date('Y-m-d H:i:s', strtotime("+15 days",$now)));
+            $order->customerWalletSendPaymentLinkAfter30Days = $this->hitURLAfterDelay($url."&time=LPlus30", date('Y-m-d H:i:s', strtotime("+30 days",$now)));
 
             $order->notification_status = 'abandon_cart_yes';
 
@@ -1904,7 +1904,7 @@ class TransactionController extends \BaseController {
 
         $rules = array(
             'customer_id'=>'required',
-            'time'=>'required|in:L+15,L+30,F1+15,PurchaseFirst,RL-7,RL-1',
+            'time'=>'required|in:LPlus15,LPlus30,F1Plus15,PurchaseFirst,RLMinus7,RLMinus1',
         );
 
         $validator = Validator::make($data,$rules);
@@ -1917,19 +1917,20 @@ class TransactionController extends \BaseController {
         $customer = Customer::find((int)$data['customer_id']);
         $top_up = false;
         $wallet_balance = 0;
+        $customer_id = (int)$data['customer_id'];
 
         if($customer){
 
-            $orderTime = ['L+15','L+30','PurchaseFirst','RL-7','RL-1'];
-            $trialTime = ['F1+15'];
+            $orderTime = ['LPlus15','LPlus30','PurchaseFirst','RLMinus7','RLMinus1'];
+            $trialTime = ['F1Plus15'];
 
             $amountArray = [
-                "L+15" => 150,
-                "L+30" => 150,
-                "F1+15" => 150,
+                "LPlus15" => 150,
+                "LPlus30" => 150,
+                "F1Plus15" => 150,
                 "PurchaseFirst" => 150,
-                "RL-7" => 150,
-                "RL-1" => 150
+                "RLMinus7" => 150,
+                "RLMinus1" => 150
             ];
 
             if(isset($customer->demonetisation)){
@@ -1947,6 +1948,8 @@ class TransactionController extends \BaseController {
             }
 
             $amount = $amountArray[$time];
+
+            Log::info('wallet_balance - '.$wallet_balance);
 
             if($wallet_balance > 0){
 
@@ -1969,9 +1972,9 @@ class TransactionController extends \BaseController {
 
                 $req['entry'] = "credit";
                 $req['type'] = "FITCASHPLUS";
-                $req['amount_fitcash_plus'] = $data['amount'];
+                $req['amount_fitcash_plus'] = $amount;
                 $req['description'] = "1 Added Fitcash Plus Rs ".$amount;
-                $req["validity"] = strtotime("+ 60 days");
+                $req["validity"] = time()+(86400*60);
 
                 $walletTransactionResponse = $this->utilities->walletTransaction($req);
 
@@ -2005,25 +2008,25 @@ class TransactionController extends \BaseController {
                 $transaction['top_up'] = $top_up;
 
                 switch ($time) {
-                    case 'L+15':
+                    case 'LPlus15':
                         $this->customersms->sendPaymentLinkAfter15Days($transaction,0);
                         if(isset($transaction['reg_id']) && $transaction['reg_id'] != "" && isset($transaction['device_type']) && $transaction['device_type'] != ""){
                             $this->customernotification->sendPaymentLinkAfter15Days($transaction,0);
                         }
                         break;
-                    case 'L+30':
+                    case 'LPlus30':
                         $this->customersms->sendPaymentLinkAfter30Days($transaction,0);
                         if(isset($transaction['reg_id']) && $transaction['reg_id'] != "" && isset($transaction['device_type']) && $transaction['device_type'] != ""){
                             $this->customernotification->sendPaymentLinkAfter30Days($transaction,0);
                         }
                         break;
-                    case 'RL-7':
+                    case 'RLMinus7':
                         $this->customersms->sendRenewalPaymentLinkBefore7Days($transaction,0);
                         /*if(isset($transaction['reg_id']) && $transaction['reg_id'] != "" && isset($transaction['device_type']) && $transaction['device_type'] != ""){
                             $this->customernotification->sendRenewalPaymentLinkBefore7Days($transaction,0);
                         }*/
                         break;
-                    case 'RL-1':
+                    case 'RLMinus1':
                         $this->customersms->sendRenewalPaymentLinkBefore1Days($transaction,0);
                         /*if(isset($transaction['reg_id']) && $transaction['reg_id'] != "" && isset($transaction['device_type']) && $transaction['device_type'] != ""){
                             $this->customernotification->sendRenewalPaymentLinkBefore1Days($transaction,0);
@@ -2035,7 +2038,7 @@ class TransactionController extends \BaseController {
                             $this->customernotification->purchaseFirst($transaction,0);
                         }
                         break;
-                    case 'F1+15':
+                    case 'F1Plus15':
                         $this->customersms->postTrialFollowup1After15Days($transaction,0);
                         if(isset($transaction['reg_id']) && $transaction['reg_id'] != "" && isset($transaction['device_type']) && $transaction['device_type'] != ""){
                             $this->customernotification->postTrialFollowup1After15Days($transaction,0);
