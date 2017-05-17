@@ -3793,7 +3793,7 @@ class CustomerController extends \BaseController {
 		'email' => 'required|email|max:255'
 		];
 		$validator = Validator::make($data, $rules);
-		$current_diet_plan = Order::where('customer_email',$data['email'])->where('type','diet_plan')->with(array('trainerslotbookings'=>function($query){$query->orderBy('_id','desc');}))->orderBy('_id','desc')->first();
+		$current_diet_plan = Order::active()->where('customer_email',$data['email'])->where('type','diet_plan')->with(array('trainerslotbookings'=>function($query){$query->orderBy('_id','desc');}))->orderBy('_id','desc')->first();
 		// $trainerslotBookings = TrainerSlotBooking::where('order_id',$current_diet_plan['_id'])->get();
 		if(isset($current_diet_plan)){
 			$total_sessions = $current_diet_plan['duration'];
