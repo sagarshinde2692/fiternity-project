@@ -99,6 +99,8 @@ Class Utilities {
 
     public function walletTransaction($request,$data = false){
 
+        $customer_id = (int)$request['customer_id'];
+        
         $jwt_token = Request::header('Authorization');
 
         Log::info('jwt_token : '.$jwt_token);
