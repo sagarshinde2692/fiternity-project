@@ -135,6 +135,8 @@ Class Utilities {
             $customer_id = (int)$decoded->customer->_id;
         }
 
+        $request['customer_id'] = $customer_id;
+
         if(!isset($request['order_id'])){
             $request['order_id'] = 0;
         }
@@ -207,11 +209,27 @@ Class Utilities {
 
         if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios']) && isset($_GET['app_version']) && ((float)$_GET['app_version'] <= 3.2) ){
 
+            $customer_balance = 0;
+            $customer_balance_fitcash_plus = 0;
+
+            $currentCustomerwallet = Customerwallet::where('customer_id',$customer_id)->OrderBy('_id','desc')->first();
+
+            if($currentCustomerwallet){
+
+                if(isset($currentCustomerwallet->balance)){
+                    $customer_balance = $currentCustomerwallet->balance;
+                }
+
+                if(isset($currentCustomerwallet->balance_fitcash_plus)){
+                    $customer_balance_fitcash_plus = $currentCustomerwallet->balance_fitcash_plus;
+                }
+            }
+
             $wallet = Customer::where('_id',$customer_id)
                 ->first(array('balance'));
 
-            !($wallet && isset($wallet['balance']))
-                ? $wallet['balance'] = 0
+            !($wallet && isset($customer_balance))
+                ? $customer_balance = 0
                 : null;
 
             !($wallet && isset($wallet['balance_fitcash_plus']))
@@ -220,18 +238,18 @@ Class Utilities {
 
             // Process Action on basis of request........
             ($request['type'] == 'CREDIT' || $request['type'] == 'REFUND'|| $request['type'] == 'CASHBACK')
-                ? $request['balance'] = ((int) $wallet['balance'] + abs($request['amount']))
+                ? $request['balance'] = ((int) $customer_balance + abs($request['amount']))
                 : null;
             if($request['type'] == 'DEBIT'){
-                if($wallet['balance'] < $request['amount']){
-                    return array('status' => 422,'message' => 'Your wallet balance is low for transaction');
+                if($customer_balance < $request['amount']){
+                    return array('status' => 421,'message' => 'Your wallet balance is low for transaction');
                 }
                 else{
-                    $request['balance'] = ((int) $wallet['balance'] - abs($request['amount']));
+                    $request['balance'] = ((int) $customer_balance - abs($request['amount']));
                 }
             }
 
-            $request['balance_fitcash_plus'] = (int)$customer['balance_fitcash_plus'];
+            $request['balance_fitcash_plus'] = (int)$customer_balance_fitcash_plus;
 
             $customerwallet = new Customerwallet();
             $id = Customerwallet::max('_id');
@@ -261,11 +279,27 @@ Class Utilities {
 
         }elseif($data && isset($data['customer_source']) && in_array($data['customer_source'],['ios']) && isset($data['app_version']) && ((float)$data['app_version'] <= 3.2) ){
 
+            $customer_balance = 0;
+            $customer_balance_fitcash_plus = 0;
+
+            $currentCustomerwallet = Customerwallet::where('customer_id',$customer_id)->OrderBy('_id','desc')->first();
+
+            if($currentCustomerwallet){
+
+                if(isset($currentCustomerwallet->balance)){
+                    $customer_balance = $currentCustomerwallet->balance;
+                }
+
+                if(isset($currentCustomerwallet->balance_fitcash_plus)){
+                    $customer_balance_fitcash_plus = $currentCustomerwallet->balance_fitcash_plus;
+                }
+            }
+
             $wallet = Customer::where('_id',$customer_id)
                 ->first(array('balance'));
 
-            !($wallet && isset($wallet['balance']))
-                ? $wallet['balance'] = 0
+            !($wallet && isset($customer_balance))
+                ? $customer_balance = 0
                 : null;
 
             !($wallet && isset($wallet['balance_fitcash_plus']))
@@ -274,18 +308,18 @@ Class Utilities {
 
             // Process Action on basis of request........
             ($request['type'] == 'CREDIT' || $request['type'] == 'REFUND'|| $request['type'] == 'CASHBACK')
-                ? $request['balance'] = ((int) $wallet['balance'] + abs($request['amount']))
+                ? $request['balance'] = ((int) $customer_balance + abs($request['amount']))
                 : null;
             if($request['type'] == 'DEBIT'){
-                if($wallet['balance'] < $request['amount']){
+                if($customer_balance < $request['amount']){
                     return array('status' => 422,'message' => 'Your wallet balance is low for transaction');
                 }
                 else{
-                    $request['balance'] = ((int) $wallet['balance'] - abs($request['amount']));
+                    $request['balance'] = ((int) $customer_balance - abs($request['amount']));
                 }
             }
 
-            $request['balance_fitcash_plus'] = (int)$customer['balance_fitcash_plus'];
+            $request['balance_fitcash_plus'] = (int)$customer_balance_fitcash_plus;
 
             $customerwallet = new Customerwallet();
             $id = Customerwallet::max('_id');
@@ -318,28 +352,44 @@ Class Utilities {
             Log::info("--request--",$request);
 
             // Get Customer wallet balance........
-            $customer = Customer::find($customer_id);
+            $customer = Customer::find((int)$customer_id);
 
-            (!isset($customer['balance'])) ? $customer['balance'] = 0 : null;
+            $customer_balance = 0;
+            $customer_balance_fitcash_plus = 0;
 
-            (!isset($customer['balance_fitcash_plus'])) ? $customer['balance_fitcash_plus'] = 0: null;
+            $currentCustomerwallet = Customerwallet::where('customer_id',$customer_id)->OrderBy('_id','desc')->first();
+
+            if($currentCustomerwallet){
+
+                if(isset($currentCustomerwallet->balance)){
+                    $customer_balance = $currentCustomerwallet->balance;
+                }
+
+                if(isset($currentCustomerwallet->balance_fitcash_plus)){
+                    $customer_balance_fitcash_plus = $currentCustomerwallet->balance_fitcash_plus;
+                }
+            }
+
+            (!isset($customer_balance)) ? $customer_balance = 0 : null;
+
+            (!isset($customer_balance_fitcash_plus)) ? $customer_balance_fitcash_plus = 0: null;
 
             (!isset($request['amount_fitcash'])) ? $request['amount_fitcash'] = 0 : null;
 
             (!isset($request['amount_fitcash_plus'])) ? $request['amount_fitcash_plus'] = 0: null;
 
-            $request['balance'] = (int)$customer['balance'];
-            $request['balance_fitcash_plus'] = (int)$customer['balance_fitcash_plus'];
+            $request['balance'] = (int)$customer_balance;
+            $request['balance_fitcash_plus'] = (int)$customer_balance_fitcash_plus;
 
             if(in_array($request['type'], ['CASHBACK','FITCASHPLUS','REFERRAL','CREDIT','FITCASH'])){
 
-                $request['balance'] = ((int) $customer['balance'] + (int) $request['amount_fitcash']);
-                $request['balance_fitcash_plus'] = ((int) $customer['balance_fitcash_plus'] + (int) $request['amount_fitcash_plus']);
+                $request['balance'] = ((int) $customer_balance + (int) $request['amount_fitcash']);
+                $request['balance_fitcash_plus'] = ((int) $customer_balance_fitcash_plus + (int) $request['amount_fitcash_plus']);
             }
 
             if($request['type'] == 'REFUND'){
 
-                $request['balance'] = ((int) $customer['balance'] + abs($request['amount']));
+                $request['balance'] = ((int) $customer_balance + abs($request['amount']));
 
                 $request['amount_fitcash'] = $request['amount'];
                 $request['amount_fitcash_plus'] = 0;
@@ -348,16 +398,16 @@ Class Utilities {
 
                     $cashback_detail = $data['cashback_detail'];
 
-                    $request['balance'] = $customer['balance'] + $cashback_detail['only_wallet']['fitcash'];
-                    $request['balance_fitcash_plus'] = $customer['balance_fitcash_plus'] + $cashback_detail['only_wallet']['fitcash_plus'];
+                    $request['balance'] = $customer_balance + $cashback_detail['only_wallet']['fitcash'];
+                    $request['balance_fitcash_plus'] = $customer_balance_fitcash_plus + $cashback_detail['only_wallet']['fitcash_plus'];
 
                     $request['amount_fitcash'] = $cashback_detail['only_wallet']['fitcash'];
                     $request['amount_fitcash_plus'] = $cashback_detail['only_wallet']['fitcash_plus'];
 
                     if(isset($data['cashback']) && $data['cashback'] == true){
 
-                        $request['balance'] = $customer['balance'] + $cashback_detail['discount_and_wallet']['fitcash'];
-                        $request['balance_fitcash_plus'] = $customer['balance_fitcash_plus'] + $cashback_detail['discount_and_wallet']['fitcash_plus'];
+                        $request['balance'] = $customer_balance + $cashback_detail['discount_and_wallet']['fitcash'];
+                        $request['balance_fitcash_plus'] = $customer_balance_fitcash_plus + $cashback_detail['discount_and_wallet']['fitcash_plus'];
 
                         $request['amount_fitcash'] = $cashback_detail['discount_and_wallet']['fitcash'];
                         $request['amount_fitcash_plus'] = $cashback_detail['discount_and_wallet']['fitcash_plus'];
@@ -369,22 +419,22 @@ Class Utilities {
      
             if($request['type'] == 'DEBIT'){
 
-                if(($customer['balance']+$customer['balance_fitcash_plus']) < $request['amount']){
-                    return array('status' => 422,'message' => 'Your wallet balance is low for transaction');
+                if(($customer_balance+$customer_balance_fitcash_plus) < $request['amount']){
+                    return array('status' => 423,'message' => 'Your wallet balance is low for transaction');
                 }
 
                 $cashback_detail = $data['cashback_detail'];
 
-                $request['balance'] = $customer['balance'] - $cashback_detail['only_wallet']['fitcash'];
-                $request['balance_fitcash_plus'] = $customer['balance_fitcash_plus'] - $cashback_detail['only_wallet']['fitcash_plus'];
+                $request['balance'] = $customer_balance - $cashback_detail['only_wallet']['fitcash'];
+                $request['balance_fitcash_plus'] = $customer_balance_fitcash_plus - $cashback_detail['only_wallet']['fitcash_plus'];
 
                 $request['amount_fitcash'] = $cashback_detail['only_wallet']['fitcash'];
                 $request['amount_fitcash_plus'] = $cashback_detail['only_wallet']['fitcash_plus'];
 
                 if(isset($data['cashback']) && $data['cashback'] == true){
 
-                    $request['balance'] = $customer['balance'] - $cashback_detail['discount_and_wallet']['fitcash'];
-                    $request['balance_fitcash_plus'] = $customer['balance_fitcash_plus'] - $cashback_detail['discount_and_wallet']['fitcash_plus'];
+                    $request['balance'] = $customer_balance - $cashback_detail['discount_and_wallet']['fitcash'];
+                    $request['balance_fitcash_plus'] = $customer_balance_fitcash_plus - $cashback_detail['discount_and_wallet']['fitcash_plus'];
 
                     $request['amount_fitcash'] = $cashback_detail['discount_and_wallet']['fitcash'];
                     $request['amount_fitcash_plus'] = $cashback_detail['discount_and_wallet']['fitcash_plus'];
