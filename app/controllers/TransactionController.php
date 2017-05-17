@@ -762,7 +762,7 @@ class TransactionController extends \BaseController {
 
         }
 
-        return $this->getCashbackRewardWalletold($data,$order);
+        return $this->getCashbackRewardWalletOld($data,$order);
 
     }
 
