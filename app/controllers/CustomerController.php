@@ -484,6 +484,7 @@ class CustomerController extends \BaseController {
 						$customer->identity = $data['identity'];
 						$customer->account_link = $account_link;
 						$customer->status = "1";
+						$customer->demonetisation = time();
 						$customer->save();
 
 						$customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email'],'password'=>$data['password']);
@@ -835,6 +836,7 @@ class CustomerController extends \BaseController {
 			}
 
 			$customer->status = "1";
+			$customer->demonetisation = time();
 			$customer->save();
 
 			$response = array('status' => 200,'customer'=>$customer);
@@ -2167,6 +2169,7 @@ class CustomerController extends \BaseController {
 			$customer->account_link = array('email'=>1,'google'=>0,'facebook'=>0,'twitter'=>0);
 			$customer->status = "1";
 			$customer->ishulluser = 1;
+			$customer->demonetisation = time();
 			$customer->save();
 
 			return $inserted_id;
@@ -2224,7 +2227,7 @@ class CustomerController extends \BaseController {
 
 		$customer_info = new CustomerInfo();
 
-		$customer_id = (isset($data['customer_id']) && $data['customer_id'] != "") ? $data['customer_id'] : $this->autoRegisterCustomer($data);
+		$customer_id = (isset($data['customer_id']) && $data['customer_id'] != "") ? $data['customer_id'] : autoRegisterCustomer($data);
 
 		$data['customer_id'] = (int)$customer_id;
 
@@ -3417,6 +3420,7 @@ class CustomerController extends \BaseController {
 		}else{
 			$otp = genericGenerateOtp();
 			$customer->lastOtp = $otp;
+			$customer->demonetisation = time();
 			$customer->save();
 			$customerdata = array(
                 'customer_name' => $customer->name,
