@@ -1609,7 +1609,7 @@ Class Utilities {
                     $request['type'] = "CREDIT";
                     $request['description'] = "Added Fitcash Plus Rs ".$current_wallet_balance;
 
-                    $this->customerWalletTransaction($request);    
+                    $this->walletTransaction($request);    
                 }
 
                 $customer->update(['demonetisation'=>time()]);
