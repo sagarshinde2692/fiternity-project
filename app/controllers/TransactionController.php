@@ -769,6 +769,8 @@ class TransactionController extends \BaseController {
 
     public function getCashbackRewardWalletNew($data,$order){
 
+        Log::info('new');
+
         $jwt_token = Request::header('Authorization');
 
         $customer_id = $data['customer_id'];
@@ -901,6 +903,8 @@ class TransactionController extends \BaseController {
     }
 
     public function getCashbackRewardWalletOld($data,$order){
+
+        Log::info('old');
 
         $jwt_token = Request::header('Authorization');
 
