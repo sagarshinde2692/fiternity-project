@@ -1210,7 +1210,8 @@ Class Utilities {
                             "customer_id" => $data["customer_id"],
                             "amount" => 250,
                             "action" => "add_fitcash_plus",
-                            "description" => "Added Fitcash Plus Rs 250 on App Download"
+                            "description" => "Added Fitcash Plus Rs 250 on App Download",
+                            "validity"=>strtotime("+ 180 days")
                         ];
 
                         $this->addWallet($addWalletData);

@@ -156,6 +156,8 @@ class OrderController extends \BaseController {
         if($data['status'] == 'success' && $hash_verified){
             // Give Rewards / Cashback to customer based on selection, on purchase success......
 
+            $this->utilities->demonetisation($order);
+
             $this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
 
             if(isset($order->reward_ids) && !empty($order->reward_ids)){
@@ -434,7 +436,7 @@ class OrderController extends \BaseController {
                 $order->unset('redundant_order');
             }
 
-            $this->utilities->demonetisation($order);
+            
 
             $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
             return Response::json($resp);

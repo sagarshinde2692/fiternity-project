@@ -172,17 +172,18 @@ Class CustomerReward {
                 $walletData = array(
                     "order_id"=>$order['_id'],
                     "customer_id"=> intval($order['customer_id']),
-                    "amount"=> intval($order['amount']),
-                    "amount_fitcash" => intval($order['amount']),
+                    "amount"=> intval($order['amount'] * 20 / 100),
+                    "amount_fitcash" => intval($order['amount'] * 20 / 100),
                     "amount_fitcash_plus" => 0,
                     "type"=>'CASHBACK',
                     'entry'=>'credit',
-                    "description"=>'CASHBACK ON Paid Booktrial amount - '.intval($order['amount'])
+                    "description"=>'CASHBACK ON Paid Booktrial amount - '.intval($order['amount']),
+                    "validity"=> strtotime("+ 60 days")
                 );
 
                 $utilities->walletTransaction($walletData,$order->toArray());
 
-            }elseif(isset($order['type']) && $order['type'] == 'events' && isset($order['customer_id']) && isset($order['amount']) && isset($order['ticket_id']) && in_array(intval($order['ticket_id']), $valid_ticket_ids )){
+            }/*elseif(isset($order['type']) && $order['type'] == 'events' && isset($order['customer_id']) && isset($order['amount']) && isset($order['ticket_id']) && in_array(intval($order['ticket_id']), $valid_ticket_ids )){
 
                 $walletData = array(
                     "order_id"=>$order['_id'],
@@ -196,7 +197,7 @@ Class CustomerReward {
                 );
 
                 $utilities->walletTransaction($walletData,$order->toArray());
-            }
+            }*/
             
         }
         catch (Exception $e) {

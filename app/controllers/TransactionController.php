@@ -1971,6 +1971,7 @@ class TransactionController extends \BaseController {
                 $req['type'] = "FITCASHPLUS";
                 $req['amount_fitcash_plus'] = $data['amount'];
                 $req['description'] = "1 Added Fitcash Plus Rs ".$amount;
+                $req["validity"] = strtotime("+ 60 days");
 
                 $walletTransactionResponse = $this->utilities->walletTransaction($req);
 

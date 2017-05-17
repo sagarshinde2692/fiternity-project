@@ -1466,6 +1466,8 @@ class SchedulebooktrialsController extends \BaseController {
                 array_set($data, 'secondary_payment_mode', 'payment_gateway_membership');
             }
 
+            $this->utilities->demonetisation($order);
+
             $this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
 
             if(isset($order->reward_ids) && !empty($order->reward_ids)){
@@ -1572,9 +1574,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             if(isset($order->redundant_order)){
                 $order->unset('redundant_order');
-            }
-
-            $this->utilities->demonetisation($order);
+            }  
 
             $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
             return Response::json($resp);
@@ -2114,6 +2114,8 @@ class SchedulebooktrialsController extends \BaseController {
 
             $booktrialdata['give_fitcash_plus'] = $give_fitcash_plus;
 
+            $this->utilities->demonetisation($order);
+
             $this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
 
             if(isset($order->booktrial_id)){
@@ -2200,8 +2202,7 @@ class SchedulebooktrialsController extends \BaseController {
             $this->attachTrialCampaignToCustomer($customer_id,$campaign,$booktrialid);
         }*/
 
-        $this->utilities->demonetisation($order);
-
+        
         Log::info('Customer Book Trial : '.json_encode(array('book_trial_details' => Booktrial::findOrFail($booktrialid))));
 
         $resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'message' => "Book a Trial", 'code' => $code);
