@@ -2459,22 +2459,42 @@ class CustomerController extends \BaseController {
 		$decoded = $this->customerTokenDecode($jwt_token);
 		$customer_id = intval($decoded->customer->_id);
 
-		$customer = Customer::find($customer_id);
-		$balance = (isset($customer['balance']) && $customer['balance'] != "") ? (int) $customer['balance'] : 0 ;
-		$balance_fitcash_plus = (isset($customer['balance_fitcash_plus']) && $customer['balance_fitcash_plus'] != "") ? (int) $customer['balance_fitcash_plus'] : 0 ;
+		$customer = Customer::find((int)$customer_id);
 
-		$customer_balance = $balance + $balance_fitcash_plus;
+		if(isset($customer->demonetisation)){
 
-		// balance and transaction_allowed are same at this time........
-		return 	Response::json(
-					array(
-						'status' => 200,
-						'balance' => $customer_balance,
-						'transaction_allowed' => $customer_balance,
-						'fitcash' => $balance,
-						'fitcash_plus' => $balance_fitcash_plus
-					),200
-				);
+			$current_wallet_balance = \Wallet::active()->where('customer_id',$customer_id)->where('balance','>',0)->sum('balance');
+
+			return 	Response::json(
+				array(
+					'status' => 200,
+					'balance' => $current_wallet_balance,
+					'transaction_allowed' => $current_wallet_balance,
+					'fitcash' => 0,
+					'fitcash_plus' => $current_wallet_balance
+				),200
+			);
+
+		}else{
+
+			$balance = (isset($customer['balance']) && $customer['balance'] != "") ? (int) $customer['balance'] : 0 ;
+			$balance_fitcash_plus = (isset($customer['balance_fitcash_plus']) && $customer['balance_fitcash_plus'] != "") ? (int) $customer['balance_fitcash_plus'] : 0 ;
+
+			$customer_balance = $balance + $balance_fitcash_plus;
+
+			// balance and transaction_allowed are same at this time........
+			return 	Response::json(
+				array(
+					'status' => 200,
+					'balance' => $customer_balance,
+					'transaction_allowed' => $customer_balance,
+					'fitcash' => $balance,
+					'fitcash_plus' => $balance_fitcash_plus
+				),200
+			);
+
+		}
+		
 	}
 	
 	public function getExistingTrialWithFinder(){
