@@ -619,10 +619,14 @@ Class CustomerReward {
 
         $wallet_amount = round($amount * $setAlgo['fitcash'] / 100);
 
-        $amount_discounted = round($amount * $setAlgo['discount'] / 100);   
+        $amount_discounted = round($amount * $setAlgo['discount'] / 100); 
 
-        $wallet_algo = $amount;//round(($amount * $commision / 100) * ($wallet_percentage / 100));
-
+        if($amount >= 500){
+            $wallet_algo = $amount;
+        }else{
+            $wallet_algo = round(($amount * $commision / 100) * ($wallet_percentage / 100));
+        }
+        
         if( isset($customer_wallet->balance_fitcash_plus) && $customer_wallet->balance_fitcash_plus != ''){
             $wallet_fitcash_plus = (int)$customer_wallet->balance_fitcash_plus;
         }
