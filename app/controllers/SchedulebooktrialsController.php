@@ -2096,7 +2096,7 @@ class SchedulebooktrialsController extends \BaseController {
                 }
             }
 
-            if($give_fitcash_plus && $type == "workout-session"){
+            /*if($give_fitcash_plus && $type == "workout-session"){
 
                 $walletData = array(
                     "customer_id"=> $customer_id,
@@ -2110,7 +2110,7 @@ class SchedulebooktrialsController extends \BaseController {
                 );
 
                 $this->utilities->walletTransaction($walletData);
-            }
+            }*/
 
             $booktrialdata['give_fitcash_plus'] = $give_fitcash_plus;
 
@@ -4958,7 +4958,7 @@ class SchedulebooktrialsController extends \BaseController {
 
 
         //Give 50% more cash back to booktrial customer on invites
-        $cashback_amount = 0;
+        /*$cashback_amount = 0;
         $customer_balance = 0;
         if($BooktrialData){
 
@@ -4982,19 +4982,8 @@ class SchedulebooktrialsController extends \BaseController {
                 );
 
                 $this->utilities->walletTransaction($walletData);
-
-                // return $walletData;
-
-               /* $wallet               	=   new \CustomerWallet($walletData);
-                $last_insertion_id      =   \CustomerWallet::max('_id');
-                $last_insertion_id      =   isset($last_insertion_id) ? $last_insertion_id :0;
-                $wallet->_id          	=   ++ $last_insertion_id;
-                $wallet->save();
-
-                $customer_update 	=	\Customer::where('_id', $customer_id)->update(['balance' => intval($customer_balance)]);*/
-
             }
-        }
+        }*/
 
         return Response::json(
             array(
