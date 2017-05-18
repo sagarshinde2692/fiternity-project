@@ -178,7 +178,7 @@ Class CustomerReward {
                     "type"=>'CASHBACK',
                     'entry'=>'credit',
                     "description"=>'CASHBACK ON Paid Booktrial amount - '.intval($order['amount_customer'] * 20 / 100),
-                    "validity"=> strtotime("+ 60 days")
+                    "validity"=>time()+(86400*60)
                 );
 
                 $utilities->walletTransaction($walletData,$order->toArray());
