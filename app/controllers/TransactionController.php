@@ -569,7 +569,7 @@ class TransactionController extends \BaseController {
                 }
 
                 //print_pretty($emailData);exit;
-                if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
+                if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin" && $order->type != 'diet_plan'){
                     if(isset($data["send_communication_customer"]) && $data["send_communication_customer"] != ""){
 
                         $sndPgMail  =   $this->customermailer->sendPgOrderMail($emailData);
@@ -581,7 +581,7 @@ class TransactionController extends \BaseController {
             }
 
             //no email to Healthy Snacks Beverages and Healthy Tiffins
-            if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" ){
+            if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" && $order->type != 'diet_plan'){
                 
                 if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
                     if(isset($data["send_communication_vendor"]) && $data["send_communication_vendor"] != ""){
@@ -609,7 +609,7 @@ class TransactionController extends \BaseController {
                 }
             }
             
-            if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
+            if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin" && $order->type != 'diet_plan'){
                 if(isset($data["send_communication_customer"]) && $data["send_communication_customer"] != ""){
 
                     $sndPgSms   =   $this->customersms->sendPgOrderSms($emailData);
@@ -621,7 +621,7 @@ class TransactionController extends \BaseController {
         }
 
         //no sms to Healthy Snacks Beverages and Healthy Tiffins
-        if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" ){
+        if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" && $order->type != 'diet_plan'){
             
             if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
                 if(isset($data["send_communication_vendor"]) && $data["send_communication_vendor"] != ""){
@@ -635,7 +635,7 @@ class TransactionController extends \BaseController {
             
         }
 
-        if(isset($order->preferred_starting_date) && $order->preferred_starting_date != "" && !in_array($finder->category_id, $abundant_category) && $order->type == "memberships" && !isset($order->customer_sms_after3days) && !isset($order->customer_email_after10days)){
+        if(isset($order->preferred_starting_date) && $order->preferred_starting_date != "" && !in_array($finder->category_id, $abundant_category) && $order->type == "memberships" && !isset($order->customer_sms_after3days) && !isset($order->customer_email_after10days) && $order->type != 'diet_plan'){
 
             $preferred_starting_date = $order->preferred_starting_date;
             $after3days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 3);
