@@ -1297,7 +1297,7 @@ Class Utilities {
 
     public function walletTransactionNew($request){
 
-        $limit = 2500;
+        $wallet_limit = 2500;
 
         $customer_id = (int)$request['customer_id'];
 
@@ -1433,6 +1433,22 @@ Class Utilities {
             }
 
             //echo"<pre>";print_r($request);exit;
+
+            $current_wallet_balance = \Wallet::active()->where('customer_id',$customer_id)->where('balance','>',0)->sum('balance');
+
+            $customer = Customer::find($customer_id);
+
+            /*if(!isset($customer->demonetisation_current_wallet_balance) && $current_wallet_balance >= $wallet_limit){
+                return ['status' => 400,'message' => 'Wallet is overflowing Rs '.$wallet_limit];
+            }*/
+
+            if($current_wallet_balance >= $wallet_limit){
+                return ['status' => 400,'message' => 'Wallet is overflowing Rs '.$wallet_limit];
+            }
+
+            if($current_wallet_balance < $wallet_limit && ($current_wallet_balance + (int)$request['amount']) > $wallet_limit){
+                $request['amount'] = intval($wallet_limit - $current_wallet_balance);
+            }
 
             $wallet = new Wallet();
             $wallet->_id = (Wallet::max('_id')) ? (int) Wallet::max('_id') + 1 : 1;
@@ -1623,6 +1639,7 @@ Class Utilities {
 
     public function demonetisation($order){
 
+        $wallet_limit = 2500;
         $cap = 2000;
         $wallet = 0;
         $wallet_fitcash_plus = 0;
@@ -1666,6 +1683,10 @@ Class Utilities {
                     $request['description'] = "Demonetisation Added Fitcash Plus Rs ".$current_wallet_balance;
 
                     $this->walletTransactionNew($request);    
+                }
+
+                if($current_wallet_balance > $wallet_limit){
+                    $customer->update(['demonetisation_current_wallet_balance'=>$current_wallet_balance]);
                 }
 
                 $customer->update(['demonetisation'=>time()]);
