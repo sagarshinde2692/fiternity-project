@@ -1537,6 +1537,7 @@ Class Utilities {
 
                 $allWalletsValidityZero = [];
                 $allWalletsValidityOther = [];
+                $allWalletsValidityDate = [];
 
                 foreach ($allWallets as $key => $value){
 
@@ -1544,11 +1545,15 @@ Class Utilities {
                         $allWalletsValidityZero[] = $value;
                     }else{
                         $allWalletsValidityOther[] = $value;
-                        $allWalletsValidityDate = $value['validity'];
+                        $allWalletsValidityDate[] = $value['validity'];
                     }
                 }
 
                 $walletData = $allWalletsValidityZero;
+
+                Log::info('----allWalletsValidityZero----',$allWalletsValidityZero);
+                Log::info('----allWalletsValidityOther----',$allWalletsValidityOther);
+                Log::info('----allWalletsValidityDate----',$allWalletsValidityDate);
 
                 if(count($allWalletsValidityOther) > 0){
                     array_multisort($allWalletsValidityDate, SORT_ASC, $allWalletsValidityOther);

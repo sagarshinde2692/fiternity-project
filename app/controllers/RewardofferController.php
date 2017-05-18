@@ -111,6 +111,8 @@ class RewardofferController extends BaseController {
             $customerReward     =   new CustomerReward();
             $calculation        =   $customerReward->purchaseGame($amount,$finder_id);
 
+            $calculation['algo']['cashback'] = (int)$calculation['algo']['cashback'];
+
             if(isset($data['order_id']) && $data['order_id'] != ""){
 
                 $order_id = (int) $data['order_id'];
@@ -349,6 +351,8 @@ class RewardofferController extends BaseController {
             }
 
         }
+
+        $calculation['algo']['cashback'] = (int)$calculation['algo']['cashback'];
 
         $cashback  = array(
             // 'title'=>$calculation['algo']['cashback'].'% Discount on Purchase',
