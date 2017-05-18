@@ -1309,6 +1309,8 @@ Class Utilities {
             $customer_id = (int)$decoded->customer->_id;
         }
 
+        $customer = Customer::find($customer_id);
+
         $validator = Validator::make($request, Wallet::$rules);
 
         if ($validator->fails()) {
@@ -1371,17 +1373,20 @@ Class Utilities {
 
             $current_wallet_balance = \Wallet::active()->where('customer_id',$customer_id)->where('balance','>',0)->sum('balance');
 
-            $customer = Customer::find($customer_id);
-
             if($type == 'REFUND'){
 
-                if(!isset($customer->demonetisation_current_wallet_balance) && $current_wallet_balance >= $wallet_limit){
+                if(isset($customer->current_wallet_balance) && $customer->current_wallet_balance > $wallet_limit){
+
+                    $wallet_limit = $customer->current_wallet_balance;
+                }
+
+                if($current_wallet_balance >= $wallet_limit){
                     return ['status' => 400,'message' => 'Wallet is overflowing Rs '.$wallet_limit];
                 }
 
-                /*if($current_wallet_balance < $wallet_limit && ($current_wallet_balance + (int)$request['amount']) > $wallet_limit){
-                    $request_amount = $request['amount'] = (int)($wallet_limit - $current_wallet_balance);
-                }*/
+                if($current_wallet_balance < $wallet_limit && ($current_wallet_balance + (int)$request['amount']) > $wallet_limit){
+                    $request_amount_balance = $request_amount = $request['amount'] = (int)($wallet_limit - $current_wallet_balance);
+                }
 
                 $order = \Order::where('status','!=','1')->find((int)$request['order_id'])->toArray();
 
@@ -1390,9 +1395,18 @@ Class Utilities {
 
                 $group = "";
 
+
                 foreach ($wallet_transaction as $key => $value) {
 
                     $value_amount = $value['amount'];
+
+                    if($request_amount_balance <= 0){
+                        break;
+                    }
+
+                    if($request_amount_balance < $value_amount){
+                        $value_amount = $request_amount_balance;
+                    }
 
                     $wallet = Wallet::find((int)$value['wallet_id']);
                     $wallet->used = intval($wallet->used - $value_amount);
@@ -1438,14 +1452,16 @@ Class Utilities {
                     }
 
                     $walletTransaction->update(['group'=>$group]);
-                   
+
+                    $request_amount_balance = (int)($request_amount_balance - $value_amount);
+   
                 }
 
                 return ['status' => 200,'message' => 'Refunded in wallet'];
 
             }
 
-            /*if(!isset($customer->demonetisation_current_wallet_balance) && $current_wallet_balance >= $wallet_limit){
+            /*if(!isset($customer->current_wallet_balance) && $current_wallet_balance >= $wallet_limit){
                 return ['status' => 400,'message' => 'Wallet is overflowing Rs '.$wallet_limit];
             }*/
 
@@ -1628,6 +1644,10 @@ Class Utilities {
                         
                     }
 
+                    if(isset($customer->demonetisation) && isset($customer->current_wallet_balance) && $customer->current_wallet_balance > $wallet_limit){
+                        $customer->update(['current_wallet_balance'=> $current_wallet_balance - $amount,'current_wallet_balance_transaction_date'=>time()]);
+                    }
+
                     if(isset($request['order_id']) && $request['order_id'] != ""){
 
                         return ['status' => 200,'message' => 'Success Updated Wallet','wallet_transaction_debit'=>['amount'=>$amount,'wallet_transaction'=>$walletTransactionDebit]];
@@ -1684,7 +1704,7 @@ Class Utilities {
                     }
                 }
 
-                $current_wallet_balance = $wallet + $wallet_fitcash_plus;
+                $current_wallet_balance = (int)($wallet + $wallet_fitcash_plus);
 
                 if($current_wallet_balance > 0){
 
@@ -1698,7 +1718,7 @@ Class Utilities {
                 }
 
                 if($current_wallet_balance > $wallet_limit){
-                    $customer->update(['demonetisation_current_wallet_balance'=>$current_wallet_balance]);
+                    $customer->update(['current_wallet_balance'=>$current_wallet_balance]);
                 }
 
                 $customer->update(['demonetisation'=>time()]);
