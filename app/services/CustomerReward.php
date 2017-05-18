@@ -167,17 +167,17 @@ Class CustomerReward {
                 $order['order_id'] = $order['_id'];
                 $this->createMyReward($order);
 
-            }elseif(isset($order['type']) && in_array(trim($order['type']),['booktrials','healthytiffintrail']) && isset($order['customer_id']) && isset($order['amount']) ){
+            }elseif(isset($order['type']) && in_array(trim($order['type']),['booktrials','healthytiffintrail']) && isset($order['customer_id']) && isset($order['amount_customer']) ){
 
                 $walletData = array(
                     "order_id"=>$order['_id'],
                     "customer_id"=> intval($order['customer_id']),
-                    "amount"=> intval($order['amount'] * 20 / 100),
-                    "amount_fitcash" => intval($order['amount'] * 20 / 100),
-                    "amount_fitcash_plus" => 0,
+                    "amount"=> intval($order['amount_customer'] * 20 / 100),
+                    "amount_fitcash" => 0,
+                    "amount_fitcash_plus" => intval($order['amount_customer'] * 20 / 100),
                     "type"=>'CASHBACK',
                     'entry'=>'credit',
-                    "description"=>'CASHBACK ON Paid Booktrial amount - '.intval($order['amount']),
+                    "description"=>'CASHBACK ON Paid Booktrial amount - '.intval($order['amount_customer'] * 20 / 100),
                     "validity"=> strtotime("+ 60 days")
                 );
 
