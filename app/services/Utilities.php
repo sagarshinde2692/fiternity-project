@@ -1683,6 +1683,8 @@ Class Utilities {
 
         $customer = \Customer::find($customer_id);
 
+        $order = $order->toArray();
+
         if(!isset($customer->demonetisation) && isset($order['wallet_amount']) && $order['amount_finder'] >= 500){
 
             $customer_wallet = \Customerwallet::where('customer_id',(int) $customer_id)->orderBy('_id','desc')->first();
@@ -1712,12 +1714,53 @@ Class Utilities {
                 if($current_wallet_balance > 0){
 
                     $request['customer_id'] = $customer_id;
+                    $request['amount'] = $order['cashback_detail']['current_wallet_balance'];
+                    $request['entry'] = "credit";
+                    $request['type'] = "CREDIT";
+                    $request['order_id'] = $order['_id'];
+                    $request['description'] = "Demonetisation Added Fitcash Plus Rs for Order ID: ".$order['_id'];
+
+                    $this->walletTransactionNew($request);
+
+                    $request['customer_id'] = $customer_id;
+                    $request['amount'] = $order['cashback_detail']['current_wallet_balance'];
+                    $request['entry'] = "debit";
+                    $request['type'] = "DEBIT";
+                    $request['order_id'] = $order['_id'];
+                    $request['description'] = "Paid for Order ID: ".$order['_id'];
+
+                    $this->walletTransactionNew($request);
+
+                    $request['customer_id'] = $customer_id;
                     $request['amount'] = $current_wallet_balance;
                     $request['entry'] = "credit";
                     $request['type'] = "CREDIT";
-                    $request['description'] = "Demonetisation Added Fitcash Plus Rs ".$current_wallet_balance;
+                    $request['order_id'] = $order['_id'];
+                    $request['description'] = "Demonetisation Added Fitcash Plus Rs for Order ID: ".$order['_id'];
 
-                    $this->walletTransactionNew($request);  
+                    $this->walletTransactionNew($request);
+
+                }else{
+
+                    $request['customer_id'] = $customer_id;
+                    $request['amount'] = $order['cashback_detail']['current_wallet_balance'];
+                    $request['entry'] = "credit";
+                    $request['type'] = "CREDIT";
+                    $request['order_id'] = $order['_id'];
+                    $request['description'] = "Demonetisation Added Fitcash Plus Rs for Order ID: ".$order['_id'];
+
+                    $this->walletTransactionNew($request);
+
+                    $request['customer_id'] = $customer_id;
+                    $request['amount'] = $order['cashback_detail']['current_wallet_balance'];
+                    $request['entry'] = "debit";
+                    $request['type'] = "DEBIT";
+                    $request['order_id'] = $order['_id'];
+                    $request['description'] = "Paid for Order ID: ".$order['_id'];
+
+                    $this->walletTransactionNew($request);
+
+
                 }
 
                 if($current_wallet_balance > $wallet_limit){
