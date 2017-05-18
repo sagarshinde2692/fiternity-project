@@ -1309,6 +1309,9 @@ Class Utilities {
             $customer_id = (int)$decoded->customer->_id;
         }
 
+
+        $request['customer_id'] = $customer_id;
+
         $customer = Customer::find($customer_id);
 
         $validator = Validator::make($request, Wallet::$rules);
@@ -1690,7 +1693,7 @@ Class Utilities {
                     $wallet_fitcash_plus = (int)$customer_wallet->balance_fitcash_plus;
                 }
 
-                if($cap > $order['wallet_amount']){
+                if($cap >= $order['wallet_amount']){
                     $cap = $cap - $order['wallet_amount'];
                 }
 
@@ -1714,7 +1717,7 @@ Class Utilities {
                     $request['type'] = "CREDIT";
                     $request['description'] = "Demonetisation Added Fitcash Plus Rs ".$current_wallet_balance;
 
-                    $this->walletTransactionNew($request);    
+                    $this->walletTransactionNew($request);  
                 }
 
                 if($current_wallet_balance > $wallet_limit){
