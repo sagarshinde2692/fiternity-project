@@ -698,7 +698,6 @@ class CustomerController extends \BaseController {
 
 			}
 
-
 		}else{
 
 			if($customer["balance"] > 0 || $customer["balance_fitcash_plus"] > 0){
