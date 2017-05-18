@@ -1369,7 +1369,19 @@ Class Utilities {
 
         if($entry == 'credit'){
 
+            $current_wallet_balance = \Wallet::active()->where('customer_id',$customer_id)->where('balance','>',0)->sum('balance');
+
+            $customer = Customer::find($customer_id);
+
             if($type == 'REFUND'){
+
+                if(!isset($customer->demonetisation_current_wallet_balance) && $current_wallet_balance >= $wallet_limit){
+                    return ['status' => 400,'message' => 'Wallet is overflowing Rs '.$wallet_limit];
+                }
+
+                /*if($current_wallet_balance < $wallet_limit && ($current_wallet_balance + (int)$request['amount']) > $wallet_limit){
+                    $request_amount = $request['amount'] = (int)($wallet_limit - $current_wallet_balance);
+                }*/
 
                 $order = \Order::where('status','!=','1')->find((int)$request['order_id'])->toArray();
 
@@ -1380,9 +1392,11 @@ Class Utilities {
 
                 foreach ($wallet_transaction as $key => $value) {
 
+                    $value_amount = $value['amount'];
+
                     $wallet = Wallet::find((int)$value['wallet_id']);
-                    $wallet->used = intval($wallet->used - $value['amount']);
-                    $wallet->balance = intval($wallet->balance + $value['amount']);
+                    $wallet->used = intval($wallet->used - $value_amount);
+                    $wallet->balance = intval($wallet->balance + $value_amount);
 
                     $wallet->update();
 
@@ -1390,20 +1404,21 @@ Class Utilities {
                     $data['entry'] = $entry;
                     $data['type'] = $type;
                     $data['customer_id'] = $customer_id;
-                    $data['amount'] = intval($value['amount']);
+                    $data['amount'] = intval($value_amount);
+                    $data['description'] = "Refund";
 
                     if(isset($request['order_id']) && $request['order_id'] != ""){
 
                         $data['order_id'] = (int)$request['order_id'];
 
-                        $data['description'] = "Refund of Rs ".$value['amount']." for order ".$request['order_id'];
+                        $data['description'] = "Refund for order ".$request['order_id'];
                     }
 
                     if(isset($request['trial_id']) && $request['trial_id'] != ""){
 
                         $data['trial_id'] = (int)$request['trial_id'];
 
-                        $data['description'] = "Refund of Rs ".$value['amount']." for trial ".$request['trial_id'];
+                        $data['description'] = "Refund for trial ".$request['trial_id'];
                     }
 
                     $data['validity'] = 0;
@@ -1411,8 +1426,6 @@ Class Utilities {
                     if(isset($value['coupon']) && $value['coupon'] != ""){
                         $data['coupon'] = $value['coupon'];
                     }
-
-                    $data['description'] = "Refund of Rs ".$value['amount'];
 
                     if(isset($request['description'])){
                         $data['description'] = $request['description'];
@@ -1432,12 +1445,6 @@ Class Utilities {
 
             }
 
-            //echo"<pre>";print_r($request);exit;
-
-            $current_wallet_balance = \Wallet::active()->where('customer_id',$customer_id)->where('balance','>',0)->sum('balance');
-
-            $customer = Customer::find($customer_id);
-
             /*if(!isset($customer->demonetisation_current_wallet_balance) && $current_wallet_balance >= $wallet_limit){
                 return ['status' => 400,'message' => 'Wallet is overflowing Rs '.$wallet_limit];
             }*/
@@ -1447,7 +1454,7 @@ Class Utilities {
             }
 
             if($current_wallet_balance < $wallet_limit && ($current_wallet_balance + (int)$request['amount']) > $wallet_limit){
-                $request['amount'] = intval($wallet_limit - $current_wallet_balance);
+                $request['amount'] = (int)($wallet_limit - $current_wallet_balance);
             }
 
             $wallet = new Wallet();
