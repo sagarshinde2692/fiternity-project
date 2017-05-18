@@ -265,6 +265,7 @@ Class Utilities {
             $customerwallet->balance = (int) $request['balance'];
             $customerwallet->balance_fitcash_plus = (int) $request['balance_fitcash_plus'];
             isset($request['description']) ? $customerwallet->description = $request['description'] : null;
+            isset($request['validity']) ? $customerwallet->validity = $request['validity'] : null;
             $customerwallet->save();
 
             // Update customer wallet balance........
@@ -335,6 +336,7 @@ Class Utilities {
             $customerwallet->balance = (int) $request['balance'];
             $customerwallet->balance_fitcash_plus = (int) $request['balance_fitcash_plus'];
             isset($request['description']) ? $customerwallet->description = $request['description'] : null;
+            isset($request['validity']) ? $customerwallet->validity = $request['validity'] : null;
             $customerwallet->save();
 
             // Update customer wallet balance........
@@ -455,6 +457,7 @@ Class Utilities {
             $customerwallet->amount_fitcash_plus = (int)$request['amount_fitcash_plus'];
             $customerwallet->balance_fitcash_plus = (int) $request['balance_fitcash_plus'];
             isset($request['description']) ? $customerwallet->description = $request['description'] : null;
+            isset($request['validity']) ? $customerwallet->validity = $request['validity'] : null;
             $customerwallet->save();
             
             //update customer balance and balance_fitcash_plus

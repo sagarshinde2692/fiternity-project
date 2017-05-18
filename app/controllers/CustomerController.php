@@ -2261,7 +2261,7 @@ class CustomerController extends \BaseController {
 				foreach ($walletTransaction as $group => $transaction) {
 
 					$amount = 0;
-					$validity = "";
+					$validity = null;
 					$description = "";
 					$date = "";
 					$entry = "";
@@ -2272,7 +2272,7 @@ class CustomerController extends \BaseController {
 
 						$amount += $value['amount'];
 
-						if(isset($value['validity']) && $validity != ""){
+						if(isset($value['validity']) && $validity != null){
 							$validity = date('d-m-Y',$value['validity']);
 						}
 
@@ -2311,7 +2311,8 @@ class CustomerController extends \BaseController {
 						'description'=>$description,
 						'updated_at'=>$updated_at,
 						'created_at'=>$created_at,
-						'debit_credit'=>$entry
+						'debit_credit'=>$entry,
+						'validity'=>$validity
 					];
 
 					$count++;
@@ -2387,6 +2388,10 @@ class CustomerController extends \BaseController {
 
 					if(in_array($value["type"],$debit_array)){
 						$wallet[$key]["debit_credit"] = "credit";
+					}
+
+					if(isset($value['validity']) && $value['validity'] != "" && $value['validity'] != null){
+						$wallet[$key]['description'] = $wallet[$key]['description']." Expires on : ".date('d-m-Y',$value['validity']);
 					}
 
 					if(isset($wallet[$key+1])){
