@@ -4958,9 +4958,9 @@ class SchedulebooktrialsController extends \BaseController {
 
 
         //Give 50% more cash back to booktrial customer on invites
-        /*$cashback_amount = 0;
+        $cashback_amount = 0;
         $customer_balance = 0;
-        if($BooktrialData){
+        /*if($BooktrialData){
 
             $booktrial_id   =   intval($req['booktrial_id']);
             $order          =   Order::where('booktrial_id', $booktrial_id)->where('status','1')->first();
