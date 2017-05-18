@@ -678,21 +678,47 @@ class CustomerController extends \BaseController {
 	}
 
 	public function checkIfpopPup($customer){
+
 		$resp = array();
-		if($customer["balance"] > 0 || $customer["balance_fitcash_plus"] > 0){
-			$resp["show_popup"] = true;
-			$resp["popup"]["header_image"] = "http://b.fitn.in/iconsv1/global/fitcash.jpg";
-			$resp["popup"]["header_text"] = "Congratulations";
-			if($customer["balance_fitcash_plus"] > 0){
-				$resp["popup"]["text"] = "You have Rs. ".$customer["balance_fitcash_plus"]." in your wallet as FitCash+. You can use this across session and membership bookings at gyms in studios in Mumbai, Bangalore, Pune & Delhi";
-			}else{
-				$resp["popup"]["text"] = "You have Rs. ".$customer["balance"]." in your wallet as FitCash. You can use this across session and membership bookings at gyms in studios in Mumbai, Bangalore, Pune & Delhi";
+
+		$resp["show_popup"] = false;
+		$resp["popup"] = array();
+
+		if(isset($customer->demonetisation)){
+
+			$current_wallet_balance = \Wallet::active()->where('customer_id',$customer_id)->where('balance','>',0)->sum('balance');
+
+			if($current_wallet_balance > 0){
+
+				$resp["show_popup"] = true;
+				$resp["popup"]["header_image"] = "http://b.fitn.in/iconsv1/global/fitcash.jpg";
+				$resp["popup"]["header_text"] = "Congratulations";
+				$resp["popup"]["text"] = "You have Rs. ".$current_wallet_balance." in your wallet as FitCash+. You can use this across session and membership bookings at gyms in studios in Mumbai, Bangalore, Pune & Delhi";
+				$resp["popup"]["button"] = "Ok";
+
 			}
-			$resp["popup"]["button"] = "Ok";
+
+
 		}else{
-			$resp["show_popup"] = false;
-			$resp["popup"] = array();
+
+			if($customer["balance"] > 0 || $customer["balance_fitcash_plus"] > 0){
+
+				$resp["show_popup"] = true;
+				$resp["popup"]["header_image"] = "http://b.fitn.in/iconsv1/global/fitcash.jpg";
+				$resp["popup"]["header_text"] = "Congratulations";
+
+				if($customer["balance_fitcash_plus"] > 0){
+					$resp["popup"]["text"] = "You have Rs. ".$customer["balance_fitcash_plus"]." in your wallet as FitCash+. You can use this across session and membership bookings at gyms in studios in Mumbai, Bangalore, Pune & Delhi";
+				}else{
+					$resp["popup"]["text"] = "You have Rs. ".$customer["balance"]." in your wallet as FitCash. You can use this across session and membership bookings at gyms in studios in Mumbai, Bangalore, Pune & Delhi";
+				}
+
+				$resp["popup"]["button"] = "Ok";
+
+			}
+
 		}
+
 		return $resp;
 	}
 
