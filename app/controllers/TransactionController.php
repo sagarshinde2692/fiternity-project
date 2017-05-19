@@ -815,7 +815,7 @@ class TransactionController extends \BaseController {
                 $walletTransactionResponse = $this->utilities->walletTransactionNew($req);
                 
                 if($walletTransactionResponse['status'] != 200){
-                    return Response::json($walletTransactionResponse,$walletTransactionResponse['status']);
+                    return $walletTransactionResponse;
                 }else{
                     $data['wallet_transaction_debit'] = $walletTransactionResponse['wallet_transaction_debit'];
                 }
@@ -847,7 +847,7 @@ class TransactionController extends \BaseController {
                 $walletTransactionResponse = $this->utilities->walletTransactionNew($req);
                 
                 if($walletTransactionResponse['status'] != 200){
-                    return Response::json($walletTransactionResponse,$walletTransactionResponse['status']);
+                    return $walletTransactionResponse;
                 }else{
                     $data['wallet_transaction_debit'] = $walletTransactionResponse['wallet_transaction_debit'];
                 }
@@ -955,7 +955,7 @@ class TransactionController extends \BaseController {
                     $walletTransactionResponse = $this->utilities->walletTransaction($req,$data);
                     
                     if($walletTransactionResponse['status'] != 200){
-                        return Response::json($walletTransactionResponse,$walletTransactionResponse['status']);
+                        return $walletTransactionResponse;
                     }
 
                     // Schedule Check orderfailure and refund wallet amount in that case....
@@ -987,7 +987,7 @@ class TransactionController extends \BaseController {
                     $walletTransactionResponse = $this->utilities->walletTransaction($req,$data);
                     
                     if($walletTransactionResponse['status'] != 200){
-                        return Response::json($walletTransactionResponse,$walletTransactionResponse['status']);
+                        return $walletTransactionResponse;
                     }
 
                     // Schedule Check orderfailure and refund wallet amount in that case....
@@ -1066,7 +1066,7 @@ class TransactionController extends \BaseController {
                     $walletTransactionResponse = $this->utilities->walletTransaction($req,$data);
                     
                     if($walletTransactionResponse['status'] != 200){
-                        return Response::json($walletTransactionResponse,$walletTransactionResponse['status']);
+                        return $walletTransactionResponse;
                     }
 
                     // Schedule Check orderfailure and refund wallet amount in that case....
@@ -1109,7 +1109,7 @@ class TransactionController extends \BaseController {
                     $walletTransactionResponse = $this->utilities->walletTransaction($req,$data);
                     
                     if($walletTransactionResponse['status'] != 200){
-                        return Response::json($walletTransactionResponse,$walletTransactionResponse['status']);
+                        return $walletTransactionResponse;
                     }
 
                     // Schedule Check orderfailure and refund wallet amount in that case....

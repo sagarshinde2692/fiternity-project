@@ -131,8 +131,13 @@ Class Utilities {
         Log::info('total_balance-----'.$total_balance);
 
         if($total_balance <= 0){
+
             $customer->demonetisation = time();
             $customer->update();
+
+            if($request['entry'] == 'debit'){
+                return ['status'=>200,'message'=>'cannot debit balance zero'];
+            }
         }
 
         if(isset($customer->demonetisation) ){
