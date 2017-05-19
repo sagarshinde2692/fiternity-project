@@ -2355,15 +2355,7 @@ class CustomerController extends \BaseController {
 					'status' => 200,
 					'data' => $wallet_summary,
 					'wallet_balance'=>$wallet_balance,
-					'fitcash' => [
-						'title' => 'FITCASH',
-						'balance'=>0,
-						'info'=>[
-							'title'=>'What is FitCash?',
-							'description' => 'Earn FitCash with every transaction you do on Fitternity. You redeem upto 10% of the booking amount in each transaction. FitCash can be used for any booking or purchase on Fitternity ranging from workout sessions, memberships and healthy tiffin subscriptions',
-							'short_description' => "short"."\n"."description"."\n"."description"
-						]
-					],
+					'fitcash' => null,
 					'fitcash_plus' => [
 						'title' => 'FITCASH+',
 						'balance'=>$wallet_balance,
