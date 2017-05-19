@@ -1500,7 +1500,7 @@ Class Utilities {
 
             }
 
-            if($current_wallet_balance < $wallet_limit && ($current_wallet_balance + (int)$request['amount']) > $wallet_limit){
+            /*if($current_wallet_balance < $wallet_limit && ($current_wallet_balance + (int)$request['amount']) > $wallet_limit){
 
                 $request['amount'] = (int)($wallet_limit - $current_wallet_balance);
 
@@ -1515,6 +1515,34 @@ Class Utilities {
 
                 }
                 
+            }*/
+
+            if(!isset($customer->current_wallet_balance) && $current_wallet_balance < $wallet_limit && ($current_wallet_balance + (int)$request['amount']) > $wallet_limit){
+
+              $request['amount'] = (int)($wallet_limit - $current_wallet_balance);
+
+            }
+
+
+            if(isset($customer->current_wallet_balance)){
+
+                $entry_present = \Wallet::active()->where('customer_id',$customer_id)->count();
+
+                if($entry_present){
+
+                    if($current_wallet_balance < $wallet_limit && ($current_wallet_balance + (int)$request['amount']) > $wallet_limit){
+
+                        $request['amount'] = (int)($wallet_limit - $current_wallet_balance);
+
+                        $customer->unset('current_wallet_balance');
+
+                    }
+                }
+
+            }
+
+            if($request['amount'] <= 0){
+                return ['status' => 400,'message' => 'Requested amount is zero'];
             }
 
             Log::info('credit',$request);
