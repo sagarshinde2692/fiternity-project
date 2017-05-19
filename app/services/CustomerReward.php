@@ -128,7 +128,7 @@ Class CustomerReward {
 
                 if(isset($order['ratecard_id']) && $order['ratecard_id'] != "" && $order['ratecard_id'] != null){
 
-                    $ratecard = Ratecard::find((int)$order['ratecard_id']);
+                    $ratecard = \Ratecard::find((int)$order['ratecard_id']);
 
                     if($ratecard){
 
