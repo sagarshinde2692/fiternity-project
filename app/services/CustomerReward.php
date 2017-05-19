@@ -126,6 +126,30 @@ Class CustomerReward {
                     $cashback_amount = $order['amount_finder'] * 5 / 100;
                 }*/
 
+                if(isset($order['ratecard_id']) && $order['ratecard_id'] != "" && $order['ratecard_id'] != null){
+
+                    $ratecard = Ratecard::find((int)$order['ratecard_id']);
+
+                    if($ratecard){
+
+                        $duration_day = 0;
+                        if(isset($ratecard['validity']) && $ratecard['validity'] != ""){
+
+                            switch ($ratecard['validity_type']){
+                                case 'days': 
+                                    $duration_day = (int)$ratecard['validity'];break;
+                                case 'months': 
+                                    $duration_day = (int)($ratecard['validity'] * 30) ; break;
+                                case 'year': 
+                                    $duration_day = (int)($ratecard['validity'] * 30 * 12); break;
+                                default : $duration_day =  $ratecard['validity']; break;
+                            }
+                        }
+                    }
+                }
+
+                $duration_day += 60; 
+
                 $req = array(
                     "customer_id"=>$order['customer_id'],
                     "order_id"=>$order['_id'],
@@ -134,7 +158,8 @@ Class CustomerReward {
                     "amount_fitcash_plus" => 0,
                     "type"=>'CASHBACK',
                     'entry'=>'credit',
-                    "description"=>'CASHBACK ON PURCHASE - '.$cashback_amount
+                    "description"=>'CASHBACK ON PURCHASE - '.$cashback_amount,
+                    "validity"=>time()+(86400*$duration_day)
                 );
 
                 $utilities->walletTransaction($req,$order->toArray());

@@ -1670,7 +1670,7 @@ Class Utilities {
                     }
 
                     if(isset($customer->demonetisation) && isset($customer->current_wallet_balance) && $customer->current_wallet_balance > $wallet_limit){
-                        $customer->update(['current_wallet_balance'=> $current_wallet_balance - $amount,'current_wallet_balance_transaction_date'=>time()]);
+                        $customer->update(['current_wallet_balance'=> (int)($customer->current_wallet_balance - $amount),'current_wallet_balance_transaction_date'=>time()]);
                     }
 
                     if(isset($request['order_id']) && $request['order_id'] != ""){
