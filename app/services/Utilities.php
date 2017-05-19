@@ -1497,10 +1497,24 @@ Class Utilities {
 
             if($current_wallet_balance >= $wallet_limit){
                 return ['status' => 400,'message' => 'Wallet is overflowing Rs '.$wallet_limit];
+
             }
 
-            if(!isset($customer->current_wallet_balance) && $current_wallet_balance < $wallet_limit && ($current_wallet_balance + (int)$request['amount']) > $wallet_limit){
+            if($current_wallet_balance < $wallet_limit && ($current_wallet_balance + (int)$request['amount']) > $wallet_limit){
+
                 $request['amount'] = (int)($wallet_limit - $current_wallet_balance);
+
+                if(isset($customer->current_wallet_balance)){
+
+                    $request['amount'] = (int)($wallet_limit - $customer->current_wallet_balance) > 0 ? (int)($wallet_limit - $customer->current_wallet_balance) : 0;
+
+                    if($request['amount'] <= 0){
+
+                        return ['status' => 400,'message' => 'Wallet is overflowing Rs '.$wallet_limit];
+                    }
+
+                }
+                
             }
 
             Log::info('credit',$request);
