@@ -92,6 +92,14 @@ class TrainerController extends \BaseController {
 					$allstarthours[] = [$duration['start_time']['hours']];
 				}
 
+				foreach ($slots as $slot_key => $slot_value) {
+					$scheduleDateTimeUnix           =  strtotime(strtoupper($date." ".$slot_value['start_hour'].".00.00"));
+					$slot_datetime_pass_status      =   (($scheduleDateTimeUnix - time()) > 0) ? false : true;
+					if($slot_datetime_pass_status){
+						$slots[$slot_key]['available'] = false;
+					}
+				}
+
 				$total_slots += count($schedule['slots']);
 
 				$trainerSlotBooking = TrainerSlotBooking::where('trainer_id',$schedule['trainer_id'])->where('hidden',false)->where('date',$date)->where('weekday',$weekday)->orderBy('_id','desc')->get();
