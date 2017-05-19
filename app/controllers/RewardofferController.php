@@ -369,6 +369,27 @@ class RewardofferController extends BaseController {
 
         unset($cashback['calculation']['description']);
 
+        if(isset($ratecard['validity']) && $ratecard['validity'] != ""){
+
+            switch ($ratecard['validity_type']){
+                case 'days': 
+                    $duration_day = (int)$ratecard['validity'];break;
+                case 'months': 
+                    $duration_day = (int)($ratecard['validity'] * 30) ; break;
+                case 'year': 
+                    $duration_day = (int)($ratecard['validity'] * 30 * 12); break;
+                default : $duration_day =  $ratecard['validity']; break;
+            }
+        }
+
+        $duration_month = 0;
+
+        if(isset($duration_day)){
+            $duration_month = ceil($duration_day/30) + 2;
+        }
+
+        $cashback['description'] = "Enjoy FitCash Plus of Rs. ".$calculation['wallet_amount'].". FitCash Plus is fully redeemable for any booking / purchase on Fitternity ranging from workout sessions, memberships, diet plan and healthy tiffin subscription with a validity of ".$duration_month." months";
+
         $renewal_cashback  = array('title'=>'Discount on Renewal');
         $selection_limit = 1;
         $data = array(
