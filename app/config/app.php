@@ -46,6 +46,7 @@ return array(
 
 	'app' =>array(
 		'discount'		=> 			2,
+		'discount_excluded_vendors' => [1747,1813,4528,4530,9984,10081],
 	),
 
 	'vendor_communication' => true,
@@ -296,7 +297,7 @@ return array(
 	'jwt' => array(
 		'key' => 'fitternity', //secret key to encode token
 		'iat' => time(), // time when token is created
-		'nbf' => time(), // time when token can be used from
+		'nbf' => time()+10, // time when token can be used from
 		'exp' => time()+(86400*365), // time when token gets expired (1 year)
 		'alg' => 'HS256',
 	),

@@ -487,7 +487,7 @@ Class CustomerReward {
 
         $setAlgo = array('cashback'=>5,'fitcash'=>5,'discount'=>0);
 
-        if($payment_mode != "paymentgateway"){
+        /*if($payment_mode != "paymentgateway"){
             $setAlgo = array('cashback'=>5,'fitcash'=>5,'discount'=>0);
             $wallet = 0;
         }else{
@@ -503,7 +503,7 @@ Class CustomerReward {
                 }
 
             }
-        }
+        }*/
 
         if($amount > 50000){
             $setAlgo = array('cashback'=>0,'fitcash'=>0,'discount'=>0);
@@ -600,7 +600,7 @@ Class CustomerReward {
 
         $setAlgo = array('cashback'=>5,'fitcash'=>5,'discount'=>0);
 
-        if($payment_mode != "paymentgateway"){
+        /*if($payment_mode != "paymentgateway"){
             $setAlgo = array('cashback'=>5,'fitcash'=>5,'discount'=>0);
             $wallet = 0;
         }else{
@@ -616,7 +616,7 @@ Class CustomerReward {
                 }
 
             }
-        }
+        }*/
 
         /*$algo = array(
             array('min'=>0,'max'=>5,'cashback'=>2.5,'fitcash'=>2.5,'discount'=>0),
