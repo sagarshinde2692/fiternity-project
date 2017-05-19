@@ -2468,7 +2468,7 @@ if(!function_exists(('sort_weekdays'))){
     function sort_weekdays($arr){
         $arr4 = array();
         // return $arr;
-    $arr2=array('monday','tuesday','wednesday','thursday','friday','saturday');
+    $arr2=array('monday','tuesday','wednesday','thursday','friday','saturday', 'sunday');
         //A simple loop that traverses all elements of the template...
         foreach($arr2 as $v)
         {
