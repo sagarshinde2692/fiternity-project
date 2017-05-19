@@ -1735,11 +1735,6 @@ Class Utilities {
 
                 if($current_wallet_balance > 0){
 
-                    if($current_wallet_balance > $wallet_limit){
-                        $customer->update(['current_wallet_balance'=>$current_wallet_balance]);
-                    }
-
-
                     $credit_amount = 2000;
 
                     $current_wallet_balance_only_fitcash = $order['cashback_detail']['current_wallet_balance_only_fitcash'];
@@ -1755,6 +1750,10 @@ Class Utilities {
 
                         $credit_amount = $current_wallet_balance_only_fitcash_plus;
 
+                    }
+
+                    if($credit_amount > $wallet_limit){
+                        $customer->update(['current_wallet_balance'=>$current_wallet_balance]);
                     }
 
                     $request['customer_id'] = $customer_id;
