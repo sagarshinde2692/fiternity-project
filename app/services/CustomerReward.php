@@ -615,6 +615,10 @@ Class CustomerReward {
             }
         }*/
 
+        if($amount > 50000){
+            $setAlgo = array('cashback'=>0,'fitcash'=>0,'discount'=>0);
+        }
+
         $original_amount = $amount;
 
         $wallet_amount = round($amount * $setAlgo['fitcash'] / 100);
