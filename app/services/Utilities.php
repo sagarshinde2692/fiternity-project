@@ -126,9 +126,11 @@ Class Utilities {
             }
         }
 
-        $total_balance = $fitcash + $fitcash_plus;
+        $total_balance = (int)($fitcash + $fitcash_plus);
 
-        if($total_balance == 0){
+        Log::info('walletTransaction-----'.$walletTransaction);
+
+        if($total_balance <= 0){
             $customer->demonetisation = time();
             $customer->update();
         }
