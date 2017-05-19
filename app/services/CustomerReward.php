@@ -158,7 +158,7 @@ Class CustomerReward {
                     "amount_fitcash_plus" => 0,
                     "type"=>'CASHBACK',
                     'entry'=>'credit',
-                    "description"=>'Cashback on purchse for Order ID: '.$cashback_amount.' validity till '.date('d-m-Y H:i:s',time()+(86400*$duration_day)),
+                    "description"=>'Cashback on purchse for Order ID : '.$order['_id'].', Expires On : '.date('d-m-Y H:i:s',time()+(86400*$duration_day)),
                     "validity"=>time()+(86400*$duration_day)
                 );
 
@@ -202,7 +202,7 @@ Class CustomerReward {
                     "amount_fitcash_plus" => intval($order['amount_customer'] * 20 / 100),
                     "type"=>'CASHBACK',
                     'entry'=>'credit',
-                    "description"=>'CASHBACK ON Paid Booktrial amount - '.intval($order['amount_customer'] * 20 / 100),
+                    "description"=>'CASHBACK on Trial for Order ID : '.$order['_id'].', Expires On : '.date('d-m-Y H:i:s',time()+(86400)),
                     "validity"=>time()+(86400*60)
                 );
 

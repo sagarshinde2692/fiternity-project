@@ -1973,8 +1973,9 @@ class TransactionController extends \BaseController {
                 $req['entry'] = "credit";
                 $req['type'] = "FITCASHPLUS";
                 $req['amount_fitcash_plus'] = $amount;
-                $req['description'] = "1 Added Fitcash Plus Rs ".$amount;
+                $req['description'] = "Added Fitcash Plus Expires On : ".date('d-m-Y H:i:s',time()+(86400*60));
                 $req["validity"] = time()+(86400*60);
+                $req['for'] = $time;
 
                 $walletTransactionResponse = $this->utilities->walletTransaction($req);
 

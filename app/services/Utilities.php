@@ -1414,6 +1414,8 @@ Class Utilities {
                     return ['status' => 400,'message' => 'Wallet is overflowing Rs '.$wallet_limit];
                 }
 
+                $request_amount_balance = $request_amount = $request['amount'];
+
                 if($current_wallet_balance < $wallet_limit && ($current_wallet_balance + (int)$request['amount']) > $wallet_limit){
                     $request_amount_balance = $request_amount = $request['amount'] = (int)($wallet_limit - $current_wallet_balance);
                 }
@@ -1424,7 +1426,6 @@ Class Utilities {
                 $wallet_amount = $order['wallet_transaction_debit']['amount'];
 
                 $group = "";
-
 
                 foreach ($wallet_transaction as $key => $value) {
 
