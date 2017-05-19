@@ -115,7 +115,7 @@ Class Utilities {
         $fitcash = 0;
         $fitcash_plus = 0;
 
-        $customerwallet = \Customerwallet::where('customer_id',$customer_id)->first();
+        $customerwallet = \Customerwallet::where('customer_id',$customer_id)->orderBy('_id','desc')->first();
 
         if($customerwallet){
 
