@@ -158,7 +158,7 @@ Class CustomerReward {
                     "amount_fitcash_plus" => 0,
                     "type"=>'CASHBACK',
                     'entry'=>'credit',
-                    "description"=>'CASHBACK ON PURCHASE - '.$cashback_amount,
+                    "description"=>'Cashback on purchse for Order ID: '.$cashback_amount.' validity till '.date('d-m-Y H:i:s',time()+(86400*$duration_day)),
                     "validity"=>time()+(86400*$duration_day)
                 );
 
