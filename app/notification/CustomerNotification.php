@@ -179,6 +179,50 @@ Class CustomerNotification extends Notification{
 
     }
 
+    public function sendRenewalPaymentLinkBefore7Days($data,$delay){
+
+        $label = 'MembershipRenewalLinkSentBefore7Days-Customer';
+
+        $notif_type = 'open_order';
+		$notif_object = array('order_id'=>(int)$data['_id'],"time"=>"rl-7");
+		
+		return $this->common($label,$data,$notif_type,$notif_object,$delay);
+
+    }
+
+    public function sendRenewalPaymentLinkBefore1Days($data,$delay){
+
+        $label = 'MembershipRenewalLinkSentBefore1Days-Customer';
+
+        $notif_type = 'open_order';
+		$notif_object = array('order_id'=>(int)$data['_id'],"time"=>"rl-1");
+		
+		return $this->common($label,$data,$notif_type,$notif_object,$delay);
+
+    }
+
+    public function purchaseFirst($data,$delay){
+
+        $label = 'PurchaseFirst-Customer';
+
+        $notif_type = 'open_order';
+		$notif_object = array('order_id'=>(int)$data['_id'],"time"=>"purchase_first");
+		
+		return $this->common($label,$data,$notif_type,$notif_object,$delay);
+
+    }
+
+    public function postTrialFollowup1After15Days($data,$delay){
+
+        $label = 'PostTrialFollowup1After15Days-Customer';
+
+        $notif_type = 'open_trial';
+		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"f1+15");
+		
+		return $this->common($label,$data,$notif_type,$notif_object,$delay);
+
+    }
+
 	public function common($label,$data,$notif_type,$notif_object,$delay = 0){
 
 		$template = \Template::where('label',$label)->first();

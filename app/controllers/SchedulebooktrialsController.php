@@ -1466,6 +1466,8 @@ class SchedulebooktrialsController extends \BaseController {
                 array_set($data, 'secondary_payment_mode', 'payment_gateway_membership');
             }
 
+            $this->utilities->demonetisation($order);
+
             $this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
 
             if(isset($order->reward_ids) && !empty($order->reward_ids)){
@@ -1572,7 +1574,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             if(isset($order->redundant_order)){
                 $order->unset('redundant_order');
-            }
+            }  
 
             $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
             return Response::json($resp);
@@ -2094,7 +2096,7 @@ class SchedulebooktrialsController extends \BaseController {
                 }
             }
 
-            if($give_fitcash_plus && $type == "workout-session"){
+            /*if($give_fitcash_plus && $type == "workout-session"){
 
                 $walletData = array(
                     "customer_id"=> $customer_id,
@@ -2103,13 +2105,16 @@ class SchedulebooktrialsController extends \BaseController {
                     "amount_fitcash_plus" => 250,
                     "type"=>'FITCASHPLUS',
                     "description"=>'Added Fitcash Plus on Workout Session amount - 250',
-                    "order_id"=>$order->_id
+                    "order_id"=>$order->_id,
+                    'entry'=>'credit',
                 );
 
                 $this->utilities->walletTransaction($walletData);
-            }
+            }*/
 
             $booktrialdata['give_fitcash_plus'] = $give_fitcash_plus;
+
+            $this->utilities->demonetisation($order);
 
             $this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
 
@@ -2155,6 +2160,7 @@ class SchedulebooktrialsController extends \BaseController {
             $order->update($orderData);
 
 
+
             // Give Rewards / Cashback to customer based on selection, on purchase success......
             
 
@@ -2196,6 +2202,7 @@ class SchedulebooktrialsController extends \BaseController {
             $this->attachTrialCampaignToCustomer($customer_id,$campaign,$booktrialid);
         }*/
 
+        
         Log::info('Customer Book Trial : '.json_encode(array('book_trial_details' => Booktrial::findOrFail($booktrialid))));
 
         $resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'message' => "Book a Trial", 'code' => $code);
@@ -4953,7 +4960,7 @@ class SchedulebooktrialsController extends \BaseController {
         //Give 50% more cash back to booktrial customer on invites
         $cashback_amount = 0;
         $customer_balance = 0;
-        if($BooktrialData){
+        /*if($BooktrialData){
 
             $booktrial_id   =   intval($req['booktrial_id']);
             $order          =   Order::where('booktrial_id', $booktrial_id)->where('status','1')->first();
@@ -4970,23 +4977,13 @@ class SchedulebooktrialsController extends \BaseController {
                     "amount_fitcash_plus" => 0,
                     "type"=>'CASHBACK',
                     "description"=>'CASHBACK ON Invite amount - '.$cashback_amount,
-                    "order_id"=>$order->_id
+                    "order_id"=>$order->_id,
+                    'entry'=>'credit',
                 );
 
                 $this->utilities->walletTransaction($walletData);
-
-                // return $walletData;
-
-               /* $wallet               	=   new \CustomerWallet($walletData);
-                $last_insertion_id      =   \CustomerWallet::max('_id');
-                $last_insertion_id      =   isset($last_insertion_id) ? $last_insertion_id :0;
-                $wallet->_id          	=   ++ $last_insertion_id;
-                $wallet->save();
-
-                $customer_update 	=	\Customer::where('_id', $customer_id)->update(['balance' => intval($customer_balance)]);*/
-
             }
-        }
+        }*/
 
         return Response::json(
             array(

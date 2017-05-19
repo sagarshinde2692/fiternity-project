@@ -156,6 +156,8 @@ class OrderController extends \BaseController {
         if($data['status'] == 'success' && $hash_verified){
             // Give Rewards / Cashback to customer based on selection, on purchase success......
 
+            $this->utilities->demonetisation($order);
+
             $this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
 
             if(isset($order->reward_ids) && !empty($order->reward_ids)){
@@ -433,6 +435,8 @@ class OrderController extends \BaseController {
             if(isset($order->redundant_order)){
                 $order->unset('redundant_order');
             }
+
+            
 
             $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
             return Response::json($resp);
@@ -1417,13 +1421,14 @@ class OrderController extends \BaseController {
                     'amount_fitcash' => $fitcash,
                     'amount_fitcash_plus' => $fitcash_plus,
                     'type'=>'DEBIT',
+                    'entry'=>'debit',
                     'description'=>'Paid for Order ID: '.$orderid,
                 );
-                $walletTransactionResponse = $this->utilities->walletTransaction($req,$data)->getData();
-                $walletTransactionResponse = (array) $walletTransactionResponse;
+                $walletTransactionResponse = $this->utilities->walletTransaction($req,$data);
+                
 
                 if($walletTransactionResponse['status'] != 200){
-                    return $walletTransactionResponse;
+                    return Response::json($walletTransactionResponse,$walletTransactionResponse['status']);
                 }
 
                 // Schedule Check orderfailure and refund wallet amount in that case....
@@ -1459,13 +1464,14 @@ class OrderController extends \BaseController {
                         'amount_fitcash' => $fitcash,
                         'amount_fitcash_plus' => $fitcash_plus,
                         'type'=>'DEBIT',
+                        'entry'=>'debit',
                         'description'=>'Paid for Order ID: '.$orderid,
                     );
-                    $walletTransactionResponse = $this->utilities->walletTransaction($req,$data)->getData();
-                    $walletTransactionResponse = (array) $walletTransactionResponse;
+                    $walletTransactionResponse = $this->utilities->walletTransaction($req,$data);
+                    
 
                     if($walletTransactionResponse['status'] != 200){
-                        return $walletTransactionResponse;
+                        return Response::json($walletTransactionResponse,$walletTransactionResponse['status']);
                     }
 
                     // Schedule Check orderfailure and refund wallet amount in that case....
@@ -1973,14 +1979,15 @@ class OrderController extends \BaseController {
                 'order_id'=>$order_id,
                 'amount'=>$order['wallet_amount'],
                 'type'=>'REFUND',
+                'entry'=>'credit',
                 'description'=>'Refund for Order ID: '.$order_id,
             );
 
-            $walletTransactionResponse = $this->utilities->walletTransaction($req,$order->toArray())->getData();
-            $walletTransactionResponse = (array) $walletTransactionResponse;
+            $walletTransactionResponse = $this->utilities->walletTransaction($req,$order->toArray());
+            
 
             if($walletTransactionResponse['status'] != 200){
-                return $walletTransactionResponse;
+                return Response::json($walletTransactionResponse,$walletTransactionResponse['status']);
             }
 
             return Response::json(
@@ -2275,13 +2282,14 @@ class OrderController extends \BaseController {
                         'amount_fitcash' => $fitcash,
                         'amount_fitcash_plus' => $fitcash_plus,
                         'type'=>'DEBIT',
+                        'entry'=>'debit',
                         'description'=>'Paid for Order ID: '.$order_id,
                     );
-                    $walletTransactionResponse = $this->utilities->walletTransaction($req,$data)->getData();
-                    $walletTransactionResponse = (array) $walletTransactionResponse;
+                    $walletTransactionResponse = $this->utilities->walletTransaction($req,$data);
+                    
 
                     if($walletTransactionResponse['status'] != 200){
-                        return $walletTransactionResponse;
+                        return Response::json($walletTransactionResponse,$walletTransactionResponse['status']);
                     }
 
                     // Schedule Check orderfailure and refund wallet amount in that case....

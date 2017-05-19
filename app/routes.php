@@ -261,6 +261,8 @@ Route::group(array('before' => 'validatetoken'), function() {
 	Route::get('getreferralcode', array('as' => 'customer.referralcode','uses' => 'CustomerController@getReferralCode'));
 	Route::post('referfriend', array('as' => 'customer.referfriend','uses' => 'CustomerController@referFriend'));
 
+	Route::get('getwalletdetails/{limit?}/{offset?}',  array('as' => 'customer.getWalletDetails','uses' => 'CustomerController@getWalletDetails'));
+
 });
 
 /******************** CUSTOMERS SECTION END HERE ********************/

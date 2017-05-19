@@ -403,6 +403,9 @@ class TempsController extends \BaseController {
 
                 $customerReward     =   new CustomerReward();
                 $calculation        =   $customerReward->purchaseGame($amount,$finder_id,"paymentgateway",false,$customer_id);
+
+                $calculation['algo']['cashback'] = (int)$calculation['algo']['cashback'];
+
                 $cashback  = array(
                     'title'=>$calculation['algo']['cashback'].'% Instant Cashback on Purchase',
                     'percentage'=>$calculation['algo']['cashback'].'%',

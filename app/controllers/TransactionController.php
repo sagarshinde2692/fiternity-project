@@ -694,8 +694,18 @@ class TransactionController extends \BaseController {
     }
 
     public function getCustomerDetail($data){
-
+        
         $customer_id = $data['customer_id'] = autoRegisterCustomer($data);
+
+        $data['logged_in_customer_id'] = $customer_id;
+
+        $jwt_token = Request::header('Authorization');
+
+        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+
+            $decoded = customerTokenDecode($jwt_token);
+            $data['logged_in_customer_id'] = (int)$decoded->customer->_id;
+        }
 
         $customer = Customer::find((int)$customer_id);
 
@@ -732,6 +742,169 @@ class TransactionController extends \BaseController {
 
 
     public function getCashbackRewardWallet($data,$order){
+
+        $customer_id = (int)$data['customer_id'];
+
+        $jwt_token = Request::header('Authorization');
+
+        Log::info('jwt_token : '.$jwt_token);
+            
+        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+            $decoded = customerTokenDecode($jwt_token);
+            $customer_id = $decoded->customer->_id;
+        }
+
+        $customer = \Customer::find($customer_id);
+
+        if(isset($customer->demonetisation)){
+
+            return $this->getCashbackRewardWalletNew($data,$order);
+
+        }
+
+        return $this->getCashbackRewardWalletOld($data,$order);
+
+    }
+
+
+    public function getCashbackRewardWalletNew($data,$order){
+
+        Log::info('new');
+
+        $jwt_token = Request::header('Authorization');
+
+        $customer_id = $data['customer_id'];
+            
+        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+            $decoded = customerTokenDecode($jwt_token);
+            $customer_id = $decoded->customer->_id;
+        }
+
+        $amount = $data['amount_customer'] = $data['amount'];
+
+        if($data['type'] == "memberships" && isset($data['customer_source']) && ($data['customer_source'] == "android" || $data['customer_source'] == "ios")){
+            $data['app_discount_amount'] = intval($data['amount'] * ($this->appOfferDiscount/100));
+            $amount = $data['amount'] = $data['amount_customer'] = $data['amount'] - $data['app_discount_amount'];
+            $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount'],$data['finder_id'],'paymentgateway',$data['offer_id'],$data['customer_id']);
+        }else{
+            $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount_finder'],$data['finder_id'],'paymentgateway',$data['offer_id'],$data['customer_id']);
+        }
+
+        if(isset($data['cashback']) && $data['cashback'] == true){
+            $data['amount'] = $data['amount'] - $data['cashback_detail']['amount_discounted'];
+        }
+
+        if(!isset($data['repetition'])){
+
+            if(isset($data['wallet']) && $data['wallet'] == true){
+                $data['wallet_amount'] = $data['cashback_detail']['amount_deducted_from_wallet'];
+                $data['amount'] = $data['amount'] - $data['wallet_amount'];
+            }
+
+            if(isset($data['wallet_amount']) && $data['wallet_amount'] > 0){
+
+                $req = array(
+                    'customer_id'=>$data['customer_id'],
+                    'order_id'=>$data['order_id'],
+                    'amount'=>$data['wallet_amount'],
+                    'type'=>'DEBIT',
+                    'entry'=>'debit',
+                    'description'=>'Paid for Order ID: '.$data['order_id'],
+                );
+
+                $walletTransactionResponse = $this->utilities->walletTransactionNew($req);
+                
+                if($walletTransactionResponse['status'] != 200){
+                    return $walletTransactionResponse;
+                }else{
+                    $data['wallet_transaction_debit'] = $walletTransactionResponse['wallet_transaction_debit'];
+                }
+
+                // Schedule Check orderfailure and refund wallet amount in that case....
+                $url = Config::get('app.url').'/orderfailureaction/'.$data['order_id'].'/'.$customer_id;
+                $delay = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addHours(4);
+                $data['wallet_refund_sidekiq'] = $this->hitURLAfterDelay($url, $delay);
+
+            }
+
+        }else{
+
+            $new_data = Input::json()->all();
+
+            if(isset($new_data['wallet']) && $new_data['wallet'] == true){
+
+                $data['wallet_amount'] = $data['cashback_detail']['amount_deducted_from_wallet'];
+                $data['amount'] = $data['amount'] - $data['wallet_amount'];
+
+                $req = array(
+                    'customer_id'=>$data['customer_id'],
+                    'order_id'=>$data['order_id'],
+                    'amount'=>$data['wallet_amount'],
+                    'type'=>'DEBIT',
+                    'entry'=>'debit',
+                    'description'=>'Paid for Order ID: '.$data['order_id'],
+                );
+                $walletTransactionResponse = $this->utilities->walletTransactionNew($req);
+                
+                if($walletTransactionResponse['status'] != 200){
+                    return $walletTransactionResponse;
+                }else{
+                    $data['wallet_transaction_debit'] = $walletTransactionResponse['wallet_transaction_debit'];
+                }
+
+                // Schedule Check orderfailure and refund wallet amount in that case....
+                $url = Config::get('app.url').'/orderfailureaction/'.$data['order_id'].'/'.$customer_id;
+                $delay = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addHours(4);
+                $data['wallet_refund_sidekiq'] = $this->hitURLAfterDelay($url, $delay);
+
+            }else{
+
+                if(isset($order['wallet_amount']) && $order['wallet_amount'] != "" && $order['wallet_amount'] != 0){
+
+                    $req = array(
+                        'customer_id'=>$order['customer_id'],
+                        'order_id'=>$order['_id'],
+                        'amount'=>$order['wallet_amount'],
+                        'type'=>'REFUND',
+                        'entry'=>'credit',
+                        'description'=>'Refund for Order ID: '.$order['_id'],
+                    );
+
+                    $walletTransactionResponse = $this->utilities->walletTransactionNew($req);
+                    
+                    if(isset($order['wallet_refund_sidekiq']) && $order['wallet_refund_sidekiq'] != ''){
+                        try {
+                            $this->sidekiq->delete($order['wallet_refund_sidekiq']);
+                        }catch(\Exception $exception){
+                            Log::error($exception);
+                        }
+                    }
+
+                    $order->unset('wallet');
+                    $order->unset('wallet_amount');
+                }
+
+            }
+
+        }
+
+        if($data['amount'] == 0){
+            $data['full_payment_wallet'] = true;
+        }else{
+            $data['full_payment_wallet'] = false;
+        }
+        
+        if(isset($data['reward_ids'])&& count($data['reward_ids']) > 0) {
+            $data['reward_ids']   =  array_map('intval', $data['reward_ids']);
+        }
+
+        return array('status' => 200,'data' => $data); 
+
+    }
+
+    public function getCashbackRewardWalletOld($data,$order){
+
+        Log::info('old');
 
         $jwt_token = Request::header('Authorization');
 
@@ -776,11 +949,11 @@ class TransactionController extends \BaseController {
                         'amount_fitcash' => $data['wallet_amount'],
                         'amount_fitcash_plus' => 0,
                         'type'=>'DEBIT',
+                        'entry'=>'debit',
                         'description'=>'Paid for Order ID: '.$data['order_id'],
                     );
-                    $walletTransactionResponse = $this->utilities->walletTransaction($req,$data)->getData();
-                    $walletTransactionResponse = (array) $walletTransactionResponse;
-
+                    $walletTransactionResponse = $this->utilities->walletTransaction($req,$data);
+                    
                     if($walletTransactionResponse['status'] != 200){
                         return $walletTransactionResponse;
                     }
@@ -808,11 +981,11 @@ class TransactionController extends \BaseController {
                         'amount_fitcash' => $data['wallet_amount'],
                         'amount_fitcash_plus' => 0,
                         'type'=>'DEBIT',
+                        'entry'=>'debit',
                         'description'=>'Paid for Order ID: '.$data['order_id'],
                     );
-                    $walletTransactionResponse = $this->utilities->walletTransaction($req,$data)->getData();
-                    $walletTransactionResponse = (array) $walletTransactionResponse;
-
+                    $walletTransactionResponse = $this->utilities->walletTransaction($req,$data);
+                    
                     if($walletTransactionResponse['status'] != 200){
                         return $walletTransactionResponse;
                     }
@@ -831,12 +1004,12 @@ class TransactionController extends \BaseController {
                             'order_id'=>$order['_id'],
                             'amount'=>$order['wallet_amount'],
                             'type'=>'REFUND',
+                            'entry'=>'credit',
                             'description'=>'Refund for Order ID: '.$order['_id'],
                         );
 
-                        $walletTransactionResponse = $this->utilities->walletTransaction($req,$order->toArray())->getData();
-                        $walletTransactionResponse = (array) $walletTransactionResponse;
-
+                        $walletTransactionResponse = $this->utilities->walletTransaction($req,$order->toArray());
+                        
                         if(isset($order['wallet_refund_sidekiq']) && $order['wallet_refund_sidekiq'] != ''){
                             try {
                                 $this->sidekiq->delete($order['wallet_refund_sidekiq']);
@@ -887,11 +1060,11 @@ class TransactionController extends \BaseController {
                         'amount_fitcash' => $fitcash,
                         'amount_fitcash_plus' => $fitcash_plus,
                         'type'=>'DEBIT',
+                        'entry'=>'debit',
                         'description'=>'Paid for Order ID: '.$data['order_id'],
                     );
-                    $walletTransactionResponse = $this->utilities->walletTransaction($req,$data)->getData();
-                    $walletTransactionResponse = (array) $walletTransactionResponse;
-
+                    $walletTransactionResponse = $this->utilities->walletTransaction($req,$data);
+                    
                     if($walletTransactionResponse['status'] != 200){
                         return $walletTransactionResponse;
                     }
@@ -930,11 +1103,11 @@ class TransactionController extends \BaseController {
                         'amount_fitcash' => $fitcash,
                         'amount_fitcash_plus' => $fitcash_plus,
                         'type'=>'DEBIT',
+                        'entry'=>'debit',
                         'description'=>'Paid for Order ID: '.$data['order_id'],
                     );
-                    $walletTransactionResponse = $this->utilities->walletTransaction($req,$data)->getData();
-                    $walletTransactionResponse = (array) $walletTransactionResponse;
-
+                    $walletTransactionResponse = $this->utilities->walletTransaction($req,$data);
+                    
                     if($walletTransactionResponse['status'] != 200){
                         return $walletTransactionResponse;
                     }
@@ -953,12 +1126,12 @@ class TransactionController extends \BaseController {
                             'order_id'=>$order['_id'],
                             'amount'=>$order['wallet_amount'],
                             'type'=>'REFUND',
+                            'entry'=>'credit',
                             'description'=>'Refund for Order ID: '.$order['_id'],
                         );
 
-                        $walletTransactionResponse = $this->utilities->walletTransaction($req,$order->toArray())->getData();
-                        $walletTransactionResponse = (array) $walletTransactionResponse;
-
+                        $walletTransactionResponse = $this->utilities->walletTransaction($req,$order->toArray());
+                        
                         if(isset($order['wallet_refund_sidekiq']) && $order['wallet_refund_sidekiq'] != ''){
                             try {
                                 $this->sidekiq->delete($order['wallet_refund_sidekiq']);
@@ -1021,14 +1194,14 @@ class TransactionController extends \BaseController {
                 'order_id'=>$order_id,
                 'amount'=>$order['wallet_amount'],
                 'type'=>'REFUND',
+                'entry'=>'credit',
                 'description'=>'Refund for Order ID: '.$order_id,
             );
 
-            $walletTransactionResponse = $this->utilities->walletTransaction($req,$order->toArray())->getData();
-            $walletTransactionResponse = (array) $walletTransactionResponse;
-
+            $walletTransactionResponse = $this->utilities->walletTransaction($req,$order->toArray());
+            
             if($walletTransactionResponse['status'] != 200){
-                return $walletTransactionResponse;
+                return Response::json($walletTransactionResponse,$walletTransactionResponse['status']);
             }
 
             return Response::json(
@@ -1563,8 +1736,8 @@ class TransactionController extends \BaseController {
 
             $order->customerSmsSendPaymentLinkAfter3Days = $this->customersms->sendPaymentLinkAfter3Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+3 days",$now)));
             $order->customerSmsSendPaymentLinkAfter7Days = $this->customersms->sendPaymentLinkAfter7Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+7 days",$now)));
-            $order->customerSmsSendPaymentLinkAfter15Days = $this->customersms->sendPaymentLinkAfter15Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+15 days",$now)));
-            $order->customerSmsSendPaymentLinkAfter30Days = $this->customersms->sendPaymentLinkAfter30Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+30 days",$now)));
+            //$order->customerSmsSendPaymentLinkAfter15Days = $this->customersms->sendPaymentLinkAfter15Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+15 days",$now)));
+            //$order->customerSmsSendPaymentLinkAfter30Days = $this->customersms->sendPaymentLinkAfter30Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+30 days",$now)));
             $order->customerSmsSendPaymentLinkAfter45Days = $this->customersms->sendPaymentLinkAfter45Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+45 days",$now)));
 
             /*if(isset($order['reg_id']) && $order['reg_id'] != "" && isset($order['device_type']) && $order['device_type'] != ""){
@@ -1575,18 +1748,12 @@ class TransactionController extends \BaseController {
                 $order->customerNotificationSendPaymentLinkAfter45Days = $this->customernotification->sendPaymentLinkAfter45Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+45 days",$now)));
             }*/
 
-            $url = Config::get('app.url')."addwallet?customer_id=".$order["customer_id"]."&action=add_fitcash_plus&amount=500&order_id=".$order_id;
+            $url = Config::get('app.url')."/addwallet?customer_id=".$order["customer_id"]."&order_id=".$order_id;
 
-            $order->customerWalletSendPaymentLinkAfter15Days = $this->hitURLAfterDelay($url, date('Y-m-d H:i:s', strtotime("+15 days",$now)));
-            $order->customerWalletSendPaymentLinkAfter30Days = $this->hitURLAfterDelay($url, date('Y-m-d H:i:s', strtotime("+30 days",$now)));
+            $order->customerWalletSendPaymentLinkAfter15Days = $this->hitURLAfterDelay($url."&time=LPlus15", date('Y-m-d H:i:s', strtotime("+15 days",$now)));
+            $order->customerWalletSendPaymentLinkAfter30Days = $this->hitURLAfterDelay($url."&time=LPlus30", date('Y-m-d H:i:s', strtotime("+30 days",$now)));
 
             $order->notification_status = 'abandon_cart_yes';
-
-            if(isset($order['start_date'])){
-
-                $order->auto_followup_date = date('Y-m-d H:i:s', strtotime("+31 days",strtotime($order['start_date'])));
-                $order->followup_status = "abandon_cart";
-            }
 
             $order->update();
 
@@ -1737,8 +1904,7 @@ class TransactionController extends \BaseController {
 
         $rules = array(
             'customer_id'=>'required',
-            'amount'=>'required',
-            'action'=>'required|in:add_fitcash,add_fitcash_plus',
+            'time'=>'required|in:LPlus15,LPlus30,F1Plus15,PurchaseFirst,RLMinus7,RLMinus1',
         );
 
         $validator = Validator::make($data,$rules);
@@ -1747,57 +1913,149 @@ class TransactionController extends \BaseController {
             return Response::json(array('status' => 404,'message' => error_message($validator->errors())),404);
         }
 
-        $req = [];
-
-        $req['customer_id'] = $data['customer_id'];
-        $req['amount'] = $data['amount'];
-
-        if($data['action'] == "add_fitcash"){
-            $req['amount_fitcash'] = $data['amount'];
-            $req['type'] = "FITCASH";
-            $req['description'] = "Added Fitcash Rs ".$data['amount'];
-        }
-
-        if($data['action'] == "add_fitcash_plus"){
-            $req['amount_fitcash_plus'] = $data['amount'];
-            $req['type'] = "FITCASHPLUS";
-            $req['description'] = "Added Fitcash Plus Rs ".$data['amount'];
-        }
-
-        if(isset($data['order_id'])){
-            $req['order_id'] = (int)$data['order_id'];
-        }
-
-        if(isset($data['booktrial_id'])){
-            $req['booktrial_id'] = (int)$data['booktrial_id'];
-        }
-
+        $time = $data['time'];
         $customer = Customer::find((int)$data['customer_id']);
+        $top_up = false;
+        $wallet_balance = 0;
+        $customer_id = (int)$data['customer_id'];
 
         if($customer){
 
-            if(!isset($customer->added_fitcash_plus)){
+            $orderTime = ['LPlus15','LPlus30','PurchaseFirst','RLMinus7','RLMinus1'];
+            $trialTime = ['F1Plus15'];
 
-                $walletTransactionResponse = $this->utilities->walletTransaction($req)->getData();
-                $walletTransactionResponse = (array) $walletTransactionResponse;
+            $amountArray = [
+                "LPlus15" => 150,
+                "LPlus30" => 150,
+                "F1Plus15" => 150,
+                "PurchaseFirst" => 150,
+                "RLMinus7" => 150,
+                "RLMinus1" => 150
+            ];
+
+            if(isset($customer->demonetisation)){
+
+                $wallet_balance = Wallet::active()->where('customer_id',$customer_id)->where('balance','>',0)->sum('balance');
+
+            }else{
+
+                $customerWallet = Customerwallet::where('customer_id',$customer_id)->orderBy('_id', 'desc')->first();
+
+                if(isset($customerWallet) && isset($customerWallet->balance_fitcash_plus)){
+                    $wallet_balance = $customerWallet->balance_fitcash_plus;
+                }
+
+            }
+
+            $amount = $amountArray[$time];
+
+            Log::info('wallet_balance - '.$wallet_balance);
+
+            if($wallet_balance > 0){
+
+                $amount = 0;
+
+                if($amountArray[$time] > $wallet_balance){
+                    $amount = $amountArray[$time] - $wallet_balance;
+                }
+
+            }
+
+            if($amount > 0){
+
+                $req = [];
+
+                $req['customer_id'] = $data['customer_id'];
+                $req['amount'] = $amount;
+
+                $wallet_balance +=  $amount;
+
+                $req['entry'] = "credit";
+                $req['type'] = "FITCASHPLUS";
+                $req['amount_fitcash_plus'] = $amount;
+                $req['description'] = "Added Fitcash Plus Expires On : ".date('d-m-Y H:i:s',time()+(86400*60));
+                $req["validity"] = time()+(86400*60);
+                $req['for'] = $time;
+
+                $walletTransactionResponse = $this->utilities->walletTransaction($req);
 
                 if($walletTransactionResponse['status'] == 200){
 
                     $customer->update(["added_fitcash_plus" => time()]);
 
-                    return Response::json(array('status' => 200,'message' => 'Success'),200);
+                    $top_up = true;
                 }
 
-                return Response::json(array('status' => 401,'message' => 'Error'),401);
-                
             }
 
-            return Response::json(array('status' => 402,'message' => 'Error'),402);
+            if(isset($data['order_id'])){
+                $req['order_id'] = (int)$data['order_id'];
+
+                $transaction = Order::find((int)(int)$data['order_id']);
+            }
+
+            if(isset($data['booktrial_id'])){
+                
+                $req['booktrial_id'] = (int)$data['booktrial_id'];
+
+                $transaction = Booktrial::find((int)(int)$data['order_id']);
+            }
+
+            if($transaction && $wallet_balance > 0){
+
+                $transaction = $transaction->toArray();
+                
+                $transaction['wallet_balance'] = $wallet_balance;
+                $transaction['top_up'] = $top_up;
+
+                switch ($time) {
+                    case 'LPlus15':
+                        $this->customersms->sendPaymentLinkAfter15Days($transaction,0);
+                        if(isset($transaction['reg_id']) && $transaction['reg_id'] != "" && isset($transaction['device_type']) && $transaction['device_type'] != ""){
+                            $this->customernotification->sendPaymentLinkAfter15Days($transaction,0);
+                        }
+                        break;
+                    case 'LPlus30':
+                        $this->customersms->sendPaymentLinkAfter30Days($transaction,0);
+                        if(isset($transaction['reg_id']) && $transaction['reg_id'] != "" && isset($transaction['device_type']) && $transaction['device_type'] != ""){
+                            $this->customernotification->sendPaymentLinkAfter30Days($transaction,0);
+                        }
+                        break;
+                    case 'RLMinus7':
+                        $this->customersms->sendRenewalPaymentLinkBefore7Days($transaction,0);
+                        /*if(isset($transaction['reg_id']) && $transaction['reg_id'] != "" && isset($transaction['device_type']) && $transaction['device_type'] != ""){
+                            $this->customernotification->sendRenewalPaymentLinkBefore7Days($transaction,0);
+                        }*/
+                        break;
+                    case 'RLMinus1':
+                        $this->customersms->sendRenewalPaymentLinkBefore1Days($transaction,0);
+                        /*if(isset($transaction['reg_id']) && $transaction['reg_id'] != "" && isset($transaction['device_type']) && $transaction['device_type'] != ""){
+                            $this->customernotification->sendRenewalPaymentLinkBefore1Days($transaction,0);
+                        }*/
+                        break;
+                    case 'PurchaseFirst':
+                        $this->customersms->purchaseFirst($transaction,0);
+                        if(isset($transaction['reg_id']) && $transaction['reg_id'] != "" && isset($transaction['device_type']) && $transaction['device_type'] != ""){
+                            $this->customernotification->purchaseFirst($transaction,0);
+                        }
+                        break;
+                    case 'F1Plus15':
+                        $this->customersms->postTrialFollowup1After15Days($transaction,0);
+                        if(isset($transaction['reg_id']) && $transaction['reg_id'] != "" && isset($transaction['device_type']) && $transaction['device_type'] != ""){
+                            $this->customernotification->postTrialFollowup1After15Days($transaction,0);
+                        }
+                        break;
+                }
+
+                return Response::json(array('status' => 200,'message' => 'Success'),200);
+            }
+
+            return Response::json(array('status' => 401,'message' => 'Error'),401);
+
         }
 
-        return Response::json(array('status' => 403,'message' => 'Error'),403);
+        return Response::json(array('status' => 402,'message' => 'Error'),402);
         
-
     }
 
     public function deleteCommunicationOfSuccess(){

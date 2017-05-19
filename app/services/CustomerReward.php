@@ -126,6 +126,30 @@ Class CustomerReward {
                     $cashback_amount = $order['amount_finder'] * 5 / 100;
                 }*/
 
+                if(isset($order['ratecard_id']) && $order['ratecard_id'] != "" && $order['ratecard_id'] != null){
+
+                    $ratecard = \Ratecard::find((int)$order['ratecard_id']);
+
+                    if($ratecard){
+
+                        $duration_day = 0;
+                        if(isset($ratecard['validity']) && $ratecard['validity'] != ""){
+
+                            switch ($ratecard['validity_type']){
+                                case 'days': 
+                                    $duration_day = (int)$ratecard['validity'];break;
+                                case 'months': 
+                                    $duration_day = (int)($ratecard['validity'] * 30) ; break;
+                                case 'year': 
+                                    $duration_day = (int)($ratecard['validity'] * 30 * 12); break;
+                                default : $duration_day =  $ratecard['validity']; break;
+                            }
+                        }
+                    }
+                }
+
+                $duration_day += 60; 
+
                 $req = array(
                     "customer_id"=>$order['customer_id'],
                     "order_id"=>$order['_id'],
@@ -133,7 +157,9 @@ Class CustomerReward {
                     "amount_fitcash" => $cashback_amount,
                     "amount_fitcash_plus" => 0,
                     "type"=>'CASHBACK',
-                    "description"=>'CASHBACK ON PURCHASE - '.$cashback_amount
+                    'entry'=>'credit',
+                    "description"=>'Cashback on purchse for Order ID : '.$order['_id'].', Expires On : '.date('d-m-Y H:i:s',time()+(86400*$duration_day)),
+                    "validity"=>time()+(86400*$duration_day)
                 );
 
                 $utilities->walletTransaction($req,$order->toArray());
@@ -166,21 +192,23 @@ Class CustomerReward {
                 $order['order_id'] = $order['_id'];
                 $this->createMyReward($order);
 
-            }elseif(isset($order['type']) && in_array(trim($order['type']),['booktrials','healthytiffintrail']) && isset($order['customer_id']) && isset($order['amount']) ){
+            }elseif(isset($order['type']) && in_array(trim($order['type']),['booktrials','healthytiffintrail']) && isset($order['customer_id']) && isset($order['amount_customer']) ){
 
                 $walletData = array(
                     "order_id"=>$order['_id'],
                     "customer_id"=> intval($order['customer_id']),
-                    "amount"=> intval($order['amount']),
-                    "amount_fitcash" => intval($order['amount']),
-                    "amount_fitcash_plus" => 0,
+                    "amount"=> intval($order['amount_customer'] * 20 / 100),
+                    "amount_fitcash" => 0,
+                    "amount_fitcash_plus" => intval($order['amount_customer'] * 20 / 100),
                     "type"=>'CASHBACK',
-                    "description"=>'CASHBACK ON Paid Booktrial amount - '.intval($order['amount'])
+                    'entry'=>'credit',
+                    "description"=>'CASHBACK on Trial for Order ID : '.$order['_id'].', Expires On : '.date('d-m-Y H:i:s',time()+(86400)),
+                    "validity"=>time()+(86400*60)
                 );
 
                 $utilities->walletTransaction($walletData,$order->toArray());
 
-            }elseif(isset($order['type']) && $order['type'] == 'events' && isset($order['customer_id']) && isset($order['amount']) && isset($order['ticket_id']) && in_array(intval($order['ticket_id']), $valid_ticket_ids )){
+            }/*elseif(isset($order['type']) && $order['type'] == 'events' && isset($order['customer_id']) && isset($order['amount']) && isset($order['ticket_id']) && in_array(intval($order['ticket_id']), $valid_ticket_ids )){
 
                 $walletData = array(
                     "order_id"=>$order['_id'],
@@ -189,11 +217,12 @@ Class CustomerReward {
                     "amount_fitcash" => intval($order['amount']),
                     "amount_fitcash_plus" => 0,
                     "type"=>'CASHBACK',
+                    'entry'=>'credit',
                     "description"=>'CASHBACK ON Events Tickets amount - '.intval($order['amount'])
                 );
 
                 $utilities->walletTransaction($walletData,$order->toArray());
-            }
+            }*/
             
         }
         catch (Exception $e) {
@@ -357,10 +386,161 @@ Class CustomerReward {
         }*/
     }
 
-    public function purchaseGame($amount,$finder_id,$payment_mode = "paymentgateway",$offer_id = false,$customer_id = false){
+   public function purchaseGameNew($amount,$finder_id,$payment_mode = "paymentgateway",$offer_id = false,$customer_id = false){
+
+        $current_wallet_balance = 0;
+        $wallet = 0;
+        $wallet_fitcash_plus = 0;
+        $cap = 2000;
+
+        $jwt_token = Request::header('Authorization');
+
+        Log::info('jwt_token : '.$jwt_token);
+            
+        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+            $decoded = $this->customerTokenDecode($jwt_token);
+            $customer_id = $decoded->customer->_id;
+        }
+
+        if($customer_id){
+
+            $customer = \Customer::find($customer_id);
+
+            $current_wallet_balance = \Wallet::active()->where('customer_id',$customer_id)->where('balance','>',0)->sum('balance');/*
+
+            if(isset($customer->demonetisation)){
+
+              $current_wallet_balance = \Wallet::active()->where('customer_id',$customer_id)->where('balance','>',0)->sum('balance');   
+
+            }else{
+
+                $customer_wallet = \Customerwallet::where('customer_id',(int) $customer_id)->orderBy('_id','desc')->first();
+
+                if($customer_wallet){
+
+                    if( isset($customer_wallet->balance_fitcash_plus) && $customer_wallet->balance_fitcash_plus != ''){
+                        $wallet_fitcash_plus = (int)$customer_wallet->balance_fitcash_plus;
+                    }
+
+                    if(isset($customer_wallet->balance) && $customer_wallet->balance != '' && $wallet_fitcash_plus < $cap){
+
+                        $wallet = $customer_wallet->balance;
+
+                        if(($wallet + $wallet_fitcash_plus) > $cap){
+
+                            $wallet = $cap - $wallet_fitcash_plus;
+                        }
+                    }
+
+                    $current_wallet_balance = $wallet + $wallet_fitcash_plus;
+
+                    $utilities = new Utilities;
+
+                    $request['customer_id'] = $customer_id;
+                    $request['amount'] = $current_wallet_balance;
+                    $request['entry'] = "credit";
+                    $request['type'] = "CREDIT";
+                    $request['description'] = "Added Fitcash Plus Rs ".$current_wallet_balance;
+
+                    $return = $utilities->customerWalletTransaction($request);
+
+                    $customer->update(['demonetisation'=>time()]);
+
+                }
+
+            }*/
+        }
+
+        $wallet_percentage = 27 ;
+
+        $vendorCommercial = \VendorCommercial::where('vendor_id',$finder_id)->orderBy('_id','desc')->first();
+
+        $commision = 15;
+        if($vendorCommercial){
+
+            if($offer_id){
+                if(isset($vendorCommercial->campaign_end_date) && $vendorCommercial->campaign_end_date != "" && isset($vendorCommercial->campaign_cos) && $vendorCommercial->campaign_cos != ""){
+
+                    $campaign_end_date = strtotime(date('Y-m-d 23:59:59',strtotime($vendorCommercial->campaign_end_date)));
+
+                    if($campaign_end_date > time()){
+                        $commision = (float) preg_replace("/[^0-9.]/","",$vendorCommercial->campaign_cos);
+                    }
+                }
+            }else{
+
+                if(isset($vendorCommercial->contract_end_date) && $vendorCommercial->contract_end_date != "" && isset($vendorCommercial->commision) && $vendorCommercial->commision != ""){
+
+                    $contract_end_date = strtotime(date('Y-m-d 23:59:59',strtotime($vendorCommercial->contract_end_date)));
+
+                    if($contract_end_date > time()){
+                        $commision = (float) preg_replace("/[^0-9.]/","",$vendorCommercial->commision);
+                    }
+                }
+            }
+        }
+
+        $algo = array(
+            array('min'=>0,'max'=>10,'cashback'=>2.5,'fitcash'=>2.5,'discount'=>0),
+            array('min'=>10,'max'=>0,'cashback'=>5,'fitcash'=>5,'discount'=>0),
+        );
+
+        $setAlgo = array('cashback'=>5,'fitcash'=>5,'discount'=>0);
+
+        if($payment_mode != "paymentgateway"){
+            $setAlgo = array('cashback'=>5,'fitcash'=>5,'discount'=>0);
+            $wallet = 0;
+        }else{
+
+            foreach ($algo as $key => $value) {
+
+                $min_flag = ($commision >= $value['min'] || $value['min'] == 0) ? true : false;
+                $max_flag = ($commision < $value['max'] || $value['max'] == 0) ? true : false;
+
+                if($min_flag && $max_flag){
+                    $setAlgo = $value;
+                    break;
+                }
+
+            }
+        }
+
+        if($amount > 50000){
+            $setAlgo = array('cashback'=>0,'fitcash'=>0,'discount'=>0);
+        }
+
+        $original_amount = $amount;
+        $wallet_amount = round($amount * $setAlgo['fitcash'] / 100);
+        $amount_discounted = round($amount * $setAlgo['discount'] / 100); 
+        $wallet_algo = round(($amount * $commision / 100) * ($wallet_percentage / 100));
+        $amount_deducted_from_wallet = $amount > $current_wallet_balance ? $current_wallet_balance : $amount;
+        $final_amount_discount_only = $original_amount - $amount_discounted;
+        $final_amount_discount_and_wallet = $original_amount - $amount_discounted - $amount_deducted_from_wallet;
+
+        $data['original_amount'] = $original_amount;
+        $data['amount_discounted'] = $amount_discounted;
+        $data['amount_deducted_from_wallet'] = $amount_deducted_from_wallet;
+        $data['final_amount_discount_only'] = $final_amount_discount_only;
+        $data['final_amount_discount_and_wallet'] = $final_amount_discount_and_wallet;
+        $data['wallet_amount'] = $wallet_amount;
+        $data['algo'] = $setAlgo;
+        $data['current_wallet_balance'] = round($current_wallet_balance);
+
+
+        $data['description'] = "Enjoy instant cashback (FitCash) of Rs. ".$wallet_amount." on this purchase. FitCash can be used for any booking / purchase on Fitternity ranging from workout sessions, memberships and healthy tiffin subscription with a validity of 12 months.";
+        
+        Log::info('reward_calculation : ',$data);
+
+        return $data;
+
+    }
+
+
+    public function purchaseGameOld($amount,$finder_id,$payment_mode = "paymentgateway",$offer_id = false,$customer_id = false){
 
         $wallet = 0;
         $wallet_fitcash_plus = 0;
+        $cap = 2000;
 
         $jwt_token = Request::header('Authorization');
 
@@ -372,6 +552,7 @@ Class CustomerReward {
         }
         
         if($customer_id){
+
             $customer_wallet = Customerwallet::where('customer_id',(int) $customer_id)->orderBy('_id','desc')->first();
 
             if($customer_wallet && isset($customer_wallet->balance) && $customer_wallet->balance != ''){
@@ -413,12 +594,11 @@ Class CustomerReward {
         }
 
         $algo = array(
-            array('min'=>0,'max'=>5,'cashback'=>2.5,'fitcash'=>2.5,'discount'=>0),
-            array('min'=>5,'max'=>10,'cashback'=>5,'fitcash'=>5,'discount'=>0),
-            array('min'=>10,'max'=>0,'cashback'=>10,'fitcash'=>10,'discount'=>0)
+            array('min'=>0,'max'=>10,'cashback'=>2.5,'fitcash'=>2.5,'discount'=>0),
+            array('min'=>10,'max'=>0,'cashback'=>5,'fitcash'=>5,'discount'=>0),
         );
 
-        $setAlgo = array('cashback'=>10,'fitcash'=>10,'discount'=>0);
+        $setAlgo = array('cashback'=>5,'fitcash'=>5,'discount'=>0);
 
         if($payment_mode != "paymentgateway"){
             $setAlgo = array('cashback'=>5,'fitcash'=>5,'discount'=>0);
@@ -464,13 +644,36 @@ Class CustomerReward {
             }
         }*/
 
+        if($amount > 50000){
+            $setAlgo = array('cashback'=>0,'fitcash'=>0,'discount'=>0);
+        }
+
         $original_amount = $amount;
 
         $wallet_amount = round($amount * $setAlgo['fitcash'] / 100);
 
-        $amount_discounted = round($amount * $setAlgo['discount'] / 100);   
+        $amount_discounted = round($amount * $setAlgo['discount'] / 100); 
 
-        $wallet_algo = round(($amount * $commision / 100) * ($wallet_percentage / 100));
+        if($amount >= 500){
+            $wallet_algo = $amount;
+        }else{
+            $wallet_algo = round(($amount * $commision / 100) * ($wallet_percentage / 100));
+        }
+        
+        if( isset($customer_wallet->balance_fitcash_plus) && $customer_wallet->balance_fitcash_plus != ''){
+            $wallet_fitcash_plus = (int)$customer_wallet->balance_fitcash_plus;
+        }
+
+        if(isset($customer_wallet->balance) && $customer_wallet->balance != '' && $wallet_fitcash_plus <= $cap){
+
+            $wallet = $customer_wallet->balance;
+
+            if(($wallet + $wallet_fitcash_plus) > $cap){
+
+                $wallet = $cap - $wallet_fitcash_plus;
+            }
+        }
+
 
         if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios']) && isset($_GET['app_version']) && ((float)$_GET['app_version'] <= 3.2) ){
 
@@ -491,7 +694,7 @@ Class CustomerReward {
             $data['current_wallet_balance'] = round($wallet);
             //$data['description'] = "Enjoy instant discount of Rs.".$amount_discounted." on this purchase & Fitcash of Rs.".$wallet_amount." for your next purchase (Fitcash is fitternity's cool new wallet)";
             // $data['description'] = "Enjoy Fitcash of Rs.".$wallet_amount." for your next purchase (Fitcash is fitternity's cool new wallet)";
-
+            
             $data['description'] = "Enjoy instant cashback (FitCash) of Rs. ".$wallet_amount." on this purchase. FitCash can be used for any booking / purchase on Fitternity ranging from workout sessions, memberships and healthy tiffin subscription with a validity of 12 months.";
             
             Log::info('reward_calculation : ',$data);
@@ -566,6 +769,29 @@ Class CustomerReward {
 
     }
 
+
+    public function purchaseGame($amount,$finder_id,$payment_mode = "paymentgateway",$offer_id = false,$customer_id = false){
+
+        $jwt_token = Request::header('Authorization');
+
+        Log::info('jwt_token : '.$jwt_token);
+            
+        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+            $decoded = $this->customerTokenDecode($jwt_token);
+            $customer_id = $decoded->customer->_id;
+        }
+
+        $customer = \Customer::find($customer_id);
+
+        if(isset($customer->demonetisation)){
+
+            return $this->purchaseGameNew($amount,$finder_id,$payment_mode = "paymentgateway",$offer_id = false,$customer_id = false);
+
+        }
+
+        return $this->purchaseGameOld($amount,$finder_id,$payment_mode = "paymentgateway",$offer_id = false,$customer_id = false);
+
+    }
 
     public function customerTokenDecode($token){
 

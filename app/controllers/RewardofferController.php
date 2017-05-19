@@ -111,6 +111,8 @@ class RewardofferController extends BaseController {
             $customerReward     =   new CustomerReward();
             $calculation        =   $customerReward->purchaseGame($amount,$finder_id);
 
+            $calculation['algo']['cashback'] = (int)$calculation['algo']['cashback'];
+
             if(isset($data['order_id']) && $data['order_id'] != ""){
 
                 $order_id = (int) $data['order_id'];
@@ -128,11 +130,11 @@ class RewardofferController extends BaseController {
                 'percentage'    =>  $calculation['algo']['cashback'].'%',
                 'commision'     =>  $calculation['algo']['cashback'],
                 'calculation'   =>  $calculation,
-                'info'          =>  "You can only pay upto 10% of the booking amount through FitCash. \nIt is calculated basis the amount, type and duration of the purchase.  \nYour total FitCash balance is Rs. ".$calculation['current_wallet_balance_only_fitcash']." FitCash applicable for this transaction is Rs. ".$calculation['amount_deducted_from_wallet']
+                'info'          =>  ""//"You can only pay upto 10% of the booking amount through FitCash. \nIt is calculated basis the amount, type and duration of the purchase.  \nYour total FitCash balance is Rs. ".$calculation['current_wallet_balance_only_fitcash']." FitCash applicable for this transaction is Rs. ".$calculation['amount_deducted_from_wallet']
             ];
-            if($calculation["current_wallet_balance_only_fitcash_plus"] > 0){
+            /*if($calculation["current_wallet_balance_only_fitcash_plus"] > 0){
                 $cashback["info"] = "You can only pay upto 10% of the booking amount through FitCash. \n\nIt is calculated basis the amount, type and duration of the purchase.  \n\nYour total FitCash balance is Rs. ".$calculation['current_wallet_balance_only_fitcash_plus']."\n\nYour total FitCash Plus balance is Rs. ".$calculation['current_wallet_balance_only_fitcash']." FitCash applicable for this transaction is Rs. ".$calculation['amount_deducted_from_wallet'];
-            }
+            }*/
 
             $renewal_cashback   =   ['title'=>'Discount on Renewal'];
             $rewards            =   [];
@@ -350,20 +352,43 @@ class RewardofferController extends BaseController {
 
         }
 
+        $calculation['algo']['cashback'] = (int)$calculation['algo']['cashback'];
+
         $cashback  = array(
             // 'title'=>$calculation['algo']['cashback'].'% Discount on Purchase',
             'title'=>$calculation['algo']['cashback'].'% Instant Cashback on Purchase',
             'percentage'=>$calculation['algo']['cashback'].'%',
             'commision'=>$calculation['algo']['cashback'],
             'calculation'=>$calculation,
-            'info'          =>  "You can only pay upto 10% of the booking amount through FitCash. \n\nIt is calculated basis the amount, type and duration of the purchase.  \n\nYour total FitCash balance is Rs. ".$calculation['current_wallet_balance_only_fitcash']." FitCash applicable for this transaction is Rs. ".$calculation['amount_deducted_from_wallet'],
+            'info'          =>  "",//"You can only pay upto 10% of the booking amount through FitCash. \n\nIt is calculated basis the amount, type and duration of the purchase.  \n\nYour total FitCash balance is Rs. ".$calculation['current_wallet_balance_only_fitcash']." FitCash applicable for this transaction is Rs. ".$calculation['amount_deducted_from_wallet'],
             'description'=>$calculation['description']
         );
-        if($calculation["current_wallet_balance_only_fitcash_plus"] > 0){
+        /*if($calculation["current_wallet_balance_only_fitcash_plus"] > 0){
             $cashback["info"] = "You can only pay upto 10% of the booking amount through FitCash. \n\nIt is calculated basis the amount, type and duration of the purchase.  \n\nYour total FitCash balance is Rs. ".$calculation['current_wallet_balance_only_fitcash_plus']."\n\nYour total FitCash Plus balance is Rs. ".$calculation['current_wallet_balance_only_fitcash']." FitCash applicable for this transaction is Rs. ".$calculation['amount_deducted_from_wallet'];
-        }
+        }*/
 
         unset($cashback['calculation']['description']);
+
+        if(isset($ratecard['validity']) && $ratecard['validity'] != ""){
+
+            switch ($ratecard['validity_type']){
+                case 'days': 
+                    $duration_day = (int)$ratecard['validity'];break;
+                case 'months': 
+                    $duration_day = (int)($ratecard['validity'] * 30) ; break;
+                case 'year': 
+                    $duration_day = (int)($ratecard['validity'] * 30 * 12); break;
+                default : $duration_day =  $ratecard['validity']; break;
+            }
+        }
+
+        $duration_month = 0;
+
+        if(isset($duration_day)){
+            $duration_month = ceil($duration_day/30) + 2;
+        }
+
+        $cashback['description'] = "Enjoy FitCash Plus of Rs. ".$calculation['wallet_amount'].". FitCash Plus is fully redeemable for any booking / purchase on Fitternity ranging from workout sessions, memberships, diet plan and healthy tiffin subscription with a validity of ".$duration_month." months";
 
         $renewal_cashback  = array('title'=>'Discount on Renewal');
         $selection_limit = 1;

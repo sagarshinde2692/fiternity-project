@@ -1993,6 +1993,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         $customer->account_link = array('email' => 1, 'google' => 0, 'facebook' => 0, 'twitter' => 0);
                         $customer->status = "1";
                         $customer->ishulluser = 1;
+                        $customer->demonetisation = time();
                         $customer->save();
 
                         return $inserted_id;
@@ -2291,7 +2292,7 @@ if (!function_exists(('getReversehash'))){
      function getReversehash($data){
 
          Log::info($data);
-        // $data['env'] = 1;
+        $data['env'] = 1;
 
         $env = (isset($data['env']) && $data['env'] == 1) ? "stage" : "production";
 
