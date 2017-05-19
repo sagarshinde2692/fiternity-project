@@ -112,10 +112,30 @@ Class Utilities {
 
         $customer = \Customer::find($customer_id);
 
-        if(isset($customer->demonetisation)){
+        $fitcash = 0;
+        $fitcash_plus = 0;
+
+        $customerwallet = \Customerwallet::where('customer_id',$customer_id)->first();
+
+        if($customerwallet){
+
+            $fitcash = $customerwallet->balance;
+
+            if(isset($customerwallet->balance_fitcash_plus)){
+                $fitcash_plus = $customerwallet->balance_fitcash_plus;
+            }
+        }
+
+        $total_balance = $fitcash + $fitcash_plus;
+
+        if($total_balance == 0){
+            $customer->demonetisation = time();
+            $customer->update();
+        }
+
+        if(isset($customer->demonetisation) ){
 
             return $this->walletTransactionNew($request);
-
         }
 
         return $this->walletTransactionOld($request,$data);
