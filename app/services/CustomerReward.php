@@ -631,7 +631,7 @@ Class CustomerReward {
             $wallet_fitcash_plus = (int)$customer_wallet->balance_fitcash_plus;
         }
 
-        if(isset($customer_wallet->balance) && $customer_wallet->balance != '' && $wallet_fitcash_plus < $cap){
+        if(isset($customer_wallet->balance) && $customer_wallet->balance != '' && $wallet_fitcash_plus <= $cap){
 
             $wallet = $customer_wallet->balance;
 

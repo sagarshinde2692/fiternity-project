@@ -1472,9 +1472,11 @@ Class Utilities {
                 return ['status' => 400,'message' => 'Wallet is overflowing Rs '.$wallet_limit];
             }
 
-            if($current_wallet_balance < $wallet_limit && ($current_wallet_balance + (int)$request['amount']) > $wallet_limit){
+            if(!isset($customer->current_wallet_balance) && $current_wallet_balance < $wallet_limit && ($current_wallet_balance + (int)$request['amount']) > $wallet_limit){
                 $request['amount'] = (int)($wallet_limit - $current_wallet_balance);
             }
+
+            Log::info('credit',$request);
 
             $wallet = new Wallet();
             $wallet->_id = (Wallet::max('_id')) ? (int) Wallet::max('_id') + 1 : 1;
@@ -1713,46 +1715,63 @@ Class Utilities {
 
                 if($current_wallet_balance > 0){
 
+                    if($current_wallet_balance > $wallet_limit){
+                        $customer->update(['current_wallet_balance'=>$current_wallet_balance]);
+                    }
+
+
+                    $credit_amount = 2000;
+
+                    $current_wallet_balance_only_fitcash = $order['cashback_detail']['current_wallet_balance_only_fitcash'];
+                    $current_wallet_balance_only_fitcash_plus = $order['cashback_detail']['current_wallet_balance_only_fitcash_plus'];
+
+                    if($current_wallet_balance_only_fitcash+$current_wallet_balance_only_fitcash_plus < 2000){
+
+                        $credit_amount = $current_wallet_balance_only_fitcash+$current_wallet_balance_only_fitcash_plus;
+
+                    }
+
+                    if($current_wallet_balance_only_fitcash_plus >= 2000){
+
+                        $credit_amount = $current_wallet_balance_only_fitcash_plus;
+
+                    }
+
                     $request['customer_id'] = $customer_id;
-                    $request['amount'] = $order['cashback_detail']['current_wallet_balance'];
+                    $request['amount'] = $credit_amount;
                     $request['entry'] = "credit";
                     $request['type'] = "CREDIT";
                     $request['order_id'] = $order['_id'];
-                    $request['description'] = "Demonetisation Added Fitcash Plus Rs for Order ID: ".$order['_id'];
+                    $request['description'] = "Conversion of Fitcash to Fitcash Plus for Order ID: ".$order['_id'];
+
+                    Log::info("1",$request);
 
                     $this->walletTransactionNew($request);
 
                     $request['customer_id'] = $customer_id;
-                    $request['amount'] = $order['cashback_detail']['current_wallet_balance'];
+                    $request['amount'] = $order['wallet_amount'];
                     $request['entry'] = "debit";
                     $request['type'] = "DEBIT";
                     $request['order_id'] = $order['_id'];
                     $request['description'] = "Paid for Order ID: ".$order['_id'];
 
-                    $this->walletTransactionNew($request);
-
-                    $request['customer_id'] = $customer_id;
-                    $request['amount'] = $current_wallet_balance;
-                    $request['entry'] = "credit";
-                    $request['type'] = "CREDIT";
-                    $request['order_id'] = $order['_id'];
-                    $request['description'] = "Demonetisation Added Fitcash Plus Rs for Order ID: ".$order['_id'];
+                    Log::info("2",$request);
 
                     $this->walletTransactionNew($request);
 
                 }else{
-
+                    
                     $request['customer_id'] = $customer_id;
                     $request['amount'] = $order['cashback_detail']['current_wallet_balance'];
                     $request['entry'] = "credit";
                     $request['type'] = "CREDIT";
                     $request['order_id'] = $order['_id'];
-                    $request['description'] = "Demonetisation Added Fitcash Plus Rs for Order ID: ".$order['_id'];
+                    $request['description'] = "Conversion of Fitcash to Fitcash Plus for Order ID: ".$order['_id'];
 
                     $this->walletTransactionNew($request);
 
                     $request['customer_id'] = $customer_id;
-                    $request['amount'] = $order['cashback_detail']['current_wallet_balance'];
+                    $request['amount'] = $order['wallet_amount'];//$order['cashback_detail']['current_wallet_balance'];
                     $request['entry'] = "debit";
                     $request['type'] = "DEBIT";
                     $request['order_id'] = $order['_id'];
@@ -1761,10 +1780,6 @@ Class Utilities {
                     $this->walletTransactionNew($request);
 
 
-                }
-
-                if($current_wallet_balance > $wallet_limit){
-                    $customer->update(['current_wallet_balance'=>$current_wallet_balance]);
                 }
 
                 $customer->update(['demonetisation'=>time()]);
