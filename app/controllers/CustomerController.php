@@ -686,7 +686,7 @@ class CustomerController extends \BaseController {
 
 		if(isset($customer->demonetisation)){
 
-			$current_wallet_balance = \Wallet::active()->where('customer_id',$customer_id)->where('balance','>',0)->sum('balance');
+			$current_wallet_balance = \Wallet::active()->where('customer_id',$customer->_id)->where('balance','>',0)->sum('balance');
 
 			if($current_wallet_balance > 0){
 
