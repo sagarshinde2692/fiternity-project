@@ -1973,7 +1973,7 @@ class TransactionController extends \BaseController {
                 $req['entry'] = "credit";
                 $req['type'] = "FITCASHPLUS";
                 $req['amount_fitcash_plus'] = $amount;
-                $req['description'] = "Added Fitcash + Expires On : ".date('d-m-Y',time()+(86400*60));
+                $req['description'] = "Added FitCash+ Expires On : ".date('d-m-Y',time()+(86400*60));
                 $req["validity"] = time()+(86400*60);
                 $req['for'] = $time;
 

@@ -921,3 +921,5 @@ Route::get('syncsharecustomerno','DebugController@syncsharecustomerno');
 
 //reverse migration roures
 Route::get('reverse/migration/{colllection}/{id}','MigrationReverseController@byId');
+
+Route::get('orderdemonetisation/{order_id}',array('as' => 'orderdemonetisation','uses' => 'CustomerController@orderDemonetisation'));

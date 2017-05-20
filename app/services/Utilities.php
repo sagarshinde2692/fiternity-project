@@ -1240,7 +1240,7 @@ Class Utilities {
                             "customer_id" => $data["customer_id"],
                             "amount" => 250,
                             "action" => "add_fitcash_plus",
-                            "description" => "Added Fitcash + Rs 250 on App Download, Expires On : ".date('d-m-Y',time()+(86400*180)),
+                            "description" => "Added FitCash+ Rs 250 on App Download, Expires On : ".date('d-m-Y',time()+(86400*180)),
                             "validity"=>time()+(86400*180)
                         ];
 
@@ -1289,7 +1289,7 @@ Class Utilities {
         if($data['action'] == "add_fitcash_plus"){
             $req['amount_fitcash_plus'] = $amount;
             $req['type'] = "FITCASHPLUS";
-            $req['description'] = "Added Fitcash + Rs ".$amount;
+            $req['description'] = "Added FitCash+ Rs ".$amount;
         }
 
         if(isset($data['description']) && $data['description'] != ""){
@@ -1811,7 +1811,7 @@ Class Utilities {
                     $request['entry'] = "credit";
                     $request['type'] = "CREDIT";
                     $request['order_id'] = $order['_id'];
-                    $request['description'] = "Conversion of FitCash + on Demonetization (Order ID. ".$order['_id'].")";
+                    $request['description'] = "Conversion of FitCash+ on Demonetization (Order ID. ".$order['_id'].")";
                     Log::info("1",$request);
 
                     $this->walletTransactionNew($request);
@@ -1834,7 +1834,7 @@ Class Utilities {
                     $request['entry'] = "credit";
                     $request['type'] = "CREDIT";
                     $request['order_id'] = $order['_id'];
-                    $request['description'] = "Conversion of FitCash + on Demonetization (Order ID. ".$order['_id'].")";
+                    $request['description'] = "Conversion of FitCash+ on Demonetization (Order ID. ".$order['_id'].")";
 
                     $this->walletTransactionNew($request);
 
@@ -1896,6 +1896,40 @@ Class Utilities {
         }
 
         return $description;
+
+    }
+
+
+    public function getWalletBalance($customer_id){
+
+        $customer_id = (int) $customer_id;
+
+        $wallet_balance = Wallet::active()->where('customer_id',$customer_id)->where('balance','>',0)->sum('balance');
+
+        return $wallet_balance;
+    }
+
+
+    public function sendDemonetisationCustomerSms($order){
+
+        if(isset($order->demonetisation)){
+
+            $customer_id = (int)$order->customer_id;
+
+            if($order->logged_in_customer_id){
+                $customer_id = (int)$order->logged_in_customer_id;
+            }
+
+            $customer_wallet_balance = (int)$this->getWalletBalance($customer_id);
+
+            $order->update(['customer_wallet_balance'=>$customer_wallet_balance]);
+
+            $customersms = new \CustomerSms();
+
+            $customersms->demonetisation($order->toArray());
+        }
+
+        return "success";
 
     }
 

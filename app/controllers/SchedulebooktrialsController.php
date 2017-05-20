@@ -1372,6 +1372,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             if(isset($order['amount']) && $order['amount'] != "" && $order['amount'] > 0){
 
+                $this->utilities->demonetisation($order);
             	$this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
             	$this->customersms->giveCashbackOnTrialOrderSuccessAndInvite($order->toArray());
             }
@@ -1383,6 +1384,8 @@ class SchedulebooktrialsController extends \BaseController {
                 $reminderDateTime 		        =	\Carbon\Carbon::createFromFormat('d-m-Y g:i A', $datetime_str);
                 $sndReminderEmailFinder	        = 	$this->findermailer->healthyTiffinTrialReminder($order->toArray(),$reminderDateTime);
             }
+
+            $this->utilities->sendDemonetisationCustomerSms($order);
 
             $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
             return Response::json($resp);
@@ -1574,7 +1577,9 @@ class SchedulebooktrialsController extends \BaseController {
 
             if(isset($order->redundant_order)){
                 $order->unset('redundant_order');
-            }  
+            }
+
+            $this->utilities->sendDemonetisationCustomerSms($order);  
 
             $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
             return Response::json($resp);
@@ -2079,7 +2084,7 @@ class SchedulebooktrialsController extends \BaseController {
                 }
             }
 
-            //give fitcash + for first workout session
+            //give fitcash+ for first workout session
             $give_fitcash_plus = true;
             $allOrderIds = Order::active()->where("customer_id",$customer_id)->where('type','workout-session')->lists("_id");
 
@@ -2104,7 +2109,7 @@ class SchedulebooktrialsController extends \BaseController {
                     "amount_fitcash" => 0,
                     "amount_fitcash_plus" => 250,
                     "type"=>'FITCASHPLUS',
-                    "description"=>'Added Fitcash + on Workout Session amount - 250',
+                    "description"=>'Added FitCash+ on Workout Session amount - 250',
                     "order_id"=>$order->_id,
                     'entry'=>'credit',
                 );
@@ -2202,6 +2207,7 @@ class SchedulebooktrialsController extends \BaseController {
             $this->attachTrialCampaignToCustomer($customer_id,$campaign,$booktrialid);
         }*/
 
+        $this->utilities->sendDemonetisationCustomerSms($order);
         
         Log::info('Customer Book Trial : '.json_encode(array('book_trial_details' => Booktrial::findOrFail($booktrialid))));
 

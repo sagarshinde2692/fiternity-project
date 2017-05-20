@@ -440,7 +440,7 @@ Class CustomerReward {
                     $request['amount'] = $current_wallet_balance;
                     $request['entry'] = "credit";
                     $request['type'] = "CREDIT";
-                    $request['description'] = "Added Fitcash + Rs ".$current_wallet_balance;
+                    $request['description'] = "Added FitCash+ Rs ".$current_wallet_balance;
 
                     $return = $utilities->customerWalletTransaction($request);
 
@@ -703,7 +703,7 @@ Class CustomerReward {
 
         }else{
 
-            //fitcash +
+            //fitcash+
             $deduct_fitcash_plus = $original_amount;
             $deduct_fitcash = 0;
 
