@@ -158,7 +158,7 @@ Class CustomerReward {
                     "amount_fitcash_plus" => 0,
                     "type"=>'CASHBACK',
                     'entry'=>'credit',
-                    "description"=>'Cashback on purchse for Order ID : '.$order['_id'].', Expires On : '.date('d-m-Y H:i:s',time()+(86400*$duration_day)),
+                    'description'=>"5% Cashback for purchase of membership at ".ucwords($order['finder_name'])." (Order ID. ".$order['_id']."), Expires On : ".date('d-m-Y',time()+(86400*$duration_day)),
                     "validity"=>time()+(86400*$duration_day)
                 );
 
@@ -202,7 +202,7 @@ Class CustomerReward {
                     "amount_fitcash_plus" => intval($order['amount_customer'] * 20 / 100),
                     "type"=>'CASHBACK',
                     'entry'=>'credit',
-                    "description"=>'CASHBACK on Trial for Order ID : '.$order['_id'].', Expires On : '.date('d-m-Y H:i:s',time()+(86400)),
+                    "description"=> "20% Cashback for paid trial purchase at ".ucwords($order['finder_name'])." (Order ID. ".$order['_id']."), Expires On : ".date('d-m-Y',time()+(86400*60)),
                     "validity"=>time()+(86400*60)
                 );
 
@@ -440,7 +440,7 @@ Class CustomerReward {
                     $request['amount'] = $current_wallet_balance;
                     $request['entry'] = "credit";
                     $request['type'] = "CREDIT";
-                    $request['description'] = "Added Fitcash Plus Rs ".$current_wallet_balance;
+                    $request['description'] = "Added Fitcash + Rs ".$current_wallet_balance;
 
                     $return = $utilities->customerWalletTransaction($request);
 
@@ -703,7 +703,7 @@ Class CustomerReward {
 
         }else{
 
-            //fitcash plus
+            //fitcash +
             $deduct_fitcash_plus = $original_amount;
             $deduct_fitcash = 0;
 

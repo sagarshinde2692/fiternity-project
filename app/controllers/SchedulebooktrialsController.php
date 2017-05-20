@@ -2079,7 +2079,7 @@ class SchedulebooktrialsController extends \BaseController {
                 }
             }
 
-            //give fitcash plus for first workout session
+            //give fitcash + for first workout session
             $give_fitcash_plus = true;
             $allOrderIds = Order::active()->where("customer_id",$customer_id)->where('type','workout-session')->lists("_id");
 
@@ -2104,7 +2104,7 @@ class SchedulebooktrialsController extends \BaseController {
                     "amount_fitcash" => 0,
                     "amount_fitcash_plus" => 250,
                     "type"=>'FITCASHPLUS',
-                    "description"=>'Added Fitcash Plus on Workout Session amount - 250',
+                    "description"=>'Added Fitcash + on Workout Session amount - 250',
                     "order_id"=>$order->_id,
                     'entry'=>'credit',
                 );

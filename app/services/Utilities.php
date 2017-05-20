@@ -1240,7 +1240,7 @@ Class Utilities {
                             "customer_id" => $data["customer_id"],
                             "amount" => 250,
                             "action" => "add_fitcash_plus",
-                            "description" => "Added Fitcash Plus Rs 250 on App Download, Expires On : ".date('d-m-Y H:i:s',time()+(86400*180)),
+                            "description" => "Added Fitcash + Rs 250 on App Download, Expires On : ".date('d-m-Y',time()+(86400*180)),
                             "validity"=>time()+(86400*180)
                         ];
 
@@ -1289,7 +1289,7 @@ Class Utilities {
         if($data['action'] == "add_fitcash_plus"){
             $req['amount_fitcash_plus'] = $amount;
             $req['type'] = "FITCASHPLUS";
-            $req['description'] = "Added Fitcash Plus Rs ".$amount;
+            $req['description'] = "Added Fitcash + Rs ".$amount;
         }
 
         if(isset($data['description']) && $data['description'] != ""){
@@ -1811,8 +1811,7 @@ Class Utilities {
                     $request['entry'] = "credit";
                     $request['type'] = "CREDIT";
                     $request['order_id'] = $order['_id'];
-                    $request['description'] = "Conversion of Fitcash to Fitcash Plus for Order ID: ".$order['_id'];
-
+                    $request['description'] = "Conversion of FitCash + on Demonetization (Order ID. ".$order['_id'].")";
                     Log::info("1",$request);
 
                     $this->walletTransactionNew($request);
@@ -1822,7 +1821,7 @@ Class Utilities {
                     $request['entry'] = "debit";
                     $request['type'] = "DEBIT";
                     $request['order_id'] = $order['_id'];
-                    $request['description'] = "Paid for Order ID: ".$order['_id'];
+                    $request['description'] = $this->getDescription($order);
 
                     Log::info("2",$request);
 
@@ -1835,7 +1834,7 @@ Class Utilities {
                     $request['entry'] = "credit";
                     $request['type'] = "CREDIT";
                     $request['order_id'] = $order['_id'];
-                    $request['description'] = "Conversion of Fitcash to Fitcash Plus for Order ID: ".$order['_id'];
+                    $request['description'] = "Conversion of FitCash + on Demonetization (Order ID. ".$order['_id'].")";
 
                     $this->walletTransactionNew($request);
 
@@ -1844,7 +1843,7 @@ Class Utilities {
                     $request['entry'] = "debit";
                     $request['type'] = "DEBIT";
                     $request['order_id'] = $order['_id'];
-                    $request['description'] = "Paid for Order ID: ".$order['_id'];
+                    $request['description'] = $this->getDescription($order);
 
                     $this->walletTransactionNew($request);
 
@@ -1853,11 +1852,50 @@ Class Utilities {
 
                 $customer->update(['demonetisation'=>time()]);
 
+                $order->update(['demonetisation'=>time()]);
+
             }
         }
 
         return "success";
 
+
+    }
+
+
+    public function getDescription($order,$validity = false){
+
+        $type = $order['type'];
+        $expires_on = "";
+
+        if($validity){
+            $expires_on = ", Expires On : ".date('d-m-Y H:i:s',$validity);
+        }
+
+        $description = "Payment for Order ID. ".$order['_id'].$validity;
+
+        try{
+
+            switch ($type) {
+                case 'memberships': $description = "Payment for purchase of membership at ".$order['finder_name']." (Order ID. ".$order['_id'].")".$validity; break;
+                case 'booktrials': $description = "Payment for purchase of paid trial at ".$order['finder_name']." (Order ID. ".$order['_id'].")".$validity; break;
+                case 'workout-session': $description = "Payment for purchase of workout session at ".$order['finder_name']." (Order ID. ".$order['_id'].")".$validity; break;
+                case 'diet_plan': $description = "Payment for purchase of diet plan (Order ID. ".$order['_id'].")".$validity; break;
+                case 'healthytiffintrail': $description = "Payment for purchase of healthy tiffin trial at (Order ID. ".$order['_id'].")".$validity; break;
+                case 'healthytiffinmembership': $description = "Payment for purchase of healthy tiffin subscription at (Order ID. ".$order['_id'].")".$validity; break;
+                default:break;
+            }
+
+            return $description;
+
+        }catch(Exception $e){
+
+            Log::info("getType Error : ".$type);
+
+            return $description;
+        }
+
+        return $description;
 
     }
 

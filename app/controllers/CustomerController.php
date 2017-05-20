@@ -2361,7 +2361,7 @@ class CustomerController extends \BaseController {
 						'balance'=>$wallet_balance,
 						'info'=>[
 							'title'=>'What is FitCash+?',
-							'description' => 'With FitCash Plus there is no restriction on redeeming - you can use the entire amount in your transaction! FitCash can be used for any booking or purchase on Fitternity ranging from workout sessions, memberships and healthy tiffin subscriptions.',
+							'description' => 'With FitCash + there is no restriction on redeeming - you can use the entire amount in your transaction! FitCash can be used for any booking or purchase on Fitternity ranging from workout sessions, memberships and healthy tiffin subscriptions.',
 							'short_description' => "short"."\n"."description"."\n"."description"
 						]
 					],
@@ -2465,7 +2465,7 @@ class CustomerController extends \BaseController {
 						'balance'=>$balance_fitcash_plus,
 						'info'=>[
 							'title'=>'What is FitCash+?',
-							'description' => 'With FitCash Plus there is no restriction on redeeming - you can use the entire amount in your transaction! FitCash can be used for any booking or purchase on Fitternity ranging from workout sessions, memberships and healthy tiffin subscriptions.',
+							'description' => 'With FitCash + there is no restriction on redeeming - you can use the entire amount in your transaction! FitCash can be used for any booking or purchase on Fitternity ranging from workout sessions, memberships and healthy tiffin subscriptions.',
 							'short_description' => "short"."\n"."description"."\n"."description"
 						]
 					],
@@ -3254,7 +3254,7 @@ class CustomerController extends \BaseController {
 						$walletData["balance_fitcash_plus"] = $cashback_amount;
 					}
 
-					$walletData["description"] = "Added Fitcash Plus on PROMOTION Rs - ".$cashback_amount;
+					$walletData["description"] = "Added Fitcash + on PROMOTION Rs - ".$cashback_amount;
 				}
 
 				
@@ -3349,7 +3349,7 @@ class CustomerController extends \BaseController {
 					$walletData["type"] = "FITCASHPLUS";
 					$walletData["amount_fitcash"] = 0;
 					$walletData["amount_fitcash_plus"] = $cashback_amount;
-					$walletData["description"] = "Added Fitcash Plus on PROMOTION Rs - ".$cashback_amount;
+					$walletData["description"] = "Added Fitcash + on PROMOTION Rs - ".$cashback_amount;
 				}
 
 				$this->utilities->walletTransaction($walletData);
