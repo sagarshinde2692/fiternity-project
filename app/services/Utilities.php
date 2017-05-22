@@ -1283,7 +1283,7 @@ Class Utilities {
         if($data['action'] == "add_fitcash"){
             $req['amount_fitcash'] = $amount;
             $req['type'] = "FITCASH";
-            $req['description'] = "Added Fitcash Rs ".$amount;
+            $req['description'] = "Added FitCash Rs ".$amount;
         }
 
         if($data['action'] == "add_fitcash_plus"){
