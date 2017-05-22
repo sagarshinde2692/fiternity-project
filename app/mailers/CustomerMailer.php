@@ -130,6 +130,7 @@ Class CustomerMailer extends Mailer {
 			case 'lyfe' :  $label = 'Order-PG-Lyfe-Customer';
 			case 'mickeymehtaevent' :  $label = 'Order-PG-Mickeymehtaevent-Customer';
 			case 'events' :  $label = 'Order-PG-Event';
+			case 'diet_plan' :  $label = 'Diet-PG-Customer';
 			default: break;
 		}
 

@@ -1959,7 +1959,7 @@ class TransactionController extends \BaseController {
         $order = Order::FindOrFail($data['_id']);
         $order->update($data);
         $order_id = $order->_id;
-        $this->customermailer->sendDietPgCustomer($data);
+        // $this->customermailer->sendDietPgCustomer($data);
         return array('order_id'=>$order_id,'status'=>200,'message'=>'Diet Plan Order Created Sucessfully');
     }
 
