@@ -1872,17 +1872,17 @@ Class Utilities {
             $expires_on = ", Expires On : ".date('d-m-Y H:i:s',$validity);
         }
 
-        $description = "Payment for Order ID. ".$order['_id'].$validity;
+        $description = "Payment for Order ID. ".$order['_id'].$expires_on;
 
         try{
 
             switch ($type) {
-                case 'memberships': $description = "Payment for purchase of membership at ".$order['finder_name']." (Order ID. ".$order['_id'].")".$validity; break;
-                case 'booktrials': $description = "Payment for purchase of paid trial at ".$order['finder_name']." (Order ID. ".$order['_id'].")".$validity; break;
-                case 'workout-session': $description = "Payment for purchase of workout session at ".$order['finder_name']." (Order ID. ".$order['_id'].")".$validity; break;
-                case 'diet_plan': $description = "Payment for purchase of diet plan (Order ID. ".$order['_id'].")".$validity; break;
-                case 'healthytiffintrail': $description = "Payment for purchase of healthy tiffin trial at (Order ID. ".$order['_id'].")".$validity; break;
-                case 'healthytiffinmembership': $description = "Payment for purchase of healthy tiffin subscription at (Order ID. ".$order['_id'].")".$validity; break;
+                case 'memberships': $description = "Payment for purchase of membership at ".$order['finder_name']." (Order ID. ".$order['_id'].")".$expires_on; break;
+                case 'booktrials': $description = "Payment for purchase of paid trial at ".$order['finder_name']." (Order ID. ".$order['_id'].")".$expires_on; break;
+                case 'workout-session': $description = "Payment for purchase of workout session at ".$order['finder_name']." (Order ID. ".$order['_id'].")".$expires_on; break;
+                case 'diet_plan': $description = "Payment for purchase of diet plan (Order ID. ".$order['_id'].")".$expires_on; break;
+                case 'healthytiffintrail': $description = "Payment for purchase of healthy tiffin trial at (Order ID. ".$order['_id'].")".$expires_on; break;
+                case 'healthytiffinmembership': $description = "Payment for purchase of healthy tiffin subscription at (Order ID. ".$order['_id'].")".$expires_on; break;
                 default:break;
             }
 
