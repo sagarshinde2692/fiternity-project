@@ -407,87 +407,106 @@ class TransactionController extends \BaseController {
             return Response::json($resp,401);
         }
 
-        $this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
 
-        if(isset($order->reward_ids) && !empty($order->reward_ids)){
+        $hash_verified = $this->utilities->verifyOrder($data,$order);
 
-            $reward_detail = array();
+        if($data['status'] == 'success' && $hash_verified){
+            // Give Rewards / Cashback to customer based on selection, on purchase success......
 
-            $reward_ids = array_map('intval',$order->reward_ids);
+            $this->utilities->demonetisation($order);
 
-            $rewards = Reward::whereIn('_id',$reward_ids)->get(array('_id','title','quantity','reward_type','quantity_type'));
+            $this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
 
-            if(count($rewards) > 0){
+            if(isset($order->reward_ids) && !empty($order->reward_ids)){
 
-                foreach ($rewards as $value) {
+                $reward_detail = array();
 
-                    $title = $value->title;
+                $reward_ids = array_map('intval',$order->reward_ids);
 
-                    if($value->reward_type == 'personal_trainer_at_studio' && isset($order->finder_name) && isset($order->finder_location)){
-                        $title = "Personal Training At ".$order->finder_name." (".$order->finder_location.")";
+                $rewards = Reward::whereIn('_id',$reward_ids)->get(array('_id','title','quantity','reward_type','quantity_type'));
+
+                if(count($rewards) > 0){
+
+                    foreach ($rewards as $value) {
+
+                        $title = $value->title;
+
+                        if($value->reward_type == 'personal_trainer_at_studio' && isset($order->finder_name) && isset($order->finder_location)){
+                            $title = "Personal Training At ".$order->finder_name." (".$order->finder_location.")";
+                        }
+
+                        $reward_detail[] = ($value->reward_type == 'nutrition_store') ? $title : $value->quantity." ".$title;
+
+                        array_set($data, 'reward_type', $value->reward_type);
+
                     }
 
-                    $reward_detail[] = ($value->reward_type == 'nutrition_store') ? $title : $value->quantity." ".$title;
+                    $reward_info = (!empty($reward_detail)) ? implode(" + ",$reward_detail) : "";
 
-                    array_set($data, 'reward_type', $value->reward_type);
-
+                    array_set($data, 'reward_info', $reward_info);
+                    
                 }
 
-                $reward_info = (!empty($reward_detail)) ? implode(" + ",$reward_detail) : "";
+            }
 
-                array_set($data, 'reward_info', $reward_info);
+            if(isset($order->cashback) && $order->cashback === true && isset($order->cashback_detail) ){
+
+                $reward_info = "Cashback";
                 
+                array_set($data, 'reward_info', $reward_info);
+                array_set($data, 'reward_type', 'cashback');
             }
+            array_set($data, 'status', '1');
+            array_set($data, 'order_action', 'bought');
+            array_set($data, 'success_date', date('Y-m-d H:i:s',time()));
 
-        }
+            array_set($data, 'auto_followup_date', date('Y-m-d H:i:s', strtotime("+7 days",strtotime($order['start_date']))));
+            array_set($data, 'followup_status', 'catch_up');
+            array_set($data, 'followup_status_count', 1);
 
-        if(isset($order->cashback) && $order->cashback === true && isset($order->cashback_detail) ){
-
-            $reward_info = "Cashback";
+            if(isset($order->payment_mode) && $order->payment_mode == "paymentgateway"){
             
-            array_set($data, 'reward_info', $reward_info);
-            array_set($data, 'reward_type', 'cashback');
-        }
+                array_set($data, 'membership_bought_at', 'Fitternity Payu Mode');
 
-        array_set($data, 'status', '1');
-        array_set($data, 'order_action', 'bought');
-        array_set($data, 'success_date', date('Y-m-d H:i:s',time()));
-            
-        if(isset($order->payment_mode) && $order->payment_mode == "paymentgateway"){
-            
-            array_set($data, 'membership_bought_at', 'Fitternity Payu Mode');
+                $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->where('_id','!=',(int)$order->_id)->where('finder_id',$order->finder_id)->count();
 
-            $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->where('_id','!=',(int)$order->_id)->where('finder_id',$order->finder_id)->count();
+                if($count > 0){
+                    array_set($data, 'acquisition_type', 'renewal_direct');
+                    array_set($data, 'membership_type', 'renewal');
+                }else{
+                    array_set($data,'acquisition_type','direct_payment');
+                    array_set($data, 'membership_type', 'new');
+                }
 
-            if($count > 0){
-                array_set($data, 'acquisition_type', 'renewal_direct');
-                array_set($data, 'membership_type', 'renewal');
-            }else{
-                array_set($data,'acquisition_type','direct_payment');
-                array_set($data, 'membership_type', 'new');
+                if($order->customer_source != 'admin'){
+
+                    array_set($data, 'secondary_payment_mode', 'payment_gateway_membership');
+                }
             }
 
-            if($order->customer_source != 'admin'){
+            if(isset($order->wallet_refund_sidekiq) && $order->wallet_refund_sidekiq != ''){
 
-                array_set($data, 'secondary_payment_mode', 'payment_gateway_membership');
+                try {
+                    $this->sidekiq->delete($order->wallet_refund_sidekiq);
+                }catch(\Exception $exception){
+                    Log::error($exception);
+                }
             }
-        }
 
-        if(isset($order->wallet_refund_sidekiq) && $order->wallet_refund_sidekiq != ''){
+            if($order['type'] == 'memberships' || $order['type'] == 'healthytiffinmembership'){
 
-            try {
-                $this->sidekiq->delete($order->wallet_refund_sidekiq);
-            }catch(\Exception $exception){
-                Log::error($exception);
-            }
-        }
+                if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
 
-        if($order['type'] == 'memberships' || $order['type'] == 'healthytiffinmembership'){
+                    if(isset($data["send_communication_customer"]) && $data["send_communication_customer"] != ""){
 
-            if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
+                        if(isset($order->instantPurchaseCustomerTiggerCount) && $order->instantPurchaseCustomerTiggerCount != ""){
+                            $data['instantPurchaseCustomerTiggerCount']     =  intval($order->instantPurchaseCustomerTiggerCount) + 1;
+                        }else{
+                            $data['instantPurchaseCustomerTiggerCount']     =   1;
+                        }
+                    }
 
-                if(isset($data["send_communication_customer"]) && $data["send_communication_customer"] != ""){
-
+                }else{
                     if(isset($order->instantPurchaseCustomerTiggerCount) && $order->instantPurchaseCustomerTiggerCount != ""){
                         $data['instantPurchaseCustomerTiggerCount']     =  intval($order->instantPurchaseCustomerTiggerCount) + 1;
                     }else{
@@ -495,67 +514,100 @@ class TransactionController extends \BaseController {
                     }
                 }
 
-            }else{
-                if(isset($order->instantPurchaseCustomerTiggerCount) && $order->instantPurchaseCustomerTiggerCount != ""){
-                    $data['instantPurchaseCustomerTiggerCount']     =  intval($order->instantPurchaseCustomerTiggerCount) + 1;
+
+                if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
+                    if(isset($data["send_communication_vendor"]) && $data["send_communication_vendor"] != ""){
+
+                        if(isset($order->instantPurchaseFinderTiggerCount) && $order->instantPurchaseFinderTiggerCount != ""){
+                            $data['instantPurchaseFinderTiggerCount']       =  intval($order->instantPurchaseFinderTiggerCount) + 1;
+                        }else{
+                            $data['instantPurchaseFinderTiggerCount']       =   1;
+                        }
+                    }
+
                 }else{
-                    $data['instantPurchaseCustomerTiggerCount']     =   1;
-                }
-            }
-
-
-            if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
-                if(isset($data["send_communication_vendor"]) && $data["send_communication_vendor"] != ""){
-
                     if(isset($order->instantPurchaseFinderTiggerCount) && $order->instantPurchaseFinderTiggerCount != ""){
                         $data['instantPurchaseFinderTiggerCount']       =  intval($order->instantPurchaseFinderTiggerCount) + 1;
                     }else{
                         $data['instantPurchaseFinderTiggerCount']       =   1;
                     }
                 }
+                
+            }
 
+            $order->update($data);
+
+            //send welcome email to payment gateway customer
+
+            $finder = Finder::find((int)$order->finder_id);
+            try {
+                if(isset($order->referal_trial_id) && $order->referal_trial_id != ''){
+                    $trial = Booktrial::find((int) $order->referal_trial_id);
+                    if($trial){
+                        $bookdata = array();
+                        array_set($bookdata, 'going_status', 4);
+                        array_set($bookdata, 'going_status_txt', 'purchased');
+                        array_set($bookdata, 'booktrial_actions', '');
+                        array_set($bookdata, 'followup_date', '');
+                        array_set($bookdata, 'followup_date_time', '');
+
+                        $trial->update($bookdata);
+                    }
+                }
+
+            } catch (Exception $e) {
+
+                Log::error($e);
+
+            }
+
+            $abundant_category = array(42,45);
+
+            if (filter_var(trim($order['customer_email']), FILTER_VALIDATE_EMAIL) === false){
+                $order->update(['email_not_sent'=>'captureOrderStatus']);
             }else{
-                if(isset($order->instantPurchaseFinderTiggerCount) && $order->instantPurchaseFinderTiggerCount != ""){
-                    $data['instantPurchaseFinderTiggerCount']       =  intval($order->instantPurchaseFinderTiggerCount) + 1;
-                }else{
-                    $data['instantPurchaseFinderTiggerCount']       =   1;
+
+                if(!in_array($finder->category_id, $abundant_category)){
+                    $emailData      =   [];
+                    $emailData      =   $order->toArray();
+                    if($emailData['type'] == 'events'){
+                        if(isset($emailData['event_id']) && $emailData['event_id'] != ''){
+                            $emailData['event'] = DbEvent::find(intval($emailData['event_id']))->toArray();
+                        }
+                        if(isset($emailData['ticket_id']) && $emailData['ticket_id'] != ''){
+                            $emailData['ticket'] = Ticket::find(intval($emailData['ticket_id']))->toArray();
+                        }
+                    }
+
+                    //print_pretty($emailData);exit;
+                    if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin" && $order->type != 'diet_plan'){
+                        if(isset($data["send_communication_customer"]) && $data["send_communication_customer"] != ""){
+
+                            $sndPgMail  =   $this->customermailer->sendPgOrderMail($emailData);
+                        }
+
+                    }else{
+                        $sndPgMail  =   $this->customermailer->sendPgOrderMail($emailData);
+                    }
+                }
+
+                //no email to Healthy Snacks Beverages and Healthy Tiffins
+                if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" && $order->type != 'diet_plan'){
+                    
+                    if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
+                        if(isset($data["send_communication_vendor"]) && $data["send_communication_vendor"] != ""){
+
+                            $sndPgMail  =   $this->findermailer->sendPgOrderMail($order->toArray());
+                        }
+                        
+                    }else{
+                        $sndPgMail  =   $this->findermailer->sendPgOrderMail($order->toArray());
+                    }
+
                 }
             }
-            
-        }
 
-        $order->update($data);
-
-        //send welcome email to payment gateway customer
-
-        $finder = Finder::find((int)$order->finder_id);
-        try {
-            if(isset($order->referal_trial_id) && $order->referal_trial_id != ''){
-                $trial = Booktrial::find((int) $order->referal_trial_id);
-                if($trial){
-                    $bookdata = array();
-                    array_set($bookdata, 'going_status', 4);
-                    array_set($bookdata, 'going_status_txt', 'purchased');
-                    array_set($bookdata, 'booktrial_actions', '');
-                    array_set($bookdata, 'followup_date', '');
-                    array_set($bookdata, 'followup_date_time', '');
-
-                    $trial->update($bookdata);
-                }
-            }
-
-        } catch (Exception $e) {
-
-            Log::error($e);
-
-        }
-
-        $abundant_category = array(42,45);
-
-        if (filter_var(trim($order['customer_email']), FILTER_VALIDATE_EMAIL) === false){
-            $order->update(['email_not_sent'=>'captureOrderStatus']);
-        }else{
-
+            //SEND payment gateway SMS TO CUSTOMER and vendor
             if(!in_array($finder->category_id, $abundant_category)){
                 $emailData      =   [];
                 $emailData      =   $order->toArray();
@@ -567,123 +619,149 @@ class TransactionController extends \BaseController {
                         $emailData['ticket'] = Ticket::find(intval($emailData['ticket_id']))->toArray();
                     }
                 }
-
-                //print_pretty($emailData);exit;
+                
                 if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin" && $order->type != 'diet_plan'){
                     if(isset($data["send_communication_customer"]) && $data["send_communication_customer"] != ""){
 
-                        $sndPgMail  =   $this->customermailer->sendPgOrderMail($emailData);
+                        $sndPgSms   =   $this->customersms->sendPgOrderSms($emailData);
                     }
 
                 }else{
-                    $sndPgMail  =   $this->customermailer->sendPgOrderMail($emailData);
+                    $sndPgSms   =   $this->customersms->sendPgOrderSms($emailData);
                 }
             }
 
-            //no email to Healthy Snacks Beverages and Healthy Tiffins
+            //no sms to Healthy Snacks Beverages and Healthy Tiffins
             if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" && $order->type != 'diet_plan'){
                 
                 if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
                     if(isset($data["send_communication_vendor"]) && $data["send_communication_vendor"] != ""){
 
-                        $sndPgMail  =   $this->findermailer->sendPgOrderMail($order->toArray());
+                        $sndPgSms   =   $this->findersms->sendPgOrderSms($order->toArray());
                     }
                     
                 }else{
-                    $sndPgMail  =   $this->findermailer->sendPgOrderMail($order->toArray());
-                }
-
-            }
-        }
-
-        //SEND payment gateway SMS TO CUSTOMER and vendor
-        if(!in_array($finder->category_id, $abundant_category)){
-            $emailData      =   [];
-            $emailData      =   $order->toArray();
-            if($emailData['type'] == 'events'){
-                if(isset($emailData['event_id']) && $emailData['event_id'] != ''){
-                    $emailData['event'] = DbEvent::find(intval($emailData['event_id']))->toArray();
-                }
-                if(isset($emailData['ticket_id']) && $emailData['ticket_id'] != ''){
-                    $emailData['ticket'] = Ticket::find(intval($emailData['ticket_id']))->toArray();
-                }
-            }
-            
-            if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin" && $order->type != 'diet_plan'){
-                if(isset($data["send_communication_customer"]) && $data["send_communication_customer"] != ""){
-
-                    $sndPgSms   =   $this->customersms->sendPgOrderSms($emailData);
-                }
-
-            }else{
-                $sndPgSms   =   $this->customersms->sendPgOrderSms($emailData);
-            }
-        }
-
-        //no sms to Healthy Snacks Beverages and Healthy Tiffins
-        if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" && $order->type != 'diet_plan'){
-            
-            if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
-                if(isset($data["send_communication_vendor"]) && $data["send_communication_vendor"] != ""){
-
                     $sndPgSms   =   $this->findersms->sendPgOrderSms($order->toArray());
                 }
                 
-            }else{
-                $sndPgSms   =   $this->findersms->sendPgOrderSms($order->toArray());
             }
-            
-        }
 
-        if(isset($order->preferred_starting_date) && $order->preferred_starting_date != "" && !in_array($finder->category_id, $abundant_category) && $order->type == "memberships" && !isset($order->customer_sms_after3days) && !isset($order->customer_email_after10days) && $order->type != 'diet_plan'){
+            if(isset($order->preferred_starting_date) && $order->preferred_starting_date != "" && !in_array($finder->category_id, $abundant_category) && $order->type == "memberships" && !isset($order->customer_sms_after3days) && !isset($order->customer_email_after10days) && $order->type != 'diet_plan'){
 
-            $preferred_starting_date = $order->preferred_starting_date;
-            $after3days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 3);
-            $after10days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 10);
+                $preferred_starting_date = $order->preferred_starting_date;
+                $after3days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 3);
+                $after10days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 10);
 
-            $category_slug = "no_category";
+                $category_slug = "no_category";
 
-            if(isset($order->finder_category_id) && $order->finder_category_id != ""){
+                if(isset($order->finder_category_id) && $order->finder_category_id != ""){
 
-                $finder_category_id = $order->finder_category_id;
+                    $finder_category_id = $order->finder_category_id;
 
-                $category = Findercategory::find((int)$finder_category_id);
+                    $category = Findercategory::find((int)$finder_category_id);
 
-                if($category){
-                    $category_slug = $category->slug;
+                    if($category){
+                        $category_slug = $category->slug;
+                    }
                 }
+
+                $order_data = $order->toArray();
+
+                $order_data['category_array'] = $this->getCategoryImage($category_slug);
+
+                $order->customer_sms_after3days = $this->customersms->orderAfter3Days($order_data,$after3days);
+                $order->customer_email_after10days = $this->customermailer->orderAfter10Days($order_data,$after10days);
+
+                $order->update();
+
             }
-
-            $order_data = $order->toArray();
-
-            $order_data['category_array'] = $this->getCategoryImage($category_slug);
-
-            $order->customer_sms_after3days = $this->customersms->orderAfter3Days($order_data,$after3days);
-            $order->customer_email_after10days = $this->customermailer->orderAfter10Days($order_data,$after10days);
-
-            $order->update();
-
-        }
-
-        if(isset($order->diet_plan_ratecard_id) && $order->diet_plan_ratecard_id != "" && $order->diet_plan_ratecard_id != 0){
+            if(isset($order->diet_plan_ratecard_id) && $order->diet_plan_ratecard_id != "" && $order->diet_plan_ratecard_id != 0){
             
-            $generaterDietPlanOrder = $this->generaterDietPlanOrder($order->toArray());
+                $generaterDietPlanOrder = $this->generaterDietPlanOrder($order->toArray());
 
-            if($generaterDietPlanOrder['status'] != 200){
-                return Response::json($generaterDietPlanOrder,$generaterDietPlanOrder['status']);
+                if($generaterDietPlanOrder['status'] != 200){
+                    return Response::json($generaterDietPlanOrder,$generaterDietPlanOrder['status']);
+                }
+
+                $order->diet_plan_order_id = $generaterDietPlanOrder['order_id'];
+                $order->update();
+
             }
 
-            $order->diet_plan_order_id = $generaterDietPlanOrder['order_id'];
-            $order->update();
+            if(isset($order->type) && $order->type == "diet_plan"){
+                return $generaterDietPlanOrder = $this->createDietPlanOrder($order->toArray());
+            }
+            $this->utilities->setRedundant($order);
 
+            Log::info("Customer for referral");
+            $customer = Customer::where('_id', $order['customer_id'])->first(['referred', 'referrer_id', 'first_transaction']);
+            Log::info($customer);
+            
+            if(isset($customer['referred']) && $customer['referred'] && $customer['first_transaction']){
+                Log::info("inside first transaction");
+                $referrer = Customer::where('_id', $customer->referrer_id)->first();
+                $customer->first_transaction = false;
+                $customer->update();
+                $wallet_data = array(
+                                'customer_id' => $customer->referrer_id,
+                                'amount' => 250,
+                                'amount_fitcash' => 0,
+                                'amount_fitcash_plus' => 250,
+                                'type' => "REFERRAL",
+                                'description' => "Referral fitcashplus to referrer",
+                                'order_id' => 0
+                                );
+                $this->utilities->walletTransaction($wallet_data);
+                $url = 'www.fitternity.com/profile/'.$referrer->email;
+                $sms_data = array(
+                    'customer_phone'=>$referrer->contact_no,
+                    // 'friend_name'   =>$customer_name,
+                    'wallet_url'    =>$url
+                    );
+                $referSms = $this->customersms->referralFitcash($sms_data);
+            }
+            
+            $finder_id = $order['finder_id'];
+            $start_date_last_30_days = date("d-m-Y 00:00:00", strtotime('-31 days',strtotime(date('d-m-Y 00:00:00'))));
+
+            $sales_count_last_30_days = Order::active()->where('finder_id',$finder_id)->where('created_at', '>=', new DateTime($start_date_last_30_days))->count();
+
+            if($sales_count_last_30_days == 0){
+            $mailData=array();
+            $mailData['finder_name']=$order['finder_name'];
+            $mailData['finder_id']=$order['finder_id'];
+            $mailData['finder_city']=$order['finder_city'];
+            $mailData['finder_location']=$order['finder_location'];
+            $mailData['customer_name']=$order['customer_name'];
+            $mailData['customer_email']=$order['customer_email'];
+
+                $sndMail  =   $this->findermailer->sendNoPrevSalesMail($mailData);
+            }
+
+            $this->utilities->deleteCommunication($order);
+
+            if(isset($order->redundant_order)){
+                $order->unset('redundant_order');
+            }
+
+            $this->utilities->sendDemonetisationCustomerSms($order);
+
+            $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
+            return Response::json($resp);
+
+        }else{
+            if($hash_verified == false){
+                $Oldorder 		= 	Order::findOrFail($orderid);
+                $Oldorder["hash_verified"] = false;
+                $Oldorder->update();
+                $resp 	= 	array('status' => 200, 'statustxt' => 'failed', 'order' => $order, 'message' => "Transaction Failed :)");
+                return Response::json($resp);
+            }
         }
 
-        if(isset($order->type) && $order->type == "diet_plan"){
-            return $generaterDietPlanOrder = $this->createDietPlanOrder($order->toArray());
-        }
-
-        $resp   =   array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
-
+            
+        $orderdata 		=	$order->update($data);
+        $resp 	= 	array('status' => 200, 'statustxt' => 'failed', 'order' => $order, 'message' => "Transaction Failed :)");
         return Response::json($resp);
     }
 
