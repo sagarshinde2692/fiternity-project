@@ -315,7 +315,7 @@ class TransactionController extends \BaseController {
                 return Response::json($resp,$resp["status"]);
             }
 
-            if($order->status == "1" && isset($data['preferred_starting_date']) && $data['preferred_starting_date']  != '' && $data['preferred_starting_date']  != '-'){
+            if($order->status == "1" && isset($data['preferred_starting_date']) && $data['preferred_starting_date']  != '' && $data['preferred_starting_date']  != '-' && $data['type']  != 'diet_plan'){
 
                 $preferred_starting_date = date('Y-m-d 00:00:00', strtotime($data['preferred_starting_date']));
 
