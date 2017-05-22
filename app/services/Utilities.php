@@ -1755,7 +1755,10 @@ Class Utilities {
 
         $customer = \Customer::find($customer_id);
 
+        $currentOrder = $order;
+
         $order = $order->toArray();
+
 
         if(!isset($customer->demonetisation) && isset($order['wallet_amount']) && $order['amount_finder'] >= 500){
 
@@ -1852,7 +1855,7 @@ Class Utilities {
 
                 $customer->update(['demonetisation'=>time()]);
 
-                $order->update(['demonetisation'=>time()]);
+                $currentOrder->update(['demonetisation'=>time()]);
 
             }
         }
@@ -1863,26 +1866,30 @@ Class Utilities {
     }
 
 
-    public function getDescription($order,$validity = false){
+    public function getDescription($data,$validity = false){
 
-        $type = $order['type'];
+        $type = $data['type'];
         $expires_on = "";
 
         if($validity){
             $expires_on = ", Expires On : ".date('d-m-Y H:i:s',$validity);
         }
 
-        $description = "Payment for Order ID. ".$order['_id'].$expires_on;
+        if(isset($data['_id']) && !isset($data['order_id'])){
+            $data['order_id'] = $data['_id'];
+        }
+
+        $description = "Payment for Order ID. ".$data['order_id'].$expires_on;
 
         try{
 
             switch ($type) {
-                case 'memberships': $description = "Payment for purchase of membership at ".$order['finder_name']." (Order ID. ".$order['_id'].")".$expires_on; break;
-                case 'booktrials': $description = "Payment for purchase of paid trial at ".$order['finder_name']." (Order ID. ".$order['_id'].")".$expires_on; break;
-                case 'workout-session': $description = "Payment for purchase of workout session at ".$order['finder_name']." (Order ID. ".$order['_id'].")".$expires_on; break;
-                case 'diet_plan': $description = "Payment for purchase of diet plan (Order ID. ".$order['_id'].")".$expires_on; break;
-                case 'healthytiffintrail': $description = "Payment for purchase of healthy tiffin trial at (Order ID. ".$order['_id'].")".$expires_on; break;
-                case 'healthytiffinmembership': $description = "Payment for purchase of healthy tiffin subscription at (Order ID. ".$order['_id'].")".$expires_on; break;
+                case 'memberships': $description = "Payment for purchase of membership at ".$data['finder_name']." (Order ID. ".$data['order_id'].")".$expires_on; break;
+                case 'booktrials': $description = "Payment for purchase of paid trial at ".$data['finder_name']." (Order ID. ".$data['order_id'].")".$expires_on; break;
+                case 'workout-session': $description = "Payment for purchase of workout session at ".$data['finder_name']." (Order ID. ".$data['order_id'].")".$expires_on; break;
+                case 'diet_plan': $description = "Payment for purchase of diet plan (Order ID. ".$data['order_id'].")".$expires_on; break;
+                case 'healthytiffintrail': $description = "Payment for purchase of healthy tiffin trial at (Order ID. ".$data['order_id'].")".$expires_on; break;
+                case 'healthytiffinmembership': $description = "Payment for purchase of healthy tiffin subscription at (Order ID. ".$data['order_id'].")".$expires_on; break;
                 default:break;
             }
 

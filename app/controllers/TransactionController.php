@@ -809,7 +809,7 @@ class TransactionController extends \BaseController {
                     'amount'=>$data['wallet_amount'],
                     'type'=>'DEBIT',
                     'entry'=>'debit',
-                    'description'=> $this->utilities->getDescription($order),
+                    'description'=> $this->utilities->getDescription($data),
                 );
 
                 $walletTransactionResponse = $this->utilities->walletTransactionNew($req);
@@ -842,7 +842,7 @@ class TransactionController extends \BaseController {
                     'amount'=>$data['wallet_amount'],
                     'type'=>'DEBIT',
                     'entry'=>'debit',
-                    'description'=> $this->utilities->getDescription($order),
+                    'description'=> $this->utilities->getDescription($data),
                 );
                 $walletTransactionResponse = $this->utilities->walletTransactionNew($req);
                 
@@ -950,7 +950,7 @@ class TransactionController extends \BaseController {
                         'amount_fitcash_plus' => 0,
                         'type'=>'DEBIT',
                         'entry'=>'debit',
-                        'description'=> $this->utilities->getDescription($order),
+                        'description'=> $this->utilities->getDescription($data),
                     );
                     $walletTransactionResponse = $this->utilities->walletTransaction($req,$data);
                     
@@ -982,7 +982,7 @@ class TransactionController extends \BaseController {
                         'amount_fitcash_plus' => 0,
                         'type'=>'DEBIT',
                         'entry'=>'debit',
-                        'description'=> $this->utilities->getDescription($order),
+                        'description'=> $this->utilities->getDescription($data),
                     );
                     $walletTransactionResponse = $this->utilities->walletTransaction($req,$data);
                     
@@ -1061,7 +1061,7 @@ class TransactionController extends \BaseController {
                         'amount_fitcash_plus' => $fitcash_plus,
                         'type'=>'DEBIT',
                         'entry'=>'debit',
-                        'description'=> $this->utilities->getDescription($order),
+                        'description'=> $this->utilities->getDescription($data),
                     );
                     $walletTransactionResponse = $this->utilities->walletTransaction($req,$data);
                     
@@ -1104,7 +1104,7 @@ class TransactionController extends \BaseController {
                         'amount_fitcash_plus' => $fitcash_plus,
                         'type'=>'DEBIT',
                         'entry'=>'debit',
-                        'description'=> $this->utilities->getDescription($order),
+                        'description'=> $this->utilities->getDescription($data),
                     );
                     $walletTransactionResponse = $this->utilities->walletTransaction($req,$data);
                     
