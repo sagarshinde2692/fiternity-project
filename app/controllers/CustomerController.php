@@ -2407,9 +2407,9 @@ class CustomerController extends \BaseController {
 						$wallet[$key]["debit_credit"] = "credit";
 					}
 
-					if(isset($value['validity']) && $value['validity'] != "" && $value['validity'] != null){
+					/*if(isset($value['validity']) && $value['validity'] != "" && $value['validity'] != null){
 						$wallet[$key]['description'] = $wallet[$key]['description']." Expires on : ".date('d-m-Y',$value['validity']);
-					}
+					}*/
 
 					if(isset($wallet[$key+1])){
 
