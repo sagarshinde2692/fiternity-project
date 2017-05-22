@@ -2314,8 +2314,16 @@ class CustomerController extends \BaseController {
 						}
 
 						if($created_at == ""){
+
+
 							$created_at = date('d-m-Y H:i:s',strtotime($value['created_at'])); 
 							$updated_at = date('d-m-Y H:i:s',strtotime($value['created_at']));
+
+							if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android")){
+								$created_at = date('d-m-Y',strtotime($value['created_at'])); 
+								$updated_at = date('d-m-Y',strtotime($value['created_at']));
+							}
+
 						}
 
 						if($type == ""){
@@ -2436,6 +2444,11 @@ class CustomerController extends \BaseController {
 							$wallet[$key]['amount_fitcash_plus'] = $value['amount'];
 							$wallet[$key]['amount_fitcash'] = 0;
 						}
+					}
+
+					if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android")){
+						$wallet[$key]['created_at'] = date('d-m-Y',strtotime($value['created_at'])); 
+						$wallet[$key]['updated_at'] = date('d-m-Y',strtotime($value['created_at']));
 					}
 
 				}
