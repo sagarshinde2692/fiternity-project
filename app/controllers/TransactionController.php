@@ -105,13 +105,13 @@ class TransactionController extends \BaseController {
             $rules = array_merge($rules,$membership_rules);
         }
 
-        if($data['type'] == 'diet_plan'){
-            $diet_plan_rules = array(
-                'offering_type'=>'required'
-            );
+        // if($data['type'] == 'diet_plan'){
+        //     $diet_plan_rules = array(
+        //         'offering_type'=>'required'
+        //     );
 
-            $rules = array_merge($rules,$diet_plan_rules);
-        }
+        //     $rules = array_merge($rules,$diet_plan_rules);
+        // }
 
         $validator = Validator::make($data,$rules);
 
