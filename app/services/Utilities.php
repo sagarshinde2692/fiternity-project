@@ -112,28 +112,39 @@ Class Utilities {
 
         $customer = \Customer::find($customer_id);
 
-        $fitcash = 0;
-        $fitcash_plus = 0;
+        $total_balance = 0;
 
-        $customerwallet = \Customerwallet::where('customer_id',$customer_id)->orderBy('_id','desc')->first();
+        $customerWallet = \Customerwallet::where('customer_id',$customer_id)->orderBy('_id','desc')->first();
 
-        if($customerwallet){
+        if($customerWallet){
 
-            $fitcash = $customerwallet->balance;
+            $fitcash = 0;
+            $fitcash_plus = 0;
 
-            if(isset($customerwallet->balance_fitcash_plus)){
-                $fitcash_plus = $customerwallet->balance_fitcash_plus;
+            $fitcash = $customerWallet->balance;
+
+            if(isset($customerWallet->balance_fitcash_plus)){
+                $fitcash_plus = $customerWallet->balance_fitcash_plus;
+            }
+
+            $total_balance = (int)($fitcash + $fitcash_plus);
+
+        }else{
+
+            $wallet = \Wallet::active()->where('customer_id',$customer_id)->orderBy('_id','desc')->first();
+
+            if(!$wallet){
+
+                $customer->demonetisation = time();
+                $customer->update();
+
+            }else{
+
+                $total_balance = \Wallet::active()->where('customer_id',$customer_id)->where('balance','>',0)->sum('balance');
             }
         }
 
-        $total_balance = (int)($fitcash + $fitcash_plus);
-
-        Log::info('total_balance-----'.$total_balance);
-
         if($total_balance <= 0){
-
-            $customer->demonetisation = time();
-            $customer->update();
 
             if($request['entry'] == 'debit'){
                 return ['status'=>200,'message'=>'cannot debit balance zero'];
@@ -1573,6 +1584,14 @@ Class Utilities {
 
             if(isset($request['validity']) && $request['validity'] != ""){
                 $wallet->validity = $request['validity'];
+            }
+
+            if(isset($request['description']) && $request['description'] != ""){
+                $wallet->description = $request['description'];
+            }
+
+            if(isset($request['code']) && $request['code'] != ""){
+                $wallet->coupon = $request['code'];
             }
 
             $wallet->save();
