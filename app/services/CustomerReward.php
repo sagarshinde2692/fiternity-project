@@ -391,7 +391,7 @@ Class CustomerReward {
         $current_wallet_balance = 0;
         $wallet = 0;
         $wallet_fitcash_plus = 0;
-        $cap = 2000;
+        $cap = 1500;
 
         $jwt_token = Request::header('Authorization');
 
@@ -540,7 +540,7 @@ Class CustomerReward {
 
         $wallet = 0;
         $wallet_fitcash_plus = 0;
-        $cap = 2000;
+        $cap = 1500;
 
         $jwt_token = Request::header('Authorization');
 
@@ -654,7 +654,7 @@ Class CustomerReward {
 
         $amount_discounted = round($amount * $setAlgo['discount'] / 100); 
 
-        if($amount >= 500){
+        if($amount > 500){
             $wallet_algo = $amount;
         }else{
             $wallet_algo = round(($amount * $commision / 100) * ($wallet_percentage / 100));
