@@ -114,33 +114,31 @@ Class Utilities {
 
         $total_balance = 0;
 
-        $customerWallet = \Customerwallet::where('customer_id',$customer_id)->orderBy('_id','desc')->first();
+        if(isset($customer->demonetisation)){
 
-        if($customerWallet){
-
-            $fitcash = 0;
-            $fitcash_plus = 0;
-
-            $fitcash = $customerWallet->balance;
-
-            if(isset($customerWallet->balance_fitcash_plus)){
-                $fitcash_plus = $customerWallet->balance_fitcash_plus;
-            }
-
-            $total_balance = (int)($fitcash + $fitcash_plus);
+            $total_balance = \Wallet::active()->where('customer_id',$customer_id)->where('balance','>',0)->sum('balance');
 
         }else{
 
-            $wallet = \Wallet::active()->where('customer_id',$customer_id)->orderBy('_id','desc')->first();
+            $customerWallet = \Customerwallet::where('customer_id',$customer_id)->orderBy('_id','desc')->first();
 
-            if(!$wallet){
+            if($customerWallet){
+
+                $fitcash = 0;
+                $fitcash_plus = 0;
+
+                $fitcash = $customerWallet->balance;
+
+                if(isset($customerWallet->balance_fitcash_plus)){
+                    $fitcash_plus = $customerWallet->balance_fitcash_plus;
+                }
+
+                $total_balance = (int)($fitcash + $fitcash_plus);
+                
+            }else{
 
                 $customer->demonetisation = time();
                 $customer->update();
-
-            }else{
-
-                $total_balance = \Wallet::active()->where('customer_id',$customer_id)->where('balance','>',0)->sum('balance');
             }
         }
 
