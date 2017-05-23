@@ -785,11 +785,11 @@ Class CustomerReward {
 
         if(isset($customer->demonetisation)){
 
-            return $this->purchaseGameNew($amount,$finder_id,$payment_mode = "paymentgateway",$offer_id = false,$customer_id = false);
+            return $this->purchaseGameNew($amount,$finder_id,$payment_mode,$offer_id,$customer_id);
 
         }
 
-        return $this->purchaseGameOld($amount,$finder_id,$payment_mode = "paymentgateway",$offer_id = false,$customer_id = false);
+        return $this->purchaseGameOld($amount,$finder_id,$payment_mode,$offer_id,$customer_id);
 
     }
 

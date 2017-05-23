@@ -1372,6 +1372,8 @@ class SchedulebooktrialsController extends \BaseController {
 
             if(isset($order['amount']) && $order['amount'] != "" && $order['amount'] > 0){
 
+                $this->utilities->demonetisation($order);
+                
             	$this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
             	$this->customersms->giveCashbackOnTrialOrderSuccessAndInvite($order->toArray());
             }
