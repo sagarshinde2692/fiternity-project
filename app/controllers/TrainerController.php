@@ -58,7 +58,7 @@ class TrainerController extends \BaseController {
 
 		$oldTrainerSlotBooking = TrainerSlotBooking::where('hidden',false)->where('customer_id',$customer_id)->where('order_id',$order_id)->orderBy('_id','desc')->first();
 
-		$schedules_query = Schedule::where('trainer_id','exists',true)->where('day',$weekday);
+		$schedules_query = TrainerSchedule::where('trainer_id','exists',true)->where('day',$weekday);
 
 		if($oldTrainerSlotBooking){
 
@@ -90,6 +90,14 @@ class TrainerController extends \BaseController {
 
 					$slots[] = ['slot' => $duration['duration'],'available' => true,'trainer_id'=>$schedule['trainer_id'],'start_hour' => $duration['start_time']['hours']];
 					$allstarthours[] = [$duration['start_time']['hours']];
+				}
+
+				foreach ($slots as $slot_key => $slot_value) {
+					$scheduleDateTimeUnix           =  strtotime(strtoupper($date." ".$slot_value['start_hour'].".00.00"));
+					$slot_datetime_pass_status      =   (($scheduleDateTimeUnix - time()) > 0) ? false : true;
+					if($slot_datetime_pass_status){
+						$slots[$slot_key]['available'] = false;
+					}
 				}
 
 				$total_slots += count($schedule['slots']);
@@ -188,7 +196,8 @@ class TrainerController extends \BaseController {
         	$weekday =   strtolower(date( "l",strtotime($date)));
         	$slot = $data['slot'];
         	$slot_explode = explode("-",$data['slot']);
-        	$order_id = (int)$data['order_id'];
+			$data['order_id'] = (int)$data['order_id'];
+        	$order_id = $data['order_id'];
 
         	$order = Order::find($order_id);
 
@@ -231,6 +240,7 @@ class TrainerController extends \BaseController {
 
 			$trainer = Trainer::find($data['trainer_id']);
 			// return $data['trainer_id'];
+			$data['trainer_id'] = new MongoId($data['trainer_id']);
 			$data['trainer_name'] = ucwords($trainer->name);
 			$data['trainer_slug'] = $trainer->slug;
 			$data['trainer_email'] = $trainer->contact['email'];
@@ -252,7 +262,7 @@ class TrainerController extends \BaseController {
 	        $trainerSlotBooking->save();
 
 	        if(!isset($order->trainer_id)){
-		        $order->trainer_id = $data['trainer_id'];
+				$order->trainer_id = new MongoId($data['trainer_id']);
 		        $order->trainer_name = $trainer->name;
 				$order->trainer_slug = $trainer->slug;
 				$order->trainer_email = $trainer->contact['email'];

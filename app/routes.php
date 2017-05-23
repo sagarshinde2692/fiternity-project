@@ -921,3 +921,4 @@ Route::get('syncsharecustomerno','DebugController@syncsharecustomerno');
 
 //reverse migration roures
 Route::get('reverse/migration/{colllection}/{id}','MigrationReverseController@byId');
+Route::get('fitternitydietvendordetail','FindersController@fitternityDietVedorDetail');

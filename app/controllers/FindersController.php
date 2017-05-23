@@ -3118,5 +3118,18 @@ class FindersController extends \BaseController {
     	return Response::json($category, 200);
     }
 
+	public function fitternityDietVedorDetail(){
+		try{
+			$finder = Finder::where('title', 'Fitternity Diet Vendor')
+			->with(array('services'=>function($query){
+				$query->select(array('id', 'name','finder_id', 'short_description','body','what_i_should_expect', 'workout_intensity'));
+				}))
+			->first();
+			return array('finder'=>$finder, 'status'=>200);
+		}catch(Exception $error){
+			return $errorMessage = $this->errorMessage($error);
+		}
+	}
+
 
 }

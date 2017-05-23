@@ -34,6 +34,7 @@ return array(
 
     'website' => 'https://www.fitternity.com', //live
     // 'website' => 'http://apistage.fitn.in:2233', //stage
+    // 'website' => 'http://localhost:3000', //stage
 
     'download_app_link' => 'https://goo.gl/sP81To',//https://www.fitternity.com/downloadapp',
 

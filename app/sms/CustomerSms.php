@@ -167,6 +167,9 @@ Class CustomerSms extends VersionNextSms{
 			$label = 'Order-PG-Event';
 		}
 		
+		if($data['type'] == "diet_plan"){
+			$label = 'Diet-PG-Customer';
+		}
 		$to = $data['customer_phone'];
 
 		return $this->common($label,$to,$data);
