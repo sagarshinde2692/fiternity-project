@@ -899,7 +899,7 @@ class TransactionController extends \BaseController {
                     'amount'=>$data['wallet_amount'],
                     'type'=>'DEBIT',
                     'entry'=>'debit',
-                    'description'=>'Paid for Order ID: '.$data['order_id'],
+                    'description'=> $this->utilities->getDescription($data),
                 );
 
                 $walletTransactionResponse = $this->utilities->walletTransactionNew($req);
@@ -932,7 +932,7 @@ class TransactionController extends \BaseController {
                     'amount'=>$data['wallet_amount'],
                     'type'=>'DEBIT',
                     'entry'=>'debit',
-                    'description'=>'Paid for Order ID: '.$data['order_id'],
+                    'description'=> $this->utilities->getDescription($data),
                 );
                 $walletTransactionResponse = $this->utilities->walletTransactionNew($req);
                 
@@ -1040,7 +1040,7 @@ class TransactionController extends \BaseController {
                         'amount_fitcash_plus' => 0,
                         'type'=>'DEBIT',
                         'entry'=>'debit',
-                        'description'=>'Paid for Order ID: '.$data['order_id'],
+                        'description'=> $this->utilities->getDescription($data),
                     );
                     $walletTransactionResponse = $this->utilities->walletTransaction($req,$data);
                     
@@ -1072,7 +1072,7 @@ class TransactionController extends \BaseController {
                         'amount_fitcash_plus' => 0,
                         'type'=>'DEBIT',
                         'entry'=>'debit',
-                        'description'=>'Paid for Order ID: '.$data['order_id'],
+                        'description'=> $this->utilities->getDescription($data),
                     );
                     $walletTransactionResponse = $this->utilities->walletTransaction($req,$data);
                     
@@ -1151,7 +1151,7 @@ class TransactionController extends \BaseController {
                         'amount_fitcash_plus' => $fitcash_plus,
                         'type'=>'DEBIT',
                         'entry'=>'debit',
-                        'description'=>'Paid for Order ID: '.$data['order_id'],
+                        'description'=> $this->utilities->getDescription($data),
                     );
                     $walletTransactionResponse = $this->utilities->walletTransaction($req,$data);
                     
@@ -1194,7 +1194,7 @@ class TransactionController extends \BaseController {
                         'amount_fitcash_plus' => $fitcash_plus,
                         'type'=>'DEBIT',
                         'entry'=>'debit',
-                        'description'=>'Paid for Order ID: '.$data['order_id'],
+                        'description'=> $this->utilities->getDescription($data),
                     );
                     $walletTransactionResponse = $this->utilities->walletTransaction($req,$data);
                     
@@ -2063,7 +2063,7 @@ class TransactionController extends \BaseController {
                 $req['entry'] = "credit";
                 $req['type'] = "FITCASHPLUS";
                 $req['amount_fitcash_plus'] = $amount;
-                $req['description'] = "Added Fitcash Plus Expires On : ".date('d-m-Y H:i:s',time()+(86400*60));
+                $req['description'] = "Added FitCash+, Expires On : ".date('d-m-Y',time()+(86400*60));
                 $req["validity"] = time()+(86400*60);
                 $req['for'] = $time;
 

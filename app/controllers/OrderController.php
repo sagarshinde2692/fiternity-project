@@ -436,7 +436,7 @@ class OrderController extends \BaseController {
                 $order->unset('redundant_order');
             }
 
-            
+            $this->utilities->sendDemonetisationCustomerSms($order);
 
             $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
             return Response::json($resp);

@@ -693,7 +693,7 @@ class CustomerController extends \BaseController {
 				$resp["show_popup"] = true;
 				$resp["popup"]["header_image"] = "http://b.fitn.in/iconsv1/global/fitcash.jpg";
 				$resp["popup"]["header_text"] = "Congratulations";
-				$resp["popup"]["text"] = "You have Rs. ".$current_wallet_balance." in your wallet as FitCash+. You can use this across session and membership bookings at gyms in studios in Mumbai, Bangalore, Pune & Delhi";
+				$resp["popup"]["text"] = "You have Rs. ".$current_wallet_balance." in your wallet as FitCash+. This is 100% redeemable to purchase workout sessions and memberships on Fitternity across Mumbai, Bangalore, Pune & Delhi";
 				$resp["popup"]["button"] = "Ok";
 
 			}
@@ -707,7 +707,7 @@ class CustomerController extends \BaseController {
 				$resp["popup"]["header_text"] = "Congratulations";
 
 				if($customer["balance_fitcash_plus"] > 0){
-					$resp["popup"]["text"] = "You have Rs. ".$customer["balance_fitcash_plus"]." in your wallet as FitCash+. You can use this across session and membership bookings at gyms in studios in Mumbai, Bangalore, Pune & Delhi";
+					$resp["popup"]["text"] = "You have Rs. ".$current_wallet_balance." in your wallet as FitCash+. This is 100% redeemable to purchase workout sessions and memberships on Fitternity across Mumbai, Bangalore, Pune & Delhi";
 				}else{
 					$resp["popup"]["text"] = "You have Rs. ".$customer["balance"]." in your wallet as FitCash. You can use this across session and membership bookings at gyms in studios in Mumbai, Bangalore, Pune & Delhi";
 				}
@@ -2314,8 +2314,16 @@ class CustomerController extends \BaseController {
 						}
 
 						if($created_at == ""){
+
+
 							$created_at = date('d-m-Y H:i:s',strtotime($value['created_at'])); 
 							$updated_at = date('d-m-Y H:i:s',strtotime($value['created_at']));
+
+							if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android")){
+								$created_at = date('d-m-Y',strtotime($value['created_at'])); 
+								$updated_at = date('d-m-Y',strtotime($value['created_at']));
+							}
+
 						}
 
 						if($type == ""){
@@ -2361,7 +2369,7 @@ class CustomerController extends \BaseController {
 						'balance'=>$wallet_balance,
 						'info'=>[
 							'title'=>'What is FitCash+?',
-							'description' => 'With FitCash Plus there is no restriction on redeeming - you can use the entire amount in your transaction! FitCash can be used for any booking or purchase on Fitternity ranging from workout sessions, memberships and healthy tiffin subscriptions.',
+							'description' => 'With FitCash+ there is no restriction on redeeming - you can use the entire amount in your transaction! FitCash can be used for any booking or purchase on Fitternity ranging from workout sessions, memberships and healthy tiffin subscriptions.',
 							'short_description' => "short"."\n"."description"."\n"."description"
 						]
 					],
@@ -2407,9 +2415,9 @@ class CustomerController extends \BaseController {
 						$wallet[$key]["debit_credit"] = "credit";
 					}
 
-					if(isset($value['validity']) && $value['validity'] != "" && $value['validity'] != null){
+					/*if(isset($value['validity']) && $value['validity'] != "" && $value['validity'] != null){
 						$wallet[$key]['description'] = $wallet[$key]['description']." Expires on : ".date('d-m-Y',$value['validity']);
-					}
+					}*/
 
 					if(isset($wallet[$key+1])){
 
@@ -2436,6 +2444,11 @@ class CustomerController extends \BaseController {
 							$wallet[$key]['amount_fitcash_plus'] = $value['amount'];
 							$wallet[$key]['amount_fitcash'] = 0;
 						}
+					}
+
+					if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android")){
+						$wallet[$key]['created_at'] = date('d-m-Y',strtotime($value['created_at'])); 
+						$wallet[$key]['updated_at'] = date('d-m-Y',strtotime($value['created_at']));
 					}
 
 				}
@@ -2465,7 +2478,7 @@ class CustomerController extends \BaseController {
 						'balance'=>$balance_fitcash_plus,
 						'info'=>[
 							'title'=>'What is FitCash+?',
-							'description' => 'With FitCash Plus there is no restriction on redeeming - you can use the entire amount in your transaction! FitCash can be used for any booking or purchase on Fitternity ranging from workout sessions, memberships and healthy tiffin subscriptions.',
+							'description' => 'With FitCash+ there is no restriction on redeeming - you can use the entire amount in your transaction! FitCash can be used for any booking or purchase on Fitternity ranging from workout sessions, memberships and healthy tiffin subscriptions.',
 							'short_description' => "short"."\n"."description"."\n"."description"
 						]
 					],
@@ -3254,7 +3267,7 @@ class CustomerController extends \BaseController {
 						$walletData["balance_fitcash_plus"] = $cashback_amount;
 					}
 
-					$walletData["description"] = "Added Fitcash Plus on PROMOTION Rs - ".$cashback_amount;
+					$walletData["description"] = "Added FitCash+ on PROMOTION Rs - ".$cashback_amount;
 				}
 
 				
@@ -3350,7 +3363,7 @@ class CustomerController extends \BaseController {
 					$walletData["type"] = "FITCASHPLUS";
 					$walletData["amount_fitcash"] = 0;
 					$walletData["amount_fitcash_plus"] = $cashback_amount;
-					$walletData["description"] = "Added Fitcash Plus on PROMOTION Rs - ".$cashback_amount;
+					$walletData["description"] = "Added FitCash+ on PROMOTION Rs - ".$cashback_amount;
 				}
 
 				$this->utilities->walletTransaction($walletData);
@@ -4125,6 +4138,35 @@ class CustomerController extends \BaseController {
 				'status' => 200,
 				'wallet_summary' => $wallet_summary,
 				'wallet_balance'=>$wallet_balance
+				),
+			200
+		);
+
+	}
+
+
+	public function orderDemonetisation($order_id){
+
+		$order_id = (int)$order_id;
+
+		$order = Order::find($order_id);
+
+		$message = "";
+
+		if($order && isset($order->demonetisation)){
+
+			$message = "Congratulations!<br/>Your FitCash has been converted to FitCash+ that enables you to do 100% redemption on any transaction on Fitternity.<br/> Any queries? Reach us on 02261222230 / support@fitternity.com";
+
+			if(isset($order->customer_wallet_balance) && $order->customer_wallet_balance > 0){
+
+				$message = "Congratulations!<br/>Your FitCash has been converted to FitCash+ that enables you to do 100% redemption on any transaction on Fitternity.<br/>Your balance is Rs. 1000. Any queries? Reach us on 02261222230 / support@fitternity.com";
+			}
+		}
+
+		return Response::json(
+			array(
+				'status' => 200,
+				'message' => $message,
 				),
 			200
 		);

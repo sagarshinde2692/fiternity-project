@@ -1249,7 +1249,7 @@ Class Utilities {
                             "customer_id" => $data["customer_id"],
                             "amount" => 250,
                             "action" => "add_fitcash_plus",
-                            "description" => "Added Fitcash Plus Rs 250 on App Download, Expires On : ".date('d-m-Y H:i:s',time()+(86400*180)),
+                            "description" => "Added FitCash+ Rs 250 on App Download, Expires On : ".date('d-m-Y',time()+(86400*180)),
                             "validity"=>time()+(86400*180)
                         ];
 
@@ -1292,13 +1292,13 @@ Class Utilities {
         if($data['action'] == "add_fitcash"){
             $req['amount_fitcash'] = $amount;
             $req['type'] = "FITCASH";
-            $req['description'] = "Added Fitcash Rs ".$amount;
+            $req['description'] = "Added FitCash Rs ".$amount;
         }
 
         if($data['action'] == "add_fitcash_plus"){
             $req['amount_fitcash_plus'] = $amount;
             $req['type'] = "FITCASHPLUS";
-            $req['description'] = "Added Fitcash Plus Rs ".$amount;
+            $req['description'] = "Added FitCash+ Rs ".$amount;
         }
 
         if(isset($data['description']) && $data['description'] != ""){
@@ -1772,7 +1772,10 @@ Class Utilities {
 
         $customer = \Customer::find($customer_id);
 
+        $currentOrder = $order;
+
         $order = $order->toArray();
+
 
         if(!isset($customer->demonetisation) && isset($order['wallet_amount']) && $order['amount_finder'] >= 500){
 
@@ -1828,8 +1831,7 @@ Class Utilities {
                     $request['entry'] = "credit";
                     $request['type'] = "CREDIT";
                     $request['order_id'] = $order['_id'];
-                    $request['description'] = "Conversion of Fitcash to Fitcash Plus for Order ID: ".$order['_id'];
-
+                    $request['description'] = "Conversion of FitCash+ on Demonetization (Order ID. ".$order['_id'].")";
                     Log::info("1",$request);
 
                     $this->walletTransactionNew($request);
@@ -1839,7 +1841,7 @@ Class Utilities {
                     $request['entry'] = "debit";
                     $request['type'] = "DEBIT";
                     $request['order_id'] = $order['_id'];
-                    $request['description'] = "Paid for Order ID: ".$order['_id'];
+                    $request['description'] = $this->getDescription($order);
 
                     Log::info("2",$request);
 
@@ -1852,7 +1854,7 @@ Class Utilities {
                     $request['entry'] = "credit";
                     $request['type'] = "CREDIT";
                     $request['order_id'] = $order['_id'];
-                    $request['description'] = "Conversion of Fitcash to Fitcash Plus for Order ID: ".$order['_id'];
+                    $request['description'] = "Conversion of FitCash+ on Demonetization (Order ID. ".$order['_id'].")";
 
                     $this->walletTransactionNew($request);
 
@@ -1861,7 +1863,7 @@ Class Utilities {
                     $request['entry'] = "debit";
                     $request['type'] = "DEBIT";
                     $request['order_id'] = $order['_id'];
-                    $request['description'] = "Paid for Order ID: ".$order['_id'];
+                    $request['description'] = $this->getDescription($order);
 
                     $this->walletTransactionNew($request);
 
@@ -1870,11 +1872,88 @@ Class Utilities {
 
                 $customer->update(['demonetisation'=>time()]);
 
+                $currentOrder->update(['demonetisation'=>time()]);
+
             }
         }
 
         return "success";
 
+
+    }
+
+
+    public function getDescription($data,$validity = false){
+
+        $type = $data['type'];
+        $expires_on = "";
+
+        if($validity){
+            $expires_on = ", Expires On : ".date('d-m-Y H:i:s',$validity);
+        }
+
+        if(isset($data['_id']) && !isset($data['order_id'])){
+            $data['order_id'] = $data['_id'];
+        }
+
+        $description = "Payment for Order ID. ".$data['order_id'].$expires_on;
+
+        try{
+
+            switch ($type) {
+                case 'memberships': $description = "Payment for purchase of membership at ".$data['finder_name']." (Order ID. ".$data['order_id'].")".$expires_on; break;
+                case 'booktrials': $description = "Payment for purchase of paid trial at ".$data['finder_name']." (Order ID. ".$data['order_id'].")".$expires_on; break;
+                case 'workout-session': $description = "Payment for purchase of workout session at ".$data['finder_name']." (Order ID. ".$data['order_id'].")".$expires_on; break;
+                case 'diet_plan': $description = "Payment for purchase of diet plan (Order ID. ".$data['order_id'].")".$expires_on; break;
+                case 'healthytiffintrail': $description = "Payment for purchase of healthy tiffin trial at (Order ID. ".$data['order_id'].")".$expires_on; break;
+                case 'healthytiffinmembership': $description = "Payment for purchase of healthy tiffin subscription at (Order ID. ".$data['order_id'].")".$expires_on; break;
+                default:break;
+            }
+
+            return $description;
+
+        }catch(Exception $e){
+
+            Log::info("getType Error : ".$type);
+
+            return $description;
+        }
+
+        return $description;
+
+    }
+
+
+    public function getWalletBalance($customer_id){
+
+        $customer_id = (int) $customer_id;
+
+        $wallet_balance = Wallet::active()->where('customer_id',$customer_id)->where('balance','>',0)->sum('balance');
+
+        return $wallet_balance;
+    }
+
+
+    public function sendDemonetisationCustomerSms($order){
+
+        if(isset($order->demonetisation)){
+
+            $customer_id = (int)$order->customer_id;
+
+            if($order->logged_in_customer_id){
+                $customer_id = (int)$order->logged_in_customer_id;
+            }
+
+            $customer_wallet_balance = (int)$this->getWalletBalance($customer_id);
+
+            $order->update(['customer_wallet_balance'=>$customer_wallet_balance]);
+
+            $customersms = new \CustomerSms();
+
+            $customersms->demonetisation($order->toArray());
+        }
+
+        return "success";
 
     }
 

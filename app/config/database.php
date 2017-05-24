@@ -12,10 +12,6 @@
 
 //production
 $host = "54.179.134.14";
-// $host = "54.179.134.14";
-// $username = "fitterAdmin";
-// $password = "Tech!Fitter";
-
 $username = "";
 $password = "";
 

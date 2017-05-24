@@ -622,7 +622,9 @@ class HomeController extends BaseController {
 
             $popup_message = "";
             if($type == "booktrial" && isset($itemData['amount']) && $itemData['amount'] > 0){
-                $popup_message = "Rs ".$itemData['amount']." Fitcash has been added to your wallet";
+
+                $amount_20_percent = (int)($itemData['amount']*20/100);
+                $popup_message = "Rs ".$amount_20_percent." FitCash has been added to your wallet";
             }
 
             if(isset($item['myreward_id']) && $item['myreward_id'] != "" && $item['myreward_id'] != 0){

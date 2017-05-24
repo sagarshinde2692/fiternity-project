@@ -158,7 +158,7 @@ Class CustomerReward {
                     "amount_fitcash_plus" => 0,
                     "type"=>'CASHBACK',
                     'entry'=>'credit',
-                    "description"=>'Cashback on purchse for Order ID : '.$order['_id'].', Expires On : '.date('d-m-Y H:i:s',time()+(86400*$duration_day)),
+                    'description'=>"5% Cashback for purchase of membership at ".ucwords($order['finder_name'])." (Order ID. ".$order['_id']."), Expires On : ".date('d-m-Y',time()+(86400*$duration_day)),
                     "validity"=>time()+(86400*$duration_day)
                 );
 
@@ -202,7 +202,7 @@ Class CustomerReward {
                     "amount_fitcash_plus" => intval($order['amount_customer'] * 20 / 100),
                     "type"=>'CASHBACK',
                     'entry'=>'credit',
-                    "description"=>'CASHBACK on Trial for Order ID : '.$order['_id'].', Expires On : '.date('d-m-Y H:i:s',time()+(86400)),
+                    "description"=> "20% Cashback for paid trial purchase at ".ucwords($order['finder_name'])." (Order ID. ".$order['_id']."), Expires On : ".date('d-m-Y',time()+(86400*60)),
                     "validity"=>time()+(86400*60)
                 );
 
@@ -440,7 +440,7 @@ Class CustomerReward {
                     $request['amount'] = $current_wallet_balance;
                     $request['entry'] = "credit";
                     $request['type'] = "CREDIT";
-                    $request['description'] = "Added Fitcash Plus Rs ".$current_wallet_balance;
+                    $request['description'] = "Added FitCash+ Rs ".$current_wallet_balance;
 
                     $return = $utilities->customerWalletTransaction($request);
 
@@ -692,8 +692,8 @@ Class CustomerReward {
             $data['wallet_amount'] = $wallet_amount;
             $data['algo'] = $setAlgo;
             $data['current_wallet_balance'] = round($wallet);
-            //$data['description'] = "Enjoy instant discount of Rs.".$amount_discounted." on this purchase & Fitcash of Rs.".$wallet_amount." for your next purchase (Fitcash is fitternity's cool new wallet)";
-            // $data['description'] = "Enjoy Fitcash of Rs.".$wallet_amount." for your next purchase (Fitcash is fitternity's cool new wallet)";
+            //$data['description'] = "Enjoy instant discount of Rs.".$amount_discounted." on this purchase & FitCash of Rs.".$wallet_amount." for your next purchase (FitCash is fitternity's cool new wallet)";
+            // $data['description'] = "Enjoy FitCash of Rs.".$wallet_amount." for your next purchase (FitCash is fitternity's cool new wallet)";
             
             $data['description'] = "Enjoy instant cashback (FitCash) of Rs. ".$wallet_amount." on this purchase. FitCash can be used for any booking / purchase on Fitternity ranging from workout sessions, memberships and healthy tiffin subscription with a validity of 12 months.";
             
@@ -703,7 +703,7 @@ Class CustomerReward {
 
         }else{
 
-            //fitcash plus
+            //fitcash+
             $deduct_fitcash_plus = $original_amount;
             $deduct_fitcash = 0;
 
@@ -757,8 +757,8 @@ Class CustomerReward {
             $data['current_wallet_balance'] = round($wallet + $wallet_fitcash_plus);
             $data['current_wallet_balance_only_fitcash'] = round($wallet);
             $data['current_wallet_balance_only_fitcash_plus'] = round($wallet_fitcash_plus);
-            //$data['description'] = "Enjoy instant discount of Rs.".$amount_discounted." on this purchase & Fitcash of Rs.".$wallet_amount." for your next purchase (Fitcash is fitternity's cool new wallet)";
-            // $data['description'] = "Enjoy Fitcash of Rs.".$wallet_amount." for your next purchase (Fitcash is fitternity's cool new wallet)";
+            //$data['description'] = "Enjoy instant discount of Rs.".$amount_discounted." on this purchase & FitCash of Rs.".$wallet_amount." for your next purchase (FitCash is fitternity's cool new wallet)";
+            // $data['description'] = "Enjoy FitCash of Rs.".$wallet_amount." for your next purchase (FitCash is fitternity's cool new wallet)";
 
             $data['description'] = "Enjoy instant cashback (FitCash) of Rs. ".$wallet_amount." on this purchase. FitCash can be used for any booking / purchase on Fitternity ranging from workout sessions, memberships and healthy tiffin subscription with a validity of 12 months.";
             
