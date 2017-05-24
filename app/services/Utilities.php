@@ -1777,7 +1777,7 @@ Class Utilities {
         $order = $order->toArray();
 
 
-        if(!isset($customer->demonetisation) && isset($order['wallet_amount']) && $order['amount_finder'] >= 500){
+        if(!isset($customer->demonetisation) && isset($order['wallet_amount']) && $order['amount_finder'] > 500){
 
             $customer_wallet = \Customerwallet::where('customer_id',(int) $customer_id)->orderBy('_id','desc')->first();
 
