@@ -2370,7 +2370,7 @@ class CustomerController extends \BaseController {
 						'info'=>[
 							'title'=>'What is FitCash+?',
 							'description' => 'With FitCash+ there is no restriction on redeeming - you can use the entire amount in your transaction! FitCash can be used for any booking or purchase on Fitternity ranging from workout sessions, memberships and healthy tiffin subscriptions.',
-							'short_description' => "short"."\n"."description"."\n"."description"
+							'short_description' => "refer"."\n"."a friend"."\n"."and earn FitCash+"
 						]
 					],
 					),
@@ -2470,7 +2470,7 @@ class CustomerController extends \BaseController {
 						'info'=>[
 							'title'=>'What is FitCash?',
 							'description' => 'Earn FitCash with every transaction you do on Fitternity. You redeem upto 10% of the booking amount in each transaction. FitCash can be used for any booking or purchase on Fitternity ranging from workout sessions, memberships and healthy tiffin subscriptions',
-							'short_description' => "short"."\n"."description"."\n"."description"
+							'short_description' => "refer"."\n"."a friend"."\n"."and earn FitCash+"
 						]
 					],
 					'fitcash_plus' => [
@@ -2479,7 +2479,7 @@ class CustomerController extends \BaseController {
 						'info'=>[
 							'title'=>'What is FitCash+?',
 							'description' => 'With FitCash+ there is no restriction on redeeming - you can use the entire amount in your transaction! FitCash can be used for any booking or purchase on Fitternity ranging from workout sessions, memberships and healthy tiffin subscriptions.',
-							'short_description' => "short"."\n"."description"."\n"."description"
+							'short_description' => "refer"."\n"."a friend"."\n"."and earn FitCash+"
 						]
 					],
 					),
