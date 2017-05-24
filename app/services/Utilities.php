@@ -807,6 +807,8 @@ Class Utilities {
                         ->where('finder_id',(int)$order->finder_id)
                         ->where('customer_email',$order->customer_email)
                         ->where('_id','!=',(int)$order->_id)
+                        ->where('payment_mode','paymentgateway')
+                        ->where('paymentLinkEmailCustomerTiggerCount','exists',false)
                         ->where('created_at', '>=', new \DateTime( date("d-m-Y 00:00:00", strtotime("-44 days"))))
                         ->orderBy('_id','desc')
                         ->get();
@@ -844,6 +846,7 @@ Class Utilities {
                         ->where('customer_email',$order->customer_email)
                         ->where('_id','!=',(int)$order->_id)
                         ->where('created_at', '>=', new \DateTime( date("d-m-Y 00:00:00", strtotime("-44 days"))))
+                        ->whereIn('payment_mode',['paymentgateway','cod'])
                         ->where('paymentLinkEmailCustomerTiggerCount','exists',true)
                         ->where('paymentLinkEmailCustomerTiggerCount','>',0)
                         ->where('redundant_order','exists',false)
