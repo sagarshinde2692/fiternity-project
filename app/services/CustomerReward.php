@@ -716,7 +716,7 @@ Class CustomerReward {
                 $balance = $original_amount - $deduct_fitcash_plus;
 
                 if($balance < $deduct_fitcash){
-                    $deduct_fitcash = 0;
+                    $deduct_fitcash = $balance;
                 }
             }
 
