@@ -2316,8 +2316,8 @@ class CustomerController extends \BaseController {
 						if($created_at == ""){
 
 
-							$created_at = date('d-m-Y H:i:s',strtotime($value['created_at'])); 
-							$updated_at = date('d-m-Y H:i:s',strtotime($value['created_at']));
+							$created_at = date('Y-m-d H:i:s',strtotime($value['created_at'])); 
+							$updated_at = date('Y-m-d H:i:s',strtotime($value['created_at']));
 
 							if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android")){
 								$created_at = date('d-m-Y',strtotime($value['created_at'])); 
