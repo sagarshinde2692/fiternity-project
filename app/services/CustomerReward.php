@@ -395,7 +395,7 @@ Class CustomerReward {
 
         $jwt_token = Request::header('Authorization');
 
-        Log::info('jwt_token : '.$jwt_token);
+        Log::info('jwt_token purchaseGameNew : '.$jwt_token);
             
         if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
             $decoded = $this->customerTokenDecode($jwt_token);
@@ -544,7 +544,7 @@ Class CustomerReward {
 
         $jwt_token = Request::header('Authorization');
 
-        Log::info('jwt_token : '.$jwt_token);
+        Log::info('jwt_token purchaseGameOld : '.$jwt_token);
             
         if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
             $decoded = $this->customerTokenDecode($jwt_token);
