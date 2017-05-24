@@ -661,6 +661,8 @@ Class CustomerReward {
         }else{
             $wallet_algo = round(($amount * $commision / 100) * ($wallet_percentage / 100));
         }
+
+        Log::info('wallet_algo-------------'.$wallet_algo);
         
         if( isset($customer_wallet->balance_fitcash_plus) && $customer_wallet->balance_fitcash_plus != ''){
             $wallet_fitcash_plus = (int)$customer_wallet->balance_fitcash_plus;
@@ -675,9 +677,6 @@ Class CustomerReward {
                 $wallet = $cap - $wallet_fitcash_plus;
             }
         }
-
-        {"only_wallet":{"fitcash":0,"fitcash_plus":80},"discount_and_wallet":{"fitcash":0,"fitcash_plus":80},"original_amount":600,"amount_discounted":0,"amount_deducted_from_wallet":80,"final_amount_discount_only":600,"final_amount_discount_and_wallet":520,"wallet_amount":30,"algo":{"cashback":5,"fitcash":5,"discount":0},"current_wallet_balance":947,"current_wallet_balance_only_fitcash":867,"current_wallet_balance_only_fitcash_plus":80,"description":"Enjoy instant cashback (FitCash) of Rs. 30 on this purchase. FitCash can be used for any booking / purchase on Fitternity ranging from workout sessions, memberships and healthy tiffin subscription with a validity of 12 months."}
-
 
         if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios']) && isset($_GET['app_version']) && ((float)$_GET['app_version'] <= 3.2) ){
 
