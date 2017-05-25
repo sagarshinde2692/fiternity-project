@@ -691,7 +691,7 @@ class CustomerController extends \BaseController {
 			if($current_wallet_balance > 0){
 
 				$resp["show_popup"] = true;
-				$resp["popup"]["header_image"] = "http://b.fitn.in/iconsv1/global/fitcash.jpg";
+				$resp["popup"]["header_image"] = "https://b.fitn.in/iconsv1/global/fitcash.jpg";
 				$resp["popup"]["header_text"] = "Congratulations";
 				$resp["popup"]["text"] = "You have Rs. ".$current_wallet_balance." in your wallet as FitCash+. This is 100% redeemable to purchase workout sessions and memberships on Fitternity across Mumbai, Bangalore, Pune & Delhi";
 				$resp["popup"]["button"] = "Ok";
@@ -718,7 +718,7 @@ class CustomerController extends \BaseController {
 			if($fitcash > 0 || $fitcash_plus > 0){
 
 				$resp["show_popup"] = true;
-				$resp["popup"]["header_image"] = "http://b.fitn.in/iconsv1/global/fitcash.jpg";
+				$resp["popup"]["header_image"] = "https://b.fitn.in/iconsv1/global/fitcash.jpg";
 				$resp["popup"]["header_text"] = "Congratulations";
 
 				if($fitcash_plus > 0){
