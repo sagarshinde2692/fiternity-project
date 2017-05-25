@@ -556,7 +556,7 @@ Class CustomerReward {
             $customer_wallet = Customerwallet::where('customer_id',(int) $customer_id)->orderBy('_id','desc')->first();
 
             if($customer_wallet && isset($customer_wallet->balance) && $customer_wallet->balance != ''){
-                $wallet = $customer_wallet->balance;
+                $wallet = $wallet <= $cap ? $customer_wallet->balance : $cap;
             }
 
             if($customer_wallet && isset($customer_wallet->balance_fitcash_plus) && $customer_wallet->balance_fitcash_plus != ''){
@@ -673,8 +673,9 @@ Class CustomerReward {
                 $wallet = $cap - $wallet_fitcash_plus;
             }
         }
-
-
+        if($wallet_fitcash_plus >= $cap){
+            $wallet = 0;
+        }
         if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios']) && isset($_GET['app_version']) && ((float)$_GET['app_version'] <= 3.2) ){
 
 
@@ -716,7 +717,7 @@ Class CustomerReward {
                 $balance = $original_amount - $deduct_fitcash_plus;
 
                 if($balance < $deduct_fitcash){
-                    $deduct_fitcash = 0;
+                    $deduct_fitcash = $balance;
                 }
             }
 
