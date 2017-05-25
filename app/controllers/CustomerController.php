@@ -700,20 +700,34 @@ class CustomerController extends \BaseController {
 
 		}else{
 
-			if($customer["balance"] > 0 || $customer["balance_fitcash_plus"] > 0){
+			$fitcash = 0;
+			$fitcash_plus = 0;
+
+			$customer_wallet = Customerwallet::where('customer_id',$customer->_id)
+			->where('amount','!=',0)
+			->orderBy('_id', 'DESC')
+			->first();
+
+			if($customer_wallet){
+				$fitcash = (isset($customer_wallet['balance']) && $customer_wallet['balance'] != "") ? (int) $customer_wallet['balance'] : 0 ;
+				$fitcash_plus = (isset($customer_wallet['balance_fitcash_plus']) && $customer_wallet['balance_fitcash_plus'] != "") ? (int) $customer_wallet['balance_fitcash_plus'] : 0 ;
+			}
+
+			$current_wallet_balance = $fitcash + $fitcash_plus;
+
+			if($fitcash > 0 || $fitcash_plus > 0){
 
 				$resp["show_popup"] = true;
 				$resp["popup"]["header_image"] = "http://b.fitn.in/iconsv1/global/fitcash.jpg";
 				$resp["popup"]["header_text"] = "Congratulations";
 
-				if($customer["balance_fitcash_plus"] > 0){
-					$resp["popup"]["text"] = "You have Rs. ".$current_wallet_balance." in your wallet as FitCash+. This is 100% redeemable to purchase workout sessions and memberships on Fitternity across Mumbai, Bangalore, Pune & Delhi";
+				if($fitcash_plus > 0){
+					$resp["popup"]["text"] = "You have Rs. ".$fitcash_plus." in your wallet as FitCash+. This is 100% redeemable to purchase workout sessions and memberships on Fitternity across Mumbai, Bangalore, Pune & Delhi";
 				}else{
-					$resp["popup"]["text"] = "You have Rs. ".$customer["balance"]." in your wallet as FitCash. You can use this across session and membership bookings at gyms in studios in Mumbai, Bangalore, Pune & Delhi";
+					$resp["popup"]["text"] = "You have Rs. ".$fitcash." in your wallet as FitCash. You can use this across session and membership bookings at gyms in studios in Mumbai, Bangalore, Pune & Delhi";
 				}
 
 				$resp["popup"]["button"] = "Ok";
-
 			}
 
 		}
