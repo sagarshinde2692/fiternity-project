@@ -485,8 +485,9 @@ class CustomerController extends \BaseController {
 						$customer->account_link = $account_link;
 						$customer->status = "1";
 						$customer->demonetisation = time();
+						$customer->referral_code = $this->generateReferralCode($customer->name);
+						$customer->old_customer = false;
 						$customer->save();
-
 						$customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email'],'password'=>$data['password']);
 						$this->customermailer->register($customer_data);
 
@@ -509,6 +510,8 @@ class CustomerController extends \BaseController {
 					$ishullcustomer->name = ucwords($data['name']);
 					$ishullcustomer->password = md5($data['password']);
 					$ishullcustomer->ishulluser = 0;
+					$ishullcustomer->referral_code = $this->generateReferralCode($ishullcustomer->name);
+					$ishullcustomer->old_customer = true;
 					$ishullcustomer->update();
 					$customer_data = array('name'=>ucwords($ishullcustomer['name']),'email'=>$ishullcustomer['email'],'password'=>$ishullcustomer['password']);
 
@@ -876,6 +879,7 @@ class CustomerController extends \BaseController {
 
 			$customer->status = "1";
 			$customer->demonetisation = time();
+			$customer->referral_code = $this->generateReferralCode($customer->name);
 			$customer->save();
 
 			$response = array('status' => 200,'customer'=>$customer);
@@ -3307,6 +3311,12 @@ class CustomerController extends \BaseController {
 			return  Response::json($resp, 400);
 		}
 
+		$code = trim(strtoupper($data['code']));
+		
+		if(strrpos($code, 'R-') == 0){
+			return $this->setReferralData($code);
+		}
+
 		$code = trim(strtolower($data['code']));
 
 		$fitcashcode = Fitcashcoupon::where('code',$code)->where("expiry",">",time())->first();
@@ -4185,6 +4195,217 @@ class CustomerController extends \BaseController {
 			200
 		);
 
+	}
+
+	public function getReferralCode(){
+		try{
+			$jwt = Request::header('Authorization');
+			$decoded = $this->customerTokenDecode($jwt);
+			$id = $decoded->customer->_id;
+			Customer::$withoutAppends = true;
+			$customer = Customer::where('_id', $id)->first(['referral_code']);
+			
+			if($customer){
+				$referral_code = $customer['referral_code'];
+				$url = Config::get('app.download_app_link');
+				$share_message = "I'm giving you Rs. 250 Fitcash for your first transaction through Fitternity. To accept, use code $referral_code to sign up. Enjoy! - $url";
+				return $response =  array('status' => 200,'referral_code' => $referral_code, 'message' 	=> 'Refer a friend and get fitcash on his first transaction', 'share_message'=>$share_message);
+			}else{
+				return $response =  array('status' => 404,'message'=>"Customer not found");
+			}
+			
+		}catch(Exception $e){
+			Log::info($e);
+		}
+	}
+	public function referFriend(){
+			
+		try{
+			$jwt = Request::header('Authorization');
+			$decoded = $this->customerTokenDecode($jwt);
+			$id = $decoded->customer->_id;
+			Customer::$withoutAppends = true;
+			$customer = Customer::where('_id', $id)->first(['name', 'email', 'contact_no', 'referral_code']);
+			
+			if($customer){
+				$referrer_name = $customer->name;
+				$req = Input::json()->all();
+		        Log::info('referfriend',$req);
+		        $rules = [
+		            'invitees' => 'required|array',
+		        ];
+		        $validator = Validator::make($req, $rules);
+		        if ($validator->fails()) {
+		            return Response::json(
+		                array(
+		                    'status' => 400,
+		                    'message' => $this->errorMessage($validator->errors()
+		                    )),400
+		            );
+		        }
+		        // Invitee info validations...........
+		        $inviteesData = [];
+		        foreach ($req['invitees'] as $value){
+		        	$inviteeData = [];
+		            if(isset($value['name'])){
+		            	Log::info("Inside name");
+		            	$inviteeData = ['name'=>$value['name']];
+		            }
+		            $rules = [
+		                'input' => 'required|string'
+		            ];
+		            $messages = [
+		                'input' => 'invitee email or phone is required'
+		            ];
+		            $validator = Validator::make($value, $rules, $messages);
+		            if ($validator->fails()) {
+		                return Response::json(
+		                    array(
+		                        'status' => 400,
+		                        'message' => $this->errorMessage($validator->errors()
+		                        )),400
+		                );
+		            }
+		            if(filter_var($value['input'], FILTER_VALIDATE_EMAIL) != '') {
+		                // valid address
+		                $inviteeData = array_add($inviteeData, 'email', $value['input']);
+		            }
+		            else if(filter_var($value['input'], FILTER_VALIDATE_REGEXP, array(
+		                    "options" => array("regexp"=>"/^[2-9]{1}[0-9]{9}$/")
+		                )) != ''){
+		                // valid phone
+		                $inviteeData = array_add($inviteeData, 'phone', $value['input']);
+		            }
+		            // return $inviteeData;
+		            array_push($inviteesData, $inviteeData);
+		        }	        
+// return $inviteesData;
+		        foreach ($inviteesData as $value){
+		            $rules = [
+		                'email' => 'required_without:phone|email',
+		                'phone' => 'required_without:email',
+		            ];
+		            $messages = [
+		                'email.required_without' => 'valid invitee email or phone is required',
+		                'phone.required_without' => 'valid invitee email or phone is required'
+		            ];
+		            $validator = Validator::make($value, $rules, $messages);
+		            if ($validator->fails()) {
+		                return Response::json(
+		                    array(
+		                        'status' => 400,
+		                        'message' => $this->errorMessage($validator->errors()
+		                        )),400
+		                );
+		            }
+		        }
+		        $emails = array_fetch($inviteesData, 'email');
+        		$phones = array_fetch($inviteesData, 'phone');
+        		// return $customer->email;
+        		if(in_array($customer->email, $emails)) {
+		            return Response::json(
+		                array(
+		                    'status' => 422,
+		                    'message' => 'You cannot invite yourself email'
+		                ),422
+		            );
+		        }
+		        if(in_array($customer->contact_no, $phones)) {
+		            return Response::json(
+		                array(
+		                    'status' => 422,
+		                    'message' => 'You cannot invite yourself'
+		                ),422
+		            );
+		        }
+		        // return $inviteesData;
+		        foreach ($inviteesData as $invitee){
+		            $url = 'www.fitternity.com/buy/';
+		            $shorten_url = new ShortenUrl();
+		            $url = $shorten_url->getShortenUrl($url);
+		            if(!isset($url['status']) ||  $url['status'] != 200){
+		                return Response::json(
+		                    array(
+		                        'status' => 422,
+		                        'message' => 'Unable to Generate Shortren URL'
+		                    ),422
+		                );
+		            }
+		            $url = $url['url'];
+		            // Send email / SMS to invitees...
+		            $templateData = array(
+		                'referral_code'=>$customer['referral_code'],
+		                'invitee_name' =>isset($invitee['name'])?$invitee['name']:"",
+		                'invitee_email'=>isset($invitee['email'])?$invitee['email']:null,
+		                'invitee_phone'=>isset($invitee['phone'])?$invitee['phone']:null,
+		                'url' => $url,
+		            );
+		            Log::info($templateData);
+		            isset($templateData['invitee_email']) ? $this->customermailer->referFriend($templateData) : null;
+		            isset($templateData['invitee_phone']) ? $this->customersms->referFriend($templateData) : null;
+		        }
+				
+				return $response =  array('status' => 200,'data'=>'Success');
+			}else{
+				return $response =  array('status' => 404,'message'=>"Customer not found");
+			}
+			
+		}catch(Exception $e){
+			Log::info($e);
+		}
+	}
+
+	public function setReferralData($data){
+		$decoded = decode_customer_token();
+		$customer_id = intval($decoded->customer->_id);
+		$customer = Customer::find($customer_id);
+		
+		$referrer = Customer::where('referral_code', $data['referral_code'])->where('status', '1')->first();
+		if($referrer){
+			$customer->referrer_id = $referrer->_id;
+			$customer->old_customer = true;
+			$customer->save();
+			if(!isset($referrer->referred_to)){
+				$referrer->referred_to = [];
+			}
+			$referred_to = $referrer->referred_to;
+			array_push($referred_to, $customer->_id);
+			$referrer->save();
+			$wallet_data = array(
+				'customer_id' => $customer->_id,
+				'amount' => 250,
+				'amount_fitcash' => 0,
+				'amount_fitcash_plus' => 250,
+				'type' => "REFERRAL",
+				"entry"=>'credit',
+				'description' => "Referral fitcashplus",
+				'order_id' => 0
+				);
+
+			$walletTransaction = $this->utilities->walletTransaction($wallet_data);
+
+			$sms_data = array(
+				'customer_phone'=>$referrer->contact_no,
+				'amount_added'	=>$walletTransaction['amount_added'],
+				'wallet_url'    =>'www.fitternity.com/profile/'.$referrer->email
+			);
+
+			$referSms = $this->customersms->referralFitcash($sms_data);
+
+			return array('status'=>200);
+		}else{
+			return array('status'=>400, 'message'=>'Incorrect referral code');
+		}
+	}
+
+	public function generateReferralCode($name){
+		$referral_code = 'R-'.substr(implode("", (explode(" ", strtoupper($name)))),0,4)."".rand(1000, 9999);
+		$exists = Customer::where('referral_code', $referral_code)->where('status', '1')->first();
+		if($exists){
+			return $this->generateReferralCode($name);
+		}else{
+			return $referral_code;
+		}
 	}
 
 
