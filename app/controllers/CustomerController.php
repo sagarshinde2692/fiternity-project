@@ -880,6 +880,7 @@ class CustomerController extends \BaseController {
 			$customer->status = "1";
 			$customer->demonetisation = time();
 			$customer->referral_code = $this->generateReferralCode($customer->name);
+			$customer->old_customer = false;
 			$customer->save();
 
 			$response = array('status' => 200,'customer'=>$customer);
