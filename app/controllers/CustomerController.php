@@ -4206,19 +4206,25 @@ class CustomerController extends \BaseController {
 			$customer = Customer::where('_id', $id)->first(['referral_code']);
 			
 			if($customer){
+			
 				$referral_code = $customer['referral_code'];
-				$url = Config::get('app.download_app_link');
-				$share_message = "I'm giving you Rs. 250 Fitcash for your first transaction through Fitternity. To accept, use code $referral_code to sign up. Enjoy! - $url";
-				return $response =  array('status' => 200,'referral_code' => $referral_code, 'message' 	=> 'Refer a friend and get fitcash on his first transaction', 'share_message'=>$share_message);
+				$url = Config::get('app.app_profile_promo_link')."?pc=$referral_code";
+				$share_message = "Register on Fitternity and earn Rs. 250 FitCash+ which can be used for fitness classes, memberships, diet consulting & more! Use my code $referral_code and apply it in your profile after logging-in $url";
+				$display_message = "Fitter is better together!<br>Refer a friend and both of you get Rs. 250 FitCash + which is fully redeemable on all bookings on Fitternity!<br><br>Valid till 31st December 2017. TCA.";
+				
+				return $response =  array('status' => 200,'referral_code' => $referral_code, 'message' 	=> $display_message, 'share_message'=>$share_message);
+			
 			}else{
+				
 				return $response =  array('status' => 404,'message'=>"Customer not found");
+			
 			}
 			
 		}catch(Exception $e){
 			Log::info($e);
 		}
 	}
-	public function referFriend(){
+	public function referFriend(){	
 			
 		try{
 			$jwt = Request::header('Authorization');
@@ -4279,7 +4285,7 @@ class CustomerController extends \BaseController {
 		            // return $inviteeData;
 		            array_push($inviteesData, $inviteeData);
 		        }	        
-// return $inviteesData;
+		// return $inviteesData;
 		        foreach ($inviteesData as $value){
 		            $rules = [
 		                'email' => 'required_without:phone|email',
@@ -4355,15 +4361,14 @@ class CustomerController extends \BaseController {
 		}
 	}
 
-	public function setReferralData($data){
+	public function setReferralData($code){
 		$decoded = decode_customer_token();
 		$customer_id = intval($decoded->customer->_id);
 		$customer = Customer::find($customer_id);
 		
-		$referrer = Customer::where('referral_code', $data['referral_code'])->where('status', '1')->first();
-		if($referrer){
+		$referrer = Customer::where('referral_code', $code)->where('status', '1')->first();
+		if($referrer && (!isset($customer->referrer_id) || $customer->referrer_id != 0)){
 			$customer->referrer_id = $referrer->_id;
-			$customer->old_customer = true;
 			$customer->save();
 			if(!isset($referrer->referred_to)){
 				$referrer->referred_to = [];
@@ -4384,17 +4389,9 @@ class CustomerController extends \BaseController {
 
 			$walletTransaction = $this->utilities->walletTransaction($wallet_data);
 
-			$sms_data = array(
-				'customer_phone'=>$referrer->contact_no,
-				'amount_added'	=>$walletTransaction['amount_added'],
-				'wallet_url'    =>'www.fitternity.com/profile/'.$referrer->email
-			);
-
-			$referSms = $this->customersms->referralFitcash($sms_data);
-
-			return array('status'=>200);
+			return array('status'=>200, 'message'=>'250 Fitcash+ has been added to your wallet');
 		}else{
-			return array('status'=>400, 'message'=>'Incorrect referral code');
+			return array('status'=>400, 'message'=>'Incorrect referral code or referral already applied');
 		}
 	}
 

@@ -15,7 +15,7 @@ return array(
 	*/
 
 
-	'debug' => FALSE,
+	'debug' => TRUE,
 
 	/*
 	|--------------------------------------------------------------------------
@@ -28,9 +28,9 @@ return array(
 	|
 	*/
 
-	'url' => 'https://a1.fitternity.com', //live
+	// 'url' => 'https://a1.fitternity.com', //live
 	// 'url' => 'http://apistage.fitn.in', //stage
-	// 'url' => 'http://fitapi.com', //local
+	'url' => 'http://fitapi.com', //local
 
     'website' => 'https://www.fitternity.com', //live
     // 'website' => 'http://apistage.fitn.in:2233', //stage
@@ -38,10 +38,14 @@ return array(
 
     'download_app_link' => 'https://goo.gl/sP81To',//https://www.fitternity.com/downloadapp',
 
+    'app_profile_promo_link' => 'https://goo.gl/xbM2NJ',//http://ftrnty.com/p/p',
+
+    'app_profile_wallet_link' => 'https://goo.gl/kjMQZM',//http://ftrnty.com/p/w',
+
     'business' => 'http://business.fitternity.com',
 
-    'sidekiq_url' => 'http://nw.fitn.in/', //live
-   	// 'sidekiq_url' => 'http://kick.fitn.in/', //stage
+    // 'sidekiq_url' => 'http://nw.fitn.in/', //live
+   	'sidekiq_url' => 'http://kick.fitn.in/', //stage
 
     'queue' => 'booktrial',
 
@@ -50,7 +54,7 @@ return array(
 		'discount_excluded_vendors' => [1747,1813,4528,4530,9984,10081],
 	),
 
-	'vendor_communication' => true,
+	'vendor_communication' => false,
 
 	/*
 	|--------------------------------------------------------------------------

@@ -696,13 +696,13 @@ class TransactionController extends \BaseController {
             $this->utilities->setRedundant($order);
 
             Log::info("Customer for referral");
-            $customer = Customer::where('_id', $order['customer_id'])->first(['referred', 'referrer_id', 'first_transaction']);
+            $customer = Customer::where('_id', $order['customer_id'])->first(['name','referred', 'referrer_id', 'first_transaction', 'old_customer']);
             Log::info($customer);
             
-            if(isset($customer['referred']) && $customer['referred'] && $customer['first_transaction']){
+            if(isset($customer['old_customer']) && !$customer['old_customer'] && isset($customer['referrer_id']) && $customer['referrer_id'] != 0){
                 Log::info("inside first transaction");
                 $referrer = Customer::where('_id', $customer->referrer_id)->first();
-                $customer->first_transaction = false;
+                $customer->old_customer = true;
                 $customer->update();
                 $wallet_data = array(
                                 'customer_id' => $customer->referrer_id,
@@ -710,14 +710,15 @@ class TransactionController extends \BaseController {
                                 'amount_fitcash' => 0,
                                 'amount_fitcash_plus' => 250,
                                 'type' => "REFERRAL",
+                                "entry"=>'credit',
                                 'description' => "Referral fitcashplus to referrer",
                                 'order_id' => 0
                                 );
                 $this->utilities->walletTransaction($wallet_data);
-                $url = 'www.fitternity.com/profile/'.$referrer->email;
+                $url = Config::get('app.app_profile_wallet_link');
                 $sms_data = array(
                     'customer_phone'=>$referrer->contact_no,
-                    // 'friend_name'   =>$customer_name,
+                    'friend_name'   =>ucwords($customer->name),
                     'wallet_url'    =>$url
                     );
                 $referSms = $this->customersms->referralFitcash($sms_data);
