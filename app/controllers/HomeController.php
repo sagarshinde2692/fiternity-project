@@ -439,12 +439,42 @@ class HomeController extends BaseController {
             $captureItemArr     =   ["manualmembership"];
 
             $itemData           =   [];
+            
             if (in_array($type, $booktrialItemArr)){
-                $itemData       =   Booktrial::with('finder')->find(intval($id))->toArray();
+
+                $itemData       =   Booktrial::with('finder')->find(intval($id));
+
+                $dates = array('start_date', 'start_date_starttime', 'schedule_date', 'schedule_date_time', 'followup_date', 'followup_date_time','missedcall_date','customofferorder_expiry_date','auto_followup_date');
+
+                foreach ($dates as $key => $value){
+                    if(isset($itemData[$value]) && $itemData[$value]==''){
+                        $itemData->unset($value);
+                    }
+                }
+
+                $itemData       =   $itemData->toArray();
+
+                if($type == 'manualtrial'){
+                    if(isset($itemData['finder']['manual_trial_auto']) && $itemData['finder']['manual_trial_auto'] == "1"){
+                        $type = "manualautotrial";
+                    }
+                }
             }
 
             if (in_array($type, $orderItemArr)) {
-                $itemData = Order::with('finder')->find(intval($id))->toArray();
+
+                $itemData = Order::with('finder')->find(intval($id));
+
+                $dates = array('followup_date','last_called_date','preferred_starting_date', 'called_at','subscription_start','start_date','start_date_starttime','end_date', 'order_confirmation_customer');
+
+                foreach ($dates as $key => $value){
+                    if(isset($itemData[$value]) && $itemData[$value]==''){
+                        $itemData->unset($value);
+                    }
+                }
+
+                $itemData       =   $itemData->toArray();
+
             }
 
             if (in_array($type, $captureItemArr)) {

@@ -1368,10 +1368,12 @@ class CustomerController extends \BaseController {
 					$value['amount'] = $value['amount_customer'];
 				}
 
-				$getAction = $this->getAction($value);
+				$getAction = $this->getAction($value,"orderHistory");
 
 			    $value["action"] = $getAction["action"];
 			    $value["feedback"] = $getAction["feedback"];
+
+				$value["action_new"] = $this->getActionV1($value,"orderHistory");
 
 				array_push($orders, $value);
 
@@ -3642,16 +3644,15 @@ class CustomerController extends \BaseController {
 	    $extraInfoData['what_to_expect'] = ($order->what_i_should_expect) ? $order->what_i_should_expect : "";
 	    $data['extra_info'] = $extraInfoData;
 
-	    $getAction = $this->getAction($order);
+		$getAction = $this->getAction($order);
 
 	    $data["action"] = $getAction["action"];
 	    $data["feedback"] = $getAction["feedback"];
 
-	    $data["action"] = $getAction["action"];
-	    $data["feedback"] = $getAction["feedback"];
+		$data["action_new"] = $this->getActionV1($order);
 
 	    $reviewData = null;
-	    $review = Review::active()->where('finder_id',(int)$order->finder_id)->where('customer_id',(int)$order->customer_id)->first();
+	    /*$review = Review::active()->where('finder_id',(int)$order->finder_id)->where('customer_id',(int)$order->customer_id)->first();
 
 	    if($review){
 	    	$reviewData[] = [
@@ -3660,32 +3661,44 @@ class CustomerController extends \BaseController {
 	    		"detail_rating"=>$review->detail_rating,
 	    		"description"=>$review->description
 	    	];
-	    }
+	    }*/
 
 	    $data['review'] = $reviewData;
-	    
+
 	    return Response::json($data,200);
 
 	}
 
-	public function getAction($order){
+	public function getAction($order,$method = false){
 
 		$action = null;
 
-		if(!isset($order->updrage_membership) && isset($order['start_date']) && time() >= strtotime($order['start_date'].'+5 days') && time() <= strtotime($order['start_date'].'+31 days') && isset($order['end_date']) && strtotime($order['end_date']) >= time() && isset($order['duration_day']) && $order['duration_day'] <= 180){
+		$change_start_date = true;
+		$renew_membership = true;
+		$upgrade_membership = true;
+
+		if(isset($_GET['device_type']) && in_array($_GET['device_type'], ['ios','android'])){
+
+			if($method == "orderHistory"){
+				$change_start_date = false;
+			}
+
+		}
+
+		if(!isset($order->upgrade_membership) && isset($order['start_date']) && time() >= strtotime($order['start_date'].'+5 days') && time() <= strtotime($order['start_date'].'+31 days') && isset($order['end_date']) && strtotime($order['end_date']) >= time() && isset($order['duration_day']) && $order['duration_day'] <= 180){
 			$action = [
 				"button_text"=>"Upgrade",
 				"activity"=>"upgrade_membership",
 				"color"=>"#26ADE5",
 				"info" => "Commit yourself for a longer duration. Upgrade your current membership with insider discounts and other benefits.",
 				"popup" =>[
-					"title"=>"Upgrade Membership",
-					"message"=>"Upgrade Membership"
+					"title"=>"",
+					"message"=>"Commit yourself for a longer duration. Upgrade your current membership with insider discounts and other benefits."
 				]
 			];
 		}
 
-		if(!isset($order->preferred_starting_change_date) && isset($order['start_date']) && time() <= strtotime($order['start_date'].'+11 days')){
+		if(!isset($order->preferred_starting_change_date) && isset($order['start_date']) && time() <= strtotime($order['start_date'].'+11 days') && $change_start_date){
 
 			$min_date = strtotime('+1 days');
 			$max_date = strtotime($order['created_at'].'+29 days');
@@ -3703,9 +3716,9 @@ class CustomerController extends \BaseController {
 					$maxDate[] = $this->closestDate($value["weekday"],$max_date);
 				}
 
-				Log::info("available_days--------",$available_days);
-				Log::info("minDate--------",$minDate);
-				Log::info("maxDate--------",$maxDate);
+				// Log::info("available_days--------",$available_days);
+				// Log::info("minDate--------",$minDate);
+				// Log::info("maxDate--------",$maxDate);
 
 				foreach ($minDate as $key => $value) {
 
@@ -3738,7 +3751,7 @@ class CustomerController extends \BaseController {
 			];
 		}
 
-		if(!isset($order->renew_membership) && isset($order['duration_day']) && isset($order['start_date'])){
+		if(!isset($order->renew_membership) && isset($order['duration_day']) && isset($order['start_date']) && $renew_membership){
 
 			$renewal_date = array();
 			$validity = (int) $order['duration_day'];
@@ -3800,6 +3813,202 @@ class CustomerController extends \BaseController {
 
 	}
 
+	public function getActionV1($order,$method = false){
+
+		$action = [
+			'change_start_date'=>null,
+			'change_start_date_request'=>null,
+			'renew_membership'=>null,
+			'upgrade_membership'=>null,
+			'feedback'=>null,
+		];
+
+		$change_start_date = true;
+		$renew_membership = true;
+		$upgrade_membership = true;
+		$change_start_date_request = true;
+
+		if(isset($_GET['device_type']) && in_array($_GET['device_type'], ['ios','android'])){
+
+			if($method == "orderHistory"){
+				$change_start_date = false;
+			}
+
+		}
+
+		if(!isset($order->upgrade_membership) && isset($order['success_date']) && time() >= strtotime($order['success_date']) && $upgrade_membership && strtotime($order['end_date']) >= time()){
+			$action['upgrade_membership'] = [
+				"button_text"=>"Upgrade",
+				"activity"=>"upgrade_membership",
+				"color"=>"#26ADE5",
+				"info" => "Commit yourself for a longer duration. Upgrade your current membership with insider discounts and other benefits.",
+				"popup" =>[
+					"title"=>"",
+					"message"=>"Commit yourself for a longer duration. Upgrade your current membership with insider discounts and other benefits."
+				]
+			];
+		}
+
+		if(!isset($order->preferred_starting_change_date) && isset($order['success_date']) && time() <= strtotime($order['success_date'].'+10 days') && $change_start_date){
+
+			$min_date = strtotime('+1 days');
+			$max_date = strtotime($order['success_date'].'+29 days');
+			$available_days = null;
+
+
+			if(isset($order->batch) && !empty($order->batch) && is_array($order->batch)){
+
+				$minDate = [];
+				$maxDate = [];
+
+				foreach ($order->batch as $key => $value) {
+					$available_days[] = $value["weekday"];
+					$minDate[] = $this->closestDate($value["weekday"],time());
+					$maxDate[] = $this->closestDate($value["weekday"],$max_date);
+				}
+
+				foreach ($minDate as $key => $value) {
+
+					if($value > time()){
+						$min_date = $value;
+						break;
+					}
+				}
+
+				foreach ($maxDate as $key => $value) {
+
+					if($value < time()){
+						$max_date = $value;
+					}
+				}
+			}
+
+			$action['change_start_date'] = [
+				"button_text"=>"Change",
+				"activity"=>"update_starting_date",
+				"color"=>"#7AB317",
+				"info" => "Don't miss even a single day workout. Change your membership start date basis your convenience. Not applicable, if you have already started with your membership.",
+				"min_date"=> $min_date,
+				"max_date"=> $max_date,
+				"available_days"=> $available_days,
+				"popup" =>[
+					"title"=>"",
+					"message"=>"Don't miss even a single day workout. Change your membership start date basis your convenience. Not applicable, if you have already started with your membership."
+				]
+			];
+
+		}
+
+		if($action['change_start_date'] == null && !isset($order->requested_preferred_starting_date) && isset($order['success_date']) && time() <= strtotime($order['success_date'].'+29 days') && $change_start_date_request){
+
+			$min_date = strtotime('+1 days');
+			$max_date = strtotime($order['success_date'].'+29 days');
+			$available_days = null;
+
+			if(isset($order->batch) && !empty($order->batch) && is_array($order->batch)){
+
+				$minDate = [];
+				$maxDate = [];
+
+				foreach ($order->batch as $key => $value) {
+					$available_days[] = $value["weekday"];
+					$minDate[] = $this->closestDate($value["weekday"],time());
+					$maxDate[] = $this->closestDate($value["weekday"],$max_date);
+				}
+
+				foreach ($minDate as $key => $value) {
+
+					if($value > time()){
+						$min_date = $value;
+						break;
+					}
+				}
+
+				foreach ($maxDate as $key => $value) {
+
+					if($value < time()){
+						$max_date = $value;
+					}
+				}
+			}
+
+			$action['change_start_date_request'] = [
+				"button_text"=>"Change",
+				"activity"=>"change_start_date_request",
+				"color"=>"#7AB317",
+				"info" => "Don't miss even a single day workout. Change your membership start date basis your convenience. Not applicable, if you have already started with your membership.",
+				"min_date"=> $min_date,
+				"max_date"=> $max_date,
+				"available_days"=> $available_days,
+				"popup" =>[
+					"title"=>"",
+					"message"=>"Don't miss even a single day workout. Change your membership start date basis your convenience. Not applicable, if you have already started with your membership."
+				]
+			];
+				
+		}
+
+		if(!isset($order->renew_membership) && isset($order['duration_day']) && isset($order['start_date']) && $renew_membership){
+
+			$renewal_date = array();
+			$validity = (int) $order['duration_day'];
+			$start_date = $order['start_date'];
+
+			if($validity >= 30 && $validity < 90){
+
+				$min_date = strtotime($start_date ."+ ".($validity-7). "days");
+				$max_date = strtotime($start_date ."+ ".($validity+30). "days");
+
+			}elseif($validity >= 90 && $validity < 180){
+
+				$min_date = strtotime($start_date ."+ ".($validity-15). "days");
+				$max_date = strtotime($start_date ."+ ".($validity+30). "days");
+
+			}elseif($validity >= 180){
+				
+				$min_date = strtotime($start_date ."+ ".($validity-30). "days");
+				$max_date = strtotime($start_date ."+ ".($validity+30). "days");
+
+			}
+
+			if(isset($min_date) && isset($max_date) && time() >= $min_date  && time() <= $max_date){
+
+				$days_to_go = ceil(($max_date - time()) / 86400);
+
+				$action['renew_membership'] = [
+					"button_text"=>"Renew",
+					"activity"=>"renew_membership",
+					"color"=>"#EF1C26",
+					"info" => "Renew your membership with the lowest price and assured rewards",
+					"popup" =>[
+						"title"=>"",
+						"message"=>"Renew your membership with the lowest price and assured rewards"
+					]
+				];
+
+			}
+		}
+
+		if($action['renew_membership'] != null){
+			$action['upgrade_membership'] = null;
+		}
+
+		$feedback = [];
+
+		if(isset($order->finder_name) && $order->finder_name != ""){
+			$action["feedback"] = ["info"=>"Share your experience at ".ucwords($order->finder_name)." and we will make sure they are notified with it","show"=>true];
+		}else{
+			$action["feedback"] = ["info"=>"Share your experience and we will make sure they are notified with it","show"=>true];
+		}
+		
+		if(isset($order["review_added"])){
+			$action["feedback"]["show"] = false;
+		}
+
+		return $action;
+
+	}
+
 	public function closestDate($day,$date){
 
 		$date = ($date) ? $date : time();
@@ -3821,6 +4030,10 @@ class CustomerController extends \BaseController {
 
 		if($notificationTracking){
 
+			if(isset($_GET['action']) && $_GET['action'] == 'received'){
+				$notificationTracking->update(['received'=>time()]);
+			}
+
 			$notificationSwitch = $this->notificationSwitch($notificationTracking);
 
 			return Response::json($notificationSwitch,200);
@@ -3831,6 +4044,8 @@ class CustomerController extends \BaseController {
 	}
 
 	public function notificationSwitch($notificationTracking){
+
+		$notificationTracking->update(['clicked'=>time()]);
 
 		$time = $notificationTracking->time;
 		
@@ -3847,7 +4062,8 @@ class CustomerController extends \BaseController {
 		];
 
 		$response["notification_id"] = $notificationTracking["_id"];
-
+		$response["cancelable"] = false;
+		
 		foreach ($array as $value) {
 
 			if(isset($notificationTracking[$value])){
@@ -3857,60 +4073,76 @@ class CustomerController extends \BaseController {
 
 		if(isset($notificationTracking["order_id"])){
 
-			$order = Order::find((int)$notificationTracking["order_id"]);
+			$transaction = Order::find((int)$notificationTracking["order_id"]);
+			
+			$dates = array('followup_date','last_called_date','preferred_starting_date', 'called_at','subscription_start','start_date','start_date_starttime','end_date', 'order_confirmation_customer');
 
-			if($order){
+			foreach ($dates as $key => $value){
+				if(isset($transaction[$value]) && $transaction[$value]==''){
+					$transaction->unset($value);
+				}
+			}
+
+		}else if(isset($notificationTracking["booktrial_id"])){
+
+			$transaction = Booktrial::find((int)$notificationTracking["booktrial_id"]);
+			
+			if($transaction && $transaction->type != 'workout-session' && (!isset($transaction->amount))){
+				$response["cancelable"] = true;
+			}
+			
+
+			$dates = array('start_date', 'start_date_starttime', 'schedule_date', 'schedule_date_time', 'followup_date', 'followup_date_time','missedcall_date','customofferorder_expiry_date','auto_followup_date');
+
+			foreach ($dates as $key => $value){
+				if(isset($transaction[$value]) && $transaction[$value]==''){
+					$transaction->unset($value);
+				}
+			}
+		}
+
+		if($transaction){
+
+			if(isset($notificationTracking["order_id"])){
 
 				$response["transaction_id"] = $notificationTracking["order_id"];
-				$response["type"] = $order->type;
 				$response["transaction_type"] = "order";
-				$response["finder_name"] = $order["finder_name"];
-				$response["finder_id"] = (int)$order["finder_id"];
-				$response["lat"] = $order["finder_lat"];
-				$response["lon"] = $order["finder_lat"];
-				$response["finder_location"] = $order["finder_location"];
-				$response["category_id"] = $order["finder_category_id"];
-				$response["finder_address"] = $order["finder_address"];
+	    		$response['amount'] = $transaction['amount'];
+	    		$response['duration'] = $transaction['service_duration'];
+	    		$response['payment_mode'] = $transaction['payment_mode'];
 
-				$response["service_id"] = (int)$order->service_id;
-
-				if(isset($order->ratecard_id)){
-					$response["ratecard_id"] = (int)$order->ratecard_id;
-				}
-
-				$data = $order->toArray();
-			}
-
-		}
-
-		if(isset($notificationTracking["booktrial_id"])){
-
-			$booktrial = Booktrial::find((int)$notificationTracking["booktrial_id"]);
-
-			if($booktrial){
+			}else if(isset($notificationTracking["booktrial_id"])){
 
 				$response["transaction_id"] = $notificationTracking["booktrial_id"];
-				$response["type"] = $booktrial->type;
 				$response["transaction_type"] = "trial";
-				$response["finder_name"] = $booktrial["finder_name"];
-				$response["finder_id"] = (int)$booktrial["finder_id"];
-				$response["lat"] = $booktrial["finder_lat"];
-				$response["lon"] = $booktrial["finder_lat"];
-				$response["finder_location"] = $booktrial["finder_location"];
-				$response["category_id"] = $booktrial["finder_category_id"];
-				$response["finder_address"] = $booktrial["finder_address"];
-
-				$response["service_id"] = (int)$booktrial->service_id;
-
-				if(isset($booktrial->ratecard_id)){
-					$response["ratecard_id"] = (int)$booktrial->ratecard_id;
-				}
-
-				$data = $booktrial->toArray();				
 			}
+
+			$response["finder_name"] = $transaction["finder_name"];
+			$response["finder_id"] = (int)$transaction["finder_id"];
+			$response["lat"] = $transaction["finder_lat"];
+			$response["lon"] = $transaction["finder_lat"];
+			$response["finder_location"] = $transaction["finder_location"];
+			$response["category_id"] = isset($transaction["finder_category_id"])?$transaction["finder_category_id"]:"";
+			$response["finder_address"] = $transaction["finder_address"];
+			$response["service_id"] = (int)$transaction->service_id;
+			$response["service_name"] = isset($transaction["service_name"])?$transaction["service_name"]:"";
+			
+			
+			if(isset($transaction->ratecard_id)){
+				$response["ratecard_id"] = (int)$transaction->ratecard_id;
+			}
+
+			$data = $transaction->toArray();
 		}
 
+		$response['fitcash'] = 0;
+
 		if(!empty($data)){
+
+			$response["title"] = isset($notificationTracking["title"])? $notificationTracking["title"]: "Default title";
+			$response["notification_msg"] = $notificationTracking["text"];
+			$response["finder_slug"] = Finder::find($data['finder_id'])->slug;
+			
 
 			$followup_date = "";
 			
@@ -3930,32 +4162,44 @@ class CustomerController extends \BaseController {
 				}
 
 				if($start_date != ""){
-					$followup_date = date("M d",strtotime($start_date." +3 days"));
+					$followup_date = strtotime($start_date." +2 days");
 				}
 			}
 
+			$response['followup_date'] = $followup_date;
+
 			$response['callback_msg']= "Awesome. We'll get in touch with you on $followup_date \n <u>Click here to change date</u>";
+			$response["phone"] = Config::get('app.direct_customer_number');
+			$hour = (int) date("G", time());
+			if($hour<=10 || $hour>=20){
+				$response["phone"] = $data["finder_poc_for_customer_no"];
+			}
+
+			$response['fitternity_no'] = Config::get('app.direct_customer_number');
+			
 
 			switch ($time) {
 				case 'n-12': 
 					$response["start_time"] = strtoupper($data["schedule_slot_start_time"]);
 					$response["start_date"] = date("d-m-Y",strtotime($data["schedule_date"]));
-					$response["title"] = "Trial Reminder";
 					break;
 				case 'n-3': 
 					$response["start_time"] = strtoupper($data["schedule_slot_start_time"]);
 					$response["start_date"] = date("d-m-Y",strtotime($data["schedule_date"]));
-					$response["title"] = "Trial Reminder";
 					break;
 				case 'n+2': 
 					$response["start_time"] = strtoupper($data["schedule_slot_start_time"]);
 					$response["start_date"] = date("d-m-Y",strtotime($data["schedule_date"]));
-					$response["title"] = "Trial Review";
+					Booktrial::where('_id', $response["transaction_id"])->update(['final_lead_stage'=> 'post_trial_stage']);
+					break;
+				case 'n-20m': 
+					$response["start_time"] = strtoupper($data["schedule_slot_start_time"]);
+					$response["start_date"] = date("d-m-Y",strtotime($data["schedule_date"]));
 					break;
 				default:
 					$response["start_time"] = "";
 					$response["start_date"] = "";
-					$response["title"] = "Default Title";
+					
 
 					if(isset($data["schedule_slot_start_time"])){
 						$response["start_time"] = strtoupper($data["schedule_slot_start_time"]);
@@ -3968,18 +4212,102 @@ class CustomerController extends \BaseController {
 					if(isset($data["start_date"])){
 						$response["start_date"] = date("d-m-Y",strtotime($data["start_date"]));
 					}
-					
 					break;
 			}
 
-		}
+			if($response["transaction_type"] == "order"){
 
-		$response["finder_type"] = getFinderType($response["category_id"]);
+				$customerReward     =   new CustomerReward();
+				$calculation        =   $customerReward->purchaseGame($data['amount'], $data["finder_id"], $data["payment_mode"], false, $data["customer_id"]);
+				$response['fitcash'] = $calculation['amount_deducted_from_wallet'];
+
+				$batches = array();
+
+				$service = Service::find((int)$data['service_id']);
+
+				if($service){
+
+					$service = $service->toArray();
+
+					if(isset($service['batches']) && count($service['batches']) > 0){
+
+						$batches = $service['batches'];
+
+						foreach ($batches as $batches_key => $batches_value) {
+
+							foreach ($batches_value as $batches_value_key => $value) {
+
+								$batches[$batches_key][$batches_value_key]['slots'] = $value['slots'][0];
+							}
+						}
+					}
+				}
+
+				if(isset($data['ratecard_id']) && $data['ratecard_id']){
+
+					$ratecard = Ratecard::find((int)$data['ratecard_id']);
+
+					if($ratecard){
+
+						$ratecard_offers = [];
+
+						if(!empty($ratecard['_id']) && isset($ratecard['_id'])){
+
+							$ratecard_offers  =   Offer::where('ratecard_id', intval($ratecard['_id']))->where('hidden', false)->orderBy('order', 'asc')
+								->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
+								->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()) ))
+								->get(['start_date','end_date','price','type','allowed_qty','remarks']);
+
+							if(count($ratecard_offers) > 0){
+
+								$ratecard_offers = $ratecard_offers->toArray();
+
+								if(isset($ratecard_offers[0]['price'])){
+
+									$ratecard['special_price'] = $ratecard_offers[0]['price'];
+
+			                    	if($ratecard['price'] == $ratecard_offers[0]['price']){
+			                    		$ratecard['special_price'] = 0;
+			                    	}
+								}
+							}
+	
+						}
+
+						if($ratecard['type'] == 'membership' || $ratecard['type'] == 'packages'){
+
+							if($ratecard['special_price'] > 0){
+
+								$app_discount_amount = intval($ratecard['special_price'] * (Config::get('app.app.discount')/100));
+								$ratecard['special_price'] = $ratecard['special_price'] - $app_discount_amount;
+
+							}else{
+
+								$app_discount_amount = intval($ratecard['price'] * (Config::get('app.app.discount')/100));
+								$ratecard['price'] = $ratecard['price'] - $app_discount_amount;
+
+							}
+						}
+
+						if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
+	                    	$response['amount'] = $ratecard['special_price'];
+		                }else{
+		                    $response['amount'] = $ratecard['price'];
+		                }
+
+					}
+				}
+
+				$response['batches'] = $batches;
+
+			}
+
+			$response["finder_type"] = getFinderType($response["category_id"]);
+			
+		}
 
 		return $response;
 	}
-
-
 
 
 	// Diet plan Listing

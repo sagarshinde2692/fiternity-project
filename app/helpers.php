@@ -1993,6 +1993,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         $customer->account_link = array('email' => 1, 'google' => 0, 'facebook' => 0, 'twitter' => 0);
                         $customer->status = "1";
                         $customer->ishulluser = 1;
+                        $customer->old_customer = true;
                         $customer->demonetisation = time();
                         $customer->save();
 
@@ -2291,8 +2292,11 @@ if (!function_exists(('newcategorymapping'))){
 if (!function_exists(('getReversehash'))){
      function getReversehash($data){
 
-         Log::info($data);
-        // $data['env'] = 1;
+        Log::info($data);
+
+        if(Config::get('app.env') == 'stage'){
+            $data['env'] = 1;
+        }
 
         $env = (isset($data['env']) && $data['env'] == 1) ? "stage" : "production";
 
@@ -2484,6 +2488,22 @@ if(!function_exists(('sort_weekdays'))){
         //prints the new array
         return $arr4;
             }
+}
+
+if (!function_exists(('getRegId'))){
+    function getRegId($customer_id){
+
+        $response = ["reg_id"=>"","device_type"=>"","flag"=>false];
+
+        $device = Device::where("customer_id",(int)$customer_id)->orderBy('updated_at','desc')->first();
+
+        if($device){
+            $response = ["reg_id"=>$device->reg_id,"device_type"=>$device->type,"flag"=>true];
+        }
+
+        return $response;
+
+    }
 }
 
 

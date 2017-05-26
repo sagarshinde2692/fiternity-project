@@ -123,7 +123,7 @@ class FindersController extends \BaseController {
 			}
 		}
 
-		$finder_detail = $cache ? Cache::tags('finder_detail')->has($tslug) : false;
+		$finder_detail = $cache ? Cache::tags('finder_detail')->has($cache_key) : false;
 
 		if(!$finder_detail){
 			//Log::info("Not cached in detail");
@@ -1374,12 +1374,13 @@ class FindersController extends \BaseController {
 
 			if(isset($notificationTracking["booktrial_id"])){
 				$data["booktrial_id"] = (int)$notificationTracking["booktrial_id"];
+				Booktrial::where('_id', $data["booktrial_id"])->update(['post_trial_status'=> 'attended']);
 			}
 
 			unset($data['"notification_id']);
 		}
 
-		
+		Log::info('review data',$data);
 
 		return $this->addReview($data);
 	}
@@ -2932,6 +2933,31 @@ class FindersController extends \BaseController {
 
 				}
 
+				if(isset($_GET['notification_id']) && $_GET['notification_id'] != ''){
+					$finderData['finder']['contact']['phone'] = Config::get('app.followup_customer_number');
+				}
+
+				if(isset($_GET['service_id']) && $_GET['service_id'] != ''){
+					$service_id = intval($_GET['service_id']);
+					$id_service = array();
+					$id_service = array_where($finderData['finder']['services'], function($key, $value) use ($service_id){
+								if($value['_id'] == $service_id)
+									{
+									return $value; 
+									}
+							});
+
+					$non_id_services = array();
+					$non_id_services = array_where($finderData['finder']['services'], function($key, $value) use ($service_id){
+								if($value['_id'] != $service_id)
+									{
+									return $value; 
+									}
+							});
+					$finderData['finder']['services'] = array_merge($id_service, $non_id_services);
+
+				}
+
 				unset($finderData['finder']['services_workout']);
 				unset($finderData['finder']['services_trial']);
 			}
@@ -2976,7 +3002,7 @@ class FindersController extends \BaseController {
 	                $ratecard['cashback_on_trial'] = "";
 
 					if($ratecard_price > 0 && $type == 'trial'){
-						$ratecard['cashback_on_trial'] = "100% Cashback";
+						$ratecard['cashback_on_trial'] = "20% Cashback";
 					}
 
 					array_push($ratecardArr, $ratecard);

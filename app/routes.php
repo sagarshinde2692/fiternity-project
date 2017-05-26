@@ -923,3 +923,4 @@ Route::get('syncsharecustomerno','DebugController@syncsharecustomerno');
 Route::get('reverse/migration/{colllection}/{id}','MigrationReverseController@byId');
 Route::get('fitternitydietvendordetail','FindersController@fitternityDietVedorDetail');
 Route::get('orderdemonetisation/{order_id}',array('as' => 'orderdemonetisation','uses' => 'CustomerController@orderDemonetisation'));
+Route::post('notifylocation',array('as' => 'customer/notifylocation','uses' => 'CustomerController@notifyLocation'));

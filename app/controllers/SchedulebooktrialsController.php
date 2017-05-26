@@ -4623,7 +4623,6 @@ class SchedulebooktrialsController extends \BaseController {
     public function preTrialAction($source = 'customer'){
 
         $rules = [
-            'booktrial_id' => 'required',
             'status' => 'required'
         ];
 
@@ -4634,13 +4633,33 @@ class SchedulebooktrialsController extends \BaseController {
             return  Response::json($resp, 400);
         }
 
-        $booktrial = Booktrial::find(intval($data['booktrial_id']));
+        if(!isset($data['booktrial_id'])){
+            if(isset($data['notification_id'])){
+                $notification = NotificationTracking::where('_id', $data['notification_id'])->first(['booktrial_id']);
+                $booktrial_id = $notification['booktrial_id'];
+            }
+        }else{
+            $booktrial_id = intval($data['booktrial_id']);
+        }
+
+        $booktrial = Booktrial::find($booktrial_id);
 
         if($booktrial){
 
+            $message = "Successfull Posted";
+
             if($source == 'customer'){
-                $booktrial->pre_trial_status = (isset($data['status']) && $data['status'] == true ) ? "attended" : "no show";
-                $booktrial->pre_trial_status_reason = (isset($data['reason']) && $data['reason'] != "") ? $data['reason'] : "";
+
+                switch($data['status']){
+                    case 'confirm':
+                    $booktrial->pre_trial_status = 'attended';
+                    $message = "Thanks for confirming, the trainer will be ready to attend you!";
+                    break;  
+                }
+
+                if((isset($data['reason']) && $data['reason'] != "")){
+                    $booktrial->pre_trial_status_reason = $data['reason'];
+                }
             }
 
             if($source == 'vendor'){
@@ -4650,7 +4669,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             $booktrial->update();
 
-            $resp   =   array('status' => 200,'message' => "Successfull");
+            $resp   =   array('status' => 200,'message' => $message);
             return  Response::json($resp, 200);
 
         }else{

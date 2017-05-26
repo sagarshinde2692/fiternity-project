@@ -341,7 +341,7 @@ class TransactionController extends \BaseController {
 
             }
 
-            if($order->status == "1" && isset($data['updrage_membership']) && $data['updrage_membership'] == "requested"){
+            if($order->status == "1" && isset($data['upgrade_membership']) && $data['upgrade_membership'] == "requested"){
 
                 $data['upgrade'] = ["requested"=>time()];
 
@@ -696,7 +696,7 @@ class TransactionController extends \BaseController {
             $this->utilities->setRedundant($order);
 
             Log::info("Customer for referral");
-            $customer = Customer::where('_id', $order['customer_id'])->first(['name','referred', 'referrer_id', 'first_transaction', 'old_customer']);
+            $customer = Customer::where('_id', $order['customer_id'])->first();
             Log::info($customer);
             
             if(isset($customer['old_customer']) && !$customer['old_customer'] && isset($customer['referrer_id']) && $customer['referrer_id'] != 0 && isset($order['amount']) && $order['amount'] > 0){
@@ -815,6 +815,19 @@ class TransactionController extends \BaseController {
 
         $device_type = (isset($data['device_type']) && $data['device_type'] != '') ? $data['device_type'] : "";
         $gcm_reg_id = (isset($data['gcm_reg_id']) && $data['gcm_reg_id'] != '') ? $data['gcm_reg_id'] : "";
+
+        if($device_type == '' || $gcm_reg_id == ''){
+
+            $getRegId = getRegId($data['customer_id']);
+
+            if($getRegId['flag']){
+
+                $$device_type = $data["reg_id"] = $getRegId["reg_id"];
+                $gcm_reg_id = $data["device_type"] = $getRegId["device_type"];
+
+                $data['gcm_reg_id'] = $getRegId["reg_id"];
+            }
+        }
 
         if($device_type != '' && $gcm_reg_id != ''){
 
@@ -1831,13 +1844,13 @@ class TransactionController extends \BaseController {
             //$order->customerSmsSendPaymentLinkAfter30Days = $this->customersms->sendPaymentLinkAfter30Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+30 days",$now)));
             $order->customerSmsSendPaymentLinkAfter45Days = $this->customersms->sendPaymentLinkAfter45Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+45 days",$now)));
 
-            /*if(isset($order['reg_id']) && $order['reg_id'] != "" && isset($order['device_type']) && $order['device_type'] != ""){
+            if(isset($order['reg_id']) && $order['reg_id'] != "" && isset($order['device_type']) && $order['device_type'] != ""){
                 $order->customerNotificationSendPaymentLinkAfter3Days = $this->customernotification->sendPaymentLinkAfter3Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+3 days",$now)));
                 $order->customerNotificationSendPaymentLinkAfter7Days = $this->customernotification->sendPaymentLinkAfter7Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+7 days",$now)));
-                $order->customerNotificationSendPaymentLinkAfter15Days = $this->customernotification->sendPaymentLinkAfter15Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+15 days",$now)));
-                $order->customerNotificationSendPaymentLinkAfter30Days = $this->customernotification->sendPaymentLinkAfter30Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+30 days",$now)));
+                /*$order->customerNotificationSendPaymentLinkAfter15Days = $this->customernotification->sendPaymentLinkAfter15Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+15 days",$now)));
+                $order->customerNotificationSendPaymentLinkAfter30Days = $this->customernotification->sendPaymentLinkAfter30Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+30 days",$now)));*/
                 $order->customerNotificationSendPaymentLinkAfter45Days = $this->customernotification->sendPaymentLinkAfter45Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+45 days",$now)));
-            }*/
+            }
 
             $url = Config::get('app.url')."/addwallet?customer_id=".$order["customer_id"]."&order_id=".$order_id;
 
@@ -2080,16 +2093,33 @@ class TransactionController extends \BaseController {
             }
 
             if(isset($data['order_id'])){
+                
                 $req['order_id'] = (int)$data['order_id'];
 
                 $transaction = Order::find((int)(int)$data['order_id']);
+
+                $dates = array('followup_date','last_called_date','preferred_starting_date', 'called_at','subscription_start','start_date','start_date_starttime','end_date', 'order_confirmation_customer');
+
+                foreach ($dates as $key => $value){
+                    if(isset($transaction[$value]) && $transaction[$value]==''){
+                        $transaction->unset($value);
+                    }
+                }
             }
 
             if(isset($data['booktrial_id'])){
                 
                 $req['booktrial_id'] = (int)$data['booktrial_id'];
 
-                $transaction = Booktrial::find((int)(int)$data['order_id']);
+                $transaction = Booktrial::find((int)(int)$data['booktrial_id']);
+
+                $dates = array('start_date', 'start_date_starttime', 'schedule_date', 'schedule_date_time', 'followup_date', 'followup_date_time','missedcall_date','customofferorder_expiry_date','auto_followup_date');
+
+                foreach ($dates as $key => $value){
+                    if(isset($transaction[$value]) && $transaction[$value]==''){
+                        $transaction->unset($value);
+                    }
+                }
             }
 
             if($transaction && $wallet_balance > 0){
