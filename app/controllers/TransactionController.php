@@ -699,7 +699,7 @@ class TransactionController extends \BaseController {
             $customer = Customer::where('_id', $order['customer_id'])->first(['name','referred', 'referrer_id', 'first_transaction', 'old_customer']);
             Log::info($customer);
             
-            if(isset($customer['old_customer']) && !$customer['old_customer'] && isset($customer['referrer_id']) && $customer['referrer_id'] != 0){
+            if(isset($customer['old_customer']) && !$customer['old_customer'] && isset($customer['referrer_id']) && $customer['referrer_id'] != 0 && isset($order['amount']) && $order['amount'] > 0){
                 Log::info("inside first transaction");
                 $referrer = Customer::where('_id', $customer->referrer_id)->first();
                 $customer->old_customer = true;
