@@ -2657,7 +2657,18 @@ public function getRankedFinderResultsAppv4()
         // Log::info("Response from ES : ".time());
         $search_results1    =   json_decode($search_results, true);
         $search_request     =   Input::json()->all();
-        $searchresulteresponse = Translator::translate_searchresultsv4($search_results1,$search_request,$keys);
+        
+        $customer_email = null;
+        $jwt_token = Request::header('Authorization');
+        if($jwt_token){
+            Log::info("inside");
+            $decoded = $this->customerTokenDecode($jwt_token);
+            if($decoded){
+                $customer_email = $decoded->customer->email;
+            }
+            
+        }
+        $searchresulteresponse = Translator::translate_searchresultsv4($search_results1,$search_request,$keys, $customer_email);
         // Log::info("Response from Translator : ".time());
         $searchresulteresponse->metadata = $this->getOfferingHeader($category,$location);
         $searchresulteresponse->metadata['total_records'] = intval($search_results1['hits']['total']);

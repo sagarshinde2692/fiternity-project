@@ -1155,7 +1155,7 @@ public static function translate_sale_ratecards($es_searchresult_response){
 
 
 
-public static function translate_searchresultsv4($es_searchresult_response,$search_request = array(),$keys = array()){
+public static function translate_searchresultsv4($es_searchresult_response,$search_request = array(),$keys = array(), $customer_email = ""){
 		$finderresult_response 							 = new FinderresultResponse();
 		$finderresult_response->results->aggregationlist = new \stdClass();
 		$resultCategory 								 = [];
@@ -1168,6 +1168,12 @@ public static function translate_searchresultsv4($es_searchresult_response,$sear
 		else{
 			$finderresult_response->metadata->total_records = $es_searchresult_response['hits']['total'];
 			foreach ($es_searchresult_response['hits']['hits'] as $resultv1) {
+				if(in_array($resultv1['_source']['slug'], Config::get('app.test_vendors'))){
+					if(!in_array($customer_email, Config::get('app.test_page_users'))){
+						$finderresult_response->metadata->total_records--;
+						continue;
+					}
+				}
 				$result 						= $resultv1['_source'];
 				$finder 						= new FinderResult();
 				$finder->object_type 			= 'vendor';
