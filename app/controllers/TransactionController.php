@@ -2144,15 +2144,15 @@ class TransactionController extends \BaseController {
                         break;
                     case 'RLMinus7':
                         $this->customersms->sendRenewalPaymentLinkBefore7Days($transaction,0);
-                        /*if(isset($transaction['reg_id']) && $transaction['reg_id'] != "" && isset($transaction['device_type']) && $transaction['device_type'] != ""){
+                        if(isset($transaction['reg_id']) && $transaction['reg_id'] != "" && isset($transaction['device_type']) && $transaction['device_type'] != ""){
                             $this->customernotification->sendRenewalPaymentLinkBefore7Days($transaction,0);
-                        }*/
+                        }
                         break;
                     case 'RLMinus1':
                         $this->customersms->sendRenewalPaymentLinkBefore1Days($transaction,0);
-                        /*if(isset($transaction['reg_id']) && $transaction['reg_id'] != "" && isset($transaction['device_type']) && $transaction['device_type'] != ""){
+                        if(isset($transaction['reg_id']) && $transaction['reg_id'] != "" && isset($transaction['device_type']) && $transaction['device_type'] != ""){
                             $this->customernotification->sendRenewalPaymentLinkBefore1Days($transaction,0);
-                        }*/
+                        }
                         break;
                     case 'PurchaseFirst':
                         $this->customersms->purchaseFirst($transaction,0);
