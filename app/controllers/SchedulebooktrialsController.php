@@ -1387,6 +1387,8 @@ class SchedulebooktrialsController extends \BaseController {
 
             $this->utilities->sendDemonetisationCustomerSms($order);
 
+            $this->utilities->addAmountToReferrer($order);
+
             $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
             return Response::json($resp);
         }
@@ -1579,7 +1581,9 @@ class SchedulebooktrialsController extends \BaseController {
                 $order->unset('redundant_order');
             }
 
-            $this->utilities->sendDemonetisationCustomerSms($order);  
+            $this->utilities->sendDemonetisationCustomerSms($order);
+
+            $this->utilities->addAmountToReferrer($order);  
 
             $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
             return Response::json($resp);
@@ -2208,6 +2212,8 @@ class SchedulebooktrialsController extends \BaseController {
         }*/
 
         $this->utilities->sendDemonetisationCustomerSms($order);
+
+        $this->utilities->addAmountToReferrer($order);
         
         Log::info('Customer Book Trial : '.json_encode(array('book_trial_details' => Booktrial::findOrFail($booktrialid))));
 
