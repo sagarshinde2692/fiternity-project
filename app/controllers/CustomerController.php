@@ -4543,7 +4543,7 @@ class CustomerController extends \BaseController {
 				$email_subject = "Join me on Fitternity & get Rs. 250";
 				$email_text = "Fitness on your mind?<br><br>Register on India's largest fitness platform to book fitness classes, memberships, diet plans & more!<br><br>If you use my invite code $referral_code to register yourself on the Fitternity mobile app, we both get Rs. 250 FitCash+ which is fully redeemable on all bookings!<br><br>Download the app and apply code in your profile after logging-in $url";
 				
-				return $response =  array('status' => 200,'referral_code' => $referral_code, 'message' 	=> $display_message, 'share_message'=>$share_message);
+				return $response =  array('status' => 200,'referral_code' => $referral_code, 'message' 	=> $display_message, 'share_message' => $share_message, 'email_subject' => $email_subject, 'email_text' => $email_text);
 			
 			}else{
 				
