@@ -15,6 +15,8 @@ use App\Services\Sidekiq as Sidekiq;
 use App\Services\Utilities as Utilities;
 use App\Services\CustomerReward as CustomerReward;
 use App\Services\CustomerInfo as CustomerInfo;
+use App\Services\ShortenUrl as ShortenUrl;
+use App\Notification\CustomerNotification as CustomerNotification;
 
 
 class OrderController extends \BaseController {
@@ -26,6 +28,7 @@ class OrderController extends \BaseController {
     protected $findersms;
     protected $utilities;
     protected $customerreward;
+    protected $customernotification;
 
     public function __construct(
         CustomerMailer $customermailer,
@@ -34,7 +37,8 @@ class OrderController extends \BaseController {
         FinderMailer $findermailer,
         FinderSms $findersms,
         Utilities $utilities,
-        CustomerReward $customerreward
+        CustomerReward $customerreward,
+        CustomerNotification $customernotification
     ) {
         parent::__construct();
         $this->customermailer		=	$customermailer;
@@ -44,7 +48,8 @@ class OrderController extends \BaseController {
         $this->findersms 			=	$findersms;
         $this->utilities 			=	$utilities;
         $this->customerreward 		=	$customerreward;
-        $this->ordertypes 		= 	array('memberships','booktrials','fitmaniadealsofday','fitmaniaservice','arsenalmembership','zumbathon','booiaka','zumbaclub','fitmania-dod','fitmania-dow','fitmania-membership-giveaways','womens-day','eefashrof','crossfit-week','workout-session','wonderise','lyfe','healthytiffintrail','healthytiffinmembership','3daystrial','vip_booktrials', 'events');
+        $this->customernotification     =   $customernotification;
+        $this->ordertypes 		= 	array('memberships','booktrials','fitmaniadealsofday','fitmaniaservice','arsenalmembership','zumbathon','booiaka','zumbaclub','fitmania-dod','fitmania-dow','fitmania-membership-giveaways','womens-day','eefashrof','crossfit-week','workout-session','wonderise','lyfe','healthytiffintrail','healthytiffinmembership','3daystrial','vip_booktrials', 'events','fittinabox');
 
     }
 
@@ -62,6 +67,54 @@ class OrderController extends \BaseController {
         $resp 				= [	'used' => $usedCouponStatus];
         return Response::json($resp,200);
     }
+
+    public function couponCode(){
+        $data = Input::json()->all();
+        if(!isset($data['coupon'])){
+            $resp = array("status"=> 400, "message" => "Coupon code missing");
+            return Response::json($resp,400);
+        }
+        if(!isset($data['amount'])){
+            $resp = array("status"=> 400, "message" => "Amount field is missing");
+            return Response::json($resp,400);
+        }
+
+        
+        $amount = (int) $data['amount'];
+        if($amount > 600 && $data['coupon'] == "fitnow"){
+            $newamount = ($amount - 500);
+            $resp = array("status"=> "Coupon applied successfully", "amount" => $newamount,"discount_amount" => 500);
+            
+        }else{
+            $resp = array("status"=> "Coupon is either expired or not valid for this transaction", "amount" => $amount,"discount_amount" => 0);
+            return Response::json($resp,406);
+        }
+        return Response::json($resp,200);
+    }
+
+
+    /*public function couponCode($customer_phone){
+        $data = Input::json()->all();
+        if(!isset($data['coupon'])){
+            $resp = array("status"=> 400, "message" => "Coupon code missing");
+            return Response::json($resp,400);
+        }
+        if(!isset($data['amount'])){
+            $resp = array("status"=> 400, "message" => "Amount field is missing");
+            return Response::json($resp,400);
+        }
+
+        
+        $amount = (int) $data['amount'];
+        if($data['coupon'] == "fitnow"){
+            $newamount = ($amount - 500);
+            $resp = array("status"=> "success", "amount" => $newamount);
+            
+        }else{
+            $resp = array("status"=> "failed", "amount" => $amount );
+        }
+        return Response::json($resp,200);
+    }*/
 
 
     //capture order status for customer used membership by
@@ -97,8 +150,13 @@ class OrderController extends \BaseController {
             return Response::json($resp,401);
         }
 
-        if($data['status'] == 'success'){
+
+        $hash_verified = $this->utilities->verifyOrder($data,$order);
+        
+        if($data['status'] == 'success' && $hash_verified){
             // Give Rewards / Cashback to customer based on selection, on purchase success......
+
+            $this->utilities->demonetisation($order);
 
             $this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
 
@@ -122,11 +180,14 @@ class OrderController extends \BaseController {
 
                         $reward_detail[] = ($value->reward_type == 'nutrition_store') ? $title : $value->quantity." ".$title;
 
+                        array_set($data, 'reward_type', $value->reward_type);
+
                     }
 
                     $reward_info = (!empty($reward_detail)) ? implode(" + ",$reward_detail) : "";
 
                     array_set($data, 'reward_info', $reward_info);
+                    
                 }
 
             }
@@ -136,21 +197,34 @@ class OrderController extends \BaseController {
                 $reward_info = "Cashback";
                 
                 array_set($data, 'reward_info', $reward_info);
+                array_set($data, 'reward_type', 'cashback');
             }
 
             array_set($data, 'status', '1');
             array_set($data, 'order_action', 'bought');
+            array_set($data, 'success_date', date('Y-m-d H:i:s',time()));
 
+            array_set($data, 'auto_followup_date', date('Y-m-d H:i:s', strtotime("+7 days",strtotime($order['start_date']))));
+            array_set($data, 'followup_status', 'catch_up');
+            array_set($data, 'followup_status_count', 1);
+            
             if(isset($order->payment_mode) && $order->payment_mode == "paymentgateway"){
                 
                 array_set($data, 'membership_bought_at', 'Fitternity Payu Mode');
 
-                $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->orderBy('_id','asc')->where('_id','<',$order->_id)->count();
+                $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->where('_id','!=',(int)$order->_id)->where('finder_id',$order->finder_id)->count();
 
                 if($count > 0){
                     array_set($data, 'acquisition_type', 'renewal_direct');
+                    array_set($data, 'membership_type', 'renewal');
                 }else{
                     array_set($data,'acquisition_type','direct_payment');
+                    array_set($data, 'membership_type', 'new');
+                }
+
+                if($order->customer_source != 'admin'){
+
+                    array_set($data, 'secondary_payment_mode', 'payment_gateway_membership');
                 }
             }
 
@@ -163,22 +237,58 @@ class OrderController extends \BaseController {
                 }
             }
 
+            if($order['type'] == 'memberships' || $order['type'] == 'healthytiffinmembership'){
+
+                if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
+
+                    if(isset($data["send_communication_customer"]) && $data["send_communication_customer"] != ""){
+
+                        if(isset($order->instantPurchaseCustomerTiggerCount) && $order->instantPurchaseCustomerTiggerCount != ""){
+                            $data['instantPurchaseCustomerTiggerCount']     =  intval($order->instantPurchaseCustomerTiggerCount) + 1;
+                        }else{
+                            $data['instantPurchaseCustomerTiggerCount']     =   1;
+                        }
+                    }
+
+                }else{
+                    if(isset($order->instantPurchaseCustomerTiggerCount) && $order->instantPurchaseCustomerTiggerCount != ""){
+                        $data['instantPurchaseCustomerTiggerCount']     =  intval($order->instantPurchaseCustomerTiggerCount) + 1;
+                    }else{
+                        $data['instantPurchaseCustomerTiggerCount']     =   1;
+                    }
+                }
+
+
+                if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
+                    if(isset($data["send_communication_vendor"]) && $data["send_communication_vendor"] != ""){
+
+                        if(isset($order->instantPurchaseFinderTiggerCount) && $order->instantPurchaseFinderTiggerCount != ""){
+                            $data['instantPurchaseFinderTiggerCount']       =  intval($order->instantPurchaseFinderTiggerCount) + 1;
+                        }else{
+                            $data['instantPurchaseFinderTiggerCount']       =   1;
+                        }
+                    }
+
+                }else{
+                    if(isset($order->instantPurchaseFinderTiggerCount) && $order->instantPurchaseFinderTiggerCount != ""){
+                        $data['instantPurchaseFinderTiggerCount']       =  intval($order->instantPurchaseFinderTiggerCount) + 1;
+                    }else{
+                        $data['instantPurchaseFinderTiggerCount']       =   1;
+                    }
+                }
+                
+            }
+
             $orderdata 	=	$order->update($data);
 
             //send welcome email to payment gateway customer
 
             $finder = Finder::find((int)$order->finder_id);
-
             try {
-
                 if(isset($order->referal_trial_id) && $order->referal_trial_id != ''){
-
                     $trial = Booktrial::find((int) $order->referal_trial_id);
-
                     if($trial){
-
                         $bookdata = array();
-
                         array_set($bookdata, 'going_status', 4);
                         array_set($bookdata, 'going_status_txt', 'purchased');
                         array_set($bookdata, 'booktrial_actions', '');
@@ -201,7 +311,7 @@ class OrderController extends \BaseController {
                 $order->update(['email_not_sent'=>'captureOrderStatus']);
             }else{
 
-                if(!in_array($finder->category_id, $abundant_category)){
+                if(!in_array($finder->category_id, $abundant_category) && $order->type != "fittinabox" ){
                     $emailData      =   [];
                     $emailData      =   $order->toArray();
                     if($emailData['type'] == 'events'){
@@ -226,10 +336,10 @@ class OrderController extends \BaseController {
                 }
 
                 //no email to Healthy Snacks Beverages and Healthy Tiffins
-                if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" ){
+                if(!in_array($finder->category_id, $abundant_category) && $order->type != "fittinabox" && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" ){
                     
-                   if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
-                        if(isset($data["send_communication_customer"]) && $data["send_communication_customer"] != ""){
+                    if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
+                        if(isset($data["send_communication_vendor"]) && $data["send_communication_vendor"] != ""){
 
                             $sndPgMail  =   $this->findermailer->sendPgOrderMail($order->toArray());
                         }
@@ -266,7 +376,7 @@ class OrderController extends \BaseController {
             }
 
             //no sms to Healthy Snacks Beverages and Healthy Tiffins
-            if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" ){
+            if(!in_array($finder->category_id, $abundant_category) && $order->type != "fittinabox" && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" ){
                 
                 if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
                     if(isset($data["send_communication_vendor"]) && $data["send_communication_vendor"] != ""){
@@ -280,48 +390,71 @@ class OrderController extends \BaseController {
                 
             }
 
-
-            if(isset($order->preferred_starting_date) && $order->preferred_starting_date != "" && !in_array($finder->category_id, $abundant_category) && $order->type == "memberships" && !isset($order->customer_sms_after3days) && !isset($order->customer_email_after10days)){
+            if(isset($order->preferred_starting_date) && $order->preferred_starting_date != "" && $order->type == "memberships" && !isset($order->cutomerSmsPurchaseAfter10Days) && !isset($order->cutomerSmsPurchaseAfter30Days)){
 
                 $preferred_starting_date = $order->preferred_starting_date;
-                $after3days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 3);
+                
                 $after10days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 10);
+                $after30days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 30);
 
-                $category_slug = "no_category";
+                $this->customersms->purchaseInstant($order->toArray());
+                $order->cutomerSmsPurchaseAfter10Days = $this->customersms->purchaseAfter10Days($order->toArray(),$after10days);
+                $order->cutomerSmsPurchaseAfter30Days = $this->customersms->purchaseAfter30Days($order->toArray(),$after30days);
 
-                if(isset($order->finder_category_id) && $order->finder_category_id != ""){
-
-                    $finder_category_id = $order->finder_category_id;
-
-                    $category = Findercategory::find((int)$finder_category_id);
-
-                    if($category){
-                        $category_slug = $category->slug;
-                    }
-                }
-
-                $order_data = $order->toArray();
-
-                $order_data['category_array'] = $this->getCategoryImage($category_slug);
-
-                $order->customer_sms_after3days = $this->customersms->orderAfter3Days($order_data,$after3days);
-                $order->customer_email_after10days = $this->customermailer->orderAfter10Days($order_data,$after10days);
+                /*if(isset($order['gcm_reg_id']) && $order['gcm_reg_id'] != '' && isset($order['device_type']) && $order['device_type'] != ''){
+                    $this->customernotification->purchaseInstant($order->toArray());
+                    $order->cutomerNotificationPurchaseAfter10Days = $this->customernotification->purchaseAfter10Days($order->toArray(),$after10days);
+                    $order->cutomerNotificationPurchaseAfter30Days = $this->customernotification->purchaseAfter30Days($order->toArray(),$after30days);
+                }*/
 
                 $order->update();
 
             }
 
+            $this->utilities->setRedundant($order);
+            
+            $finder_id = $order['finder_id'];
+            $start_date_last_30_days = date("d-m-Y 00:00:00", strtotime('-31 days',strtotime(date('d-m-Y 00:00:00'))));
+
+            $sales_count_last_30_days = Order::active()->where('finder_id',$finder_id)->where('created_at', '>=', new DateTime($start_date_last_30_days))->count();
+
+            if($sales_count_last_30_days == 0){
+            $mailData=array();
+            $mailData['finder_name']=$order['finder_name'];
+            $mailData['finder_id']=$order['finder_id'];
+            $mailData['finder_city']=$order['finder_city'];
+            $mailData['finder_location']=$order['finder_location'];
+            $mailData['customer_name']=$order['customer_name'];
+            $mailData['customer_email']=$order['customer_email'];
+
+                $sndMail  =   $this->findermailer->sendNoPrevSalesMail($mailData);
+            }
+
+            $this->utilities->deleteCommunication($order);
+
+            if(isset($order->redundant_order)){
+                $order->unset('redundant_order');
+            }
+
+            $this->utilities->sendDemonetisationCustomerSms($order);
+
             $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
             return Response::json($resp);
+        }else{
+            if($hash_verified == false){
+                $Oldorder 		= 	Order::findOrFail($orderid);
+                $Oldorder["hash_verified"] = false;
+                $Oldorder->update();
+                $resp 	= 	array('status' => 200, 'statustxt' => 'failed', 'order' => $order, 'message' => "Transaction Failed :)");
+                return Response::json($resp);
+            }
         }
 
         $orderdata 		=	$order->update($data);
         $resp 	= 	array('status' => 200, 'statustxt' => 'failed', 'order' => $order, 'message' => "Transaction Failed :)");
         return Response::json($resp);
     }
-
-
-
+    
     //create cod order for customer
     public function generateCodOrder(){
 
@@ -423,13 +556,13 @@ class OrderController extends \BaseController {
         $data			=	array_except(Input::json()->all(), array('preferred_starting_date'));
         if(trim(Input::json()->get('preferred_starting_date')) != '' && trim(Input::json()->get('preferred_starting_date')) != '-'){
             $date_arr = explode('-', Input::json()->get('preferred_starting_date'));
-            $preferred_starting_date			=	date('Y-m-d 00:00:00', strtotime( $date_arr[2]."-".$date_arr[1]."-".$date_arr[0]));
+            $preferred_starting_date			=	date('Y-m-d 00:00:00', strtotime($data['preferred_starting_date']));
             array_set($data, 'preferred_starting_date', $preferred_starting_date);
             array_set($data, 'start_date', $preferred_starting_date);
         }
         // return $data;
 
-        $customer_id 		=	(Input::json()->get('customer_id')) ? Input::json()->get('customer_id') : $this->autoRegisterCustomer($data);
+        $customer_id 		=	(Input::json()->get('customer_id')) ? Input::json()->get('customer_id') : autoRegisterCustomer($data);
 
         if(trim(Input::json()->get('finder_id')) != '' ){
 
@@ -509,13 +642,13 @@ class OrderController extends \BaseController {
 
         if($device_type != '' && $gcm_reg_id != ''){
 
-            $reg_data = array();
+            $regData = array();
 
-            $reg_data['customer_id'] = $customer_id;
-            $reg_data['reg_id'] = $gcm_reg_id;
-            $reg_data['type'] = $device_type;
+            $regData['customer_id'] = $customer_id;
+            $regData['reg_id'] = $gcm_reg_id;
+            $regData['type'] = $device_type;
 
-            $this->addRegId($reg_data);
+            $this->utilities->addRegId($regData);
         }
 
         //SEND COD EMAIL TO CUSTOMER
@@ -540,12 +673,254 @@ class OrderController extends \BaseController {
      *	Service Duration can be (trial, workout session, months, session, etc).
      */
 
-    public function generateTmpOrder(){
+    public function generateTmpOrderPre(){
 
-        // $userdata	=	array_except(Input::all(), array());
+        $data = Input::json()->all();
 
-        $data			=	array_except(Input::json()->all(), array('preferred_starting_date'));
-        $postdata		=	Input::json()->all();
+        $rules = array(
+            'customer_name'=>'required',
+            'customer_email'=>'required|email',
+            'customer_phone'=>'required',
+            'customer_source'=>'required',
+            'finder_id'=>'required|integer|min:1',
+            'service_id'=>'required|integer|min:1',
+            'type'=>'required',
+            'amount'=>'required'
+        );
+
+        $validator = Validator::make($data,$rules);
+
+        if ($validator->fails()) {
+            return Response::json(array('status' => 404,'message' =>$this->errorMessage($validator->errors())),404);
+        }
+
+        $workout = array('vip_booktrials','3daystrial','booktrials','workout-session');
+
+        if(in_array($data['type'],$workout)){
+            $rules = array(
+                'schedule_date'=>'required',
+                'schedule_slot'=>'required'
+            );
+
+            $validator = Validator::make($data,$rules);
+
+            if ($validator->fails()) {
+                return Response::json(array('status' => 404,'message' =>$this->errorMessage($validator->errors())),404);
+            }
+        }
+
+        $ht_trail = array('healthytiffintrail');
+
+        if(in_array($data['type'],$ht_trail)){
+            $rules = array(
+                'preferred_starting_date'=>'required',
+            );
+
+            $validator = Validator::make($data,$rules);
+
+            if ($validator->fails()) {
+                return Response::json(array('status' => 404,'message' =>$this->errorMessage($validator->errors())),404);
+            }
+
+        }
+
+        $membership = array('healthytiffinmembership','memberships');
+
+        if(in_array($data['type'],$membership)){
+            $rules = array(
+                'preferred_starting_date'=>'required',
+                'ratecard_id'=>'required|integer|min:1',
+            );
+
+            $validator = Validator::make($data,$rules);
+
+            if ($validator->fails()) {
+
+                return Response::json(array('status' => 404,'message' =>$this->errorMessage($validator->errors())),404);
+            }
+
+        }
+
+        $data['service_duration'] = "-";
+
+        $data['amount'] = ($data['amount'] != 0) ? $data['amount'] :  "-";
+
+        if(isset($data['ratecard_id']) && $data['ratecard_id'] != "" && $data['ratecard_id'] != 0){
+            
+            $ratecard = Ratecard::find($data['ratecard_id']);
+
+            if(!$ratecard){
+                return Response::json(array('status' => 404,'message' =>'Ratecard does not exists'),404);
+            }
+
+            $data['service_duration'] = $this->getServiceDuration($ratecard);
+
+            if(isset($ratecard->special_price) && $ratecard->special_price != 0){
+                $data['amount_finder'] = $ratecard->special_price;
+            }else{
+                $data['amount_finder'] = $ratecard->price;
+            }
+        }
+
+        $service = Service::find($data['service_id']);
+
+        if(!$service){
+            return Response::json(array('status' => 404,'message' =>'Service does not exists'),404);
+        }
+
+        $data['finder_address'] = (isset($service['address']) && $service['address'] != "") ? $service['address'] : "-";
+        $data['service_name'] = ucwords($service['name']);
+        $data['meal_contents'] = ucwords($service['short_description']);
+
+        $finder = Finder::find($data['finder_id']);
+
+        if(!$finder){
+            return Response::json(array('status' => 404,'message' =>'Vendor does not exists'),404);
+        }
+
+        $data['city_id'] = (int)$finder['city_id'];
+
+        (isset($finder['contact']['address']) && $finder['contact']['address'] != "" && $data['finder_address'] == "-") ? $data['finder_address'] = $finder['contact']['address'] : null;
+
+        $data['finder_name'] = ucwords($finder->title);
+
+        $batch = array();
+
+        if(isset($data['batch']) && $data['batch'] != ""){
+            
+            if(is_array($data['batch'])){
+                $data['batch'] = $data['batch'];
+            }else{
+                $data['batch'] = json_decode($data['batch'],true);
+            }
+
+            foreach ($data['batch'] as $key => $value) {
+
+                if(isset($value['slots']['start_time']) && $value['slots']['start_time'] != ""){
+
+                    $batch[$key]['weekday'] = $value['weekday'];
+                    $batch[$key]['slots'][0] = $value['slots'];
+                }
+
+                if(isset($value['slots'][0]['start_time']) && $value['slots'][0]['start_time'] != ""){
+                    $batch[$key] = $value;
+                }
+            }
+
+            $data['batch'] = $batch;
+
+        }
+
+        return $this->generateTmpOrder($data);
+
+    }
+
+    public function getServiceDuration($ratecard){
+
+        $duration_day = 1;
+
+        if(isset($ratecard['validity']) && $ratecard['validity'] != '' && $ratecard['validity'] != 0){
+
+            $duration_day = $ratecard['validity'];
+        }
+
+        if(isset($ratecard['validity']) && $ratecard['validity'] != '' && $ratecard['validity_type'] == "days"){
+
+            $ratecard['validity_type'] = 'Days';
+
+            if(($ratecard['validity'] % 30) == 0){
+
+                $month = ($ratecard['validity']/30);
+
+                if($month == 1){
+                    $ratecard['validity_type'] = 'Month';
+                    $ratecard['validity'] = $month;
+                }
+
+                if($month > 1 && $month < 12){
+                    $ratecard['validity_type'] = 'Months';
+                    $ratecard['validity'] = $month;
+                }
+
+                if($month == 12){
+                    $ratecard['validity_type'] = 'Year';
+                    $ratecard['validity'] = 1;
+                }
+
+            }
+              
+        }
+
+        if(isset($ratecard['validity']) && $ratecard['validity'] != '' && $ratecard['validity_type'] == "months"){
+
+            $ratecard['validity_type'] = 'Months';
+
+            if($ratecard['validity'] == 1){
+                $ratecard['validity_type'] = 'Month';
+            }
+
+            if(($ratecard['validity'] % 12) == 0){
+
+                $year = ($ratecard['validity']/12);
+
+                if($year == 1){
+                    $ratecard['validity_type'] = 'Year';
+                    $ratecard['validity'] = $year;
+                }
+
+                if($year > 1){
+                    $ratecard['validity_type'] = 'Years';
+                    $ratecard['validity'] = $year;
+                }
+            }
+              
+        }
+
+        if(isset($ratecard['validity']) && $ratecard['validity'] != '' && $ratecard['validity_type'] == "year"){
+
+            $year = $ratecard['validity'];
+
+            if($year == 1){
+                $ratecard['validity_type'] = 'Year';
+            }
+
+            if($year > 1){
+                $ratecard['validity_type'] = 'Years';
+            }
+              
+        }
+
+        $service_duration = "";
+
+        if($ratecard->duration > 0){
+            $service_duration .= $ratecard->duration ." ".ucwords($ratecard->duration_type);
+        }
+        if($ratecard->duration > 0 && $ratecard['validity'] > 0){
+            $service_duration .= " - ";
+        }
+        if($ratecard['validity'] > 0){
+            $service_duration .=  $ratecard['validity'] ." ".ucwords($ratecard['validity_type']);
+        }
+
+        ($service_duration == "") ? $service_duration = "-" : null;
+
+        return $service_duration;
+
+    }
+
+    public function generateTmpOrder($data = false){
+
+        if(!$data){
+
+            $postdata = Input::json()->all();
+            $data =	array_except(Input::json()->all(), array('preferred_starting_date'));
+            
+        }else{
+
+            $postdata = $data;
+            $data = array_except($data, array('preferred_starting_date'));
+        }
+        
 
         Log::info('Gnerate Tmp Order',$postdata);
 
@@ -567,10 +942,12 @@ class OrderController extends \BaseController {
             return Response::json($resp,404);
         }
 
-        if(empty($data['customer_identity'])){
+        $data['customer_email'] = strtolower($data['customer_email']);
+
+        /*if(empty($data['customer_identity'])){
             $resp 	= 	array('status' => 404,'message' => "Data Missing - customer_identity");
             return Response::json($resp,404);
-        }
+        }*/
 
         if(empty($data['customer_phone'])){
             $resp 	= 	array('status' => 404,'message' => "Data Missing - customer_phone");
@@ -582,19 +959,31 @@ class OrderController extends \BaseController {
             return Response::json($resp,404);
         }
 
-        if(empty($data['customer_location'])){
+        /*if(empty($data['customer_location'])){
             $resp 	= 	array('status' => 404,'message' => "Data Missing - customer_location");
             return Response::json($resp,404);
-        }
+        }*/
 
         if(empty($data['city_id'])){
             $resp 	= 	array('status' => 404,'message' => "Data Missing - city_id");
             return Response::json($resp,404);
+        }else{
+            $citydata 		=	City::find(intval($data['city_id']));
+            if(!$citydata){
+                $resp 	= 	array('status' => 404,'message' => "City does not exist");
+                return Response::json($resp,404);
+            }
         }
 
         if(empty($data['finder_id'])){
             $resp 	= 	array('status' => 404,'message' => "Data Missing - finder_id");
             return Response::json($resp,404);
+        }else{
+            $finderdata 		=	Finder::find(intval($data['finder_id']));
+            if(!$finderdata) {
+                $resp = array('status' => 404, 'message' => "Finder does not exist");
+                return Response::json($resp, 404);
+            }
         }
 
         if(empty($data['finder_name'])){
@@ -607,14 +996,35 @@ class OrderController extends \BaseController {
             return Response::json($resp,404);
         }
 
-        if(empty($data['service_id'])){
-            $resp 	= 	array('status' => 404,'message' => "Data Missing - service_id");
+        if (!in_array($data['type'], $this->ordertypes)) {
+            $resp 	= 	array('status' => 404,'message' => "Invalid Order Type");
             return Response::json($resp,404);
+        }
+
+        if($data['type'] != "events"){
+            if(empty($data['service_id'])){
+                $resp 	= 	array('status' => 404,'message' => "Data Missing - service_id");
+                return Response::json($resp,404);
+            }else{
+                $servicedata 		=	Service::find(intval($data['service_id']));
+                if(!$servicedata) {
+                    $resp = array('status' => 404, 'message' => "Service does not exist");
+                    return Response::json($resp, 404);
+                }
+            }
         }
 
         if(empty($data['service_name'])){
             $resp 	= 	array('status' => 404,'message' => "Data Missing - service_name");
             return Response::json($resp,404);
+        }
+
+        if(isset($data['ratecard_id']) && $data['ratecard_id'] != ""){
+            $ratecarddata 		=	Ratecard::find(intval($data['ratecard_id']));
+            if(!$ratecarddata) {
+                $resp = array('status' => 404, 'message' => "Ratecard does not exist");
+                return Response::json($resp, 404);
+            }
         }
 
         if(empty($data['amount'])){
@@ -627,11 +1037,6 @@ class OrderController extends \BaseController {
             return Response::json($resp,404);
         }
 
-        if (!in_array($data['type'], $this->ordertypes)) {
-            $resp 	= 	array('status' => 404,'message' => "Invalid Order Type");
-            return Response::json($resp,404);
-        }
-
         //Validation base on order type
         if($data['type'] == 'fitmania-dod' || $data['type'] == 'fitmania-dow'){
 
@@ -640,7 +1045,7 @@ class OrderController extends \BaseController {
                 return Response::json($resp,404);
             }
 
-            if( empty($data['preferred_starting_date']) ){
+            if( empty($postdata['preferred_starting_date']) ){
                 $resp 	= 	array('status' => 404,'message' => "Data Missing - preferred_starting_date");
                 return Response::json($resp,404);
             }
@@ -686,7 +1091,6 @@ class OrderController extends \BaseController {
             $data['membership_duration_type'] = 'healthy_tiffin_snacks';
         }
 
-
         //Validation base on order type for sms body and email body  zumbathon','booiaka
         if($data['type'] == 'zumbathon' || $data['type'] == 'booiaka' || $data['type'] == 'fitmaniadealsofday' || $data['type'] == 'fitmaniaservice' || $data['type'] == 'zumbaclub' || $data['type'] == 'kutchi-minithon' || $data['type'] == 'eefashrof' ){
             if( empty($data['sms_body']) ){
@@ -706,16 +1110,16 @@ class OrderController extends \BaseController {
         }
         // return $data;
 
-        $customer_id 		=	(Input::json()->get('customer_id')) ? Input::json()->get('customer_id') : $this->autoRegisterCustomer($data);
+        $customer_id 		=	(isset($data['customer_id']) && $data['customer_id'] != "") ? $data['customer_id'] : autoRegisterCustomer($data);
 
-        if($data['type'] == 'booktrials' ||  $data['type'] == 'healthytiffintrail'||  $data['type'] == 'vip_booktrials'||  $data['type'] == '3daystrial'){
+        if($data['type'] == 'booktrials'/* ||  $data['type'] == 'healthytiffintrail'||  $data['type'] == 'vip_booktrials'||  $data['type'] == '3daystrial'*/){
 
-            // Throw an error if user has already booked a trial for that vendor...
-//            $alreadyBookedTrials = $this->utilities->checkExistingTrialWithFinder($data['customer_email'], $data['customer_phone'], $data['finder_id']);
-//            if(count($alreadyBookedTrials) > 0){
-//                $resp 	= 	array('status' => 403,'message' => "You have already booked a trial for this vendor");
-//                return Response::json($resp,403);
-//            }
+           // Throw an error if user has already booked a trial for that vendor...
+           $alreadyBookedTrials = $this->utilities->checkExistingTrialWithFinder($data['customer_email'], $data['customer_phone'], $data['finder_id']);
+           if(count($alreadyBookedTrials) > 0){
+               $resp 	= 	array('status' => 403,'message' => "You have already booked a trial for this vendor");
+               return Response::json($resp,403);
+           }
 
             // Throw an error if user has already booked a trial on same schedule timestamp..
             if(isset($data['schedule_date'])&&isset($data['schedule_slot'])){
@@ -756,29 +1160,39 @@ class OrderController extends \BaseController {
 
         if($device_type != '' && $gcm_reg_id != ''){
 
-            $reg_data = array();
+            $regData = array();
 
-            $reg_data['customer_id'] = $customer_id;
-            $reg_data['reg_id'] = $gcm_reg_id;
-            $reg_data['type'] = $device_type;
+            $regData['customer_id'] = $customer_id;
+            $regData['reg_id'] = $gcm_reg_id;
+            $regData['type'] = $device_type;
 
-            $this->addRegId($reg_data);
+            $this->utilities->addRegId($regData);
         }
 
         if(isset($postdata['preferred_starting_date']) && $postdata['preferred_starting_date']  != '') {
 
-            if(trim(Input::json()->get('preferred_starting_date')) != '-'){
-                $date_arr = explode('-', Input::json()->get('preferred_starting_date'));
-                $preferred_starting_date			=	date('Y-m-d 00:00:00', strtotime( $date_arr[2]."-".$date_arr[1]."-".$date_arr[0]));
+            if(trim($postdata['preferred_starting_date']) != '-'){
+                $date_arr = explode('-', $postdata['preferred_starting_date']);
+                $preferred_starting_date			=	date('Y-m-d 00:00:00', strtotime($postdata['preferred_starting_date']));
                 array_set($data, 'start_date', $preferred_starting_date);
                 array_set($data, 'preferred_starting_date', $preferred_starting_date);
             }
         }
 
+
         if(trim(Input::json()->get('finder_id')) != '' ){
 
             $finder 	= 	Finder::with(array('location'=>function($query){$query->select('_id','name','slug');}))->with(array('city'=>function($query){$query->select('_id','name','slug');}))->with('locationtags')->where('_id','=',intval(Input::json()->get('finder_id')))->first()->toArray();
 
+
+            $disableTrialMembership = $this->disableTrialMembership($data);
+
+            if($disableTrialMembership['status'] != 200){
+
+                return Response::json($disableTrialMembership,$disableTrialMembership['status']);
+            }
+
+        
             $finder_city						=	(isset($finder['city']['name']) && $finder['city']['name'] != '') ? $finder['city']['name'] : "";
             $finder_location					=	(isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
             $finder_address						= 	(isset($finder['contact']['address']) && $finder['contact']['address'] != '') ? $finder['contact']['address'] : "";
@@ -810,10 +1224,9 @@ class OrderController extends \BaseController {
 
         }
 
-        $code		=	random_numbers(5);
-
-        array_set($data, 'code', $code);
+        
         array_set($data, 'batch_time', '');
+        array_set($data, 'source_of_membership', 'real time');
 
         if(isset($data['batches']) && $data['batches'] != ""){
             if(is_array($data['batches'])){
@@ -831,15 +1244,64 @@ class OrderController extends \BaseController {
             }
         }
 
-        if(isset($data['schedule_date']) && $data['schedule_date'] != ""){
-            $data['membership_duration_type'] = 'workout_session';
+        if(isset($data['batch']) && $data['batch'] != ""){
+            
+            if(is_array($data['batch'])){
+                $data['batch'] = $data['batch'];
+            }else{
+                $data['batch'] = json_decode($data['batch'],true);
+            }
+
+
+
+            foreach ($data['batch'] as $key => $value) {
+
+                if(isset($value['slots']['start_time']) && $value['slots']['start_time'] != ""){
+                    $data['batch_time'] = strtoupper($value['slots']['start_time']);
+                    break;
+                }
+
+                if(isset($value['slots'][0]['start_time']) && $value['slots'][0]['start_time'] != ""){
+                    $data['batch_time'] = strtoupper($value['slots'][0]['start_time']);
+                    break;
+                }
+            }
         }
 
+        if(!isset($data['ratecard_id'])){
+
+            if($data['type'] == 'booktrials'){
+                $ratecard  = Ratecard::active()->where('type','trial')->first();
+
+                if($ratecard){
+                    $data['ratecard_id'] = (int)$ratecard->_id;
+                }
+            }
+
+            if($data['type'] == 'workout-session'){
+                $ratecard  = Ratecard::active()->where('type','workout session')->first();
+
+                if($ratecard){
+                    $data['ratecard_id'] = (int)$ratecard->_id;
+                }
+            }
+
+        }
+
+        $offer_id = false;
         if(isset($data['ratecard_id']) && $data['ratecard_id'] != ""){
 
             $ratecard = Ratecard::find((int)$data['ratecard_id']);
 
+            if(isset($ratecard->remarks) && $ratecard->remarks != ""){
+                
+                $data['ratecard_remarks']  = $ratecard->remarks;
+            }
+
             if($ratecard){
+
+                $data['duration'] = (isset($ratecard->duration)) ? $ratecard->duration : "";
+                $data['duration_type'] = (isset($ratecard->duration_type)) ? $ratecard->duration_type : "";
 
                 if(isset($ratecard->special_price) && $ratecard->special_price != 0){
                     $data['amount_finder'] = $ratecard->special_price;
@@ -848,15 +1310,47 @@ class OrderController extends \BaseController {
                 }
 
                 if(isset($ratecard->validity) && $ratecard->validity != ""){
-                    $duration_day = (int)$ratecard->validity;
-                    $data['duration_day'] = $duration_day;
+
+                    switch ($ratecard->validity_type){
+                        case 'days': 
+                            $data['duration_day'] = $duration_day = (int)$ratecard->validity;break;
+                        case 'months': 
+                            $data['duration_day'] = $duration_day = (int)($ratecard->validity * 30) ; break;
+                        case 'year': 
+                            $data['duration_day'] = $duration_day = (int)($ratecard->validity * 30 * 12); break;
+                        default : $data['duration_day'] = $duration_day =  $ratecard->validity; break;
+                    }
+
                     if(isset($postdata['preferred_starting_date']) && $postdata['preferred_starting_date']  != '') {
-                        $data['end_date'] = date('Y-m-d 00:00:00', strtotime($preferred_starting_date."+ ".$duration_day." days"));
+                        $data['end_date'] = date('Y-m-d 00:00:00', strtotime($postdata['preferred_starting_date']."+ ".$duration_day." days"));
                     }
 
                     if($duration_day <= 90){
                         $data['membership_duration_type'] = ($duration_day <= 90) ? 'short_term_membership' : 'long_term_membership' ;
                     }
+                }
+
+                if($data['type'] == 'memberships' || $data['type'] == 'healthytiffinmembership'){
+
+                    $duration = $ratecard->duration;
+                    $duration_type = $ratecard->duration_type;
+                    $validity = $ratecard->validity;
+                    $validity_type = $ratecard->validity_type;
+
+                    $service_duration = $data['service_duration'] = $this->getServiceDuration($ratecard);
+                }
+
+                $offer = Offer::where('ratecard_id',$ratecard->_id)->where('hidden', false)->where('start_date','<=',new DateTime(date("d-m-Y 00:00:00")))->where('end_date','>=',new DateTime(date("d-m-Y 00:00:00")))->first();
+
+                if($offer){
+                    $data['amount_finder'] = $offer->price;
+                    $offer_id = $offer->_id;
+                    $data['offer_id'] = $offer->_id;
+                }
+
+                if(isset($offer->remarks) && $offer->remarks != ""){
+                
+                    $data['ratecard_remarks']  = $offer->remarks;
                 }
                 
             }else{
@@ -890,40 +1384,102 @@ class OrderController extends \BaseController {
             array_set($data, 'reward_ids', $rewardoffers);
         }
 
-        if(isset($data['amount_finder'])){
+        $orderid = Order::max('_id') + 1;
 
-        	$data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount_finder'],(int)$data['finder_id']);
+        $code = $orderid.str_random(8);
 
-            if(isset($data['wallet']) && $data['wallet'] == true){
-                $data['wallet_amount'] = $data['cashback_detail']['amount_deducted_from_wallet'];
-            }
+        array_set($data, 'code', $code);
+
+        if(isset($_GET['device_type']) && $_GET['device_type'] != ""){
+            $data["device_type"] = strtolower(trim($_GET['device_type']));
         }
 
-        // Deduct wallet balance if applicable and feasible....
-        $orderid 			=	Order::max('_id') + 1;
+        if(isset($_GET['app_version']) && $_GET['app_version'] != ""){
+            $data["app_version"] = (float)$_GET['app_version'];
+        }
 
+        if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios'])){
 
-        if(isset($data['wallet_amount']) && $data['wallet_amount'] > 0){
+            if(isset($data['amount_finder'])){
 
-            $req = array(
-                'customer_id'=>$customer_id,
-                'order_id'=>$orderid,
-                'amount'=>$data['wallet_amount'],
-                'type'=>'DEBIT',
-                'description'=>'Paid for Order ID: '.$orderid,
-            );
-            $walletTransactionResponse = $this->utilities->walletTransaction($req)->getData();
-            $walletTransactionResponse = (array) $walletTransactionResponse;
+                $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount_finder'],(int)$data['finder_id'],'paymentgateway',$offer_id,$customer_id);
 
-            if($walletTransactionResponse['status'] != 200){
-                return $walletTransactionResponse;
+                if(isset($data['wallet']) && $data['wallet'] == true){
+                    $data['wallet_amount'] = $data['cashback_detail']['amount_deducted_from_wallet'];
+                }
             }
 
-            // Schedule Check orderfailure and refund wallet amount in that case....
-	        $url = Config::get('app.url').'/orderfailureaction/'.$orderid;
-	        $delay = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addHours(4);
-	        $data['wallet_refund_sidekiq'] = $this->hitURLAfterDelay($url, $delay);
+            if(isset($data['wallet_amount']) && $data['wallet_amount'] > 0){
 
+                $fitcash_plus = 0;
+                $fitcash = $data['wallet_amount'];
+
+                $req = array(
+                    'customer_id'=>$customer_id,
+                    'order_id'=>$orderid,
+                    'amount'=>$data['wallet_amount'],
+                    'amount_fitcash' => $fitcash,
+                    'amount_fitcash_plus' => $fitcash_plus,
+                    'type'=>'DEBIT',
+                    'entry'=>'debit',
+                    'description'=>'Paid for Order ID: '.$orderid,
+                );
+                $walletTransactionResponse = $this->utilities->walletTransaction($req,$data);
+                
+
+                if($walletTransactionResponse['status'] != 200){
+                    return Response::json($walletTransactionResponse,$walletTransactionResponse['status']);
+                }
+
+                // Schedule Check orderfailure and refund wallet amount in that case....
+                $url = Config::get('app.url').'/orderfailureaction/'.$orderid;
+                $delay = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addHours(4);
+                $data['wallet_refund_sidekiq'] = $this->hitURLAfterDelay($url, $delay);
+
+            }
+
+        }else{
+            
+            if(isset($data['amount_finder'])){
+
+                if(isset($data['wallet']) && $data['wallet'] == true){
+
+                    $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount_finder'],(int)$data['finder_id'],'paymentgateway',$offer_id,$customer_id);
+
+                    $wallet_amount = $data['wallet_amount'] = $cashback_detail['only_wallet']['fitcash'] + $cashback_detail['only_wallet']['fitcash_plus'];
+
+                    $fitcash_plus = $cashback_detail['only_wallet']['fitcash_plus'];
+                    $fitcash = $cashback_detail['only_wallet']['fitcash'];
+
+                    if(isset($data['cashback']) && $data['cashback'] == true){
+                        $wallet_amount = $data['wallet_amount'] = $cashback_detail['discount_and_wallet']['fitcash'] + $cashback_detail['discount_and_wallet']['fitcash_plus'];
+                        $fitcash_plus = $cashback_detail['discount_and_wallet']['fitcash_plus'];
+                        $fitcash = $cashback_detail['discount_and_wallet']['fitcash'];
+                    }
+
+                    $req = array(
+                        'customer_id'=>$customer_id,
+                        'order_id'=>$orderid,
+                        'amount'=>$wallet_amount,
+                        'amount_fitcash' => $fitcash,
+                        'amount_fitcash_plus' => $fitcash_plus,
+                        'type'=>'DEBIT',
+                        'entry'=>'debit',
+                        'description'=>'Paid for Order ID: '.$orderid,
+                    );
+                    $walletTransactionResponse = $this->utilities->walletTransaction($req,$data);
+                    
+
+                    if($walletTransactionResponse['status'] != 200){
+                        return Response::json($walletTransactionResponse,$walletTransactionResponse['status']);
+                    }
+
+                    // Schedule Check orderfailure and refund wallet amount in that case....
+                    $url = Config::get('app.url').'/orderfailureaction/'.$orderid;
+                    $delay = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addHours(4);
+                    $data['wallet_refund_sidekiq'] = $this->hitURLAfterDelay($url, $delay);
+                }
+            }
         }
 
         if(isset($data['address']) && $data['address'] != ''){
@@ -941,15 +1497,153 @@ class OrderController extends \BaseController {
 	        $data['customer_address'] = $data['address'] = implode(",", array_values($data['customer_address']));
 	    }
 
+        if(isset($data['schedule_slot']) && $data['schedule_slot'] != ""){
+
+            $schedule_slot = explode("-", $data['schedule_slot']);
+
+            $data['start_time'] = trim($schedule_slot[0]);
+            $data['end_time']= trim($schedule_slot[1]);
+        }
+
+        if(isset($data['schedule_date']) && $data['schedule_date'] != ""){
+
+            $date_arr = $data['schedule_date'];
+            $schedule_date = date('Y-m-d 00:00:00', strtotime($data['schedule_date']));
+            array_set($data, 'start_date', $schedule_date);
+
+            array_set($data, 'end_date', $schedule_date);
+
+            $data['membership_duration_type'] = 'workout_session';
+
+        }
+
+        $set_vertical_type = array(
+            'healthytiffintrail'=>'tiffin',
+            'healthytiffinmembership'=>'tiffin',
+            'memberships'=>'workout',
+            'booktrials'=>'workout',
+            'workout-session'=>'workout',
+            '3daystrial'=>'workout',
+            'vip_booktrials'=>'workout',
+        );
+
+        $set_membership_duration_type = array(
+            'healthytiffintrail'=>'trial',
+            'healthytiffinmembership'=>'short_term_membership',
+            'memberships'=>'short_term_membership',
+            'booktrials'=>'trial',
+            'workout-session'=>'workout_session',
+            '3daystrial'=>'trial',
+            'vip_booktrials'=>'vip_trial',
+        );
+
+        (isset($set_vertical_type[$data['type']])) ? $data['vertical_type'] = $set_vertical_type[$data['type']] : null;
+
+        (isset($data['finder_category_id']) &&  $data['finder_category_id'] == 41) ? $data['vertical_type'] = 'trainer' : null;
+
+        (isset($set_membership_duration_type[$data['type']])) ? $data['membership_duration_type'] = $set_membership_duration_type[$data['type']] : null;
+
+        (isset($data['duration_day']) && $data['duration_day'] >=30 && $data['duration_day'] <= 90) ? $data['membership_duration_type'] = 'short_term_membership' : null;
+
+        (isset($data['duration_day']) && $data['duration_day'] >90 ) ? $data['membership_duration_type'] = 'long_term_membership' : null;
+
+        $data['secondary_payment_mode'] = 'payment_gateway_tentative';
+
+        $countOrder = 0;
+        $countOrder  = Order::where('customer_email',$data['customer_email'])->where('_id','!=',$orderid)->count();
+
+        $countTrial = 0;
+        $countTrial  = Booktrial::where('customer_email',$data['customer_email'])->count();
+
+        $countCapture = 0;
+        $countCapture  = Capture::where('customer_email',$data['customer_email'])->count();
+
+        array_set($data, 'repeat_customer', 'no');
+
+        if($countOrder > 0 || $countTrial > 0 || $countCapture > 0){
+            array_set($data, 'repeat_customer', 'yes');
+        }
+        Log::info("Here before create");
         $order 				= 	new Order($data);
         $order->_id 		= 	$orderid;
+        Log::info("Here after create".$order->_id);
         $orderstatus   		= 	$order->save();
+        Log::info("Here after save");
         $resp 	= 	array('status' => 200, 'order' => $order, 'message' => "Transaction details for tmp order :)");
         return Response::json($resp);
 
     }
 
+    public function disableTrialMembership($data){
 
+        $finder     =   Finder::find(intval($data['finder_id']));
+
+        $trial_array = array('vip_booktrials','3daystrial','booktrials','workout-session','healthytiffintrail');
+        $membership_array = array('healthytiffinmembership','memberships');
+        
+        if(in_array($data['type'],$trial_array)){
+
+            if(isset($finder['trial']) && $finder['trial'] == "disable"){
+
+                $message = "Sorry, this class is not available. Kindly book a different slot";
+
+                ($data['type'] == "healthytiffintrail") ? $message = "Sorry, this meal subscription can't be fulfilled." : null;
+
+                return array('status' => 400,'message' => $message);
+            }
+
+        }
+
+        
+        if(in_array($data['type'],$membership_array)){
+
+            if(isset($finder['membership']) && $finder['membership'] == "disable"){
+
+                $message = "Sorry, this membership purchase can't be fulfilled.";
+
+                ($data['type'] == "healthytiffinmembership") ? $message = "Sorry, this meal subscription can't be fulfilled." : null;
+
+                return array('status' => 400,'message' => $message);
+            }
+
+        }
+
+        if(isset($data['service_id']) && $data['service_id'] != ""){
+
+            $service = Service::find((int)$data['service_id']);
+
+            if(in_array($data['type'],$trial_array)){
+
+                if(isset($service['trial']) && $service['trial'] == "disable"){
+
+                    $message = "Sorry, this class is not available. Kindly book a different slot";
+
+                    ($data['type'] == "healthytiffintrail") ? $message = "Sorry, this meal subscription can't be fulfilled." : null;
+
+                    return array('status' => 400,'message' => $message);
+
+                }
+
+            }
+
+            if(in_array($data['type'],$membership_array)){
+
+                if(isset($service['membership']) && $service['membership'] == "disable"){
+
+                    $message = "Sorry, this membership purchase can't be fulfilled.";
+
+                    ($data['type'] == "healthytiffinmembership") ? $message = "Sorry, this meal subscription can't be fulfilled." : null;
+
+                    return array('status' => 400,'message' => $message);
+
+                }
+
+            }
+
+        }
+
+        return array('status' => 200,'message' => 'success');
+    }
 
 
     public function captureFailOrders(){
@@ -1199,17 +1893,6 @@ class OrderController extends \BaseController {
 
     }
 
-    public function addRegId($data){
-
-        $response = add_reg_id($data);
-
-        return Response::json($response,$response['status']);
-    }
-
-
-
-
-
     public function emailToPersonalTrainers (){
 
         $match 			=	array(41);
@@ -1264,13 +1947,11 @@ class OrderController extends \BaseController {
     }
 
 
-    public function orderFailureAction($order_id){
+    public function orderFailureAction($order_id,$customer_id = false){
 
-        $data = Order::where('_id',(int) $order_id)
-            ->where('status',"0")
-            ->first();
+        $order = Order::where('_id',(int) $order_id)->where('status',"0")->first();
 
-        if($data == ''){
+        if($order == ''){
             return Response::json(
                 array(
                     'status' => 200,
@@ -1281,25 +1962,32 @@ class OrderController extends \BaseController {
         }
 
         // Update order status to failed........
-        $data->update(['status' => '-1']);
+        $order->update(['status' => '-1']);
 
+        if($order['amount'] >= 15000){
+            $order_data = $order->toArray();
+            $order_data['finder_vcc_email'] = "vinichellani@fitternity.com";
+            $this->findermailer->orderFailureNotificationToLmd($order_data);
+        }
+
+        $customer_id = ($customer_id) ? (int)$customer_id : (int)$order['customer_id'];
 
         // Refund wallet amount if deducted........
-        if(isset($data['wallet_amount']) && ((int) $data['wallet_amount']) >= 0){
+        if(isset($order['wallet_amount']) && ((int) $order['wallet_amount']) >= 0){
             $req = array(
-                'customer_id'=>$data['customer_id'],
+                'customer_id'=>$customer_id,
                 'order_id'=>$order_id,
-                'amount'=>$data['wallet_amount'],
+                'amount'=>$order['wallet_amount'],
                 'type'=>'REFUND',
+                'entry'=>'credit',
                 'description'=>'Refund for Order ID: '.$order_id,
             );
 
-            $walletTransactionResponse = $this->utilities->walletTransaction($req)->getData();
-            $walletTransactionResponse = (array) $walletTransactionResponse;
-
+            $walletTransactionResponse = $this->utilities->walletTransaction($req,$order->toArray());
+            
 
             if($walletTransactionResponse['status'] != 200){
-                return $walletTransactionResponse;
+                return Response::json($walletTransactionResponse,$walletTransactionResponse['status']);
             }
 
             return Response::json(
@@ -1319,7 +2007,6 @@ class OrderController extends \BaseController {
 
             );
         }
-
 
     }
 
@@ -1392,6 +2079,52 @@ class OrderController extends \BaseController {
         return (int) $delay;
     }
 
+    public function getHash($data){
+        $env = (isset($data['env']) && $data['env'] == 1) ? "stage" : "production";
+
+        $data['service_name'] = trim($data['service_name']);
+        $data['finder_name'] = trim($data['finder_name']);
+
+        $service_name = preg_replace("/^'|[^A-Za-z0-9 \'-]|'$/", '', $data['service_name']);
+        $finder_name = preg_replace("/^'|[^A-Za-z0-9 \'-]|'$/", '', $data['finder_name']);
+
+        $key = 'gtKFFx';
+        $salt = 'eCwWELxi';
+
+        if($env == "production"){
+            $key = 'l80gyM';
+            $salt = 'QBl78dtK';
+        }
+
+        $txnid = $data['txnid'];
+        $amount = $data['amount'];
+        $productinfo = $data['productinfo'] = $service_name." - ".$finder_name;
+        $firstname = $data['customer_name'];
+        $email = $data['customer_email'];
+        $udf1 = "";
+        $udf2 = "";
+        $udf3 = "";
+        $udf4 = "";
+        $udf5 = "";
+
+        $payhash_str = $key.'|'.$txnid.'|'.$amount.'|'.$productinfo.'|'.$firstname.'|'.$email.'|'.$udf1.'|'.$udf2.'|'.$udf3.'|'.$udf4.'|'.$udf5.'||||||'.$salt;
+        
+        // Log::info($payhash_str);
+
+        $data['payment_hash'] = hash('sha512', $payhash_str);
+
+        $verify_str = $salt.'||||||'.$udf5.'|'.$udf4.'|'.$udf3.'|'.$udf3.'|'.$udf2.'|'.$udf1.'|'.$email.'|'.$firstname.'|'.$productinfo.'|'.$amount.'|'.$txnid.'|'.$key;
+
+        $data['verify_hash'] = hash('sha512', $verify_str);
+
+        $cmnPaymentRelatedDetailsForMobileSdk1              =   'payment_related_details_for_mobile_sdk';
+        $detailsForMobileSdk_str1                           =   $key  . '|' . $cmnPaymentRelatedDetailsForMobileSdk1 . '|default|' . $salt ;
+        $detailsForMobileSdk1                               =   hash('sha512', $detailsForMobileSdk_str1);
+        $data['payment_related_details_for_mobile_sdk_hash'] =   $detailsForMobileSdk1;
+        
+        return $data;
+    }
+
     public function orderUpdate(){
 
         $rules = array(
@@ -1432,13 +2165,13 @@ class OrderController extends \BaseController {
                 return Response::json($resp,$resp["status"]);
             }
 
-            if(isset($order->cashback) && $order->cashback == true){
+            if(isset($order->cashback) && $order->cashback == true && isset($order->status) && $order->status == "1"){
 
                 $resp   =   array("status" => 401,"message" => "We have already received your request");
                 return Response::json($resp,$resp["status"]);
             }
 
-            if(isset($order->reward_ids) && count($order->reward_ids) > 0){
+            if(isset($order->reward_ids) && count($order->reward_ids) > 0 && isset($order->status) && $order->status == "1"){
 
                 $resp   =   array("status" => 401,"message" => "We have already received your request");
                 return Response::json($resp,$resp["status"]);
@@ -1446,13 +2179,15 @@ class OrderController extends \BaseController {
 
             $data['amount_finder'] = $order->amount_finder;
             $data['amount'] = $order->amount;
+            $data['finder_name'] = $order->finder_name;
+            $data['service_name'] = $order->service_name;
 
-            $customer_id = $this->autoRegisterCustomer($data);
+            $customer_id = autoRegisterCustomer($data);
 
             if(isset($data['preferred_starting_date']) && $data['preferred_starting_date']  != ''){
-                if(trim(Input::json()->get('preferred_starting_date')) != '-'){
-                    $date_arr = explode('-', Input::json()->get('preferred_starting_date'));
-                    $preferred_starting_date            =   date('Y-m-d 00:00:00', strtotime( $date_arr[2]."-".$date_arr[1]."-".$date_arr[0]));
+                if(trim($data['preferred_starting_date']) != '-'){
+                    $date_arr = explode('-', $data['preferred_starting_date']);
+                    $preferred_starting_date            =   date('Y-m-d 00:00:00', strtotime($data['preferred_starting_date']));
                     array_set($data, 'start_date', $preferred_starting_date);
                     array_set($data, 'preferred_starting_date', $preferred_starting_date);
                 }
@@ -1460,17 +2195,24 @@ class OrderController extends \BaseController {
 
             if(isset($data['preferred_payment_date']) && $data['preferred_payment_date']  != ''){
                 if(trim(Input::json()->get('preferred_payment_date')) != '-'){
-                    $date_arr = explode('-', Input::json()->get('preferred_payment_date'));
-                    $preferred_payment_date            =   date('Y-m-d 00:00:00', strtotime( $date_arr[2]."-".$date_arr[1]."-".$date_arr[0]));
+                    $date_arr = explode('-', $data['preferred_payment_date']);
+                    $preferred_payment_date            =   date('Y-m-d 00:00:00', strtotime($data['preferred_payment_date']));
                     array_set($data, 'preferred_payment_date', $preferred_payment_date);
                 }
             }
+
+            $offer_id = false;
 
             if(isset($order->ratecard_id) && $order->ratecard_id != ""){
 
                 $ratecard = Ratecard::find((int)$order->ratecard_id);
 
                 if($ratecard){
+
+                    if(isset($ratecard->remarks) && $ratecard->remarks != ""){
+                
+                        $data['ratecard_remarks']  = $ratecard->remarks;
+                    }
 
                     if($data['payment_mode'] == "paymentgateway"){
                         if(isset($ratecard->special_price) && $ratecard->special_price != 0){
@@ -1491,6 +2233,19 @@ class OrderController extends \BaseController {
                             $data['membership_duration_type'] = ($duration_day <= 90) ? 'short_term_membership' : 'long_term_membership' ;
                         }
                     }
+
+                    $offer = Offer::where('ratecard_id',$ratecard->_id)->where('hidden', false)->where('start_date','<=',new DateTime(date("d-m-Y 00:00:00")))->where('end_date','>=',new DateTime(date("d-m-Y 00:00:00")))->first();
+
+                    if($offer){
+                        $data['amount_finder'] = $offer->price;
+                        $offer_id = $offer->_id;
+                        $data['offer_id'] = $offer->_id;
+                    }
+
+                    if(isset($offer->remarks) && $offer->remarks != ""){
+                
+                        $data['ratecard_remarks']  = $offer->remarks;
+                    }
                     
                 }else{
 
@@ -1501,34 +2256,50 @@ class OrderController extends \BaseController {
 
             if(isset($data['amount_finder'])){
 
-                $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount_finder'],(int)$order->finder_id,$data['payment_mode']);
+                $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount_finder'],(int)$order->finder_id,$data['payment_mode'],$offer_id);
 
                 if(isset($data['wallet']) && $data['wallet'] == true){
-                    $data['wallet_amount'] = $data['cashback_detail']['amount_deducted_from_wallet'];
+
+                    $wallet_amount = $data['wallet_amount'] = $cashback_detail['only_wallet']['fitcash'] + $cashback_detail['only_wallet']['fitcash_plus'];
+
+                    $fitcash = $cashback_detail['only_wallet']['fitcash'];
+                    $fitcash_plus = $cashback_detail['only_wallet']['fitcash_plus'];
+
+                    if(isset($data['cashback']) && $data['cashback'] == true){
+
+                        $wallet_amount = $data['wallet_amount'] = $cashback_detail['discount_and_wallet']['fitcash'] + $cashback_detail['discount_and_wallet']['fitcash_plus'];
+
+                        $fitcash = $cashback_detail['discount_and_wallet']['fitcash'];
+                        $fitcash_plus = $cashback_detail['discount_and_wallet']['fitcash_plus'];
+                    }
+
+                    $data['amount'] = $data['amount'] - $data['wallet_amount'];
+
+                    $req = array(
+                        'customer_id'=>$customer_id,
+                        'order_id'=>$order_id,
+                        'amount'=>$wallet_amount,
+                        'amount_fitcash' => $fitcash,
+                        'amount_fitcash_plus' => $fitcash_plus,
+                        'type'=>'DEBIT',
+                        'entry'=>'debit',
+                        'description'=>'Paid for Order ID: '.$order_id,
+                    );
+                    $walletTransactionResponse = $this->utilities->walletTransaction($req,$data);
+                    
+
+                    if($walletTransactionResponse['status'] != 200){
+                        return Response::json($walletTransactionResponse,$walletTransactionResponse['status']);
+                    }
+
+                    // Schedule Check orderfailure and refund wallet amount in that case....
+                    $url = Config::get('app.url').'/orderfailureaction/'.$order_id;
+                    $delay = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addHours(4);
+                    $data['wallet_refund_sidekiq'] = $this->hitURLAfterDelay($url, $delay);
+
+                }elseif(isset($data['cashback']) && $data['cashback'] == true){
+                    $data['amount'] = $data['amount'] - $data['cashback_detail']['amount_discounted'];
                 }
-            }
-
-            if(isset($data['wallet_amount']) && $data['wallet_amount'] > 0){
-
-                $req = array(
-                    'customer_id'=>$customer_id,
-                    'order_id'=>$order_id,
-                    'amount'=>$data['wallet_amount'],
-                    'type'=>'DEBIT',
-                    'description'=>'Paid for Order ID: '.$order_id,
-                );
-                $walletTransactionResponse = $this->utilities->walletTransaction($req)->getData();
-                $walletTransactionResponse = (array) $walletTransactionResponse;
-
-                if($walletTransactionResponse['status'] != 200){
-                    return $walletTransactionResponse;
-                }
-
-                // Schedule Check orderfailure and refund wallet amount in that case....
-                $url = Config::get('app.url').'/orderfailureaction/'.$order_id;
-                $delay = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addHours(4);
-                $data['wallet_refund_sidekiq'] = $this->hitURLAfterDelay($url, $delay);
-
             }
 
             if(isset($data['reward_ids'])&& count($data['reward_ids']) > 0) {
@@ -1574,18 +2345,331 @@ class OrderController extends \BaseController {
                 array_set($data, 'reward_info', $reward_info);
             }
 
+
+            $txnid = "FIT".$order_id;
+            $successurl = $order['type'] == "memberships" ? Config::get('app.website')."/paymentsuccess" : Config::get('app.website')."/paymentsuccesstrial";
+            $mobilehash = "";
+           
+            $data['txnid'] = $txnid;
+            $hash = getHash($data);
+
+            $data = array_merge($data,$hash);
+
+            if(isset($data['reward_ids']) && !empty($data['reward_ids']) && isset($data['preferred_payment_date']) && $data['preferred_payment_date']  != ''){
+                $data['order_confirmation_customer']= date('Y-m-d H:i:s',time());
+            } 
+
             $order->update($data);
+
+            $result['firstname'] = $data['customer_name'];
+            $result['lastname'] = "";
+            $result['phone'] = $data['customer_phone'];
+            $result['email'] = $data['customer_email'];
+            $result['orderid'] = $order_id;
+            $result['txnid'] = $txnid;
+            $result['amount'] = $data['amount'];
+            $result['productinfo'] = $data['productinfo'];
+            $result['service_name'] = preg_replace("/^'|[^A-Za-z0-9 \'-]|'$/", '', $data['service_name']);
+            $result['successurl'] = $successurl;
+            $result['hash'] = $data['payment_hash'];
+            $result['payment_related_details_for_mobile_sdk_hash'] = $mobilehash;
 
             if($order->payment_mode == "at the studio" /*&& isset($data['reward_info'])*/){
                 $this->findermailer->orderUpdatePaymentAtVendor($order->toArray());
                 $this->customermailer->orderUpdatePaymentAtVendor($order->toArray());
             }
 
-            $resp   =   array("status" => 200, 'message' => "Order Updated Successfull",'order' => $order);
+            $resp   =   array(
+                'status' => 200,
+                'data' => $result,
+                'message' => "Order Updated Successfull"
+            );
 
             return Response::json($resp);
         }
 
+    }
+
+    public function inviteForMembership(){
+
+        $req = Input::json()->all();
+        Log::info('inviteForMembership',$req);
+        // return $req;
+        // exit(0);
+
+        if(isset($req['id_for_invite'])){
+            $req['order_id'] = $req['id_for_invite'];
+        }
+        
+        // Request Validations...........
+        $rules = [
+            'order_id' => 'required|integer|numeric',
+            'invitees' => 'required|array',
+            'source' => 'in:ANDROID,IOS,WEB',
+        ];
+
+        $validator = Validator::make($req, $rules);
+
+        if ($validator->fails()) {
+            return Response::json(
+                array(
+                    'status' => 400,
+                    'message' => $this->errorMessage($validator->errors()
+                    )),400
+            );
+        }
+
+        // Invitee info validations...........
+        $inviteesData = [];
+
+        foreach ($req['invitees'] as $value){
+
+            $inviteeData = ['name'=>$value['name']];
+
+            $rules = [
+                'name' => 'required|string',
+                'input' => 'required|string',
+            ];
+            $messages = [
+                'name' => 'invitee name is required',
+                'input' => 'invitee email or phone is required'
+            ];
+            $validator = Validator::make($value, $rules, $messages);
+
+            if ($validator->fails()) {
+                return Response::json(
+                    array(
+                        'status' => 400,
+                        'message' => $this->errorMessage($validator->errors()
+                        )),400
+                );
+            }
+
+            if(filter_var($value['input'], FILTER_VALIDATE_EMAIL) != '') {
+                // valid address
+                $inviteeData = array_add($inviteeData, 'email', $value['input']);
+            }
+            else if(filter_var($value['input'], FILTER_VALIDATE_REGEXP, array(
+                    "options" => array("regexp"=>"/^[2-9]{1}[0-9]{9}$/")
+                )) != ''){
+                // valid phone
+                $inviteeData = array_add($inviteeData, 'phone', $value['input']);
+
+            }
+            array_push($inviteesData, $inviteeData);
+
+        }
+
+
+        foreach ($inviteesData as $value){
+
+            $rules = [
+                'name' => 'required|string',
+                'email' => 'required_without:phone|email',
+                'phone' => 'required_without:email',
+            ];
+            $messages = [
+                'email.required_without' => 'invitee email or phone is required',
+                'phone.required_without' => 'invitee email or phone is required'
+            ];
+            $validator = Validator::make($value, $rules, $messages);
+
+            if ($validator->fails()) {
+                return Response::json(
+                    array(
+                        'status' => 400,
+                        'message' => $this->errorMessage($validator->errors()
+                        )),400
+                );
+            }
+        }
+
+        // Get Host Data an validate booktrial ID......
+        $orderData = Order::where('_id', $req['order_id'])
+            ->get(array(
+                'customer_id', 'customer_name', 'customer_email','customer_phone','service_name',
+                'type', 'finder_name', 'finder_location','finder_address', 'amount', 'service_duration', 'finder_slug', 'service_id', 'finder_city' , 'finder_category_id', 'batch', 'ratecard_remarks', 'finder_id'
+            ))
+            ->first();
+            //  Finder::$withoutAppends=true;
+            $locationSlug= Finder::where('_id', $orderData['finder_id'])->with(array('location'=>function($query){$query->select('slug');}))->get(['_id', 'location_id'])->first();
+           
+            $locationSlug = $locationSlug['location']['slug'];
+
+            // return $locationSlug;
+            // exit(0);
+
+        $finder_cat_slug = Findercategory::where('_id', intval($orderData['finder_category_id']))->get(['slug']);
+
+            // return $finder_cat_slug;
+            // exit(0);
+
+        $errorMessage = !isset($orderData)
+            ? 'Invalid Order ID'
+//            : count($BooktrialData['invites']) >= 0
+//                ? 'You have already invited your friends for this trial'
+            : null;
+        if($errorMessage){
+            return Response::json(
+                array(
+                    'status' => 422,
+                    'message' => $errorMessage
+                ),422
+            );
+        }
+
+        // Validate customer is not inviting himself/herself......
+        $emails = array_fetch($inviteesData, 'email');
+        $phones = array_fetch($inviteesData, 'phone');
+
+
+        if(array_where($emails, function ($key, $value) use($orderData)  {
+            if($value == $orderData['customer_email']){
+                return true;
+            }
+        })) {
+            return Response::json(
+                array(
+                    'status' => 422,
+                    'message' => 'You cannot invite yourself'
+                ),422
+            );
+        }
+
+        if(array_where($phones, function ($key, $value) use($orderData)  {
+            if($value == $orderData['customer_phone']){
+                return true;
+            }
+        })) {
+            return Response::json(
+                array(
+                    'status' => 422,
+                    'message' => 'You cannot invite yourself'
+                ),422
+            );
+        }
+
+        // Save Invite info..........
+        foreach ($inviteesData as $invitee){
+            $invite = new Invite();
+            $invite->_id = Invite::max('_id') + 1;
+            $invite->status = 'pending';
+            $invite->host_id = $orderData['customer_id'];
+            $invite->host_email = $orderData['customer_email'];
+            $invite->host_name = $orderData['customer_name'];
+            $invite->host_phone = $orderData['customer_phone'];
+            $invite->root_order_id =
+                isset($orderData['root_order_id'])
+                    ? $orderData['root_order_id']
+                    : $req['order_id'];
+            $invite->referrer_order_id = $req['order_id'];
+            $invite->source = $req['source'];
+            isset($invitee['name']) ? $invite->invitee_name = trim($invitee['name']): null;
+            isset($invitee['email']) ? $invite->invitee_email = trim($invitee['email']): null;
+            isset($invitee['phone']) ? $invite->invitee_phone = trim($invitee['phone']): null;
+            $invite->save();
+
+           // continue;
+
+            // Generate bitly for landing page with invite_id and booktrial_id
+            // 'www.fitternity.com/buy/'.$orderData['finder_slug'].'/'.$orderData['service_id']finder-slug/service_id
+            // 'www.fitternity.com/'.$orderData['finder_city'].'/'.$finder_cat_slug['slug']
+            $url = 'www.fitternity.com/buy/'.$orderData['finder_slug'].'/'.$orderData['service_id'];
+            $url2 = 'www.fitternity.com/'.$orderData['finder_city'].'/'.$finder_cat_slug[0]['slug'].'/'.$locationSlug;
+            $shorten_url = new ShortenUrl();
+            $url = $shorten_url->getShortenUrl($url);
+            $url2 = $shorten_url->getShortenUrl($url2);
+            if(!isset($url['status']) ||  $url['status'] != 200){
+                return Response::json(
+                    array(
+                        'status' => 422,
+                        'message' => 'Unable to Generate Shortren URL'
+                    ),422
+                );
+            }
+            if(!isset($url2['status']) ||  $url2['status'] != 200){
+                return Response::json(
+                    array(
+                        'status' => 422,
+                        'message' => 'Unable to Generate Shortren URL'
+                    ),422
+                );
+            }
+            $url = $url['url'];
+            $url2 = $url2['url'];
+
+            // Send email / SMS to invitees...
+            $templateData = array(
+                'invitee_name'=>$invite['invitee_name'],
+                'invitee_email'=>$invite['invitee_email'],
+                'invitee_phone'=>$invite['invitee_phone'],
+                'host_name' => $invite['host_name'],
+                'type'=> $orderData['type'],
+                'finder_name'=> $orderData['finder_name'],
+                'finder_location'=> $orderData['finder_location'],
+                'finder_address'=> $orderData['finder_address'],
+                'service_name'=> $orderData['service_name'],
+                'url' => $url,
+                'url2' => $url2,
+                'amount' => $orderData['amount'],
+                'service_duration' => $orderData['service_duration'],
+                'ratecard_remarks' => $orderData['ratecard_remarks'],
+                'batch' => $orderData['batch']
+            );
+
+//            return $this->customermailer->inviteEmail($BooktrialData['type'], $templateData);
+
+            isset($templateData['invitee_email']) ? $this->customermailer->inviteEmail($orderData['type'], $templateData) : null;
+            isset($templateData['invitee_phone']) ? $this->customersms->inviteSMS($orderData['type'], $templateData) : null;
+        }
+
+        return Response::json(
+            array(
+                'status' => 200,
+                'message' => 'Invitation has been sent successfully'
+            ),200
+        );
+    }
+
+
+
+    public function getReversehash($data){
+
+        $data['env'] == 1;
+        $env = (isset($data['env']) && $data['env'] == 1) ? "stage" : "production";
+
+        $data['service_name'] = trim($data['service_name']);
+        $data['finder_name'] = trim($data['finder_name']);
+
+        $service_name = preg_replace("/^'|[^A-Za-z0-9 \'-]|'$/", '', $data['service_name']);
+        $finder_name = preg_replace("/^'|[^A-Za-z0-9 \'-]|'$/", '', $data['finder_name']);
+
+        $key = 'gtKFFx';
+        $salt = 'eCwWELxi';
+
+        if($env == "production"){
+            $key = 'l80gyM';
+            $salt = 'QBl78dtK';
+        }
+
+        $txnid = $data['txnid'];
+        $amount = $data['amount'].".00";
+        $productinfo = $data['productinfo'] = $service_name." - ".$finder_name;
+        $firstname = $data['customer_name'];
+        $email = $data['customer_email'];
+        $udf1 = "";
+        $udf2 = "";
+        $udf3 = "";
+        $udf4 = "";
+        $udf5 = "";
+
+        $payhash_str = $salt.'|success||||||'.$udf5.'|'.$udf4.'|'.$udf3.'|'.$udf2.'|'.$udf1.'|'.$email.'|'.$firstname.'|'.$productinfo.'|'.$amount.'|'.$txnid.'|'.$key;
+//    $payhash_str = "0|".$salt.'|success||||||'.$udf5.'|'.$udf4.'|'.$udf3.'|'.$udf2.'|'.$udf1.'|'.$email.'|'.$firstname.'|'.$productinfo.'|'.$amount.'|'.$txnid.'|'.$key;
+        
+        // Log::info($payhash_str);
+        $data['reverse_hash'] = hash('sha512', $payhash_str);        
+        // Log::info($data['reverse_hash']);
+        return $data;
     }
 
 

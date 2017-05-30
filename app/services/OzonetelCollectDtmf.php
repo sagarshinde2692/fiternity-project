@@ -51,7 +51,7 @@ class OzonetelCollectDtmf {
         //time out in ms default is 4000ms,
     }
 
-    public function addPlayText($text, $speed=5, $lang="EN", $quality="best") {
+    public function addPlayText($text, $speed=4, $lang="EN", $quality="best") {
 
         $play_text = $this->doc->createElement("playtext", $text);
         $play_text->setAttribute("speed", $speed);

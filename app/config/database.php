@@ -1,5 +1,20 @@
 <?php
 
+//local
+// $host = "localhost";
+// $username = "";
+// $password = "";
+
+//stage
+// $host = "localhost";
+// $username = "fitadmin";
+// $password = "fit1234";
+
+//production
+$host = "54.179.134.14";
+$username = "";
+$password = "";
+
 return array(
 
 	/*
@@ -48,31 +63,38 @@ return array(
 	'connections' => array(
 
 		'mongodb' => array(
-		    'driver'   => 'mongodb',
-			    'host'     => 'localhost',
-//			 'host'     => '52.77.247.239',
-		    'port'     => 27017,
-		    // 'username' => 'fituser',
-		    // 'password' => '65e4d4c196aa6229cf2ad0ff252658c7',
-		    'database' => 'fitadmin'
+			'driver'   => 'mongodb',
+            'host'     => $host,
+			'port'     => 27017,
+			'database' => 'fitadmin',
+		    'username' => $username,
+		    'password' => $password,
+			// 'options' => [
+			// 		'db' => 'admin' // sets the authentication database required by mongo 3
+			// 	]
 		),
 
 		'mongodb2' => array(
-		    'driver'   => 'mongodb',
-		     'host'     => 'localhost',
-//		      'host'     => '52.77.247.239',
-		    'port'     => 27017,
-		    'database' => 'fitapi'
+			'driver'   => 'mongodb',
+            'host'     => $host,
+			'port'     => 27017,
+			'database' => 'fitapi',
+            'username' => $username,
+            'password' => $password,
+			// 'options' => [
+			// 	'db' => 'admin' // sets the authentication database required by mongo 3
+			// ]
 		),
 
 
-		'mongodb3' => array(
-		    'driver'   => 'mongodb',
-		    'host'     => 'localhost',
-//		     'host'     => '52.77.247.239',
-		    'port'     => 27017,
-		    'database' => 'fitadminnew'
-		),
+		// 'mongodb3' => array(
+		// 	'driver'   => 'mongodb',
+        //     'host'     => $host,
+		// 	'port'     => 27017,
+		// 	'database' => 'fitadminnew',
+        //     'username' => $username,
+        //     'password' => $password
+		// ),
 
 
 		/*'sqlite' => array(
@@ -112,7 +134,7 @@ return array(
 			'prefix'   => '',
 			),*/
 
-	),
+			),
 
 	/*
 	|--------------------------------------------------------------------------

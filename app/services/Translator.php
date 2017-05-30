@@ -12,6 +12,7 @@ Use \App\Responsemodels\saleRatecardResponse;
 Use \App\Responsemodels\saleRatecardResult;
 Use \App\Responsemodels\saleRatecardObject;
 use \Input;
+use Log, Config;
 
 // Translator methods to model API responses for client
 
@@ -21,7 +22,7 @@ class Translator {
 		//empty constructor
 	}
 
-	public static function translate_autocomplete($es_autocomplete_response = array(), $city){
+	public static function translate_autocomplete($es_autocomplete_response = array(), $city, $customer_email = ""){
 		$autcomplete_response = new AutocompleteResponse();
 		if(isset($es_autocomplete_response['error'])){
 			$autcomplete_response->status = 500;
@@ -30,8 +31,14 @@ class Translator {
 		else{	
 
 			$autcomplete_response->meta = new \stdClass();			
-			$autcomplete_response->meta->total_records = $es_autocomplete_response['hits']['total'];			
+			$autcomplete_response->meta->total_records = $es_autocomplete_response['hits']['total'];
 			foreach ($es_autocomplete_response['hits']['hits'] as $value) {
+				if(in_array($value['fields']['slug'][0], Config::get('app.test_vendors'))){
+					if(!in_array($customer_email, Config::get('app.test_page_users'))){
+						$autcomplete_response->meta->total_records--;
+						continue;
+					}
+				}
 				$area = '';
 				if($value['fields']['location'][0] === ""){
 					$area = $city;
@@ -39,7 +46,7 @@ class Translator {
 				else{
 					$area = $value['fields']['location'][0];
 				}
-
+				//Log::info($value['fields']['slug'][0]);
                 $automodel = new AutocompleteResult();
                 $automodel->keyword = $value['fields']['autosuggestvalue'][0];
                 $automodel->object->id = $value['_id'];
@@ -110,7 +117,7 @@ class Translator {
 			$resultobject->special_offer_title = $result['special_offer_title'];
 			$resultobject->slug = $result['slug'];
 			$resultobject->status = $result['status'];
-			$resultobject->title = $result['title'];
+			$resultobject->title = str_replace('crossfit', 'CrossFit', $result['title']);;
 			$resultobject->total_rating_count = $result['total_rating_count'];
 			$resultobject->views = $result['views'];
 			$resultobject->instantbooktrial_status = $result['instantbooktrial_status'];
@@ -256,7 +263,7 @@ public static function translate_searchresultskeywordsearch($es_searchresult_res
 			$resultobject->special_offer_title = $result['special_offer_title'];
 			$resultobject->slug = $result['slug'];
 			$resultobject->status = $result['status'];
-			$resultobject->title = $result['title'];
+			$resultobject->title = str_replace('crossfit', 'CrossFit', $result['title']);;
 			$resultobject->total_rating_count = $result['total_rating_count'];
 			$resultobject->views = $result['views'];
 			$resultobject->instantbooktrial_status = $result['instantbooktrial_status'];
@@ -268,6 +275,47 @@ public static function translate_searchresultskeywordsearch($es_searchresult_res
 			$resultobject->ozonetelno->phone_number = (isset($result['ozonetelno']) && isset($result['ozonetelno']['phone_number'])) ? $result['ozonetelno']['phone_number'] : '';
 			$resultobject->ozonetelno->extension = (isset($result['ozonetelno']) && isset($result['ozonetelno']['extension'])) ? $result['ozonetelno']['extension'] : '';
 			$finder->object = $resultobject;
+
+			$resultobject->vendor_type = "";
+				if($result['category'] != "personal trainer"){
+					if($result['category'] != "dietitians and nutritionists" && $result['category'] != "healthy snacks and beverages" && $result['category'] != "healthy tiffins"){
+
+						if($result['business_type'] == 0){
+							$resultobject->vendor_type = "Trainer";
+						}else{
+							$resultobject->vendor_type = "Outlet";
+						}
+					}else{
+						if($result['category'] == "dietitians and nutritionists" ){
+							$resultobject->vendor_type = "";
+						}elseif($result['category'] == "healthy tiffins"){
+							$resultobject->vendor_type = "healthy tiffins";
+						}else{
+							$resultobject->vendor_type = "healthy snacks";
+						}
+					}
+				}else{
+					$resultobject->vendor_type = "Trainer";
+				}
+
+				// Booktrial caption button
+				$resultobject->booktrial_button_caption = "";
+
+                $nobooktrialCategories = ['healthy snacks and beverages','swimming pools','sports','dietitians and nutritionists','sport nutrition supliment stores'];
+				if($resultobject->commercial_type != 0){
+					if(!in_array($result['category'],$nobooktrialCategories)){
+						if($result['category'] != "healthy tiffins"){
+							if( in_array('free trial',$result['facilities']) ){
+								$resultobject->booktrial_button_caption = "Book a free trial";
+							}else{
+								$resultobject->booktrial_button_caption = "Book a trial";
+							}
+						}else{
+							$resultobject->booktrial_button_caption = "Book a trial Meal";
+						}
+					}
+				}
+
 			array_push($finderresult_response->results->resultlist, $finder);			
 		}
 	}
@@ -407,7 +455,7 @@ public static function translate_searchresultsv2($es_searchresult_response){
 			$resultobject->special_offer_title = $result['special_offer_title'];
 			$resultobject->slug = $result['slug'];
 			$resultobject->status = $result['status'];
-			$resultobject->title = $result['title'];
+			$resultobject->title = str_replace('crossfit', 'CrossFit', $result['title']);;
 			$resultobject->total_rating_count = $result['total_rating_count'];
 			$resultobject->views = $result['views'];
 			$resultobject->instantbooktrial_status = $result['instantbooktrial_status'];
@@ -530,10 +578,14 @@ public static function translate_searchresultsv2($es_searchresult_response){
 }
 
 
-	public static function translate_searchresultsv3($es_searchresult_response){
+	public static function translate_searchresultsv3($es_searchresult_response,$search_request = array(), $customer_email = ""){
 		$finderresult_response = new FinderresultResponse();
 
 		$finderresult_response->results->aggregationlist = new \stdClass();
+
+
+		$resultCategory = [];
+
 		if(empty($es_searchresult_response['hits']['hits']))
 		{
 			$finderresult_response->results->resultlist = array();
@@ -542,6 +594,12 @@ public static function translate_searchresultsv2($es_searchresult_response){
 		else{
 			$finderresult_response->meta->total_records = $es_searchresult_response['hits']['total'];
 			foreach ($es_searchresult_response['hits']['hits'] as $resultv1) {
+				if(in_array($resultv1['_source']['slug'], Config::get('app.test_vendors'))){
+					if(!in_array($customer_email, Config::get('app.test_page_users'))){
+						$finderresult_response->meta->total_records--;
+						continue;
+					}
+				}
 				$result = $resultv1['_source'];
 				$finder = new FinderResult();
 				$finder->object_type = 'vendor';
@@ -549,6 +607,7 @@ public static function translate_searchresultsv2($es_searchresult_response){
 				$resultobject->distance = isset($resultv1['fields']) ? $resultv1['fields']['distance'][0] : 0;
 				$resultobject->id = $result['_id'];
 				$resultobject->category = $result['category'];
+				$resultCategory = $result['category'];
 				$resultobject->categorytags = empty($result['categorytags']) ? array() : $result['categorytags'];
 				$resultobject->location = $result['location'];
 				$resultobject->locationtags = empty($result['locationtags']) ? array() : $result['locationtags'];
@@ -564,6 +623,9 @@ public static function translate_searchresultsv2($es_searchresult_response){
 				$resultobject->contact->phone = ''; //$result['contact']['phone'];
 				$resultobject->contact->website = isset($result['contact']['website']) ? $result['contact']['website'] : "";
 				$resultobject->coverimage = $result['coverimage'];
+				$resultobject->finder_coverimage_webp = ""; //isset($result['finder_coverimage_webp']) ? (strpos($result['finder_coverimage_webp'],"default/") > -1 ? "" : $result['finder_coverimage_webp']) : "";
+				$resultobject->finder_coverimage_color = isset($result['finder_coverimage_color']) && $result['finder_coverimage_color'] != "" ? $result['finder_coverimage_color'] : "#FFC107";
+
 				$resultobject->commercial_type = $result['commercial_type'];
 				$resultobject->finder_type = $result['finder_type'];
 				$resultobject->business_type = $result['business_type'];
@@ -578,7 +640,7 @@ public static function translate_searchresultsv2($es_searchresult_response){
 				$resultobject->special_offer_title = $result['special_offer_title'];
 				$resultobject->slug = $result['slug'];
 				$resultobject->status = $result['status'];
-				$resultobject->title = $result['title'];
+				$resultobject->title = str_replace('crossfit', 'CrossFit', $result['title']);;
 				$resultobject->total_rating_count = $result['total_rating_count'];
 				$resultobject->views = $result['views'];
 				$resultobject->instantbooktrial_status = $result['instantbooktrial_status'];
@@ -590,123 +652,250 @@ public static function translate_searchresultsv2($es_searchresult_response){
 				$resultobject->ozonetelno->phone_number = (isset($result['ozonetelno']) && isset($result['ozonetelno']['phone_number'])) ? $result['ozonetelno']['phone_number'] : "";
 				$resultobject->manual_trial_bool = (isset($result['manual_trial_bool'])) ? $result['manual_trial_bool'] : "";
 				$resultobject->ozonetelno->extension = (isset($result['ozonetelno']) && isset($result['ozonetelno']['extension'])) ? $result['ozonetelno']['extension'] : "";
+				$resultobject->flags = isset($result['flags']) ? $result['flags'] : array();
+				$result['facilities'] = (is_array($result['facilities']) && $result['facilities'] != "") ? $result['facilities'] : [];
+
+				$resultobject->offer_available = "";
+				if(in_array($result['commercial_type'],["1","2","3"])){
+					$resultobject->offer_available = "https://b.fitn.in/iconsv1/fitmania/offer_avail_red.png";
+				}else{
+					$resultobject->offer_available = "";
+				}
+
+				// Deciding which address to show
+				if(count($search_request) > 0 && isset($search_request['regions']) && count($search_request['regions']) > 0 && !empty($result['multiaddress'])){
+					$multiaddress_locations = array();
+					$intersect = array();
+					$found = false;
+					foreach($search_request['regions'] as $loc){
+						$loc = str_replace("-"," ",$loc);
+						foreach($result['multiaddress'] as $key => $regions){
+							if(in_array(strtolower($loc),$regions['location'])){
+								array_push($intersect,$regions);
+								$found = true;
+								unset($result['multiaddress'][$key]);	
+							}
+							if(in_array("Base location",$regions['location'])){
+								$regions['location'] = str_replace("Base location",$result['location'],$regions['location']);
+								// Log::info($regions['location']);
+								$result['multiaddress'][$key]['location'] = $regions['location'];
+							}
+						}
+						foreach($result['multiaddress'] as $key => $regions){
+							array_push($intersect,$regions);
+						}
+					}
+					$resultobject->multiaddress = $intersect;
+				}else{
+					$resultobject->multiaddress = isset($result['multiaddress']) && count($result['multiaddress']) > 0 ? $result['multiaddress'] : array();
+				}
+				// if(count($search_request) > 0 && isset($search_request['regions']) && count($search_request['regions']) > 0 && !empty($result['multiaddress'])){
+				// 	$multiaddress_locations = array();
+				// 	$intersect = array();
+				// 	$found = false;
+				// 	foreach($search_request['regions'] as $loc){
+				// 		foreach($result['multiaddress'] as $regions){
+				// 			if(in_array(strtolower($loc),$regions['location'])){
+				// 				array_push($intersect,$regions);
+				// 				$found = true;
+				// 				break;	
+				// 			}
+				// 		}
+				// 	}
+				// 	$resultobject->multiaddress = $found ? $intersect : $result['multiaddress'];
+				// }else{
+				// 	$resultobject->multiaddress = isset($result['multiaddress']) && count($result['multiaddress']) > 0 ? $result['multiaddress'] : array();
+				// }
+				// if(count($search_request) > 0 && ((isset($search_request['womens_day']) && $search_request['womens_day'] == true) ||(isset($search_request['offer_available']) && $search_request['offer_available'] == true) )){
+				// 	// echo "disc25or50".$result['flags']['disc25or50'];
+				// 	// echo "discother".$result['flags']['discother'];
+				// 	if($result['flags']['disc25or50'] == 1){
+				// 		$resultobject->offer_available = "https://b.fitn.in/iconsv1/womens-day/additional-50.png";
+				// 	}
+				// 	if($result['flags']['discother'] == 1){
+				// 		$resultobject->offer_available = "https://b.fitn.in/iconsv1/womens-day/exclusive.png";
+				// 	}
+				// }
+
+
+				// Decide vendor type
+				$resultobject->vendor_type = "";
+				if($result['category'] != "personal trainer"){
+					if($result['category'] != "dietitians and nutritionists" && $result['category'] != "healthy snacks and beverages" && $result['category'] != "healthy tiffins"){
+
+						if($result['business_type'] == 0){
+							$resultobject->vendor_type = "Trainer";
+						}else{
+							$resultobject->vendor_type = "Outlet";
+						}
+					}else{
+						if($result['category'] == "dietitians and nutritionists" ){
+							$resultobject->vendor_type = "";
+						}elseif($result['category'] == "healthy tiffins"){
+							$resultobject->vendor_type = "Healthy tiffins";
+						}else{
+							$resultobject->vendor_type = "Healthy snacks";
+						}
+					}
+				}else{
+					$resultobject->vendor_type = "Trainer";
+				}
+
+				// Booktrial caption button
+				$resultobject->booktrial_button_caption = "";
+
+                $nobooktrialCategories = ['healthy snacks and beverages','swimming pools','sports','dietitians and nutritionists','sport nutrition supliment stores'];
+				if($resultobject->commercial_type != 0){
+					if(!in_array($result['category'],$nobooktrialCategories)){
+						if($result['category'] != "healthy tiffins"){
+							if( in_array('free trial',$result['facilities']) ){
+								$resultobject->booktrial_button_caption = "Book a free trial";
+							}else{
+								$resultobject->booktrial_button_caption = "Book a trial";
+							}
+						}else{
+							$resultobject->booktrial_button_caption = "Book a trial Meal";
+						}
+					}
+				}
 				$finder->object = $resultobject;
+				$resultobject->vendor_type = "";
+				if($result['category'] != "personal trainer"){
+					if($result['category'] != "dietitians and nutritionists" && $result['category'] != "healthy snacks and beverages"){
+						if($result['business_type'] == 0){
+							$resultobject->vendor_type = "Trainer";
+						}else{
+							$resultobject->vendor_type = "Outlet";
+						}
+					}else{
+						$resultobject->vendor_type = "";
+					}
+				}else{
+					$resultobject->vendor_type = "Trainer";
+				}
+
 				array_push($finderresult_response->results->resultlist, $finder);
 			}
 		}
 
 
+		$aggs = new \stdClass();
+		if(isset($es_searchresult_response['aggregations'])){
 
-		$aggs = $es_searchresult_response['aggregations'];
+			$aggs = $es_searchresult_response['aggregations'];
 
-		$finderresult_response->results->aggregationlist->budget = array();
-		$budval0 = new \stdClass();
-		$budval1 = new \stdClass();
-		$budval2 = new \stdClass();
-		$budval3 = new \stdClass();
-		$budval4 = new \stdClass();
-		$budval5 = new \stdClass();
-		foreach ($aggs['filtered_budgets']['budgets']['buckets'] as $bud) {
-			switch ($bud['key']) {
-				case 'one':
-					$budval0->key = 'less than 1000';
-					$budval0->count = $bud['doc_count'];
+			$finderresult_response->results->aggregationlist->budget = array();
+			$budval0 = new \stdClass();
+			$budval1 = new \stdClass();
+			$budval2 = new \stdClass();
+			$budval3 = new \stdClass();
+			$budval4 = new \stdClass();
+			$budval5 = new \stdClass();
+			foreach ($aggs['filtered_budgets']['budgets']['buckets'] as $bud) {
+				switch ($bud['key']) {
+					case 'one':
+						$budval0->key = 'less than 1000';
+						$budval0->count = $bud['doc_count'];
 
-					break;
-				case 'two':
-					$budval1->key = '1000-2500';
-					$budval1->count = $bud['doc_count'];
+						break;
+					case 'two':
+						$budval1->key = '1000-2500';
+						$budval1->count = $bud['doc_count'];
 
-					break;
-				case 'three':
-					$budval2->key = '2500-5000';
-					$budval2->count = $bud['doc_count'];
+						break;
+					case 'three':
+						$budval2->key = '2500-5000';
+						$budval2->count = $bud['doc_count'];
 
-					break;
-				case 'four':
-					$budval3->key = '5000-7500';
-					$budval3->count = $bud['doc_count'];
+						break;
+					case 'four':
+						$budval3->key = '5000-7500';
+						$budval3->count = $bud['doc_count'];
 
-					break;
-				case 'five':
-					$budval4->key = '7500-15000';
-					$budval4->count = $bud['doc_count'];
+						break;
+					case 'five':
+						$budval4->key = '7500-15000';
+						$budval4->count = $bud['doc_count'];
 
-					break;
-				case 'six':
-					$budval5->key = '15000 & Above';
-					$budval5->count = $bud['doc_count'];
-					break;
-				default:
-					break;
+						break;
+					case 'six':
+						$budval5->key = '15000 & Above';
+						$budval5->count = $bud['doc_count'];
+						break;
+					default:
+						break;
+				}
 			}
-		}
-		array_push($finderresult_response->results->aggregationlist->budget, $budval0);
-		array_push($finderresult_response->results->aggregationlist->budget, $budval1);
-		array_push($finderresult_response->results->aggregationlist->budget, $budval2);
-		array_push($finderresult_response->results->aggregationlist->budget, $budval3);
-		array_push($finderresult_response->results->aggregationlist->budget, $budval4);
-		array_push($finderresult_response->results->aggregationlist->budget, $budval5);
+			array_push($finderresult_response->results->aggregationlist->budget, $budval0);
+			array_push($finderresult_response->results->aggregationlist->budget, $budval1);
+			array_push($finderresult_response->results->aggregationlist->budget, $budval2);
+			array_push($finderresult_response->results->aggregationlist->budget, $budval3);
+			array_push($finderresult_response->results->aggregationlist->budget, $budval4);
+			array_push($finderresult_response->results->aggregationlist->budget, $budval5);
 
-		$finderresult_response->results->aggregationlist->filters = array();
-		foreach ($aggs['filtered_facilities']['facilities']['buckets'] as $fac) {
-			$facval = new \stdClass();
-			$facval->key = $fac['key'];
-			$facval->count = $fac['doc_count'];
-			array_push($finderresult_response->results->aggregationlist->filters, $facval);
-		}
-
-		$finderresult_response->results->aggregationlist->locationcluster = array();
-		foreach ($aggs['filtered_locations']['loccluster']['buckets'] as $cluster) {
-			$clusterval = new \stdClass();
-			$clusterval->key = $cluster['key'];
-			$clusterval->count = $cluster['doc_count'];
-			$clusterval->regions = array();
-			foreach ($cluster['region']['buckets'] as $reg) {
-				$regval = new \stdClass();
-				$regval->key = $reg['key'];
-				$regval->count = $reg['doc_count'];
-				array_push($clusterval->regions, $regval);
+			$finderresult_response->results->aggregationlist->filters = array();
+			$noBasicFilterCategories = ['healthy snacks and beverages','healthy tiffins','dietitians and nutritionists','sport nutrition supliment stores'];
+			if(!in_array($resultCategory,$noBasicFilterCategories)){
+				foreach ($aggs['filtered_facilities']['facilities']['buckets'] as $fac) {
+					$facval = new \stdClass();
+					$facval->key = $fac['key'];
+					$facval->count = $fac['doc_count'];
+					array_push($finderresult_response->results->aggregationlist->filters, $facval);
+				}
 			}
-			array_push($finderresult_response->results->aggregationlist->locationcluster, $clusterval);
-		}
 
-		$finderresult_response->results->aggregationlist->offerings = array();
+			$finderresult_response->results->aggregationlist->locationcluster = array();
+			foreach ($aggs['filtered_locations']['loccluster']['buckets'] as $cluster) {
+				$clusterval = new \stdClass();
+				$clusterval->key = $cluster['key'];
+				$clusterval->count = $cluster['doc_count'];
+				$clusterval->regions = array();
+				foreach ($cluster['region']['buckets'] as $reg) {
+					$regval = new \stdClass();
+					$regval->key = $reg['key'];
+					$regval->count = $reg['doc_count'];
+					array_push($clusterval->regions, $regval);
+				}
+				array_push($finderresult_response->results->aggregationlist->locationcluster, $clusterval);
+			}
 
-		foreach ($aggs['filtered_offerings']['offerings']['buckets'] as $off){
-			$offval = new \stdClass();
-			$offval->key = $off['key'];
-			$offval->count = $off['doc_count'];
-			array_push($finderresult_response->results->aggregationlist->offerings, $offval);
-		}
+			$finderresult_response->results->aggregationlist->offerings = array();
 
-		$finderresult_response->results->aggregationlist->vip_trial = array();
-
-		foreach ($aggs['filtered_vip_trial']['vip_trial']['buckets'] as $off){
-			$offval = new \stdClass();
-			$offval->key = $off['key'];
-			$offval->count = $off['doc_count'];
-			array_push($finderresult_response->results->aggregationlist->vip_trial, $offval);
-		}
-
-		$finderresult_response->results->aggregationlist->locationtags = array();
-
-	
-	foreach ($aggs['filtered_locationtags']['offerings']['buckets'] as $off){
-		$offval = new \stdClass();
-		$offval->key = $off['key'];
-		$offval->count = $off['doc_count'];
-		array_push($finderresult_response->results->aggregationlist->locationtags, $offval);
-	}
-	
-	if(isset($aggs['filtered_trials']['level1'])){
-		$finderresult_response->results->aggregationlist->trialdays = array();
-
-			foreach ($aggs['filtered_trials']['level1']['level2']['daysaggregator']['buckets'] as $off){
+			foreach ($aggs['filtered_offerings']['offerings']['buckets'] as $off){
 				$offval = new \stdClass();
 				$offval->key = $off['key'];
-				$offval->count = $off['backtolevel1']['backtorootdoc']['doc_count'];
-				array_push($finderresult_response->results->aggregationlist->trialdays, $offval);
+				$offval->count = $off['doc_count'];
+				array_push($finderresult_response->results->aggregationlist->offerings, $offval);
+			}
+
+			$finderresult_response->results->aggregationlist->vip_trial = array();
+
+			foreach ($aggs['filtered_vip_trial']['vip_trial']['buckets'] as $off){
+				$offval = new \stdClass();
+				$offval->key = $off['key'];
+				$offval->count = $off['doc_count'];
+				array_push($finderresult_response->results->aggregationlist->vip_trial, $offval);
+			}
+
+			$finderresult_response->results->aggregationlist->locationtags = array();
+
+		
+		foreach ($aggs['filtered_locationtags']['offerings']['buckets'] as $off){
+			$offval = new \stdClass();
+			$offval->key = $off['key'];
+			$offval->count = $off['doc_count'];
+			array_push($finderresult_response->results->aggregationlist->locationtags, $offval);
+		}
+		
+		if(isset($aggs['filtered_trials']['level1'])){
+			$finderresult_response->results->aggregationlist->trialdays = array();
+
+				foreach ($aggs['filtered_trials']['level1']['level2']['daysaggregator']['buckets'] as $off){
+					$offval = new \stdClass();
+					$offval->key = $off['key'];
+					$offval->count = $off['backtolevel1']['backtorootdoc']['doc_count'];
+					array_push($finderresult_response->results->aggregationlist->trialdays, $offval);
+				}
 			}
 		}
 		return $finderresult_response;
@@ -729,6 +918,8 @@ public static function translate_searchresultsv2($es_searchresult_response){
 			$vip_trial_response->meta->total_records = $es_searchresult_response['hits']['total'];
 
 			foreach ($es_searchresult_response['hits']['hits'] as $resultv1) {
+
+
 				$result = $resultv1['_source'];
 				$finder = new VipResult();
 				$finder->object_type = 'vendor';
@@ -736,48 +927,57 @@ public static function translate_searchresultsv2($es_searchresult_response){
 
 				$sort = $resultv1['sort'];
 
-				$resultobject->id = $result['service_id'];
-				$resultobject->category = $result['category'];
-				$resultobject->subcategory = empty($result['subcategory']) ? array() : $result['subcategory'];
-				$resultobject->location = $result['location'];
-				$resultobject->findername = $result['findername'];
-				$resultobject->finderslug = $result['finderslug'];
-				$resultobject->city = $result['city'];
-				$resultobject->name = $result['name'];
-				$resultobject->slug = $result['slug'];
-				$resultobject->workoutintensity = $result['workout_intensity'];
-				$resultobject->locationcluster = $result['locationcluster'];
-				$resultobject->rating = $result['rating'];
-				$resultobject->findercoverimage = $result['finder_coverimage'];
-				$resultobject->workout_session_schedules_price = $result['workout_session_schedules_price'];
-				$resultobject->workout_session_schedules_weekday = $result['workout_session_schedules_weekday'];
-				$resultobject->workout_session_schedules_end_time_24_hrs = $result['workout_session_schedules_end_time_24_hrs'];
-				$resultobject->workout_session_schedules_start_time_24_hrs = $result['workout_session_schedules_start_time_24_hrs'];
-				$resultobject->workout_session_schedules_end_time = $result['workout_session_schedules_end_time'];
-				$resultobject->workout_session_schedules_start_time = $result['workout_session_schedules_start_time'];
-				$resultobject->finder_gallery = $result['finder_gallary'];
-				$resultobject->finder_address = $result['finder_address'];
-				$resultobject->service_address = $result['service_address'];
-				$resultobject->finder_slug = $result['finderslug'];
-				$resultobject->finder_id = isset($result['finder_id']) ? $result['finder_id'] : 0;
-				//$resultobject->city_id = isset($result['city_id']) ? $result['city_id'] : 0;
+				// var_dump($result['commercial_type'] );exit;
 
-				/*if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android") && isset($_GET['app_version']) && ((float)$_GET['app_version'] >= 2.4)){
+					// var_dump($result['commercial_type'] );exit();
 
-					$resultobject->geolocation = new \stdClass();
 
-					$resultobject->geolocation->lat = (float)$result['geolocation']['lat'];
-					$resultobject->geolocation->long = (float)$result['geolocation']['lon'];
+					$resultobject->id = $result['service_id'];
+					$resultobject->category = $result['category'];
+					$resultobject->subcategory = empty($result['subcategory']) ? array() : $result['subcategory'];
+					$resultobject->location = $result['location'];
+					$resultobject->findername = $result['findername'];
+					$resultobject->finderslug = $result['finderslug'];
+					$resultobject->city = $result['city'];
+					$resultobject->name = $result['name'];
+					$resultobject->slug = $result['slug'];
+					$resultobject->workoutintensity = $result['workout_intensity'];
+					$resultobject->locationcluster = $result['locationcluster'];
+					$resultobject->rating = $result['rating'];
+					$resultobject->findercoverimage = $result['finder_coverimage'];
+					$resultobject->workout_session_schedules_price = $result['workout_session_schedules_price'];
+					$resultobject->workout_session_schedules_weekday = $result['workout_session_schedules_weekday'];
+					$resultobject->workout_session_schedules_end_time_24_hrs = $result['workout_session_schedules_end_time_24_hrs'];
+					$resultobject->workout_session_schedules_start_time_24_hrs = $result['workout_session_schedules_start_time_24_hrs'];
+					$resultobject->workout_session_schedules_end_time = $result['workout_session_schedules_end_time'];
+					$resultobject->workout_session_schedules_start_time = $result['workout_session_schedules_start_time'];
+					$resultobject->finder_gallery = $result['finder_gallary'];
+					$resultobject->finder_address = $result['finder_address'];
+					$resultobject->service_address = $result['service_address'];
+					$resultobject->finder_slug = $result['finderslug'];
+					$resultobject->ratecard_id = $result['ratecard_id']; 
+					$resultobject->finder_id = isset($result['finder_id']) ? $result['finder_id'] : 0;
+					//$resultobject->city_id = isset($result['city_id']) ? $result['city_id'] : 0;
 
-					if(isset($sort[2])){
-						$resultobject->geolocation->distance = round((float)$sort[2],2);
+					/*if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android") && isset($_GET['app_version']) && ((float)$_GET['app_version'] >= 2.4)){
+
+						$resultobject->geolocation = new \stdClass();
+
+						$resultobject->geolocation->lat = (float)$result['geolocation']['lat'];
+						$resultobject->geolocation->long = (float)$result['geolocation']['lon'];
+
+						if(isset($sort[2])){
+							$resultobject->geolocation->distance = round((float)$sort[2],2);
+						}
+					}*/
+
+					$resultobject->city_id = isset($result['city_id']) ? $result['city_id'] : $city_array[$result['city']];
+
+					$finder->object = $resultobject;
+					if($resultobject->ratecard_id != ""){
+						array_push($vip_trial_response->results->resultlist, $finder);
 					}
-				}*/
 
-				$resultobject->city_id = isset($result['city_id']) ? $result['city_id'] : $city_array[$result['city']];
-
-				$finder->object = $resultobject;
-				array_push($vip_trial_response->results->resultlist, $finder);
 			}
 		}
 
@@ -948,6 +1148,340 @@ public static function translate_sale_ratecards($es_searchresult_response){
 	return $sale_ratecard_response;
 
 }
+
+
+
+
+
+
+
+public static function translate_searchresultsv4($es_searchresult_response,$search_request = array(),$keys = array(), $customer_email = ""){
+		$finderresult_response 							 = new FinderresultResponse();
+		$finderresult_response->results->aggregationlist = new \stdClass();
+		$resultCategory 								 = [];
+		$currentcity 									 = "mumbai";
+		if(empty($es_searchresult_response['hits']['hits']))
+		{
+			$finderresult_response->results->resultlist = array();
+			$finderresult_response->metadata->total_records = 0;
+		}
+		else{
+			$finderresult_response->metadata->total_records = $es_searchresult_response['hits']['total'];
+			foreach ($es_searchresult_response['hits']['hits'] as $resultv1) {
+				if(in_array($resultv1['_source']['slug'], Config::get('app.test_vendors'))){
+					if(!in_array($customer_email, Config::get('app.test_page_users'))){
+						$finderresult_response->metadata->total_records--;
+						continue;
+					}
+				}
+				$result 						= $resultv1['_source'];
+				$finder 						= new FinderResult();
+				$finder->object_type 			= 'vendor';
+				$resultobject 					= new FinderObject();
+				$resultobject->distance 		= isset($resultv1['fields']) ? $resultv1['fields']['distance'][0] : 0;
+				$resultobject->id 				= $result['_id'];
+				$resultobject->category 		= $result['category'];
+				$resultCategory 				= $result['category'];
+				$resultobject->categorytags 	= empty($result['categorytags']) ? array() : $result['categorytags'];
+				$resultobject->location 		= $result['location'];
+				$resultobject->locationtags 	= empty($result['locationtags']) ? array() : $result['locationtags'];
+				$resultobject->average_rating 	= $result['average_rating'];
+				$resultobject->membership_discount = $result['membership_discount'];
+				$resultobject->country 			= $result['country'];
+				$resultobject->city 			= $result['city'];
+				$currentcity 					= $result['city'];
+				//$resultobject->city_id = $result['city_id'];
+				$resultobject->info_service 	= $result['info_service'];
+				$resultobject->info_service_list= array();//$result['info_service_list'];
+				$resultobject->contact->address = isset($result['contact']['address']) ? $result['contact']['address'] : "";
+				$resultobject->contact->email 	= isset($result['contact']['email']) ? $result['contact']['email'] : "";
+				$resultobject->contact->phone 	= ''; //$result['contact']['phone'];
+				$resultobject->contact->website = isset($result['contact']['website']) ? $result['contact']['website'] : "";
+				$resultobject->coverimage 		= $result['coverimage'];
+				$resultobject->finder_coverimage_webp = ""; //isset($result['finder_coverimage_webp']) ? (strpos($result['finder_coverimage_webp'],"default/") > -1 ? "" : $result['finder_coverimage_webp']) : "";
+				$resultobject->finder_coverimage_color = isset($result['finder_coverimage_color']) && $result['finder_coverimage_color'] != "" ? $result['finder_coverimage_color'] : "#FFC107";
+				$resultobject->commercial_type 	= $result['commercial_type'];
+				$resultobject->finder_type 		= $result['finder_type'];
+				$resultobject->business_type 	= $result['business_type'];
+				$resultobject->fitternityno 	= '+917506122637';
+				$resultobject->facilities 		= empty($result['facilities']) ? array() : $result['facilities'];
+				$resultobject->logo 			= $result['logo'];
+				$resultobject->geolocation->lat = $result['geolocation']['lat'];
+				$resultobject->geolocation->long= $result['geolocation']['lon'];
+				$resultobject->offerings 		= empty($result['offerings']) ? array() : $result['offerings'];
+				$resultobject->price_range 		= $result['price_range'];
+				$resultobject->popularity 		= $result['popularity'];
+				$resultobject->special_offer_title = $result['special_offer_title'];
+				$resultobject->slug 			= $result['slug'];
+				$resultobject->status 			= $result['status'];
+				$resultobject->title 			= $result['title'];
+				$resultobject->total_rating_count = $result['total_rating_count'];
+				$resultobject->views 			= $result['views'];
+				$resultobject->instantbooktrial_status = $result['instantbooktrial_status'];
+				$resultobject->photos 			= $result['photos'];
+				$resultobject->locationcluster 	= $result['locationcluster'];
+				$resultobject->price_rangeval 	= $result['price_rangeval'];
+				$resultobject->servicelist 		= isset($result['servicelist']) ? $result['servicelist'] : array();
+				$resultobject->servicephotos 	= isset($result['servicephotos']) ? $result['servicephotos'] : array();
+				$resultobject->ozonetelno->phone_number = (isset($result['ozonetelno']) && isset($result['ozonetelno']['phone_number'])) ? $result['ozonetelno']['phone_number'] : "";
+				$resultobject->manual_trial_bool = (isset($result['manual_trial_bool'])) ? $result['manual_trial_bool'] : "";
+				$resultobject->ozonetelno->extension = (isset($result['ozonetelno']) && isset($result['ozonetelno']['extension'])) ? $result['ozonetelno']['extension'] : "";
+				$result['facilities'] 			= (is_array($result['facilities']) && $result['facilities'] != "") ? $result['facilities'] : [];
+
+				$resultobject->offer_available 	= "";
+				if(in_array($result['commercial_type'],["1","2","3"])){
+					$resultobject->offer_available = "https://b.fitn.in/iconsv1/fitmania/offer_avail_red.png";
+				}else{
+					$resultobject->offer_available = "";
+				}
+
+				// Deciding which address to show
+				if(count($search_request) > 0 && isset($search_request['regions']) && count($search_request['regions']) > 0 && !empty($result['multiaddress'])){
+					$multiaddress_locations = array();
+					$intersect = array();
+					$found = false;
+					foreach($search_request['regions'] as $loc){
+						$loc = str_replace("-"," ",$loc);
+						foreach($result['multiaddress'] as $key => $regions){
+							if(in_array(strtolower($loc),$regions['location'])){
+								array_push($intersect,$regions);
+								$found = true;
+								unset($result['multiaddress'][$key]);	
+							}
+							if(in_array("Base location",$regions['location'])){
+								$regions['location'] = str_replace("Base location",$result['location'],$regions['location']);
+								// Log::info($regions['location']);
+								$result['multiaddress'][$key]['location'] = $regions['location'];
+							}
+						}
+						foreach($result['multiaddress'] as $key => $regions){
+							array_push($intersect,$regions);
+						}
+					}
+					$resultobject->multiaddress = $intersect;
+				}else{
+					$resultobject->multiaddress = isset($result['multiaddress']) && count($result['multiaddress']) > 0 ? $result['multiaddress'] : array();
+				}
+
+				// Decide vendor type
+				$resultobject->vendor_type = "";
+				if($result['category'] != "personal trainer"){
+					if($result['category'] != "dietitians and nutritionists" && $result['category'] != "healthy snacks and beverages" && $result['category'] != "healthy tiffins"){
+
+						if($result['business_type'] == 0){
+							$resultobject->vendor_type = "Trainer";
+						}else{
+							$resultobject->vendor_type = "Outlet";
+						}
+					}else{
+						if($result['category'] == "dietitians and nutritionists" ){
+							$resultobject->vendor_type = "";
+						}elseif($result['category'] == "healthy tiffins"){
+							$resultobject->vendor_type = "Healthy tiffins";
+						}else{
+							$resultobject->vendor_type = "Healthy snacks";
+						}
+					}
+				}else{
+					$resultobject->vendor_type = "Trainer";
+				}
+
+				// Booktrial caption button
+				$resultobject->booktrial_button_caption = "";
+
+                $nobooktrialCategories = ['healthy snacks and beverages','swimming pools','sports','dietitians and nutritionists','sport nutrition supliment stores'];
+				if($resultobject->commercial_type != 0){
+					if(!in_array($result['category'],$nobooktrialCategories)){
+						if($result['category'] != "healthy tiffins"){
+							if( in_array('free trial',$result['facilities']) ){
+								$resultobject->booktrial_button_caption = "Book a free trial";
+							}else{
+								$resultobject->booktrial_button_caption = "Book a trial";
+							}
+						}else{
+							$resultobject->booktrial_button_caption = "Book a trial Meal";
+						}
+					}
+				}
+				if(count($keys) > 0){
+					$newObj = array();
+					foreach ($keys as $key){
+						isset($resultobject->$key) ? $newObj[$key]=$resultobject->$key : null;
+					}
+					$finder->object = $newObj;
+				}else{
+					$finder->object = $resultobject;
+				}
+				$resultobject->vendor_type = "";
+				if($result['category'] != "personal trainer"){
+					if($result['category'] != "dietitians and nutritionists" && $result['category'] != "healthy snacks and beverages"){
+						if($result['business_type'] == 0){
+							$resultobject->vendor_type = "Trainer";
+						}else{
+							$resultobject->vendor_type = "Outlet";
+						}
+					}else{
+						$resultobject->vendor_type = "";
+					}
+				}else{
+					$resultobject->vendor_type = "Trainer";
+				}
+
+				array_push($finderresult_response->results->resultlist, $finder);
+			}
+		}
+		unset($finderresult_response->meta);
+
+
+
+		$aggs = $es_searchresult_response['aggregations'];
+
+		$finderresult_response->results->aggregationlist->budget = array();
+		$budval0 = new \stdClass();
+		$budval1 = new \stdClass();
+		$budval2 = new \stdClass();
+		$budval3 = new \stdClass();
+		$budval4 = new \stdClass();
+		$budval5 = new \stdClass();
+		// print_r($aggs['filtered_budgets']['budgets']['buckets']);
+		// exit;
+		if(count($aggs['filtered_budgets']['budgets']['buckets']) > 0){
+			
+			foreach ($aggs['filtered_budgets']['budgets']['buckets'] as $bud) {
+				switch ($bud['key']) {
+					case 'one':
+						$budval0->key = 'less than 1000';
+						$budval0->count = $bud['doc_count'];
+
+						break;
+					case 'two':
+						$budval1->key = '1000-2500';
+						$budval1->count = $bud['doc_count'];
+
+						break;
+					case 'three':
+						$budval2->key = '2500-5000';
+						$budval2->count = $bud['doc_count'];
+
+						break;
+					case 'four':
+						$budval3->key = '5000-7500';
+						$budval3->count = $bud['doc_count'];
+
+						break;
+					case 'five':
+						$budval4->key = '7500-15000';
+						$budval4->count = $bud['doc_count'];
+
+						break;
+					case 'six':
+						$budval5->key = '15000 & Above';
+						$budval5->count = $bud['doc_count'];
+						break;
+					default:
+						break;
+				}
+			}
+			array_push($finderresult_response->results->aggregationlist->budget, $budval0);
+			array_push($finderresult_response->results->aggregationlist->budget, $budval1);
+			array_push($finderresult_response->results->aggregationlist->budget, $budval2);
+			array_push($finderresult_response->results->aggregationlist->budget, $budval3);
+			array_push($finderresult_response->results->aggregationlist->budget, $budval4);
+			array_push($finderresult_response->results->aggregationlist->budget, $budval5);
+		}
+
+		$finderresult_response->results->aggregationlist->filters = array();
+		$noBasicFilterCategories = ['healthy snacks and beverages','healthy tiffins','dietitians and nutritionists','sport nutrition supliment stores'];
+        if(!in_array($resultCategory,$noBasicFilterCategories)){
+			foreach ($aggs['filtered_facilities']['facilities']['buckets'] as $fac) {
+				$facval = new \stdClass();
+				$facval->key = $fac['key'];
+				$facval->slug = str_replace(' ', '-', $fac['key']);
+				$facval->count = $fac['doc_count'];
+				array_push($finderresult_response->results->aggregationlist->filters, $facval);
+			}
+		}
+
+		$finderresult_response->results->aggregationlist->locationcluster = array();
+		foreach ($aggs['filtered_locations']['loccluster']['buckets'] as $cluster) {
+			$clusterval = new \stdClass();
+			$clusterval->key = $cluster['key'];
+			$clusterval->slug = strtolower(str_replace(' ', '-', $cluster['key']));
+			$clusterval->count = $cluster['doc_count'];
+			$clusterval->regions = array();
+			if(isset($cluster['region']['attrs'])){
+				foreach ($cluster['region']['attrs']['buckets'] as $reg) {
+					$regval = new \stdClass();
+					$regval->key = $reg['key'];
+					$regval->slug = $reg['attrsValues']['buckets'][0]['key'];
+					$regval->count = $reg['doc_count'];
+					array_push($clusterval->regions, $regval);
+				}
+			}
+			array_push($finderresult_response->results->aggregationlist->locationcluster, $clusterval);
+		}
+
+		$finderresult_response->results->aggregationlist->subcategories = array();
+
+		foreach ($aggs['filtered_offerings']['offerings']['buckets'] as $off){
+			$offval = new \stdClass();
+			$offval->key = $off['key'];
+			$offval->slug = str_replace(' ', '-', $off['key']);
+			$offval->count = $off['doc_count'];
+			array_push($finderresult_response->results->aggregationlist->subcategories, $offval);
+		}
+
+		// $finderresult_response->results->aggregationlist->vip_trial = array();
+
+		// foreach ($aggs['filtered_vip_trial']['vip_trial']['buckets'] as $off){
+		// 	$offval = new \stdClass();
+		// 	$offval->key = $off['key'];
+		// 	$offval->count = $off['doc_count'];
+		// 	array_push($finderresult_response->results->aggregationlist->vip_trial, $offval);
+		// }
+		if(isset($search_request['with_locationtags']) && $search_request['with_locationtags'] == 1){
+			$finderresult_response->results->aggregationlist->locationtags = array();
+			foreach ($aggs['filtered_locationtags']['offerings']['attrs']['buckets'] as $off){
+				$offval = new \stdClass();
+				$offval->key = $off['key'];
+				$offval->slug = $off['attrsValues']['buckets'][0]['key'];
+				//$offval->cluster = $off['locationcluster']['buckets'][0]['key'];
+				$offval->count = $off['doc_count'];
+				array_push($finderresult_response->results->aggregationlist->locationtags, $offval);
+			}
+		}
+
+	
+	if(isset($aggs['filtered_trials']['level1'])){
+		$finderresult_response->results->aggregationlist->trialdays = array();
+
+			foreach ($aggs['filtered_trials']['level1']['level2']['daysaggregator']['buckets'] as $off){
+				$offval = new \stdClass();
+				$offval->key = $off['key'];
+				$offval->slug = str_replace(' ', '-', $off['key']);
+				$offval->count = $off['backtolevel1']['backtorootdoc']['doc_count'];
+				array_push($finderresult_response->results->aggregationlist->trialdays, $offval);
+			}
+			$weekdays = ['monday','tuesday','wednesday','thursday','friday','saturday','sunday'];
+			$trialdays = json_decode(json_encode($finderresult_response->results->aggregationlist->trialdays), true);
+			$trialdays = sorting_array($trialdays, "key", $weekdays, false);
+			$finaltrialdays = array();
+			foreach($trialdays as $day){
+				if($day["key"] != ""){
+					$day["slug"] = $day["key"]."-open";
+					$day["key"] = $day["key"]." open";
+					array_push($finaltrialdays, $day);
+				}
+				//  print_r($days["key"]);
+				// exit;
+			}
+			$finderresult_response->results->aggregationlist->trialdays = $finaltrialdays;
+		}
+		$finderresult_response->results->aggregationlist->categories = array();
+		$finderresult_response->results->aggregationlist->categories = citywise_categories($currentcity);
+		// print_r($finderresult_response);
+		return $finderresult_response;
+	}
 
 
 }

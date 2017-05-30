@@ -24,6 +24,16 @@ class Finder extends  \Basemodel {
 	'finder_coverimage' => 'mimes:jpeg,png|image|max:2000',
 	];
 
+	public static $withoutAppends = false;
+
+	protected function getArrayableAppends()
+	{
+		if(self::$withoutAppends){
+			return [];
+		}
+		return parent::getArrayableAppends();
+	}
+
 	public static $update_rules = [
 		'title' => 'sometimes|required|string'
 	];
@@ -36,12 +46,12 @@ class Finder extends  \Basemodel {
 	}
 
 
-
 	public function getFinderCoverimageAttribute(){
 
 		$finder_coverimage = (trim($this->coverimage) != '') ? trim($this->coverimage) : 'default/'.$this->category_id.'-'.rand(1, 4).'.jpg';
 		return $finder_coverimage;
 	}
+
 
 	public function getCommercialTypeStatusAttribute(){
 		
@@ -147,6 +157,5 @@ class Finder extends  \Basemodel {
 	public function brand(){
 		return $this->belongsTo('Brand');
 	}
-
 
 }

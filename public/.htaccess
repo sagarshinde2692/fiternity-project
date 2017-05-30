@@ -20,7 +20,7 @@
 <IfModule mod_rewrite.c>
   Header set Access-Control-Allow-Origin "*"
   Header set Access-Control-Allow-Methods: "GET,POST,OPTIONS,DELETE,PUT"
-  Header set Access-Control-Allow-Headers: "Content-Type,Authorization,Client"
+  Header set Access-Control-Allow-Headers: "Content-Type,Authorization,Client,Device-Type,App-Version"
  
   RewriteEngine on
   RewriteBase /

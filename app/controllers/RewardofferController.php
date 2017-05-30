@@ -15,7 +15,7 @@ class RewardofferController extends BaseController {
     }
 
 
-	public function ListRewardsApplicableOnPurchase(){
+    public function ListRewardsApplicableOnPurchase(){
 
         try {
 
@@ -71,7 +71,7 @@ class RewardofferController extends BaseController {
                 'selection_limit'           =>   2
             );
 
-            $resp 	= 	array('status' => 200, 'data' => $data);
+            $resp   =   array('status' => 200, 'data' => $data);
             return Response::json($resp);
 
 
@@ -97,62 +97,128 @@ class RewardofferController extends BaseController {
 
     public function getRewardOffers(){
 
-        $data = Input::json()->all();
+        $data       = Input::json()->all();
+        $order              =   array();
+        if(isset($data) && isset($data['type']) && $data['type'] == 'workout-session'){
+            $rules      =   ['finder_id'=>'required', 'amount'=>'required', 'type'=>'required'];
+            $validator  =   Validator::make($data,$rules);
+            if ($validator->fails()) {
+                return Response::json(array('status' => 401,'message' => $this->utilities->errorMessage($validator->errors())),401);
+            }
+            $device             =   isset($data["device_type"]) ? $data["device_type"] : "";
+            $finder_id          =   (int)$data['finder_id'];
+            $amount             =   (int)$data['amount'];
+            $customerReward     =   new CustomerReward();
+            $calculation        =   $customerReward->purchaseGame($amount,$finder_id);
 
-        $rules = array(
-            'finder_id'=>'required',
-            'amount'=>'required',
-            'ratecard_id'=>'required'
-        );
+            $calculation['algo']['cashback'] = (int)$calculation['algo']['cashback'];
 
-        $validator = Validator::make($data,$rules);
+            if(isset($data['order_id']) && $data['order_id'] != ""){
 
+                $order_id = (int) $data['order_id'];
+
+                $order = Order::find($order_id);
+
+                if(isset($order->payment_mode) && $order->payment_mode == "at the studio"){
+                    $calculation = $customerReward->purchaseGame($amount,$finder_id,"at the studio");
+                }
+
+            }
+
+            $cashback  = [
+                'title'         =>  $calculation['algo']['cashback'].'% Discount on Purchase',
+                'percentage'    =>  $calculation['algo']['cashback'].'%',
+                'commision'     =>  $calculation['algo']['cashback'],
+                'calculation'   =>  $calculation,
+                'info'          =>  ""//"You can only pay upto 10% of the booking amount through FitCash. \nIt is calculated basis the amount, type and duration of the purchase.  \nYour total FitCash balance is Rs. ".$calculation['current_wallet_balance_only_fitcash']." FitCash applicable for this transaction is Rs. ".$calculation['amount_deducted_from_wallet']
+            ];
+            /*if($calculation["current_wallet_balance_only_fitcash_plus"] > 0){
+                $cashback["info"] = "You can only pay upto 10% of the booking amount through FitCash. \n\nIt is calculated basis the amount, type and duration of the purchase.  \n\nYour total FitCash balance is Rs. ".$calculation['current_wallet_balance_only_fitcash_plus']."\n\nYour total FitCash+ balance is Rs. ".$calculation['current_wallet_balance_only_fitcash']." FitCash applicable for this transaction is Rs. ".$calculation['amount_deducted_from_wallet'];
+            }*/
+
+            $renewal_cashback   =   ['title'=>'Discount on Renewal'];
+            $rewards            =   [];
+            $selection_limit    =   1;
+
+            $data = [
+                'renewal_cashback'          =>   $renewal_cashback,
+                'cashback'                  =>   $cashback,
+                'rewards'                   =>   $rewards,
+                'selection_limit'           =>   $selection_limit,
+                'status' => 200,
+                'message' => "Rewards offers"
+            ];
+
+            return  Response::json($data, 200);
+
+        }
+
+
+        $rules      =   ['finder_id'=>'required', 'amount'=>'required', 'ratecard_id'=>'required'];
+        $device     =   isset($data["device_type"]) ? $data["device_type"] : "";
+        $validator  =   Validator::make($data,$rules);
         if ($validator->fails()) {
             return Response::json(array('status' => 401,'message' => $this->utilities->errorMessage($validator->errors())),401);
         }
 
-        $finder_id = (int)$data['finder_id'];
-        $amount = (int)$data['amount'];
-        $ratecard_id = (int)$data['ratecard_id'];
-
-        $ratecard = Ratecard::where('_id',$ratecard_id)->where('finder_id',$finder_id)->first();
-
-        if(!$ratecard){
-            $resp   =   array('status' => 401,'message' => "Ratecard Not Present");
-            return  Response::json($resp, 401);
-        }
-
-        if(isset($ratecard->special_price) && $ratecard->special_price > 0 && $ratecard->special_price != ""){
-            $amount = $ratecard->special_price;
-        }else{
-            $amount = $ratecard->price;
-        }
+        $finder_id      =   (int)$data['finder_id'];
+        $amount         =   (int)$data['amount'];
+        $ratecard_id    =   (int)$data['ratecard_id'];
+        $ratecard       =   Ratecard::where('_id',$ratecard_id)->where('finder_id',$finder_id)->first();
 
         if(isset($data['order_id']) && $data['order_id'] != ""){
-
-            $order_id = (int) $data['order_id'];
-
-            $order = Order::find($order_id);
-
+            $order_id   = (int) $data['order_id'];
+            $order      = Order::find($order_id);
             if(isset($order->payment_mode) && $order->payment_mode == "at the studio"){
                 $amount = (int)$data['amount'];
             }
         }
+        if(!$ratecard && count($order) == 0){
+            $resp   =   array('status' => 401,'message' => "Ratecard Not Present");
+            return  Response::json($resp, 401);
+        }
 
-        $finder = Finder::find($finder_id);
+        /*if(isset($ratecard->special_price) && $ratecard->special_price > 0 && $ratecard->special_price != ""){
+            $amount = $ratecard->special_price;
+        }else{
+            $amount = $ratecard->price;
+        }*/
 
+
+        $finder                 =   Finder::find($finder_id);
         $findercategory_id      =   intval($finder->category_id);
-
-        $rewards = array();
+        $rewards                =   [];
 
         if(isset($finder->purchase_gamification_disable) && $finder->purchase_gamification_disable == "1"){
             $rewards = array();
         }else{
-            $rewardoffer           =   Rewardoffer::where('findercategory_id', $findercategory_id)
-            ->where('amount_min','<', $amount)
-            ->where('amount_max','>=', $amount)
-            ->with('rewards')
-            ->orderBy('_id','desc')->first();
+
+            // if($device == "website"){
+            //     // return $device;
+            //     $rewardoffer           =   Rewardoffer::active()->where('findercategory_id', $findercategory_id)
+            //         ->where('amount_min','<', $amount)
+            //         ->where('amount_max','>=', $amount)
+            //         // ->whereNotIn('reward_type',['personal_trainer_at_home'])
+            //         ->with(array('rewards'=> function($query){$query->select('*')->where('reward_type','!=','personal_trainer_at_home');}  ))
+            //         // ->with('rewards')
+            //         ->orderBy('_id','desc')->first();
+            // }else{
+            //     $rewardoffer           =   Rewardoffer::active()->where('findercategory_id', $findercategory_id)
+            //         ->where('amount_min','<', $amount)
+            //         ->where('amount_max','>=', $amount)
+            //         ->with(array('rewards'=> function($query){$query->select('*')->where('reward_type','!=','diet_plan');}  ))
+            //         ->orderBy('_id','desc')->first();
+            // }
+
+            $rewardoffer           =   Rewardoffer::active()->where('findercategory_id', $findercategory_id)
+                    ->where('amount_min','<', $amount)
+                    ->where('amount_max','>=', $amount)
+                    // ->whereNotIn('reward_type',['personal_trainer_at_home'])
+                    ->with(array('rewards'=> function($query){$query->select('*')->where('reward_type','!=','personal_trainer_at_home');}  ))
+                    // ->with('rewards')
+                    ->orderBy('_id','desc')->first();
+
+                    // return $rewardoffer;
 
             if ($rewardoffer){
                 $rewardoffer = $rewardoffer->toArray();
@@ -161,17 +227,153 @@ class RewardofferController extends BaseController {
 
                 if(count($rewards) > 0){
                     foreach ($rewards as $key => $value){
+                        unset($rewards[$key]['rewrardoffers']);
+                        unset($rewards[$key]['updated_at']);
+                        unset($rewards[$key]['created_at']);
                         if(isset($value['payload']) && isset($value['payload']['amount']) && $value['payload']['amount'] != "" && isset($value['quantity']) && $value['quantity'] != ""){
                             $rewards[$key]['payload']['amount'] = $value['payload']['amount'] * $value['quantity'];
                         }
                     }
+
+                    $reward_ordered = array();
+
+                    $reward_type_order = array(
+                        'fitness_kit',
+                        'sessions',
+                        'healthy_snacks',
+                        'personal_trainer_at_home',
+                        'diet_plan',
+                        'healthy_tiffin',
+                        'nutrition_store',
+                        'fitternity_voucher'
+                    );
+
+                    foreach ($reward_type_order as $reward_type_order_value){
+                        if($amount < 2000){
+                            $rewards = [];        
+                        }
+                        foreach ($rewards as $rewards_value){
+                            if($rewards_value['reward_type'] == "fitness_kit" || $rewards_value['reward_type'] == "healthy_snacks"){
+                                switch(true){
+                                    case $amount < 2000 :
+                                        // $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 750 : 650;
+                                        // $rewards_value['contents'] = $rewards_value['reward_type'] == "fitness_kit" ?  ["Shaker", "Badge"] : ["Pop Mak – Roasted Flavoured Makhana 50gm", "2 Honey Chew Pouch (5 flavours) 20gm", "3 Vegan Protein Bar 1 piece", "4 Stroopwaffle (Caramel Wafer Biscuits/ Cookies) 1 piece", "5 Baked Pizza Stick Dippers 75gm", "6 Roasted Mexican Chickpea 100gm" ];
+                                        // $rewards_value['description'] = $rewards_value['reward_type'] == "fitness_kit" ? "Start your membership with the right products and gear. Get a super-cool fitness kit which contains the following:<br> - Shaker <br> - Badge" : $rewards_value['description'];
+                                        // $rewards_value['image'] =  $rewards_value['reward_type'] == "fitness_kit" ? "https://b.fitn.in/gamification/reward/goodies/kit-1-20-12-2016.jpg" : "https://b.fitn.in/gamification/reward/goodies/hamper-2.jpg";
+                                        break;
+                                    case (2000 <= $amount && $amount < 5000) :
+                                        $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 600 : 300;
+                                        $rewards_value['contents'] =  $rewards_value['reward_type'] == "fitness_kit" ? ["Shaker", "Cloth Bag"] : ["Pop Mak – Roasted Flavoured Makhana (small)", "2 Honey Chew Pouch (5 flavours)","Good Juicery (Sugar Free Sparkling) Juice"];
+                                        $rewards_value['description'] = $rewards_value['reward_type'] == "fitness_kit" ? "Start your membership with the right products and gear. Get a super-cool fitness kit which contains the following:<br> - Shaker <br> - Cloth Bag" : "Ensure you avoid those extra calories by munching on tasty snacks. Get a specially curated hamper which contains: <br> - Pop Mak – Roasted Flavoured Makhana (small) <br> - 2 Honey Chew Pouch (5 flavours) <br> - Good Juicery (Sugar Free Sparkling) Juice";
+                                        $rewards_value['image'] =  $rewards_value['reward_type'] == "fitness_kit" ? "https://b.fitn.in/gamification/reward/goodies/kit-2-24-01-2017.jpg" : "https://b.fitn.in/gamification/reward/goodies/hamper-2.jpg";
+                                        break;
+                                    case (5000 <= $amount && $amount < 7500) :
+                                        $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 1100: 510;
+                                        $rewards_value['contents'] =  $rewards_value['reward_type'] == "fitness_kit" ?  ["Shaker", "T-shirt"] : ["Pop Mak – Roasted Flavoured Makhana (small)", "2 Honey Chew Pouch (5 flavours)","Good Juicery (Sugar Free Sparkling) Juice","Baked Pizza Stick Dippers"];
+                                        $rewards_value['description'] = $rewards_value['reward_type'] == "fitness_kit" ? "Start your membership with the right products and gear. Get a super-cool fitness kit which contains the following:<br> - Shaker <br> - T-shirt" : "Ensure you avoid those extra calories by munching on tasty snacks. Get a specially curated hamper which contains: <br> - Pop Mak – Roasted Flavoured Makhana (small) <br> - 2 Honey Chew Pouch (5 flavours) <br> - Good Juicery (Sugar Free Sparkling) Juice <br> - Baked Pizza Stick Dippers";
+                                        $rewards_value['image'] =  $rewards_value['reward_type'] == "fitness_kit" ? "https://b.fitn.in/gamification/reward/goodies/kit-3-24-01-2017.jpg" : "https://b.fitn.in/gamification/reward/goodies/hamper-2.jpg";
+                                        break;
+                                    case (7500 <= $amount && $amount < 10000) :
+                                        $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 1200 : 700;
+                                        $rewards_value['contents'] =  $rewards_value['reward_type'] == "fitness_kit" ?  ["T-shirt", "Shaker", "Cloth Bag"] : ["2 Pop Mak – Roasted Flavoured Makhana (small)", "Honey Chew Pouch (5 flavours)","2 Good Juicery (Sugar Free Sparkling) Juice","Baked Pizza Stick Dippers"];
+                                        $rewards_value['description'] = $rewards_value['reward_type'] == "fitness_kit" ? "Start your membership with the right products and gear. Get a super-cool fitness kit which contains the following:<br> - Shaker <br> - Cloth Bag <br> - T-shirt" : "Ensure you avoid those extra calories by munching on tasty snacks. Get a specially curated hamper which contains: <br> - 2 Pop Mak – Roasted Flavoured Makhana (small) <br> - Honey Chew Pouch (5 flavours) <br> - 2 Good Juicery (Sugar Free Sparkling) Juice <br> - Baked Pizza Stick Dippers";
+                                        $rewards_value['image'] =  $rewards_value['reward_type'] == "fitness_kit" ? "https://b.fitn.in/gamification/reward/goodies/kit-4-24-01-2017.jpg" : "https://b.fitn.in/gamification/reward/goodies/hamper-2.jpg";
+                                        break;
+                                    case (10000 <= $amount && $amount < 15000) :
+                                        $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 1050 : 1600;
+                                        $rewards_value['contents'] =  $rewards_value['reward_type'] == "fitness_kit" ? ["T-shirt", "Shaker", "Earphone Detangler", "Notebook"] : ["Pop Mak – Roasted Flavoured Makhana (small)", "Honey Chew Pouch (5 flavours)","Baked Pizza Stick Dippers","Pop Mak – Roasted Flavoured Makhana (big)","Colonel & Co. Nachos with Dip", "Kettle Chips"];
+                                        $rewards_value['description'] = $rewards_value['reward_type'] == "fitness_kit" ? "Start your membership with the right products and gear. Get a super-cool fitness kit which contains the following:<br> - Shaker <br> - T-shirt <br> - Earphone Detangler <br> - Notebook" : "Ensure you avoid those extra calories by munching on tasty snacks. Get a specially curated hamper which contains: <br> - Pop Mak – Roasted Flavoured Makhana (small) <br> - Honey Chew Pouch (5 flavours) <br> - Baked Pizza Stick Dippers <br> - Pop Mak – Roasted Flavoured Makhana (big) <br> - Colonel & Co. Nachos with Dip <br> - Kettle Chips";
+                                        $rewards_value['image'] =  $rewards_value['reward_type'] == "fitness_kit" ? "https://b.fitn.in/gamification/reward/goodies/kit-5-24-01-2017.jpg" : "https://b.fitn.in/gamification/reward/goodies/hamper-2.jpg";
+                                        break;
+                                    case (15000 <= $amount && $amount < 20000) :
+                                        $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 2500 : 1600;
+                                        $rewards_value['contents'] = $rewards_value['reward_type'] == "fitness_kit" ? ["T-shirt", "Gym bag", "Shaker", "Earphone Detangler", "Notebook"] : ["Pop Mak – Roasted Flavoured Makhana (small)", "2 Honey Chew Pouch (5 flavours)","Good Juicery (Sugar Free Sparkling) Juice","Baked Pizza Stick Dippers","Colonel & Co. Nachos with Dip", "3 Kettle Chips","Wholewheat Thins"];
+                                        $rewards_value['description'] = $rewards_value['reward_type'] == "fitness_kit" ? "Start your membership with the right products and gear. Get a super-cool fitness kit which contains the following:<br> - Shaker <br> - Gym Bag <br> - T-shirt <br> - Earphone Detangler" : "Ensure you avoid those extra calories by munching on tasty snacks. Get a specially curated hamper which contains: <br> - Pop Mak – Roasted Flavoured Makhana (small) <br> - 2 Honey Chew Pouch (5 flavours) <br> - Good Juicery (Sugar Free Sparkling) Juice <br> - Baked Pizza Stick Dippers <br> - Colonel & Co. Nachos with Dip <br> - Kettle Chips <br> - Wholewheat Thins";
+                                        $rewards_value['image'] =  $rewards_value['reward_type'] == "fitness_kit" ? "https://b.fitn.in/gamification/reward/goodies/kit-6-24-01-2017.jpg" : "https://b.fitn.in/gamification/reward/goodies/hamper-2.jpg";
+                                        break;
+                                    case (20000 <= $amount && $amount < 25000) :
+                                        $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 3000 : 2020;
+                                        $rewards_value['contents'] = $rewards_value['reward_type'] == "fitness_kit" ? ["T-shirt", "Gym bag", "Shaker", "Earphone Detangler", "Notebook","Mug","Cloth Bag"] : ["Pop Mak – Roasted Flavoured Makhana (small)", "2 Honey Chew Pouch (5 flavours)","Good Juicery (Sugar Free Sparkling) Juice","2 Pop Mak – Roasted Flavoured Makhana (big)", "Baked Pizza Stick Dippers","Colonel & Co. Nachos with Dip", "2 Kettle Chips","Wholewheat Thins"];
+                                        $rewards_value['description'] = $rewards_value['reward_type'] == "fitness_kit" ? "Start your membership with the right products and gear. Get a super-cool fitness kit which contains the following:<br> - Shaker <br> - Gym Bag <br> - T-shirt <br> - Earphone Detangler <br> - Mug <br> - Notebook <br> - Cloth Bag" : "Ensure you avoid those extra calories by munching on tasty snacks. Get a specially curated hamper which contains: <br> - Pop Mak – Roasted Flavoured Makhana (small)<br> - 2 Honey Chew Pouch (5 flavours) <br> - Good Juicery (Sugar Free Sparkling) Juice<br> - 2 Pop Mak – Roasted Flavoured Makhana (big)<br> - Baked Pizza Stick Dippers<br> - Colonel & Co. Nachos with Dip<br> - 2 Kettle Chips<br> - Wholewheat Thins";
+                                        $rewards_value['image'] =  $rewards_value['reward_type'] == "fitness_kit" ? "https://b.fitn.in/gamification/reward/goodies/kit-7-24-01-2017.jpg" : "https://b.fitn.in/gamification/reward/goodies/hamper-2.jpg";
+                                        break;
+                                    case (25000 <= $amount && $amount < 30000) :
+                                        $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 3500 : 2200;
+                                        $rewards_value['contents'] = $rewards_value['reward_type'] == "fitness_kit" ? ["T-shirt", "Gym bag", "Shaker", "Earphone Detangler", "Notebook","Mug","Cloth Bag", "Coaster", "Skipping Rope"] : ["Pop Mak – Roasted Flavoured Makhana ", "2 Honey Chew Pouch (5 flavours)","2 Good Juicery (Sugar Free Sparkling) Juice", "2 Baked Pizza Stick Dippers","Colonel & Co. Nachos with Dip", "Banana & Chia Granola Crunchers","Wholewheat Thins"];
+                                        $rewards_value['description'] = $rewards_value['reward_type'] == "fitness_kit" ? "Start your membership with the right products and gear. Get a super-cool fitness kit which contains the following:<br> - Shaker <br> - Gym Bag <br> - T-shirt <br> - Earphone Detangler <br> - Mug <br> - Notebook <br> - Cloth Bag <br> - Coaster <br> - Skipping Rope " : "Ensure you avoid those extra calories by munching on tasty snacks. Get a specially curated hamper which contains: <br> - Pop Mak – Roasted Flavoured Makhana <br> - 2 Honey Chew Pouch (5 flavours)<br> - 2 Good Juicery (Sugar Free Sparkling) Juice <br> - 2 Baked Pizza Stick Dippers <br> - Colonel & Co. Nachos with Dip <br> - Banana & Chia Granola Crunchers <br> - Wholewheat Thins";
+                                        $rewards_value['image'] =  $rewards_value['reward_type'] == "fitness_kit" ? "https://b.fitn.in/gamification/reward/goodies/kit-8-24-01-2017.jpg" : "https://b.fitn.in/gamification/reward/goodies/hamper-2.jpg";
+                                        break;
+                                    case (30000 <= $amount) :
+                                        $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 4000 : 2600;
+                                        $rewards_value['contents'] = $rewards_value['reward_type'] == "fitness_kit" ? ["T-shirt", "Gym bag", "Shaker", "Earphone Detangler", "Notebook","Mug","Cloth Bag", "Coaster", "Skipping Rope", "Resistance Bands"] : ["Pop Mak – Roasted Flavoured Makhana ", "2 Honey Chew Pouch (5 flavours)","2 Good Juicery (Sugar Free Sparkling) Juice", "2 Baked Pizza Stick Dippers","Colonel & Co. Nachos with Dip", "Banana & Chia Granola Crunchers","Wholewheat Thins","2 Pop Mak – Roasted Flavoured Makhana"];
+                                        $rewards_value['description'] = $rewards_value['reward_type'] == "fitness_kit" ? "Start your membership with the right products and gear. Get a super-cool fitness kit which contains the following:<br> - Shaker <br> - Gym Bag <br> - T-shirt <br> - Earphone Detangler <br> - Mug <br> - Notebook <br> - Cloth Bag <br> - Coaster <br> - Skipping Rope <br> - Resistance Bands" : "Ensure you avoid those extra calories by munching on tasty snacks. Get a specially curated hamper which contains: <br> - Pop Mak – Roasted Flavoured Makhana<br> - 2 Honey Chew Pouch (5 flavours)<br> -2 Good Juicery (Sugar Free Sparkling) Juice<br> - 2 Baked Pizza Stick Dippers<br> -Colonel & Co. Nachos with Dip<br> - Banana & Chia Granola Crunchers<br> -Wholewheat Thins<br> -2 Pop Mak – Roasted Flavoured Makhana";
+                                        $rewards_value['image'] =  $rewards_value['reward_type'] == "fitness_kit" ? "https://b.fitn.in/gamification/reward/goodies/kit-9-24-01-2017.jpg" : "https://b.fitn.in/gamification/reward/goodies/hamper-2.jpg";
+                                        break;
+                                }
+                                
+                            }else{
+
+                                $rewards_value['image'] = "https://b.fitn.in/gamification/reward/".$rewards_value['reward_type'].".jpg";
+                            }
+
+                            if($rewards_value['reward_type'] == "diet_plan"){
+                                $rewards_value['service_id'] = Service::where('_id', 19370)->first(['_id'])->_id;
+                                switch($rewards_value['_id']){
+                                    case 27:
+                                    $validity = 14;
+                                    $validity_type = 'days';
+                                    
+                                    break;
+                                    case 28:
+                                    $validity = 1;
+                                    $validity_type = 'months';
+                                    break;
+                                    case 29:
+                                    $validity = 2;
+                                    $validity_type = 'months';
+                                    break;
+                                    case 30:
+                                    $validity = 3;
+                                    $validity_type = 'months';
+                                    break;
+                                    case 31:
+                                    $validity = 3;
+                                    $validity_type = 'months';
+                                    break;
+                                    
+                                }
+
+                                $diet_ratecard = Ratecard::where('service_id', $rewards_value['service_id'])->where('validity', $validity)->where('validity_type', $validity_type)->first(['_id']);
+                                if($diet_ratecard){
+                                    $rewards_value['ratecard_id'] = $diet_ratecard['_id'];
+                                }
+                            }
+
+                            if($rewards_value['reward_type'] == $reward_type_order_value){
+
+                                $reward_type_array = ["fitness_kit","healthy_snacks"];
+
+                                if(isset($_GET['device_type']) && $_GET['device_type'] == 'ios' && in_array($rewards_value['reward_type'], $reward_type_array)){
+                                   
+                                    $rewards_value['contents'] = str_replace("<br>", "\n", $rewards_value['contents']);
+                                    $rewards_value['description'] = str_replace("<br>", "\n", $rewards_value['description']);
+                                }
+
+                                $reward_ordered[] = $rewards_value;
+
+                                break;
+                            }
+                        }
+                    }
+
+                    $rewards = $reward_ordered;
+
                 }
             }
         }
 
-        $customerReward = new CustomerReward();
-
-        $calculation = $customerReward->purchaseGame($amount,$finder_id);
+        $customerReward     =   new CustomerReward();
+        $calculation        =   $customerReward->purchaseGame($amount,$finder_id);
 
         if(isset($data['order_id']) && $data['order_id'] != ""){
 
@@ -185,27 +387,63 @@ class RewardofferController extends BaseController {
 
         }
 
+        $calculation['algo']['cashback'] = (int)$calculation['algo']['cashback'];
+
         $cashback  = array(
-            'title'=>$calculation['algo']['cashback'].'% Discount on Purchase',
+            // 'title'=>$calculation['algo']['cashback'].'% Discount on Purchase',
+            'title'=>$calculation['algo']['cashback'].'% Instant Cashback on Purchase',
             'percentage'=>$calculation['algo']['cashback'].'%',
             'commision'=>$calculation['algo']['cashback'],
-            'calculation'=>$calculation
+            'calculation'=>$calculation,
+            'info'          =>  "",//"You can only pay upto 10% of the booking amount through FitCash. \n\nIt is calculated basis the amount, type and duration of the purchase.  \n\nYour total FitCash balance is Rs. ".$calculation['current_wallet_balance_only_fitcash']." FitCash applicable for this transaction is Rs. ".$calculation['amount_deducted_from_wallet'],
+            'description'=>$calculation['description']
         );
+        /*if($calculation["current_wallet_balance_only_fitcash_plus"] > 0){
+            $cashback["info"] = "You can only pay upto 10% of the booking amount through FitCash. \n\nIt is calculated basis the amount, type and duration of the purchase.  \n\nYour total FitCash balance is Rs. ".$calculation['current_wallet_balance_only_fitcash_plus']."\n\nYour total FitCash+ balance is Rs. ".$calculation['current_wallet_balance_only_fitcash']." FitCash applicable for this transaction is Rs. ".$calculation['amount_deducted_from_wallet'];
+        }*/
 
-        $renewal_cashback  = array('title'=>'Discount of 15% on Renewal');
+        unset($cashback['calculation']['description']);
+
+        if(isset($ratecard['validity']) && $ratecard['validity'] != ""){
+
+            switch ($ratecard['validity_type']){
+                case 'days': 
+                    $duration_day = (int)$ratecard['validity'];break;
+                case 'months': 
+                    $duration_day = (int)($ratecard['validity'] * 30) ; break;
+                case 'year': 
+                    $duration_day = (int)($ratecard['validity'] * 30 * 12); break;
+                default : $duration_day =  $ratecard['validity']; break;
+            }
+        }
+
+        $duration_month = 0;
+
+        if(isset($duration_day)){
+            $duration_month = ceil($duration_day/30) + 2;
+        }
+
+        $cashback['description'] = "Enjoy FitCash+ of Rs. ".$calculation['wallet_amount'].". FitCash+ is fully redeemable for any booking / purchase on Fitternity ranging from workout sessions, memberships, diet plan and healthy tiffin subscription with a validity of ".$duration_month." months";
+
+        $renewal_cashback  = array('title'=>'Discount on Renewal');
         $selection_limit = 1;
-
         $data = array(
             'renewal_cashback'          =>   $renewal_cashback,
             'cashback'                  =>   $cashback,
             'rewards'                   =>   $rewards,
             'selection_limit'           =>   $selection_limit,
-            'status' => 200,
-            'message' => "Rewards offers"
+            'status'                    =>  200,
+            'message'                   => "Rewards offers"
         );
+        $data['cross_sell'] = array(
+            'diet_plan' => $customerReward->fitternityDietVendor($amount)
+        );
+        // $data['diet_plan'] = $customerReward->fitternityDietVendor($amount);
+
 
         return  Response::json($data, 200);
 
     }
-	
-}																																																																																																																																																																																																																																																																										
+    
+    
+}

@@ -10,14 +10,22 @@ App::error(function(Illuminate\Database\Eloquent\ModelNotFoundException $e){
 	return Response::json('not found',404);
 });
 
+// Event::listen('illuminate.query', function($query)
+// {
+//    Log::info($query);
+// });
 
-require __DIR__.'/debug_routes.php';
+
+
+// require __DIR__.'/debug_routes.php';
+require __DIR__.'/analytics_routes.php';
+
 
 
  // $queries = DB::getQueryLog();
  // var_dump($queries);
 
-
+Route::get('/', function() {  return date('l')." laravel 4.2 goes here...."; });
 Route::get('acceptvendormou/{vendormouid}', 'FindersController@acceptVendorMou');
 Route::get('cancelvendormou/{vendormouid}', 'FindersController@cancelVendorMou');
 
@@ -113,10 +121,6 @@ Route::group(array('before' => 'validatevendor'), function() {
 });
 
 
-
-
-
-
 /******************** VENDOR PANEL SECTION END HERE ********************/
 ##############################################################################
 
@@ -124,7 +128,8 @@ Route::group(array('before' => 'validatevendor'), function() {
 
 ##############################################################################
 /******************** HOME SECTION START HERE ***********************/
-
+Route::post('saveutmdata', array('as' => 'home.saveutmdata','uses' => 'HomeController@saveUtmData'));
+Route::post('gethashes', array('as' => 'home.gethashes','uses' => 'HomeController@getHashes'));
 
 Route::get('monsoonsalehome/{city?}', 'HomeController@getMonsoonSaleHomepage');
 Route::get('getfindercountlocationwise/{city?}', 'HomeController@getFinderCountLocationwise');
@@ -145,6 +150,8 @@ Route::get('landingcrushfinders/', 'HomeController@landingcrushFinders');
 Route::get('landingcrushlocationclusterwise/{location_cluster}', 'HomeController@landingcrushLocationClusterWise');
 Route::get('landinganytimefitnessfinders/', 'HomeController@landingAnytimeFitnessFinders');
 Route::get('landinganytimefitnessfinders/{cityid}', 'HomeController@landingAnytimeFitnessFindersCityWise');
+
+Route::get('/successmsg/{type}/{id}', 'HomeController@getSuccessMsg');
 
 // Power house gym
 Route::get('landingpowerhousefinders/', 'HomeController@landingPowerhouseFinders');
@@ -177,6 +184,9 @@ Route::post('feedbackfromcustomer', 'SchedulebooktrialsController@feedbackFromCu
 /*Events API*/
 Route::get('events/{eventSlug}', 'EventsController@getEventInfo');
 
+/*Coupons API*/
+Route::get('getcouponinfo/{couponCode}/{ticketID}', 'CouponsController@getCouponInfo');
+
 Route::get('send/communication', 'SchedulebooktrialsController@sendCommunication');
 
 ##############################################################################
@@ -192,10 +202,14 @@ Route::post('captureorderpayment', array('as' => 'customer.storebooktrial','uses
 
 Route::post('customerregister', array('as' => 'customer.customerregister','uses' => 'CustomerController@register'));
 Route::post('customerlogin', array('as' => 'customer.customerlogin','uses' => 'CustomerController@customerLogin'));
+Route::post('customerloginotp', array('as' => 'customer.customerloginotp','uses' => 'CustomerController@customerLoginOtp'));
 Route::post('customerforgotpasswordemail', array('as' => 'customer.customerforgotpasswordemail','uses' => 'CustomerController@forgotPasswordEmail'));
 Route::post('customerforgotpassword', array('as' => 'customer.customerforgotpassword','uses' => 'CustomerController@forgotPassword'));
 Route::post('customerforgotpasswordemailapp', array('as' => 'customer.customerforgotpasswordemailapp','uses' => 'CustomerController@forgotPasswordEmailApp'));
 Route::post('customervalidateotp', array('as' => 'customer.customervalidateotp','uses' => 'CustomerController@validateOtp'));
+
+Route::post('customerstatus', array('as' => 'customer.customerstatus','uses' => 'CustomerController@customerstatus'));
+
 
 
 Route::get('autobooktrials/{customeremail}',  array('as' => 'customer.autobooktrials','uses' => 'CustomerController@getAutoBookTrials'));
@@ -217,9 +231,13 @@ Route::post('customer/myrewards/create', array('as' => 'customer.createMyReward'
 Route::get('customer/home/{city?}', array('as' => 'customer.home','uses' => 'CustomerController@home'));
 Route::post('customer/transformation', array('as' => 'customer.transformation','uses' => 'CustomerController@transformation'));
 Route::post('sms/downloadapp', array('as' => 'customer.downloadapp','uses' => 'CustomerController@downloadApp'));
+Route::get('app/forceupdate', array('as' => 'customer.forceupdate','uses' => 'CustomerController@forceUpdate'));
+Route::get('app/config', array('as' => 'customer.appconfig','uses' => 'CustomerController@appConfig'));
+Route::post('storecustomerattribution',  array('as' => 'customer.storecustomerattribution','uses' => 'CustomerController@storeCustomerAttribution'));
 
 
 
+Route::post('admin/customer/capturemyreward', array('as' => 'customer.capturemyreward','uses' => 'CustomerController@captureMyReward'));
 
 Route::group(array('before' => 'validatetoken'), function() {
 
@@ -238,10 +256,15 @@ Route::group(array('before' => 'validatetoken'), function() {
 	Route::get('upcomingtrials',  array('as' => 'customer.upcomingtrials','uses' => 'CustomerController@getUpcomingTrials'));
 	Route::get('customer/myrewards/list/{offset?}/{limit?}',  array('as' => 'customer.listMyRewards','uses' => 'MyrewardController@listMyRewards'));
 	Route::get('customer/myrewardsv1/list/{offset?}/{limit?}',  array('as' => 'customer.listMyRewardsv1','uses' => 'MyrewardController@listMyRewardsV1'));
+	Route::get('customer/mydietplan/list',  array('as' => 'customer.listMyDietPlan','uses' => 'CustomerController@listMyDietPlan'));
+	
+	// Route::post('apply/promotioncode', array('as' => 'customer.applypromotioncode','uses' => 'CustomerController@applyPromotionCode'));
 
 	// Wallet APIs...
+	Route::post('apply/promotioncode', array('as' => 'customer.applypromotioncode','uses' => 'CustomerController@applyPromotionCode'));
 
 	Route::get('getwalletbalance',  array('as' => 'customer.getWalletBalance','uses' => 'CustomerController@getWalletBalance'));
+	
 //	Route::post('wallettransaction',  array('as' => 'customer.walletTransaction','uses' => 'CustomerController@walletTransaction'));
 	Route::get('listwalletsummary/{limit?}/{offset?}',  array('as' => 'customer.listWalletSummary','uses' => 'CustomerController@listWalletSummary'));
 	Route::get('getexistingtrialwithfinder/{finder_id?}', array('as' => 'customer.getExistingTrialWithFinder','uses' => 'CustomerController@getExistingTrialWithFinder'));
@@ -253,6 +276,10 @@ Route::group(array('before' => 'validatetoken'), function() {
 
 	Route::get('customer/gettransformation', array('as' => 'customer.gettransformation','uses' => 'CustomerController@getTransformation'));
 	Route::get('customer/getstayontrack', array('as' => 'customer.getstayontrack','uses' => 'CustomerController@getStayOnTrack'));
+	Route::get('getreferralcode', array('as' => 'customer.referralcode','uses' => 'CustomerController@getReferralCode'));
+	Route::post('referfriend', array('as' => 'customer.referfriend','uses' => 'CustomerController@referFriend'));
+
+	Route::get('getwalletdetails/{limit?}/{offset?}',  array('as' => 'customer.getWalletDetails','uses' => 'CustomerController@getWalletDetails'));
 
 });
 
@@ -268,7 +295,7 @@ Route::group(array('before' => 'validatetoken'), function() {
 Route::get('listrewardsapplicableonpurchase', array(
 	'as' => 'rewards.ListRewardsApplicableOnPurchase','uses' => 'RewardofferController@ListRewardsApplicableOnPurchase'
 ));
-Route::post('getrewardoffers/', array('as' => 'rewards.getRewardOffers','uses' => 'RewardofferController@getRewardOffers'));
+Route::post('getrewardoffers', array('as' => 'rewards.getRewardOffers','uses' => 'RewardofferController@getRewardOffers'));
 
 /******************** REWARDS SECTION END HERE ********************/
 ##############################################################################
@@ -288,14 +315,17 @@ Route::post('capturepayment',  array('as' => 'order.buymembership','uses' => 'Or
 Route::post('captureorderstatus',  array('as' => 'orders.captureorderstatus','uses' => 'OrderController@captureOrderStatus'));
 Route::post('capturefailsorders',  array('as' => 'orders.capturefailsorders','uses' => 'OrderController@captureFailOrders'));
 
+Route::post('generatetmporderpre',  array('as' => 'orders.generatetmporderpre','uses' => 'OrderController@generateTmpOrderPre'));
 
 Route::post('buyarsenalmembership',  array('as' => 'orders.buyarsenalmembership','uses' => 'OrderController@buyArsenalMembership'));
 Route::post('buylandingpagepurchase',  array('as' => 'orders.buylandingpagepurchase','uses' => 'OrderController@buyLandingpagePurchase'));
-Route::get('orderfailureaction/{order_id}', array('as' => 'orders.orderFailureAction','uses' => 'OrderController@orderFailureAction'));
+Route::get('orderfailureaction/{order_id}/{customer_id?}', array('as' => 'orders.orderFailureAction','uses' => 'OrderController@orderFailureAction'));
 
 Route::get('linkopenfororder/{order_id}',  array('as' => 'orders.linkOpenForOrder','uses' => 'OrderController@linkOpenForOrder'));
 
 Route::post('orderupdate', array('as' => 'orders.orderupdate','uses' => 'OrderController@orderUpdate'));
+
+Route::post('inviteformembership', array('as' => 'customer.inviteForMembership','uses' => 'OrderController@inviteForMembership'));
 
 
 
@@ -338,6 +368,8 @@ Route::get('reviewdetail/{id}', array('as' => 'review.reviewdetail','uses' => 'F
 Route::get('getfinderreview/{slug}', array('as' => 'finders.getfinderreview','uses' => 'FindersController@getFinderReview'));
 Route::get('findertopreview/{slug}/{limit?}', array('as' => 'finders.findertopreview','uses' => 'FindersController@finderTopReview'));
 
+Route::get('finderdetail/app/{slug}', array('as' => 'finders.finderdetailapp','uses' => 'FindersController@finderDetailApp'));
+
 /******************** FINDERS SECTION END HERE ********************/
 ##############################################################################
 
@@ -360,23 +392,25 @@ Route::get('getblogcomment/{slug}', array('as' => 'blogs.getblogcomment','uses' 
 
 ##############################################################################
 /******************** ELASTICSEARH SECTION START HERE  *******************/
-Route::get('createindex/{index?}', array('as' => 'elasticsearch.createindex','uses' => 'ElasticsearchController@createIndex'));
-Route::get('deleteindex/{index?}', array('as' => 'elasticsearch.deleteindex','uses' => 'ElasticsearchController@deleteIndex'));
-Route::get('managesetttings/{index?}', array('as' => 'elasticsearch.managesetttings','uses' => 'ElasticsearchController@manageSetttings'));
-Route::get('createtype/{type}', array('as' => 'elasticsearch.createtype','uses' => 'ElasticsearchController@createType'));
+// Route::get('createindex/{index?}', array('as' => 'elasticsearch.createindex','uses' => 'ElasticsearchController@createIndex'));
+// Route::get('deleteindex/{index?}', array('as' => 'elasticsearch.deleteindex','uses' => 'ElasticsearchController@deleteIndex'));
+// Route::get('managesetttings/{index?}', array('as' => 'elasticsearch.managesetttings','uses' => 'ElasticsearchController@manageSetttings'));
+// Route::get('createtype/{type}', array('as' => 'elasticsearch.createtype','uses' => 'ElasticsearchController@createType'));
 Route::get('checkmapping/{type}', array('as' => 'elasticsearch.checkmapping','uses' => 'ElasticsearchController@checkMapping'));
-Route::get('deletetype/{type}', array('as' => 'elasticsearch.deletetype','uses' => 'ElasticsearchController@deleteType'));		
-Route::get('mongo2elastic/{type?}', array('as' => 'elasticsearch.mongo2elastic','uses' => 'ElasticsearchController@mongo2Elastic'));
-Route::get('indexautosuggestdata/{type?}', array('as' => 'elasticsearch.indexautosuggestdata','uses' => 'ElasticsearchController@indexautosuggestdata'));
-Route::get('indexrankmongo2elastic', array('as' => 'elasticsearch.indexrankmongo2elastic','uses' => 'RankingController@IndexRankMongo2Elastic'));
-Route::get('manageautosuggestsetttings', array('as' => 'elasticsearch.manageautosuggestsetttings','uses' => 'ElasticsearchController@manageAutoSuggestSetttings'));
-Route::get('embedtrials', array('as' => 'elasticsearch.embedtrials','uses' => 'RankingController@embedTrialsBooked'));
-Route::get('indexservicerankmongo2elastic', array('as' => 'elasticsearch.indexservicerankmongo2elastic','uses' => 'ServiceRankingController@IndexServiceRankMongo2Elastic'));
+// Route::get('deletetype/{type}', array('as' => 'elasticsearch.deletetype','uses' => 'ElasticsearchController@deleteType'));		
+// Route::get('mongo2elastic/{type?}', array('as' => 'elasticsearch.mongo2elastic','uses' => 'ElasticsearchController@mongo2Elastic'));
+// Route::get('indexautosuggestdata/{type?}', array('as' => 'elasticsearch.indexautosuggestdata','uses' => 'ElasticsearchController@indexautosuggestdata'));
+// Route::get('indexrankmongo2elastic', array('as' => 'elasticsearch.indexrankmongo2elastic','uses' => 'RankingController@IndexRankMongo2Elastic'));
+// Route::get('manageautosuggestsetttings', array('as' => 'elasticsearch.manageautosuggestsetttings','uses' => 'ElasticsearchController@manageAutoSuggestSetttings'));
+// Route::get('embedtrials', array('as' => 'elasticsearch.embedtrials','uses' => 'RankingController@embedTrialsBooked'));
+// Route::get('indexservicerankmongo2elastic', array('as' => 'elasticsearch.indexservicerankmongo2elastic','uses' => 'ServiceRankingController@IndexServiceRankMongo2Elastic'));
 Route::get('v1/rollingfinderindex', array('as' => 'elasticsearch.rollingbuildfindersearch','uses' => 'RankingController@RollingBuildFinderSearchIndex'));
 Route::get('v1/rollingserviceindex', array('as' => 'elasticsearch.rollingbuildserviceindex','uses' => 'ServiceRankingController@RollingBuildServiceIndex'));
 //Route::get('rollingbuildserviceindexv2','ServiceRankingController@RollingBuildServiceIndex');
 Route::get('indexfinderdocument/{id}','RankingController@IndexFinderDocument');
 Route::get('locationcity/{value}','SearchController@locationCity');
+
+Route::get('updatescheduleinsearch/{finderid}','ServiceRankingController@UpdateScheduleOfThisFinderInSessionSearch');
 
 /******************** ELASTICSEARH SECTION END HERE  ********************/
 ##############################################################################
@@ -384,7 +418,7 @@ Route::get('locationcity/{value}','SearchController@locationCity');
 ########################################################################################
 /************************KYU SECTION START HERE****************************************/
 Route::post('pushkyuevent', 'KYUController@pushkyuevent');
-Route::get('migratedatatoclevertap', 'KYUController@migratedatatoclevertap');
+// Route::get('migratedatatoclevertap', 'KYUController@migratedatatoclevertap');
 Route::get('getvendorview/{vendor_id}/{start_date?}/{end_date?}','KYUController@getvendorviewcount');
 Route::post('getcitywiseviews','KYUController@getcitywiseviews');
 //Route::get('getfacebookadsconversion','KYUController@getfacebookadsconversion');
@@ -424,6 +458,9 @@ Route::post('keywordsearchweb', 'GlobalSearchController@keywordSearch');
 Route::post('search/getfinderresults', 'RankingSearchController@getRankedFinderResultsApp');
 Route::post('search/getfinderresultsv2', 'RankingSearchController@getRankedFinderResultsAppv2');
 Route::post('search/getfinderresultsv3', 'RankingSearchController@getRankedFinderResultsAppv3');
+
+Route::post('search/getfinderresultsv4', 'RankingSearchController@getRankedFinderResultsAppv4');
+
 Route::get('buildkeywordcache', 'GlobalSearchController@preparekeywordsearchcache');
 Route::post('keywordsearchwebv1', 'GlobalSearchController@improvedkeywordSearch');
 Route::post('search/searchdirectpefinders', 'RankingSearchController@searchDirectPaymentEnabled');
@@ -432,7 +469,6 @@ Route::post('search/searchsaleratecards/v1', 'ServiceRankingSearchController@sea
 
 /******************** SEARCH SECTION END HERE ********************/
 ##############################################################################
-
 
 
 
@@ -447,6 +483,7 @@ Route::get('servicemarketfooterv1/{city?}', array('as' => 'service.servicemarket
 Route::get('service/getservicewithworkoutsession/{finder_id}', array('as' => 'service.getservicewithworkoutsession','uses' => 'ServiceController@getServiceWithWorkoutSession'));
 Route::get('service/getworkoutsessionschedulebyservice/{service_id}/{date?}', array('as' => 'service.getworkoutsessionschedulebyservice','uses' => 'ServiceController@getWorkoutSessionScheduleByService'));
 Route::get('getservicesbytype/{finder_id}/{type}', array('as' => 'service.getservicesbytype','uses' => 'ServiceController@getServicesByType'));
+Route::get('getschedulebyfinderservice', array('as' => 'service.getschedulebyfinderservice','uses' => 'ServiceController@getScheduleByFinderService'));
 
 
 
@@ -474,8 +511,8 @@ Route::get('finder/senddaliysummaryhealthytiffin/', array('as' => 'finders.sendd
 
 
 Route::get('gettrialschedule/{finderid}/{date}', array('as' => 'services.gettrialschedule', 'uses' => 'SchedulebooktrialsController@getTrialSchedule'));
-Route::get('gettrialschedulev1/{finderid}/{date}', array('as' => 'services.gettrialschedule', 'uses' => 'SchedulebooktrialsController@getTrialScheduleIfDontSoltsAlso'));
-Route::get('getworkoutsessionschedule/{finderid}/{date}', array('as' => 'services.getworkoutsessionschedule', 'uses' => 'SchedulebooktrialsController@getWorkoutSessionSchedule'));
+Route::get('gettrialschedulev1/{finderid}/{date}/{service_id?}', array('as' => 'services.gettrialschedule', 'uses' => 'SchedulebooktrialsController@getTrialScheduleIfDontSoltsAlso'));
+Route::get('getworkoutsessionschedule/{finderid}/{date}/{service_id?}', array('as' => 'services.getworkoutsessionschedule', 'uses' => 'SchedulebooktrialsController@getWorkoutSessionSchedule'));
 Route::get('getserviceschedule/{serviceid}/{date?}/{noofdays?}/{schedulesof?}', array('as' => 'services.getserviceschedule','uses' => 'SchedulebooktrialsController@getServiceSchedule'));
 // Route::get('booktrialff', array('as' => 'schedulebooktrials.booktrialff','uses' => 'SchedulebooktrialsController@bookTrialFintnessForce'));
 Route::get('updateappointmentstatus', array('as' => 'customer.updateappointmentstatus','uses' => 'SchedulebooktrialsController@updateAppointmentStatus'));
@@ -495,6 +532,7 @@ Route::group(array('before' => 'validatetoken'), function() {
 
 	Route::post('booktrials/reschedule', array('as' => 'customer.rescheduledbooktrial','uses' => 'SchedulebooktrialsController@rescheduledBookTrial'));
 	Route::get('booktrials/{action}/{trialid}', array('as' => 'trial.booktrialaction', 'uses' => 'SchedulebooktrialsController@booktrialAction'));
+	Route::post('pretrialaction/{source}', array('as' => 'trial.pretrialaction', 'uses' => 'SchedulebooktrialsController@preTrialAction'));
 
 });
 
@@ -528,6 +566,7 @@ Route::post('fivefitness/refundcustomer', 'EmailSmsApiController@refundfivefitne
 Route::post('registerme', 'EmailSmsApiController@registerme');
 Route::post('landingpage/conversion', 'EmailSmsApiController@landingconversion');
 Route::post('landingpage/callback', 'EmailSmsApiController@landingpagecallback');
+Route::put('landingpage/callback/{capture_id}', 'EmailSmsApiController@landingpagecallbacksave');
 Route::post('landingpage/register', 'EmailSmsApiController@landingpageregister');
 Route::post('offeravailed', 'EmailSmsApiController@offeravailed');
 Route::post('fitcardbuy', 'EmailSmsApiController@fitcardbuy');
@@ -647,8 +686,8 @@ Route::get('stats/smsbalance/{day}', 'StatsController@smsBalance');
 ##############################################################################
 /******************** OZONETELS SECTION START HERE ***********************/
 
-Route::get('ozonetel/freevendor',  array('as' => 'ozonetel.freevendor','uses' => 'OzonetelsController@freeVendor'));
-Route::get('ozonetel/paidvendor',  array('as' => 'ozonetel.paidvendor','uses' => 'OzonetelsController@paidVendor'));
+Route::get('ozonetel/freevendor',  array('as' => 'ozonetel.freevendor','uses' => 'OzonetelsController@freeVendorV1'));
+Route::get('ozonetel/paidvendor',  array('as' => 'ozonetel.paidvendor','uses' => 'OzonetelsController@paidVendorV1'));
 Route::get('ozonetel/outboundcallsend/{phone_number}',  array('as' => 'ozonetel.outboundCallSend','uses' => 'OzonetelsController@outboundCallSend'));
 Route::get('ozonetel/outboundcallrecive/{id}',  array('as' => 'ozonetel.outboundCallRecive','uses' => 'OzonetelsController@outboundCallRecive'));
 Route::get('ozonetel/outbound/{id}',  array('as' => 'ozonetel.outbound','uses' => 'OzonetelsController@outbound'));
@@ -777,7 +816,7 @@ Route::get('v1/rollingautosuggestindex', 'GlobalPushController@rollingbuildautos
 ####################################################################################################
 /**********************************Moengage Migration COntroller***********************************/
 
-Route::get('migratedatatomoenagage', 'MigrationsController@migratedatatomoenagage');
+// Route::get('migratedatatomoenagage', 'MigrationsController@migratedatatomoenagage');
 
 
 /********************************Moengage Migration Controller*************************************/
@@ -812,9 +851,14 @@ Route::post('temp/add', array('as' => 'temps.add','uses' => 'TempsController@add
 Route::get('temp/delete/{customer_phone}', array('as' => 'temps.delete','uses' => 'TempsController@delete'));
 
 Route::get('temp/verifynumber/{number}', array('as' => 'temps.verifynumber','uses' => 'TempsController@verifyNumber'));
-Route::get('temp/verifyotp/{temp_id}/{otp}', array('as' => 'temps.verifyotp','uses' => 'TempsController@verifyOtp'));
+Route::get('temp/verifyotp/{temp_id}/{otp}/{email?}/{name?}', array('as' => 'temps.verifyotp','uses' => 'TempsController@verifyOtp'));
 Route::get('temp/proceedwithoutotp/{temp_id}', array('as' => 'temps.proceedwithoutotp','uses' => 'TempsController@proceedWithoutOtp'));
 Route::get('temp/regenerateotp/{temp_id}', array('as' => 'temps.regenerateotp','uses' => 'TempsController@regenerateOtp'));
+
+/**** Version 1 ****/
+Route::post('temp/addv1', array('as' => 'temps.add','uses' => 'TempsController@addV1'));
+Route::get('temp/verifyotpv1/{temp_id}/{otp}/{email?}/{name?}', array('as' => 'temps.verifyotp','uses' => 'TempsController@verifyOtpV1'));
+Route::get('temp/proceedwithoutotpv1/{temp_id}', array('as' => 'temps.proceedwithoutotp','uses' => 'TempsController@proceedWithoutOtpV1'));
 
 
 /******************  Temp API END HERE************************************************/
@@ -851,3 +895,49 @@ Route::group(array('before' => 'validatetoken'), function() {
 #####################################################################################################
 
 Route::post('seourl', 'GlobalSearchController@seourl');
+
+Route::get('email/opened', 'CustomerController@emailOpened');
+
+Route::post('transaction/capture',array('as' => 'transaction.capture','uses' => 'TransactionController@capture'));
+Route::get('transaction/dcos',array('as' => 'transaction.dcos','uses' => 'TransactionController@deleteCommunicationOfSuccess'));
+
+Route::get('getfindercategories/{city?}', 'DebugController@cacheFinderCategoryTags');
+
+Route::get('getfinderlocations', 'DebugController@cacheLocations');
+
+Route::get('getsubcategories', 'DebugController@cacheOfferings');
+
+Route::get('getfinders', 'DebugController@cacheFinders');
+
+Route::post('transaction/pg',array('as' => 'transaction.pg','uses' => 'TransactionController@pg'));
+Route::post('transaction/success',array('as' => 'transaction.success','uses' => 'TransactionController@success'));
+
+Route::get('referral', 'CustomerController@generateReferralCode');
+
+Route::post('displayemi','CustomerController@displayEmi');
+
+Route::post('trainer/getavailableslots',array('as' => 'trainer/getavailableslots','uses' => 'TrainerController@getAvailableSlots'));
+
+Route::group(array('before' => 'validatetoken'), function() {
+	Route::post('trainer/bookslot', array('as' => 'trainer.bookslot','uses' => 'TrainerController@bookSlot'));
+	Route::post('transaction/update',array('as' => 'transaction.update','uses' => 'TransactionController@update'));
+	Route::get('customer/orderdetail/{order_id}',array('as' => 'customer.orderdetail','uses' => 'CustomerController@orderDetail'));
+	Route::get('customer/orderdetail/{order_id}',array('as' => 'customer.orderdetail','uses' => 'CustomerController@orderDetail'));
+	Route::post('customer/addreview', array('as' => 'finders.addreviewcustomer','uses' => 'FindersController@addReviewCustomer'));
+});
+
+Route::get('getdetailrating',array('as' => 'getdetailrating','uses' => 'FindersController@getDetailRating'));
+
+Route::get('customer/notification/{id}',array('as' => 'customer.notification','uses' => 'CustomerController@notificationTracking'));
+
+Route::get('addwallet',array('as' => 'transaction.addwallet','uses' => 'TransactionController@addWallet'));
+
+
+Route::get('customerorderdata','DebugController@customer_data');
+Route::get('zumbadata','DebugController@zumba_data');
+Route::get('syncsharecustomerno','DebugController@syncsharecustomerno');
+
+//reverse migration roures
+Route::get('reverse/migration/{colllection}/{id}','MigrationReverseController@byId');
+Route::get('fitternitydietvendordetail','FindersController@fitternityDietVedorDetail');
+Route::get('orderdemonetisation/{order_id}',array('as' => 'orderdemonetisation','uses' => 'CustomerController@orderDemonetisation'));

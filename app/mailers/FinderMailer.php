@@ -238,8 +238,29 @@ Class FinderMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 
+    public function healthyTiffinTrialReminder($data){
 
-	public function healthyTiffinMembership($data){
+        $label = 'HealthyTiffinTrial-Reminder-Vendor';
+
+        if($data['finder_vcc_email'] != ''){
+            $user_email 	=  	explode(',', $data['finder_vcc_email']);
+        }else{
+            $user_email 	= 	array(Config::get('mail.to_mailus'));
+        }
+
+        $user_name = ucwords($data['finder_name']);
+
+        $message_data 	= array(
+            'user_email' => $user_email,
+            'user_name' =>  $user_name,
+        );
+
+        return $this->common($label,$data,$message_data);
+    }
+
+
+
+    public function healthyTiffinMembership($data){
 
 		$label = 'HealthyTiffinMembership-Instant-Vendor';
 
@@ -363,63 +384,41 @@ Class FinderMailer extends Mailer {
 
 
     public function acceptVendorMou ($data){
+        $label = 'AcceptVendorMou-Paid-Cash-Cheque-Vendor';
+        if($data['contract_type'] == 'premium'){
+            $label = 'AcceptVendorMou-Cos-Vendor';
+        }elseif(($data['contract_type'] == 'platinum' || $data['contract_type'] == 'launch plan' ) && $data['payment_mode'] == 'online'){
+            $label = 'AcceptVendorMou-Paid-Online-Vendor';
+        }
+        // var_dump($label);exit();
 
-		$label = 'AcceptVendorMou-Paid-Cash-Cheque-Vendor';
-
-
-
-		if($data['contract_type'] == 'premium'){
-
-			$label = 'AcceptVendorMou-Cos-Vendor';
-
-		}elseif(($data['contract_type'] == 'platinum' || $data['contract_type'] == 'launch plan' ) && $data['payment_mode'] == 'online'){
-
-			$label = 'AcceptVendorMou-Paid-Online-Vendor';
-
-		}
-
-		// var_dump($label);exit();
-
-		
-		if($data['rm_email'] != ''){
-			$user_email 	=  	[$data['rm_email']];
-		}else{
-			$user_email 	= 	array(Config::get('mail.to_mailus'));
-		}
-
-		$user_name = ucwords($data['rm_name']);
-
-		$message_data 	= array(
-			'user_email' => $user_email,
-			'user_name' =>  $user_name,
-		);
-
-		return $this->common($label,$data,$message_data);
-
-	}
-
-
+        if($data['rm_email'] != ''){
+            $user_email 	=  	[$data['rm_email']];
+        }else{
+            $user_email 	= 	array(Config::get('mail.to_mailus'));
+        }
+        $user_name = ucwords($data['rm_name']);
+        $message_data 	= array(
+            'user_email' => $user_email,
+            'user_name' =>  $user_name,
+        );
+        return $this->common($label,$data,$message_data);
+    }
 
     public function cancelVendorMou ($data){
-
-		$label = 'CancelVendorMou-Vendor';
-		
-		if($data['rm_email'] != ''){
-			$user_email 	=  	[$data['rm_email']];
-		}else{
-			$user_email 	= 	array(Config::get('mail.to_mailus'));
-		}
-
-		$user_name = ucwords($data['rm_name']);
-
-		$message_data 	= array(
-			'user_email' => $user_email,
-			'user_name' =>  $user_name,
-		);
-
-		return $this->common($label,$data,$message_data);
-
-	}
+        $label = 'CancelVendorMou-Vendor';
+        if($data['rm_email'] != ''){
+            $user_email 	=  	[$data['rm_email']];
+        }else{
+            $user_email 	= 	array(Config::get('mail.to_mailus'));
+        }
+        $user_name = ucwords($data['rm_name']);
+        $message_data 	= array(
+            'user_email' => $user_email,
+            'user_name' =>  $user_name,
+        );
+        return $this->common($label,$data,$message_data);
+    }
 
 	public function rewardClaim($data){
 
@@ -481,13 +480,60 @@ Class FinderMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 
+	public function orderFailureNotificationToLmd($data){
+
+		$label = 'OrderFailureNotification-LMD';
+
+		if($data['finder_vcc_email'] != ''){
+			$user_email 	=  	explode(',', $data['finder_vcc_email']);
+		}else{
+			$user_email 	= 	array(Config::get('mail.to_mailus'));
+		}
+
+		$user_name = ucwords($data['finder_name']);
+
+		$message_data 	= array(
+			'user_email' => $user_email,
+			'user_name' =>  $user_name,
+		);
+
+		return $this->common($label,$data,$message_data);
+	}
+	
+	public function sendNoPrevSalesMail($data){
+
+		$label = 'NoPrevSalesNotification';
+
+		$user_email = array('pranjalisalvi@fitternity.com','vinichellani@fitternity.com','surajshetty@fitternity.com');
+		$user_name = "Fitternity Team";
+
+		$message_data 	= array(
+			'user_email' => $user_email,
+			'user_name' =>  $user_name,
+		);
+
+		return $this->common($label,$data,$message_data);
+	}
 
 	public function common($label,$data,$message_data,$delay = 0){
+		// return($message_data['user_email']);
+		if(in_array(Config::get('mail.to_mailus'),$message_data['user_email'])){
+			$delay = 0;
+			$data['label'] = $label;
+			$data['user_name'] = $message_data['user_name'];
+			$label = 'EmailFailureNotification-LMD';
+			$message_data['user_email'] = array('vinichellani@fitternity.com');
+		}
 
 		$template = \Template::where('label',$label)->first();
 
 		$email_template = 	$this->bladeCompile($template->email_text,$data);
 		$email_subject = 	$this->bladeCompile($template->email_subject,$data);
+
+		if(!Config::get('app.vendor_communication')){
+
+			$message_data['user_email'] = array('utkarshmehrotra@fitternity.com','pranjalisalvi@fitternity.com','sailismart@fitternity.com');
+		}
 
 		$message_data['bcc_emailids'] = ($template->email_bcc != "") ? array_merge(explode(',', $template->email_bcc),array(Config::get('mail.to_mailus'))) : array(Config::get('mail.to_mailus'));
 

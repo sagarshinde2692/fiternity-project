@@ -209,11 +209,23 @@ class EmailSmsApiController extends \BaseController {
     }
 
     public function SubscribeNewsletter(){
-        $list_id = 'd2a433c826';
+        // $list_id = 'd2a433c826';
         //$list_id = 'cd8d82a9d0';
         $email_address = Input::json()->get('email');
-        $response =  MailchimpWrapper::lists()->subscribe($list_id, array('email'=>$email_address));
-        return $response;
+        // $response =  MailchimpWrapper::lists()->subscribe($list_id, array('email'=>$email_address));
+        $data = array(
+            'capture_type' => 'newsletter-subscription',
+            'name' => Input::json()->get('name'),
+            'email' => $email_address,
+            'phone' => Input::json()->get('phone'),
+            'city' => Input::json()->get('city')
+        );
+
+        array_set($data, 'capture_status', 'yet to connect');
+
+        $storecapture = Capture::create($data);
+        $resp = array('status' => 200,'message' => "Recieved the Request");
+        return Response::json($resp);
     }
 
     public function fivefitnesscustomer(){
@@ -461,7 +473,18 @@ class EmailSmsApiController extends \BaseController {
 
     }
 
-
+    public function landingpagecallbacksave($capture_id){
+        $data = Input::json()->all();
+        if(isset($capture_id) && $capture_id != ""){
+            $capture = Capture::find($capture_id);
+            $capture['specialinstructions'] = $data["specialinstructions"];
+            $capture->save();
+            $resp = array('status' => 200,'message' => "Instructions saved successfully");
+            return Response::json($resp,$resp['status']);
+        }
+        $resp = array('status' => 400,'message' => "Bad request");
+        return Response::json($resp,$resp['status']);
+    }
     public function landingpagecallback(){
 
         $data = Input::json()->all();
@@ -475,6 +498,67 @@ class EmailSmsApiController extends \BaseController {
             }
         }
 
+        $jwt_token = Request::header('Authorization');
+
+        if($jwt_token){
+
+            $decoded = decode_customer_token();
+
+            $data['customer_id'] = $decoded->customer->_id;
+            $data['customer_name'] = $decoded->customer->name;
+            $data['customer_email'] = $decoded->customer->email;
+            $data['customer_phone'] = $decoded->customer->contact_no;
+        }
+
+        if(isset($data['order_id']) && $data['order_id'] != ""){
+
+            $order = Order::find((int) $data['order_id']);
+
+            if(isset($order->finder_id)){
+                $data['vendor_id'] = $data['finder_id'] = $order->finder_id;
+            }
+
+            if(isset($order->finder_name)){
+                $data['vendor_name'] = $data['finder_name'] = $order->finder_name;
+            }
+
+            if(isset($order->city_id)){
+                $data['city_id'] = $order->city_id;
+            }
+
+            if($data["capture_type"] == "renew-membership"){
+                $order->update(["renew_membership"=>"requested"]);
+            }
+        }
+
+        if(isset($data['customer_phone']) && $data['customer_phone'] != ""){
+            $data['phone'] = $data['mobile'] = $data['customer_phone'];
+        }
+
+        if(isset($data['mobile']) && $data['mobile'] != ""){
+            $data['customer_phone'] = $data['phone'] = $data['mobile'];
+        }
+
+        if(isset($data['customer_name']) && $data['customer_name'] != ""){
+            $data['name'] = $data['customer_name'];
+        }
+
+        if(isset($data['customer_email']) && $data['customer_email'] != ""){
+            $data['email'] = $data['customer_email'];
+        }
+
+        if(isset($data['phone']) && $data['phone'] != ""){
+            $data['customer_phone'] = $data['mobile'] = $data['phone'];
+        }
+
+        if(isset($data['name']) && $data['name'] != ""){
+            $data['customer_name'] = $data['name'];
+        }
+
+        if(isset($data['email']) && $data['email'] != ""){
+            $data['customer_email'] = $data['email'];
+        }
+
         array_set($data, 'capture_status', 'yet to connect');
 
         if(isset($data['preferred_starting_date']) && $data['preferred_starting_date'] != "" && $data['preferred_starting_date'] != "-"){
@@ -485,6 +569,10 @@ class EmailSmsApiController extends \BaseController {
 
         array_set($data, 'date',date("h:i:sa"));
         array_set($data, 'ticket_number',random_numbers(5));
+
+        if(isset($data['finder_id']) && $data['finder_id'] != ""){
+            $data['finder_id'] = (int)$data['finder_id'];
+        }
 
         $storecapture   = Capture::create($data);
 
@@ -504,7 +592,7 @@ class EmailSmsApiController extends \BaseController {
             'send_bcc_status'   => 1
         );
 
-        $capture_type = array('fitness_canvas');
+        $capture_type = array('fitness_canvas','renew-membership');
 
         if(in_array($data['capture_type'],$capture_type)){
 
@@ -517,6 +605,9 @@ class EmailSmsApiController extends \BaseController {
         }
 
         $resp           = array('status' => 200,'capture' =>$storecapture, 'message' => "Recieved the Request");
+        if($data['capture_type'] == "renew-membership"){
+            $resp["message"] = "Thank you for your request. We will curate a renew subscription for you and get back";
+        }
         return Response::json($resp);
     }
 
@@ -593,7 +684,7 @@ class EmailSmsApiController extends \BaseController {
 
 //        var_dump($responseData);exit;
 
-        $resp = array('status' => 200,'message' => "Recieved the Request" );
+        $resp = array('status' => 200,'message' => "Recieved the Request",'capture_id'=>$storecapture->_id);
 
         if(isset($responseData) && isset($responseData['data'])){
             $resp['data'] = $responseData['data'];

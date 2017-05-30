@@ -330,6 +330,9 @@ class ServiceRankingSearchController extends \BaseController {
 
         $order         =           (Input::json()->get('sort')) ? strtolower(Input::json()->get('sort')['order']) : '';
 
+        $keys   =         (Input::json()->get('keys')) ? Input::json()->get('keys') : array();
+
+
 
         /*****************************sort********************************************************************************************/
 
@@ -361,6 +364,8 @@ class ServiceRankingSearchController extends \BaseController {
 
         $vendor_filter = ( (null !== Input::json()->get('vendor')) &&(!empty(Input::json()->get('vendor')))) ? '{"terms" : {  "findername": ["'.strtolower(implode('","', Input::json()->get('vendor'))).'"],"_cache": true}},' : '';
 
+        $vendorId_filter = ( (null !== Input::json()->get('vendor_id')) &&(!empty(Input::json()->get('vendor_id')))) ? '{"terms" : {  "finder_id": ['.Input::json()->get('vendor_id').'],"_cache": true}},' : '';
+
         $service_filter = '';
         if((null !== Input::json()->get('campaign_id')) &&(!empty(Input::json()->get('campaign_id')))){
           $campaign_id = Input::json()->get('campaign_id');
@@ -373,11 +378,17 @@ class ServiceRankingSearchController extends \BaseController {
 
         $service_type_filter = "";
         
-        if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android") && isset($_GET['app_version']) && ((float)$_GET['app_version'] >= 2.5)){
-          $service_type_filter = '{"terms" : {  "service_type": ["'.$service_type.'"],"_cache": true}},';
-        }
+        
+        $service_type_filter = '{"terms" : {  "service_type": ["'.$service_type.'"],"_cache": true}},';
 
         /***********************************Geo Range Filter*********************************/
+
+        $vendor_id = ((null !== Input::json()->get('vendor_id')) && (!empty(Input::json()->get('vendor_id')))) ? Input::json()->get('vendor_id') : "";
+
+        if($vendor_id != ""){ // if vendor dont search by lat lon
+          $lat = "";
+          $lon = "";
+        }
 
         $geo_distance_filter = '';
 
@@ -404,13 +415,33 @@ class ServiceRankingSearchController extends \BaseController {
 
       $time = ( (null !== Input::json()->get('time')) &&(!empty(Input::json()->get('time')))) ? Input::json()->get('time') : '';
 
-      $price_range_filter = '';
-      $time_range_filter = '';        
+      $price_range_filter = $price_range_above_100_filter = '{
+        "range": {
+          "workout_session_schedules_price": {
+            "gte": 100
+          }
+        }
+      },';
+
+      $time_range_filter = ''; 
+
+      if($service_type != "workout_session"){
+        $price_range_filter = $price_range_above_100_filter = "";
+      }
 
       if($price !== ''){
 
-        $price_from = isset($price['from']) ? $price['from'] : 0;
-        $price_to = isset($price['to']) ? $price['to'] : 1000000;
+        if($service_type == "workout_session"){
+
+          $price_from = (isset($price['from']) && $price['from'] >= 100 ) ? $price['from'] : 100;
+          $price_to = (isset($price['to']) && $price['to'] >= 100) ? $price['to'] : 1000000;
+
+        }else{
+
+          $price_from = (isset($price['from'])) ? $price['from'] : 0;
+          $price_to = (isset($price['to'])) ? $price['to'] : 1000000;
+
+        }
 
         $price_range_filter = '{
           "range": {
@@ -465,12 +496,13 @@ class ServiceRankingSearchController extends \BaseController {
       $mustnot_filter = "";
       $exclude_category = '{"terms" : {  "category": ["dietitians and nutritionists","healthy tiffins","marathon training","healthy snacks and beverages","sport nutrition supliment stores"]}},';
       $exclude_categorytags   = '{"terms" : {  "categorytags": ["dietitians and nutritionists","healthy tiffins","marathon training","healthy snacks and beverages","sport nutrition supliment stores"]}},';
-      $mustnot_filter = trim($exclude_category.$exclude_categorytags,',');
+      $exclude_commercial_type   = '{"terms" : {  "commercial_type": ["0"]}},';
+      $mustnot_filter = trim($exclude_commercial_type.$exclude_category.$exclude_categorytags,',');
       
 
       /**********************************************************************************************/
       
-      $bool_filter = trim($city_filter.$category_filter.$subcategory_filter.$workout_intensity_filter.$day_filter.$price_range_filter.$region_filter.$vip_trial_filter.$time_range_filter.$geo_distance_filter.$service_filter.$service_type_filter, ',');
+      $bool_filter = trim($city_filter.$category_filter.$subcategory_filter.$workout_intensity_filter.$day_filter.$price_range_filter.$region_filter.$vip_trial_filter.$time_range_filter.$geo_distance_filter.$service_filter.$service_type_filter.$vendorId_filter, ',');
 
       $post_filter_query = 
       '{
@@ -494,11 +526,11 @@ class ServiceRankingSearchController extends \BaseController {
 
       $workout_facets_filter = trim($city_filter.$subcategory_filter.$region_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$price_range_filter.$geo_distance_filter.$service_filter, ',');
 
-      $price_facets_filter = trim($city_filter.$vip_trial_filter,',');//trim($city_filter.$workout_intensity_filter.$subcategory_filter.$region_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$geo_distance_filter.$service_filter,',');
+      $price_facets_filter = trim($city_filter.$vip_trial_filter.$price_range_above_100_filter,',');//trim($city_filter.$workout_intensity_filter.$subcategory_filter.$region_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$geo_distance_filter.$service_filter,',');
 
       $vendor_facets_filter = trim($city_filter.$workout_intensity_filter.$subcategory_filter.$region_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$price_range_filter.$geo_distance_filter.$service_filter, ',');
 
-
+      $vendorId_facets_filter = trim($city_filter.$workout_intensity_filter.$subcategory_filter.$region_filter.$day_filter.$time_range_filter.$category_filter.$vip_trial_filter.$price_range_filter.$geo_distance_filter.$service_filter.$vendorId_filter, ',');
 
       $time_bool = '"filter": {
         "bool" : { "must":['.$time_facets_filter.'],"must_not": ['.$mustnot_filter.']}
@@ -526,6 +558,10 @@ class ServiceRankingSearchController extends \BaseController {
 
       $vendor_bool = '"filter": {
         "bool" : {"must":['.$vendor_facets_filter.'],"must_not": ['.$mustnot_filter.']}
+      }';
+
+      $vendorId_bool = '"filter": {
+        "bool" : {"must":['.$vendorId_facets_filter.'],"must_not": ['.$mustnot_filter.']}
       }';
 
       $region_tag_bool = '"filter": {
@@ -693,8 +729,22 @@ class ServiceRankingSearchController extends \BaseController {
         }
       },';
 
-            $facetsvalue = trim($time_facets.$category_subcategory_facets.$category_facets.$regions_facets.$region_tag_facets.$subcategory_facets.$workout_facets.$vendor_facets.$price_max_facets.$price_min_facets,',');
 
+      $vendorId_facets = ' "filtered_vendorId": {
+      '.$vendorId_bool.',
+      "aggs": {
+          "vendors": {
+            "terms": {
+              "field": "vendor_id",
+              "min_doc_count": 1,
+              "size": 500,
+              "order":{"_count": "desc"}
+            }
+          }
+        }
+      },';
+
+      $facetsvalue = trim($time_facets.$category_subcategory_facets.$category_facets.$regions_facets.$region_tag_facets.$subcategory_facets.$workout_facets.$vendor_facets.$price_max_facets.$price_min_facets.$vendorId_facets,',');
       
       /*******************************************Drilled Aggregations here ******************************************/
 
@@ -738,7 +788,10 @@ class ServiceRankingSearchController extends \BaseController {
         '.$sort.'
       }';
 
-   
+
+
+      // var_dump($query);exit();
+      // return $query;
 
       $request = array(
         'url' => $this->elasticsearch_host."/fitternity_vip_trials/service/_search",
@@ -757,8 +810,10 @@ class ServiceRankingSearchController extends \BaseController {
       $searchresulteresponse->meta->from = intval($from);
       $searchresulteresponse->meta->sortfield = $orderfield;
       $searchresulteresponse->meta->sortorder = $order;
+      $searchresulteresponse = $this->responseHandler($searchresulteresponse, $keys);
 
-      $searchresulteresponse1 = json_encode($searchresulteresponse, true);
+
+        $searchresulteresponse1 = json_encode($searchresulteresponse, true);
 
       $response       =   json_decode($searchresulteresponse1,true);
 
@@ -772,6 +827,38 @@ class ServiceRankingSearchController extends \BaseController {
       throw $e;
 
     }
+  }
+
+  public function responseHandler($response, $keys) {
+
+    if(isset($keys) && count($keys) <= 0){
+      return $response;
+    }
+
+    $resultlist = $response->results->resultlist;
+    $responseaggregationlist = $response->results->aggregationlist;
+    $responsemeta = $response->meta;
+
+    $Response = array();
+    $ResultList = array();
+    $Record = array();
+
+    foreach ($resultlist as $res){
+      $res = $res->object;
+      $newObj = array();
+      foreach ($keys as $key){
+        isset($res->$key) ? $newObj[$key]=$res->$key : null;
+      }
+      $Record['object'] = $newObj;
+      array_push($ResultList,$Record);
+    }
+
+    $Response['results'] = array();
+    $Response['results']['resultlist'] = $ResultList;
+    $Response['results']['aggregationlist'] = $responseaggregationlist;
+    $Response['meta'] = $responsemeta;
+
+    return $Response;
   }
 
     public function searchSaleRatecards(){

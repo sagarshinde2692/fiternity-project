@@ -1,5 +1,6 @@
 <?php
 
+
 return array(
 
 	/*
@@ -27,9 +28,29 @@ return array(
 	|
 	*/
 
-	'url' => 'https://a1.fitternity.com',
-//	'url' => 'http://apistg.fitn.in/',
-	//'url' => 'http://fitapi.com',
+	'url' => 'https://a1.fitternity.com', //live
+	// 'url' => 'http://apistage.fitn.in', //stage
+	// 'url' => 'http://fitapi.com', //local
+
+    'website' => 'https://www.fitternity.com', //live
+    // 'website' => 'http://apistage.fitn.in:2233', //stage
+    // 'website' => 'http://localhost:3000', //stage
+
+    'download_app_link' => 'https://goo.gl/sP81To',//https://www.fitternity.com/downloadapp',
+
+    'business' => 'http://business.fitternity.com',
+
+    'sidekiq_url' => 'http://nw.fitn.in/', //live
+   	// 'sidekiq_url' => 'http://kick.fitn.in/', //stage
+
+    'queue' => 'booktrial',
+
+	'app' =>array(
+		'discount'		=> 			2,
+		'discount_excluded_vendors' => [1747,1813,4528,4530,9984,10081],
+	),
+
+	'vendor_communication' => true,
 
 	/*
 	|--------------------------------------------------------------------------
@@ -242,21 +263,28 @@ return array(
 		'default_type' 	=> 	'finder',
 	),
 	//stage
-//	 'es' =>array(
-//	 	'url'		=> 			'139.59.16.74:1243',
-//	 	'host'		=> 			'139.59.16.74',
-//	 	'port'		=>			1243,
-//	 	'default_index' => 	'fitternity',
-//	 	'default_type' 	=> 	'finder',
-//	 ),
+	// 'es' =>array(
+	//  	'url'		=> 			'139.59.16.74:1243',
+	//  	'host'		=> 			'139.59.16.74',
+	//  	'port'		=>			1243,
+	//  	'default_index' => 	'fitternity',
+	//  	'default_type' 	=> 	'finder',
+	// ),
 	//local
-	/*'es' =>array(
-		'url'		=> 			'localhost:9200',
-		'host'		=> 			'localhost',
-		'port'		=>			9200,
-		'default_index' => 	'fitternity',
-		'default_type' 	=> 	'finder',
-	),*/
+	// 'es' =>array(
+	// 	'url'		=> 			'localhost:9200',
+	// 	'host'		=> 			'localhost',
+	// 	'port'		=>			9200,
+	// 	'default_index' => 	'fitternity',
+	// 	'default_type' 	=> 	'finder',
+	// ),
+//	'es' =>array(
+//		'url'		=> 			'localhost:9200',
+//		'host'		=> 			'localhost',
+//		'port'		=>			9200,
+//		'default_index' => 	'fitternity',
+//		'default_type' 	=> 	'finder',
+//	),
 
 
 	// 'es_host'		=> 			'localhost',
@@ -293,11 +321,35 @@ return array(
 		),
 	),
 
-	'customer_care_number' => '02261222233',
+	'customer_care_number' => '+912261222233',
 	'contact_us_vendor_email' => 'business@fitternity.com',
 	'contact_us_customer_email' => 'support@fitternity.com',
-	'contact_us_vendor_number' => '02261222233',
-	'contact_us_customer_number' => '02261222222',
+	'contact_us_vendor_number' => '+912261222233',
+	'contact_us_customer_number' => '+912261222222',
+	'followup_fitness_concierge' => 'Rachel',
+	'followup_customer_number' => '+912261222266',
+	'renewal_fitness_concierge' => 'David',
+	'renewal_customer_number' => '+912261222223',
+	'purchase_fitness_concierge' => 'David',
+	'purchase_customer_number' => '+912261222223',
+	'order_missed_call_no' => '+912233010070',
+	'confirm_order_customer_number' => '+912261222230',
+	'renewal_linksent_fitness_concierge' => 'David',
+	'renewal_linksent_customer_number' => '+912261222223',
+	'not_interested_fitness_concierge' => 'David',
+	'not_interested_customer_number' => '+912261222223',
+	'direct_customer_number' => '+912261222230',
+	'cancel_trial_missed_call_vendor' => "+912261222230",
+	'n-3_customer_number' => "+912261222230",
+	'n-3_confirm_customer_number' => "+912261222205",
+	'n+2_feedback_customer_number' => "+912261222219",
+	'diet_plan_customer_email' => 'nutrition@fitternity.com',
+	'diet_plan_customer_number' => '+912261222230',
+	'diet_plan_trainer_email' => 'nutrition@fitternity.com',
+	'diet_plan_trainer_number' => '+912261222230',
+	'direct_vendor_number' => '+912261222233',
+	'direct_ozonetel_vendor_number' => '+912261222233',
+	'direct_ozonetel_customer_number' => '+912261222242',
 
 	's3_finderurl'  => array(
 		'cover' 			=> 'https://b.fitn.in/f/c/',
@@ -325,7 +377,301 @@ return array(
 
 	'kraken_key'							=> '73dbf866dbe673867134dc90204ddf96',
 	'kraken_secret'							=> 'd206555b6c07d8e3eba3807402a183578471251e',
-	'manual_trial_auto_finderids' => []
+	'manual_trial_auto_finderids' => [],
+
+
+    'calorie_burn_categorywise'             =>   [
+        65      => 600,
+        1       => 250,
+        2       => 450,
+        4       => 350,
+        5       => 450,
+        19      => 700,
+        86      => 450,
+        111     => 800,
+        114     => 400,
+        123     => 750,
+        152     => 450,
+        154     => 300,
+        3       => 450,
+        161     => 650,
+        184     => 400
+    ],
+
+
+    'workout_results_categorywise'        =>   [
+        65      => ["tone up", "super cardio", "endurance", "muscle definition", "flat abs", "increase power"],
+        1       => ["flexibility", "feel centered & calm", "stress buster", "control breathing", "improve postures", "tone up"],
+        2       => ["catch some sexy moves", "super cardio", "stress buster", "improve co-ordination", "tone & shape legs, butt & hips", "fat burn"],
+        4       => ["super strong core", "stability", "tone & rip", "flexibility", "improve postures", "strong abs"],
+        5       => ["burn fat", "work on all muscle", "chiseled body", "super strong core", "agility", "musclar endurance"],
+        19      => ["catch some sexy moves", "super cardio", "stress buster", "fat burn", "tone & shape legs, butt & hips", "flexibility"],
+        86      => ["burn fat", "super cardio", "increase leg strength", "tone & shape legs, butt & hips", "speed", "stress buster"],
+        111     => ["tone & rip", "increase sports performance", "increase power", "musclar endurance", "strong abs", "burn fat"],
+        114     => ["super cardio", "speed", "agility", "burn fat", "endurance", "lean legs"],
+        123     => ["super cardio", "speed", "agility", "burn fat", "tone & shape legs, butt & hips", "flexibility"],
+        152     => ["catch some sexy moves", "super cardio", "stress buster", "improve co-ordination", "tone & shape legs, butt & hips", "fat burn"],
+        154     => ["super cardio", "speed", "agility", "co-ordination", "stability", "flexibility"],
+        3       => ["tone up", "co-ordination", "increase power", "work on all muscle", "stability", "increase sports performance"],
+        161     => ["burn fat", "endurance", "control breathing", "increase sports performance", "speed", "shape up"],
+        184     => ["burn fat","shape up","endurance","flat abs","flexibility","work on all muscle"]
+    ],
+
+    'emi_struct'=> array(
+		 	array(
+                "bankCode"=> "EMIA3",
+                "bankName"=> "AXIS",
+                "bankTitle"=>3,
+                "pgId"=> "8",
+                "minval"=> 500,
+                "rate"=>12
+            ),
+            array(
+                "bankCode"=> "EMIA6",
+                "bankName"=> "AXIS",
+                "bankTitle"=>6,
+                "pgId"=> "8",
+                "minval"=> 500,
+                "rate"=>12
+            ),
+            array(
+                "bankCode"=> "EMIA9",
+                "bankName"=> "AXIS",
+                "bankTitle"=>9,
+                "pgId"=> "8",
+                "minval"=> 500,
+                "rate"=>13
+            ),
+            array(
+                "bankCode"=> "EMIA12",
+                "bankName"=> "AXIS",
+                "bankTitle"=> 12,
+                "pgId"=> "8",
+                "minval"=> 500,
+                "rate"=>13
+            ),
+            
+          
+            array(
+                "bankCode"=> "EMI",
+                "bankName"=> "HDFC",
+                "bankTitle"=>3,
+                "pgId"=> "15",
+                "minval"=> 3000,
+                "rate"=>12
+            ),
+            array(
+                "bankCode"=> "EMI6",
+                "bankName"=> "HDFC",
+                "bankTitle"=>6,
+                "pgId"=> "8",
+                "minval"=> 3000,
+                "rate"=>12
+            ),
+            array(
+                "bankCode"=> "EMI9",
+                "bankName"=> "HDFC",
+                "bankTitle"=>9,
+                "pgId"=> "15",
+                "minval"=> 3000,
+                "rate"=>13
+            ),
+          	array(
+                "bankCode"=> "EMI12",
+                "bankName"=> "HDFC",
+                "bankTitle"=> 12,
+                "pgId"=> "8",
+                "minval"=> 3000,
+                "rate"=>13
+            ),
+            array(
+                "bankCode"=> "EMIHS03",
+                "bankName"=> "HSBC",
+                "bankTitle"=>3,
+                "pgId"=> "8",
+                "minval"=> 2000,
+                "rate"=>12.50
+            ),
+            array(
+                "bankCode"=> "EMIHS06",
+                "bankName"=> "HSBC",
+                "bankTitle"=>6,
+                "pgId"=> "8",
+                "minval"=> 2000,
+                "rate"=>12.50
+            ),
+            array(
+                "bankCode"=> "EMIHS09",
+                "bankName"=> "HSBC",
+                "bankTitle"=>9,
+                "pgId"=> "8",
+                "minval"=> 2000,
+                "rate"=>13.50
+            ),
+            array(
+                "bankCode"=> "EMIHS12",
+                "bankName"=> "HSBC",
+                "bankTitle"=> 12,
+                "pgId"=> "8",
+                "minval"=> 2000,
+                "rate"=>13.50
+            ),
+            array(
+                "bankCode"=> "EMIHS18",
+                "bankName"=> "HSBC",
+                "bankTitle"=> 18,
+                "pgId"=> "8",
+                "minval"=> 2000,
+                "rate"=>13.50
+            ),
+            array(
+                "bankCode"=> "EMIIC3",
+                "bankName"=> "ICICI",
+                "bankTitle"=>3,
+                "pgId"=> "8",
+                "minval"=> 1500,
+                "rate"=>13
+            ),
+			array(
+                "bankCode"=> "EMIICP6",
+                "bankName"=> "ICICI",
+                "bankTitle"=>6,
+                "pgId"=> "8",
+                "minval"=> 1500,
+                "rate"=>13
+            ),
+            array(
+                "bankCode"=> "EMIICP6",
+                "bankName"=> "ICICI",
+                "bankTitle"=>9,
+                "pgId"=> "8",
+                "minval"=> 1500,
+                "rate"=>13
+            ),
+            array(
+                "bankCode"=> "EMIIC12",
+                "bankName"=> "ICICI",
+                "bankTitle"=> 12,
+                "pgId"=> "8",
+                "minval"=> 1500,
+                "rate"=>13
+            ),
+            array(
+                "bankCode"=> "EMIIND3",
+                "bankName"=> "INDUS",
+                "bankTitle"=>3,
+                "pgId"=> "8",
+                "minval"=> 2000,
+                "rate"=>13
+            ),
+            array(
+                "bankCode"=> "EMIIND6",
+                "bankName"=> "INDUS",
+                "bankTitle"=>6,
+                "pgId"=> "8",
+                "minval"=> 2000,
+                "rate"=>13
+            ),
+            array(
+                "bankCode"=> "EMIIND9",
+                "bankName"=> "INDUS",
+                "bankTitle"=>9,
+                "pgId"=> "8",
+                "minval"=> 2000,
+                "rate"=>13
+            ),           
+            array(
+                "bankCode"=> "EMIIND12",
+                "bankName"=> "INDUS",
+                "bankTitle"=> 12,
+                "pgId"=> "8",
+                "minval"=> 2000,
+                "rate"=>13
+            ),
+            array(
+                "bankCode"=> "EMIIND18",
+                "bankName"=> "INDUS",
+                "bankTitle"=> 18,
+                "pgId"=> "8",
+                "minval"=> 2000,
+                "rate"=>15
+            ),
+            array(
+                "bankCode"=> "EMIIND24",
+                "bankName"=> "INDUS",
+                "bankTitle"=> 24,
+                "pgId"=> "8",
+                "minval"=> 2000,
+                "rate"=>15
+            ),
+            array(
+                "bankCode"=> "EMIK3",
+                "bankName"=> "KOTAK",
+                "bankTitle"=>3,
+                "pgId"=> "8",
+                "minval"=> 500,
+                "rate"=>12
+            ),
+            array(
+                "bankCode"=> "EMIK6",
+                "bankName"=> "KOTAK",
+                "bankTitle"=>6,
+                "pgId"=> "8",
+                "minval"=> 500,
+                "rate"=>12
+            ),
+            array(
+                "bankCode"=> "EMIK9",
+                "bankName"=> "KOTAK",
+                "bankTitle"=>9,
+                "pgId"=> "8",
+                "minval"=> 500,
+                "rate"=>14
+            ),
+            array(
+                "bankCode"=> "EMIK12",
+                "bankName"=> "KOTAK",
+                "bankTitle"=> 12,
+                "pgId"=> "8",
+                "minval"=> 500,
+                "rate"=>14
+            ),
+            array(
+                "bankCode"=> "SBI03",
+                "bankName"=> "SBI",
+                "bankTitle"=>3,
+                "pgId"=> "8",
+                "minval"=> 2500,
+                "rate"=>14
+            ),
+            array(
+                "bankCode"=> "SBI06",
+                "bankName"=> "SBI",
+                "bankTitle"=>6,
+                "pgId"=> "8",
+                "minval"=> 2500,
+                "rate"=>14
+            ),
+            array(
+                "bankCode"=> "SBI03",
+                "bankName"=> "SBI",
+                "bankTitle"=>9,
+                "pgId"=> "8",
+                "minval"=> 2500,
+                "rate"=>14
+            ),
+            array(
+                "bankCode"=> "SBI06",
+                "bankName"=> "SBI",
+                "bankTitle"=>12,
+                "pgId"=> "8",
+                "minval"=> 2500,
+                "rate"=>14
+            )
+        ),
+    'test_page_users' => ['dhruvsarawagi@fitternity.com', 'utkarshmehrotra@fitternity.com', 'sailismart@fitternity.com', 'neha@fitternity.com', 'pranjalisalvi@fitternity.com', 'maheshjadhav@fitternity.com', 'gauravravi@fitternity.com', 'nishankjain@fitternity.com', 'laxanshadesara@fitternity.com','mjmjadhav@gmail.com','gauravraviji@gmail.com','kushagra@webbutterjam.com','beltezzarthong@fitternity.com'],
+    'test_vendors' => ['fitternity-test-page-bandra-west', 'test-healthy-vendor']
+
 
 
 );

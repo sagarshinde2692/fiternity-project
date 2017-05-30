@@ -77,10 +77,16 @@ return array(
 			'encrypt' => true,
 		),*/
 
-		'redis' => array(
-			'driver' => 'redis',
-			'queue'  => 'booktrial',
-		),
+		//live
+//		'redis' => array(
+//			'driver' => 'redis',
+//			'queue'  => 'booktrial',
+//		),
+        //
+        'redis' => array(
+            'driver' => 'redis',
+            'queue'  => 'booktrial',
+        ),
 
 	),
 

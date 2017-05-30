@@ -9,7 +9,7 @@
 use App\Services\Translator;
 use App\Responsemodels\AutocompleteResponse;
 use App\Responsemodels\FinderresultResponse;
-use \RedisL4;
+// use \RedisL4;
 use App\Services\Cacheapi as Cacheapi;
 
 
@@ -788,6 +788,7 @@ catch(Exception $e){
 }
 
 public function newglobalsearch(){
+   
    $type     =         Input::json()->get('type');
    $from     =         Input::json()->get('offset')['from'];
    $size     =         Input::json()->get('offset')['number_of_records'] ? Input::json()->get('offset')['number_of_records'] : 10;
@@ -796,6 +797,19 @@ public function newglobalsearch(){
    $location =         Input::json()->get('location');
    $lat      =         isset($location['lat']) ? $location['lat'] : '';
    $lon      =         isset($location['long']) ? $location['long'] : '';
+   $city     =  getmy_city($city);
+   $customer_email = null;
+   $jwt_token = Request::header('Authorization');
+   if($jwt_token){
+        Log::info("inside");
+        $decoded = $this->customerTokenDecode($jwt_token);
+        if($decoded){
+            $customer_email = $decoded->customer->email;
+        }
+        
+   }
+   
+   
         //  $keys    =          array_diff($keys1, array(''));
         $geo_location_filter   =   '';//($lat != '' && $lon != '') ? '{"geo_distance" : {  "distance": "10km","distance_type":"plane", "geolocation":{ "lat":'.$lat. ',"lon":' .$lon. '}}},':'';
         $city_filter =  '{ "term": { "city": "'.$city.'", "_cache": true } },';
@@ -812,16 +826,15 @@ public function newglobalsearch(){
      }
 
 
-     $keylist   = array_filter(explode(" ", $string1));
+    $keylist   = array_filter(explode(" ", $string1));
 
-     if(sizeof($keylist) > 1){
-        if(($keylist[1] === 'i')){
-            array_splice($keylist, 1);
-        }
+    if(sizeof($keylist) > 1 && isset($keylist[1]) && $keylist[1] === 'i'){
+        array_splice($keylist, 1);
     }
+
     $firstwordscript = '';
 
-    if(isset($keylist[0]) && $keylist[0] === 'i'){
+    if(sizeof($keylist) > 1 && isset($keylist[0]) && $keylist[0] === 'i'){
         $firstwordscript = '{
             "script_score": {            
                 "params": {
@@ -832,6 +845,7 @@ public function newglobalsearch(){
             }                                           
         },';
     }
+
     // Boost to brand........
     $brandscript = '';
 //    if(isset($type) && $type == 'brand'){
@@ -1308,7 +1322,7 @@ $request = array(
 $search_results     =   es_curl_request($request);
 $search_results1    =   json_decode($search_results, true);
 
-$autocompleteresponse = Translator::translate_autocomplete($search_results1, $city);
+$autocompleteresponse = Translator::translate_autocomplete($search_results1, $city, $customer_email);
 $autocompleteresponse->meta->number_of_records = $size;
 $autocompleteresponse->meta->from = $from;
 $autocompleteresponse1 = json_encode($autocompleteresponse, true);
@@ -1337,7 +1351,13 @@ public function improvedkeywordSearch(){
         $brand    =         Input::json()->get('brand_id') ? Input::json()->get('brand_id') : array();
         $servicecategory =   Input::json()->get('servicecategory') ? Input::json()->get('servicecategory') : array();
         $sort_clause = '';
-
+        $keys   =         (Input::json()->get('keys')) ? Input::json()->get('keys') : array();
+        if(count($category) > 0){
+            $category[0] = str_replace("-"," ",$category[0]);
+        }
+        // if(count($location) > 0){
+        //     $location[0] = str_replace("-"," ",$location[0]);
+        // }
         /*
 
         All static filters and static clause, 
@@ -1376,7 +1396,7 @@ public function improvedkeywordSearch(){
         }
 
         if(sizeof($location) > 0){
-         $regions_filter = '{"terms" : {  "locationtags": ["'.strtolower(implode('","', $location)).'"]}},';
+         $regions_filter = '{"terms" : {  "locationtags_slug": ["'.strtolower(implode('","', $location)).'"]}},';
      }
     
     
@@ -1461,7 +1481,7 @@ if($mustfilter_post != ''){
         "bool" : {'.$filtervalue_post.'}
     }';
 }
-$location_facets_filter = trim($city_filter,',');
+$location_facets_filter = trim($city_filter.$regions_filter,',');
 $facilities_facets_filter = trim($city_filter.$regions_filter.$geo_location_filter.$category_filter, ',');
 $offerings_facets_filter = trim($city_filter.$regions_filter.$facilities_filter.$geo_location_filter.$category_filter, ',');
 $budgets_facets_filter = trim($city_filter.$regions_filter.$facilities_filter.$offerings_filter.$geo_location_filter.$category_filter, ',');
@@ -1489,7 +1509,7 @@ $location_facets = ' "filtered_locationtags": {
     "aggs": {
         "locationstags": {
             "terms": {
-                "field": "locationtags",                    
+                "field": "locationtags_slug",                    
                 "min_doc_count": 1,
                 "size": 500,
                 "order":{"_term": "asc"}
@@ -1498,28 +1518,62 @@ $location_facets = ' "filtered_locationtags": {
     }
 },';
 
-$regions_facets = '
-"filtered_locations": { '.$location_bool.', 
-"aggs":
-{ "loccluster": {
-    "terms": {
-        "field": "locationcluster",
-        "min_doc_count":1
-    },
-    "aggs": {
-      "region": {      
-        "terms": {
-            "field": "location",
-            "min_doc_count":1,
-            "size":"500",
-            "order": {
-              "_term": "asc"
-          }
+// $regions_facets = '
+// "filtered_locations": { '.$location_bool.', 
+// "aggs":
+// { "loccluster": {
+//     "terms": {
+//         "field": "locationcluster",
+//         "min_doc_count":1
+//     },
+//     "aggs": {
+//       "region": {      
+//         "terms": {
+//             "field": "location",
+//             "min_doc_count":1,
+//             "size":"500",
+//             "order": {
+//               "_term": "asc"
+//           }
 
-      }
-  }
-}}}
-},';
+//       }
+//   }
+// }}}
+// },';
+$regions_facets = '
+        "filtered_locations": { '.$location_bool.', 
+        "aggs":{ 
+            "loccluster": {
+                    "terms": {
+                        "field": "locationcluster",
+                        "min_doc_count":1
+
+                    },"aggs": {
+                    "region": {
+                        "nested": {
+                            "path": "main_location_obj"
+                        },
+                        "aggs": {
+                            "attrs": {
+                            "terms": {
+                                "field": "main_location_obj.name",
+                                "min_doc_count":1,
+                                "size":"500",
+                                "order" : { "_term" : "asc" }
+                            },
+                            "aggs": {
+                                "attrsValues": {
+                                "terms": {
+                                    "field": "main_location_obj.slug",
+                                    "size": 100
+                                }
+                                }
+                            }
+                            }
+                        }
+                }
+            }}}
+        },';
 
 $facilities_facets = ' "filtered_facilities": {
     '.$facilities_bool.',
@@ -1878,7 +1932,7 @@ $query = '{
     }'.$filters_post.$sort_clause.'
 }';
 
-// return $query;
+// return json_decode($query,true);
 $request = array(
     'url' => Config::get('app.es.url')."/fitternity_finder/finder/_search",
     'port' => Config::get('app.es.port'),
@@ -1888,14 +1942,19 @@ $request = array(
 
 $search_results     =   es_curl_request($request);
 $search_results1    =   json_decode($search_results, true);
-$searchresulteresponse = Translator::translate_searchresultskeywordsearch($search_results1);
-$searchresulteresponse->meta->number_of_records = $size;
-$searchresulteresponse->meta->from = $from;
-$searchresulteresponse->meta->sortfield = $sort;
-$searchresulteresponse->meta->sortorder = $order;
-$searchresulteresponse->meta->categoryfilters = $category;
-$searchresulteresponse->meta->locationfilters = $location;
-
+$search_request     =   Input::json()->all();
+$searchresulteresponse = Translator::translate_searchresultsv4($search_results1,$search_request,$keys);
+// $searchresulteresponse = Translator::translate_searchresultskeywordsearch($search_results1);
+// $searchresulteresponse->metadata = $this->getOfferingHeader($category,$location);
+$searchresulteresponse->metadata->total_records = intval($search_results1['hits']['total']);
+$searchresulteresponse->metadata->number_of_records = intval($size);
+$searchresulteresponse->metadata->from = intval($from);
+$category = count($search_request['category']) == 0 ? $this->checkCategory($search_request) : $search_request['category'];
+$location = isset($search_request['regions']) && count($search_request['regions']) == 0 ? $this->checkLocation($search_request) : $search_request['regions'];
+$searchresulteresponse->metadata->request = Input::all();
+$searchresulteresponse->metadata->request['category'] = $category != "" ? array($category) : array();
+$searchresulteresponse->metadata->request['regions'] = $location != "" ? array($location) : array();
+// $searchresulteresponse = $this->CustomResponse($searchresulteresponse, $keys);
 $searchresulteresponse1 = json_encode($searchresulteresponse, true);
 
 $response       =   json_decode($searchresulteresponse1,true);
@@ -1906,6 +1965,66 @@ catch(Exception $e){
    throw $e;
 }
 }
+
+public function checkCategory($request){
+    $string = $request['key'];
+    $categories = citywise_categories("all");
+    foreach ($categories as $url) {
+        //if (strstr($string, $url)) { // mine version
+        if (strpos($string, strtolower($url["name"])) !== FALSE) { // Yoshi version
+            return strtolower($url["slug"]);
+        }
+    }
+    return "";
+}
+
+public function checkLocation($request){
+    $string = $request['key'];
+    $city_id = City::where('name',strtolower($request['city']))->first();
+    $location = Locationtag::where('cities',$city_id['_id'])->get(array('name','slug'));
+    foreach ($location as $url) {
+        //if (strstr($string, $url)) { // mine version
+        if (strpos($string, strtolower($url['name'])) !== FALSE) { // Yoshi version
+            return $url['slug'];
+        }
+    }
+    return "";
+}
+
+
+
+public function CustomResponse($response, $keys) {
+
+    if(count($keys) <= 0){
+        return $response;
+    }
+
+    $resultlist = $response->results->resultlist;
+    $responseaggregationlist = $response->results->aggregationlist;
+    $responsemeta = $response->meta;
+
+    $newResponse = array();
+    $newResultList = array();
+    $newRecord = array();
+
+    foreach ($resultlist as $res){
+        $res = $res->object;
+        $newObj = array();
+        foreach ($keys as $key){
+            isset($res->$key) ? $newObj[$key]=$res->$key : null;
+        }
+        $newRecord['object'] = $newObj;
+        array_push($newResultList,$newRecord);
+    }
+
+    $newResponse['results'] = array();
+    $newResponse['results']['resultlist'] = $newResultList;
+    $newResponse['results']['aggregationlist'] = $responseaggregationlist;
+    $newResponse['meta'] = $responsemeta;
+
+    return $newResponse;
+}
+
 
 public function preparekeywordsearchcache(){
 
@@ -2003,6 +2122,23 @@ private function _getCategoryRegex($city){
         }
 
         return Response::json($response,$response['status']);
+    }
+
+    public function customerTokenDecode($token){
+
+        $jwt_token = $token;
+
+        $jwt_key = Config::get('app.jwt.key');
+        $jwt_alg = Config::get('app.jwt.alg');
+        try {
+            $decodedToken = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+
+        }catch (Exception $e) {
+            Log::info($e);
+            return null;
+        }
+        
+        return $decodedToken;
     }
 
 }

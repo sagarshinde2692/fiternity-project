@@ -68,144 +68,163 @@ class GlobalPushController extends \BaseController
     sleep(5);
 
     $settings = '{
-        "analysis": {
-          "analyzer": {
-            "synonymanalyzer":{
-              "tokenizer": "standard",
-              "filter": ["lowercase", "locationsynfilter"]
-            },          
-            "locationanalyzer":{
-              "type": "custom",
-              "tokenizer": "standard",
-              "filter": ["standard", "locationsynfilter", "lowercase","delimiter-filter"],
-              "tokenizer": "my_ngram_tokenizer"            
-            },
-            "search_analyzer": {
-              "type": "custom",
-              "filter": [
-              "lowercase"
-              ],
-              "tokenizer": "standard"
-            },
-            "index_analyzerV1": {
-              "type": "custom",
-              "filter": [
-              "standard",
-              "lowercase"
-              ],
-              "tokenizer": "my_ngram_tokenizer"
-            },
-            "index_analyzerV2": {
-              "type": "custom",
-              "filter": [
-              "standard",
-              "lowercase",
-              "ngram-filter"
-              ],
-              "tokenizer": "standard"
-            },
-            "input_analyzer": {
-              "type": "custom",
-              "tokenizer": "standard",
-              "filter": [
-              "standard",
-              "lowercase",                        
-              "ngram-filter"
-              ]
-            }
-          },
-          "tokenizer": {
-            "my_ngram_tokenizer": {
-              "type": "edgeNGram",
-              "min_gram": "3",
-              "max_gram": "20"
-            },
-            "input_ngram_tokenizer": {
-              "type": "edgeNGram",
-              "min_gram": "2",
-              "max_gram": "25"
-            }
-          },
-          "filter": {
-            "ngram-filter": {
-              "type": "edgeNGram",
-              "min_gram": "1",
-              "max_gram": "20"
-            },
-            "stop-filter": {
-              "type": "stop",
-              "stopwords": "_english_",
-              "ignore_case": "true"
-            },
-            "snowball-filter": {
-              "type": "snowball",
-              "language": "english"
-            },
-            "delimiter-filter": {
-              "type": "word_delimiter",
-              "preserve_original" : true
-            },
-            "locationsynfilter":{
-              "type": "synonym",
-              "synonyms" : [
-              "lokhandwala,andheri west",
-              "versova,andheri west",
-              "oshiwara,andheri west",
-              "chakala,andheri east",
-              "jb nagar,andheri east",
-              "marol,andheri east",
-              "sakinaka,andheri east",
-              "chandivali,powai",
-              "vidyavihar,ghatkopar",
-              "dharavi,sion",
-              "chunabatti,sion",
-              "deonar,chembur",
-              "govandi,chembur",
-              "anushakti nagar,chembur",
-              "charkop,kandivali",
-              "seven bungalows,andheri west",
-              "opera house,grant road",
-              "nana chowk,grant road",
-              "shivaji park,dadar",
-              "lalbaug,dadar",
-              "walkeshwar,malabar hill",
-              "tilak nagar,chembur",
-              "vashi,navi mumbai",
-              "sanpada,navi mumbai",
-              "juinagar,navi mumbai",
-              "nerul,navi mumbai",
-              "seawoods,navi mumbai",
-              "cbd belapur,navi mumbai",
-              "kharghar,navi mumbai",
-              "airoli,navi mumbai",
-              "kamothe,navi mumbai",
-              "kopar khairan,navi mumbai",
-              "gamdevi,hughes road",
-              "mazgaon,byculla",
-              "navi mumbai,vashi",
-              "navi mumbai,sanpada",
-              "navi mumbai,juinagar",
-              "navi mumbai,nerul",
-              "navi mumbai,seawoods",
-              "navi mumbai,cbd belapur",
-              "navi mumbai,kharghar",
-              "navi mumbai,airoli",
-              "navi mumbai,kamothe",
-              "navi mumbai,kopar khairan",
-              "gamdevi,hughes road",
-              "mazgaon,byculla"
-              ]
-            },
-            "titlesynfilter":{
-              "type": "synonym",
-              "synonyms": [
-              "golds , gold",
-              "talwalkars, talwalkar"
-              ]
-            }
-          }
-        }
-      }';
+  "analysis": {
+    "analyzer": {
+      "synonymanalyzer": {
+        "tokenizer": "standard",
+        "filter": ["lowercase", "locationsynfilter"]
+      },
+      "locationanalyzer": {
+        "type": "custom",
+        "filter": ["standard", "locationsynfilter", "lowercase", "delimiter-filter"],
+        "tokenizer": "my_ngram_tokenizer"
+      },
+      "categoryanalyzer": {
+        "type": "custom",
+        "filter": ["standard", "categorysynfilter", "lowercase", "delimiter-filter"],
+        "tokenizer": "my_ngram_tokenizer"
+      },
+      "search_analyzer": {
+        "type": "custom",
+        "filter": [
+          "lowercase"
+        ],
+        "tokenizer": "standard"
+      },
+      "index_analyzerV1": {
+        "type": "custom",
+        "filter": [
+          "standard",
+          "lowercase"
+        ],
+        "tokenizer": "my_ngram_tokenizer"
+      },
+      "index_analyzerV2": {
+        "type": "custom",
+        "filter": [
+          "standard",
+          "lowercase",
+          "ngram-filter"
+        ],
+        "tokenizer": "standard"
+      },
+      "input_analyzer": {
+        "type": "custom",
+        "tokenizer": "standard",
+        "filter": [
+          "standard",
+          "lowercase",
+          "ngram-filter",
+          "titlesynfilter"
+        ]
+      }
+    },
+    "tokenizer": {
+      "my_ngram_tokenizer": {
+        "type": "edgeNGram",
+        "min_gram": "3",
+        "max_gram": "20"
+      },
+      "input_ngram_tokenizer": {
+        "type": "edgeNGram",
+        "min_gram": "2",
+        "max_gram": "25"
+      }
+    },
+    "filter": {
+      "ngram-filter": {
+        "type": "edgeNGram",
+        "min_gram": "1",
+        "max_gram": "20"
+      },
+      "stop-filter": {
+        "type": "stop",
+        "stopwords": "_english_",
+        "ignore_case": "true"
+      },
+      "snowball-filter": {
+        "type": "snowball",
+        "language": "english"
+      },
+      "delimiter-filter": {
+        "type": "word_delimiter",
+        "preserve_original": true
+      },
+      "locationsynfilter": {
+        "type": "synonym",
+        "synonyms": [
+          "lokhandwala,andheri west",
+          "versova,andheri west",
+          "oshiwara,andheri west",
+          "chakala,andheri east",
+          "jb nagar,andheri east",
+          "marol,andheri east",
+          "sakinaka,andheri east",
+          "chandivali,powai",
+          "vidyavihar,ghatkopar",
+          "dharavi,sion",
+          "chunabatti,sion",
+          "deonar,chembur",
+          "govandi,chembur",
+          "anushakti nagar,chembur",
+          "charkop,kandivali",
+          "seven bungalows,andheri west",
+          "opera house,grant road",
+          "nana chowk,grant road",
+          "shivaji park,dadar",
+          "lalbaug,dadar",
+          "walkeshwar,malabar hill",
+          "tilak nagar,chembur",
+          "vashi,navi mumbai",
+          "sanpada,navi mumbai",
+          "juinagar,navi mumbai",
+          "nerul,navi mumbai",
+          "seawoods,navi mumbai",
+          "cbd belapur,navi mumbai",
+          "kharghar,navi mumbai",
+          "airoli,navi mumbai",
+          "kamothe,navi mumbai",
+          "kopar khairan,navi mumbai",
+          "gamdevi,hughes road",
+          "mazgaon,byculla",
+          "navi mumbai,vashi",
+          "navi mumbai,sanpada",
+          "navi mumbai,juinagar",
+          "navi mumbai,nerul",
+          "navi mumbai,seawoods",
+          "navi mumbai,cbd belapur",
+          "navi mumbai,kharghar",
+          "navi mumbai,airoli",
+          "navi mumbai,kamothe",
+          "navi mumbai,kopar khairan",
+          "gamdevi,hughes road",
+          "mazgaon,byculla"
+        ]
+      },
+      "categorysynfilter": {
+        "type": "synonym",
+        "synonyms": [
+          "gyms,gymnasium, gym deals, gym workout",
+          "zumba,zumba fitness,zumba workout,zumba dance,zumba dance workout,zumba instructor,zumba weight loss,zumba training,aerobics",
+          "crossfit,crossfit workouts,crossfit training,crossfit box,crossfit gym,crossfit weight loss,crossfit fitness",
+          "pilates,pilates exercises,pilates weiht loss",
+          "mma and kick boxing,kickboxing classes,mixed martial arts,mma,kickboxing training",
+          "marathon training,marathon coach,marathon fitness,half marathon training,running clubs,marathon training clubs",
+          "healthy tiffins,tiffins,tiffining,tiffing service,tiffing",
+          "personal trainers,yoga instructor,yoga trainer"
+        ]
+      },
+      "titlesynfilter": {
+        "type": "synonym",
+        "synonyms": [
+          "golds , gold, gold\'s",
+          "talwalkars, talwalkar"
+        ]
+
+      }
+    }
+  }
+}';
 
     /*
     add setting to new index
@@ -288,7 +307,7 @@ class GlobalPushController extends \BaseController
             },
             "inputcat1":{
               "type": "string",
-              "index_analyzer": "index_analyzerV2"
+              "index_analyzer": "categoryanalyzer"
             },
             "inputservicecat":{
               "type": "string",
@@ -377,8 +396,10 @@ class GlobalPushController extends \BaseController
   public function pushfinders($index_name, $city_id){
 
     ini_set('max_execution_time', 30000);
-
-    $indexdocs = Finder::active()->with(array('country'=>function($query){$query->select('name');}))
+    // ini_set('memory_limit', '512M');
+    $city_id = (int) $city_id;
+    $indexdocs = Finder::active()->where('city_id', $city_id)
+        ->with(array('country'=>function($query){$query->select('name');}))
         ->with(array('city'=>function($query){$query->select('name');}))
         ->with(array('category'=>function($query){$query->select('name','meta');}))
         ->with(array('location'=>function($query){$query->select('name','locationcluster_id' );}))
@@ -386,23 +407,22 @@ class GlobalPushController extends \BaseController
         ->with('locationtags')
         ->with('offerings')
         ->with('facilities')
-        ->with('services')
+        // ->with('services')
         ->orderBy('_id')
-        ->where('city_id', $city_id)
 //          ->take(1000)->skip(0)
-        ->take(50000)->skip(0)
+        ->take(80000)->skip(0)
         ->timeout(400000000)
-        ->get();
+        ->get(array("title","country_id","country","city_id","city","category_id","category","location_id","location","categorytags","locationtags","offerings","facilities","slug","business_type","lat","lon"));
 
 //      var_dump($indexdocs);
 //      exit();
 
-//      Log::info('I have $indexdocs.......');
+     Log::info('I have $indexdocs.......');
 
 
     foreach ($indexdocs as $data) {
 
-//        Log::info('Processing $indexdocs $data.......');
+       Log::info('Processing $indexdocs $data.......');
 
 
       //Exclude exceptional Finders.........
@@ -414,19 +434,20 @@ class GlobalPushController extends \BaseController
 
       $clusterid = '';
 
-      if(!isset($data['location']['locationcluster_id']))
-      {
-        continue;
-      }
+      // if(!isset($data['location']['locationcluster_id']))
+      // {
+      //   continue;
+      // }
 
-      else
-      {
-        $clusterid  = $data['location']['locationcluster_id'];
-      }
+      // else
+      // {
+      //   $clusterid  = $data['location']['locationcluster_id'];
+      // }
 
-      $locationcluster = Locationcluster::active()->where('_id',$clusterid)->get();
-      $locationcluster->toArray();
-      $cluster = (isset($locationcluster[0]) && isset($locationcluster[0]['name'])) ? $locationcluster[0]['name'] : '';
+      // $locationcluster = Locationcluster::active()->where('_id',$clusterid)->get();
+      // $locationcluster->toArray();
+      // $cluster = (isset($locationcluster[0]) && isset($locationcluster[0]['name'])) ? $locationcluster[0]['name'] : '';
+      $cluster = '';
 
 //        Log::info('$data for autosuggest.......');
 
@@ -435,7 +456,7 @@ class GlobalPushController extends \BaseController
 
       $postfields_data = json_encode($postdata);
 
-//        Log::info('$postfields_data for autosuggest.......');
+       Log::info('$postfields_data for autosuggest.......');
 
 
       // $postfields_data    =   json_encode(json_decode($mapping,true));
@@ -448,9 +469,9 @@ class GlobalPushController extends \BaseController
       );
 
       $user = es_curl_request($request);
-//        Log::info('finder entry in index........');
+       Log::info('finder entry in index........'.$data['_id']);
 
-//        Log::info('done vendors of city ',array($city_id));
+       Log::info('done vendors of city ',array($city_id));
 
     }
   }
@@ -465,7 +486,8 @@ class GlobalPushController extends \BaseController
           '$group' => array(
               '_id' => array(
                   'brand_id' => '$brand_id',
-                  'city_id' => '$city_id'
+                  'city_id' => '$city_id',
+                  'status' => '1'
               ),
               'count' => array(
                   '$sum' => 1
@@ -512,7 +534,7 @@ class GlobalPushController extends \BaseController
       $categorytags = Findercategorytag::active()
           ->with('cities')
           ->where('cities', $city)
-          ->whereNotIn('_id', array(22))
+          ->whereNotIn('_id', array(22,30))
           ->get();
 
       $locationtags = Location::where('cities', $city)
@@ -548,7 +570,7 @@ class GlobalPushController extends \BaseController
 
     }
 
-    Log::info("done servicecategorylocations.......");
+    Log::info("done findercategorylocations.......");
 
   }
 
@@ -567,17 +589,41 @@ class GlobalPushController extends \BaseController
 
       $finders = Finder::where('city_id', (int) $city)->active()->lists('_id');
 
-      $services = Service::active()
+
+    $services = Service::raw(function($collection) use($city,$finders){
+
+            $aggregate = [];
+            $match['$match']['servicecategory_id']['$nin'] = array(111);
+            $match['$match']['servicesubcategory_id']['$nin'] = array(112,1,2,4,5,19,27,65,82,83,85,111,112,114,115,123,124,138,147,152,153,154,155,170,180,184);
+            $match['$match']['city_id'] = (int) $city;
+            $match['$match']['status'] = "1";
+            $match['$match']['finder_id']['$in'] = $finders;
+
+            $aggregate[] = $match;
+
+            $group = array(
+              '$group' => array(
+                '_id' => array(
+                  'servicesubcategory_id' => '$servicesubcategory_id',
+                  'location_id'	=> '$location_id'
+                  )
+                )
+              );
+
+            $aggregate[] = $group;
+
+            return $collection->aggregate($aggregate);
+
+          });
+          $services = array_fetch($services['result'],"_id.servicesubcategory_id");
+          // return $services;
+       $services = Service::active()
+          ->whereIn('_id', $services)
           ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
           ->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
           ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-          ->where('city_id', (int) $city)
-          ->whereIn('finder_id', $finders)
           ->get(array('city_id','city','servicesubcategory_id','subcategory','location','location_id'))
           ->toArray();
-
-//        var_dump($services);
-//        exit();
 
 
       $servicecategories = array();
@@ -635,7 +681,7 @@ class GlobalPushController extends \BaseController
       $categorytags = Findercategorytag::active()
           ->with('cities')
           ->where('cities', $city)
-          ->whereNotIn('_id', array(22))
+          ->whereNotIn('_id', array(22,30))
           ->get();
 
       foreach ($categorytags as $cat) {
@@ -659,7 +705,7 @@ class GlobalPushController extends \BaseController
           ->whereIn('cities',array($city))
           ->with('offerings')
           ->orderBy('ordering')
-          ->whereNotIn('_id', array(22))
+          ->whereNotIn('_id', array(22,30))
           ->get(array('_id','name','offering_header','slug','status','offerings'));
 
       foreach ($categorytag_offerings as $cat) {
@@ -794,7 +840,7 @@ class GlobalPushController extends \BaseController
           ->whereIn('cities',array($city))
           ->with('offerings')
           ->orderBy('ordering')
-          ->whereNotIn('_id', array(22))
+          ->whereNotIn('_id', array(22,30))
           //->whereIn('_id',array(32))
           ->get(array('_id','name','offering_header','slug','status','offerings'));
 
@@ -925,7 +971,7 @@ class GlobalPushController extends \BaseController
       $categorytags = Findercategorytag::active()
           ->with('cities')
           ->where('cities', $city)
-          ->whereNotIn('_id', array(22))
+          ->whereNotIn('_id', array(22,30))
           ->get();
 
       foreach ($categorytags as $cat) {
@@ -952,7 +998,7 @@ class GlobalPushController extends \BaseController
       $categorytags = Findercategorytag::active()
           ->with('cities')
           ->where('cities', $city)
-          ->whereNotIn('_id', array(22))
+          ->whereNotIn('_id', array(22,30))
           ->get();
 
       foreach ($categorytags as $cat) {
@@ -1000,13 +1046,55 @@ class GlobalPushController extends \BaseController
 
       $finders = Finder::active()->where('city_id', (int) $city)->lists('_id');
 
-      $services = Service::active()
+      // $services = Service::active()
+      //     ->whereNotIn('servicecategory_id', array(111))
+      //     ->whereNotIn('servicesubcategory_id', array(112,1,2,4,5,19,27,65,82,83,85,111,112,114,115,123,124,138,147,152,153,154,155,170,180,184))
+      //     ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
+      //     ->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
+      //     ->where('city_id', (int) $city)
+      //     ->whereIn('finder_id', $finders)
+      //     ->get(array('city_id','city','servicesubcategory_id','subcategory'))
+      //     ->toArray();
+
+
+
+      $services = Service::raw(function($collection) use($city,$finders){
+
+            $aggregate = [];
+            $match['$match']['servicecategory_id']['$nin'] = array(111);
+            $match['$match']['servicesubcategory_id']['$nin'] = array(112,1,2,4,5,19,27,65,82,83,85,111,112,114,115,123,124,138,147,152,153,154,155,170,180,184);
+            $match['$match']['city_id'] = (int) $city;
+            $match['$match']['status'] = "1";
+            $match['$match']['finder_id']['$in'] = $finders;
+
+            $aggregate[] = $match;
+
+            $group = array(
+              '$group' => array(
+                '_id' => array(
+                  'servicesubcategory_id' => '$servicesubcategory_id',
+                  'location_id'	=> '$location_id'
+                  )
+                )
+              );
+
+            $aggregate[] = $group;
+
+            return $collection->aggregate($aggregate);
+
+          });
+          $services = array_fetch($services['result'],"_id.servicesubcategory_id");
+          // return $services;
+       $services = Service::active()
+          ->whereIn('_id', $services)
           ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
           ->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))
-          ->where('city_id', (int) $city)
-          ->whereIn('finder_id', $finders)
-          ->get(array('city_id','city','servicesubcategory_id','subcategory'))
+          ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+          ->get(array('city_id','city','servicesubcategory_id','subcategory','location','location_id'))
           ->toArray();
+
+
+
 
       $servicecategories = array();
 
@@ -1470,7 +1558,7 @@ class GlobalPushController extends \BaseController
         $string = 'All Fitness options in '.ucwords($loc['name']);
         $postdata = get_elastic_autosuggest_allfitness_doc($loc, $cityname, $string);
         $postfields_data = json_encode($postdata);
-        $request = array('url' => $this->elasticsearch_url, 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
+        $request = array('url' => $this->elasticsearch_url_build.$index_name.'/autosuggestor/', 'port' => $this->elasticsearch_port, 'method' => 'POST', 'postfields' => $postfields_data);
         echo "<br> ---  ".es_curl_request($request);
       }
     }

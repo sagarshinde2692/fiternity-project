@@ -13,12 +13,18 @@ use App\Mailers\FinderMailer as FinderMailer;
 use App\Mailers\CustomerMailer as CustomerMailer;
 use App\Services\Sidekiq as Sidekiq;
 use App\Services\Bulksms as Bulksms;
+use App\Services\Utilities as Utilities;
+
+use \Pubnub\Pubnub as Pubnub;
 
 class DebugController extends \BaseController {
+
+	public $fitapi;
 
 	public function __construct(FinderMailer $findermailer) {
 
 		$this->findermailer						=	$findermailer;
+		$this->fitapi = 'mongodb2';
 
 	}
 
@@ -2588,7 +2594,7 @@ public function testEmail(){
 
 	public function removePersonalTrainerStudio(){
 
-		$reward_id = Reward::where("reward_type","personal_trainer_at_studio")->lists("_id");
+		$reward_id = Reward::where("reward_type","healthy_snacks")->lists("_id");
 
 		// $reward = Reward::where("reward_type","personal_trainer_at_studio")->delete();
 
@@ -2624,6 +2630,1697 @@ public function testEmail(){
 		echo "done";
 	}
 
+
+	public function latLonSwap(){
+		
+		try{
+
+			ini_set('memory_limit', '-1');
+        	ini_set('max_execution_time', 3000);
+
+			$offset = 0;
+			$limit = 10;
+
+			$finders = $this->finderQuery($offset,$limit);
+
+			while(count($finders) != 0){
+
+				foreach ($finders as $key => $finder) {
+
+					ini_set('set_time_limit', 30);
+
+					$lat = (float)$finder->lat;
+					$lon = (float)$finder->lon;
+
+					if($lat > 60){
+						$finder->lat = (string)$lon;
+						$finder->lon = (string)$lat;
+					}
+
+					$finder->latlon_change = true;
+					$finder->update();
+
+				}
+
+				$offset = $offset + 10;
+
+				$finders = $this->finderQuery($offset,$limit);
+
+			}
+
+			$return = array('status'=>'done');
+
+		}catch(Exception $exception){
+
+			$message = array(
+            	'type'    => get_class($exception),
+               	'message' => $exception->getMessage(),
+               	'file'    => $exception->getFile(),
+                'line'    => $exception->getLine(),
+            );
+
+            Log::error($exception);
+
+			$return = array('status'=>'fail','error_message'=>$message);
+		}
+
+		//Finder::where('latlon_change','exists',true)->unset('latlon_change');
+
+		print_r($return);
+
+	}
+
+
+	public function finderQuery($offset,$limit){
+
+		$finders = Finder::where('lat','exists',true)->where('lat','!=',"")->where('lon','!=',"")->where('latlon_change','exists',false)->skip($offset)->take($limit)->get(array("_id","lat","lon","latlon_change"));
+
+		//dd(DB::getQueryLog());
+
+		return $finders;
+	}
+
+	public function latLonSwapApi(){
+		
+		try{
+
+			ini_set('memory_limit', '-1');
+        	ini_set('max_execution_time', 3000);
+
+			$offset = 0;
+			$limit = 10;
+
+			$finders = $this->finderQueryApi($offset,$limit);
+
+			while(count($finders) != 0){
+
+				foreach ($finders as $key => $finder) {
+
+					$lat = (float)$finder->geometry['coordinates'][0];
+					$lon = (float)$finder->geometry['coordinates'][1];
+
+					if($lat > 60){
+
+						$lat_new = (string)$lon;
+						$lon_new = (string)$lat;
+
+						$geometry = array(
+							"type" => "Point",
+							"coordinates" => array($lat_new,$lon_new)
+						);
+
+						$finder->geometry = $geometry;
+						
+					}
+
+					$finder->latlon_change = true;
+					$finder->update();
+
+				}
+
+				$offset = $offset + 10;
+
+				$finders = $this->finderQueryApi($offset,$limit);
+
+			}
+
+			$return = array('status'=>'done');
+
+		}catch(Exception $exception){
+
+			$message = array(
+            	'type'    => get_class($exception),
+               	'message' => $exception->getMessage(),
+               	'file'    => $exception->getFile(),
+                'line'    => $exception->getLine(),
+            );
+
+            Log::error($exception);
+
+			$return = array('status'=>'fail','error_message'=>$message);
+		}
+
+		//Vendor::where('latlon_change','exists',true)->unset('latlon_change');
+
+		print_r($return);
+
+	}
+
+
+	public function finderQueryApi($offset,$limit){
+
+		$finders = Vendor::where('geometry','exists',true)->where('latlon_change','exists',false)->skip($offset)->take($limit)->get(array("_id","geometry","latlon_change"));
+
+		//dd(DB::getQueryLog());
+
+		return $finders;
+	}
+
+	public function latLonSwapService(){
+		
+		try{
+
+			ini_set('memory_limit', '-1');
+        	ini_set('max_execution_time', 3000);
+
+			$offset = 0;
+			$limit = 10;
+
+			$services = $this->serviceQuery($offset,$limit);
+
+			while(count($services) != 0){
+
+				foreach ($services as $key => $service) {
+
+					ini_set('set_time_limit', 30);
+
+					$lat = (float)$service->lat;
+					$lon = (float)$service->lon;
+
+					if($lat > 60){
+						$service->lat = (string)$lon;
+						$service->lon = (string)$lat;
+					}
+
+					$service->latlon_change = true;
+					$service->update();
+
+				}
+
+				$offset = $offset + 10;
+
+				$services = $this->serviceQuery($offset,$limit);
+
+			}
+
+			$return = array('status'=>'done');
+
+		}catch(Exception $exception){
+
+			$message = array(
+            	'type'    => get_class($exception),
+               	'message' => $exception->getMessage(),
+               	'file'    => $exception->getFile(),
+                'line'    => $exception->getLine(),
+            );
+
+            Log::error($exception);
+
+			$return = array('status'=>'fail','error_message'=>$message);
+		}
+
+		//Service::where('latlon_change','exists',true)->unset('latlon_change');
+
+		print_r($return);
+
+	}
+
+
+	public function serviceQuery($offset,$limit){
+
+		$services = Service::where('lat','exists',true)->where('lat','!=',"")->where('lon','!=',"")->where('latlon_change','exists',false)->skip($offset)->take($limit)->get(array("_id","lat","lon","latlon_change"));
+
+		//dd(DB::getQueryLog());
+
+		return $services;
+	}
+
+	public function latLonSwapServiceApi(){
+		
+		try{
+
+			ini_set('memory_limit', '-1');
+        	ini_set('max_execution_time', 3000);
+
+			$offset = 0;
+			$limit = 10;
+
+			$services = $this->serviceQueryApi($offset,$limit);
+
+			while(count($services) != 0){
+
+				foreach ($services as $key => $service) {
+
+					$lat = (double)$service->geometry['coordinates'][0];
+					$lon = (double)$service->geometry['coordinates'][1];
+
+					if($lat > 60){
+
+						$lat_new = (double)$lon;
+						$lon_new = (double)$lat;
+
+						$geometry = array(
+							"type" => "Point",
+							"coordinates" => array($lat_new,$lon_new)
+						);
+
+						$service->geometry = $geometry;
+						
+					}
+
+					$service->latlon_change = true;
+					$service->update();
+
+				}
+
+				$offset = $offset + 10;
+
+				$services = $this->serviceQueryApi($offset,$limit);
+
+			}
+
+			$return = array('status'=>'done');
+
+		}catch(Exception $exception){
+
+			$message = array(
+            	'type'    => get_class($exception),
+               	'message' => $exception->getMessage(),
+               	'file'    => $exception->getFile(),
+                'line'    => $exception->getLine(),
+            );
+
+            Log::error($exception);
+
+			$return = array('status'=>'fail','error_message'=>$message);
+		}
+
+		//Vendorservice::where('latlon_change','exists',true)->unset('latlon_change');
+
+		print_r($return);
+
+	}
+
+
+	public function serviceQueryApi($offset,$limit){
+
+		$services = Vendorservice::where('geometry','exists',true)->where('latlon_change','exists',false)->skip($offset)->take($limit)->get(array("_id","geometry","latlon_change"));
+
+		//dd(DB::getQueryLog());
+
+		return $services;
+	}
+
+	public function addExpiryDate(){
+
+		try{
+
+			ini_set('memory_limit', '-1');
+        	ini_set('max_execution_time', 3000);
+
+			$offset = 0;
+			$limit = 50;
+
+			/*$dates = array('customofferorder_expiry_date','customofferorder_validity','customofferorder_flag');
+
+			foreach ($dates as $key => $value) {
+
+				Booktrial::where('customofferorder_flag','exists',true)->unset($value);
+			}
+
+			exit;*/
+
+			//Booktrial::where('customofferorder_flag','exists',true)->unset('customofferorder_flag');
+
+			//exit;
+
+			$booktrials = $this->booktrialQuery($offset,$limit);
+
+			while(count($booktrials) != 0){
+
+				foreach ($booktrials as $key => $booktrial) {
+
+					$customofferorder   =   Fitapicustomofferorder::find($booktrial['customofferorder_id']);
+
+	                if(isset($customofferorder->validity) && $customofferorder->validity != ""){
+
+	                    $booktrial->customofferorder_expiry_date =   date("Y-m-d h:i:s", strtotime("+".$customofferorder->validity." day", strtotime($customofferorder->created_at)));
+	                    $booktrial->customofferorder_validity = $customofferorder->validity;
+	               
+	                }	
+
+	                $booktrial->customofferorder_new_flag = "1";
+
+					$booktrial->update();
+				}
+
+				$offset = $offset + 50;
+
+				$booktrials = $this->booktrialQuery($offset,$limit);
+
+			}
+
+			$return = array('status'=>'done');
+
+		}catch(Exception $exception){
+
+			$message = array(
+            	'type'    => get_class($exception),
+               	'message' => $exception->getMessage(),
+               	'file'    => $exception->getFile(),
+                'line'    => $exception->getLine(),
+            );
+
+            Log::error($exception);
+
+			$return = array('status'=>'fail','error_message'=>$message);
+		}
+
+		print_r($return);
+
+	}
+
+	public function booktrialQuery($offset,$limit){
+
+		$booktrials = Booktrial::where('customofferorder_id','exists',true)->where('customofferorder_new_flag','exists',false)->orderBy('update_at','desc')->skip($offset)->take($limit)->get(array("_id","customofferorder_id","customofferorder_expiry_date","schedule_date_time","customofferorder_new_flag"));
+
+		return $booktrials;
+	}
+
+
+	public function booktrialRaw($next_month,$start_month,$year,$removecustomers = [],$includeonlythese = []){
+
+		return $trialRequest = Booktrial::raw(function($collection) use ($next_month,$start_month,$year,$removecustomers,$includeonlythese){
+
+				$aggregate = [];
+				$from_date = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime("1-".$start_month."-".$year))));
+				$match['$match']['created_at']['$gt'] = $from_date;
+
+				if($next_month != -1){
+					$to_date = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime("30-".$next_month."-".$year))));
+					$match['$match']['created_at']['$lte'] = $to_date;
+				}
+				if(count($includeonlythese) > 0){
+					$match['$match']['customer_email']['$in'] = $includeonlythese;	
+				}
+				$match['$match']['customer_email']['$nin'] = $removecustomers;
+
+				$aggregate[] = $match;
+
+				$group = array(
+					'$group' => array(
+						'_id' => array(
+							'customer_email' => '$customer_email',
+							),
+						'count' => array(
+							'$sum' => 1
+							)
+						)
+					);
+
+				$aggregate[] = $group;
+				$aggregate[] = array('$sort' => array('count'=> -1));
+				return $collection->aggregate($aggregate);
+
+			});
+	}
+
+
+
+
+
+	public function orderRaw($next_month,$start_month,$year,$removecustomers = [],$includeonlythese = []){
+
+		return $trialRequest = Order::raw(function($collection) use ($next_month,$start_month,$year,$removecustomers,$includeonlythese){
+
+				$aggregate = [];
+				$from_date = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime("1-".$start_month."-".$year))));
+				$match['$match']['created_at']['$gt'] = $from_date;
+
+				if($next_month != -1){
+					$to_date = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime("30-".$next_month."-".$year))));
+					$match['$match']['created_at']['$lte'] = $to_date;
+				}
+				if(count($includeonlythese) > 0){
+					$match['$match']['customer_email']['$in'] = $includeonlythese;	
+				}
+				$match['$match']['customer_email']['$nin'] = $removecustomers;
+
+				$aggregate[] = $match;
+
+				$group = array(
+					'$group' => array(
+						'_id' => array(
+							'customer_email' => '$customer_email',
+							),
+						'count' => array(
+							'$sum' => 1
+							)
+						)
+					);
+
+				$aggregate[] = $group;
+				$aggregate[] = array('$sort' => array('count'=> -1));
+				return $collection->aggregate($aggregate);
+
+			});
+	}
+
+
+	public function customertrials($year, $division){
+		$cycle = 12/$division;
+		$start_month = 1;
+		$monthwise = array();
+		for($i = 0; $i < $division; $i++){
+			$next_month = $start_month + ($cycle - 1);
+			// $customers = 
+			$trialRequest = $this->booktrialRaw($next_month,$start_month,$year);	
+				$start_month = $next_month+1;
+				array_push($monthwise,count($trialRequest['result']));
+		}
+		return $monthwise;
+	}
+
+
 	
+
+
+	public function customertrialsrepeat($year, $division){
+		$cycle = 12/$division;
+		$monthwise = array();
+		$avgwise = array();
+		$removecustomers = array();
+		$years = ["2015","2016"];
+		foreach($years as $year){
+			$start_month = 1;
+			for($i = 0; $i < $division; $i++){
+				$next_month = $start_month + ($cycle - 1);
+				// $customers = 
+				$trialRequest = $this->booktrialRaw($next_month,$start_month,$year,$removecustomers);	
+				
+				$customersinthissegment = array_fetch($trialRequest['result'],"_id.customer_email");
+				array_push($removecustomers,$customersinthissegment);
+				$thisCustomerSegment = $this->booktrialRaw(-1,$start_month,$year,array(),$customersinthissegment);
+				$thisCustomerSegment["start_date"] = "1-0".$start_month."-".$year;
+				$start_month = $next_month+1;
+				// array_push($monthwise,array_sum(array_fetch($thisCustomerSegment['result'],"count")));
+				$customersWithMoreThanOneTrial = 0;
+				$totalTrialCustomerForMoreThanOneTrial = 0;
+				foreach($thisCustomerSegment['result'] as $res){
+					if($res["count"] > 1){
+						$customersWithMoreThanOneTrial++;
+						$totalTrialCustomerForMoreThanOneTrial += $res["count"];
+					}
+				}
+				array_push($monthwise,$customersWithMoreThanOneTrial);
+				array_push($avgwise,($totalTrialCustomerForMoreThanOneTrial/$customersWithMoreThanOneTrial));
+			}
+		}
+		return array("monthwise" => $monthwise, "avgwise" => $avgwise);
+	}
+
+
+	public function customerorders($year, $division){
+		$cycle = 12/$division;
+		$monthwise = array();
+		$years = ["2015","2016"];
+		foreach($years as $year){
+			$start_month = 1;
+			
+		for($i = 0; $i < $division; $i++){
+				$next_month = $start_month + ($cycle - 1);
+				// $customers =
+				$trialRequest = $this->orderRaw($next_month,$start_month,$year); 
+				if($i == 1 && $year == "2016"){
+					return $trialRequest = $this->orderRaw($next_month,$start_month,$year);
+				exit;
+				}
+					// echo $start_month. " - ".$next_month." * ".$year. " ";
+					$start_month = $next_month+1;
+					array_push($monthwise,count($trialRequest['result']));
+			}
+		}
+		return $monthwise;
+	}
+
+
+	public function customerordersrepeat($year, $division){
+		$cycle = 12/$division;
+		$monthwise = array();
+		$avgwise = array();
+		$removecustomers = array();
+		$years = ["2015","2016"];
+		foreach($years as $year){
+			$start_month = 1;
+			for($i = 0; $i < $division; $i++){
+				$next_month = $start_month + ($cycle - 1);
+				// $customers = 
+				$trialRequest = $this->orderRaw($next_month,$start_month,$year,$removecustomers);	
+				return $trialRequest['result'];
+				exit;
+				$customersinthissegment = array_fetch($trialRequest['result'],"_id.customer_email");
+				array_push($removecustomers,$customersinthissegment);
+				$thisCustomerSegment = $this->orderRaw(-1,$start_month,$year,array(),$customersinthissegment);
+				
+				$thisCustomerSegment["start_date"] = "1-0".$start_month."-".$year;
+				$start_month = $next_month+1;
+				// array_push($monthwise,array_sum(array_fetch($thisCustomerSegment['result'],"count")));
+				$customersWithMoreThanOneTrial = 0;
+				$totalTrialCustomerForMoreThanOneTrial = 0;
+				foreach($thisCustomerSegment['result'] as $res){
+					if($res["count"] > 1){
+						$customersWithMoreThanOneTrial++;
+						$totalTrialCustomerForMoreThanOneTrial += $res["count"];
+					}
+				}
+				array_push($monthwise,$customersWithMoreThanOneTrial);
+				array_push($avgwise,($totalTrialCustomerForMoreThanOneTrial/$customersWithMoreThanOneTrial));
+			}
+		}
+		return array("monthwise" => $monthwise, "avgwise" => $avgwise);
+	}
+
+
+
+	public function topBooktrial($from,$to){
+
+		return $trialRequest = Booktrial::raw(function($collection) use ($to, $from){
+
+				$aggregate = [];
+				$from_date = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($from))));
+					$match['$match']['created_at']['$gt'] = $from_date;
+				$to_date = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($to))));
+					$match['$match']['created_at']['$lte'] = $to_date;
+
+				$aggregate[] = $match;
+
+				$group = array(
+					'$group' => array(
+						'_id' => array(
+							'finder_id' => '$finder_id',
+							'finder_name'	=> '$finder_name',
+							'city_id' => '$city_id'
+							),
+						'count' => array(
+							'$sum' => 1
+							)
+						)
+					);
+
+				$aggregate[] = $group;
+				$aggregate[] = array('$sort' => array('count'=> -1));
+
+				return $collection->aggregate($aggregate);
+
+			});
+	}
+
+
+
+	public function nehacustomertrials($year, $month){
+		$trials = array();
+		   $booktrial = Booktrial::where('schedule_slot', 'exists', true)
+            ->where('schedule_slot', '!=', "")
+            ->where('schedule_date_time',  '>=', new \DateTime( date("d-m-Y", strtotime( "1-".$month."-".$year )) ))
+            ->where('schedule_date_time',  '<=', new \DateTime( date("d-m-Y", strtotime( "31-".$month."-".$year )) ))->get(array("customer_email"))->toArray();
+		
+		$ht = Order::where("type","healthytiffintrail")->where("status","1")->get(array("customer_email"))->toArray();
+		$booktrial = array_fetch($booktrial,"customer_email");
+		$ht = array_fetch($ht,"customer_email");
+		$booktrial = array_merge($booktrial,$ht);
+		$unique = array_unique($booktrial);
+		return array("booktrial" => count($booktrial),"unique" =>count($unique));
+		
+	}
+
+	public function unsetStartEndService(){
+
+		Service::where('start_date',"")->unset('start_date');
+
+		Service::where('end_date',"")->unset('end_date');
+
+	}
+
+
+public function xyz(){
+	$pubnub = new Pubnub('demo', 'demo');
+	$pubnub->subscribe('hello_world', function ($envelope) {
+             print_r($envelope['message']);
+       });
+}
+
+
+public function yes($msg){
+	$pubnub = new Pubnub('demo', 'demo');
+	$publish_result = $pubnub->publish('hello_world',$msg);
+   
+	print_r($publish_result);
+}
+
+	public function orderQuery($offset,$limit){
+
+		$orders = Order::where('vertical_type','exists',false)
+					->where('vertical_type','exists',false)
+					->where('migration_done','exists',false)
+					->orderBy('created_at','desc')
+					->skip($offset)
+					->take($limit)
+					->get();
+
+		return $orders;
+	}
+
+	public function newOrderMigration(){
+
+		try{
+
+			$customer_email = [
+				"smart.saili@gmail.com",
+				"ut.mehrotra@gmail.com",
+				"gauravraviji@gmail.com",
+				"pranjalitanya@gmail.com",
+				"nishankiit@gmail.com"
+			];
+
+			$finder_id = [
+				3305,
+				6465,
+				6323,
+				6324,
+				6325,
+				6449,
+				6332,
+				6865,
+				9403
+			];
+
+			Order::whereIn('customer_email',$customer_email)->delete();
+
+			Order::where('customer_email', 'LIKE', '%fitternity.com%')->whereNotIn('customer_email',['neha@fitternity.com,jayamvora@fitternity.com'])->delete();
+
+			Order::whereIn('finder_id',$finder_id)->delete();
+
+			Order::where('customer_name', 'LIKE', '%test%')->delete();
+
+			ini_set('memory_limit', '-1');
+        	ini_set('max_execution_time', 3000);
+
+			$offset = 0;
+			$limit = 50;
+
+			$orders = $this->orderQuery($offset,$limit);
+
+			while(count($orders) != 0){
+
+				foreach ($orders as $key => $order) {
+
+					try{
+
+						$set_vertical_type = array(
+							'healthytiffintrail'=>'tiffin',
+							'healthytiffinmembership'=>'tiffin',
+							'memberships'=>'workout',
+							'booktrials'=>'workout',
+							'workout-session'=>'workout',
+							'3daystrial'=>'workout',
+							'vip_booktrials'=>'workout',
+						);
+
+						$set_membership_duration_type = array(
+							'healthytiffintrail'=>'trial',
+							'healthytiffinmembership'=>'short_term_membership',
+							'memberships'=>'short_term_membership',
+							'booktrials'=>'trial',
+							'workout-session'=>'workout_session',
+							'3daystrial'=>'trial',
+							'vip_booktrials'=>'vip_trial',
+						);
+
+						if($order->customer_source != 'admin'){
+
+							if(!isset($order->vertical_type)){
+
+								(isset($set_vertical_type[$order->type])) ? $order->vertical_type = $set_vertical_type[$order->type] : null;
+
+								(isset($order->finder_category_id) &&  $order->finder_category_id == 41) ? $order->vertical_type = 'trainer' : null;
+							}
+
+							if(!isset($order->membership_duration_type)){
+
+								(isset($set_membership_duration_type[$order->type])) ? $order->membership_duration_type = $set_membership_duration_type[$order->type] : null;
+
+								(isset($order->duration_day) && $order->duration_day >=30 && $order->duration_day <= 90) ? $order->membership_duration_type = 'short_term_membership' : null;
+
+								(isset($order->duration_day) && $order->duration_day >90 ) ? $order->membership_duration_type = 'long_term_membership' : null;
+							}
+
+							if($order->status == "1"){
+
+								if(!isset($order->secondary_payment_mode) && $order->payment_mode == 'paymentgateway'){
+									$order->secondary_payment_mode = 'payment_gateway_membership';
+								}		
+
+							}
+
+							if(!isset($order->secondary_payment_mode) && $order->payment_mode == 'paymentgateway'){
+								$order->secondary_payment_mode = 'payment_gateway_tentative';
+							}
+
+						}
+
+						if(!isset($order->secondary_payment_mode) && $order->payment_mode == 'cod'){
+							$order->secondary_payment_mode = 'cod_membership';
+						}
+
+						if(!isset($order->secondary_payment_mode) && $order->payment_mode == 'at the studio'){
+							$order->secondary_payment_mode = 'at_vendor_pre';
+						}
+
+						if($order->status == "1"){
+
+							if(!isset($order->secondary_payment_mode) && $order->payment_mode == 'paymentgateway'){
+								$order->secondary_payment_mode = 'payment_gateway_membership';
+							}		
+
+						}
+
+						if(!isset($order->secondary_payment_mode) && $order->payment_mode == 'paymentgateway'){
+							$order->secondary_payment_mode = 'payment_gateway_tentative';
+						}
+
+						if(!isset($order->vertical_type)){
+
+							(isset($set_vertical_type[$order->type])) ? $order->vertical_type = $set_vertical_type[$order->type] : null;
+
+							(isset($order->finder_category_id) &&  $order->finder_category_id == 41) ? $order->vertical_type = 'trainer' : null;
+						}
+
+						if(isset($order->schedule_slot) && is_string($order->schedule_slot) && $order->schedule_slot != "" && $order->schedule_slot != "-"){
+
+							$schedule_slot = explode("-", $order->schedule_slot);
+
+							if(isset($schedule_slot[0]) && isset($schedule_slot[1])){
+								$order->start_time = trim($schedule_slot[0]);
+								$order->end_time = trim($schedule_slot[1]);
+							}
+						}
+
+						if($order->status != "1"){
+							$order->status = "0";
+						}
+
+						if(isset($order->customer_phone)  && $order->customer_phone != ""){
+							$order->customer_phone = str_replace(" ", "", $order->customer_phone);
+						}
+
+		                $order->migration_done = "1";
+
+						$order->update();
+
+					}catch(Exception $exception){
+
+						Log::error($order);
+
+						$message = array(
+			            	'type'    => get_class($exception),
+			               	'message' => $exception->getMessage(),
+			               	'file'    => $exception->getFile(),
+			                'line'    => $exception->getLine(),
+			            );
+
+			            Log::error($exception);
+
+						return array('status'=>'fail','error_message'=>$message);
+
+					}
+				}
+
+				$offset = $offset + 50;
+
+				$orders = $this->orderQuery($offset,$limit);
+
+			}
+
+			return array('status'=>'done');
+
+		}catch(Exception $exception){
+
+			$message = array(
+            	'type'    => get_class($exception),
+               	'message' => $exception->getMessage(),
+               	'file'    => $exception->getFile(),
+                'line'    => $exception->getLine(),
+            );
+
+            Log::error($exception);
+
+			return array('status'=>'fail','error_message'=>$message);
+		}
+
+		print_r($return);
+	}
+
+	public function cacheLocations(){
+		$locationTags = Locationtag::where('status', "1")->get(['_id', 'name', 'slug','location_group','lat','lon']);
+		return $locationTags;
+
+	}
+
+	public function cacheFinderCategoryTags($city="mumbai"){
+		// $finderCategoryTags = Findercategorytag::where('status', "1")->get(['_id', 'name', 'slug']);
+		if($city != "all"){
+			$finderCategoryTags = citywise_categories($city);
+		}else{
+			$finderCategoryTags = citywise_categories("all");
+		}
+		return $finderCategoryTags;
+
+	}
+
+	public function cacheOfferings(){
+		$offerings = Offering::where('status', "1")->get(['_id', 'name', 'slug']);
+		return $offerings;
+
+	}
+
+	public function serviceToVendorMigration(){
+
+		try{
+
+			$serviceToFinder =[
+			"5" => 35,
+			"2" => 7,
+			"1" => 6,
+			"3" => 8,
+			"4" => 11,
+			"19" => 12,
+			"86" => 14,
+			"111" => 32,
+			"114" => 36,
+			"123" => 10,
+			"152" => 9,
+			"154" => 44,
+			"168" => 45,
+			"180" => 42,
+			"184" => 41
+			];
+			Service::$withoutAppends=true;
+			
+			// $vendorServices = Vendorservice::where('hidden',false)->get(['category','vendor_id']);
+			$vendorServices = Vendorservice::where('hidden',false)->get(['category','vendor_id']);
+			// return $service;
+			// exit(0);
+			$vendorsChanged=array();
+			foreach ($vendorServices as $key => $value) {
+				// return $value;
+				// exit(0);
+
+				if(isset($serviceToFinder[$value['category']['primary']]) && isset($value['vendor_id'])){
+					$vendorCategoryId = $serviceToFinder[$value['category']['primary']];
+					// return $vendorServiceId;
+					// exit(0);
+					$vendorCategory = Vendorcategory::where('_id', $vendorCategoryId)->first(['vendors']);
+					// return $vendorServiceCategory;
+					// exit(0);
+					// $key = array_search($value['vendor_id'], $vendorCategory['vendors']);
+					// return gettype($key);
+					// exit(0);
+					// if(!is_int($key)){
+						// return $value['vendor_id'];
+						// exit(0);
+						$vendor = Vendor::find((int) $value['vendor_id']);
+						// return $vendor;
+						// exit(0);
+						$key = array_search($vendorCategoryId, $vendor['vendorcategory']['secondary']);
+						// return gettype($key);
+						// exit(0);
+						if(!is_int($key)){
+							// print_r("inside");
+							array_push($vendorsChanged, (int) $value['vendor_id']);
+							$vendorCategory = $vendor['vendorcategory'];
+							array_push($vendorCategory['secondary'], $vendorCategoryId);
+							$vendor->vendorcategory = $vendorCategory;
+							$vendor->update();
+							// $url = Config::get('app.url').'/reverse/migration/vendor/'.$value['vendor_id'];
+							// // return $url;
+							// // exit(0);
+							// $ch = curl_init();
+							// curl_setopt($ch, CURLOPT_URL, $url);
+							// $result = curl_exec($ch);
+							// curl_close($ch);
+							// return gettype($result);
+							// exit(0);
+						}
+					// }
+ 				
+				}
+				Log::info("Done for ".$value);
+			}
+			return array('status'=>'done','Vendors'=>$vendorsChanged);
+		}catch(Exception $exception){
+
+			$message = array(
+	        	'type'    => get_class($exception),
+	           	'message' => $exception->getMessage(),
+	           	'file'    => $exception->getFile(),
+	            'line'    => $exception->getLine(),
+	        );
+
+	        Log::error($exception);
+
+			return array('status'=>'fail','error_message'=>$message);
+		}
+
+		// print_r($return);
+	}
+		
+	public function vendorReverseMigrate()
+	{
+		$vendorIds = [1939,5988];
+		$ch = curl_init();
+		foreach($vendorIds as $vendorId){
+			$url = Config::get('app.url').'/reverse/migration/vendor/'.$vendorId;
+			curl_setopt($ch, CURLOPT_URL, $url);
+			$result = curl_exec($ch);
+			Log::info("Done for vendor Id".$vendorId);
+		}
+		
+		curl_close($ch);	
+	}
+
+	public function subCatToOfferings(){
+		
+		try{
+			
+			$subCatToOffering =[
+				"82"=>[462, 463, 464, 465, 466, 467],
+				"77"=>[251],
+				"79"=>[252],
+				"88"=>[253],
+				"116"=>[469],
+				"93"=>[250],
+				"94"=>[346],
+				"110"=>[12],
+				"96"=>[468],
+				"97"=>[456],
+				"20"=>[334],
+				"21"=>[65],
+				"13"=>[260],
+				"12"=>[259],
+				"6"=>[294],
+				"8"=>[293],
+				"11"=>[337],
+				"134"=>[476],
+				"14"=>[40],
+				"28"=>[35],
+				"26"=>[36],
+				"16"=>[32],
+				"25"=>[41],
+				"17"=>[39],
+				"15"=>[34],
+				"18"=>[31],
+				"27"=>[38],
+				"22"=>[33],
+				"23"=>[37],
+				"24"=>[274],
+				"142"=>[477],
+				"30"=>[326],
+				"29"=>[342],
+				"32"=>[322],
+				"38"=>[312],
+				"41"=>[333],
+				"48"=>[319],
+				"51"=>[324],
+				"53"=>[320],
+				"54"=>[315],
+				"56"=>[479],
+				"100"=>[480],
+				"83"=>[361],
+				"19"=>[362],
+				"17"=>[367],
+				"138"=>[363],
+				"40"=>[316],
+				"35"=>[321]
+
+			];
+
+			$subCatIds = array_keys($subCatToOffering);
+			// return $subCatIds;
+			// exit(0);
+			Service::$withoutAppends=true;
+			Log::info("inside subcat to offering");
+			
+			// $vendorServices = Vendorservice::where('hidden',false)->get(['category','vendor_id']);
+			$vendorServices = Vendorservice::where('hidden',false)->whereIn('category.secondary',$subCatIds)->get(['category','vendor_id']);
+			// return $vendorServices;
+			// exit(0);
+			$vendorsChanged=array();
+			foreach ($vendorServices as $key => $value) {
+				// return $value;
+				// exit(0);
+
+				if(isset($subCatToOffering[$value['category']['secondary']]) && isset($value['vendor_id'])){
+					// return $value;
+					// exit(0);
+					$offeringIds = $subCatToOffering[$value['category']['secondary']];
+					// return $offeringIds;
+					// exit(0);
+					foreach($offeringIds as $offeringId){
+						$offering = Offering::on($this->fitapi)->where('_id', $offeringId)->first(['vendors']);
+						// return $offering;
+						// continue;
+						// $key = array_search($value['vendor_id'], $offering['vendors']);
+						// return gettype($key);
+						// exit(0);
+						// if(!is_int($key)){
+							// return $value['vendor_id'];
+							// exit(0);
+							$vendor = Vendor::find((int) $value['vendor_id']);
+							// return $vendor;
+							// exit(0);
+							$key = array_search($offeringId, $vendor['filter']['offerings']);
+							// return gettype($key);
+							// exit(0);
+							if(!is_int($key)){
+								// return $vendor;
+								// exit(0);
+								// print_r("inside");
+								array_push($vendorsChanged, (int) $value['vendor_id']);
+								$filter = $vendor['filter'];
+								array_push($filter['offerings'], $offeringId);
+								$vendor->filter = $filter;
+								$vendor->update();
+							}
+						// }
+						Log::info("Done for service Id ".$value." offering Id :".$offeringId);
+					}
+					// return $vendorServiceId;
+					// exit(0);
+					
+ 				
+				}
+			}
+			return array('status'=>'done','Vendors'=>$vendorsChanged);
+		}catch(Exception $exception){
+
+			$message = array(
+	        	'type'    => get_class($exception),
+	           	'message' => $exception->getMessage(),
+	           	'file'    => $exception->getFile(),
+	            'line'    => $exception->getLine(),
+	        );
+
+	        Log::error($exception);
+
+			return array('status'=>'fail','error_message'=>$message);
+		}
+	}
+
+	public function cacheFinders(){
+		Finder::$withoutAppends = true;
+		$finders = Finder::where('status', "1")->get(['_id', 'slug']);
+		return $finders;
+	}
+	public function customer_data()
+	{       
+		$start_date = new DateTime('01-02-2017');
+		$end_date = new DateTime('31-03-2017');
+			$transactions = Transaction::
+			where('transaction_type', 'Order')
+				->where('status', '1')
+				->where('created_at', '>=', $start_date)
+				->where('created_at', '<=', $end_date)
+				->get();
+			$after_trial = 0;
+			$after_link = 0;
+			$orders = count($transactions);
+			$orderDetails = array();
+			$trialDetails = array();
+			$linkDetails = array();
+			foreach($transactions as $transaction){
+
+				$data = array();
+				$fields = array('finder_name', 'finder_id', 'service_name','service_id', 'amount_finder', 'customer_email', 'customer_phone', 'customer_name');
+				foreach($fields as $field){
+					if(isset($transaction[$field])){
+						$data[$field] = $transaction[$field];
+					}
+				}
+				// array_push($orderDetails, $data);
+
+				$prev_payment = Transaction::where('customer_email', $transaction['customer_email'])
+					->where('created_at', '<', $transaction['created_at'])
+					->where('transaction_type', 'Booktrial')
+					->first();
+
+
+				if($prev_payment){
+					$after_trial++;
+					// array_push($trialDetails, $data);
+					if(isset($transaction['paymentLinkEmailCustomerTiggerCount'])){
+						$after_link++;
+						// array_push($linkDetails, $data);
+						
+					}
+				}
+			}
+			$data = array(
+				'orders' 	=> $orders,
+				'trials'	=> $after_trial,
+				'link'		=> $after_link,
+				// 'orderDetails' 	=> $orderDetails,
+				// 'trialDetails'	=> $trialDetails,
+				// 'linkDetails'	=> $linkDetails
+			);
+			return $data;	
+	}
+
+
+	public function zumba_data(){
+		Service::$withoutAppends = true;
+		$zumba_services = Service::where('servicecategory_id', 19)
+			->where('status', '1')
+			->lists('_id')
+			;
+
+		$count = 0;
+		$booktrials = Transaction::where('service_id','exists',true)->where('transaction_type', 'Booktrial')->get(['service_id']);
+
+		foreach($booktrials as $booktrial){
+			if(in_array($booktrial['service_id'],$zumba_services)){
+					$count++;
+
+			}
+			// foreach($zumba_services as $service){
+			// 	if($booktrial['finder_id']==$service['finder_id'] && strtolower($booktrial['service_name'])==strtolower($service['name'])){
+			// 	}
+			// }
+		}
+		$data = array(
+			'total_booktrials'	=> count($booktrials),
+			'zumba_trials'		=> $count
+		);
+		return $data;
+	}
+
+	public function booktrial_funnel()
+	{       
+		$start_date = new DateTime('01-02-2017');
+		$end_date = new DateTime('31-02-2017');
+			$transactions = Transaction::where('transaction_type', 'Booktrial')
+				->where('created_at', '>=', $start_date)
+				->where('created_at', '<=', $end_date)
+				->groupBy('customer_email')->lists('customer_email');
+			$orders = Transaction::where('transaction_type', 'Order')
+									->where('status', '1')
+									->where('created_at', '>=', $start_date)
+									->where('type', "memberships")		
+									->whereIn('customer_email',$transactions)
+									->groupBy('customer_email')->lists('customer_email');
+			$nopaymentgateway = Transaction::where('transaction_type', 'Order')
+									->where('status', '1')
+									->where('created_at', '>=', $start_date)
+									->where('type', "memberships")		
+									->whereIn('customer_email',$transactions)
+									->where("payment_mode",'!=', "paymentgateway")
+									->groupBy('customer_email')->lists('customer_email');
+			$query = Transaction::where('transaction_type', 'Order')
+									->where('status', '1')
+									->where('created_at', '>=', $start_date)
+									->where('type', "memberships")		
+									->whereIn('customer_email',$transactions)
+									->where("payment_mode", "paymentgateway");
+			$paymentgateway = $query->groupBy('customer_email')->lists('customer_email'); 
+			$linkSent = $query->where("paymentLinkEmailCustomerTiggerCount", "exists",true)->groupBy('customer_email')->lists('customer_email');
+									
+			return $data = array(
+				'Trials' 	=> count($transactions),
+				'orders_after_trials'	=> count($orders),
+				'did_not_purchase'		=> count($transactions) - count($orders),
+				'offline'				=> count($nopaymentgateway),
+				'online'				=> count($paymentgateway),
+				'link'					=> count($linkSent),
+				'direct'				=> count($paymentgateway) - count($linkSent)
+
+				// 'orderDetails' 	=> $orderDetails,
+				// 'trialDetails'	=> $trialDetails,
+				// 'linkDetails'	=> $linkDetails
+			);	
+	}
+
+	public function order_funnel(){
+		$start_date = new DateTime('01-02-2017');
+		$end_date = new DateTime('31-02-2017');
+		// $fortyfive = new DateTime('01-11-2016');
+		$transactions = Transaction::where('transaction_type', 'Order')
+									->where('status', '1')
+									->where('type', "memberships")		
+									->where('created_at', '>=', $start_date)
+									->where('created_at', '<=', $end_date)
+									->groupBy('customer_email')->lists('customer_email');
+		$transactions2 = Transaction::where('status','!=', '1')
+									// ->where('created_at', '>=', $fortyfive)
+									->where('created_at', '<=', $end_date)
+									->whereIn('customer_email',$transactions)
+									->groupBy('customer_email')
+									->lists('customer_email');
+		return $data = array(
+			"purchases" => count($transactions),
+			"direct_purchases" => count(array_diff($transactions, $transactions2)),
+			"people_who_interacted_in_last_45_days" => count($transactions2)
+		);
+		
+	}
+	public function linksent_funnel()
+	{       
+		$start_date = new DateTime('01-02-2017');
+		$end_date = new DateTime('31-02-2017');
+			$query = Order::
+				where('created_at', '>=', $start_date)
+				->where('created_at', '<=', $end_date)->where("type","memberships");
+
+			$transactions = $query->where("paymentLinkEmailCustomerTiggerCount", "exists",true)->groupBy('customer_email')->lists('customer_email');
+			$link_sent_purchase = Order::
+				where('created_at', '>=', $start_date)
+				->where('created_at', '<=', $end_date)->where("type","memberships")
+										->whereIn('customer_email',$transactions)
+										->where('status', '1')
+										->where("paymentLinkEmailCustomerTiggerCount", "exists",true)
+										// ->groupBy('customer_email')
+										->lists('customer_email');
+			$link_sent_direct_purchase = Order::
+				where('created_at', '>=', $start_date)
+				->where('created_at', '<=', $end_date)->where("type","memberships")->whereIn('customer_email',$transactions)
+												->where('status', '1')
+												->where("paymentLinkEmailCustomerTiggerCount", "exists",false)
+												// ->where("payment_mode", "paymentgateway")
+												->lists('customer_email');
+												// ->groupBy('customer_email');
+			$link_sent_direct_purchase_offline = Order::
+				where('created_at', '>=', $start_date)
+				->where('created_at', '<=', $end_date)->where("type","memberships")->whereIn('customer_email',$transactions)
+														->where('status', '1')
+														->where("paymentLinkEmailCustomerTiggerCount", "exists",false)
+														->where("payment_mode",'!=', "paymentgateway")
+														->groupBy('customer_email')->lists('customer_email');
+			return $data = array(
+				"link_sent" => count($transactions),
+				"link_sent_purchase" => count($link_sent_purchase),
+				"link_sent_direct_purchase" => count($link_sent_direct_purchase),
+				"link_sent_direct_purchase_offline" => count($link_sent_direct_purchase_offline),
+			);
+	}
+
+	public function syncsharecustomerno(){
+		$vendors = Vendor::
+		where('commercial.share_customer_no', true)
+		->lists('_id');
+		Finder::whereIn('_id', $vendors)->update(['share_customer_no'=> "1"]);
+		Finder::whereNotIn('_id', $vendors)->update(['share_customer_no'=> "0"]);
+		return "Done";
+
+	}
+
+	public function ozonetelCaptureBulkSms(){
+
+		ini_set('memory_limit','512M');
+		ini_set('max_execution_time', 300);
+
+		$utilities = new Utilities();
+
+		$finder_ids = Ozonetelcapture::where('created_at', '>=', new DateTime(date("2017-01-01 00:00:00")))
+						->where('finder_id','exists',true)
+						->where('customer_cid','exists',true)
+						->where('bulk_sms_sent','exists',false)
+						->lists('finder_id');
+
+		$finder_ids = array_map("intval",array_unique($finder_ids));
+
+		$allFinder = [];
+
+		foreach ($finder_ids as $key => $finder_id) {
+
+			$finder = Finder::select('city_id','location_id','title','slug','_id')->where('_id',$finder_id)->with(array('city'=>function($query){$query->select('_id','name','slug');}))->with(array('location'=>function($query){$query->select('_id','name','slug');}))->first();
+
+			$paymentEnableFinderCount = Ratecard::where('direct_payment_enable','1')->where('finder_id',$finder_id)->count();
+
+			$contact_nos = Ozonetelcapture::where('created_at', '>=', new DateTime(date("2017-01-01 00:00:00")))
+						->where('finder_id','exists',true)
+						->where('finder_id',$finder_id)
+						->where('customer_cid','exists',true)
+						->where('bulk_sms_sent','exists',false)
+						->lists('customer_cid');
+
+			$finder_city_slug = $finder->city->slug;
+			$finder_location_slug = $finder->location->slug;
+			$finder_slug = $finder->slug;
+			$srp_link = $utilities->getShortenUrl(Config::get('app.website')."/".$finder_city_slug."/".$finder_location_slug."/fitness");
+			$vendor_link = $utilities->getShortenUrl(Config::get('app.website')."/".$finder_slug);
+			$finder_name = ucwords($finder->title);
+
+			$message = "This is regarding your enquiry on Fitternity. We have some great offers running for fitness options around you. Get lowest price guaranteed and rewards like fitness kit or diet plan on your purchase. Get Rs 300 in your wallet by applying promocode in your user profile. Code - GETFIT. Explore - ".$srp_link;
+
+			if($paymentEnableFinderCount > 0){
+
+				$message = "This is regarding your enquiry for ".$finder_name." on Fitternity. We have some great offers running for ".$finder_name." and 10000 other fitness providers. Get lowest price guaranteed and rewards like fitness kit or diet plan on your purchase. Get Rs 300 in your wallet by applying promocode in your user profile. Code GETFIT. Buy now - ".$vendor_link;
+			}
+
+			$contact_nos = array_unique($contact_nos);
+
+			$numbers = array_chunk($contact_nos, 500);
+
+			$return = [];
+
+			foreach ($numbers as $key => $contact_no) {
+
+				$ozonetelCapture = Ozonetelcapture::where('created_at', '>=', new DateTime(date("2017-01-01 00:00:00")))
+						->where('finder_id','exists',true)
+						->where('finder_id',$finder_id)
+						->whereIn('customer_cid',$contact_no)
+						->update(['bulk_sms_sent'=>time()]);
+
+				$sms['sms_type'] = 'transactional';
+				$sms['contact_no'] = $contact_no;
+				$sms['message'] = $message;
+
+				$bulkSms = new Bulksms();
+
+				$return[] = $bulkSms->send($sms);
+			}
+
+			$allFinder[$finder_id] = $return;
+
+		}
+
+		return $allFinder;
+
+	}
+
+
+	public function durationDayStringQuery($offset,$limit){
+
+		$orders  = Order::where('duration_day','type',2)
+			->where('duration_day','!=',"")
+			->skip($offset)
+			->take($limit)
+			->get();
+
+		return $orders;
+	}
+
+	public function durationDayString(){
+
+		ini_set('memory_limit','512M');
+		ini_set('max_execution_time', 300);
+
+		$offset = 0;
+		$limit = 10;
+
+		$allOrders = $this->durationDayStringQuery($offset,$limit);
+
+		while(count($allOrders) != 0){
+
+			echo $offset;
+
+			foreach ($allOrders as $order) {
+
+				$duration_day = intval($order['duration_day']);
+
+				DB::table('orders')->where('_id', (int)$order->_id)->update(['duration_day' =>$duration_day]);
+
+			}
+
+			$offset = $offset + 10;
+
+			$allOrders = $this->durationDayStringQuery($offset,$limit);
+		}
+
+		return array('status'=>'done');
+
+	}
+
+	public function orderFollowupQuery($offset,$limit){
+		
+		$orders  = Order::active()
+			->whereIn('type',['memberships','healthytiffinmembership'])
+			->where('added_auto_followup_date','exists',false)
+			->where('start_date','exists',true)
+			->where('start_date', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-01-01 00:00:00"))))
+			->where('end_date','exists',true)
+			->where('duration_day','exists',true)
+			->where('duration_day','>=',30)
+			->skip($offset)
+			->take($limit)
+			->get();
+
+		return $orders;
+
+	}
+
+
+	public function orderFollowup(){
+
+		ini_set('memory_limit','512M');
+		ini_set('max_execution_time', 300);
+
+		$offset = 0;
+		$limit = 10;
+
+		$allOrders = $this->orderFollowupQuery($offset,$limit);
+
+		while(count($allOrders) != 0){
+
+			echo $offset;
+
+			foreach ($allOrders as $order) {
+
+				if($order['duration_day'] >= 30 && $order['duration_day'] < 90){
+
+					if(time() <= strtotime("+7 days",strtotime($order['start_date']))){
+
+						$data['followup_status'] = 'catch_up';
+						$data['followup_status_count'] = 1;
+						$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("+7 days",strtotime($order['start_date'])));
+
+					}elseif(time() <= strtotime("+21 days",strtotime($order['start_date']))){
+
+						$data['followup_status'] = 'catch_up';
+						$data['followup_status_count'] = 2;
+						$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("+21 days",strtotime($order['start_date'])));
+
+					}elseif(time() <= strtotime("-7 days",strtotime($order['end_date']))){
+
+						$data['followup_status'] = 'renewal';
+						$data['followup_status_count'] = 1;
+						$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("-7 days",strtotime($order['end_date'])));
+
+					}elseif(time() <= strtotime("-1 days",strtotime($order['end_date']))){
+
+						$data['followup_status'] = 'renewal';
+						$data['followup_status_count'] = 2;
+						$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("-1 days",strtotime($order['end_date'])));
+
+					}
+
+				}elseif ($order['duration_day'] >= 90 && $order['duration_day'] < 180) {
+
+					if(time() <= strtotime("+7 days",strtotime($order['start_date']))){
+
+						$data['followup_status'] = 'catch_up';
+						$data['followup_status_count'] = 1;
+						$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("+7 days",strtotime($order['start_date'])));
+
+					}elseif(time() <= strtotime("+45 days",strtotime($order['start_date']))){
+
+						$data['followup_status'] = 'catch_up';
+						$data['followup_status_count'] = 2;
+						$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("+45 days",strtotime($order['start_date'])));
+
+					}elseif(time() <= strtotime("-15 days",strtotime($order['end_date']))){
+
+						$data['followup_status'] = 'renewal';
+						$data['followup_status_count'] = 1;
+						$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("-15 days",strtotime($order['end_date'])));
+
+					}elseif(time() <= strtotime("-7 days",strtotime($order['end_date']))){
+
+						$data['followup_status'] = 'renewal';
+						$data['followup_status_count'] = 2;
+						$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("-7 days",strtotime($order['end_date'])));
+
+					}elseif(time() <= strtotime("-1 days",strtotime($order['end_date']))){
+
+						$data['followup_status'] = 'renewal';
+						$data['followup_status_count'] = 3;
+						$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("-1 days",strtotime($order['end_date'])));
+
+					}
+
+				}elseif ($order['duration_day'] >= 180 && $order['duration_day'] < 360) {
+
+					if(time() <= strtotime("+7 days",strtotime($order['start_date']))){
+
+						$data['followup_status'] = 'catch_up';
+						$data['followup_status_count'] = 1;
+						$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("+7 days",strtotime($order['start_date'])));
+
+					}elseif(time() <= strtotime("+45 days",strtotime($order['start_date']))){
+
+						$data['followup_status'] = 'catch_up';
+						$data['followup_status_count'] = 2;
+						$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("+45 days",strtotime($order['start_date'])));
+
+					}elseif(time() <= strtotime("+75 days",strtotime($order['start_date']))){
+
+						$data['followup_status'] = 'catch_up';
+						$data['followup_status_count'] = 3;
+						$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("+75 days",strtotime($order['start_date'])));
+
+					}elseif(time() <= strtotime("-30 days",strtotime($order['end_date']))){
+
+						$data['followup_status'] = 'renewal';
+						$data['followup_status_count'] = 1;
+						$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("-30 days",strtotime($order['end_date'])));
+
+					}elseif(time() <= strtotime("-15 days",strtotime($order['end_date']))){
+
+						$data['followup_status'] = 'renewal';
+						$data['followup_status_count'] = 2;
+						$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("-15 days",strtotime($order['end_date'])));
+
+					}elseif(time() <= strtotime("-7 days",strtotime($order['end_date']))){
+
+						$data['followup_status'] = 'renewal';
+						$data['followup_status_count'] = 3;
+						$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("-7 days",strtotime($order['end_date'])));
+
+					}elseif(time() <= strtotime("-1 days",strtotime($order['end_date']))){
+
+						$data['followup_status'] = 'renewal';
+						$data['followup_status_count'] = 4;
+						$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("-1 days",strtotime($order['end_date'])));
+
+					}
+
+				}elseif ($order['duration_day'] >= 360) {
+
+					if(time() <= strtotime("+7 days",strtotime($order['start_date']))){
+
+						$data['followup_status'] = 'catch_up';
+						$data['followup_status_count'] = 1;
+						$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("+7 days",strtotime($order['start_date'])));
+
+					}elseif(time() <= strtotime("+45 days",strtotime($order['start_date']))){
+
+						$data['followup_status'] = 'catch_up';
+						$data['followup_status_count'] = 2;
+						$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("+45 days",strtotime($order['start_date'])));
+
+					}elseif(time() <= strtotime("+75 days",strtotime($order['start_date']))){
+
+						$data['followup_status'] = 'catch_up';
+						$data['followup_status_count'] = 3;
+						$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("+75 days",strtotime($order['start_date'])));
+
+					}elseif(time() <= strtotime("+165 days",strtotime($order['start_date']))){
+
+						$data['followup_status'] = 'catch_up';
+						$data['followup_status_count'] = 4;
+						$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("+165 days",strtotime($order['start_date'])));
+
+					}elseif(time() <= strtotime("-30 days",strtotime($order['end_date']))){
+
+						$data['followup_status'] = 'renewal';
+						$data['followup_status_count'] = 1;
+						$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("-30 days",strtotime($order['end_date'])));
+
+					}elseif(time() <= strtotime("-15 days",strtotime($order['end_date']))){
+
+						$data['followup_status'] = 'renewal';
+						$data['followup_status_count'] = 2;
+						$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("-15 days",strtotime($order['end_date'])));
+
+					}elseif(time() <= strtotime("-7 days",strtotime($order['end_date']))){
+
+						$data['followup_status'] = 'renewal';
+						$data['followup_status_count'] = 3;
+						$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("-7 days",strtotime($order['end_date'])));
+
+					}elseif(time() <= strtotime("-1 days",strtotime($order['end_date']))){
+
+						$data['followup_status'] = 'renewal';
+						$data['followup_status_count'] = 4;
+						$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("-1 days",strtotime($order['end_date'])));
+
+					}
+				}
+
+				if(!isset($order['auto_followup_date']) && isset($data['auto_followup_date']) && isset($order['followup_date']) && strtotime($order['followup_date']) >= strtotime($data['auto_followup_date'])){
+
+					$data = [];
+
+				}
+
+				$data['added_auto_followup_date'] = time();
+
+				$order->update($data);
+			}
+
+			$offset = $offset + 10;
+
+			$allOrders = $this->orderFollowupQuery($offset,$limit);
+		}
+
+		return array('status'=>'done');
+	}
+
+
+	public function trialFollowupQuery($offset,$limit){
+
+		$trials  = Booktrial::whereIn('type',['booktrials','workout-session'])
+			->where('final_lead_stage','exists',true)
+			->where('final_lead_stage','post_trial_stage')
+			->where('added_auto_followup_date','exists',false)
+			->where('schedule_date_time','exists',true)
+			->where('schedule_date_time', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-04-01 00:00:00"))))
+			->skip($offset)
+			->take($limit)
+			->get();
+			
+		return $trials;
+
+	}
+
+	public function trialFollowup(){
+
+		ini_set('memory_limit','512M');
+		ini_set('max_execution_time', 300);
+
+		$offset = 0;
+		$limit = 10;
+
+		$allTrials = $this->trialFollowupQuery($offset,$limit);
+
+		while(count($allTrials) != 0){
+
+			echo $offset;
+
+			foreach ($allTrials as $trial) {
+
+				$data['auto_followup_date'] = date('Y-m-d H:i:s', strtotime("+31 days",strtotime($trial['schedule_date_time'])));
+
+				if(!isset($trial['auto_followup_date']) && isset($data['auto_followup_date']) && isset($trial['followup_date']) && strtotime($trial['followup_date']) >= strtotime($data['auto_followup_date'])){
+
+					$data = [];
+
+				}
+
+				$data['added_auto_followup_date'] = time();
+
+				$trial->update($data);
+
+			}
+
+			$offset = $offset + 10;
+
+			$allTrials = $this->trialFollowupQuery($offset,$limit);
+		}
+
+		return array('status'=>'done');
+
+	}
+
+
+
     
 }

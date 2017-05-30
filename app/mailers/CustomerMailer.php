@@ -130,6 +130,7 @@ Class CustomerMailer extends Mailer {
 			case 'lyfe' :  $label = 'Order-PG-Lyfe-Customer';
 			case 'mickeymehtaevent' :  $label = 'Order-PG-Mickeymehtaevent-Customer';
 			case 'events' :  $label = 'Order-PG-Event';
+			case 'diet_plan' :  $label = 'Diet-PG-Customer';
 			default: break;
 		}
 
@@ -294,6 +295,9 @@ Class CustomerMailer extends Mailer {
 			case 'vip_3days_booktrials':
 				$label = 'Invite-friend-for-vip-trial';
 				break;
+			case 'memberships':
+				$label = 'Invite-friend-for-membership';
+				break;
 			default:
 				$label = 'Invite-friend-for-trial';
 				break;
@@ -433,6 +437,84 @@ Class CustomerMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 
+
+	public function referFriend($data){
+
+		$label = "Refer-friend";
+
+		$message_data 	= array(
+			'user_email' => array($data['invitee_email']),
+			'user_name' => $data['invitee_name']
+		);
+
+		return $this->common($label,$data,$message_data);
+	}
+
+	public function instantSlotBooking($data){
+
+		$label = 'DietPlan-InstantSlotBooking-Customer';
+
+		$message_data 	= array(
+			'user_email' => array($data['customer_email']),
+			'user_name' => $data['customer_name']
+		);
+
+		return $this->common($label,$data,$message_data);
+
+	}
+
+	public function before3HourSlotBooking($data,$delay){
+
+		$label = 'DietPlan-Before3HourSlotBooking-Customer';
+
+		$message_data 	= array(
+			'user_email' => array($data['customer_email']),
+			'user_name' => $data['customer_name']
+		);
+
+		return $this->common($label,$data,$message_data,$dealy);
+
+	}
+
+	public function dietPlanAfter15DaysReviewSlotConfirm($data){
+
+        $label = 'DietPlan-After15DaysReview-SlotConfirm-Customer';
+
+        $message_data 	= array(
+			'user_email' => array($data['customer_email']),
+			'user_name' => $data['customer_name']
+		);
+
+		return $this->common($label,$data,$message_data);
+
+    }
+
+    public function dietPlanAfter15DaysFollowupSlotConfirm($data){
+
+        $label = 'DietPlan-After15DaysFollowup-SlotConfirm-Customer';
+
+        $message_data 	= array(
+			'user_email' => array($data['customer_email']),
+			'user_name' => $data['customer_name']
+		);
+
+		return $this->common($label,$data,$message_data);
+
+    }
+
+	public function sendDietPgCustomer($data){
+
+        $label = 'Diet-PG-Customer';
+
+        $message_data 	= array(
+			'user_email' => array($data['customer_email']),
+			'user_name' => $data['customer_name']
+		);
+
+		return $this->common($label,$data,$message_data);
+
+    }
+    
 	public function common($label,$data,$message_data,$delay = 0){
 
 		if(isset($data['source']) && $data['source'] == 'cleartrip'){

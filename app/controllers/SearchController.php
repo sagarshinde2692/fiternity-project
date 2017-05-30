@@ -1260,11 +1260,11 @@ public function locationCity($value){
 	if($lat != "" && $lon != ""){
 
 		$lonlat = [(float)$lon,(float)$lat];
-		$location = Location::where('name',new MongoRegex('/^'.$value.'/i'))->where('lonlat','near',$lonlat)->get();
+		$location = Location::where('name',new MongoRegex('/^'.$value.'/i'))->where('name','!=','default location')->where('lonlat','near',$lonlat)->get();
 
 	}else{
 
-		$location = Location::where('name',new MongoRegex('/^'.$value.'/i'))->get();
+		$location = Location::where('name',new MongoRegex('/^'.$value.'/i'))->where('name','!=','default location')->get();
 	}
 
 	$data = array();
