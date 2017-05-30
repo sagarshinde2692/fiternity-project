@@ -529,6 +529,13 @@ class EmailSmsApiController extends \BaseController {
             if($data["capture_type"] == "renew-membership"){
                 $order->update(["renew_membership"=>"requested"]);
             }
+
+            if(isset($data['requested_preferred_starting_date']) && $data['requested_preferred_starting_date'] != "" && $data['requested_preferred_starting_date'] != "-"){
+                $data['requested_preferred_starting_date'] = date('Y-m-d 00:00:00',strtotime($data['requested_preferred_starting_date']));
+                $order->update(["requested_preferred_starting_date"=>$data["requested_preferred_starting_date"]]);
+            }else{
+                unset($data['requested_preferred_starting_date']);
+            }
         }
 
         if(isset($data['customer_phone']) && $data['customer_phone'] != ""){
@@ -566,6 +573,8 @@ class EmailSmsApiController extends \BaseController {
         }else{
             unset($data['preferred_starting_date']);
         }
+
+
 
         array_set($data, 'date',date("h:i:sa"));
         array_set($data, 'ticket_number',random_numbers(5));
