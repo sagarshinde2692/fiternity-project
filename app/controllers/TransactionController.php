@@ -1868,8 +1868,8 @@ class TransactionController extends \BaseController {
 
         $referal_order['order_id'] =  $order['order_id'];
         $referal_order['city_id'] =  $order['city_id'];
-        $referal_order['city_name'] =  $order['city_name'];
-        $referal_order['city_slug'] = $order['city_slug'];
+        $referal_order['city_name'] =  (isset($order['city_name']) && $order['city_name']!="") ?  $order['city_name'] : "";
+        $referal_order['city_slug'] = (isset($order['city_slug']) && $order['city_slug']!="") ?  $order['city_slug'] : "";
         $referal_order['finder_id'] =  $order['finder_id'];
         $referal_order['finder_name'] =  $order['finder_name'];
         $referal_order['finder_slug'] =  $order['finder_slug'];
@@ -1889,6 +1889,48 @@ class TransactionController extends \BaseController {
 
     }
 
+    public function generaterDietPlanOrderOnline($order_id){
+
+        $order_id = (int)$order_id;
+
+        $order = Order::find($order_id);
+
+        if(!$order){
+            return Response::json(array('status' => 404,'message' => 'Order not found'),404);
+        }
+
+        if(!isset($order->diet_plan_order_id) && isset($order->diet_plan_ratecard_id) && $order->diet_plan_ratecard_id != "" && $order->diet_plan_ratecard_id != 0){
+
+
+            if(isset($order->city_id)){
+
+                $city = City::find((int)$order->city_id,['_id','name','slug']);
+
+                $order->update(['city_name'=>$city->name,'city_slug'=>$city->slug]);
+            }
+
+            if(isset($order->finder_category_id)){
+
+                $category = Findercategory::find((int)$order->finder_category_id,['_id','name','slug']);
+
+                $order->update(['category_name'=>$category->name,'category_slug'=>$category->slug]);
+            }
+
+            $generaterDietPlanOrder = $this->generaterDietPlanOrder($order->toArray());
+
+            if($generaterDietPlanOrder['status'] != 200){
+                return Response::json($generaterDietPlanOrder,$generaterDietPlanOrder['status']);
+            }
+
+            $order->diet_plan_order_id = $generaterDietPlanOrder['order_id'];
+            $order->update();
+
+            return Response::json(array('status' => 200,'message' => 'Success','diet_plan_order_id'=>$generaterDietPlanOrder['order_id']),200);
+        }
+
+        return Response::json(array('status' => 404,'message' => 'Diet plan not created'),404);
+    }
+
     public function generaterDietPlanOrder($order){
 
         $data = [];
@@ -1901,8 +1943,8 @@ class TransactionController extends \BaseController {
         $data['customer_phone'] = $order['customer_phone'];
         $data['customer_source'] = $order['customer_source'];
         $data['city_id'] =  $order['city_id'];
-        $data['city_name'] =  $order['city_name'];
-        $data['city_slug'] = $order['city_slug'];
+        $data['city_name'] =  (isset($order['city_name']) && $order['city_name']!="") ?  $order['city_name'] : "";
+        $data['city_slug'] = (isset($order['city_slug']) && $order['city_slug']!="") ?  $order['city_slug'] : "";
         $data['offering_type'] = (isset($order['offering_type']) && $order['offering_type']!="") ? $order['offering_type']: "cross_sell";
         $data['renewal'] = "no";
         $data['final_assessment'] = "no";

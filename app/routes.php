@@ -923,3 +923,5 @@ Route::get('syncsharecustomerno','DebugController@syncsharecustomerno');
 Route::get('reverse/migration/{colllection}/{id}','MigrationReverseController@byId');
 Route::get('fitternitydietvendordetail','FindersController@fitternityDietVedorDetail');
 Route::get('orderdemonetisation/{order_id}',array('as' => 'orderdemonetisation','uses' => 'CustomerController@orderDemonetisation'));
+
+Route::get('trainer/generaterdietplanorderonline/{order_id}',array('as' => 'transaction.generaterdietplanorderonline','uses' => 'TransactionController@generaterDietPlanOrderOnline'));
