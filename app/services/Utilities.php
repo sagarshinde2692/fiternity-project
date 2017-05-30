@@ -1981,7 +1981,7 @@ Class Utilities {
 
             $order->update(['customer_wallet_balance'=>$customer_wallet_balance]);
 
-            $customersms = new \CustomerSms();
+            $customersms = new CustomerSms();
 
             $customersms->demonetisation($order->toArray());
         }
@@ -2029,7 +2029,7 @@ Class Utilities {
                     'wallet_url'    =>$url
                 ];
 
-                $customersms = new \CustomerSms();
+                $customersms = new CustomerSms();
 
                 $customersms->referralFitcash($sms_data);
             }
