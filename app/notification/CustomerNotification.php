@@ -45,7 +45,7 @@ Class CustomerNotification extends Notification{
 		$label = 'AutoTrial-ReminderBefore20Min-Customer';
 
 		$notif_type = 'open_trial';
-		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"n-20m","max_time"=>strtotime($data["schedule_date_time"]));
+		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"n-20m","max_time"=>strtotime($data["schedule_date_time"])+(30*60));
 		
 		return $this->common($label,$data,$notif_type,$notif_object,$delay);
 	}
