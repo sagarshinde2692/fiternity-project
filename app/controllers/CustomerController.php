@@ -4705,12 +4705,14 @@ class CustomerController extends \BaseController {
 
 			$customer->referrer_id = $referrer->_id;
 			$customer->save();
+			
 			if(!isset($referrer->referred_to)){
 				$referrer->referred_to = [];
 			}
 			$referred_to = $referrer->referred_to;
 			array_push($referred_to, $customer->_id);
 			$referrer->save();
+
 			$wallet_data = array(
 				'customer_id' => $customer->_id,
 				'amount' => 250,
@@ -4720,14 +4722,14 @@ class CustomerController extends \BaseController {
 				"entry"=>'credit',
 				'description' => "Referral fitcashplus",
 				'order_id' => 0
-				);
+			);
 
 			$walletTransaction = $this->utilities->walletTransaction($wallet_data);
 
 			return array('status'=>200, 'message'=>'250 Fitcash+ has been added to your wallet');
 
 		}else{
-			
+
 			return array('status'=>400, 'message'=>'Incorrect referral code or referral already applied');
 		}
 	}
