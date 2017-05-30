@@ -4536,15 +4536,24 @@ class CustomerController extends \BaseController {
 
 	public function getReferralCode(){
 		try{
+
 			$jwt = Request::header('Authorization');
 			$decoded = $this->customerTokenDecode($jwt);
 			$id = $decoded->customer->_id;
 			Customer::$withoutAppends = true;
-			$customer = Customer::where('_id', $id)->first(['referral_code']);
+
+			$customer = Customer::where('_id', $id)->first();
 			
 			if($customer){
-			
+
+				if(!isset($customer->referral_code) || strrpos($customer->referral_code, 'R-') == 0){
+
+					$customer->referral_code = $this->generateReferralCode($customer->name);
+					$customer->update();
+				}
+
 				$referral_code = $customer['referral_code'];
+
 				$url = Config::get('app.app_profile_promo_link')."?pc=$referral_code";
 				$share_message = "Register on Fitternity and earn Rs. 250 FitCash+ which can be used for fitness classes, memberships, diet consulting & more! Use my code $referral_code and apply it in your profile after logging-in $url";
 				$display_message = "Fitter is better together!<br>Refer a friend and both of you get Rs. 250 FitCash + which is fully redeemable on all bookings on Fitternity!<br><br>Valid till 31st December 2017. TCA.";
