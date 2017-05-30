@@ -1995,13 +1995,13 @@ Class Utilities {
 
         Log::info("inside addAmountToReferrer function");
 
-        $customer = \Customer::find('_id',(int)$order['customer_id']);
+        $customer = \Customer::find((int)$order['customer_id']);
 
         if(isset($customer['old_customer']) && !$customer['old_customer'] && isset($customer['referrer_id']) && $customer['referrer_id'] != 0 && isset($order['amount_customer']) && $order['amount_customer'] > 0){
 
             Log::info("inside first transaction");
 
-            $referrer = \Customer::find('_id',(int)$customer->referrer_id);
+            $referrer = \Customer::find((int)$customer->referrer_id);
 
             $customer->old_customer = true;
             $customer->update();
