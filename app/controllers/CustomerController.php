@@ -4137,6 +4137,7 @@ class CustomerController extends \BaseController {
 		}
 
 		$response['fitcash'] = 0;
+		$response['remark'] = "";
 
 		if(!empty($data)){
 
@@ -4218,9 +4219,7 @@ class CustomerController extends \BaseController {
 
 			if($response["transaction_type"] == "order"){
 
-				$customerReward     =   new CustomerReward();
-				$calculation        =   $customerReward->purchaseGame($data['amount'], $data["finder_id"], $data["payment_mode"], false, $data["customer_id"]);
-				$response['fitcash'] = $calculation['amount_deducted_from_wallet'];
+				
 
 				$batches = array();
 
@@ -4304,6 +4303,12 @@ class CustomerController extends \BaseController {
 			}
 
 			$response["finder_type"] = getFinderType($response["category_id"]);
+
+			$customerReward     =   new CustomerReward();
+			$calculation        =   $customerReward->purchaseGame($response['amount'], $data["finder_id"], $data["payment_mode"], false, $data["customer_id"]);
+			$response['fitcash'] = $calculation['amount_deducted_from_wallet'];
+
+			$response['remark'] = "2% Auto applied";
 			
 		}
 
