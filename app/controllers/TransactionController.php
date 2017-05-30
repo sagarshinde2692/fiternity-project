@@ -677,6 +677,21 @@ class TransactionController extends \BaseController {
                 $order->update();
 
             }
+
+            if(isset($order->city_id)){
+
+                $city = City::find((int)$order->city_id,['_id','name','slug']);
+
+                $order->update(['city_name'=>$city->name,'city_slug'=>$city->slug]);
+            }
+
+            if(isset($order->finder_category_id)){
+
+                $category = Findercategory::find((int)$order->finder_category_id,['_id','name','slug']);
+
+                $order->update(['category_name'=>$category->name,'category_slug'=>$category->slug]);
+            }
+
             if(isset($order->diet_plan_ratecard_id) && $order->diet_plan_ratecard_id != "" && $order->diet_plan_ratecard_id != 0){
             
                 $generaterDietPlanOrder = $this->generaterDietPlanOrder($order->toArray());
@@ -1881,8 +1896,8 @@ class TransactionController extends \BaseController {
         $referal_order['city_name'] =  $order['city_name'];
         $referal_order['city_slug'] = $order['city_slug'];
         $referal_order['category_id'] =  $order['finder_category_id'];
-        $referal_order['category_name'] =  $order['category_name'];
-        $referal_order['category_slug'] = $order['category_slug'];
+        $referal_order['category_name'] =  (isset($order['category_name']) && $order['category_name']!="") ?  $order['category_name'] : "";
+        $referal_order['category_slug'] = (isset($order['category_slug']) && $order['category_slug']!="") ?  $order['category_slug'] : "";
 
         return $referal_order;
 
