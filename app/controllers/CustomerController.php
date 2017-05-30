@@ -4694,12 +4694,15 @@ class CustomerController extends \BaseController {
 	}
 
 	public function setReferralData($code){
+
 		$decoded = decode_customer_token();
 		$customer_id = intval($decoded->customer->_id);
 		$customer = Customer::find($customer_id);
 		
 		$referrer = Customer::where('referral_code', $code)->where('status', '1')->first();
-		if($referrer && isset($customer->old_customer) && $customer->old_customer == false &&(!isset($customer->referrer_id) || $customer->referrer_id == 0) && $customer_id != $referrer->_id){
+
+		if($referrer && isset($customer->old_customer) && $customer->old_customer == false && !isset($customer->referrer_id) && $customer_id != $referrer->_id){
+
 			$customer->referrer_id = $referrer->_id;
 			$customer->save();
 			if(!isset($referrer->referred_to)){
@@ -4722,7 +4725,9 @@ class CustomerController extends \BaseController {
 			$walletTransaction = $this->utilities->walletTransaction($wallet_data);
 
 			return array('status'=>200, 'message'=>'250 Fitcash+ has been added to your wallet');
+
 		}else{
+			
 			return array('status'=>400, 'message'=>'Incorrect referral code or referral already applied');
 		}
 	}
