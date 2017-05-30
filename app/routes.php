@@ -42,6 +42,24 @@ Route::post('/vendorsummary/{finder_id?}/trials/{trial_id?}/cancel',
 
 Route::group(array('before' => 'validatevendor'), function() {
 
+	Route::post('/vendorapp/dashboard/{finder_id?}',
+		array('as' => 'vendor.dashboard', 'uses' => 'VendorpanelController@dashboard'));
+
+	Route::post('/vendorapp/reviews/{finder_id?}',
+		array('as' => 'vendor.reviews','uses' => 'VendorpanelController@getReviewsApp'));
+
+	Route::post('/vendorapp/sales/{finder_id?}',
+			array('as' => 'vendor.sales','uses' => 'VendorpanelController@getSalesApp'));
+
+	Route::post('/vendorapp/ozonetel/{finder_id?}',
+				array('as' => 'vendor.ozonetel','uses' => 'VendorpanelController@getOzonetelApp'));
+
+	Route::post('/vendorapp/trials/{finder_id?}',
+					array('as' => 'vendor.trials','uses' => 'VendorpanelController@getTrialsApp'));
+
+	Route::post('/vendorapp/upcomingtrials/{finder_id?}',
+						array('as' => 'vendor.upcomingtrials','uses' => 'VendorpanelController@getUpcomingTrialsApp'));
+
 	Route::post('/refreshWebToken',
 		array('as' => 'vendor.refreshWebToken', 'uses' => 'VendorpanelController@refreshWebToken'));
 

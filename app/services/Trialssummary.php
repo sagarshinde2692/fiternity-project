@@ -77,6 +77,17 @@ Class Trialssummary {
             ::  where('finder_id', '=', intval($finder_id))
             ->where('schedule_slot', 'exists', true)
             ->where('schedule_slot', '!=', "")
-            ->where('schedule_date',  '>=', new \DateTime( date("d-m-Y", time()) ));
+            ->where('schedule_date_time',  '>=', new \DateTime( date("d-m-Y h:i:s", time()) ));
+    }
+
+    public function getUpcomingBooktrials($finder_id, $start_date, $end_date)
+    {
+
+        return Booktrial
+            ::  where('finder_id', '=', intval($finder_id))
+            ->where('schedule_slot', 'exists', true)
+            ->where('schedule_slot', '!=', "")
+            ->where('schedule_date_time',  '>=', new \DateTime( date("d-m-Y", strtotime( $start_date )) ))
+            ->where('schedule_date_time',  '<=', new \DateTime( date("d-m-Y", strtotime( $end_date )) ));
     }
 }
