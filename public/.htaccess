@@ -10,9 +10,10 @@
     RewriteCond %{HTTP:Authorization} ^(.*)
     RewriteRule .* - [e=HTTP_AUTHORIZATION:%1]
 
-    RewriteCond %{THE_REQUEST} ^.*(email/opened).* [NC]
+    # RewriteCond %{THE_REQUEST} ^.*(email/opened).* [NC]
+    RewriteCond %{QUERY_STRING} label=flash-sale-mumbai [NC]
     RewriteRule ^(.*)$ - [F,L]
-    
+
     # Handle Front Controller...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
