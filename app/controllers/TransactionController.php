@@ -1899,7 +1899,7 @@ class TransactionController extends \BaseController {
             return Response::json(array('status' => 404,'message' => 'Order not found'),404);
         }
 
-        if(!isset($order->diet_plan_order_id) && isset($order->diet_plan_ratecard_id) && $order->diet_plan_ratecard_id != "" && $order->diet_plan_ratecard_id != 0){
+        if($order->status == "1" && !isset($order->diet_plan_order_id) && isset($order->diet_plan_ratecard_id) && $order->diet_plan_ratecard_id != "" && $order->diet_plan_ratecard_id != 0){
 
 
             if(isset($order->city_id)){
