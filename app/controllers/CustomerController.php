@@ -3407,6 +3407,10 @@ class CustomerController extends \BaseController {
 			$emailTracking = Emailtracking::where('customer_id',$data['customer_id'])->where('label',$data['label'])->where('order_id',$data['order_id'])->first();
 		}
 
+		if(!isset($data['booktrial_id']) && !isset($data['order_id']) && isset($data['label']) && isset($data['customer_email'])){
+
+			$emailTracking = Emailtracking::where('customer_email',$data['customer_email'])->where('label',$data['label'])->first();
+		}
 
 		if($emailTracking){
 
