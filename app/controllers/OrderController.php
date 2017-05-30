@@ -412,6 +412,8 @@ class OrderController extends \BaseController {
             }
 
             $this->utilities->setRedundant($order);
+
+            $this->utilities->addAmountToReferrer($order);
             
             $finder_id = $order['finder_id'];
             $start_date_last_30_days = date("d-m-Y 00:00:00", strtotime('-31 days',strtotime(date('d-m-Y 00:00:00'))));

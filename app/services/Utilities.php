@@ -1993,9 +1993,11 @@ Class Utilities {
 
     public function addAmountToReferrer($order){
 
+        Log::info("inside addAmountToReferrer function");
+
         $customer = \Customer::find('_id',(int)$order['customer_id']);
 
-        if(isset($customer['old_customer']) && !$customer['old_customer'] && isset($customer['referrer_id']) && $customer['referrer_id'] != 0 && isset($order['amount']) && $order['amount'] > 0){
+        if(isset($customer['old_customer']) && !$customer['old_customer'] && isset($customer['referrer_id']) && $customer['referrer_id'] != 0 && isset($order['amount_customer']) && $order['amount_customer'] > 0){
 
             Log::info("inside first transaction");
 
