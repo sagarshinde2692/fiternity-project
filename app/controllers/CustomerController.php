@@ -3599,6 +3599,8 @@ class CustomerController extends \BaseController {
 
 	public function orderDetail($order_id){
 
+		Log::info("----------------orderDetail : ".$orderDetail);
+
 		$decoded = decode_customer_token();
 
 		$order_id = (int) $order_id;
