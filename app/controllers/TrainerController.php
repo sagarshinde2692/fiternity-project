@@ -94,7 +94,7 @@ class TrainerController extends \BaseController {
 
 				foreach ($slots as $slot_key => $slot_value) {
 					$scheduleDateTimeUnix           =  strtotime(strtoupper($date." ".$slot_value['start_hour'].".00.00"));
-					$slot_datetime_pass_status      =   (($scheduleDateTimeUnix - time()) > 0) ? false : true;
+					$slot_datetime_pass_status      =   (($scheduleDateTimeUnix - time()) > 60*60*2) ? false : true;
 					if($slot_datetime_pass_status){
 						$slots[$slot_key]['available'] = false;
 					}
@@ -102,7 +102,7 @@ class TrainerController extends \BaseController {
 
 				$total_slots += count($schedule['slots']);
 
-				$trainerSlotBooking = TrainerSlotBooking::where('trainer_id',$schedule['trainer_id'])->where('hidden',false)->where('date',$date)->where('weekday',$weekday)->orderBy('_id','desc')->get();
+				$trainerSlotBooking = TrainerSlotBooking::where('trainer_id',new mongoID($schedule['trainer_id']))->where('hidden',false)->where('date',$date)->where('weekday',$weekday)->orderBy('_id','desc')->get();
 				// echo $schedule['trainer_id'].$weekday;
 				// print_r($trainerSlotBooking);
 				// echo "<br>";
