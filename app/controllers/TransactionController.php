@@ -461,8 +461,11 @@ class TransactionController extends \BaseController {
             array_set($data, 'status', '1');
             array_set($data, 'order_action', 'bought');
             array_set($data, 'success_date', date('Y-m-d H:i:s',time()));
-
-            array_set($data, 'auto_followup_date', date('Y-m-d H:i:s', strtotime("+7 days",strtotime($order['start_date']))));
+            
+            if(isset($order['start_date'])){
+                array_set($data, 'auto_followup_date', date('Y-m-d H:i:s', strtotime("+7 days",strtotime($order['start_date']))));
+            }
+            
             array_set($data, 'followup_status', 'catch_up');
             array_set($data, 'followup_status_count', 1);
 
@@ -706,8 +709,11 @@ class TransactionController extends \BaseController {
             }
 
             if(isset($order->type) && $order->type == "diet_plan"){
-                $data['final_assessment'] = "no";
+                $order->final_assessment = "no";
+                $order->renewal = "no";
+                $order->update();
             }
+
             $this->utilities->setRedundant($order);
 
             Log::info("Customer for referral");
