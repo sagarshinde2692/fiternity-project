@@ -3316,7 +3316,7 @@ class CustomerController extends \BaseController {
 
 		$code = trim(strtoupper($data['code']));
 		
-		if(strrpos($code, 'R-') == 0){
+		if(strpos($code, 'R-') == 0){
 			return $this->setReferralData($code);
 		}
 
@@ -4546,7 +4546,7 @@ class CustomerController extends \BaseController {
 			
 			if($customer){
 
-				if(!isset($customer->referral_code) || !strrpos($customer->referral_code, 'R-')){
+				if(!isset($customer->referral_code) || !strpos($customer->referral_code, 'R-')){
 
 					$customer->referral_code = $this->generateReferralCode($customer->name);
 					$customer->update();
