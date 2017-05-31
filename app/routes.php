@@ -924,4 +924,5 @@ Route::get('reverse/migration/{colllection}/{id}','MigrationReverseController@by
 Route::get('fitternitydietvendordetail','FindersController@fitternityDietVedorDetail');
 Route::get('orderdemonetisation/{order_id}',array('as' => 'orderdemonetisation','uses' => 'CustomerController@orderDemonetisation'));
 
-Route::get('trainer/generaterdietplanorderonline/{order_id}',array('as' => 'transaction.generaterdietplanorderonline','uses' => 'TransactionController@generaterDietPlanOrderOnline'));
+
+//Route::get('trainer/generaterdietplanorderonline/{order_id}',array('as' => 'transaction.generaterdietplanorderonline','uses' => 'TransactionController@generaterDietPlanOrderOnline'));
