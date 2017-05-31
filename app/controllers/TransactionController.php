@@ -706,7 +706,7 @@ class TransactionController extends \BaseController {
             }
 
             if(isset($order->type) && $order->type == "diet_plan"){
-                return $generaterDietPlanOrder = $this->createDietPlanOrder($order->toArray());
+                $data['final_assessment'] = "no";
             }
             $this->utilities->setRedundant($order);
 
@@ -2229,64 +2229,6 @@ class TransactionController extends \BaseController {
 
         return "no orders found";
     
-    }
-
-    public function createDietPlanOrder($data){
-        Log::info('inside createDietPlanOrder');
-        $data['renewal'] = "no";
-        $data['final_assessment'] = "no";
-
-        array_set($data, 'status', '1');
-        array_set($data, 'order_action', 'bought');
-        array_set($data, 'success_date', date('Y-m-d H:i:s',time()));
-
-        $customerDetail = $this->getCustomerDetail($data);
-
-        if($customerDetail['status'] != 200){
-            return $customerDetail;
-        }
-
-        $data = array_merge($data,$customerDetail['data']); 
-          
-        $ratecardDetail = $this->getRatecardDetail($data);
-
-        if($ratecardDetail['status'] != 200){
-            return $ratecardDetail;
-        }
-
-        $data = array_merge($data,$ratecardDetail['data']);
-
-        $ratecard_id = (int) $data['ratecard_id'];
-        $finder_id = (int) $data['finder_id'];
-        $service_id = (int) $data['service_id'];
-
-        $finderDetail = $this->getFinderDetail($finder_id);
-
-        if($finderDetail['status'] != 200){
-            return $finderDetail;
-        }
-
-        $data = array_merge($data,$finderDetail['data']);
-
-        $serviceDetail = $this->getServiceDetail($service_id);
-
-        if($serviceDetail['status'] != 200){
-            return $serviceDetail;
-        }
-
-        $data = array_merge($data,$serviceDetail['data']);
-
-        $data = $this->unsetData($data);
-
-        $data['status'] = "1";
-        $data['order_action'] = "bought";
-        $data['success_date'] = date('Y-m-d H:i:s',time());
-
-        $order = Order::FindOrFail($data['_id']);
-        $order->update($data);
-        $order_id = $order->_id;
-        // $this->customermailer->sendDietPgCustomer($data);
-        return array('order_id'=>$order_id,'status'=>200,'message'=>'Diet Plan Order Created Sucessfully');
     }
 
 }
