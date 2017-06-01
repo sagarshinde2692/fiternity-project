@@ -3632,7 +3632,9 @@ class CustomerController extends \BaseController {
 	    $data['duration'] = $order->service_duration;
 	    $data['subscription_code'] = $order->code;
 	    $data['amount'] = $order->amount;
-
+	    if($order->amount_customer){
+	    	$data['amount'] = $order->amount_customer;
+	    }
 	    $finderData = [];
 	    $finderData['id'] = $order->finder_id;
 	    $finderData['name'] = $order->finder_name;
