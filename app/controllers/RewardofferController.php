@@ -317,8 +317,7 @@ class RewardofferController extends BaseController {
                             }
 
                             if($rewards_value['reward_type'] == "diet_plan"){
-                                // $rewards_value['service_id'] = Service::where('_id', 19370)->first(['_id'])->_id; //production
-                                $rewards_value['service_id'] = Service::where('_id', 17366)->first(['_id'])->_id; //stage
+                                $rewards_value['service_id'] = Service::where('_id', 19370)->first(['_id'])->_id;
                                 switch($rewards_value['_id']){
                                     case 27:
                                     $validity = 14;
