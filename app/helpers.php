@@ -837,6 +837,7 @@ if (!function_exists('get_elastic_finder_documentv2')) {
             'status'                        =>      (isset($data['status']) && $data['status'] != '') ? $data['status'] : "",
             'title'                         =>      (isset($data['title']) && $data['title'] != '') ? strtolower($data['title']) : "",
             'title_snow'                    =>      (isset($data['title']) && $data['title'] != '') ? strtolower($data['title']) : "",
+            'title_show'                    =>      (isset($data['title']) && $data['title'] != '') ? $data['title'] : "",
             'total_rating_count'            =>      (isset($data['total_rating_count']) && $data['total_rating_count'] != '') ? $data['total_rating_count'] : 0,
             'views'                         =>      (isset($data['views']) && $data['views'] != '') ? $data['views'] : 0,
             'created_at'                    =>      (isset($data['created_at']) && $data['created_at'] != '') ? $data['created_at'] : "",
@@ -864,7 +865,8 @@ if (!function_exists('get_elastic_finder_documentv2')) {
             'finder_coverimage_color' => (isset($data['finder_coverimage_color']) && $data['finder_coverimage_color'] != "") ? $data['finder_coverimage_color'] : "",
             'multiaddress'            => (isset($data['multiaddress'])) ? $data['multiaddress'] : [],
             'location_obj'            => $locationtag_object,
-            'main_location_obj'       => (isset($data['location'])) ? array("name"=>$data['location']['name'],"slug"=>$data['location']['slug'],"locationcluster"=>$locationcluster) : array()
+            'main_location_obj'       => (isset($data['location'])) ? array("name"=>$data['location']['name'],"slug"=>$data['location']['slug'],"locationcluster"=>$locationcluster) : array(),
+            'state'                   => (isset($data['flags']) && isset($data['flags']['state']) != '') ? $data['flags']['state'] : ""
                 //'trialschedules'                =>      $trialdata,
             );
 

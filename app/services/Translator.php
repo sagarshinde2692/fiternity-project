@@ -1214,9 +1214,10 @@ public static function translate_searchresultsv4($es_searchresult_response,$sear
 				$resultobject->special_offer_title = $result['special_offer_title'];
 				$resultobject->slug 			= $result['slug'];
 				$resultobject->status 			= $result['status'];
-				$resultobject->title 			= $result['title'];
+				$resultobject->title 			= isset($result['title_show']) ? $result['title_show'] : $result['title'];
 				$resultobject->total_rating_count = $result['total_rating_count'];
 				$resultobject->views 			= $result['views'];
+				$resultobject->state 			= isset($result['state']) ? $result['state'] : "";
 				$resultobject->instantbooktrial_status = $result['instantbooktrial_status'];
 				$resultobject->photos 			= $result['photos'];
 				$resultobject->locationcluster 	= $result['locationcluster'];
