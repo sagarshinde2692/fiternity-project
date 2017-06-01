@@ -4090,7 +4090,7 @@ class SchedulebooktrialsController extends \BaseController {
                 'customer_name'                 =>      $booktrialdata->customer_name,
                 'customer_email'                =>      $booktrialdata->customer_email,
                 'customer_phone'                =>      $booktrialdata->customer_phone,
-
+                'customer_id'                   =>      $booktrialdata->customer_id,
                 'finder_id'                     =>      $finderid,
                 'finder_name'                   =>      $finder_name,
                 'finder_slug'                   =>      $finder_slug,
@@ -4144,10 +4144,9 @@ class SchedulebooktrialsController extends \BaseController {
 
                 if(isset($booktrialdata->source) && $booktrialdata->source != 'cleartrip'){
                     $this->customermailer->cancelBookTrial($emaildata);
+                    $this->customersms->cancelBookTrial($emaildata);
                     if($emaildata['reg_id'] != '' && $emaildata['device_type'] != ''){
                         $this->customernotification->cancelBookTrial($emaildata);
-                    }else{
-                        $this->customersms->cancelBookTrial($emaildata);
                     }
                 }
             }
