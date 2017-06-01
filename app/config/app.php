@@ -15,7 +15,7 @@ return array(
 	*/
 
 
-	'debug' => FALSE,
+	'debug' => TRUE,
 
 	/*
 	|--------------------------------------------------------------------------
@@ -38,6 +38,10 @@ return array(
 
     'download_app_link' => 'https://goo.gl/sP81To',//https://www.fitternity.com/downloadapp',
 
+    'app_profile_promo_link' => 'http://ftrnty.com/p/p',//http://ftrnty.com/p/p',
+
+    'app_profile_wallet_link' => 'http://ftrnty.com/p/w',//http://ftrnty.com/p/w',
+
     'business' => 'http://business.fitternity.com',
 
     'sidekiq_url' => 'http://nw.fitn.in/', //live
@@ -51,6 +55,9 @@ return array(
 	),
 
 	'vendor_communication' => true,
+
+	// 'env' => 'stage',//stage
+	'env' => 'production',//live
 
 	/*
 	|--------------------------------------------------------------------------
@@ -255,21 +262,21 @@ return array(
 	//will be implemented everywhere in future when other api will be changed
 	/*************************************************************************/
 	//Production
-	'es' =>array(
-		'url'		=> 			'ESAdmin:fitternity2020@54.169.120.141:8050',
-		'host'		=> 			'ESAdmin:fitternity2020@54.169.120.141',
-		'port'		=>			8050,
-		'default_index' => 	'fitternity',
-		'default_type' 	=> 	'finder',
-	),
-	//stage
 	// 'es' =>array(
-	//  	'url'		=> 			'139.59.16.74:1243',
-	//  	'host'		=> 			'139.59.16.74',
-	//  	'port'		=>			1243,
-	//  	'default_index' => 	'fitternity',
-	//  	'default_type' 	=> 	'finder',
+	// 	'url'		=> 			'ESAdmin:fitternity2020@54.169.120.141:8050',
+	// 	'host'		=> 			'ESAdmin:fitternity2020@54.169.120.141',
+	// 	'port'		=>			8050,
+	// 	'default_index' => 	'fitternity',
+	// 	'default_type' 	=> 	'finder',
 	// ),
+	//stage
+	'es' =>array(
+	 	'url'		=> 			'139.59.16.74:1243',
+	 	'host'		=> 			'139.59.16.74',
+	 	'port'		=>			1243,
+	 	'default_index' => 	'fitternity',
+	 	'default_type' 	=> 	'finder',
+	),
 	//local
 	// 'es' =>array(
 	// 	'url'		=> 			'localhost:9200',

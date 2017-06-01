@@ -14,6 +14,7 @@ use App\Services\ShortenUrl as ShortenUrl;
 use Device;
 use Wallet;
 use WalletTransaction;
+use App\Sms\CustomerSms as CustomerSms;
 
 Class Utilities {
 
@@ -45,6 +46,35 @@ Class Utilities {
                         ->orWhere('customer_phone','LIKE','%'.substr($customer_phone, -9).'%');
                 })
                 ->where('finder_id', '=', (int) $finder_id)
+                ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
+                ->get(array('id'));
+
+        }catch (Exception $e) {
+            $error = array('status'=>400,'reason'=>'Error');
+            return $error;
+        }
+
+    }
+
+    public function checkExistingTrialWithService($customer_email = null,$customer_phone = null,$finder_id = null, $service_id = null){
+        // For test vendor 
+        if($finder_id == 7146 || $finder_id == 1584){
+            return [];
+        }
+        // End for test vendor
+        if(($customer_email == null && $customer_phone == null) || $service_id == null){
+            $error = array('status'=>400,'reason'=>'Required fields are missing');
+            return $error;
+        }
+
+        try {
+            return \Booktrial::
+                where(function ($query) use($customer_email, $customer_phone) {
+                    $query->orWhere('customer_email', $customer_email)
+                        ->orWhere('customer_phone','LIKE','%'.substr($customer_phone, -9).'%');
+                })
+                ->where('finder_id', '=', (int) $finder_id)
+                ->where('service_id', '=', (int) $service_id)
                 ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
                 ->get(array('id'));
 
@@ -989,7 +1019,7 @@ Class Utilities {
                 'customerSmsNotInterestedAfter15Days',
                 'customerSmsNotInterestedAfter45Days',
                 'customerSmsNotInterestedAfter75Days',
-               /* 'customerNotificationSendPaymentLinkAfter3Days',
+                'customerNotificationSendPaymentLinkAfter3Days',
                 'customerNotificationSendPaymentLinkAfter7Days',
                 'customerNotificationSendPaymentLinkAfter15Days',
                 'customerNotificationSendPaymentLinkAfter30Days',
@@ -1003,7 +1033,7 @@ Class Utilities {
                 'customerNotificationRenewalLinkSentAfter30Days',
                 'customerNotificationNotInterestedAfter15Days',
                 'customerNotificationNotInterestedAfter45Days',
-                'customerNotificationNotInterestedAfter75Days',*/
+                'customerNotificationNotInterestedAfter75Days',
                 'customerWalletRenewalLinkSentBefore7Days',
                 'customerWalletRenewalLinkSentBefore1Days',
                 'customerWalletSendPaymentLinkAfter15Days',
@@ -1064,7 +1094,7 @@ Class Utilities {
             'customerSmsNotInterestedAfter15Days',
             'customerSmsNotInterestedAfter45Days',
             'customerSmsNotInterestedAfter75Days',
-           /* 'customerNotificationPostTrialFollowup1After3Days',
+            'customerNotificationPostTrialFollowup1After3Days',
             'customerNotificationPostTrialFollowup1After7Days',
             'customerNotificationPostTrialFollowup1After15Days',
             'customerNotificationPostTrialFollowup1After30Days',
@@ -1074,7 +1104,7 @@ Class Utilities {
             'customerNotificationPostTrialFollowup2After30Days',
             'customerNotificationNotInterestedAfter15Days',
             'customerNotificationNotInterestedAfter45Days',
-            'customerNotificationNotInterestedAfter75Days',*/
+            'customerNotificationNotInterestedAfter75Days',
             'customerWalletPostTrialFollowup1After15Days'
         ];
 
@@ -1106,10 +1136,10 @@ Class Utilities {
             'customerSmsPostCaptureFollowup2After7Days',
             'customerSmsPostCaptureFollowup2After15Days',
             'customerSmsPostCaptureFollowup2After30Days',
-            /*'customerNotificationPostCaptureFollowup2After3Days',
+            'customerNotificationPostCaptureFollowup2After3Days',
             'customerNotificationPostCaptureFollowup2After7Days',
             'customerNotificationPostCaptureFollowup2After15Days',
-            'customerNotificationPostCaptureFollowup2After30Days',*/
+            'customerNotificationPostCaptureFollowup2After30Days',
         ];
 
         foreach ($array as $value) {
@@ -1951,9 +1981,58 @@ Class Utilities {
 
             $order->update(['customer_wallet_balance'=>$customer_wallet_balance]);
 
-            $customersms = new \CustomerSms();
+            $customersms = new CustomerSms();
 
             $customersms->demonetisation($order->toArray());
+        }
+
+        return "success";
+
+    }
+
+
+    public function addAmountToReferrer($order){
+
+        Log::info("inside addAmountToReferrer function");
+
+        $customer = \Customer::find((int)$order['customer_id']);
+
+        if(isset($customer['old_customer']) && !$customer['old_customer'] && isset($customer['referrer_id']) && $customer['referrer_id'] != 0 && isset($order['amount_customer']) && $order['amount_customer'] > 0){
+
+            Log::info("inside first transaction");
+
+            $referrer = \Customer::find((int)$customer->referrer_id);
+
+            $customer->old_customer = true;
+            $customer->update();
+
+            $wallet_data = [
+                'customer_id' => $customer->referrer_id,
+                'amount' => 250,
+                'amount_fitcash' => 0,
+                'amount_fitcash_plus' => 250,
+                'type' => "REFERRAL",
+                "entry"=>'credit',
+                'description' => "Referral fitcashplus to referrer",
+                'order_id' => $order['_id']
+            ];
+
+            $walletTransaction = $this->walletTransaction($wallet_data);
+
+            if($walletTransaction['status'] == 200){
+
+                $url = Config::get('app.app_profile_wallet_link');
+
+                $sms_data = [
+                    'customer_phone'=>$referrer->contact_no,
+                    'friend_name'   =>ucwords($customer->name),
+                    'wallet_url'    =>$url
+                ];
+
+                $customersms = new CustomerSms();
+
+                $customersms->referralFitcash($sms_data);
+            }
         }
 
         return "success";

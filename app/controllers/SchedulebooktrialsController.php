@@ -1387,6 +1387,8 @@ class SchedulebooktrialsController extends \BaseController {
 
             $this->utilities->sendDemonetisationCustomerSms($order);
 
+            $this->utilities->addAmountToReferrer($order);
+
             $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
             return Response::json($resp);
         }
@@ -1579,7 +1581,9 @@ class SchedulebooktrialsController extends \BaseController {
                 $order->unset('redundant_order');
             }
 
-            $this->utilities->sendDemonetisationCustomerSms($order);  
+            $this->utilities->sendDemonetisationCustomerSms($order);
+
+            $this->utilities->addAmountToReferrer($order);  
 
             $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
             return Response::json($resp);
@@ -2208,6 +2212,8 @@ class SchedulebooktrialsController extends \BaseController {
         }*/
 
         $this->utilities->sendDemonetisationCustomerSms($order);
+
+        $this->utilities->addAmountToReferrer($order);
         
         Log::info('Customer Book Trial : '.json_encode(array('book_trial_details' => Booktrial::findOrFail($booktrialid))));
 
@@ -2259,9 +2265,9 @@ class SchedulebooktrialsController extends \BaseController {
 
                 $send_communication["customer_email_before12hour"] = $this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
 
-                /*if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
+                if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
                     $send_communication["customer_notification_before12hour"] = $this->customernotification->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
-                }*/
+                }
 
             }else{
 
@@ -2295,9 +2301,9 @@ class SchedulebooktrialsController extends \BaseController {
 
                 $send_communication["customer_sms_before3hour"] = $this->customersms->bookTrialReminderBefore3Hour($booktrialdata, $delayReminderTimeBefore3Hour);
 
-                /*if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
+                if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
                     $send_communication["customer_notification_before3hour"] = $this->customernotification->bookTrialReminderBefore3Hour($booktrialdata, $delayReminderTimeBefore3Hour);
-                }*/
+                }
 
             }
 
@@ -2328,9 +2334,9 @@ class SchedulebooktrialsController extends \BaseController {
 
                 $send_communication["customer_sms_before20Min"] = $this->customersms->bookTrialReminderBefore20Min($booktrialdata, $delayReminderTimeBefore20Min);
 
-                /*if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
+                if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
                     $send_communication["customer_notification_before20Min"] = $this->customernotification->bookTrialReminderBefore20Min($booktrialdata, $delayReminderTimeBefore20Min);
-                }*/
+                }
 
                 $booktrial->missedcall_batch = $batch;
             }
@@ -2344,9 +2350,9 @@ class SchedulebooktrialsController extends \BaseController {
                 $this->customersms->giveCashbackOnTrialOrderSuccessAndInvite($booktrialdata);
             }
 
-            /*if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
+            if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
                 $send_communication["customer_notification_after2hour"] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter90Min);
-            }*/
+            }
 
             $booktrial->send_communication = $send_communication;
             $booktrial->followup_date_time_auto = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',time()))->addDays(31);
@@ -4623,7 +4629,6 @@ class SchedulebooktrialsController extends \BaseController {
     public function preTrialAction($source = 'customer'){
 
         $rules = [
-            'booktrial_id' => 'required',
             'status' => 'required'
         ];
 
@@ -4634,13 +4639,33 @@ class SchedulebooktrialsController extends \BaseController {
             return  Response::json($resp, 400);
         }
 
-        $booktrial = Booktrial::find(intval($data['booktrial_id']));
+        if(!isset($data['booktrial_id'])){
+            if(isset($data['notification_id'])){
+                $notification = NotificationTracking::where('_id', $data['notification_id'])->first(['booktrial_id']);
+                $booktrial_id = $notification['booktrial_id'];
+            }
+        }else{
+            $booktrial_id = intval($data['booktrial_id']);
+        }
+
+        $booktrial = Booktrial::find($booktrial_id);
 
         if($booktrial){
 
+            $message = "Successfull Posted";
+
             if($source == 'customer'){
-                $booktrial->pre_trial_status = (isset($data['status']) && $data['status'] == true ) ? "attended" : "no show";
-                $booktrial->pre_trial_status_reason = (isset($data['reason']) && $data['reason'] != "") ? $data['reason'] : "";
+
+                switch($data['status']){
+                    case 'confirm':
+                    $booktrial->pre_trial_status = 'attended';
+                    $message = "Thanks for confirming, the trainer will be ready to attend you!";
+                    break;  
+                }
+
+                if((isset($data['reason']) && $data['reason'] != "")){
+                    $booktrial->pre_trial_status_reason = $data['reason'];
+                }
             }
 
             if($source == 'vendor'){
@@ -4650,7 +4675,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             $booktrial->update();
 
-            $resp   =   array('status' => 200,'message' => "Successfull");
+            $resp   =   array('status' => 200,'message' => $message);
             return  Response::json($resp, 200);
 
         }else{

@@ -45,7 +45,7 @@ Class CustomerNotification extends Notification{
 		$label = 'AutoTrial-ReminderBefore20Min-Customer';
 
 		$notif_type = 'open_trial';
-		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"n-20m","max_time"=>strtotime($data["schedule_date_time"]));
+		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"n-20m","max_time"=>strtotime($data["schedule_date_time"])+(30*60));
 		
 		return $this->common($label,$data,$notif_type,$notif_object,$delay);
 	}
@@ -230,6 +230,10 @@ Class CustomerNotification extends Notification{
 		$to =  array($data['reg_id']);
 		$text = $this->bladeCompile($template->notification_text,$data);
 
+		$notification_title = isset($template->notification_title)?$template->notification_title:"Fitternity";
+		$title = $this->bladeCompile($notification_title,$data);
+		
+
 		$notificationData = [
 			"label"=> $label,
 			"time" => $notif_object["time"],
@@ -255,12 +259,15 @@ Class CustomerNotification extends Notification{
 		}
 
 		$notificationData["text"]  = $text;
+		$notificationData["title"]  = $title;
 
 		$unique_id = $this->getUniqueId($notificationData);
 
 		$notif_object["customer_id"] = (int)$data["customer_id"];
 		$notif_object["unique_id"] = $unique_id;
-		$notif_object["title"] = "Check this out!";
+		$notif_object["title"] = $title;
+
+		$text = strip_tags($text);
 		$notif_object["text"] = $text;
 
 		$notif_id = (int)$data["_id"];
