@@ -704,6 +704,7 @@ class RankingSearchController extends \BaseController
         // echo "yo";
         // return Input::json()->all();
         $customer_email = null;
+        Log::info("upar ");
         $jwt_token = Request::header('Authorization');
         Log::info("upar ".$jwt_token);
         if($jwt_token){
