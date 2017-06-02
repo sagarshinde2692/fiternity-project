@@ -4127,7 +4127,7 @@ class CustomerController extends \BaseController {
 			$response["finder_name"] = $transaction["finder_name"];
 			$response["finder_id"] = (int)$transaction["finder_id"];
 			$response["lat"] = $transaction["finder_lat"];
-			$response["lon"] = $transaction["finder_lat"];
+			$response["lon"] = $transaction["finder_lon"];
 			$response["finder_location"] = $transaction["finder_location"];
 			$response["category_id"] = isset($transaction["finder_category_id"])?$transaction["finder_category_id"]:"";
 			$response["finder_address"] = $transaction["finder_address"];
