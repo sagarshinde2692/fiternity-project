@@ -339,6 +339,8 @@ class TransactionController extends \BaseController {
 
                 $message = "Thank you! Your starting date has been changed";
 
+                return Response::json(array('status' => 200,'message' => $message,'start_date'=>$data['start_date'],'end_date'=>$data['end_date']),200);
+
             }
 
             if($order->status == "1" && isset($data['upgrade_membership']) && $data['upgrade_membership'] == "requested"){
