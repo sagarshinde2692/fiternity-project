@@ -40,10 +40,6 @@ return array(
 
     'download_app_link' => 'https://goo.gl/sP81To',//https://www.fitternity.com/downloadapp',
 
-    'app_profile_promo_link' => 'http://ftrnty.com/p/p',//http://ftrnty.com/p/p',
-
-    'app_profile_wallet_link' => 'http://ftrnty.com/p/w',//http://ftrnty.com/p/w',
-
     'business' => 'http://business.fitternity.com',
 
     // 'sidekiq_url' => 'http://nw.fitn.in/', //live

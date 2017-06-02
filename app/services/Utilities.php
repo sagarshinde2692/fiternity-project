@@ -2021,7 +2021,19 @@ Class Utilities {
 
             if($walletTransaction['status'] == 200){
 
-                $url = Config::get('app.app_profile_wallet_link');
+                $referrer_email =  $referrer->email;
+                $url = Config::get('app.website')."/profile/$referrer_email#wallet";
+                $shorten_url = new ShortenUrl();
+				$url = $shorten_url->getShortenUrl($url);
+				if(!isset($url['status']) ||  $url['status'] != 200){
+					return Response::json(
+						array(
+							'status' => 422,
+							'message' => 'Unable to Generate Shortren URL'
+						),422
+					);
+				}
+				$url = $url['url'];
 
                 $sms_data = [
                     'customer_phone'=>$referrer->contact_no,
