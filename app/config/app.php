@@ -28,7 +28,7 @@ return array(
 	|
 	*/
 
-	'url' => 'https://a1.fitternity.com', //live
+	'url' => 'https://a2.fitternity.com', //live
 	// 'url' => 'http://apistage.fitn.in', //stage
 	// 'url' => 'http://fitapi.com', //local
 
@@ -47,14 +47,15 @@ return array(
     'sidekiq_url' => 'http://nw.fitn.in/', //live
    	// 'sidekiq_url' => 'http://kick.fitn.in/', //stage
 
-    'queue' => 'booktrial',
+    'queue' => 'booktrialv2', //a2
+    //'queue' => 'booktrial', //a1
 
 	'app' =>array(
 		'discount'		=> 			2,
 		'discount_excluded_vendors' => [1747,1813,4528,4530,9984,10081],
 	),
 
-	'vendor_communication' => true,
+	'vendor_communication' => false,
 
 	// 'env' => 'stage',//stage
 	'env' => 'production',//live
