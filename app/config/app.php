@@ -50,7 +50,7 @@ return array(
    	'sidekiq_url' => 'http://kick.fitn.in/', //stage
 
     'queue' => 'beta', //beta
-    'queue' => 'booktrial', //live
+    // 'queue' => 'booktrial', //live
 
 	'app' =>array(
 		'discount'		=> 			2,
