@@ -25,7 +25,7 @@ require __DIR__.'/analytics_routes.php';
  // $queries = DB::getQueryLog();
  // var_dump($queries);
 
-Route::get('/', function() {  return date('l')." laravel 4.2 goes here...."; });
+Route::get('/', function() {  return date('l')." laravel beta 4.2 goes here...."; });
 Route::get('acceptvendormou/{vendormouid}', 'FindersController@acceptVendorMou');
 Route::get('cancelvendormou/{vendormouid}', 'FindersController@cancelVendorMou');
 

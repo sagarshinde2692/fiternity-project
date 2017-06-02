@@ -626,7 +626,7 @@ class ServiceController extends \BaseController {
         	default: $type = 'trialschedules'; break;
         }
 
-		$all_trials_booked = true;
+		// $all_trials_booked = true;
 		
         foreach ($items as $k => $item) {
 
@@ -761,8 +761,8 @@ class ServiceController extends \BaseController {
             	}
             }
 
-            $service['trials_booked'] = $this->checkTrialAlreadyBooked($item['finder_id'],$item['_id']);
-            $all_trials_booked = $all_trials_booked && $service['trials_booked'];
+            // $service['trials_booked'] = $this->checkTrialAlreadyBooked($item['finder_id'],$item['_id']);
+            // $all_trials_booked = $all_trials_booked && $service['trials_booked'];
             array_push($schedules, $service);
         }
 
@@ -822,17 +822,19 @@ class ServiceController extends \BaseController {
 	        $data['count'] = $count;
         	$data['todays_date'] = date("Y-m-d");
         	$data['requested_date'] = $request['requested_date'];
-			$device_type = ['ios','android'];
+			$data['trial_booked'] = $this->checkTrialAlreadyBooked($item['finder_id']);
+			// $device_type = ['ios','android'];
 
-			if(isset($_GET['device_type']) && in_array($_GET['device_type'], $device_type)){
-        		$data['trial_booked'] = $this->checkTrialAlreadyBooked($item['finder_id']);
-			}else{
-        		$data['trial_booked'] = $all_trials_booked;
-			}
+			// if(isset($_GET['device_type']) && in_array($_GET['device_type'], $device_type)){
+        	// 	$data['trial_booked'] = $this->checkTrialAlreadyBooked($item['finder_id']);
+			// }else{
+        	// 	$data['trial_booked'] = $all_trials_booked;
+			// }
 
         	if($type == "trialschedules" &&  !empty($schedules)){
         		$data['schedules'] = $this->checkWorkoutSessionAvailable($schedules);
         	}
+
 
 	        return Response::json($data,200);
         }
@@ -903,9 +905,9 @@ class ServiceController extends \BaseController {
                         ->where('type','booktrials')
                         ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"]);
 
-            if($service_id){
-            	$query->where('service_id',(int)$service_id);
-            }
+            // if($service_id){
+            // 	$query->where('service_id',(int)$service_id);
+            // }
 
             $booktrial_count = $query->count();
         }

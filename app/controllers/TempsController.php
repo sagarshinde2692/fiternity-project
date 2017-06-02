@@ -336,9 +336,9 @@ class TempsController extends \BaseController {
                         ->where('type','booktrials')
                         ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"]);
 
-                    if(!isset($_GET['device_type'])){
-                         $query = $query->where('service_id', '=',$temp->service_id);
-                    }
+                    // if(!isset($_GET['device_type'])){
+                    //      $query = $query->where('service_id', '=',$temp->service_id);
+                    // }
 
                     $booktrial_count = $query->count();
                     
@@ -350,7 +350,7 @@ class TempsController extends \BaseController {
 
                             $booktrial = Booktrial::where('customer_phone', $customer_phone)
                                 ->where('finder_id', '=',$finder_id)
-                                ->where('service_id', '=',$temp->service_id)
+                                // ->where('service_id', '=',$temp->service_id)
                                 ->where('type','booktrials')
                                 ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
                                 ->orderBy('_id','desc')
