@@ -1997,42 +1997,49 @@ Class Utilities {
 
         $customer = \Customer::find((int)$order['customer_id']);
 
-        if(isset($customer['old_customer']) && !$customer['old_customer'] && isset($customer['referrer_id']) && $customer['referrer_id'] != 0 && isset($order['amount_customer']) && $order['amount_customer'] > 0){
+        if($customer && isset($customer['old_customer']) && !$customer['old_customer'] && isset($customer['referrer_id']) && $customer['referrer_id'] != 0 && isset($order['amount_customer']) && $order['amount_customer'] > 0){
 
             Log::info("inside first transaction");
 
             $referrer = \Customer::find((int)$customer->referrer_id);
 
-            $customer->old_customer = true;
-            $customer->update();
+            if($referrer){
 
-            $wallet_data = [
-                'customer_id' => $customer->referrer_id,
-                'amount' => 250,
-                'amount_fitcash' => 0,
-                'amount_fitcash_plus' => 250,
-                'type' => "REFERRAL",
-                "entry"=>'credit',
-                'description' => "Referral fitcashplus to referrer",
-                'order_id' => $order['_id']
-            ];
-
-            $walletTransaction = $this->walletTransaction($wallet_data);
-
-            if($walletTransaction['status'] == 200){
-
-                $url = Config::get('app.app_profile_wallet_link');
-
-                $sms_data = [
-                    'customer_phone'=>$referrer->contact_no,
-                    'friend_name'   =>ucwords($customer->name),
-                    'wallet_url'    =>$url
+                $wallet_data = [
+                    'customer_id' => $customer->referrer_id,
+                    'amount' => 250,
+                    'amount_fitcash' => 0,
+                    'amount_fitcash_plus' => 250,
+                    'type' => "REFERRAL",
+                    "entry"=>'credit',
+                    'description' => "Referral fitcashplus to referrer",
+                    'order_id' => $order['_id']
                 ];
 
-                $customersms = new CustomerSms();
+                $walletTransaction = $this->walletTransaction($wallet_data);
 
-                $customersms->referralFitcash($sms_data);
+                if($walletTransaction['status'] == 200){
+
+                    $referrer_email =  $referrer->email;
+
+                    $url = $this->getShortenUrl(Config::get('app.website')."/profile/$referrer_email#wallet");
+
+                    $sms_data = [
+                        'customer_phone'=>$referrer->contact_no,
+                        'friend_name'   =>ucwords($customer->name),
+                        'wallet_url'    =>$url
+                    ];
+
+                    $customersms = new CustomerSms();
+
+                    $customersms->referralFitcash($sms_data);
+                }
             }
+        }
+
+        if($customer){
+            $customer->old_customer = true;
+            $customer->update();
         }
 
         return "success";

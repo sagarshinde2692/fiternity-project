@@ -272,7 +272,7 @@ class TrainerController extends \BaseController {
 
 		    $order->update();
 
-        	$redisid = Queue::connection('redis')->push('TrainerController@sendCommunication', array('trainer_slot_booking_id'=>$trainerSlotBooking->_id),'booktrial');
+        	$redisid = Queue::connection('redis')->push('TrainerController@sendCommunication', array('trainer_slot_booking_id'=>$trainerSlotBooking->_id),Config::get('app.queue'));
         	$trainerSlotBooking->update(array('redis_id'=>$redisid));
 
         	return Response::json(array('status' => 200,'message' => 'Slot Booked Succesfully'),200);

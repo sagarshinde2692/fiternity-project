@@ -267,7 +267,7 @@ class TransactionController extends \BaseController {
         $result['full_payment_wallet'] = $data['full_payment_wallet'];
 
         if(in_array($data['type'],$this->membership_array)){
-            $redisid = Queue::connection('redis')->push('TransactionController@sendCommunication', array('order_id'=>$order_id),'booktrial');
+            $redisid = Queue::connection('redis')->push('TransactionController@sendCommunication', array('order_id'=>$order_id),Config::get('app.queue'));
             $order->update(array('redis_id'=>$redisid));
         }
 
@@ -338,6 +338,8 @@ class TransactionController extends \BaseController {
                 $this->findersms->changeStartDate($emailData);
 
                 $message = "Thank you! Your starting date has been changed";
+
+                return Response::json(array('status' => 200,'message' => $message,'start_date'=>$data['start_date'],'end_date'=>$data['end_date']),200);
 
             }
 
@@ -2006,7 +2008,7 @@ class TransactionController extends \BaseController {
         $order->_id = $order_id;
         $order->save();
 
-        //$redisid = Queue::connection('redis')->push('TransactionController@sendCommunication', array('order_id'=>$order_id),'booktrial');
+        //$redisid = Queue::connection('redis')->push('TransactionController@sendCommunication', array('order_id'=>$order_id),Config::get('app.queue'));
         //$order->update(array('redis_id'=>$redisid));
 
         return array('order_id'=>$order_id,'status'=>200,'message'=>'Diet Plan Order Created Sucessfully');
