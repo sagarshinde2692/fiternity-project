@@ -28,13 +28,15 @@ return array(
 	|
 	*/
 
-	'url' => 'https://a2.fitternity.com', //live
+	//'url' => 'https://a1.fitternity.com', //live
 	// 'url' => 'http://apistage.fitn.in', //stage
 	// 'url' => 'http://fitapi.com', //local
+	'url' => 'http://beta.fitn.in', //stage
 
-    'website' => 'https://www.fitternity.com', //live
+    // 'website' => 'https://www.fitternity.com', //live
     // 'website' => 'http://apistage.fitn.in:2233', //stage
     // 'website' => 'http://localhost:3000', //stage
+    'website' => 'http://apistage.fitn.in:2233', //beta
 
     'download_app_link' => 'https://goo.gl/sP81To',//https://www.fitternity.com/downloadapp',
 
@@ -44,11 +46,11 @@ return array(
 
     'business' => 'http://business.fitternity.com',
 
-    'sidekiq_url' => 'http://nw.fitn.in/', //live
-   	// 'sidekiq_url' => 'http://kick.fitn.in/', //stage
+    // 'sidekiq_url' => 'http://nw.fitn.in/', //live
+   	'sidekiq_url' => 'http://kick.fitn.in/', //stage
 
-    'queue' => 'booktrialv2', //a2
-    //'queue' => 'booktrial', //a1
+    'queue' => 'beta', //beta
+    'queue' => 'booktrial', //live
 
 	'app' =>array(
 		'discount'		=> 			2,
@@ -57,8 +59,8 @@ return array(
 
 	'vendor_communication' => false,
 
-	// 'env' => 'stage',//stage
-	'env' => 'production',//live
+	'env' => 'stage',//stage
+	// 'env' => 'production',//live
 
 	/*
 	|--------------------------------------------------------------------------
