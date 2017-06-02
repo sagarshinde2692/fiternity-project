@@ -701,6 +701,7 @@ class RankingSearchController extends \BaseController
 
     public function getRankedFinderResultsAppv2()
     {
+        return "yo";
         // echo "yo";
         // return Input::json()->all();
         $customer_email = null;
