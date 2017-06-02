@@ -705,8 +705,9 @@ class RankingSearchController extends \BaseController
         // return Input::json()->all();
         $customer_email = null;
         $jwt_token = Request::header('Authorization');
+        Log::info("upar ".$jwt_token);
         if($jwt_token){
-            Log::info("inside",$jwt_token);
+            Log::info("inside ".$jwt_token);
             $decoded = $this->customerTokenDecode($jwt_token);
             if($decoded){
                 $customer_email = $decoded->customer->email;
