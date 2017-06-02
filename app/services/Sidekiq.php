@@ -35,7 +35,7 @@ Class Sidekiq {
             $payload['dev_certificate'] = true;
         }
 
-        \Log::info('dev_certificate ----------',$dev_certificate);
+        \Log::info('dev_certificate ----------'.$dev_certificate);
 
         $route = $this->route_type[$type];
 
