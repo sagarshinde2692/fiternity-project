@@ -4567,19 +4567,7 @@ class CustomerController extends \BaseController {
 
 				$customer_email = $customer->email;
 
-				$url = Config::get('app.website')."/profile/$customer_email#promotion";
-
-				$shorten_url = new ShortenUrl();
-				$url = $shorten_url->getShortenUrl($url);
-				if(!isset($url['status']) ||  $url['status'] != 200){
-					return Response::json(
-						array(
-							'status' => 422,
-							'message' => 'Unable to Generate Shortren URL'
-						),422
-					);
-				}
-				$url = $url['url'];
+				$url = $this->utilities->getShortenUrl(Config::get('app.website')."/profile/$customer_email#promotion");
 
 				$share_message = "Register on Fitternity and earn Rs. 250 FitCash+ which can be used for fitness classes, memberships, diet consulting & more! Use my code $referral_code and apply it in your profile after logging-in $url";
 				$display_message = "Fitter is better together!<br>Refer a friend and both of you get Rs. 250 FitCash + which is fully redeemable on all bookings on Fitternity!<br><br>Valid till 31st December 2017. TCA.";
