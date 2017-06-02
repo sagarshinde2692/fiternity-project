@@ -613,10 +613,15 @@ class EmailSmsApiController extends \BaseController {
             $this->sendEmail($emaildata);
         }
 
-        $resp           = array('status' => 200,'capture' =>$storecapture, 'message' => "Recieved the Request");
-        if($data['capture_type'] == "renew-membership"){
-            $resp["message"] = "Thank you for your request. We will curate a renew subscription for you and get back";
+        $message = "";
+        switch ($data['capture_type']) {
+            case 'renew-membership':$message = "Thank you for your request, We will curate a renew subscription for you and get back";break;
+            case 'change_start_date_request':$message = "Thank you for your request, We will get back";break;
+            default:$message = "Recieved the Request";break;
         }
+
+        $resp  = array('status' => 200,'message'=>$message);
+
         return Response::json($resp);
     }
 
