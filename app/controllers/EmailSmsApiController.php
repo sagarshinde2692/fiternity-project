@@ -616,7 +616,7 @@ class EmailSmsApiController extends \BaseController {
         $message = "";
         switch ($data['capture_type']) {
             case 'renew-membership':$message = "Thank you for your request, We will curate a renew subscription for you and get back";break;
-            case 'change_start_date_request':$message = "Thank you for your request, We will get back";break;
+            case 'change_start_date_request':$message = "Thank you for your request, Our team will get in touch with you within 24 hours to process the request";break;
             default:$message = "Recieved the Request";break;
         }
 
