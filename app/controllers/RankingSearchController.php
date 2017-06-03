@@ -2175,7 +2175,7 @@ public function getRankedFinderResultsAppv4()
         // $vip_trial       = implode($vip_trial,',');
         $locat              = Input::json()->get('location');
         $lat                =         (isset($locat['lat'])) ? $locat['lat']  : '';
-        $lon                =         (isset($locat['long'])) ? $locat['long']  : '';
+        $lon                =         (isset($locat['lon'])) ? $locat['lon']  : '';
         $keys               =         (Input::json()->get('keys')) ? Input::json()->get('keys') : array();
         // Log::info("category being searched : ".time());
         $category           = newcategorymapping(Input::json()->get('category'));
@@ -2188,7 +2188,7 @@ public function getRankedFinderResultsAppv4()
         $budget             = Input::json()->get('budget');
         $trialdays          = Input::json()->get('trialdays') == null ? [] : Input::json()->get('trialdays');
         $other_filters      = Input::json()->get('other_filters') == null ? [] : Input::json()->get('other_filters');
-        $radial_distance      = Input::json()->get('radius') == null ? "10km" : Input::json()->get('radius');
+        $radial_distance      = isset($locat["radius"]) && $locat["radius"] != null ? $locat["radius"] : "10km";
         $other_flags        = [];
         foreach ($other_filters as $filter){
             // $budget_filters = ["one","two","three","four","five","six"];

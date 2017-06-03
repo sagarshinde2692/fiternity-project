@@ -7,13 +7,13 @@
 
 //stage
 $host = "localhost";
-$username = "fitadmin";
-$password = "fit1234";
+// $username = "fitadmin";
+// $password = "fit1234";
 
 //production
 // $host = "54.179.134.14";
-// $username = "";
-// $password = "";
+$username = "";
+$password = "";
 
 return array(
 
