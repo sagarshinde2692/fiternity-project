@@ -1370,7 +1370,7 @@ class SchedulebooktrialsController extends \BaseController {
             $sndInstantSmsFinder	                =	$this->findersms->healthyTiffinTrial($order->toArray());
 
 
-            if(isset($order['amount']) && $order['amount'] != "" && $order['amount'] > 0){
+            if(isset($order['amount_customer']) && $order['amount_customer'] != "" && $order['amount_customer'] > 0 && !isset($order['myreward_id'])){
 
                 $this->utilities->demonetisation($order);
             	$this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);

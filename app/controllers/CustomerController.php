@@ -4309,7 +4309,7 @@ class CustomerController extends \BaseController {
 				$customerReward     =   new CustomerReward();
 				$calculation        =   $customerReward->purchaseGame($response['amount'], $data["finder_id"], $data["payment_mode"], false, $data["customer_id"]);
 				$response['fitcash'] = $calculation['amount_deducted_from_wallet'];
-				$response['remarks'] = "2% Discount applied";
+				$response['remarks'] = "(2% Discount applied)";
 
 			}
 

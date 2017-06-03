@@ -651,9 +651,9 @@ class HomeController extends BaseController {
             }
 
             $popup_message = "";
-            if($type == "booktrial" && isset($itemData['amount']) && $itemData['amount'] > 0){
+            if(($type == "booktrial" || $type == "healthytiffintrial") && isset($itemData['amount_customer']) && $itemData['amount_customer'] > 0){
 
-                $amount_20_percent = (int)($itemData['amount']*20/100);
+                $amount_20_percent = (int)($itemData['amount_customer']*20/100);
                 $popup_message = "Rs ".$amount_20_percent." FitCash has been added to your wallet";
             }
 
