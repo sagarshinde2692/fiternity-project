@@ -5,15 +5,15 @@
 // $username = "";
 // $password = "";
 
-//stage beta
-$host = "localhost";
-$username = "fitadmin";
-$password = "fit1234";
+//stage
+// $host = "localhost";
+// $username = "fitadmin";
+// $password = "fit1234";
 
 //production
-// $host = "54.179.134.14";
-// $username = "";
-// $password = "";
+$host = "54.179.134.14";
+$username = "";
+$password = "";
 
 return array(
 
