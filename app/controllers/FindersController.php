@@ -2825,9 +2825,15 @@ class FindersController extends \BaseController {
 				$finderData['finder']['title'] = str_replace('crossfit', 'CrossFit', $finder['title']);
 				$finderData['finder']['title'] = str_replace('Crossfit', 'CrossFit', $finder['title']);
 				if(Request::header('Authorization')){
+
 					$decoded                            =       decode_customer_token();
 					$customer_email                     =       $decoded->customer->email;
-					$customer_phone                     =       $decoded->customer->contact_no;
+					$customer_phone 					= 		"";
+
+					if(isset($decoded->customer->contact_no)){
+						$customer_phone                     =       $decoded->customer->contact_no;
+					}
+
 					$customer_id                        =       $decoded->customer->_id;
 
 					$customer                           =       Customer::find((int)$customer_id);
@@ -2840,10 +2846,20 @@ class FindersController extends \BaseController {
 						$finderData['finder']['bookmark'] = true;
 					}
 					
-					$customer_trials_with_vendors       =       Booktrial::where(function ($query) use($customer_email, $customer_phone) { $query->where('customer_email', $customer_email)->orWhere('customer_phone', $customer_phone);})
+					if($customer_phone != ""){
+
+						$customer_trials_with_vendors       =       Booktrial::where(function ($query) use($customer_email, $customer_phone) { $query->orWhere('customer_email', $customer_email)->orWhere('customer_phone','LIKE','%'.substr($customer_phone, -9).'%');})
 						->where('finder_id', '=', (int) $finder->_id)
 						->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
 						->get(array('id'));
+
+					}else{
+
+						$customer_trials_with_vendors       =       Booktrial::where('customer_email', $customer_email)
+						->where('finder_id', '=', (int) $finder->_id)
+						->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
+						->get(array('id'));
+					}
 
 					$finderData['trials_detials']              =      $customer_trials_with_vendors;
 					$finderData['trials_booked_status']        =      (count($customer_trials_with_vendors) > 0) ? true : false;
