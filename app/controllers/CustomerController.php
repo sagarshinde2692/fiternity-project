@@ -3316,7 +3316,7 @@ class CustomerController extends \BaseController {
 
 		$code = trim(strtoupper($data['code']));
 		
-		if(strpos($code, 'R-') == 0){
+		if(strpos($code, 'R-') != false){
 			return $this->setReferralData($code);
 		}
 
