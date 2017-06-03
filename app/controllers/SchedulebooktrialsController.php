@@ -2274,6 +2274,10 @@ class SchedulebooktrialsController extends \BaseController {
                 $delayReminderAfter30Min    =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->created_at)))->addMinutes(30);
 
                 $send_communication["customer_email_before12hour"] = $this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderAfter30Min);
+
+                if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
+                    $send_communication["customer_notification_before12hour"] = $this->customernotification->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderAfter30Min);
+                }
             }
 
             if($currentScheduleDateDiffMin >= (60 * 6)){
