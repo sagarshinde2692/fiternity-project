@@ -890,20 +890,35 @@ class ServiceController extends \BaseController {
             $decoded = decode_customer_token();
             $customer_id = intval($decoded->customer->_id);
             $customer_email = intval($decoded->customer->email);
-            $customer_phone = intval($decoded->customer->contact_no);
+
+            $customer_phone = "";
+
+            if(isset($decoded->customer->contact_no)){
+				$customer_phone = $decoded->customer->contact_no;
+			}
         }
 
         $booktrial_count = 0;
 
         if($customer_id != ""){
 
-        	$query = Booktrial::where(function ($query) use($customer_email, $customer_phone) {
+        	if($customer_phone != ""){
+
+        		$query = Booktrial::where(function ($query) use($customer_email, $customer_phone) {
 								$query->orWhere('customer_email', $customer_email)
 									->orWhere('customer_phone','LIKE','%'.substr($customer_phone, -9).'%');
 							})
                         ->where('finder_id',(int)$finder_id)
                         ->where('type','booktrials')
                         ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"]);
+            }else{
+
+            	$query = Booktrial::where('customer_email', $customer_email)
+                        ->where('finder_id',(int)$finder_id)
+                        ->where('type','booktrials')
+                        ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"]);
+
+            }
 
             // if($service_id){
             // 	$query->where('service_id',(int)$service_id);
