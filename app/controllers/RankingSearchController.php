@@ -762,11 +762,13 @@ class RankingSearchController extends \BaseController
             }
 
         }else{
-            $lat = "";
-            $lon = "";
+            if(count($region) > 1){
+                $lat = "";
+                $lon = "";
+            }
             $locationCount = count($region);
         }
-
+        
         // return $category;
         $offering_regex = $this->_getOfferingRegex($category);
 
@@ -788,9 +790,8 @@ class RankingSearchController extends \BaseController
         }]
         ';
         }
-
-        $geo_location_filter   =   ($lat != '' && $lon != '') ? '{"geo_distance" : {  "distance": "10km","distance_type":"plane", "geolocation":{ "lat":'.$lat. ',"lon":' .$lon. '}}},':'';
-
+        // return $lat;
+        $geo_location_filter   =   ($lat != '' && $lon != '') ? '{"geo_distance" : {  "distance": "4km","distance_type":"plane", "geolocation":{ "lat":'.$lat. ',"lon":' .$lon. '}}},':'';
         $free_trial_enable = Input::json()->get('free_trial_enable');
         $trial_filter = '';
         if(intval($free_trial_enable) == 1){
