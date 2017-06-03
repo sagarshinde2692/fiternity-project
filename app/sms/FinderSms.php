@@ -38,6 +38,15 @@ Class FinderSms extends VersionNextSms{
 		return $this->common($label,$to,$data,$delay);
 	}
 
+	public function bookTrialReminderBefore6Hour ($data, $delay){
+
+		$to = explode(',', $data['finder_vcc_mobile']);
+
+		$label = 'AutoTrial-ReminderBefore6Hour-Vendor';
+
+		return $this->common($label,$to,$data,$delay);
+	}
+
 
 	public function cancelBookTrial ($data){
 
@@ -82,7 +91,7 @@ Class FinderSms extends VersionNextSms{
 
 	public function confirmTrial($data){
 
-		$label = 'Missedcall-Reply-N-3-ConfirmTrial-Vendor';
+		$label = 'AutoTrial-ReminderBefore20Min-Confirm-Vendor';
 		
 		$to = explode(',', $data['finder_vcc_mobile']);
 
@@ -183,6 +192,27 @@ Class FinderSms extends VersionNextSms{
 
 		return $this->common($label,$to,$data);
 	}
+
+	public function bookTrialReminderBefore20Min ($data){
+	
+		$label = 'AutoTrial-ReminderBefore20Min-Confirm-Vendor';
+
+		$to = explode(',', $data['finder_vcc_mobile']);
+
+		return $this->common($label,$to,$data);
+	}
+
+	public function ozonetelCapture($data){
+
+       	$label = 'OzonetelCapture-Vendor';
+       
+       	$to = explode(',', $data['finder_vcc_mobile']);
+
+       	//$to = array_merge($to,['7506262489']);
+
+		return $this->common($label,$to,$data);
+
+   	}
 	
 	public function common($label,$to,$data,$delay = 0){
 
@@ -190,7 +220,10 @@ Class FinderSms extends VersionNextSms{
 
 		$message = $this->bladeCompile($template->sms_text,$data);
 
-		//$to = array('8976167917');
+		if(!Config::get('app.vendor_communication')){
+
+			$to = array('7506262489');
+		}
 		
 		return $this->sendToWorker($to, $message, $label, $delay);
 	}

@@ -439,12 +439,42 @@ class HomeController extends BaseController {
             $captureItemArr     =   ["manualmembership"];
 
             $itemData           =   [];
+            
             if (in_array($type, $booktrialItemArr)){
-                $itemData       =   Booktrial::with('finder')->find(intval($id))->toArray();
+
+                $itemData       =   Booktrial::with('finder')->find(intval($id));
+
+                $dates = array('start_date', 'start_date_starttime', 'schedule_date', 'schedule_date_time', 'followup_date', 'followup_date_time','missedcall_date','customofferorder_expiry_date','auto_followup_date');
+
+                foreach ($dates as $key => $value){
+                    if(isset($itemData[$value]) && $itemData[$value]==''){
+                        $itemData->unset($value);
+                    }
+                }
+
+                $itemData       =   $itemData->toArray();
+
+                if($type == 'manualtrial'){
+                    if(isset($itemData['finder']['manual_trial_auto']) && $itemData['finder']['manual_trial_auto'] == "1"){
+                        $type = "manualautotrial";
+                    }
+                }
             }
 
             if (in_array($type, $orderItemArr)) {
-                $itemData = Order::with('finder')->find(intval($id))->toArray();
+
+                $itemData = Order::with('finder')->find(intval($id));
+
+                $dates = array('followup_date','last_called_date','preferred_starting_date', 'called_at','subscription_start','start_date','start_date_starttime','end_date', 'order_confirmation_customer');
+
+                foreach ($dates as $key => $value){
+                    if(isset($itemData[$value]) && $itemData[$value]==''){
+                        $itemData->unset($value);
+                    }
+                }
+
+                $itemData       =   $itemData->toArray();
+
             }
 
             if (in_array($type, $captureItemArr)) {
@@ -622,7 +652,9 @@ class HomeController extends BaseController {
 
             $popup_message = "";
             if($type == "booktrial" && isset($itemData['amount']) && $itemData['amount'] > 0){
-                $popup_message = "Rs ".$itemData['amount']." Fitcash has been added to your wallet";
+
+                $amount_20_percent = (int)($itemData['amount']*20/100);
+                $popup_message = "Rs ".$amount_20_percent." FitCash has been added to your wallet";
             }
 
             if(isset($item['myreward_id']) && $item['myreward_id'] != "" && $item['myreward_id'] != 0){
@@ -711,7 +743,7 @@ class HomeController extends BaseController {
 
 
 
-    public function getFooterByCity($city = 'mumbai',$cache = false){
+    public function getFooterByCity($city = 'mumbai',$cache = true){
 
         $footer_by_city = $cache ? Cache::tags('footer_by_city')->has($city) : false;
 
@@ -758,9 +790,9 @@ class HomeController extends BaseController {
             array_set($footer_finders,  'footer_block6_title', (isset($homepage['footer_block6_title']) && $homepage['footer_block6_title'] != '') ? $homepage['footer_block6_title'] : '');
 
             // Default City vendors
-            // $defaultfinders = Finder::where('city_id',10000)->get(array('title','slug','custom_city','custom_location'))->groupBy('custom_city');
-            // $footerdata 	= 	array('footer_finders' => $footer_finders, 'city_name' => $city_name, 'city_id' => $city_id,'default_vendors'=>$defaultfinders);
-            $footerdata 	= 	array('footer_finders' => $footer_finders, 'city_name' => $city_name, 'city_id' => $city_id);
+            $defaultfinders = Finder::where('city_id',10000)->active()->get(array('title','slug','custom_city','custom_location'))->groupBy('custom_city');
+            $footerdata 	= 	array('footer_finders' => $footer_finders, 'city_name' => $city_name, 'city_id' => $city_id,'default_vendors'=>$defaultfinders);
+            // $footerdata 	= 	array('footer_finders' => $footer_finders, 'city_name' => $city_name, 'city_id' => $city_id);
             Cache::tags('footer_by_city')->put($city, $footerdata, Config::get('cache.cache_time'));
         }
 

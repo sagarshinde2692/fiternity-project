@@ -1,23 +1,23 @@
 <?php
 
 /** 
- * ModelName : Customerwallet.
- * Maintains a list of functions used for Customerwallet.
+ * ModelName : Wallet.
+ * Maintains a list of functions used for Wallet.
  *
  * @author Renuka Aggarwal <renu17a@gmail.com>
  */
 
-class Customerwallet extends  \Basemodel {
+class Wallet extends  \Basemodel {
 
-	protected $collection = "customerwallets";
+	protected $collection = "wallets";
 	
 	// Add your validation rules here
 	public static $rules = [
 		'customer_id' => 'required|integer|numeric',
-		'order_id' => 'required|integer|numeric',
 		'amount' => 'required|integer|numeric',
-		'type' => 'in:DEBIT,CREDIT,REFUND,CASHBACK,REFERRAL,FITCASH,FITCASHPLUS',
-	    'description' => 'required'
+		'entry'=>'required|in:debit,credit',
+		'type'=>'required'
+		//'validity'=>'required'
 	];
 
 	public function setIdAttribute($value){

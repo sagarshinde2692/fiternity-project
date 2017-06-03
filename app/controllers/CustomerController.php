@@ -430,30 +430,43 @@ class CustomerController extends \BaseController {
 	public function register(){
 
 		$data = Input::json()->all();
+
 		$inserted_id = Customer::max('_id') + 1;
+
 		$rules = [
-		'name' => 'required|max:255',
-		'email' => 'required|email|max:255',
-		'password' => 'required|min:6|max:20|confirmed',
-		'password_confirmation' => 'required|min:6|max:20',
-		'contact_no' => 'max:15',
-		'identity' => 'required'
+			'name' => 'required|max:255',
+			'email' => 'required|email|max:255',
+			'password' => 'required|min:6|max:20|confirmed',
+			'password_confirmation' => 'required|min:6|max:20',
+			'contact_no' => 'max:15',
+			'identity' => 'required'
 		];
+
 		$validator = Validator::make($data,$rules);
+
 		$data['email'] = strtolower($data['email']);
+
 		if ($validator->fails()) {
+
 			return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),400);
 		}else{
 
 			$customer = Customer::where('email','=',$data['email'])->where('identity','!=','email')->first();
 			
 			if(empty($customer)){
+
 				$ishullcustomer = Customer::where('email','=',$data['email'])->where('ishulluser',1)->first();
+
 				if(empty($ishullcustomer)){
+
 					$new_validator = Validator::make($data, Customer::$rules);
+
 					if ($new_validator->fails()) {
+
 						return Response::json(array('status' => 400,'message' => $this->errorMessage($new_validator->errors())),400);
+
 					}else{
+
 						$account_link = array('email'=>0,'google'=>0,'facebook'=>0,'twitter'=>0);
 						$account_link[$data['identity']] = 1;
 						$customer = new Customer();
@@ -471,42 +484,55 @@ class CustomerController extends \BaseController {
 						$customer->identity = $data['identity'];
 						$customer->account_link = $account_link;
 						$customer->status = "1";
+						$customer->demonetisation = time();
+						$customer->referral_code = $this->generateReferralCode($customer->name);
+						$customer->old_customer = false;
 						$customer->save();
-
 						$customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email'],'password'=>$data['password']);
 						$this->customermailer->register($customer_data);
 
 						Log::info('Customer Register : '.json_encode(array('customer_details' => $customer)));
+
 						$response = $this->createToken($customer);
+
 						$resp = $this->checkIfpopPup($customer);
+
 						if($resp["show_popup"] == "true"){
 							$response["extra"] = $resp;
 						}
-						return Response::json($response,200);
+
+						$customer_id = $customer->_id;
+						
 					}
+
 				}else{
+
 					$ishullcustomer->name = ucwords($data['name']);
 					$ishullcustomer->password = md5($data['password']);
 					$ishullcustomer->ishulluser = 0;
+					$ishullcustomer->referral_code = $this->generateReferralCode($ishullcustomer->name);
+					$ishullcustomer->old_customer = true;
 					$ishullcustomer->update();
 					$customer_data = array('name'=>ucwords($ishullcustomer['name']),'email'=>$ishullcustomer['email'],'password'=>$ishullcustomer['password']);
-					// $this->customermailer->register($ishullcustomer);
 
 					Log::info('Customer Register : '.json_encode(array('customer_details' => $ishullcustomer)));
+
 					$response = $this->createToken($ishullcustomer);
 					$resp = $this->checkIfpopPup($ishullcustomer);
 					if($resp["show_popup"] == "true"){
 						$response["extra"] = $resp;
 					}
-					return Response::json($response,200);
-				}	
+
+					$customer_id = $ishullcustomer->_id;
+					
+				}
+
 			}else{
 
 				$account_link= $customer['account_link'];
 				$account_link[$data['identity']] = 1;
 				$customer->name = ucwords($data['name']) ;
 				$customer->email = $data['email'];
-
 				isset($data['dob']) ? $customer->dob = $data['dob'] : null;
 				isset($data['gender']) ? $customer->gender = $data['gender'] : null;
 				isset($data['fitness_goal']) ? $customer->fitness_goal = $data['fitness_goal'] : null;
@@ -528,11 +554,16 @@ class CustomerController extends \BaseController {
 				if($resp["show_popup"] == "true"){
 					$response["extra"] = $resp;
 				}
-				return Response::json($response,200);
+
+				$customer_id = $customer->_id;
+				
 			}
 
-			$account_link = array('email'=>0,'google'=>0,'facebook'=>0,'twitter'=>0);
-			$account_link[$data['identity']] = 1;
+			$data["customer_id"] = (int)$customer_id;
+
+			$this->addCustomerRegId($data);
+
+			return Response::json($response,200);
 		}
 	}
 
@@ -543,19 +574,34 @@ class CustomerController extends \BaseController {
 
 		if(isset($data['identity']) && !empty($data['identity'])){
 
-			if($data['identity'] == 'email')
-			{
+			if($data['identity'] == 'email'){
+
 				$resp = $this->emailLogin($data);
+
 				if(isset($resp["token"])){
 					$response = $resp["token"];
 					if($resp["popup"]["show_popup"] == "true"){
 						$response["extra"] = $resp["popup"];
+					}else{
+						$response["extra"] = array("show_popup" => false);
 					}
 				}else{
 					$response = $resp;
 				}
+
+				if($response['status'] == 200 && isset($response['token']) && $response['token'] != ""){
+
+					$customerTokenDecode = $this->customerTokenDecode($response['token']);
+
+					$data["customer_id"] = (int)$customerTokenDecode->customer->_id;
+
+					$this->addCustomerRegId($data);
+				}
+
 				return Response::json($response,$response['status']);
+
 			}elseif($data['identity'] == 'google' || $data['identity'] == 'facebook' || $data['identity'] == 'twitter'){
+
 				$resp = $this->socialLogin($data);
 				if(isset($resp["token"])){
 					$response = $resp["token"];
@@ -565,6 +611,16 @@ class CustomerController extends \BaseController {
 				}else{
 					$response = $resp;
 				}
+
+				if($response['status'] == 200 && isset($response['token']) && $response['token'] != ""){
+
+					$customerTokenDecode = $this->customerTokenDecode($response['token']);
+
+					$data["customer_id"] = (int)$customerTokenDecode->customer->_id;
+
+					$this->addCustomerRegId($data);
+				}
+
 				return Response::json($response,$response['status']);
 			}else{
 				return Response::json(array('status' => 400,'message' => 'The identity is incorrect'),400);
@@ -625,21 +681,60 @@ class CustomerController extends \BaseController {
 	}
 
 	public function checkIfpopPup($customer){
+
 		$resp = array();
-		if($customer["balance"] > 0 || $customer["balance_fitcash_plus"] > 0){
-			$resp["show_popup"] = true;
-			$resp["popup"]["header_image"] = "http://b.fitn.in/iconsv1/global/fitcash.jpg";
-			$resp["popup"]["header_text"] = "Congratulations";
-			if($customer["balance_fitcash_plus"] > 0){
-				$resp["popup"]["text"] = "You have Rs. ".$customer["balance_fitcash_plus"]." in your wallet as FitCash+. You can use this across session and membership bookings at gyms in studios in Mumbai, Bangalore, Pune & Delhi";
-			}else{
-				$resp["popup"]["text"] = "You have Rs. ".$customer["balance"]." in your wallet as FitCash. You can use this across session and membership bookings at gyms in studios in Mumbai, Bangalore, Pune & Delhi";
+
+		$resp["show_popup"] = false;
+		$resp["popup"] = array();
+
+		if(isset($customer->demonetisation)){
+
+			$current_wallet_balance = \Wallet::active()->where('customer_id',$customer->_id)->where('balance','>',0)->sum('balance');
+
+			if($current_wallet_balance > 0){
+
+				$resp["show_popup"] = true;
+				$resp["popup"]["header_image"] = "https://b.fitn.in/iconsv1/global/fitcash.jpg";
+				$resp["popup"]["header_text"] = "Congratulations";
+				$resp["popup"]["text"] = "You have Rs. ".$current_wallet_balance." in your wallet as FitCash+. This is 100% redeemable to purchase workout sessions and memberships on Fitternity across Mumbai, Bangalore, Pune & Delhi";
+				$resp["popup"]["button"] = "Ok";
+
 			}
-			$resp["popup"]["button"] = "Ok";
+
 		}else{
-			$resp["show_popup"] = false;
-			$resp["popup"] = array();
+
+			$fitcash = 0;
+			$fitcash_plus = 0;
+
+			$customer_wallet = Customerwallet::where('customer_id',$customer->_id)
+			->where('amount','!=',0)
+			->orderBy('_id', 'DESC')
+			->first();
+
+			if($customer_wallet){
+				$fitcash = (isset($customer_wallet['balance']) && $customer_wallet['balance'] != "") ? (int) $customer_wallet['balance'] : 0 ;
+				$fitcash_plus = (isset($customer_wallet['balance_fitcash_plus']) && $customer_wallet['balance_fitcash_plus'] != "") ? (int) $customer_wallet['balance_fitcash_plus'] : 0 ;
+			}
+
+			$current_wallet_balance = $fitcash + $fitcash_plus;
+
+			if($fitcash > 0 || $fitcash_plus > 0){
+
+				$resp["show_popup"] = true;
+				$resp["popup"]["header_image"] = "https://b.fitn.in/iconsv1/global/fitcash.jpg";
+				$resp["popup"]["header_text"] = "Congratulations";
+
+				if($fitcash_plus > 0){
+					$resp["popup"]["text"] = "You have Rs. ".$fitcash_plus." in your wallet as FitCash+. This is 100% redeemable to purchase workout sessions and memberships on Fitternity across Mumbai, Bangalore, Pune & Delhi";
+				}else{
+					$resp["popup"]["text"] = "You have Rs. ".$fitcash." in your wallet as FitCash. You can use this across session and membership bookings at gyms in studios in Mumbai, Bangalore, Pune & Delhi";
+				}
+
+				$resp["popup"]["button"] = "Ok";
+			}
+
 		}
+
 		return $resp;
 	}
 
@@ -783,12 +878,47 @@ class CustomerController extends \BaseController {
 			}
 
 			$customer->status = "1";
+			$customer->demonetisation = time();
+			$customer->referral_code = $this->generateReferralCode($customer->name);
+			$customer->old_customer = false;
 			$customer->save();
 
 			$response = array('status' => 200,'customer'=>$customer);
 		}
 
 		return $response;
+	}
+
+	public function addRegId(){
+
+		$data = Input::json()->all();
+
+		$addRegIdData["device_type"] = $data["type"];
+		$addRegIdData["gcm_reg_id"] = $data["reg_id"];
+		$addRegIdData["customer_id"] = (isset($data["customer_id"]) && $data["customer_id"] != "") ? (int)$data["customer_id"] : "";
+
+		$this->addCustomerRegId($addRegIdData);
+
+		return Response::json(array('status' => 200,'message' => 'success'),200);
+	}
+
+	public function addCustomerRegId($data){
+
+		$device_type = (isset($data['device_type']) && $data['device_type'] != '') ? $data['device_type'] : "";
+        $gcm_reg_id = (isset($data['gcm_reg_id']) && $data['gcm_reg_id'] != '') ? $data['gcm_reg_id'] : "";
+
+        if($device_type != '' && $gcm_reg_id != ''){
+
+            $regData = array();
+
+            $regData['customer_id'] = $data["customer_id"];
+            $regData['reg_id'] = $gcm_reg_id;
+            $regData['type'] = $device_type;
+
+            $this->utilities->addRegId($regData);
+        }
+
+        return "success";
 	}
 
 	public function createToken($customer){
@@ -1238,10 +1368,12 @@ class CustomerController extends \BaseController {
 					$value['amount'] = $value['amount_customer'];
 				}
 
-				$getAction = $this->getAction($value);
+				$getAction = $this->getAction($value,"orderHistory");
 
 			    $value["action"] = $getAction["action"];
 			    $value["feedback"] = $getAction["feedback"];
+
+				$value["action_new"] = $this->getActionV1($value,"orderHistory");
 
 				array_push($orders, $value);
 
@@ -1427,7 +1559,7 @@ class CustomerController extends \BaseController {
 		$jwt_token = Request::header('Authorization');
 		$decoded = $this->customerTokenDecode($jwt_token);
 
-		$reviews 			= 	Review::with(array('finder'=>function($query){$query->select('_id','title','slug','coverimage');}))->active()->where('customer_id',$decoded->customer->_id)->skip($offset)->take($limit)->orderBy('_id', 'desc')->get();
+		$reviews 			= 	Review::with(array('finder'=>function($query){$query->select('_id','title','slug','coverimage');}))->active()->where('customer_id',$decoded->customer->_id)->skip($offset)->take($limit)->orderBy('updated_at', 'desc')->get();
 
 		$response 		= 	['status' => 200,'reviews' => $reviews,  'message' => 'List for reviews'];
 
@@ -2046,15 +2178,6 @@ class CustomerController extends \BaseController {
 
 	}
 
-	public function addRegId(){
-
-		$data = Input::json()->all();
-
-		$response = add_reg_id($data);
-
-		return Response::json($response,$response['status']);
-	}
-
 	public function autoRegisterCustomer($data){
 
 		$customer 		= 	Customer::active()->where('email', $data['customer_email'])->first();
@@ -2092,6 +2215,7 @@ class CustomerController extends \BaseController {
 			$customer->account_link = array('email'=>1,'google'=>0,'facebook'=>0,'twitter'=>0);
 			$customer->status = "1";
 			$customer->ishulluser = 1;
+			$customer->demonetisation = time();
 			$customer->save();
 
 			return $inserted_id;
@@ -2149,7 +2273,7 @@ class CustomerController extends \BaseController {
 
 		$customer_info = new CustomerInfo();
 
-		$customer_id = (isset($data['customer_id']) && $data['customer_id'] != "") ? $data['customer_id'] : $this->autoRegisterCustomer($data);
+		$customer_id = (isset($data['customer_id']) && $data['customer_id'] != "") ? $data['customer_id'] : autoRegisterCustomer($data);
 
 		$data['customer_id'] = (int)$customer_id;
 
@@ -2159,114 +2283,232 @@ class CustomerController extends \BaseController {
 
 	}
 
-
 	public function listWalletSummary($limit=0,$offset=10){
-
-		$request = Input::json()->all();
 
 		$jwt_token = Request::header('Authorization');
 		$decoded = $this->customerTokenDecode($jwt_token);
 		$customer_id = $decoded->customer->_id;
-		$request['customer_id'] = $customer_id;
-		//Log::info($jwt_token);
-		$wallet = array();
 
-		$wallet = Customerwallet::where('customer_id',$request['customer_id'])
-		->where('amount','!=',0)
-		->orderBy('_id', 'DESC')
-		//->skip($limit)
-		//->take($offset)
-		->get();
 
-		$wallet_balance = 0;
-		$balance = 0;
-		$balance_fitcash_plus = 0;
+		$customer = Customer::find((int)$customer_id);
 
-		if(count($wallet) > 0){
+		if(isset($customer->demonetisation)){
 
-			$debit_array = [
-			    "CASHBACK",
-			    "REFUND",
-			    "FITCASHPLUS",
-			    "REFERRAL",
-			    "CREDIT",
-			];
+			$wallet_summary = [];
 
-			$wallet = $wallet->toArray();
+			$wallet_balance = Wallet::active()->where('customer_id',$customer_id)->where('balance','>',0)->sum('balance');
 
-			foreach ($wallet as $key => $value) {
+			$walletTransaction = WalletTransaction::where('customer_id',$customer_id)->orderBy('updated_at','DESC')->get()->groupBy('group');
 
-				if(!isset($value['order_id'])){
-					$wallet[$key]['order_id'] = 0;
-				}
+			if($walletTransaction){
 
-				$wallet[$key]["debit_credit"] = "debit";
+				$count = 0;
 
-				if(in_array($value["type"],$debit_array)){
-					$wallet[$key]["debit_credit"] = "credit";
-				}
+				foreach ($walletTransaction as $group => $transaction) {
 
-				if(isset($wallet[$key+1])){
+					$amount = 0;
+					$validity = null;
+					$description = "";
+					$date = "";
+					$entry = "";
+					$created_at = "";
+					$type = "";
 
-					$wallet[$key]['amount_fitcash'] = $value['amount'];
-					$wallet[$key]['amount_fitcash_plus'] = 0;
+					foreach ($transaction as $key => $value) {
 
-					if(isset($value['balance_fitcash_plus'])){
+						$amount += $value['amount'];
 
-						$wallet[$key]['amount_fitcash'] = abs($wallet[$key]['balance'] - $wallet[$key+1]['balance']);
-						$wallet[$key]['amount_fitcash_plus'] = 0;
+						if(isset($value['validity']) && $validity != null){
+							$validity = date('d-m-Y',$value['validity']);
+						}
 
-						if(isset($wallet[$key+1]['balance_fitcash_plus'])){
-							$wallet[$key]['amount_fitcash_plus'] = abs($wallet[$key]['balance_fitcash_plus'] - $wallet[$key+1]['balance_fitcash_plus']);
+						if($date == ""){
+							$date = date('d-m-Y',strtotime($value['created_at']));
+						}
+
+						if($description == ""){
+							$description = $value['description'];
+						}
+
+						if($entry == ""){
+							$entry = $value['entry'];
+						}
+
+						if($created_at == ""){
+
+
+							$created_at = date('Y-m-d H:i:s',strtotime($value['created_at'])); 
+							$updated_at = date('Y-m-d H:i:s',strtotime($value['created_at']));
+
+							if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android")){
+								$created_at = date('d-m-Y',strtotime($value['created_at'])); 
+								$updated_at = date('d-m-Y',strtotime($value['created_at']));
+							}
+
+						}
+
+						if($type == ""){
+							$type = $value['type'];
 						}
 					}
 
+					$wallet_summary[] = [
+						'_id'=>$count,
+						'customer_id'=>$customer_id,
+						'order_id'=>0,
+						'type'=>$type,
+						'amount'=>$amount,
+						'balance'=>0,
+						'amount_fitcash'=>0,
+						'amount_fitcash_plus'=>$amount,
+						'balance_fitcash_plus'=>0,
+						'description'=>$description,
+						'updated_at'=>$updated_at,
+						'created_at'=>$created_at,
+						'debit_credit'=>$entry,
+						'validity'=>$validity
+					];
 
-				}else{
+					$count++;
 
-					$wallet[$key]['amount_fitcash'] = $value['amount'];
-					$wallet[$key]['amount_fitcash_plus'] = 0;
-
-					if(isset($value['balance_fitcash_plus'])){
-						$wallet[$key]['amount_fitcash_plus'] = $value['amount'];
-						$wallet[$key]['amount_fitcash'] = 0;
-					}
 				}
 
 			}
 
-			$balance = (isset($wallet[0]['balance']) && $wallet[0]['balance'] != "") ? (int) $wallet[0]['balance'] : 0 ;
-			$balance_fitcash_plus = (isset($wallet[0]['balance_fitcash_plus']) && $wallet[0]['balance_fitcash_plus'] != "") ? (int) $wallet[0]['balance_fitcash_plus'] : 0 ;
+			if(count($wallet_summary) > 0){
+				$wallet_summary[0]['balance'] = $wallet_balance;
+			}
 
-			$wallet_balance = $balance + $balance_fitcash_plus;
+			return Response::json(
+				array(
+					'status' => 200,
+					'data' => $wallet_summary,
+					'wallet_balance'=>$wallet_balance,
+					'fitcash' => null,
+					'fitcash_plus' => [
+						'title' => 'FITCASH+',
+						'balance'=>$wallet_balance,
+						'info'=>[
+							'title'=>'What is FitCash+?',
+							'description' => 'With FitCash+ there is no restriction on redeeming - you can use the entire amount in your transaction! FitCash can be used for any booking or purchase on Fitternity ranging from workout sessions, memberships and healthy tiffin subscriptions.',
+							'short_description' => "refer"."\n"."a friend"."\n"."and earn FitCash+"
+						]
+					],
+					),
+				200
+			);
+
+		}else{
+
+			$wallet = array();
+			$wallet = Customerwallet::where('customer_id',$customer_id)
+			->where('amount','!=',0)
+			->orderBy('_id', 'DESC')
+			//->skip($limit)
+			//->take($offset)
+			->get();
+
+			$wallet_balance = 0;
+			$balance = 0;
+			$balance_fitcash_plus = 0;
+
+			if(count($wallet) > 0){
+
+				$debit_array = [
+				    "CASHBACK",
+				    "REFUND",
+				    "FITCASHPLUS",
+				    "REFERRAL",
+				    "CREDIT",
+				];
+
+				$wallet = $wallet->toArray();
+
+				foreach ($wallet as $key => $value) {
+
+					if(!isset($value['order_id'])){
+						$wallet[$key]['order_id'] = 0;
+					}
+
+					$wallet[$key]["debit_credit"] = "debit";
+
+					if(in_array($value["type"],$debit_array)){
+						$wallet[$key]["debit_credit"] = "credit";
+					}
+
+					/*if(isset($value['validity']) && $value['validity'] != "" && $value['validity'] != null){
+						$wallet[$key]['description'] = $wallet[$key]['description']." Expires on : ".date('d-m-Y',$value['validity']);
+					}*/
+
+					if(isset($wallet[$key+1])){
+
+						$wallet[$key]['amount_fitcash'] = $value['amount'];
+						$wallet[$key]['amount_fitcash_plus'] = 0;
+
+						if(isset($value['balance_fitcash_plus'])){
+
+							$wallet[$key]['amount_fitcash'] = abs($wallet[$key]['balance'] - $wallet[$key+1]['balance']);
+							$wallet[$key]['amount_fitcash_plus'] = 0;
+
+							if(isset($wallet[$key+1]['balance_fitcash_plus'])){
+								$wallet[$key]['amount_fitcash_plus'] = abs($wallet[$key]['balance_fitcash_plus'] - $wallet[$key+1]['balance_fitcash_plus']);
+							}
+						}
+
+
+					}else{
+
+						$wallet[$key]['amount_fitcash'] = $value['amount'];
+						$wallet[$key]['amount_fitcash_plus'] = 0;
+
+						if(isset($value['balance_fitcash_plus'])){
+							$wallet[$key]['amount_fitcash_plus'] = $value['amount'];
+							$wallet[$key]['amount_fitcash'] = 0;
+						}
+					}
+
+					if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android")){
+						$wallet[$key]['created_at'] = date('d-m-Y',strtotime($value['created_at'])); 
+						$wallet[$key]['updated_at'] = date('d-m-Y',strtotime($value['created_at']));
+					}
+
+				}
+
+				$balance = (isset($wallet[0]['balance']) && $wallet[0]['balance'] != "") ? (int) $wallet[0]['balance'] : 0 ;
+				$balance_fitcash_plus = (isset($wallet[0]['balance_fitcash_plus']) && $wallet[0]['balance_fitcash_plus'] != "") ? (int) $wallet[0]['balance_fitcash_plus'] : 0 ;
+
+				$wallet_balance = $balance + $balance_fitcash_plus;
+			}
+
+			return Response::json(
+				array(
+					'status' => 200,
+					'data' => $wallet,
+					'wallet_balance'=>$wallet_balance,
+					'fitcash' => [
+						'title' => 'FITCASH',
+						'balance'=>$balance,
+						'info'=>[
+							'title'=>'What is FitCash?',
+							'description' => 'Earn FitCash with every transaction you do on Fitternity. You redeem upto 10% of the booking amount in each transaction. FitCash can be used for any booking or purchase on Fitternity ranging from workout sessions, memberships and healthy tiffin subscriptions',
+							'short_description' => "refer"."\n"."a friend"."\n"."and earn FitCash+"
+						]
+					],
+					'fitcash_plus' => [
+						'title' => 'FITCASH+',
+						'balance'=>$balance_fitcash_plus,
+						'info'=>[
+							'title'=>'What is FitCash+?',
+							'description' => 'With FitCash+ there is no restriction on redeeming - you can use the entire amount in your transaction! FitCash can be used for any booking or purchase on Fitternity ranging from workout sessions, memberships and healthy tiffin subscriptions.',
+							'short_description' => "refer"."\n"."a friend"."\n"."and earn FitCash+"
+						]
+					],
+					),
+				200
+			);
+
 		}
-
-		return Response::json(
-			array(
-				'status' => 200,
-				'data' => $wallet,
-				'wallet_balance'=>$wallet_balance,
-				'fitcash' => [
-					'title' => 'FITCASH',
-					'balance'=>$balance,
-					'info'=>[
-						'title'=>'What is FitCash?',
-						'description' => 'Earn FitCash with every transaction you do on Fitternity. You redeem upto 10% of the booking amount in each transaction. FitCash can be used for any booking or purchase on Fitternity ranging from workout sessions, memberships and healthy tiffin subscriptions',
-						'short_description' => "short"."\n"."description"."\n"."description"
-					]
-				],
-				'fitcash_plus' => [
-					'title' => 'FITCASH+',
-					'balance'=>$balance_fitcash_plus,
-					'info'=>[
-						'title'=>'What is FitCash+?',
-						'description' => 'With FitCash Plus there is no restriction on redeeming - you can use the entire amount in your transaction! FitCash can be used for any booking or purchase on Fitternity ranging from workout sessions, memberships and healthy tiffin subscriptions.',
-						'short_description' => "short"."\n"."description"."\n"."description"
-					]
-				],
-				),
-			200
-		);
+		
 	}
 
 
@@ -2276,22 +2518,42 @@ class CustomerController extends \BaseController {
 		$decoded = $this->customerTokenDecode($jwt_token);
 		$customer_id = intval($decoded->customer->_id);
 
-		$customer = Customer::find($customer_id);
-		$balance = (isset($customer['balance']) && $customer['balance'] != "") ? (int) $customer['balance'] : 0 ;
-		$balance_fitcash_plus = (isset($customer['balance_fitcash_plus']) && $customer['balance_fitcash_plus'] != "") ? (int) $customer['balance_fitcash_plus'] : 0 ;
+		$customer = Customer::find((int)$customer_id);
 
-		$customer_balance = $balance + $balance_fitcash_plus;
+		if(isset($customer->demonetisation)){
 
-		// balance and transaction_allowed are same at this time........
-		return 	Response::json(
-					array(
-						'status' => 200,
-						'balance' => $customer_balance,
-						'transaction_allowed' => $customer_balance,
-						'fitcash' => $balance,
-						'fitcash_plus' => $balance_fitcash_plus
-					),200
-				);
+			$current_wallet_balance = \Wallet::active()->where('customer_id',$customer_id)->where('balance','>',0)->sum('balance');
+
+			return 	Response::json(
+				array(
+					'status' => 200,
+					'balance' => $current_wallet_balance,
+					'transaction_allowed' => $current_wallet_balance,
+					'fitcash' => 0,
+					'fitcash_plus' => $current_wallet_balance
+				),200
+			);
+
+		}else{
+
+			$balance = (isset($customer['balance']) && $customer['balance'] != "") ? (int) $customer['balance'] : 0 ;
+			$balance_fitcash_plus = (isset($customer['balance_fitcash_plus']) && $customer['balance_fitcash_plus'] != "") ? (int) $customer['balance_fitcash_plus'] : 0 ;
+
+			$customer_balance = $balance + $balance_fitcash_plus;
+
+			// balance and transaction_allowed are same at this time........
+			return 	Response::json(
+				array(
+					'status' => 200,
+					'balance' => $customer_balance,
+					'transaction_allowed' => $customer_balance,
+					'fitcash' => $balance,
+					'fitcash_plus' => $balance_fitcash_plus
+				),200
+			);
+
+		}
+		
 	}
 	
 	public function getExistingTrialWithFinder(){
@@ -2412,7 +2674,8 @@ class CustomerController extends \BaseController {
 		$jwt_token = Request::header('Authorization');
 		$upcoming = array();
 		
-		$city = strtolower($city);
+		// $city = strtolower($city);
+		$city = getmy_city($city);
 
 		if($jwt_token != ""){
 
@@ -2467,13 +2730,13 @@ class CustomerController extends \BaseController {
 
 		if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android") && isset($_GET['app_version']) && ((float)$_GET['app_version'] >= 2.5)){
 
-			$category_slug = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates",/*"personal-trainers",*/"luxury-hotels","healthy-snacks-and-beverages","spinning-and-indoor-cycling","healthy-tiffins","dietitians-and-nutritionists","sport-nutrition-supliment-stores","aerobics");
+			$category_slug = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","personal-trainers","luxury-hotels","healthy-snacks-and-beverages","spinning-and-indoor-cycling","healthy-tiffins"/*,"dietitians-and-nutritionists"*/,"sport-nutrition-supliment-stores","aerobics","kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness");
 
 			$cache_tag = 'customer_home_by_city_2_5';
 
 		}else{
 
-			$category_slug = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates"/*,"personal-trainers","luxury-hotels"*/,"healthy-snacks-and-beverages","spinning-and-indoor-cycling","healthy-tiffins","dietitians-and-nutritionists"/*,"sport-nutrition-supliment-stores"*/);
+			$category_slug = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","personal-trainers"/*,"luxury-hotels"*/,"healthy-snacks-and-beverages","spinning-and-indoor-cycling","healthy-tiffins"/*,"dietitians-and-nutritionists"*//*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness");
 
 			$cache_tag = 'customer_home_by_city';
 
@@ -2482,21 +2745,21 @@ class CustomerController extends \BaseController {
 
 		if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "ios")){
 
-			$category_slug = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","luxury-hotels","healthy-snacks-and-beverages","spinning-and-indoor-cycling","healthy-tiffins","dietitians-and-nutritionists","sport-nutrition-supliment-stores");
+			$category_slug = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","luxury-hotels","healthy-snacks-and-beverages","spinning-and-indoor-cycling","healthy-tiffins"/*,"dietitians-and-nutritionists"*/,"sport-nutrition-supliment-stores","kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness","personal-trainers");
 
 			$cat = array();
 
-			$cat['mumbai'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","luxury-hotels","healthy-snacks-and-beverages","spinning-and-indoor-cycling","healthy-tiffins","dietitians-and-nutritionists","sport-nutrition-supliment-stores");
+			$cat['mumbai'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","luxury-hotels","healthy-snacks-and-beverages","spinning-and-indoor-cycling","healthy-tiffins"/*,"dietitians-and-nutritionists"*/,"sport-nutrition-supliment-stores","kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness","personal-trainers");
 
-			$cat['pune'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates","healthy-tiffins","cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling","sport-nutrition-supliment-stores","aerobics");
+			$cat['pune'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates","healthy-tiffins","cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling","sport-nutrition-supliment-stores","aerobics","kids-fitness","pre-natal-classes","aerial-fitness","personal-trainers");
 
-			$cat['bangalore'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates","healthy-tiffins","cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling","sport-nutrition-supliment-stores");
+			$cat['bangalore'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates","healthy-tiffins","cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling","sport-nutrition-supliment-stores","kids-fitness","pre-natal-classes","aerial-fitness","personal-trainers");
 
-			$cat['delhi'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates","healthy-tiffins","cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling","sport-nutrition-supliment-stores");
+			$cat['delhi'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates","healthy-tiffins","cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling","sport-nutrition-supliment-stores","kids-fitness","pre-natal-classes","aerial-fitness","personal-trainers");
 
-			$cat['gurgaon'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates","healthy-tiffins","cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling","sport-nutrition-supliment-stores");
+			$cat['gurgaon'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates","healthy-tiffins","cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling","sport-nutrition-supliment-stores","kids-fitness","pre-natal-classes","aerial-fitness","personal-trainers");
 
-			$cat['noida'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"mma-and-kick-boxing","dance");
+			$cat['noida'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"mma-and-kick-boxing","dance","kids-fitness","pre-natal-classes");
 
 			if(isset($cat[$city])){
 				$category_slug = $cat[$city];
@@ -2526,7 +2789,9 @@ class CustomerController extends \BaseController {
 			$city_name 		= 	$citydata['name'];
 			$city_id		= 	(int) $citydata['_id'];
 
-			$category			= 		Findercategory::active()->where('cities',$city_id)->whereIn('slug',$category_slug)->get(array('name','_id','slug'))->toArray();
+			$category			= 		Findercategory::active()
+													// ->where('cities',$city_id)
+													->whereIn('slug',$category_slug)->get(array('name','_id','slug'))->toArray();
 			
 			$ordered_category = array();
 
@@ -3023,7 +3288,7 @@ class CustomerController extends \BaseController {
 						$walletData["balance_fitcash_plus"] = $cashback_amount;
 					}
 
-					$walletData["description"] = "Added Fitcash Plus on PROMOTION Rs - ".$cashback_amount;
+					$walletData["description"] = "Added FitCash+ on PROMOTION Rs - ".$cashback_amount;
 				}
 
 				
@@ -3036,9 +3301,8 @@ class CustomerController extends \BaseController {
 	}*/
 
 	public function applyPromotionCode(){
-		// return time();
-		// $valid_promotion_codes		=		['fitgift','in2017','befit'];
-		$data 						= 		Input::json()->all();
+
+		$data = Input::json()->all();
 		
 		if(empty(Request::header('Authorization'))){
 			$resp 	= 	array('status' => 400,'message' => "Customer Token Missing");
@@ -3050,9 +3314,15 @@ class CustomerController extends \BaseController {
 			return  Response::json($resp, 400);
 		}
 
-		$code 			= 	trim(strtolower($data['code']));
+		$code = trim(strtoupper($data['code']));
+		
+		if(strrpos($code, 'R-') == 0){
+			return $this->setReferralData($code);
+		}
 
-		$fitcashcode  = Fitcashcoupon::where('code',$code)->where("expiry",">",time())->first();
+		$code = trim(strtolower($data['code']));
+
+		$fitcashcode = Fitcashcoupon::where('code',$code)->where("expiry",">",time())->first();
 
 
 		if (!isset($fitcashcode) || $fitcashcode == "") {
@@ -3061,81 +3331,76 @@ class CustomerController extends \BaseController {
 		}
 
 		if(Request::header('Authorization')){
+
 			$decoded          				=       decode_customer_token();
 			$customer_id 					= 		intval($decoded->customer->_id);
 
 			$already_applied_promotion 		= 		Customer::where('_id',$customer_id)->whereIn('applied_promotion_codes',[$code])->count();
-
+			
 			if($already_applied_promotion > 0){
 				$resp 	= 	array('status' => 400,'message' => "You have already applied promotion code");
 				return  Response::json($resp, 400);
 			}
 
-			$customer_update 	=	Customer::where('_id', $customer_id)->push('applied_promotion_codes', $code, true);
-			$amounttobeadded = 0;
-			if($customer_update){
-				// switch($code){
-				// 	case "fitgift" :  $amounttobeadded = 2000;
-				// 	break;
-				// 	case "in2017" :  $amounttobeadded = 2000;
-                //     break;
-				// }
-				$amounttobeadded = $fitcashcode['amount'];
-				$customer 	=	Customer::find($customer_id);				
+			if (isset($fitcashcode->quantity) && $fitcashcode->quantity != "") {
+				$already_applied_promotion 		= 		Customer::whereIn('applied_promotion_codes',[$code])->count();
+				if($already_applied_promotion >= $fitcashcode->quantity){
+					$resp 	= 	array('status' => 404,'message' => "Promotion code already used by other customers");
+					return Response::json($resp,404);
+				}
+			}
 
+			$customer_update 	=	Customer::where('_id', $customer_id)->push('applied_promotion_codes', $code, true);
+			$cashback_amount = 0;
+
+			if($customer_update){
+
+				$cashback_amount = $fitcashcode['amount'];
+				$customer 	=	Customer::find($customer_id);	
 
 				$customerwallet 		= 		Customerwallet::where('customer_id',$customer_id)->orderBy('_id', 'desc')->first();
 				if($customerwallet){
-					$customer_balance 	=	$customerwallet['balance'] + $amounttobeadded;				
+					$customer_balance 	=	$customerwallet['balance'] + $cashback_amount;				
 					$customer_balance_fitcashplus = $customerwallet['balance_fitcash_plus'];
 				}else{
-					$customer_balance 	=	 $amounttobeadded;
+					$customer_balance 	=	 $cashback_amount;
 					$customer_balance_fitcashplus = 0;
 				}
 				
-				$cashback_amount 	=	$amounttobeadded;
 				$walletData = array(
 					"customer_id"=> $customer_id,
 					"amount"=> $cashback_amount,
+					"amount_fitcash" => $cashback_amount,
+                    "amount_fitcash_plus" => 0,
 					"type"=>'CASHBACK',
-					"code"=>	$code,
-					"balance"=>	$customer_balance,
-					"balance_fitcash_plus"=>$customer_balance_fitcashplus,
+					"code"=>$code,
+					"coupon"=>$code,
+					"entry"=>'credit',
 					"description"=>'CASHBACK ON Promotion amount - '.$cashback_amount
-					);
+				);
+
 				if($fitcashcode['type'] == "restricted"){
 					$walletData["vendor_id"] = $fitcashcode['vendor_id'];
-					$vb = array("vendor_id"=>$fitcashcode['vendor_id'],"balance"=>$amounttobeadded);
+					$vb = array("vendor_id"=>$fitcashcode['vendor_id'],"balance"=>$cashback_amount);
 					$customer_update = Customer::where('_id', $customer_id)->push('vendor_balance', $vb, true);
 				}
+
 				if($fitcashcode['type'] == "fitcashplus"){
+
 					$walletData["type"] = "FITCASHPLUS";
-					if($customerwallet){
-						$walletData["balance"] = $customerwallet['balance'];
-						$walletData["balance_fitcash_plus"] = $customerwallet['balance_fitcash_plus'] + $amounttobeadded;				
-					}else{
-						$walletData["balance"] = 0;
-						$walletData["balance_fitcash_plus"] = $amounttobeadded;
-					}
-					$walletData["description"] = "Added Fitcash Plus on PROMOTION Rs - ".$cashback_amount;
+					$walletData["amount_fitcash"] = 0;
+					$walletData["amount_fitcash_plus"] = $cashback_amount;
+					$walletData["description"] = "Added FitCash+ on PROMOTION Rs - ".$cashback_amount;
 				}
-				$customer_balance = $walletData["balance"];
-				$customer_balance_fitcashplus = $walletData["balance_fitcash_plus"];
-				// return $walletData;
 
-				$wallet               	=   new CustomerWallet($walletData);
-				$last_insertion_id      =   CustomerWallet::max('_id');
-				$last_insertion_id      =   isset($last_insertion_id) ? $last_insertion_id :0;
-				$wallet->_id          	=   ++ $last_insertion_id;
-				$wallet->save();
-				$customer_update 	=	Customer::where('_id', $customer_id)->update(['balance' => intval($customer_balance),'balance_fitcash_plus' => intval($customer_balance_fitcashplus)]);
+				$this->utilities->walletTransaction($walletData);
 
-				$resp 	= 	array('status' => 200,'message' => "Thank you. Rs ".$amounttobeadded." has been successfully added to your fitcash wallet", 'walletdata' => $wallet);
+				$resp 	= 	array('status' => 200,'message' => "Thank you. Rs ".$cashback_amount." has been successfully added to your fitcash wallet", 'walletdata' => $walletData);
+
 				return  Response::json($resp, 200);	
 			}
 		}
 	}
-
 
 	public function emailOpened(){
 
@@ -3218,7 +3483,7 @@ class CustomerController extends \BaseController {
 		}else{
 			$otp = genericGenerateOtp();
 			$customer->lastOtp = $otp;
-			$customer->save();
+			$customer->updated();
 			$customerdata = array(
                 'customer_name' => $customer->name,
                 'customer_email' => $customer->email,
@@ -3334,6 +3599,8 @@ class CustomerController extends \BaseController {
 
 	public function orderDetail($order_id){
 
+		Log::info("----------------orderDetail : ".$order_id);
+
 		$decoded = decode_customer_token();
 
 		$order_id = (int) $order_id;
@@ -3358,7 +3625,7 @@ class CustomerController extends \BaseController {
 	    $data['start_date'] = strtotime($order->start_date);
 	    $data['end_date'] = strtotime($order->end_date);
 	    $data['service_name'] = $order->service_name;
-	    $data['dutarion'] = $order->service_duration;
+	    $data['duration'] = $order->service_duration;
 	    $data['subscription_code'] = $order->code;
 	    $data['amount'] = $order->amount;
 
@@ -3378,13 +3645,15 @@ class CustomerController extends \BaseController {
 	    $extraInfoData['what_to_expect'] = ($order->what_i_should_expect) ? $order->what_i_should_expect : "";
 	    $data['extra_info'] = $extraInfoData;
 
-	    $getAction = $this->getAction($order);
+		$getAction = $this->getAction($order);
 
 	    $data["action"] = $getAction["action"];
 	    $data["feedback"] = $getAction["feedback"];
 
+		$data["action_new"] = $this->getActionV1($order);
+
 	    $reviewData = null;
-	    $review = Review::active()->where('finder_id',(int)$order->finder_id)->where('customer_id',(int)$order->customer_id)->first();
+	    /*$review = Review::active()->where('finder_id',(int)$order->finder_id)->where('customer_id',(int)$order->customer_id)->first();
 
 	    if($review){
 	    	$reviewData[] = [
@@ -3393,32 +3662,44 @@ class CustomerController extends \BaseController {
 	    		"detail_rating"=>$review->detail_rating,
 	    		"description"=>$review->description
 	    	];
-	    }
+	    }*/
 
 	    $data['review'] = $reviewData;
-	    
+
 	    return Response::json($data,200);
 
 	}
 
-	public function getAction($order){
+	public function getAction($order,$method = false){
 
 		$action = null;
 
-		if(!isset($order->updrage_membership) && isset($order['start_date']) && time() >= strtotime($order['start_date'].'+11 days') && time() <= strtotime($order['start_date'].'+31 days') && isset($order['end_date']) && strtotime($order['end_date']) >= time() && isset($order['duration_day']) && $order['duration_day'] <= 180){
+		$change_start_date = true;
+		$renew_membership = true;
+		$upgrade_membership = true;
+
+		if(isset($_GET['device_type']) && in_array($_GET['device_type'], ['ios','android'])){
+
+			if($method == "orderHistory"){
+				$change_start_date = false;
+			}
+
+		}
+
+		if(!isset($order->upgrade_membership) && isset($order['start_date']) && time() >= strtotime($order['start_date'].'+5 days') && time() <= strtotime($order['start_date'].'+31 days') && isset($order['end_date']) && strtotime($order['end_date']) >= time() && isset($order['duration_day']) && $order['duration_day'] <= 180){
 			$action = [
-				"button_text"=>"Upgrade Membership",
+				"button_text"=>"Upgrade",
 				"activity"=>"upgrade_membership",
 				"color"=>"#26ADE5",
 				"info" => "Commit yourself for a longer duration. Upgrade your current membership with insider discounts and other benefits.",
 				"popup" =>[
-					"title"=>"Upgrade Membership",
-					"message"=>"Upgrade Membership"
+					"title"=>"",
+					"message"=>"Commit yourself for a longer duration. Upgrade your current membership with insider discounts and other benefits."
 				]
 			];
 		}
 
-		if(!isset($order->preferred_starting_change_date) && isset($order['start_date']) && time() <= strtotime($order['start_date'].'+11 days')){
+		if(!isset($order->preferred_starting_change_date) && isset($order['start_date']) && time() <= strtotime($order['start_date'].'+11 days') && $change_start_date){
 
 			$min_date = strtotime('+1 days');
 			$max_date = strtotime($order['created_at'].'+29 days');
@@ -3436,9 +3717,9 @@ class CustomerController extends \BaseController {
 					$maxDate[] = $this->closestDate($value["weekday"],$max_date);
 				}
 
-				Log::info("available_days--------",$available_days);
-				Log::info("minDate--------",$minDate);
-				Log::info("maxDate--------",$maxDate);
+				// Log::info("available_days--------",$available_days);
+				// Log::info("minDate--------",$minDate);
+				// Log::info("maxDate--------",$maxDate);
 
 				foreach ($minDate as $key => $value) {
 
@@ -3457,7 +3738,7 @@ class CustomerController extends \BaseController {
 			}
 
 			$action = [
-				"button_text"=>"Change Start Date",
+				"button_text"=>"Change",
 				"activity"=>"update_starting_date",
 				"color"=>"#7AB317",
 				"info" => "Don't miss even a single day workout. Change your membership start date basis your convenience. Not applicable, if you have already started with your membership.",
@@ -3471,7 +3752,7 @@ class CustomerController extends \BaseController {
 			];
 		}
 
-		if(!isset($order->renew_membership) && isset($order['duration_day']) && isset($order['start_date'])){
+		if(!isset($order->renew_membership) && isset($order['duration_day']) && isset($order['start_date']) && $renew_membership){
 
 			$renewal_date = array();
 			$validity = (int) $order['duration_day'];
@@ -3499,7 +3780,7 @@ class CustomerController extends \BaseController {
 				$days_to_go = ceil(($max_date - time()) / 86400);
 
 				$action = [
-					"button_text"=>"Renew Membership",
+					"button_text"=>"Renew",
 					"activity"=>"renew_membership",
 					"color"=>"#EF1C26",
 					"info" => "Renew your membership with the lowest price and assured rewards",
@@ -3533,6 +3814,202 @@ class CustomerController extends \BaseController {
 
 	}
 
+	public function getActionV1($order,$method = false){
+
+		$action = [
+			'change_start_date'=>null,
+			'change_start_date_request'=>null,
+			'renew_membership'=>null,
+			'upgrade_membership'=>null,
+			'feedback'=>null,
+		];
+
+		$change_start_date = true;
+		$renew_membership = true;
+		$upgrade_membership = true;
+		$change_start_date_request = true;
+
+		if(isset($_GET['device_type']) && in_array($_GET['device_type'], ['ios','android'])){
+
+			if($method == "orderHistory"){
+				$change_start_date = false;
+			}
+
+		}
+
+		if(!isset($order->upgrade_membership) && isset($order['success_date']) && time() >= strtotime($order['success_date']) && $upgrade_membership && strtotime($order['end_date']) >= time()){
+			$action['upgrade_membership'] = [
+				"button_text"=>"Upgrade",
+				"activity"=>"upgrade_membership",
+				"color"=>"#26ADE5",
+				"info" => "Commit yourself for a longer duration. Upgrade your current membership with insider discounts and other benefits.",
+				"popup" =>[
+					"title"=>"",
+					"message"=>"Commit yourself for a longer duration. Upgrade your current membership with insider discounts and other benefits."
+				]
+			];
+		}
+
+		if(!isset($order->preferred_starting_change_date) && isset($order['success_date']) && time() <= strtotime($order['success_date'].'+10 days') && $change_start_date){
+
+			$min_date = strtotime('+1 days');
+			$max_date = strtotime($order['success_date'].'+29 days');
+			$available_days = null;
+
+
+			if(isset($order->batch) && !empty($order->batch) && is_array($order->batch)){
+
+				$minDate = [];
+				$maxDate = [];
+
+				foreach ($order->batch as $key => $value) {
+					$available_days[] = $value["weekday"];
+					$minDate[] = $this->closestDate($value["weekday"],time());
+					$maxDate[] = $this->closestDate($value["weekday"],$max_date);
+				}
+
+				foreach ($minDate as $key => $value) {
+
+					if($value > time()){
+						$min_date = $value;
+						break;
+					}
+				}
+
+				foreach ($maxDate as $key => $value) {
+
+					if($value < time()){
+						$max_date = $value;
+					}
+				}
+			}
+
+			$action['change_start_date'] = [
+				"button_text"=>"Change",
+				"activity"=>"update_starting_date",
+				"color"=>"#7AB317",
+				"info" => "Don't miss even a single day workout. Change your membership start date basis your convenience. Not applicable, if you have already started with your membership.",
+				"min_date"=> $min_date,
+				"max_date"=> $max_date,
+				"available_days"=> $available_days,
+				"popup" =>[
+					"title"=>"",
+					"message"=>"Don't miss even a single day workout. Change your membership start date basis your convenience. Not applicable, if you have already started with your membership."
+				]
+			];
+
+		}
+
+		if($action['change_start_date'] == null && !isset($order->requested_preferred_starting_date) && isset($order['success_date']) && time() <= strtotime($order['success_date'].'+29 days') && $change_start_date_request){
+
+			$min_date = strtotime('+1 days');
+			$max_date = strtotime($order['success_date'].'+29 days');
+			$available_days = null;
+
+			if(isset($order->batch) && !empty($order->batch) && is_array($order->batch)){
+
+				$minDate = [];
+				$maxDate = [];
+
+				foreach ($order->batch as $key => $value) {
+					$available_days[] = $value["weekday"];
+					$minDate[] = $this->closestDate($value["weekday"],time());
+					$maxDate[] = $this->closestDate($value["weekday"],$max_date);
+				}
+
+				foreach ($minDate as $key => $value) {
+
+					if($value > time()){
+						$min_date = $value;
+						break;
+					}
+				}
+
+				foreach ($maxDate as $key => $value) {
+
+					if($value < time()){
+						$max_date = $value;
+					}
+				}
+			}
+
+			$action['change_start_date_request'] = [
+				"button_text"=>"Change",
+				"activity"=>"change_start_date_request",
+				"color"=>"#7AB317",
+				"info" => "Don't miss even a single day workout. Change your membership start date basis your convenience. Not applicable, if you have already started with your membership.",
+				"min_date"=> $min_date,
+				"max_date"=> $max_date,
+				"available_days"=> $available_days,
+				"popup" =>[
+					"title"=>"",
+					"message"=>"Don't miss even a single day workout. Change your membership start date basis your convenience. Not applicable, if you have already started with your membership."
+				]
+			];
+				
+		}
+
+		if(!isset($order->renew_membership) && isset($order['duration_day']) && isset($order['start_date']) && $renew_membership){
+
+			$renewal_date = array();
+			$validity = (int) $order['duration_day'];
+			$start_date = $order['start_date'];
+
+			if($validity >= 30 && $validity < 90){
+
+				$min_date = strtotime($start_date ."+ ".($validity-7). "days");
+				$max_date = strtotime($start_date ."+ ".($validity+30). "days");
+
+			}elseif($validity >= 90 && $validity < 180){
+
+				$min_date = strtotime($start_date ."+ ".($validity-15). "days");
+				$max_date = strtotime($start_date ."+ ".($validity+30). "days");
+
+			}elseif($validity >= 180){
+				
+				$min_date = strtotime($start_date ."+ ".($validity-30). "days");
+				$max_date = strtotime($start_date ."+ ".($validity+30). "days");
+
+			}
+
+			if(isset($min_date) && isset($max_date) && time() >= $min_date  && time() <= $max_date){
+
+				$days_to_go = ceil(($max_date - time()) / 86400);
+
+				$action['renew_membership'] = [
+					"button_text"=>"Renew",
+					"activity"=>"renew_membership",
+					"color"=>"#EF1C26",
+					"info" => "Renew your membership with the lowest price and assured rewards",
+					"popup" =>[
+						"title"=>"",
+						"message"=>"Renew your membership with the lowest price and assured rewards"
+					]
+				];
+
+			}
+		}
+
+		if($action['renew_membership'] != null){
+			$action['upgrade_membership'] = null;
+		}
+
+		$feedback = [];
+
+		if(isset($order->finder_name) && $order->finder_name != ""){
+			$action["feedback"] = ["info"=>"Share your experience at ".ucwords($order->finder_name)." and we will make sure they are notified with it","show"=>true];
+		}else{
+			$action["feedback"] = ["info"=>"Share your experience and we will make sure they are notified with it","show"=>true];
+		}
+		
+		if(isset($order["review_added"])){
+			$action["feedback"]["show"] = false;
+		}
+
+		return $action;
+
+	}
+
 	public function closestDate($day,$date){
 
 		$date = ($date) ? $date : time();
@@ -3546,6 +4023,720 @@ class CustomerController extends \BaseController {
 	        return strtotime('last '.$day,$date);
 
 	}
+
+
+	public function notificationTracking($id){
+
+		$notificationTracking = NotificationTracking::find($id);
+
+		if($notificationTracking){
+
+			if(isset($_GET['action']) && $_GET['action'] == 'received'){
+				$notificationTracking->update(['received'=>time()]);
+			}
+
+			$notificationSwitch = $this->notificationSwitch($notificationTracking);
+
+			return Response::json($notificationSwitch,200);
+		}
+
+		return Response::json(["message"=>"Data Not Found"],404);
+
+	}
+
+	public function notificationSwitch($notificationTracking){
+
+		$notificationTracking->update(['clicked'=>time()]);
+
+		$time = $notificationTracking->time;
+		
+		$data = array();
+
+		$response = array();
+
+		$array = [
+			"time",
+			"customer_id",
+			"schedule_for",
+			"max_time",
+			"text"
+		];
+
+		$response["notification_id"] = $notificationTracking["_id"];
+		$response["cancelable"] = false;
+		
+		foreach ($array as $value) {
+
+			if(isset($notificationTracking[$value])){
+				$response[$value] = $notificationTracking[$value];
+			}
+		}
+
+		if(isset($notificationTracking["order_id"])){
+
+			$transaction = Order::find((int)$notificationTracking["order_id"]);
+			
+			$dates = array('followup_date','last_called_date','preferred_starting_date', 'called_at','subscription_start','start_date','start_date_starttime','end_date', 'order_confirmation_customer');
+
+			foreach ($dates as $key => $value){
+				if(isset($transaction[$value]) && $transaction[$value]==''){
+					$transaction->unset($value);
+				}
+			}
+
+		}else if(isset($notificationTracking["booktrial_id"])){
+
+			$transaction = Booktrial::find((int)$notificationTracking["booktrial_id"]);
+			
+			if($transaction && $transaction->type != 'workout-session' && (!isset($transaction->amount))){
+				$response["cancelable"] = true;
+			}
+			
+
+			$dates = array('start_date', 'start_date_starttime', 'schedule_date', 'schedule_date_time', 'followup_date', 'followup_date_time','missedcall_date','customofferorder_expiry_date','auto_followup_date');
+
+			foreach ($dates as $key => $value){
+				if(isset($transaction[$value]) && $transaction[$value]==''){
+					$transaction->unset($value);
+				}
+			}
+		}
+
+		if($transaction){
+
+			if(isset($notificationTracking["order_id"])){
+
+				$response["transaction_id"] = $notificationTracking["order_id"];
+				$response["transaction_type"] = "order";
+	    		$response['amount'] = $transaction['amount'];
+	    		$response['duration'] = $transaction['service_duration'];
+	    		$response['payment_mode'] = $transaction['payment_mode'];
+
+			}else if(isset($notificationTracking["booktrial_id"])){
+
+				$response["transaction_id"] = $notificationTracking["booktrial_id"];
+				$response["transaction_type"] = "trial";
+			}
+
+			$response["finder_name"] = $transaction["finder_name"];
+			$response["finder_id"] = (int)$transaction["finder_id"];
+			$response["lat"] = $transaction["finder_lat"];
+			$response["lon"] = $transaction["finder_lat"];
+			$response["finder_location"] = $transaction["finder_location"];
+			$response["category_id"] = isset($transaction["finder_category_id"])?$transaction["finder_category_id"]:"";
+			$response["finder_address"] = $transaction["finder_address"];
+			$response["service_id"] = (int)$transaction->service_id;
+			$response["service_name"] = isset($transaction["service_name"])?$transaction["service_name"]:"";
+			
+			
+			if(isset($transaction->ratecard_id)){
+				$response["ratecard_id"] = (int)$transaction->ratecard_id;
+			}
+
+			$data = $transaction->toArray();
+		}
+
+		$response['fitcash'] = 0;
+
+		if(!empty($data)){
+
+			$response["title"] = isset($notificationTracking["title"])? $notificationTracking["title"]: "Default title";
+			$response["notification_msg"] = $notificationTracking["text"];
+			$response["finder_slug"] = Finder::find($data['finder_id'])->slug;
+			
+
+			$followup_date = "";
+			
+			if(isset($data["followup_date"])){
+
+				$followup_date = date('M d',strtotime($data["followup_date"]));
+
+			}else{
+
+				$start_date = "";
+				if(isset($data["schedule_date"])){
+					$start_date = date("d-m-Y",strtotime($data["schedule_date"]));
+				}
+
+				if(isset($data["start_date"])){
+					$start_date = date("d-m-Y",strtotime($data["start_date"]));
+				}
+
+				if($start_date != ""){
+					$followup_date = strtotime($start_date." +2 days");
+				}
+			}
+
+			$response['followup_date'] = $followup_date;
+
+			$response['callback_msg']= "Awesome. We'll get in touch with you on $followup_date \n <u>Click here to change date</u>";
+			$response["phone"] = Config::get('app.direct_customer_number');
+			$hour = (int) date("G", time());
+			if($hour<=10 || $hour>=20){
+				$response["phone"] = $data["finder_poc_for_customer_no"];
+			}
+
+			$response['fitternity_no'] = Config::get('app.direct_customer_number');
+			
+
+			switch ($time) {
+				case 'n-12': 
+					$response["start_time"] = strtoupper($data["schedule_slot_start_time"]);
+					$response["start_date"] = date("d-m-Y",strtotime($data["schedule_date"]));
+					break;
+				case 'n-3': 
+					$response["start_time"] = strtoupper($data["schedule_slot_start_time"]);
+					$response["start_date"] = date("d-m-Y",strtotime($data["schedule_date"]));
+					break;
+				case 'n+2': 
+					$response["start_time"] = strtoupper($data["schedule_slot_start_time"]);
+					$response["start_date"] = date("d-m-Y",strtotime($data["schedule_date"]));
+					Booktrial::where('_id', $response["transaction_id"])->update(['final_lead_stage'=> 'post_trial_stage']);
+					break;
+				case 'n-20m': 
+					$response["start_time"] = strtoupper($data["schedule_slot_start_time"]);
+					$response["start_date"] = date("d-m-Y",strtotime($data["schedule_date"]));
+					break;
+				default:
+					$response["start_time"] = "";
+					$response["start_date"] = "";
+					
+
+					if(isset($data["schedule_slot_start_time"])){
+						$response["start_time"] = strtoupper($data["schedule_slot_start_time"]);
+					}
+
+					if(isset($data["schedule_date"])){
+						$response["start_date"] = date("d-m-Y",strtotime($data["schedule_date"]));
+					}
+
+					if(isset($data["start_date"])){
+						$response["start_date"] = date("d-m-Y",strtotime($data["start_date"]));
+					}
+					break;
+			}
+
+			if($response["transaction_type"] == "order"){
+
+				$customerReward     =   new CustomerReward();
+				$calculation        =   $customerReward->purchaseGame($data['amount'], $data["finder_id"], $data["payment_mode"], false, $data["customer_id"]);
+				$response['fitcash'] = $calculation['amount_deducted_from_wallet'];
+
+				$batches = array();
+
+				$service = Service::find((int)$data['service_id']);
+
+				if($service){
+
+					$service = $service->toArray();
+
+					if(isset($service['batches']) && count($service['batches']) > 0){
+
+						$batches = $service['batches'];
+
+						foreach ($batches as $batches_key => $batches_value) {
+
+							foreach ($batches_value as $batches_value_key => $value) {
+
+								$batches[$batches_key][$batches_value_key]['slots'] = $value['slots'][0];
+							}
+						}
+					}
+				}
+
+				if(isset($data['ratecard_id']) && $data['ratecard_id']){
+
+					$ratecard = Ratecard::find((int)$data['ratecard_id']);
+
+					if($ratecard){
+
+						$ratecard_offers = [];
+
+						if(!empty($ratecard['_id']) && isset($ratecard['_id'])){
+
+							$ratecard_offers  =   Offer::where('ratecard_id', intval($ratecard['_id']))->where('hidden', false)->orderBy('order', 'asc')
+								->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
+								->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()) ))
+								->get(['start_date','end_date','price','type','allowed_qty','remarks']);
+
+							if(count($ratecard_offers) > 0){
+
+								$ratecard_offers = $ratecard_offers->toArray();
+
+								if(isset($ratecard_offers[0]['price'])){
+
+									$ratecard['special_price'] = $ratecard_offers[0]['price'];
+
+			                    	if($ratecard['price'] == $ratecard_offers[0]['price']){
+			                    		$ratecard['special_price'] = 0;
+			                    	}
+								}
+							}
+	
+						}
+
+						if($ratecard['type'] == 'membership' || $ratecard['type'] == 'packages'){
+
+							if($ratecard['special_price'] > 0){
+
+								$app_discount_amount = intval($ratecard['special_price'] * (Config::get('app.app.discount')/100));
+								$ratecard['special_price'] = $ratecard['special_price'] - $app_discount_amount;
+
+							}else{
+
+								$app_discount_amount = intval($ratecard['price'] * (Config::get('app.app.discount')/100));
+								$ratecard['price'] = $ratecard['price'] - $app_discount_amount;
+
+							}
+						}
+
+						if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
+	                    	$response['amount'] = $ratecard['special_price'];
+		                }else{
+		                    $response['amount'] = $ratecard['price'];
+		                }
+
+					}
+				}
+
+				$response['batches'] = $batches;
+
+			}
+
+			$response["finder_type"] = getFinderType($response["category_id"]);
+			
+		}
+
+		return $response;
+	}
+
+
+	// Diet plan Listing
+	public function listMyDietPlan(){
+		$jwt_token  = Request::header('Authorization');
+		$jwt_key = Config::get('app.jwt.key');
+		$jwt_alg = Config::get('app.jwt.alg');
+		$decoded = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+
+		$data['email'] = $decoded->customer->email;
+		
+		$rules = [
+		'email' => 'required|email|max:255'
+		];
+		$validator = Validator::make($data, $rules);
+		$current_diet_plan = Order::active()->where('customer_email',$data['email'])->where('type','diet_plan')->with(array('trainerslotbookings'=>function($query){$query->orderBy('_id','desc');}))->orderBy('_id','desc')->first();
+		// $trainerslotBookings = TrainerSlotBooking::where('order_id',$current_diet_plan['_id'])->get();
+		if(isset($current_diet_plan)){
+			$total_sessions = $current_diet_plan['duration'];
+			$sessions_booked = count($current_diet_plan['trainerslotbookings']);
+			
+			if(count($current_diet_plan['trainerslotbookings']) > 0){
+				$can_book = false;
+				$last_session_booked = strtotime($current_diet_plan['trainerslotbookings'][0]['date']);
+				$sessions_lapsed_before_last_interaction = 0;
+				if(isset($current_diet_plan->last_interaction_date)){
+					$last_interaction_date = $current_diet_plan['last_interaction_date'];
+					$sessions_lapsed_before_last_interaction = intval(floor(((strtotime($last_interaction_date)-$last_session_booked)/(60*60*24) - 3)/14));
+					$sessions_lapsed_before_last_interaction = $sessions_lapsed_before_last_interaction>0?$sessions_lapsed_before_last_interaction:0;
+				}
+				$days_passed_last_session = intval(floor(time()-$last_session_booked)/(60*60*24));
+				
+				$sessions_lapsed_before_now = 0;
+				if($days_passed_last_session>=1){
+
+					$sessions_lapsed_before_now = intval(floor(($days_passed_last_session - 3)/14));
+					$sessions_lapsed_before_now = $sessions_lapsed_before_now>0?$sessions_lapsed_before_now:0;
+					
+					$sessions_lapsed_after_last_interaction = $sessions_lapsed_before_now - $sessions_lapsed_before_last_interaction;
+					
+					if($sessions_lapsed_after_last_interaction>0){
+						$current_diet_plan->sessions_lapsed = isset($current_diet_plan->sessions_lapsed) ? ($current_diet_plan->sessions_lapsed + $sessions_lapsed_after_last_interaction) : $sessions_lapsed_after_last_interaction;
+					}
+
+				}
+				
+				$last_interaction_date = date('d-m-Y', time());
+				
+
+				$current_diet_plan->last_interaction_date = $last_interaction_date;
+				$current_diet_plan->update();
+				$total_sessions_over = $sessions_booked + (isset($current_diet_plan->sessions_lapsed)?$current_diet_plan->sessions_lapsed:0);
+			
+				if($total_sessions_over < $total_sessions){
+					if($days_passed_last_session>0){
+						$can_book = $days_passed_last_session >= (14*($sessions_lapsed_before_now+1)-2) && $days_passed_last_session <= (14*($sessions_lapsed_before_now+1)+2);
+					}
+					if(!$can_book){
+						$current_diet_plan->booking_opens_on = date("d-m-Y", ($last_session_booked + (60*60*24*(14*($sessions_lapsed_before_now+1)-2))));
+					}
+				}
+
+			}else{
+				$can_book = true;
+			}
+			$current_diet_plan->can_book = $can_book;
+		}else{
+			$current_diet_plan;
+		}
+		
+		$resp = array("current_diet_plan"=>$current_diet_plan);
+		return Response::json($resp,200);
+	}
+
+	public function storeCustomerAttribution(){
+		
+		try{
+
+			$data = Input::all();
+		
+			$rules = Customerattribution::$rules;
+
+			$validator = Validator::make($data,$rules);
+
+			if ($validator->fails()) {
+				return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),400);
+			}
+
+			$attribution_array = $data['attribution'];
+			$last_key = count($attribution_array) - 1;
+			foreach($attribution_array as $key => $attr){
+				$lineitem = array();
+				$lineitem = array_merge($data, $attr);
+				$customerattribution = new Customerattribution($lineitem);
+				$customerattribution->_id = Customerattribution::max('_id')?(Customerattribution::max('_id')+1):1;
+				$customerattribution->visit_date_epoch = $customerattribution->visit_date = ($attr['date']);
+				$customerattribution->bought = $key == $last_key ? true : false;
+				unset($customerattribution->attribution);
+				unset($customerattribution->date);
+				$customerattribution->save();
+			}
+			
+			
+			return Response::json(array('status'=>200, 'message'=>'Attribution created succesfully'));
+
+		}catch(Exception $exception){
+
+            $message = array(
+                'type'    => get_class($exception),
+                'message' => $exception->getMessage(),
+                'file'    => $exception->getFile(),
+                'line'    => $exception->getLine(),
+            );
+
+            Log::error($exception);
+
+            return array('status'=>'fail','error_message'=>$message);
+        }
+		
+	}
+
+	public function getWalletDetails($limit=0,$offset=10){
+
+		$request = Input::json()->all();
+
+		$jwt_token = Request::header('Authorization');
+		$decoded = $this->customerTokenDecode($jwt_token);
+		$customer_id = $decoded->customer->_id;
+
+		$wallet_summary = [];
+
+		$wallet_balance = Wallet::active()->where('customer_id',$customer_id)->where('balance','>',0)->sum('balance');
+
+		$walletTransaction = WalletTransaction::where('customer_id',$customer_id)->orderBy('updated_at','DESC')->get()->groupBy('group');
+
+		if($walletTransaction){
+
+			foreach ($walletTransaction as $group => $transaction) {
+
+				$amount = 0;
+				$validity = "";
+				$description = "";
+				$date = "";
+				$entry = "";
+
+				foreach ($transaction as $key => $value) {
+
+					$amount += $value['amount'];
+
+					if(isset($value['validity']) && $validity != ""){
+						$validity = date('d-m-Y',$value['validity']);
+					}
+
+					if($date == ""){
+						$date = date('d-m-Y',strtotime($value['created_at']));
+					}
+
+					if($description == ""){
+						$description = $value['description'];
+					}
+
+					if($entry == ""){
+						$entry = $value['entry'];
+					}
+				}
+
+				$wallet_summary[] = [
+					'amount'=>$amount,
+					'description'=>$description,
+					'date'=>$date,
+					'validity'=>$validity,
+					'entry'=>$entry
+				];
+
+			}
+
+		}
+
+		return Response::json(
+			array(
+				'status' => 200,
+				'wallet_summary' => $wallet_summary,
+				'wallet_balance'=>$wallet_balance
+				),
+			200
+		);
+
+	}
+
+
+	public function orderDemonetisation($order_id){
+
+		$order_id = (int)$order_id;
+
+		$order = Order::find($order_id);
+
+		$message = "";
+
+		if($order && isset($order->demonetisation)){
+
+			$message = "Congratulations!<br/>Your FitCash has been converted to FitCash+ that enables you to do 100% redemption on any transaction on Fitternity.<br/> Any queries? Reach us on 02261222230 / support@fitternity.com";
+
+			if(isset($order->customer_wallet_balance) && $order->customer_wallet_balance > 0){
+
+				$message = "Congratulations!<br/>Your FitCash has been converted to FitCash+ that enables you to do 100% redemption on any transaction on Fitternity.<br/>Your balance is Rs. 1000. Any queries? Reach us on 02261222230 / support@fitternity.com";
+			}
+		}
+
+		return Response::json(
+			array(
+				'status' => 200,
+				'message' => $message,
+				),
+			200
+		);
+
+	}
+
+	public function getReferralCode(){
+		try{
+			$jwt = Request::header('Authorization');
+			$decoded = $this->customerTokenDecode($jwt);
+			$id = $decoded->customer->_id;
+			Customer::$withoutAppends = true;
+			$customer = Customer::where('_id', $id)->first(['referral_code']);
+			
+			if($customer){
+			
+				$referral_code = $customer['referral_code'];
+				$url = Config::get('app.app_profile_promo_link')."?pc=$referral_code";
+				$share_message = "Register on Fitternity and earn Rs. 250 FitCash+ which can be used for fitness classes, memberships, diet consulting & more! Use my code $referral_code and apply it in your profile after logging-in $url";
+				$display_message = "Fitter is better together!<br>Refer a friend and both of you get Rs. 250 FitCash + which is fully redeemable on all bookings on Fitternity!<br><br>Valid till 31st December 2017. TCA.";
+				$email_subject = "Join me on Fitternity & get Rs. 250";
+				$email_text = "Fitness on your mind?<br><br>Register on India's largest fitness platform to book fitness classes, memberships, diet plans & more!<br><br>If you use my invite code $referral_code to register yourself on the Fitternity mobile app, we both get Rs. 250 FitCash+ which is fully redeemable on all bookings!<br><br>Download the app and apply code in your profile after logging-in $url";
+				
+				return $response =  array('status' => 200,'referral_code' => $referral_code, 'message' 	=> $display_message, 'share_message' => $share_message, 'email_subject' => $email_subject, 'email_text' => $email_text);
+			
+			}else{
+				
+				return $response =  array('status' => 404,'message'=>"Customer not found");
+			
+			}
+			
+		}catch(Exception $e){
+			Log::info($e);
+		}
+	}
+	public function referFriend(){	
+			
+		try{
+			$jwt = Request::header('Authorization');
+			$decoded = $this->customerTokenDecode($jwt);
+			$id = $decoded->customer->_id;
+			Customer::$withoutAppends = true;
+			$customer = Customer::where('_id', $id)->first(['name', 'email', 'contact_no', 'referral_code']);
+			
+			if($customer){
+				$referrer_name = $customer->name;
+				$req = Input::json()->all();
+		        Log::info('referfriend',$req);
+		        $rules = [
+		            'invitees' => 'required|array',
+		        ];
+		        $validator = Validator::make($req, $rules);
+		        if ($validator->fails()) {
+		            return Response::json(
+		                array(
+		                    'status' => 400,
+		                    'message' => $this->errorMessage($validator->errors()
+		                    )),400
+		            );
+		        }
+		        // Invitee info validations...........
+		        $inviteesData = [];
+		        foreach ($req['invitees'] as $value){
+		        	$inviteeData = [];
+		            if(isset($value['name'])){
+		            	Log::info("Inside name");
+		            	$inviteeData = ['name'=>$value['name']];
+		            }
+		            $rules = [
+		                'input' => 'required|string'
+		            ];
+		            $messages = [
+		                'input' => 'invitee email or phone is required'
+		            ];
+		            $validator = Validator::make($value, $rules, $messages);
+		            if ($validator->fails()) {
+		                return Response::json(
+		                    array(
+		                        'status' => 400,
+		                        'message' => $this->errorMessage($validator->errors()
+		                        )),400
+		                );
+		            }
+		            if(filter_var($value['input'], FILTER_VALIDATE_EMAIL) != '') {
+		                // valid address
+		                $inviteeData = array_add($inviteeData, 'email', $value['input']);
+		            }
+		            else if(filter_var($value['input'], FILTER_VALIDATE_REGEXP, array(
+		                    "options" => array("regexp"=>"/^[2-9]{1}[0-9]{9}$/")
+		                )) != ''){
+		                // valid phone
+		                $inviteeData = array_add($inviteeData, 'phone', $value['input']);
+		            }
+		            // return $inviteeData;
+		            array_push($inviteesData, $inviteeData);
+		        }	        
+		// return $inviteesData;
+		        foreach ($inviteesData as $value){
+		            $rules = [
+		                'email' => 'required_without:phone|email',
+		                'phone' => 'required_without:email',
+		            ];
+		            $messages = [
+		                'email.required_without' => 'valid invitee email or phone is required',
+		                'phone.required_without' => 'valid invitee email or phone is required'
+		            ];
+		            $validator = Validator::make($value, $rules, $messages);
+		            if ($validator->fails()) {
+		                return Response::json(
+		                    array(
+		                        'status' => 400,
+		                        'message' => $this->errorMessage($validator->errors()
+		                        )),400
+		                );
+		            }
+		        }
+		        $emails = array_fetch($inviteesData, 'email');
+        		$phones = array_fetch($inviteesData, 'phone');
+        		// return $customer->email;
+        		if(in_array($customer->email, $emails)) {
+		            return Response::json(
+		                array(
+		                    'status' => 422,
+		                    'message' => 'You cannot invite yourself email'
+		                ),422
+		            );
+		        }
+		        if(in_array($customer->contact_no, $phones)) {
+		            return Response::json(
+		                array(
+		                    'status' => 422,
+		                    'message' => 'You cannot invite yourself'
+		                ),422
+		            );
+		        }
+		        // return $inviteesData;
+		        foreach ($inviteesData as $invitee){
+		            $url = 'www.fitternity.com/buy/';
+		            $shorten_url = new ShortenUrl();
+		            $url = $shorten_url->getShortenUrl($url);
+		            if(!isset($url['status']) ||  $url['status'] != 200){
+		                return Response::json(
+		                    array(
+		                        'status' => 422,
+		                        'message' => 'Unable to Generate Shortren URL'
+		                    ),422
+		                );
+		            }
+		            $url = $url['url'];
+		            // Send email / SMS to invitees...
+		            $templateData = array(
+		                'referral_code'=>$customer['referral_code'],
+		                'invitee_name' =>isset($invitee['name'])?$invitee['name']:"",
+		                'invitee_email'=>isset($invitee['email'])?$invitee['email']:null,
+		                'invitee_phone'=>isset($invitee['phone'])?$invitee['phone']:null,
+		                'url' => $url,
+		            );
+		            Log::info($templateData);
+		            isset($templateData['invitee_email']) ? $this->customermailer->referFriend($templateData) : null;
+		            isset($templateData['invitee_phone']) ? $this->customersms->referFriend($templateData) : null;
+		        }
+				
+				return $response =  array('status' => 200,'data'=>'Success');
+			}else{
+				return $response =  array('status' => 404,'message'=>"Customer not found");
+			}
+			
+		}catch(Exception $e){
+			Log::info($e);
+		}
+	}
+
+	public function setReferralData($code){
+		$decoded = decode_customer_token();
+		$customer_id = intval($decoded->customer->_id);
+		$customer = Customer::find($customer_id);
+		
+		$referrer = Customer::where('referral_code', $code)->where('status', '1')->first();
+		if($referrer && isset($customer->old_customer) && $customer->old_customer == false &&(!isset($customer->referrer_id) || $customer->referrer_id == 0) && $customer_id != $referrer->_id){
+			$customer->referrer_id = $referrer->_id;
+			$customer->save();
+			if(!isset($referrer->referred_to)){
+				$referrer->referred_to = [];
+			}
+			$referred_to = $referrer->referred_to;
+			array_push($referred_to, $customer->_id);
+			$referrer->save();
+			$wallet_data = array(
+				'customer_id' => $customer->_id,
+				'amount' => 250,
+				'amount_fitcash' => 0,
+				'amount_fitcash_plus' => 250,
+				'type' => "REFERRAL",
+				"entry"=>'credit',
+				'description' => "Referral fitcashplus",
+				'order_id' => 0
+				);
+
+			$walletTransaction = $this->utilities->walletTransaction($wallet_data);
+
+			return array('status'=>200, 'message'=>'250 Fitcash+ has been added to your wallet');
+		}else{
+			return array('status'=>400, 'message'=>'Incorrect referral code or referral already applied');
+		}
+	}
+
+	public function generateReferralCode($name){
+		$referral_code = 'R-'.substr(implode("", (explode(" ", strtoupper($name)))),0,4)."".rand(1000, 9999);
+		$exists = Customer::where('referral_code', $referral_code)->where('status', '1')->first();
+		if($exists){
+			return $this->generateReferralCode($name);
+		}else{
+			return $referral_code;
+		}
+	}
+
 
 
 }

@@ -47,15 +47,15 @@ class ElasticsearchController extends \BaseController {
 	}
 
 	// Delete Index in elastic
-	public function deleteIndex($index = ''){
-		$url = ($index != '') ? $this->elasticsearch_url."$index/" : $this->elasticsearch_default_url;
-		$request = array(
-			'url' => $url,
-			'port' => $this->elasticsearch_port,
-			'method' => 'DELETE',
-			);
-		return es_curl_request($request);       
-	}
+	// public function deleteIndex($index = ''){
+	// 	$url = ($index != '') ? $this->elasticsearch_url."$index/" : $this->elasticsearch_default_url;
+	// 	$request = array(
+	// 		'url' => $url,
+	// 		'port' => $this->elasticsearch_port,
+	// 		'method' => 'DELETE',
+	// 		);
+	// 	return es_curl_request($request);       
+	// }
 
 
 	// manage settings in elastic

@@ -18,6 +18,8 @@ class TempsController extends \BaseController {
         //parent::__construct();
         $this->customersms              =   $customersms;
         $this->contact_us_customer_number = Config::get('app.contact_us_customer_number');
+        $this->appOfferDiscount 				= Config::get('app.app.discount');
+        $this->appOfferExcludedVendors 				= Config::get('app.app.discount_excluded_vendors');
     }
 
     public function errorMessage($errors){
@@ -303,10 +305,9 @@ class TempsController extends \BaseController {
 
                 $temp->save();
                 $verified = true;
-
                 Customer::$withoutAppends = true;
                 $customer = Customer::select('name','email','contact_no','dob','gender')->active()->where('contact_no',$temp['customer_phone'])->orderBy('_id','desc')->first();
-
+                
                 if($customer) {
 
                     if($customerToken == ""){
@@ -325,25 +326,31 @@ class TempsController extends \BaseController {
                 $return = array('status' => 200,'verified' => $verified,'token'=>$customerToken,'trial_booked'=>false,'customer_data'=>$customer_data,'fitternity_no'=>$fitternity_no);
 
                 if(isset($temp->service_id) && $temp->service_id != "" && $temp->action == "booktrials"){
-
+                    
                     $customer_phone = $temp->customer_phone;
                     $service = Service::active()->find($temp->service_id);
                     $finder_id = (int)$service->finder_id;
 
-                    $booktrial_count = Booktrial::where('customer_phone', $customer_phone)
+                    $query = Booktrial::where('customer_phone', $customer_phone)
                         ->where('finder_id', '=',$finder_id)
                         ->where('type','booktrials')
-                        ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
-                        ->count();
+                        ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"]);
 
+                    if(!isset($_GET['device_type'])){
+                         $query = $query->where('service_id', '=',$temp->service_id);
+                    }
+
+                    $booktrial_count = $query->count();
+                    
                     Log::info("booktrial_count : ".$booktrial_count);
 
                     if($booktrial_count > 0){
-
+                        
                         if($customer_data == null){
 
                             $booktrial = Booktrial::where('customer_phone', $customer_phone)
                                 ->where('finder_id', '=',$finder_id)
+                                ->where('service_id', '=',$temp->service_id)
                                 ->where('type','booktrials')
                                 ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
                                 ->orderBy('_id','desc')
@@ -351,7 +358,6 @@ class TempsController extends \BaseController {
 
                             Customer::$withoutAppends = true;
                             $customer = Customer::select('name','email','contact_no','dob','gender')->find((int)$booktrial->customer_id);
-
                             if($customer) {
 
                                 if($customerToken == ""){
@@ -390,17 +396,21 @@ class TempsController extends \BaseController {
 
             }
 
+
             if($finder_id != "" && $amount != "" && $customer_id != ""){
 
                 $device_type = ["android","ios"];
 
                 if($temp->action == "memberships" && isset($_GET['device_type']) &&  in_array($_GET['device_type'], $device_type)){
-
-                    $amount = $amount - intval($amount * (Config::get('app.app.discount')/100));
+                    $this->appOfferDiscount = in_array($finder_id, $this->appOfferExcludedVendors) ? 0 : $this->appOfferDiscount;
+                    $amount = $amount - intval($amount * ($this->appOfferDiscount/100));
                 }
 
                 $customerReward     =   new CustomerReward();
                 $calculation        =   $customerReward->purchaseGame($amount,$finder_id,"paymentgateway",false,$customer_id);
+
+                $calculation['algo']['cashback'] = (int)$calculation['algo']['cashback'];
+
                 $cashback  = array(
                     'title'=>$calculation['algo']['cashback'].'% Instant Cashback on Purchase',
                     'percentage'=>$calculation['algo']['cashback'].'%',

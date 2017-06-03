@@ -14,7 +14,7 @@ use App\Sms\CustomerSms as CustomerSms;
 use App\Sms\FinderSms as FinderSms;
 use App\Services\ShortenUrl as ShortenUrl;
 use App\Services\Sidekiq as Sidekiq;
-
+use App\Services\Utilities as Utilities;
 use Guzzle\Http\Client;
 
 class OzonetelsController extends \BaseController {
@@ -31,19 +31,34 @@ class OzonetelsController extends \BaseController {
     protected $jump_fitternity_no;
     protected $sunday;
     protected $free_special_finder;
+    protected $utilities;
 
     protected   $jump_fitternity_no2;
 
 
-	public function __construct(OzonetelResponse $ozonetelResponse,OzonetelCollectDtmf $ozonetelCollectDtmf,OzontelOutboundCall $ozontelOutboundCall,CustomerSms $customersms,FinderSms $findersms) {
+	public function __construct(
+		OzonetelResponse $ozonetelResponse,
+		OzonetelCollectDtmf $ozonetelCollectDtmf,
+		OzontelOutboundCall $ozontelOutboundCall,
+		CustomerSms $customersms,
+		FinderSms $findersms,
+		Utilities $utilities
+	) {
 
 		$this->ozonetelResponse			=	$ozonetelResponse;
 		$this->ozonetelCollectDtmf		=	$ozonetelCollectDtmf;
 		$this->ozontelOutboundCall		=	$ozontelOutboundCall;
 		$this->customersms 				=	$customersms;
 		$this->findersms 				=	$findersms;
+		$this->utilities            	=   $utilities;
 
-        $this->jump_finder_ids 		    =	[5737,5739,5566,6594,5736,6254,5735,5738,8878,5681,5743,5750,5742,7651,6525,7355,6530,9171,9178,5880,5883,5893,7348,9862,9866,4840,9865,5882,7351,9873,9874,6632,6411,5609,6534,6895,7136,9397,8763,8125,9417,9624,9888,9876,8837,9864,7357,6469,6818,6905,6412,6213,9440,9415,5347,6333,5355,9600,9881,9412,5986,4602,9446,3229,4763,3499,3860,3989,3491,7805,4607,6034,7786,3443,7408,4385,3972,3279,3716,7220,3340,3556,7059,3429,3425,4175,4291,4088,4778,8102,7773,9410,3417,3239,6005,9968,7037,3193,6882,3843,3350,3351,3804,4307,7336];
+		$mumbai = [14,40,61,138,142,143,147,166,171,179,223,303,307,328,329,380,417,424,442,449,530,561,566,569,570,575,579,590,596,602,608,613,625,647,648,667,718,735,736,823,827,841,862,877,878,881,889,900,926,927,941,966,975,978,979,980,984,987,988,998,1013,1026,1029,1030,1031,1034,1035,1038,1040,1041,1068,1069,1154,1215,1219,1233,1242,1257,1258,1259,1260,1261,1262,1263,1266,1309,1330,1332,1380,1388,1393,1395,1414,1421,1427,1431,1484,1490,1493,1495,1496,1501,1505,1510,1513,1518,1522,1523,1554,1579,1580,1581,1582,1583,1584,1602,1604,1605,1606,1607,1613,1623,1630,1642,1656,1664,1671,1673,1676,1677,1690,1691,1705,1706,1732,1739,1747,1764,1766,1771,1783,1813,1837,1873,1928,1938,1939,1986,2209,2235,2236,2242,2244,2257,2281,2309,2421,2501,2545,2806,2818,2821,2824,2828,2833,2844,2848,2864,2865,3006,3382,3451,3579,3856,4141,4142,4416,4528,4530,4534,4586,4678,4679,4680,4693,4742,4749,4773,5387,5529,5570,5585,5684,5939,5979,6009,6036,6049,6058,6081,6082,6095,6126,6129,6133,6134,6138,6140,6143,6144,6151,6162,6179,6233,6259,6289,6291,6297,6377,6461,6466,6468,6511,6532,6543,6587,6784,6820,6893,6907,6910,6914,6916,6932,6946,7036,7054,7064,7215,7224,7319,7341,7388,7407,7438,7442,7444,7451,7456,7480,7525,7532,7656,7661,7696,7697,7724,7792,7866,7875,7878,7896,8021,8546,8554,8842,8852,8859,8861,8892,8910,8932,9040,9111,9124,9187,9246,9336,9340,9365,9370,9378,9398,9404,9414,9419,9420,9427,9432,9436,9439,9452,9459,9476,9485,9518,9575,9671,9751,9752,9870,9872,9877,9909,9922,9932,9935,9942,9943,9946,9948,9984,9994,10081,10119,10136,10465,10485,10486,10508,10515,10565,10567,10571,10752,10768,10927,10946,10965,10966,10967,10968];
+
+		$bangalore = [4822,3491,4823,3202,4818,3197,3184,3972,7037,4825,4179,4059,6882,3229,3239,9410,7429,4819,4826,3350,4817,3193,7898,7786,4607,9400,6884,4650,4763,4821,7805,3417,5958,6686,3210,9112,3985,3235,3340,5950,5959,3413,4291,5957,4183,3253,4209,9579,7321,7433,10120,4388,4484,4164,3989,7029,7773,5502,3975,4784,9968,7408,4175,8649,3443,5988,3191,4581,7010,3860,3195,4602,3654,4385,3429,7189,6997,7059,4705,4088,3547,6397,4387,3424,6942,3196,4185,3970,3279,4653,5655,5725,3557,3614,4034,3927,3716,4486,3586,3175,3233,3178,3179,8872,3183,3341,3342,3343,3345,3192,3330,3331,3332,3333,3335,3336,3201,7081,3204,3346,3347,5964,7106,7114,7116,7111,9589,9412,5986,9881,9882,10514,3618,7428,3620,3619,6933,7434,6947,9422,3774,3775,9918,6945,6948,10394,3751,9613,9614,7435,3812,6034,4281,3843,4044,3720,3757,7436,3977,4645,6168,8877,10552,5909,3901,3904,3907,3905,3906];
+
+		$pune = [1801,1803,1806,1816,1824,1828,1846,1848,1853,1860,1863,1865,1866,1874,1875,1876,1883,1884,1892,1895,1935,1940,1946,1968,1971,1980,2002,2013,2044,2076,2093,2105,2107,2119,2126,2137,2145,2147,2159,2161,2162,2168,2183,2187,2194,2196,2197,2200,2216,2217,2219,2222,2665,2677,2723,2785,2813,2845,2860,2861,2867,2886,2890,2992,3100,3101,3255,3256,3854,4585,4677,4772,4815,5149,5967,5970,6022,6054,6131,6188,6227,6245,6593,6681,6963,7004,7005,7299,7301,7317,7397,7446,7458,7940,7941,7947,8058,8332,8519,8744,8937,9304,9386,9423,9433,9469,9479,9481,9500,9729,9731,9732,9735,9745,9933,9934,9954,9973,10076,10674,10696,10970,11021];
+
+		$this->jump_finder_ids = array_merge($mumbai,$bangalore,$pune);
 
         $this->free_special_finder 		= 	[7389,5740,6083,9589,9881,9882,1609,2187,5741,4818,1876,9216,4822,4821,4825,5041];
 
@@ -218,7 +233,7 @@ class OzonetelsController extends \BaseController {
 			   
 				    	if($ozonetelNoDetails){
 
-				    		if($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time && $this->sunday != "Sunday"){
+				    		if($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time && $this->sunday != "Sunday" && ( in_array($ozonetelNoDetails->finder->_id, $this->jump_finder_ids) || in_array($ozonetelNoDetails->finder->city_id, [4,8,9]))){
 
 				    			if(in_array($ozonetelNoDetails->finder->commercial_type,[1,3]) || ($ozonetelNoDetails->finder->commercial_type == 2 && in_array($ozonetelNoDetails->finder->_id, $this->free_special_finder))){
 
@@ -518,7 +533,7 @@ class OzonetelsController extends \BaseController {
                 //OZONETEL JUMP LOGIC
                 //if(in_array($ozonetelNoDetails->finder->city_id, $city) || in_array($ozonetelNoDetails->finder->_id, $this->jump_finder_ids)) {
 
-                	if($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time && $this->sunday != "Sunday"){
+                	if($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time && $this->sunday != "Sunday" && in_array($ozonetelNoDetails->finder->_id, $this->jump_finder_ids)){
 
 			    		$this->ozonetelCollectDtmf = new OzonetelCollectDtmf();
 			    		$this->ozonetelCollectDtmf->addPlayText('Thank you for calling.');
@@ -806,18 +821,14 @@ class OzonetelsController extends \BaseController {
 					$data['finder_commercial_type'] = $ozonetel_capture->finder_commercial_type = (int)$finder['commercial_type'];
 					$data['finder_location'] = $ozonetel_capture->finder_location = ucwords($finder['location']['name']);
 					$data['finder_city'] = $ozonetel_capture->finder_city = ucwords($finder['city']['name']);
+					$data['finder_vcc_mobile'] = $ozonetel_capture->finder_vcc_mobile = (isset($finder['finder_vcc_mobile']) && $finder['finder_vcc_mobile'] != '') ? $finder['finder_vcc_mobile'] : "";
 
-					$finder_url = ($finder['commercial_type'] != 0) ? "www.fitternity.com/".$finder['slug'] : "www.fitternity.com/".$finder['city']['slug']."/fitness/".$finder['location']['slug'];
+					$finder_url = ($finder['commercial_type'] != 0) ? "www.fitternity.com/".$finder['slug'] : "www.fitternity.com/".$finder['city']['slug']."/".$finder['location']['slug']."/fitness";
 
-					$shorten_url = new ShortenUrl();
+					$data['finder_url'] = $ozonetel_capture->finder_url = $this->utilities->getShortenUrl($finder_url);
 
-		            $url = $shorten_url->getShortenUrl($finder_url);
-
-		            if(isset($url['status']) &&  $url['status'] == 200){
-		                $finder_url = $url['url'];
-		            }
-
-					$data['finder_url'] = $ozonetel_capture->finder_url = $finder_url;
+					$data['srp_link'] = $ozonetel_capture->srp_link =  $this->utilities->getShortenUrl(Config::get('app.website')."/".$finder['city']['slug']."/".$finder['location']['slug']."/fitness");
+					$data['vendor_link'] = $ozonetel_capture->vendor_link = $this->utilities->getShortenUrl(Config::get('app.website')."/".$finder['slug']);
 
 				}
 			}
@@ -876,21 +887,21 @@ class OzonetelsController extends \BaseController {
 			$ozonetel_capture->update();
 
 			//send sms on call to customer
-			if($ozonetel_capture->call_status == 'answered' || $ozonetel_capture->call_status == 'not_answered' || $data['event'] == 'Disconnect' && isset($ozonetel_capture->finder_commercial_type) && $ozonetel_capture->finder_commercial_type != 0){
+			if(($ozonetel_capture->call_status == 'answered' || $ozonetel_capture->call_status == 'not_answered' || $data['event'] == 'Disconnect') && isset($ozonetel_capture->finder_commercial_type)){
 
-				if(!isset($ozonetel_capture->ozonetel_capture_sms)){
+				if(!isset($ozonetel_capture->sms_send)){
 
-					if($call_jump){
+					$ozonetel_capture->sms_send = true;
 
-						if($ozonetel_capture->call_status != 'answered'){
-							$ozonetel_capture->ozonetel_capture_sms = $this->customersms->ozonetelCapture($ozonetel_capture->toArray());
-						}
-						
-					}else{
+					$ozonetel_capture->update();
 
-						$ozonetel_capture->ozonetel_capture_sms = $this->customersms->ozonetelCapture($ozonetel_capture->toArray());
+					$ozonetel_capture->customer_ozonetel_capture_sms = $this->customersms->ozonetelCapture($ozonetel_capture->toArray());
+
+					if(!isset($ozonetel_capture->call_jump) && isset($data['finder_vcc_mobile']) && $data['finder_vcc_mobile'] != ""){
+						$ozonetel_capture->finder_ozonetel_capture_sms = $this->findersms->ozonetelCapture($ozonetel_capture->toArray());
 					}
 
+					
 					$ozonetel_capture->update();
 				}
 			}

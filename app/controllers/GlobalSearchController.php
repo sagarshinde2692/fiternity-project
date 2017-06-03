@@ -797,6 +797,7 @@ public function newglobalsearch(){
    $location =         Input::json()->get('location');
    $lat      =         isset($location['lat']) ? $location['lat'] : '';
    $lon      =         isset($location['long']) ? $location['long'] : '';
+   $city     =  getmy_city($city);
    $customer_email = null;
    $jwt_token = Request::header('Authorization');
    if($jwt_token){

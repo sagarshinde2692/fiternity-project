@@ -724,6 +724,7 @@ class RankingSearchController extends \BaseController
         $orderfield  =     (Input::json()->get('sort')) ? Input::json()->get('sort')['sortfield'] : '';
         $order   =         (Input::json()->get('sort')) ? Input::json()->get('sort')['order'] : '';
         $location    =         Input::json()->get('location')['city'] ? strtolower(Input::json()->get('location')['city']): 'mumbai';
+        $location    =      getmy_city($location);
         $vip_trial    =         Input::json()->get('vip_trial') ? array(intval(Input::json()->get('vip_trial'))) : [1,0];
         $vip_trial = implode($vip_trial,',');
         $locat = Input::json()->get('location');
@@ -2506,12 +2507,12 @@ public function getRankedFinderResultsAppv4()
             "aggs": {
             "offerings": {
                 "nested": {
-                    "path": "main_location_obj"
+                    "path": "location_obj"
                 },
                 "aggs": {
                     "attrs": {
                         "terms": {
-                            "field": "main_location_obj.name",
+                            "field": "location_obj.name",
                             "min_doc_count": 1,
                             "size": "500",
                             "order": {
@@ -2519,15 +2520,9 @@ public function getRankedFinderResultsAppv4()
                             }
                         },
                         "aggs": {
-                            "locationslug": {
+                            "attrsValues": {
                                 "terms": {
-                                    "field": "main_location_obj.slug",
-                                    "size": 100
-                                }
-                            },
-                            "locationcluster": {
-                                "terms": {
-                                    "field": "main_location_obj.locationcluster",
+                                    "field": "location_obj.slug",
                                     "size": 100
                                 }
                             }
@@ -2682,7 +2677,18 @@ public function getRankedFinderResultsAppv4()
         // Log::info("Response from ES : ".time());
          $search_results1    =   json_decode($search_results, true);
         $search_request     =   Input::json()->all();
-        $searchresulteresponse = Translator::translate_searchresultsv4($search_results1,$search_request,$keys);
+        
+        $customer_email = null;
+        $jwt_token = Request::header('Authorization');
+        if($jwt_token){
+            Log::info("inside");
+            $decoded = $this->customerTokenDecode($jwt_token);
+            if($decoded){
+                $customer_email = $decoded->customer->email;
+            }
+            
+        }
+        $searchresulteresponse = Translator::translate_searchresultsv4($search_results1,$search_request,$keys, $customer_email);
         // Log::info("Response from Translator : ".time());
         $searchresulteresponse->metadata = $this->getOfferingHeader($category,$location);
         $searchresulteresponse->metadata['total_records'] = intval($search_results1['hits']['total']);

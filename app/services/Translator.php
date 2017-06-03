@@ -668,28 +668,54 @@ public static function translate_searchresultsv2($es_searchresult_response){
 					$intersect = array();
 					$found = false;
 					foreach($search_request['regions'] as $loc){
-						foreach($result['multiaddress'] as $regions){
+						$loc = str_replace("-"," ",$loc);
+						foreach($result['multiaddress'] as $key => $regions){
 							if(in_array(strtolower($loc),$regions['location'])){
 								array_push($intersect,$regions);
 								$found = true;
-								break;	
+								unset($result['multiaddress'][$key]);	
+							}
+							if(in_array("Base location",$regions['location'])){
+								$regions['location'] = str_replace("Base location",$result['location'],$regions['location']);
+								// Log::info($regions['location']);
+								$result['multiaddress'][$key]['location'] = $regions['location'];
 							}
 						}
+						foreach($result['multiaddress'] as $key => $regions){
+							array_push($intersect,$regions);
+						}
 					}
-					$resultobject->multiaddress = $found ? $intersect : $result['multiaddress'];
+					$resultobject->multiaddress = $intersect;
 				}else{
 					$resultobject->multiaddress = isset($result['multiaddress']) && count($result['multiaddress']) > 0 ? $result['multiaddress'] : array();
 				}
-				if(count($search_request) > 0 && ((isset($search_request['womens_day']) && $search_request['womens_day'] == true) ||(isset($search_request['offer_available']) && $search_request['offer_available'] == true) )){
-					// echo "disc25or50".$result['flags']['disc25or50'];
-					// echo "discother".$result['flags']['discother'];
-					if($result['flags']['disc25or50'] == 1){
-						$resultobject->offer_available = "https://b.fitn.in/iconsv1/womens-day/additional-50.png";
-					}
-					if($result['flags']['discother'] == 1){
-						$resultobject->offer_available = "https://b.fitn.in/iconsv1/womens-day/exclusive.png";
-					}
-				}
+				// if(count($search_request) > 0 && isset($search_request['regions']) && count($search_request['regions']) > 0 && !empty($result['multiaddress'])){
+				// 	$multiaddress_locations = array();
+				// 	$intersect = array();
+				// 	$found = false;
+				// 	foreach($search_request['regions'] as $loc){
+				// 		foreach($result['multiaddress'] as $regions){
+				// 			if(in_array(strtolower($loc),$regions['location'])){
+				// 				array_push($intersect,$regions);
+				// 				$found = true;
+				// 				break;	
+				// 			}
+				// 		}
+				// 	}
+				// 	$resultobject->multiaddress = $found ? $intersect : $result['multiaddress'];
+				// }else{
+				// 	$resultobject->multiaddress = isset($result['multiaddress']) && count($result['multiaddress']) > 0 ? $result['multiaddress'] : array();
+				// }
+				// if(count($search_request) > 0 && ((isset($search_request['womens_day']) && $search_request['womens_day'] == true) ||(isset($search_request['offer_available']) && $search_request['offer_available'] == true) )){
+				// 	// echo "disc25or50".$result['flags']['disc25or50'];
+				// 	// echo "discother".$result['flags']['discother'];
+				// 	if($result['flags']['disc25or50'] == 1){
+				// 		$resultobject->offer_available = "https://b.fitn.in/iconsv1/womens-day/additional-50.png";
+				// 	}
+				// 	if($result['flags']['discother'] == 1){
+				// 		$resultobject->offer_available = "https://b.fitn.in/iconsv1/womens-day/exclusive.png";
+				// 	}
+				// }
 
 
 				// Decide vendor type
@@ -1129,7 +1155,7 @@ public static function translate_sale_ratecards($es_searchresult_response){
 
 
 
-public static function translate_searchresultsv4($es_searchresult_response,$search_request = array(),$keys = array()){
+public static function translate_searchresultsv4($es_searchresult_response,$search_request = array(),$keys = array(), $customer_email = ""){
 		$finderresult_response 							 = new FinderresultResponse();
 		$finderresult_response->results->aggregationlist = new \stdClass();
 		$resultCategory 								 = [];
@@ -1142,6 +1168,12 @@ public static function translate_searchresultsv4($es_searchresult_response,$sear
 		else{
 			$finderresult_response->metadata->total_records = $es_searchresult_response['hits']['total'];
 			foreach ($es_searchresult_response['hits']['hits'] as $resultv1) {
+				if(in_array($resultv1['_source']['slug'], Config::get('app.test_vendors'))){
+					if(!in_array($customer_email, Config::get('app.test_page_users'))){
+						$finderresult_response->metadata->total_records--;
+						continue;
+					}
+				}
 				$result 						= $resultv1['_source'];
 				$finder 						= new FinderResult();
 				$finder->object_type 			= 'vendor';
@@ -1219,7 +1251,7 @@ public static function translate_searchresultsv4($es_searchresult_response,$sear
 							}
 							if(in_array("Base location",$regions['location'])){
 								$regions['location'] = str_replace("Base location",$result['location'],$regions['location']);
-								Log::info($regions['location']);
+								// Log::info($regions['location']);
 								$result['multiaddress'][$key]['location'] = $regions['location'];
 							}
 						}
@@ -1413,8 +1445,8 @@ public static function translate_searchresultsv4($es_searchresult_response,$sear
 			foreach ($aggs['filtered_locationtags']['offerings']['attrs']['buckets'] as $off){
 				$offval = new \stdClass();
 				$offval->key = $off['key'];
-				$offval->slug = $off['locationslug']['buckets'][0]['key'];
-				$offval->cluster = $off['locationcluster']['buckets'][0]['key'];
+				$offval->slug = $off['attrsValues']['buckets'][0]['key'];
+				//$offval->cluster = $off['locationcluster']['buckets'][0]['key'];
 				$offval->count = $off['doc_count'];
 				array_push($finderresult_response->results->aggregationlist->locationtags, $offval);
 			}

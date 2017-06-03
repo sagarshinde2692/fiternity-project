@@ -50,18 +50,31 @@ Route::get('unsetstartendservice', 'DebugController@unsetStartEndService');
 
 Route::get('xyz','DebugController@xyz');
 Route::get('yes/{msg}','DebugController@yes');
+Route::get('ozonetelcapturebulksms','DebugController@ozonetelCaptureBulkSms');
+Route::get('orderfollowup','DebugController@orderFollowup');
+Route::get('trialfollowup','DebugController@trialFollowup');
+Route::get('durationdaystring','DebugController@durationDayString');
 
 
 // please dont merge in live or production environment
-Route::get('deletetrans/{email}', function ($email){
+Route::get('transaction/delete/{table}/{email}', function ($table,$email){
 
     $emails = ["ankit13.kumar@gmail.com","sailismart@fitternity.com","amrita.ghosh.cipl@gmail.com","utkarshmehrotra@fitternity.com","amritaghosh@fitternity.com","sanjaysahu@fitternity.com","sanajy.id7@gmail.com","gauravravi@fitternity.com","gauravraviji@gmail.com","maheshjadhav@fitternity.com","ut.mehrotra@gmail.com"];
 
     if(in_array($email, $emails)){
 
-        DB::connection('mongodb')->table('booktrials')->where('customer_email', trim($email))->delete();
-        DB::connection('mongodb')->table('orders')->where('customer_email', trim($email))->delete();
-        DB::connection('mongodb')->table('captures')->where('email', trim($email))->delete();
+        if($table == "trial"){
+            DB::connection('mongodb')->table('booktrials')->where('customer_email', trim($email))->delete();
+        }
+
+        if($table == "order"){
+            DB::connection('mongodb')->table('orders')->where('customer_email', trim($email))->delete();
+        }
+
+        if($table == "capture"){
+            DB::connection('mongodb')->table('captures')->where('email', trim($email))->delete();
+        }
+
         echo "valid email";
 
     }else{
@@ -69,7 +82,6 @@ Route::get('deletetrans/{email}', function ($email){
         echo "invalid email";
 
     }
-
 
 });
 
@@ -2670,3 +2682,9 @@ Route::get('orderfunnel','DebugController@order_funnel');
 Route::get('linksentfunnel','DebugController@linksent_funnel');
 /******************  Service to vendor category API END HERE************************************************/
 #####################################################################################################
+
+
+
+
+// Checking global search
+Route::get('pushfinders/{index}/{city_id}', 'GlobalPushController@pushfinders');

@@ -111,6 +111,8 @@ class RewardofferController extends BaseController {
             $customerReward     =   new CustomerReward();
             $calculation        =   $customerReward->purchaseGame($amount,$finder_id);
 
+            $calculation['algo']['cashback'] = (int)$calculation['algo']['cashback'];
+
             if(isset($data['order_id']) && $data['order_id'] != ""){
 
                 $order_id = (int) $data['order_id'];
@@ -128,8 +130,11 @@ class RewardofferController extends BaseController {
                 'percentage'    =>  $calculation['algo']['cashback'].'%',
                 'commision'     =>  $calculation['algo']['cashback'],
                 'calculation'   =>  $calculation,
-                'info'          =>  "You can only pay upto 10% of the booking amount through FitCash. \nIt is calculated basis the amount, type and duration of the purchase.  \nYour total FitCash balance is Rs. ".$calculation['current_wallet_balance']." FitCash applicable for this transaction is Rs. ".$calculation['amount_deducted_from_wallet']
+                'info'          =>  ""//"You can only pay upto 10% of the booking amount through FitCash. \nIt is calculated basis the amount, type and duration of the purchase.  \nYour total FitCash balance is Rs. ".$calculation['current_wallet_balance_only_fitcash']." FitCash applicable for this transaction is Rs. ".$calculation['amount_deducted_from_wallet']
             ];
+            /*if($calculation["current_wallet_balance_only_fitcash_plus"] > 0){
+                $cashback["info"] = "You can only pay upto 10% of the booking amount through FitCash. \n\nIt is calculated basis the amount, type and duration of the purchase.  \n\nYour total FitCash balance is Rs. ".$calculation['current_wallet_balance_only_fitcash_plus']."\n\nYour total FitCash+ balance is Rs. ".$calculation['current_wallet_balance_only_fitcash']." FitCash applicable for this transaction is Rs. ".$calculation['amount_deducted_from_wallet'];
+            }*/
 
             $renewal_cashback   =   ['title'=>'Discount on Renewal'];
             $rewards            =   [];
@@ -212,6 +217,8 @@ class RewardofferController extends BaseController {
                     ->with(array('rewards'=> function($query){$query->select('*')->where('reward_type','!=','personal_trainer_at_home');}  ))
                     // ->with('rewards')
                     ->orderBy('_id','desc')->first();
+
+                    // return $rewardoffer;
 
             if ($rewardoffer){
                 $rewardoffer = $rewardoffer->toArray();
@@ -309,6 +316,40 @@ class RewardofferController extends BaseController {
                                 $rewards_value['image'] = "https://b.fitn.in/gamification/reward/".$rewards_value['reward_type'].".jpg";
                             }
 
+                            if($rewards_value['reward_type'] == "diet_plan"){
+                                // $rewards_value['service_id'] = Service::where('_id', 19370)->first(['_id'])->_id; //production
+                                $rewards_value['service_id'] = Service::where('_id', 17366)->first(['_id'])->_id; //stage
+                                switch($rewards_value['_id']){
+                                    case 27:
+                                    $validity = 14;
+                                    $validity_type = 'days';
+                                    
+                                    break;
+                                    case 28:
+                                    $validity = 1;
+                                    $validity_type = 'months';
+                                    break;
+                                    case 29:
+                                    $validity = 2;
+                                    $validity_type = 'months';
+                                    break;
+                                    case 30:
+                                    $validity = 3;
+                                    $validity_type = 'months';
+                                    break;
+                                    case 31:
+                                    $validity = 3;
+                                    $validity_type = 'months';
+                                    break;
+                                    
+                                }
+
+                                $diet_ratecard = Ratecard::where('service_id', $rewards_value['service_id'])->where('validity', $validity)->where('validity_type', $validity_type)->first(['_id']);
+                                if($diet_ratecard){
+                                    $rewards_value['ratecard_id'] = $diet_ratecard['_id'];
+                                }
+                            }
+
                             if($rewards_value['reward_type'] == $reward_type_order_value){
 
                                 $reward_type_array = ["fitness_kit","healthy_snacks"];
@@ -347,17 +388,43 @@ class RewardofferController extends BaseController {
 
         }
 
+        $calculation['algo']['cashback'] = (int)$calculation['algo']['cashback'];
+
         $cashback  = array(
             // 'title'=>$calculation['algo']['cashback'].'% Discount on Purchase',
             'title'=>$calculation['algo']['cashback'].'% Instant Cashback on Purchase',
             'percentage'=>$calculation['algo']['cashback'].'%',
             'commision'=>$calculation['algo']['cashback'],
             'calculation'=>$calculation,
-            'info'          =>  "You can only pay upto 10% of the booking amount through FitCash. \nIt is calculated basis the amount, type and duration of the purchase.  \nYour total FitCash balance is Rs. ".$calculation['current_wallet_balance']." FitCash applicable for this transaction is Rs. ".$calculation['amount_deducted_from_wallet'],
+            'info'          =>  "",//"You can only pay upto 10% of the booking amount through FitCash. \n\nIt is calculated basis the amount, type and duration of the purchase.  \n\nYour total FitCash balance is Rs. ".$calculation['current_wallet_balance_only_fitcash']." FitCash applicable for this transaction is Rs. ".$calculation['amount_deducted_from_wallet'],
             'description'=>$calculation['description']
         );
+        /*if($calculation["current_wallet_balance_only_fitcash_plus"] > 0){
+            $cashback["info"] = "You can only pay upto 10% of the booking amount through FitCash. \n\nIt is calculated basis the amount, type and duration of the purchase.  \n\nYour total FitCash balance is Rs. ".$calculation['current_wallet_balance_only_fitcash_plus']."\n\nYour total FitCash+ balance is Rs. ".$calculation['current_wallet_balance_only_fitcash']." FitCash applicable for this transaction is Rs. ".$calculation['amount_deducted_from_wallet'];
+        }*/
 
         unset($cashback['calculation']['description']);
+
+        if(isset($ratecard['validity']) && $ratecard['validity'] != ""){
+
+            switch ($ratecard['validity_type']){
+                case 'days': 
+                    $duration_day = (int)$ratecard['validity'];break;
+                case 'months': 
+                    $duration_day = (int)($ratecard['validity'] * 30) ; break;
+                case 'year': 
+                    $duration_day = (int)($ratecard['validity'] * 30 * 12); break;
+                default : $duration_day =  $ratecard['validity']; break;
+            }
+        }
+
+        $duration_month = 0;
+
+        if(isset($duration_day)){
+            $duration_month = ceil($duration_day/30) + 2;
+        }
+
+        $cashback['description'] = "Enjoy FitCash+ of Rs. ".$calculation['wallet_amount'].". FitCash+ is fully redeemable for any booking / purchase on Fitternity ranging from workout sessions, memberships, diet plan and healthy tiffin subscription with a validity of ".$duration_month." months";
 
         $renewal_cashback  = array('title'=>'Discount on Renewal');
         $selection_limit = 1;
@@ -369,6 +436,11 @@ class RewardofferController extends BaseController {
             'status'                    =>  200,
             'message'                   => "Rewards offers"
         );
+        $data['cross_sell'] = array(
+            'diet_plan' => $customerReward->fitternityDietVendor($amount)
+        );
+        // $data['diet_plan'] = $customerReward->fitternityDietVendor($amount);
+
 
         return  Response::json($data, 200);
 
