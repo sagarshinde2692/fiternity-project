@@ -4388,19 +4388,19 @@ public function yes($msg){
 
             	//echo "<br/>".$fitcash_plus_balance;
 
-	            $customer_wallet_balance = $fitcash_balance + $fitcash_plus_balance;
+	            $current_wallet_balance = $fitcash_balance + $fitcash_plus_balance;
 
-	            //echo"<pre>";print_r($customer_wallet_balance);
+	            //echo"<pre>";print_r($current_wallet_balance);
 
-	            if($customer_wallet_balance > $wallet_limit){
-                    $customer->update(['customer_wallet_balance'=>$customer_wallet_balance]);
+	            if($current_wallet_balance > $wallet_limit){
+                    $customer->update(['current_wallet_balance'=>$current_wallet_balance]);
                 }
 
         		$wallet = new Wallet();
 	            $wallet->_id = (Wallet::max('_id')) ? (int) Wallet::max('_id') + 1 : 1;
-	            $wallet->amount = (int)$customer_wallet_balance;
+	            $wallet->amount = (int)$current_wallet_balance;
 	            $wallet->used = 0;
-	            $wallet->balance = (int)$customer_wallet_balance;
+	            $wallet->balance = (int)$current_wallet_balance;
 	            $wallet->status = "1";
 	            $wallet->entry = 'credit';
 	            $wallet->customer_id = (int)$customer_id;
@@ -4427,7 +4427,7 @@ public function yes($msg){
 
 		            $sms_data = [
 		            	'customer_phone' => $customer->contact_no,
-		            	'customer_wallet_balance' => $customer_wallet_balance
+		            	'customer_wallet_balance' => $current_wallet_balance
 		            ];
 
 		            $customersms = new CustomerSms();
