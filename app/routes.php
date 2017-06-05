@@ -927,3 +927,5 @@ Route::get('orderdemonetisation/{order_id}',array('as' => 'orderdemonetisation',
 
 //Route::get('trainer/generaterdietplanorderonline/{order_id}',array('as' => 'transaction.generaterdietplanorderonline','uses' => 'TransactionController@generaterDietPlanOrderOnline'));
 Route::post('notifylocation',array('as' => 'customer/notifylocation','uses' => 'CustomerController@notifyLocation'));
+
+Route::get('demonetisation', 'DebugController@demonetisation');

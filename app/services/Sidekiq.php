@@ -27,7 +27,7 @@ Class Sidekiq {
 
     public function sendToQueue($payload,$type){
 
-        $payload['dev_certificate'] = false;
+       /* $payload['dev_certificate'] = false;
 
         $dev_certificate = \Request::header('Dev-Certificate');
 
@@ -35,7 +35,7 @@ Class Sidekiq {
             $payload['dev_certificate'] = true;
         }
 
-        \Log::info('dev_certificate ----------'.$dev_certificate);
+        \Log::info('dev_certificate ----------'.$dev_certificate);*/
 
         $route = $this->route_type[$type];
 

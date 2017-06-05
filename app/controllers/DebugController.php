@@ -14,6 +14,7 @@ use App\Mailers\CustomerMailer as CustomerMailer;
 use App\Services\Sidekiq as Sidekiq;
 use App\Services\Bulksms as Bulksms;
 use App\Services\Utilities as Utilities;
+use App\Sms\CustomerSms as CustomerSms;
 
 use \Pubnub\Pubnub as Pubnub;
 
@@ -4319,6 +4320,129 @@ public function yes($msg){
 		return array('status'=>'done');
 
 	}
+
+	public function demonetisation(){
+
+        ini_set('memory_limit', '-1');
+        ini_set('max_execution_time', 3000);
+
+        $customer_wallet_customer_ids = Customerwallet::where('balance','exists',true)->where('balance','>',0)->lists('customer_id');
+
+        $customer_wallet_customer_ids = array_map('intval', array_unique($customer_wallet_customer_ids));
+
+        $customer_demonetisation_customer_ids = Customer::where('demonetisation','exists',true)->lists('_id');
+
+        $customer_demonetisation_customer_ids = array_map('intval', array_unique($customer_demonetisation_customer_ids));
+
+        $percentage = 25;
+        $cap = 1500;
+        $wallet_limit = 2500;
+
+        $final_customer_ids = [];
+
+        //echo"<pre>";print_r($customer_wallet_customer_ids);exit;
+
+        foreach ($customer_wallet_customer_ids as $key => $customer_id) {
+
+        	if(!in_array($customer_id,$customer_demonetisation_customer_ids)){
+        		$final_customer_ids[] = $customer_id;
+        	}
+
+        }
+
+        echo"<pre> final_customer_ids ---";print_r(count($final_customer_ids));
+
+        foreach ($final_customer_ids as $key => $customer_id) {
+
+    		$customer = Customer::find($customer_id);
+
+    		if($customer && !isset($customer->demonetisation)){
+
+    			//echo $customer_id;
+
+        		$wallet = Customerwallet::where('customer_id',$customer_id)->orderBy('_id','desc')->first();
+
+                $fitcash_balance = intval($wallet->balance * ($percentage/100));
+
+                if($fitcash_balance >= $cap){
+                	$fitcash_balance = $cap;
+                }
+
+                $fitcash_plus_balance = 0;
+
+                if(isset($wallet->balance_fitcash_plus)){
+
+                    $fitcash_plus_balance = $wallet->balance_fitcash_plus;
+
+                    if($fitcash_plus_balance >= $cap){
+	            		$fitcash_balance = 0;
+	            	}else{
+
+	            		if($fitcash_balance+$fitcash_plus_balance > $cap){
+	            			$fitcash_balance = $cap - $fitcash_plus_balance;
+	            		}
+	            	}
+            	}
+
+            	//echo "<br/>".$fitcash_balance;
+
+            	//echo "<br/>".$fitcash_plus_balance;
+
+	            $customer_wallet_balance = $fitcash_balance + $fitcash_plus_balance;
+
+	            //echo"<pre>";print_r($customer_wallet_balance);
+
+	            if($customer_wallet_balance > $wallet_limit){
+                    $customer->update(['customer_wallet_balance'=>$customer_wallet_balance]);
+                }
+
+        		$wallet = new Wallet();
+	            $wallet->_id = (Wallet::max('_id')) ? (int) Wallet::max('_id') + 1 : 1;
+	            $wallet->amount = (int)$customer_wallet_balance;
+	            $wallet->used = 0;
+	            $wallet->balance = (int)$customer_wallet_balance;
+	            $wallet->status = "1";
+	            $wallet->entry = 'credit';
+	            $wallet->customer_id = (int)$customer_id;
+	            $wallet->validity = time()+(86400*360);
+	            $wallet->type = "CREDIT";
+	            $wallet->description = "Conversion of FitCash+ on Demonetization, Expires On : ".date('d-m-Y',time()+(86400*360));
+	            $wallet->save();
+
+	            $wallet_transaction_data['wallet_id'] = $wallet->_id;
+	            $wallet_transaction_data['entry'] = $wallet->entry;
+	            $wallet_transaction_data['type'] = $wallet->type;
+	            $wallet_transaction_data['customer_id'] = $wallet->customer_id;
+	            $wallet_transaction_data['amount'] = $wallet->amount;
+	            $wallet_transaction_data['description'] = $wallet->description;
+	            $wallet_transaction_data['validity'] = $wallet->validity;
+
+	            $walletTransaction = WalletTransaction::create($wallet_transaction_data);
+
+	            $walletTransaction->update(['group'=>$walletTransaction->_id]);
+
+	            $customer->update(['demonetisation'=>time()]);
+
+	            if(isset($customer->contact_no) && $customer->contact_no != "" && $customer->contact_no != null){
+
+		            $sms_data = [
+		            	'customer_phone' => $customer->contact_no,
+		            	'customer_wallet_balance' => $customer_wallet_balance
+		            ];
+
+		            $customersms = new CustomerSms();
+
+	            	$customersms->demonetisation($sms_data);
+	            }
+
+	           //echo"<pre>";print_r('success');exit;
+	        }
+
+        }
+
+        return "success";
+
+    }
 
 
 
