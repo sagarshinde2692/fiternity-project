@@ -1370,7 +1370,7 @@ class SchedulebooktrialsController extends \BaseController {
             $sndInstantSmsFinder	                =	$this->findersms->healthyTiffinTrial($order->toArray());
 
 
-            if(isset($order['amount']) && $order['amount'] != "" && $order['amount'] > 0){
+            if(isset($order['amount_customer']) && $order['amount_customer'] != "" && $order['amount_customer'] > 0 && !isset($order['myreward_id'])){
 
                 $this->utilities->demonetisation($order);
             	$this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
@@ -1386,6 +1386,8 @@ class SchedulebooktrialsController extends \BaseController {
             }
 
             $this->utilities->sendDemonetisationCustomerSms($order);
+
+            $this->utilities->addAmountToReferrer($order);
 
             $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
             return Response::json($resp);
@@ -1579,7 +1581,9 @@ class SchedulebooktrialsController extends \BaseController {
                 $order->unset('redundant_order');
             }
 
-            $this->utilities->sendDemonetisationCustomerSms($order);  
+            $this->utilities->sendDemonetisationCustomerSms($order);
+
+            $this->utilities->addAmountToReferrer($order);  
 
             $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
             return Response::json($resp);
@@ -1795,8 +1799,9 @@ class SchedulebooktrialsController extends \BaseController {
                 $final_lead_status = 'call_to_confirm';
             }
 
-            $gcm_reg_id					       = 	(isset($data['gcm_reg_id']) && $data['gcm_reg_id'] != '') ? $data['gcm_reg_id'] : "";
-            $device_type				       = 	(isset($data['device_type']) && $data['device_type'] != '') ? $data['device_type'] : "";
+            $device_type    =   $data['device_type']    = (isset($order['device_type']) && $order['device_type'] != '') ? $order['device_type'] : "";
+            $gcm_reg_id     =   $data['gcm_reg_id']     = (isset($order['gcm_reg_id']) && $order['gcm_reg_id'] != '') ? $order['gcm_reg_id'] : "";
+
             $social_referrer			       = 	(isset($data['social_referrer']) && $data['social_referrer'] != '') ? $data['social_referrer'] : "";
             $transacted_after			       = 	(isset($data['transacted_after']) && $data['transacted_after'] != '') ? $data['transacted_after'] : "";
             $referrer_object			       = 	(isset($data['referrer_object']) && $data['referrer_object'] != '') ? $data['referrer_object'] : "";
@@ -2198,7 +2203,7 @@ class SchedulebooktrialsController extends \BaseController {
             }
 
             $orderid = (int) Input::json()->get('order_id');
-            $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@sendCommunication', array('booktrial_id'=>$booktrialid),'booktrial');
+            $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@sendCommunication', array('booktrial_id'=>$booktrialid),Config::get('app.queue'));
             $booktrial->update(array('redis_id'=>$redisid));
 
         }
@@ -2208,6 +2213,8 @@ class SchedulebooktrialsController extends \BaseController {
         }*/
 
         $this->utilities->sendDemonetisationCustomerSms($order);
+
+        $this->utilities->addAmountToReferrer($order);
         
         Log::info('Customer Book Trial : '.json_encode(array('book_trial_details' => Booktrial::findOrFail($booktrialid))));
 
@@ -2259,15 +2266,19 @@ class SchedulebooktrialsController extends \BaseController {
 
                 $send_communication["customer_email_before12hour"] = $this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
 
-                /*if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
+                if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
                     $send_communication["customer_notification_before12hour"] = $this->customernotification->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
-                }*/
+                }
 
             }else{
 
                 $delayReminderAfter30Min    =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->created_at)))->addMinutes(30);
 
                 $send_communication["customer_email_before12hour"] = $this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderAfter30Min);
+
+                if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
+                    $send_communication["customer_notification_before12hour"] = $this->customernotification->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderAfter30Min);
+                }
             }
 
             if($currentScheduleDateDiffMin >= (60 * 6)){
@@ -2295,9 +2306,9 @@ class SchedulebooktrialsController extends \BaseController {
 
                 $send_communication["customer_sms_before3hour"] = $this->customersms->bookTrialReminderBefore3Hour($booktrialdata, $delayReminderTimeBefore3Hour);
 
-                /*if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
+                if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
                     $send_communication["customer_notification_before3hour"] = $this->customernotification->bookTrialReminderBefore3Hour($booktrialdata, $delayReminderTimeBefore3Hour);
-                }*/
+                }
 
             }
 
@@ -2328,9 +2339,9 @@ class SchedulebooktrialsController extends \BaseController {
 
                 $send_communication["customer_sms_before20Min"] = $this->customersms->bookTrialReminderBefore20Min($booktrialdata, $delayReminderTimeBefore20Min);
 
-                /*if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
+                if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
                     $send_communication["customer_notification_before20Min"] = $this->customernotification->bookTrialReminderBefore20Min($booktrialdata, $delayReminderTimeBefore20Min);
-                }*/
+                }
 
                 $booktrial->missedcall_batch = $batch;
             }
@@ -2344,9 +2355,9 @@ class SchedulebooktrialsController extends \BaseController {
                 $this->customersms->giveCashbackOnTrialOrderSuccessAndInvite($booktrialdata);
             }
 
-            /*if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
+            if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
                 $send_communication["customer_notification_after2hour"] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter90Min);
-            }*/
+            }
 
             $booktrial->send_communication = $send_communication;
             $booktrial->followup_date_time_auto = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',time()))->addDays(31);
@@ -2909,7 +2920,7 @@ class SchedulebooktrialsController extends \BaseController {
 
            /* Log::info('finder commercial_type  -- '. $finder['commercial_type']);
             if($finder['commercial_type'] != '2'){*/
-                $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@sendCommunication', array('booktrial_id'=>$booktrialid), 'booktrial');
+                $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@sendCommunication', array('booktrial_id'=>$booktrialid), Config::get('app.queue'));
                 $booktrial->update(array('redis_id'=>$redisid));
             /*}else{
 
@@ -3475,7 +3486,7 @@ class SchedulebooktrialsController extends \BaseController {
                 'schedule_slot' => $data['schedule_slot'],
             );
 
-            $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@sendCommunication',['booktrial_id'=>$booktrialid], 'booktrial');
+            $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@sendCommunication',['booktrial_id'=>$booktrialid], Config::get('app.queue'));
             $booktrial->update(array('reschedule_redis_id'=>$redisid));
 
             $resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'message' => "Rescheduled Trial");
@@ -3853,7 +3864,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         if($trialbooked == true ){
 
-            $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialCancel', array('id'=>$id), 'booktrial');
+            $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialCancel', array('id'=>$id),Config::get('app.queue'));
             $booktrial->update(array('cancel_redis_id'=>$redisid));
 
             $resp 	= 	array('status' => 200, 'message' => "Trial Canceled");
@@ -4084,7 +4095,7 @@ class SchedulebooktrialsController extends \BaseController {
                 'customer_name'                 =>      $booktrialdata->customer_name,
                 'customer_email'                =>      $booktrialdata->customer_email,
                 'customer_phone'                =>      $booktrialdata->customer_phone,
-
+                'customer_id'                   =>      $booktrialdata->customer_id,
                 'finder_id'                     =>      $finderid,
                 'finder_name'                   =>      $finder_name,
                 'finder_slug'                   =>      $finder_slug,
@@ -4138,10 +4149,9 @@ class SchedulebooktrialsController extends \BaseController {
 
                 if(isset($booktrialdata->source) && $booktrialdata->source != 'cleartrip'){
                     $this->customermailer->cancelBookTrial($emaildata);
+                    $this->customersms->cancelBookTrial($emaildata);
                     if($emaildata['reg_id'] != '' && $emaildata['device_type'] != ''){
                         $this->customernotification->cancelBookTrial($emaildata);
-                    }else{
-                        $this->customersms->cancelBookTrial($emaildata);
                     }
                 }
             }
@@ -4623,7 +4633,6 @@ class SchedulebooktrialsController extends \BaseController {
     public function preTrialAction($source = 'customer'){
 
         $rules = [
-            'booktrial_id' => 'required',
             'status' => 'required'
         ];
 
@@ -4634,13 +4643,33 @@ class SchedulebooktrialsController extends \BaseController {
             return  Response::json($resp, 400);
         }
 
-        $booktrial = Booktrial::find(intval($data['booktrial_id']));
+        if(!isset($data['booktrial_id'])){
+            if(isset($data['notification_id'])){
+                $notification = NotificationTracking::where('_id', $data['notification_id'])->first(['booktrial_id']);
+                $booktrial_id = $notification['booktrial_id'];
+            }
+        }else{
+            $booktrial_id = intval($data['booktrial_id']);
+        }
+
+        $booktrial = Booktrial::find($booktrial_id);
 
         if($booktrial){
 
+            $message = "Successfull Posted";
+
             if($source == 'customer'){
-                $booktrial->pre_trial_status = (isset($data['status']) && $data['status'] == true ) ? "attended" : "no show";
-                $booktrial->pre_trial_status_reason = (isset($data['reason']) && $data['reason'] != "") ? $data['reason'] : "";
+
+                switch($data['status']){
+                    case 'confirm':
+                    $booktrial->pre_trial_status = 'attended';
+                    $message = "Thanks for confirming, the trainer will be ready to attend you!";
+                    break;  
+                }
+
+                if((isset($data['reason']) && $data['reason'] != "")){
+                    $booktrial->pre_trial_status_reason = $data['reason'];
+                }
             }
 
             if($source == 'vendor'){
@@ -4650,7 +4679,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             $booktrial->update();
 
-            $resp   =   array('status' => 200,'message' => "Successfull");
+            $resp   =   array('status' => 200,'message' => $message);
             return  Response::json($resp, 200);
 
         }else{
@@ -5307,7 +5336,7 @@ class SchedulebooktrialsController extends \BaseController {
         $store_id = $store->_id = Store::max('_id') + 1;
         $store->save();
 
-        $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueNutritionStore', array('store_id'=>$store_id),'booktrial');
+        $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueNutritionStore', array('store_id'=>$store_id),Config::get('app.queue'));
 
         $store->update(array('redis_id'=>$redisid));
 

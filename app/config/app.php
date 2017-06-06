@@ -31,10 +31,16 @@ return array(
 	'url' => 'https://a1.fitternity.com', //live
 	// 'url' => 'http://apistage.fitn.in', //stage
 	// 'url' => 'http://fitapi.com', //local
+	// 'url' => 'http://beta.fitn.in', //beta
+
+	'admin_url' => 'https://fitn.in', //live
+	// 'admin_url' => 'http://adminstage.fitn.in', //stage
+	// 'admin_url' => 'http://fitadmin.com', //local
 
     'website' => 'https://www.fitternity.com', //live
     // 'website' => 'http://apistage.fitn.in:2233', //stage
     // 'website' => 'http://localhost:3000', //stage
+    // 'website' => 'http://apistage.fitn.in:8020', //beta
 
     'download_app_link' => 'https://goo.gl/sP81To',//https://www.fitternity.com/downloadapp',
 
@@ -43,7 +49,8 @@ return array(
     'sidekiq_url' => 'http://nw.fitn.in/', //live
    	// 'sidekiq_url' => 'http://kick.fitn.in/', //stage
 
-    'queue' => 'booktrial',
+    // 'queue' => 'beta', //beta
+    'queue' => 'booktrial', //live
 
 	'app' =>array(
 		'discount'		=> 			2,
@@ -51,6 +58,9 @@ return array(
 	),
 
 	'vendor_communication' => true,
+
+	// 'env' => 'stage',//stage
+	'env' => 'production',//live
 
 	/*
 	|--------------------------------------------------------------------------
@@ -670,7 +680,8 @@ return array(
             )
         ),
     'test_page_users' => ['dhruvsarawagi@fitternity.com', 'utkarshmehrotra@fitternity.com', 'sailismart@fitternity.com', 'neha@fitternity.com', 'pranjalisalvi@fitternity.com', 'maheshjadhav@fitternity.com', 'gauravravi@fitternity.com', 'nishankjain@fitternity.com', 'laxanshadesara@fitternity.com','mjmjadhav@gmail.com','gauravraviji@gmail.com','kushagra@webbutterjam.com','beltezzarthong@fitternity.com'],
-    'test_vendors' => ['fitternity-test-page-bandra-west', 'test-healthy-vendor']
+	
+    'test_vendors' => ['fitternity-test-page-bandra-west', 'test-healthy-vendor', 'fitternity-test-dharminder', 'gaurav-test-page-gym']
 
 
 

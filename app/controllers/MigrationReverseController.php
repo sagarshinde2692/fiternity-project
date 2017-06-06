@@ -771,7 +771,9 @@ class MigrationReverseController extends \BaseController {
                 'custom_city'                           =>  isset($Finder->custom_city) ? $Finder->custom_city : "",
                 'custom_location'                       =>  isset($Finder->custom_location) ? $Finder->custom_location : "",
                 'flags'                                 =>  isset($Finder->flags) ? $Finder->flags : array(),
-                'renewal_remark'                        =>  isset($Finder->renewal_remark) ? $Finder->renewal_remark : ""
+                'renewal_remark'                        =>  isset($Finder->renewal_remark) ? $Finder->renewal_remark : "",
+                'backend_flags'                         =>  isset($Finder->backend_flags) ? $Finder->backend_flags : array(),
+                'offer_texts'                           =>  isset($Finder->offer_texts) ? $Finder->offer_texts : array(),
             ];
 
             $insertData['vip_trial']                    = (isset($Finder->vip_trial) &&  $Finder['vip_trial'] == true ) ? '1' : '0';
@@ -997,6 +999,7 @@ class MigrationReverseController extends \BaseController {
             $insertData['what_i_should_carry'] = $data['what_i_should_carry'];
             $insertData['what_i_should_expect'] = $data['what_i_should_expect'];
             $insertData['photos']	=  (isset($data['gallery']) && count($data['gallery']) > 0) ? array_values($data['gallery']) : [];
+            $insertData['timings'] = (isset($data['timings'])) ? $data['timings'] : "";
 
             if(isset($data['provided_by']) && $data['provided_by'] !== 0){
                 $insertData['trainer_id'] = $data['provided_by'];

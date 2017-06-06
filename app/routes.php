@@ -25,7 +25,7 @@ require __DIR__.'/analytics_routes.php';
  // $queries = DB::getQueryLog();
  // var_dump($queries);
 
-Route::get('/', function() {  return date('l')." laravel 4.2 goes here...."; });
+Route::get('/', function() {  return date('l')." laravel beta 4.2 goes here...."; });
 Route::get('acceptvendormou/{vendormouid}', 'FindersController@acceptVendorMou');
 Route::get('cancelvendormou/{vendormouid}', 'FindersController@cancelVendorMou');
 
@@ -924,4 +924,10 @@ Route::get('reverse/migration/{colllection}/{id}','MigrationReverseController@by
 Route::get('fitternitydietvendordetail','FindersController@fitternityDietVedorDetail');
 Route::get('orderdemonetisation/{order_id}',array('as' => 'orderdemonetisation','uses' => 'CustomerController@orderDemonetisation'));
 
-Route::get('trainer/generaterdietplanorderonline/{order_id}',array('as' => 'transaction.generaterdietplanorderonline','uses' => 'TransactionController@generaterDietPlanOrderOnline'));
+
+//Route::get('trainer/generaterdietplanorderonline/{order_id}',array('as' => 'transaction.generaterdietplanorderonline','uses' => 'TransactionController@generaterDietPlanOrderOnline'));
+Route::post('notifylocation',array('as' => 'customer/notifylocation','uses' => 'CustomerController@notifyLocation'));
+
+Route::get('demonetisation', 'DebugController@demonetisation');
+
+Route::post('customer/getlink', 'CustomerController@getLink');

@@ -529,6 +529,13 @@ class EmailSmsApiController extends \BaseController {
             if($data["capture_type"] == "renew-membership"){
                 $order->update(["renew_membership"=>"requested"]);
             }
+
+            if(isset($data['requested_preferred_starting_date']) && $data['requested_preferred_starting_date'] != "" && $data['requested_preferred_starting_date'] != "-"){
+                $data['requested_preferred_starting_date'] = date('Y-m-d 00:00:00',strtotime($data['requested_preferred_starting_date']));
+                $order->update(["requested_preferred_starting_date"=>$data["requested_preferred_starting_date"]]);
+            }else{
+                unset($data['requested_preferred_starting_date']);
+            }
         }
 
         if(isset($data['customer_phone']) && $data['customer_phone'] != ""){
@@ -567,6 +574,8 @@ class EmailSmsApiController extends \BaseController {
             unset($data['preferred_starting_date']);
         }
 
+
+
         array_set($data, 'date',date("h:i:sa"));
         array_set($data, 'ticket_number',random_numbers(5));
 
@@ -604,10 +613,15 @@ class EmailSmsApiController extends \BaseController {
             $this->sendEmail($emaildata);
         }
 
-        $resp           = array('status' => 200,'capture' =>$storecapture, 'message' => "Recieved the Request");
-        if($data['capture_type'] == "renew-membership"){
-            $resp["message"] = "Thank you for your request. We will curate a renew subscription for you and get back";
+        $message = "";
+        switch ($data['capture_type']) {
+            case 'renew-membership':$message = "Thank you for your request, We will curate a renew subscription for you and get back";break;
+            case 'change_start_date_request':$message = "Thank you for your request, Our team will get in touch with you within 24 hours to process the request";break;
+            default:$message = "Recieved the Request";break;
         }
+
+        $resp  = array('status' => 200,'message'=>$message);
+
         return Response::json($resp);
     }
 

@@ -305,10 +305,9 @@ class TempsController extends \BaseController {
 
                 $temp->save();
                 $verified = true;
-
                 Customer::$withoutAppends = true;
                 $customer = Customer::select('name','email','contact_no','dob','gender')->active()->where('contact_no',$temp['customer_phone'])->orderBy('_id','desc')->first();
-
+                
                 if($customer) {
 
                     if($customerToken == ""){
@@ -327,25 +326,31 @@ class TempsController extends \BaseController {
                 $return = array('status' => 200,'verified' => $verified,'token'=>$customerToken,'trial_booked'=>false,'customer_data'=>$customer_data,'fitternity_no'=>$fitternity_no);
 
                 if(isset($temp->service_id) && $temp->service_id != "" && $temp->action == "booktrials"){
-
+                    
                     $customer_phone = $temp->customer_phone;
                     $service = Service::active()->find($temp->service_id);
                     $finder_id = (int)$service->finder_id;
 
-                    $booktrial_count = Booktrial::where('customer_phone', $customer_phone)
+                    $query = Booktrial::where('customer_phone', $customer_phone)
                         ->where('finder_id', '=',$finder_id)
                         ->where('type','booktrials')
-                        ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
-                        ->count();
+                        ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"]);
 
+                    // if(!isset($_GET['device_type'])){
+                    //      $query = $query->where('service_id', '=',$temp->service_id);
+                    // }
+
+                    $booktrial_count = $query->count();
+                    
                     Log::info("booktrial_count : ".$booktrial_count);
 
                     if($booktrial_count > 0){
-
+                        
                         if($customer_data == null){
 
                             $booktrial = Booktrial::where('customer_phone', $customer_phone)
                                 ->where('finder_id', '=',$finder_id)
+                                // ->where('service_id', '=',$temp->service_id)
                                 ->where('type','booktrials')
                                 ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
                                 ->orderBy('_id','desc')
@@ -353,7 +358,6 @@ class TempsController extends \BaseController {
 
                             Customer::$withoutAppends = true;
                             $customer = Customer::select('name','email','contact_no','dob','gender')->find((int)$booktrial->customer_id);
-
                             if($customer) {
 
                                 if($customerToken == ""){
@@ -392,6 +396,7 @@ class TempsController extends \BaseController {
 
             }
 
+
             if($finder_id != "" && $amount != "" && $customer_id != ""){
 
                 $device_type = ["android","ios"];
@@ -411,7 +416,7 @@ class TempsController extends \BaseController {
                     'percentage'=>$calculation['algo']['cashback'].'%',
                     'commision'=>$calculation['algo']['cashback'],
                     'calculation'=>$calculation,
-                    'info'          =>  "You can only pay upto 10% of the booking amount through FitCash. \nIt is calculated basis the amount, type and duration of the purchase.  \nYour total FitCash balance is Rs. ".$calculation['current_wallet_balance']." FitCash applicable for this transaction is Rs. ".$calculation['amount_deducted_from_wallet'],
+                    'info'          =>  "",//"You can only pay upto 10% of the booking amount through FitCash. \nIt is calculated basis the amount, type and duration of the purchase.  \nYour total FitCash balance is Rs. ".$calculation['current_wallet_balance']." FitCash applicable for this transaction is Rs. ".$calculation['amount_deducted_from_wallet'],
                     'description'=>$calculation['description']
                 );
 

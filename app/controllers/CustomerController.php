@@ -485,8 +485,9 @@ class CustomerController extends \BaseController {
 						$customer->account_link = $account_link;
 						$customer->status = "1";
 						$customer->demonetisation = time();
+						$customer->referral_code = $this->generateReferralCode($customer->name);
+						$customer->old_customer = false;
 						$customer->save();
-
 						$customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email'],'password'=>$data['password']);
 						$this->customermailer->register($customer_data);
 
@@ -509,6 +510,8 @@ class CustomerController extends \BaseController {
 					$ishullcustomer->name = ucwords($data['name']);
 					$ishullcustomer->password = md5($data['password']);
 					$ishullcustomer->ishulluser = 0;
+					$ishullcustomer->referral_code = $this->generateReferralCode($ishullcustomer->name);
+					$ishullcustomer->old_customer = true;
 					$ishullcustomer->update();
 					$customer_data = array('name'=>ucwords($ishullcustomer['name']),'email'=>$ishullcustomer['email'],'password'=>$ishullcustomer['password']);
 
@@ -876,6 +879,8 @@ class CustomerController extends \BaseController {
 
 			$customer->status = "1";
 			$customer->demonetisation = time();
+			$customer->referral_code = $this->generateReferralCode($customer->name);
+			$customer->old_customer = false;
 			$customer->save();
 
 			$response = array('status' => 200,'customer'=>$customer);
@@ -1363,10 +1368,12 @@ class CustomerController extends \BaseController {
 					$value['amount'] = $value['amount_customer'];
 				}
 
-				$getAction = $this->getAction($value);
+				$getAction = $this->getAction($value,"orderHistory");
 
 			    $value["action"] = $getAction["action"];
 			    $value["feedback"] = $getAction["feedback"];
+
+				$value["action_new"] = $this->getActionV1($value,"orderHistory");
 
 				array_push($orders, $value);
 
@@ -3307,6 +3314,12 @@ class CustomerController extends \BaseController {
 			return  Response::json($resp, 400);
 		}
 
+		$code = trim(strtoupper($data['code']));
+		
+		if(strpos($code, 'R-') != false){
+			return $this->setReferralData($code);
+		}
+
 		$code = trim(strtolower($data['code']));
 
 		$fitcashcode = Fitcashcoupon::where('code',$code)->where("expiry",">",time())->first();
@@ -3474,8 +3487,7 @@ class CustomerController extends \BaseController {
 		}else{
 			$otp = genericGenerateOtp();
 			$customer->lastOtp = $otp;
-			$customer->demonetisation = time();
-			$customer->save();
+			$customer->updated();
 			$customerdata = array(
                 'customer_name' => $customer->name,
                 'customer_email' => $customer->email,
@@ -3591,6 +3603,8 @@ class CustomerController extends \BaseController {
 
 	public function orderDetail($order_id){
 
+		Log::info("----------------orderDetail : ".$order_id);
+
 		$decoded = decode_customer_token();
 
 		$order_id = (int) $order_id;
@@ -3618,7 +3632,9 @@ class CustomerController extends \BaseController {
 	    $data['duration'] = $order->service_duration;
 	    $data['subscription_code'] = $order->code;
 	    $data['amount'] = $order->amount;
-
+	    if($order->amount_customer){
+	    	$data['amount'] = $order->amount_customer;
+	    }
 	    $finderData = [];
 	    $finderData['id'] = $order->finder_id;
 	    $finderData['name'] = $order->finder_name;
@@ -3635,16 +3651,15 @@ class CustomerController extends \BaseController {
 	    $extraInfoData['what_to_expect'] = ($order->what_i_should_expect) ? $order->what_i_should_expect : "";
 	    $data['extra_info'] = $extraInfoData;
 
-	    $getAction = $this->getAction($order);
+		$getAction = $this->getAction($order);
 
 	    $data["action"] = $getAction["action"];
 	    $data["feedback"] = $getAction["feedback"];
 
-	    $data["action"] = $getAction["action"];
-	    $data["feedback"] = $getAction["feedback"];
+		$data["action_new"] = $this->getActionV1($order);
 
 	    $reviewData = null;
-	    $review = Review::active()->where('finder_id',(int)$order->finder_id)->where('customer_id',(int)$order->customer_id)->first();
+	    /*$review = Review::active()->where('finder_id',(int)$order->finder_id)->where('customer_id',(int)$order->customer_id)->first();
 
 	    if($review){
 	    	$reviewData[] = [
@@ -3653,32 +3668,44 @@ class CustomerController extends \BaseController {
 	    		"detail_rating"=>$review->detail_rating,
 	    		"description"=>$review->description
 	    	];
-	    }
+	    }*/
 
 	    $data['review'] = $reviewData;
-	    
+
 	    return Response::json($data,200);
 
 	}
 
-	public function getAction($order){
+	public function getAction($order,$method = false){
 
 		$action = null;
 
-		if(!isset($order->updrage_membership) && isset($order['start_date']) && time() >= strtotime($order['start_date'].'+5 days') && time() <= strtotime($order['start_date'].'+31 days') && isset($order['end_date']) && strtotime($order['end_date']) >= time() && isset($order['duration_day']) && $order['duration_day'] <= 180){
+		$change_start_date = true;
+		$renew_membership = true;
+		$upgrade_membership = true;
+
+		if(isset($_GET['device_type']) && in_array($_GET['device_type'], ['ios','android'])){
+
+			if($method == "orderHistory"){
+				$change_start_date = false;
+			}
+
+		}
+
+		if(!isset($order->upgrade_membership) && isset($order['start_date']) && time() >= strtotime($order['start_date'].'+5 days') && time() <= strtotime($order['start_date'].'+31 days') && isset($order['end_date']) && strtotime($order['end_date']) >= time() && isset($order['duration_day']) && $order['duration_day'] <= 180){
 			$action = [
 				"button_text"=>"Upgrade",
 				"activity"=>"upgrade_membership",
 				"color"=>"#26ADE5",
 				"info" => "Commit yourself for a longer duration. Upgrade your current membership with insider discounts and other benefits.",
 				"popup" =>[
-					"title"=>"Upgrade Membership",
-					"message"=>"Upgrade Membership"
+					"title"=>"",
+					"message"=>"Commit yourself for a longer duration. Upgrade your current membership with insider discounts and other benefits."
 				]
 			];
 		}
 
-		if(!isset($order->preferred_starting_change_date) && isset($order['start_date']) && time() <= strtotime($order['start_date'].'+11 days')){
+		if(!isset($order->preferred_starting_change_date) && isset($order['start_date']) && time() <= strtotime($order['start_date'].'+11 days') && $change_start_date){
 
 			$min_date = strtotime('+1 days');
 			$max_date = strtotime($order['created_at'].'+29 days');
@@ -3696,9 +3723,9 @@ class CustomerController extends \BaseController {
 					$maxDate[] = $this->closestDate($value["weekday"],$max_date);
 				}
 
-				Log::info("available_days--------",$available_days);
-				Log::info("minDate--------",$minDate);
-				Log::info("maxDate--------",$maxDate);
+				// Log::info("available_days--------",$available_days);
+				// Log::info("minDate--------",$minDate);
+				// Log::info("maxDate--------",$maxDate);
 
 				foreach ($minDate as $key => $value) {
 
@@ -3731,7 +3758,7 @@ class CustomerController extends \BaseController {
 			];
 		}
 
-		if(!isset($order->renew_membership) && isset($order['duration_day']) && isset($order['start_date'])){
+		if(!isset($order->renew_membership) && isset($order['duration_day']) && isset($order['start_date']) && $renew_membership){
 
 			$renewal_date = array();
 			$validity = (int) $order['duration_day'];
@@ -3793,6 +3820,202 @@ class CustomerController extends \BaseController {
 
 	}
 
+	public function getActionV1($order,$method = false){
+
+		$action = [
+			'change_start_date'=>null,
+			'change_start_date_request'=>null,
+			'renew_membership'=>null,
+			'upgrade_membership'=>null,
+			'feedback'=>null,
+		];
+
+		$change_start_date = true;
+		$renew_membership = true;
+		$upgrade_membership = true;
+		$change_start_date_request = true;
+
+		if(isset($_GET['device_type']) && in_array($_GET['device_type'], ['ios','android'])){
+
+			if($method == "orderHistory"){
+				$change_start_date = false;
+			}
+
+		}
+
+		if(!isset($order->upgrade_membership) && isset($order['success_date']) && time() >= strtotime($order['success_date']) && $upgrade_membership && strtotime($order['end_date']) >= time()){
+			$action['upgrade_membership'] = [
+				"button_text"=>"Upgrade",
+				"activity"=>"upgrade_membership",
+				"color"=>"#26ADE5",
+				"info" => "Commit yourself for a longer duration. Upgrade your current membership with insider discounts and other benefits.",
+				"popup" =>[
+					"title"=>"",
+					"message"=>"Commit yourself for a longer duration. Upgrade your current membership with insider discounts and other benefits."
+				]
+			];
+		}
+
+		if(!isset($order->preferred_starting_change_date) && isset($order['success_date']) && time() <= strtotime($order['success_date'].'+10 days') && $change_start_date){
+
+			$min_date = strtotime('+1 days');
+			$max_date = strtotime($order['success_date'].'+29 days');
+			$available_days = null;
+
+
+			if(isset($order->batch) && !empty($order->batch) && is_array($order->batch)){
+
+				$minDate = [];
+				$maxDate = [];
+
+				foreach ($order->batch as $key => $value) {
+					$available_days[] = $value["weekday"];
+					$minDate[] = $this->closestDate($value["weekday"],time());
+					$maxDate[] = $this->closestDate($value["weekday"],$max_date);
+				}
+
+				foreach ($minDate as $key => $value) {
+
+					if($value > time()){
+						$min_date = $value;
+						break;
+					}
+				}
+
+				foreach ($maxDate as $key => $value) {
+
+					if($value < time()){
+						$max_date = $value;
+					}
+				}
+			}
+
+			$action['change_start_date'] = [
+				"button_text"=>"Change",
+				"activity"=>"update_starting_date",
+				"color"=>"#7AB317",
+				"info" => "Don't miss even a single day workout. Change your membership start date basis your convenience. Not applicable, if you have already started with your membership.",
+				"min_date"=> $min_date,
+				"max_date"=> $max_date,
+				"available_days"=> $available_days,
+				"popup" =>[
+					"title"=>"",
+					"message"=>"Don't miss even a single day workout. Change your membership start date basis your convenience. Not applicable, if you have already started with your membership."
+				]
+			];
+
+		}
+
+		if($action['change_start_date'] == null && !isset($order->requested_preferred_starting_date) && isset($order['success_date']) && time() <= strtotime($order['success_date'].'+29 days') && $change_start_date_request){
+
+			$min_date = strtotime('+1 days');
+			$max_date = strtotime($order['success_date'].'+29 days');
+			$available_days = null;
+
+			if(isset($order->batch) && !empty($order->batch) && is_array($order->batch)){
+
+				$minDate = [];
+				$maxDate = [];
+
+				foreach ($order->batch as $key => $value) {
+					$available_days[] = $value["weekday"];
+					$minDate[] = $this->closestDate($value["weekday"],time());
+					$maxDate[] = $this->closestDate($value["weekday"],$max_date);
+				}
+
+				foreach ($minDate as $key => $value) {
+
+					if($value > time()){
+						$min_date = $value;
+						break;
+					}
+				}
+
+				foreach ($maxDate as $key => $value) {
+
+					if($value < time()){
+						$max_date = $value;
+					}
+				}
+			}
+
+			$action['change_start_date_request'] = [
+				"button_text"=>"Change",
+				"activity"=>"change_start_date_request",
+				"color"=>"#7AB317",
+				"info" => "Don't miss even a single day workout. Change your membership start date basis your convenience. Not applicable, if you have already started with your membership.",
+				"min_date"=> $min_date,
+				"max_date"=> $max_date,
+				"available_days"=> $available_days,
+				"popup" =>[
+					"title"=>"",
+					"message"=>"Don't miss even a single day workout. Change your membership start date basis your convenience. Not applicable, if you have already started with your membership."
+				]
+			];
+				
+		}
+
+		if(!isset($order->renew_membership) && isset($order['duration_day']) && isset($order['start_date']) && $renew_membership){
+
+			$renewal_date = array();
+			$validity = (int) $order['duration_day'];
+			$start_date = $order['start_date'];
+
+			if($validity >= 30 && $validity < 90){
+
+				$min_date = strtotime($start_date ."+ ".($validity-7). "days");
+				$max_date = strtotime($start_date ."+ ".($validity+30). "days");
+
+			}elseif($validity >= 90 && $validity < 180){
+
+				$min_date = strtotime($start_date ."+ ".($validity-15). "days");
+				$max_date = strtotime($start_date ."+ ".($validity+30). "days");
+
+			}elseif($validity >= 180){
+				
+				$min_date = strtotime($start_date ."+ ".($validity-30). "days");
+				$max_date = strtotime($start_date ."+ ".($validity+30). "days");
+
+			}
+
+			if(isset($min_date) && isset($max_date) && time() >= $min_date  && time() <= $max_date){
+
+				$days_to_go = ceil(($max_date - time()) / 86400);
+
+				$action['renew_membership'] = [
+					"button_text"=>"Renew",
+					"activity"=>"renew_membership",
+					"color"=>"#EF1C26",
+					"info" => "Renew your membership with the lowest price and assured rewards",
+					"popup" =>[
+						"title"=>"",
+						"message"=>"Renew your membership with the lowest price and assured rewards"
+					]
+				];
+
+			}
+		}
+
+		if($action['renew_membership'] != null){
+			$action['upgrade_membership'] = null;
+		}
+
+		$feedback = [];
+
+		if(isset($order->finder_name) && $order->finder_name != ""){
+			$action["feedback"] = ["info"=>"Share your experience at ".ucwords($order->finder_name)." and we will make sure they are notified with it","show"=>true];
+		}else{
+			$action["feedback"] = ["info"=>"Share your experience and we will make sure they are notified with it","show"=>true];
+		}
+		
+		if(isset($order["review_added"])){
+			$action["feedback"]["show"] = false;
+		}
+
+		return $action;
+
+	}
+
 	public function closestDate($day,$date){
 
 		$date = ($date) ? $date : time();
@@ -3814,6 +4037,10 @@ class CustomerController extends \BaseController {
 
 		if($notificationTracking){
 
+			if(isset($_GET['action']) && $_GET['action'] == 'received'){
+				$notificationTracking->update(['received'=>time()]);
+			}
+
 			$notificationSwitch = $this->notificationSwitch($notificationTracking);
 
 			return Response::json($notificationSwitch,200);
@@ -3824,6 +4051,8 @@ class CustomerController extends \BaseController {
 	}
 
 	public function notificationSwitch($notificationTracking){
+
+		$notificationTracking->update(['clicked'=>time()]);
 
 		$time = $notificationTracking->time;
 		
@@ -3840,7 +4069,8 @@ class CustomerController extends \BaseController {
 		];
 
 		$response["notification_id"] = $notificationTracking["_id"];
-
+		$response["cancelable"] = false;
+		
 		foreach ($array as $value) {
 
 			if(isset($notificationTracking[$value])){
@@ -3850,60 +4080,77 @@ class CustomerController extends \BaseController {
 
 		if(isset($notificationTracking["order_id"])){
 
-			$order = Order::find((int)$notificationTracking["order_id"]);
+			$transaction = Order::find((int)$notificationTracking["order_id"]);
+			
+			$dates = array('followup_date','last_called_date','preferred_starting_date', 'called_at','subscription_start','start_date','start_date_starttime','end_date', 'order_confirmation_customer');
 
-			if($order){
+			foreach ($dates as $key => $value){
+				if(isset($transaction[$value]) && $transaction[$value]==''){
+					$transaction->unset($value);
+				}
+			}
+
+		}else if(isset($notificationTracking["booktrial_id"])){
+
+			$transaction = Booktrial::find((int)$notificationTracking["booktrial_id"]);
+			
+			if($transaction && $transaction->type != 'workout-session' && (!isset($transaction->amount))){
+				$response["cancelable"] = true;
+			}
+			
+
+			$dates = array('start_date', 'start_date_starttime', 'schedule_date', 'schedule_date_time', 'followup_date', 'followup_date_time','missedcall_date','customofferorder_expiry_date','auto_followup_date');
+
+			foreach ($dates as $key => $value){
+				if(isset($transaction[$value]) && $transaction[$value]==''){
+					$transaction->unset($value);
+				}
+			}
+		}
+
+		if($transaction){
+
+			if(isset($notificationTracking["order_id"])){
 
 				$response["transaction_id"] = $notificationTracking["order_id"];
-				$response["type"] = $order->type;
 				$response["transaction_type"] = "order";
-				$response["finder_name"] = $order["finder_name"];
-				$response["finder_id"] = (int)$order["finder_id"];
-				$response["lat"] = $order["finder_lat"];
-				$response["lon"] = $order["finder_lat"];
-				$response["finder_location"] = $order["finder_location"];
-				$response["category_id"] = $order["finder_category_id"];
-				$response["finder_address"] = $order["finder_address"];
+	    		$response['amount'] = $transaction['amount'];
+	    		$response['duration'] = $transaction['service_duration'];
+	    		$response['payment_mode'] = $transaction['payment_mode'];
 
-				$response["service_id"] = (int)$order->service_id;
-
-				if(isset($order->ratecard_id)){
-					$response["ratecard_id"] = (int)$order->ratecard_id;
-				}
-
-				$data = $order->toArray();
-			}
-
-		}
-
-		if(isset($notificationTracking["booktrial_id"])){
-
-			$booktrial = Booktrial::find((int)$notificationTracking["booktrial_id"]);
-
-			if($booktrial){
+			}else if(isset($notificationTracking["booktrial_id"])){
 
 				$response["transaction_id"] = $notificationTracking["booktrial_id"];
-				$response["type"] = $booktrial->type;
 				$response["transaction_type"] = "trial";
-				$response["finder_name"] = $booktrial["finder_name"];
-				$response["finder_id"] = (int)$booktrial["finder_id"];
-				$response["lat"] = $booktrial["finder_lat"];
-				$response["lon"] = $booktrial["finder_lat"];
-				$response["finder_location"] = $booktrial["finder_location"];
-				$response["category_id"] = $booktrial["finder_category_id"];
-				$response["finder_address"] = $booktrial["finder_address"];
-
-				$response["service_id"] = (int)$booktrial->service_id;
-
-				if(isset($booktrial->ratecard_id)){
-					$response["ratecard_id"] = (int)$booktrial->ratecard_id;
-				}
-
-				$data = $booktrial->toArray();				
 			}
+
+			$response["finder_name"] = $transaction["finder_name"];
+			$response["finder_id"] = (int)$transaction["finder_id"];
+			$response["lat"] = $transaction["finder_lat"];
+			$response["lon"] = $transaction["finder_lon"];
+			$response["finder_location"] = $transaction["finder_location"];
+			$response["category_id"] = isset($transaction["finder_category_id"])?$transaction["finder_category_id"]:"";
+			$response["finder_address"] = $transaction["finder_address"];
+			$response["service_id"] = (int)$transaction->service_id;
+			$response["service_name"] = isset($transaction["service_name"])?$transaction["service_name"]:"";
+			
+			
+			if(isset($transaction->ratecard_id)){
+				$response["ratecard_id"] = (int)$transaction->ratecard_id;
+			}
+
+			$data = $transaction->toArray();
 		}
 
+		$response['fitcash'] = 0;
+		$response['remark'] = "";
+
 		if(!empty($data)){
+
+			$response["title"] = isset($notificationTracking["title"])? $notificationTracking["title"]: "Default title";
+			$response["notification_msg"] = $notificationTracking["text"];
+			$response["finder_slug"] = Finder::find($data['finder_id'])->slug;
+			
 
 			$followup_date = "";
 			
@@ -3923,32 +4170,44 @@ class CustomerController extends \BaseController {
 				}
 
 				if($start_date != ""){
-					$followup_date = date("M d",strtotime($start_date." +3 days"));
+					$followup_date = strtotime($start_date." +2 days");
 				}
 			}
 
+			$response['followup_date'] = $followup_date;
+
 			$response['callback_msg']= "Awesome. We'll get in touch with you on $followup_date \n <u>Click here to change date</u>";
+			$response["phone"] = Config::get('app.direct_customer_number');
+			$hour = (int) date("G", time());
+			if($hour<=10 || $hour>=20){
+				$response["phone"] = $data["finder_poc_for_customer_no"];
+			}
+
+			$response['fitternity_no'] = Config::get('app.direct_customer_number');
+			
 
 			switch ($time) {
 				case 'n-12': 
 					$response["start_time"] = strtoupper($data["schedule_slot_start_time"]);
 					$response["start_date"] = date("d-m-Y",strtotime($data["schedule_date"]));
-					$response["title"] = "Trial Reminder";
 					break;
 				case 'n-3': 
 					$response["start_time"] = strtoupper($data["schedule_slot_start_time"]);
 					$response["start_date"] = date("d-m-Y",strtotime($data["schedule_date"]));
-					$response["title"] = "Trial Reminder";
 					break;
 				case 'n+2': 
 					$response["start_time"] = strtoupper($data["schedule_slot_start_time"]);
 					$response["start_date"] = date("d-m-Y",strtotime($data["schedule_date"]));
-					$response["title"] = "Trial Review";
+					Booktrial::where('_id', $response["transaction_id"])->update(['final_lead_stage'=> 'post_trial_stage']);
+					break;
+				case 'n-20m': 
+					$response["start_time"] = strtoupper($data["schedule_slot_start_time"]);
+					$response["start_date"] = date("d-m-Y",strtotime($data["schedule_date"]));
 					break;
 				default:
 					$response["start_time"] = "";
 					$response["start_date"] = "";
-					$response["title"] = "Default Title";
+					
 
 					if(isset($data["schedule_slot_start_time"])){
 						$response["start_time"] = strtoupper($data["schedule_slot_start_time"]);
@@ -3961,18 +4220,107 @@ class CustomerController extends \BaseController {
 					if(isset($data["start_date"])){
 						$response["start_date"] = date("d-m-Y",strtotime($data["start_date"]));
 					}
-					
 					break;
 			}
 
-		}
+			if($response["transaction_type"] == "order"){
 
-		$response["finder_type"] = getFinderType($response["category_id"]);
+				
+
+				$batches = array();
+
+				$service = Service::find((int)$data['service_id']);
+
+				if($service){
+
+					$service = $service->toArray();
+
+					if(isset($service['batches']) && count($service['batches']) > 0){
+
+						$batches = $service['batches'];
+
+						foreach ($batches as $batches_key => $batches_value) {
+
+							foreach ($batches_value as $batches_value_key => $value) {
+
+								$batches[$batches_key][$batches_value_key]['slots'] = $value['slots'][0];
+							}
+						}
+					}
+				}
+
+				if(isset($data['ratecard_id']) && $data['ratecard_id']){
+
+					$ratecard = Ratecard::find((int)$data['ratecard_id']);
+
+					if($ratecard){
+
+						$ratecard_offers = [];
+
+						if(!empty($ratecard['_id']) && isset($ratecard['_id'])){
+
+							$ratecard_offers  =   Offer::where('ratecard_id', intval($ratecard['_id']))->where('hidden', false)->orderBy('order', 'asc')
+								->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
+								->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()) ))
+								->get(['start_date','end_date','price','type','allowed_qty','remarks']);
+
+							if(count($ratecard_offers) > 0){
+
+								$ratecard_offers = $ratecard_offers->toArray();
+
+								if(isset($ratecard_offers[0]['price'])){
+
+									$ratecard['special_price'] = $ratecard_offers[0]['price'];
+
+			                    	if($ratecard['price'] == $ratecard_offers[0]['price']){
+			                    		$ratecard['special_price'] = 0;
+			                    	}
+								}
+							}
+	
+						}
+
+						if($ratecard['type'] == 'membership' || $ratecard['type'] == 'packages'){
+
+							if($ratecard['special_price'] > 0){
+
+								$app_discount_amount = intval($ratecard['special_price'] * (Config::get('app.app.discount')/100));
+								$ratecard['special_price'] = $ratecard['special_price'] - $app_discount_amount;
+
+							}else{
+
+								$app_discount_amount = intval($ratecard['price'] * (Config::get('app.app.discount')/100));
+								$ratecard['price'] = $ratecard['price'] - $app_discount_amount;
+
+							}
+						}
+
+						if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
+	                    	$response['amount'] = $ratecard['special_price'];
+		                }else{
+		                    $response['amount'] = $ratecard['price'];
+		                }
+
+					}
+				}
+
+				$response['batches'] = $batches;
+
+				$customerReward     =   new CustomerReward();
+				$calculation        =   $customerReward->purchaseGame($response['amount'], $data["finder_id"], $data["payment_mode"], false, $data["customer_id"]);
+				$response['fitcash'] = $calculation['amount_deducted_from_wallet'];
+				$response['remarks'] = "(2% Discount applied)";
+
+			}
+
+			$response["finder_type"] = getFinderType($response["category_id"]);
+
+			
+			
+		}
 
 		return $response;
 	}
-
-
 
 
 	// Diet plan Listing
@@ -4189,6 +4537,255 @@ class CustomerController extends \BaseController {
 			200
 		);
 
+	}
+
+	public function getReferralCode(){
+		try{
+
+			$jwt = Request::header('Authorization');
+			$decoded = $this->customerTokenDecode($jwt);
+			$id = $decoded->customer->_id;
+			Customer::$withoutAppends = true;
+
+			$customer = Customer::where('_id', $id)->first();
+			
+			if($customer){
+
+				if(!isset($customer->referral_code)){
+
+					$customer->referral_code = $this->generateReferralCode($customer->name);
+					$customer->update();
+				}
+
+				if(isset($customer->referral_code) && strpos($customer->referral_code, 'R-') != 0){
+					
+					$customer->referral_code = $this->generateReferralCode($customer->name);
+					$customer->update();
+				}
+
+				$referral_code = $customer['referral_code'];
+
+				$customer_email = $customer->email;
+
+				$url = $this->utilities->getShortenUrl(Config::get('app.website')."/profile/$customer_email#promotion");
+
+				$share_message = "Register on Fitternity and earn Rs. 250 FitCash+ which can be used for fitness classes, memberships, diet consulting & more! Use my code $referral_code and apply it in your profile after logging-in $url";
+				$display_message = "Fitter is better together!<br>Refer a friend and both of you get Rs. 250 FitCash + which is fully redeemable on all bookings on Fitternity!<br><br>Valid till 31st December 2017. TCA.";
+				$email_subject = "Join me on Fitternity & get Rs. 250";
+				$email_text = "Fitness on your mind?<br><br>Register on India's largest fitness platform to book fitness classes, memberships, diet plans & more!<br><br>If you use my invite code $referral_code to register yourself on the Fitternity mobile app, we both get Rs. 250 FitCash+ which is fully redeemable on all bookings!<br><br>Download the app and apply code in your profile after logging-in $url";
+				
+				return $response =  array('status' => 200,'referral_code' => $referral_code, 'message' 	=> $display_message, 'share_message' => $share_message, 'email_subject' => $email_subject, 'email_text' => $email_text);
+			
+			}else{
+				
+				return $response =  array('status' => 404,'message'=>"Customer not found");
+			
+			}
+			
+		}catch(Exception $e){
+			Log::info($e);
+		}
+	}
+	public function referFriend(){	
+			
+		try{
+			$jwt = Request::header('Authorization');
+			$decoded = $this->customerTokenDecode($jwt);
+			$id = $decoded->customer->_id;
+			Customer::$withoutAppends = true;
+			$customer = Customer::where('_id', $id)->first(['name', 'email', 'contact_no', 'referral_code']);
+			
+			if($customer){
+				$referrer_name = $customer->name;
+				$req = Input::json()->all();
+		        Log::info('referfriend',$req);
+		        $rules = [
+		            'invitees' => 'required|array',
+		        ];
+		        $validator = Validator::make($req, $rules);
+		        if ($validator->fails()) {
+		            return Response::json(
+		                array(
+		                    'status' => 400,
+		                    'message' => $this->errorMessage($validator->errors()
+		                    )),400
+		            );
+		        }
+		        // Invitee info validations...........
+		        $inviteesData = [];
+		        foreach ($req['invitees'] as $value){
+		        	$inviteeData = [];
+		            if(isset($value['name'])){
+		            	Log::info("Inside name");
+		            	$inviteeData = ['name'=>$value['name']];
+		            }
+		            $rules = [
+		                'input' => 'required|string'
+		            ];
+		            $messages = [
+		                'input' => 'invitee email or phone is required'
+		            ];
+		            $validator = Validator::make($value, $rules, $messages);
+		            if ($validator->fails()) {
+		                return Response::json(
+		                    array(
+		                        'status' => 400,
+		                        'message' => $this->errorMessage($validator->errors()
+		                        )),400
+		                );
+		            }
+		            if(filter_var($value['input'], FILTER_VALIDATE_EMAIL) != '') {
+		                // valid address
+		                $inviteeData = array_add($inviteeData, 'email', $value['input']);
+		            }
+		            else if(filter_var($value['input'], FILTER_VALIDATE_REGEXP, array(
+		                    "options" => array("regexp"=>"/^[2-9]{1}[0-9]{9}$/")
+		                )) != ''){
+		                // valid phone
+		                $inviteeData = array_add($inviteeData, 'phone', $value['input']);
+		            }
+		            // return $inviteeData;
+		            array_push($inviteesData, $inviteeData);
+		        }	        
+		// return $inviteesData;
+		        foreach ($inviteesData as $value){
+		            $rules = [
+		                'email' => 'required_without:phone|email',
+		                'phone' => 'required_without:email',
+		            ];
+		            $messages = [
+		                'email.required_without' => 'valid invitee email or phone is required',
+		                'phone.required_without' => 'valid invitee email or phone is required'
+		            ];
+		            $validator = Validator::make($value, $rules, $messages);
+		            if ($validator->fails()) {
+		                return Response::json(
+		                    array(
+		                        'status' => 400,
+		                        'message' => $this->errorMessage($validator->errors()
+		                        )),400
+		                );
+		            }
+		        }
+		        $emails = array_fetch($inviteesData, 'email');
+        		$phones = array_fetch($inviteesData, 'phone');
+        		// return $customer->email;
+        		if(in_array($customer->email, $emails)) {
+		            return Response::json(
+		                array(
+		                    'status' => 422,
+		                    'message' => 'You cannot invite yourself email'
+		                ),422
+		            );
+		        }
+		        if(in_array($customer->contact_no, $phones)) {
+		            return Response::json(
+		                array(
+		                    'status' => 422,
+		                    'message' => 'You cannot invite yourself'
+		                ),422
+		            );
+		        }
+		        // return $inviteesData;
+		        foreach ($inviteesData as $invitee){
+		            $url = 'www.fitternity.com/buy/';
+		            $shorten_url = new ShortenUrl();
+		            $url = $shorten_url->getShortenUrl($url);
+		            if(!isset($url['status']) ||  $url['status'] != 200){
+		                return Response::json(
+		                    array(
+		                        'status' => 422,
+		                        'message' => 'Unable to Generate Shortren URL'
+		                    ),422
+		                );
+		            }
+		            $url = $url['url'];
+		            // Send email / SMS to invitees...
+		            $templateData = array(
+		                'referral_code'=>$customer['referral_code'],
+		                'invitee_name' =>isset($invitee['name'])?$invitee['name']:"",
+		                'invitee_email'=>isset($invitee['email'])?$invitee['email']:null,
+		                'invitee_phone'=>isset($invitee['phone'])?$invitee['phone']:null,
+		                'url' => $url,
+		            );
+		            Log::info($templateData);
+		            isset($templateData['invitee_email']) ? $this->customermailer->referFriend($templateData) : null;
+		            isset($templateData['invitee_phone']) ? $this->customersms->referFriend($templateData) : null;
+		        }
+				
+				return $response =  array('status' => 200,'data'=>'Success');
+			}else{
+				return $response =  array('status' => 404,'message'=>"Customer not found");
+			}
+			
+		}catch(Exception $e){
+			Log::info($e);
+		}
+	}
+
+	public function setReferralData($code){
+
+		$decoded = decode_customer_token();
+		$customer_id = intval($decoded->customer->_id);
+		$customer = Customer::find($customer_id);
+		
+		$referrer = Customer::where('referral_code', $code)->where('status', '1')->first();
+
+		if($referrer && isset($customer->old_customer) && $customer->old_customer == false && !isset($customer->referrer_id) && $customer_id != $referrer->_id){
+
+			$customer->referrer_id = $referrer->_id;
+			$customer->save();
+			
+			if(!isset($referrer->referred_to)){
+				$referrer->referred_to = [];
+			}
+			$referred_to = $referrer->referred_to;
+			array_push($referred_to, $customer->_id);
+			$referrer->save();
+
+			$wallet_data = array(
+				'customer_id' => $customer->_id,
+				'amount' => 250,
+				'amount_fitcash' => 0,
+				'amount_fitcash_plus' => 250,
+				'type' => "REFERRAL",
+				"entry"=>'credit',
+				'description' => "Referral fitcashplus",
+				'order_id' => 0
+			);
+
+			$walletTransaction = $this->utilities->walletTransaction($wallet_data);
+
+			return array('status'=>200, 'message'=>'250 Fitcash+ has been added to your wallet');
+
+		}else{
+
+			return array('status'=>400, 'message'=>'Incorrect referral code or referral already applied');
+		}
+	}
+
+	public function generateReferralCode($name){
+		$referral_code = 'R-'.substr(implode("", (explode(" ", strtoupper($name)))),0,4)."".rand(1000, 9999);
+		$exists = Customer::where('referral_code', $referral_code)->where('status', '1')->first();
+		if($exists){
+			return $this->generateReferralCode($name);
+		}else{
+			return $referral_code;
+		}
+	}
+
+	public function getLink(){
+		try{
+			$data = Input::json()->all();
+			$customer = Customer::find($data['id']);
+			if(!$customer){
+				return array('status'=>404, 'message'=>'Customer does not exists');
+			}
+			$customer_link = Config::get('app.admin_url').'/customers/'.$data['id'];
+			return $customer_link;
+		}catch(Exception $e){
+			return array('status'=>500, 'message'=>'server error');
+		}
 	}
 
 

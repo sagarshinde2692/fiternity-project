@@ -626,6 +626,8 @@ class ServiceController extends \BaseController {
         	default: $type = 'trialschedules'; break;
         }
 
+		// $all_trials_booked = true;
+		
         foreach ($items as $k => $item) {
 
         	$item['three_day_trial'] = isset($item['three_day_trial']) ? $item['three_day_trial'] : "";
@@ -758,9 +760,13 @@ class ServiceController extends \BaseController {
             		$service['available_message'] = "Next Slot is available on ".date("jS F, Y",strtotime($service['available_date']));
             	}
             }
-            
+
+            // $service['trials_booked'] = $this->checkTrialAlreadyBooked($item['finder_id'],$item['_id']);
+            // $all_trials_booked = $all_trials_booked && $service['trials_booked'];
             array_push($schedules, $service);
         }
+
+		// return $trial_booked?'true':'false';
 
         $request['date'] = date("Y-m-d",strtotime($date." +1 days"));
 
@@ -816,11 +822,19 @@ class ServiceController extends \BaseController {
 	        $data['count'] = $count;
         	$data['todays_date'] = date("Y-m-d");
         	$data['requested_date'] = $request['requested_date'];
-        	$data['trial_booked'] = $this->checkTrialAlreadyBooked($item['finder_id']);
+			$data['trial_booked'] = $this->checkTrialAlreadyBooked($item['finder_id']);
+			// $device_type = ['ios','android'];
+
+			// if(isset($_GET['device_type']) && in_array($_GET['device_type'], $device_type)){
+        	// 	$data['trial_booked'] = $this->checkTrialAlreadyBooked($item['finder_id']);
+			// }else{
+        	// 	$data['trial_booked'] = $all_trials_booked;
+			// }
 
         	if($type == "trialschedules" &&  !empty($schedules)){
         		$data['schedules'] = $this->checkWorkoutSessionAvailable($schedules);
         	}
+
 
 	        return Response::json($data,200);
         }
@@ -859,7 +873,7 @@ class ServiceController extends \BaseController {
 
     }
 
-    public function checkTrialAlreadyBooked($finder_id){
+    public function checkTrialAlreadyBooked($finder_id,$service_id = false){
 
     	$return = false;
 
@@ -875,17 +889,42 @@ class ServiceController extends \BaseController {
         if($jwt_token == true && $jwt_token != 'null' && $jwt_token != null){
             $decoded = decode_customer_token();
             $customer_id = intval($decoded->customer->_id);
+            $customer_email = intval($decoded->customer->email);
+
+            $customer_phone = "";
+
+            if(isset($decoded->customer->contact_no)){
+				$customer_phone = $decoded->customer->contact_no;
+			}
         }
 
         $booktrial_count = 0;
 
         if($customer_id != ""){
 
-        	$booktrial_count = Booktrial::where('customer_id', $customer_id)
-                        ->where('finder_id', '=',$finder_id)
+        	if($customer_phone != ""){
+
+        		$query = Booktrial::where(function ($query) use($customer_email, $customer_phone) {
+								$query->orWhere('customer_email', $customer_email)
+									->orWhere('customer_phone','LIKE','%'.substr($customer_phone, -9).'%');
+							})
+                        ->where('finder_id',(int)$finder_id)
                         ->where('type','booktrials')
-                        ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
-                        ->count();
+                        ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"]);
+            }else{
+
+            	$query = Booktrial::where('customer_email', $customer_email)
+                        ->where('finder_id',(int)$finder_id)
+                        ->where('type','booktrials')
+                        ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"]);
+
+            }
+
+            // if($service_id){
+            // 	$query->where('service_id',(int)$service_id);
+            // }
+
+            $booktrial_count = $query->count();
         }
 
         if($booktrial_count > 0){
