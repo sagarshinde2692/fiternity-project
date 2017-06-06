@@ -1799,8 +1799,9 @@ class SchedulebooktrialsController extends \BaseController {
                 $final_lead_status = 'call_to_confirm';
             }
 
-            $gcm_reg_id					       = 	(isset($data['gcm_reg_id']) && $data['gcm_reg_id'] != '') ? $data['gcm_reg_id'] : "";
-            $device_type				       = 	(isset($data['device_type']) && $data['device_type'] != '') ? $data['device_type'] : "";
+            $device_type    =   $data['device_type']    = (isset($order['device_type']) && $order['device_type'] != '') ? $order['device_type'] : "";
+            $gcm_reg_id     =   $data['gcm_reg_id']     = (isset($order['gcm_reg_id']) && $order['gcm_reg_id'] != '') ? $order['gcm_reg_id'] : "";
+
             $social_referrer			       = 	(isset($data['social_referrer']) && $data['social_referrer'] != '') ? $data['social_referrer'] : "";
             $transacted_after			       = 	(isset($data['transacted_after']) && $data['transacted_after'] != '') ? $data['transacted_after'] : "";
             $referrer_object			       = 	(isset($data['referrer_object']) && $data['referrer_object'] != '') ? $data['referrer_object'] : "";
