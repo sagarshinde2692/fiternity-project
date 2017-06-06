@@ -4774,6 +4774,45 @@ class CustomerController extends \BaseController {
 		}
 	}
 
+	public function notifyLocation(){
+
+		$request = Input::json()->all();
+
+		$jwt_token = Request::header('Authorization');
+
+        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+
+            $decoded = $this->customerTokenDecode($jwt_token);
+            $request['customer_id'] = (int)$decoded->customer->_id;
+        }
+
+        $array = [
+        	'lat',
+        	'lon',
+        	'city',
+        	'region'
+        ];
+
+        foreach ($array as $value) {
+
+        	if(isset($request[$value]) && $request[$value] != "" && $request[$value] != null){
+        		$request[$value] = strtolower($request[$value]);
+        	}
+        }
+
+        NotifyLocation::create($request);
+
+        return Response::json(
+			array(
+				'status' => 200,
+				'message' => 'success',
+				),
+			200
+		);
+
+
+	}
+
 
 
 }
