@@ -2188,7 +2188,7 @@ public function getRankedFinderResultsAppv4()
         $budget             = Input::json()->get('budget');
         $trialdays          = Input::json()->get('trialdays') == null ? [] : Input::json()->get('trialdays');
         $other_filters      = Input::json()->get('other_filters') == null ? [] : Input::json()->get('other_filters');
-        $radial_distance      = isset($locat["radius"]) && $locat["radius"] != null ? $locat["radius"] : "10km";
+        $radial_distance      = isset($locat["radius"]) && $locat["radius"] != null ? $locat["radius"] : "4km";
         $other_flags        = [];
         foreach ($other_filters as $filter){
             // $budget_filters = ["one","two","three","four","five","six"];
