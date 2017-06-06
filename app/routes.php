@@ -929,3 +929,5 @@ Route::get('orderdemonetisation/{order_id}',array('as' => 'orderdemonetisation',
 Route::post('notifylocation',array('as' => 'customer/notifylocation','uses' => 'CustomerController@notifyLocation'));
 
 Route::get('demonetisation', 'DebugController@demonetisation');
+
+Route::post('customer/getlink', 'CustomerController@getLink');
