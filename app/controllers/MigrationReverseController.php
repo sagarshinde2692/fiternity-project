@@ -772,9 +772,8 @@ class MigrationReverseController extends \BaseController {
                 'custom_location'                       =>  isset($Finder->custom_location) ? $Finder->custom_location : "",
                 'flags'                                 =>  isset($Finder->flags) ? $Finder->flags : array(),
                 'renewal_remark'                        =>  isset($Finder->renewal_remark) ? $Finder->renewal_remark : "",
-                'discount'                              =>  isset($Finder->discount) ? $Finder->discount : "",
-                'discount_remarks'                      =>  isset($Finder->discount_remarks) ? $Finder->discount_remarks : ""
-                
+                'backend_flags'                         =>  isset($Finder->backend_flags) ? $Finder->backend_flags : array(),
+                'offer_texts'                           =>  isset($Finder->offer_texts) ? $Finder->offer_texts : array(),
             ];
 
             $insertData['vip_trial']                    = (isset($Finder->vip_trial) &&  $Finder['vip_trial'] == true ) ? '1' : '0';
