@@ -33,6 +33,10 @@ return array(
 	// 'url' => 'http://fitapi.com', //local
 	// 'url' => 'http://beta.fitn.in', //beta
 
+	'admin_url' => 'https://fitn.in', //live
+	// 'admin_url' => 'http://adminstage.fitn.in', //stage
+	// 'admin_url' => 'http://fitadmin.com', //local
+
     'website' => 'https://www.fitternity.com', //live
     // 'website' => 'http://apistage.fitn.in:2233', //stage
     // 'website' => 'http://localhost:3000', //stage

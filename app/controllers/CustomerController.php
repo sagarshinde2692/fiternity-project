@@ -4809,8 +4809,21 @@ class CustomerController extends \BaseController {
 				),
 			200
 		);
+    }
 
 
+	public function getLink(){
+		try{
+			$data = Input::json()->all();
+			$customer = Customer::find($data['id']);
+			if(!$customer){
+				return array('status'=>404, 'message'=>'Customer does not exists');
+			}
+			$customer_link = Config::get('app.admin_url').'/customers/'.$data['id'];
+			return $customer_link;
+		}catch(Exception $e){
+			return array('status'=>500, 'message'=>'server error');
+		}
 	}
 
 

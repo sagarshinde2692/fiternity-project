@@ -870,7 +870,7 @@ Class Utilities {
         try {
 
             $allOrdersLinkSent = \Order::where('status','!=','1')
-                        ->whereIn('type',['memberships','healthytiffinmembership'])
+                        ->whereIn('type',['memberships','healthytiffinmembership', 'diet_plan'])
                         ->where('service_id',(int)$order->service_id)
                         ->where('finder_id',(int)$order->finder_id)
                         ->where('customer_email',$order->customer_email)
