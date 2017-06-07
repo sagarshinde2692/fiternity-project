@@ -462,7 +462,10 @@ class TransactionController extends \BaseController {
             }
             array_set($data, 'status', '1');
             array_set($data, 'order_action', 'bought');
-            array_set($data, 'success_date', date('Y-m-d H:i:s',time()));
+            
+            if(isset($order['update_success_date']) && $order['update_success_date'] == 1){
+                array_set($data, 'success_date', date('Y-m-d H:i:s',time()));
+            }
             
             if(isset($order['start_date'])){
                 array_set($data, 'auto_followup_date', date('Y-m-d H:i:s', strtotime("+7 days",strtotime($order['start_date']))));
