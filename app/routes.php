@@ -931,3 +931,5 @@ Route::post('notifylocation',array('as' => 'customer/notifylocation','uses' => '
 Route::get('demonetisation', 'DebugController@demonetisation');
 
 Route::post('customer/getlink', 'CustomerController@getLink');
+
+Route::get('sendtransactionemails/{withInstant?}','SchedulebooktrialsController@sendTransactionEmails');
