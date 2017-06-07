@@ -5611,22 +5611,20 @@ class SchedulebooktrialsController extends \BaseController {
     public function sendTransactionEmails($withInstant = 0){
 		$timestamp = strtotime('2017-06-07 11am');
         Log::info($withInstant);
-		// return $timestamp;
         if($withInstant=='1'){
 		    $booktrial_ids = Booktrial::where('created_at', '>=', new MongoDate($timestamp))->where('created_at', '<=', new MongoDate(strtotime('2017-06-07 5pm')))->lists('_id');
         }else{
             $booktrial_ids = Booktrial::where('schedule_date_time', '>=', new MongoDate($timestamp))->where('created_at', '<=', new MongoDate($timestamp))->lists('_id');
         }
-        // return $booktrial_ids;
-        $booktrial_ids = [73926];
 		foreach($booktrial_ids as $id){
             $booktrial = Booktrial::findOrFail($id);
-            $redisid = $this->sendCommunicationMissed(null, ['booktrial_id'=>$id, 'withInstant'=>$withInstant]);
-            // $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@sendCommunicationMissed',['booktrial_id'=>$id, 'withInstant'=>$withInstant], Config::get('app.queue'));
+            // $redisid = $this->sendCommunicationMissed(null, ['booktrial_id'=>$id, 'withInstant'=>$withInstant]);
+            $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@sendCommunicationMissed',['booktrial_id'=>$id, 'withInstant'=>$withInstant], Config::get('app.queue'));
             $booktrial->update(array('redis_id'=>$redisid));
+            Log::info($id);
         }
 
-        return $redisid;
+        return "Done";
 	}
 
 }
