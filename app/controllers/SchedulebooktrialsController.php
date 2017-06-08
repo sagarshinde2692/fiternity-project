@@ -2051,7 +2051,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'pay_as_you_go_link'            =>      $pay_as_you_go_link,
                 'profile_link'                  =>      $profile_link,
                 'vendor_link'                   =>      $vendor_link,
-                'finder_location_slug'          =>      $finder_location_slug
+                'finder_location_slug'          =>      $finder_location_slug,
+                'order_id'                      =>      $orderid
             );
 
             if ($medical_detail != "" && $medication_detail != "") {
@@ -2362,6 +2363,15 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrial->send_communication = $send_communication;
             $booktrial->auto_followup_date = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',time()))->addDays(31);
             $booktrial->update();
+
+            if(isset($booktrial->order_id) && $booktrial->order_id != ""){
+
+                $order = Order::find((int) $booktrial->order_id);
+
+                if($order){
+                    $this->utilities->setRedundant($order);
+                }
+            }
 
         }catch(\Exception $exception){
 
