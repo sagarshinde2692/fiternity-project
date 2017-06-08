@@ -2360,7 +2360,7 @@ class SchedulebooktrialsController extends \BaseController {
             }
 
             $booktrial->send_communication = $send_communication;
-            $booktrial->followup_date_time_auto = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',time()))->addDays(31);
+            $booktrial->auto_followup_date = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',time()))->addDays(31);
             $booktrial->update();
 
         }catch(\Exception $exception){
