@@ -804,6 +804,11 @@ class TransactionController extends \BaseController {
             $data['customer_address']  = $data['address'];
         }
 
+        if(isset($data['customer_address']) && $data['customer_address'] != ''){
+
+            $data['address']  = $data['customer_address'];
+        }
+
         if(isset($data['customer_address']) && is_array($data['customer_address']) && !empty($data['customer_address'])){
             
             $customerData['address'] = $data['customer_address'];
