@@ -440,7 +440,7 @@ class TransactionController extends \BaseController {
                         }
 
                         $reward_detail[] = ($value->reward_type == 'nutrition_store') ? $title : $value->quantity." ".$title;
-
+                        $profile_link = $value->reward_type == 'diet_plan' ? $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$data['customer_email']."#diet-plan") : $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$data['customer_email']);
                         array_set($data, 'reward_type', $value->reward_type);
 
                     }
@@ -544,7 +544,7 @@ class TransactionController extends \BaseController {
                 }
                 
             }
-
+            $data["profile_link"] = isset($profile_link) ? $profile_link : $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$data['customer_email']);
             $order->update($data);
 
             //send welcome email to payment gateway customer
