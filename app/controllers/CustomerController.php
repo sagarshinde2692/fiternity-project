@@ -3336,6 +3336,19 @@ class CustomerController extends \BaseController {
 			$customer_id 					= 		intval($decoded->customer->_id);
 
 			$already_applied_promotion 		= 		Customer::where('_id',$customer_id)->whereIn('applied_promotion_codes',[$code])->count();
+
+			if($code == 'gwdfit'){
+
+				$customer = Customer::find($customer_id);
+				$customer_tansactions_new_wallet = Wallet::where('customer_id', $customer_id)->count();
+				
+				if($customer_tansactions_new_wallet > 0 || (isset($customer->balance) && $customer->balance > 0) || (isset($customer->balance_fitcash_plus) && $customer->balance_fitcash_plus > 0)){
+
+					$resp 	= 	array('status' => 400,'message' => "Invalid promotion code");
+					return  Response::json($resp, 400);
+				
+				}
+			}	
 			
 			if($already_applied_promotion > 0){
 				$resp 	= 	array('status' => 400,'message' => "You have already applied promotion code");
