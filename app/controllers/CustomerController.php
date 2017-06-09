@@ -3344,7 +3344,7 @@ class CustomerController extends \BaseController {
 				
 				if($customer_tansactions_new_wallet > 0 || (isset($customer->balance) && $customer->balance > 0) || (isset($customer->balance_fitcash_plus) && $customer->balance_fitcash_plus > 0)){
 
-					$resp 	= 	array('status' => 400,'message' => "Invalid promotion code");
+					$resp 	= 	array('status' => 400,'message' => "This promotion code is applicable only for new users");
 					return  Response::json($resp, 400);
 				
 				}
