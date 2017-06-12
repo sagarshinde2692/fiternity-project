@@ -753,7 +753,7 @@ class TransactionController extends \BaseController {
 
         }else{
             if($hash_verified == false){
-                $Oldorder 		= 	Order::findOrFail($orderid);
+                $Oldorder 		= 	Order::findOrFail($order_id);
                 $Oldorder["hash_verified"] = false;
                 $Oldorder->update();
                 $resp 	= 	array('status' => 200, 'statustxt' => 'failed', 'order' => $order, 'message' => "Transaction Failed :)");
