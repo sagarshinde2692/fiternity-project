@@ -366,6 +366,7 @@ public function chunkIndex($index_name, $city_id,$skip,$take){
         $items = Finder::active()
        ->where('city_id', $city_id)
        ->where('status', '=', '1')
+       ->where('flags.state', '!=', 'closed')
         ->with(array('country'=>function($query){$query->select('name');}))
        ->with(array('city'=>function($query){$query->select('name');}))
        ->with(array('category'=>function($query){$query->select('name','meta');}))
