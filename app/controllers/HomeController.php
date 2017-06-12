@@ -430,6 +430,15 @@ class HomeController extends BaseController {
 
     public function getSuccessMsg($type, $id){
 
+        $customer_id = "";
+        $jwt_token = Request::header('Authorization');
+
+        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+
+            $decoded = $this->customerTokenDecode($jwt_token);
+            $customer_id = (int)$decoded->customer->_id;
+        }
+
         $type       =   strtolower(trim($type));
 
         if($type != "" && $id != ""){
@@ -661,6 +670,33 @@ class HomeController extends BaseController {
                 $show_invite = false;
             }
 
+            $fitcash_plus = 0;
+
+            if($customer_id != ""){
+
+                $customer = Customer::find($customer_id);
+
+                if(isset($customer)){
+
+                    if(isset($customer->demonetisation)){
+
+                        $fitcash_plus = \Wallet::active()->where('customer_id',$customer->_id)->where('balance','>',0)->sum('balance');
+
+                    }else{
+
+                        $customer_wallet = Customerwallet::where('customer_id',$customer->_id)
+                        ->where('amount','!=',0)
+                        ->orderBy('_id', 'DESC')
+                        ->first();
+
+                        if($customer_wallet){
+                            $fitcash_plus = (isset($customer_wallet['balance_fitcash_plus']) && $customer_wallet['balance_fitcash_plus'] != "") ? (int) $customer_wallet['balance_fitcash_plus'] : 0 ;
+                        }
+                    }
+
+                }
+            }
+
             $resp = [
                 'status'    =>  200,
                 'item'      =>  null,
@@ -674,7 +710,8 @@ class HomeController extends BaseController {
                 'show_invite' => $show_invite,
                 'id_for_invite' => $id_for_invite,
                 'end_point'=> $end_point,
-                'type' => $type
+                'type' => $type,
+                'customer_wallet'=> $fitcash_plus
             ];
 
             return Response::json($resp);
