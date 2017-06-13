@@ -53,7 +53,7 @@ return array(
     'queue' => 'booktrial', //live
 
 	'app' =>array(
-		'discount'		=> 			2,
+		'discount'		=> 			0,
 		'discount_excluded_vendors' => [1747,1813,4528,4530,9984,10081],
 	),
 
