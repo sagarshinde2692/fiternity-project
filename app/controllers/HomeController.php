@@ -435,7 +435,7 @@ class HomeController extends BaseController {
 
         if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
 
-            $decoded = $this->customerTokenDecode($jwt_token);
+            $decoded = customerTokenDecode($jwt_token);
             $customer_id = (int)$decoded->customer->_id;
         }
 
