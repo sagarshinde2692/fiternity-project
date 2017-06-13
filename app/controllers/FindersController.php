@@ -2980,6 +2980,31 @@ class FindersController extends \BaseController {
 
 			// $finderData['show_reward_banner'] = true;
 
+			$finderData['finder']['call_interrupt'] = null;
+
+			if($finderData['finder']['commercial_type'] != 0 || $finderData['call_for_action_button'] != ""){
+
+				$call_interrupt = [
+					'title'=>'Calling to book a trial at '.$finderData['finder']['title'],
+					'description'=>'Book online for faster experiance when it comes to your fitness choices!',
+					'button_text'=>'Book Trial Online',
+					'chat_enable'=>true,
+					'call_enable'=>true
+				];
+
+				if(isset($finderData['trials_booked_status']) && $finderData['trials_booked_status'] == true){
+					$call_interrupt['title'] = 'Calling to book a session at '.$finderData['finder']['title'];
+					$call_interrupt['button_text'] = 'Book Session Online';
+				}
+
+				if($finderData['finder']['type'] == "healthytiffins"){
+					$call_interrupt['title'] = 'Calling to book a trial meal at '.$finderData['finder']['title'];
+					$call_interrupt['button_text'] = 'Book Trial Meal Online';
+				}
+
+				$finderData['finder']['call_interrupt'] = $call_interrupt;
+			}
+
 		}else{
 
 			$finderData['status'] = 404;
