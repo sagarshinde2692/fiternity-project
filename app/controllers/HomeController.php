@@ -504,6 +504,7 @@ class HomeController extends BaseController {
             $show_invite = false;
             $id_for_invite = (int) $id;
             $end_point = "";
+            $item_description = "";
 
             switch ($type) {
 
@@ -518,6 +519,7 @@ class HomeController extends BaseController {
                     ];
                     $show_invite = true;
                     $end_point = "invitefortrial";
+                    $item_description = "Trial Session";
                     break;
 
                 case 'booktrial':
@@ -532,6 +534,7 @@ class HomeController extends BaseController {
                     $show_invite = true;
                     $id_for_invite = (int) $item['booktrial_id'];
                     $end_point = "invitefortrial";
+                    $item_description = "Trial Session";
                     break;
                 case 'workoutsession':
                     $subline = "Your Workout Session at $finder_name for $service_name on $schedule_date from $schedule_slot has been scheduled";
@@ -544,6 +547,7 @@ class HomeController extends BaseController {
                     $show_invite = true;
                     $id_for_invite = (int) $item['booktrial_id'];
                     $end_point = "invitefortrial";
+                    $item_description = "Trial Session";
                     break;
                 case 'personaltrainertrial':
                     $subline = "Your Session is booked. Hope you and your buddy have great workout.";
@@ -555,6 +559,7 @@ class HomeController extends BaseController {
                         ['icon'=>$icon_path.'choose-reward.png','text'=>'Get lowest price guarantee & Rewards on purchase'],
                     ];
                     $end_point = "";
+                    $item_description = "Trial Session";
                     break;
                 case 'manualtrial':
                     $subline = "Your Trial Session request at $finder_name is recieved";
@@ -566,6 +571,7 @@ class HomeController extends BaseController {
                         ['icon'=>$icon_path.'choose-reward.png','text'=>'Get lowest price guarantee & Rewards on purchase'],
                     ];
                     $end_point = "";
+                    $item_description = "Trial Session";
                     break;
                 case 'manualautotrial':
                     $subline = "Your Trial Session request at $finder_name is recieved";
@@ -577,6 +583,7 @@ class HomeController extends BaseController {
                         ['icon'=>$icon_path.'choose-reward.png','text'=>'Get lowest price guarantee & Rewards on purchase'],
                     ];
                     $end_point = "";
+                    $item_description = "Trial Session";
                     break;
                 case 'healthytiffintrial':
                     $subline = "Your Trial request at $finder_name has been received. Please expect a revert shortly.";
@@ -587,6 +594,7 @@ class HomeController extends BaseController {
                         ['icon'=>$icon_path.'manage-booking.png','text'=>'Your meal will be delivered basis the specifications'],
                     ];
                     $end_point = "";
+                    $item_description = "Trial Session";
                     break;
                 case 'membershipwithpg':
                     $subline = "Your Membership purchase at $finder_name for $service_name($service_duration) from ".date('d-m-y',strtotime($preferred_starting_date))." is confirmed.";
@@ -598,6 +606,7 @@ class HomeController extends BaseController {
                     ];
                     $show_invite = true;
                     $end_point = "inviteformembership";
+                    $item_description = "Trial Session";
                     break;
                 case 'membershipwithoutpg':
                     $subline = "Your Membership purchase at $finder_name for $service_name($service_duration) from ".date('d-m-y',strtotime($preferred_starting_date))." is confirmed.";
@@ -609,6 +618,7 @@ class HomeController extends BaseController {
                     ];
                     $show_invite = true;
                     $end_point = "inviteformembership";
+                    $item_description = "Trial Session";
                     break;
                 case 'manualmembership':
                     $subline = "Your Membership request at $finder_name has been received. Please expect a revert shortly.";
@@ -620,6 +630,7 @@ class HomeController extends BaseController {
                         ['icon'=>$icon_path.'flash-code.png','text'=>'Flash the code at the studio & kickstart your fitness journey.'],
                     ];
                     $end_point = "";
+                    $item_description = "Trial Session";
                     break;
                 case 'healthytiffinmembership':
                     $subline = "Your Membership request at $finder_name for $service_name has been received. Please expect a revert shortly.";
@@ -631,6 +642,7 @@ class HomeController extends BaseController {
                         ['icon'=>$icon_path.'manage-booking.png','text'=>'Your meal will be delivered basis the specifications'],
                     ];
                     $end_point = "";
+                    $item_description = "Trial Session";
                     break;
                 case 'personaltrainermembership':
                     $subline = "Your Membership request with $finder_name is captured. ";
@@ -641,6 +653,7 @@ class HomeController extends BaseController {
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'On starting date the trainer will reach your location'],
                     ];
                     $end_point = "";
+                    $item_description = "Trial Session";
                     break;
                 default :
                     $subline = "Your Session has been scheduled";
@@ -652,6 +665,7 @@ class HomeController extends BaseController {
                         ['icon'=>$icon_path.'choose-reward.png','text'=>'Choose exciting rewards when you buy'],
                     ];
                     $end_point = "";
+                    $item_description = "Trial Session";
                     break;
             }
 
@@ -697,20 +711,164 @@ class HomeController extends BaseController {
                 }
             }
 
+            $geoLocationFinder = [];
 
-            $finder = 
+            if(isset($itemData['finder']) && isset($itemData['finder']['lat']) && isset($itemData['finder']['lon'])){
 
-            $request = [
-                "offset" => 0,
-                "limit" => 6,
-                "from_range"=>0,
-                "to_range"=>3,
-                "category"=>"",
-                "lat"=>$lat,
-                "lon"=>$lon
+                $lat = $itemData['finder']['lat'];
+                $lon = $itemData['finder']['lon'];
+
+                $request = [
+                    "offset" => 0,
+                    "limit" => 6,
+                    "radius" => "3km",
+                    "category"=>"",
+                    "lat"=>$lat,
+                    "lon"=>$lon,
+                    "keys"=>[
+                      /*"average_rating",
+                      "business_type",
+                      "categorytags",
+                      "commercial_type",
+                      "contact",
+                      "coverimage",
+                      "distance",
+                      "facilities",
+                      "geolocation",
+                      "location",
+                      "locationtags",
+                      "multiaddress",
+                      "offer_available",
+                      "offerings",
+                      "photos",
+                      "servicelist",*/
+                      "slug",
+                      "title",
+                      "id",
+                      /*"total_rating_count",
+                      "vendor_type"*/
+                    ]
+                ];
+
+                $geoLocationFinder = $this->geoLocationFinder($request);
+
+                $swimming_finder_request = [
+                    "offset" => 0,
+                    "limit" => 6,
+                    "radius" => "3km",
+                    "category"=>"swimming",
+                    "lat"=>$lat,
+                    "lon"=>$lon,
+                    "keys"=>[
+                      /*"average_rating",
+                      "business_type",
+                      "categorytags",
+                      "commercial_type",
+                      "contact",
+                      "coverimage",
+                      "distance",
+                      "facilities",
+                      "geolocation",
+                      "location",
+                      "locationtags",
+                      "multiaddress",
+                      "offer_available",
+                      "offerings",
+                      "photos",
+                      "servicelist",*/
+                      "slug",
+                      "title",
+                      "id",
+                      /*"total_rating_count",
+                      "vendor_type"*/
+                    ]
+                ];
+
+                $swimming_finder = $this->geoLocationFinder($swimming_finder_request);
+
+                $healthy_tiffins_finder_request = [
+                    "offset" => 0,
+                    "limit" => 6,
+                    "radius" => "3km",
+                    "category"=>"healthy-tiffins",
+                    "lat"=>$lat,
+                    "lon"=>$lon,
+                    "keys"=>[
+                      /*"average_rating",
+                      "business_type",
+                      "categorytags",
+                      "commercial_type",
+                      "contact",
+                      "coverimage",
+                      "distance",
+                      "facilities",
+                      "geolocation",
+                      "location",
+                      "locationtags",
+                      "multiaddress",
+                      "offer_available",
+                      "offerings",
+                      "photos",
+                      "servicelist",*/
+                      "slug",
+                      "title",
+                      "id",
+                      /*"total_rating_count",
+                      "vendor_type"*/
+                    ]
+                ];
+
+                $healthy_tiffins_finder = $this->geoLocationFinder($healthy_tiffins_finder_request);
+
+            }
+
+            $booking_details = null;
+
+            if($item != null){
+               $booking_details = [
+                    "BOOKING ID" => (string)$item['_id'],
+                    "DESCRIPTION" => $item_description,
+                    "PREFERRED DATE" => date('d-m-Y',strtotime($item['start_date'])),
+                    "PREFERRED TIME" => strtoupper($item['start_time']),
+                    "LOCATION" => $item['finder_address'],
+                    "PRICE" => (string)$item['amount'],
+               ];
+            }
+
+            $fitcash_vendor = [
+                "title"=>"title",
+                "description"=>"description",
+                "image"=>"image",
+                "vendor"=>[
+                    [ 
+                        "image"=>"image",
+                        "title"=>"Book Swiming Sessions",
+                        "details"=>[
+                            "Avg. Calorie Burn"=>"750 KCAL",
+                            "Avg. Price Per Session"=>"Rs 200", 
+                            "Current Providers in area"=>"2 Providers",  
+                        ]
+                    ],
+                    [ 
+                        "image"=>"image",
+                        "title"=>"Book Healthy Tiffin",
+                        "details"=>[
+                            "Avg. Calorie Intake"=>"750 KCAL",
+                            "Avg. Price Per Tiffin"=>"Rs 200", 
+                            "Current Providers in area"=>"2 Providers",
+                        ]
+                    ],
+                    [ 
+                        "image"=>"image",
+                        "title"=>"Buy Online Diet Plans",
+                        "details"=>[
+                            "Avg. Plan Duration"=>"1 Month",
+                            "Avg. Price Per Plan"=>"Rs 200", 
+                            "Primary Function"=>"Weight Loss",  
+                        ]
+                    ],
+                ]
             ];
-
-            $geoLocationFinder = $this->geoLocationFinder($request);
 
             $resp = [
                 'status'    =>  200,
@@ -726,7 +884,10 @@ class HomeController extends BaseController {
                 'id_for_invite' => $id_for_invite,
                 'end_point'=> $end_point,
                 'type' => $type,
-                'customer_wallet'=> $fitcash_plus
+                'current_balance'=> $fitcash_plus,
+                'near_by_vendor'=>$geoLocationFinder,
+                'booking_details'=>$booking_details,
+                'fitcash_vendor'=>$fitcash_vendor
             ];
 
             return Response::json($resp);
@@ -735,79 +896,66 @@ class HomeController extends BaseController {
 
     public function geoLocationFinder($request){
 
-        $from               =   $request['offset'];
-        $size               =   $request['limit'];  
-        $from_range         =   $request['from_range'];
-        $to_range           =   $request['to_range'];
-        $category           =   $request['category'];  
-        $lat                =   $request['lat'];
-        $lon                =   $request['lon'];
+        $offset  = $request['offset'];
+        $limit   = $request['limit'];
+        $radius  = $request['radius'];
+        $lat    =  $request['lat'];
+        $lon    =  $request['lon'];
+        $category = $request['category'];
+        $keys = $request['keys'];
 
-        if($category == ''){
-            $query = '"match_all": {}';
-            $basecategory_score = '';       
-        }else{
-            $query = '"multi_match": {
-                "query": "'.$category.'",
-                "fields": [
-                "category",
-                "categorytags"
-                ]
-            }'; 
-        }
-    
-        $body = '{
-                "from": '.$from.',
-                "size": '.$size.',
-                "query": {
-                    "filtered": {
-                        "query": {'.$query.'
-                    },
-                    "filter": {
-                        "geo_distance_range": {
-                            "from" : "'.$from_range.'",
-                            "to" : "'.$to_range.'",
-                            "geolocation": {
-                                "lat" : '.$lat.',
-                                "lon" : '.$lon.'
-                            }
-                        }
-                    }
-                }
-            },
-            "fields": ["_source"],
-            "script_fields": {
-                "distance": {
-                    "lang": "groovy",
-                    "params": {
-                        "lat" : '.$lat.',
-                        "lon" : '.$lon.'
-                    },
-                    "script": "doc[\'geolocation\'].distanceInKm(lat,lon)"
-                }
-            },"sort": [
-            {
-                "_geo_distance": {
-                    "geolocation": "'.$lat.', '.$lon.'",
-                    "order": "asc",
-                    "unit": "km"
+        $payload = [
+           "category"=>$category,
+           "sort"=>[
+              "sortfield"=>"popularity",
+              "order"=>"desc"
+           ],
+           "offset"=>[
+              "from"=>$offset,
+              "number_of_records"=>$limit
+           ],
+           "other_filters"=>[
+
+           ],
+           "location"=>[
+              "city"=>"mumbai",
+              "lat"=>$lat,
+              "lon"=>$lon,
+              "radius"=>$radius
+           ],
+           "with_locationtags"=>"1",
+           "keys"=>$keys
+        ];
+
+        //echo"<pre>";print_r($payload);exit;
+
+        $url = $this->api_url."search/getfinderresultsv4";
+        $finder = [];
+
+        try {
+           
+            $response  =   json_decode($this->client->post($url,['json'=>$payload])->getBody()->getContents(),true);
+
+            if(isset($response['results']['resultlist'])){
+
+                $vendor = $response['results']['resultlist'];
+
+                foreach ($vendor as $key => $value) {
+
+                    $finder[] = $value['object'];
                 }
             }
-            ]
-        }';
 
-        $serachbody = $body;
-            // return $body;
-        $request = array(
-            'url' => $this->elasticsearch_default_url."_search",
-            'port' => 9200,
-            'method' => 'POST',
-            'postfields' => $serachbody
-            );
+            return $finder;
 
-        $search_results     =   es_curl_request($request);
-        $response           =   json_encode(json_decode($search_results,true)); 
-        return $response;
+        }catch (RequestException $e) {
+
+            return $finder;
+
+        }catch (Exception $e) {
+
+            return $finder;
+        }
 
     }
 

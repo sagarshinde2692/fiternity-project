@@ -15,7 +15,7 @@ return array(
 	*/
 
 
-	'debug' => FALSE,
+	'debug' => TRUE,
 
 	/*
 	|--------------------------------------------------------------------------
@@ -42,7 +42,7 @@ return array(
     // 'website' => 'http://localhost:3000', //stage
     // 'website' => 'http://apistage.fitn.in:8020', //beta
 
-    'download_app_link' => 'https://goo.gl/sP81To',//https://www.fitternity.com/downloadapp',
+    'download_app_link' => 'https://goo.gl/QBV6dl', //https://go.onelink.me/I0CO?pid=techfitsms
 
     'business' => 'http://business.fitternity.com',
 
