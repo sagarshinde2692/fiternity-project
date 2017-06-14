@@ -125,7 +125,7 @@ Class CustomerReward {
                 /*if($order['payment_mode'] = "at the studio"){
                     $cashback_amount = $order['amount_finder'] * 5 / 100;
                 }*/
-
+                $duration_day = isset($order["duration_day"]) ? int($order["duration_day"]) : 0;
                 if(isset($order['ratecard_id']) && $order['ratecard_id'] != "" && $order['ratecard_id'] != null){
 
                     $ratecard = \Ratecard::find((int)$order['ratecard_id']);
