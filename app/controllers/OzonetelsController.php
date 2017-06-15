@@ -34,6 +34,7 @@ class OzonetelsController extends \BaseController {
     protected $utilities;
 
     protected   $jump_fitternity_no2;
+    protected 	$direct_route_to_fitternity_vendor;
 
 
 	public function __construct(
@@ -60,8 +61,11 @@ class OzonetelsController extends \BaseController {
 
 		$other_cities = [10745,10786,10728,10190,10521,10522,10524,10526,10558,10787,10753,10770,10771];
 
-
 		$this->jump_finder_ids = array_merge($mumbai,$bangalore,$pune,$other_cities);
+
+		$direct_route_to_fitternity_vendor = [1579,1580,1581,1582,1583,1584,1602,1604,1605,1607,2235,2236,6893,7064,579,1233,1257,1260,1261,1262,4823,4817,1874,2105,5742,10675,7355,4825,4822,4821,4818];
+
+		$this->direct_route_to_fitternity_vendor = $direct_route_to_fitternity_vendor;
 
         $this->free_special_finder 		= 	[7389,5740,6083,9589,9881,9882,1609,2187,5741,4818,1876,9216,4822,4821,4825,5041];
 
@@ -236,7 +240,18 @@ class OzonetelsController extends \BaseController {
 			   
 				    	if($ozonetelNoDetails){
 
-				    		if($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time && $this->sunday != "Sunday" && ( in_array($ozonetelNoDetails->finder->_id, $this->jump_finder_ids) || in_array($ozonetelNoDetails->finder->city_id, [4,8,9]))){
+				    		if(in_array($ozonetelNoDetails->finder->_id, $this->direct_route_to_fitternity_vendor)){
+
+				    			$capture = $this->getCapture($_REQUEST['sid']);
+								$call_jump = true;
+						    	$this->ozonetelResponse->addGoto(Config::get('app.url')."/ozonetel/freevendor?fit_action=route_to_fitternity_1");
+						    	$this->ozonetelResponse->addDial($this->jump_fitternity_no, "true");
+
+						    	$this->updateCapture($_REQUEST,$ozonetelNoDetails->finder->_id,$extension,$add_count = true, $call_jump);
+
+						    	$this->pubNub($_REQUEST,$ozonetelNoDetails->finder->_id,$capture->_id);
+
+							}elseif($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time && $this->sunday != "Sunday" && ( in_array($ozonetelNoDetails->finder->_id, $this->jump_finder_ids) || in_array($ozonetelNoDetails->finder->city_id, [4,8,9]))){
 
 				    			if(in_array($ozonetelNoDetails->finder->commercial_type,[1,3]) || ($ozonetelNoDetails->finder->commercial_type == 2 && in_array($ozonetelNoDetails->finder->_id, $this->free_special_finder))){
 
