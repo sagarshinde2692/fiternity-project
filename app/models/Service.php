@@ -163,11 +163,11 @@ class Service extends \Basemodel{
 
 		
 		if($ratecardsarr){
-//            var_dump($ratecardsarr);
+	//            var_dump($ratecardsarr);
 
-            
+            $offer_exists = false;
             foreach ($ratecardsarr as $key => $value) {
-
+				
             	$ratecardoffers 	= 	[];
 				
 
@@ -179,6 +179,7 @@ class Service extends \Basemodel{
                                                     ->get(['start_date','end_date','price','type','allowed_qty','remarks'])
                                                     ->toArray();
                     foreach ($ratecardoffersRecards as $ratecardoffersRecard){
+            			$offer_exists = true;
                         $ratecardoffer                  =   $ratecardoffersRecard;
                         $ratecardoffer['offer_text']    =   "";
                         $ratecardoffer['offer_icon']    =   "https://b.fitn.in/iconsv1/fitmania/hot_offer_vendor.png";
@@ -228,7 +229,7 @@ class Service extends \Basemodel{
 					
                 }
 //                var_dump($ratecardoffers);exit;
-				if(isset($this['offer_available']) && $this->offer_available){
+				if(isset($this['offer_available']) && $this->offer_available && !$offer_exists){
 					if(isset($value['type']) && ($value['type']=='membership' || $value['type']=='packages')){
 						if(isset($value['validity']) && isset($value['validity_type'])){
 							
@@ -294,7 +295,7 @@ class Service extends \Basemodel{
 				array_push($ratecards, $value);
 			}
 
-			if(isset($this['offer_available']) && $this->offer_available){
+			if(isset($this['offer_available']) && $this->offer_available && !$offer_exists){
 				$max_validity_ids = array_merge($max_validity_ids, $second_max_validity_ids);
 				foreach($ratecards as &$value){
 					if((in_array($value['_id'], $max_validity_ids))){
