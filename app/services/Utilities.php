@@ -1281,12 +1281,13 @@ Class Utilities {
                         $addWalletData = [
                             "customer_id" => $data["customer_id"],
                             "amount" => 250,
-                            "action" => "add_fitcash_plus",
                             "description" => "Added FitCash+ Rs 250 on App Download, Expires On : ".date('d-m-Y',time()+(86400*180)),
-                            "validity"=>time()+(86400*180)
+                            "validity"=>time()+(86400*180),
+                            "entry"=>"credit",
+                            "type"=>"FITCASHPLUS"
                         ];
 
-                        $this->addWallet($addWalletData);
+                        $this->walletTransaction($addWalletData);
                     }
                 }
 
@@ -1337,6 +1338,8 @@ Class Utilities {
         if(isset($data['description']) && $data['description'] != ""){
             $req['description'] = $data['description'];
         }
+
+        $req['entry'] = 'credit';
 
         $walletTransactionResponse = $this->walletTransaction($req);
 
