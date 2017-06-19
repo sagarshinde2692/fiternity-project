@@ -824,15 +824,45 @@ class HomeController extends BaseController {
 
             $booking_details = null;
 
-            if($item != null){
-               $booking_details = [
-                    "BOOKING ID" => (string)$item['_id'],
-                    "DESCRIPTION" => $item_description,
-                    "PREFERRED DATE" => date('d-m-Y',strtotime($item['start_date'])),
-                    "PREFERRED TIME" => strtoupper($item['start_time']),
-                    "LOCATION" => $item['finder_address'],
-                    "PRICE" => (string)$item['amount'],
-               ];
+            $booking_details = [
+                "booking_id" => (string)$item['_id'],
+                "description" => $item_description,
+                "start_date" => "",
+                "start_time" => "",
+                "location" => "",
+                "price" => "Free Via Fitternity",
+            ];
+
+            if(isset($item['start_date']) && $item['start_date'] != ""){
+                $booking_details['start_date'] = date('d-m-Y',strtotime($item['start_date']));
+            }
+
+            if(isset($item['schedule_date']) && $item['schedule_date'] != ""){
+                $booking_details['start_date'] = date('d-m-Y',strtotime($item['schedule_date']));
+            }
+
+            if(isset($item['preferred_starting_date']) && $item['preferred_starting_date'] != ""){
+                $booking_details['start_date'] = date('d-m-Y',strtotime($item['preferred_starting_date']));
+            }
+
+            if(isset($item['start_time']) && $item['start_time'] != ""){
+                $booking_details['start_time'] = strtoupper($item['start_time']);
+            }
+
+            if(isset($item['schedule_slot_start_time']) && $item['schedule_slot_start_time'] != ""){
+                $booking_details['start_time'] = strtoupper($item['schedule_slot_start_time']);
+            }
+
+            if(isset($item['amount']) && $item['amount'] != ""){
+                $booking_details['price'] = (string)$item['amount'];
+            }
+
+            if(isset($item['amount_finder']) && $item['amount_finder'] != ""){
+                $booking_details['price'] = (string)$item['amount_finder'];
+            }
+
+            if(isset($item['finder_address']) && $item['finder_address'] != ""){
+                $booking_details['location'] = (string)$item['finder_address'];
             }
 
             $fitcash_vendor = [
