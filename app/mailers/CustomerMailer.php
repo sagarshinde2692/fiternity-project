@@ -561,4 +561,22 @@ Class CustomerMailer extends Mailer {
 	    return $content;
 	}
 
+	public function directWorker($emaildata){
+
+        $email_template_data    =   $emaildata['email_template_data'];
+
+		$email_template = 	$this->bladeCompile($emaildata['email_template'],$emaildata['email_template_data']);
+
+		$message_data 	= [
+			'user_email' => is_array($emaildata['to']) ? $emaildata['to'] : [$emaildata['to']],
+			'user_name' => (isset($email_template_data['name'])) ? ucwords($email_template_data['name']) : 'Team Fitternity',
+			'bcc_emailids'=> $emaildata['bcc_emailds'],
+			'email_subject'=>ucfirst($emaildata['email_subject'])
+		];
+		$label = "Direct Worker";
+		$delay = 0;
+
+		return $this->sendDbToWorker('customer',$email_template, $message_data, $label, $delay);
+	}
+
 }

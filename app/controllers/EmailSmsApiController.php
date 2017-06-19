@@ -64,6 +64,8 @@ class EmailSmsApiController extends \BaseController {
 
     public function sendEmail($emaildata){
 
+        return $this->customermailer->directWorker($emaildata);
+/*
         $email_template         =   $emaildata['email_template'];
         $email_template_data    =   $emaildata['email_template_data'];
         $reciver_name           =   (isset($email_template_data['name'])) ? ucwords($email_template_data['name']) : 'Team Fitternity';
@@ -81,7 +83,7 @@ class EmailSmsApiController extends \BaseController {
             Mail::send($email_template, $email_template_data, function($message) use ($to,$reciver_name,$bcc_emailids,$email_subject){
                 $message->to($to, $reciver_name)->subject($email_subject);
             });
-        }
+        }*/
 
 
     }
