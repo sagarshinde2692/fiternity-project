@@ -1281,6 +1281,7 @@ Class Utilities {
                         $addWalletData = [
                             "customer_id" => $data["customer_id"],
                             "amount" => 250,
+                            "amount_fitcash_plus"=>250,
                             "description" => "Added FitCash+ Rs 250 on App Download, Expires On : ".date('d-m-Y',time()+(86400*180)),
                             "validity"=>time()+(86400*180),
                             "entry"=>"credit",
