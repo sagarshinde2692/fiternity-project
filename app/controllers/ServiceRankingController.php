@@ -76,6 +76,8 @@ class ServiceRankingController extends \BaseController {
         $items = Finder::where("commercial_type","!=",0)
         ->where('city_id', intval($city))
         ->where('status', '=', '1')
+        ->where('flags.state', '!=', 'closed')
+        ->where('flags.trial', '!=', 'disable')
         ->with(array('country'=>function($query){$query->select('name');}))
         ->with(array('city'=>function($query){$query->select('name');}))
         ->with(array('category'=>function($query){$query->select('name','meta');}))
@@ -84,7 +86,6 @@ class ServiceRankingController extends \BaseController {
         ->with('locationtags')
         ->with('offerings')
         ->with('facilities')                            
-        ->active()
         ->orderBy('_id')                                    
 //        ->take(500)->skip(0)
         ->take(50000)->skip(0)
@@ -106,6 +107,7 @@ class ServiceRankingController extends \BaseController {
 
                 $score = $this->generateRank($finderdocument);                
                 $serviceitems = Service::active()
+                ->where("trial","!=","disable")
                 ->where('finder_id',$finderdata['_id'])
                 ->whereNotIn('servicecategory_id', array(111))
                 ->whereNotIn('servicesubcategory_id', array(112))
