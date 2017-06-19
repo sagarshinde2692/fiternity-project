@@ -2125,7 +2125,7 @@ class FindersController extends \BaseController {
 				'trial' => (isset($item['trial'])) ? $item['trial'] : "",
 				'offer_icon' => "",
 				'servicecategory_id' => $item['servicecategory_id'],
-				'traction' => isset($item['traction']) && isset($service['traction']['sales']) && isset($service['traction']['trials']) ? $item['traction'] : array("trials"=>0,"sales"=>0),
+				'traction' => isset($item['traction']) && isset($item['traction']['sales']) && isset($item['traction']['trials']) ? $item['traction'] : array("trials"=>0,"sales"=>0),
 				'location_id' => $item['location_id'],
 				'offer_available' => isset($item['offer_available']) ? $item['offer_available'] : false
 			);
