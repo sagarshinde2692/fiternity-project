@@ -932,7 +932,7 @@ Route::get('demonetisation', 'DebugController@demonetisation');
 
 Route::post('customer/getlink', 'CustomerController@getLink');
 
-Route::post('aap/installs', 'HomeController@appinstalls');
+Route::post('app/installs', 'HomeController@appinstalls');
 Route::post('promotional/notification','HomeController@promotionalNotification');
 // Route::get('sendtransactionemails/{withInstant?}','SchedulebooktrialsController@sendTransactionEmails');
 // Route::get('sendordermissedemails','TransactionController@sendOrderMissedEmails');
