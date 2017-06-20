@@ -4377,9 +4377,8 @@ public function yes($msg){
                     if($fitcash_plus_balance >= $cap){
 	            		$fitcash_balance = 0;
 	            	}else{
-						// What is this - wallet limit
-	            		if($fitcash_balance+$fitcash_plus_balance > $cap){
-	            			$fitcash_balance = $cap - $fitcash_plus_balance;
+	            		if($fitcash_balance+$fitcash_plus_balance > $wallet_limit){
+	            			$fitcash_balance = $wallet_limit - $fitcash_plus_balance;
 	            		}
 	            	}
             	}
@@ -4425,17 +4424,17 @@ public function yes($msg){
 
 	            $customer->update(['demonetisation'=>time()]);
 
-	            if(isset($customer->contact_no) && $customer->contact_no != "" && $customer->contact_no != null){
+	            // if(isset($customer->contact_no) && $customer->contact_no != "" && $customer->contact_no != null){
 
-		            $sms_data = [
-		            	'customer_phone' => $customer->contact_no,
-		            	'customer_wallet_balance' => $current_wallet_balance
-		            ];
+		        //     $sms_data = [
+		        //     	'customer_phone' => $customer->contact_no,
+		        //     	'customer_wallet_balance' => $current_wallet_balance
+		        //     ];
 
-		            $customersms = new CustomerSms();
+		        //     $customersms = new CustomerSms();
 
-	            	$customersms->demonetisation($sms_data);
-	            }
+	            // 	$customersms->demonetisation($sms_data);
+	            // }
 
 	           //echo"<pre>";print_r('success');exit;
 	        }
