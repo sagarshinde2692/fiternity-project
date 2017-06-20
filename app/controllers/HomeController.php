@@ -5,7 +5,7 @@
 
 use \GuzzleHttp\Exception\RequestException;
 use \GuzzleHttp\Client;
-
+use App\Notification\CustomerNotification as CustomerNotification;
 class HomeController extends BaseController {
 
 
@@ -15,7 +15,8 @@ class HomeController extends BaseController {
     protected $client;
 
 
-    public function __construct() {
+    public function __construct(CustomerNotification $customernotification) {
+        $this->customernotification     =   $customernotification;
         $this->initClient();
     }
 
@@ -1887,6 +1888,15 @@ class HomeController extends BaseController {
         return Response::json($responsedata, 200);
     }
 
+    public function appinstalls(){
+        $data = Input::json()->all();
+        $appinstall = Appinstall::create($data);
+        return $appinstall;
+    }
 
+    public function promotionalNotification(){
+        $data = Input::json()->all();
+        $notificationData = array("to" =>$data->to,"delay" => 0, "label"=>$data->label,"app_payload"=>$data->app_payload);
+    }
 
 }
