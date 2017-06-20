@@ -4066,7 +4066,7 @@ class CustomerController extends \BaseController {
 	}
 
 	public function notificationSwitch($notificationTracking){
-
+		
 		$notificationTracking->update(['clicked'=>time()]);
 
 		$time = $notificationTracking->time;
@@ -4185,7 +4185,7 @@ class CustomerController extends \BaseController {
 				}
 
 				if($start_date != ""){
-					$followup_date = strtotime($start_date." +2 days");
+					$followup_date = strtotime($start_date." +3 days");
 				}
 			}
 
@@ -4214,12 +4214,20 @@ class CustomerController extends \BaseController {
 					$response["start_time"] = strtoupper($data["schedule_slot_start_time"]);
 					$response["start_date"] = date("d-m-Y",strtotime($data["schedule_date"]));
 					Booktrial::where('_id', $response["transaction_id"])->update(['final_lead_stage'=> 'post_trial_stage']);
+					if(isset($_GET['device_type']) && $_GET['device_type'] == "ios"){
+						unset($response["text"]);
+					}
 					break;
-				case 'n-20m': 
+				case 'n-20m':
 					$response["start_time"] = strtoupper($data["schedule_slot_start_time"]);
 					$response["start_date"] = date("d-m-Y",strtotime($data["schedule_date"]));
+					if(isset($_GET['device_type']) && $_GET['device_type'] == "ios"){
+						unset($response["text"]);
+					}
 					break;
 				default:
+					
+					
 					$response["start_time"] = "";
 					$response["start_date"] = "";
 					
@@ -4324,6 +4332,18 @@ class CustomerController extends \BaseController {
 				$customerReward     =   new CustomerReward();
 				$calculation        =   $customerReward->purchaseGame($response['amount'], $data["finder_id"], $data["payment_mode"], false, $data["customer_id"]);
 				$response['fitcash'] = $calculation['amount_deducted_from_wallet'];
+				if(isset($_GET['device_type']) && $_GET['device_type'] == "ios"){
+					switch($time){
+						case 'pl+30':
+						case 'pl+45':
+							$response["text"] = $response['fitcash']." Fitcach can be applied in the next step";
+							break;
+						case 'pl+3':
+						case 'pl+7':
+						case 'pl+15':
+							unset($response["text"]);
+					}
+				}
 				$response['remarks'] = "(2% Discount applied)";
 
 			}
