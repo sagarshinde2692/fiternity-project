@@ -4377,7 +4377,7 @@ public function yes($msg){
                     if($fitcash_plus_balance >= $cap){
 	            		$fitcash_balance = 0;
 	            	}else{
-
+						// What is this - wallet limit
 	            		if($fitcash_balance+$fitcash_plus_balance > $cap){
 	            			$fitcash_balance = $cap - $fitcash_plus_balance;
 	            		}
@@ -4392,6 +4392,8 @@ public function yes($msg){
 
 	            //echo"<pre>";print_r($current_wallet_balance);
 
+
+				// What is this
 	            if($current_wallet_balance > $wallet_limit){
                     $customer->update(['current_wallet_balance'=>$current_wallet_balance]);
                 }
