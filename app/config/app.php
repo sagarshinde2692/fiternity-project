@@ -42,7 +42,7 @@ return array(
     // 'website' => 'http://localhost:3000', //stage
     // 'website' => 'http://apistage.fitn.in:8020', //beta
 
-    'download_app_link' => 'https://goo.gl/XjdZbh',//https://www.fitternity.com/downloadapp?source=fittech',
+    'download_app_link' => 'https://go.onelink.me/I0CO?pid=techfitsms',//https://www.fitternity.com/downloadapp?source=fittech',
 
     'business' => 'http://business.fitternity.com',
 
