@@ -2234,6 +2234,8 @@ class SchedulebooktrialsController extends \BaseController {
 
             $booktrial = Booktrial::findOrFail($booktrial_id);
 
+            $this->deleteTrialCommunication($booktrial);
+
             $this->firstTrial($booktrial->toArray()); // first trial communication
 
             $booktrialdata = $booktrial->toArray();
@@ -2390,15 +2392,15 @@ class SchedulebooktrialsController extends \BaseController {
             "finder_email_instant",
             "finder_sms_instant",
             "customer_email_before12hour",
-            //"customer_notification_before12hour",
+            "customer_notification_before12hour",
             "finder_sms_before6hour",
             "customer_sms_before3hour",
-            //"customer_notification_before3hour",
+            "customer_notification_before3hour",
             "customer_sms_before20Min",
-           // "customer_notification_before20Min",
+            "customer_notification_before20Min",
             "customer_sms_after2hour",
             "customer_email_after2hour",
-           // "customer_notification_after2hour",
+            "customer_notification_after2hour",
         ];
 
         foreach ($array as $value) {
