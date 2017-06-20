@@ -1894,9 +1894,12 @@ class HomeController extends BaseController {
         return $appinstall;
     }
 
-    public function promotionalNotification(){
-        $data = Input::json()->all();
-        $notificationData = array("to" =>$data->to,"delay" => 0, "label"=>$data->label,"app_payload"=>$data->app_payload);
-    }
+    // public function promotionalNotification(){
+    //     $data = Input::json()->all();
+    //     $notification_object = array("notif_id" => 2005,"notif_type" => "promotion", "notif_object" => array("promo_id"=>739423,"promo_code"=>$data->couponcode,"deep_link_url"=>"ftrnty://ftrnty.com".$data->deeplink));
+    //     $notificationData = array("to" =>$data->to,"delay" => 0,
+    //      "label"=>$data->label,
+    //      "app_payload"=>$data->app_payload);
+    // }
 
 }
