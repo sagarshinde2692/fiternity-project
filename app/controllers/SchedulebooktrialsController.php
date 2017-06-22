@@ -2500,7 +2500,7 @@ class SchedulebooktrialsController extends \BaseController {
             $slot_date = date('d-m-Y', strtotime($data['schedule_date']));
             $schedule_date_starttime = strtoupper($slot_date . " " . $schedule_slot_start_time);
             $currentDateTime = \Carbon\Carbon::now();
-            $ratecard_id = (isset($data['ratecard']) && $data['ratecard'] != '') ? (int) $data['ratecard'] : "";
+            $ratecard_id = (isset($data['ratecard_id']) && $data['ratecard_id'] != '') ? (int) $data['ratecard_id'] : "";
             if($ratecard_id != ""){
                 $ratecard = Ratecard::where('_id',$ratecard_id)->first();
                 if($ratecard->price > 0 || $ratecard->special_price > 0){
