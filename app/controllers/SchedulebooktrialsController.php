@@ -4620,8 +4620,15 @@ class SchedulebooktrialsController extends \BaseController {
                     }
 
                     break;
+                    case 'attended_on_my_way':		
+                    $booktrial->post_trial_status = 'attended';		
+                    break;		
+                    case 'not_attended_not_interested':		
+                    $booktrial->post_trial_initail_status = 'not_interested';		
+                    $booktrial->post_trial_status = 'no show';		
+                    break;
                 }
-                $booktrial->post_trial_status_reason = (isset($data['reason']) && $data['reason'] != "") ? $data['reason'] : "";
+                $booktrial->feedback_about_trial = (isset($data['reason']) && $data['reason'] != "") ? $data['reason'] : "";
             }
 
             if($source == 'vendor'){

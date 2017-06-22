@@ -385,7 +385,7 @@ class TransactionController extends \BaseController {
     }
 
     public function successCommon($data){
-
+        
         $rules = array(
             'order_id'=>'required'
         );
@@ -463,7 +463,7 @@ class TransactionController extends \BaseController {
             array_set($data, 'status', '1');
             array_set($data, 'order_action', 'bought');
             
-            if(isset($order['update_success_date']) && $order['update_success_date'] == 1){
+            if(!isset($order['success_date']) || (isset($order['update_success_date']) && $order['update_success_date'] == "1")){
                 array_set($data, 'success_date', date('Y-m-d H:i:s',time()));
             }
             
