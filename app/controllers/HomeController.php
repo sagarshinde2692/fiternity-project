@@ -865,6 +865,16 @@ class HomeController extends BaseController {
                 $booking_details['location'] = (string)$item['finder_address'];
             }
 
+            $poc = null;
+
+            if(isset($item['finder_poc_for_customer_name']) && $item['finder_poc_for_customer_name'] != ""){
+                $poc['name'] = $item['finder_poc_for_customer_name'];
+            }
+
+            if(isset($item['finder_poc_for_customer_no']) && $item['finder_poc_for_customer_no'] != ""){
+                $poc['number'] = $item['finder_poc_for_customer_no'];
+            }
+
             $fitcash_vendor = [
                 "title"=>"title",
                 "description"=>"description",
@@ -917,7 +927,8 @@ class HomeController extends BaseController {
                 'current_balance'=> $fitcash_plus,
                 'near_by_vendor'=>$geoLocationFinder,
                 'booking_details'=>$booking_details,
-                'fitcash_vendor'=>$fitcash_vendor
+                'fitcash_vendor'=>$fitcash_vendor,
+                'poc'=>$poc
             ];
 
             return Response::json($resp);
