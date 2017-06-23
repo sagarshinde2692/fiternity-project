@@ -4479,7 +4479,10 @@ public function yes($msg){
 			$customer = Customer::where('email',$value['email'])->first();
 
 			if($customer){
-
+				if(!isset($customer->demonetisation)){
+					$customer->demonetisation =	time();
+					$customer->update();
+				}
 				$description = "Cashback on event purchase Beat the Heat";
 
 				$walletGiven = Wallet::where('description','LIKE','%'.$description.'%')->where('customer_id',(int)$customer->_id)->first();
