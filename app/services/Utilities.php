@@ -1276,7 +1276,11 @@ Class Utilities {
 
                     $booktrial = \Booktrial::where('created_at','>',new DateTime(date("d-m-Y 00:00:00",strtotime("20-4-2017 00:00:00"))))->where("customer_id",(int)$data['customer_id'])->where('type','booktrials')->count();
 
-                    if($booktrial > 0){
+                    $description = "App Download";
+
+                    $fitcashGiven = Wallet::where('description','LIKE','%'.$description.'%')->where('customer_id',(int)$data['customer_id'])->count();
+
+                    if($booktrial > 0 && $fitcashGiven == 0){
 
                         $addWalletData = [
                             "customer_id" => $data["customer_id"],
