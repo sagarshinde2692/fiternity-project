@@ -509,7 +509,7 @@ class HomeController extends BaseController {
             switch ($type) {
 
                 case 'booktrialfree':
-                    $subline = "Your Trial Session at $finder_name for $service_name on $schedule_date from $schedule_slot has been scheduled";
+                    $subline = "Thank you for choosing Fitternity as your preferred fitness provider.Make sure you buy memberships through us for lowest price guarantee.Below are the details of your transaction.";
                     $steps = [
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
                         ['icon'=>$icon_path.'manage-profile.png','text'=>'Manage this booking through your User Profile'],
@@ -519,11 +519,12 @@ class HomeController extends BaseController {
                     ];
                     $show_invite = true;
                     $end_point = "invitefortrial";
-                    $item_description = "Trial Session";
+                    $item_description = "$finder_name, $finder_location Trial Session <b>(FREE VIA FITTERNITY)</b>";
+                    $header = "Booking Confirmed";
                     break;
 
                 case 'booktrial':
-                    $subline = "Your Trial Session at $finder_name for $service_name on $schedule_date from $schedule_slot has been scheduled";
+                    $subline = "Thank you for choosing Fitternity as your preferred fitness provider.Make sure you buy memberships through us for lowest price guarantee.Below are the details of your transaction.";
                     $steps = [
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
                         ['icon'=>$icon_path.'manage-profile.png','text'=>'Manage this booking through your User Profile'],
@@ -534,10 +535,11 @@ class HomeController extends BaseController {
                     $show_invite = true;
                     $id_for_invite = (int) $item['booktrial_id'];
                     $end_point = "invitefortrial";
-                    $item_description = "Trial Session";
+                    $item_description = "$finder_name, $finder_location Trial Session";
+                    $header = "Booking Confirmed";
                     break;
                 case 'workoutsession':
-                    $subline = "Your Workout Session at $finder_name for $service_name on $schedule_date from $schedule_slot has been scheduled";
+                    $subline = "Thank you for choosing Fitternity as your preferred fitness provider. Make sure you buy a membership through Fitternity to enjoy lowest price guarantee!";
                     $steps = [
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
                         ['icon'=>$icon_path.'manage-profile.png','text'=>'Manage this booking through your User Profile'],
@@ -547,7 +549,8 @@ class HomeController extends BaseController {
                     $show_invite = true;
                     $id_for_invite = (int) $item['booktrial_id'];
                     $end_point = "invitefortrial";
-                    $item_description = "Trial Session";
+                    $item_description = "Single Workout Session";
+                    $header = "Booking Confirmed";
                     break;
                 case 'personaltrainertrial':
                     $subline = "Your Session is booked. Hope you and your buddy have great workout.";
@@ -559,10 +562,10 @@ class HomeController extends BaseController {
                         ['icon'=>$icon_path.'choose-reward.png','text'=>'Get lowest price guarantee & Rewards on purchase'],
                     ];
                     $end_point = "";
-                    $item_description = "Trial Session";
+                    $item_description = "Personal Trialner Trial Session";
                     break;
                 case 'manualtrial':
-                    $subline = "Your Trial Session request at $finder_name is recieved";
+                    $subline = "Thank you for choosing Fitternity as your preferred fitness provider.We’ll get back to you shortly with your appointment details.";
                     $steps = [
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
                         ['icon'=>$icon_path.'book-appointment.png','text'=>'Fitternity will get in touch with you to book the appointment'],
@@ -572,9 +575,10 @@ class HomeController extends BaseController {
                     ];
                     $end_point = "";
                     $item_description = "Trial Session";
+                    $header = "Request Confirmed";
                     break;
                 case 'manualautotrial':
-                    $subline = "Your Trial Session request at $finder_name is recieved";
+                    $subline = "Thank you for choosing Fitternity as your preferred fitness provider.We’ll get back to you shortly with your appointment details.";
                     $steps = [
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
                         ['icon'=>$icon_path.'book-appointment.png','text'=>"$finder_name will get in touch with you to book the appointment"],
@@ -584,6 +588,7 @@ class HomeController extends BaseController {
                     ];
                     $end_point = "";
                     $item_description = "Trial Session";
+                    $header = "Request Confirmed";
                     break;
                 case 'healthytiffintrial':
                     $subline = "Your Trial request at $finder_name has been received. Please expect a revert shortly.";
@@ -594,7 +599,7 @@ class HomeController extends BaseController {
                         ['icon'=>$icon_path.'manage-booking.png','text'=>'Your meal will be delivered basis the specifications'],
                     ];
                     $end_point = "";
-                    $item_description = "Trial Session";
+                    $item_description = "Healthy Tiffin Trial";
                     break;
                 case 'membershipwithpg':
                     $subline = "Your Membership purchase at $finder_name for $service_name($service_duration) from ".date('d-m-y',strtotime($preferred_starting_date))." is confirmed.";
@@ -606,7 +611,7 @@ class HomeController extends BaseController {
                     ];
                     $show_invite = true;
                     $end_point = "inviteformembership";
-                    $item_description = "Trial Session";
+                    $item_description = "Membership";
                     break;
                 case 'membershipwithoutpg':
                     $subline = "Your Membership purchase at $finder_name for $service_name($service_duration) from ".date('d-m-y',strtotime($preferred_starting_date))." is confirmed.";
@@ -621,7 +626,7 @@ class HomeController extends BaseController {
                     $item_description = "Trial Session";
                     break;
                 case 'manualmembership':
-                    $subline = "Your Membership request at $finder_name has been received. Please expect a revert shortly.";
+                    $subline = "Thank you for choosing Fitternity as your preferred fitness provider.We’ll get back to you shortly with your appointment details.";
                     $steps = [
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
                         ['icon'=>$icon_path.'flash-code.png','text'=>'Fitternity will get in touch with you to facilitate the membership purchase'],
@@ -630,7 +635,8 @@ class HomeController extends BaseController {
                         ['icon'=>$icon_path.'flash-code.png','text'=>'Flash the code at the studio & kickstart your fitness journey.'],
                     ];
                     $end_point = "";
-                    $item_description = "Trial Session";
+                    $item_description = (isset($item['membership']) && $item['membership'] != "") ? $item['membership'] : "";
+                    $header = "Request Confirmed";
                     break;
                 case 'healthytiffinmembership':
                     $subline = "Your Membership request at $finder_name for $service_name has been received. Please expect a revert shortly.";
@@ -711,14 +717,14 @@ class HomeController extends BaseController {
                 }
             }
 
-            $geoLocationFinder = [];
+            $near_by_vendor = [];
 
             if(isset($itemData['finder']) && isset($itemData['finder']['lat']) && isset($itemData['finder']['lon'])){
 
                 $lat = $itemData['finder']['lat'];
                 $lon = $itemData['finder']['lon'];
 
-                $request = [
+                $near_by_vendor_request = [
                     "offset" => 0,
                     "limit" => 6,
                     "radius" => "3km",
@@ -726,31 +732,31 @@ class HomeController extends BaseController {
                     "lat"=>$lat,
                     "lon"=>$lon,
                     "keys"=>[
-                      /*"average_rating",
-                      "business_type",
-                      "categorytags",
-                      "commercial_type",
-                      "contact",
+                      // "average_rating",
+                      // "business_type",
+                      // "categorytags",
+                      // "commercial_type",
+                      // "contact",
                       "coverimage",
-                      "distance",
-                      "facilities",
-                      "geolocation",
+                      // "distance",
+                      // "facilities",
+                      // "geolocation",
                       "location",
-                      "locationtags",
-                      "multiaddress",
-                      "offer_available",
-                      "offerings",
-                      "photos",
-                      "servicelist",*/
+                      // "locationtags",
+                      // "multiaddress",
+                      // "offer_available",
+                      // "offerings",
+                      // "photos",
+                      // "servicelist",
                       "slug",
                       "title",
                       "id",
-                      /*"total_rating_count",
-                      "vendor_type"*/
+                      // "total_rating_count",
+                      // "vendor_type"
                     ]
                 ];
 
-                $geoLocationFinder = $this->geoLocationFinder($request);
+                $near_by_vendor = $this->geoLocationFinder($near_by_vendor_request);
 
                 $swimming_finder_request = [
                     "offset" => 0,
@@ -760,27 +766,27 @@ class HomeController extends BaseController {
                     "lat"=>$lat,
                     "lon"=>$lon,
                     "keys"=>[
-                      /*"average_rating",
-                      "business_type",
-                      "categorytags",
-                      "commercial_type",
-                      "contact",
+                      // "average_rating",
+                      // "business_type",
+                      // "categorytags",
+                      // "commercial_type",
+                      // "contact",
                       "coverimage",
-                      "distance",
-                      "facilities",
-                      "geolocation",
+                      // "distance",
+                      // "facilities",
+                      // "geolocation",
                       "location",
-                      "locationtags",
-                      "multiaddress",
-                      "offer_available",
-                      "offerings",
-                      "photos",
-                      "servicelist",*/
+                      // "locationtags",
+                      // "multiaddress",
+                      // "offer_available",
+                      // "offerings",
+                      // "photos",
+                      // "servicelist",
                       "slug",
                       "title",
                       "id",
-                      /*"total_rating_count",
-                      "vendor_type"*/
+                      // "total_rating_count",
+                      // "vendor_type"
                     ]
                 ];
 
@@ -794,27 +800,27 @@ class HomeController extends BaseController {
                     "lat"=>$lat,
                     "lon"=>$lon,
                     "keys"=>[
-                      /*"average_rating",
-                      "business_type",
-                      "categorytags",
-                      "commercial_type",
-                      "contact",
+                      // "average_rating",
+                      // "business_type",
+                      // "categorytags",
+                      // "commercial_type",
+                      // "contact",
                       "coverimage",
-                      "distance",
-                      "facilities",
-                      "geolocation",
+                      // "distance",
+                      // "facilities",
+                      // "geolocation",
                       "location",
-                      "locationtags",
-                      "multiaddress",
-                      "offer_available",
-                      "offerings",
-                      "photos",
-                      "servicelist",*/
+                      // "locationtags",
+                      // "multiaddress",
+                      // "offer_available",
+                      // "offerings",
+                      // "photos",
+                      // "servicelist",
                       "slug",
                       "title",
                       "id",
-                      /*"total_rating_count",
-                      "vendor_type"*/
+                      // "total_rating_count",
+                      // "vendor_type"
                     ]
                 ];
 
@@ -822,47 +828,63 @@ class HomeController extends BaseController {
 
             }
 
-            $booking_details = null;
+            $booking_details = [];
 
-            $booking_details = [
-                "booking_id" => (string)$item['_id'],
-                "description" => $item_description,
-                "start_date" => "",
-                "start_time" => "",
-                "location" => "",
-                "price" => "Free Via Fitternity",
+            $booking_details_data = [
+                "booking_id" => ['field'=>'BOOKING ID','value'=>(string)$item['_id'],'position'=>1],
+                "description" => ['field'=>'DESCRIPTION','value'=>$item_description,'position'=>2],
+                "start_date" => ['field'=>'START DATE','value'=>'','position'=>3],
+                "start_time" => ['field'=>'START TIME','value'=>'','position'=>4],
+                "location" => ['field'=>'LOCATION','value'=>'','position'=>5],
+                "price" => ['field'=>'PRICE','value'=>'Free Via Fitternity','position'=>6],
             ];
 
             if(isset($item['start_date']) && $item['start_date'] != ""){
-                $booking_details['start_date'] = date('d-m-Y',strtotime($item['start_date']));
+                $booking_details_data['start_date']['value'] = date('d-m-Y',strtotime($item['start_date']));
             }
 
             if(isset($item['schedule_date']) && $item['schedule_date'] != ""){
-                $booking_details['start_date'] = date('d-m-Y',strtotime($item['schedule_date']));
+                $booking_details_data['start_date']['value'] = date('d-m-Y',strtotime($item['schedule_date']));
             }
 
             if(isset($item['preferred_starting_date']) && $item['preferred_starting_date'] != ""){
-                $booking_details['start_date'] = date('d-m-Y',strtotime($item['preferred_starting_date']));
+                $booking_details_data['start_date']['value'] = date('d-m-Y',strtotime($item['preferred_starting_date']));
             }
 
             if(isset($item['start_time']) && $item['start_time'] != ""){
-                $booking_details['start_time'] = strtoupper($item['start_time']);
+                $booking_details_data['start_time']['value'] = strtoupper($item['start_time']);
             }
 
             if(isset($item['schedule_slot_start_time']) && $item['schedule_slot_start_time'] != ""){
-                $booking_details['start_time'] = strtoupper($item['schedule_slot_start_time']);
+                $booking_details_data['start_time']['value'] = strtoupper($item['schedule_slot_start_time']);
             }
 
             if(isset($item['amount']) && $item['amount'] != ""){
-                $booking_details['price'] = (string)$item['amount'];
+                $booking_details_data['price']['value'] = "Rs. ".(string)$item['amount'];
             }
 
             if(isset($item['amount_finder']) && $item['amount_finder'] != ""){
-                $booking_details['price'] = (string)$item['amount_finder'];
+                $booking_details_data['price']['value']= "Rs. ".(string)$item['amount_finder'];
             }
 
             if(isset($item['finder_address']) && $item['finder_address'] != ""){
-                $booking_details['location'] = (string)$item['finder_address'];
+                $booking_details_data['location']['value'] = (string)$item['finder_address'];
+            }
+
+            if(in_array($type, ['manualtrial','manualautotrial','manualmembership'])){
+                $booking_details_data["start_date"]["field"] = "PREFERRED DATE";
+                $booking_details_data["start_time"]["field"] = "PREFERRED TIME";
+                $booking_details_data["price"]["value"] = "-";
+            }
+
+            if(in_array($type, ['booktrialfree','booktrial','workoutsession'])){
+                $booking_details_data["start_date"]["field"] = "DATE";
+                $booking_details_data["start_time"]["field"] = "TIME";
+            }
+
+            foreach ($booking_details_data as $key => $value) {
+
+                $booking_details[$value['position']] = ['field'=>$value['field'],'value'=>$value['value']];
             }
 
             $poc = null;
@@ -884,27 +906,27 @@ class HomeController extends BaseController {
                         "image"=>"image",
                         "title"=>"Book Swiming Sessions",
                         "details"=>[
-                            "Avg. Calorie Burn"=>"750 KCAL",
-                            "Avg. Price Per Session"=>"Rs 200", 
-                            "Current Providers in area"=>"2 Providers",  
+                            ['field'=>'Avg. Calorie Burn','value'=>'750 KCAL'],
+                            ['field'=>'Avg. Price Per Session','value'=>'Rs 200'],
+                            ['field'=>'Current Providers in area','value'=>'2 Providers']
                         ]
                     ],
                     [ 
                         "image"=>"image",
                         "title"=>"Book Healthy Tiffin",
                         "details"=>[
-                            "Avg. Calorie Intake"=>"750 KCAL",
-                            "Avg. Price Per Tiffin"=>"Rs 200", 
-                            "Current Providers in area"=>"2 Providers",
+                            ['field'=>'Avg. Calorie Intake','value'=>'750 KCAL'],
+                            ['field'=>'Avg. Price Per Tiffin','value'=>'Rs 200'],
+                            ['field'=>'Current Providers in area','value'=>'2 Providers']
                         ]
                     ],
                     [ 
                         "image"=>"image",
                         "title"=>"Buy Online Diet Plans",
                         "details"=>[
-                            "Avg. Plan Duration"=>"1 Month",
-                            "Avg. Price Per Plan"=>"Rs 200", 
-                            "Primary Function"=>"Weight Loss",  
+                            ['field'=>'Avg. Plan Duration','value'=>'1 Month'],
+                            ['field'=>'Avg. Price Per Plan','value'=>'Rs 200'],
+                            ['field'=>'Primary Function','value'=>'Weight Loss']
                         ]
                     ],
                 ]
@@ -925,7 +947,7 @@ class HomeController extends BaseController {
                 'end_point'=> $end_point,
                 'type' => $type,
                 'current_balance'=> $fitcash_plus,
-                'near_by_vendor'=>$geoLocationFinder,
+                'near_by_vendor'=>$near_by_vendor,
                 'booking_details'=>$booking_details,
                 'fitcash_vendor'=>$fitcash_vendor,
                 'poc'=>$poc
