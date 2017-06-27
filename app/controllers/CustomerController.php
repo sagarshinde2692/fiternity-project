@@ -4842,5 +4842,35 @@ class CustomerController extends \BaseController {
 	}
 
 
+	public function addWebNotification(){
+		$data = Input::json()->all();
+		$rules = [
+			'device' => 'required|max:255',
+			'browser' => 'required',
+			'subscription' => 'required',
+		];
+		$data["subscription"] = json_decode($data["subscription"], true);
+		// return $data;
+		$addWebDevice["type"] = $data["device"];
+		$addWebDevice["customer_id"] = (isset($data["customer_id"]) && $data["customer_id"] != "") ? (int)$data["customer_id"] : "";
+		$addWebDevice["browser"] = $data["browser"];
+		$addWebDevice["endpoint"] = $data["subscription"]["endpoint"];
+		$addWebDevice["keys"] = $data["subscription"]["keys"];
+		$device_id = Device::max('_id') + 1;
+
+		$device = new Device();
+		$device->_id = $device_id;
+		$device->customer_id = $addWebDevice['customer_id'];
+		$device->type = $addWebDevice['type'];
+		$device->browser = $addWebDevice['browser'];
+		$device->endpoint = $addWebDevice['endpoint'];
+		$device->keys = $addWebDevice['keys'];
+		$device->status = "1";
+		// return $device;
+		$device->save();
+		return Response::json(array('status' => 200,'message' => 'success','device'=>$device),200);
+	}
+
+
 
 }

@@ -2497,7 +2497,7 @@ if (!function_exists(('getRegId'))){
 
         $response = ["reg_id"=>"","device_type"=>"","flag"=>false];
 
-        $device = Device::where("customer_id",(int)$customer_id)->orderBy('updated_at','desc')->first();
+        $device = Device::where("customer_id",(int)$customer_id)->where('type','!=','web')->orderBy('updated_at','desc')->first();
 
         if($device){
             $response = ["reg_id"=>$device->reg_id,"device_type"=>$device->type,"flag"=>true];
