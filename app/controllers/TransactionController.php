@@ -699,8 +699,9 @@ class TransactionController extends \BaseController {
 
                 $order->update(['category_name'=>$category->name,'category_slug'=>$category->slug]);
             }
+            
 
-            if(isset($order->diet_plan_ratecard_id) && $order->diet_plan_ratecard_id != "" && $order->diet_plan_ratecard_id != 0 && (!isset($order->status) || $order->status != "1" )){
+            if(isset($order->diet_plan_ratecard_id) && $order->diet_plan_ratecard_id != "" && $order->diet_plan_ratecard_id != 0 && !isset($order->diet_plan_order_id)){
             
                 $generaterDietPlanOrder = $this->generaterDietPlanOrder($order->toArray());
 
