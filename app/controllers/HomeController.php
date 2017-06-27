@@ -563,6 +563,7 @@ class HomeController extends BaseController {
                     ];
                     $end_point = "";
                     $item_description = "Personal Trialner Trial Session";
+                    $header = "Booking Confirmed";
                     break;
                 case 'manualtrial':
                     $subline = "Thank you for choosing Fitternity as your preferred fitness provider.We’ll get back to you shortly with your appointment details.";
@@ -600,9 +601,10 @@ class HomeController extends BaseController {
                     ];
                     $end_point = "";
                     $item_description = "Healthy Tiffin Trial";
+                    $header = "Booking Confirmed";
                     break;
                 case 'membershipwithpg':
-                    $subline = "Your Membership purchase at $finder_name for $service_name($service_duration) from ".date('d-m-y',strtotime($preferred_starting_date))." is confirmed.";
+                    $subline = "Thank you for choosing Fitternity as your preferred fitness provider. Make sure you upgrade / renew your membership through Fitternity to enjoy lowest price guarantee!";
                     $steps = [
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
                         ['icon'=>$icon_path.'manage-booking.png','text'=>'Subscription code & membership details shared on email'],
@@ -611,10 +613,11 @@ class HomeController extends BaseController {
                     ];
                     $show_invite = true;
                     $end_point = "inviteformembership";
-                    $item_description = "Membership";
+                    $item_description = "$service_name $service_duration";
+                    $header = "Booking Confirmed";
                     break;
                 case 'membershipwithoutpg':
-                    $subline = "Your Membership purchase at $finder_name for $service_name($service_duration) from ".date('d-m-y',strtotime($preferred_starting_date))." is confirmed.";
+                    $subline = "Thank you for choosing Fitternity as your preferred fitness provider. Make sure you upgrade / renew your membership through Fitternity to enjoy lowest price guarantee!";
                     $steps = [
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
                         ['icon'=>$icon_path.'manage-booking.png','text'=>'Subscription code & membership details shared on email'],
@@ -623,7 +626,8 @@ class HomeController extends BaseController {
                     ];
                     $show_invite = true;
                     $end_point = "inviteformembership";
-                    $item_description = "Trial Session";
+                    $item_description = "$service_name $service_duration";
+                    $header = "Booking Confirmed";
                     break;
                 case 'manualmembership':
                     $subline = "Thank you for choosing Fitternity as your preferred fitness provider.We’ll get back to you shortly with your appointment details.";
@@ -648,7 +652,8 @@ class HomeController extends BaseController {
                         ['icon'=>$icon_path.'manage-booking.png','text'=>'Your meal will be delivered basis the specifications'],
                     ];
                     $end_point = "";
-                    $item_description = "Trial Session";
+                    $item_description = "$service_name";
+                    $header = "Booking Confirmed";
                     break;
                 case 'personaltrainermembership':
                     $subline = "Your Membership request with $finder_name is captured. ";
@@ -659,7 +664,8 @@ class HomeController extends BaseController {
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'On starting date the trainer will reach your location'],
                     ];
                     $end_point = "";
-                    $item_description = "Trial Session";
+                    $item_description = "Personal Trainer Membership";
+                    $header = "Booking Confirmed";
                     break;
                 default :
                     $subline = "Your Session has been scheduled";
