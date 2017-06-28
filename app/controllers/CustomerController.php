@@ -4344,7 +4344,7 @@ class CustomerController extends \BaseController {
 							unset($response["text"]);
 					}
 				}
-				$response['remarks'] = "(2% Discount applied)";
+				$response['remarks'] = "";
 
 			}
 
