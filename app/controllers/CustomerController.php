@@ -4165,6 +4165,7 @@ class CustomerController extends \BaseController {
 			$response["title"] = isset($notificationTracking["title"])? $notificationTracking["title"]: "Default title";
 			$response["notification_msg"] = $notificationTracking["text"];
 			$response["finder_slug"] = Finder::find($data['finder_id'])->slug;
+			$response["type"] = $data["type"];
 			
 
 			$followup_date = "";

@@ -490,7 +490,8 @@ class EmailSmsApiController extends \BaseController {
     public function landingpagecallback(){
 
         $data = Input::json()->all();
-
+        Log::info('capture data');
+        Log::info($data);
         if($data['capture_type'] == 'fitness_canvas'){
             $count = Capture::where('capture_type','fitness_canvas')->where('phone','LIKE','%'.substr($data['phone'], -9).'%')->count();
 
