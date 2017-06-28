@@ -1542,9 +1542,15 @@ class TransactionController extends \BaseController {
 
         (isset($set_vertical_type[$data['type']])) ? $data['vertical_type'] = $set_vertical_type[$data['type']] : null;
 
-        (isset($data['finder_category_id']) &&  $data['finder_category_id'] == 41) ? $data['vertical_type'] = 'trainer' : null;
+        if(isset($data['finder_category_id'])){
 
-        (isset($data['finder_category_id']) &&  $data['finder_category_id'] == 45) ? $data['vertical_type'] = 'package' : null;
+            switch ($data['finder_category_id']) {
+                case 41 : $data['vertical_type'] = 'trainer';break;
+                case 45 : $data['vertical_type'] = 'package';break;
+                default: break;
+            }
+
+        }
 
         (isset($set_membership_duration_type[$data['type']])) ? $data['membership_duration_type'] = $set_membership_duration_type[$data['type']] : null;
 
