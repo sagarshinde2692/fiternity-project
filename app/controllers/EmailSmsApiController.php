@@ -513,6 +513,10 @@ class EmailSmsApiController extends \BaseController {
             $data['customer_phone'] = $decoded->customer->contact_no;
         }
 
+        if(isset($data['studio_name'])){
+            $data['vendor'] = $data['studio_name'];
+        }
+
         if(isset($data['order_id']) && $data['order_id'] != ""){
 
             $order = Order::find((int) $data['order_id']);
