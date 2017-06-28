@@ -4586,6 +4586,11 @@ class CustomerController extends \BaseController {
 
 				$share_message = "Register on Fitternity and earn Rs. 250 FitCash+ which can be used for fitness classes, memberships, diet consulting & more! Use my code $referral_code and apply it in your profile after logging-in $url";
 				$display_message = "Fitter is better together!<br>Refer a friend and both of you get Rs. 250 FitCash + which is fully redeemable on all bookings on Fitternity!<br><br>Valid till 31st December 2017. TCA.";
+
+				if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "ios")){
+					$display_message = "Fitter is better together!\nRefer a friend and both of you get Rs. 250 FitCash + which is fully redeemable on all bookings on Fitternity!\n\nValid till 31st December 2017. TCA.";
+				}
+				
 				$email_subject = "Join me on Fitternity & get Rs. 250";
 				$email_text = "Fitness on your mind?<br><br>Register on India's largest fitness platform to book fitness classes, memberships, diet plans & more!<br><br>If you use my invite code $referral_code to register yourself on the Fitternity mobile app, we both get Rs. 250 FitCash+ which is fully redeemable on all bookings!<br><br>Download the app and apply code in your profile after logging-in $url";
 				
