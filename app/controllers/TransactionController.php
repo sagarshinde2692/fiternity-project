@@ -573,6 +573,10 @@ class TransactionController extends \BaseController {
 
             $abundant_category = array(42,45);
 
+            if($order->finder_id == 6318){
+                $abundant_category = array(42);
+            }
+
             if (filter_var(trim($order['customer_email']), FILTER_VALIDATE_EMAIL) === false){
                 $order->update(['email_not_sent'=>'captureOrderStatus']);
             }else{
