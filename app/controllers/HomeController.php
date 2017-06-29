@@ -6,6 +6,7 @@
 use \GuzzleHttp\Exception\RequestException;
 use \GuzzleHttp\Client;
 use App\Notification\CustomerNotification as CustomerNotification;
+use App\Services\Sidekiq as Sidekiq;
 class HomeController extends BaseController {
 
 
@@ -15,8 +16,9 @@ class HomeController extends BaseController {
     protected $client;
 
 
-    public function __construct(CustomerNotification $customernotification) {
+    public function __construct(CustomerNotification $customernotification,Sidekiq $sidekiq) {
         $this->customernotification     =   $customernotification;
+        $this->sidekiq = $sidekiq;
         $this->initClient();
     }
 
@@ -1894,13 +1896,19 @@ class HomeController extends BaseController {
         return $appinstall;
     }
 
-    // public function promotionalNotification(){
-    //     $data = Input::json()->all();
-    //     $notification_object = array("notif_id" => 2005,"notif_type" => "promotion", "notif_object" => array("promo_id"=>739423,"promo_code"=>$data->couponcode,"deep_link_url"=>"ftrnty://ftrnty.com".$data->deeplink));
-    //     $notificationData = array("to" =>$data->to,"delay" => 0,
-    //      "label"=>$data->label,
-    //      "app_payload"=>$data->app_payload);
-    // }
+    public function promotionalNotification(){
+        $data = Input::json()->all();
+        $device_type = $data['device_type'];
+        $to = $data['to'];
+        if($device_type == "android"){
+            $notification_object = array("notif_id" => 2005,"notif_type" => "promotion", "notif_object" => array("promo_id"=>739423,"promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> "593a9380820095bf3e8b4568","title"=> $data["title"],"text"=> "Message .. Long one maybe"));
+        }else{
+            $notification_object = array("aps"=>array("alert"=> array("body" => $data["title"]), "sound" => "default", "badge" => 1),"notif_type" => "promotion", "notif_object" => array("promo_id"=>739423,"promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> "593a9380820095bf3e8b4568","title"=> $data["title"],"text"=> "Message .. Long one maybe"));
+        }
+        $notificationData = array("to" =>array($data['to']),"delay" => 0,"label"=>$data['label'],"app_payload"=>$notification_object);
+        $route  = $device_type;
+        return $result  = $this->sidekiq->sendToQueue($notificationData,$route);
+    }
 
     public function ifcity($city){
         $city = strtolower($city);
