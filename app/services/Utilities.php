@@ -1260,7 +1260,7 @@ Class Utilities {
 
                 if(isset($data['customer_id']) && $data['customer_id'] != ''){
 
-                    $allDeviceCount = Device::where('customer_id', (int)$data['customer_id'])->count();
+                    $allDeviceCount = Device::where('customer_id', (int)$data['customer_id'])->where('type','!=','web')->count();
                 }
 
                 $device_id = Device::max('_id') + 1;

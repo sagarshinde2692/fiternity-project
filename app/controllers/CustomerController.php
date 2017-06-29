@@ -495,7 +495,7 @@ class CustomerController extends \BaseController {
 
 						$response = $this->createToken($customer);
 
-						$resp = $this->checkIfpopPup($customer);
+						$resp = $this->checkIfpopPup($customer,$data);
 
 						if($resp["show_popup"] == "true"){
 							$response["extra"] = $resp;
@@ -518,7 +518,7 @@ class CustomerController extends \BaseController {
 					Log::info('Customer Register : '.json_encode(array('customer_details' => $ishullcustomer)));
 
 					$response = $this->createToken($ishullcustomer);
-					$resp = $this->checkIfpopPup($ishullcustomer);
+					$resp = $this->checkIfpopPup($ishullcustomer, $data);
 					if($resp["show_popup"] == "true"){
 						$response["extra"] = $resp;
 					}
@@ -680,59 +680,80 @@ class CustomerController extends \BaseController {
 		return array("token" => $this->createToken($customer), "popup" => $resp);
 	}
 
-	public function checkIfpopPup($customer){
+	public function checkIfpopPup($customer, $customdata=array()){
 
 		$resp = array();
 
 		$resp["show_popup"] = false;
 		$resp["popup"] = array();
 
-		if(isset($customer->demonetisation)){
+		if(count($customdata) == 0){
+			if(isset($customer->demonetisation)){
 
-			$current_wallet_balance = \Wallet::active()->where('customer_id',$customer->_id)->where('balance','>',0)->sum('balance');
+				$current_wallet_balance = \Wallet::active()->where('customer_id',$customer->_id)->where('balance','>',0)->sum('balance');
 
-			if($current_wallet_balance > 0){
+				if($current_wallet_balance > 0){
 
-				$resp["show_popup"] = true;
-				$resp["popup"]["header_image"] = "https://b.fitn.in/iconsv1/global/fitcash.jpg";
-				$resp["popup"]["header_text"] = "Congratulations";
-				$resp["popup"]["text"] = "You have Rs. ".$current_wallet_balance." in your wallet as FitCash+. This is 100% redeemable to purchase workout sessions and memberships on Fitternity across Mumbai, Bangalore, Pune & Delhi";
-				$resp["popup"]["button"] = "Ok";
+					$resp["show_popup"] = true;
+					$resp["popup"]["header_image"] = "https://b.fitn.in/iconsv1/global/fitcash.jpg";
+					$resp["popup"]["header_text"] = "Congratulations";
+					$resp["popup"]["text"] = "You have Rs. ".$current_wallet_balance." in your wallet as FitCash+. This is 100% redeemable to purchase workout sessions and memberships on Fitternity across Mumbai, Bangalore, Pune & Delhi";
+					$resp["popup"]["button"] = "Ok";
 
-			}
-
-		}else{
-
-			$fitcash = 0;
-			$fitcash_plus = 0;
-
-			$customer_wallet = Customerwallet::where('customer_id',$customer->_id)
-			->where('amount','!=',0)
-			->orderBy('_id', 'DESC')
-			->first();
-
-			if($customer_wallet){
-				$fitcash = (isset($customer_wallet['balance']) && $customer_wallet['balance'] != "") ? (int) $customer_wallet['balance'] : 0 ;
-				$fitcash_plus = (isset($customer_wallet['balance_fitcash_plus']) && $customer_wallet['balance_fitcash_plus'] != "") ? (int) $customer_wallet['balance_fitcash_plus'] : 0 ;
-			}
-
-			$current_wallet_balance = $fitcash + $fitcash_plus;
-
-			if($fitcash > 0 || $fitcash_plus > 0){
-
-				$resp["show_popup"] = true;
-				$resp["popup"]["header_image"] = "https://b.fitn.in/iconsv1/global/fitcash.jpg";
-				$resp["popup"]["header_text"] = "Congratulations";
-
-				if($fitcash_plus > 0){
-					$resp["popup"]["text"] = "You have Rs. ".$fitcash_plus." in your wallet as FitCash+. This is 100% redeemable to purchase workout sessions and memberships on Fitternity across Mumbai, Bangalore, Pune & Delhi";
-				}else{
-					$resp["popup"]["text"] = "You have Rs. ".$fitcash." in your wallet as FitCash. You can use this across session and membership bookings at gyms in studios in Mumbai, Bangalore, Pune & Delhi";
 				}
 
+			}else{
+
+				$fitcash = 0;
+				$fitcash_plus = 0;
+
+				$customer_wallet = Customerwallet::where('customer_id',$customer->_id)
+				->where('amount','!=',0)
+				->orderBy('_id', 'DESC')
+				->first();
+
+				if($customer_wallet){
+					$fitcash = (isset($customer_wallet['balance']) && $customer_wallet['balance'] != "") ? (int) $customer_wallet['balance'] : 0 ;
+					$fitcash_plus = (isset($customer_wallet['balance_fitcash_plus']) && $customer_wallet['balance_fitcash_plus'] != "") ? (int) $customer_wallet['balance_fitcash_plus'] : 0 ;
+				}
+
+				$current_wallet_balance = $fitcash + $fitcash_plus;
+
+				if($fitcash > 0 || $fitcash_plus > 0){
+
+					$resp["show_popup"] = true;
+					$resp["popup"]["header_image"] = "https://b.fitn.in/iconsv1/global/fitcash.jpg";
+					$resp["popup"]["header_text"] = "Congratulations";
+
+					if($fitcash_plus > 0){
+						$resp["popup"]["text"] = "You have Rs. ".$fitcash_plus." in your wallet as FitCash+. This is 100% redeemable to purchase workout sessions and memberships on Fitternity across Mumbai, Bangalore, Pune & Delhi";
+					}else{
+						$resp["popup"]["text"] = "You have Rs. ".$fitcash." in your wallet as FitCash. You can use this across session and membership bookings at gyms in studios in Mumbai, Bangalore, Pune & Delhi";
+					}
+
+					$resp["popup"]["button"] = "Ok";
+				}
+
+			}
+		}else{
+			if(isset($customdata['signupIncentive']) && $customdata['signupIncentive'] == true){
+
+				$addWalletData = [
+					"customer_id" => $customer["_id"],
+					"amount" => 250,
+					"amount_fitcash_plus"=>250,
+					"description" => "Added FitCash+ Rs 250 on Sign-Up, Expires On : ".date('d-m-Y',time()+(86400*15)),
+					"validity"=>time()+(86400*15),
+					"entry"=>"credit",
+					"type"=>"FITCASHPLUS"
+				];
+				$this->utilities->walletTransaction($addWalletData);
+				$resp["show_popup"] = true;
+				$resp["popup"]["header_image"] = "https://b.fitn.in/iconsv1/global/fitcash.jpg";
+				$resp["popup"]["header_text"] = "Congratulations";
+				$resp["popup"]["text"] = "You have recieved Rs.250 FitCash plus. Validity: 15 days";
 				$resp["popup"]["button"] = "Ok";
 			}
-
 		}
 
 		return $resp;
@@ -4839,6 +4860,36 @@ class CustomerController extends \BaseController {
 		}catch(Exception $e){
 			return array('status'=>500, 'message'=>'server error');
 		}
+	}
+
+
+	public function addWebNotification(){
+		$data = Input::json()->all();
+		$rules = [
+			'device' => 'required|max:255',
+			'browser' => 'required',
+			'subscription' => 'required',
+		];
+		$data["subscription"] = json_decode($data["subscription"], true);
+		// return $data;
+		$addWebDevice["type"] = $data["device"];
+		$addWebDevice["customer_id"] = (isset($data["customer_id"]) && $data["customer_id"] != "") ? (int)$data["customer_id"] : "";
+		$addWebDevice["browser"] = $data["browser"];
+		$addWebDevice["endpoint"] = $data["subscription"]["endpoint"];
+		$addWebDevice["keys"] = $data["subscription"]["keys"];
+		$device_id = Device::max('_id') + 1;
+
+		$device = new Device();
+		$device->_id = $device_id;
+		$device->customer_id = $addWebDevice['customer_id'];
+		$device->type = $addWebDevice['type'];
+		$device->browser = $addWebDevice['browser'];
+		$device->endpoint = $addWebDevice['endpoint'];
+		$device->keys = $addWebDevice['keys'];
+		$device->status = "1";
+		// return $device;
+		$device->save();
+		return Response::json(array('status' => 200,'message' => 'success','device'=>$device),200);
 	}
 
 
