@@ -1942,7 +1942,7 @@ class HomeController extends BaseController {
                 break;
         };
         $response = array("city"=>$send_city,"found"=>$ifcity);
-        return $appinstall;
+        return $response;
     }
 
 }
