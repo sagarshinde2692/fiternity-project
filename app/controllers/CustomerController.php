@@ -4335,14 +4335,17 @@ class CustomerController extends \BaseController {
 				$response['fitcash'] = $calculation['amount_deducted_from_wallet'];
 				if(isset($_GET['device_type']) && $_GET['device_type'] == "ios"){
 					switch($time){
-						case 'pl+30':
-							unset($response["text"]);
-							$response["fitcash_text"] = $response['fitcash']." Fitcash can be applied in the next step";
-							break;
-						case 'pl+45':
 						case 'pl+3':
 						case 'pl+7':
 						case 'pl+15':
+						case 'pl+30':
+							unset($response["text"]);
+							if($response['fitcash']>0){
+								$response["fitcash_text"] = $response['fitcash']." Fitcash can be applied in the next step";
+							}
+							break;
+						case 'pl+45':
+						
 							unset($response["text"]);
 					}
 				}
