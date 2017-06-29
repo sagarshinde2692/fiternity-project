@@ -1902,4 +1902,47 @@ class HomeController extends BaseController {
     //      "app_payload"=>$data->app_payload);
     // }
 
+    public function ifcity($city){
+        $city = strtolower($city);
+        $send_city = $city;
+        $ifcity = false;
+        switch($city){
+            case "mumbai":
+            case "bombay":
+            case "thane":
+            case "vashi":
+            case "navi mumbai":
+                $send_city = "mumbai";
+                $ifcity = true;
+                break;
+            case "pune":
+            case "pimpri":
+            case "pimpri chinchwad":
+                $send_city = "pune";
+                $ifcity = true;
+                break;
+            case "bangalore":
+            case "bengaluru":
+                $send_city = "bangalore";
+                $ifcity = true;
+                break;
+            case "delhi":
+            case "new delhi":
+                $send_city = "delhi";
+                $ifcity = true;
+                break;
+            case "gurgaon":
+                $send_city = "gurgaon";
+                $ifcity = true;
+                break;
+            case "noida":
+            case "greater noida":
+                $send_city = "gurgaon";
+                $ifcity = true;
+                break;
+        };
+        $response = array("city"=>$send_city,"found"=>$ifcity);
+        return $appinstall;
+    }
+
 }

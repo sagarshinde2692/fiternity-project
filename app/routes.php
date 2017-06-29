@@ -149,6 +149,7 @@ Route::get('getcollecitonfinders/{city}/{slug}', 'HomeController@getcollecitonfi
 Route::get('getlocations/{city?}', 'HomeController@getCityLocation');
 Route::get('getcategories/{city?}', 'HomeController@getCityCategorys');
 Route::get('getcities', 'HomeController@getCities');
+Route::get('ifcity/{city}', 'HomeController@ifCity');
 
 Route::get('getlandingpagefinders/{cityid}/{landingpageid}/{locationclusterid?}', 'HomeController@getLandingPageFinders');
 
