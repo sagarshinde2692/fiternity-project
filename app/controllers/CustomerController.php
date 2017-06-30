@@ -4348,9 +4348,7 @@ class CustomerController extends \BaseController {
 								$response["fitcash_text"] = $response['fitcash']." Fitcash can be applied in the next step";
 							}
 							break;
-						case 'pl+45':
 						
-							unset($response["text"]);
 					}
 				}
 				$response['remarks'] = "";
