@@ -4193,13 +4193,13 @@ class CustomerController extends \BaseController {
 			$response['followup_date'] = $followup_date;
 
 			$response['callback_msg']= "Awesome. We'll get in touch with you on $followup_date \n <u>Click here to change date</u>";
-			$response["phone"] = Config::get('app.followup_customer_number');
+			$response["phone"] = Config::get('app.direct_customer_number');
 			$hour = (int) date("G", time());
 			if($hour<=10 || $hour>=20){
 				$response["phone"] = $data["finder_poc_for_customer_no"];
 			}
 
-			$response['fitternity_no'] = Config::get('app.followup_customer_number');
+			$response['fitternity_no'] = Config::get('app.direct_customer_number');
 			
 
 			switch ($time) {
@@ -4227,6 +4227,10 @@ class CustomerController extends \BaseController {
 					}
 					break;
 				default:
+
+					if($hour>10 && $hour<20){
+						$response["phone"] = Config::get('app.followup_customer_number');;
+					}
 					
 					
 					$response["start_time"] = "";
