@@ -970,6 +970,13 @@ class HomeController extends BaseController {
                 'type' => $type
             ];
 
+            $final = [
+                "title"=>"Done",
+                "description"=>"We hope you have a great time,if you need any help you can reach out to us below",
+                "email"=>"info@fitternity.com",
+                "phone"=>"022-61222222"
+            ];
+
             $resp = [
                 'status'    =>  200,
                 'item'      =>  null,
@@ -989,7 +996,8 @@ class HomeController extends BaseController {
                 'booking_details'=>$booking_details,
                 'fitcash_vendor'=>$fitcash_vendor,
                 'poc'=>$poc,
-                'invite'=>$invite
+                'invite'=>$invite,
+                'final'=>$final
             ];
 
             return Response::json($resp);
