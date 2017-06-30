@@ -738,7 +738,7 @@ class HomeController extends BaseController {
                     "lat"=>$lat,
                     "lon"=>$lon,
                     "keys"=>[
-                      // "average_rating",
+                      "average_rating",
                       // "business_type",
                       // "categorytags",
                       // "commercial_type",
@@ -763,6 +763,8 @@ class HomeController extends BaseController {
                 ];
 
                 $near_by_vendor = $this->geoLocationFinder($near_by_vendor_request);
+
+                $near_by_vendor_message = "People with similar prefrences";
 
                 $swimming_finder_request = [
                     "offset" => 0,
@@ -938,6 +940,15 @@ class HomeController extends BaseController {
                 ]
             ];
 
+            $invite = [
+                "description"=>"Did you know that you increase the chances of you",
+                "message"=>"Awesome",
+                "confirm"=>"Now you have invited your workout buddies,you are sure to have a lot of fun",
+                'show_invite' => $show_invite,
+                'id_for_invite' => $id_for_invite,
+                'end_point'=> $end_point
+            ];
+
             $resp = [
                 'status'    =>  200,
                 'item'      =>  null,
@@ -956,7 +967,8 @@ class HomeController extends BaseController {
                 'near_by_vendor'=>$near_by_vendor,
                 'booking_details'=>$booking_details,
                 'fitcash_vendor'=>$fitcash_vendor,
-                'poc'=>$poc
+                'poc'=>$poc,
+                'invite'=>$invite
             ];
 
             return Response::json($resp);
