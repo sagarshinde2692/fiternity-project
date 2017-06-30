@@ -2167,7 +2167,7 @@ class OrderController extends \BaseController {
                 return Response::json($resp,$resp["status"]);
             }
 
-            if(isset($order->cashback) && $order->cashback == true && isset($order->status) && $order->status == "1"){
+            if(isset($order->cashback) && $order->cashback == true){
 
                 if(isset($order->status) && $order->status == "1"){
                     $resp   =   array("status" => 401,"message" => "We have already received your request");
@@ -2177,7 +2177,7 @@ class OrderController extends \BaseController {
                 $order->unset('cashback');
             }
 
-            if(isset($order->reward_ids) && count($order->reward_ids) > 0 && isset($order->status) && $order->status == "1"){
+            if(isset($order->reward_ids) && count($order->reward_ids) > 0){
 
                 if(isset($order->status) && $order->status == "1"){
                     $resp   =   array("status" => 401,"message" => "We have already received your request");
