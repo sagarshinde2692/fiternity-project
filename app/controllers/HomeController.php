@@ -946,7 +946,8 @@ class HomeController extends BaseController {
                 "confirm"=>"Now you have invited your workout buddies,you are sure to have a lot of fun",
                 'show_invite' => $show_invite,
                 'id_for_invite' => $id_for_invite,
-                'end_point'=> $end_point
+                'end_point'=> $end_point,
+                'type' => $type
             ];
 
             $resp = [
