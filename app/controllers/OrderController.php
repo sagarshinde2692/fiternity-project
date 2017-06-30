@@ -2169,14 +2169,22 @@ class OrderController extends \BaseController {
 
             if(isset($order->cashback) && $order->cashback == true && isset($order->status) && $order->status == "1"){
 
-                $resp   =   array("status" => 401,"message" => "We have already received your request");
-                return Response::json($resp,$resp["status"]);
+                if(isset($order->status) && $order->status == "1"){
+                    $resp   =   array("status" => 401,"message" => "We have already received your request");
+                    return Response::json($resp,$resp["status"]);
+                }
+
+                $order->unset('cashback');
             }
 
             if(isset($order->reward_ids) && count($order->reward_ids) > 0 && isset($order->status) && $order->status == "1"){
 
-                $resp   =   array("status" => 401,"message" => "We have already received your request");
-                return Response::json($resp,$resp["status"]);
+                if(isset($order->status) && $order->status == "1"){
+                    $resp   =   array("status" => 401,"message" => "We have already received your request");
+                    return Response::json($resp,$resp["status"]);
+                }
+
+                $order->unset('reward_ids');
             }
 
             $data['amount_finder'] = $order->amount_finder;
