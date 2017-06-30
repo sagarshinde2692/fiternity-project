@@ -2234,6 +2234,17 @@ class SchedulebooktrialsController extends \BaseController {
 
             $booktrial = Booktrial::findOrFail($booktrial_id);
 
+            $dates = array('start_date', 'start_date_starttime', 'schedule_date', 'schedule_date_time', 'followup_date', 'followup_date_time','missedcall_date');
+
+	        foreach ($dates as $key => $value) {
+
+	        	if($booktrial[$value] == "-" || $booktrial[$value] == ""){
+
+	        		$booktrial->unset($value);
+	        	}
+
+	        }
+
             $this->deleteTrialCommunication($booktrial);
 
             $this->firstTrial($booktrial->toArray()); // first trial communication
