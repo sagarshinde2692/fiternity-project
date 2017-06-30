@@ -2234,14 +2234,15 @@ class SchedulebooktrialsController extends \BaseController {
 
             $booktrial = Booktrial::findOrFail($booktrial_id);
 
-            $dates = array('start_date', 'start_date_starttime', 'schedule_date', 'schedule_date_time', 'followup_date', 'followup_date_time','missedcall_date');
+            $dates = array('schedule_date','schedule_date_time','missedcall_date','customofferorder_expiry_date','followup_date','auto_followup_date');
 
 	        foreach ($dates as $key => $value) {
+                if(isset($booktrial[$value])){
+                    if($booktrial[$value] == "-" || $booktrial[$value] == ""){
 
-	        	if($booktrial[$value] == "-" || $booktrial[$value] == ""){
-
-	        		$booktrial->unset($value);
-	        	}
+                        $booktrial->unset($value);
+                    }
+                }
 
 	        }
 
