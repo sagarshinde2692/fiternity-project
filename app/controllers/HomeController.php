@@ -905,6 +905,17 @@ class HomeController extends BaseController {
                 $poc['number'] = $item['finder_poc_for_customer_no'];
             }
 
+            $city_name = "";
+
+            if(isset($item['city_id']) && $item['city_id'] != ""){
+
+                $city = City::find((int)$item['city_id']);
+
+                if($city){
+                    $city_name  = ucwords($city->name);
+                }
+            }
+
             $fitcash_vendor = [
                 "title"=>"title",
                 "description"=>"description",
@@ -917,7 +928,10 @@ class HomeController extends BaseController {
                             ['field'=>'Avg. Calorie Burn','value'=>'750 KCAL'],
                             ['field'=>'Avg. Price Per Session','value'=>'Rs 200'],
                             ['field'=>'Current Providers in area','value'=>'2 Providers']
-                        ]
+                        ],
+                        "category"=>"swimming",
+                        "city"=>$city_name,
+                        "region"=>(isset($item['finder_location']) && $item['finder_location'] != "") ? [$item['finder_location']] : []
                     ],
                     [ 
                         "image"=>"image",
@@ -926,7 +940,10 @@ class HomeController extends BaseController {
                             ['field'=>'Avg. Calorie Intake','value'=>'750 KCAL'],
                             ['field'=>'Avg. Price Per Tiffin','value'=>'Rs 200'],
                             ['field'=>'Current Providers in area','value'=>'2 Providers']
-                        ]
+                        ],
+                        "category"=>"healthy-tiffins",
+                        "city"=>$city_name,
+                        "region"=>(isset($item['finder_location']) && $item['finder_location'] != "") ? [$item['finder_location']] : []
                     ],
                     [ 
                         "image"=>"image",
@@ -935,7 +952,10 @@ class HomeController extends BaseController {
                             ['field'=>'Avg. Plan Duration','value'=>'1 Month'],
                             ['field'=>'Avg. Price Per Plan','value'=>'Rs 200'],
                             ['field'=>'Primary Function','value'=>'Weight Loss']
-                        ]
+                        ],
+                        "category"=>"diet_plan",
+                        "city"=>$city_name,
+                        "region"=>(isset($item['finder_location']) && $item['finder_location'] != "") ? [$item['finder_location']] : []
                     ],
                 ]
             ];
