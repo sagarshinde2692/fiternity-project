@@ -4429,6 +4429,13 @@ class CustomerController extends \BaseController {
 				$can_book = true;
 			}
 			$current_diet_plan->can_book = $can_book;
+			$current_diet_plan = $current_diet_plan->toArray();
+
+			if(isset($current_diet_plan['start_date'])){
+				$current_diet_plan['start_date'] = date("F j, Y", strtotime($current_diet_plan['start_date']));
+			}else{
+				$current_diet_plan['start_date'] = "Not scheduled yet.";
+			}
 		}else{
 			$current_diet_plan;
 		}
