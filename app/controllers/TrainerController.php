@@ -270,6 +270,10 @@ class TrainerController extends \BaseController {
 				$order->trainer_landline = $trainer->contact['phone']['landline'];
 		    }
 
+			if(!isset($order->start_date)){
+				$order->start_date = strtotime(date("j-n-Y"));  
+			}
+
 		    $order->update();
 
         	$redisid = Queue::connection('redis')->push('TrainerController@sendCommunication', array('trainer_slot_booking_id'=>$trainerSlotBooking->_id),Config::get('app.queue'));
