@@ -4801,7 +4801,7 @@ class CustomerController extends \BaseController {
 
 		}else{
 
-			return array('status'=>400, 'message'=>'Incorrect referral code or referral already applied');
+			return array('status'=>400, 'message'=>'Incorrect referral code or code already applied');
 		}
 	}
 
