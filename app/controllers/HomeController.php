@@ -440,6 +440,7 @@ class HomeController extends BaseController {
         }
 
         $type       =   strtolower(trim($type));
+        $order_type    = "";
 
         if($type != "" && $id != ""){
 
@@ -468,6 +469,8 @@ class HomeController extends BaseController {
                         $type = "manualautotrial";
                     }
                 }
+
+                $order_type = "booktrial_id";
             }
 
             if (in_array($type, $orderItemArr)) {
@@ -484,10 +487,14 @@ class HomeController extends BaseController {
 
                 $itemData       =   $itemData->toArray();
 
+                $order_type = "order_id";
+
             }
 
             if (in_array($type, $captureItemArr)) {
                 $itemData = Capture::with('finder')->find($id)->toArray();
+
+                $order_type = "capture_id";
             }
 
             $item           =   array_except($itemData, ['finder']);
@@ -1009,7 +1016,8 @@ class HomeController extends BaseController {
                 'poc'=>$poc,
                 'invite'=>$invite,
                 'conclusion'=>$conclusion,
-                'feedback'=>$feedback
+                'feedback'=>$feedback,
+                'order_type'=>$order_type
             ];
 
             return Response::json($resp);
