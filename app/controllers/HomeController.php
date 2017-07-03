@@ -1017,7 +1017,8 @@ class HomeController extends BaseController {
                 'invite'=>$invite,
                 'conclusion'=>$conclusion,
                 'feedback'=>$feedback,
-                'order_type'=>$order_type
+                'order_type'=>$order_type,
+                'id'=>$id
             ];
 
             return Response::json($resp);
