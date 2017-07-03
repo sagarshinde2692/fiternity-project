@@ -984,7 +984,8 @@ class HomeController extends BaseController {
                     'Transaction & Booking process',
                     'Payment/Cashback/Offer related',
                     'Any other issue'
-                ]
+                ],
+                'threshold_value'=>6
             ];
 
             $resp = [
