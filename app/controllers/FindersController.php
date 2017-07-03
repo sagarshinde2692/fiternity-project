@@ -3195,7 +3195,7 @@ class FindersController extends \BaseController {
 		try{
 			$finder = Finder::where('title', 'Fitternity Diet Vendor')
 			->with(array('services'=>function($query){
-				$query->active()->select(array('id', 'name','finder_id', 'short_description','body','what_i_should_expect', 'workout_intensity'));
+				$query->active()->select(array('id', 'name','finder_id', 'short_description','body','what_i_should_expect', 'workout_intensity','ordering'))->orderBy('ordering');
 				}))
 			->first();
 			return array('finder'=>$finder, 'status'=>200);
