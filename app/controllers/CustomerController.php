@@ -4839,6 +4839,22 @@ class CustomerController extends \BaseController {
 		}
 	}
 
+	public function feedback(){
+
+		$request = Input::json()->all();
+
+		$jwt_token = Request::header('Authorization');
+
+        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+
+            $decoded = $this->customerTokenDecode($jwt_token);
+            $request['customer_id'] = (int)$decoded->customer->_id;
+        }
+
+        Feedback::create($request);
+
+	}
+
 
 
 }

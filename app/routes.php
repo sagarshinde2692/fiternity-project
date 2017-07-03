@@ -932,5 +932,8 @@ Route::get('demonetisation', 'DebugController@demonetisation');
 
 Route::post('customer/getlink', 'CustomerController@getLink');
 
+Route::post('customer/feedback', 'CustomerController@feedback');
+
+
 // Route::get('sendtransactionemails/{withInstant?}','SchedulebooktrialsController@sendTransactionEmails');
 // Route::get('sendordermissedemails','TransactionController@sendOrderMissedEmails');

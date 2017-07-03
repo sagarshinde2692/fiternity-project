@@ -977,6 +977,16 @@ class HomeController extends BaseController {
                 "phone"=>"022-61222222"
             ];
 
+            $feedback = [
+                'reason'=>[
+                    'Choice of fitness options available',
+                    'Information provided about the gym/studio',
+                    'Transaction & Booking process',
+                    'Payment/Cashback/Offer related',
+                    'Any other issue'
+                ]
+            ];
+
             $resp = [
                 'status'    =>  200,
                 'item'      =>  null,
@@ -997,7 +1007,8 @@ class HomeController extends BaseController {
                 'fitcash_vendor'=>$fitcash_vendor,
                 'poc'=>$poc,
                 'invite'=>$invite,
-                'conclusion'=>$conclusion
+                'conclusion'=>$conclusion,
+                'feedback'=>$feedback
             ];
 
             return Response::json($resp);
