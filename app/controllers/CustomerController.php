@@ -4841,17 +4841,37 @@ class CustomerController extends \BaseController {
 
 	public function feedback(){
 
-		$request = Input::json()->all();
+		$data = Input::json()->all();
 
 		$jwt_token = Request::header('Authorization');
 
         if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
 
             $decoded = $this->customerTokenDecode($jwt_token);
-            $request['customer_id'] = (int)$decoded->customer->_id;
+            $data['customer_id'] = (int)$decoded->customer->_id;
         }
 
-        Feedback::create($request);
+        if(isset($data['order_id']) && $data['order_id'] != ""){
+        	$data['order_id'] = (int)$data['order_id'];
+        }
+
+        if(isset($data['booktrial_id']) && $data['booktrial_id'] != ""){
+        	$data['booktrial_id'] = (int)$data['booktrial_id'];
+        }
+
+        if(isset($data['finder_id']) && $data['finder_id'] != ""){
+        	$data['finder_id'] = (int)$data['finder_id'];
+        }
+
+        Feedback::create($data);
+
+        return Response::json(
+			array(
+				'status' => 200,
+				'message' => "Thankyou for the feedback",
+				),
+			200
+		);
 
 	}
 
