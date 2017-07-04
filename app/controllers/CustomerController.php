@@ -4436,6 +4436,12 @@ class CustomerController extends \BaseController {
 			}else{
 				$current_diet_plan['start_date'] = "Not scheduled yet.";
 			}
+
+			$service = Service::find((int)$current_diet_plan['service_id']);
+			if($service && isset($service->workout_results)){
+				$current_diet_plan['workout_goal'] = implode(", ", $service['workout_results']);
+			}
+			
 		}else{
 			$current_diet_plan;
 		}
