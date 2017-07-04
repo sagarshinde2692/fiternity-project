@@ -3336,9 +3336,13 @@ class CustomerController extends \BaseController {
 		}
 
 		$code = trim(strtoupper($data['code']));
-		
-		if(is_numeric(strpos($code, 'R-')) && strpos($code, 'R-') == 0){
-			return $this->setReferralData($code);
+
+		if(strlen($code)==9 && strrpos($code, 'R') == (strlen($code)-1)){
+			$referral = $this->setReferralData($code);
+		}
+
+		if($referral['status']==200){
+			return $referral;
 		}
 
 		$code = trim(strtolower($data['code']));
@@ -4577,14 +4581,13 @@ class CustomerController extends \BaseController {
 
 	public function getReferralCode(){
 		try{
-
 			$jwt = Request::header('Authorization');
 			$decoded = $this->customerTokenDecode($jwt);
 			$id = $decoded->customer->_id;
 			Customer::$withoutAppends = true;
 
 			$customer = Customer::where('_id', $id)->first();
-			
+			// return $customer;
 			if($customer){
 
 				if(!isset($customer->referral_code)){
@@ -4593,7 +4596,8 @@ class CustomerController extends \BaseController {
 					$customer->update();
 				}
 
-				if(isset($customer->referral_code) && strpos($customer->referral_code, 'R-') != 0){
+
+				if(isset($customer->referral_code) && strrpos($customer->referral_code, 'R') != (strlen($customer->referral_code)-1)){
 					
 					$customer->referral_code = $this->generateReferralCode($customer->name);
 					$customer->update();
@@ -4625,6 +4629,7 @@ class CustomerController extends \BaseController {
 			
 		}catch(Exception $e){
 			Log::info($e);
+			return array('status'=>500, 'message'=>'Something went wrong');
 		}
 	}
 	public function referFriend(){	
@@ -4806,7 +4811,7 @@ class CustomerController extends \BaseController {
 	}
 
 	public function generateReferralCode($name){
-		$referral_code = 'R-'.substr(implode("", (explode(" ", strtoupper($name)))),0,4)."".rand(1000, 9999);
+		$referral_code = substr(implode("", (explode(" ", strtoupper($name)))),0,4)."".rand(1000, 9999).'R';
 		$exists = Customer::where('referral_code', $referral_code)->where('status', '1')->first();
 		if($exists){
 			return $this->generateReferralCode($name);
