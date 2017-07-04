@@ -4881,6 +4881,19 @@ class CustomerController extends \BaseController {
 		}
 	}
 
+	public function termsAndConditions($type){
+
+		if($type == 'referral'){
+			$tnc = "<h3 style='text-align:center'>Terms and conditions for refer and earn</h3><ul><li>Every time a new user signs up with your referral code, they'll get Rs. 250 Fitcash +</li>
+				<li>As soon as they do their first transaction (free trials not applicable) on Fitternity - you will automatically get Rs. 250 Fitcash plus in your wallet. </li>
+				<li>FitCash + can we used in any booking and will be auto-applied on checkout</li>
+				<li>The validity of this Fitcash+ is 6 months</li>
+				<li>You can send unlimited referral invitations, however the maximum amount of FitCash + you can earn is Rs. 1,500</li></ul>";
+		}
+		
+		return $tnc;
+	}
+
 
 
 }

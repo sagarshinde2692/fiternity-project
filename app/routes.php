@@ -934,3 +934,5 @@ Route::post('customer/getlink', 'CustomerController@getLink');
 
 // Route::get('sendtransactionemails/{withInstant?}','SchedulebooktrialsController@sendTransactionEmails');
 // Route::get('sendordermissedemails','TransactionController@sendOrderMissedEmails');
+
+Route::get('termsandconditions/{type}', 'CustomerController@termsAndConditions');
