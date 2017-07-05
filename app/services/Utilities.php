@@ -2056,5 +2056,49 @@ Class Utilities {
 
     }
 
+    public function hitURLAfterDelay($url, $delay = 0, $label = 'label', $priority = 0){
+
+        if($delay !== 0){
+            $delay = $this->getSeconds($delay);
+        }
+
+        $payload = array('url'=>$url,'delay'=>$delay,'priority'=>$priority,'label' => $label);
+
+        $route  = 'outbound';
+
+        $sidekiq = new Sidekiq();
+        $result  = $sidekiq->sendToQueue($payload,$route);
+
+        if($result['status'] == 200){
+            return $result['task_id'];
+        }else{
+            return $result['status'].':'.$result['reason'];
+        }
+    }
+
+     public function getSeconds($delay){
+
+        if ($delay instanceof DateTime){
+
+            return max(0, $delay->getTimestamp() - $this->getTime());
+
+        }elseif ($delay instanceof \Carbon\Carbon){
+
+            return max(0, $delay->timestamp - $this->getTime());
+
+        }elseif(isset($delay['date'])){
+
+            $time = strtotime($delay['date']) - $this->getTime();
+
+            return $time;
+
+        }else{
+
+            $delay = strtotime($delay) - time();
+        }
+
+        return (int) $delay;
+    }
+
 
 }

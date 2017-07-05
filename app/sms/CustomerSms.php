@@ -233,6 +233,9 @@ Class CustomerSms extends VersionNextSms{
 	}
 
 	public function rescheduleTrial($data){
+		// return $data;
+		$customer_email = $data['customer_email'];
+		$data['customer_profile_url'] = Config::get('website');//'\/profile\/'.$customer_email;
 
 		$label = 'Missedcall-Reply-N-3-RescheduleTrial-Customer';
 		

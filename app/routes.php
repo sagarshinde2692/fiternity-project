@@ -938,3 +938,7 @@ Route::post('customer/getlink', 'CustomerController@getLink');
 
 
 Route::get('addfitcash', 'DebugController@addFitcash');
+
+Route::get('communication/{type}/{to}/{transaction_type}/{id}/{label}', 'CommunicationsController@sendCommunication');
+
+
