@@ -1988,8 +1988,9 @@ class HomeController extends BaseController {
         }else{
             $belp_data = Belp::where("_id",$data["belp_id"])->first();
             if(isset($belp_data)){
-                $belp_capture = Belpcapture::where("belp_id",$data["belp_id"])->first();
-                if(isset($belp_capture) && !isset($belp_data->test)){
+                $belp_capture = Belpcapture::where("belp_id",$data["belp_id"])->get();
+                // return $belp_data;
+                if(count($belp_capture) == 0 || isset($belp_data->test)){
                     $data["email"] = $belp_data["email"];
                     $data["capture_type"] = "belp_capture";
                     $storecapture = Belpcapture::create($data);

@@ -7,4 +7,8 @@
 class Belp extends  \Basemodel {
 	
 	protected $collection = "belp";
+	public function setIdAttribute($value){
+		
+		$this->attributes['_id'] = $value;
+	}
 }
