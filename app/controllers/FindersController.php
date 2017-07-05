@@ -3204,5 +3204,8 @@ class FindersController extends \BaseController {
 		}
 	}
 
+	public function getbrands($city,$brand_name){
+		
+	}
 
 }
