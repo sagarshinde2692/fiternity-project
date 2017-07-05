@@ -937,3 +937,5 @@ Route::post('app/installs', 'HomeController@appinstalls');
 Route::post('promotional/notification','HomeController@promotionalNotification');
 // Route::get('sendtransactionemails/{withInstant?}','SchedulebooktrialsController@sendTransactionEmails');
 // Route::get('sendordermissedemails','TransactionController@sendOrderMissedEmails');
+Route::post('belp/signin','HomeController@belpSignin');
+Route::post('belp/fitnessquiz','HomeController@belpFitnessQuiz');

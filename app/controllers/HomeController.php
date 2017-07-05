@@ -1953,4 +1953,57 @@ class HomeController extends BaseController {
         return $response;
     }
 
+    public function belpSignin(){
+       $data   =   Input::json()->all();
+       if(!isset($data["email"])){
+           $resp = array("message"=> "Email field can't be blank");
+           return  Response::json($resp, 400);
+       }
+       if(!isset($data["password"])){
+           $resp = array("message"=> "Password field can't be blank");
+           return  Response::json($resp, 400);
+       }
+       $belp_data = Belp::where("email",$data["email"])->first();
+       if(isset($belp_data)){
+            if($belp_data["password"] == $data["password"]){
+                unset($belp_data["password"]);
+                $resp = array("data" => $belp_data);
+                return  Response::json($resp, 200);
+            }else{
+                $resp = array("message"=> "Email password doesn't match");
+                return  Response::json($resp, 401);     
+            }
+       }else{
+           $resp = array("message"=> "Email doesn't exists");
+           return  Response::json($resp, 401);
+       }
+        
+    }
+
+    public function belpFitnessQuiz(){
+        $data   =   Input::json()->all();
+        if(!isset($data["belp_id"])){
+            $resp = array("message"=> "No belp Id found");
+            return  Response::json($resp, 400);
+        }else{
+            $belp_data = Belp::where("_id",$data["belp_id"])->first();
+            if(isset($belp_data)){
+                $belp_capture = Capture::where("belp_id",$data["belp_id"])->first();
+                if(isset($belp_capture)){
+                    $data["email"] = $belp_data["email"];
+                    $data["capture_type"] = "belp_capture";
+                    $storecapture = Capture::create($data);
+                    $resp = array("message"=> "Entry Saved", "capture_id"=>$storecapture->_id);
+                    return  Response::json($resp, 200);
+                }else{
+                    $resp = array("message"=> "Your entry has already reached us");
+                    return  Response::json($resp, 400);
+                }
+            }else{
+                $resp = array("message"=> "Belp user not found");
+                return  Response::json($resp, 400);
+            }
+        }
+    }
+
 }
