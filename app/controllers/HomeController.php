@@ -1992,7 +1992,7 @@ class HomeController extends BaseController {
                 if(isset($belp_capture) && !isset($belp_data->test)){
                     $data["email"] = $belp_data["email"];
                     $data["capture_type"] = "belp_capture";
-                    $storecapture = Capture::create($data);
+                    $storecapture = Belpcapture::create($data);
                     $resp = array("message"=> "Entry Saved", "capture_id"=>$storecapture->_id);
                     return  Response::json($resp, 200);
                 }else{
