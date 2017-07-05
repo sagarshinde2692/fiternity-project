@@ -385,7 +385,7 @@ class TransactionController extends \BaseController {
     }
 
     public function successCommon($data){
-
+        
         $rules = array(
             'order_id'=>'required'
         );
@@ -463,7 +463,7 @@ class TransactionController extends \BaseController {
             array_set($data, 'status', '1');
             array_set($data, 'order_action', 'bought');
             
-            if(isset($order['update_success_date']) && $order['update_success_date'] == 1){
+            if(!isset($order['success_date']) || (isset($order['update_success_date']) && $order['update_success_date'] == "1")){
                 array_set($data, 'success_date', date('Y-m-d H:i:s',time()));
             }
             
@@ -572,6 +572,10 @@ class TransactionController extends \BaseController {
             }
 
             $abundant_category = array(42,45);
+
+            if($order->finder_id == 6318){
+                $abundant_category = array(42);
+            }
 
             if (filter_var(trim($order['customer_email']), FILTER_VALIDATE_EMAIL) === false){
                 $order->update(['email_not_sent'=>'captureOrderStatus']);
@@ -699,8 +703,9 @@ class TransactionController extends \BaseController {
 
                 $order->update(['category_name'=>$category->name,'category_slug'=>$category->slug]);
             }
+            
 
-            if(isset($order->diet_plan_ratecard_id) && $order->diet_plan_ratecard_id != "" && $order->diet_plan_ratecard_id != 0 && (!isset($order->status) || $order->status != "1" )){
+            if(isset($order->diet_plan_ratecard_id) && $order->diet_plan_ratecard_id != "" && $order->diet_plan_ratecard_id != 0 && !isset($order->diet_plan_order_id)){
             
                 $generaterDietPlanOrder = $this->generaterDietPlanOrder($order->toArray());
 
@@ -1537,7 +1542,15 @@ class TransactionController extends \BaseController {
 
         (isset($set_vertical_type[$data['type']])) ? $data['vertical_type'] = $set_vertical_type[$data['type']] : null;
 
-        (isset($data['finder_category_id']) &&  $data['finder_category_id'] == 41) ? $data['vertical_type'] = 'trainer' : null;
+        if(isset($data['finder_category_id'])){
+
+            switch ($data['finder_category_id']) {
+                case 41 : $data['vertical_type'] = 'trainer';break;
+                case 45 : $data['vertical_type'] = 'package';break;
+                default: break;
+            }
+
+        }
 
         (isset($set_membership_duration_type[$data['type']])) ? $data['membership_duration_type'] = $set_membership_duration_type[$data['type']] : null;
 

@@ -1260,7 +1260,7 @@ Class Utilities {
 
                 if(isset($data['customer_id']) && $data['customer_id'] != ''){
 
-                    $allDeviceCount = Device::where('customer_id', (int)$data['customer_id'])->count();
+                    $allDeviceCount = Device::where('customer_id', (int)$data['customer_id'])->where('type','!=','web')->count();
                 }
 
                 $device_id = Device::max('_id') + 1;
@@ -1274,9 +1274,15 @@ Class Utilities {
                 
                 if($allDeviceCount == 0 && isset($data['customer_id']) && $data['customer_id'] != ''){
 
-                    $booktrial = \Booktrial::where("customer_id",(int)$data['customer_id'])->where('type','booktrials')->count();
+                    $booktrial = \Booktrial::where('created_at','>',new DateTime(date("d-m-Y 00:00:00",strtotime("20-4-2017 00:00:00"))))->where("customer_id",(int)$data['customer_id'])->where('type','booktrials')->count();
 
-                    if(count($booktrial) > 0){
+                    $description = "app download";
+
+                    $fitcashGivenWallet = Wallet::where('description','LIKE','%'.$description.'%')->where('customer_id',(int)$data['customer_id'])->count();
+
+                    $fitcashGivenCustomerwallet = Customerwallet::where('description','LIKE','%'.$description.'%')->where('customer_id',(int)$data['customer_id'])->count();
+
+                    if($booktrial > 0 && $fitcashGivenWallet == 0 && $fitcashGivenCustomerwallet == 0){
 
                         $addWalletData = [
                             "customer_id" => $data["customer_id"],

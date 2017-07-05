@@ -208,6 +208,7 @@ Route::get('updatebookmarks/email/{customeremail}/{finderid}/{remove?}',  array(
 Route::get('customerdetail/email/{customeremail}',  array('as' => 'customer.customerdetailbyemail','uses' => 'CustomerController@customerDetailByEmail'));
 Route::get('isregistered/{email}/{id?}/{collection?}',  array('as' => 'customer.isregistered','uses' => 'CustomerController@isRegistered'));
 Route::post('customer/addregid', array('as' => 'customer.addregid','uses' => 'CustomerController@addRegId'));
+Route::post('customer/add/webnotification', array('as' => 'customer.addwebnotification','uses' => 'CustomerController@addWebNotification'));
 Route::post('customer/addhealthinfo', array('as' => 'customer.addhealthinfo','uses' => 'CustomerController@addHealthInfo'));
 Route::post('customer/myrewards/create', array('as' => 'customer.createMyReward','uses' => 'MyrewardController@createMyReward'));
 Route::get('customer/home/{city?}', array('as' => 'customer.home','uses' => 'CustomerController@home'));
@@ -928,7 +929,7 @@ Route::get('orderdemonetisation/{order_id}',array('as' => 'orderdemonetisation',
 //Route::get('trainer/generaterdietplanorderonline/{order_id}',array('as' => 'transaction.generaterdietplanorderonline','uses' => 'TransactionController@generaterDietPlanOrderOnline'));
 Route::post('notifylocation',array('as' => 'customer/notifylocation','uses' => 'CustomerController@notifyLocation'));
 
-Route::get('demonetisation', 'DebugController@demonetisation');
+//Route::get('demonetisation', 'DebugController@demonetisation');
 
 Route::post('customer/getlink', 'CustomerController@getLink');
 
@@ -936,3 +937,5 @@ Route::post('customer/getlink', 'CustomerController@getLink');
 // Route::get('sendordermissedemails','TransactionController@sendOrderMissedEmails');
 
 Route::get('termsandconditions/{type}', 'CustomerController@termsAndConditions');
+
+Route::get('addfitcash', 'DebugController@addFitcash');

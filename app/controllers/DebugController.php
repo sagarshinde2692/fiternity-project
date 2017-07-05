@@ -4377,9 +4377,8 @@ public function yes($msg){
                     if($fitcash_plus_balance >= $cap){
 	            		$fitcash_balance = 0;
 	            	}else{
-						// What is this - wallet limit
-	            		if($fitcash_balance+$fitcash_plus_balance > $cap){
-	            			$fitcash_balance = $cap - $fitcash_plus_balance;
+	            		if($fitcash_balance+$fitcash_plus_balance > $wallet_limit){
+	            			$fitcash_balance = $wallet_limit - $fitcash_plus_balance;
 	            		}
 	            	}
             	}
@@ -4425,17 +4424,17 @@ public function yes($msg){
 
 	            $customer->update(['demonetisation'=>time()]);
 
-	            if(isset($customer->contact_no) && $customer->contact_no != "" && $customer->contact_no != null){
+	            // if(isset($customer->contact_no) && $customer->contact_no != "" && $customer->contact_no != null){
 
-		            $sms_data = [
-		            	'customer_phone' => $customer->contact_no,
-		            	'customer_wallet_balance' => $current_wallet_balance
-		            ];
+		        //     $sms_data = [
+		        //     	'customer_phone' => $customer->contact_no,
+		        //     	'customer_wallet_balance' => $current_wallet_balance
+		        //     ];
 
-		            $customersms = new CustomerSms();
+		        //     $customersms = new CustomerSms();
 
-	            	$customersms->demonetisation($sms_data);
-	            }
+	            // 	$customersms->demonetisation($sms_data);
+	            // }
 
 	           //echo"<pre>";print_r('success');exit;
 	        }
@@ -4443,6 +4442,86 @@ public function yes($msg){
         }
 
         return "success";
+
+    }
+
+    public function addFitcash(){
+
+    	$customer_emails = [
+			['email'=>'mittravinda@gmail.com','amount'=>400],
+			['email'=>'vinaya.r.kanoor@gmail.com','amount'=>400],
+			['email'=>'rohita.gadepalli@gmail.com','amount'=>400],
+			['email'=>'samar_krishna@yahoo.com','amount'=>800],
+			['email'=>'mumyums@gmail.com','amount'=>400],
+			['email'=>'reeneta05@hotmail.com','amount'=>800],
+			['email'=>'gayatrirao.great@gmail.com','amount'=>400],
+			['email'=>'aneeshapillai13@gmail.com','amount'=>400],
+			['email'=>'samshad.mohd@gmail.com','amount'=>400],
+			['email'=>'madhurgundecha@gmail.com','amount'=>400],
+			['email'=>'sarikapancholi48@gmail.com','amount'=>400],
+			['email'=>'brave.noopur08@gmail.com','amount'=>400],
+			['email'=>'archana.k11@gmail.com','amount'=>400],
+			['email'=>'asha.rattan@majesco.com','amount'=>400],
+			['email'=>'mitikjagtiani@gmail.com','amount'=>400],
+			['email'=>'amitnandoskar@gmail.com','amount'=>400],
+			['email'=>'srk9363@gmail.com','amount'=>400],
+			['email'=>'mumyums@gmail.com','amount'=>400],
+			['email'=>'shweta.h.lalan@gmail.com','amount'=>400],
+			['email'=>'kavitasachinnair@gmail.com','amount'=>400],
+			['email'=>'aky.akshi@gmail.com','amount'=>400],
+			['email'=>'tanishasadevra2609@gmail.com','amount'=>400],
+		];
+
+		$fitcashGiven = [];
+
+		foreach ($customer_emails as $value) {
+
+			$customer = Customer::where('email',$value['email'])->first();
+
+			if($customer){
+				if(!isset($customer->demonetisation)){
+					$customer->demonetisation =	time();
+					$customer->update();
+				}
+				$description = "Cashback on event purchase Beat the Heat";
+
+				$walletGiven = Wallet::where('description','LIKE','%'.$description.'%')->where('customer_id',(int)$customer->_id)->first();
+
+				if(!$walletGiven){
+
+					$wallet = new Wallet();
+		            $wallet->_id = (Wallet::max('_id')) ? (int) Wallet::max('_id') + 1 : 1;
+		            $wallet->amount = (int)$value['amount'];
+		            $wallet->used = 0;
+		            $wallet->balance = (int)$value['amount'];
+		            $wallet->status = "1";
+		            $wallet->entry = 'credit';
+		            $wallet->customer_id = (int)$customer->_id;
+		            $wallet->validity = time()+(86400*180);
+		            $wallet->type = "CASHBACK";
+		            $wallet->description = "Cashback on event purchase Beat the Heat, Expires On : ".date('d-m-Y',time()+(86400*180));
+		            $wallet->save();
+
+		            $wallet_transaction_data['wallet_id'] = $wallet->_id;
+		            $wallet_transaction_data['entry'] = $wallet->entry;
+		            $wallet_transaction_data['type'] = $wallet->type;
+		            $wallet_transaction_data['customer_id'] = $wallet->customer_id;
+		            $wallet_transaction_data['amount'] = $wallet->amount;
+		            $wallet_transaction_data['description'] = $wallet->description;
+		            $wallet_transaction_data['validity'] = $wallet->validity;
+
+			        $walletTransaction = WalletTransaction::create($wallet_transaction_data);
+
+			        $fitcashGiven[] = $value['email'];
+			    }
+		    }
+		}
+
+		echo"<pre>customer_emails";print_r($customer_emails);
+
+		echo"<pre>fitcashGiven";print_r($fitcashGiven);
+
+		return "Success";
 
     }
 

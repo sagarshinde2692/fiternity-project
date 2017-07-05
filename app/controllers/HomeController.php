@@ -1279,6 +1279,14 @@ class HomeController extends BaseController {
 
             // return $finder_ids;
             // echo $collection['finder_ids']."<br>";1395,881,1490,968,1765,613,1682,424,1493,1,1704,1928
+
+            foreach ($collection_finders as $key => $finder) {
+
+                if(!isset($finder['average_rating'])){
+                    $collection_finders[$key]['average_rating'] = 0;
+                }
+            }
+
             foreach ($finder_ids as $key => $finderid) {
                 $array = head(array_where($collection_finders, function($key, $value) use ($finderid){
                     if($value['_id'] == $finderid){ return $value; }
