@@ -1974,6 +1974,9 @@ class HomeController extends BaseController {
        $belp_data = Belp::where("email",$data["email"])->first();
        if(isset($belp_data)){
             if($belp_data["password"] == $data["password"]){
+                $belp_data["email_id"] = $data["email_id"];
+                $belp_data["name"] = $data["name"];
+                $belp_data->save();
                 unset($belp_data["password"]);
                 $resp = array("data" => $belp_data);
                 return  Response::json($resp, 200);
