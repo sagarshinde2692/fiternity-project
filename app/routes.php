@@ -936,7 +936,9 @@ Route::post('customer/getlink', 'CustomerController@getLink');
 // Route::get('sendtransactionemails/{withInstant?}','SchedulebooktrialsController@sendTransactionEmails');
 // Route::get('sendordermissedemails','TransactionController@sendOrderMissedEmails');
 
+Route::get('termsandconditions/{type}', 'CustomerController@termsAndConditions');
 
 Route::get('addfitcash', 'DebugController@addFitcash');
 
 Route::get('getbrands/{city}/{brand_id}', 'FindersController@getbrands');
+Route::get('orderfollowup','DebugController@orderFollowup');

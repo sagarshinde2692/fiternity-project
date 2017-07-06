@@ -4087,7 +4087,7 @@ class CustomerController extends \BaseController {
 	}
 
 	public function notificationSwitch($notificationTracking){
-
+		
 		$notificationTracking->update(['clicked'=>time()]);
 
 		$time = $notificationTracking->time;
@@ -4186,6 +4186,7 @@ class CustomerController extends \BaseController {
 			$response["title"] = isset($notificationTracking["title"])? $notificationTracking["title"]: "Default title";
 			$response["notification_msg"] = $notificationTracking["text"];
 			$response["finder_slug"] = Finder::find($data['finder_id'])->slug;
+			$response["type"] = $data["type"];
 			
 
 			$followup_date = "";
@@ -4206,7 +4207,7 @@ class CustomerController extends \BaseController {
 				}
 
 				if($start_date != ""){
-					$followup_date = strtotime($start_date." +2 days");
+					$followup_date = strtotime($start_date." +3 days");
 				}
 			}
 
@@ -4235,12 +4236,24 @@ class CustomerController extends \BaseController {
 					$response["start_time"] = strtoupper($data["schedule_slot_start_time"]);
 					$response["start_date"] = date("d-m-Y",strtotime($data["schedule_date"]));
 					Booktrial::where('_id', $response["transaction_id"])->update(['final_lead_stage'=> 'post_trial_stage']);
+					if(isset($_GET['device_type']) && $_GET['device_type'] == "ios"){
+						unset($response["text"]);
+					}
 					break;
-				case 'n-20m': 
+				case 'n-20m':
 					$response["start_time"] = strtoupper($data["schedule_slot_start_time"]);
 					$response["start_date"] = date("d-m-Y",strtotime($data["schedule_date"]));
+					if(isset($_GET['device_type']) && $_GET['device_type'] == "ios"){
+						unset($response["text"]);
+					}
 					break;
 				default:
+
+					if($hour>10 && $hour<20){
+						$response["phone"] = Config::get('app.followup_customer_number');;
+					}
+					
+					
 					$response["start_time"] = "";
 					$response["start_date"] = "";
 					
@@ -4345,7 +4358,21 @@ class CustomerController extends \BaseController {
 				$customerReward     =   new CustomerReward();
 				$calculation        =   $customerReward->purchaseGame($response['amount'], $data["finder_id"], $data["payment_mode"], false, $data["customer_id"]);
 				$response['fitcash'] = $calculation['amount_deducted_from_wallet'];
-				$response['remarks'] = "(2% Discount applied)";
+				if(isset($_GET['device_type']) && $_GET['device_type'] == "ios"){
+					switch($time){
+						case 'pl+3':
+						case 'pl+7':
+						case 'pl+15':
+						case 'pl+30':
+							unset($response["text"]);
+							if($response['fitcash']>0){
+								$response["fitcash_text"] = $response['fitcash']." Fitcash can be applied in the next step";
+							}
+							break;
+						
+					}
+				}
+				$response['remarks'] = "";
 
 			}
 
@@ -4423,6 +4450,19 @@ class CustomerController extends \BaseController {
 				$can_book = true;
 			}
 			$current_diet_plan->can_book = $can_book;
+			$current_diet_plan = $current_diet_plan->toArray();
+
+			if(isset($current_diet_plan['start_date'])){
+				$current_diet_plan['start_date'] = date("F j, Y", strtotime($current_diet_plan['start_date']));
+			}else{
+				$current_diet_plan['start_date'] = "Not scheduled yet.";
+			}
+
+			$service = Service::find((int)$current_diet_plan['service_id']);
+			if($service && isset($service->workout_results)){
+				$current_diet_plan['workout_goal'] = implode(", ", $service['workout_results']);
+			}
+			
 		}else{
 			$current_diet_plan;
 		}
@@ -4865,6 +4905,19 @@ class CustomerController extends \BaseController {
 		}catch(Exception $e){
 			return array('status'=>500, 'message'=>'server error');
 		}
+	}
+
+	public function termsAndConditions($type){
+
+		if($type == 'referral'){
+			$tnc = "<h3 style='text-align:center'>Terms and conditions for refer and earn</h3><ul><li>Every time a new user signs up with your referral code, they'll get Rs. 250 Fitcash +</li>
+				<li>As soon as they do their first transaction (free trials not applicable) on Fitternity - you will automatically get Rs. 250 Fitcash plus in your wallet. </li>
+				<li>FitCash + can we used in any booking and will be auto-applied on checkout</li>
+				<li>The validity of this Fitcash+ is 6 months</li>
+				<li>You can send unlimited referral invitations, however the maximum amount of FitCash + you can earn is Rs. 1,500</li></ul>";
+		}
+		
+		return $tnc;
 	}
 
 

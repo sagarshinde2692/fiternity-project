@@ -2234,6 +2234,18 @@ class SchedulebooktrialsController extends \BaseController {
 
             $booktrial = Booktrial::findOrFail($booktrial_id);
 
+            $dates = array('schedule_date','schedule_date_time','missedcall_date','customofferorder_expiry_date','followup_date','auto_followup_date');
+
+	        foreach ($dates as $key => $value) {
+                if(isset($booktrial[$value])){
+                    if($booktrial[$value] == "-" || $booktrial[$value] == ""){
+
+                        $booktrial->unset($value);
+                    }
+                }
+
+	        }
+
             $this->deleteTrialCommunication($booktrial);
 
             $this->firstTrial($booktrial->toArray()); // first trial communication
@@ -4687,7 +4699,7 @@ class SchedulebooktrialsController extends \BaseController {
 
                 switch($data['status']){
                     case 'confirm':
-                    $booktrial->pre_trial_status = 'attended';
+                    $booktrial->pre_trial_status = 'confirm';
                     $message = "Thanks for confirming, the trainer will be ready to attend you!";
                     break;  
                 }
