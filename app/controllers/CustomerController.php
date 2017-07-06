@@ -3337,13 +3337,20 @@ class CustomerController extends \BaseController {
 
 		$code = trim(strtoupper($data['code']));
 
-		if(strlen($code)==9 && strrpos($code, 'R') == (strlen($code)-1)){
-			$referral = $this->setReferralData($code);
+		if(is_numeric(strpos($code, 'R-')) && strpos($code, 'R-') == 0){
+			return $this->setReferralData($code);
 		}
 
-		if($referral['status']==200){
-			return $referral;
+		if(strlen($code)==9 && strrpos($code, 'R') == (strlen($code)-1)){
+			Log::info("inside referral ");
+			$referral = $this->setReferralData($code);
+			Log::info($referral);
+			if($referral['status']==200){
+				return $referral;
+			}
 		}
+
+		
 
 		$code = trim(strtolower($data['code']));
 
