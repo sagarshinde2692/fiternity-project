@@ -1005,7 +1005,7 @@ class HomeController extends BaseController {
 
                 $reward_details = [
                     'reward_id' => $reward->_id,
-                    'reward_type' => $reward->_id,
+                    'reward_type' => $reward->reward_type,
                     'finder_name'=> (isset($item['finder_name']) && $item['finder_name'] != "") ? $item['finder_name'] : ""
                 ];
             }
@@ -1098,7 +1098,7 @@ class HomeController extends BaseController {
                     }
 
                     if(in_array('offerings',$request['keys'])){
-                        $finder_data['remarks'] = $finder_data['offerings'];
+                        $finder_data['remarks'] = implode(",",$finder_data['offerings']);
                         unset($finder_data['offerings']);
                     }
 
@@ -1118,9 +1118,9 @@ class HomeController extends BaseController {
                         unset($finder_data['multiaddress']);
                     }
 
-                    if(in_array('contact',$request['keys']) && !$address){
+                    if(in_array('contact',$request['keys'])){
 
-                        if(!empty($finder_data['contact']) && isset($finder_data['contact']['address']) && $finder_data['contact']['address'] != ""){
+                        if(!$address && !empty($finder_data['contact']) && isset($finder_data['contact']['address']) && $finder_data['contact']['address'] != ""){
 
                             $finder_data['address'] = $finder_data['contact']['address'];
                         }
