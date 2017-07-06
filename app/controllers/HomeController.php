@@ -848,12 +848,12 @@ class HomeController extends BaseController {
             $booking_details = [];
 
             $booking_details_data = [
-                "booking_id" => ['field'=>'SUBSCRIPTION CODE','value'=>(string)$item['_id'],'position'=>1],
-                "description" => ['field'=>'DESCRIPTION','value'=>$item_description,'position'=>2],
-                "start_date" => ['field'=>'START DATE','value'=>'','position'=>3],
-                "start_time" => ['field'=>'START TIME','value'=>'','position'=>4],
-                "location" => ['field'=>'ADDRESS','value'=>'','position'=>5],
-                "price" => ['field'=>'PRICE','value'=>'Free Via Fitternity','position'=>6],
+                "booking_id" => ['field'=>'SUBSCRIPTION CODE','value'=>(string)$item['_id'],'position'=>0],
+                "description" => ['field'=>'DESCRIPTION','value'=>$item_description,'position'=>1],
+                "start_date" => ['field'=>'START DATE','value'=>'','position'=>2],
+                "start_time" => ['field'=>'START TIME','value'=>'','position'=>3],
+                "location" => ['field'=>'ADDRESS','value'=>'','position'=>4],
+                "price" => ['field'=>'PRICE','value'=>'Free Via Fitternity','position'=>5],
             ];
 
             if(isset($item['start_date']) && $item['start_date'] != ""){
@@ -950,7 +950,7 @@ class HomeController extends BaseController {
                             ['field'=>'Avg. Price Per Tiffin','value'=>'Rs 200'],
                             ['field'=>'Current Providers in area','value'=>'2 Providers']
                         ],
-                        "category"=>"healthy-tiffins",
+                        "category"=>"healthy tiffins",
                         "city"=>$city_name,
                         "region"=>(isset($item['finder_location']) && $item['finder_location'] != "") ? [$item['finder_location']] : []
                     ],
@@ -962,7 +962,7 @@ class HomeController extends BaseController {
                             ['field'=>'Avg. Price Per Plan','value'=>'Rs 200'],
                             ['field'=>'Primary Function','value'=>'Weight Loss']
                         ],
-                        "category"=>"diet_plan",
+                        "category"=>"diet plan",
                         "city"=>$city_name,
                         "region"=>(isset($item['finder_location']) && $item['finder_location'] != "") ? [$item['finder_location']] : []
                     ],
