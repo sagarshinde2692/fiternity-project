@@ -749,14 +749,14 @@ class HomeController extends BaseController {
                       // "business_type",
                       // "categorytags",
                       // "commercial_type",
-                      // "contact",
+                      "contact",
                       "coverimage",
                       // "distance",
                       // "facilities",
                       // "geolocation",
                       "location",
                       // "locationtags",
-                      // "multiaddress",
+                      "multiaddress",
                       // "offer_available",
                       "offerings",
                       // "photos",
@@ -846,11 +846,11 @@ class HomeController extends BaseController {
             $booking_details = [];
 
             $booking_details_data = [
-                "booking_id" => ['field'=>'BOOKING ID','value'=>(string)$item['_id'],'position'=>1],
+                "booking_id" => ['field'=>'SUBSCRIPTION CODE','value'=>(string)$item['_id'],'position'=>1],
                 "description" => ['field'=>'DESCRIPTION','value'=>$item_description,'position'=>2],
                 "start_date" => ['field'=>'START DATE','value'=>'','position'=>3],
                 "start_time" => ['field'=>'START TIME','value'=>'','position'=>4],
-                "location" => ['field'=>'LOCATION','value'=>'','position'=>5],
+                "location" => ['field'=>'ADDRESS','value'=>'','position'=>5],
                 "price" => ['field'=>'PRICE','value'=>'Free Via Fitternity','position'=>6],
             ];
 
@@ -968,8 +968,8 @@ class HomeController extends BaseController {
             ];
 
             $invite = [
-                "description"=>"Did you know that you increase the chances of you",
-                "message"=>"Awesome",
+                "description"=>"<b>Did you know?</b><br/>Working out with a friend can improve your performance by 87%",
+                "message"=>"Awesome! Lets invite your buddies to join you!",
                 "confirm"=>"Now you have invited your workout buddies,you are sure to have a lot of fun",
                 'show_invite' => $show_invite,
                 'id_for_invite' => $id_for_invite,
@@ -979,7 +979,7 @@ class HomeController extends BaseController {
 
             $conclusion = [
                 "title"=>"Done",
-                "description"=>"We hope you have a great time,if you need any help you can reach out to us below",
+                "description"=>"Hope you had a great experience. \n If you need any help, you can reach out to us on on below details",
                 "email"=>"info@fitternity.com",
                 "phone"=>"022-61222222"
             ];
@@ -995,7 +995,20 @@ class HomeController extends BaseController {
                 'threshold_value'=>6
             ];
 
-            $reward = [];
+            $reward_details = null;
+
+            if(isset($item['reward_ids']) && !empty($item['reward_ids'])){
+
+                $reward_id = (int)$item['reward_ids'][0];
+
+                $reward = Reward::select('_id','title','reward_type')->find($reward_id);
+
+                $reward_details = [
+                    'reward_id' => $reward->_id,
+                    'reward_type' => $reward->_id,
+                    'finder_name'=> (isset($item['finder_name']) && $item['finder_name'] != "") ? $item['finder_name'] : ""
+                ];
+            }
 
             $resp = [
                 'status'    =>  200,
@@ -1020,7 +1033,8 @@ class HomeController extends BaseController {
                 'conclusion'=>$conclusion,
                 'feedback'=>$feedback,
                 'order_type'=>$order_type,
-                'id'=>$id
+                'id'=>$id,
+                'reward_details'=>$reward_details
             ];
 
             return Response::json($resp);
@@ -1075,6 +1089,8 @@ class HomeController extends BaseController {
 
                 foreach ($vendor as $key => $value) {
 
+                    $address = false;
+
                     $finder_data = $value['object'];
 
                     if(in_array('coverimage',$request['keys'])){
@@ -1084,6 +1100,32 @@ class HomeController extends BaseController {
                     if(in_array('offerings',$request['keys'])){
                         $finder_data['remarks'] = $finder_data['offerings'];
                         unset($finder_data['offerings']);
+                    }
+
+                    if(in_array('multiaddress',$request['keys'])){
+
+                        $finder_data['address'] = "";
+
+                        if(!empty($finder_data['multiaddress']) && isset( $finder_data['multiaddress'][0])){
+
+                            $multi_address = $finder_data['multiaddress'][0];
+
+                            $finder_data['address'] = $multi_address['line1'].$multi_address['line2'].$multi_address['line3'].$multi_address['landmark'].$multi_address['pincode'];
+
+                            $address = true;                            
+                        }
+                     
+                        unset($finder_data['multiaddress']);
+                    }
+
+                    if(in_array('contact',$request['keys']) && !$address){
+
+                        if(!empty($finder_data['contact']) && isset($finder_data['contact']['address']) && $finder_data['contact']['address'] != ""){
+
+                            $finder_data['address'] = $finder_data['contact']['address'];
+                        }
+
+                        unset($finder_data['contact']);
                     }
 
                     $finder[] = $finder_data;
