@@ -939,4 +939,4 @@ Route::post('customer/getlink', 'CustomerController@getLink');
 
 Route::get('addfitcash', 'DebugController@addFitcash');
 
-Route::get('getbrands/{city?}/{brand_name}', 'FinderController@getbrands');
+Route::get('getbrands/{city}/{brand_id}', 'FindersController@getbrands');

@@ -3204,8 +3204,16 @@ class FindersController extends \BaseController {
 		}
 	}
 
-	public function getbrands($city,$brand_name){
-		
+	public function getbrands($city,$brand_id){
+		$city = getmy_city($city);
+		$city_obj = City::active()->where('slug',$city)->get(array('_id'));
+		$brand_id = (int) $brand_id;
+		if(count($city_obj) > 0){
+			$finders = Finder::active()->where("brand_id",$brand_id)->where('city_id',$city_obj[0]->_id)->with('location')->get(array('title','location_id','slug'));
+		}else{
+			$finders = Finder::active()->where("brand_id",$brand_id)->where('city_id',10000)->where('custom_city',new MongoRegex('^'.$city.'$/i'))->get(array('title','custom_location','slug'));
+		}
+		return $finders;
 	}
 
 }
