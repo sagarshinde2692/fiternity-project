@@ -931,7 +931,7 @@ class HomeController extends BaseController {
                 "image"=>"image",
                 "vendor"=>[
                     [ 
-                        "image"=>"b.fitn.in/success-pages/swimming+session.png",
+                        "image"=>"http://b.fitn.in/success-pages/swimming+session.png",
                         "title"=>"Book Swiming Sessions",
                         "details"=>[
                             ['field'=>'Avg. Calorie Burn','value'=>'750 KCAL'],
@@ -943,7 +943,7 @@ class HomeController extends BaseController {
                         "region"=>(isset($item['finder_location']) && $item['finder_location'] != "") ? [$item['finder_location']] : []
                     ],
                     [ 
-                        "image"=>"b.fitn.in/success-pages/healthy+tiffin.png",
+                        "image"=>"http://b.fitn.in/success-pages/healthy+tiffin.png",
                         "title"=>"Book Healthy Tiffin",
                         "details"=>[
                             ['field'=>'Avg. Trial Meal Duration','value'=>'3 Days'],
