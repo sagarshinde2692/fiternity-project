@@ -758,7 +758,7 @@ class HomeController extends BaseController {
                       // "locationtags",
                       // "multiaddress",
                       // "offer_available",
-                      // "offerings",
+                      "offerings",
                       // "photos",
                       // "servicelist",
                       "slug",
@@ -995,6 +995,8 @@ class HomeController extends BaseController {
                 'threshold_value'=>6
             ];
 
+            $reward = [];
+
             $resp = [
                 'status'    =>  200,
                 'item'      =>  null,
@@ -1073,7 +1075,18 @@ class HomeController extends BaseController {
 
                 foreach ($vendor as $key => $value) {
 
-                    $finder[] = $value['object'];
+                    $finder_data = $value['object'];
+
+                    if(in_array('coverimage',$request['keys'])){
+                        $finder_data['coverimage'] = Config::get('app.s3_finderurl.cover_thumb').$finder_data['coverimage'];
+                    }
+
+                    if(in_array('offerings',$request['keys'])){
+                        $finder_data['remarks'] = $finder_data['offerings'];
+                        unset($finder_data['offerings']);
+                    }
+
+                    $finder[] = $finder_data;
                 }
             }
 
