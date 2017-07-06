@@ -760,7 +760,7 @@ class HomeController extends BaseController {
                       // "locationtags",
                       "multiaddress",
                       // "offer_available",
-                      "offerings",
+                      //"offerings",
                       // "photos",
                       // "servicelist",
                       "slug",
@@ -926,8 +926,8 @@ class HomeController extends BaseController {
             }
 
             $fitcash_vendor = [
-                "title"=>"title",
-                "description"=>"description",
+                "title"=>"Header - You have ".$fitcash_plus." Fitcash+ and now its time to use it!",
+                "description"=>"Fitcash+ is your fitness currency on Fitternity. You can use the entire amount in your transaction! Fitcash can be used for any booking or purchase on Fitternity ranging from workout sessions,memberships and healthy tiffin subscriptions.Fitcash+ is your companion for everything! \n Here are few options you can spend your Fitcash+ on.",
                 "image"=>"image",
                 "vendor"=>[
                     [ 
@@ -946,7 +946,7 @@ class HomeController extends BaseController {
                         "image"=>"image",
                         "title"=>"Book Healthy Tiffin",
                         "details"=>[
-                            ['field'=>'Avg. Calorie Intake','value'=>'750 KCAL'],
+                            ['field'=>'Avg. Trial Meal Duration','value'=>'3 Days'],
                             ['field'=>'Avg. Price Per Tiffin','value'=>'Rs 200'],
                             ['field'=>'Current Providers in area','value'=>'2 Providers']
                         ],
