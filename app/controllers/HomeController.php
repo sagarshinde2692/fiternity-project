@@ -433,6 +433,8 @@ class HomeController extends BaseController {
         $customer_id = "";
         $jwt_token = Request::header('Authorization');
 
+        Log::info("getSuccessMsg".$jwt_token);
+
         if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
 
             $decoded = customerTokenDecode($jwt_token);
