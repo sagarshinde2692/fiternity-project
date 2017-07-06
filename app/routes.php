@@ -939,3 +939,5 @@ Route::post('customer/getlink', 'CustomerController@getLink');
 Route::get('termsandconditions/{type}', 'CustomerController@termsAndConditions');
 
 Route::get('addfitcash', 'DebugController@addFitcash');
+
+Route::get('orderfollowup','DebugController@orderFollowup');
