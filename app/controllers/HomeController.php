@@ -926,12 +926,12 @@ class HomeController extends BaseController {
             }
 
             $fitcash_vendor = [
-                "title"=>"Header - You have ".$fitcash_plus." Fitcash+ and now its time to use it!",
+                "title"=>"You have Rs. ".$fitcash_plus." Fitcash+ and now its time to use it!",
                 "description"=>"Fitcash+ is your fitness currency on Fitternity. You can use the entire amount in your transaction! Fitcash can be used for any booking or purchase on Fitternity ranging from workout sessions,memberships and healthy tiffin subscriptions.Fitcash+ is your companion for everything! \n Here are few options you can spend your Fitcash+ on.",
                 "image"=>"image",
                 "vendor"=>[
                     [ 
-                        "image"=>"image",
+                        "image"=>"b.fitn.in/success-pages/swimming+session.png",
                         "title"=>"Book Swiming Sessions",
                         "details"=>[
                             ['field'=>'Avg. Calorie Burn','value'=>'750 KCAL'],
@@ -943,7 +943,7 @@ class HomeController extends BaseController {
                         "region"=>(isset($item['finder_location']) && $item['finder_location'] != "") ? [$item['finder_location']] : []
                     ],
                     [ 
-                        "image"=>"image",
+                        "image"=>"b.fitn.in/success-pages/healthy+tiffin.png",
                         "title"=>"Book Healthy Tiffin",
                         "details"=>[
                             ['field'=>'Avg. Trial Meal Duration','value'=>'3 Days'],
@@ -955,7 +955,7 @@ class HomeController extends BaseController {
                         "region"=>(isset($item['finder_location']) && $item['finder_location'] != "") ? [$item['finder_location']] : []
                     ],
                     [ 
-                        "image"=>"image",
+                        "image"=>"http://b.fitn.in/success-pages/diet+plan.png",
                         "title"=>"Buy Online Diet Plans",
                         "details"=>[
                             ['field'=>'Avg. Plan Duration','value'=>'1 Month'],
@@ -1096,7 +1096,7 @@ class HomeController extends BaseController {
                     $finder_data = $value['object'];
 
                     if(in_array('coverimage',$request['keys'])){
-                        $finder_data['coverimage'] = Config::get('app.s3_finderurl.cover_thumb').$finder_data['coverimage'];
+                        $finder_data['coverimage'] = Config::get('app.s3_finderurl.cover').$finder_data['coverimage'];
                     }
 
                     if(in_array('offerings',$request['keys'])){
