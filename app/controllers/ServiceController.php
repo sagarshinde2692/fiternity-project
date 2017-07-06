@@ -620,7 +620,7 @@ class ServiceController extends \BaseController {
         $schedules = array();
 
         switch ($type) {
-
+			case 'workout-session':
         	case 'workout_session': $type = 'workoutsessionschedules'; break;
         	case 'trial': $type = 'trialschedules'; break;
         	default: $type = 'trialschedules'; break;

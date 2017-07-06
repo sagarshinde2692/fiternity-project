@@ -3430,8 +3430,13 @@ class CustomerController extends \BaseController {
 				$this->utilities->walletTransaction($walletData);
 
 				$resp 	= 	array('status' => 200,'message' => "Thank you. Rs ".$cashback_amount." has been successfully added to your fitcash wallet", 'walletdata' => $walletData);
-				if($code == 'yogaday'){
-					$resp["showpopUp"] = true;
+				if($code == "yogaday"){
+					$resp["popup"] = array();
+					$resp["popup"]["header_image"] = "https://b.fitn.in/iconsv1/global/fitcash.jpg";
+					$resp["popup"]["header_text"] = "Congratulations";
+					$resp["popup"]["text"] = "Chal chal bht hua";
+					$resp["popup"]["button"] = "Khareed Le";
+					$resp["popup"]["deep_link_url"] = "ftrnty://ftrnty.com/v/7146";
 				}
 				return  Response::json($resp, 200);	
 			}
@@ -4466,8 +4471,8 @@ class CustomerController extends \BaseController {
 		}else{
 			$current_diet_plan;
 		}
-		
-		$resp = array("current_diet_plan"=>$current_diet_plan);
+		$second_section = array("header" => "<p> what you <span style='color:#F7A81E'>eat</span> <br> is what makes <span style='color:#F7A81E'>you</span>", "subline"=>"<p>You've taken a great step to be fit & fine in your life!</p> <p>Here's what you can expect from the diet plan you've purchased</p>", "content"=>"<ul>    <li>Personalisations based on your requirements</li>    <li>Unlimited access to your dietician</li>    <li>Bi-weekly diet changes</li>    <li>Assorted healthy recipes & hacks</li>    <li>All diet changes synchronized with your trainer</li></ul>");
+		$resp = array("current_diet_plan"=>$current_diet_plan, "content_section"=>$second_section);
 		return Response::json($resp,200);
 	}
 

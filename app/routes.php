@@ -149,6 +149,7 @@ Route::get('getcollecitonfinders/{city}/{slug}', 'HomeController@getcollecitonfi
 Route::get('getlocations/{city?}', 'HomeController@getCityLocation');
 Route::get('getcategories/{city?}', 'HomeController@getCityCategorys');
 Route::get('getcities', 'HomeController@getCities');
+Route::get('ifcity/{city}', 'HomeController@ifCity');
 
 Route::get('getlandingpagefinders/{cityid}/{landingpageid}/{locationclusterid?}', 'HomeController@getLandingPageFinders');
 
@@ -933,6 +934,8 @@ Route::post('notifylocation',array('as' => 'customer/notifylocation','uses' => '
 
 Route::post('customer/getlink', 'CustomerController@getLink');
 
+Route::post('app/installs', 'HomeController@appinstalls');
+Route::post('promotional/notification','HomeController@promotionalNotification');
 // Route::get('sendtransactionemails/{withInstant?}','SchedulebooktrialsController@sendTransactionEmails');
 // Route::get('sendordermissedemails','TransactionController@sendOrderMissedEmails');
 
@@ -942,3 +945,5 @@ Route::get('addfitcash', 'DebugController@addFitcash');
 
 Route::get('getbrands/{city}/{brand_id}', 'FindersController@getbrands');
 Route::get('orderfollowup','DebugController@orderFollowup');
+Route::post('belp/signin','HomeController@belpSignin');
+Route::post('belp/fitnessquiz','HomeController@belpFitnessQuiz');

@@ -5,7 +5,8 @@
 
 use \GuzzleHttp\Exception\RequestException;
 use \GuzzleHttp\Client;
-
+use App\Notification\CustomerNotification as CustomerNotification;
+use App\Services\Sidekiq as Sidekiq;
 class HomeController extends BaseController {
 
 
@@ -15,7 +16,9 @@ class HomeController extends BaseController {
     protected $client;
 
 
-    public function __construct() {
+    public function __construct(CustomerNotification $customernotification,Sidekiq $sidekiq) {
+        $this->customernotification     =   $customernotification;
+        $this->sidekiq = $sidekiq;
         $this->initClient();
     }
 
@@ -1895,6 +1898,121 @@ class HomeController extends BaseController {
         return Response::json($responsedata, 200);
     }
 
+    public function appinstalls(){
+        $data = Input::json()->all();
+        $appinstall = Appinstall::create($data);
+        return $appinstall;
+    }
 
+    public function promotionalNotification(){
+        $data = Input::json()->all();
+        $device_type = $data['device_type'];
+        $to = $data['to'];
+        if($device_type == "android"){
+            $notification_object = array("notif_id" => 2005,"notif_type" => "promotion", "notif_object" => array("promo_id"=>739423,"promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> "593a9380820095bf3e8b4568","title"=> $data["title"],"text"=> "Message .. Long one maybe"));
+        }else{
+            $notification_object = array("aps"=>array("alert"=> array("body" => $data["title"]), "sound" => "default", "badge" => 1), "notif_object" => array("promo_id"=>739423,"notif_type" => "promotion","promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> "593a9380820095bf3e8b4568","title"=> $data["title"],"text"=> "Message .. Long one maybe"));
+        }
+        $notificationData = array("to" =>array($data['to']),"delay" => 0,"label"=>$data['label'],"app_payload"=>$notification_object);
+        $route  = $device_type;
+        return $result  = $this->sidekiq->sendToQueue($notificationData,$route);
+    }
+
+    public function ifcity($city){
+        $city = strtolower($city);
+        $send_city = $city;
+        $ifcity = false;
+        switch($city){
+            case "mumbai":
+            case "bombay":
+            case "thane":
+            case "vashi":
+            case "navi mumbai":
+                $send_city = "mumbai";
+                $ifcity = true;
+                break;
+            case "pune":
+            case "pimpri":
+            case "pimpri chinchwad":
+                $send_city = "pune";
+                $ifcity = true;
+                break;
+            case "bangalore":
+            case "bengaluru":
+                $send_city = "bangalore";
+                $ifcity = true;
+                break;
+            case "delhi":
+            case "new delhi":
+                $send_city = "delhi";
+                $ifcity = true;
+                break;
+            case "gurgaon":
+                $send_city = "gurgaon";
+                $ifcity = true;
+                break;
+            case "noida":
+            case "greater noida":
+                $send_city = "gurgaon";
+                $ifcity = true;
+                break;
+        };
+        $response = array("city"=>$send_city,"found"=>$ifcity);
+        return $response;
+    }
+
+    public function belpSignin(){
+       $data   =   Input::json()->all();
+       if(!isset($data["email"])){
+           $resp = array("message"=> "Email field can't be blank");
+           return  Response::json($resp, 400);
+       }
+       if(!isset($data["password"])){
+           $resp = array("message"=> "Password field can't be blank");
+           return  Response::json($resp, 400);
+       }
+       $belp_data = Belp::where("email",$data["email"])->first();
+       if(isset($belp_data)){
+            if($belp_data["password"] == $data["password"]){
+                unset($belp_data["password"]);
+                $resp = array("data" => $belp_data);
+                return  Response::json($resp, 200);
+            }else{
+                $resp = array("message"=> "Email password doesn't match");
+                return  Response::json($resp, 401);     
+            }
+       }else{
+           $resp = array("message"=> "Email doesn't exists");
+           return  Response::json($resp, 401);
+       }
+        
+    }
+
+    public function belpFitnessQuiz(){
+        $data   =   Input::json()->all();
+        if(!isset($data["belp_id"])){
+            $resp = array("message"=> "No belp Id found");
+            return  Response::json($resp, 400);
+        }else{
+            $belp_data = Belp::where("_id",$data["belp_id"])->first();
+            if(isset($belp_data)){
+                $belp_capture = Belpcapture::where("belp_id",$data["belp_id"])->get();
+                // return $belp_data;
+                if(count($belp_capture) == 0 || isset($belp_data->test)){
+                    $data["email"] = $belp_data["email"];
+                    $data["capture_type"] = "belp_capture";
+                    $storecapture = Belpcapture::create($data);
+                    $resp = array("message"=> "Entry Saved", "capture_id"=>$storecapture->_id);
+                    return  Response::json($resp, 200);
+                }else{
+                    $resp = array("message"=> "Your entry has already reached us");
+                    return  Response::json($resp, 400);
+                }
+            }else{
+                $resp = array("message"=> "Belp user not found");
+                return  Response::json($resp, 400);
+            }
+        }
+    }
 
 }
