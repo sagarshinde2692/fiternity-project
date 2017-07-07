@@ -945,6 +945,12 @@ class HomeController extends BaseController {
                 $booking_details_data['address']['value'] = $item['finder_address'];
             }
 
+            if(isset($booking_details_data['address']['value'])){
+
+                $booking_details_data['address']['value'] = str_replace("  ", " ",$booking_details_data['address']['value']);
+                $booking_details_data['address']['value'] = str_replace(", , ", "",$booking_details_data['address']['value']);
+            }
+
             if(in_array($type, ['manualtrial','manualautotrial','manualmembership'])){
                 $booking_details_data["start_date"]["field"] = "PREFERRED DATE";
                 $booking_details_data["start_time"]["field"] = "PREFERRED TIME";
