@@ -998,7 +998,7 @@ class HomeController extends BaseController {
 
             foreach ($booking_details_all as $key => $value) {
 
-                if($value['value'] != ""){
+                if($value['value'] != "" && $value['value'] != "-"){
                     $booking_details[] = $value;
                 }
 
@@ -1102,6 +1102,10 @@ class HomeController extends BaseController {
                 ];
             }*/
 
+            if(empty($near_by_vendor)){
+                $show_other_vendor = false;
+            }
+
             $resp = [
                 'status'    =>  200,
                 'item'      =>  null,
@@ -1133,7 +1137,7 @@ class HomeController extends BaseController {
             return Response::json($resp);
         }
     }
-
+    
     public function geoLocationFinder($request){
 
         $offset  = $request['offset'];
