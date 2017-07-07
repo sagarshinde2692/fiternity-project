@@ -1794,8 +1794,15 @@ class CustomerController extends \BaseController {
 		$decoded = $this->customerTokenDecode($jwt_token);
 
 		$customer_id = $decoded->customer->_id;
+		if(isset($_GET['af_instance_id'])){
+			$af_instance_id = $_GET['af_instance_id'];
+			$customer = Customer::find((int) $customer_id);
+			$af_instance_idData = ['af_instance_id' => $af_instance_id];
+			$customer->update($af_instance_idData);
+		}
+		$customer_detail = $this->customerDetail($customer_id);
 
-		return $this->customerDetail($customer_id);
+		return $customer_detail;
 
 	}
 
