@@ -503,7 +503,7 @@ class HomeController extends BaseController {
             $finder_location = "";
             if(isset($itemData['finder_id']) && $itemData['finder_id'] != ""){
 
-                $finder = Finder::with(array('location'=>function($query){$query->select('name');}))->find($finder_id,array('_id','title','location_id'));
+                $finder = Finder::with(array('location'=>function($query){$query->select('name');}))->find((int)$itemData['finder_id'],array('_id','title','location_id'));
 
                 if(isset($finder['title']) && $finder['title'] != ""){
                     $finder_name = ucwords($finder['title']);
