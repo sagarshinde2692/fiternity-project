@@ -906,9 +906,9 @@ class HomeController extends BaseController {
 
             $booking_details_data["service_duration"] = ['field'=>'SERVICE DURATION','value'=>$service_duration,'position'=>$position++];
 
-            $booking_details_data["start_date"] = ['field'=>'START DATE','value'=>'','position'=>$position++];
+            $booking_details_data["start_date"] = ['field'=>'START DATE','value'=>'-','position'=>$position++];
 
-            $booking_details_data["start_time"] = ['field'=>'START TIME','value'=>'','position'=>$position++];
+            $booking_details_data["start_time"] = ['field'=>'START TIME','value'=>'-','position'=>$position++];
 
             $booking_details_data["address"] = ['field'=>'ADDRESS','value'=>'','position'=>$position++];
 
@@ -923,15 +923,15 @@ class HomeController extends BaseController {
             }
 
             if(isset($item['start_date']) && $item['start_date'] != ""){
-                $booking_details_data['start_date']['value'] = date('d-m-Y (W)',strtotime($item['start_date']));
+                $booking_details_data['start_date']['value'] = date('d-m-Y (L)',strtotime($item['start_date']));
             }
 
             if(isset($item['schedule_date']) && $item['schedule_date'] != ""){
-                $booking_details_data['start_date']['value'] = date('d-m-Y (W)',strtotime($item['schedule_date']));
+                $booking_details_data['start_date']['value'] = date('d-m-Y (L)',strtotime($item['schedule_date']));
             }
 
             if(isset($item['preferred_starting_date']) && $item['preferred_starting_date'] != ""){
-                $booking_details_data['start_date']['value'] = date('d-m-Y (W)',strtotime($item['preferred_starting_date']));
+                $booking_details_data['start_date']['value'] = date('d-m-Y (L)',strtotime($item['preferred_starting_date']));
             }
 
             if(isset($item['start_time']) && $item['start_time'] != ""){
