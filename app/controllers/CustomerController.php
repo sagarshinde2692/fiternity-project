@@ -1353,7 +1353,15 @@ class CustomerController extends \BaseController {
 					->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
 					->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 					->find(intval($value['finder_id']),['_id','title','slug','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile','finder_poc_for_customer_name','info','category_id','location_id','city_id','category','location','city','average_rating','total_rating_count','review_added']);
+
 					if($finderarr){
+
+						$finderarr = $finderarr->toArray();
+
+						if(isset($finderarr['info']['service']) && is_array($finderarr['info']['service'])){
+							$finderarr['info']['service'] = "";
+						}
+
 						$value['finder'] = $finderarr;
 					}
 				}
@@ -1362,10 +1370,6 @@ class CustomerController extends \BaseController {
 
 				if(!isset($value['preferred_starting_date']) && isset($value['start_date'])){
 					$value['preferred_starting_date'] = $value['start_date']; 
-				}
-
-				if(isset($value['finder']['info']['service']) && is_array($value['finder']['info']['service'])){
-					$value['finder']['info']['service'] = "";
 				}
 
 				if(isset($value['amount_customer']) && $value['amount_customer'] != 0){
