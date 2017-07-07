@@ -906,7 +906,7 @@ class HomeController extends BaseController {
             }
 
             if(isset($item["reward_info"]) && $item["reward_info"] != ""){
-                $booking_details_data["reward"] = ['field'=>'REWARD','value'=>$item["reward_info"],'position'=>$position++];
+                $booking_details_data["reward"] = ['field'=>'REWARD','value'=>$item["reward_info"]." (Avail it from your Profile)",'position'=>$position++];
             }
 
             if(isset($item['start_date']) && $item['start_date'] != ""){

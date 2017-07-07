@@ -1364,9 +1364,14 @@ class CustomerController extends \BaseController {
 					$value['preferred_starting_date'] = $value['start_date']; 
 				}
 
+				if(isset($value['info']['service']) && is_array($value['info']['service'])){
+					$value['info']['service'] = "";
+				}
+
 				if(isset($value['amount_customer']) && $value['amount_customer'] != 0){
 					$value['amount'] = $value['amount_customer'];
 				}
+
 
 				$getAction = $this->getAction($value,"orderHistory");
 
