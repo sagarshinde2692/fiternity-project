@@ -501,9 +501,10 @@ class HomeController extends BaseController {
 
             $finder_name = "";
             $finder_location = "";
+            $finder_address = "";
             if(isset($itemData['finder_id']) && $itemData['finder_id'] != ""){
 
-                $finder = Finder::with(array('location'=>function($query){$query->select('name');}))->find((int)$itemData['finder_id'],array('_id','title','location_id'));
+                $finder = Finder::with(array('location'=>function($query){$query->select('name');}))->find((int)$itemData['finder_id'],array('_id','title','location_id','contact'));
 
                 if(isset($finder['title']) && $finder['title'] != ""){
                     $finder_name = ucwords($finder['title']);
@@ -512,6 +513,11 @@ class HomeController extends BaseController {
                 if(isset($finder['location']['name']) && $finder['location']['name'] != ""){
                     $finder_location = ucwords($finder['location']['name']);
                 }
+
+                if(isset($finder['contact']['address']) && $finder['contact']['address'] != ""){
+                    $finder_address = $finder['contact']['address'];
+                }
+
             }
 
             if(isset($itemData['finder_name']) && $itemData['finder_name'] != ""){
@@ -524,9 +530,9 @@ class HomeController extends BaseController {
 
             $item           =   $itemData;
             $service_name    =   (isset($itemData) && isset($itemData['service_name'])) ? ucwords($itemData['service_name']) : "";
-            $schedule_date  =   (isset($itemData['schedule_date']) && $itemData['schedule_date'] != "") ? date(' jS F\, Y \(l\) ', strtotime($itemData['schedule_date'])) : "-";
-            $schedule_slot  =   (isset($itemData['schedule_slot']) && $itemData['schedule_slot'] != "") ? $itemData['schedule_slot'] : "-";
-            $service_duration = (isset($itemData['service_duration_purchase']) && $itemData['service_duration_purchase'] != "") ? $itemData['service_duration_purchase'] : "-";
+            $schedule_date  =   (isset($itemData['schedule_date']) && $itemData['schedule_date'] != "") ? date(' jS F\, Y \(l\) ', strtotime($itemData['schedule_date'])) : "";
+            $schedule_slot  =   (isset($itemData['schedule_slot']) && $itemData['schedule_slot'] != "") ? $itemData['schedule_slot'] : "";
+            $service_duration = (isset($itemData['service_duration_purchase']) && $itemData['service_duration_purchase'] != "") ? $itemData['service_duration_purchase'] : "";
             $preferred_starting_date = (isset($itemData['preferred_starting_date'])) ? $itemData['preferred_starting_date'] : "";
 
             $header     =   "Congratulations!";
@@ -950,14 +956,18 @@ class HomeController extends BaseController {
                 $booking_details_data['price']['value']= "Rs. ".(string)$item['amount_finder'];
             }
 
+            if($finder_address != ""){
+                $booking_details_data['address']['value'] = $finder_address;
+            }
+
             if(isset($item['finder_address']) && $item['finder_address'] != ""){
-                $booking_details_data['address']['value'] = (string)$item['finder_address'];
+                $booking_details_data['address']['value'] = $item['finder_address'];
             }
 
             if(in_array($type, ['manualtrial','manualautotrial','manualmembership'])){
                 $booking_details_data["start_date"]["field"] = "PREFERRED DATE";
                 $booking_details_data["start_time"]["field"] = "PREFERRED TIME";
-                $booking_details_data["price"]["value"] = "-";
+                $booking_details_data["price"]["value"] = "";
             }
 
             if(in_array($type, ['booktrialfree','booktrial','workoutsession'])){
@@ -971,13 +981,27 @@ class HomeController extends BaseController {
             }
 
             if(isset($item['preferred_time']) && $item['preferred_time'] != ""){
-                $booking_details_data['start_date']['field'] = 'PREFERRED TIME';
-                $booking_details_data['start_date']['value'] = $item['preferred_time'];
+                $booking_details_data['start_time']['field'] = 'PREFERRED TIME';
+                $booking_details_data['start_time']['value'] = $item['preferred_time'];
             }
 
+            if(isset($item['"preferred_service']) && $item['"preferred_service'] != "" && $item['"preferred_service'] != null){
+                $booking_details_data['service_name']['field'] = 'PREFERRED SERVICE';
+                $booking_details_data['service_name']['value'] = $item['preferred_service'];
+            }
+
+            $booking_details_all = [];
             foreach ($booking_details_data as $key => $value) {
 
-                $booking_details[$value['position']] = ['field'=>$value['field'],'value'=>$value['value']];
+                $booking_details_all[$value['position']] = ['field'=>$value['field'],'value'=>$value['value']];
+            }
+
+            foreach ($booking_details_all as $key => $value) {
+
+                if($value['value'] != ""){
+                    $booking_details[] = $value;
+                }
+
             }
 
             $city_name = "";
@@ -1096,7 +1120,7 @@ class HomeController extends BaseController {
                 'near_by_vendor'=>$near_by_vendor,
                 'booking_details'=>$booking_details,
                 'fitcash_vendor'=>$fitcash_vendor,
-                'poc'=>$poc,
+                'poc'=>null,
                 'invite'=>$invite,
                 'conclusion'=>$conclusion,
                 'feedback'=>$feedback,
