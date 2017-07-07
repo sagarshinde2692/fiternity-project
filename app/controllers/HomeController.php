@@ -9,14 +9,16 @@ use \GuzzleHttp\Client;
 class HomeController extends BaseController {
 
 
-    protected $api_url = "http://a1.fitternity.com/";
-    // protected $api_url = "http://fitapi.com/";
+    protected $api_url = false;
     protected $debug = false;
     protected $client;
 
 
     public function __construct() {
+        
         $this->initClient();
+
+        $this->api_url = Config::get("app.url");
     }
 
 
