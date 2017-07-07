@@ -4603,13 +4603,6 @@ class CustomerController extends \BaseController {
 					$customer->update();
 				}
 
-
-				if(isset($customer->referral_code) && strrpos($customer->referral_code, 'R') != (strlen($customer->referral_code)-1)){
-					
-					$customer->referral_code = $this->generateReferralCode($customer->name);
-					$customer->update();
-				}
-
 				$referral_code = $customer['referral_code'];
 
 				$customer_email = $customer->email;
