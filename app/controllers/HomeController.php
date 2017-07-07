@@ -15,10 +15,9 @@ class HomeController extends BaseController {
 
 
     public function __construct() {
-        
-        $this->initClient();
 
-        $this->api_url = Config::get("app.url");
+        $this->api_url = Config::get("app.url")."/";
+        $this->initClient();
     }
 
 
@@ -772,116 +771,97 @@ class HomeController extends BaseController {
 
             $near_by_vendor = [];
 
+            $category_array = [
+                "swimming"=>["category"=>"swimming","count"=>0],
+                "healthy_tiffins"=>["category"=>"healthy tiffins","count"=>0]
+            ];
+
             if(isset($finder) && isset($finder['lat']) && isset($finder['lon'])){
 
                 $lat = $finder['lat'];
                 $lon = $finder['lon'];
 
-                $near_by_vendor_request = [
-                    "offset" => 0,
-                    "limit" => 6,
-                    "radius" => "3km",
-                    "category"=>"",
-                    "lat"=>$lat,
-                    "lon"=>$lon,
-                    "keys"=>[
-                      "average_rating",
-                      // "business_type",
-                      // "categorytags",
-                      // "commercial_type",
-                      "contact",
-                      "coverimage",
-                      // "distance",
-                      // "facilities",
-                      // "geolocation",
-                      "location",
-                      // "locationtags",
-                      "multiaddress",
-                      // "offer_available",
-                      //"offerings",
-                      // "photos",
-                      // "servicelist",
-                      "slug",
-                      "title",
-                      "id",
-                      // "total_rating_count",
-                      // "vendor_type"
-                    ]
-                ];
+                $near_by_type = ["membershipwithpg","membershipwithoutpg","manualmembership"];
 
-                $near_by_vendor = $this->geoLocationFinder($near_by_vendor_request);
+                if(!in_array($type,$near_by_type)){
 
-                $near_by_vendor_message = "People with similar prefrences";
+                    $near_by_vendor_request = [
+                        "offset" => 0,
+                        "limit" => 6,
+                        "radius" => "3km",
+                        "category"=>"",
+                        "lat"=>$lat,
+                        "lon"=>$lon,
+                        "keys"=>[
+                          "average_rating",
+                          // "business_type",
+                          // "categorytags",
+                          // "commercial_type",
+                          "contact",
+                          "coverimage",
+                          // "distance",
+                          // "facilities",
+                          // "geolocation",
+                          "location",
+                          // "locationtags",
+                          "multiaddress",
+                          // "offer_available",
+                          //"offerings",
+                          // "photos",
+                          // "servicelist",
+                          "slug",
+                          "title",
+                          "id",
+                          // "total_rating_count",
+                          // "vendor_type"
+                        ]
+                    ];
 
-                $swimming_finder_request = [
-                    "offset" => 0,
-                    "limit" => 6,
-                    "radius" => "3km",
-                    "category"=>"swimming",
-                    "lat"=>$lat,
-                    "lon"=>$lon,
-                    "keys"=>[
-                      // "average_rating",
-                      // "business_type",
-                      // "categorytags",
-                      // "commercial_type",
-                      // "contact",
-                      "coverimage",
-                      // "distance",
-                      // "facilities",
-                      // "geolocation",
-                      "location",
-                      // "locationtags",
-                      // "multiaddress",
-                      // "offer_available",
-                      // "offerings",
-                      // "photos",
-                      // "servicelist",
-                      "slug",
-                      "title",
-                      "id",
-                      // "total_rating_count",
-                      // "vendor_type"
-                    ]
-                ];
+                    $near_by_vendor = $this->geoLocationFinder($near_by_vendor_request);
+                }
 
-                $swimming_finder = $this->geoLocationFinder($swimming_finder_request);
+                if($fitcash_plus > 0){
 
-                $healthy_tiffins_finder_request = [
-                    "offset" => 0,
-                    "limit" => 6,
-                    "radius" => "3km",
-                    "category"=>"healthy-tiffins",
-                    "lat"=>$lat,
-                    "lon"=>$lon,
-                    "keys"=>[
-                      // "average_rating",
-                      // "business_type",
-                      // "categorytags",
-                      // "commercial_type",
-                      // "contact",
-                      "coverimage",
-                      // "distance",
-                      // "facilities",
-                      // "geolocation",
-                      "location",
-                      // "locationtags",
-                      // "multiaddress",
-                      // "offer_available",
-                      // "offerings",
-                      // "photos",
-                      // "servicelist",
-                      "slug",
-                      "title",
-                      "id",
-                      // "total_rating_count",
-                      // "vendor_type"
-                    ]
-                ];
+                    foreach ($category_array as $key => $value) {
 
-                $healthy_tiffins_finder = $this->geoLocationFinder($healthy_tiffins_finder_request);
+                         $finder_request = [
+                            "offset" => 0,
+                            "limit" => 0,
+                            "radius" => "3km",
+                            "category"=>newcategorymapping($value["category"]),
+                            "lat"=>$lat,
+                            "lon"=>$lon,
+                            "keys"=>[
+                              // "average_rating",
+                              // "business_type",
+                              // "categorytags",
+                              // "commercial_type",
+                              // "contact",
+                              //"coverimage",
+                              // "distance",
+                              // "facilities",
+                              // "geolocation",
+                              //"location",
+                              // "locationtags",
+                              // "multiaddress",
+                              // "offer_available",
+                              // "offerings",
+                              // "photos",
+                              // "servicelist",
+                              //"slug",
+                              //"title",
+                              "id",
+                              // "total_rating_count",
+                              // "vendor_type"
+                            ]
+                        ];
 
-            }
+                        $category_array[$key]['count'] = count($this->geoLocationFinder($finder_request));
+
+                    }
+                }
+
+            }    
 
             $poc = $poc_name = $poc_number = "";
 
@@ -1016,49 +996,57 @@ class HomeController extends BaseController {
                 }
             }
 
-            $fitcash_vendor = [
-                "title"=>"You have Rs. ".$fitcash_plus." Fitcash+ and now its time to use it!",
-                "description"=>"Fitcash+ is your fitness currency on Fitternity. You can use the entire amount in your transaction! Fitcash can be used for any booking or purchase on Fitternity ranging from workout sessions,memberships and healthy tiffin subscriptions.Fitcash+ is your companion for everything! \n Here are few options you can spend your Fitcash+ on.",
-                "image"=>"image",
-                "vendor"=>[
-                    [ 
-                        "image"=>"http://b.fitn.in/success-pages/swimming+session.png",
-                        "title"=>"Book Swiming Sessions",
-                        "details"=>[
-                            ['field'=>'Avg. Calorie Burn','value'=>'750 KCAL'],
-                            ['field'=>'Avg. Price Per Session','value'=>'Rs 200'],
-                            ['field'=>'Current Providers in area','value'=>'2 Providers']
+            $fitcash_vendor = null;
+
+            if($fitcash_plus > 0){
+                $fitcash_vendor = [
+                    "title"=>"You have Rs. ".$fitcash_plus." Fitcash+ and now its time to use it!",
+                    "description"=>"Fitcash+ is your fitness currency on Fitternity. You can use the entire amount in your transaction! Fitcash can be used for any booking or purchase on Fitternity ranging from workout sessions,memberships and healthy tiffin subscriptions.Fitcash+ is your companion for everything! \n Here are few options you can spend your Fitcash+ on.",
+                    "image"=>"image",
+                    "vendor"=>[
+                        [ 
+                            "image"=>"http://b.fitn.in/success-pages/swimming+session.png",
+                            "title"=>"Book Swiming Sessions",
+                            "details"=>[
+                                ['field'=>'Avg. Calorie Burn','value'=>'750 KCAL'],
+                                //['field'=>'Avg. Price Per Session','value'=>'Rs 200'],
+                                ['field'=>'Current Providers in area','value'=>$category_array["swimming"]["count"].' Providers']
+                            ],
+                            "category"=>newcategorymapping("swimming"),
+                            "city"=>$city_name,
+                            "region"=>(isset($item['finder_location']) && $item['finder_location'] != "") ? [$item['finder_location']] : []
                         ],
-                        "category"=>"swimming",
-                        "city"=>$city_name,
-                        "region"=>(isset($item['finder_location']) && $item['finder_location'] != "") ? [$item['finder_location']] : []
-                    ],
-                    [ 
-                        "image"=>"http://b.fitn.in/success-pages/healthy+tiffin.png",
-                        "title"=>"Book Healthy Tiffin",
-                        "details"=>[
-                            ['field'=>'Avg. Trial Meal Duration','value'=>'3 Days'],
-                            ['field'=>'Avg. Price Per Tiffin','value'=>'Rs 200'],
-                            ['field'=>'Current Providers in area','value'=>'2 Providers']
+                        [ 
+                            "image"=>"http://b.fitn.in/success-pages/healthy+tiffin.png",
+                            "title"=>"Book Healthy Tiffin",
+                            "details"=>[
+                                ['field'=>'Avg. Trial Meal Duration','value'=>'3 Days'],
+                                //['field'=>'Avg. Price Per Tiffin','value'=>'Rs 200'],
+                                ['field'=>'Current Providers in area','value'=>$category_array["healthy_tiffins"]["count"].' Providers']
+                            ],
+                            "category"=>newcategorymapping("healthy tiffins"),
+                            "city"=>$city_name,
+                            "region"=>(isset($item['finder_location']) && $item['finder_location'] != "") ? [$item['finder_location']] : []
                         ],
-                        "category"=>"healthy tiffins",
-                        "city"=>$city_name,
-                        "region"=>(isset($item['finder_location']) && $item['finder_location'] != "") ? [$item['finder_location']] : []
-                    ],
-                    [ 
-                        "image"=>"http://b.fitn.in/success-pages/diet+plan.png",
-                        "title"=>"Buy Online Diet Plans",
-                        "details"=>[
-                            ['field'=>'Avg. Plan Duration','value'=>'1 Month'],
-                            ['field'=>'Avg. Price Per Plan','value'=>'Rs 200'],
-                            ['field'=>'Primary Function','value'=>'Weight Loss']
+                        [ 
+                            "image"=>"http://b.fitn.in/success-pages/diet+plan.png",
+                            "title"=>"Buy Online Diet Plans",
+                            "details"=>[
+                                ['field'=>'Avg. Plan Duration','value'=>'1 Month'],
+                                //['field'=>'Avg. Price Per Plan','value'=>'Rs 200'],
+                                ['field'=>'Primary Function','value'=>'Weight Loss']
+                            ],
+                            "category"=>newcategorymapping("dietitians and nutritionists"),
+                            "city"=>$city_name,
+                            "region"=>(isset($item['finder_location']) && $item['finder_location'] != "") ? [$item['finder_location']] : []
                         ],
-                        "category"=>"diet plan",
-                        "city"=>$city_name,
-                        "region"=>(isset($item['finder_location']) && $item['finder_location'] != "") ? [$item['finder_location']] : []
-                    ],
-                ]
-            ];
+                    ]
+                ];
+
+                if(isset($_GET['device_type']) && in_array($_GET['device_type'], ["ios","android"])){
+                    unset($fitcash_vendor["vendor"][2]);
+                }
+            }
 
             $invite = [
                 "description"=>"<b>Did you know?</b><br/>Working out with a friend can improve your performance by 87%",
