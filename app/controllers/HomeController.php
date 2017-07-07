@@ -923,15 +923,15 @@ class HomeController extends BaseController {
             }
 
             if(isset($item['start_date']) && $item['start_date'] != ""){
-                $booking_details_data['start_date']['value'] = date('d-m-Y (L)',strtotime($item['start_date']));
+                $booking_details_data['start_date']['value'] = date('d-m-Y (l)',strtotime($item['start_date']));
             }
 
             if(isset($item['schedule_date']) && $item['schedule_date'] != ""){
-                $booking_details_data['start_date']['value'] = date('d-m-Y (L)',strtotime($item['schedule_date']));
+                $booking_details_data['start_date']['value'] = date('d-m-Y (l)',strtotime($item['schedule_date']));
             }
 
             if(isset($item['preferred_starting_date']) && $item['preferred_starting_date'] != ""){
-                $booking_details_data['start_date']['value'] = date('d-m-Y (L)',strtotime($item['preferred_starting_date']));
+                $booking_details_data['start_date']['value'] = date('d-m-Y (l)',strtotime($item['preferred_starting_date']));
             }
 
             if(isset($item['start_time']) && $item['start_time'] != ""){
@@ -966,12 +966,12 @@ class HomeController extends BaseController {
             }
 
             if(isset($item['preferred_day']) && $item['preferred_day'] != ""){
-                $booking_details_data['start_date']['field'] = $item['PREFERRED DAY'];
+                $booking_details_data['start_date']['field'] = 'PREFERRED DAY';
                 $booking_details_data['start_date']['value'] = $item['preferred_day'];
             }
 
             if(isset($item['preferred_time']) && $item['preferred_time'] != ""){
-                $booking_details_data['start_date']['field'] = $item['PREFERRED TIME'];
+                $booking_details_data['start_date']['field'] = 'PREFERRED TIME';
                 $booking_details_data['start_date']['value'] = $item['preferred_time'];
             }
 
