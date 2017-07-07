@@ -1364,8 +1364,8 @@ class CustomerController extends \BaseController {
 					$value['preferred_starting_date'] = $value['start_date']; 
 				}
 
-				if(isset($value['info']['service']) && is_array($value['info']['service'])){
-					$value['info']['service'] = "";
+				if(isset($value['finder']['info']['service']) && is_array($value['finder']['info']['service'])){
+					$value['finder']['info']['service'] = "";
 				}
 
 				if(isset($value['amount_customer']) && $value['amount_customer'] != 0){
