@@ -435,8 +435,6 @@ class HomeController extends BaseController {
         $customer_id = "";
         $jwt_token = Request::header('Authorization');
 
-        Log::info("getSuccessMsg".$jwt_token);
-
         if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
 
             $decoded = customerTokenDecode($jwt_token);
@@ -468,12 +466,6 @@ class HomeController extends BaseController {
 
                 $itemData       =   $itemData->toArray();
 
-                if($type == 'manualtrial'){
-                    if(isset($itemData['finder']['manual_trial_auto']) && $itemData['finder']['manual_trial_auto'] == "1"){
-                        $type = "manualautotrial";
-                    }
-                }
-
                 $order_type = "booktrial_id";
             }
 
@@ -504,9 +496,10 @@ class HomeController extends BaseController {
             $finder_name = "";
             $finder_location = "";
             $finder_address = "";
+
             if(isset($itemData['finder_id']) && $itemData['finder_id'] != ""){
 
-                $finder = Finder::with(array('location'=>function($query){$query->select('name');}))->find((int)$itemData['finder_id'],array('_id','title','location_id','contact'));
+                $finder = Finder::with(array('location'=>function($query){$query->select('name');}))->find((int)$itemData['finder_id'],array('_id','title','location_id','contact','lat','lon','manual_trial_auto'));
 
                 if(isset($finder['title']) && $finder['title'] != ""){
                     $finder_name = ucwords($finder['title']);
@@ -528,6 +521,12 @@ class HomeController extends BaseController {
 
             if(isset($itemData['finder_location']) && $itemData['finder_location'] != ""){
                 $finder_location = $itemData['finder_location'];
+            }
+
+            if($type == 'manualtrial'){
+                if(isset($finder['manual_trial_auto']) && $finder['manual_trial_auto'] == "1"){
+                    $type = "manualautotrial";
+                }
             }
 
             $item           =   $itemData;
@@ -773,10 +772,10 @@ class HomeController extends BaseController {
 
             $near_by_vendor = [];
 
-            if(isset($itemData['finder']) && isset($itemData['finder']['lat']) && isset($itemData['finder']['lon'])){
+            if(isset($finder) && isset($finder['lat']) && isset($finder['lon'])){
 
-                $lat = $itemData['finder']['lat'];
-                $lon = $itemData['finder']['lon'];
+                $lat = $finder['lat'];
+                $lon = $finder['lon'];
 
                 $near_by_vendor_request = [
                     "offset" => 0,
