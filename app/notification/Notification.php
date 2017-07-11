@@ -4,13 +4,6 @@ use App\Services\Sidekiq as Sidekiq;
 
 abstract Class Notification {
 
-    protected $sidekiq;
-
-    public function __construct(Sidekiq $sidekiq) {
-
-        $this->sidekiq = $sidekiq;
-    }
-
     public function __call($method, $arguments){
 
         $qualified_class_name = get_class($this);
@@ -114,7 +107,8 @@ abstract Class Notification {
         $payload = array('to'=>$to,'delay'=>$delay,'label' => $label,'app_payload'=>$app_payload);
         
         $route  = $device_type;
-        $result  = $this->sidekiq->sendToQueue($payload,$route);
+        $sidekiq = new \Sidekiq();
+        $result  = $sidekiq->sendToQueue($payload,$route);
 
         if($result['status'] == 200){
             return $result['task_id'];
