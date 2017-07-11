@@ -74,17 +74,11 @@ class CommunicationsController extends \BaseController {
 			
 			$response = $this->prepareData($data, $sender_class, $label);
 
-			// $communication_keys = $transaction_data->communication_keys;
-			// $communication_keys["$sender_class-$label"] = "";
+			$communication_keys = $transaction_data->communication_keys;
+			$communication_keys["$sender_class-$label"] = "";
 
-			// $transaction_data->communication_keys = $communication_keys;
-			// $transaction_data->update();
-
-			// foreach ($dates as $key => $value){
-			// 	if(isset($transaction_data[$value]) && $transaction_data[$value]==''){
-			// 		$transaction_data->unset($value);
-			// 	}
-			// }
+			$transaction_data->communication_keys = $communication_keys;
+			$transaction_data->update();
 
 			return $response;
 			
