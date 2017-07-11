@@ -1682,7 +1682,19 @@ Class Utilities {
 
             $amount = $request['amount'];
 
-            $allWallets = Wallet::active()->where('customer_id',(int)$customer_id)->where('balance','>',0)->OrderBy('_id','asc')->get();
+            $query = Wallet::active()->where('customer_id',(int)$customer_id)->where('balance','>',0);
+
+            if(isset($request['order_id']) && $request['order_id'] != ""){
+
+                $order = Order::find((int)$request['order_id']);
+
+                if(isset($order->finder_category_id) && in_array($order->finder_category_id,[42,45])){
+
+                    $query->whereNotIn('coupon','swiggyfit');
+                }
+            }
+
+            $allWallets  = $query->OrderBy('_id','asc')->get();
 
             if(count($allWallets) > 0){
 
