@@ -73,11 +73,6 @@ class CommunicationsController extends \BaseController {
 			Log::info($label);
 			
 			$response = $this->prepareData($data, $sender_class, $label);
-			$response = $this->$sender_class->$label($data, 0);
-			
-			
-
-
 
 			// $communication_keys = $transaction_data->communication_keys;
 			// $communication_keys["$sender_class-$label"] = "";
