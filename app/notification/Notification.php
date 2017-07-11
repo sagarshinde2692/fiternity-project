@@ -109,7 +109,7 @@ abstract Class Notification {
         $payload = array('to'=>$to,'delay'=>$delay,'label' => $label,'app_payload'=>$app_payload);
         
         $route  = $device_type;
-        $sidekiq = new \Sidekiq();
+        $sidekiq = new Sidekiq();
         $result  = $sidekiq->sendToQueue($payload,$route);
 
         if($result['status'] == 200){
