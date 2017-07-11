@@ -1,6 +1,8 @@
 <?PHP namespace App\Notification;
 use Config;
 use App\Services\Sidekiq as Sidekiq;
+use App\Services\Utilities as Utilities;
+
 
 abstract Class Notification {
 
