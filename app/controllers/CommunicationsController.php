@@ -112,8 +112,10 @@ class CommunicationsController extends \BaseController {
 				case "orderAfter3Days":
 				$order_data['category_array'] = $this->getCategoryImage($category_slug);
 				break;
-				
-
+				case "bookTrialReminderBefore3Hour":
+				$data['poc'] = "fitternity";
+				$data['poc_no'] = Config::get('app.contact_us_customer_number');
+				break;
 		}
 
 		return $this->$sender_class->$label($data, 0);
