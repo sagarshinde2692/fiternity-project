@@ -1,11 +1,12 @@
 <?PHP namespace App\Sms;
 
-use Config;
+use Config, Log;
+use App\Services\Utilities as Utilities;
 
 Class CustomerSms extends VersionNextSms{
 
-	public function bookTrial ($data){
-
+	
+	protected function bookTrial ($data){
 		$label = 'AutoTrial-Instant-Customer';
 
 		if(isset($data['type']) && ($data['type'] == "vip_booktrials" || $data['type'] == "vip_booktrials_rewarded" || $data['type'] == "vip_booktrials_invited" )){
@@ -18,7 +19,7 @@ Class CustomerSms extends VersionNextSms{
 		return $this->common($label,$to,$data);
 	}
 
-	public function bookTrialFreeSpecial ($data){
+	protected function bookTrialFreeSpecial ($data){
 
 		$label = 'AutoTrial-Instant-FreeSpecial-Customer';
 		
@@ -27,7 +28,7 @@ Class CustomerSms extends VersionNextSms{
 		return $this->common($label,$to,$data);
 	}
 
-	public function rescheduledBookTrial ($data){
+	protected function rescheduledBookTrial ($data){
 
 		$label = 'RescheduleTrial-Instant-Customer';
 		
@@ -36,7 +37,7 @@ Class CustomerSms extends VersionNextSms{
 		return $this->common($label,$to,$data);
 	}
 
-	public function bookTrialReminderBefore1Hour ($data, $delay){
+	protected function bookTrialReminderBefore1Hour ($data, $delay){
 
 		$label = 'AutoTrial-ReminderBefore1Hour-Customer';
 		
@@ -45,7 +46,7 @@ Class CustomerSms extends VersionNextSms{
 		return $this->common($label,$to,$data,$delay);
 	}
 
-	public function bookTrialReminderBefore20Min ($data, $delay){
+	protected function bookTrialReminderBefore20Min ($data, $delay){
 
 		$label = 'AutoTrial-ReminderBefore20Min-Customer';
 		
@@ -54,7 +55,7 @@ Class CustomerSms extends VersionNextSms{
 		return $this->common($label,$to,$data,$delay);
 	}
 
-	public function bookTrialReminderBefore3Hour ($data, $delay){
+	protected function bookTrialReminderBefore3Hour ($data, $delay){
 
 		$label = 'AutoTrial-ReminderBefore3Hour-Customer';
 		
@@ -64,7 +65,7 @@ Class CustomerSms extends VersionNextSms{
 	}
 
 
-	public function bookTrialReminderAfter2Hour ($data, $delay){
+	protected function bookTrialReminderAfter2Hour ($data, $delay){
 
 		$label = 'AutoTrial-ReminderAfter2Hour-Customer';
 		
@@ -74,7 +75,7 @@ Class CustomerSms extends VersionNextSms{
 	}
 
 
-	public function cancelBookTrial ($data){
+	protected function cancelBookTrial ($data){
 
 		$label = 'Cancel-Trial-Customer';
 		
@@ -83,7 +84,7 @@ Class CustomerSms extends VersionNextSms{
 		return $this->common($label,$to,$data);
 	}
 
-	public function cancelBookTrialByVendor ($data){
+	protected function cancelBookTrialByVendor ($data){
 
 		$label = 'Vendor-trial-cancellation-email-to-customer';
 
@@ -93,7 +94,7 @@ Class CustomerSms extends VersionNextSms{
 	}
 
 
-	public function manualBookTrial ($data){
+	protected function manualBookTrial ($data){
 
 		$label = 'ManualTrial-Customer';
 		
@@ -102,7 +103,7 @@ Class CustomerSms extends VersionNextSms{
 		return $this->common($label,$to,$data);
 	}
 
-	public function manualTrialAuto ($data){
+	protected function manualTrialAuto ($data){
 
 		$label = 'ManualTrialAuto-Customer';
 	
@@ -111,7 +112,7 @@ Class CustomerSms extends VersionNextSms{
 		return $this->common($label,$to,$data);
 	}
 
-	public function reminderToConfirmManualTrial ($data,$delay){
+	protected function reminderToConfirmManualTrial ($data,$delay){
 	
 		$label = 'Reminder-To-Confirm-ManualTrial-Customer';
 
@@ -120,7 +121,7 @@ Class CustomerSms extends VersionNextSms{
 		return $this->common($label,$to,$data,$delay);
 	}
 	
-	public function sendCodOrderSms ($data){
+	protected function sendCodOrderSms ($data){
 
 		$label = 'Order-COD-Customer';
 		
@@ -129,7 +130,7 @@ Class CustomerSms extends VersionNextSms{
 		return $this->common($label,$to,$data);
 	}
 
-	public function requestCodOrderSms ($data){
+	protected function requestCodOrderSms ($data){
 
 		$label = 'Order-COD-Request-Customer';
 		
@@ -139,7 +140,7 @@ Class CustomerSms extends VersionNextSms{
 	}
 
 
-	public function sendPgOrderSms ($data){
+	protected function sendPgOrderSms ($data){
 
 		$label = 'Order-PG-Customer';
 
@@ -175,7 +176,7 @@ Class CustomerSms extends VersionNextSms{
 		return $this->common($label,$to,$data);
 	}
 
-	public function forgotPasswordApp ($data){
+	protected function forgotPasswordApp ($data){
 
 		$label = 'ForgotPassword-App-Customer';
 		
@@ -184,7 +185,7 @@ Class CustomerSms extends VersionNextSms{
 		return $this->common($label,$to,$data);
 	}
 
-	public function buyLandingpagePurchase ($data){
+	protected function buyLandingpagePurchase ($data){
 
 		$label = 'Purchase-LandingPage-Customer';
 		
@@ -194,7 +195,7 @@ Class CustomerSms extends VersionNextSms{
 
 	}
 
-	public function generalSms ($data){
+	protected function generalSms ($data){
 
 		$label = 'Missedcall-Genral-Customer';
 		
@@ -203,7 +204,7 @@ Class CustomerSms extends VersionNextSms{
 		return $this->common($label,$to,$data);
 	}
 
-	public function missedCallDelay ($data,$delay){
+	protected function missedCallDelay ($data,$delay){
 
 		$label = 'Missedcall-N-3-Customer';
 		
@@ -212,7 +213,7 @@ Class CustomerSms extends VersionNextSms{
 		return $this->common($label,$to,$data,$delay);
 	}
 
-	public function confirmTrial($data){
+	protected function confirmTrial($data){
 
 		$label = 'Missedcall-Reply-N-3-ConfirmTrial-Customer';
 		
@@ -222,7 +223,7 @@ Class CustomerSms extends VersionNextSms{
 
 	}
 
-	public function cancelTrial($data){
+	protected function cancelTrial($data){
 
 		$label = 'Missedcall-Reply-N-3-CancelTrial-Customer';
 		
@@ -232,7 +233,7 @@ Class CustomerSms extends VersionNextSms{
 
 	}
 
-	public function rescheduleTrial($data){
+	protected function rescheduleTrial($data){
 		// return $data;
 		$customer_email = $data['customer_email'];
 		$data['customer_profile_url'] = Config::get('website');//'\/profile\/'.$customer_email;
@@ -245,7 +246,7 @@ Class CustomerSms extends VersionNextSms{
 
 	}
 
-	public function likedTrial($data){
+	protected function likedTrial($data){
 
 		$label = 'Missedcall-Reply-N+2-Liked-Customer';
 		
@@ -255,7 +256,7 @@ Class CustomerSms extends VersionNextSms{
 
 	}
 
-	public function exploreTrial($data){
+	protected function exploreTrial($data){
 
 		$label = 'Missedcall-Reply-N+2-Explore-Customer';
 		
@@ -265,7 +266,7 @@ Class CustomerSms extends VersionNextSms{
 
 	}
 
-	public function notAttendedTrial($data){
+	protected function notAttendedTrial($data){
 
 		$label = 'Missedcall-Reply-N+2-NotAttended-Customer';
 		
@@ -275,7 +276,7 @@ Class CustomerSms extends VersionNextSms{
 
 	}
 
-	public function bookTrialReminderAfter2HourRegular($data,$delay){
+	protected function bookTrialReminderAfter2HourRegular($data,$delay){
 
 		$label = 'AutoTrial-ReminderAfter2HourRegular-Customer';
 		
@@ -285,7 +286,7 @@ Class CustomerSms extends VersionNextSms{
 
 	}
 
-	public function orderAfter3Days($data,$delay){
+	protected function orderAfter3Days($data,$delay=0){
 
 		$label = 'S+3-Customer';
 		
@@ -295,7 +296,7 @@ Class CustomerSms extends VersionNextSms{
 
 	}
 
-	public function orderRenewalMissedcall($data,$delay){
+	protected function orderRenewalMissedcall($data,$delay){
 
 		$label = 'Missedcall-Membership-Customer';
 		
@@ -305,7 +306,7 @@ Class CustomerSms extends VersionNextSms{
 
 	}
 
-	public function renewOrder($data){
+	protected function renewOrder($data){
 
 		$label = 'Missedcall-Reply-Membership-Renew-Customer';
 		
@@ -315,7 +316,7 @@ Class CustomerSms extends VersionNextSms{
 
 	}
 
-	public function alreadyExtendedOrder($data){	
+	protected function alreadyExtendedOrder($data){	
 
 		$label = 'Missedcall-Reply-Membership-AlreadyExtended-Customer';
 		
@@ -325,7 +326,7 @@ Class CustomerSms extends VersionNextSms{
 
 	}
 
-	public function exploreOrder($data){
+	protected function exploreOrder($data){
 
 		$label = 'Missedcall-Reply-Membership-Explore-Customer';
 		
@@ -335,7 +336,7 @@ Class CustomerSms extends VersionNextSms{
 
 	}
 
-    public function giveCashbackOnTrialOrderSuccessAndInvite($data){
+    protected function giveCashbackOnTrialOrderSuccessAndInvite($data){
 
         $label = 'Give-Cashback-On-Trial-OrderSuccessAndInvite-Instant-Customer';
 
@@ -345,7 +346,7 @@ Class CustomerSms extends VersionNextSms{
 
     }
 
-	public function healthyTiffinTrial($data){
+	protected function healthyTiffinTrial($data){
 
 		$label = 'HealthyTiffinTrial-Instant-Customer';
 
@@ -355,7 +356,7 @@ Class CustomerSms extends VersionNextSms{
 
 	}
 
-	public function healthyTiffinMembership($data){
+	protected function healthyTiffinMembership($data){
 
 		$label = 'HealthyTiffinMembership-Instant-Customer';
 
@@ -365,7 +366,7 @@ Class CustomerSms extends VersionNextSms{
 
 	}
 
-	public function reminderAfter2Hour3DaysTrial($data,$delay){
+	protected function reminderAfter2Hour3DaysTrial($data,$delay){
 
 		$label = 'Missedcall-GymTrial-N+2-Customer';
 		
@@ -376,7 +377,7 @@ Class CustomerSms extends VersionNextSms{
 	}
 
 
-	public function inviteSMS($type, $data){
+	protected function inviteSMS($type, $data){
 
 		switch ($type){
 			case 'vip_booktrials':
@@ -402,7 +403,7 @@ Class CustomerSms extends VersionNextSms{
 
 	}
 
-	public function respondToInviteSMS($data){
+	protected function respondToInviteSMS($data){
 
 		$label = 'respond-to-invite-for-trial';
 
@@ -411,7 +412,7 @@ Class CustomerSms extends VersionNextSms{
 		return $this->common($label,$to,$data);
 	}
 
-	public function vipReward($data){
+	protected function vipReward($data){
 
 		$label = 'VipReward-Instant-Customer';
 
@@ -421,7 +422,7 @@ Class CustomerSms extends VersionNextSms{
 
 	}
 
-	public function genericOtp ($data){
+	protected function genericOtp ($data){
 
 		$label = 'Generic-Otp-Customer';
 
@@ -430,7 +431,7 @@ Class CustomerSms extends VersionNextSms{
 		return $this->common($label,$to,$data);
 	}
 
-	public function yogaDayPass($data){
+	protected function yogaDayPass($data){
 
 		$label = 'YogaDayPass-Instant-Customer';
 		
@@ -440,7 +441,7 @@ Class CustomerSms extends VersionNextSms{
 
 	}
 
-	public function bookYogaDayTrial ($data){
+	protected function bookYogaDayTrial ($data){
 
 		$label = 'YogaDay-AutoTrial-Instant-Customer';
 
@@ -450,7 +451,7 @@ Class CustomerSms extends VersionNextSms{
 
 	}
 
-	public function nutritionStore ($data){
+	protected function nutritionStore ($data){
 
 		$label = 'NutritionStore-Customer';
 
@@ -460,7 +461,7 @@ Class CustomerSms extends VersionNextSms{
 
 	}
 
-	public function landingPageCallback ($data){
+	protected function landingPageCallback ($data){
 
 		$label = 'FitnessCanvas-Customer';
 
@@ -477,7 +478,7 @@ Class CustomerSms extends VersionNextSms{
 
 	}
 
-	public function changeStartDate ($data){
+	protected function changeStartDate ($data){
 
 		$label = 'ChangeStartDate-Customer';
 
@@ -487,7 +488,7 @@ Class CustomerSms extends VersionNextSms{
 
 	}
 
-	public function reminderRescheduleAfter4Days($data,$delay){
+	protected function reminderRescheduleAfter4Days($data,$delay){
 
 		$label = 'RescheduleAfter4Days-Customer';
 
@@ -497,7 +498,7 @@ Class CustomerSms extends VersionNextSms{
 
 	}
 
-	public function ozonetelCapture($data){
+	protected function ozonetelCapture($data){
 
        $label = 'OzonetelCapture-Customer';
        
@@ -507,7 +508,7 @@ Class CustomerSms extends VersionNextSms{
 
    	}
 
-  	public function downloadApp($data){
+  	protected function downloadApp($data){
 
        $label = 'DownloadApp-Customer';
        
@@ -517,7 +518,7 @@ Class CustomerSms extends VersionNextSms{
 
    	}
 
-   	public function rewardClaim($data){
+   	protected function rewardClaim($data){
 
 		$label = $data['label'];
 
@@ -527,7 +528,7 @@ Class CustomerSms extends VersionNextSms{
 
 	}
 
-	public function sendPaymentLinkAfter3Days($data,$delay){
+	protected function sendPaymentLinkAfter3Days($data,$delay){
 
         $label = 'SendPaymentLinkAfter3Days-Customer';
 
@@ -537,7 +538,7 @@ Class CustomerSms extends VersionNextSms{
 
     }
 
-    public function sendPaymentLinkAfter7Days($data,$delay){
+    protected function sendPaymentLinkAfter7Days($data,$delay){
 
         $label = 'SendPaymentLinkAfter7Days-Customer';
 
@@ -547,7 +548,7 @@ Class CustomerSms extends VersionNextSms{
 
     }
 
-    public function sendPaymentLinkAfter15Days($data,$delay){
+    protected function sendPaymentLinkAfter15Days($data,$delay){
 
         $label = 'SendPaymentLinkAfter15Days-Customer';
 
@@ -557,7 +558,7 @@ Class CustomerSms extends VersionNextSms{
 
     }
 
-    public function sendPaymentLinkAfter30Days($data,$delay){
+    protected function sendPaymentLinkAfter30Days($data,$delay){
 
         $label = 'SendPaymentLinkAfter30Days-Customer';
 
@@ -567,7 +568,7 @@ Class CustomerSms extends VersionNextSms{
 
     }
 
-    public function sendPaymentLinkAfter45Days($data,$delay){
+    protected function sendPaymentLinkAfter45Days($data,$delay){
 
         $label = 'SendPaymentLinkAfter45Days-Customer';
 
@@ -577,7 +578,7 @@ Class CustomerSms extends VersionNextSms{
 
     }
 
-    public function purchaseInstant($data){
+    protected function purchaseInstant($data){
 
         $label = 'PurchaseInstant-Customer';
 
@@ -586,7 +587,7 @@ Class CustomerSms extends VersionNextSms{
         return $this->common($label,$to,$data);
     }
 
-	public function instantSlotBooking($data){
+	protected function instantSlotBooking($data){
 
 		$label = 'DietPlan-InstantSlotBooking-Customer';
 
@@ -596,7 +597,7 @@ Class CustomerSms extends VersionNextSms{
 
 	}
 
-	public function before3HourSlotBooking($data,$delay){
+	protected function before3HourSlotBooking($data,$delay){
 
 		$label = 'DietPlan-Before3HourSlotBooking-Customer';
 
@@ -606,7 +607,7 @@ Class CustomerSms extends VersionNextSms{
 
 	}
 
-	public function dietPlanAfter15DaysReviewSlotConfirm($data){
+	protected function dietPlanAfter15DaysReviewSlotConfirm($data){
 
         $label = 'DietPlan-After15DaysReview-SlotConfirm-Customer';
 
@@ -616,7 +617,7 @@ Class CustomerSms extends VersionNextSms{
 
     }
 
-    public function purchaseAfter10Days($data,$delay){
+    protected function purchaseAfter10Days($data,$delay){
 
         $label = 'PurchaseAfter10Days-Customer';
 
@@ -626,7 +627,7 @@ Class CustomerSms extends VersionNextSms{
 
     }
 
-    public function purchaseAfter30Days($data,$delay){
+    protected function purchaseAfter30Days($data,$delay){
 
         $label = 'PurchaseAfter30Days-Customer';
 
@@ -635,7 +636,7 @@ Class CustomerSms extends VersionNextSms{
         return $this->common($label,$to,$data,$delay);
 
     }
-	public function referFriend($data){
+	protected function referFriend($data){
 
 		$label = 'Refer-friend';
 
@@ -644,7 +645,7 @@ Class CustomerSms extends VersionNextSms{
 		return $this->common($label,$to,$data);
 	}
 
-	public function referralFitcash($data){
+	protected function referralFitcash($data){
 
 		$label = 'Referral-fitcashplus';
 
@@ -653,7 +654,7 @@ Class CustomerSms extends VersionNextSms{
 		return $this->common($label,$to,$data);
 	}
 
-    public function dietPlanAfter15DaysFollowupSlotConfirm($data){
+    protected function dietPlanAfter15DaysFollowupSlotConfirm($data){
 
         $label = 'DietPlan-After15DaysFollowup-SlotConfirm-Customer';
 
@@ -663,7 +664,7 @@ Class CustomerSms extends VersionNextSms{
 
     }
 
-    public function bookTrialCancelByVendor($data){
+    protected function bookTrialCancelByVendor($data){
 
         $label = 'AutoTrial-CancelByVendor-Customer';
 
@@ -673,7 +674,7 @@ Class CustomerSms extends VersionNextSms{
 
     }
 
-    public function sendRenewalPaymentLinkBefore7Days($data,$delay){
+    protected function sendRenewalPaymentLinkBefore7Days($data,$delay){
 
         $label = 'MembershipRenewalLinkSentBefore7Days-Customer';
 
@@ -683,7 +684,7 @@ Class CustomerSms extends VersionNextSms{
 
     }
 
-    public function sendRenewalPaymentLinkBefore1Days($data,$delay){
+    protected function sendRenewalPaymentLinkBefore1Days($data,$delay){
 
         $label = 'MembershipRenewalLinkSentBefore1Days-Customer';
 
@@ -693,7 +694,7 @@ Class CustomerSms extends VersionNextSms{
 
     }
 
-    public function purchaseFirst($data,$delay){
+    protected function purchaseFirst($data,$delay){
 
         $label = 'PurchaseFirst-Customer';
 
@@ -703,7 +704,7 @@ Class CustomerSms extends VersionNextSms{
 
     }
 
-    public function postTrialFollowup1After15Days($data,$delay){
+    protected function postTrialFollowup1After15Days($data,$delay){
 
         $label = 'PostTrialFollowup1After15Days-Customer';
 
@@ -713,7 +714,7 @@ Class CustomerSms extends VersionNextSms{
 
     }
 
-    public function demonetisation($data){
+    protected function demonetisation($data){
 
         $label = 'Demonetisation-Customer';
 

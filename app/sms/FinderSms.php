@@ -1,10 +1,11 @@
 <?PHP namespace App\Sms;
 
 use Config;
+use App\Services\Utilities as Utilities;
 
 Class FinderSms extends VersionNextSms{
 
-	public function bookTrial ($data){
+	protected function bookTrial ($data){
 
 		$to = explode(',', $data['finder_vcc_mobile']);
 
@@ -19,7 +20,7 @@ Class FinderSms extends VersionNextSms{
 	}
 
 
-	public function rescheduledBookTrial ($data){
+	protected function rescheduledBookTrial ($data){
 
 		$to = explode(',', $data['finder_vcc_mobile']);
 
@@ -29,7 +30,7 @@ Class FinderSms extends VersionNextSms{
 	}
 
 
-	public function bookTrialReminderBefore1Hour ($data, $delay){
+	protected function bookTrialReminderBefore1Hour ($data, $delay){
 
 		$to = explode(',', $data['finder_vcc_mobile']);
 
@@ -38,7 +39,7 @@ Class FinderSms extends VersionNextSms{
 		return $this->common($label,$to,$data,$delay);
 	}
 
-	public function bookTrialReminderBefore6Hour ($data, $delay){
+	protected function bookTrialReminderBefore6Hour ($data, $delay){
 
 		$to = explode(',', $data['finder_vcc_mobile']);
 
@@ -48,7 +49,7 @@ Class FinderSms extends VersionNextSms{
 	}
 
 
-	public function cancelBookTrial ($data){
+	protected function cancelBookTrial ($data){
 
 		$to = explode(',', $data['finder_vcc_mobile']);
 
@@ -57,7 +58,7 @@ Class FinderSms extends VersionNextSms{
 		return $this->common($label,$to,$data);
 	}
 
-	public function cancelBookTrialByVendor ($data){
+	protected function cancelBookTrialByVendor ($data){
 
 		$to = explode(',', $data['finder_vcc_mobile']);
 
@@ -66,7 +67,7 @@ Class FinderSms extends VersionNextSms{
 		return $this->common($label,$to,$data);
 	}
 
-	public function sendPgOrderSms ($data){
+	protected function sendPgOrderSms ($data){
 
 		$to = explode(',', $data['finder_vcc_mobile']);
 
@@ -80,7 +81,7 @@ Class FinderSms extends VersionNextSms{
 		return $this->common($label,$to,$data);
 	}
 
-	public function buyLandingpagePurchaseEefashrof ($data, $count){
+	protected function buyLandingpagePurchaseEefashrof ($data, $count){
 
 		$to 		=  	['9730401839','9773348762'];
 
@@ -89,7 +90,7 @@ Class FinderSms extends VersionNextSms{
 		return $this->common($label,$to,$data);
 	}
 
-	public function confirmTrial($data){
+	protected function confirmTrial($data){
 
 		$label = 'AutoTrial-ReminderBefore20Min-Confirm-Vendor';
 		
@@ -99,7 +100,7 @@ Class FinderSms extends VersionNextSms{
 
 	}
 
-	public function cancelTrial($data){
+	protected function cancelTrial($data){
 
 		$label = 'Missedcall-Reply-N-3-CancelTrial-Vendor';
 		
@@ -109,7 +110,7 @@ Class FinderSms extends VersionNextSms{
 
 	}
 
-	public function rescheduleTrial($data){
+	protected function rescheduleTrial($data){
 
 		$label = 'Missedcall-Reply-N-3-RescheduleTrial-Vendor';
 		
@@ -119,7 +120,7 @@ Class FinderSms extends VersionNextSms{
 
 	}
 
-	public function healthyTiffinTrial($data){
+	protected function healthyTiffinTrial($data){
 
 		$label = 'HealthyTiffinTrial-Instant-Vendor';
 
@@ -129,7 +130,7 @@ Class FinderSms extends VersionNextSms{
 
 	}
 
-    public function healthyTiffinMembership($data){
+    protected function healthyTiffinMembership($data){
 
         $label = 'HealthyTiffinMembership-Instant-Vendor';
 
@@ -139,7 +140,7 @@ Class FinderSms extends VersionNextSms{
 
     }
 
-    public function bookYogaDayTrial ($data){
+    protected function bookYogaDayTrial ($data){
 
 		$label = 'YogaDay-AutoTrial-Instant-Vendor';
 
@@ -148,7 +149,7 @@ Class FinderSms extends VersionNextSms{
         return $this->common($label,$to,$data);
 	}
 
-	public function firstTrial($data){
+	protected function firstTrial($data){
 
 		$label = 'First-Autotrial-Fitternity';
 
@@ -157,7 +158,7 @@ Class FinderSms extends VersionNextSms{
         return $this->common($label,$to,$data);
 	}
 
-	public function nutritionStore ($data){
+	protected function nutritionStore ($data){
 
 		$label = 'NutritionStore-Vendor';
 
@@ -166,7 +167,7 @@ Class FinderSms extends VersionNextSms{
         return $this->common($label,$to,$data);
 	}
 
-	public function manualTrialAuto ($data){
+	protected function manualTrialAuto ($data){
 
 		$label = 'ManualTrialAuto-Finder';
 
@@ -175,7 +176,7 @@ Class FinderSms extends VersionNextSms{
 		return $this->common($label,$to,$data);
 	}
 
-	public function reminderToConfirmManualTrial ($data,$delay){
+	protected function reminderToConfirmManualTrial ($data,$delay){
 	
 		$label = 'Reminder-To-Confirm-ManualTrial-Finder';
 
@@ -184,7 +185,7 @@ Class FinderSms extends VersionNextSms{
 		return $this->common($label,$to,$data,$delay);
 	}
 
-	public function changeStartDate ($data){
+	protected function changeStartDate ($data){
 	
 		$label = 'ChangeStartDate-Vendor';
 
@@ -193,7 +194,7 @@ Class FinderSms extends VersionNextSms{
 		return $this->common($label,$to,$data);
 	}
 
-	public function bookTrialReminderBefore20Min ($data){
+	protected function bookTrialReminderBefore20Min ($data){
 	
 		$label = 'AutoTrial-ReminderBefore20Min-Confirm-Vendor';
 
@@ -202,7 +203,7 @@ Class FinderSms extends VersionNextSms{
 		return $this->common($label,$to,$data);
 	}
 
-	public function ozonetelCapture($data){
+	protected function ozonetelCapture($data){
 
        	$label = 'OzonetelCapture-Vendor';
        
@@ -213,6 +214,15 @@ Class FinderSms extends VersionNextSms{
 		return $this->common($label,$to,$data);
 
    	}
+
+	protected function bookTrialReminderAfter2Hour ($data, $delay){
+
+		$to = explode(',', $data['finder_vcc_mobile']);
+
+		$label = 'AutoTrial-ReminderAfter2Hour-Vendor';
+
+		return $this->common($label,$to,$data,$delay);
+	}
 	
 	public function common($label,$to,$data,$delay = 0){
 
@@ -222,7 +232,7 @@ Class FinderSms extends VersionNextSms{
 
 		if(!Config::get('app.vendor_communication')){
 
-			$to = array('7506262489');
+			$to = array('7506026203');
 		}
 		
 		return $this->sendToWorker($to, $message, $label, $delay);

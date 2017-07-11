@@ -939,6 +939,6 @@ Route::post('customer/getlink', 'CustomerController@getLink');
 
 Route::get('addfitcash', 'DebugController@addFitcash');
 
-Route::get('communication/{type}/{to}/{transaction_type}/{id}/{label}', 'CommunicationsController@sendCommunication');
+Route::get('communication/{sender_class}/{transaction_type}/{label}/{id}/{key}', 'CommunicationsController@sendCommunication');
 
-
+Route::get('sendManualCommunication/{id}', 'SchedulebooktrialsController@sendManualCommunication');

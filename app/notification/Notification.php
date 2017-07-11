@@ -11,6 +11,24 @@ abstract Class Notification {
         $this->sidekiq = $sidekiq;
     }
 
+    public function __call($method, $arguments){
+
+        $qualified_class_name = get_class($this);
+        
+        $reflect = new \ReflectionClass($this);
+        $class_name = $reflect->getShortName();
+
+        $reflect = new \ReflectionClass($qualified_class_name);
+        $objInstance = $reflect->newInstanceArgs();
+        
+		if(count($arguments) < 2 || (is_int($arguments[1]) && $arguments[1] == 0) || !in_array($method, Config::get('app.delay_methods'))){
+			return $objInstance->$method($arguments[0], 0);
+		}else{
+			$utilities = new Utilities();
+			return $utilities->scheduleCommunication($arguments, $method, $class_name);
+		}
+    }
+
     /**
      * Calculate the number of seconds with the given delay.
      *

@@ -2058,6 +2058,9 @@ Class Utilities {
 
     public function hitURLAfterDelay($url, $delay = 0, $label = 'label', $priority = 0){
 
+        Log::info("Scheduling url:$url");
+        Log::info("delay: $delay");
+
         if($delay !== 0){
             $delay = $this->getSeconds($delay);
         }
@@ -2099,6 +2102,36 @@ Class Utilities {
 
         return (int) $delay;
     }
+    
+    public function getTime(){
+        return time();
+    }
 
+    public function scheduleCommunication($data, $method, $class_name){
+        $transaction_data = $data[0];
+        $transaction_id = $transaction_data['_id'];
+        $delay = $data[1];
+        $transaction_type = (isset($transaction_data['order_id'])) ? "order" : "trial";
+        $key = rand(100000000, 999999999);
+        if($transaction_type == "order"){
+            $transaction = \Order::find($transaction_id);
+            
+        }else{
+            $transaction = \Booktrial::find($transaction_id);
+        }
+
+        $communication_keys = isset($transaction->communication_keys)?$transaction->communication_keys:[];
+        $communication_variable = "$class_name-$method";
+        $communication_keys[$communication_variable] = $key;
+        
+
+        $transaction->communication_keys = $communication_keys;
+
+        $transaction->update();
+
+        Log::info("Scheduling url from scheduleCommunication function");
+        return $this->hitURLAfterDelay(Config::get('app.url')."/communication/$class_name/$transaction_type/$method/$transaction_id/$key", $delay);
+
+    }
 
 }
