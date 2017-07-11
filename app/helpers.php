@@ -77,7 +77,7 @@ if(!function_exists('citywise_category')){
             
 			$cat['noida'] = array(array("name" => "All Fitness Options","slug" => "fitness"),array("name" => "Gyms","slug" => "gyms"),array("name" => "Yoga","slug" => "yoga-classes"),array("name" => "Fitness Studios","slug" => "fitness-studios"),array("name" => "Zumba","slug" => "zumba-classes"),array("name" => "Dance","slug" => "dance-classes"),array("name" => "MMA And Kick Boxing","slug" => "mma-and-kick-boxing-classes"),array("name" => "Pre-natal Classes","slug" => "pre-natal-classes"),array("name" => "Kids Fitness","slug" => "kids-fitness-classes"));
 
-            $cat['hyderabad'] = array(array("name" => "All Fitness Options","slug" => "fitness"),array("name" => "Gyms","slug" => "gyms"),array("name" => "Yoga","slug" => "yoga-classes"),array("name" => "Fitness Studios","slug" => "fitness-studios"),array("name" => "Zumba","slug" => "zumba-classes"),array("name" => "Dance","slug" => "dance-classes"),array("name" => "MMA And Kick Boxing","slug" => "mma-and-kick-boxing-classes"),array("name" => "Pre-natal Classes","slug" => "pre-natal-classes"),array("name" => "Kids Fitness","slug" => "kids-fitness-classes"));
+            $cat['hyderabad'] = array();
 
             $cat['all'] = array(array("name" => "All Fitness Options","slug" => "fitness"),array("name" => "Gyms","slug" => "gyms"),array("name" => "Yoga","slug" => "yoga-classes"),array("name" => "Zumba","slug" => "zumba-classes"),array("name" => "Fitness Studios","slug" => "fitness-studios"),array("name" => "Pilates","slug" => "pilates-classes"),array("name" => "Healthy Tiffins","slug" => "healthy-tiffins"),array("name" => "Cross Functional Training","slug" => "functional-training"),array("name" => "Aerobics","slug" => "aerobics"),array("name" => "MMA And Kick Boxing","slug" => "mma-and-kick-boxing-classes"),array("name" => "Dance","slug" => "dance-classes"),array("name" => "Spinning And Indoor Cycling","slug" => "spinning-classes"),/* array("name" => "Personal Trainers","slug" => "personal-trainers"), */ array("name" => "Healthy Snacks And Beverages","slug" => "healthy-snacks-and-beverages"),array("name" => "Marathon Training","slug" => "marathon-training"),array("name" => "Swimming","slug" => "swimming-pools"),/*array("name" => "Sport Nutrition Supplement Stores","slug" => "sport-nutrition-supplement-stores"),*/array("name" => "Luxury Hotels","slug" => "luxury-hotels"),array("name" => "Aerial Fitness","slug" => "aerial-fitness"),array("name" => "Pre-natal Classes","slug" => "pre-natal-classes"),array("name" => "Kids Fitness","slug" => "kids-fitness-classes"),array("name" => "Aqua Fitness","slug" => "aqua-fitness"));
 
@@ -106,11 +106,61 @@ if(!function_exists('getmy_city')){
             case "bengaluru":
                 return "bangalore";
                 break;
+            case "gurgaon":
+            case "gurugram":
+                return "gurgaon";
+                break;
             default: return $city;
         };
     }
 }
 
+
+if(!function_exists('ifCityPresent')){
+    function ifCityPresent($city){
+        $city = strtolower($city);
+        $send_city = $city;
+        $ifcity = false;
+        switch($city){
+            case "mumbai":
+            case "bombay":
+            case "thane":
+            case "vashi":
+            case "navi mumbai":
+                $send_city = "mumbai";
+                $ifcity = true;
+                break;
+            case "pune":
+            case "pimpri":
+            case "pimpri chinchwad":
+                $send_city = "pune";
+                $ifcity = true;
+                break;
+            case "bangalore":
+            case "bengaluru":
+                $send_city = "bangalore";
+                $ifcity = true;
+                break;
+            case "delhi":
+            case "new delhi":
+                $send_city = "delhi";
+                $ifcity = true;
+                break;
+            case "gurugram":
+            case "gurgaon":
+                $send_city = "gurgaon";
+                $ifcity = true;
+                break;
+            case "noida":
+            case "greater noida":
+                $send_city = "gurgaon";
+                $ifcity = true;
+                break;
+        };
+        $response = array("city"=>$send_city,"found"=>$ifcity);
+        return $response;
+    }
+}
 
 
 if (!function_exists('bitly_url')) {
