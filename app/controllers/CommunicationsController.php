@@ -105,7 +105,20 @@ class CommunicationsController extends \BaseController {
 
 				
 				case "orderAfter3Days":
-					$order_data['category_array'] = $this->getCategoryImage($category_slug);
+					$category_slug = "no_category";
+
+					if(isset($data['finder_category_id']) && $data['finder_category_id'] != ""){
+
+						$finder_category_id = $data['finder_category_id']
+
+						$category = Findercategory::find((int)$finder_category_id);
+
+						if($category){
+							$category_slug = $category->slug;
+						}
+					}
+
+					$data['category_array'] = $this->utilities->getCategoryImage($category_slug);
 					break;
 
 
