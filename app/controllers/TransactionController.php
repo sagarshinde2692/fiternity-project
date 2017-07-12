@@ -923,6 +923,7 @@ class TransactionController extends \BaseController {
                     'type'=>'DEBIT',
                     'entry'=>'debit',
                     'description'=> $this->utilities->getDescription($data),
+                    'finder_id'=>$data['finder_id']
                 );
 
                 $walletTransactionResponse = $this->utilities->walletTransactionNew($req);
@@ -956,6 +957,7 @@ class TransactionController extends \BaseController {
                     'type'=>'DEBIT',
                     'entry'=>'debit',
                     'description'=> $this->utilities->getDescription($data),
+                    'finder_id'=>$data['finder_id']
                 );
                 $walletTransactionResponse = $this->utilities->walletTransactionNew($req);
                 
