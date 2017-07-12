@@ -406,7 +406,64 @@ Class CustomerReward {
 
             $customer = \Customer::find($customer_id);
 
-            $current_wallet_balance = \Wallet::active()->where('customer_id',$customer_id)->where('balance','>',0)->sum('balance');/*
+            $query = \Wallet::active()->where('customer_id',(int)$customer_id)->where('balance','>',0);
+
+            $finder = \Finder::find((int)$finder_id);
+
+            $conditionData = [];
+
+            $conditionData['finder_category_id'] = $finder->category_id;
+
+            $fitcashCoupons = \Fitcashcoupon::select('_id','code','condition')->where('condition','exists',true)->get();
+
+            if(count($fitcashCoupons) > 0){
+
+                $fitcashCoupons = $fitcashCoupons->toArray();
+
+                foreach ($fitcashCoupons as $coupon) {
+
+                    $code = $coupon['code'];
+
+                    $condition_array = [];
+
+                    foreach ($coupon['condition'] as $condition) {
+
+                        $operator = $condition['operator'];
+                        $field = $condition['field'];
+                        $value = $condition['value'];
+
+                        switch ($operator) {
+                            case 'in':
+
+                                if(isset($conditionData[$field]) && in_array($conditionData[$field],$value)){
+                                    $condition_array[] = 'true';
+                                }else{
+                                    $condition_array[] = 'false';
+                                }
+
+                                break;
+
+                            case 'not_in':
+
+                                if(isset($conditionData[$field]) && !in_array($conditionData[$field],$value)){
+                                    $condition_array[] = 'true';
+                                }else{
+                                    $condition_array[] = 'false';
+                                }
+
+                                break;
+                        }
+
+                    }
+
+                    if(in_array('false', $condition_array)){
+                        $query->where('coupon','!=',$code);
+                    }
+
+                }
+            }
+
+            $current_wallet_balance = $query->sum('balance');/*
 
             if(isset($customer->demonetisation)){
 
