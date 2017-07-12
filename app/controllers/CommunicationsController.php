@@ -49,16 +49,20 @@ class CommunicationsController extends \BaseController {
 	public function sendCommunication($sender_class, $transaction_type, $label, $id, $key){
 
 		try{
-			Log::info("inside");
 		
 			if($transaction_type == 'order'){
-				$transaction_data = Order:: where('_id', intval($id))->where("communication_keys.$sender_class-$label", intval($key))->first();
-				$dates = array('preferred_starting_date','start_date','start_date_starttime','end_date','preferred_payment_date','success_date','pg_date','preferred_starting_change_date','dietplan_start_date','followup_date', 'order_confirmation_customer','auto_followup_date','requested_preferred_starting_date');
+
+				$transaction_data = Order:: where('_id', intval($id))
+											->where("communication_keys.$sender_class-$label", intval($key))
+											->first();
 
 
 			}else if($transaction_type == 'trial'){
-				$transaction_data = Booktrial::where('_id', intval($id))->where("communication_keys.$sender_class-$label", intval($key))->first();
-				$dates = array('schedule_date','schedule_date_time','missedcall_date','customofferorder_expiry_date','followup_date','auto_followup_date');
+
+				$transaction_data = Booktrial:: where('_id', intval($id))
+												->where("communication_keys.$sender_class-$label", intval($key))
+												->first();
+
 
 			}
 
@@ -67,16 +71,15 @@ class CommunicationsController extends \BaseController {
 			}
 
 			$data = $transaction_data->toArray();
-
-			$sender_class = strtolower($sender_class);
-			Log::info($sender_class);
-			Log::info($label);
+			Log::info("From communicationsController");
+			Log::info("$sender_class-$label");
 			
-			$response = $this->prepareData($data, $sender_class, $label);
+			$data = $this->prepareData($data, $label);
+			$class = strtolower($sender_class);
+			$response = $this->$class->$label($data);
 
 			$communication_keys = $transaction_data->communication_keys;
 			$communication_keys["$sender_class-$label"] = "";
-
 			$transaction_data->communication_keys = $communication_keys;
 			$transaction_data->update();
 
@@ -89,25 +92,55 @@ class CommunicationsController extends \BaseController {
 		
 	}
 
-	public function prepareData($data, $sender_class, $label){
+	public function prepareData($data, $label){
 		switch($label){
+				
 				case "alreadyExtendedOrder":
-				$data = array();
-				$data['customer_name'] = ucwords($order->customer_name);
-				$data['customer_phone'] = $ozonetel_missedcall->customer_number;
-				$data['finder_name'] = $order->finder_name;
-				$data['google_pin'] = $google_pin;
-				break;
+					$data = array();
+					$data['customer_name'] = ucwords($order->customer_name);
+					$data['customer_phone'] = $ozonetel_missedcall->customer_number;
+					$data['finder_name'] = $order->finder_name;
+					$data['google_pin'] = $google_pin;
+					break;
+
+				
 				case "orderAfter3Days":
-				$order_data['category_array'] = $this->getCategoryImage($category_slug);
-				break;
+					$order_data['category_array'] = $this->getCategoryImage($category_slug);
+					break;
+
+
 				case "bookTrialReminderBefore3Hour":
-				$data['poc'] = "fitternity";
-				$data['poc_no'] = Config::get('app.contact_us_customer_number');
-				break;
+					$data['poc'] = "vendor";
+					$data['poc_no'] = $data['finder_poc_for_customer_no'];
+					$hour = (int) date("G");
+
+					if($hour >= 10 && $hour <= 22){
+						$data['poc'] = "fitternity";
+						$data['poc_no'] = Config::get('app.contact_us_customer_number');
+					}
+					break;
+
+
+				case "bookTrialReminderBefore20Min":
+					$current_date = date('Y-m-d 00:00:00');
+					$from_date = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($current_date))));
+					$to_date = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($current_date." + 1 days"))));
+					$batch = 1;
+					$booktrialMissedcall  = Booktrial::where('_id','!=',(int) $data['_id'])->where('customer_phone','LIKE','%'.substr($data['customer_phone'], -8).'%')->where('missedcall_batch','exists',true)->where('created_at','>',$from_date)->where('created_at','<',$to_date)->orderBy('_id','desc')->first();
+					if(!empty($booktrialMissedcall) && isset($booktrialMissedcall->missedcall_batch) && $booktrialMissedcall->missedcall_batch != ''){
+						$batch = $booktrialMissedcall->missedcall_batch + 1;
+					}
+					$missedcall_no = Ozonetelmissedcallno::where('batch',$batch)->where('type','yes')->where('for','N-3Trial')->first();
+					if(empty($missedcall_no)){
+						$missedcall_no = Ozonetelmissedcallno::where('batch',1)->where('type','yes')->where('for','N-3Trial')->first();
+					}
+
+					$data['yes'] = $missedcall_no->number;
+					break;
+
 		}
 
-		return $this->$sender_class->$label($data, 0);
+		return $data;
 	}
 
 

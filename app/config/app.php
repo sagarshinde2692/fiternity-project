@@ -683,7 +683,7 @@ return array(
 	
     'test_vendors' => ['fitternity-test-page-bandra-west', 'test-healthy-vendor', 'fitternity-test-dharminder', 'gaurav-test-page-gym'],
 
-	'delay_methods' =>["before3HourSlotBooking","bookTrialReminderAfter2Hour","bookTrialReminderAfter2HourRegular","bookTrialReminderBefore12Hour","bookTrialReminderBefore1Hour","bookTrialReminderBefore20Min","bookTrialReminderBefore3Hour","bookTrialReminderBefore6Hour"]
+	'delay_methods' =>["bookTrialReminderAfter2Hour","bookTrialReminderAfter2HourRegular","bookTrialReminderBefore12Hour","bookTrialReminderBefore1Hour","bookTrialReminderBefore20Min","bookTrialReminderBefore3Hour","bookTrialReminderBefore6Hour"]
 
 
 

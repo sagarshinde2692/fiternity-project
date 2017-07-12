@@ -5556,6 +5556,8 @@ class SchedulebooktrialsController extends \BaseController {
             try{
                 $booktrial_id = (int)$data['booktrial_id'];
                 $booktrial = Booktrial::findOrFail($booktrial_id);
+                // Log::info($booktrial);
+                // return;
                 $dates = array('schedule_date','schedule_date_time','missedcall_date','customofferorder_expiry_date','followup_date','auto_followup_date');
                 foreach ($dates as $key => $value) {
                     if(isset($booktrial[$value])){

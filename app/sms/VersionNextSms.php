@@ -18,7 +18,9 @@ abstract Class VersionNextSms {
         $objInstance = $reflect->newInstanceArgs();
         
 		if(count($arguments) < 2 || (is_int($arguments[1]) && $arguments[1] == 0) || !in_array($method, Config::get('app.delay_methods'))){
-			return $objInstance->$method($arguments[0], 0);
+			// return $objInstance->$method($arguments[0], 0);
+            return call_user_func_array( array($objInstance, $method), $arguments );
+
 		}else{
 			$utilities = new Utilities();
 			return $utilities->scheduleCommunication($arguments, $method, $class_name);
