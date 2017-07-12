@@ -4955,6 +4955,4 @@ class CustomerController extends \BaseController {
 		return Response::json(array('status' => 200,'message' => 'success','device'=>$device),200);
 	}
 
-
-
 }

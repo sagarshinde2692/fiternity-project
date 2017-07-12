@@ -1688,10 +1688,59 @@ Class Utilities {
 
                 $order = Order::find((int)$request['order_id']);
 
-                if(isset($order->finder_category_id) && in_array($order->finder_category_id,[42,45])){
+                $fitcashCoupons = Fitcashcoupon::select('_id','code','condition')->where('condition','exists',true)->get();
+
+                if(count($fitcashCoupons) > 0){
+
+                    $fitcashCoupons = $fitcashCoupons->toArray();
+
+                    foreach ($fitcashCoupons as $coupon) {
+
+                        $code = $coupon['code'];
+
+                        $condition_array = [];
+
+                        foreach ($coupon['condition'] as $condition) {
+
+                            $operator = $condition['operator'];
+                            $field = $condition['field'];
+                            $value = $condition['value'];
+
+                            switch ($operator) {
+                                case 'in':
+
+                                    if(isset($order[$field]) && in_array($order[$field],$value)){
+                                        $condition_array[] = 'true';
+                                    }else{
+                                        $condition_array[] = 'false';
+                                    }
+
+                                    break;
+
+                                case 'not_in':
+
+                                    if(isset($order[$field]) && !in_array($order[$field],$value)){
+                                        $condition_array[] = 'true';
+                                    }else{
+                                        $condition_array[] = 'false';
+                                    }
+
+                                    break;
+                            }
+
+                        }
+
+                        if(in_array('false', $condition_array)){
+                            $query->where('coupon','!=',$code);
+                        }
+
+                    }
+                }
+
+                /*if(isset($order['finder_category_id']) && in_array($order['finder_category_id'],[42,45])){
 
                     $query->whereNotIn('coupon','swiggyfit');
-                }
+                }*/
             }
 
             $allWallets  = $query->OrderBy('_id','asc')->get();
