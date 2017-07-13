@@ -778,6 +778,17 @@ class HomeController extends BaseController {
                 "healthy_tiffins"=>["category"=>"healthy tiffins","count"=>0]
             ];
 
+            $city_name = "";
+
+            if(isset($item['city_id']) && $item['city_id'] != ""){
+
+                $city = City::find((int)$item['city_id']);
+
+                if($city){
+                    $city_name  = ucwords($city->name);
+                }
+            }
+
             if(isset($finder) && isset($finder['lat']) && isset($finder['lon'])){
 
                 $lat = $finder['lat'];
@@ -794,6 +805,7 @@ class HomeController extends BaseController {
                         "category"=>"",
                         "lat"=>$lat,
                         "lon"=>$lon,
+                        "city"=>strtolower($city_name),
                         "keys"=>[
                           "average_rating",
                           // "business_type",
@@ -998,17 +1010,6 @@ class HomeController extends BaseController {
 
             }
 
-            $city_name = "";
-
-            if(isset($item['city_id']) && $item['city_id'] != ""){
-
-                $city = City::find((int)$item['city_id']);
-
-                if($city){
-                    $city_name  = ucwords($city->name);
-                }
-            }
-
             $fitcash_vendor = null;
 
             if($fitcash_plus > 0){
@@ -1149,6 +1150,7 @@ class HomeController extends BaseController {
         $lon    =  $request['lon'];
         $category = $request['category'];
         $keys = $request['keys'];
+        $city = $request['city'];
 
         $payload = [
            "category"=>$category,
@@ -1164,9 +1166,9 @@ class HomeController extends BaseController {
 
            ],
            "location"=>[
-              "city"=>"mumbai",
+              "city"=>$city,
               "lat"=>$lat,
-              "lon"=>$lon,
+              "long"=>$lon,
               "radius"=>$radius
            ],
            "with_locationtags"=>"1",
