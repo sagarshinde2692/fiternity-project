@@ -2120,7 +2120,7 @@ Class Utilities {
             $transaction = \Booktrial::find($transaction_id);
         }
 
-        $communication_keys = isset($transaction->communication_keys)?$transaction->communication_keys:[];
+        $communication_keys = isset($transaction->communication_keys)?$transaction->communication_keys:array();
         $communication_variable = "$class_name-$method";
         $communication_keys[$communication_variable] = $key;
         
