@@ -1398,12 +1398,12 @@ class CustomerController extends \BaseController {
 				}
 
 
-				$getAction = $this->getAction($value,"orderHistory");
+				//$getAction = $this->getAction($value,"orderHistory");
 
-			    $value["action"] = $getAction["action"];
-			    $value["feedback"] = $getAction["feedback"];
+			    $value["action"] = null; //$getAction["action"];
+			    $value["feedback"] = null; //$getAction["feedback"];
 
-				$value["action_new"] = $this->getActionV1($value,"orderHistory");
+				$value["action_new"] = []; //$this->getActionV1($value,"orderHistory");
 
 				array_push($orders, $value);
 
