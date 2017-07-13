@@ -48,8 +48,10 @@ Class ShortenUrl {
 
         }catch (RequestException $e) {
 
-            $response = $e->getResponse();
-            $error = array('status'=>$response->getStatusCode(),'reason'=>$response->getReasonPhrase());
+           /*$response = $e->getResponse();
+            $error = array('status'=>$response->getStatusCode(),'reason'=>$response->getReasonPhrase());*/
+
+            $error = array('status'=>400,'reason'=>'RequestException Error');
 
             return $error;
 
@@ -75,8 +77,10 @@ Class ShortenUrl {
 
         }catch (RequestException $e) {
 
-            $response = $e->getResponse();
-            $error = array('status'=>$response->getStatusCode(),'reason'=>$response->getReasonPhrase());
+           /*$response = $e->getResponse();
+            $error = array('status'=>$response->getStatusCode(),'reason'=>$response->getReasonPhrase());*/
+
+            $error = array('status'=>400,'reason'=>'RequestException Error');
 
             return $error;
 
