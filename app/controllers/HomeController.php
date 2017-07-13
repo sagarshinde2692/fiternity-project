@@ -845,6 +845,7 @@ class HomeController extends BaseController {
                             "category"=>newcategorymapping($value["category"]),
                             "lat"=>$lat,
                             "lon"=>$lon,
+                            "city"=>strtolower($city_name),
                             "keys"=>[
                               // "average_rating",
                               // "business_type",
