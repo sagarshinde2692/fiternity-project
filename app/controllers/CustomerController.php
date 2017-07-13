@@ -4480,6 +4480,9 @@ class CustomerController extends \BaseController {
 			}
 
 			$service = Service::find((int)$current_diet_plan['service_id']);
+			
+			$current_diet_plan['workout_goal'] = "";
+			
 			if($service && isset($service->workout_results)){
 				$current_diet_plan['workout_goal'] = implode(", ", $service['workout_results']);
 			}
