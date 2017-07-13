@@ -1398,7 +1398,7 @@ class CustomerController extends \BaseController {
 				}
 
 
-				//$getAction = $this->getAction($value,"orderHistory");
+				$getAction = $this->getAction($value,"orderHistory");
 
 			    $value["action"] = null; //$getAction["action"];
 			    $value["feedback"] = $getAction["feedback"];
