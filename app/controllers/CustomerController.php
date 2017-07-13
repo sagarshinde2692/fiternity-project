@@ -1398,12 +1398,25 @@ class CustomerController extends \BaseController {
 				}
 
 
-				$getAction = $this->getAction($value,"orderHistory");
+				if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android")){
 
-			    $value["action"] = null; //$getAction["action"];
-			    $value["feedback"] = $getAction["feedback"];
+					//$getAction = $this->getAction($value,"orderHistory");
 
-				$value["action_new"] = $this->getActionV1($value,"orderHistory");
+				    $value["action"] = null; //$getAction["action"];
+				    $value["feedback"] = null; //$getAction["feedback"];
+
+					$value["action_new"] = $this->getActionV1($value,"orderHistory");
+
+				}else{
+
+					$getAction = $this->getAction($value,"orderHistory");
+
+				    $value["action"] = $getAction["action"];
+				    $value["feedback"] = $getAction["feedback"];
+
+					$value["action_new"] = $this->getActionV1($value,"orderHistory");
+
+				}
 
 				array_push($orders, $value);
 
