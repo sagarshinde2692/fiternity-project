@@ -1169,7 +1169,7 @@ class HomeController extends BaseController {
            "location"=>[
               "city"=>$city,
               "lat"=>$lat,
-              "long"=>$lon,
+              "lon"=>$lon,
               "radius"=>$radius
            ],
            "with_locationtags"=>"1",
