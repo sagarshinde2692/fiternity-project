@@ -2226,6 +2226,10 @@ public function getRankedFinderResultsAppv4()
             }
         }else{
             $locationCount = count($region);
+            if($locationCount > 1){
+                $lat = "";
+                $lon = "";
+            }
         }
         // Log::info("Location being searched over : ".time());
         $offering_regex = $this->_getOfferingRegex($category);
