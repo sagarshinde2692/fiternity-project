@@ -2125,7 +2125,7 @@ Class Utilities {
         $communication_keys[$communication_variable] = $key;
         
 
-        $transaction->communication_keys = $communication_keys;
+        $transaction['communication_keys'] = $communication_keys;
 
         $transaction->update();
 
