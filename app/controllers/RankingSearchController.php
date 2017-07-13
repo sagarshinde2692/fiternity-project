@@ -2430,6 +2430,9 @@ public function getRankedFinderResultsAppv4()
             "bool" : {"must":['.$location_facets_filter.']}
         }';
 
+        $location_bool_mail_filter = '"filter": {
+            "bool" : {'.$filtervalue_post.$must_not_filter.'}
+        }';
         $trialdays_bool = '"filter": {
             "bool" : {"must":['.$trialday_facets_filter.']}
         }';
@@ -2495,7 +2498,7 @@ public function getRankedFinderResultsAppv4()
 
         $locationtags_facets = ' 
         "filtered_locationtags": {
-            '.$location_bool.',
+            '.$location_bool_mail_filter.',
             "aggs": {
             "offerings": {
                 "nested": {
