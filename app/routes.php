@@ -934,8 +934,11 @@ Route::post('notifylocation',array('as' => 'customer/notifylocation','uses' => '
 
 Route::post('customer/getlink', 'CustomerController@getLink');
 
+
 Route::post('app/installs', 'HomeController@appinstalls');
 Route::post('promotional/notification','HomeController@promotionalNotification');
+Route::post('customer/feedback', 'CustomerController@feedback');
+
 // Route::get('sendtransactionemails/{withInstant?}','SchedulebooktrialsController@sendTransactionEmails');
 // Route::get('sendordermissedemails','TransactionController@sendOrderMissedEmails');
 

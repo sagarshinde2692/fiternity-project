@@ -1374,7 +1374,15 @@ class CustomerController extends \BaseController {
 					->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
 					->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 					->find(intval($value['finder_id']),['_id','title','slug','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile','finder_poc_for_customer_name','info','category_id','location_id','city_id','category','location','city','average_rating','total_rating_count','review_added']);
+
 					if($finderarr){
+
+						$finderarr = $finderarr->toArray();
+
+						if(isset($finderarr['info']['service']) && is_array($finderarr['info']['service'])){
+							$finderarr['info']['service'] = "";
+						}
+
 						$value['finder'] = $finderarr;
 					}
 				}
@@ -1388,6 +1396,7 @@ class CustomerController extends \BaseController {
 				if(isset($value['amount_customer']) && $value['amount_customer'] != 0){
 					$value['amount'] = $value['amount_customer'];
 				}
+
 
 				$getAction = $this->getAction($value,"orderHistory");
 
@@ -4922,11 +4931,11 @@ class CustomerController extends \BaseController {
 	public function termsAndConditions($type){
 
 		if($type == 'referral'){
-			$tnc = "<h3 style='text-align:center'>Terms and conditions for refer and earn</h3><ul><li>Every time a new user signs up with your referral code, they'll get Rs. 250 Fitcash +</li>
-				<li>As soon as they do their first transaction (free trials not applicable) on Fitternity - you will automatically get Rs. 250 Fitcash plus in your wallet. </li>
-				<li>FitCash + can we used in any booking and will be auto-applied on checkout</li>
-				<li>The validity of this Fitcash+ is 6 months</li>
-				<li>You can send unlimited referral invitations, however the maximum amount of FitCash + you can earn is Rs. 1,500</li></ul>";
+			$tnc = "<h3 style='text-align:center'>Terms and conditions for refer and earn</h3><ul><li>Every time a new user signs up with your referral code, they'll get Rs. 250 FitCash+</li>
+				<li>As soon as they do their first transaction (free trials not applicable) on Fitternity - you will automatically get Rs. 250 FitCash+ in your wallet.</li>
+				<li>FitCash+ can be used in any booking and will be auto-applied on checkout</li>
+				<li>The validity of this FitCash+ is 6 months</li>
+				<li>You can send unlimited referral invitations, however the maximum amount of FitCash+ you can earn is Rs. 1,500</li></ul>";
 		}
 		
 		return $tnc;
@@ -4960,6 +4969,41 @@ class CustomerController extends \BaseController {
 		// return $device;
 		$device->save();
 		return Response::json(array('status' => 200,'message' => 'success','device'=>$device),200);
+	}
+
+	public function feedback(){
+
+		$data = Input::json()->all();
+
+		$jwt_token = Request::header('Authorization');
+
+        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+
+            $decoded = $this->customerTokenDecode($jwt_token);
+            $data['customer_id'] = (int)$decoded->customer->_id;
+        }
+
+        if(isset($data['order_id']) && $data['order_id'] != ""){
+        	$data['order_id'] = (int)$data['order_id'];
+        }
+
+        if(isset($data['booktrial_id']) && $data['booktrial_id'] != ""){
+        	$data['booktrial_id'] = (int)$data['booktrial_id'];
+        }
+
+        if(isset($data['finder_id']) && $data['finder_id'] != ""){
+        	$data['finder_id'] = (int)$data['finder_id'];
+        }
+
+        Feedback::create($data);
+
+        return Response::json(
+			array(
+				'status' => 200,
+				'message' => "Thankyou for the feedback",
+				),
+			200
+		);
 	}
 
 

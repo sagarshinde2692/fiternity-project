@@ -10,8 +10,7 @@ use App\Services\Sidekiq as Sidekiq;
 class HomeController extends BaseController {
 
 
-    protected $api_url = "http://a1.fitternity.com/";
-    // protected $api_url = "http://fitapi.com/";
+    protected $api_url = false;
     protected $debug = false;
     protected $client;
 
@@ -19,6 +18,7 @@ class HomeController extends BaseController {
     public function __construct(CustomerNotification $customernotification,Sidekiq $sidekiq) {
         $this->customernotification     =   $customernotification;
         $this->sidekiq = $sidekiq;
+        $this->api_url = Config::get("app.url")."/";
         $this->initClient();
     }
 
@@ -433,19 +433,29 @@ class HomeController extends BaseController {
 
     public function getSuccessMsg($type, $id){
 
+        $customer_id = "";
+        $jwt_token = Request::header('Authorization');
+
+        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+
+            $decoded = customerTokenDecode($jwt_token);
+            $customer_id = (int)$decoded->customer->_id;
+        }
+
         $type       =   strtolower(trim($type));
+        $order_type    = "";
 
         if($type != "" && $id != ""){
 
             $booktrialItemArr   =   ["personaltrainertrial","manualtrial","manualautotrial","booktrialfree"];
-            $orderItemArr       =   ["healthytiffintrial","membershipwithpg","membershipwithoutpg","healthytiffinmembership","personaltrainermembership","booktrial","workoutsession"];
+            $orderItemArr       =   ["healthytiffintrial","membershipwithpg","membershipwithoutpg","healthytiffinmembership","personaltrainermembership","booktrial","workoutsession","workout-session","booktrials"];
             $captureItemArr     =   ["manualmembership"];
 
             $itemData           =   [];
             
             if (in_array($type, $booktrialItemArr)){
 
-                $itemData       =   Booktrial::with('finder')->find(intval($id));
+                $itemData       =   Booktrial::find(intval($id));
 
                 $dates = array('start_date', 'start_date_starttime', 'schedule_date', 'schedule_date_time', 'followup_date', 'followup_date_time','missedcall_date','customofferorder_expiry_date','auto_followup_date');
 
@@ -457,16 +467,12 @@ class HomeController extends BaseController {
 
                 $itemData       =   $itemData->toArray();
 
-                if($type == 'manualtrial'){
-                    if(isset($itemData['finder']['manual_trial_auto']) && $itemData['finder']['manual_trial_auto'] == "1"){
-                        $type = "manualautotrial";
-                    }
-                }
+                $order_type = "booktrial_id";
             }
 
             if (in_array($type, $orderItemArr)) {
 
-                $itemData = Order::with('finder')->find(intval($id));
+                $itemData = Order::find(intval($id));
 
                 $dates = array('followup_date','last_called_date','preferred_starting_date', 'called_at','subscription_start','start_date','start_date_starttime','end_date', 'order_confirmation_customer');
 
@@ -478,18 +484,57 @@ class HomeController extends BaseController {
 
                 $itemData       =   $itemData->toArray();
 
+                $order_type = "order_id";
+
             }
 
             if (in_array($type, $captureItemArr)) {
-                $itemData = Capture::with('finder')->find($id)->toArray();
+                $itemData = Capture::find($id)->toArray();
+
+                $order_type = "capture_id";
             }
 
-            $item           =   array_except($itemData, ['finder']);
-            $finder_name    =   (isset($itemData) && isset($itemData['finder']) && isset($itemData['finder']['title'])) ? ucwords($itemData['finder']['title']) : "";
+            $finder_name = "";
+            $finder_location = "";
+            $finder_address = "";
+
+            if(isset($itemData['finder_id']) && $itemData['finder_id'] != ""){
+
+                $finder = Finder::with(array('location'=>function($query){$query->select('name');}))->find((int)$itemData['finder_id'],array('_id','title','location_id','contact','lat','lon','manual_trial_auto'));
+
+                if(isset($finder['title']) && $finder['title'] != ""){
+                    $finder_name = ucwords($finder['title']);
+                }
+
+                if(isset($finder['location']['name']) && $finder['location']['name'] != ""){
+                    $finder_location = ucwords($finder['location']['name']);
+                }
+
+                if(isset($finder['contact']['address']) && $finder['contact']['address'] != ""){
+                    $finder_address = $finder['contact']['address'];
+                }
+
+            }
+
+            if(isset($itemData['finder_name']) && $itemData['finder_name'] != ""){
+                $finder_name = $itemData['finder_name'];
+            }
+
+            if(isset($itemData['finder_location']) && $itemData['finder_location'] != ""){
+                $finder_location = $itemData['finder_location'];
+            }
+
+            if($type == 'manualtrial'){
+                if(isset($finder['manual_trial_auto']) && $finder['manual_trial_auto'] == "1"){
+                    $type = "manualautotrial";
+                }
+            }
+
+            $item           =   $itemData;
             $service_name    =   (isset($itemData) && isset($itemData['service_name'])) ? ucwords($itemData['service_name']) : "";
-            $schedule_date  =   (isset($itemData['schedule_date']) && $itemData['schedule_date'] != "") ? date(' jS F\, Y \(l\) ', strtotime($itemData['schedule_date'])) : "-";
-            $schedule_slot  =   (isset($itemData['schedule_slot']) && $itemData['schedule_slot'] != "") ? $itemData['schedule_slot'] : "-";
-            $service_duration = (isset($itemData['service_duration_purchase']) && $itemData['service_duration_purchase'] != "") ? $itemData['service_duration_purchase'] : "-";
+            $schedule_date  =   (isset($itemData['schedule_date']) && $itemData['schedule_date'] != "") ? date(' jS F\, Y \(l\) ', strtotime($itemData['schedule_date'])) : "";
+            $schedule_slot  =   (isset($itemData['schedule_slot']) && $itemData['schedule_slot'] != "") ? $itemData['schedule_slot'] : "";
+            $service_duration = (isset($itemData['service_duration_purchase']) && $itemData['service_duration_purchase'] != "") ? $itemData['service_duration_purchase'] : "";
             $preferred_starting_date = (isset($itemData['preferred_starting_date'])) ? $itemData['preferred_starting_date'] : "";
 
             $header     =   "Congratulations!";
@@ -498,11 +543,13 @@ class HomeController extends BaseController {
             $show_invite = false;
             $id_for_invite = (int) $id;
             $end_point = "";
+            
+            $show_other_vendor = false;
 
             switch ($type) {
 
                 case 'booktrialfree':
-                    $subline = "Your Trial Session at $finder_name for $service_name on $schedule_date from $schedule_slot has been scheduled";
+                    $subline = "Thank you for choosing Fitternity as your preferred fitness provider.Make sure you buy memberships through us for lowest price guarantee.Below are the details of your transaction.";
                     $steps = [
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
                         ['icon'=>$icon_path.'manage-profile.png','text'=>'Manage this booking through your User Profile'],
@@ -512,10 +559,14 @@ class HomeController extends BaseController {
                     ];
                     $show_invite = true;
                     $end_point = "invitefortrial";
+                    
+                    $header = "Booking Confirmed";
+                    $show_other_vendor = true;
                     break;
 
                 case 'booktrial':
-                    $subline = "Your Trial Session at $finder_name for $service_name on $schedule_date from $schedule_slot has been scheduled";
+                case 'booktrials':
+                    $subline = "Thank you for choosing Fitternity as your preferred fitness provider.Make sure you buy memberships through us for lowest price guarantee.Below are the details of your transaction.";
                     $steps = [
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
                         ['icon'=>$icon_path.'manage-profile.png','text'=>'Manage this booking through your User Profile'],
@@ -526,9 +577,13 @@ class HomeController extends BaseController {
                     $show_invite = true;
                     $id_for_invite = (int) $item['booktrial_id'];
                     $end_point = "invitefortrial";
+                    
+                    $header = "Booking Confirmed";
+                    $show_other_vendor = true;
                     break;
                 case 'workoutsession':
-                    $subline = "Your Workout Session at $finder_name for $service_name on $schedule_date from $schedule_slot has been scheduled";
+                case 'workout-session':
+                    $subline = "Thank you for choosing Fitternity as your preferred fitness provider. Make sure you buy a membership through Fitternity to enjoy lowest price guarantee!";
                     $steps = [
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
                         ['icon'=>$icon_path.'manage-profile.png','text'=>'Manage this booking through your User Profile'],
@@ -538,6 +593,9 @@ class HomeController extends BaseController {
                     $show_invite = true;
                     $id_for_invite = (int) $item['booktrial_id'];
                     $end_point = "invitefortrial";
+                    
+                    $header = "Booking Confirmed";
+                    $show_other_vendor = true;
                     break;
                 case 'personaltrainertrial':
                     $subline = "Your Session is booked. Hope you and your buddy have great workout.";
@@ -548,10 +606,13 @@ class HomeController extends BaseController {
                         ['icon'=>$icon_path.'attend-workout.png','text'=>'You attend the trial with the trainer basis the appointment'],
                         ['icon'=>$icon_path.'choose-reward.png','text'=>'Get lowest price guarantee & Rewards on purchase'],
                     ];
-                    $end_point = "";
+                    
+                    
+                    $header = "Booking Confirmed";
+                    $show_other_vendor = true;
                     break;
                 case 'manualtrial':
-                    $subline = "Your Trial Session request at $finder_name is recieved";
+                    $subline = "Thank you for choosing Fitternity as your preferred fitness provider.We’ll get back to you shortly with your appointment details.";
                     $steps = [
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
                         ['icon'=>$icon_path.'book-appointment.png','text'=>'Fitternity will get in touch with you to book the appointment'],
@@ -559,10 +620,13 @@ class HomeController extends BaseController {
                         ['icon'=>$icon_path.'attend-workout.png','text'=>'You attend the trial basis the appointment'],
                         ['icon'=>$icon_path.'choose-reward.png','text'=>'Get lowest price guarantee & Rewards on purchase'],
                     ];
-                    $end_point = "";
+                    
+                    
+                    $header = "Request Confirmed";
+                    $show_other_vendor = true;
                     break;
                 case 'manualautotrial':
-                    $subline = "Your Trial Session request at $finder_name is recieved";
+                    $subline = "Thank you for choosing Fitternity as your preferred fitness provider.We’ll get back to you shortly with your appointment details.";
                     $steps = [
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
                         ['icon'=>$icon_path.'book-appointment.png','text'=>"$finder_name will get in touch with you to book the appointment"],
@@ -570,7 +634,10 @@ class HomeController extends BaseController {
                         ['icon'=>$icon_path.'attend-workout.png','text'=>'You attend the trial basis the appointment'],
                         ['icon'=>$icon_path.'choose-reward.png','text'=>'Get lowest price guarantee & Rewards on purchase'],
                     ];
-                    $end_point = "";
+                    
+                    
+                    $header = "Request Confirmed";
+                    $show_other_vendor = true;
                     break;
                 case 'healthytiffintrial':
                     $subline = "Your Trial request at $finder_name has been received. Please expect a revert shortly.";
@@ -580,10 +647,12 @@ class HomeController extends BaseController {
                         ['icon'=>$icon_path.'get-details.png','text'=> $finder_name.' will get in touch with you'],
                         ['icon'=>$icon_path.'manage-booking.png','text'=>'Your meal will be delivered basis the specifications'],
                     ];
-                    $end_point = "";
+                    
+                    
+                    $header = "Booking Confirmed";
                     break;
                 case 'membershipwithpg':
-                    $subline = "Your Membership purchase at $finder_name for $service_name($service_duration) from ".date('d-m-y',strtotime($preferred_starting_date))." is confirmed.";
+                    $subline = "Thank you for choosing Fitternity as your preferred fitness provider. Make sure you upgrade / renew your membership through Fitternity to enjoy lowest price guarantee!";
                     $steps = [
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
                         ['icon'=>$icon_path.'manage-booking.png','text'=>'Subscription code & membership details shared on email'],
@@ -592,9 +661,11 @@ class HomeController extends BaseController {
                     ];
                     $show_invite = true;
                     $end_point = "inviteformembership";
+                    
+                    $header = "Booking Confirmed";
                     break;
                 case 'membershipwithoutpg':
-                    $subline = "Your Membership purchase at $finder_name for $service_name($service_duration) from ".date('d-m-y',strtotime($preferred_starting_date))." is confirmed.";
+                    $subline = "Thank you for choosing Fitternity as your preferred fitness provider. Make sure you upgrade / renew your membership through Fitternity to enjoy lowest price guarantee!";
                     $steps = [
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
                         ['icon'=>$icon_path.'manage-booking.png','text'=>'Subscription code & membership details shared on email'],
@@ -603,9 +674,11 @@ class HomeController extends BaseController {
                     ];
                     $show_invite = true;
                     $end_point = "inviteformembership";
+                    
+                    $header = "Booking Confirmed";
                     break;
                 case 'manualmembership':
-                    $subline = "Your Membership request at $finder_name has been received. Please expect a revert shortly.";
+                    $subline = "Thank you for choosing Fitternity as your preferred fitness provider.We’ll get back to you shortly with your appointment details.";
                     $steps = [
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
                         ['icon'=>$icon_path.'flash-code.png','text'=>'Fitternity will get in touch with you to facilitate the membership purchase'],
@@ -613,7 +686,9 @@ class HomeController extends BaseController {
                         ['icon'=>$icon_path.'manage-booking.png','text'=>'On purchase - Subscription code & membership details shared'],
                         ['icon'=>$icon_path.'flash-code.png','text'=>'Flash the code at the studio & kickstart your fitness journey.'],
                     ];
-                    $end_point = "";
+                    
+                    
+                    $header = "Request Confirmed";
                     break;
                 case 'healthytiffinmembership':
                     $subline = "Your Membership request at $finder_name for $service_name has been received. Please expect a revert shortly.";
@@ -624,7 +699,9 @@ class HomeController extends BaseController {
                         ['icon'=>$icon_path.'get-details.png','text'=> $finder_name.' will get in touch with you'],
                         ['icon'=>$icon_path.'manage-booking.png','text'=>'Your meal will be delivered basis the specifications'],
                     ];
-                    $end_point = "";
+                    
+                    
+                    $header = "Booking Confirmed";
                     break;
                 case 'personaltrainermembership':
                     $subline = "Your Membership request with $finder_name is captured. ";
@@ -634,7 +711,9 @@ class HomeController extends BaseController {
                         ['icon'=>$icon_path.'manage-profile.png','text'=>'When you buy the membership details will be shared'],
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'On starting date the trainer will reach your location'],
                     ];
-                    $end_point = "";
+                    
+                    
+                    $header = "Booking Confirmed";
                     break;
                 default :
                     $subline = "Your Session has been scheduled";
@@ -645,7 +724,8 @@ class HomeController extends BaseController {
                         ['icon'=>$icon_path.'low-price.png','text'=>'Get lowest price guarantee to buy membership'],
                         ['icon'=>$icon_path.'choose-reward.png','text'=>'Choose exciting rewards when you buy'],
                     ];
-                    $end_point = "";
+                    
+                    
                     break;
             }
 
@@ -664,6 +744,370 @@ class HomeController extends BaseController {
                 $show_invite = false;
             }
 
+            $fitcash_plus = 0;
+
+            if($customer_id != ""){
+
+                $customer = Customer::find($customer_id);
+
+                if(isset($customer)){
+
+                    if(isset($customer->demonetisation)){
+
+                        $fitcash_plus = \Wallet::active()->where('customer_id',$customer->_id)->where('balance','>',0)->sum('balance');
+
+                    }else{
+
+                        $customer_wallet = Customerwallet::where('customer_id',$customer->_id)
+                        ->where('amount','!=',0)
+                        ->orderBy('_id', 'DESC')
+                        ->first();
+
+                        if($customer_wallet){
+                            $fitcash_plus = (isset($customer_wallet['balance_fitcash_plus']) && $customer_wallet['balance_fitcash_plus'] != "") ? (int) $customer_wallet['balance_fitcash_plus'] : 0 ;
+                        }
+                    }
+
+                }
+            }
+
+            $near_by_vendor = [];
+
+            $category_array = [
+                "swimming"=>["category"=>"swimming","count"=>0],
+                "healthy_tiffins"=>["category"=>"healthy tiffins","count"=>0]
+            ];
+
+            if(isset($finder) && isset($finder['lat']) && isset($finder['lon'])){
+
+                $lat = $finder['lat'];
+                $lon = $finder['lon'];
+
+                $near_by_type = ["membershipwithpg","membershipwithoutpg","manualmembership"];
+
+                if(!in_array($type,$near_by_type)){
+
+                    $near_by_vendor_request = [
+                        "offset" => 0,
+                        "limit" => 6,
+                        "radius" => "3km",
+                        "category"=>"",
+                        "lat"=>$lat,
+                        "lon"=>$lon,
+                        "keys"=>[
+                          "average_rating",
+                          // "business_type",
+                          // "categorytags",
+                          // "commercial_type",
+                          "contact",
+                          "coverimage",
+                          // "distance",
+                          // "facilities",
+                          // "geolocation",
+                          "location",
+                          // "locationtags",
+                          "multiaddress",
+                          // "offer_available",
+                          //"offerings",
+                          // "photos",
+                          // "servicelist",
+                          "slug",
+                          "title",
+                          "id",
+                          // "total_rating_count",
+                          // "vendor_type"
+                        ]
+                    ];
+
+                    $near_by_vendor = $this->geoLocationFinder($near_by_vendor_request);
+                }
+
+                if($fitcash_plus > 0){
+
+                    foreach ($category_array as $key => $value) {
+
+                         $finder_request = [
+                            "offset" => 0,
+                            "limit" => 0,
+                            "radius" => "3km",
+                            "category"=>newcategorymapping($value["category"]),
+                            "lat"=>$lat,
+                            "lon"=>$lon,
+                            "keys"=>[
+                              // "average_rating",
+                              // "business_type",
+                              // "categorytags",
+                              // "commercial_type",
+                              // "contact",
+                              //"coverimage",
+                              // "distance",
+                              // "facilities",
+                              // "geolocation",
+                              //"location",
+                              // "locationtags",
+                              // "multiaddress",
+                              // "offer_available",
+                              // "offerings",
+                              // "photos",
+                              // "servicelist",
+                              //"slug",
+                              //"title",
+                              "id",
+                              // "total_rating_count",
+                              // "vendor_type"
+                            ]
+                        ];
+
+                        $category_array[$key]['count'] = count($this->geoLocationFinder($finder_request));
+
+                    }
+                }
+
+            }    
+
+            $poc = $poc_name = $poc_number = "";
+
+            if(isset($item['finder_poc_for_customer_name']) && $item['finder_poc_for_customer_name'] != ""){
+                $poc_name = $item['finder_poc_for_customer_name'];
+            }
+
+            if(isset($item['finder_poc_for_customer_no']) && $item['finder_poc_for_customer_no'] != ""){
+                $poc_number = " (".$item['finder_poc_for_customer_no'].")";
+            }
+
+            $poc = $poc_name.$poc_number;
+
+            $booking_details = [];
+
+            $position = 0;
+
+            $booking_details_data["booking_id"] = ['field'=>'SUBSCRIPTION CODE','value'=>(string)$item['_id'],'position'=>$position++];
+
+            if(in_array($type,["healthytiffintrial","membershipwithpg","membershipwithoutpg","healthytiffinmembership","personaltrainermembership"])){
+                $booking_details_data["finder_name_location"] = ['field'=>'MEMBERSHIP BOUGHT AT','value'=>$finder_name.", ".$finder_location,'position'=>$position++];
+            }
+
+            if(in_array($type,["personaltrainertrial","manualtrial","manualautotrial","booktrialfree","booktrial","workoutsession","workout-session","booktrials"])){
+                $booking_details_data["finder_name_location"] = ['field'=>'SESSION BOOKED AT','value'=>$finder_name.", ".$finder_location,'position'=>$position++];
+            }
+
+            $booking_details_data["service_name"] = ['field'=>'SERVICE NAME','value'=>$service_name,'position'=>$position++];
+
+            $booking_details_data["service_duration"] = ['field'=>'SERVICE DURATION','value'=>$service_duration,'position'=>$position++];
+
+            $booking_details_data["start_date"] = ['field'=>'START DATE','value'=>'-','position'=>$position++];
+
+            $booking_details_data["start_time"] = ['field'=>'START TIME','value'=>'-','position'=>$position++];
+
+            $booking_details_data["address"] = ['field'=>'ADDRESS','value'=>'','position'=>$position++];
+
+            $booking_details_data["price"] = ['field'=>'PRICE','value'=>'Free Via Fitternity','position'=>$position++];
+
+            if($poc != ""){ 
+                $booking_details_data["poc"] = ['field'=>'POINT OF CONTACT','value'=>$poc,'position'=>$position++];
+            }
+
+            if(isset($item["reward_info"]) && $item["reward_info"] != ""){
+
+                if($item["reward_info"] == 'Cashback'){
+                    $booking_details_data["reward"] = ['field'=>'REWARD','value'=>$item["reward_info"],'position'=>$position++];
+                }else{
+                    $booking_details_data["reward"] = ['field'=>'REWARD','value'=>$item["reward_info"]." (Avail it from your Profile)",'position'=>$position++];
+                }
+            }
+
+            if(isset($item['start_date']) && $item['start_date'] != ""){
+                $booking_details_data['start_date']['value'] = date('d-m-Y (l)',strtotime($item['start_date']));
+            }
+
+            if(isset($item['schedule_date']) && $item['schedule_date'] != ""){
+                $booking_details_data['start_date']['value'] = date('d-m-Y (l)',strtotime($item['schedule_date']));
+            }
+
+            if(isset($item['preferred_starting_date']) && $item['preferred_starting_date'] != ""){
+                $booking_details_data['start_date']['value'] = date('d-m-Y (l)',strtotime($item['preferred_starting_date']));
+            }
+
+            if(isset($item['start_time']) && $item['start_time'] != ""){
+                $booking_details_data['start_time']['value'] = strtoupper($item['start_time']);
+            }
+
+            if(isset($item['schedule_slot_start_time']) && $item['schedule_slot_start_time'] != ""){
+                $booking_details_data['start_time']['value'] = strtoupper($item['schedule_slot_start_time']);
+            }
+
+            if(isset($item['amount']) && $item['amount'] != ""){
+                $booking_details_data['price']['value'] = "Rs. ".(string)$item['amount'];
+            }
+
+            if(isset($item['amount_finder']) && $item['amount_finder'] != ""){
+                $booking_details_data['price']['value']= "Rs. ".(string)$item['amount_finder'];
+            }
+
+            if($finder_address != ""){
+                $booking_details_data['address']['value'] = $finder_address;
+            }
+
+            if(isset($item['finder_address']) && $item['finder_address'] != ""){
+                $booking_details_data['address']['value'] = $item['finder_address'];
+            }
+
+            if(isset($booking_details_data['address']['value'])){
+
+                $booking_details_data['address']['value'] = str_replace("  ", " ",$booking_details_data['address']['value']);
+                $booking_details_data['address']['value'] = str_replace(", , ", "",$booking_details_data['address']['value']);
+            }
+
+            if(in_array($type, ['manualtrial','manualautotrial','manualmembership'])){
+                $booking_details_data["start_date"]["field"] = "PREFERRED DATE";
+                $booking_details_data["start_time"]["field"] = "PREFERRED TIME";
+                $booking_details_data["price"]["value"] = "";
+            }
+
+            if(in_array($type, ['booktrialfree','booktrial','workoutsession'])){
+                $booking_details_data["start_date"]["field"] = "DATE";
+                $booking_details_data["start_time"]["field"] = "TIME";
+            }
+
+            if(isset($item['preferred_day']) && $item['preferred_day'] != ""){
+                $booking_details_data['start_date']['field'] = 'PREFERRED DAY';
+                $booking_details_data['start_date']['value'] = $item['preferred_day'];
+            }
+
+            if(isset($item['preferred_time']) && $item['preferred_time'] != ""){
+                $booking_details_data['start_time']['field'] = 'PREFERRED TIME';
+                $booking_details_data['start_time']['value'] = $item['preferred_time'];
+            }
+
+            if(isset($item['"preferred_service']) && $item['"preferred_service'] != "" && $item['"preferred_service'] != null){
+                $booking_details_data['service_name']['field'] = 'PREFERRED SERVICE';
+                $booking_details_data['service_name']['value'] = $item['preferred_service'];
+            }
+
+            $booking_details_all = [];
+            foreach ($booking_details_data as $key => $value) {
+
+                $booking_details_all[$value['position']] = ['field'=>$value['field'],'value'=>$value['value']];
+            }
+
+            foreach ($booking_details_all as $key => $value) {
+
+                if($value['value'] != "" && $value['value'] != "-"){
+                    $booking_details[] = $value;
+                }
+
+            }
+
+            $city_name = "";
+
+            if(isset($item['city_id']) && $item['city_id'] != ""){
+
+                $city = City::find((int)$item['city_id']);
+
+                if($city){
+                    $city_name  = ucwords($city->name);
+                }
+            }
+
+            $fitcash_vendor = null;
+
+            if($fitcash_plus > 0){
+                $fitcash_vendor = [
+                    "title"=>"You have Rs. ".$fitcash_plus." Fitcash+ and now its time to use it!",
+                    "description"=>"Fitcash+ is your fitness currency on Fitternity. You can use the entire amount in your transaction! Fitcash can be used for any booking or purchase on Fitternity ranging from workout sessions,memberships and healthy tiffin subscriptions.Fitcash+ is your companion for everything! \n Here are few options you can spend your Fitcash+ on.",
+                    "image"=>"image",
+                    "vendor"=>[
+                        [ 
+                            "image"=>"http://b.fitn.in/success-pages/swimming+session.png",
+                            "title"=>"Book Swiming Sessions",
+                            "details"=>[
+                                ['field'=>'Avg. Calorie Burn','value'=>'750 KCAL'],
+                                //['field'=>'Avg. Price Per Session','value'=>'Rs 200'],
+                                ['field'=>'Current Providers in area','value'=>$category_array["swimming"]["count"].' Providers']
+                            ],
+                            "category"=>newcategorymapping("swimming"),
+                            "city"=>$city_name,
+                            "region"=>(isset($item['finder_location']) && $item['finder_location'] != "") ? [$item['finder_location']] : []
+                        ],
+                        [ 
+                            "image"=>"http://b.fitn.in/success-pages/healthy+tiffin.png",
+                            "title"=>"Book Healthy Tiffin",
+                            "details"=>[
+                                ['field'=>'Avg. Trial Meal Duration','value'=>'3 Days'],
+                                //['field'=>'Avg. Price Per Tiffin','value'=>'Rs 200'],
+                                ['field'=>'Current Providers in area','value'=>$category_array["healthy_tiffins"]["count"].' Providers']
+                            ],
+                            "category"=>newcategorymapping("healthy tiffins"),
+                            "city"=>$city_name,
+                            "region"=>(isset($item['finder_location']) && $item['finder_location'] != "") ? [$item['finder_location']] : []
+                        ],
+                        [ 
+                            "image"=>"http://b.fitn.in/success-pages/diet+plan.png",
+                            "title"=>"Buy Online Diet Plans",
+                            "details"=>[
+                                ['field'=>'Avg. Plan Duration','value'=>'1 Month'],
+                                //['field'=>'Avg. Price Per Plan','value'=>'Rs 200'],
+                                ['field'=>'Primary Function','value'=>'Weight Loss']
+                            ],
+                            "category"=>newcategorymapping("dietitians and nutritionists"),
+                            "city"=>$city_name,
+                            "region"=>(isset($item['finder_location']) && $item['finder_location'] != "") ? [$item['finder_location']] : []
+                        ],
+                    ]
+                ];
+
+                if(isset($_GET['device_type']) && in_array($_GET['device_type'], ["ios","android"])){
+                    unset($fitcash_vendor["vendor"][2]);
+                }
+            }
+
+            $invite = [
+                "description"=>"<b>Did you know?</b><br/>Working out with a friend can improve your performance by 87%",
+                "message"=>"Awesome! Lets invite your buddies to join you!",
+                "confirm"=>"Now you have invited your workout buddies,you are sure to have a lot of fun",
+                'show_invite' => $show_invite,
+                'id_for_invite' => $id_for_invite,
+                'end_point'=> $end_point,
+                'type' => $type
+            ];
+
+            $conclusion = [
+                "title"=>"Done",
+                "description"=>"Hope you had a great experience. \n If you need any help, you can reach out to us on on below details",
+                "email"=>"info@fitternity.com",
+                "phone"=>"022-61222222"
+            ];
+
+            $feedback = [
+                'reason'=>[
+                    'Choice of fitness options available',
+                    'Information provided about the gym/studio',
+                    'Transaction & Booking process',
+                    'Payment/Cashback/Offer related',
+                    'Any other issue'
+                ],
+                'threshold_value'=>6
+            ];
+
+            $reward_details = null;
+
+            /*if(isset($item['reward_ids']) && !empty($item['reward_ids'])){
+
+                $reward_id = (int)$item['reward_ids'][0];
+
+                $reward = Reward::select('_id','title','reward_type')->find($reward_id);
+
+                $reward_details = [
+                    'reward_id' => $reward->_id,
+                    'reward_type' => $reward->reward_type,
+                    'finder_name'=> (isset($item['finder_name']) && $item['finder_name'] != "") ? $item['finder_name'] : ""
+                ];
+            }*/
+
+            if(empty($near_by_vendor)){
+                $show_other_vendor = false;
+            }
+
             $resp = [
                 'status'    =>  200,
                 'item'      =>  null,
@@ -677,11 +1121,127 @@ class HomeController extends BaseController {
                 'show_invite' => $show_invite,
                 'id_for_invite' => $id_for_invite,
                 'end_point'=> $end_point,
-                'type' => $type
+                'type' => $type,
+                'current_balance'=> $fitcash_plus,
+                'near_by_vendor'=>$near_by_vendor,
+                'booking_details'=>$booking_details,
+                'fitcash_vendor'=>$fitcash_vendor,
+                'poc'=>null,
+                'invite'=>$invite,
+                'conclusion'=>$conclusion,
+                'feedback'=>$feedback,
+                'order_type'=>$order_type,
+                'id'=>$id,
+                'reward_details'=>$reward_details,
+                'show_other_vendor' => $show_other_vendor,
             ];
 
             return Response::json($resp);
         }
+    }
+    
+    public function geoLocationFinder($request){
+
+        $offset  = $request['offset'];
+        $limit   = $request['limit'];
+        $radius  = $request['radius'];
+        $lat    =  $request['lat'];
+        $lon    =  $request['lon'];
+        $category = $request['category'];
+        $keys = $request['keys'];
+
+        $payload = [
+           "category"=>$category,
+           "sort"=>[
+              "sortfield"=>"popularity",
+              "order"=>"desc"
+           ],
+           "offset"=>[
+              "from"=>$offset,
+              "number_of_records"=>$limit
+           ],
+           "other_filters"=>[
+
+           ],
+           "location"=>[
+              "city"=>"mumbai",
+              "lat"=>$lat,
+              "lon"=>$lon,
+              "radius"=>$radius
+           ],
+           "with_locationtags"=>"1",
+           "keys"=>$keys
+        ];
+
+        //echo"<pre>";print_r($payload);exit;
+
+        $url = $this->api_url."search/getfinderresultsv4";
+        $finder = [];
+
+        try {
+           
+            $response  =   json_decode($this->client->post($url,['json'=>$payload])->getBody()->getContents(),true);
+
+            if(isset($response['results']['resultlist'])){
+
+                $vendor = $response['results']['resultlist'];
+
+                foreach ($vendor as $key => $value) {
+
+                    $address = false;
+
+                    $finder_data = $value['object'];
+
+                    if(in_array('coverimage',$request['keys'])){
+                        $finder_data['coverimage'] = Config::get('app.s3_finderurl.cover').$finder_data['coverimage'];
+                    }
+
+                    if(in_array('offerings',$request['keys'])){
+                        $finder_data['remarks'] = implode(",",$finder_data['offerings']);
+                        unset($finder_data['offerings']);
+                    }
+
+                    if(in_array('multiaddress',$request['keys'])){
+
+                        $finder_data['address'] = "";
+
+                        if(!empty($finder_data['multiaddress']) && isset( $finder_data['multiaddress'][0])){
+
+                            $multi_address = $finder_data['multiaddress'][0];
+
+                            $finder_data['address'] = $multi_address['line1'].$multi_address['line2'].$multi_address['line3'].$multi_address['landmark'].$multi_address['pincode'];
+
+                            $address = true;                            
+                        }
+                     
+                        unset($finder_data['multiaddress']);
+                    }
+
+                    if(in_array('contact',$request['keys'])){
+
+                        if(!$address && !empty($finder_data['contact']) && isset($finder_data['contact']['address']) && $finder_data['contact']['address'] != ""){
+
+                            $finder_data['address'] = $finder_data['contact']['address'];
+                        }
+
+                        unset($finder_data['contact']);
+                    }
+
+                    $finder[] = $finder_data;
+                }
+            }
+
+            return $finder;
+
+        }catch (RequestException $e) {
+
+            return $finder;
+
+        }catch (Exception $e) {
+
+            return $finder;
+        }
+
     }
 
 
