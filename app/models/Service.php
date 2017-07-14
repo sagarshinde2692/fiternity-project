@@ -24,10 +24,13 @@ class Service extends \Basemodel{
 
     public static $withoutAppends = false;
 
+    public static $setAppends = [];
+	
+
 	protected function getArrayableAppends()
 	{
 		if(self::$withoutAppends){
-			return [];
+			return self::$setAppends;
 		}
 		return parent::getArrayableAppends();
 	}
