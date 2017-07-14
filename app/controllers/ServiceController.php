@@ -631,9 +631,20 @@ class ServiceController extends \BaseController {
 
 
 
+
         if(count($items) == 0){
         	return Response::json(array('status'=>401,'message'=>'data is empty'),401);
         }
+
+		Finder::$withoutAppends = true;
+		Finder::$setAppends = ['inoperational_dates_array'];
+		
+		$finder_id = $items[0]['finder_id'];
+		// $finder = Finder::find($finder_id, array('inoperational_dates'));
+		$finder = Finder::find($finder_id);
+		
+		$inoperational_dates = isset($finder['$inoperational_dates_array']) ? isset($finder['$inoperational_dates_array']) : [];
+		// return $finder;
 
         $schedules = array();
 
@@ -654,12 +665,17 @@ class ServiceController extends \BaseController {
             $item['vip_trial'] = "";//isset($item['vip_trial']) ? $item['vip_trial'] : "";
 			$item['address'] = isset($item['address']) ? $item['address'] : "";
 			$trial_status = isset($item['trial']) ? $item['trial'] : "";
+
+			// return $item;
+
 			
             $weekdayslots = head(array_where($item[$type], function($key, $value) use ($weekday){
                 if($value['weekday'] == $weekday){
                     return $value;
                 }
             }));
+
+			// return gettype($weekdayslots);
 			
 
             $time_in_seconds = time_passed_check($item['servicecategory_id']);
@@ -698,6 +714,7 @@ class ServiceController extends \BaseController {
 			}else{
 				continue;
 			}
+			
 
 			// return $item;
 			// if($ratecard){
@@ -707,7 +724,7 @@ class ServiceController extends \BaseController {
 	        $slot_passed_flag = true;
 
 			
-
+			return ($weekdayslots['slots']);
             if(count($weekdayslots['slots']) > 0 && isset($ratecard['_id'])){
 
             	if(isset($ratecard->special_price) && $ratecard->special_price != 0){
