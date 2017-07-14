@@ -605,13 +605,31 @@ class ServiceController extends \BaseController {
         $type 					= 	(isset($request['type']) && $request['type'] != "") ? $request['type'] : "trial" ;
         $recursive 				= 	(isset($request['recursive']) && $request['recursive'] != "" && $request['recursive'] == "true") ? true : false ;
 
-        $query = Service::active()->where('trial','!=','disable')->select('_id','name','finder_id', 'workoutsessionschedules','servicecategory_id','trialschedules','vip_trial','three_day_trial','address','trial');
+		$selectedFieldsForService = array('_id','name','finder_id','servicecategory_id','vip_trial','three_day_trial','address','trial');
+		Service::$withoutAppends=true;
+		Service::$setAppends=['workoutsession_active_weekdays'];
+		
+        $query = Service::active()->where('trial','!=','disable');
+
+
 
         (isset($request['finder_id']) && $request['finder_id'] != "") ? $query->where('finder_id',(int)$request['finder_id']) : null;
 
         (isset($request['service_id']) && $request['service_id'] != "") ? $query->where('_id',(int)$request['service_id']) : null;
 
-        $items = $query->get();
+		switch ($type) {
+			case 'workout-session':
+        	case 'workout_session': $ratecard_type = 'workout session'; array_push($selectedFieldsForService,'workoutsessionschedules'); break;
+        	case 'trial': $ratecard_type = 'trial'; array_push($selectedFieldsForService,'trialschedules');break;
+        	default: $ratecard_type = 'trial'; array_push($selectedFieldsForService,'trialschedules');break;
+        }
+     	 $items = $query->with(array('serviceratecards'=> function($query) use ($ratecard_type){
+			 $query->where('type',$ratecard_type);
+		 }))->get($selectedFieldsForService)->toArray();
+
+		//  $items = $query->get()->toArray();
+
+
 
         if(count($items) == 0){
         	return Response::json(array('status'=>401,'message'=>'data is empty'),401);
@@ -620,13 +638,15 @@ class ServiceController extends \BaseController {
         $schedules = array();
 
         switch ($type) {
-
+			case 'workout-session':
         	case 'workout_session': $type = 'workoutsessionschedules'; break;
         	case 'trial': $type = 'trialschedules'; break;
         	default: $type = 'trialschedules'; break;
         }
 
 		// $all_trials_booked = true;
+
+		
 		
         foreach ($items as $k => $item) {
 
@@ -634,11 +654,13 @@ class ServiceController extends \BaseController {
             $item['vip_trial'] = "";//isset($item['vip_trial']) ? $item['vip_trial'] : "";
 			$item['address'] = isset($item['address']) ? $item['address'] : "";
 			$trial_status = isset($item['trial']) ? $item['trial'] : "";
+			
             $weekdayslots = head(array_where($item[$type], function($key, $value) use ($weekday){
                 if($value['weekday'] == $weekday){
                     return $value;
                 }
             }));
+			
 
             $time_in_seconds = time_passed_check($item['servicecategory_id']);
 
@@ -658,25 +680,40 @@ class ServiceController extends \BaseController {
             	'workout_session' => [
 	    			"available" => false,
 	    			"amount" => 0
-	    		]
+	    		],
+				'workoutsession_active_weekdays' => $item["workoutsession_active_weekdays"]
             );
 
             $slots = array();
 
-            switch ($type) {
-	        	case 'workoutsessionschedules': $ratecard = Ratecard::where('service_id',(int)$item['_id'])->where('type','workout session')->first(); break;
-	        	case 'trialschedules': $ratecard = Ratecard::where('service_id',(int)$item['_id'])->where('type','trial')->first(); break;
-	        	default: $ratecard = Ratecard::where('service_id',(int)$item['_id'])->where('type','trial')->first(); break;
-	        }
+            // switch ($type) {
+	        // 	case 'workoutsessionschedules': $ratecard = Ratecard::where('service_id',(int)$item['_id'])->where('type','workout session')->first(); break;
+	        // 	case 'trialschedules': $ratecard = Ratecard::where('service_id',(int)$item['_id'])->where('type','trial')->first(); break;
+	        // 	default: $ratecard = Ratecard::where('service_id',(int)$item['_id'])->where('type','trial')->first(); break;
+	        // }
+			// return array("name" => $item["name"],"rate"=>$item["serviceratecards"], "item"=>$item);
+			if(isset($item["serviceratecards"]) && isset($item["serviceratecards"][0]) > 0)
+			{
+				$ratecard = $item["serviceratecards"][0];
+			}else{
+				continue;
+			}
+
+			// return $item;
+			// if($ratecard){
+			// 	$ratecard = $ratecard->toArray();
+			// }
 
 	        $slot_passed_flag = true;
+
+			
 
             if(count($weekdayslots['slots']) > 0 && isset($ratecard['_id'])){
 
             	if(isset($ratecard->special_price) && $ratecard->special_price != 0){
-                    $ratecard_price = $ratecard->special_price;
+                    $ratecard_price = $ratecard['special_price'];
                 }else{
-                    $ratecard_price = $ratecard->price;
+                    $ratecard_price = $ratecard['price'];
                 }
 
                 if($type == "workoutsessionschedules"){
@@ -713,6 +750,7 @@ class ServiceController extends \BaseController {
                         }
 
                     }*/
+					
 
                     array_set($slot, 'vip_trial_amount', $vip_trial_amount);
 
@@ -739,8 +777,11 @@ class ServiceController extends \BaseController {
                      
                 }
                 
-            }
-
+            }else{
+				continue;
+			}
+			
+			
             $service['slot_passed_flag'] = $slot_passed_flag;
 
             $service['slots'] = $slots;
@@ -753,29 +794,34 @@ class ServiceController extends \BaseController {
             		'date' => $date
             	];
 
-            	$service['available_date'] = $this->getAvailableDateByService($avaliable_request);
-
+            	// $service['available_date'] = $this->getAvailableDateByService($avaliable_request);
+            	$service['available_date'] = $this->getAvailableDateByServiceV1($service,$request);
             	if($service['available_date'] != ""){
             		$service['current_available_date_diff'] = $this->getDateDiff($service['available_date']);
             		$service['available_message'] = "Next Slot is available on ".date("jS F, Y",strtotime($service['available_date']));
             	}
             }
+			
 
             // $service['trials_booked'] = $this->checkTrialAlreadyBooked($item['finder_id'],$item['_id']);
             // $all_trials_booked = $all_trials_booked && $service['trials_booked'];
             array_push($schedules, $service);
         }
 
+
+		// return $schedules;
+
 		// return $trial_booked?'true':'false';
 
         $request['date'] = date("Y-m-d",strtotime($date." +1 days"));
 
-        $flag = false;
+        // $flag = false;
 
-        foreach ($schedules as $key => $value) {
+        // foreach ($schedules as $key => $value) {
 
-        	(count($value['slots']) > 0) ? $flag = true : null;
-        }
+        // 	// (count($value['slots']) > 0) ? $flag = true : null;
+		// 	(!$value['slot_passed_flag']) ? $flag = true : null;
+        // }
 
         $schedules_sort = array();
         $schedules_slots_empty = array();
@@ -796,17 +842,19 @@ class ServiceController extends \BaseController {
         foreach ($schedules_sort as $key => $value) {
 
         	if($value['slot_passed_flag']){
+				$value['available_date'] = $this->getAvailableDateByServiceV1($value,$request);
         		$schedules_sort_passed_true[] = $value;
         	}else{
         		$schedules_sort_passed_false[] = $value;
         	}
-
+			$schedules_sort[$key] = $value;
         }
+		
+		$flag = count($schedules_sort_passed_false)>0?true:false;
 
         $schedules = array();
 
         $schedules = array_merge($schedules_sort_passed_false,$schedules_sort_passed_true,$schedules_slots_empty);
-
         if(!$flag && $count < 7 && $recursive){
 
         	$count += 1;
@@ -1005,6 +1053,26 @@ class ServiceController extends \BaseController {
         return $return;
 
     }
+
+	public function getAvailableDateByServiceV1($service,$request){
+		$timestamp    			=   strtotime($request['date']);
+		$weekday     			=   strtolower(date( "l", $timestamp));
+		for($i = 1; $i < 7; $i++){
+			$nextweekday     			=   strtolower(date( "l", strtotime("+".$i." days",$timestamp)));
+			Log::info($nextweekday." ++ ".$service["service_name"]);
+			if(in_array($nextweekday,$service["workoutsession_active_weekdays"])){
+				$v = date("Y-m-d",strtotime("+".$i." days",$timestamp));
+				Log::info("Yahan".$v);
+				return  $v;
+			}
+		}
+		return "";
+
+		// $scheduleDateTimeUnix               =  strtotime(strtoupper($date." ".$slot['start_time']));
+        // $slot_datetime_pass_status      =   (($scheduleDateTimeUnix - time()) > $time_in_seconds) ? false : true;
+		
+    }
+
 
     public function getAvailableDateByService($request,$count = 1){
 

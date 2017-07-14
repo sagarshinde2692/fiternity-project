@@ -1396,7 +1396,12 @@ public function improvedkeywordSearch(){
         }
 
         if(sizeof($location) > 0){
-         $regions_filter = '{"terms" : {  "locationtags_slug": ["'.strtolower(implode('","', $location)).'"]}},';
+            if($cityBool){
+                $regions_filter = '{"terms" : {  "locationtags_slug": ["'.strtolower(implode('","', $location)).'"]}},';
+            }else{
+                $regions_filter = '';
+            }
+        //  $regions_filter = '{"terms" : {  "locationtags_slug": ["'.strtolower(implode('","', $location)).'"]}},';
      }
     
     

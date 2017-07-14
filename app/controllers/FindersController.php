@@ -2127,7 +2127,8 @@ class FindersController extends \BaseController {
 				'servicecategory_id' => $item['servicecategory_id'],
 				'traction' => isset($item['traction']) && isset($item['traction']['sales']) && isset($item['traction']['trials']) ? $item['traction'] : array("trials"=>0,"sales"=>0),
 				'location_id' => $item['location_id'],
-				'offer_available' => isset($item['offer_available']) ? $item['offer_available'] : false
+				'offer_available' => isset($item['offer_available']) ? $item['offer_available'] : false,
+				'short_description' => isset($item['short_description']) ? $item['short_description'] : ""
 			);
 
 			if(isset($item['offer_available']) && $item['offer_available'] == true){
@@ -2992,7 +2993,7 @@ class FindersController extends \BaseController {
 
 				$call_interrupt = [
 					'title'=>'Calling to book a trial at '.$finderData['finder']['title'],
-					'description'=>'Book online for faster experiance when it comes to your fitness choices!',
+					'description'=>'Book online for faster experience when it comes to your fitness choices!',
 					'button_text'=>'Book Trial Online',
 					'chat_enable'=>true,
 					'call_enable'=>true
@@ -3195,7 +3196,7 @@ class FindersController extends \BaseController {
 		try{
 			$finder = Finder::where('title', 'Fitternity Diet Vendor')
 			->with(array('services'=>function($query){
-				$query->select(array('id', 'name','finder_id', 'short_description','body','what_i_should_expect', 'workout_intensity'));
+				$query->active()->select(array('id', 'name','finder_id', 'short_description','body','what_i_should_expect', 'workout_intensity','ordering'))->orderBy('ordering');
 				}))
 			->first();
 			return array('finder'=>$finder, 'status'=>200);
@@ -3204,5 +3205,16 @@ class FindersController extends \BaseController {
 		}
 	}
 
+	public function getbrands($city,$brand_id){
+		$city = getmy_city($city);
+		$city_obj = City::active()->where('slug',$city)->get(array('_id'));
+		$brand_id = (int) $brand_id;
+		if(count($city_obj) > 0){
+			$finders = Finder::active()->where("brand_id",$brand_id)->where('city_id',$city_obj[0]->_id)->with('location')->get(array('title','location_id','slug'));
+		}else{
+			$finders = Finder::active()->where("brand_id",$brand_id)->where('city_id',10000)->where('custom_city',new MongoRegex('^'.$city.'$/i'))->get(array('title','custom_location','slug'));
+		}
+		return $finders;
+	}
 
 }

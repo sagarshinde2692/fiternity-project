@@ -1,25 +1,19 @@
 <?php
 
+/** 
+ * ModelName : Feedback.
+ * Maintains a list of functions used for Feedback.
+ *
+ * @author Mahesh Jadhav <maheshjadhav@fitternity.com>
+ */
+
 class Feedback extends \Basemodel {
 
-	protected $collection = "feedback";
+	protected $collection = "feedbacks";
 
 	public function setIdAttribute($value){
 		
 		$this->attributes['_id'] = $value;
-	}
-
-	public function finder(){
-		return $this->belongsTo('Finder','finder_id');
-	}
-	public function booktrial(){
-		return $this->hasMany('Booktrial','booktrial_id');
-	}
-	public function customer(){
-		return $this->hasMany('Customer','customer_id');
-	}
-	public function service(){
-		return $this->hasMany('Service','service_id');
 	}
 
 }
