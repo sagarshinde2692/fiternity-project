@@ -1,20 +1,20 @@
 <?php
 
 //local
-$host = "localhost";
-$username = "";
-$password = "";
+// $host = "localhost";
+// $username = "";
+// $password = "";
 
 //stage
-// $host = "apistage.fitn.in";
+// $host = "localhost";
 // $username = "admin";
 // $password = "fit123";
 // $options = ['db' => 'admin','authMechanism' => 'MONGODB-CR'];
 
 //production
-// $host = "54.179.134.14";
-// $username = "";
-// $password = "";
+$host = "54.179.134.14";
+$username = "";
+$password = "";
 
 return array(
 
