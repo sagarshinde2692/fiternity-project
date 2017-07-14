@@ -621,7 +621,7 @@ class ServiceController extends \BaseController {
 			case 'workout-session':
         	case 'workout_session': $ratecard_type = 'workout session'; array_push($selectedFieldsForService,'workoutsessionschedules'); break;
         	case 'trial': $ratecard_type = 'trial'; array_push($selectedFieldsForService,'trialschedules');break;
-        	default: $ratecard_type = 'trial'; break;
+        	default: $ratecard_type = 'trial'; array_push($selectedFieldsForService,'trialschedules');break;
         }
      	 $items = $query->with(array('serviceratecards'=> function($query) use ($ratecard_type){
 			 $query->where('type',$ratecard_type);
