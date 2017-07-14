@@ -2176,7 +2176,7 @@ public function getRankedFinderResultsAppv4()
         // $vip_trial       = implode($vip_trial,',');
         $locat              = Input::json()->get('location');
         $lat                =         (isset($locat['lat'])) ? $locat['lat']  : '';
-        $lon                =         (isset($locat['long'])) ? $locat['long']  : '';
+        $lon                =         (isset($locat['lon'])) ? $locat['lon']  : '';
         $keys               =         (Input::json()->get('keys')) ? Input::json()->get('keys') : array();
         // Log::info("category being searched : ".time());
         $category           = newcategorymapping(Input::json()->get('category'));
@@ -2189,6 +2189,7 @@ public function getRankedFinderResultsAppv4()
         $budget             = Input::json()->get('budget');
         $trialdays          = Input::json()->get('trialdays') == null ? [] : Input::json()->get('trialdays');
         $other_filters      = Input::json()->get('other_filters') == null ? [] : Input::json()->get('other_filters');
+        $radial_distance      = isset($locat["radius"]) && $locat["radius"] != null ? $locat["radius"] : "4km";
         $other_flags        = [];
         foreach ($other_filters as $filter){
             // $budget_filters = ["one","two","three","four","five","six"];
@@ -2207,17 +2208,29 @@ public function getRankedFinderResultsAppv4()
 
         $locationCount = 0;
         // Log::info("Location being searched : ".time());
+        $regionsInRequest = Input::json()->get('regions');
         if(count($region) == 1){
             $region_slug = str_replace(' ', '-',strtolower(trim($region[0])));
-            $locationCount = Location::where('slug',$region_slug)->count();
-            if($locationCount > 0){
+            $locationCount = 1;
+            $location_lat_lon = Location::where('slug',$region_slug)->first();
+            if(isset($location_lat_lon)){
+                $lat = $location_lat_lon['lat'];
+                $lon = $location_lat_lon['lon'];
+            }else{
+                $location_cluster = Locationcluster::where('slug',$region_slug)->with('locations')->first();
+                if(isset($location_cluster)){
+                    $regionsInRequest = array();
+                    foreach($location_cluster['locations'] as $locs){
+                        array_push($regionsInRequest,$locs['slug']);
+                    }
+                }
+            }
+        }else{
+            $locationCount = count($region);
+            if($locationCount > 1){
                 $lat = "";
                 $lon = "";
             }
-        }else{
-            $lat = "";
-            $lon = "";
-            $locationCount = count($region);
         }
         // Log::info("Location being searched over : ".time());
         $offering_regex = $this->_getOfferingRegex($category);
@@ -2237,7 +2250,7 @@ public function getRankedFinderResultsAppv4()
                     }
                 }]';
         }
-        $geo_location_filter   =   ($lat != '' && $lon != '') ? '{"geo_distance" : {  "distance": "10km","distance_type":"plane", "geolocation":{ "lat":'.$lat. ',"lon":' .$lon. '}}},':'';
+        $geo_location_filter   =   ($lat != '' && $lon != '') ? '{"geo_distance" : {  "distance": "'.$radial_distance.'","distance_type":"plane", "geolocation":{ "lat":'.$lat. ',"lon":' .$lon. '}}},':'';
         $free_trial_enable     = Input::json()->get('trial_enable');
         $trial_filter          = '';
 
@@ -2250,8 +2263,8 @@ public function getRankedFinderResultsAppv4()
         $commercial_type_filter = Input::json()->get('commercial_type') ? '{"terms" : {  "commercial_type": ['.implode(',', Input::json()->get('commercial_type')).'],"_cache": true}},': '';
         $category_filter        = $category ? '{"terms" : {  "categorytags": ["'.strtolower($category).'"],"_cache": true}},': '';
         $budget_filter          = $budget ? '{"terms" : {  "price_range": ["'.strtolower(implode('","', $budget)).'"],"_cache": true}},': '';
-        $regions_filter         = Input::json()->get('regions') && $locationCount > 0 ? '{"terms" : {  "locationtags_slug": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
-        $region_tags_filter     = Input::json()->get('regions') && $locationCount > 0 ? '{"terms" : {  "region_tags": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
+        $regions_filter         = $geo_location_filter == "" && $regionsInRequest && $locationCount > 0 ? '{"terms" : {  "locationtags_slug": ["'.strtolower(implode('","', $regionsInRequest)).'"],"_cache": true}},': '';
+        $region_tags_filter     = $geo_location_filter == "" && Input::json()->get('regions') && $locationCount > 0 ? '{"terms" : {  "region_tags": ["'.strtolower(implode('","', Input::json()->get('regions'))).'"],"_cache": true}},': '';
         $offerings_filter       = $offerings ? '{"terms" : {  "offerings": ["'.strtolower(implode('","', $offerings)).'"],"_cache": true}},': '';
         $facilities_filter      = $facilities ? '{"terms" : {  "facilities": ["'.strtolower(implode('","', $facilities)).'"],"_cache": true}},': '';
         $trials_day_filter      = (($trialdays)) ? '{"terms" : {  "service_weekdays": ["'.strtolower(implode('","', $trialdays)).'"],"_cache": true}},'  : '';
@@ -2632,7 +2645,18 @@ public function getRankedFinderResultsAppv4()
 
         $facetsvalue = trim($regions_facets.$locationtags_facets.$facilities_facets.$offerings_facets.$budgets_facets.$trialdays_facets.$category_facets,',');
 
+        $distance_calculator = $geo_location_filter == "" ? "" : ' "fields": ["_source"],
+    "script_fields":{
+        "distance": {
+          "params": {
+            "lat": '.$lat.',
+            "lon": '.$lon.'
+        },
+        "script": "doc[\'geolocation\'].distanceInKm(lat,lon)"
+    }
+},';
         $body = '{
+            '.$distance_calculator.'
             "from": '.$from.',
             "size": '.$size.',
             "aggs": {'.$facetsvalue.'},
@@ -2659,7 +2683,7 @@ public function getRankedFinderResultsAppv4()
 
         $search_results     =   es_curl_request($request);
         // Log::info("Response from ES : ".time());
-        $search_results1    =   json_decode($search_results, true);
+         $search_results1    =   json_decode($search_results, true);
         $search_request     =   Input::json()->all();
         
         $customer_email = null;

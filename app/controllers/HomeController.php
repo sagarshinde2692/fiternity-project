@@ -1169,7 +1169,7 @@ class HomeController extends BaseController {
            "location"=>[
               "city"=>$city,
               "lat"=>$lat,
-              "long"=>$lon,
+              "lon"=>$lon,
               "radius"=>$radius
            ],
            "with_locationtags"=>"1",
@@ -1474,7 +1474,9 @@ class HomeController extends BaseController {
 
                 $locations				= 	Location::active()->whereIn('cities',array($city_id))->orderBy('name')->get(array('name','_id','slug','location_group','lat','lon'));
             }else{
-                $locations				= 	Location::active()->orderBy('name')->get(array('name','_id','slug','location_group','lat','lon'));
+                $locations				= 	Location::active()->orderBy('name')->get(array('name','_id','slug','location_group','lat','lon'))->toArray();
+                $locations_cluster				= 	Locationcluster::active()->orderBy('name')->get(array('name','_id','slug','lat','lon'))->toArray();
+                $locations = array_merge($locations,$locations_cluster);
             }
 
             $homedata 				= 	array('locations' => $locations );

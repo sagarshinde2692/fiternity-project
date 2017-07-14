@@ -1398,12 +1398,25 @@ class CustomerController extends \BaseController {
 				}
 
 
-				$getAction = $this->getAction($value,"orderHistory");
+				if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android")){
 
-			    $value["action"] = $getAction["action"];
-			    $value["feedback"] = $getAction["feedback"];
+					//$getAction = $this->getAction($value,"orderHistory");
 
-				$value["action_new"] = $this->getActionV1($value,"orderHistory");
+				    $value["action"] = null; //$getAction["action"];
+				    $value["feedback"] = null; //$getAction["feedback"];
+
+					$value["action_new"] = $this->getActionV1($value,"orderHistory");
+
+				}else{
+
+					$getAction = $this->getAction($value,"orderHistory");
+
+				    $value["action"] = $getAction["action"];
+				    $value["feedback"] = $getAction["feedback"];
+
+					$value["action_new"] = $this->getActionV1($value,"orderHistory");
+
+				}
 
 				array_push($orders, $value);
 
@@ -2767,13 +2780,13 @@ class CustomerController extends \BaseController {
 
 		if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android") && isset($_GET['app_version']) && ((float)$_GET['app_version'] >= 2.5)){
 
-			$category_slug = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","personal-trainers","luxury-hotels","healthy-snacks-and-beverages","spinning-and-indoor-cycling","healthy-tiffins"/*,"dietitians-and-nutritionists"*/,"sport-nutrition-supliment-stores","aerobics","kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness");
+			$category_slug = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates"/*,"personal-trainers"*/,"luxury-hotels"/*,"healthy-snacks-and-beverages"*/,"spinning-and-indoor-cycling","healthy-tiffins"/*,"dietitians-and-nutritionists"*//*,"sport-nutrition-supliment-stores"*/,"aerobics","kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness");
 
 			$cache_tag = 'customer_home_by_city_2_5';
 
 		}else{
 
-			$category_slug = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","personal-trainers"/*,"luxury-hotels"*/,"healthy-snacks-and-beverages","spinning-and-indoor-cycling","healthy-tiffins"/*,"dietitians-and-nutritionists"*//*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness");
+			$category_slug = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates"/*,"personal-trainers"*//*,"luxury-hotels"*//*,"healthy-snacks-and-beverages"*/,"spinning-and-indoor-cycling","healthy-tiffins"/*,"dietitians-and-nutritionists"*//*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness");
 
 			$cache_tag = 'customer_home_by_city';
 
@@ -2782,19 +2795,19 @@ class CustomerController extends \BaseController {
 
 		if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "ios")){
 
-			$category_slug = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","luxury-hotels","healthy-snacks-and-beverages","spinning-and-indoor-cycling","healthy-tiffins"/*,"dietitians-and-nutritionists"*/,"sport-nutrition-supliment-stores","kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness","personal-trainers");
+			$category_slug = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","luxury-hotels"/*,"healthy-snacks-and-beverages"*/,"spinning-and-indoor-cycling","healthy-tiffins"/*,"dietitians-and-nutritionists"*//*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness"/*,"personal-trainers"*/);
 
 			$cat = array();
 
-			$cat['mumbai'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","luxury-hotels","healthy-snacks-and-beverages","spinning-and-indoor-cycling","healthy-tiffins"/*,"dietitians-and-nutritionists"*/,"sport-nutrition-supliment-stores","kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness","personal-trainers");
+			$cat['mumbai'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","luxury-hotels"/*,"healthy-snacks-and-beverages"*/,"spinning-and-indoor-cycling","healthy-tiffins"/*,"dietitians-and-nutritionists"*//*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness"/*,"personal-trainers"*/);
 
-			$cat['pune'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates","healthy-tiffins","cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling","sport-nutrition-supliment-stores","aerobics","kids-fitness","pre-natal-classes","aerial-fitness","personal-trainers");
+			$cat['pune'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates","healthy-tiffins","cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling"/*,"sport-nutrition-supliment-stores"*/,"aerobics","kids-fitness","pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
 
-			$cat['bangalore'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates","healthy-tiffins","cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling","sport-nutrition-supliment-stores","kids-fitness","pre-natal-classes","aerial-fitness","personal-trainers");
+			$cat['bangalore'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates","healthy-tiffins","cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling"/*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
 
-			$cat['delhi'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates","healthy-tiffins","cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling","sport-nutrition-supliment-stores","kids-fitness","pre-natal-classes","aerial-fitness","personal-trainers");
+			$cat['delhi'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates","healthy-tiffins","cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling"/*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
 
-			$cat['gurgaon'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates","healthy-tiffins","cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling","sport-nutrition-supliment-stores","kids-fitness","pre-natal-classes","aerial-fitness","personal-trainers");
+			$cat['gurgaon'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates","healthy-tiffins","cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling"/*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
 
 			$cat['noida'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"mma-and-kick-boxing","dance","kids-fitness","pre-natal-classes");
 
@@ -3352,10 +3365,21 @@ class CustomerController extends \BaseController {
 		}
 
 		$code = trim(strtoupper($data['code']));
-		
+
 		if(is_numeric(strpos($code, 'R-')) && strpos($code, 'R-') == 0){
 			return $this->setReferralData($code);
 		}
+
+		if(strlen($code)==9 && strrpos($code, 'R') == (strlen($code)-1)){
+			Log::info("inside referral ");
+			$referral = $this->setReferralData($code);
+			Log::info($referral);
+			if($referral['status']==200){
+				return $referral;
+			}
+		}
+
+		
 
 		$code = trim(strtolower($data['code']));
 
@@ -4641,24 +4665,17 @@ class CustomerController extends \BaseController {
 
 	public function getReferralCode(){
 		try{
-
 			$jwt = Request::header('Authorization');
 			$decoded = $this->customerTokenDecode($jwt);
 			$id = $decoded->customer->_id;
 			Customer::$withoutAppends = true;
 
 			$customer = Customer::where('_id', $id)->first();
-			
+			// return $customer;
 			if($customer){
 
 				if(!isset($customer->referral_code)){
 
-					$customer->referral_code = $this->generateReferralCode($customer->name);
-					$customer->update();
-				}
-
-				if(isset($customer->referral_code) && strpos($customer->referral_code, 'R-') != 0){
-					
 					$customer->referral_code = $this->generateReferralCode($customer->name);
 					$customer->update();
 				}
@@ -4689,6 +4706,7 @@ class CustomerController extends \BaseController {
 			
 		}catch(Exception $e){
 			Log::info($e);
+			return array('status'=>500, 'message'=>'Something went wrong');
 		}
 	}
 	public function referFriend(){	
@@ -4865,12 +4883,12 @@ class CustomerController extends \BaseController {
 
 		}else{
 
-			return array('status'=>400, 'message'=>'Incorrect referral code or referral already applied');
+			return array('status'=>400, 'message'=>'Incorrect referral code or code already applied');
 		}
 	}
 
 	public function generateReferralCode($name){
-		$referral_code = 'R-'.substr(implode("", (explode(" ", strtoupper($name)))),0,4)."".rand(1000, 9999);
+		$referral_code = substr(implode("", (explode(" ", strtoupper($name)))),0,4)."".rand(1000, 9999).'R';
 		$exists = Customer::where('referral_code', $referral_code)->where('status', '1')->first();
 		if($exists){
 			return $this->generateReferralCode($name);

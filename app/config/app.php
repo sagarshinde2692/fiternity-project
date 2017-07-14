@@ -15,7 +15,7 @@ return array(
 	*/
 
 
-	'debug' => FAlSE,
+	'debug' => FALSE,
 
 	/*
 	|--------------------------------------------------------------------------
@@ -57,8 +57,8 @@ return array(
 		'discount_excluded_vendors' => [1747,1813,4528,4530,9984,10081],
 	),
 
-	// 'vendor_communication' => true,//live
-	'vendor_communication' => false,//stage
+	'vendor_communication' => true,//live
+	// 'vendor_communication' => false,//stage
 
 	// 'env' => 'stage',//stage
 	'env' => 'production',//live
