@@ -605,13 +605,29 @@ class ServiceController extends \BaseController {
         $type 					= 	(isset($request['type']) && $request['type'] != "") ? $request['type'] : "trial" ;
         $recursive 				= 	(isset($request['recursive']) && $request['recursive'] != "" && $request['recursive'] == "true") ? true : false ;
 
+		Service::$withoutAppends=true;
         $query = Service::active()->where('trial','!=','disable')->select('_id','name','finder_id', 'workoutsessionschedules','servicecategory_id','trialschedules','vip_trial','three_day_trial','address','trial');
+
+
 
         (isset($request['finder_id']) && $request['finder_id'] != "") ? $query->where('finder_id',(int)$request['finder_id']) : null;
 
         (isset($request['service_id']) && $request['service_id'] != "") ? $query->where('_id',(int)$request['service_id']) : null;
 
-        $items = $query->get();
+		switch ($type) {
+			case 'workout-session':
+        	case 'workout_session': $ratecard_type = 'workout session'; break;
+        	case 'trial': $ratecard_type = 'trial'; break;
+        	default: $ratecard_type = 'trial'; break;
+        }
+
+     	// $items = $query->with(array('serviceratecards'=> function($query) use ($ratecard_type){
+		// 	 $query->where('type',$ratecard_type);
+		//  }))->get()->toArray();
+
+		 $items = $query->get()->toArray();
+
+
 
         if(count($items) == 0){
         	return Response::json(array('status'=>401,'message'=>'data is empty'),401);
@@ -627,6 +643,8 @@ class ServiceController extends \BaseController {
         }
 
 		// $all_trials_booked = true;
+
+		
 		
         foreach ($items as $k => $item) {
 
@@ -634,11 +652,16 @@ class ServiceController extends \BaseController {
             $item['vip_trial'] = "";//isset($item['vip_trial']) ? $item['vip_trial'] : "";
 			$item['address'] = isset($item['address']) ? $item['address'] : "";
 			$trial_status = isset($item['trial']) ? $item['trial'] : "";
+			Log::info("checkpoint 1");
+			
             $weekdayslots = head(array_where($item[$type], function($key, $value) use ($weekday){
                 if($value['weekday'] == $weekday){
                     return $value;
                 }
             }));
+
+			Log::info("checkpoint 2");
+			
 
             $time_in_seconds = time_passed_check($item['servicecategory_id']);
 
@@ -668,15 +691,24 @@ class ServiceController extends \BaseController {
 	        	case 'trialschedules': $ratecard = Ratecard::where('service_id',(int)$item['_id'])->where('type','trial')->first(); break;
 	        	default: $ratecard = Ratecard::where('service_id',(int)$item['_id'])->where('type','trial')->first(); break;
 	        }
+			// return array("name" => $item["name"],"rate"=>$item["serviceratecards"], "item"=>$item);
+			// $ratecard = isset($item["serviceratecards"]) && isset($item["serviceratecards"][0]) > 0 ? $item["serviceratecards"][0] : null;
+			if($ratecard){
+				$ratecard = $ratecard->toArray();
+			}
 
 	        $slot_passed_flag = true;
+
+
+			Log::info("checkpoint 3");
+			
 
             if(count($weekdayslots['slots']) > 0 && isset($ratecard['_id'])){
 
             	if(isset($ratecard->special_price) && $ratecard->special_price != 0){
-                    $ratecard_price = $ratecard->special_price;
+                    $ratecard_price = $ratecard['special_price'];
                 }else{
-                    $ratecard_price = $ratecard->price;
+                    $ratecard_price = $ratecard['price'];
                 }
 
                 if($type == "workoutsessionschedules"){
@@ -713,6 +745,7 @@ class ServiceController extends \BaseController {
                         }
 
                     }*/
+					
 
                     array_set($slot, 'vip_trial_amount', $vip_trial_amount);
 
@@ -741,6 +774,9 @@ class ServiceController extends \BaseController {
                 
             }
 
+			Log::info("checkpoint 4");
+			
+			
             $service['slot_passed_flag'] = $slot_passed_flag;
 
             $service['slots'] = $slots;
@@ -760,22 +796,28 @@ class ServiceController extends \BaseController {
             		$service['available_message'] = "Next Slot is available on ".date("jS F, Y",strtotime($service['available_date']));
             	}
             }
+			Log::info("checkpoint 5");
+			
 
             // $service['trials_booked'] = $this->checkTrialAlreadyBooked($item['finder_id'],$item['_id']);
             // $all_trials_booked = $all_trials_booked && $service['trials_booked'];
             array_push($schedules, $service);
         }
 
+
+		// return $schedules;
+
 		// return $trial_booked?'true':'false';
 
         $request['date'] = date("Y-m-d",strtotime($date." +1 days"));
 
-        $flag = false;
+        // $flag = false;
 
-        foreach ($schedules as $key => $value) {
+        // foreach ($schedules as $key => $value) {
 
-        	(count($value['slots']) > 0) ? $flag = true : null;
-        }
+        // 	// (count($value['slots']) > 0) ? $flag = true : null;
+		// 	(!$value['slot_passed_flag']) ? $flag = true : null;
+        // }
 
         $schedules_sort = array();
         $schedules_slots_empty = array();
@@ -802,11 +844,12 @@ class ServiceController extends \BaseController {
         	}
 
         }
+		
+		$flag = count($schedules_sort_passed_false)>0?true:false;
 
         $schedules = array();
 
         $schedules = array_merge($schedules_sort_passed_false,$schedules_sort_passed_true,$schedules_slots_empty);
-
         if(!$flag && $count < 7 && $recursive){
 
         	$count += 1;
