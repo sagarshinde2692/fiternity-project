@@ -3,65 +3,54 @@
 
 return array(
 
-	/*
-	|--------------------------------------------------------------------------
-	| Application Debug Mode
-	|--------------------------------------------------------------------------
-	|
-	| When your application is in debug mode, detailed error messages with
-	| stack traces will be shown on every error that occurs within your
-	| application. If disabled, a simple generic error page is shown.
-	|
-	*/
+	//live
+	'url' => 'https://a1.fitternity.com',
+	'admin_url' => 'https://fitn.in',
+	'website' => 'https://www.fitternity.com',
+	'sidekiq_url' => 'http://nw.fitn.in/',
+	'queue' => 'booktrial',
+	'vendor_communication' => true,
+	'env' => 'production',
+	'debug' => FALSE,
 
+	//stage
+	// 'url' => 'http://apistage.fitn.in',
+	// 'admin_url' => 'http://adminstage.fitn.in',
+	// 'website' => 'http://apistage.fitn.in:2233',
+	// 'sidekiq_url' => 'http://kick.fitn.in/',
+	// 'queue' => 'booktrial',
+	// 'vendor_communication' => false,
+	// 'env' => 'stage',
+	// 'debug' => TRUE,
 
-	'debug' => true,
+	//beta
+	// 'url' => 'http://beta.fitn.in', 
+	// 'admin_url' => 'http://adminstage.fitn.in', 
+	// 'website' => 'http://apistage.fitn.in:2233', 
+	// 'sidekiq_url' => 'http://kick.fitn.in/', 
+	// 'queue' => 'beta',
+	// 'vendor_communication' => false,
+	// 'env' => 'stage',
+	// 'debug' => TRUE,
 
-	/*
-	|--------------------------------------------------------------------------
-	| Application URL
-	|--------------------------------------------------------------------------
-	|
-	| This URL is used by the console to properly generate URLs when using
-	| the Artisan command line tool. You should set this to the root of
-	| your application so that it is used when running Artisan tasks.
-	|
-	*/
+	//local
+	// 'url' => 'http://fitapi.com',
+	// 'admin_url' => 'http://fitadmin.com',
+	// 'website' => 'https://www.fitternity.com',
+	// 'sidekiq_url' => 'http://kick.fitn.in/', 
+	// 'queue' => 'booktrial',
+	// 'vendor_communication' => false,
+	// 'env' => 'stage',
+	// 'debug' => TRUE,
 
-	'url' => 'https://a1.fitternity.com', //live
-	// 'url' => 'http://apistage.fitn.in', //stage
-	// 'url' => 'http://fitapi.com', //local
-	// 'url' => 'http://beta.fitn.in', //beta
-
-	'admin_url' => 'https://fitn.in', //live
-	// 'admin_url' => 'http://adminstage.fitn.in', //stage
-	// 'admin_url' => 'http://fitadmin.com', //local
-
-    'website' => 'https://www.fitternity.com', //live
-    // 'website' => 'http://apistage.fitn.in:2233', //stage
-    // 'website' => 'http://localhost:3000', //stage
-    // 'website' => 'http://apistage.fitn.in:8020', //beta
-
-    'download_app_link' => 'https://go.onelink.me/I0CO?pid=techfitsms',//https://www.fitternity.com/downloadapp?source=fittech',
+	'download_app_link' => 'https://go.onelink.me/I0CO?pid=techfitsms',//https://www.fitternity.com/downloadapp?source=fittech',
 
     'business' => 'http://business.fitternity.com',
 
-    'sidekiq_url' => 'http://nw.fitn.in/', //live
-   	// 'sidekiq_url' => 'http://kick.fitn.in/', //stage
-
-    // 'queue' => 'beta', //beta
-    'queue' => 'booktrial', //live
-
-	'app' =>array(
+    'app' =>array(
 		'discount'		=> 			0,
 		'discount_excluded_vendors' => [1747,1813,4528,4530,9984,10081],
 	),
-
-	'vendor_communication' => true,//live
-	// 'vendor_communication' => false,//stage
-
-	// 'env' => 'stage',//stage
-	'env' => 'production',//live
 
 	/*
 	|--------------------------------------------------------------------------
