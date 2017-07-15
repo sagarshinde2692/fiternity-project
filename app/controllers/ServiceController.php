@@ -607,7 +607,7 @@ class ServiceController extends \BaseController {
 
 		$selectedFieldsForService = array('_id','name','finder_id','servicecategory_id','vip_trial','three_day_trial','address','trial');
 		Service::$withoutAppends=true;
-		Service::$setAppends=['workoutsession_active_weekdays'];
+		Service::$setAppends=['trial_active_weekdays', 'workoutsession_active_weekdays'];
 		
         $query = Service::active()->where('trial','!=','disable');
 
@@ -643,9 +643,6 @@ class ServiceController extends \BaseController {
 		// $finder = Finder::find($finder_id, array('inoperational_dates'));
 		$finder = Finder::find($finder_id);
 		
-		$inoperational_dates = isset($finder['$inoperational_dates_array']) ? isset($finder['$inoperational_dates_array']) : [];
-		// return $finder;
-
         $schedules = array();
 
         switch ($type) {
@@ -668,16 +665,17 @@ class ServiceController extends \BaseController {
 
 			// return $item;
 
-			
-            $weekdayslots = head(array_where($item[$type], function($key, $value) use ($weekday){
-                if($value['weekday'] == $weekday){
-                    return $value;
-                }
-            }));
+			$weekdayslots = false;
 
-			// return gettype($weekdayslots);
-			
 
+			if(!in_array($timestamp, $finder['inoperational_dates_array'])){
+				$weekdayslots = head(array_where($item[$type], function($key, $value) use ($weekday){
+					if($value['weekday'] == $weekday){
+						return $value;
+					}
+				}));
+			}
+			
             $time_in_seconds = time_passed_check($item['servicecategory_id']);
 
             $service = array(
@@ -697,7 +695,9 @@ class ServiceController extends \BaseController {
 	    			"available" => false,
 	    			"amount" => 0
 	    		],
-				'workoutsession_active_weekdays' => $item["workoutsession_active_weekdays"]
+				'workoutsession_active_weekdays' => $item["workoutsession_active_weekdays"],
+				'trial_active_weekdays' => $item["trial_active_weekdays"],
+				'inoperational_dates_array' => $finder['inoperational_dates_array']
             );
 
             $slots = array();
@@ -722,9 +722,7 @@ class ServiceController extends \BaseController {
 			// }
 
 	        $slot_passed_flag = true;
-
 			
-			return ($weekdayslots['slots']);
             if(count($weekdayslots['slots']) > 0 && isset($ratecard['_id'])){
 
             	if(isset($ratecard->special_price) && $ratecard->special_price != 0){
@@ -794,9 +792,7 @@ class ServiceController extends \BaseController {
                      
                 }
                 
-            }else{
-				continue;
-			}
+            }
 			
 			
             $service['slot_passed_flag'] = $slot_passed_flag;
@@ -812,7 +808,7 @@ class ServiceController extends \BaseController {
             	];
 
             	// $service['available_date'] = $this->getAvailableDateByService($avaliable_request);
-            	$service['available_date'] = $this->getAvailableDateByServiceV1($service,$request);
+            	$service['available_date'] = $this->getAvailableDateByServiceV1($service,$request, $type);
             	if($service['available_date'] != ""){
             		$service['current_available_date_diff'] = $this->getDateDiff($service['available_date']);
             		$service['available_message'] = "Next Slot is available on ".date("jS F, Y",strtotime($service['available_date']));
@@ -859,7 +855,7 @@ class ServiceController extends \BaseController {
         foreach ($schedules_sort as $key => $value) {
 
         	if($value['slot_passed_flag']){
-				$value['available_date'] = $this->getAvailableDateByServiceV1($value,$request);
+				$value['available_date'] = $this->getAvailableDateByServiceV1($value,$request, $type);
         		$schedules_sort_passed_true[] = $value;
         	}else{
         		$schedules_sort_passed_false[] = $value;
@@ -1071,13 +1067,15 @@ class ServiceController extends \BaseController {
 
     }
 
-	public function getAvailableDateByServiceV1($service,$request){
+	public function getAvailableDateByServiceV1($service,$request, $type){
 		$timestamp    			=   strtotime($request['date']);
 		$weekday     			=   strtolower(date( "l", $timestamp));
+		$active_weekdays 		=  $type = 'trialschedules' ? $service['trial_active_weekdays'] : $service['workoutsession_active_weekdays'];
 		for($i = 1; $i < 7; $i++){
 			$nextweekday     			=   strtolower(date( "l", strtotime("+".$i." days",$timestamp)));
 			Log::info($nextweekday." ++ ".$service["service_name"]);
-			if(in_array($nextweekday,$service["workoutsession_active_weekdays"])){
+			Log::info($active_weekdays);
+			if(in_array($nextweekday,$active_weekdays) && !in_array($timestamp, $service['inoperational_dates_array'])){
 				$v = date("Y-m-d",strtotime("+".$i." days",$timestamp));
 				Log::info("Yahan".$v);
 				return  $v;
