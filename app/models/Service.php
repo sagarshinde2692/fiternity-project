@@ -36,7 +36,7 @@ class Service extends \Basemodel{
 	}
 
 //    protected $appends = array('active_weekdays', 'workoutsession_active_weekdays', 'service_coverimage', 'service_coverimage_thumb', 'service_ratecards', 'service_trainer','serviceratecard','servicebatches');
-    protected $appends = array('active_weekdays', 'workoutsession_active_weekdays', 'service_coverimage', 'service_coverimage_thumb', 'service_trainer','serviceratecard','servicebatches');
+    protected $appends = array('active_weekdays', 'workoutsession_active_weekdays', 'service_coverimage', 'service_coverimage_thumb', 'service_trainer','serviceratecard','servicebatches', 'trial_active_weekdays');
 	// protected $appends = array('active_weekdays', 'workoutsession_active_weekdays', 'service_coverimage', 'service_coverimage_thumb', 'service_ratecards');
 
 	public function setIdAttribute($value){
@@ -64,6 +64,22 @@ class Service extends \Basemodel{
 		$activedays 	= 	array();
 		if(!empty($this->workoutsessionschedules) && isset($this->workoutsessionschedules)){
 			$schedules  	=	$this->workoutsessionschedules;
+
+			foreach ($schedules as $key => $schedule) {
+				if(!empty($schedule['slots'])){
+					array_push($activedays, $schedule['weekday']);
+				}
+			}
+			// $activedays 		= pluck( $this->schedules , array('weekday') );
+		}
+		return $activedays;
+	}
+
+	public function getTrialActiveWeekdaysAttribute(){
+
+		$activedays 	= 	array();
+		if(!empty($this->trialschedules) && isset($this->trialschedules)){
+			$schedules  	=	$this->trialschedules;
 
 			foreach ($schedules as $key => $schedule) {
 				if(!empty($schedule['slots'])){
