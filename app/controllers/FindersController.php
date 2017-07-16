@@ -2993,7 +2993,7 @@ class FindersController extends \BaseController {
 
 				$call_interrupt = [
 					'title'=>'Calling to book a trial at '.$finderData['finder']['title'],
-					'description'=>'Book online for faster experiance when it comes to your fitness choices!',
+					'description'=>'Book online for faster experience when it comes to your fitness choices!',
 					'button_text'=>'Book Trial Online',
 					'chat_enable'=>true,
 					'call_enable'=>true

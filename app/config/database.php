@@ -84,7 +84,6 @@ return array(
             'username' => $username,
             'password' => $password,
 			// 'options' => $options
-			
 			// 'options' => [
 			// 	'db' => 'admin' // sets the authentication database required by mongo 3
 			// ]

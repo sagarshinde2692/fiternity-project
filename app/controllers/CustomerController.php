@@ -3365,10 +3365,21 @@ class CustomerController extends \BaseController {
 		}
 
 		$code = trim(strtoupper($data['code']));
-		
+
 		if(is_numeric(strpos($code, 'R-')) && strpos($code, 'R-') == 0){
 			return $this->setReferralData($code);
 		}
+
+		if(strlen($code)==9 && strrpos($code, 'R') == (strlen($code)-1)){
+			Log::info("inside referral ");
+			$referral = $this->setReferralData($code);
+			Log::info($referral);
+			if($referral['status']==200){
+				return $referral;
+			}
+		}
+
+		
 
 		$code = trim(strtolower($data['code']));
 
@@ -4654,24 +4665,17 @@ class CustomerController extends \BaseController {
 
 	public function getReferralCode(){
 		try{
-
 			$jwt = Request::header('Authorization');
 			$decoded = $this->customerTokenDecode($jwt);
 			$id = $decoded->customer->_id;
 			Customer::$withoutAppends = true;
 
 			$customer = Customer::where('_id', $id)->first();
-			
+			// return $customer;
 			if($customer){
 
 				if(!isset($customer->referral_code)){
 
-					$customer->referral_code = $this->generateReferralCode($customer->name);
-					$customer->update();
-				}
-
-				if(isset($customer->referral_code) && strpos($customer->referral_code, 'R-') != 0){
-					
 					$customer->referral_code = $this->generateReferralCode($customer->name);
 					$customer->update();
 				}
@@ -4702,6 +4706,7 @@ class CustomerController extends \BaseController {
 			
 		}catch(Exception $e){
 			Log::info($e);
+			return array('status'=>500, 'message'=>'Something went wrong');
 		}
 	}
 	public function referFriend(){	
@@ -4878,12 +4883,12 @@ class CustomerController extends \BaseController {
 
 		}else{
 
-			return array('status'=>400, 'message'=>'Incorrect referral code or referral already applied');
+			return array('status'=>400, 'message'=>'Incorrect referral code or code already applied');
 		}
 	}
 
 	public function generateReferralCode($name){
-		$referral_code = 'R-'.substr(implode("", (explode(" ", strtoupper($name)))),0,4)."".rand(1000, 9999);
+		$referral_code = substr(implode("", (explode(" ", strtoupper($name)))),0,4)."".rand(1000, 9999).'R';
 		$exists = Customer::where('referral_code', $referral_code)->where('status', '1')->first();
 		if($exists){
 			return $this->generateReferralCode($name);
