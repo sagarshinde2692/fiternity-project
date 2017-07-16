@@ -71,7 +71,18 @@ class BaseObserver {
             'utm',
             'created_at',
             'mobile',
-            'reward_ids'
+            'reward_ids',
+            'finder_category',
+            'start_date',
+            'end_date',
+            'city_id',
+            'interim_status',
+            'secondary_payment_mode',
+            'membership_type',
+            'amount',
+            'amount_customer',
+            'preferred_starting_date',
+            'finder_category_id'
         );
             
         foreach($fields as $field){
@@ -132,6 +143,21 @@ class BaseObserver {
                         $transaction->customer_email = $model->$field;
                         continue;
                     }
+
+                if(!(strcmp($field, 'start_date'))){
+                    $transaction->$field =  new Mongodate($model->$field->timestamp);
+                    continue;
+                }
+
+                if(!(strcmp($field, 'end_date'))){
+                    $transaction->$field =  new Mongodate($model->$field->timestamp);
+                    continue;
+                }
+
+                if(!(strcmp($field, 'preferred_starting_date'))){
+                    $transaction->start_date =  new Mongodate($model->$field->timestamp);
+                    continue;
+                }
 
                 $transaction->$field = $model->$field;
             }

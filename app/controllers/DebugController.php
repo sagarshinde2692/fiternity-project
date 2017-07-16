@@ -4525,6 +4525,72 @@ public function yes($msg){
 
     }
 
+    public function conditionTest(){
+
+		$request = [];
+
+		$request['order_id'] = 48495;
+		$customer_id = 1;
+
+		$order = Order::find((int)$request['order_id'])->toArray();
+
+        $fitcashCoupons = Fitcashcoupon::select('_id','code','condition')->where('condition','exists',true)->get();
+
+        $query = Wallet::active()->where('customer_id',(int)$customer_id)->where('balance','>',0);
+
+        if(count($fitcashCoupons) > 0){
+
+            $fitcashCoupons = $fitcashCoupons->toArray();
+
+            foreach ($fitcashCoupons as $coupon) {
+
+            	$code = $coupon['code'];
+
+            	$condition_array = [];
+
+            	foreach ($coupon['condition'] as $condition) {
+
+            		$operator = $condition['operator'];
+            		$field = $condition['field'];
+            		$value = $condition['value'];
+
+            		switch ($operator) {
+            			case 'in':
+
+            				if(isset($order[$field]) && in_array($order[$field],$value)){
+			                    $condition_array[] = 'true';
+			                }else{
+			                	$condition_array[] = 'false';
+			                }
+
+            				break;
+
+            			case 'not_in':
+
+            				if(isset($order[$field]) && !in_array($order[$field],$value)){
+			                    $condition_array[] = 'true';
+			                }else{
+			                	$condition_array[] = 'false';
+			                }
+
+            				break;
+            		}
+
+            	}
+
+            	if(in_array('false', $condition_array)){
+            		$query->where('coupon','!=',$code);
+        		}
+
+            }
+        }
+
+        $allWallets  = $query->OrderBy('_id','asc')->get();
+
+        return $allWallets;
+
+	}
+
 
 
     
