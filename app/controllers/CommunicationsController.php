@@ -109,7 +109,7 @@ class CommunicationsController extends \BaseController {
 
 					if(isset($data['finder_category_id']) && $data['finder_category_id'] != ""){
 
-						$finder_category_id = $data['finder_category_id']
+						$finder_category_id = $data['finder_category_id'];
 
 						$category = Findercategory::find((int)$finder_category_id);
 
