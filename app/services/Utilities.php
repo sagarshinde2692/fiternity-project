@@ -2109,7 +2109,7 @@ Class Utilities {
 
     public function scheduleCommunication($data, $method, $class_name){
         $transaction_data = $data[0];
-        $transaction_id = $transaction_data['_id'];
+        $transaction_id = isset($transaction_data['_id']) ? $transaction_data['_id'] : $transaction_data['id'];
         $delay = $data[1];
         $transaction_type = (isset($transaction_data['order_id'])) ? "order" : "trial";
         $key = rand(100000000, 999999999);
