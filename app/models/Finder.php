@@ -86,11 +86,11 @@ class Finder extends  \Basemodel {
 	}
 
 	public function getInoperationalDatesArrayAttribute(){
-
+		
 		$inopertaional_dates = isset($this->inoperational_dates) ? $this->inoperational_dates : [];
 
 		$inopertaional_dates = array_map(function($value){
-			return $value->toDateTime()->getTimestamp(); 
+			return $value->sec; 
 		}, $inopertaional_dates);
 
 		return $inopertaional_dates;

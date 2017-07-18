@@ -638,7 +638,7 @@ class ServiceController extends \BaseController {
 
 		Finder::$withoutAppends = true;
 		Finder::$setAppends = ['inoperational_dates_array'];
-		
+
 		$finder_id = $items[0]['finder_id'];
 		// $finder = Finder::find($finder_id, array('inoperational_dates'));
 		$finder = Finder::find($finder_id);
@@ -1073,9 +1073,10 @@ class ServiceController extends \BaseController {
 		$active_weekdays 		=  $type = 'trialschedules' ? $service['trial_active_weekdays'] : $service['workoutsession_active_weekdays'];
 		for($i = 1; $i < 7; $i++){
 			$nextweekday     			=   strtolower(date( "l", strtotime("+".$i." days",$timestamp)));
-			Log::info($nextweekday." ++ ".$service["service_name"]);
-			Log::info($active_weekdays);
-			if(in_array($nextweekday,$active_weekdays) && !in_array($timestamp, $service['inoperational_dates_array'])){
+			// Log::info($nextweekday." ++ ".$service["service_name"]);
+			// Log::info($active_weekdays);
+			if(in_array($nextweekday,$active_weekdays) && !in_array(strtotime("+".$i." days",$timestamp), $service['inoperational_dates_array'])){
+				// Log::info("available timestamp:".strtotime("+".$i." days",$timestamp));
 				$v = date("Y-m-d",strtotime("+".$i." days",$timestamp));
 				Log::info("Yahan".$v);
 				return  $v;
