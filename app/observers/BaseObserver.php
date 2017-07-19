@@ -82,7 +82,8 @@ class BaseObserver {
             'amount',
             'amount_customer',
             'preferred_starting_date',
-            'finder_category_id'
+            'finder_category_id',
+            'redundant_order'
         );
             
         foreach($fields as $field){
