@@ -151,6 +151,9 @@ class CommunicationsController extends \BaseController {
 					$data['yes'] = $missedcall_no->number;
 					break;
 
+				case "reminderToConfirmManualTrial":
+					$data['id'] = $data['_id'];
+
 		}
 
 		return $data;
