@@ -2111,8 +2111,15 @@ Class Utilities {
         $transaction_data = $data[0];
         $transaction_id = isset($transaction_data['_id']) ? $transaction_data['_id'] : $transaction_data['id'];
         $delay = $data[1];
-        $transaction_type = (isset($transaction_data['order_id'])) ? "order" : "trial";
+        // $transaction_type = (isset($transaction_data['order_id'])) ? "order" : "trial";
         $key = rand(100000000, 999999999);
+
+        if(in_array($method, ["before3HourSlotBooking", "orderRenewalMissedcall", "sendPaymentLinkAfter3Days", "sendPaymentLinkAfter7Days", "sendPaymentLinkAfter45Days", "purchaseAfter10Days", "purchaseAfter30Days"])){
+            $transaction_type = "order";
+        }else{
+            $transaction_type = "trial";
+        }
+
         if($transaction_type == "order"){
             $transaction = \Order::find($transaction_id);
             
