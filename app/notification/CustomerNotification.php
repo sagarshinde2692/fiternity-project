@@ -222,6 +222,83 @@ Class CustomerNotification extends Notification{
 		return $this->common($label,$data,$notif_type,$notif_object,$delay);
 
     }
+	public function postTrialFollowup1After3Days($data,$delay){
+
+        $label = 'PostTrialFollowup1After3Days-Customer';
+
+        $notif_type = 'open_trial';
+		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"f1+3");
+		
+		return $this->common($label,$data,$notif_type,$notif_object,$delay);
+
+    }
+
+    public function postTrialFollowup1After7Days($data,$delay){
+
+        $label = 'PostTrialFollowup1After7Days-Customer';
+
+        $notif_type = 'open_trial';
+		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"f1+7");
+		
+		return $this->common($label,$data,$notif_type,$notif_object,$delay);
+
+    }
+    
+
+    public function postTrialFollowup1After30Days($data,$delay){
+
+        $label = 'PostTrialFollowup1After30Days-Customer';
+
+        $notif_type = 'open_trial';
+		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"f1+30");
+		
+		return $this->common($label,$data,$notif_type,$notif_object,$delay);
+
+    }
+
+    public function postTrialFollowup2After3Days($data,$delay){
+
+        $label = 'PostTrialFollowup2After3Days-Customer';
+
+        $notif_type = 'open_trial';
+		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"f2+3");
+		
+		return $this->common($label,$data,$notif_type,$notif_object,$delay);
+
+    }
+
+    public function postTrialFollowup2After7Days($data,$delay){
+
+        $label = 'PostTrialFollowup2After7Days-Customer';
+
+        $notif_type = 'open_trial';
+		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"f2+7");
+		
+		return $this->common($label,$data,$notif_type,$notif_object,$delay);
+
+    }
+
+    public function postTrialFollowup2After15Days($data,$delay){
+
+        $label = 'PostTrialFollowup2After15Days-Customer';
+
+        $notif_type = 'open_trial';
+		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"f2+15");
+		
+		return $this->common($label,$data,$notif_type,$notif_object,$delay);
+
+    }
+
+    public function postTrialFollowup2After30Days($data,$delay){
+
+        $label = 'PostTrialFollowup2After30Days-Customer';
+
+        $notif_type = 'open_trial';
+		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"f2+30");
+		
+		return $this->common($label,$data,$notif_type,$notif_object,$delay);
+
+    }
 
 	public function common($label,$data,$notif_type,$notif_object,$delay = 0){
 

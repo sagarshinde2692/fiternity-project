@@ -704,6 +704,36 @@ Class CustomerSms extends VersionNextSms{
 
     }
 
+    protected function demonetisation($data){
+
+        $label = 'Demonetisation-Customer';
+
+        $to = $data['customer_phone'];
+
+        return $this->common($label,$to,$data);
+
+    }
+
+	protected function postTrialFollowup1After3Days($data,$delay){
+
+        $label = 'PostTrialFollowup1After3Days-Customer';
+
+        $to = $data['customer_phone'];
+
+        return $this->common($label,$to,$data,$delay);
+
+    }
+
+    protected function postTrialFollowup1After7Days($data,$delay){
+
+        $label = 'PostTrialFollowup1After7Days-Customer';
+
+        $to = $data['customer_phone'];
+
+        return $this->common($label,$to,$data,$delay);
+
+    }
+
     protected function postTrialFollowup1After15Days($data,$delay){
 
         $label = 'PostTrialFollowup1After15Days-Customer';
@@ -714,13 +744,53 @@ Class CustomerSms extends VersionNextSms{
 
     }
 
-    protected function demonetisation($data){
+    protected function postTrialFollowup1After30Days($data,$delay){
 
-        $label = 'Demonetisation-Customer';
+        $label = 'PostTrialFollowup1After30Days-Customer';
 
         $to = $data['customer_phone'];
 
-        return $this->common($label,$to,$data);
+        return $this->common($label,$to,$data,$delay);
+
+    }
+
+    protected function postTrialFollowup2After3Days($data,$delay){
+
+        $label = 'PostTrialFollowup2After3Days-Customer';
+
+        $to = $data['customer_phone'];
+
+        return $this->common($label,$to,$data,$delay);
+
+    }
+
+    protected function postTrialFollowup2After7Days($data,$delay){
+
+        $label = 'PostTrialFollowup2After7Days-Customer';
+
+        $to = $data['customer_phone'];
+
+        return $this->common($label,$to,$data,$delay);
+
+    }
+
+    protected function postTrialFollowup2After15Days($data,$delay){
+
+        $label = 'PostTrialFollowup2After15Days-Customer';
+
+        $to = $data['customer_phone'];
+
+        return $this->common($label,$to,$data,$delay);
+
+    }
+
+    protected function postTrialFollowup2After30Days($data,$delay){
+
+        $label = 'PostTrialFollowup2After30Days-Customer';
+
+        $to = $data['customer_phone'];
+
+        return $this->common($label,$to,$data,$delay);
 
     }
 
