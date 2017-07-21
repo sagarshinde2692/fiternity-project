@@ -690,6 +690,10 @@ class TransactionController extends \BaseController {
 
             }
 
+            if(isset($order->fullfilment) && isset($order->fullfilment['party_type']) && $order->fullfilment['party_type'] == 'personal_trainer'){
+                
+            }
+
             if(isset($order->city_id)){
 
                 $city = City::find((int)$order->city_id,['_id','name','slug']);
