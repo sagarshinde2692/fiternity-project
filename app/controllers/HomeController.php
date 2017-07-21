@@ -1822,7 +1822,8 @@ class HomeController extends BaseController {
 
     public function getcollecitonfinders($city, $slug, $cache = true){
 
-        $city = strtolower($city);
+        // $city = strtolower($city);
+        $city = getmy_city($city);
         $slug = strtolower($slug);
 
         $finder_by_collection_list = $cache ? Cache::tags('finder_by_collection_list')->has($city."_".$slug) : false;
