@@ -462,8 +462,8 @@ class TransactionController extends \BaseController {
             }
             array_set($data, 'status', '1');
             array_set($data, 'order_action', 'bought');
-            
-            if(!isset($order['success_date']) || (isset($order['update_success_date']) && $order['update_success_date'] == "1")){
+
+            if(((!isset($data['order_success_flag']) || $data['order_success_flag'] != 'admin') && !isset($order['success_date'])) || (isset($order['update_success_date']) && $order['update_success_date'] == "1" && isset($data['order_success_flag']) && $data['order_success_flag'] == 'admin')){
                 array_set($data, 'success_date', date('Y-m-d H:i:s',time()));
             }
             
