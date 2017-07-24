@@ -211,10 +211,10 @@ class TransactionController extends \BaseController {
 
         $data['service_link'] = $this->utilities->getShortenUrl(Config::get('app.website')."/buy/".$data['finder_slug']."/".$data['service_id']);
 
-        $data['payment_link'] = $this->utilities->getShortenUrl(Config::get('app.website')."/paymentlink/".$data['order_id']);
+        $data['payment_link'] = Config::get('app.website')."/paymentlink/".$data['order_id']; //$this->utilities->getShortenUrl(Config::get('app.website')."/paymentlink/".$data['order_id']);
 
         if(in_array($data['type'],$this->membership_array) && isset($data['ratecard_id']) && $data['ratecard_id'] != ""){
-            $data['payment_link'] = $this->utilities->getShortenUrl(Config::get('app.website')."/buy/".$data['finder_slug']."/".$data['service_id']."/".$data['ratecard_id']."/".$data['order_id']);
+            $data['payment_link'] = Config::get('app.website')."/buy/".$data['finder_slug']."/".$data['service_id']."/".$data['ratecard_id']."/".$data['order_id']; //$this->utilities->getShortenUrl(Config::get('app.website')."/buy/".$data['finder_slug']."/".$data['service_id']."/".$data['ratecard_id']."/".$data['order_id']);
         }
 
         $data['vendor_link'] = $this->utilities->getShortenUrl(Config::get('app.website')."/".$data['finder_slug']);
