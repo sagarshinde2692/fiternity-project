@@ -1797,6 +1797,7 @@ class HomeController extends BaseController {
 
         $collection_by_city_list = $cache ? Cache::tags('collection_by_city_list')->has($city) : false;
         if(!$collection_by_city_list){
+            $city = getmy_city($city);
             $citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
             if(!$citydata){
                 return $this->responseNotFound('City does not exist');
@@ -1821,7 +1822,8 @@ class HomeController extends BaseController {
 
     public function getcollecitonfinders($city, $slug, $cache = true){
 
-        $city = strtolower($city);
+        // $city = strtolower($city);
+        $city = getmy_city($city);
         $slug = strtolower($slug);
 
         $finder_by_collection_list = $cache ? Cache::tags('finder_by_collection_list')->has($city."_".$slug) : false;
