@@ -305,7 +305,7 @@ Class CustomerNotification extends Notification{
 		$template = \Template::where('label',$label)->first();
 		$device_type = $data['device_type'];
 
-		$device = \Device::where('customer_id', $data['customer_id'])->orderBy('_id', 'desc')->first();
+		$device = \Device::where('customer_id', $data['customer_id'])->whereIn('type', ["android", "ios"])->orderBy('_id', 'desc')->first();
 
 		if($device){
 			$to = array($device['reg_id']);
