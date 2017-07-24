@@ -663,8 +663,6 @@ class TransactionController extends \BaseController {
             if(isset($order->preferred_starting_date) && $order->preferred_starting_date != "" && !in_array($finder->category_id, $abundant_category) && $order->type == "memberships" && !isset($order->customer_sms_after3days) && !isset($order->customer_email_after10days) && $order->type != 'diet_plan'){
 
                 $preferred_starting_date = $order->preferred_starting_date;
-                $after3days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 3);
-                $after10days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 10);
 
                 $category_slug = "no_category";
 
@@ -683,8 +681,11 @@ class TransactionController extends \BaseController {
 
                 $order_data['category_array'] = $this->getCategoryImage($category_slug);
 
-                $order->customer_sms_after3days = $this->customersms->orderAfter3Days($order_data,$after3days);
-                $order->customer_email_after10days = $this->customermailer->orderAfter10Days($order_data,$after10days);
+                $after10days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 10);
+                $after30days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 30);
+
+                $order->cutomerSmsPurchaseAfter10Days = $this->customersms->purchaseAfter10Days($order_data,$after10days);
+                $order->cutomerSmsPurchaseAfter30Days = $this->customersms->purchaseAfter30Days($order_data,$after30days);
 
                 $order->update();
 
