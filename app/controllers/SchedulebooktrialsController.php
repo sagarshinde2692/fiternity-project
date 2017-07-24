@@ -2223,9 +2223,9 @@ class SchedulebooktrialsController extends \BaseController {
         return Response::json($resp,200);
     }
 
-     public function sendCommunication($data){
-
-        // $job->delete();
+     public function sendCommunication($job,$data){
+         
+        $job->delete();
 
         try{
 

@@ -153,6 +153,11 @@ class CommunicationsController extends \BaseController {
 
 				case "reminderToConfirmManualTrial":
 					$data['id'] = $data['_id'];
+					break;
+
+				case "rescheduleTrial":
+					$data['customer_profile_url'] = Config::get('app.website')."/profile/".$data['customer_email'];
+
 
 		}
 

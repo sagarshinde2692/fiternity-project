@@ -518,13 +518,13 @@ Class FinderMailer extends Mailer {
 	}
 
 	public function common($label,$data,$message_data,$delay = 0){
-		// Log::info($message_data['user_email']);
+		// return($message_data['user_email']);
 		if(in_array(Config::get('mail.to_mailus'),$message_data['user_email'])){
 			$delay = 0;
 			$data['label'] = $label;
 			$data['user_name'] = $message_data['user_name'];
 			$label = 'EmailFailureNotification-LMD';
-			$message_data['user_email'] = array('dhruvsarawagi@fitternity.com');
+			$message_data['user_email'] = array('vinichellani@fitternity.com');
 		}
 
 		$template = \Template::where('label',$label)->first();
@@ -534,10 +534,10 @@ Class FinderMailer extends Mailer {
 
 		if(!Config::get('app.vendor_communication')){
 
-			$message_data['user_email'] = array('dhruvsarawagi@fitternity.com');
+			$message_data['user_email'] = array('utkarshmehrotra@fitternity.com','pranjalisalvi@fitternity.com','sailismart@fitternity.com', 'dhruvsarawagi@fitternity.com');
 		}
 
-		// $message_data['bcc_emailids'] = ($template->email_bcc != "") ? array_merge(explode(',', $template->email_bcc),array(Config::get('mail.to_mailus'))) : array(Config::get('mail.to_mailus'));
+		$message_data['bcc_emailids'] = ($template->email_bcc != "") ? array_merge(explode(',', $template->email_bcc),array(Config::get('mail.to_mailus'))) : array(Config::get('mail.to_mailus'));
 
 		$message_data['email_subject'] = $email_subject;
 
