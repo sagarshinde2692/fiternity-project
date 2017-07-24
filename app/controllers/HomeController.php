@@ -2551,14 +2551,14 @@ class HomeController extends BaseController {
 
         $data   =   Input::json()->all();
 
-        $rules = CrashLog::$rules;
+        // $rules = CrashLog::$rules;
 
-		$validator = Validator::make($data,$rules);
+		// $validator = Validator::make($data,$rules);
 
 
-		if ($validator->fails()) {
-			return Response::json(array('status' => 400,'message' => $validator->errors()),400);   
-        }
+		// if ($validator->fails()) {
+		// 	return Response::json(array('status' => 400,'message' => $validator->errors()),400);   
+        // }
 
         $crashlog = new CrashLog($data);
         $crashlog->save();
