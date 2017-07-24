@@ -1,10 +1,11 @@
 <?PHP namespace App\Mailers;
 
 use Config,Mail;
+use App\Services\Utilities as Utilities;
 
 Class TrainerMailer extends Mailer {
 
-	public function instantSlotBooking ($data){
+	protected function instantSlotBooking ($data){
 
 		$label = 'DietPlan-InstantSlotBooking-Trainer';
 
@@ -24,7 +25,7 @@ Class TrainerMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 
-	public function before3HourSlotBooking ($data,$delay){
+	protected function before3HourSlotBooking ($data,$delay){
 
 		$label = 'DietPlan-Before3HourSlotBooking-Trainer';
 
@@ -44,7 +45,7 @@ Class TrainerMailer extends Mailer {
 		return $this->common($label,$data,$message_data,$delay);
 	}
 
-	public function dietPlanAfter15DaysReviewSlotConfirm ($data){
+	protected function dietPlanAfter15DaysReviewSlotConfirm ($data){
 
 		$label = 'DietPlan-After15DaysReview-SlotConfirm-Trainer';
 
@@ -64,7 +65,7 @@ Class TrainerMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 
-	public function dietPlanAfter15DaysFollowupSlotConfirm ($data){
+	protected function dietPlanAfter15DaysFollowupSlotConfirm ($data){
 
 		$label = 'DietPlan-After15DaysFollowup-SlotConfirm-Trainer';
 

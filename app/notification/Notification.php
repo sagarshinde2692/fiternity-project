@@ -1,14 +1,27 @@
 <?PHP namespace App\Notification;
-
+use Config;
 use App\Services\Sidekiq as Sidekiq;
+use App\Services\Utilities as Utilities;
+
 
 abstract Class Notification {
 
-    protected $sidekiq;
+    public function __call($method, $arguments){
 
-    public function __construct(Sidekiq $sidekiq) {
+        $qualified_class_name = get_class($this);
+        
+        $reflect = new \ReflectionClass($this);
+        $class_name = $reflect->getShortName();
 
-        $this->sidekiq = $sidekiq;
+        $reflect = new \ReflectionClass($qualified_class_name);
+        $objInstance = $reflect->newInstanceArgs();
+        
+		if(count($arguments) < 2 || (is_int($arguments[1]) && $arguments[1] == 0) || !in_array($method, Config::get('app.delay_methods'))){
+            return call_user_func_array( array($objInstance, $method), $arguments);
+        }else{
+			$utilities = new Utilities();
+			return $utilities->scheduleCommunication($arguments, $method, $class_name);
+		}
     }
 
     /**
@@ -96,7 +109,8 @@ abstract Class Notification {
         $payload = array('to'=>$to,'delay'=>$delay,'label' => $label,'app_payload'=>$app_payload);
         
         $route  = $device_type;
-        $result  = $this->sidekiq->sendToQueue($payload,$route);
+        $sidekiq = new Sidekiq();
+        $result  = $sidekiq->sendToQueue($payload,$route);
 
         if($result['status'] == 200){
             return $result['task_id'];
