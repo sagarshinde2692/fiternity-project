@@ -6,13 +6,13 @@
 // $password = "";
 
 //stage
-$host = "localhost";
+// $host = "localhost";
 // $username = "admin";
 // $password = "fit123";
 // $options = ['db' => 'admin','authMechanism' => 'MONGODB-CR'];
 
 //production
-// $host = "54.179.134.14";
+$host = "54.179.134.14";
 $username = "";
 $password = "";
 
