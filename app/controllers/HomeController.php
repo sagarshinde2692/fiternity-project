@@ -2547,4 +2547,24 @@ class HomeController extends BaseController {
         }
     }
 
+    public function crashLog(){
+
+        $data   =   Input::json()->all();
+
+        $rules = CrashLog::$rules;
+
+		$validator = Validator::make($data,$rules);
+
+
+		if ($validator->fails()) {
+			return Response::json(array('status' => 400,'message' => $validator->errors()),400);   
+        }
+
+        $crashlog = new CrashLog($data);
+        $crashlog->save();
+
+        return array('status'=>200, 'message'=>'Log saved');
+
+    }
+
 }
