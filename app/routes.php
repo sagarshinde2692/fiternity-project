@@ -42,6 +42,24 @@ Route::post('/vendorsummary/{finder_id?}/trials/{trial_id?}/cancel',
 
 Route::group(array('before' => 'validatevendor'), function() {
 
+	Route::post('/vendorapp/dashboard/{finder_id?}',
+		array('as' => 'vendor.dashboard', 'uses' => 'VendorpanelController@dashboard'));
+
+	Route::post('/vendorapp/reviews/{finder_id?}',
+		array('as' => 'vendor.reviews','uses' => 'VendorpanelController@getReviewsApp'));
+
+	Route::post('/vendorapp/sales/{finder_id?}',
+			array('as' => 'vendor.sales','uses' => 'VendorpanelController@getSalesApp'));
+
+	Route::post('/vendorapp/ozonetel/{finder_id?}',
+				array('as' => 'vendor.ozonetel','uses' => 'VendorpanelController@getOzonetelApp'));
+
+	Route::post('/vendorapp/trials/{finder_id?}',
+					array('as' => 'vendor.trials','uses' => 'VendorpanelController@getTrialsApp'));
+
+	Route::post('/vendorapp/upcomingtrials/{finder_id?}',
+						array('as' => 'vendor.upcomingtrials','uses' => 'VendorpanelController@getUpcomingTrialsApp'));
+
 	Route::post('/refreshWebToken',
 		array('as' => 'vendor.refreshWebToken', 'uses' => 'VendorpanelController@refreshWebToken'));
 
@@ -149,6 +167,7 @@ Route::get('getcollecitonfinders/{city}/{slug}', 'HomeController@getcollecitonfi
 Route::get('getlocations/{city?}', 'HomeController@getCityLocation');
 Route::get('getcategories/{city?}', 'HomeController@getCityCategorys');
 Route::get('getcities', 'HomeController@getCities');
+Route::get('ifcity/{city}', 'HomeController@ifCity');
 
 Route::get('getlandingpagefinders/{cityid}/{landingpageid}/{locationclusterid?}', 'HomeController@getLandingPageFinders');
 
@@ -933,12 +952,28 @@ Route::post('notifylocation',array('as' => 'customer/notifylocation','uses' => '
 
 Route::post('customer/getlink', 'CustomerController@getLink');
 
+
+Route::post('app/installs', 'HomeController@appinstalls');
+Route::post('promotional/notification','HomeController@promotionalNotification');
+Route::post('customer/feedback', 'CustomerController@feedback');
+
 // Route::get('sendtransactionemails/{withInstant?}','SchedulebooktrialsController@sendTransactionEmails');
 // Route::get('sendordermissedemails','TransactionController@sendOrderMissedEmails');
 
+Route::get('termsandconditions/{type}', 'CustomerController@termsAndConditions');
 
 Route::get('addfitcash', 'DebugController@addFitcash');
 
 Route::get('communication/{sender_class}/{transaction_type}/{label}/{id}/{key}', 'CommunicationsController@sendCommunication');
 
 Route::get('sendManualCommunication/{id}', 'SchedulebooktrialsController@sendManualCommunication');
+Route::get('getbrands/{city}/{brand_id}', 'FindersController@getbrands');
+Route::get('orderfollowup','DebugController@orderFollowup');
+Route::post('belp/signin','HomeController@belpSignin');
+Route::post('belp/fitnessquiz','HomeController@belpFitnessQuiz');
+
+
+Route::get('conditiontest','DebugController@conditionTest');
+
+Route::post('crashlog','HomeController@crashLog');
+

@@ -490,7 +490,8 @@ class EmailSmsApiController extends \BaseController {
     public function landingpagecallback(){
 
         $data = Input::json()->all();
-
+        Log::info('capture data');
+        Log::info($data);
         if($data['capture_type'] == 'fitness_canvas'){
             $count = Capture::where('capture_type','fitness_canvas')->where('phone','LIKE','%'.substr($data['phone'], -9).'%')->count();
 
@@ -510,6 +511,10 @@ class EmailSmsApiController extends \BaseController {
             $data['customer_name'] = $decoded->customer->name;
             $data['customer_email'] = $decoded->customer->email;
             $data['customer_phone'] = $decoded->customer->contact_no;
+        }
+
+        if(isset($data['studio_name'])){
+            $data['vendor'] = $data['studio_name'];
         }
 
         if(isset($data['order_id']) && $data['order_id'] != ""){

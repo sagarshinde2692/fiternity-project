@@ -338,6 +338,8 @@ Class CustomerSms extends VersionNextSms{
 
     protected function giveCashbackOnTrialOrderSuccessAndInvite($data){
 
+    	return "no sms";
+
         $label = 'Give-Cashback-On-Trial-OrderSuccessAndInvite-Instant-Customer';
 
         $to = $data['customer_phone'];

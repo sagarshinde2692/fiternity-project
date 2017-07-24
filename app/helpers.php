@@ -77,6 +77,8 @@ if(!function_exists('citywise_category')){
             
 			$cat['noida'] = array(array("name" => "All Fitness Options","slug" => "fitness"),array("name" => "Gyms","slug" => "gyms"),array("name" => "Yoga","slug" => "yoga-classes"),array("name" => "Fitness Studios","slug" => "fitness-studios"),array("name" => "Zumba","slug" => "zumba-classes"),array("name" => "Dance","slug" => "dance-classes"),array("name" => "MMA And Kick Boxing","slug" => "mma-and-kick-boxing-classes"),array("name" => "Pre-natal Classes","slug" => "pre-natal-classes"),array("name" => "Kids Fitness","slug" => "kids-fitness-classes"));
 
+            $cat['hyderabad'] = array();
+
             $cat['all'] = array(array("name" => "All Fitness Options","slug" => "fitness"),array("name" => "Gyms","slug" => "gyms"),array("name" => "Yoga","slug" => "yoga-classes"),array("name" => "Zumba","slug" => "zumba-classes"),array("name" => "Fitness Studios","slug" => "fitness-studios"),array("name" => "Pilates","slug" => "pilates-classes"),array("name" => "Healthy Tiffins","slug" => "healthy-tiffins"),array("name" => "Cross Functional Training","slug" => "functional-training"),array("name" => "Aerobics","slug" => "aerobics"),array("name" => "MMA And Kick Boxing","slug" => "mma-and-kick-boxing-classes"),array("name" => "Dance","slug" => "dance-classes"),array("name" => "Spinning And Indoor Cycling","slug" => "spinning-classes"),/* array("name" => "Personal Trainers","slug" => "personal-trainers"), */ array("name" => "Healthy Snacks And Beverages","slug" => "healthy-snacks-and-beverages"),array("name" => "Marathon Training","slug" => "marathon-training"),array("name" => "Swimming","slug" => "swimming-pools"),/*array("name" => "Sport Nutrition Supplement Stores","slug" => "sport-nutrition-supplement-stores"),*/array("name" => "Luxury Hotels","slug" => "luxury-hotels"),array("name" => "Aerial Fitness","slug" => "aerial-fitness"),array("name" => "Pre-natal Classes","slug" => "pre-natal-classes"),array("name" => "Kids Fitness","slug" => "kids-fitness-classes"),array("name" => "Aqua Fitness","slug" => "aqua-fitness"));
 
 			if(isset($cat[$city])){
@@ -104,11 +106,61 @@ if(!function_exists('getmy_city')){
             case "bengaluru":
                 return "bangalore";
                 break;
+            case "gurgaon":
+            case "gurugram":
+                return "gurgaon";
+                break;
             default: return $city;
         };
     }
 }
 
+
+if(!function_exists('ifCityPresent')){
+    function ifCityPresent($city){
+        $city = strtolower($city);
+        $send_city = $city;
+        $ifcity = false;
+        switch($city){
+            case "mumbai":
+            case "bombay":
+            case "thane":
+            case "vashi":
+            case "navi mumbai":
+                $send_city = "mumbai";
+                $ifcity = true;
+                break;
+            case "pune":
+            case "pimpri":
+            case "pimpri chinchwad":
+                $send_city = "pune";
+                $ifcity = true;
+                break;
+            case "bangalore":
+            case "bengaluru":
+                $send_city = "bangalore";
+                $ifcity = true;
+                break;
+            case "delhi":
+            case "new delhi":
+                $send_city = "delhi";
+                $ifcity = true;
+                break;
+            case "gurugram":
+            case "gurgaon":
+                $send_city = "gurgaon";
+                $ifcity = true;
+                break;
+            case "noida":
+            case "greater noida":
+                $send_city = "gurgaon";
+                $ifcity = true;
+                break;
+        };
+        $response = array("city"=>$send_city,"found"=>$ifcity);
+        return $response;
+    }
+}
 
 
 if (!function_exists('bitly_url')) {
@@ -803,7 +855,7 @@ if (!function_exists('get_elastic_finder_documentv2')) {
             'average_rating'                =>      (isset($data['average_rating']) && $data['average_rating'] != '') ? round($data['average_rating'],1) : 0,
             'membership_discount'           =>      "",
             'country'                       =>      (isset($data['country']['name']) && $data['country']['name'] != '') ? strtolower($data['country']['name']) : "",
-            'city'                          =>      (isset($data['city']['name']) && $data['city']['name'] != '') ? strtolower($data['city']['name']) : "",
+            'city'                          =>      (isset($data['city']['name']) && $data['city']['name'] != '') ? $data['city_id'] == 10000 ? strtolower($data['custom_city']) : strtolower($data['city']['name']) : "",
             'city_id'                       =>      (isset($data['city_id']) && $data['city_id'] != '') ? strtolower($data['city_id']) : 1,
             'info_service'                  =>      (isset($data['info']['service']) && $data['info']['service'] != '') ? $data['info']['service'] : "",
             'info_service_snow'             =>      (isset($data['info']['service']) && $data['info']['service'] != '') ? $data['info']['service'] : "",
@@ -822,7 +874,7 @@ if (!function_exists('get_elastic_finder_documentv2')) {
             'facilities'                    =>      (isset($data['facilities']) && !empty($data['facilities'])) ? array_map('strtolower',array_pluck($data['facilities'],'name')) : array(),
             'facilities_snow'               =>      (isset($data['facilities']) && !empty($data['facilities'])) ? array_map('strtolower',array_pluck($data['facilities'],'name')) : array(),
             'logo'                          =>      (isset($data['logo'])) ? $data['logo'] : '',
-            'location'                      =>      (isset($data['location']['name']) && $data['location']['name'] != '') ? strtolower($data['location']['name']) : array(),
+            'location'                      =>      (isset($data['location']['name']) && $data['location']['name'] != '') ? $data['city_id'] == 10000 ? strtolower($data['custom_location']) : strtolower($data['location']['name']) : array(),
             'location_snow'                 =>      (isset($data['location']['name']) && $data['location']['name'] != '') ? strtolower($data['location']['name']) : array(),
             'locationtags'                  =>      (isset($data['locationtags']) && !empty($data['locationtags'])) ? array_map('strtolower',array_pluck($data['locationtags'],'name')) : array(),
             'locationtags_slug'             =>      (isset($data['locationtags']) && !empty($data['locationtags'])) ? array_map('strtolower',array_pluck($data['locationtags'],'slug')) : array(),

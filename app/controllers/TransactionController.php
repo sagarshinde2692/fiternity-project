@@ -171,7 +171,7 @@ class TransactionController extends \BaseController {
             $order_id = $data['_id'] = $data['order_id'] = Order::max('_id') + 1;
         }
 
-        $data['code'] = $data['order_id'].str_random(8);
+        $data['code'] = (string)$data['order_id'];
 
         if(isset($data['referal_trial_id'])){
 
@@ -462,8 +462,8 @@ class TransactionController extends \BaseController {
             }
             array_set($data, 'status', '1');
             array_set($data, 'order_action', 'bought');
-            
-            if(!isset($order['success_date']) || (isset($order['update_success_date']) && $order['update_success_date'] == "1")){
+
+            if(((!isset($data['order_success_flag']) || $data['order_success_flag'] != 'admin') && !isset($order['success_date'])) || (isset($order['update_success_date']) && $order['update_success_date'] == "1" && isset($data['order_success_flag']) && $data['order_success_flag'] == 'admin')){
                 array_set($data, 'success_date', date('Y-m-d H:i:s',time()));
             }
             
@@ -923,6 +923,7 @@ class TransactionController extends \BaseController {
                     'type'=>'DEBIT',
                     'entry'=>'debit',
                     'description'=> $this->utilities->getDescription($data),
+                    'finder_id'=>$data['finder_id']
                 );
 
                 $walletTransactionResponse = $this->utilities->walletTransactionNew($req);
@@ -956,6 +957,7 @@ class TransactionController extends \BaseController {
                     'type'=>'DEBIT',
                     'entry'=>'debit',
                     'description'=> $this->utilities->getDescription($data),
+                    'finder_id'=>$data['finder_id']
                 );
                 $walletTransactionResponse = $this->utilities->walletTransactionNew($req);
                 

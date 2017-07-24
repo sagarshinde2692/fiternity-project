@@ -406,7 +406,16 @@ Class CustomerReward {
 
             $customer = \Customer::find($customer_id);
 
-            $current_wallet_balance = \Wallet::active()->where('customer_id',$customer_id)->where('balance','>',0)->sum('balance');/*
+            $utilities = new Utilities;
+
+            $request = [
+               'customer_id'=>$customer_id,
+               'finder_id'=>$finder_id, 
+            ];
+
+            $query = $utilities->getWalletQuery($request);
+            
+            $current_wallet_balance = $query->sum('balance');/*
 
             if(isset($customer->demonetisation)){
 

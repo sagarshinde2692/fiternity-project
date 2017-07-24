@@ -53,7 +53,7 @@ class RankingController extends \BaseController {
         $this->orders_min                       =   Finder::active()->min('orders30days');
         $this->popularity_max                   =   20000;
         $this->popularity_min                   =   0;
-        $this->city_list                        =   array(1,2,3,4,8,9);
+        $this->city_list                        =   array(1,2,3,4,8,9,10000);
     }
 
     /*
@@ -350,7 +350,7 @@ public function IndexRankMongo2Elastic($index_name, $city_id){
    
     //    ini_set('max_execution_time', 30000);
 //       ini_set('memory_limit', '512M');
-       $citykist      =    array(1,2,3,4,8,9);
+       $citykist      =    array(1,2,3,4,8,9,10000);
        $finder_count_incity = Finder::active()->where('city_id', $city_id)->count();
        $i_max = (int) $finder_count_incity/1000;
         Log::error($finder_count_incity."  - ".$i_max);
@@ -491,23 +491,30 @@ public function chunkIndex($index_name, $city_id,$skip,$take){
             $score = $this->generateRank($finderdocument);
                 //$trialdata = get_elastic_finder_trialschedules($data);               
             $clusterid = '';
-            if(!isset($data['location']['locationcluster_id']))
+            if(!isset($data['location']['locationcluster_id']) && $data['city_id'] != 10000)
             {
              continue;
          }
          else
          {
-            $clusterid  = $data['location']['locationcluster_id'];
+            if($data['city_id'] != 10000){
+                $clusterid  = $data['location']['locationcluster_id'];
+            }
         }
         if(isset($data['ozonetelno']) && $data['ozonetelno'] != ''){
             $data['ozonetelno']['phone_number'] = '+'.$data['ozonetelno']['phone_number'];
         }
         $finder_id = $finderdocument['_id'];
         $healthy_cap_offers = array(7890,7915,7933,7937,8133,7922,8098,8118,8100);
-        $locationcluster = Locationcluster::active()->where('_id',$clusterid)->get();
-        $locationcluster->toArray();                                          
-        $postdata = get_elastic_finder_documentv2($data, $locationcluster[0]['name'], $rangeval);  
-        
+        if($data['city_id'] != 10000){
+            $locationcluster = Locationcluster::active()->where('_id',$clusterid)->get();
+            $locationcluster->toArray();  
+            $locClusterName = $locationcluster[0]['name'];
+        }else{
+            $locClusterName = $data["custom_city"];
+        }                                        
+        $postdata = get_elastic_finder_documentv2($data, $locClusterName , $rangeval);  
+        Log::info("Logging for ".$postdata["title"]);
         $postdata['free_trial_enable'] = 0;
         
         if(isset($postdata['commercial_type']) && intval($postdata['commercial_type']) !== 0){

@@ -4698,7 +4698,7 @@ class SchedulebooktrialsController extends \BaseController {
 
                 switch($data['status']){
                     case 'confirm':
-                    $booktrial->pre_trial_status = 'attended';
+                    $booktrial->pre_trial_status = 'confirm';
                     $message = "Thanks for confirming, the trainer will be ready to attend you!";
                     break;  
                 }

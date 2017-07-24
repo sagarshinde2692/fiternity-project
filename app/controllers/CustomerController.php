@@ -1374,7 +1374,15 @@ class CustomerController extends \BaseController {
 					->with(array('city'=>function($query){$query->select('_id','name','slug');})) 
 					->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 					->find(intval($value['finder_id']),['_id','title','slug','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile','finder_poc_for_customer_name','info','category_id','location_id','city_id','category','location','city','average_rating','total_rating_count','review_added']);
+
 					if($finderarr){
+
+						$finderarr = $finderarr->toArray();
+
+						if(isset($finderarr['info']['service']) && is_array($finderarr['info']['service'])){
+							$finderarr['info']['service'] = "";
+						}
+
 						$value['finder'] = $finderarr;
 					}
 				}
@@ -1389,12 +1397,26 @@ class CustomerController extends \BaseController {
 					$value['amount'] = $value['amount_customer'];
 				}
 
-				$getAction = $this->getAction($value,"orderHistory");
 
-			    $value["action"] = $getAction["action"];
-			    $value["feedback"] = $getAction["feedback"];
+				if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android")){
 
-				$value["action_new"] = $this->getActionV1($value,"orderHistory");
+					//$getAction = $this->getAction($value,"orderHistory");
+
+				    $value["action"] = null; //$getAction["action"];
+				    $value["feedback"] = null; //$getAction["feedback"];
+
+					$value["action_new"] = $this->getActionV1($value,"orderHistory");
+
+				}else{
+
+					$getAction = $this->getAction($value,"orderHistory");
+
+				    $value["action"] = $getAction["action"];
+				    $value["feedback"] = $getAction["feedback"];
+
+					$value["action_new"] = $this->getActionV1($value,"orderHistory");
+
+				}
 
 				array_push($orders, $value);
 
@@ -1794,8 +1816,15 @@ class CustomerController extends \BaseController {
 		$decoded = $this->customerTokenDecode($jwt_token);
 
 		$customer_id = $decoded->customer->_id;
+		if(isset($_GET['af_instance_id'])){
+			$af_instance_id = $_GET['af_instance_id'];
+			$customer = Customer::find((int) $customer_id);
+			$af_instance_idData = ['af_instance_id' => $af_instance_id];
+			$customer->update($af_instance_idData);
+		}
+		$customer_detail = $this->customerDetail($customer_id);
 
-		return $this->customerDetail($customer_id);
+		return $customer_detail;
 
 	}
 
@@ -2751,13 +2780,13 @@ class CustomerController extends \BaseController {
 
 		if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android") && isset($_GET['app_version']) && ((float)$_GET['app_version'] >= 2.5)){
 
-			$category_slug = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","personal-trainers","luxury-hotels","healthy-snacks-and-beverages","spinning-and-indoor-cycling","healthy-tiffins"/*,"dietitians-and-nutritionists"*/,"sport-nutrition-supliment-stores","aerobics","kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness");
+			$category_slug = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates"/*,"personal-trainers"*/,"luxury-hotels"/*,"healthy-snacks-and-beverages"*/,"spinning-and-indoor-cycling"/*,"healthy-tiffins"*//*,"dietitians-and-nutritionists"*//*,"sport-nutrition-supliment-stores"*/,"aerobics","kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness");
 
 			$cache_tag = 'customer_home_by_city_2_5';
 
 		}else{
 
-			$category_slug = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","personal-trainers"/*,"luxury-hotels"*/,"healthy-snacks-and-beverages","spinning-and-indoor-cycling","healthy-tiffins"/*,"dietitians-and-nutritionists"*//*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness");
+			$category_slug = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates"/*,"personal-trainers"*//*,"luxury-hotels"*//*,"healthy-snacks-and-beverages"*/,"spinning-and-indoor-cycling"/*,"healthy-tiffins"*//*,"dietitians-and-nutritionists"*//*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness");
 
 			$cache_tag = 'customer_home_by_city';
 
@@ -2766,19 +2795,19 @@ class CustomerController extends \BaseController {
 
 		if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "ios")){
 
-			$category_slug = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","luxury-hotels","healthy-snacks-and-beverages","spinning-and-indoor-cycling","healthy-tiffins"/*,"dietitians-and-nutritionists"*/,"sport-nutrition-supliment-stores","kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness","personal-trainers");
+			$category_slug = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","luxury-hotels"/*,"healthy-snacks-and-beverages"*/,"spinning-and-indoor-cycling"/*,"healthy-tiffins"*//*,"dietitians-and-nutritionists"*//*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness"/*,"personal-trainers"*/);
 
 			$cat = array();
 
-			$cat['mumbai'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","luxury-hotels","healthy-snacks-and-beverages","spinning-and-indoor-cycling","healthy-tiffins"/*,"dietitians-and-nutritionists"*/,"sport-nutrition-supliment-stores","kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness","personal-trainers");
+			$cat['mumbai'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","luxury-hotels"/*,"healthy-snacks-and-beverages"*/,"spinning-and-indoor-cycling"/*,"healthy-tiffins"*//*,"dietitians-and-nutritionists"*//*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness"/*,"personal-trainers"*/);
 
-			$cat['pune'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates","healthy-tiffins","cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling","sport-nutrition-supliment-stores","aerobics","kids-fitness","pre-natal-classes","aerial-fitness","personal-trainers");
+			$cat['pune'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates"/*,"healthy-tiffins"*/,"cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling"/*,"sport-nutrition-supliment-stores"*/,"aerobics","kids-fitness","pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
 
-			$cat['bangalore'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates","healthy-tiffins","cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling","sport-nutrition-supliment-stores","kids-fitness","pre-natal-classes","aerial-fitness","personal-trainers");
+			$cat['bangalore'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates"/*,"healthy-tiffins"*/,"cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling"/*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
 
-			$cat['delhi'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates","healthy-tiffins","cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling","sport-nutrition-supliment-stores","kids-fitness","pre-natal-classes","aerial-fitness","personal-trainers");
+			$cat['delhi'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates"/*,"healthy-tiffins"*/,"cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling"/*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
 
-			$cat['gurgaon'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates","healthy-tiffins","cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling","sport-nutrition-supliment-stores","kids-fitness","pre-natal-classes","aerial-fitness","personal-trainers");
+			$cat['gurgaon'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates"/*,"healthy-tiffins"*/,"cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling"/*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
 
 			$cat['noida'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"mma-and-kick-boxing","dance","kids-fitness","pre-natal-classes");
 
@@ -3336,10 +3365,21 @@ class CustomerController extends \BaseController {
 		}
 
 		$code = trim(strtoupper($data['code']));
-		
+
 		if(is_numeric(strpos($code, 'R-')) && strpos($code, 'R-') == 0){
 			return $this->setReferralData($code);
 		}
+
+		if(strlen($code)==9 && strrpos($code, 'R') == (strlen($code)-1)){
+			Log::info("inside referral ");
+			$referral = $this->setReferralData($code);
+			Log::info($referral);
+			if($referral['status']==200){
+				return $referral;
+			}
+		}
+
+		
 
 		$code = trim(strtolower($data['code']));
 
@@ -3430,8 +3470,13 @@ class CustomerController extends \BaseController {
 				$this->utilities->walletTransaction($walletData);
 
 				$resp 	= 	array('status' => 200,'message' => "Thank you. Rs ".$cashback_amount." has been successfully added to your fitcash wallet", 'walletdata' => $walletData);
-				if($code == 'yogaday'){
-					$resp["showpopUp"] = true;
+				if($code == "yogaday"){
+					$resp["popup"] = array();
+					$resp["popup"]["header_image"] = "https://b.fitn.in/iconsv1/global/fitcash.jpg";
+					$resp["popup"]["header_text"] = "Congratulations";
+					$resp["popup"]["text"] = "Chal chal bht hua";
+					$resp["popup"]["button"] = "Khareed Le";
+					$resp["popup"]["deep_link_url"] = "ftrnty://ftrnty.com/v/7146";
 				}
 				return  Response::json($resp, 200);	
 			}
@@ -4087,7 +4132,7 @@ class CustomerController extends \BaseController {
 	}
 
 	public function notificationSwitch($notificationTracking){
-
+		
 		$notificationTracking->update(['clicked'=>time()]);
 
 		$time = $notificationTracking->time;
@@ -4186,6 +4231,7 @@ class CustomerController extends \BaseController {
 			$response["title"] = isset($notificationTracking["title"])? $notificationTracking["title"]: "Default title";
 			$response["notification_msg"] = $notificationTracking["text"];
 			$response["finder_slug"] = Finder::find($data['finder_id'])->slug;
+			$response["type"] = $data["type"];
 			
 
 			$followup_date = "";
@@ -4206,7 +4252,7 @@ class CustomerController extends \BaseController {
 				}
 
 				if($start_date != ""){
-					$followup_date = strtotime($start_date." +2 days");
+					$followup_date = strtotime($start_date." +3 days");
 				}
 			}
 
@@ -4235,12 +4281,24 @@ class CustomerController extends \BaseController {
 					$response["start_time"] = strtoupper($data["schedule_slot_start_time"]);
 					$response["start_date"] = date("d-m-Y",strtotime($data["schedule_date"]));
 					Booktrial::where('_id', $response["transaction_id"])->update(['final_lead_stage'=> 'post_trial_stage']);
+					if(isset($_GET['device_type']) && $_GET['device_type'] == "ios"){
+						unset($response["text"]);
+					}
 					break;
-				case 'n-20m': 
+				case 'n-20m':
 					$response["start_time"] = strtoupper($data["schedule_slot_start_time"]);
 					$response["start_date"] = date("d-m-Y",strtotime($data["schedule_date"]));
+					if(isset($_GET['device_type']) && $_GET['device_type'] == "ios"){
+						unset($response["text"]);
+					}
 					break;
 				default:
+
+					if($hour>10 && $hour<20){
+						$response["phone"] = Config::get('app.followup_customer_number');;
+					}
+					
+					
 					$response["start_time"] = "";
 					$response["start_date"] = "";
 					
@@ -4345,7 +4403,21 @@ class CustomerController extends \BaseController {
 				$customerReward     =   new CustomerReward();
 				$calculation        =   $customerReward->purchaseGame($response['amount'], $data["finder_id"], $data["payment_mode"], false, $data["customer_id"]);
 				$response['fitcash'] = $calculation['amount_deducted_from_wallet'];
-				$response['remarks'] = "(2% Discount applied)";
+				if(isset($_GET['device_type']) && $_GET['device_type'] == "ios"){
+					switch($time){
+						case 'pl+3':
+						case 'pl+7':
+						case 'pl+15':
+						case 'pl+30':
+							unset($response["text"]);
+							if($response['fitcash']>0){
+								$response["fitcash_text"] = $response['fitcash']." Fitcash can be applied in the next step";
+							}
+							break;
+						
+					}
+				}
+				$response['remarks'] = "";
 
 			}
 
@@ -4423,11 +4495,27 @@ class CustomerController extends \BaseController {
 				$can_book = true;
 			}
 			$current_diet_plan->can_book = $can_book;
+			$current_diet_plan = $current_diet_plan->toArray();
+
+			if(isset($current_diet_plan['start_date'])){
+				$current_diet_plan['start_date'] = date("F j, Y", strtotime($current_diet_plan['start_date']));
+			}else{
+				$current_diet_plan['start_date'] = "Not scheduled yet.";
+			}
+
+			$service = Service::find((int)$current_diet_plan['service_id']);
+			
+			$current_diet_plan['workout_goal'] = "";
+			
+			if($service && isset($service->workout_results)){
+				$current_diet_plan['workout_goal'] = implode(", ", $service['workout_results']);
+			}
+			
 		}else{
 			$current_diet_plan;
 		}
-		
-		$resp = array("current_diet_plan"=>$current_diet_plan);
+		$second_section = array("header" => "<p> what you <span style='color:#F7A81E'>eat</span> <br> is what makes <span style='color:#F7A81E'>you</span>", "subline"=>"<p>You've taken a great step to be fit & fine in your life!</p> <p>Here's what you can expect from the diet plan you've purchased</p>", "content"=>"<ul>    <li>Personalisations based on your requirements</li>    <li>Unlimited access to your dietician</li>    <li>Bi-weekly diet changes</li>    <li>Assorted healthy recipes & hacks</li>    <li>All diet changes synchronized with your trainer</li></ul>");
+		$resp = array("current_diet_plan"=>$current_diet_plan, "content_section"=>$second_section);
 		return Response::json($resp,200);
 	}
 
@@ -4577,24 +4665,17 @@ class CustomerController extends \BaseController {
 
 	public function getReferralCode(){
 		try{
-
 			$jwt = Request::header('Authorization');
 			$decoded = $this->customerTokenDecode($jwt);
 			$id = $decoded->customer->_id;
 			Customer::$withoutAppends = true;
 
 			$customer = Customer::where('_id', $id)->first();
-			
+			// return $customer;
 			if($customer){
 
 				if(!isset($customer->referral_code)){
 
-					$customer->referral_code = $this->generateReferralCode($customer->name);
-					$customer->update();
-				}
-
-				if(isset($customer->referral_code) && strpos($customer->referral_code, 'R-') != 0){
-					
 					$customer->referral_code = $this->generateReferralCode($customer->name);
 					$customer->update();
 				}
@@ -4625,6 +4706,7 @@ class CustomerController extends \BaseController {
 			
 		}catch(Exception $e){
 			Log::info($e);
+			return array('status'=>500, 'message'=>'Something went wrong');
 		}
 	}
 	public function referFriend(){	
@@ -4801,12 +4883,12 @@ class CustomerController extends \BaseController {
 
 		}else{
 
-			return array('status'=>400, 'message'=>'Incorrect referral code or referral already applied');
+			return array('status'=>400, 'message'=>'Incorrect referral code or code already applied');
 		}
 	}
 
 	public function generateReferralCode($name){
-		$referral_code = 'R-'.substr(implode("", (explode(" ", strtoupper($name)))),0,4)."".rand(1000, 9999);
+		$referral_code = substr(implode("", (explode(" ", strtoupper($name)))),0,4)."".rand(1000, 9999).'R';
 		$exists = Customer::where('referral_code', $referral_code)->where('status', '1')->first();
 		if($exists){
 			return $this->generateReferralCode($name);
@@ -4867,6 +4949,19 @@ class CustomerController extends \BaseController {
 		}
 	}
 
+	public function termsAndConditions($type){
+
+		if($type == 'referral'){
+			$tnc = "<h3 style='text-align:center'>Terms and conditions for refer and earn</h3><ul><li>Every time a new user signs up with your referral code, they'll get Rs. 250 FitCash+</li>
+				<li>As soon as they do their first transaction (free trials not applicable) on Fitternity - you will automatically get Rs. 250 FitCash+ in your wallet.</li>
+				<li>FitCash+ can be used in any booking and will be auto-applied on checkout</li>
+				<li>The validity of this FitCash+ is 6 months</li>
+				<li>You can send unlimited referral invitations, however the maximum amount of FitCash+ you can earn is Rs. 1,500</li></ul>";
+		}
+		
+		return $tnc;
+	}
+
 
 	public function addWebNotification(){
 		$data = Input::json()->all();
@@ -4897,6 +4992,39 @@ class CustomerController extends \BaseController {
 		return Response::json(array('status' => 200,'message' => 'success','device'=>$device),200);
 	}
 
+	public function feedback(){
 
+		$data = Input::json()->all();
 
+		$jwt_token = Request::header('Authorization');
+
+        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+
+            $decoded = $this->customerTokenDecode($jwt_token);
+            $data['customer_id'] = (int)$decoded->customer->_id;
+        }
+
+        if(isset($data['order_id']) && $data['order_id'] != ""){
+        	$data['order_id'] = (int)$data['order_id'];
+        }
+
+        if(isset($data['booktrial_id']) && $data['booktrial_id'] != ""){
+        	$data['booktrial_id'] = (int)$data['booktrial_id'];
+        }
+
+        if(isset($data['finder_id']) && $data['finder_id'] != ""){
+        	$data['finder_id'] = (int)$data['finder_id'];
+        }
+
+        Feedback::create($data);
+
+        return Response::json(
+			array(
+				'status' => 200,
+				'message' => "Thankyou for the feedback",
+				),
+			200
+		);
+	}
+	
 }

@@ -1682,7 +1682,9 @@ Class Utilities {
 
             $amount = $request['amount'];
 
-            $allWallets = Wallet::active()->where('customer_id',(int)$customer_id)->where('balance','>',0)->OrderBy('_id','asc')->get();
+            $query =  $this->getWalletQuery($request);
+
+            $allWallets  = $query->OrderBy('_id','asc')->get();
 
             if(count($allWallets) > 0){
 
@@ -2161,5 +2163,71 @@ Class Utilities {
         }
 
     }
+    public function getWalletQuery($request){
+
+        $query = Wallet::active()->where('customer_id',(int)$request['customer_id'])->where('balance','>',0);
+
+        if(isset($request['finder_id']) && $request['finder_id'] != ""){
+
+            $finder = \Finder::find((int)$request['finder_id']);
+
+            $conditionData = [];
+
+            $conditionData['finder_category_id'] = $finder->category_id;
+
+            $fitcashCoupons = \Fitcashcoupon::select('_id','code','condition')->where('condition','exists',true)->get();
+
+            if(count($fitcashCoupons) > 0){
+
+                $fitcashCoupons = $fitcashCoupons->toArray();
+
+                foreach ($fitcashCoupons as $coupon) {
+
+                    $code = $coupon['code'];
+
+                    $condition_array = [];
+
+                    foreach ($coupon['condition'] as $condition) {
+
+                        $operator = $condition['operator'];
+                        $field = $condition['field'];
+                        $value = $condition['value'];
+
+                        switch ($operator) {
+                            case 'in':
+
+                                if(isset($conditionData[$field]) && in_array($conditionData[$field],$value)){
+                                    $condition_array[] = 'true';
+                                }else{
+                                    $condition_array[] = 'false';
+                                }
+
+                                break;
+
+                            case 'not_in':
+
+                                if(isset($conditionData[$field]) && !in_array($conditionData[$field],$value)){
+                                    $condition_array[] = 'true';
+                                }else{
+                                    $condition_array[] = 'false';
+                                }
+
+                                break;
+                        }
+
+                    }
+
+                    if(in_array('false', $condition_array)){
+                        $query->where('coupon','!=',$code);
+                    }
+
+                }
+            }
+        }
+
+        return $query;
+
+    }
+
 
 }

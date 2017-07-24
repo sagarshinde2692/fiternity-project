@@ -1227,6 +1227,7 @@ public static function translate_searchresultsv4($es_searchresult_response,$sear
 				$resultobject->ozonetelno->phone_number = (isset($result['ozonetelno']) && isset($result['ozonetelno']['phone_number'])) ? $result['ozonetelno']['phone_number'] : "";
 				$resultobject->manual_trial_bool = (isset($result['manual_trial_bool'])) ? $result['manual_trial_bool'] : "";
 				$resultobject->ozonetelno->extension = (isset($result['ozonetelno']) && isset($result['ozonetelno']['extension'])) ? $result['ozonetelno']['extension'] : "";
+				$resultobject->distance 		= (isset($resultv1['fields']) && isset($resultv1['fields']['distance'])) ? number_format((float)$resultv1['fields']['distance'][0], 2, '.', '')."km" : "no";
 				$result['facilities'] 			= (is_array($result['facilities']) && $result['facilities'] != "") ? $result['facilities'] : [];
 
 				$resultobject->offer_available 	= "";
@@ -1404,22 +1405,29 @@ public static function translate_searchresultsv4($es_searchresult_response,$sear
 		}
 
 		$finderresult_response->results->aggregationlist->locationcluster = array();
-		foreach ($aggs['filtered_locations']['loccluster']['buckets'] as $cluster) {
-			$clusterval = new \stdClass();
-			$clusterval->key = $cluster['key'];
-			$clusterval->slug = strtolower(str_replace(' ', '-', $cluster['key']));
-			$clusterval->count = $cluster['doc_count'];
-			$clusterval->regions = array();
-			if(isset($cluster['region']['attrs'])){
-				foreach ($cluster['region']['attrs']['buckets'] as $reg) {
-					$regval = new \stdClass();
-					$regval->key = $reg['key'];
-					$regval->slug = $reg['attrsValues']['buckets'][0]['key'];
-					$regval->count = $reg['doc_count'];
-					array_push($clusterval->regions, $regval);
+		$cityfound = true;
+		if(isset($search_request["city"])){
+			$cityResponse = ifCityPresent($search_request["city"]);
+			$cityfound = $cityResponse["found"];
+		}
+		if($cityfound){
+			foreach ($aggs['filtered_locations']['loccluster']['buckets'] as $cluster) {
+				$clusterval = new \stdClass();
+				$clusterval->key = $cluster['key'];
+				$clusterval->slug = strtolower(str_replace(' ', '-', $cluster['key']));
+				$clusterval->count = $cluster['doc_count'];
+				$clusterval->regions = array();
+				if(isset($cluster['region']['attrs'])){
+					foreach ($cluster['region']['attrs']['buckets'] as $reg) {
+						$regval = new \stdClass();
+						$regval->key = $reg['key'];
+						$regval->slug = $reg['attrsValues']['buckets'][0]['key'];
+						$regval->count = $reg['doc_count'];
+						array_push($clusterval->regions, $regval);
+					}
 				}
+				array_push($finderresult_response->results->aggregationlist->locationcluster, $clusterval);
 			}
-			array_push($finderresult_response->results->aggregationlist->locationcluster, $clusterval);
 		}
 
 		$finderresult_response->results->aggregationlist->subcategories = array();
