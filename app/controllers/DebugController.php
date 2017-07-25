@@ -4591,6 +4591,39 @@ public function yes($msg){
 
 	}
 
+	public function manualtractionupdate($type, $x){
+
+		$x = intval($x);
+	
+		$data = Input::all();
+
+		$service_ids = $data['service_ids'];
+
+		$services = 0;
+		$vendorservices = 0;
+
+		if($type=='increment'){
+
+			$services = Service::whereIn('_id', $service_ids)->increment('traction.sales', $x);
+
+			$vendorservices = Vendorservice::whereIn('_id', $service_ids)->increment('traction.sales', $x);
+
+		}else if($type=='decrement'){
+
+			$services = Service::whereIn('_id', $service_ids)->where('traction.sales', '<=', $x)->update(['traction.sales'=> 0]);
+
+			$vendorservices = Vendorservice::whereIn('_id', $service_ids)->where('traction.sales', '<=', $x)->update(['traction.sales'=> 0]);
+
+			$services += Service::whereIn('_id', $service_ids)->where('traction.sales', '>', $x)->decrement('traction.sales', $x);
+
+			$vendorservices += Vendorservice::whereIn('_id', $service_ids)->where('traction.sales', '>', $x)->decrement('traction.sales', $x);
+
+		}
+
+		return array('services updated'=>$services, 'vendorservices updated'=> $vendorservices);
+
+	}
+
 
 
     
