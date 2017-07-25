@@ -1352,6 +1352,10 @@ public function improvedkeywordSearch(){
         $servicecategory =   Input::json()->get('servicecategory') ? Input::json()->get('servicecategory') : array();
         $sort_clause = '';
         $keys   =         (Input::json()->get('keys')) ? Input::json()->get('keys') : array();
+
+        $app_device = Request::header('Device-Type');
+        $app_version = Request::header('App-Version');
+
         if(count($category) > 0){
             $category[0] = str_replace("-"," ",$category[0]);
         }
@@ -1948,7 +1952,14 @@ $request = array(
 $search_results     =   es_curl_request($request);
 $search_results1    =   json_decode($search_results, true);
 $search_request     =   Input::json()->all();
-$searchresulteresponse = Translator::translate_searchresultsv4($search_results1,$search_request,$keys);
+Log::info("Yolo".$app_device.$app_version);
+if(($app_device == "android" && $app_version >= "4.1") || ($app_device == "ios" && $app_version >= "4.2")){
+    $searchresulteresponse = Translator::translate_searchresultsv5($search_results1,$search_request,$keys);
+    $searchresulteresponse->aggregations = $searchresulteresponse->results->aggregations;
+    $searchresulteresponse->results = $searchresulteresponse->results->results;
+}else{
+    $searchresulteresponse = Translator::translate_searchresultsv4($search_results1,$search_request,$keys);
+}
 // $searchresulteresponse = Translator::translate_searchresultskeywordsearch($search_results1);
 // $searchresulteresponse->metadata = $this->getOfferingHeader($category,$location);
 $searchresulteresponse->metadata->total_records = intval($search_results1['hits']['total']);
