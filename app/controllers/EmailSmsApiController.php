@@ -6,7 +6,7 @@ use App\Services\Cloudagent as Cloudagent;
 use App\Services\Sidekiq as Sidekiq;
 Use App\Mailers\CustomerMailer as CustomerMailer;
 use App\Sms\CustomerSms as CustomerSms;
-
+use App\Services\Utilities as Utilities;
 
 class EmailSmsApiController extends \BaseController {
 
@@ -16,14 +16,20 @@ class EmailSmsApiController extends \BaseController {
     protected $sidekiq;
     protected $customermailer;
     protected $customersms;
+    protected $utilities;
 
-
-    public function __construct(Cloudagent $cloudagent, Sidekiq $sidekiq,CustomerMailer $customermailer,CustomerSms $customersms)
-    {
+    public function __construct(
+        Cloudagent $cloudagent,
+        Sidekiq $sidekiq,
+        CustomerMailer $customermailer,
+        CustomerSms $customersms,
+        Utilities $utilities
+    ){
         $this->cloudagent       =   $cloudagent;
         $this->sidekiq          =   $sidekiq;
         $this->customermailer           =   $customermailer;
         $this->customersms              =   $customersms;
+        $this->utilities            =   $utilities;
     }
 
     public function sendSMS($smsdata){
@@ -581,7 +587,24 @@ class EmailSmsApiController extends \BaseController {
             unset($data['preferred_starting_date']);
         }
 
+        if(isset($data['customer_email']) && $data['customer_email'] != "" && isset($data['customer_name']) && $data['customer_name'] != ""){
 
+            $data['customer_id'] = autoRegisterCustomer($data);
+
+            $addUpdateDevice = $this->utilities->addUpdateDevice($customer_id);
+
+        }else{
+
+            $addUpdateDevice = $this->utilities->addUpdateDevice();
+        }
+
+        foreach ($addUpdateDevice as $header_key => $header_value) {
+
+            if($header_key != ""){
+               $data[$header_key]  = $header_value;
+            }
+
+        }
 
         array_set($data, 'date',date("h:i:sa"));
         array_set($data, 'ticket_number',random_numbers(5));

@@ -1958,6 +1958,23 @@ class SchedulebooktrialsController extends \BaseController {
             $profile_link = $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$customer_email);
             $vendor_link = $this->utilities->getShortenUrl(Config::get('app.website')."/".$finder_slug);
 
+
+            $addUpdateDevice = [];
+
+            $addUpdateDevice['device_type'] = (isset($order['device_type']) && $order['device_type'] != '') ? $order['device_type'] : "";
+            $addUpdateDevice['device_model'] = (isset($order['device_model']) && $order['device_model'] != '') ? $order['device_model'] : "";
+            $addUpdateDevice['app_version'] = (isset($order['app_version']) && $order['app_version'] != '') ? $order['app_version'] : "";
+            $addUpdateDevice['os_version'] = (isset($order['os_version']) && $order['os_version'] != '') ? $order['os_version'] : "";
+            $addUpdateDevice['reg_id'] = (isset($order['gcm_reg_id']) && $order['gcm_reg_id'] != '') ? $order['gcm_reg_id'] : "";
+
+            foreach ($addUpdateDevice as $header_key => $header_value) {
+
+                if($header_key != ""){
+                   $data[$header_key]  = $header_value;
+                }
+                
+            }
+
             $booktrialdata = array(
                 'booktrialid'                   =>      intval($booktrialid),
                 'premium_session'               =>      $premium_session,
@@ -2775,6 +2792,8 @@ class SchedulebooktrialsController extends \BaseController {
             $profile_link = $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$customer_email);
             $vendor_link = $this->utilities->getShortenUrl(Config::get('app.website')."/".$finder_slug);
 
+
+
             $booktrialdata = array(
 
                 'booktrialid'         =>      $booktrialid,
@@ -2871,6 +2890,16 @@ class SchedulebooktrialsController extends \BaseController {
                 'finder_location_slug'          =>      $finder_location_slug
 
             );
+
+            $addUpdateDevice = $this->utilities->addUpdateDevice($customer_id);
+
+            foreach ($addUpdateDevice as $header_key => $header_value) {
+
+                if($header_key != ""){
+                   $booktrialdata[$header_key]  = $header_value;
+                }
+
+            }
 
             if(isset($data['customofferorder_id']) && $data['customofferorder_id'] != ""){
 
