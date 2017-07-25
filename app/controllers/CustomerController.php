@@ -3161,8 +3161,10 @@ class CustomerController extends \BaseController {
 			return Response::json(array('status' => 401,'message' =>$this->errorMessage($validator->errors())),401);
 		}
 
-		$current_version_android = 3.5;
+		$current_version_android = 3.4;
 		$current_version_ios = 2.3;
+
+		$last_stable_version_android = 3.0;
 
 		if($data["device_type"] == "android"){
 
@@ -3172,7 +3174,7 @@ class CustomerController extends \BaseController {
 				"force_update" => false
 			);
 
-			if(floatval($data["app_version"]) < $current_version_android){
+			if(floatval($data["app_version"]) < $last_stable_version_android){
 
 				$result_android['force_update'] = true;
 			}
