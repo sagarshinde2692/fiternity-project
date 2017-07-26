@@ -171,3 +171,138 @@ Route::filter('validatevendor',function(){
     }
 
 });
+
+Route::filter('device',function(){
+
+    $header_array = [
+        "Device-Type"=>"",
+        "Device-Model"=>"",
+        "App-Version"=>"",
+        "Os-Version"=>"",
+        "Device-Token"=>"",
+        "Device-Id"=>""
+    ];
+
+    $flag = false;
+
+    foreach ($header_array as $header_key => $header_value) {
+
+        $value = $value;
+
+        if($value != "" && $value != null && $value != 'null'){
+           $header_array[$header_key] =  $value;
+           $flag = true;
+        }
+        
+    }
+
+    $customer_id = "";
+
+    $jwt_token = Request::header('Authorization');
+
+    if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+
+        $decoded = customerTokenDecode($jwt_token);
+        $customer_id = (int)$decoded->customer->_id;
+    }
+
+    $data = [];
+
+    $data['customer_id'] = $customer_id;
+    $data['device_id'] = $header_array['Device-Id'];
+    $data['os_version'] = $header_array['Os-Version'];
+    $data['app_version'] = $header_array['App-Version'];
+    $data['device_model'] = $header_array['Device-Model'];
+    $data['device_type'] = $header_array['Device-Type'];
+    $data['reg_id'] = $header_array['Device-Token'];
+
+    if($flag){
+
+        if(isset($data['reg_id']) && $data['reg_id'] != " "&& $data['reg_id'] != null && $data['reg_id'] != 'null'){
+
+            $device = Device::where('reg_id', $data['reg_id'])->orderBy("_id","DESC")->first();
+        }
+
+        if(isset($data['device_id']) && $data['device_id'] != "" && $data['device_id'] != null && $data['device_id'] != 'null'){
+
+            $device = Device::first((int)$data['device_id']);
+        }
+
+        if ($device) {
+
+            if(isset($data['reg_id']) && $data['reg_id'] != '' && $data['reg_id'] != null && $data['reg_id'] != 'null'){
+                $device->reg_id = $data['reg_id'];
+            }
+
+            if(isset($data['customer_id']) && $data['customer_id'] != '' && $data['customer_id'] != null && $data['customer_id'] != 'null'){
+                $device->customer_id = (int)$data['customer_id'];
+            }
+
+            if(isset($data['device_model']) && $data['device_model'] != '' && $data['device_model'] != null && $data['device_model'] != 'null'){
+                $device->device_model = $data['device_model'];
+            }
+
+            if(isset($data['app_version']) && $data['app_version'] != '' && $data['app_version'] != null && $data['app_version'] != 'null'){
+                $device->app_version = (float)$data['app_version'];
+            }
+
+            if(isset($data['os_version']) && $data['os_version'] != '' && $data['os_version'] != null && $data['os_version'] != 'null'){
+                $device->os_version = (float)$data['os_version'];
+            }
+
+            if(isset($data['device_type']) && $data['device_type'] != '' && $data['device_type'] != null && $data['device_type'] != 'null'){
+                $device->type = $data['device_type'];
+            }
+
+            $device->last_visited_date = time();
+
+            $device->update();
+
+        } else {
+
+            $device_id = Device::max('_id') + 1;
+            $device = new Device();
+            $device->_id = $device_id;
+
+            if(isset($data['reg_id']) && $data['reg_id'] != '' && $data['reg_id'] != null && $data['reg_id'] != 'null'){
+                $device->reg_id = $data['reg_id'];
+            }
+
+            if(isset($data['customer_id']) && $data['customer_id'] != '' && $data['customer_id'] != null && $data['customer_id'] != 'null'){
+                $device->customer_id = (int)$data['customer_id'];
+            }
+
+            if(isset($data['device_model']) && $data['device_model'] != '' && $data['device_model'] != null && $data['device_model'] != 'null'){
+                $device->device_model = $data['device_model'];
+            }
+
+            if(isset($data['app_version']) && $data['app_version'] != '' && $data['app_version'] != null && $data['app_version'] != 'null'){
+                $device->app_version = (float)$data['app_version'];
+            }
+
+            if(isset($data['os_version']) && $data['os_version'] != '' && $data['os_version'] != null && $data['os_version'] != 'null'){
+                $device->os_version = (float)$data['os_version'];
+            }
+
+            if(isset($data['device_type']) && $data['device_type'] != '' && $data['device_type'] != null && $data['device_type'] != 'null'){
+                $device->type = $data['device_type'];
+            }
+
+            $device->last_visited_date = time();
+
+            $device->status = "1";
+            $device->save();
+        }
+
+        $device_id = (int)$device->_id;
+
+        App::after(function($device_id, $response)
+        {
+            $response->headers->set('Device-Id',$device_id);
+
+            return $response;
+        });
+    }
+
+
+});

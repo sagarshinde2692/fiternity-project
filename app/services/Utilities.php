@@ -1251,10 +1251,22 @@ Class Utilities {
 
             if ($device) {
 
-                $device->customer_id = (isset($data['customer_id']) && $data['customer_id'] != '') ? (int)$data['customer_id'] : $device->customer_id;
-                $device->device_model = (isset($data['device_model']) && $data['device_model'] != '') ? $data['device_model'] : "";
-                $device->app_version = (isset($data['app_version']) && $data['app_version'] != '') ? (float)$data['app_version'] : "";
-                $device->os_version = (isset($data['os_version']) && $data['os_version'] != '') ? (float)$data['os_version'] : "";
+                if(isset($data['customer_id']) && $data['customer_id'] != '' && $data['customer_id'] != null && $data['customer_id'] != 'null'){
+                    $device->customer_id = (int)$data['customer_id'];
+                }
+
+                if(isset($data['device_model']) && $data['device_model'] != '' && $data['device_model'] != null && $data['device_model'] != 'null'){
+                    $device->device_model = $data['device_model'];
+                }
+
+                if(isset($data['app_version']) && $data['app_version'] != '' && $data['app_version'] != null && $data['app_version'] != 'null'){
+                    $device->app_version = (float)$data['app_version'];
+                }
+
+                if(isset($data['os_version']) && $data['os_version'] != '' && $data['os_version'] != null && $data['os_version'] != 'null'){
+                    $device->os_version = (float)$data['os_version'];
+                }
+
                 $device->update();
 
             } else {
@@ -1270,10 +1282,23 @@ Class Utilities {
                 $device = new Device();
                 $device->_id = $device_id;
                 $device->reg_id = $data['reg_id'];
-                $device->customer_id = (isset($data['customer_id']) && $data['customer_id'] != '') ? (int)$data['customer_id'] : '';
-                $device->device_model = (isset($data['device_model']) && $data['device_model'] != '') ? $data['device_model'] : "";
-                $device->app_version = (isset($data['app_version']) && $data['app_version'] != '') ? (float)$data['app_version'] : "";
-                $device->os_version = (isset($data['os_version']) && $data['os_version'] != '') ? (float)$data['os_version'] : "";
+
+                if(isset($data['customer_id']) && $data['customer_id'] != '' && $data['customer_id'] != null && $data['customer_id'] != 'null'){
+                    $device->customer_id = (int)$data['customer_id'];
+                }
+
+                if(isset($data['device_model']) && $data['device_model'] != '' && $data['device_model'] != null && $data['device_model'] != 'null'){
+                    $device->device_model = $data['device_model'];
+                }
+
+                if(isset($data['app_version']) && $data['app_version'] != '' && $data['app_version'] != null && $data['app_version'] != 'null'){
+                    $device->app_version = (float)$data['app_version'];
+                }
+
+                if(isset($data['os_version']) && $data['os_version'] != '' && $data['os_version'] != null && $data['os_version'] != 'null'){
+                    $device->os_version = (float)$data['os_version'];
+                }
+
                 $device->type = $data['type'];
                 $device->status = "1";
                 $device->save();
@@ -2239,16 +2264,24 @@ Class Utilities {
     public function addUpdateDevice($customer_id = false){
 
         $header_array = [
-            "device_type"=>"",
-            "device_model"=>"",
-            "app_version"=>"",
-            "os_version"=>"",
-            "device_token"=>""
+            "Device-Type"=>"",
+            "Device-Model"=>"",
+            "App-Version"=>"",
+            "Os-Version"=>"",
+            "Device-Token"=>"",
+            "Device-Id"=>""
         ];
+
+        $flag = false;
 
         foreach ($header_array as $header_key => $header_value) {
 
-           $header_array[$header_key] =  Request::header($header_value);
+            $value = $value;
+
+            if($value != "" && $value != null && $value != 'null'){
+               $header_array[$header_key] =  $value;
+               $flag = true;
+            }
             
         }
 
@@ -2256,19 +2289,31 @@ Class Utilities {
           $header_array['customer_id'] = (int)$customer_id;
         }
 
-        $data = $header_array;
+        $data = [];
 
-        $data['type'] = $header_array['device_type'];
-        $data['reg_id'] = $header_array['device_token'];
+        if($customer_id && $customer_id != ""){
+          $data['customer_id'] = (int)$customer_id;
+        }
+
+        $data['device_id'] = $header_array['Device-Id'];
+        $data['os_version'] = $header_array['Os-Version'];
+        $data['app_version'] = $header_array['App-Version'];
+        $data['device_model'] = $header_array['Device-Model'];
+        $data['type'] = $header_array['Device-Type'];
+        $data['device_type'] = $header_array['Device-Type'];
+        $data['reg_id'] = $header_array['Device-Token'];
+        $data['gcm_reg_id'] = $header_array['Device-Token'];
 
         $this->addRegId($data);
 
-        $header_array['reg_id'] = $header_array['device_token'];
-        $header_array['gcm_reg_id'] = $header_array['device_token'];
+        unset($data['type']);
+        unset($data['device_id']);
 
-        unset($header_array['device_token']);
+        if($customer_id && $customer_id != ""){
+          unset($data['customer_id']);
+        }
 
-        return $header_array;
+        return $data;
 
     }
 

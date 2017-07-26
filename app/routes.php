@@ -25,6 +25,7 @@ require __DIR__.'/analytics_routes.php';
  // $queries = DB::getQueryLog();
  // var_dump($queries);
 
+
 Route::get('/', function() {  return date('l')." laravel beta 4.2 goes here...."; });
 Route::get('acceptvendormou/{vendormouid}', 'FindersController@acceptVendorMou');
 Route::get('cancelvendormou/{vendormouid}', 'FindersController@cancelVendorMou');
@@ -34,6 +35,8 @@ Route::get('cancelvendormou/{vendormouid}', 'FindersController@cancelVendorMou')
 
 ##############################################################################
 /******************** VENDOR PANEL SECTION START HERE ***********************/
+
+
 
 Route::post('/vendorlogin',  array('as' => 'vendor.login','uses' => 'VendorpanelController@doVendorLogin'));
 
@@ -230,7 +233,9 @@ Route::post('customer/addregid', array('as' => 'customer.addregid','uses' => 'Cu
 Route::post('customer/add/webnotification', array('as' => 'customer.addwebnotification','uses' => 'CustomerController@addWebNotification'));
 Route::post('customer/addhealthinfo', array('as' => 'customer.addhealthinfo','uses' => 'CustomerController@addHealthInfo'));
 Route::post('customer/myrewards/create', array('as' => 'customer.createMyReward','uses' => 'MyrewardController@createMyReward'));
-Route::get('customer/home/{city?}', array('as' => 'customer.home','uses' => 'CustomerController@home'));
+Route::group(array('before' => 'device'), function() {
+	Route::get('customer/home/{city?}', array('as' => 'customer.home','uses' => 'CustomerController@home'));
+});
 Route::post('customer/transformation', array('as' => 'customer.transformation','uses' => 'CustomerController@transformation'));
 Route::post('sms/downloadapp', array('as' => 'customer.downloadapp','uses' => 'CustomerController@downloadApp'));
 Route::get('app/forceupdate', array('as' => 'customer.forceupdate','uses' => 'CustomerController@forceUpdate'));
@@ -976,4 +981,3 @@ Route::post('belp/fitnessquiz','HomeController@belpFitnessQuiz');
 Route::get('conditiontest','DebugController@conditionTest');
 
 Route::post('crashlog','HomeController@crashLog');
-
