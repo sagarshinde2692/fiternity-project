@@ -102,7 +102,7 @@ class Translator {
 			$resultobject->contact->email = isset($result['contact']['email']) ? $result['contact']['email'] : "";
 			$resultobject->contact->phone = ''; //$result['contact']['phone'];
 			$resultobject->contact->website = isset($result['contact']['website']) ? $result['contact']['website'] : "";
-			$resultobject->coverimage = isset($result['coverimage']) ? $result['coverimage'] : "";;
+			$resultobject->coverimage = isset($result['coverimage']) ? "https://b.fitn.in/f/ct/".$result['coverimage'] : "";;
 			$resultobject->commercial_type = isset($result['commercial_type']) ? $result['commercial_type'] : "";;
 			$resultobject->finder_type = (isset($result['finder_type']) && !empty($result['finder_type'])) ? $result['finder_type'] : 0;
 			$resultobject->business_type = isset($result['business_type']) ? $result['business_type'] : "";;
@@ -1649,9 +1649,9 @@ public static function translate_searchresultsv5($es_searchresult_response,$sear
 					foreach ($keys as $key){
 						isset($resultobject->$key) ? $newObj[$key]=$resultobject->$key : null;
 					}
-					$finder->object = $newObj;
+					$finder = $newObj;
 				}else{
-					$finder->object = $resultobject;
+					$finder = $resultobject;
 				}
 				$resultobject->vendor_type = "";
 				if($result['category'] != "personal trainer"){
