@@ -297,7 +297,6 @@ return array(
 
 	'jwt' => array(
 		'key' => 'fitternity', //secret key to encode token
-		'metropolis_key' => 'fitTernitYwEbKeY&^$^&$^%$^%7782348723t4872t34endInGHerE',
 		'iat' => time(), // time when token is created
 		'nbf' => time()+10, // time when token can be used from
 		'exp' => time()+(86400*365), // time when token gets expired (1 year)
