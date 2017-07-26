@@ -4,24 +4,24 @@
 return array(
 
 	//live
-	'url' => 'https://a1.fitternity.com',
-	'admin_url' => 'https://fitn.in',
-	'website' => 'https://www.fitternity.com',
-	'sidekiq_url' => 'http://nw.fitn.in/',
-	'queue' => 'booktrial',
-	'vendor_communication' => true,
-	'env' => 'production',
-	'debug' => FALSE,
+	// 'url' => 'https://a1.fitternity.com',
+	// 'admin_url' => 'https://fitn.in',
+	// 'website' => 'https://www.fitternity.com',
+	// 'sidekiq_url' => 'http://nw.fitn.in/',
+	// 'queue' => 'booktrial',
+	// 'vendor_communication' => true,
+	// 'env' => 'production',
+	// 'debug' => FALSE,
 
 	//stage
-	// 'url' => 'http://apistage.fitn.in',
-	// 'admin_url' => 'http://adminstage.fitn.in',
-	// 'website' => 'http://apistage.fitn.in:2233',
-	// 'sidekiq_url' => 'http://kick.fitn.in/',
-	// 'queue' => 'booktrial',
-	// 'vendor_communication' => false,
-	// 'env' => 'stage',
-	// 'debug' => TRUE,
+	'url' => 'http://apistage.fitn.in',
+	'admin_url' => 'http://adminstage.fitn.in',
+	'website' => 'http://apistage.fitn.in:2233',
+	'sidekiq_url' => 'http://kick.fitn.in/',
+	'queue' => 'booktrial',
+	'vendor_communication' => false,
+	'env' => 'stage',
+	'debug' => TRUE,
 
 	//beta
 	// 'url' => 'http://beta.fitn.in', 
@@ -297,6 +297,7 @@ return array(
 
 	'jwt' => array(
 		'key' => 'fitternity', //secret key to encode token
+		'metropolis_key' => 'fitTernitYwEbKeY&^$^&$^%$^%7782348723t4872t34endInGHerE',
 		'iat' => time(), // time when token is created
 		'nbf' => time()+10, // time when token can be used from
 		'exp' => time()+(86400*365), // time when token gets expired (1 year)

@@ -65,6 +65,8 @@ class TrainerController extends \BaseController {
 			$schedules_query->where('trainer_id',$oldTrainerSlotBooking->trainer_id);
 			$call_for = "followup";
 
+		}else if(isset($request['trainer_id'])){
+			$schedules_query->where('trainer_id',new mongoID($request['trainer_id']));
 		}
 
 		$schedules = $schedules_query->get();
@@ -179,17 +181,30 @@ class TrainerController extends \BaseController {
 
         try {
 
-        	$jwt_token  = Request::header('Authorization');
-			$jwt_key = Config::get('app.jwt.key');
-			$jwt_alg = Config::get('app.jwt.alg');
-			$decoded = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+        	if(!isset($data['source']) || $data['source'] != 'cthulhu'){
+				$jwt_token  = Request::header('Authorization');
+				$jwt_key = Config::get('app.jwt.key');
+				$jwt_alg = Config::get('app.jwt.alg');
+				$decoded = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
 
-			$data['customer_email'] = $decoded->customer->email;
-			$data['customer_name'] = $decoded->customer->name;
-			$data['customer_phone'] = $decoded->customer->contact_no;
-			$data['customer_id'] = $decoded->customer->_id;
+				$data['customer_email'] = $decoded->customer->email;
+				$data['customer_name'] = $decoded->customer->name;
+				$data['customer_phone'] = $decoded->customer->contact_no;
+				$data['customer_id'] = $decoded->customer->_id;
+				
+			}else{
+				
 
-			
+				if( !isset($data['key']) || $data['key'] != '1jhvv123vhjc323@(*Bb@##*yhjj2Jhasda78&*gu'){
+					return array('status'=>404, 'message'=>'Not Authorized');
+				}
+				$customer = Customer::find($data['customer_id']);
+				$data['customer_email'] = $customer->email;
+				$data['customer_name'] = $customer->name;
+				$data['customer_phone'] = $customer->contact_no;
+				$data['customer_id'] = $customer->_id;
+			}
+
 			$data['call_for'] = "first";
 
 			$date = $data['date'] = date('d-m-Y',strtotime($data['date']));
@@ -275,7 +290,7 @@ class TrainerController extends \BaseController {
 			}
 
 		    $order->update();
-
+			
         	$redisid = Queue::connection('redis')->push('TrainerController@sendCommunication', array('trainer_slot_booking_id'=>$trainerSlotBooking->_id),Config::get('app.queue'));
         	$trainerSlotBooking->update(array('redis_id'=>$redisid));
 
