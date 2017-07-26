@@ -1924,7 +1924,7 @@ class FindersController extends \BaseController {
 
 					}
 				}else{
-					$info_timing .= $btch;
+					$info_timing .= "<p><i>".$btch."</i></p>";
 				}
 			}
 		}
