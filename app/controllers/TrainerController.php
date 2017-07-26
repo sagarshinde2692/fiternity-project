@@ -198,6 +198,8 @@ class TrainerController extends \BaseController {
 				if( !isset($data['key']) || $data['key'] != '1jhvv123vhjc323@(*Bb@##*yhjj2Jhasda78&*gu'){
 					return array('status'=>404, 'message'=>'Not Authorized');
 				}
+
+				unset($data['key']);
 				$customer = Customer::find($data['customer_id']);
 				$data['customer_email'] = $customer->email;
 				$data['customer_name'] = $customer->name;
@@ -290,7 +292,7 @@ class TrainerController extends \BaseController {
 			}
 
 		    $order->update();
-			
+
         	$redisid = Queue::connection('redis')->push('TrainerController@sendCommunication', array('trainer_slot_booking_id'=>$trainerSlotBooking->_id),Config::get('app.queue'));
         	$trainerSlotBooking->update(array('redis_id'=>$redisid));
 
