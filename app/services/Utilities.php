@@ -1267,6 +1267,8 @@ Class Utilities {
                     $device->os_version = (float)$data['os_version'];
                 }
 
+                $device->last_visited_date = time();
+
                 $device->update();
 
             } else {
@@ -1298,6 +1300,8 @@ Class Utilities {
                 if(isset($data['os_version']) && $data['os_version'] != '' && $data['os_version'] != null && $data['os_version'] != 'null'){
                     $device->os_version = (float)$data['os_version'];
                 }
+
+                $device->last_visited_date = time();
 
                 $device->type = $data['type'];
                 $device->status = "1";
