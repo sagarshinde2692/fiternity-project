@@ -1924,7 +1924,10 @@ class FindersController extends \BaseController {
 
 					}
 				}else{
-					$info_timing .= "<p><i>".$btch."</i></p>";
+
+					$time = substr($btch, strpos($btch, ":")+1);
+					$days = substr($btch, 0, strpos($btch, ":")-1);
+					$info_timing .= "<p><i>".$days." : </i>$time</p>";
 				}
 			}
 		}
