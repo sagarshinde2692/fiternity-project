@@ -798,6 +798,9 @@ public function newglobalsearch(){
    $lat      =         isset($location['lat']) ? $location['lat'] : '';
    $lon      =         isset($location['long']) ? $location['long'] : '';
    $city     =  getmy_city($city);
+   $app_device = Request::header('Device-Type');
+   $app_version = Request::header('App-Version');
+   
    $customer_email = null;
    $jwt_token = Request::header('Authorization');
    if($jwt_token){
