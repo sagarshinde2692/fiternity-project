@@ -592,6 +592,10 @@ class EmailSmsApiController extends \BaseController {
 
         $storecapture   = Capture::create($data);
 
+        if($data['capture_type']=='my-home-fitness'){
+            $this->customersms->myHomFitnessWithoutSlot($data);
+        }
+
         $emaildata = array(
             'email_template' => 'emails.finder.landingcallbacks',
             'email_template_data' => array(
