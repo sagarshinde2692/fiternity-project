@@ -573,6 +573,10 @@ class EmailSmsApiController extends \BaseController {
             $data['customer_email'] = $data['email'];
         }
 
+        if(isset($data['location']) && $data['location'] != ""){
+            $data['customer_location'] = $data['location'];
+        }
+
         array_set($data, 'capture_status', 'yet to connect');
 
         if(isset($data['preferred_starting_date']) && $data['preferred_starting_date'] != "" && $data['preferred_starting_date'] != "-"){
@@ -592,9 +596,17 @@ class EmailSmsApiController extends \BaseController {
 
         $storecapture   = Capture::create($data);
 
-        if($data['capture_type']=='my-home-fitness'){
-            $this->customersms->myHomFitnessWithoutSlot($data);
+        if(isset($data['capture_type']) && $data['capture_type']=='my-home-fitness-trial'){
+
+            $this->customersms->myHomFitnessWithoutSlotInstant($data);
+
         }
+
+        if(isset($data['capture_type']) && $data['capture_type'] == 'my-home-fitness-membership'){
+
+			$this->customersms->myHomeFitnessPurchaseWithoutSlot($data);
+			
+		}
 
         $emaildata = array(
             'email_template' => 'emails.finder.landingcallbacks',

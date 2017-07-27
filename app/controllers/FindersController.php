@@ -3219,7 +3219,7 @@ class FindersController extends \BaseController {
 
 	public function fitternityPersonalTrainersDetail(){
 		try{
-			$finder = Finder::where('title', 'Fitternity Personal Trainers')
+			$finder = Finder::where('title', Config::get('app.fitternity_personal_trainers'))
 			->with(array('services'=>function($query){
 				$query->active()->select(array('id', 'name','finder_id', 'short_description','body','what_i_should_expect', 'workout_intensity','ordering'))->orderBy('ordering');
 				}))
