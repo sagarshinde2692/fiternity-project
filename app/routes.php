@@ -964,6 +964,9 @@ Route::get('termsandconditions/{type}', 'CustomerController@termsAndConditions')
 
 Route::get('addfitcash', 'DebugController@addFitcash');
 
+Route::get('communication/{sender_class}/{transaction_type}/{label}/{id}/{key}', 'CommunicationsController@sendCommunication');
+
+// Route::get('sendManualCommunication/{id}', 'SchedulebooktrialsController@sendManualCommunication');
 Route::get('getbrands/{city}/{brand_id}', 'FindersController@getbrands');
 Route::get('orderfollowup','DebugController@orderFollowup');
 Route::post('belp/signin','HomeController@belpSignin');
@@ -981,4 +984,5 @@ Route::get('fitternitypersonaltrainersdetail','FindersController@fitternityPerso
 
 
 
+Route::post('crashlog','HomeController@crashLog');
 

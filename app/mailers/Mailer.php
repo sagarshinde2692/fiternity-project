@@ -2,8 +2,27 @@
 
 use Mail, Queue, IronWorker, Config, View, Log;
 use App\Services\Sidekiq as Sidekiq;
+use App\Services\Utilities as Utilities;
+
 
 abstract Class Mailer {
+
+	public function __call($method, $arguments){
+
+        $qualified_class_name = get_class($this);
+        
+        $reflect = new \ReflectionClass($this);
+        $class_name = $reflect->getShortName();
+
+        $reflect = new \ReflectionClass($qualified_class_name);
+        $objInstance = $reflect->newInstanceArgs();
+		if(count($arguments) < 2 || (is_int($arguments[1]) && $arguments[1] == 0) || !in_array($method, Config::get('app.delay_methods'))){
+			return call_user_func_array( array($objInstance, $method), $arguments);
+		}else{
+			$utilities = new Utilities();
+			return $utilities->scheduleCommunication($arguments, $method, $class_name);
+		}
+    }
 
 	public function sendTo($email_template, $template_data = [], $message_data = [], $delay = null ){
 
@@ -199,7 +218,6 @@ abstract Class Mailer {
 
 		$route	= 'email';
 		$result  = $sidekiq->sendToQueue($payload,$route);
-
 
 		if($result['status'] == 200){
 			return $result['task_id'];
