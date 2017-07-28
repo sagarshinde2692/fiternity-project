@@ -5,7 +5,7 @@ use App\Services\Utilities as Utilities;
 
 Class CustomerNotification extends Notification{
 
-	public function bookTrial ($data){
+	protected function bookTrial ($data){
 
 		$label = 'AutoTrial-Instant-Customer';
 
@@ -20,7 +20,7 @@ Class CustomerNotification extends Notification{
 		return $this->common($label,$data,$notif_type,$notif_object);
 	}
 
-	public function rescheduledBookTrial ($data){
+	protected function rescheduledBookTrial ($data){
 
 		$label = 'RescheduleTrial-Instant-Customer';
 
@@ -30,7 +30,7 @@ Class CustomerNotification extends Notification{
 		return $this->common($label,$data,$notif_type,$notif_object);
 	}
 
-	public function bookTrialReminderBefore12Hour ($data, $delay){
+	protected function bookTrialReminderBefore12Hour ($data, $delay){
 
 		$label = 'AutoTrial-ReminderBefore12Hour-Customer';
 
@@ -40,7 +40,7 @@ Class CustomerNotification extends Notification{
 		return $this->common($label,$data,$notif_type,$notif_object,$delay);
 	}
 
-	public function bookTrialReminderBefore20Min ($data, $delay){
+	protected function bookTrialReminderBefore20Min ($data, $delay){
 
 		$label = 'AutoTrial-ReminderBefore20Min-Customer';
 
@@ -50,7 +50,7 @@ Class CustomerNotification extends Notification{
 		return $this->common($label,$data,$notif_type,$notif_object,$delay);
 	}
 
-	public function bookTrialReminderBefore1Hour ($data, $delay){
+	protected function bookTrialReminderBefore1Hour ($data, $delay){
 
 		$label = 'AutoTrial-ReminderBefore1Hour-Customer';
 		
@@ -60,7 +60,7 @@ Class CustomerNotification extends Notification{
 		return $this->common($label,$data,$notif_type,$notif_object,$delay);
 	}
 
-	public function bookTrialReminderBefore3Hour ($data, $delay){
+	protected function bookTrialReminderBefore3Hour ($data, $delay){
 
 		$label = 'AutoTrial-ReminderBefore3Hour-Customer';
 
@@ -71,7 +71,7 @@ Class CustomerNotification extends Notification{
 	}
 
 
-	public function bookTrialReminderAfter2Hour ($data, $delay){
+	protected function bookTrialReminderAfter2Hour ($data, $delay){
 
 		$label = 'AutoTrial-ReminderAfter2Hour-Customer';
 
@@ -81,7 +81,7 @@ Class CustomerNotification extends Notification{
 		return $this->common($label,$data,$notif_type,$notif_object,$delay);
 	}
 
-	public function cancelBookTrial ($data){
+	protected function cancelBookTrial ($data){
 
 		$label = 'Cancel-Trial-Customer';
 
@@ -92,7 +92,7 @@ Class CustomerNotification extends Notification{
 	}
 
 
-	public function sendPaymentLinkAfter3Days($data,$delay){
+	protected function sendPaymentLinkAfter3Days($data,$delay){
 
         $label = 'SendPaymentLinkAfter3Days-Customer';
 
@@ -103,7 +103,7 @@ Class CustomerNotification extends Notification{
 
     }
 
-    public function sendPaymentLinkAfter7Days($data,$delay){
+    protected function sendPaymentLinkAfter7Days($data,$delay){
 
         $label = 'SendPaymentLinkAfter7Days-Customer';
 
@@ -114,7 +114,7 @@ Class CustomerNotification extends Notification{
 
     }
 
-    public function sendPaymentLinkAfter15Days($data,$delay){
+    protected function sendPaymentLinkAfter15Days($data,$delay){
 
         $label = 'SendPaymentLinkAfter15Days-Customer';
 
@@ -125,7 +125,7 @@ Class CustomerNotification extends Notification{
 
     }
 
-    public function sendPaymentLinkAfter30Days($data,$delay){
+    protected function sendPaymentLinkAfter30Days($data,$delay){
 
         $label = 'SendPaymentLinkAfter30Days-Customer';
 
@@ -136,7 +136,7 @@ Class CustomerNotification extends Notification{
 
     }
 
-    public function sendPaymentLinkAfter45Days($data,$delay){
+    protected function sendPaymentLinkAfter45Days($data,$delay){
 
         $label = 'SendPaymentLinkAfter45Days-Customer';
 
@@ -147,7 +147,7 @@ Class CustomerNotification extends Notification{
 
     }
 
-    public function purchaseInstant($data){
+    protected function purchaseInstant($data){
 
         $label = 'PurchaseInstant-Customer';
 
@@ -157,7 +157,7 @@ Class CustomerNotification extends Notification{
 		return $this->common($label,$data,$notif_type,$notif_object);
     }
 
-    public function purchaseAfter10Days($data,$delay){
+    protected function purchaseAfter10Days($data,$delay){
 
         $label = 'PurchaseAfter10Days-Customer';
 
@@ -168,7 +168,7 @@ Class CustomerNotification extends Notification{
 
     }
 
-    public function purchaseAfter30Days($data,$delay){
+    protected function purchaseAfter30Days($data,$delay){
 
         $label = 'PurchaseAfter30Days-Customer';
 
@@ -179,7 +179,7 @@ Class CustomerNotification extends Notification{
 
     }
 
-    public function sendRenewalPaymentLinkBefore7Days($data,$delay){
+    protected function sendRenewalPaymentLinkBefore7Days($data,$delay){
 
         $label = 'MembershipRenewalLinkSentBefore7Days-Customer';
 
@@ -190,7 +190,7 @@ Class CustomerNotification extends Notification{
 
     }
 
-    public function sendRenewalPaymentLinkBefore1Days($data,$delay){
+    protected function sendRenewalPaymentLinkBefore1Days($data,$delay){
 
         $label = 'MembershipRenewalLinkSentBefore1Days-Customer';
 
@@ -201,7 +201,7 @@ Class CustomerNotification extends Notification{
 
     }
 
-    public function purchaseFirst($data,$delay){
+    protected function purchaseFirst($data,$delay){
 
         $label = 'PurchaseFirst-Customer';
 
@@ -222,12 +222,99 @@ Class CustomerNotification extends Notification{
 		return $this->common($label,$data,$notif_type,$notif_object,$delay);
 
     }
+	public function postTrialFollowup1After3Days($data,$delay){
+
+        $label = 'PostTrialFollowup1After3Days-Customer';
+
+        $notif_type = 'open_trial';
+		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"f1+3");
+		
+		return $this->common($label,$data,$notif_type,$notif_object,$delay);
+
+    }
+
+    public function postTrialFollowup1After7Days($data,$delay){
+
+        $label = 'PostTrialFollowup1After7Days-Customer';
+
+        $notif_type = 'open_trial';
+		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"f1+7");
+		
+		return $this->common($label,$data,$notif_type,$notif_object,$delay);
+
+    }
+    
+
+    public function postTrialFollowup1After30Days($data,$delay){
+
+        $label = 'PostTrialFollowup1After30Days-Customer';
+
+        $notif_type = 'open_trial';
+		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"f1+30");
+		
+		return $this->common($label,$data,$notif_type,$notif_object,$delay);
+
+    }
+
+    public function postTrialFollowup2After3Days($data,$delay){
+
+        $label = 'PostTrialFollowup2After3Days-Customer';
+
+        $notif_type = 'open_trial';
+		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"f2+3");
+		
+		return $this->common($label,$data,$notif_type,$notif_object,$delay);
+
+    }
+
+    public function postTrialFollowup2After7Days($data,$delay){
+
+        $label = 'PostTrialFollowup2After7Days-Customer';
+
+        $notif_type = 'open_trial';
+		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"f2+7");
+		
+		return $this->common($label,$data,$notif_type,$notif_object,$delay);
+
+    }
+
+    public function postTrialFollowup2After15Days($data,$delay){
+
+        $label = 'PostTrialFollowup2After15Days-Customer';
+
+        $notif_type = 'open_trial';
+		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"f2+15");
+		
+		return $this->common($label,$data,$notif_type,$notif_object,$delay);
+
+    }
+
+    public function postTrialFollowup2After30Days($data,$delay){
+
+        $label = 'PostTrialFollowup2After30Days-Customer';
+
+        $notif_type = 'open_trial';
+		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"f2+30");
+		
+		return $this->common($label,$data,$notif_type,$notif_object,$delay);
+
+    }
 
 	public function common($label,$data,$notif_type,$notif_object,$delay = 0){
 
 		$template = \Template::where('label',$label)->first();
 		$device_type = $data['device_type'];
-		$to =  array($data['reg_id']);
+
+		$device = \Device::where('customer_id', $data['customer_id'])->whereIn('type', ["android", "ios"])->orderBy('_id', 'desc')->first();
+
+		if($device){
+			$to = array($device['reg_id']);
+			$device_type = $device['type'];
+		}else{
+			\Log::info("no device id");
+			return;
+		}
+
 		$text = $this->bladeCompile($template->notification_text,$data);
 
 		$notification_title = isset($template->notification_title)?$template->notification_title:"Fitternity";

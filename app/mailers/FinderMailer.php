@@ -1,11 +1,13 @@
 <?PHP namespace App\Mailers;
 
-use Config,Mail;
+use Config,Mail, Log;
+use App\Services\Utilities as Utilities;
+
 
 Class FinderMailer extends Mailer {
 
 
-	public function bookTrial ($data){
+	protected function bookTrial ($data){
 
 		$label = 'AutoTrial-Instant-Vendor';
 
@@ -30,7 +32,7 @@ Class FinderMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 
-	public function bookYogaDayTrial ($data){
+	protected function bookYogaDayTrial ($data){
 
 		$label = 'YogaDay-AutoTrial-Instant-Vendor';
 
@@ -50,7 +52,7 @@ Class FinderMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 
-	public function rescheduledBookTrial ($data){
+	protected function rescheduledBookTrial ($data){
 
 		$label = 'RescheduleTrial-Instant-Vendor';
 		
@@ -70,7 +72,7 @@ Class FinderMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 
-	public function sendBookTrialDaliySummary ($data){
+	protected function sendBookTrialDaliySummary ($data){
 
 		$label = 'BookTrialDaliySummary-Vendor';
 		
@@ -91,7 +93,7 @@ Class FinderMailer extends Mailer {
 
 	}
 
-	public function cancelBookTrial ($data){
+	protected function cancelBookTrial ($data){
 		
 		$label = 'Cancel-Trial-Vendor';
 		
@@ -111,7 +113,7 @@ Class FinderMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 
-	public function cancelBookTrialByVendor ($data){
+	protected function cancelBookTrialByVendor ($data){
 
 		$label = 'Vendor-trial-cancellation-email-to-vendor';
 
@@ -131,7 +133,7 @@ Class FinderMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 
-	public function VendorEmailOnProfileEditRequest ($data){
+	protected function VendorEmailOnProfileEditRequest ($data){
 
 		$label = 'Vendor-email-on-profile-edit-request';
 
@@ -151,7 +153,7 @@ Class FinderMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 
-	public function RMEmailOnProfileEditRequest ($data){
+	protected function RMEmailOnProfileEditRequest ($data){
 
 		$label = 'RM-email-on-profile-edit-request';
 
@@ -164,7 +166,7 @@ Class FinderMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 
-	public function sendPgOrderMail ($data){
+	protected function sendPgOrderMail ($data){
 
 		$label = 'Order-PG-Vendor';
 
@@ -196,7 +198,7 @@ Class FinderMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 
-	public function sendCodOrderMail ($data){
+	protected function sendCodOrderMail ($data){
 
 		$label = 'Order-COD-Vendor';
 		
@@ -218,7 +220,7 @@ Class FinderMailer extends Mailer {
 
 
 
-	public function healthyTiffinTrial($data){
+	protected function healthyTiffinTrial($data){
 
 		$label = 'HealthyTiffinTrial-Instant-Vendor';
 
@@ -238,7 +240,7 @@ Class FinderMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 
-    public function healthyTiffinTrialReminder($data){
+    protected function healthyTiffinTrialReminder($data){
 
         $label = 'HealthyTiffinTrial-Reminder-Vendor';
 
@@ -260,7 +262,7 @@ Class FinderMailer extends Mailer {
 
 
 
-    public function healthyTiffinMembership($data){
+    protected function healthyTiffinMembership($data){
 
 		$label = 'HealthyTiffinMembership-Instant-Vendor';
 
@@ -281,7 +283,7 @@ Class FinderMailer extends Mailer {
 	}
 
 
-    public function sendDaliySummaryHealthyTiffin ($data){
+    protected function sendDaliySummaryHealthyTiffin ($data){
 
         $label = 'BookTriaMembershiplDaliySummary-HealthyTiffinVendor';
 
@@ -302,7 +304,7 @@ Class FinderMailer extends Mailer {
 
     }
 
-    public function cleartrip ($data){
+    protected function cleartrip ($data){
 
         $label = 'Cleartrip-Vendor';
 
@@ -323,7 +325,7 @@ Class FinderMailer extends Mailer {
 
     }
 
-    public function monsoonSale($data){
+    protected function monsoonSale($data){
 
         $label = 'MonsoonSale-Vendor';
 
@@ -344,7 +346,7 @@ Class FinderMailer extends Mailer {
 
     }
 
-    public function firstTrial($data){
+    protected function firstTrial($data){
 
         $label = 'First-Autotrial-Fitternity';
 
@@ -361,7 +363,7 @@ Class FinderMailer extends Mailer {
 
     }
 
-    public function nutritionStore($data){
+    protected function nutritionStore($data){
 
         $label = 'NutritionStore-Vendor';
 
@@ -383,7 +385,7 @@ Class FinderMailer extends Mailer {
     }
 
 
-    public function acceptVendorMou ($data){
+    protected function acceptVendorMou ($data){
         $label = 'AcceptVendorMou-Paid-Cash-Cheque-Vendor';
         if($data['contract_type'] == 'premium'){
             $label = 'AcceptVendorMou-Cos-Vendor';
@@ -405,7 +407,7 @@ Class FinderMailer extends Mailer {
         return $this->common($label,$data,$message_data);
     }
 
-    public function cancelVendorMou ($data){
+    protected function cancelVendorMou ($data){
         $label = 'CancelVendorMou-Vendor';
         if($data['rm_email'] != ''){
             $user_email 	=  	[$data['rm_email']];
@@ -420,7 +422,7 @@ Class FinderMailer extends Mailer {
         return $this->common($label,$data,$message_data);
     }
 
-	public function rewardClaim($data){
+	protected function rewardClaim($data){
 
         $label = $data['label'];
         
@@ -441,7 +443,7 @@ Class FinderMailer extends Mailer {
 
     }
 
-	public function manualTrialAuto ($data){
+	protected function manualTrialAuto ($data){
 
 		$label = 'ManualTrialAuto-Finder';
 
@@ -460,7 +462,7 @@ Class FinderMailer extends Mailer {
 
 	}
 
-	public function orderUpdatePaymentAtVendor($data){
+	protected function orderUpdatePaymentAtVendor($data){
 
 		$label = 'OrderUpdatePaymentAtVendor-Vendor';
 
@@ -480,7 +482,7 @@ Class FinderMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 
-	public function orderFailureNotificationToLmd($data){
+	protected function orderFailureNotificationToLmd($data){
 
 		$label = 'OrderFailureNotification-LMD';
 
@@ -500,7 +502,7 @@ Class FinderMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 	
-	public function sendNoPrevSalesMail($data){
+	protected function sendNoPrevSalesMail($data){
 
 		$label = 'NoPrevSalesNotification';
 

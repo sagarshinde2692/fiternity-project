@@ -805,9 +805,12 @@ public function newglobalsearch(){
         $decoded = $this->customerTokenDecode($jwt_token);
         if($decoded){
             $customer_email = $decoded->customer->email;
-        }
-        
+        } 
    }
+   $device_type = "";
+    if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android" || strtolower($_GET['device_type']) == "ios")){
+        $device_type = strtolower($_GET['device_type']);
+    }
    
    
         //  $keys    =          array_diff($keys1, array(''));
@@ -1322,7 +1325,7 @@ $request = array(
 $search_results     =   es_curl_request($request);
 $search_results1    =   json_decode($search_results, true);
 
-$autocompleteresponse = Translator::translate_autocomplete($search_results1, $city, $customer_email);
+$autocompleteresponse = Translator::translate_autocomplete($search_results1, $city, $customer_email,$device_type);
 $autocompleteresponse->meta->number_of_records = $size;
 $autocompleteresponse->meta->from = $from;
 $autocompleteresponse1 = json_encode($autocompleteresponse, true);
@@ -1355,6 +1358,7 @@ public function improvedkeywordSearch(){
         if(count($category) > 0){
             $category[0] = str_replace("-"," ",$category[0]);
         }
+        
         // if(count($location) > 0){
         //     $location[0] = str_replace("-"," ",$location[0]);
         // }

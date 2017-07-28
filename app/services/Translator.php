@@ -22,7 +22,7 @@ class Translator {
 		//empty constructor
 	}
 
-	public static function translate_autocomplete($es_autocomplete_response = array(), $city, $customer_email = ""){
+	public static function translate_autocomplete($es_autocomplete_response = array(), $city, $customer_email = "",$device_type = ""){
 		$autcomplete_response = new AutocompleteResponse();
 		if(isset($es_autocomplete_response['error'])){
 			$autcomplete_response->status = 500;
@@ -64,6 +64,10 @@ class Translator {
                 $automodel->object->outlets = isset($value['fields']['outlets']) ? $value['fields']['outlets'][0] : '';
                 $automodel->object->infra_type = isset($value['fields']['infrastructure_type']) ? $value['fields']['infrastructure_type'][0] : '';
                 $automodel->object_type = $value['fields']['type'][0];
+				if($device_type != "" && ($value['fields']['inputcat1'][0] == "healthy tiffins" || $automodel->object->servicecategory == "healthy tiffins")){
+					$autcomplete_response->meta->total_records --;
+					continue;
+				}
                 array_push($autcomplete_response->results, $automodel);
             }
             return $autcomplete_response;

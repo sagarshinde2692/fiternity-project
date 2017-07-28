@@ -734,6 +734,7 @@ class RankingSearchController extends \BaseController
 
         $object_keys = array();
         //input filters
+        Log::info("logs in findersearchv2".json_encode(Input::json()->all()));
         
         $category = Input::json()->get('category');
 

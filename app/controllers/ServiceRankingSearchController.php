@@ -341,6 +341,7 @@ class ServiceRankingSearchController extends \BaseController {
         $locat        =         (Input::json()->get('location'));
 
         $city         =         $locat['city'] ? strtolower($locat['city']): 'mumbai';
+        $city         =         getmy_city($city);
         $lat          =         (isset($locat['lat'])) ? $locat['lat']  : '';
         $lon          =         (isset($locat['long'])) ? $locat['long']  : '';
 

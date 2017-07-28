@@ -2175,6 +2175,7 @@ class OrderController extends \BaseController {
                 }
 
                 $order->unset('cashback');
+                $order->unset('reward_info');
             }
 
             if(isset($order->reward_ids) && count($order->reward_ids) > 0){
@@ -2185,6 +2186,7 @@ class OrderController extends \BaseController {
                 }
 
                 $order->unset('reward_ids');
+                $order->unset('reward_info');
             }
 
             $data['amount_finder'] = $order->amount_finder;
@@ -2413,7 +2415,9 @@ class OrderController extends \BaseController {
 
             if(isset($data['reward_ids']) && !empty($data['reward_ids']) && isset($data['preferred_payment_date']) && $data['preferred_payment_date']  != ''){
                 $data['order_confirmation_customer']= date('Y-m-d H:i:s',time());
-            } 
+            }
+
+            $order = Order::find($order_id);
 
             $order->update($data);
 

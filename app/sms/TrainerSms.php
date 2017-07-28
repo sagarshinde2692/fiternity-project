@@ -4,7 +4,7 @@ use Config;
 
 Class TrainerSms extends VersionNextSms{
 
-	public function instantSlotBooking ($data){
+	protected function instantSlotBooking ($data){
 
 		$to = explode(',', $data['trainer_mobile']);
 
@@ -13,7 +13,7 @@ Class TrainerSms extends VersionNextSms{
 		return $this->common($label,$to,$data);
 	}
 
-	public function before3HourSlotBooking ($data,$delay){
+	protected function before3HourSlotBooking ($data,$delay){
 
 		$to = explode(',', $data['trainer_mobile']);
 
@@ -22,7 +22,7 @@ Class TrainerSms extends VersionNextSms{
 		return $this->common($label,$to,$data,$delay);
 	}
 
-	public function dietPlanAfter15DaysReviewSlotConfirm ($data){
+	protected function dietPlanAfter15DaysReviewSlotConfirm ($data){
 
 		$to = explode(',', $data['trainer_mobile']);
 
@@ -31,7 +31,7 @@ Class TrainerSms extends VersionNextSms{
 		return $this->common($label,$to,$data);
 	}
 
-	public function dietPlanAfter15DaysFollowupSlotConfirm ($data){
+	protected function dietPlanAfter15DaysFollowupSlotConfirm ($data){
 
 		$to = explode(',', $data['trainer_mobile']);
 
