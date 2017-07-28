@@ -565,6 +565,10 @@ class EmailSmsApiController extends \BaseController {
             $data['customer_phone'] = $data['mobile'] = $data['phone'];
         }
 
+        if(isset($data['mobile']) && $data['mobile'] != ""){
+            $data['customer_phone'] = $data['phone']= $data['mobile'];
+        }
+
         if(isset($data['name']) && $data['name'] != ""){
             $data['customer_name'] = $data['name'];
         }
