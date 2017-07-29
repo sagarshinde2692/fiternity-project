@@ -82,23 +82,46 @@ class OrderController extends \BaseController {
             $resp = array("status"=> 400, "message" => "Ratecard Id field is missing", "error_message" => "Coupon cannot be applied on this transaction");
             return Response::json($resp,400);
         }
-        
+
+        $jwt_token = Request::header('Authorization');
+        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+            $decoded = customerTokenDecode($jwt_token);
+            $customer_id = (int)$decoded->customer->_id;
+        }
         $couponCode = $data['coupon'];
         $ratecard = Ratecard::find($data['ratecard_id']);
         if(isset($ratecard)){
-            $price = $ratecard["special_price"] == 0 ? $ratecard["price"] : $ratecard["special_price"];
-            $today_date = date("d-m-Y 00:00:00");
-             $coupon = Coupon::where('code', strtolower($couponCode))->where('start_date', '<=', new DateTime($today_date))->where('end_date', '>=', new DateTime($today_date))->first();
-            if(isset($coupon)){
-                $discount_amount = $coupon["discount_amount"];
-                $discount_amount = $discount_amount == 0 ? $coupon["discount_percent"]/100 * $price : $discount_amount;
-                $discount_amount = $discount_amount > $coupon["discount_max"] ? $discount_max : $discount_amount;
-                $final_amount = $price - $discount_amount;
-                $resp = array("status"=>200, "data"=>array("discount" => $discount_amount, "final_amount" => $final_amount));
-            }else{
-                $resp = array("status"=> 400, "message" => "Coupon not found", "error_message" => "Coupon is either not valid or expired");
-                return Response::json($resp,400);    
-            }
+                $customer_id = isset($customer_id) ? $customer_id : false;
+                $resp = $this->customerreward->couponCodeDiscountCheck($ratecard,$couponCode,$customer_id);
+                if($resp["coupon_applied"]){
+                    return $resp;
+                }else{
+                    $resp = array("status"=> 400, "message" => "Coupon not found", "error_message" => "Coupon is either not valid or expired");
+                    return Response::json($resp,400);    
+                }
+            // $offer = Offer::where('ratecard_id',$ratecard->_id)->where('hidden', false)->where('start_date','<=',new DateTime(date("d-m-Y 00:00:00")))->where('end_date','>=',new DateTime(date("d-m-Y 00:00:00")))->first();
+            // if($offer){
+            //     $price = $offer->price;
+            // }else{
+            //     $price = $ratecard["special_price"] == 0 ? $ratecard["price"] : $ratecard["special_price"];
+            // }
+            // $today_date = date("d-m-Y 00:00:00");
+            // $coupon = Coupon::where('code', strtolower($couponCode))->where('start_date', '<=', new DateTime($today_date))->where('end_date', '>=', new DateTime($today_date))->first();
+            // if(isset($coupon)){
+            //     $customer_id = isset($customer_id) ? $customer_id : false;
+            //      $calculation = $this->customerreward->purchaseGameNew($price,$ratecard["finder_id"],"paymentgateway",false,$customer_id);
+            //     $wallet_balance = $calculation["current_wallet_balance"];
+            //     $discount_amount = $coupon["discount_amount"];
+            //     $discount_amount = $discount_amount == 0 ? $coupon["discount_percent"]/100 * $price : $discount_amount;
+            //     $discount_amount = $discount_amount > $coupon["discount_max"] ? $discount_max : $discount_amount;
+            //     $discount_price = $price - $discount_amount;
+            //     $final_amount = $discount_price - $wallet_balance;
+            //     $resp = array("status"=>200, "data"=>array("discount" => $discount_amount, "final_amount" => $final_amount, "wallet_balance" => $wallet_balance, "only_discount" => $discount_price));
+            // }else{
+            //     $resp = array("status"=> 400, "message" => "Coupon not found", "error_message" => "Coupon is either not valid or expired");
+            //     return Response::json($resp,400);    
+            // }
+
         }else{
             $resp = array("status"=> 400, "message" => "Ratecard Id field is wrong", "error_message" => "Coupon cannot be applied on this transaction");
             return Response::json($resp,400);
