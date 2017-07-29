@@ -940,7 +940,7 @@ Class CustomerReward {
                 $discount_amount = $coupon["discount_amount"];
                 $discount_amount = $discount_amount == 0 ? $coupon["discount_percent"]/100 * $price : $discount_amount;
                 $discount_amount = intval($discount_amount);
-                $discount_amount = $discount_amount > $coupon["discount_max"] ? $discount_max : $discount_amount;
+                $discount_amount = $discount_amount > $coupon["discount_max"] ? $coupon["discount_max"] : $discount_amount;
                 $discount_price = $price - $discount_amount;
                 $final_amount = $discount_price > $wallet_balance ? $discount_price - $wallet_balance : 0;
                 $resp = array("data"=>array("discount" => $discount_amount, "final_amount" => $final_amount, "wallet_balance" => $wallet_balance, "only_discount" => $discount_price), "coupon_applied" => true);
