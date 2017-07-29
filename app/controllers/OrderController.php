@@ -71,24 +71,46 @@ class OrderController extends \BaseController {
     public function couponCode(){
         $data = Input::json()->all();
         if(!isset($data['coupon'])){
-            $resp = array("status"=> 400, "message" => "Coupon code missing");
+            $resp = array("status"=> 400, "message" => "Coupon code missing", "error_message" => "Please enter a valid coupon");
             return Response::json($resp,400);
         }
-        if(!isset($data['amount'])){
-            $resp = array("status"=> 400, "message" => "Amount field is missing");
+        // if(!isset($data['amount'])){
+        //     $resp = array("status"=> 400, "message" => "Amount field is missing", "error_message" => "Coupon cannot be applied on this transaction");
+        //     return Response::json($resp,400);
+        // }
+        if(!isset($data['ratecard_id'])){
+            $resp = array("status"=> 400, "message" => "Ratecard Id field is missing", "error_message" => "Coupon cannot be applied on this transaction");
             return Response::json($resp,400);
         }
-
         
-        $amount = (int) $data['amount'];
-        if($amount > 600 && $data['coupon'] == "fitnow"){
-            $newamount = ($amount - 500);
-            $resp = array("status"=> "Coupon applied successfully", "amount" => $newamount,"discount_amount" => 500);
-            
+        $couponCode = $data['coupon'];
+        $ratecard = Ratecard::find($data['ratecard_id']);
+        if(isset($ratecard)){
+            $price = $ratecard["special_price"] == 0 ? $ratecard["price"] : $ratecard["special_price"];
+            $today_date = date("d-m-Y 00:00:00");
+             $coupon = Coupon::where('code', strtolower($couponCode))->where('start_date', '<=', new DateTime($today_date))->where('end_date', '>=', new DateTime($today_date))->first();
+            if(isset($coupon)){
+                $discount_amount = $coupon["discount_amount"];
+                $discount_amount = $discount_amount == 0 ? $coupon["discount_percent"]/100 * $price : $discount_amount;
+                $discount_amount = $discount_amount > $coupon["discount_max"] ? $discount_max : $discount_amount;
+                $final_amount = $price - $discount_amount;
+                $resp = array("status"=>200, "data"=>array("discount" => $discount_amount, "final_amount" => $final_amount));
+            }else{
+                $resp = array("status"=> 400, "message" => "Coupon not found", "error_message" => "Coupon is either not valid or expired");
+                return Response::json($resp,400);    
+            }
         }else{
-            $resp = array("status"=> "Coupon is either expired or not valid for this transaction", "amount" => $amount,"discount_amount" => 0);
-            return Response::json($resp,406);
+            $resp = array("status"=> 400, "message" => "Ratecard Id field is wrong", "error_message" => "Coupon cannot be applied on this transaction");
+            return Response::json($resp,400);
         }
+        // if($amount > 600 && $data['coupon'] == "fitnow"){
+        //     $newamount = ($amount - 500);
+        //     $resp = array("status"=> "Coupon applied successfully", "amount" => $newamount,"discount_amount" => 500);
+            
+        // }else{
+        //     $resp = array("status"=> "Coupon is either expired or not valid for this transaction", "amount" => $amount,"discount_amount" => 0);
+        //     return Response::json($resp,406);
+        // }
         return Response::json($resp,200);
     }
 
