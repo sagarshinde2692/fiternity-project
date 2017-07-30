@@ -11,7 +11,7 @@ return array(
 	'queue' => 'booktrial',
 	'vendor_communication' => true,
 	'env' => 'production',
-	'debug' => TRUE,
+	'debug' => FALSE,
 
 	//stage
 	// 'url' => 'http://apistage.fitn.in',
