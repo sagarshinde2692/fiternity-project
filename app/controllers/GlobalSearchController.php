@@ -811,7 +811,7 @@ public function newglobalsearch(){
         } 
    }
    $device_type = "";
-    if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android" || strtolower($_GET['device_type']) == "ios")){
+    if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android" || strtolower($_GET['device_type']) == "ios" || strtolower($_GET['device_type']) == "web")){
         $device_type = strtolower($_GET['device_type']);
     }
    
