@@ -4624,7 +4624,85 @@ public function yes($msg){
 
 	}
 
+	public function linkSentNotSuccess(){
 
+		ini_set('memory_limit','512M');
+		ini_set('max_execution_time', 300);
+
+		$orderSuccessCustomerId = Order::active()->where('customer_id','!=','xxxxxxxxxx')->whereIn('type',['memberships','healthytiffinmembership'])->where('created_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-07-01 00:00:00"))))->lists('customer_id');
+
+		$orderSuccessCustomerId = array_unique(array_map("intval", $orderSuccessCustomerId));
+
+		$orderNotSuccessOrderId = Order::whereIn('type',['memberships','healthytiffinmembership'])
+			->where('created_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-07-01 00:00:00"))))
+			->where('status','!=','1')
+			->where("paymentLinkEmailCustomerTiggerCount","exists",true)
+			->where("paymentLinkEmailCustomerTiggerCount",">=",1)
+			->whereNotIn('customer_id',$orderSuccessCustomerId)
+			->lists('_id');
+
+		$orderNotSuccessOrderId = array_map("intval", $orderNotSuccessOrderId);
+
+		$offset = 0;
+		$limit = 10;
+
+		$allOrders = $this->linkSentNotSuccessQuery($offset,$limit,$orderNotSuccessOrderId);
+
+		$customersms = new CustomerSms();
+
+		while(count($allOrders) != 0){
+
+			echo $offset;
+
+			foreach ($allOrders as $order) {
+
+				$data = [];
+
+				$data['payment_link'] = Config::get('app.website')."/paymentlink/".$order['order_id'];
+
+				if(isset($order['ratecard_id']) && $order['ratecard_id'] != ""){
+		            $data['payment_link'] = Config::get('app.website')."/buy/".$order['finder_slug']."/".$order['service_id']."/".$order['ratecard_id']."/".$order['order_id'];
+		        }
+
+		        if(isset($order['no_ratecard_service_duration']) && $order['no_ratecard_service_duration'] != ""){
+		            $data['payment_link'] = Config::get('app.website')."/buy/".$order['finder_slug']."/".$order['service_id']."/true/".$order['order_id'];
+		        }
+
+		        $data['customer_name'] = ucwords($order['customer_name']);
+		        $data['customer_phone'] = $order['customer_phone'];
+		        $data['finder_name'] = ucwords($order['finder_name']);
+
+		       	$customersms->linkSentNotSuccess($data);
+
+				$order->update(['linkSentNotSuccess'=>time()]);
+
+			}
+
+			$offset = $offset + 10;
+
+			$allOrders = $this->linkSentNotSuccessQuery($offset,$limit,$orderNotSuccessOrderId);
+		}
+
+		return array('status'=>'done');
+
+	}
+
+	public function linkSentNotSuccessQuery($offset,$limit,$orderNotSuccessOrderId){
+		
+		$orders  = Order::whereIn('type',['memberships','healthytiffinmembership'])
+			->where('created_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-07-01 00:00:00"))))
+			->where('status','!=','1')
+			->where("paymentLinkEmailCustomerTiggerCount","exists",true)
+			->where("paymentLinkEmailCustomerTiggerCount",">=",1)
+			->whereIn('_id',$orderNotSuccessOrderId)
+			->skip($offset)
+			->take($limit)
+			->where('linkSentNotSuccess','exists',false)
+			->get();
+
+		return $orders;
+
+	}
 
     
 }

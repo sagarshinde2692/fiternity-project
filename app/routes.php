@@ -975,5 +975,7 @@ Route::post('belp/fitnessquiz','HomeController@belpFitnessQuiz');
 
 Route::get('conditiontest','DebugController@conditionTest');
 
+Route::get('linksentnotsuccess','DebugController@linkSentNotSuccess');
+
 Route::post('crashlog','HomeController@crashLog');
 
