@@ -1017,7 +1017,6 @@ class TransactionController extends \BaseController {
         }else{
             $data['full_payment_wallet'] = false;
         }
-        
         if(isset($data['reward_ids'])&& count($data['reward_ids']) > 0) {
             $data['reward_ids']   =  array_map('intval', $data['reward_ids']);
         }

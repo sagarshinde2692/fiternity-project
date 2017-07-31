@@ -2425,7 +2425,20 @@ class OrderController extends \BaseController {
                 
                 array_set($data, 'reward_info', $reward_info);
             }
-
+            if(isset($data["coupon_code"]) && $data["coupon_code"] != ""){
+                $ratecard = Ratecard::find($data['ratecard_id']);
+                Log::info("Customer Info". $customer_id);
+                $couponCheck = $this->customerreward->couponCodeDiscountCheck($ratecard,$data["coupon_code"],$customer_id);
+                if(isset($couponCheck["coupon_applied"]) && $couponCheck["coupon_applied"]){
+                    $data["amount"] = $data["amount"] > $couponCheck["data"]["discount"] ? $data["amount"] - $couponCheck["data"]["discount"] : 0;
+                    $data["coupon_discount_amount"] = $data["amount"] > $couponCheck["data"]["discount"] ? $couponCheck["data"]["discount"] : $data["amount"];
+                }
+            }
+            if($data['amount'] == 0){
+                $data['full_payment_wallet'] = true;
+            }else{
+                $data['full_payment_wallet'] = false;
+            }
 
             $txnid = "FIT".$order_id;
             $successurl = $order['type'] == "memberships" ? Config::get('app.website')."/paymentsuccess" : Config::get('app.website')."/paymentsuccesstrial";
