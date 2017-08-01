@@ -1309,7 +1309,7 @@ Class Utilities {
                 
                 if($allDeviceCount == 0 && isset($data['customer_id']) && $data['customer_id'] != ''){
 
-                    $booktrial = \Booktrial::where('created_at','>',new DateTime(date("d-m-Y 00:00:00",strtotime("20-4-2017 00:00:00"))))->where("customer_id",(int)$data['customer_id'])->where('type','booktrials')->count();
+                    $booktrial = \Booktrial::where('created_at','>',new \DateTime(date("d-m-Y 00:00:00",strtonime("20-4-2017 00:00:00"))))->where("customer_id",(int)$data['customer_id'])->where('type','booktrials')->count();
 
                     $description = "app download";
 
@@ -2280,7 +2280,7 @@ Class Utilities {
 
         foreach ($header_array as $header_key => $header_value) {
 
-            $value = $value;
+            $value = Request::header($header_key);
 
             if($value != "" && $value != null && $value != 'null'){
                $header_array[$header_key] =  $value;

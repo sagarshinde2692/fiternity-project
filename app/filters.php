@@ -187,7 +187,7 @@ Route::filter('device',function(){
 
     foreach ($header_array as $header_key => $header_value) {
 
-        $value = $value;
+        $value = Request::header($header_key);
 
         if($value != "" && $value != null && $value != 'null'){
            $header_array[$header_key] =  $value;
@@ -195,6 +195,8 @@ Route::filter('device',function(){
         }
         
     }
+
+    Log::info('header_array',$header_array);
 
     $customer_id = "";
 
@@ -218,6 +220,8 @@ Route::filter('device',function(){
 
     if($flag){
 
+        $device = false;
+
         if(isset($data['reg_id']) && $data['reg_id'] != " "&& $data['reg_id'] != null && $data['reg_id'] != 'null'){
 
             $device = Device::where('reg_id', $data['reg_id'])->orderBy("_id","DESC")->first();
@@ -225,7 +229,7 @@ Route::filter('device',function(){
 
         if(isset($data['device_id']) && $data['device_id'] != "" && $data['device_id'] != null && $data['device_id'] != 'null'){
 
-            $device = Device::first((int)$data['device_id']);
+            $device = Device::find((int)$data['device_id']);
         }
 
         if ($device) {
@@ -296,13 +300,14 @@ Route::filter('device',function(){
 
         $device_id = (int)$device->_id;
 
-        App::after(function($device_id, $response)
+        //echo"<pre>";print_r($device_id);exit;
+
+        App::after (function($request, $response) use($device_id)
         {
             $response->headers->set('Device-Id',$device_id);
 
             return $response;
         });
     }
-
 
 });
