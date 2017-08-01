@@ -71,6 +71,10 @@ class CustomerController extends \BaseController {
 		$passed_trials_date_array = [];
 		$upcoming_trials_date_array = [];
 
+		$hour = 60*60;
+		$hour12 = 60*60*12;
+		$hour2 = 60*60*2;
+
 		foreach ($trials as $trial){
 
 			array_set($trial, 'message', '');
@@ -160,8 +164,6 @@ class CustomerController extends \BaseController {
 
 				foreach ($healthytiffintrails as $key => $healthytiffintrail) {
 
-					$upcoming_trials_date_array[] = strtotime($healthytiffintrail['created_at']);
-
 					foreach ($selectfields as $field) {
 
 						if(!isset($healthytiffintrail[$field])){
@@ -246,6 +248,7 @@ class CustomerController extends \BaseController {
 			}
 
 		if(count($upcomingtrials) > 0 && count($upcoming_trials_date_array) > 0){
+
 			array_multisort($upcoming_trials_date_array, SORT_DESC, $upcomingtrials);
 		}
 

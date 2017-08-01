@@ -448,7 +448,7 @@ class HomeController extends BaseController {
         if($type != "" && $id != ""){
 
             $booktrialItemArr   =   ["personaltrainertrial","manualtrial","manualautotrial","booktrialfree"];
-            $orderItemArr       =   ["healthytiffintrial","membershipwithpg","membershipwithoutpg","healthytiffinmembership","personaltrainermembership","booktrial","workoutsession","workout-session","booktrials"];
+            $orderItemArr       =   ["healthytiffintrail","healthytiffintrial","membershipwithpg","membershipwithoutpg","healthytiffinmembership","personaltrainermembership","booktrial","workoutsession","workout-session","booktrials"];
             $captureItemArr     =   ["manualmembership"];
 
             $itemData           =   [];
@@ -640,6 +640,7 @@ class HomeController extends BaseController {
                     $show_other_vendor = true;
                     break;
                 case 'healthytiffintrial':
+                case 'healthytiffintrail':
                     $subline = "Your Trial request at $finder_name has been received. Please expect a revert shortly.";
                     $steps = [
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
@@ -734,7 +735,7 @@ class HomeController extends BaseController {
             }
 
             $popup_message = "";
-            if(($type == "booktrial" || $type == "healthytiffintrial") && isset($itemData['amount_customer']) && $itemData['amount_customer'] > 0){
+            if(($type == "booktrial" || $type == "healthytiffintrial" || $type == "healthytiffintrail") && isset($itemData['amount_customer']) && $itemData['amount_customer'] > 0){
 
                 $amount_20_percent = (int)($itemData['amount_customer']*20/100);
                 $popup_message = "Rs ".$amount_20_percent." FitCash has been added to your wallet";
@@ -896,7 +897,7 @@ class HomeController extends BaseController {
 
             $booking_details_data["booking_id"] = ['field'=>'SUBSCRIPTION CODE','value'=>(string)$item['_id'],'position'=>$position++];
 
-            if(in_array($type,["healthytiffintrial","membershipwithpg","membershipwithoutpg","healthytiffinmembership","personaltrainermembership"])){
+            if(in_array($type,["healthytiffintrail","healthytiffintrial","membershipwithpg","membershipwithoutpg","healthytiffinmembership","personaltrainermembership"])){
                 $booking_details_data["finder_name_location"] = ['field'=>'MEMBERSHIP BOUGHT AT','value'=>$finder_name.", ".$finder_location,'position'=>$position++];
             }
 
