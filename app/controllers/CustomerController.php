@@ -33,19 +33,24 @@ class CustomerController extends \BaseController {
 
     // Listing Schedule Tirals for Normal Customer
 	public function getAutoBookTrials($customeremail){
-		$selectfields 	=	array('finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt','service_id','what_i_should_carry','what_i_should_expect','origin','trial_attended_finder', 'type','amount');
-		$trials 		=	Booktrial::where('customer_email', '=', $customeremail)
+		$selectfields 	=	array('finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt','service_id','what_i_should_carry','what_i_should_expect','origin','trial_attended_finder', 'type','amount','created_at');
+
+
+		$trials		=	Booktrial::where('customer_email', '=', $customeremail)
 		->whereIn('booktrial_type', array('auto'))
 		->with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))
 		->with(array('invite'=>function($query){$query->get(array('invitee_name', 'invitee_email','invitee_phone','referrer_booktrial_id'));}))
+		->where('going_status_txt','!=','cancel')
 		//->with('invite')
 		->orderBy('_id', 'desc')->take(8)
-		->get($selectfields)->toArray();
+		->get($selectfields);
 
 
 		if(count($trials) < 0){
 			$resp 	= 	array('status' => 200,'trials' => [],'message' => 'No trials scheduled yet :)');
 			return Response::json($resp,200);
+		}else{
+			$trials->toArray();
 		}
 
 		$customertrials  = 	$trial = array();
@@ -53,7 +58,9 @@ class CustomerController extends \BaseController {
 		$upcomingtrials = [];
 		$passedtrials = [];
 		$healthytiffintrail = [];
-		
+		$passed_trials_date_array = [];
+		$upcoming_trials_date_array = [];
+
 		foreach ($trials as $trial){
 
 			array_set($trial, 'message', '');
@@ -70,49 +77,19 @@ class CustomerController extends \BaseController {
 				}
 			}
 
-
-
 			$scheduleDateTime 				=	Carbon::parse($trial['schedule_date_time']);
 			$slot_datetime_pass_status  	= 	($currentDateTime->diffInMinutes($scheduleDateTime, false) > 0) ? false : true;
 
-			
+			array_set($trial, 'message', "");
 			array_set($trial, 'passed', $slot_datetime_pass_status);
 
 			if($slot_datetime_pass_status){
-
-				$time_diff = strtotime($currentDateTime) - strtotime($scheduleDateTime);
-				$hour2 = 60*60*2;
-
-				$trial_message = '';
-
-				if($time_diff >= $hour2){
-
-					$trial_message = nl2br("Hope you had a chance to attend the session.\nIf you attended, rate your experience and win awesome merchandise and unlock Rs. 250 off");
-				}
-
-				array_set($trial, 'message', $trial_message);
 
 				array_push($passedtrials, $trial);
 				
 			}else{
 
 				$time_diff = strtotime($scheduleDateTime) - strtotime($currentDateTime);
-
-				$hour = 60*60;
-				$hour12 = 60*60*12;
-				$hour2 = 60*60*2;
-
-				$trial_message = '';
-
-				if($time_diff <= $hour12 && isset($trial['what_i_should_carry']) && $trial['what_i_should_carry'] != ''){
-					$trial_message = nl2br('What to carry : '.str_replace("Optional","\nOptional ",strip_tags($trial['what_i_should_carry'])));
-				}
-
-				if($time_diff <= $hour && isset($trial['finder']['finder_poc_for_customer_name']) && $trial['finder']['finder_poc_for_customer_name'] != ''){
-					$trial_message = nl2br("Hope you are ready for your session.\nContact person : ".ucwords($trial['finder']['finder_poc_for_customer_name'])."\nHave a great workout!");
-				}
-
-				array_set($trial, 'message', $trial_message);
 
 				$going_status_txt = ['rescheduled','cancel'];
 
@@ -139,6 +116,10 @@ class CustomerController extends \BaseController {
 				if(!isset($trial['going_status_txt'])){
 					$reschedule_enable = false;
 				}
+
+				$trial['interaction_date'] = strtotime($value['created_at']);
+
+				$upcoming_trials_date_array[] = strtotime($trial['created_at']);
 			
 				array_set($trial, 'reschedule_enable', $reschedule_enable);
 
@@ -147,7 +128,7 @@ class CustomerController extends \BaseController {
 
 			$healthytiffintrail = array();
 
-			$ht_selectfields 	=	array('finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt','service_id','what_i_should_carry','what_i_should_expect','origin','preferred_starting_date','amount','status','order_action');
+			$ht_selectfields 	=	array('finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt','service_id','what_i_should_carry','what_i_should_expect','origin','preferred_starting_date','amount','status','order_action','created_at');
 
 			$healthytiffintrail = Order::where('customer_email',$customeremail)
 			->where('type','healthytiffintrail')
@@ -161,6 +142,8 @@ class CustomerController extends \BaseController {
 				$healthytiffintrail = $healthytiffintrail->toArray();
 
 				foreach ($healthytiffintrail as $key => $value) {
+
+					$upcoming_trials_date_array[] = strtotime($value['created_at']);
 
 					foreach ($selectfields as $field) {
 
@@ -193,13 +176,21 @@ class CustomerController extends \BaseController {
 
 					}
 
+					$healthytiffintrail[$key]['interaction_date'] = strtotime($value['created_at']);
+
+					array_push($upcomingtrials,$healthytiffintrail[$key]);
+
 				}
 			}
 
 		}
 
+		if(count($upcomingtrials) > 0 && count($date_array) > 0){
+			array_multisort($date_array, SORT_DESC, $upcomingtrials);
+		}
+
 		// array_push($customertrials, $trial);
-		$resp 	= 	array('status' => 200,'passedtrials' => $passedtrials,'upcomingtrials' => $upcomingtrials,'healthytiffintrail'=>$healthytiffintrail,'message' => 'List of scheduled trials');
+		$resp 	= 	array('status' => 200,'passedtrials' => $passedtrials,'upcomingtrials' => $upcomingtrials,'healthytiffintrail'=>[],'message' => 'List of scheduled trials');
 		return Response::json($resp,200);
 	}
 
