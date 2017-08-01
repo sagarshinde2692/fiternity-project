@@ -33,18 +33,28 @@ class CustomerController extends \BaseController {
 
     // Listing Schedule Tirals for Normal Customer
 	public function getAutoBookTrials($customeremail){
+
 		$selectfields 	=	array('finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt','service_id','what_i_should_carry','what_i_should_expect','origin','trial_attended_finder', 'type','amount','created_at');
 
+		if(isset($_GET['device_type']) && $_GET['device_type'] == "website"){
 
-		$trials		=	Booktrial::where('customer_email', '=', $customeremail)
-		->whereIn('booktrial_type', array('auto'))
-		->with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))
-		->with(array('invite'=>function($query){$query->get(array('invitee_name', 'invitee_email','invitee_phone','referrer_booktrial_id'));}))
-		->where('going_status_txt','!=','cancel')
-		//->with('invite')
-		->orderBy('_id', 'desc')->take(8)
-		->get($selectfields);
+			$trials = Booktrial::where('customer_email', '=', $customeremail)
+			->whereIn('booktrial_type', array('auto'))
+			->with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))
+			->with(array('invite'=>function($query){$query->get(array('invitee_name', 'invitee_email','invitee_phone','referrer_booktrial_id'));}))
+			->orderBy('_id', 'desc')->take(8)
+			->get($selectfields);
 
+		}else{
+
+			$trials		=	Booktrial::where('customer_email', '=', $customeremail)
+			->whereIn('booktrial_type', array('auto'))
+			->with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))
+			->with(array('invite'=>function($query){$query->get(array('invitee_name', 'invitee_email','invitee_phone','referrer_booktrial_id'));}))
+			->where('going_status_txt','!=','cancel')
+			->orderBy('_id', 'desc')->take(8)
+			->get($selectfields);
+		}
 
 		if(count($trials) < 0){
 			$resp 	= 	array('status' => 200,'trials' => [],'message' => 'No trials scheduled yet :)');
@@ -83,9 +93,13 @@ class CustomerController extends \BaseController {
 			array_set($trial, 'message', "");
 			array_set($trial, 'passed', $slot_datetime_pass_status);
 
+			$trial['interaction_date'] = strtotime($trial['created_at']);
+
 			if($slot_datetime_pass_status){
 
 				array_push($passedtrials, $trial);
+
+				$passed_trials_date_array[] = strtotime($trial['created_at']);
 				
 			}else{
 
@@ -117,8 +131,6 @@ class CustomerController extends \BaseController {
 					$reschedule_enable = false;
 				}
 
-				$trial['interaction_date'] = strtotime($value['created_at']);
-
 				$upcoming_trials_date_array[] = strtotime($trial['created_at']);
 			
 				array_set($trial, 'reschedule_enable', $reschedule_enable);
@@ -126,11 +138,15 @@ class CustomerController extends \BaseController {
 				array_push($upcomingtrials, $trial);	
 			}
 
-			$healthytiffintrail = array();
 
-			$ht_selectfields 	=	array('finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt','service_id','what_i_should_carry','what_i_should_expect','origin','preferred_starting_date','amount','status','order_action','created_at');
 
-			$healthytiffintrail = Order::where('customer_email',$customeremail)
+		}
+
+		$healthytiffintrails = array();
+
+			$ht_selectfields 	=	array('type','finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt','service_id','what_i_should_carry','what_i_should_expect','origin','preferred_starting_date','amount','status','order_action','created_at');
+
+			$healthytiffintrails = Order::where('customer_email',$customeremail)
 			->where('type','healthytiffintrail')
 			->orWhere(function($query){$query->where('status',"1")->where('order_action','bought')->where('amount','!=',0);})
 			->orWhere(function($query){$query->where('status',"0")->where('amount','exist',false);})
@@ -138,55 +154,103 @@ class CustomerController extends \BaseController {
 			->orderBy('_id', 'desc')->take(8)
 			->get($ht_selectfields);
 
-			if(count($healthytiffintrail) > 0){
-				$healthytiffintrail = $healthytiffintrail->toArray();
+			if(count($healthytiffintrails) > 0){
 
-				foreach ($healthytiffintrail as $key => $value) {
+				$healthytiffintrails = $healthytiffintrails->toArray();
 
-					$upcoming_trials_date_array[] = strtotime($value['created_at']);
+				foreach ($healthytiffintrails as $key => $healthytiffintrail) {
+
+					$upcoming_trials_date_array[] = strtotime($healthytiffintrail['created_at']);
 
 					foreach ($selectfields as $field) {
 
-						if(!isset($value[$field])){
-							$healthytiffintrail[$key][$field] = "";
+						if(!isset($healthytiffintrail[$field])){
+							$healthytiffintrail[$field] = "";
 						}
 
-						if(isset($value['preferred_starting_date'])){
+						if(isset($healthytiffintrail['preferred_starting_date'])){
 
-							$healthytiffintrail[$key]['schedule_date_time'] = $value['preferred_starting_date'];
-							$healthytiffintrail[$key]['schedule_date'] = $value['preferred_starting_date'];
+							$healthytiffintrail['schedule_date_time'] = $healthytiffintrail['preferred_starting_date'];
+							$healthytiffintrail['schedule_date'] = $healthytiffintrail['preferred_starting_date'];
 
-							unset($healthytiffintrail[$key]['preferred_starting_date']);
+							unset($healthytiffintrail['preferred_starting_date']);
 						}
 
-						if(isset($value['amount'])){
+						if(isset($healthytiffintrail['amount'])){
 
-							unset($healthytiffintrail[$key]['amount']);
+							unset($healthytiffintrail['amount']);
 						}
 
-						if(isset($value['status'])){
+						if(isset($healthytiffintrail['status'])){
 
-							unset($healthytiffintrail[$key]['status']);
+							unset($healthytiffintrail['status']);
 						}
 
-						if(isset($value['order_action'])){
+						if(isset($healthytiffintrail['order_action'])){
 
-							unset($healthytiffintrail[$key]['order_action']);
+							unset($healthytiffintrail['order_action']);
 						}
 
 					}
 
-					$healthytiffintrail[$key]['interaction_date'] = strtotime($value['created_at']);
+					$healthytiffintrail['interaction_date'] = strtotime($healthytiffintrail['created_at']);
 
-					array_push($upcomingtrials,$healthytiffintrail[$key]);
+
+					$scheduleDateTime 				=	Carbon::parse($healthytiffintrail['schedule_date_time']);
+					$slot_datetime_pass_status  	= 	($currentDateTime->diffInMinutes($scheduleDateTime, false) > 0) ? false : true;
+
+					if($slot_datetime_pass_status){
+
+						array_push($passedtrials, $healthytiffintrail);
+						
+						$passed_trials_date_array[] = strtotime($healthytiffintrail['created_at']);
+						
+					}else{
+
+						$time_diff = strtotime($scheduleDateTime) - strtotime($currentDateTime);
+
+						$going_status_txt = ['rescheduled','cancel'];
+
+						if(!isset($healthytiffintrail['going_status_txt'])){
+							$healthytiffintrail['going_status_txt'] = "-";
+						}
+
+						if(!isset($healthytiffintrail['amount'])){
+							$healthytiffintrail['amount'] = 0;
+						}
+
+						if(isset($healthytiffintrail['amount']) && $healthytiffintrail['amount'] == "-"){
+							$healthytiffintrail['amount'] = 0;
+						}
+
+						if($time_diff <= $hour2){
+							$reschedule_enable = false;
+						}elseif(in_array($healthytiffintrail['going_status_txt'], $going_status_txt) || $healthytiffintrail['amount'] > 0  || $healthytiffintrail['type'] == 'workout-session'){
+							$reschedule_enable = false;
+						}else{
+							$reschedule_enable = true;
+						}
+
+						if(!isset($healthytiffintrail['going_status_txt'])){
+							$reschedule_enable = false;
+						}
+
+						$upcoming_trials_date_array[] = strtotime($healthytiffintrail['created_at']);
+					
+						array_set($healthytiffintrail, 'reschedule_enable', $reschedule_enable);
+
+						array_push($upcomingtrials, $healthytiffintrail);	
+					}
 
 				}
 			}
 
+		if(count($upcomingtrials) > 0 && count($upcoming_trials_date_array) > 0){
+			array_multisort($upcoming_trials_date_array, SORT_DESC, $upcomingtrials);
 		}
 
-		if(count($upcomingtrials) > 0 && count($date_array) > 0){
-			array_multisort($date_array, SORT_DESC, $upcomingtrials);
+		if(count($passedtrials) > 0 && count($passed_trials_date_array) > 0){
+			array_multisort($passed_trials_date_array, SORT_DESC, $passedtrials);
 		}
 
 		// array_push($customertrials, $trial);
@@ -3679,7 +3743,7 @@ class CustomerController extends \BaseController {
 
 		Log::info("----------------orderDetail : ".$order_id);
 
-		$decoded = decode_customer_token();
+		//$decoded = decode_customer_token();
 
 		$order_id = (int) $order_id;
 
@@ -3691,17 +3755,21 @@ class CustomerController extends \BaseController {
 	        return Response::json($resp,$resp["status"]);
 	    }
 
-	    if($order->customer_email != $decoded->customer->email){
+	    /*if($order->customer_email != $decoded->customer->email){
 	        $resp   =   array("status" => 401,"message" => "Invalid Customer");
 	        return Response::json($resp,$resp["status"]);
-	    }
+	    }*/
 
 	    $finder = Finder::find((int)$order->finder_id);
 
 	    $data = [];
 	    $data['order_id'] = $order_id;
 	    $data['start_date'] = strtotime($order->start_date);
-	    $data['end_date'] = strtotime($order->end_date);
+
+	    if(isset($order->end_date) && $order->end_date != ""){
+	    	$data['end_date'] = strtotime($order->end_date);
+	    }
+
 	    $data['service_name'] = $order->service_name;
 	    $data['duration'] = $order->service_duration;
 	    $data['subscription_code'] = $order->code;
@@ -3712,9 +3780,14 @@ class CustomerController extends \BaseController {
 	    $finderData = [];
 	    $finderData['id'] = $order->finder_id;
 	    $finderData['name'] = $order->finder_name;
-	    $finderData['address'] = strip_tags($order->finder_address);
-	    $finderData['location'] = $order->finder_location;
-	    $finderData['geo'] = ["lat"=>$order->finder_lat,"lon"=>$order->finder_lon];
+
+	    if(($order->type != "healthytiffinmembership")){
+
+	    	$finderData['address'] = strip_tags($order->finder_address);
+	    	$finderData['location'] = $order->finder_location;
+	    	$finderData['geo'] = ["lat"=>$order->finder_lat,"lon"=>$order->finder_lon];
+	    }
+	    
 	    $finderData['cover_image'] = ($finder['coverimage'] != '') ? Config::get('app.s3_finderurl.cover').$finder['coverimage'] : Config::get('app.s3_finderurl.cover').'default/'.$finder['category_id'].'-'.rand(1, 4).'.jpg';
 	    $data['finder'] = $finderData;
 
