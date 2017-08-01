@@ -2429,7 +2429,7 @@ class OrderController extends \BaseController {
                 $ratecard = Ratecard::find($data['ratecard_id']);
                 Log::info("Customer Info". $customer_id);
                 $couponCheck = $this->customerreward->couponCodeDiscountCheck($ratecard,$data["coupon_code"],$customer_id);
-                if(isset($couponCheck["coupon_applied"]) && $couponCheck["coupon_applied"]){
+                if(isset($couponCheck["coupon_applied"]) && $couponCheck["coupon_applied"] && !isset($order->coupon_discount_amount)){
                     $data["amount"] = $data["amount"] > $couponCheck["data"]["discount"] ? $data["amount"] - $couponCheck["data"]["discount"] : 0;
                     $data["coupon_discount_amount"] = $data["amount"] > $couponCheck["data"]["discount"] ? $couponCheck["data"]["discount"] : $data["amount"];
                 }
