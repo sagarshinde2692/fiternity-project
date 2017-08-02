@@ -181,7 +181,7 @@ Route::get('categorytagofferings/{city?}', 'HomeController@getCategorytagsOfferi
 
 
 Route::get('getcapturedetail/{captureid}', 'CaptureController@getCaptureDetail');
-Route::get('booktrialdetail/{captureid}', 'SchedulebooktrialsController@booktrialdetail');
+Route::get('booktrialdetail/{captureid}/{type?}', 'SchedulebooktrialsController@booktrialdetail');
 
 Route::post('feedbackfromcustomer', 'SchedulebooktrialsController@feedbackFromCustomer');
 
@@ -928,7 +928,6 @@ Route::post('trainer/getavailableslots',array('as' => 'trainer/getavailableslots
 //Route::group(array('before' => 'validatetoken'), function() {
 	Route::post('trainer/bookslot', array('as' => 'trainer.bookslot','uses' => 'TrainerController@bookSlot'));
 	Route::post('transaction/update',array('as' => 'transaction.update','uses' => 'TransactionController@update'));
-	Route::get('customer/orderdetail/{order_id}',array('as' => 'customer.orderdetail','uses' => 'CustomerController@orderDetail'));
 	Route::get('customer/orderdetail/{order_id}',array('as' => 'customer.orderdetail','uses' => 'CustomerController@orderDetail'));
 	Route::post('customer/addreview', array('as' => 'finders.addreviewcustomer','uses' => 'FindersController@addReviewCustomer'));
 //});

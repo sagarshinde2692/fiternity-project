@@ -4442,16 +4442,25 @@ class SchedulebooktrialsController extends \BaseController {
     }
 
 
-    public function booktrialdetail($captureid){
+    public function booktrialdetail($captureid,$type=false){
 
-        $booktrial      =   Booktrial::with('invite')->with(array('finder'=>function($query){$query->select('*')->with(array('location'=>function($query){$query->select('name');}))->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))->with(array('city'=>function($query){$query->select('_id','name','slug');}));}))->find(intval($captureid));
+        if(isset($type) && $type == "healthytiffintrail"){
+            $booktrial      =   Order::active()->with('invite')->with(array('finder'=>function($query){$query->select('*')->with(array('location'=>function($query){$query->select('name');}))->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))->with(array('city'=>function($query){$query->select('_id','name','slug');}));}))->find(intval($captureid));
+        }else{
+            $booktrial      =   Booktrial::with('invite')->with(array('finder'=>function($query){$query->select('*')->with(array('location'=>function($query){$query->select('name');}))->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))->with(array('city'=>function($query){$query->select('_id','name','slug');}));}))->find(intval($captureid)); 
+        }
 
         if(!$booktrial){
 
             return $this->responseNotFound('Request not found');
         }
 
-        $dates = array('schedule_date','schedule_date_time','missedcall_date','customofferorder_expiry_date','followup_date');
+        if(isset($type) && $type == "healthytiffintrail"){
+            $dates = array('preferred_starting_date','start_date','start_date_starttime','end_date','preferred_payment_date','success_date','pg_date','preferred_starting_change_date','dietplan_start_date','followup_date', 'order_confirmation_customer','auto_followup_date','requested_preferred_starting_date');
+        }else{         
+            $dates = array('schedule_date','schedule_date_time','missedcall_date','customofferorder_expiry_date','followup_date','auto_followup_date');
+        }
+
 
         foreach ($dates as $key => $value) {
 
@@ -4462,7 +4471,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         $booktrial = $booktrial->toArray();
 
-        $unset = array('customer_emailqueuedids','customer_smsqueuedids','customer_notification_messageids','finder_emailqueuedids','finder_smsqueuedids','customer_auto_sms');
+        $unset = array('customer_emailqueuedids','customer_smsqueuedids','customer_notification_messageids','finder_emailqueuedids','finder_smsqueuedids','customer_auto_sms','send_communication');
 
         if(isset($booktrial['schedule_date_time']) && strtotime(Carbon::now()) >= strtotime(Carbon::parse($booktrial['schedule_date_time']))){
 
@@ -4515,6 +4524,28 @@ class SchedulebooktrialsController extends \BaseController {
 		}
 	
 		array_set($booktrial, 'reschedule_enable', $reschedule_enable);
+
+        if(isset($booktrial['preferred_starting_date'])){
+
+            $booktrial['schedule_date_time'] = $booktrial['preferred_starting_date'];
+            $booktrial['schedule_date'] = $booktrial['preferred_starting_date'];
+
+            unset($booktrial['preferred_starting_date']);
+        }
+
+        if(isset($booktrial['status'])){
+
+            unset($booktrial['status']);
+        }
+
+        if(isset($booktrial['order_action'])){
+
+            unset($booktrial['order_action']);
+        }
+
+        if(isset($booktrial['amount_finder']) && $booktrial['amount_finder'] != ""){
+            $booktrial['amount'] = $booktrial['amount_finder'];
+        }
 
         $responsedata   = ['booktrial' => $booktrial,  'message' => 'Booktrial Detail'];
         return Response::json($responsedata, 200);
@@ -5721,5 +5752,6 @@ class SchedulebooktrialsController extends \BaseController {
         $this->sendCommunication1(array('booktrial_id'=>intval($id)));
         return "done";
     }
+ 
 
 }
