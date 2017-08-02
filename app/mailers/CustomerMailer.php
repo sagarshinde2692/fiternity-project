@@ -567,9 +567,14 @@ Class CustomerMailer extends Mailer {
 
 	protected function directWorker($emaildata){
 
+		\Log::info("inside direct worker");
+		// return;
+
         $email_template_data    =   $emaildata['email_template_data'];
 
-		$email_template = 	$this->bladeCompile($emaildata['email_template'],$emaildata['email_template_data']);
+		$template = \Template::where('label',$email_template_data['label'])->first();
+
+		$email_template = 	$this->bladeCompile($template->email_text,$email_template_data);
 
 		$message_data 	= [
 			'user_email' => is_array($emaildata['to']) ? $emaildata['to'] : [$emaildata['to']],

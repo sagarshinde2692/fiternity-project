@@ -620,11 +620,12 @@ class EmailSmsApiController extends \BaseController {
                 'phone' => Input::json()->get('phone'),
                 'findertitle' => Input::json()->get('title'),
                 'location' => Input::json()->get('location'),
-                'date' => date("h:i:sa")
+                'date' => date("h:i:sa"),
+                'label' => 'Capture-landingcallbacks'
             ),
             'to'                =>  Config::get('mail.to_neha'),
             'bcc_emailds'       =>  Config::get('mail.bcc_emailds_request_callback_landing_page'),
-            'email_subject'     => Input::json()->get('subject'),
+            'email_subject'     => "Capture - ".ucwords(Input::json()->get('capture_type')),
             'send_bcc_status'   => 1
         );
 
@@ -636,8 +637,8 @@ class EmailSmsApiController extends \BaseController {
             $this->customersms->landingPageCallback($data);
 
         }else{
-
-            $this->sendEmail($emaildata);
+            $this->customermailer->directWorker($emaildata);
+            
         }
 
         $message = "";
