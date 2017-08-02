@@ -4704,5 +4704,22 @@ public function yes($msg){
 
 	}
 
+	public function servicefilterreversemigration(){
+
+		$vendor_ids = Vendor::where('filter.servicesfilter', 'exists', true)->lists('_id');
+
+		$ch = curl_init();
+		foreach($vendor_ids as $vendorId){
+			$url = Config::get('app.url').'/reverse/migration/vendor/'.$vendorId;
+			curl_setopt($ch, CURLOPT_URL, $url);
+			$result = curl_exec($ch);
+			Log::info("Done for vendor Id".$vendorId);
+		}
+
+
+
+
+	}
+
     
 }
