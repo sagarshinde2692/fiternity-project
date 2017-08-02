@@ -5095,5 +5095,83 @@ class CustomerController extends \BaseController {
 			200
 		);
 	}
+
+	public function promotionalNotificationTracking(){
+
+		$data = Input::json()->all();
+
+		$header_array = [
+	        "Device-Type"=>"",
+	        "Device-Model"=>"",
+	        "App-Version"=>"",
+	        "Os-Version"=>"",
+	        "Device-Token"=>"",
+	        "Device-Id"=>""
+	    ];
+
+	    $flag = false;
+
+	    foreach ($header_array as $header_key => $header_value) {
+
+	        $value = Request::header($header_key);
+
+	        if($value != "" && $value != null && $value != 'null'){
+	           $header_array[$header_key] =  $value;
+	           $flag = true;
+	        }
+	        
+	    }
+
+	    $customer_id = "";
+
+	    $jwt_token = Request::header('Authorization');
+
+	    if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+
+	        $decoded = customerTokenDecode($jwt_token);
+	        $customer_id = (int)$decoded->customer->_id;
+	    }
+
+	    $data['customer_id'] = $customer_id;
+	    $data['device_id'] = $header_array['Device-Id'];
+	    $data['os_version'] = $header_array['Os-Version'];
+	    $data['app_version'] = $header_array['App-Version'];
+	    $data['device_model'] = $header_array['Device-Model'];
+	    $data['device_type'] = $header_array['Device-Type'];
+	    $data['device_token'] = $header_array['Device-Token'];
+
+	    $rules = [
+			'device_token' => 'required',
+			'label' => 'required',
+			'action'=>'required|in:received,clicked'
+		];
+
+		$validator = Validator::make($data,$rules);
+
+		if($validator->fails()) {
+
+			return Response::json(array('status' => 401,'message' =>$this->errorMessage($validator->errors())),401);
+		}
+
+		$promotionalNotificationTracking = false;
+		
+		if(isset($data['label']) && isset($data['device_token'])){
+
+			$promotionalNotificationTracking = PromotionalNotificationTracking::where('device_token',$data['device_token'])->where('label',$data['label'])->first();
+		}
+
+		if($promotionalNotificationTracking){
+
+			$promotionalNotificationTracking->update($data);
+
+		}else{
+
+			$promotionalNotificationTracking = new PromotionalNotificationTracking($data);
+			$promotionalNotificationTracking->save();
+		}
+
+		return Response::json(array('status' => 200,'message' => 'Captured Successfully'),200);
+
+	}
 	
 }

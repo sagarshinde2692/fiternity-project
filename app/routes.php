@@ -980,3 +980,5 @@ Route::post('belp/fitnessquiz','HomeController@belpFitnessQuiz');
 Route::get('conditiontest','DebugController@conditionTest');
 
 Route::post('crashlog','HomeController@crashLog');
+
+Route::post('customer/promotionalnotification',array('as' => 'customer.promotionalnotification','uses' => 'CustomerController@promotionalNotificationTracking'));
