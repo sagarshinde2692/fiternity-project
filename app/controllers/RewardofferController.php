@@ -249,9 +249,9 @@ class RewardofferController extends BaseController {
                     );
 
                     foreach ($reward_type_order as $reward_type_order_value){
-                        if($amount < 2000){
-                            $rewards = [];        
-                        }
+                        // if($amount < 2000){
+                        //     $rewards = [];        
+                        // }
                         foreach ($rewards as $rewards_value){
                             if($rewards_value['reward_type'] == "fitness_kit" || $rewards_value['reward_type'] == "healthy_snacks"){
                                 switch(true){
