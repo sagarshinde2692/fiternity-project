@@ -774,6 +774,7 @@ class MigrationReverseController extends \BaseController {
                 'renewal_remark'                        =>  isset($Finder->renewal_remark) ? $Finder->renewal_remark : "",
                 'backend_flags'                         =>  isset($Finder->backend_flags) ? $Finder->backend_flags : array(),
                 'offer_texts'                           =>  isset($Finder->offer_texts) ? $Finder->offer_texts : array(),
+                'servicesfilter' 			            =>  (isset($Finder->filter) && isset($Finder->filter['servicesfilter'])) ? $Finder->filter['servicesfilter'] : [],
             ];
 
             $insertData['vip_trial']                    = (isset($Finder->vip_trial) &&  $Finder['vip_trial'] == true ) ? '1' : '0';
