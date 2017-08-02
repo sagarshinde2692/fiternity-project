@@ -773,10 +773,7 @@ class EmailSmsApiController extends \BaseController {
 
     }
 
-
-
-    public function addReminderMessage($reqquesteddata)
-    {
+    public function addReminderMessage($reqquesteddata){
 
         $capture_id         = ($reqquesteddata['_id']) ? $reqquesteddata['_id'] : "";
         $customer_name      = ($reqquesteddata['name']) ? $reqquesteddata['name'] : "";
@@ -786,40 +783,44 @@ class EmailSmsApiController extends \BaseController {
 
         if ($capture_id !="" && $customer_name != "" && $customer_phone != "" && $preferred_time != ""){
 
-            if ($preferred_time == "Before 10 AM") {
-                $schedule_slot = "09:00 AM-10:00 AM";
-            } elseif ($preferred_time == "10 AM - 2 PM") {
-                $schedule_slot = "10:00 AM-02:00 PM";
-            } elseif ($preferred_time == "2 PM - 6 PM") {
-                $schedule_slot = "02:00 PM-06:00 PM";
-            } elseif ($preferred_time == "6 PM - 10 PM") {
-                $schedule_slot = "06:00 PM-09:30 PM";
+            $schedule_slot = "right_now";
+            $schedule_date_time = date('Y-m-d H:i:s',time());
+
+            switch ($preferred_time) {
+                case "Before 10 AM" : $schedule_slot = "09:00 AM-10:00 AM"; break;
+                case "10 AM - 2 PM" : $schedule_slot = "10:00 AM-02:00 PM"; break;
+                case "2 PM - 6 PM"  : $schedule_slot = "02:00 PM-06:00 PM"; break;
+                case "6 PM - 10 PM" : $schedule_slot = "06:00 PM-09:30 PM"; break;
+                case "right_now"    : $schedule_slot = "right_now"; break;
             }
 
-            $slot_times = explode('-', $schedule_slot);
-            $schedule_slot_start_time = $slot_times[0];
-            $schedule_slot_end_time = $slot_times[1];
-            $schedule_slot = $schedule_slot_start_time . '-' . $schedule_slot_end_time;
+            if($schedule_slot != "right_now"){
 
-            $schedule_date_starttime    =   strtoupper(date('d-m-Y', strtotime($schedule_date)) . " " . $schedule_slot_start_time);
-            $schedule_date_time         =   Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->toDateTimeString();
+                $slot_times = explode('-', $schedule_slot);
+                $schedule_slot_start_time = $slot_times[0];
+                $schedule_slot_end_time = $slot_times[1];
+                $schedule_slot = $schedule_slot_start_time . '-' . $schedule_slot_end_time;
+
+                $schedule_date_starttime    =   strtoupper(date('d-m-Y', strtotime($schedule_date)) . " " . $schedule_slot_start_time);
+                $schedule_date_time         =   Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->toDateTimeString();
 
 
-            $time       = time();
-            $from_time  = strtotime(date('Y-m-d') . $schedule_slot_start_time);
-            $to_time    = strtotime(date('Y-m-d') . $schedule_slot_end_time);
+                $time       = time();
+                $from_time  = strtotime(date('Y-m-d') . $schedule_slot_start_time);
+                $to_time    = strtotime(date('Y-m-d') . $schedule_slot_end_time);
 
-            if($time >= $from_time && $time <= $to_time){
-                $delay = 0;
-                // echo "today ".$delay." --- ".$from_time." -- ".$to_time;
-                $schedule_date_time = $schedule_date_time;
-            }else{
-                $tommrow_schedule_date_time = date('Y-m-d H:i:s', strtotime($schedule_date_time . ' +1 day'));
-                $delay = $this->getSeconds($tommrow_schedule_date_time);
-                // echo "tommrow ".$tommrow_schedule_date_time." --- ".$from_time." -- ".$to_time;
-                $schedule_date_time = $tommrow_schedule_date_time;
+                if($time >= $from_time && $time <= $to_time){
+                    $delay = 0;
+                    // echo "today ".$delay." --- ".$from_time." -- ".$to_time;
+                    $schedule_date_time = $schedule_date_time;
+                }else{
+                    $tommrow_schedule_date_time = date('Y-m-d H:i:s', strtotime($schedule_date_time . ' +1 day'));
+                    $delay = $this->getSeconds($tommrow_schedule_date_time);
+                    // echo "tommrow ".$tommrow_schedule_date_time." --- ".$from_time." -- ".$to_time;
+                    $schedule_date_time = $tommrow_schedule_date_time;
+                }
+
             }
-
 
             $data = [
                 'customer_name' => trim($customer_name),
@@ -833,26 +834,24 @@ class EmailSmsApiController extends \BaseController {
                 'capture_id' => $capture_id
             ];
 
-            $requestcallbackremindercall_id = Requestcallbackremindercall::max('_id') + 1;
+            $requestCallBackReminderCall = new Requestcallbackremindercall($data);
+            $requestCallBackReminderCall->_id = Requestcallbackremindercall::max('_id') + 1;
+            $requestCallBackReminderCall->save();
 
-//            $label      =       "request_callback_cloudagent";
-////            $host       =       "http://apistg.fitn.in/";
-//            $host       =       "https://a1.fitternity.com/";
-//            $url        =       $host."requestcallbackcloudagent/".$requestcallbackremindercall_id;
-//            $queue_id   =       $this->hitURLAfterDelay($url, $delay, $label);
-//            if($queue_id){
-//                $data['queue_id'] = $queue_id;
-//                $data['url'] = $url;
-//            }
 
-            $obj = new Requestcallbackremindercall($data);
-            $obj->_id = $requestcallbackremindercall_id;
-            $obj->save();
+            $requestToCallBackData =   ['name' => $customer_name, 'phone' => $customer_phone];
+            $responseData = $this->cloudagent->requestToCallBack($requestToCallBackData);
+
+            if(isset($responseData) && isset($responseData['data']) && isset($responseData['data']['status']) && $responseData['data']['status'] == "SUCCESS"){
+
+                $new_schedule_date_time     =   date("d-m-Y H:i:s", strtotime('+1 hour', strtotime($requestCallBackReminderCall['schedule_date_time'])) );
+                $new_schedule_date_time     =   \Carbon::parse($new_schedule_date_time)->toDateTimeString();
+                $update                     =   $requestCallBackReminderCall->update(['attempt' => 1, 'status' => 'callbackcheck', 'schedule_date_time' => $new_schedule_date_time]);
+            }
 
         }
     }
-
-
+    
     public function hitURLAfterDelay($url, $delay = 0, $label = 'label', $priority = 0){
 
         if($delay !== 0){
