@@ -3589,7 +3589,8 @@ public function yes($msg){
 	{
 		$ch = curl_init();
 		foreach($vendorIds as $vendorId){
-			$url = 'fitapi.com/reverse/migration/vendor/'.$vendorId;
+			Log::info("migratoin url:".Config::get('app.url'));
+			$url = Config::get('app.url').'/reverse/migration/vendor/'.$vendorId;
 			curl_setopt($ch, CURLOPT_URL, $url);
 			$result = curl_exec($ch);
 			Log::info("Done for vendor Id".$vendorId);
