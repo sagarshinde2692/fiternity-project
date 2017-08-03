@@ -3585,12 +3585,11 @@ public function yes($msg){
 		// print_r($return);
 	}
 		
-	public function vendorReverseMigrate()
+	public function vendorReverseMigrate($vendorIds=[])
 	{
-		$vendorIds = [1939,5988];
 		$ch = curl_init();
 		foreach($vendorIds as $vendorId){
-			$url = Config::get('app.url').'/reverse/migration/vendor/'.$vendorId;
+			$url = 'fitapi.com/reverse/migration/vendor/'.$vendorId;
 			curl_setopt($ch, CURLOPT_URL, $url);
 			$result = curl_exec($ch);
 			Log::info("Done for vendor Id".$vendorId);
@@ -4707,19 +4706,14 @@ public function yes($msg){
 	public function servicefilterreversemigration(){
 
 		$vendor_ids = Vendor::where('filter.servicesfilter', 'exists', true)->lists('_id');
-
-		$ch = curl_init();
-		foreach($vendor_ids as $vendorId){
-			$url = Config::get('app.url').'/reverse/migration/vendor/'.$vendorId;
-			curl_setopt($ch, CURLOPT_URL, $url);
-			$result = curl_exec($ch);
-			Log::info("Done for vendor Id".$vendorId);
+		Log::info("starting reverse migration of ".count($vendor_ids)." vendors");
+		$this->vendorReverseMigrate($vendor_ids);
+		return "Done";
 		}
 
 
 
 
-	}
 
     
 }
