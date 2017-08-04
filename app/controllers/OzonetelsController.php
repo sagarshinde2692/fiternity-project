@@ -70,7 +70,7 @@ class OzonetelsController extends \BaseController {
         $this->free_special_finder 		= 	[7389,5740,6083,9589,9881,9882,1609,2187,5741,4818,1876,9216,4822,4821,4825,5041];
 
         $this->jump_start_time 			=	strtotime( date("d-m-Y")." 09:00:00");
-        $this->jump_end_time 			=	strtotime( date("d-m-Y")." 20:00:00");
+        $this->jump_end_time 			=	strtotime( date("d-m-Y")." 19:00:00");
         $this->current_date_time 		=	time();
         $this->jump_fitternity_no 		=	"02261222216";
         $this->jump_fitternity_no2 		=	"02261222216";
@@ -2203,6 +2203,7 @@ class OzonetelsController extends \BaseController {
 		$array['customer_number'] = $data['cid'];
 		$array['capture_id'] = $capture_id;
 		$array['vendor'] = ucwords($finder['title'])." | ".ucwords($finder['location']['name'])." | ".ucwords($finder['city']['name']);
+		$array['finder_slug'] = $finder['slug'];
 
 		Log::info("pubNub array : ",$array);
 
