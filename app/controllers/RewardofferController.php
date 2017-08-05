@@ -219,7 +219,6 @@ class RewardofferController extends BaseController {
                     ->orderBy('_id','desc')->first();
 
                     // return $rewardoffer;
-
             if ($rewardoffer){
                 $rewardoffer = $rewardoffer->toArray();
 
@@ -247,7 +246,9 @@ class RewardofferController extends BaseController {
                         'nutrition_store',
                         'fitternity_voucher'
                     );
-
+                    if($ratecard["type"] == "trial" || $ratecard["type"] == "workout session"){
+                        $rewards = [];
+                    }
                     foreach ($reward_type_order as $reward_type_order_value){
                         // if($amount < 2000){
                         //     $rewards = [];        
