@@ -2491,21 +2491,28 @@ class HomeController extends BaseController {
     }
 
     public function belpSignin(){
+        Log::info("inside belp");
        $data   =   Input::json()->all();
-       if(!isset($data["email"])){
-           $resp = array("message"=> "Email field can't be blank");
+    //    if(!isset($data["email"])){
+    //        $resp = array("message"=> "Email field can't be blank");
+    //        return  Response::json($resp, 400);
+    //    }
+       if(!isset($data["username"])){
+           $resp = array("message"=> "Username field can't be blank");
            return  Response::json($resp, 400);
        }
        if(!isset($data["password"])){
            $resp = array("message"=> "Password field can't be blank");
            return  Response::json($resp, 400);
        }
-       $belp_data = Belp::where("email",$data["email"])->first();
+    //    $belp_data = Belp::where("email",$data["email"])->first();
+       $belp_data = Belp::where("username",$data["username"])->first();
+    
        if(isset($belp_data)){
             if($belp_data["password"] == $data["password"]){
-                $belp_data["email_id"] = $data["email_id"];
-                $belp_data["name"] = $data["name"];
-                $belp_data->save();
+                // $belp_data["email_id"] = $data["email_id"];
+                // $belp_data["name"] = $data["name"];
+                // $belp_data->save();
                 unset($belp_data["password"]);
                 $resp = array("data" => $belp_data);
                 return  Response::json($resp, 200);
@@ -2520,6 +2527,64 @@ class HomeController extends BaseController {
         
     }
 
+    public function belpUserData(){
+        $data = Input::json()->all();
+        
+        if(!isset($data['_id'])){
+            $resp = array('status'=>400, 'message'=>'No belp Id found');
+            return  Response::json($resp, 400);
+            
+        }
+        
+        $belp = Belp::where('_id', $data['_id'])->first();
+
+        if(count($belp)==0){
+            $resp = array('status'=>404, 'message'=>'No belp found for this id');
+            return  Response::json($resp, 400);
+            
+        }
+        
+        $keys_array = ['email', 'name'];
+        
+        foreach($keys_array as $key){
+            $belp->$key = $data[$key];
+        }
+
+        $belp->update();
+
+        $resp = array('status'=>200, 'message'=>'Belp data saved');
+        return  Response::json($resp, 200);
+        
+
+    }
+
+    public function showBelpCapture(){
+
+       $data   =   Input::json()->all();
+        if(!isset($data["belp_id"])){
+            $resp = array("message"=> "No belp Id found");
+            return  Response::json($resp, 400);
+        }else{
+            $belp_data = Belp::where("_id",$data["belp_id"])->first();
+            if(isset($belp_data)){
+                $belp_capture = Belpcapture::where("belp_id",$data["belp_id"])->get();
+                
+                // return $belp_data;
+                if(count($belp_capture) == 0 || isset($belp_data->test)){
+                    $resp = array("message"=> "No Belp Capture found");
+                    return  Response::json($resp, 400);
+                }else{
+                    $resp = array("belp_data"=> $belp_capture);
+                    return  Response::json($resp, 400);
+                }
+            }else{
+                $resp = array("message"=> "Belp user not found");
+                return  Response::json($resp, 400);
+            }
+        }
+
+    }
+
     public function belpFitnessQuiz(){
         $data   =   Input::json()->all();
         if(!isset($data["belp_id"])){
@@ -2529,6 +2594,8 @@ class HomeController extends BaseController {
             $belp_data = Belp::where("_id",$data["belp_id"])->first();
             if(isset($belp_data)){
                 $belp_capture = Belpcapture::where("belp_id",$data["belp_id"])->get();
+            Log::info($belp_capture);
+                
                 // return $belp_data;
                 if(count($belp_capture) == 0 || isset($belp_data->test)){
                     $data["email"] = $belp_data["email"];
