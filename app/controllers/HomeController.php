@@ -2544,7 +2544,7 @@ class HomeController extends BaseController {
             
         }
         
-        $keys_array = ['email', 'name'];
+        $keys_array = ['email', 'full_name', 'gender', 'dob'];
         
         foreach($keys_array as $key){
             $belp->$key = $data[$key];
@@ -2554,8 +2554,6 @@ class HomeController extends BaseController {
 
         $resp = array('status'=>200, 'message'=>'Belp data saved');
         return  Response::json($resp, 200);
-        
-
     }
 
     public function showBelpCapture(){
