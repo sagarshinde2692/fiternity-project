@@ -2491,14 +2491,13 @@ class HomeController extends BaseController {
     }
 
     public function belpSignin(){
-        Log::info("inside belp");
        $data   =   Input::json()->all();
     //    if(!isset($data["email"])){
     //        $resp = array("message"=> "Email field can't be blank");
     //        return  Response::json($resp, 400);
     //    }
-       if(!isset($data["username"])){
-           $resp = array("message"=> "Username field can't be blank");
+       if(!isset($data["email_id"])){
+           $resp = array("message"=> "Email field can't be blank");
            return  Response::json($resp, 400);
        }
        if(!isset($data["password"])){
@@ -2506,7 +2505,7 @@ class HomeController extends BaseController {
            return  Response::json($resp, 400);
        }
     //    $belp_data = Belp::where("email",$data["email"])->first();
-       $belp_data = Belp::where("username",$data["username"])->first();
+       $belp_data = Belp::where("email_id",$data["email_id"])->first();
     
        if(isset($belp_data)){
             if($belp_data["password"] == $data["password"]){
@@ -2514,10 +2513,11 @@ class HomeController extends BaseController {
                 // $belp_data["name"] = $data["name"];
                 // $belp_data->save();
                 unset($belp_data["password"]);
-                $resp = array("data" => $belp_data);
+                $belp_capture = Belpcapture::where("belp_id",$belp_data["id"])->first();
+                $resp = array("user" => $belp_data, "capture_data"=>$belp_capture);
                 return  Response::json($resp, 200);
             }else{
-                $resp = array("message"=> "Username password don't match");
+                $resp = array("message"=> "Email password don't match");
                 return  Response::json($resp, 401);     
             }
        }else{
@@ -2547,7 +2547,9 @@ class HomeController extends BaseController {
         $keys_array = ['email', 'full_name', 'gender', 'dob'];
         
         foreach($keys_array as $key){
-            $belp->$key = $data[$key];
+            if(isset($data[$key])){
+                $belp->$key = $data[$key];
+            }
         }
 
         $belp->update();
@@ -2556,32 +2558,32 @@ class HomeController extends BaseController {
         return  Response::json($resp, 200);
     }
 
-    public function showBelpCapture(){
+    // public function showBelpCapture(){
 
-       $data   =   Input::json()->all();
-        if(!isset($data["belp_id"])){
-            $resp = array("message"=> "No belp Id found");
-            return  Response::json($resp, 400);
-        }else{
-            $belp_data = Belp::where("_id",$data["belp_id"])->first();
-            if(isset($belp_data)){
-                $belp_capture = Belpcapture::where("belp_id",$data["belp_id"])->get();
+    //    $data   =   Input::json()->all();
+    //     if(!isset($data["belp_id"])){
+    //         $resp = array("message"=> "No belp Id found");
+    //         return  Response::json($resp, 400);
+    //     }else{
+    //         $belp_data = Belp::where("_id",$data["belp_id"])->first();
+    //         if(isset($belp_data)){
+    //             $belp_capture = Belpcapture::where("belp_id",$data["belp_id"])->get();
                 
-                // return $belp_data;
-                if(count($belp_capture) == 0 || isset($belp_data->test)){
-                    $resp = array("message"=> "No Belp Capture found");
-                    return  Response::json($resp, 400);
-                }else{
-                    $resp = array("belp_data"=> $belp_capture);
-                    return  Response::json($resp, 400);
-                }
-            }else{
-                $resp = array("message"=> "Belp user not found");
-                return  Response::json($resp, 400);
-            }
-        }
+    //             // return $belp_data;
+    //             if(count($belp_capture) == 0 || isset($belp_data->test)){
+    //                 $resp = array("message"=> "No Belp Capture found");
+    //                 return  Response::json($resp, 400);
+    //             }else{
+    //                 $resp = array("belp_data"=> $belp_capture);
+    //                 return  Response::json($resp, 400);
+    //             }
+    //         }else{
+    //             $resp = array("message"=> "Belp user not found");
+    //             return  Response::json($resp, 400);
+    //         }
+    //     }
 
-    }
+    // }
 
     public function belpFitnessQuiz(){
         $data   =   Input::json()->all();
@@ -2596,7 +2598,7 @@ class HomeController extends BaseController {
                 
                 // return $belp_data;
                 if(count($belp_capture) == 0 || isset($belp_data->test)){
-                    $data["email"] = $belp_data["email"];
+                    // $data["email"] = $belp_data["email"];
                     $data["capture_type"] = "belp_capture";
                     $storecapture = Belpcapture::create($data);
                     $resp = array("message"=> "Entry Saved", "capture_id"=>$storecapture->_id);
