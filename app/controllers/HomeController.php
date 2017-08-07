@@ -2517,11 +2517,11 @@ class HomeController extends BaseController {
                 $resp = array("data" => $belp_data);
                 return  Response::json($resp, 200);
             }else{
-                $resp = array("message"=> "Email password doesn't match");
+                $resp = array("message"=> "Username password don't match");
                 return  Response::json($resp, 401);     
             }
        }else{
-           $resp = array("message"=> "Email doesn't exists");
+           $resp = array("message"=> "User doesn't exists");
            return  Response::json($resp, 401);
        }
         
