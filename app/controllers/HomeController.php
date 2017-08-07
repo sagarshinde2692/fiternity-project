@@ -2513,7 +2513,7 @@ class HomeController extends BaseController {
                 // $belp_data["name"] = $data["name"];
                 // $belp_data->save();
                 unset($belp_data["password"]);
-                $belp_capture = Belpcapture::where("belp_id",$belp_data["id"])->first();
+                $belp_capture = Belptracking::where("belp_id",$belp_data["id"])->first();
                 $resp = array("user" => $belp_data, "capture_data"=>$belp_capture);
                 return  Response::json($resp, 200);
             }else{
@@ -2601,6 +2601,37 @@ class HomeController extends BaseController {
                     // $data["email"] = $belp_data["email"];
                     $data["capture_type"] = "belp_capture";
                     $storecapture = Belpcapture::create($data);
+                    $resp = array("message"=> "Entry Saved", "capture_id"=>$storecapture->_id);
+                    return  Response::json($resp, 200);
+                }else{
+                    $resp = array("message"=> "Your entry has already reached us");
+                    return  Response::json($resp, 400);
+                }
+            }else{
+                $resp = array("message"=> "Belp user not found");
+                return  Response::json($resp, 400);
+            }
+        }
+    }
+
+    public function belpTracking(){
+        $data   =   Input::json()->all();
+        if(!isset($data["belp_id"])){
+            $resp = array("message"=> "No belp Id found");
+            return  Response::json($resp, 400);
+        }else{
+            $belp_data = Belp::where("_id",$data["belp_id"])->first();
+            Log::info("belp user11");
+            Log::info($belp_data);
+            if(isset($belp_data)){
+                $belp_tracking = Belptracking::where("belp_id",$data["belp_id"])->get();
+                Log::info($belp_tracking);
+                
+                // return $belp_data;
+                if(count($belp_tracking) == 0 || isset($belp_data->test)){
+                    // $data["email"] = $belp_data["email"];
+                    $data["capture_type"] = "belp_capture";
+                    $storecapture = Belptracking::create($data);
                     $resp = array("message"=> "Entry Saved", "capture_id"=>$storecapture->_id);
                     return  Response::json($resp, 200);
                 }else{
