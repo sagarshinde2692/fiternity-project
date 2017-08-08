@@ -2558,32 +2558,31 @@ class HomeController extends BaseController {
         return  Response::json($resp, 200);
     }
 
-    // public function showBelpCapture(){
+    public function showBelpCapture(){
 
-    //    $data   =   Input::json()->all();
-    //     if(!isset($data["belp_id"])){
-    //         $resp = array("message"=> "No belp Id found");
-    //         return  Response::json($resp, 400);
-    //     }else{
-    //         $belp_data = Belp::where("_id",$data["belp_id"])->first();
-    //         if(isset($belp_data)){
-    //             $belp_capture = Belpcapture::where("belp_id",$data["belp_id"])->get();
+       $data   =   Input::json()->all();
+        if(!isset($data["belp_id"])){
+            $resp = array("message"=> "No belp Id found");
+            return  Response::json($resp, 400);
+        }else{
+            $belp_data = Belp::where("_id",$data["belp_id"])->first();
+            if(isset($belp_data)){
+                $belp_tracking = Belptracking::where("belp_id",$data["belp_id"])->get();
                 
-    //             // return $belp_data;
-    //             if(count($belp_capture) == 0 || isset($belp_data->test)){
-    //                 $resp = array("message"=> "No Belp Capture found");
-    //                 return  Response::json($resp, 400);
-    //             }else{
-    //                 $resp = array("belp_data"=> $belp_capture);
-    //                 return  Response::json($resp, 400);
-    //             }
-    //         }else{
-    //             $resp = array("message"=> "Belp user not found");
-    //             return  Response::json($resp, 400);
-    //         }
-    //     }
+                if(count($belp_tracking) == 0 || isset($belp_data->test)){
+                    $resp = array("message"=> "No Belp Capture found");
+                    return  Response::json($resp, 400);
+                }else{
+                    $resp = array("belp_data"=> $belp_tracking[0]);
+                    return  Response::json($resp, 200);
+                }
+            }else{
+                $resp = array("message"=> "Belp user not found");
+                return  Response::json($resp, 400);
+            }
+        }
 
-    // }
+    }
 
     public function belpFitnessQuiz(){
         $data   =   Input::json()->all();
@@ -2621,23 +2620,23 @@ class HomeController extends BaseController {
             return  Response::json($resp, 400);
         }else{
             $belp_data = Belp::where("_id",$data["belp_id"])->first();
-            Log::info("belp user11");
-            Log::info($belp_data);
             if(isset($belp_data)){
-                $belp_tracking = Belptracking::where("belp_id",$data["belp_id"])->get();
-                Log::info($belp_tracking);
-                
-                // return $belp_data;
-                if(count($belp_tracking) == 0 || isset($belp_data->test)){
-                    // $data["email"] = $belp_data["email"];
-                    $data["capture_type"] = "belp_capture";
-                    $storecapture = Belptracking::create($data);
-                    $resp = array("message"=> "Entry Saved", "capture_id"=>$storecapture->_id);
-                    return  Response::json($resp, 200);
-                }else{
-                    $resp = array("message"=> "Your entry has already reached us");
-                    return  Response::json($resp, 400);
-                }
+                // $belp_tracking = Belptracking::where("belp_id",$data["belp_id"])->get();
+                // if(count($belp_tracking) == 0 || isset($belp_data->test)){
+                //     // $data["email"] = $belp_data["email"];
+                //     $data["capture_type"] = "belp_capture";
+                //     $storecapture = Belptracking::create($data);
+                //     $resp = array("message"=> "Entry Saved", "capture_id"=>$storecapture->_id);
+                //     return  Response::json($resp, 200);
+                // }else{
+                //     $resp = array("message"=> "Your entry has already reached us");
+                //     return  Response::json($resp, 400);
+                // }
+
+                $result = Belptracking::updateOrCreate(['belp_id'=>$data["belp_id"]], $data);
+                $resp = array("message"=> "Entry Saved", "capture_id"=>$data["belp_id"]);
+                return  Response::json($resp, 200);
+
             }else{
                 $resp = array("message"=> "Belp user not found");
                 return  Response::json($resp, 400);
