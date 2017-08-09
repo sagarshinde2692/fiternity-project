@@ -115,11 +115,16 @@ class TrainerController extends \BaseController {
 
 					foreach ($trainerSlotBooking as $value) {
 
-						foreach ($slots as $slot_key => $slot_value) {
+						$booked_slot_start_time = substr($value['slot'], 0, strpos($value['slot'], '-'));
+						$booked_slot_end_time = substr($value['slot'], strpos($value['slot'], '-')+1);
 
-							if($value['slot'] == $slot_value['slot']){
+						foreach ($slots as $slot_key => $slot_value) {
+							
+							$slot_start_time = substr($slot_value['slot'], 0, strpos($slot_value['slot'], '-'));
+							$slot_end_time = substr($slot_value['slot'], strpos($slot_value['slot'], '-')+1);
+							
+							if($value['slot'] == $slot_value['slot'] || $booked_slot_start_time == $slot_end_time || $booked_slot_end_time == $slot_start_time){
 								$slots[$slot_key]['available'] = false;
-								break;
 							}
 						}
 					}
