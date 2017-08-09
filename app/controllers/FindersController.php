@@ -3012,6 +3012,11 @@ class FindersController extends \BaseController {
 				$finderData['finder']['call_interrupt'] = $call_interrupt;
 			}
 
+			if(isset($finderData['finder']['category_id']) && $finderData['finder']['category_id'] == 42){
+				unset($finderData['finder']['lat']);
+				unset($finderData['finder']['lon']);
+			}			
+
 		}else{
 
 			$finderData['status'] = 404;

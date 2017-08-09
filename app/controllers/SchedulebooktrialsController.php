@@ -2072,6 +2072,10 @@ class SchedulebooktrialsController extends \BaseController {
                 'order_id'                      =>      $orderid
             );
 
+            if(isset($order['recommended_booktrial_id']) && $order['recommended_booktrial_id'] != ""){
+                $booktrialdata['recommended_booktrial_id'] = (int)$order['recommended_booktrial_id'];
+            }
+
             if ($medical_detail != "" && $medication_detail != "") {
 
                 $customer_info = new CustomerInfo();
@@ -2932,6 +2936,10 @@ class SchedulebooktrialsController extends \BaseController {
 
             // return $this->customersms->bookTrial($booktrialdata);
             // return $booktrialdata;
+
+            if(isset($data['recommended_booktrial_id']) && $data['recommended_booktrial_id'] != ""){
+                $booktrialdata['recommended_booktrial_id'] = (int)$data['recommended_booktrial_id'];
+            }
 
             if(isset($data['_id'])){
                 $booktrialid = (int) $data['_id'];
