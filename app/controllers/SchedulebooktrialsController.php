@@ -2754,6 +2754,8 @@ class SchedulebooktrialsController extends \BaseController {
             $medication_detail = (isset($data['medication_detail']) && $data['medication_detail'] != '') ? $data['medication_detail'] : "";
             $source                   =   (isset($data['customer_source']) && $data['customer_source'] != '') ? trim($data['customer_source']) : "website";
             $physical_activity_detail = (isset($data['physical_activity_detail']) && $data['physical_activity_detail'] != '') ? $data['physical_activity_detail'] : "";
+            $membership = isset($data['membership']) ? $data['membership'] : new stdClass();
+            
 
             $google_pin = $this->googlePin($finder_lat, $finder_lon);
             $customer_profile_url       =   $this->customerProfileUrl($customer_email);
