@@ -2203,6 +2203,7 @@ class OzonetelsController extends \BaseController {
 		$array['customer_number'] = $data['cid'];
 		$array['capture_id'] = $capture_id;
 		$array['vendor'] = ucwords($finder['title'])." | ".ucwords($finder['location']['name'])." | ".ucwords($finder['city']['name']);
+		$array['finder_slug'] = $finder['slug'];
 
 		Log::info("pubNub array : ",$array);
 

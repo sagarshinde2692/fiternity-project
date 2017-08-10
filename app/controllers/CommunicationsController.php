@@ -70,6 +70,15 @@ class CommunicationsController extends \BaseController {
 				return array('status'=>400, 'message'=>'Transaction not found');
 			}
 
+
+			$dates = array('followup_date','last_called_date','preferred_starting_date', 'called_at','subscription_start','start_date','start_date_starttime','end_date', 'order_confirmation_customer', 'start_date', 'start_date_starttime', 'schedule_date', 'schedule_date_time', 'followup_date', 'followup_date_time','missedcall_date','customofferorder_expiry_date','auto_followup_date');
+
+			foreach ($dates as $key => $value){
+				if(isset($transaction_data[$value]) && $transaction_data[$value]==''){
+					$transaction_data->unset($value);
+				}
+			}
+
 			$data = $transaction_data->toArray();
 			Log::info("From communicationsController");
 			Log::info("$sender_class-$label");

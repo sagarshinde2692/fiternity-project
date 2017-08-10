@@ -4433,7 +4433,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         $booktrial = $booktrial->toArray();
 
-        $unset = array('customer_emailqueuedids','customer_smsqueuedids','customer_notification_messageids','finder_emailqueuedids','finder_smsqueuedids','customer_auto_sms');
+        $unset = array('customer_emailqueuedids','customer_smsqueuedids','customer_notification_messageids','finder_emailqueuedids','finder_smsqueuedids','customer_auto_sms','followup_date_time');
 
         if(isset($booktrial['schedule_date_time']) && strtotime(Carbon::now()) >= strtotime(Carbon::parse($booktrial['schedule_date_time']))){
 

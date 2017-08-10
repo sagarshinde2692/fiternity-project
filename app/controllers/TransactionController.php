@@ -1003,13 +1003,20 @@ class TransactionController extends \BaseController {
             }
 
         }
-
+        if(isset($data["coupon_code"]) && $data["coupon_code"] != ""){
+            $ratecard = Ratecard::find($data['ratecard_id']);
+            Log::info("Customer Info". $customer_id);
+            $couponCheck = $this->customerreward->couponCodeDiscountCheck($ratecard,$data["coupon_code"],$customer_id);
+            if(isset($couponCheck["coupon_applied"]) && $couponCheck["coupon_applied"]){
+                $data["amount"] = $data["amount"] > $couponCheck["data"]["discount"] ? $data["amount"] - $couponCheck["data"]["discount"] : 0;
+                $data["coupon_discount_amount"] = $data["amount"] > $couponCheck["data"]["discount"] ? $couponCheck["data"]["discount"] : $data["amount"];
+            }
+        }
         if($data['amount'] == 0){
             $data['full_payment_wallet'] = true;
         }else{
             $data['full_payment_wallet'] = false;
         }
-        
         if(isset($data['reward_ids'])&& count($data['reward_ids']) > 0) {
             $data['reward_ids']   =  array_map('intval', $data['reward_ids']);
         }
@@ -1878,6 +1885,12 @@ class TransactionController extends \BaseController {
             $order->customerWalletSendPaymentLinkAfter30Days = $this->hitURLAfterDelay($url."&time=LPlus30", date('Y-m-d H:i:s', strtotime("+30 days",$now)));
 
             $order->notification_status = 'abandon_cart_yes';
+
+            $booktrial = Booktrial::where('customer_id',$order['customer_id'])->where('finder_id',(int)$order['finder_id'])->orderBy('desc','_id')->first();
+
+            if($booktrial){
+                $order->previous_booktrial_id = (int)$booktrial->_id;
+            }
 
             $order->update();
 
