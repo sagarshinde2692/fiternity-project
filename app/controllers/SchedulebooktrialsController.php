@@ -2233,6 +2233,10 @@ class SchedulebooktrialsController extends \BaseController {
         
         Log::info('Customer Book Trial : '.json_encode(array('book_trial_details' => Booktrial::findOrFail($booktrialid))));
 
+        if(isset($data['temp_id'])){
+            $delete = Tempbooktrial::where('_id', $data['temp_id'])->delete();
+        }
+
         $resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'message' => "Book a Trial", 'code' => $code);
         return Response::json($resp,200);
     }
@@ -2547,6 +2551,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             // Throw an error if user has already booked a trial for that vendor...
             $alreadyBookedTrials = $this->utilities->checkExistingTrialWithFinder($data['customer_email'], $data['customer_phone'], $data['finder_id']);
+            return $alreadyBookedTrials;
             if (count($alreadyBookedTrials) > 0) {
                 $resp = array('status' => 403, 'message' => "You have already booked a trial for this vendor, please choose some other vendor");
                 return Response::json($resp, 403);
@@ -2994,6 +2999,10 @@ class SchedulebooktrialsController extends \BaseController {
         }*/
 
         Log::info('Customer Book Trial : '.json_encode(array('book_trial_details' => Booktrial::findOrFail($booktrialid))));
+
+        if(isset($data['temp_id'])){
+            $delete = Tempbooktrial::where('_id', $data['temp_id'])->delete();
+        }
 
         $resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'code' => $code, 'message' => "Book a Trial");
         return Response::json($resp,200);
@@ -5728,5 +5737,25 @@ class SchedulebooktrialsController extends \BaseController {
         $this->sendCommunication1(array('booktrial_id'=>intval($id)));
         return "done";
     }
+
+
+    public function booktrialWithoutReward(){
+        try{
+            $data = Input::json()->all();
+            $tempbooktrial_id = Tempbooktrial::max('_id')+1 ? (Tempbooktrial::max('_id')+1) : 0;
+            $tempbooktrial = new Tempbooktrial($data);
+            $tempbooktrial->_id = $tempbooktrial_id;
+            $tempbooktrial->save();
+            Log::info("delete");
+            return array('status'=>200, 'temp_id'=>$tempbooktrial->_id);
+        }catch(Exception $e){
+            Log::info($e);
+            return array('message'=>'Try after some time');
+        }
+        
+        
+        
+    }
+
 
 }

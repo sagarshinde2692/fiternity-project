@@ -982,3 +982,4 @@ Route::post('crashlog','HomeController@crashLog');
 // Route::get('sendManualCommunication/{id}', 'SchedulebooktrialsController@sendManualCommunication');
 
 
+Route::post('booktrialwithoutreward','SchedulebooktrialsController@booktrialWithoutReward');
