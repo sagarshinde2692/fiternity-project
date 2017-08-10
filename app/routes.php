@@ -979,3 +979,6 @@ Route::get('linksentnotsuccess','DebugController@linkSentNotSuccess');
 
 Route::post('crashlog','HomeController@crashLog');
 
+// Route::get('sendManualCommunication/{id}', 'SchedulebooktrialsController@sendManualCommunication');
+
+
