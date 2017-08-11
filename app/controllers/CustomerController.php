@@ -148,7 +148,7 @@ class CustomerController extends \BaseController {
 
 		$healthytiffintrails = array();
 
-			$ht_selectfields 	=	array('type','finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt','service_id','what_i_should_carry','what_i_should_expect','origin','preferred_starting_date','amount','status','order_action','created_at');
+			$ht_selectfields 	=	array('type','finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt','service_id','what_i_should_carry','what_i_should_expect','origin','preferred_starting_date','amount','status','order_action','created_at','customer_address');
 
 			$healthytiffintrails = Order::where('customer_email',$customeremail)
 			->where('type','healthytiffintrail')
