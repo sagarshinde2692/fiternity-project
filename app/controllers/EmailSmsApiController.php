@@ -565,12 +565,20 @@ class EmailSmsApiController extends \BaseController {
             $data['customer_phone'] = $data['mobile'] = $data['phone'];
         }
 
+        if(isset($data['mobile']) && $data['mobile'] != ""){
+            $data['customer_phone'] = $data['phone']= $data['mobile'];
+        }
+
         if(isset($data['name']) && $data['name'] != ""){
             $data['customer_name'] = $data['name'];
         }
 
         if(isset($data['email']) && $data['email'] != ""){
             $data['customer_email'] = $data['email'];
+        }
+
+        if(isset($data['location']) && $data['location'] != ""){
+            $data['customer_location'] = $data['location'];
         }
 
         array_set($data, 'capture_status', 'yet to connect');
@@ -592,6 +600,18 @@ class EmailSmsApiController extends \BaseController {
 
         $storecapture   = Capture::create($data);
 
+        if(isset($data['capture_type']) && $data['capture_type']=='my-home-fitness-trial'){
+
+            $this->customersms->myHomFitnessWithoutSlotInstant($data);
+
+        }
+
+        if(isset($data['capture_type']) && $data['capture_type'] == 'my-home-fitness-membership'){
+
+			$this->customersms->myHomeFitnessPurchaseWithoutSlot($data);
+			
+		}
+
         $emaildata = array(
             'email_template' => 'emails.finder.landingcallbacks',
             'email_template_data' => array(
@@ -600,11 +620,12 @@ class EmailSmsApiController extends \BaseController {
                 'phone' => Input::json()->get('phone'),
                 'findertitle' => Input::json()->get('title'),
                 'location' => Input::json()->get('location'),
-                'date' => date("h:i:sa")
+                'date' => date("h:i:sa"),
+                'label' => 'Capture-landingcallbacks'
             ),
             'to'                =>  Config::get('mail.to_neha'),
             'bcc_emailds'       =>  Config::get('mail.bcc_emailds_request_callback_landing_page'),
-            'email_subject'     => Input::json()->get('subject'),
+            'email_subject'     => "Capture - ".ucwords(Input::json()->get('capture_type')),
             'send_bcc_status'   => 1
         );
 
@@ -616,8 +637,8 @@ class EmailSmsApiController extends \BaseController {
             $this->customersms->landingPageCallback($data);
 
         }else{
-
-            $this->sendEmail($emaildata);
+            $this->customermailer->directWorker($emaildata);
+            
         }
 
         $message = "";

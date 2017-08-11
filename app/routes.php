@@ -975,6 +975,14 @@ Route::post('belp/fitnessquiz','HomeController@belpFitnessQuiz');
 
 Route::get('conditiontest','DebugController@conditionTest');
 
+Route::get('getmealdetailsbyid', 'ServiceController@getMealDetailsById');
+Route::get('getlocationbyratecard/{ratecard_id}', 'ServiceController@getLocationByRatecard');
+
+
+Route::get('fitternitypersonaltrainersdetail','FindersController@fitternityPersonalTrainersDetail');
+
+
+
 Route::get('linksentnotsuccess','DebugController@linkSentNotSuccess');
 
 Route::post('crashlog','HomeController@crashLog');

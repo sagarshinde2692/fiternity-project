@@ -128,13 +128,13 @@ Class CustomerMailer extends Mailer {
 		}
 
 		switch ($data['type']) {
-			case 'crossfit-week' : $label = 'Order-PG-Crossfit-Week-Customer';
-			case 'wonderise' :  $label = 'Order-PG-Wonderise-Customer';
-			case 'combat-fitness' :  $label = 'Order-PG-Combat-fitness-Customer';
-			case 'lyfe' :  $label = 'Order-PG-Lyfe-Customer';
-			case 'mickeymehtaevent' :  $label = 'Order-PG-Mickeymehtaevent-Customer';
-			case 'events' :  $label = 'Order-PG-Event';
-			case 'diet_plan' :  $label = 'Diet-PG-Customer';
+			case 'crossfit-week' : $label = 'Order-PG-Crossfit-Week-Customer';break;
+			case 'wonderise' :  $label = 'Order-PG-Wonderise-Customer';break;
+			case 'combat-fitness' :  $label = 'Order-PG-Combat-fitness-Customer';break;
+			case 'lyfe' :  $label = 'Order-PG-Lyfe-Customer';break;
+			case 'mickeymehtaevent' :  $label = 'Order-PG-Mickeymehtaevent-Customer';break;
+			case 'events' :  $label = 'Order-PG-Event';break;
+			case 'diet_plan' :  $label = 'Diet-PG-Customer';break;
 			default: break;
 		}
 
@@ -567,9 +567,14 @@ Class CustomerMailer extends Mailer {
 
 	protected function directWorker($emaildata){
 
+		\Log::info("inside direct worker");
+		// return;
+
         $email_template_data    =   $emaildata['email_template_data'];
 
-		$email_template = 	$this->bladeCompile($emaildata['email_template'],$emaildata['email_template_data']);
+		$template = \Template::where('label',$email_template_data['label'])->first();
+
+		$email_template = 	$this->bladeCompile($template->email_text,$email_template_data);
 
 		$message_data 	= [
 			'user_email' => is_array($emaildata['to']) ? $emaildata['to'] : [$emaildata['to']],

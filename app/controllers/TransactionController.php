@@ -1886,6 +1886,12 @@ class TransactionController extends \BaseController {
 
             $order->notification_status = 'abandon_cart_yes';
 
+            $booktrial = Booktrial::where('customer_id',$order['customer_id'])->where('finder_id',(int)$order['finder_id'])->orderBy('desc','_id')->first();
+
+            if($booktrial){
+                $order->previous_booktrial_id = (int)$booktrial->_id;
+            }
+
             $order->update();
 
             return "success";
