@@ -792,6 +792,29 @@ Class CustomerSms extends VersionNextSms{
         return $this->common($label,$to,$data,$delay);
 
     }
+	
+	protected function myHomFitnessWithoutSlotInstant($data){
+
+        $label = 'MyHomeFitnessWithoutSlotInstant-Customer';
+
+        $to = $data['customer_phone'];
+
+        return $this->common($label,$to,$data);
+
+    }
+
+	
+
+	protected function myHomeFitnessPurchaseWithoutSlot($data){
+
+        $label = 'MyHomeFitnessPurchaseWithoutSlot-Customer';
+
+        $to = $data['customer_phone'];
+
+        return $this->common($label,$to,$data);
+
+    }
+
 
     protected function linkSentNotSuccess($data){
 
