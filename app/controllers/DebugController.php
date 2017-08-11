@@ -15,6 +15,8 @@ use App\Services\Sidekiq as Sidekiq;
 use App\Services\Bulksms as Bulksms;
 use App\Services\Utilities as Utilities;
 use App\Sms\CustomerSms as CustomerSms;
+use App\Services\Cacheapi as Cacheapi;
+
 
 use \Pubnub\Pubnub as Pubnub;
 
@@ -4706,9 +4708,16 @@ public function yes($msg){
 
 	public function servicefilterreversemigration(){
 
-		$vendor_ids = Vendor::where('filter.servicesfilter', 'exists', true)->lists('_id');
-		Log::info("starting reverse migration of ".count($vendor_ids)." vendors");
-		$this->vendorReverseMigrate($vendor_ids);
+		$cache = new Cacheapi();
+
+		$migration = new MigrationReverseController($cache);
+
+		$migration->vendor(7146);
+
+		// $vendor_ids = Vendor::where('filter.servicesfilter', 'exists', true)->lists('_id');
+		// Log::info("starting reverse migration of ".count($vendor_ids)." vendors");
+		// $vendor_ids = [7146];
+		// $this->vendorReverseMigrate($vendor_ids);
 		return "Done";
 		}
 

@@ -587,6 +587,8 @@ class MigrationReverseController extends \BaseController {
 
         try{
 
+            Log::info("migrating vendor:".$id);
+
             $detail_rating_obj = "";
             $commercial_type_arr = array( 0 => 'free', 1 => 'paid', 2 => 'freespecial', 3 => 'cos');
             $business_type_arr = array( 0 => 'noninfrastructure', 1 => 'infrastructure');
@@ -796,7 +798,12 @@ class MigrationReverseController extends \BaseController {
                 $entity->update($insertData);
             }
 
+            Log::info("before flush");
+
             $this->cacheapi->flushTagKey('finder_detail',$entity->slug);
+
+            Log::info("after flush");
+            
 
 
             $finder_id = intval($entity['_id']);
