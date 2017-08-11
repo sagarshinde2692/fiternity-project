@@ -4710,24 +4710,18 @@ public function yes($msg){
 		ini_set('max_execution_time', 300);
 
 		$destinationPath = public_path();
-        $fileName = "pay_order _success.csv";
+        $fileName = "pay_order_success.csv";
         $filePath = $destinationPath.'/'.$fileName;
 
         $csv_to_array = $this->csv_to_array($filePath);
 
-        //echo"<pre>";print_r($csv_to_array);exit;
-
         if($csv_to_array){
 
             foreach ($csv_to_array as $key => $value) {
-
-            	//echo"<pre>";print_r(strpos(strtolower($value['Transaction ID']),'hesh'));exit;
-
+            	
                 if(strpos(strtolower($value['Transaction ID']),'fit') !== false){
 
                 	$order = Order::find((int) $value['Order ID']);
-
-                	//echo"<pre>";print_r($value['Order ID']);exit;
 
                 	if($order && !isset($order->success_date_added)){
 
@@ -4735,13 +4729,17 @@ public function yes($msg){
                 		$order->success_date_added = time();
                 		$order->update();
 
-                		echo $value['Transaction ID'];
+                		echo "Yes - ".$value['Transaction ID']."\n";
 
+                	}else{
+
+                		echo "No - ".$value['Transaction ID']."\n";
                 	}
 
-                }
+                }else{
 
-                //echo $value['Transaction ID'];
+                	echo "Error - ".$value['Transaction ID']."\n";
+                }
 
             }
         }
