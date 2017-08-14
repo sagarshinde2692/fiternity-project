@@ -1400,11 +1400,22 @@ class OrderController extends \BaseController {
                     }
                     
                 }else{
-                    
+
                     $resp   =   array('status' => 400,'message' => "Ticket id not found");
                     return Response::json($resp,400);
                     
                 }
+            }
+
+            $finder = Finder::where('_id', $data['finder_id'])->first(['title']);
+            if($finder){
+                $data['finder_name'] = $finder->title;
+            }
+
+            $event = DbEvent::where('_id', $data['event_id'])->first(['name']);
+
+            if($event){
+                $data['event_name'] = $event->name;
             }
         }
 
