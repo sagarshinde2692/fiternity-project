@@ -1385,6 +1385,29 @@ class OrderController extends \BaseController {
             }
         }
 
+        if($data['type'] == 'events'){
+            if(isset($data['ticket_quantity'])){
+
+                if(isset($data['ticket_id'])){
+                    
+                    $ticket = Ticket::where('_id', $data['ticket_id'])->first();
+
+                    if($ticket){
+                        $data['amount'] = $data['amount_finder'] = $data['ticket_quantity'] * $ticket->price;
+                    }else{
+                        $resp   =   array('status' => 400,'message' => "Ticket not found");
+                        return Response::json($resp,400);
+                    }
+                    
+                }else{
+                    
+                    $resp   =   array('status' => 400,'message' => "Ticket id not found");
+                    return Response::json($resp,400);
+                    
+                }
+            }
+        }
+
         array_set($data, 'service_name_purchase', $data['service_name']);
         array_set($data, 'service_duration_purchase', $data['service_duration']);
 
