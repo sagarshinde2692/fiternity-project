@@ -4708,18 +4708,21 @@ public function yes($msg){
 
 	public function servicefilterreversemigration(){
 
-		$cache = new Cacheapi();
+		$updated_vendors = [];
 
-		$migration = new MigrationReverseController($cache);
+		$vendors = Vendor::where('filter.servicesfilter', 'exists', true)->take(7)->get(['_id', 'filter.servicesfilter']);
 
-		$migration->vendor(7146);
+		$i = 1;
+		
+		Log::info("Vendors to update:".count($vendors));
+		foreach($vendors as $vendor){
 
-		// $vendor_ids = Vendor::where('filter.servicesfilter', 'exists', true)->lists('_id');
-		// Log::info("starting reverse migration of ".count($vendor_ids)." vendors");
-		// $vendor_ids = [7146];
-		// $this->vendorReverseMigrate($vendor_ids);
-		return "Done";
+			$result = Finder::where('_id', $vendor['id'])->update(['servicesfilter'=>$vendor['filter']['servicesfilter']]);
+			array_push($updated_vendors, $vendor['_id']);
+			Log::info("Updated:".$i++);
 		}
+		return $updated_vendors;
+	}
 
 
 
