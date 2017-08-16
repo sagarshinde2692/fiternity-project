@@ -559,7 +559,7 @@ class GlobalPushController extends \BaseController
             default:
               $string = ucwords($cat['name']).' in '.ucwords($loc['name']);
               break;                              }
-
+Log::info("location".$loc['name']);
           $postdata =  get_elastic_autosuggest_catloc_doc($cat, $loc, $string, $loc['cities'][0]['name'], $cluster);
           $postfields_data = json_encode($postdata);
 
