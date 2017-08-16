@@ -4710,7 +4710,7 @@ public function yes($msg){
 
 		$updated_vendors = [];
 
-		$vendors = Vendor::where('filter.servicesfilter', 'exists', true)->take(7)->get(['_id', 'filter.servicesfilter']);
+		$vendors = Vendor::where('filter.servicesfilter', 'exists', true)->get(['_id', 'filter.servicesfilter']);
 
 		$i = 1;
 		
