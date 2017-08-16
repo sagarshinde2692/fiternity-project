@@ -176,7 +176,7 @@ class OrderController extends \BaseController {
 
         $hash_verified = $this->utilities->verifyOrder($data,$order);
 
-        if($data['status'] == 'success' && $hash_verified){
+        if($data['status'] == 'success' && ($hash_verified || $data['type']=='events')){
             // Give Rewards / Cashback to customer based on selection, on purchase success......
 
             $this->utilities->demonetisation($order);
