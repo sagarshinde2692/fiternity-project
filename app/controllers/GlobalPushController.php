@@ -357,7 +357,7 @@ class GlobalPushController extends \BaseController
 
 //        $this->pushcategorywithfacilities($index_name);
 //        $this->pushcategoryoffering($index_name);
-//        $this->pushcategoryofferinglocation($index_name);
+       $this->pushcategoryofferinglocation($index_name);
 //        $this->pushcategoryfacilitieslocation($index_name);
 //        $this->pushofferingcity($index_name);
 

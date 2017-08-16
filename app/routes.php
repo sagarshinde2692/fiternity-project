@@ -992,3 +992,6 @@ Route::post('crashlog','HomeController@crashLog');
 
 Route::get('payusuccessdate','DebugController@payuSuccessDate');
 
+Route::get('servicefilterreversemigration', 'DebugController@servicefilterreversemigration');
+
+
