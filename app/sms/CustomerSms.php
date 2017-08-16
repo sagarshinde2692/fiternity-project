@@ -339,7 +339,9 @@ Class CustomerSms extends VersionNextSms{
 
     protected function giveCashbackOnTrialOrderSuccessAndInvite($data){
 
-    	return "no sms";
+		if($data['type'] != 'events'){
+			return "no sms";
+		}
 
         $label = 'Give-Cashback-On-Trial-OrderSuccessAndInvite-Instant-Customer';
 

@@ -175,7 +175,7 @@ class OrderController extends \BaseController {
 
 
         $hash_verified = $this->utilities->verifyOrder($data,$order);
-        
+
         if($data['status'] == 'success' && $hash_verified){
             // Give Rewards / Cashback to customer based on selection, on purchase success......
 
@@ -1393,7 +1393,7 @@ class OrderController extends \BaseController {
                     $ticket = Ticket::where('_id', $data['ticket_id'])->first();
 
                     if($ticket){
-                        $data['amount'] = $data['amount_finder'] = $data['ticket_quantity'] * $ticket->price;
+                        $data['amount_customer'] = $data['amount'] = $data['amount_finder'] = $data['ticket_quantity'] * $ticket->price;
                     }else{
                         $resp   =   array('status' => 400,'message' => "Ticket not found");
                         return Response::json($resp,400);
