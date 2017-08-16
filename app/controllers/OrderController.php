@@ -1412,10 +1412,13 @@ class OrderController extends \BaseController {
                 $data['finder_name'] = $finder->title;
             }
 
-            $event = DbEvent::where('_id', $data['event_id'])->first(['name']);
+            $event = DbEvent::where('_id', $data['event_id'])->first(['name', 'slug']);
 
             if($event){
                 $data['event_name'] = $event->name;
+                if($event['slug'] == Config::get('app.my_fitness_party_slug')){
+                    $data['event_type'] = "TOI";
+                }
             }
         }
 
