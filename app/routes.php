@@ -971,6 +971,9 @@ Route::get('getbrands/{city}/{brand_id}', 'FindersController@getbrands');
 Route::get('orderfollowup','DebugController@orderFollowup');
 Route::post('belp/signin','HomeController@belpSignin');
 Route::post('belp/fitnessquiz','HomeController@belpFitnessQuiz');
+Route::post('belp/userdata','HomeController@belpUserData');
+Route::post('belp/showcapture','HomeController@showBelpCapture');
+Route::post('belp/tracking','HomeController@belpTracking');
 
 
 Route::get('conditiontest','DebugController@conditionTest');
@@ -986,4 +989,9 @@ Route::get('fitternitypersonaltrainersdetail','FindersController@fitternityPerso
 Route::get('linksentnotsuccess','DebugController@linkSentNotSuccess');
 
 Route::post('crashlog','HomeController@crashLog');
+
+Route::get('payusuccessdate','DebugController@payuSuccessDate');
+
+Route::get('servicefilterreversemigration', 'DebugController@servicefilterreversemigration');
+
 

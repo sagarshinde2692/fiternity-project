@@ -4236,11 +4236,11 @@ class CustomerController extends \BaseController {
 			$response["type"] = $data["type"];
 			
 
-			$followup_date = "";
+			$followup_date = null;
 			
 			if(isset($data["followup_date"])){
 
-				$followup_date = date('M d',strtotime($data["followup_date"]));
+				$followup_date = strtotime($data["followup_date"]);
 
 			}else{
 

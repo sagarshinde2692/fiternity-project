@@ -440,10 +440,10 @@ class RewardofferController extends BaseController {
             'status'                    =>  200,
             'message'                   => "Rewards offers"
         );
-        $data['cross_sell'] = array(
-            'diet_plan' => $customerReward->fitternityDietVendor($amount)
-        );
-        // $data['diet_plan'] = $customerReward->fitternityDietVendor($amount);
+        // $data['cross_sell'] = array(
+        //     'diet_plan' => $customerReward->fitternityDietVendor($amount)
+        // );
+        $data['diet_plan'] = $customerReward->fitternityDietVendor($amount);
 
 
         return  Response::json($data, 200);

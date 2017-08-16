@@ -4727,6 +4727,49 @@ public function yes($msg){
 
 
 
+	public function payuSuccessDate(){
+
+		ini_set('memory_limit','512M');
+		ini_set('max_execution_time', 300);
+
+		$destinationPath = public_path();
+        $fileName = "pay_order_success.csv";
+        $filePath = $destinationPath.'/'.$fileName;
+
+        $csv_to_array = $this->csv_to_array($filePath);
+
+        if($csv_to_array){
+
+            foreach ($csv_to_array as $key => $value) {
+            	
+                if(strpos(strtolower($value['Transaction ID']),'fit') !== false){
+
+                	$order = Order::find((int) $value['Order ID']);
+
+                	if($order && !isset($order->success_date_added)){
+
+                		$order->success_date = date('Y-m-d H:i:s',strtotime(str_replace("/", "-", $value['Date'])));
+                		$order->success_date_added = time();
+                		$order->update();
+
+                		echo "Yes - ".$value['Transaction ID']."\n";
+
+                	}else{
+
+                		echo "No - ".$value['Transaction ID']."\n";
+                	}
+
+                }else{
+
+                	echo "Error - ".$value['Transaction ID']."\n";
+                }
+
+            }
+        }
+
+        return "done";
+
+	}
 
     
 }
