@@ -15,6 +15,8 @@ use App\Services\Sidekiq as Sidekiq;
 use App\Services\Bulksms as Bulksms;
 use App\Services\Utilities as Utilities;
 use App\Sms\CustomerSms as CustomerSms;
+use App\Services\Cacheapi as Cacheapi;
+
 
 use \Pubnub\Pubnub as Pubnub;
 
@@ -3585,11 +3587,11 @@ public function yes($msg){
 		// print_r($return);
 	}
 		
-	public function vendorReverseMigrate()
+	public function vendorReverseMigrate($vendorIds=[])
 	{
-		$vendorIds = [1939,5988];
 		$ch = curl_init();
 		foreach($vendorIds as $vendorId){
+			Log::info("migratoin url:".Config::get('app.url'));
 			$url = Config::get('app.url').'/reverse/migration/vendor/'.$vendorId;
 			curl_setopt($ch, CURLOPT_URL, $url);
 			$result = curl_exec($ch);
@@ -4703,6 +4705,27 @@ public function yes($msg){
 		return $orders;
 
 	}
+
+	public function servicefilterreversemigration(){
+
+		$updated_vendors = [];
+
+		$vendors = Vendor::where('filter.servicesfilter', 'exists', true)->take(7)->get(['_id', 'filter.servicesfilter']);
+
+		$i = 1;
+		
+		Log::info("Vendors to update:".count($vendors));
+		foreach($vendors as $vendor){
+
+			$result = Finder::where('_id', $vendor['id'])->update(['servicesfilter'=>$vendor['filter']['servicesfilter']]);
+			array_push($updated_vendors, $vendor['_id']);
+			Log::info("Updated:".$i++);
+		}
+		return $updated_vendors;
+	}
+
+
+
 
 	public function payuSuccessDate(){
 
