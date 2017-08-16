@@ -167,6 +167,10 @@ Class CustomerSms extends VersionNextSms{
 		if($data['type'] == 'events'){
 			$label = 'Order-PG-Event';
 		}
+
+		if(isset($data['event_type']) && $data['event_type']=='TOI'){
+			$label = 'Order-PG-Event-TOI';
+		}
 		
 		if($data['type'] == "diet_plan"){
 			$label = 'Diet-PG-Customer';
@@ -335,7 +339,9 @@ Class CustomerSms extends VersionNextSms{
 
     protected function giveCashbackOnTrialOrderSuccessAndInvite($data){
 
-    	return "no sms";
+		if($data['type'] != 'events'){
+			return "no sms";
+		}
 
         $label = 'Give-Cashback-On-Trial-OrderSuccessAndInvite-Instant-Customer';
 

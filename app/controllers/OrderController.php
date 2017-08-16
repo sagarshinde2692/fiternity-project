@@ -175,8 +175,8 @@ class OrderController extends \BaseController {
 
 
         $hash_verified = $this->utilities->verifyOrder($data,$order);
-        
-        if($data['status'] == 'success' && $hash_verified){
+
+        if($data['status'] == 'success' && ($hash_verified || $data['type']=='events')){
             // Give Rewards / Cashback to customer based on selection, on purchase success......
 
             $this->utilities->demonetisation($order);
@@ -1382,6 +1382,43 @@ class OrderController extends \BaseController {
 
                 $resp   =   array('status' => 400,'message' => "Ratecard not found");
                 return Response::json($resp,400);
+            }
+        }
+
+        if($data['type'] == 'events'){
+            if(isset($data['ticket_quantity'])){
+
+                if(isset($data['ticket_id'])){
+                    
+                    $ticket = Ticket::where('_id', $data['ticket_id'])->first();
+
+                    if($ticket){
+                        $data['amount_customer'] = $data['amount'] = $data['amount_finder'] = $data['ticket_quantity'] * $ticket->price;
+                    }else{
+                        $resp   =   array('status' => 400,'message' => "Ticket not found");
+                        return Response::json($resp,400);
+                    }
+                    
+                }else{
+
+                    $resp   =   array('status' => 400,'message' => "Ticket id not found");
+                    return Response::json($resp,400);
+                    
+                }
+            }
+
+            $finder = Finder::where('_id', $data['finder_id'])->first(['title']);
+            if($finder){
+                $data['finder_name'] = $finder->title;
+            }
+
+            $event = DbEvent::where('_id', $data['event_id'])->first(['name', 'slug']);
+
+            if($event){
+                $data['event_name'] = $event->name;
+                if($event['slug'] == Config::get('app.my_fitness_party_slug')){
+                    $data['event_type'] = "TOI";
+                }
             }
         }
 

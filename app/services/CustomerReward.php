@@ -110,7 +110,7 @@ Class CustomerReward {
     public function giveCashbackOrRewardsOnOrderSuccess($order){
 
         $utilities          =   new Utilities;
-        $valid_ticket_ids   =   [99,100];
+        $valid_ticket_ids   =   [99,100, 262];
 
         try{
             // For Cashback.....
@@ -165,7 +165,7 @@ Class CustomerReward {
                 );
 
                 $utilities->walletTransaction($req,$order->toArray());
-                
+
                 $order->update(array('cashback_amount'=>$cashback_amount));
 
             }elseif(isset($order['reward_id']) && is_array($order['reward_id']) && !empty($order['reward_id'])){
@@ -210,21 +210,34 @@ Class CustomerReward {
 
                 $utilities->walletTransaction($walletData,$order->toArray());
 
-            }/*elseif(isset($order['type']) && $order['type'] == 'events' && isset($order['customer_id']) && isset($order['amount']) && isset($order['ticket_id']) && in_array(intval($order['ticket_id']), $valid_ticket_ids )){
+            }elseif(isset($order['type']) && $order['type'] == 'events' && isset($order['customer_id']) && isset($order['amount']) && isset($order['ticket_id']) ){
+                
+                $fitcash_plus = intval($order['amount']/5);
+
+                if(isset($order['event_type']) && $order['event_type']=='TOI'){
+                    $fitcash_plus = intval($order['amount']);
+                    Log::info("cashback");
+                }
 
                 $walletData = array(
                     "order_id"=>$order['_id'],
                     "customer_id"=> intval($order['customer_id']),
                     "amount"=> intval($order['amount']),
-                    "amount_fitcash" => intval($order['amount']),
-                    "amount_fitcash_plus" => 0,
+                    "amount_fitcash" => 0,
+                    "amount_fitcash_plus" => $fitcash_plus,
                     "type"=>'CASHBACK',
                     'entry'=>'credit',
-                    "description"=>'CASHBACK ON Events Tickets amount - '.intval($order['amount'])
+                    "description"=>'CASHBACK ON Events Tickets amount - '.$fitcash_plus
                 );
 
+                
+
                 $utilities->walletTransaction($walletData,$order->toArray());
-            }*/
+                $customersms = new CustomerSms();
+                $order->amount_20_percent = $fitcash_plus;
+                $customersms->giveCashbackOnTrialOrderSuccessAndInvite($order->toArray());
+                
+            }
             
         }
         catch (Exception $e) {
