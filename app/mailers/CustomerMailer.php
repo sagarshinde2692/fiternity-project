@@ -138,6 +138,10 @@ Class CustomerMailer extends Mailer {
 			default: break;
 		}
 
+		if(isset($data['event_type']) && $data['event_type']=='TOI'){
+			$label = 'Order-PG-Event-TOI';
+		}
+
 		$message_data 	= array(
 			'user_email' => array($data['customer_email']),
 			'user_name' => $data['customer_name']
