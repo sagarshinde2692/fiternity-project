@@ -173,10 +173,13 @@ class OrderController extends \BaseController {
             return Response::json($resp,401);
         }
 
+        if($order['type']=='events'){
+            $hash_verified = true;
+        }else{
+            $hash_verified = $this->utilities->verifyOrder($data,$order);
+        }
 
-        $hash_verified = $this->utilities->verifyOrder($data,$order);
-
-        if($data['status'] == 'success' && ($hash_verified || $data['type']=='events')){
+        if($data['status'] == 'success' && $hash_verified){
             // Give Rewards / Cashback to customer based on selection, on purchase success......
 
             $this->utilities->demonetisation($order);
@@ -1386,6 +1389,9 @@ class OrderController extends \BaseController {
         }
 
         if($data['type'] == 'events'){
+
+            $data["profile_link"] = $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$data['customer_email']);
+
             if(isset($data['ticket_quantity'])){
 
                 if(isset($data['ticket_id'])){
