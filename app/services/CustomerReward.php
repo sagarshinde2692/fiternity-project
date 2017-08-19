@@ -936,33 +936,44 @@ Class CustomerReward {
     }
 
 
-    public function couponCodeDiscountCheck($ratecard,$couponCode,$customer_id = false){
-        $offer = Offer::where('ratecard_id',$ratecard->_id)->where('hidden', false)->where('start_date','<=',new \DateTime(date("d-m-Y 00:00:00")))->where('end_date','>=',new \DateTime(date("d-m-Y 00:00:00")))->first();
+    public function couponCodeDiscountCheck($ratecard,$couponCode,$customer_id = false, $ticket = null, $ticket_quantity = 1){
+
+
+        if($ticket){
+
+            $price = $ticket['price'] * $ticket_quantity;
+        
+        }else{
+
+            $offer = Offer::where('ratecard_id',$ratecard->_id)->where('hidden', false)->where('start_date','<=',new \DateTime(date("d-m-Y 00:00:00")))->where('end_date','>=',new \DateTime(date("d-m-Y 00:00:00")))->first();
             if($offer){
                 $price = $offer->price;
             }else{
                 $price = $ratecard["special_price"] == 0 ? $ratecard["price"] : $ratecard["special_price"];
             }
-            $customer_id = isset($customer_id) ? $customer_id : false;
-            $calculation = $this->purchaseGameNew($price,$ratecard["finder_id"],"paymentgateway",false,$customer_id);
-            $wallet_balance = $calculation["amount_deducted_from_wallet"];
 
-            $today_date = date("d-m-Y 00:00:00");
-            $coupon = Coupon::where('code', strtolower($couponCode))->where('start_date', '<=', new \DateTime($today_date))->where('end_date', '>=', new \DateTime($today_date))->first();
-            if(isset($coupon)){
-                $discount_amount = $coupon["discount_amount"];
-                $discount_amount = $discount_amount == 0 ? $coupon["discount_percent"]/100 * $price : $discount_amount;
-                $discount_amount = intval($discount_amount);
-                $discount_amount = $discount_amount > $coupon["discount_max"] ? $coupon["discount_max"] : $discount_amount;
-                $discount_price = $price - $discount_amount;
-                $final_amount = $discount_price > $wallet_balance ? $discount_price - $wallet_balance : 0;
-                $resp = array("data"=>array("discount" => $discount_amount, "final_amount" => $final_amount, "wallet_balance" => $wallet_balance, "only_discount" => $discount_price), "coupon_applied" => true);
-            }else{
-                $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false);
-                // $resp = array("status"=> 400, "message" => "Coupon not found", "error_message" => "Coupon is either not valid or expired");
-                // return Response::json($resp,400);    
-            }
-            return $resp;
+        }
+
+        $customer_id = isset($customer_id) ? $customer_id : false;
+        $calculation = $this->purchaseGameNew($price,$ratecard["finder_id"],"paymentgateway",false,$customer_id);
+        $wallet_balance = $calculation["amount_deducted_from_wallet"];
+
+        $today_date = date("d-m-Y 00:00:00");
+        $coupon = Coupon::where('code', strtolower($couponCode))->where('start_date', '<=', new \DateTime($today_date))->where('end_date', '>=', new \DateTime($today_date))->first();
+        if(isset($coupon)){
+            $discount_amount = $coupon["discount_amount"];
+            $discount_amount = $discount_amount == 0 ? $coupon["discount_percent"]/100 * $price : $discount_amount;
+            $discount_amount = intval($discount_amount);
+            $discount_amount = $discount_amount > $coupon["discount_max"] ? $coupon["discount_max"] : $discount_amount;
+            $discount_price = $price - $discount_amount;
+            $final_amount = $discount_price > $wallet_balance ? $discount_price - $wallet_balance : 0;
+            $resp = array("data"=>array("discount" => $discount_amount, "final_amount" => $final_amount, "wallet_balance" => $wallet_balance, "only_discount" => $discount_price), "coupon_applied" => true);
+        }else{
+            $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false);
+            // $resp = array("status"=> 400, "message" => "Coupon not found", "error_message" => "Coupon is either not valid or expired");
+            // return Response::json($resp,400);    
+        }
+        return $resp;
     }
 
 

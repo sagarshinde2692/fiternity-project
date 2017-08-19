@@ -1004,9 +1004,14 @@ class TransactionController extends \BaseController {
 
         }
         if(isset($data["coupon_code"]) && $data["coupon_code"] != ""){
+            $ticket_quantity = isset($data['ticket_quantity'])?$data['ticket_quantity']:1;
+            $ticket = null;
+            if(isset($data['tickect_id'])){
+                $ticket = Ticket::find($data['ticket_id']);
+            }
             $ratecard = Ratecard::find($data['ratecard_id']);
             Log::info("Customer Info". $customer_id);
-            $couponCheck = $this->customerreward->couponCodeDiscountCheck($ratecard,$data["coupon_code"],$customer_id);
+            $couponCheck = $this->customerreward->couponCodeDiscountCheck($ratecard,$data["coupon_code"],$customer_id, $ticket, $ticket_quantity);
             if(isset($couponCheck["coupon_applied"]) && $couponCheck["coupon_applied"]){
                 $data["amount"] = $data["amount"] > $couponCheck["data"]["discount"] ? $data["amount"] - $couponCheck["data"]["discount"] : 0;
                 $data["coupon_discount_amount"] = $data["amount"] > $couponCheck["data"]["discount"] ? $couponCheck["data"]["discount"] : $data["amount"];
