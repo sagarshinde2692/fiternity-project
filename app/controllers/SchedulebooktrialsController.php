@@ -2082,6 +2082,14 @@ class SchedulebooktrialsController extends \BaseController {
                 $response = $customer_info->addHealthInfo($booktrialdata);
             }
 
+            if(isset($order['promotional_notification_id']) && $order['promotional_notification_id'] != ""){
+                $booktrialdata['promotional_notification_id'] = $order['promotional_notification_id'];
+            }
+
+            if(isset($order['promotional_notification_label']) && $order['promotional_notification_label'] != ""){
+                $booktrialdata['promotional_notification_label'] = $order['promotional_notification_label'];
+            }
+
             // Add Cashback and rewards to booktrialdata if exist in orders....
             isset($order['cashback']) ? $booktrialdata['cashback'] = $order['cashback']:null;
             isset($order['reward_ids']) ? $booktrialdata['reward_ids'] = $order['reward_ids']:null;
@@ -2894,6 +2902,14 @@ class SchedulebooktrialsController extends \BaseController {
                 'finder_location_slug'          =>      $finder_location_slug
 
             );
+
+            if(isset($data['promotional_notification_id']) && $data['promotional_notification_id'] != ""){
+                $booktrialdata['promotional_notification_id'] = $data['promotional_notification_id'];
+            }
+
+            if(isset($data['promotional_notification_label']) && $data['promotional_notification_label'] != ""){
+                $booktrialdata['promotional_notification_label'] = $data['promotional_notification_label'];
+            }
 
             $addUpdateDevice = $this->utilities->addUpdateDevice($customer_id);
 
