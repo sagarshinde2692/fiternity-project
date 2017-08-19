@@ -62,7 +62,7 @@ class TransactionController extends \BaseController {
 
         $data = Input::json()->all();
 
-
+        
         foreach ($data as $key => $value) {
 
             if(is_string($value)){
@@ -706,8 +706,15 @@ class TransactionController extends \BaseController {
             }
             
 
-            if(isset($order->diet_plan_ratecard_id) && $order->diet_plan_ratecard_id != "" && $order->diet_plan_ratecard_id != 0 && !isset($order->diet_plan_order_id)){
-            
+            if(isset($order->diet_plan_ratecard_id) && $order->diet_plan_ratecard_id != "" && $order->diet_plan_ratecard_id != 0 && !isset($order->diet_plan_order_id) || (isset($order->diet_inclusive) && $order->diet_inclusive)){
+
+                if(!isset($order->diet_plan_ratecard_id)){
+                    $ratecard = Ratecard::find($order->ratecard_id, array('diet_ratecard'));
+                    if($ratecard){
+                        $order->diet_plan_ratecard_id = $ratecard->diet_ratecard;
+                    }
+                }
+
                 $generaterDietPlanOrder = $this->generaterDietPlanOrder($order->toArray());
 
                 if($generaterDietPlanOrder['status'] != 200){
@@ -1597,7 +1604,9 @@ class TransactionController extends \BaseController {
         $data['finder_address'] = (isset($service['address']) && $service['address'] != "") ? $service['address'] : "-";
         $data['service_name'] = ucwords($service['name']);
         $data['meal_contents'] = $this->stripTags($service['short_description']);
-
+        (isset($service['diet_inclusive'])) ? $data['diet_inclusive'] = $service['diet_inclusive'] : null;
+        $data['finder_address'] = (isset($service['address']) && $service['address'] != "") ? $service['address'] : "-";
+        
         return array('status' => 200,'data' =>$data);
 
     }
@@ -2018,6 +2027,12 @@ class TransactionController extends \BaseController {
 
         $data = array_merge($data,$ratecardDetail['data']);
 
+        $diet_inclusive = false;
+        if(isset($order['diet_inclusive']) && $order['diet_inclusive']){
+            $data['amount'] = $data['amount_finder'] = $data['amount_finder']/2;
+            $diet_inclusive = true;
+        }
+
         $ratecard_id = (int) $data['ratecard_id'];
         $finder_id = (int) $data['finder_id'];
         $service_id = (int) $data['service_id'];
@@ -2049,6 +2064,19 @@ class TransactionController extends \BaseController {
         $order = new Order($data);
         $order->_id = $order_id;
         $order->save();
+
+
+        if($diet_inclusive){
+
+            $emailData = $order->toArray();
+            $dietRatecard = Ratecard::find($data['ratecard_id']);
+            $dietService = Service::find($dietRatecard['service_id']);
+            $emailData['service_name'] = $dietService['name'];
+
+            $sndPgMail  =   $this->customermailer->sendPgOrderMail($emailData);
+            $sndPgSms   =   $this->customersms->sendPgOrderSms($emailData);
+        }
+
 
         //$redisid = Queue::connection('redis')->push('TransactionController@sendCommunication', array('order_id'=>$order_id),Config::get('app.queue'));
         //$order->update(array('redis_id'=>$redisid));
