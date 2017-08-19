@@ -81,7 +81,7 @@ class TransactionController extends \BaseController {
             'customer_email'=>'required|email',
             'customer_phone'=>'required',
             'customer_source'=>'required',
-            'ratecard_id'=>'required|integer|min:1',
+            // 'ratecard_id'=>'required|integer|min:1',
             'type'=>'required'
         );
 
@@ -127,17 +127,23 @@ class TransactionController extends \BaseController {
 
         $data = array_merge($data,$customerDetail['data']); 
           
-        $ratecardDetail = $this->getRatecardDetail($data);
+        
 
-        if($ratecardDetail['status'] != 200){
-            return Response::json($ratecardDetail,$ratecardDetail['status']);
+        if(isset($data['ratecard_id'])){
+            
+            $ratecard_id = (int) $data['ratecard_id'];
+
+            $ratecardDetail = $this->getRatecardDetail($data);
+
+            if($ratecardDetail['status'] != 200){
+                return Response::json($ratecardDetail,$ratecardDetail['status']);
+            }
+
+            $data = array_merge($data,$ratecardDetail['data']);
+
         }
 
-        $data = array_merge($data,$ratecardDetail['data']);
-
-        $ratecard_id = (int) $data['ratecard_id'];
         $finder_id = (int) $data['finder_id'];
-        $service_id = (int) $data['service_id'];
 
         $finderDetail = $this->getFinderDetail($finder_id);
 
@@ -147,13 +153,18 @@ class TransactionController extends \BaseController {
 
         $data = array_merge($data,$finderDetail['data']);
 
-        $serviceDetail = $this->getServiceDetail($service_id);
+        if(isset($data['service_id'])){
+            $service_id = (int) $data['service_id'];
 
-        if($serviceDetail['status'] != 200){
-            return Response::json($serviceDetail,$serviceDetail['status']);
+            $serviceDetail = $this->getServiceDetail($service_id);
+
+            if($serviceDetail['status'] != 200){
+                return Response::json($serviceDetail,$serviceDetail['status']);
+            }
+
+            $data = array_merge($data,$serviceDetail['data']);
         }
 
-        $data = array_merge($data,$serviceDetail['data']);
 
         $order = false;
         if(isset($data['order_id'])){
@@ -178,13 +189,16 @@ class TransactionController extends \BaseController {
             $data['referal_trial_id'] = (int) $data['referal_trial_id'];
         }
 
-        $cashbackRewardWallet =$this->getCashbackRewardWallet($data,$order);
+        if($data['type']!='events'){
+            
+            $cashbackRewardWallet =$this->getCashbackRewardWallet($data,$order);
 
-        if($cashbackRewardWallet['status'] != 200){
-            return Response::json($cashbackRewardWallet,$cashbackRewardWallet['status']);
+            if($cashbackRewardWallet['status'] != 200){
+                return Response::json($cashbackRewardWallet,$cashbackRewardWallet['status']);
+            }
+
+            $data = array_merge($data,$cashbackRewardWallet['data']);
         }
-
-        $data = array_merge($data,$cashbackRewardWallet['data']);
 
         $txnid = "";
         $successurl = "";
@@ -209,7 +223,11 @@ class TransactionController extends \BaseController {
 
         $data = $this->unsetData($data);
 
-        $data['service_link'] = $this->utilities->getShortenUrl(Config::get('app.website')."/buy/".$data['finder_slug']."/".$data['service_id']);
+        if(isset($data['service_id'])){
+
+            $data['service_link'] = $this->utilities->getShortenUrl(Config::get('app.website')."/buy/".$data['finder_slug']."/".$data['service_id']);
+        
+        }
 
         $data['payment_link'] = Config::get('app.website')."/paymentlink/".$data['order_id']; //$this->utilities->getShortenUrl(Config::get('app.website')."/paymentlink/".$data['order_id']);
 
@@ -225,6 +243,44 @@ class TransactionController extends \BaseController {
 
             $data["auto_followup_date"] = date('Y-m-d H:i:s', strtotime("+31 days",strtotime($data['start_date'])));
             $data["followup_status"] = "abandon_cart";
+        }
+        
+        if($data['type'] == 'events'){
+
+            if(isset($data['ticket_quantity'])){
+
+                if(isset($data['ticket_id'])){
+                    
+                    $ticket = Ticket::where('_id', $data['ticket_id'])->first();
+
+                    if($ticket){
+                        $data['amount_customer'] = $data['amount'] = $data['amount_finder'] = $data['ticket_quantity'] * $ticket->price;
+                    }else{
+                        $resp   =   array('status' => 400,'message' => "Ticket not found");
+                        return Response::json($resp,400);
+                    }
+                    
+                }else{
+
+                    $resp   =   array('status' => 400,'message' => "Ticket id not found");
+                    return Response::json($resp,400);
+                    
+                }
+            }
+
+            $finder = Finder::where('_id', $data['finder_id'])->first(['title']);
+            if($finder){
+                $data['finder_name'] = $finder->title;
+            }
+
+            $event = DbEvent::where('_id', $data['event_id'])->first(['name', 'slug']);
+
+            if($event){
+                $data['event_name'] = $event->name;
+                if($event['slug'] == Config::get('app.my_fitness_party_slug')){
+                    $data['event_type'] = "TOI";
+                }
+            }
         }
 
         if(isset($old_order_id)){
@@ -264,7 +320,10 @@ class TransactionController extends \BaseController {
         $result['successurl'] = $successurl;
         $result['hash'] = $data['payment_hash'];
         $result['payment_related_details_for_mobile_sdk_hash'] = $mobilehash;
-        $result['full_payment_wallet'] = $data['full_payment_wallet'];
+
+        if(isset($data['full_payment_wallet'])){
+            $result['full_payment_wallet'] = $data['full_payment_wallet'];
+        }
 
         if(in_array($data['type'],$this->membership_array)){
             $redisid = Queue::connection('redis')->push('TransactionController@sendCommunication', array('order_id'=>$order_id),Config::get('app.queue'));
