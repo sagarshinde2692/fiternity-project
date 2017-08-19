@@ -5133,6 +5133,16 @@ class CustomerController extends \BaseController {
 			return Response::json(array('status' => 401,'message' =>$this->errorMessage($validator->errors())),401);
 		}
 
+		if($data['action'] == 'received'){
+			$data['received'] = time();
+		}
+
+		if($data['action'] == 'clicked'){
+			$data['clicked'] = time();
+		}
+
+		unset($data['action']);
+
 		$promotionalNotificationTracking = false;
 		
 		if(isset($data['label']) && isset($data['device_token'])){
@@ -5150,7 +5160,7 @@ class CustomerController extends \BaseController {
 			$promotionalNotificationTracking->save();
 		}
 
-		return Response::json(array('status' => 200,'message' => 'Captured Successfully'),200);
+		return Response::json(array('status' => 200,'message' => 'Captured Successfully','promotional_notification_id'=>$promotionalNotificationTracking->_id),200);
 
 	}
 	
