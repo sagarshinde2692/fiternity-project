@@ -85,6 +85,10 @@ class TransactionController extends \BaseController {
             'type'=>'required'
         );
 
+        if(!isset($data['ratecard_id']) && !isset($data['ticket_id'])){
+            return Response::json(array('status'=>400, 'message'=>'Ratecard Id or ticket Id is required'));
+        }
+
         $workout = array('vip_booktrials','3daystrial','booktrials','workout-session');
         if(in_array($data['type'],$workout)){
 
@@ -188,17 +192,50 @@ class TransactionController extends \BaseController {
 
             $data['referal_trial_id'] = (int) $data['referal_trial_id'];
         }
-
-        if($data['type']!='events'){
+        
+        if($data['type'] == 'events'){
+            $data['ticket_quantity'] = isset($data['ticket_quantity']) ? $data['ticket_quantity'] : 1;
             
-            $cashbackRewardWallet =$this->getCashbackRewardWallet($data,$order);
+            if(isset($data['ticket_id'])){
+                
+                $ticket = Ticket::where('_id', $data['ticket_id'])->first();
 
-            if($cashbackRewardWallet['status'] != 200){
-                return Response::json($cashbackRewardWallet,$cashbackRewardWallet['status']);
+                if($ticket){
+                    $data['amount_customer'] = $data['amount'] = $data['amount_finder'] = $data['ticket_quantity'] * $ticket->price;
+                }else{
+                    $resp   =   array('status' => 400,'message' => "Ticket not found");
+                    return Response::json($resp,400);
+                }
+                
+            }else{
+
+                $resp   =   array('status' => 400,'message' => "Ticket id not found");
+                return Response::json($resp,400);
+                
             }
 
-            $data = array_merge($data,$cashbackRewardWallet['data']);
+            $finder = Finder::where('_id', $data['finder_id'])->first(['title']);
+            if($finder){
+                $data['finder_name'] = $finder->title;
+            }
+
+            $event = DbEvent::where('_id', $data['event_id'])->first(['name', 'slug']);
+
+            if($event){
+                $data['event_name'] = $event->name;
+                if($event['slug'] == Config::get('app.my_fitness_party_slug')){
+                    $data['event_type'] = "TOI";
+                }
+            }
         }
+            
+        $cashbackRewardWallet =$this->getCashbackRewardWallet($data,$order);
+
+        if($cashbackRewardWallet['status'] != 200){
+            return Response::json($cashbackRewardWallet,$cashbackRewardWallet['status']);
+        }
+
+        $data = array_merge($data,$cashbackRewardWallet['data']);
 
         $txnid = "";
         $successurl = "";
@@ -245,43 +282,8 @@ class TransactionController extends \BaseController {
             $data["followup_status"] = "abandon_cart";
         }
         
-        if($data['type'] == 'events'){
-
-            if(isset($data['ticket_quantity'])){
-
-                if(isset($data['ticket_id'])){
-                    
-                    $ticket = Ticket::where('_id', $data['ticket_id'])->first();
-
-                    if($ticket){
-                        $data['amount_customer'] = $data['amount'] = $data['amount_finder'] = $data['ticket_quantity'] * $ticket->price;
-                    }else{
-                        $resp   =   array('status' => 400,'message' => "Ticket not found");
-                        return Response::json($resp,400);
-                    }
-                    
-                }else{
-
-                    $resp   =   array('status' => 400,'message' => "Ticket id not found");
-                    return Response::json($resp,400);
-                    
-                }
-            }
-
-            $finder = Finder::where('_id', $data['finder_id'])->first(['title']);
-            if($finder){
-                $data['finder_name'] = $finder->title;
-            }
-
-            $event = DbEvent::where('_id', $data['event_id'])->first(['name', 'slug']);
-
-            if($event){
-                $data['event_name'] = $event->name;
-                if($event['slug'] == Config::get('app.my_fitness_party_slug')){
-                    $data['event_type'] = "TOI";
-                }
-            }
-        }
+        return $data;
+        
 
         if(isset($old_order_id)){
 
@@ -955,121 +957,131 @@ class TransactionController extends \BaseController {
 
         $amount = $data['amount_customer'] = $data['amount'];
 
-        if($data['type'] == "memberships" && isset($data['customer_source']) && ($data['customer_source'] == "android" || $data['customer_source'] == "ios")){
-            $data['app_discount_amount'] = intval($data['amount'] * ($this->appOfferDiscount/100));
-            $amount = $data['amount'] = $data['amount_customer'] = $data['amount'] - $data['app_discount_amount'];
-            $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount'],$data['finder_id'],'paymentgateway',$data['offer_id'],$data['customer_id']);
-        }else{
-            $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount_finder'],$data['finder_id'],'paymentgateway',$data['offer_id'],$data['customer_id']);
-        }
-
-        if(isset($data['cashback']) && $data['cashback'] == true){
-            $data['amount'] = $data['amount'] - $data['cashback_detail']['amount_discounted'];
-        }
-
-        if(!isset($data['repetition'])){
-
-            if(isset($data['wallet']) && $data['wallet'] == true){
-                $data['wallet_amount'] = $data['cashback_detail']['amount_deducted_from_wallet'];
-                $data['amount'] = $data['amount'] - $data['wallet_amount'];
-            }
-
-            if(isset($data['wallet_amount']) && $data['wallet_amount'] > 0){
-
-                $req = array(
-                    'customer_id'=>$data['customer_id'],
-                    'order_id'=>$data['order_id'],
-                    'amount'=>$data['wallet_amount'],
-                    'type'=>'DEBIT',
-                    'entry'=>'debit',
-                    'description'=> $this->utilities->getDescription($data),
-                    'finder_id'=>$data['finder_id']
-                );
-
-                $walletTransactionResponse = $this->utilities->walletTransactionNew($req);
-                
-                if($walletTransactionResponse['status'] != 200){
-                    return $walletTransactionResponse;
-                }else{
-                    $data['wallet_transaction_debit'] = $walletTransactionResponse['wallet_transaction_debit'];
-                }
-
-                // Schedule Check orderfailure and refund wallet amount in that case....
-                $url = Config::get('app.url').'/orderfailureaction/'.$data['order_id'].'/'.$customer_id;
-                $delay = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addHours(4);
-                $data['wallet_refund_sidekiq'] = $this->hitURLAfterDelay($url, $delay);
-
-            }
-
-        }else{
-
-            $new_data = Input::json()->all();
-
-            if(isset($new_data['wallet']) && $new_data['wallet'] == true){
-
-                $data['wallet_amount'] = $data['cashback_detail']['amount_deducted_from_wallet'];
-                $data['amount'] = $data['amount'] - $data['wallet_amount'];
-
-                $req = array(
-                    'customer_id'=>$data['customer_id'],
-                    'order_id'=>$data['order_id'],
-                    'amount'=>$data['wallet_amount'],
-                    'type'=>'DEBIT',
-                    'entry'=>'debit',
-                    'description'=> $this->utilities->getDescription($data),
-                    'finder_id'=>$data['finder_id']
-                );
-                $walletTransactionResponse = $this->utilities->walletTransactionNew($req);
-                
-                if($walletTransactionResponse['status'] != 200){
-                    return $walletTransactionResponse;
-                }else{
-                    $data['wallet_transaction_debit'] = $walletTransactionResponse['wallet_transaction_debit'];
-                }
-
-                // Schedule Check orderfailure and refund wallet amount in that case....
-                $url = Config::get('app.url').'/orderfailureaction/'.$data['order_id'].'/'.$customer_id;
-                $delay = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addHours(4);
-                $data['wallet_refund_sidekiq'] = $this->hitURLAfterDelay($url, $delay);
-
+        if($data['type'] != 'events'){
+            if($data['type'] == "memberships" && isset($data['customer_source']) && ($data['customer_source'] == "android" || $data['customer_source'] == "ios")){
+                $data['app_discount_amount'] = intval($data['amount'] * ($this->appOfferDiscount/100));
+                $amount = $data['amount'] = $data['amount_customer'] = $data['amount'] - $data['app_discount_amount'];
+                $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount'],$data['finder_id'],'paymentgateway',$data['offer_id'],$data['customer_id']);
             }else{
+                $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount_finder'],$data['finder_id'],'paymentgateway',$data['offer_id'],$data['customer_id']);
+            }
 
-                if(isset($order['wallet_amount']) && $order['wallet_amount'] != "" && $order['wallet_amount'] != 0){
+            if(isset($data['cashback']) && $data['cashback'] == true){
+                $data['amount'] = $data['amount'] - $data['cashback_detail']['amount_discounted'];
+            }
+
+            if(!isset($data['repetition'])){
+
+                if(isset($data['wallet']) && $data['wallet'] == true){
+                    $data['wallet_amount'] = $data['cashback_detail']['amount_deducted_from_wallet'];
+                    $data['amount'] = $data['amount'] - $data['wallet_amount'];
+                }
+
+                if(isset($data['wallet_amount']) && $data['wallet_amount'] > 0){
 
                     $req = array(
-                        'customer_id'=>$order['customer_id'],
-                        'order_id'=>$order['_id'],
-                        'amount'=>$order['wallet_amount'],
-                        'type'=>'REFUND',
-                        'entry'=>'credit',
-                        'description'=>'Refund for Order ID: '.$order['_id'],
+                        'customer_id'=>$data['customer_id'],
+                        'order_id'=>$data['order_id'],
+                        'amount'=>$data['wallet_amount'],
+                        'type'=>'DEBIT',
+                        'entry'=>'debit',
+                        'description'=> $this->utilities->getDescription($data),
+                        'finder_id'=>$data['finder_id']
                     );
 
                     $walletTransactionResponse = $this->utilities->walletTransactionNew($req);
                     
-                    if(isset($order['wallet_refund_sidekiq']) && $order['wallet_refund_sidekiq'] != ''){
-                        try {
-                            $this->sidekiq->delete($order['wallet_refund_sidekiq']);
-                        }catch(\Exception $exception){
-                            Log::error($exception);
-                        }
+                    if($walletTransactionResponse['status'] != 200){
+                        return $walletTransactionResponse;
+                    }else{
+                        $data['wallet_transaction_debit'] = $walletTransactionResponse['wallet_transaction_debit'];
                     }
 
-                    $order->unset('wallet');
-                    $order->unset('wallet_amount');
+                    // Schedule Check orderfailure and refund wallet amount in that case....
+                    $url = Config::get('app.url').'/orderfailureaction/'.$data['order_id'].'/'.$customer_id;
+                    $delay = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addHours(4);
+                    $data['wallet_refund_sidekiq'] = $this->hitURLAfterDelay($url, $delay);
+
+                }
+
+            }else{
+
+                $new_data = Input::json()->all();
+
+                if(isset($new_data['wallet']) && $new_data['wallet'] == true){
+
+                    $data['wallet_amount'] = $data['cashback_detail']['amount_deducted_from_wallet'];
+                    $data['amount'] = $data['amount'] - $data['wallet_amount'];
+
+                    $req = array(
+                        'customer_id'=>$data['customer_id'],
+                        'order_id'=>$data['order_id'],
+                        'amount'=>$data['wallet_amount'],
+                        'type'=>'DEBIT',
+                        'entry'=>'debit',
+                        'description'=> $this->utilities->getDescription($data),
+                        'finder_id'=>$data['finder_id']
+                    );
+                    $walletTransactionResponse = $this->utilities->walletTransactionNew($req);
+                    
+                    if($walletTransactionResponse['status'] != 200){
+                        return $walletTransactionResponse;
+                    }else{
+                        $data['wallet_transaction_debit'] = $walletTransactionResponse['wallet_transaction_debit'];
+                    }
+
+                    // Schedule Check orderfailure and refund wallet amount in that case....
+                    $url = Config::get('app.url').'/orderfailureaction/'.$data['order_id'].'/'.$customer_id;
+                    $delay = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addHours(4);
+                    $data['wallet_refund_sidekiq'] = $this->hitURLAfterDelay($url, $delay);
+
+                }else{
+
+                    if(isset($order['wallet_amount']) && $order['wallet_amount'] != "" && $order['wallet_amount'] != 0){
+
+                        $req = array(
+                            'customer_id'=>$order['customer_id'],
+                            'order_id'=>$order['_id'],
+                            'amount'=>$order['wallet_amount'],
+                            'type'=>'REFUND',
+                            'entry'=>'credit',
+                            'description'=>'Refund for Order ID: '.$order['_id'],
+                        );
+
+                        $walletTransactionResponse = $this->utilities->walletTransactionNew($req);
+                        
+                        if(isset($order['wallet_refund_sidekiq']) && $order['wallet_refund_sidekiq'] != ''){
+                            try {
+                                $this->sidekiq->delete($order['wallet_refund_sidekiq']);
+                            }catch(\Exception $exception){
+                                Log::error($exception);
+                            }
+                        }
+
+                        $order->unset('wallet');
+                        $order->unset('wallet_amount');
+                    }
+
                 }
 
             }
-
         }
+
+        
         if(isset($data["coupon_code"]) && $data["coupon_code"] != ""){
             $ticket_quantity = isset($data['ticket_quantity'])?$data['ticket_quantity']:1;
             $ticket = null;
-            if(isset($data['tickect_id'])){
+            if(isset($data['ticket_id'])){
                 $ticket = Ticket::find($data['ticket_id']);
+                if(!$ticket){
+                    $resp = array('status'=>400, 'message'=>'Ticket not found');
+                    return Response::json($resp, 400);
+                }
             }
-            $ratecard = Ratecard::find($data['ratecard_id']);
+            
+            $ratecard = isset($data['ratecard_id'])?Ratecard::find($data['ratecard_id']):null;
             Log::info("Customer Info". $customer_id);
+            
             $couponCheck = $this->customerreward->couponCodeDiscountCheck($ratecard,$data["coupon_code"],$customer_id, $ticket, $ticket_quantity);
             if(isset($couponCheck["coupon_applied"]) && $couponCheck["coupon_applied"]){
                 $data["amount"] = $data["amount"] > $couponCheck["data"]["discount"] ? $data["amount"] - $couponCheck["data"]["discount"] : 0;
