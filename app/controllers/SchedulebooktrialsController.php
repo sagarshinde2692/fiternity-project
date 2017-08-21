@@ -2318,11 +2318,10 @@ class SchedulebooktrialsController extends \BaseController {
                     $booktrialdata['poc_no'] = Config::get('app.contact_us_customer_number');
                 }
 
-                $send_communication["customer_sms_before3hour"] = $this->customersms->bookTrialReminderBefore3Hour($booktrialdata, $delayReminderTimeBefore3Hour);
-
-                // if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
+                if($hour >= 9 && $hour <= 21 ){
+                    $send_communication["customer_sms_before3hour"] = $this->customersms->bookTrialReminderBefore3Hour($booktrialdata, $delayReminderTimeBefore3Hour);
                     $send_communication["customer_notification_before3hour"] = $this->customernotification->bookTrialReminderBefore3Hour($booktrialdata, $delayReminderTimeBefore3Hour);
-                // }
+                }
 
             }
 
