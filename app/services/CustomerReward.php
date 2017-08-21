@@ -216,6 +216,9 @@ Class CustomerReward {
 
                 if(isset($order['event_type']) && $order['event_type']=='TOI'){
                     $fitcash_plus = intval($order['amount']);
+                    if($fitcash_plus == 0){
+                        return;
+                    }
                     Log::info("cashback");
                 }
 
