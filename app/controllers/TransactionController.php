@@ -799,7 +799,7 @@ class TransactionController extends \BaseController {
                 $order->update();
             }
             if(isset($order->coupon_code)){
-                $customer_update 	=	Customer::where('_id', $customer_id)->push('applied_promotion_codes', $code, true);	
+                $customer_update 	=	Customer::where('_id', $order->customer_id)->push('applied_promotion_codes', $order->coupon_code, true);	
             }
 
             $this->utilities->setRedundant($order);
