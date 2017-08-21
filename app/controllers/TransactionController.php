@@ -194,6 +194,8 @@ class TransactionController extends \BaseController {
         }
         
         if($data['type'] == 'events'){
+            $data['payment_mode'] = "paymentgateway";
+            
             $data['ticket_quantity'] = isset($data['ticket_quantity']) ? $data['ticket_quantity'] : 1;
             
             if(isset($data['ticket_id'])){
