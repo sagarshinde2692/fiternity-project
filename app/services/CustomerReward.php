@@ -943,26 +943,34 @@ Class CustomerReward {
             }else{
                 $price = $ratecard["special_price"] == 0 ? $ratecard["price"] : $ratecard["special_price"];
             }
-            $customer_id = isset($customer_id) ? $customer_id : false;
-            $calculation = $this->purchaseGameNew($price,$ratecard["finder_id"],"paymentgateway",false,$customer_id);
-            $wallet_balance = $calculation["amount_deducted_from_wallet"];
+        $customer_id = isset($customer_id) ? $customer_id : false;
+        $calculation = $this->purchaseGameNew($price,$ratecard["finder_id"],"paymentgateway",false,$customer_id);
+        $wallet_balance = $calculation["amount_deducted_from_wallet"];
 
-            $today_date = date("d-m-Y 00:00:00");
-            $coupon = Coupon::where('code', strtolower($couponCode))->where('start_date', '<=', new \DateTime($today_date))->where('end_date', '>=', new \DateTime($today_date))->first();
-            if(isset($coupon)){
-                $discount_amount = $coupon["discount_amount"];
-                $discount_amount = $discount_amount == 0 ? $coupon["discount_percent"]/100 * $price : $discount_amount;
-                $discount_amount = intval($discount_amount);
-                $discount_amount = $discount_amount > $coupon["discount_max"] ? $coupon["discount_max"] : $discount_amount;
-                $discount_price = $price - $discount_amount;
-                $final_amount = $discount_price > $wallet_balance ? $discount_price - $wallet_balance : 0;
-                $resp = array("data"=>array("discount" => $discount_amount, "final_amount" => $final_amount, "wallet_balance" => $wallet_balance, "only_discount" => $discount_price), "coupon_applied" => true);
-            }else{
-                $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false);
-                // $resp = array("status"=> 400, "message" => "Coupon not found", "error_message" => "Coupon is either not valid or expired");
-                // return Response::json($resp,400);    
+        $today_date = date("d-m-Y 00:00:00");
+        $coupon = Coupon::where('code', strtolower($couponCode))->where('start_date', '<=', new \DateTime($today_date))->where('end_date', '>=', new \DateTime($today_date))->first();
+        if(isset($coupon)){
+            $vendor_coupon = false;
+            if(isset($coupon['vendor_exclusive']) && $coupon['vendor_exclusive']){
+                if(!$customer_id || !in_array($customer_id, $coupon['vendors'])){
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false);
+                    return $resp;
+                }
+                $vendor_coupon = true;
             }
-            return $resp;
+            $discount_amount = $coupon["discount_amount"];
+            $discount_amount = $discount_amount == 0 ? $coupon["discount_percent"]/100 * $price : $discount_amount;
+            $discount_amount = intval($discount_amount);
+            $discount_amount = $discount_amount > $coupon["discount_max"] ? $coupon["discount_max"] : $discount_amount;
+            $discount_price = $price - $discount_amount;
+            $final_amount = $discount_price > $wallet_balance ? $discount_price - $wallet_balance : 0;
+            $resp = array("data"=>array("discount" => $discount_amount, "final_amount" => $final_amount, "wallet_balance" => $wallet_balance, "only_discount" => $discount_price), "coupon_applied" => true, "vendor_coupon"=>$vendor_coupon);
+        }else{
+            $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false);
+            // $resp = array("status"=> 400, "message" => "Coupon not found", "error_message" => "Coupon is either not valid or expired");
+            // return Response::json($resp,400);    
+        }
+        return $resp;
     }
 
 
