@@ -307,18 +307,20 @@ class TransactionController extends \BaseController {
         if(isset($data['myreward_id']) && $data['type'] == "workout-session"){
             $data['amount'] = 0;
         }
-        $result['firstname'] = $data['customer_name'];
+        $result['firstname'] = strtolower($data['customer_name']);
         $result['lastname'] = "";
         $result['phone'] = $data['customer_phone'];
-        $result['email'] = $data['customer_email'];
+        $result['email'] = strtolower($data['customer_email']);
         $result['orderid'] = $data['_id'];
         $result['txnid'] = $txnid;
         $result['amount'] = $data['amount'];
-        $result['productinfo'] = $data['productinfo'];
-        $result['service_name'] = preg_replace("/^'|[^A-Za-z0-9 \'-]|'$/", '', $data['service_name']);
+        $result['productinfo'] = strtolower($data['productinfo']);
+        $result['service_name'] = preg_replace("/^'|[^A-Za-z0-9 \'-]|'$/", '', strtolower($data['service_name']));
         $result['successurl'] = $successurl;
         $result['hash'] = $data['payment_hash'];
         $result['payment_related_details_for_mobile_sdk_hash'] = $mobilehash;
+        $result['finder_name'] = strtolower($data['finder_name']);
+        
 
         if(isset($data['full_payment_wallet'])){
             $result['full_payment_wallet'] = $data['full_payment_wallet'];
