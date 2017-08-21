@@ -227,6 +227,15 @@ class TransactionController extends \BaseController {
                     $data['event_type'] = "TOI";
                 }
             }
+
+            if(isset($data['coupon_code'])){
+                
+                $already_applied_coupon = Customer::where('_id',$data['customer_id'])->whereIn('applied_promotion_codes',[$data['coupon_code']])->count();
+            
+                if($already_applied_coupon>0){
+                    return Response::json(array('status'=>400, 'message'=>'Coupon already applied'), 400);
+                }
+            }
         }
             
         $cashbackRewardWallet =$this->getCashbackRewardWallet($data,$order);
@@ -788,6 +797,9 @@ class TransactionController extends \BaseController {
                 $order->final_assessment = "no";
                 $order->renewal = "no";
                 $order->update();
+            }
+            if(isset($order->coupon_code)){
+                $customer_update 	=	Customer::where('_id', $customer_id)->push('applied_promotion_codes', $code, true);	
             }
 
             $this->utilities->setRedundant($order);

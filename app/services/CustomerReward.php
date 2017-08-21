@@ -955,8 +955,15 @@ Class CustomerReward {
         }
 
         $customer_id = isset($customer_id) ? $customer_id : false;
-        $calculation = $this->purchaseGameNew($price,$ratecard["finder_id"],"paymentgateway",false,$customer_id);
-        $wallet_balance = $calculation["amount_deducted_from_wallet"];
+
+        $wallet_balance = 0;
+
+        if(!$ticket){
+        
+            $calculation = $this->purchaseGameNew($price,$ratecard["finder_id"],"paymentgateway",false,$customer_id);
+            $wallet_balance = $calculation["amount_deducted_from_wallet"];
+
+        }
 
         $today_date = date("d-m-Y 00:00:00");
         $coupon = Coupon::where('code', strtolower($couponCode))->where('start_date', '<=', new \DateTime($today_date))->where('end_date', '>=', new \DateTime($today_date))->first();
