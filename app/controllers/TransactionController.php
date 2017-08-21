@@ -253,6 +253,11 @@ class TransactionController extends \BaseController {
             }
             $successurl = $data['type'] == "memberships" ? Config::get('app.website')."/paymentsuccess" : Config::get('app.website')."/paymentsuccesstrial";
         }
+        
+
+        if($data['type'] == 'events'){
+            $successurl = Config::get('app.website')."/eventpaymentsuccess";
+        }
         $data['txnid'] = $txnid;
         $hash = getHash($data);
 
