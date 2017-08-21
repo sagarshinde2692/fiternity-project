@@ -282,9 +282,6 @@ class TransactionController extends \BaseController {
             $data["followup_status"] = "abandon_cart";
         }
         
-        return $data;
-        
-
         if(isset($old_order_id)){
 
             if($order){
