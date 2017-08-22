@@ -1013,13 +1013,8 @@ class TransactionController extends \BaseController {
         if(isset($data["coupon_code"]) && $data["coupon_code"] != ""){
             $ratecard = Ratecard::find($data['ratecard_id']);
             Log::info("Customer Info". $customer_id);
-            $logged_in_customer = Customer::find($data['logged_in_customer_id']);
-            if($logged_in_customer){
-                if(isset($logged_in_customer->vendor_account)){
-                    $customer_id = $logged_in_customer_id;
-                }
-            }
-            $couponCheck = $this->customerreward->couponCodeDiscountCheck($ratecard,$data["coupon_code"],$customer_id);
+            
+            $couponCheck = $this->customerreward->couponCodeDiscountCheck($ratecard,$data["coupon_code"],$customer_id, $data['service_id']);
             if(isset($couponCheck["coupon_applied"]) && $couponCheck["coupon_applied"]){
                 $data["amount"] = $data["amount"] > $couponCheck["data"]["discount"] ? $data["amount"] - $couponCheck["data"]["discount"] : 0;
                 $data["coupon_discount_amount"] = $data["amount"] > $couponCheck["data"]["discount"] ? $couponCheck["data"]["discount"] : $data["amount"];

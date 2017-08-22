@@ -936,7 +936,7 @@ Class CustomerReward {
     }
 
 
-    public function couponCodeDiscountCheck($ratecard,$couponCode,$customer_id = false){
+    public function couponCodeDiscountCheck($ratecard,$couponCode,$customer_id = false, $service_id = null){
         $offer = Offer::where('ratecard_id',$ratecard->_id)->where('hidden', false)->where('start_date','<=',new \DateTime(date("d-m-Y 00:00:00")))->where('end_date','>=',new \DateTime(date("d-m-Y 00:00:00")))->first();
             if($offer){
                 $price = $offer->price;
@@ -952,7 +952,28 @@ Class CustomerReward {
         if(isset($coupon)){
             $vendor_coupon = false;
             if(isset($coupon['vendor_exclusive']) && $coupon['vendor_exclusive']){
-                if(!$customer_id || !in_array($customer_id, $coupon['vendors'])){
+
+                $jwt_token = Request::header('Authorization');
+
+                if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+                    $decoded = $this->customerTokenDecode($jwt_token);
+                    $customer_id = $decoded->customer->_id;
+                }else{
+                    Log::info("returning");
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false);
+                    return $resp;
+                }
+
+                Log::info("===========customer".$customer_id);
+
+                $customer = \Customer::find((int)$customer_id);
+
+                $finder_id = $customer->finder_id;
+                Log::info("===========finder_id".$finder_id);
+                Log::info("===========service_id".$service_id);
+                
+    
+                if(!$finder_id || !in_array($finder_id, $coupon['finders']) || !$service_id || !in_array((int)$service_id, $coupon['services'])){
                     $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false);
                     return $resp;
                 }

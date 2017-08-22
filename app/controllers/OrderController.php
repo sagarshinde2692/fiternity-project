@@ -88,11 +88,12 @@ class OrderController extends \BaseController {
             $decoded = customerTokenDecode($jwt_token);
             $customer_id = (int)$decoded->customer->_id;
         }
+        $service_id = isset($data['service_id']) ? $data['service_id']: null;
         $couponCode = $data['coupon'];
         $ratecard = Ratecard::find($data['ratecard_id']);
         if(isset($ratecard)){
                 $customer_id = isset($customer_id) ? $customer_id : false;
-                $resp = $this->customerreward->couponCodeDiscountCheck($ratecard,$couponCode,$customer_id);
+                $resp = $this->customerreward->couponCodeDiscountCheck($ratecard,$couponCode,$customer_id, $service_id);
                 if($resp["coupon_applied"]){
                     return $resp;
                 }else{
