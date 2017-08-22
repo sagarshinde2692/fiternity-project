@@ -125,7 +125,7 @@ class OrderController extends \BaseController {
                 $already_applied_coupon = Customer::where('email', 'like', '%'.$data['customer_email'].'%')->whereIn('applied_promotion_codes',[strtolower($data['coupon'])])->count();
             
                 if($already_applied_coupon>0){
-                    return Response::json(array('status'=>400, 'message'=>'Coupon already applied'), 400);
+                    return Response::json(array('status'=>400,'data'=>array('final_amount'=>($resp['data']['discount']+$resp['data']['final_amount']), "discount" => 0), 'error_message'=>'Coupon already applied', "message" => "Coupon already applied"), 400);
                 }
             }
             return $resp;
