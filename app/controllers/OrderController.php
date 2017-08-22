@@ -78,8 +78,8 @@ class OrderController extends \BaseController {
         //     $resp = array("status"=> 400, "message" => "Amount field is missing", "error_message" => "Coupon cannot be applied on this transaction");
         //     return Response::json($resp,400);
         // }
-        if(!isset($data['ratecard_id'])){
-            $resp = array("status"=> 400, "message" => "Ratecard Id field is missing", "error_message" => "Coupon cannot be applied on this transaction");
+        if(!isset($data['ratecard_id']) && !isset($data['ticket_id'])){
+            $resp = array("status"=> 400, "message" => "Ratecard Id or ticket Id must be present", "error_message" => "Coupon cannot be applied on this transaction");
             return Response::json($resp,400);
         }
 
@@ -89,21 +89,51 @@ class OrderController extends \BaseController {
             $customer_id = (int)$decoded->customer->_id;
         }
         $couponCode = $data['coupon'];
-        $ratecard = Ratecard::find($data['ratecard_id']);
-        if(isset($ratecard)){
-                $customer_id = isset($customer_id) ? $customer_id : false;
-                $resp = $this->customerreward->couponCodeDiscountCheck($ratecard,$couponCode,$customer_id);
-                if($resp["coupon_applied"]){
-                    return $resp;
-                }else{
-                    $resp = array("status"=> 400, "message" => "Coupon not found", "error_message" => "Coupon is either not valid or expired", "data"=>$resp["data"]);
-                    return Response::json($resp,400);    
-                }
 
-        }else{
-            $resp = array("status"=> 400, "message" => "Ratecard Id field is wrong", "error_message" => "Coupon cannot be applied on this transaction");
-            return Response::json($resp,400);
+        $ticket = null;
+        
+        $ticket_quantity = isset($data['ticket_quantity']) ? $data['ticket_quantity'] : 1;
+        
+        
+        if(isset($data['ticket_id'])){
+            $ticket = Ticket::find($data['ticket_id']);
+            if(!$ticket){
+                $resp = array("status"=> 400, "message" => "Ticket not found", "error_message" => "Coupon cannot be applied on this transaction");
+                return Response::json($resp,400);   
+            }
         }
+
+        $ratecard = null;
+
+        if(isset($data['ratecard_id'])){
+            $ratecard = Ratecard::find($data['ratecard_id']);
+            if(!$ratecard){
+                $resp = array("status"=> 400, "message" => "Ratecard not found", "error_message" => "Coupon cannot be applied on this transaction");
+                return Response::json($resp,400);   
+            }
+        }
+
+        if(isset($data['event_id'])){
+            $customer_id = false;
+        }
+
+        $customer_id = isset($customer_id) ? $customer_id : false;
+        $resp = $this->customerreward->couponCodeDiscountCheck($ratecard,$couponCode,$customer_id, $ticket, $ticket_quantity);
+        if($resp["coupon_applied"]){
+            if(isset($data['event_id']) && isset($data['customer_email'])){
+                                
+                $already_applied_coupon = Customer::where('email', 'like', '%'.$data['customer_email'].'%')->whereIn('applied_promotion_codes',[strtolower($data['coupon'])])->count();
+            
+                if($already_applied_coupon>0){
+                    return Response::json(array('status'=>400,'data'=>array('final_amount'=>($resp['data']['discount']+$resp['data']['final_amount']), "discount" => 0), 'error_message'=>'Coupon already applied', "message" => "Coupon already applied"), 400);
+                }
+            }
+            return $resp;
+        }else{
+            $resp = array("status"=> 400, "message" => "Coupon not found", "error_message" => "Coupon is either not valid or expired", "data"=>$resp["data"]);
+            return Response::json($resp,400);    
+        }
+
         // if($amount > 600 && $data['coupon'] == "fitnow"){
         //     $newamount = ($amount - 500);
         //     $resp = array("status"=> "Coupon applied successfully", "amount" => $newamount,"discount_amount" => 500);

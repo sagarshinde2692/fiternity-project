@@ -605,7 +605,7 @@ class ServiceController extends \BaseController {
         $type 					= 	(isset($request['type']) && $request['type'] != "") ? $request['type'] : "trial" ;
         $recursive 				= 	(isset($request['recursive']) && $request['recursive'] != "" && $request['recursive'] == "true") ? true : false ;
 
-		$selectedFieldsForService = array('_id','name','finder_id','servicecategory_id','vip_trial','three_day_trial','address','trial');
+		$selectedFieldsForService = array('_id','name','finder_id','servicecategory_id','vip_trial','three_day_trial','address','trial', 'city_id');
 		Service::$withoutAppends=true;
 		Service::$setAppends=['trial_active_weekdays', 'workoutsession_active_weekdays'];
 		
@@ -635,6 +635,8 @@ class ServiceController extends \BaseController {
         	return Response::json(array('status'=>401,'message'=>'data is empty'),401);
         }
 
+		$city_id = isset($items[0]['city_id'])?$items[0]['city_id']:0;
+
         $schedules = array();
 
         switch ($type) {
@@ -647,7 +649,7 @@ class ServiceController extends \BaseController {
 		// $all_trials_booked = true;
 
 		
-		
+
         foreach ($items as $k => $item) {
 
         	$item['three_day_trial'] = isset($item['three_day_trial']) ? $item['three_day_trial'] : "";
@@ -693,7 +695,7 @@ class ServiceController extends \BaseController {
 	        // 	default: $ratecard = Ratecard::where('service_id',(int)$item['_id'])->where('type','trial')->first(); break;
 	        // }
 			// return array("name" => $item["name"],"rate"=>$item["serviceratecards"], "item"=>$item);
-			if(isset($item["serviceratecards"]) && isset($item["serviceratecards"][0]) > 0)
+			if(isset($item["serviceratecards"]) && isset($item["serviceratecards"][0]) > 0 && isNotInoperationalDate($date, $city_id))
 			{
 				$ratecard = $item["serviceratecards"][0];
 			}else{
