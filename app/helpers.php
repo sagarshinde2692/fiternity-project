@@ -2707,7 +2707,7 @@ if (!function_exists(('getRegId'))){
 if (!function_exists(('isNotInoperationalDate'))){
     function isNotInoperationalDate($date){
         // Log::info($date);
-        $inoperational_dates = ['2017-08-22'];
+        $inoperational_dates = ['2017-08-25'];
 
         if(in_array($date, $inoperational_dates)){
             return false;
