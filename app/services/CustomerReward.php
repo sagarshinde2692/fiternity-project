@@ -969,7 +969,13 @@ Class CustomerReward {
         }
 
         $today_date = date("d-m-Y 00:00:00");
-        $coupon = Coupon::where('code', strtolower($couponCode))->where('start_date', '<=', new \DateTime($today_date))->where('end_date', '>=', new \DateTime($today_date))->first();
+        $query = Coupon::where('code', strtolower($couponCode))->where('start_date', '<=', new \DateTime($today_date))->where('end_date', '>=', new \DateTime($today_date));
+
+        if($ticket){
+            $query->whereIn('tickets', [$ticket->_id]);
+        }
+        $coupon = $query->first();
+
         if(isset($coupon)){
             $discount_amount = $coupon["discount_amount"];
             $discount_amount = $discount_amount == 0 ? $coupon["discount_percent"]/100 * $price : $discount_amount;
