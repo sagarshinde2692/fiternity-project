@@ -2705,11 +2705,11 @@ if (!function_exists(('getRegId'))){
 }
 
 if (!function_exists(('isNotInoperationalDate'))){
-    function isNotInoperationalDate($date){
-        // Log::info($date);
+    function isNotInoperationalDate($date, $city_id){
+        // Log::info($city_id);
         $inoperational_dates = ['2017-08-25'];
 
-        if(in_array($date, $inoperational_dates)){
+        if(in_array($date, $inoperational_dates) && in_array($city_id, [1, 2])){
             return false;
         }else{
             return true;
