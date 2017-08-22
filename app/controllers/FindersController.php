@@ -2829,6 +2829,7 @@ class FindersController extends \BaseController {
 			$finder = Finder::active()->where('slug','=',$tslug)->first();
 
 			if($finder){
+
 				$finderData['finder']['title'] = str_replace('crossfit', 'CrossFit', $finder['title']);
 				$finderData['finder']['title'] = str_replace('Crossfit', 'CrossFit', $finder['title']);
 				if(Request::header('Authorization')){
@@ -2874,6 +2875,19 @@ class FindersController extends \BaseController {
 				}
 			
 			}
+
+			if(isset($finder['flags']) && isset($finder['flags']['state']) && in_array($finder['flags']['state'],['closed','temporarily_shut'])){
+
+				if($finder['flags']['state'] == 'temporarily_shut'){
+
+					$finderData['finder']['offer_icon'] = "https://b.fitn.in/global/finder/temporarily_shut.png";
+
+				}else{
+
+					$finderData['finder']['offer_icon'] = "https://b.fitn.in/global/finder/closed.png";
+					$finderData['finder']['services'] = [];
+				}
+			}	
 
 			if(isset($finderData['finder']['trial']) && $finderData['finder']['trial'] == "disable" ){
 				$finderData['call_for_action_button'] = "";
@@ -3015,7 +3029,9 @@ class FindersController extends \BaseController {
 			if(isset($finderData['finder']['category_id']) && $finderData['finder']['category_id'] == 42){
 				unset($finderData['finder']['lat']);
 				unset($finderData['finder']['lon']);
-			}			
+			}
+
+					
 
 		}else{
 
