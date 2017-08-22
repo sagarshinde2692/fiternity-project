@@ -647,7 +647,7 @@ class ServiceController extends \BaseController {
 		// $all_trials_booked = true;
 
 		
-		
+
         foreach ($items as $k => $item) {
 
         	$item['three_day_trial'] = isset($item['three_day_trial']) ? $item['three_day_trial'] : "";
@@ -693,7 +693,7 @@ class ServiceController extends \BaseController {
 	        // 	default: $ratecard = Ratecard::where('service_id',(int)$item['_id'])->where('type','trial')->first(); break;
 	        // }
 			// return array("name" => $item["name"],"rate"=>$item["serviceratecards"], "item"=>$item);
-			if(isset($item["serviceratecards"]) && isset($item["serviceratecards"][0]) > 0)
+			if(isset($item["serviceratecards"]) && isset($item["serviceratecards"][0]) > 0 && isNotInoperationalDate($date))
 			{
 				$ratecard = $item["serviceratecards"][0];
 			}else{
