@@ -113,9 +113,21 @@ class OrderController extends \BaseController {
             }
         }
 
+        if(isset($data['event_id'])){
+            $customer_id = false;
+        }
+
         $customer_id = isset($customer_id) ? $customer_id : false;
         $resp = $this->customerreward->couponCodeDiscountCheck($ratecard,$couponCode,$customer_id, $ticket, $ticket_quantity);
         if($resp["coupon_applied"]){
+            if(isset($data['event_id']) && isset($data['customer_email'])){
+                                
+                $already_applied_coupon = Customer::where('email', 'like', '%'.$data['customer_email'].'%')->whereIn('applied_promotion_codes',[strtolower($data['coupon'])])->count();
+            
+                if($already_applied_coupon>0){
+                    return Response::json(array('status'=>400, 'message'=>'Coupon already applied'), 400);
+                }
+            }
             return $resp;
         }else{
             $resp = array("status"=> 400, "message" => "Coupon not found", "error_message" => "Coupon is either not valid or expired", "data"=>$resp["data"]);
