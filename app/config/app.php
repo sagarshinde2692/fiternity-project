@@ -34,14 +34,14 @@ return array(
 	// 'debug' => TRUE,
 
 	//local
-	'url' => 'http://fitapi.com',
-	'admin_url' => 'http://fitadmin.com',
-	'website' => 'https://www.fitternity.com',
-	'sidekiq_url' => 'http://kick.fitn.in/', 
-	'queue' => 'booktrial',
-	'vendor_communication' => false,
-	'env' => 'stage',
-	'debug' => TRUE,
+	// 'url' => 'http://fitapi.com',
+	// 'admin_url' => 'http://fitadmin.com',
+	// 'website' => 'https://www.fitternity.com',
+	// 'sidekiq_url' => 'http://kick.fitn.in/', 
+	// 'queue' => 'booktrial',
+	// 'vendor_communication' => false,
+	// 'env' => 'stage',
+	// 'debug' => TRUE,
 
 	'download_app_link' => 'https://go.onelink.me/I0CO?pid=techfitsms',//https://www.fitternity.com/downloadapp?source=fittech',
 
