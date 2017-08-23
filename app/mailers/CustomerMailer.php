@@ -1,10 +1,12 @@
 <?PHP namespace App\Mailers;
 
 use Config,Mail;
+use App\Services\Utilities as Utilities;
 
 Class CustomerMailer extends Mailer {
 
-	public function bookTrial ($data){
+
+	protected function bookTrial ($data){
 
 		$label = 'AutoTrial-Instant-Customer';
 
@@ -12,6 +14,8 @@ Class CustomerMailer extends Mailer {
 
 			$label = 'VipTrial-Instant-Customer';
 		}
+
+		// return $data;
 
 		$message_data 	= array(
 			'user_email' => array($data['customer_email']),
@@ -22,7 +26,7 @@ Class CustomerMailer extends Mailer {
 
 	}
 
-	public function bookYogaDayTrial ($data){
+	protected function bookYogaDayTrial ($data){
 
 		$label = 'YogaDay-AutoTrial-Instant-Customer';
 
@@ -35,7 +39,7 @@ Class CustomerMailer extends Mailer {
 
 	}
 
-	public function rescheduledBookTrial ($data){
+	protected function rescheduledBookTrial ($data){
 
 		$label = 'RescheduleTrial-Instant-Customer';
 
@@ -48,8 +52,8 @@ Class CustomerMailer extends Mailer {
 	}
 
 
-	public function bookTrialReminderBefore12Hour ($data, $delay){
-
+	protected function bookTrialReminderBefore12Hour ($data, $delay){
+		\Log::info("inside bookTrialReminderBefore12Hour");
 		$label = 'AutoTrial-ReminderBefore12Hour-Customer';
 
 		$message_data 	= array(
@@ -61,7 +65,7 @@ Class CustomerMailer extends Mailer {
 	}
 
 
-	public function bookTrialReminderAfter2Hour ($data, $delay){
+	protected function bookTrialReminderAfter2Hour ($data, $delay){
 
 		$label = 'AutoTrial-ReminderAfter2Hour-Customer';
 
@@ -73,7 +77,7 @@ Class CustomerMailer extends Mailer {
 		return $this->common($label,$data,$message_data,$delay);
 	}
 
-	public function manualBookTrial ($data){
+	protected function manualBookTrial ($data){
 
 		$label = 'ManualTrial-Customer';
 
@@ -86,7 +90,7 @@ Class CustomerMailer extends Mailer {
 
 	}
 
-	public function manualTrialAuto ($data){
+	protected function manualTrialAuto ($data){
 
 		$label = 'ManualTrialAuto-Customer';
 
@@ -100,7 +104,7 @@ Class CustomerMailer extends Mailer {
 	}
 
 
-	public function sendCodOrderMail ($data){
+	protected function sendCodOrderMail ($data){
 
 		$label = 'Order-COD-Customer';
 
@@ -112,7 +116,7 @@ Class CustomerMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 
-	public function sendPgOrderMail ($data){
+	protected function sendPgOrderMail ($data){
 
 		$label = 'Order-PG-Customer';
 
@@ -124,14 +128,18 @@ Class CustomerMailer extends Mailer {
 		}
 
 		switch ($data['type']) {
-			case 'crossfit-week' : $label = 'Order-PG-Crossfit-Week-Customer';
-			case 'wonderise' :  $label = 'Order-PG-Wonderise-Customer';
-			case 'combat-fitness' :  $label = 'Order-PG-Combat-fitness-Customer';
-			case 'lyfe' :  $label = 'Order-PG-Lyfe-Customer';
-			case 'mickeymehtaevent' :  $label = 'Order-PG-Mickeymehtaevent-Customer';
-			case 'events' :  $label = 'Order-PG-Event';
-			case 'diet_plan' :  $label = 'Diet-PG-Customer';
+			case 'crossfit-week' : $label = 'Order-PG-Crossfit-Week-Customer';break;
+			case 'wonderise' :  $label = 'Order-PG-Wonderise-Customer';break;
+			case 'combat-fitness' :  $label = 'Order-PG-Combat-fitness-Customer';break;
+			case 'lyfe' :  $label = 'Order-PG-Lyfe-Customer';break;
+			case 'mickeymehtaevent' :  $label = 'Order-PG-Mickeymehtaevent-Customer';break;
+			case 'events' :  $label = 'Order-PG-Event';break;
+			case 'diet_plan' :  $label = 'Diet-PG-Customer';break;
 			default: break;
+		}
+
+		if(isset($data['event_type']) && $data['event_type']=='TOI'){
+			$label = 'Order-PG-Event-TOI';
 		}
 
 		$message_data 	= array(
@@ -142,7 +150,7 @@ Class CustomerMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 
-	public function forgotPassword ($data){
+	protected function forgotPassword ($data){
 
 		$label = 'ForgotPassword-Customer';
 
@@ -154,7 +162,7 @@ Class CustomerMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 
-	public function forgotPasswordApp ($data){
+	protected function forgotPasswordApp ($data){
 
 		$label = 'ForgotPassword-App-Customer';
 
@@ -166,7 +174,7 @@ Class CustomerMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 
-	public function register($data){
+	protected function register($data){
 
 		$label = 'Register-Customer';
 
@@ -179,7 +187,7 @@ Class CustomerMailer extends Mailer {
 	}
 
 
-	public function buyArsenalMembership ($data){
+	protected function buyArsenalMembership ($data){
 
 		$email_template_customer 	= 	'emails.order.pg_arsenalmembership';
 		$email_template_mailus 		= 	'emails.order.pg_arsenalmembership_mailus';
@@ -207,7 +215,7 @@ Class CustomerMailer extends Mailer {
 		return $this->sendToWorker('customer',$email_template_mailus, $template_data, $message_data, $label);
 	}
 
-	public function buyLandingpagePurchase ($data){
+	protected function buyLandingpagePurchase ($data){
 
 		$label = 'Purchase-LandingPage-Customer';
 
@@ -220,7 +228,7 @@ Class CustomerMailer extends Mailer {
 	}
 
 
-	public function cancelBookTrial($data){
+	protected function cancelBookTrial($data){
 		
 		$label = 'Cancel-Trial-Customer';
 
@@ -232,7 +240,7 @@ Class CustomerMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 	
-	public function cancelBookTrialByVendor($data){
+	protected function cancelBookTrialByVendor($data){
 
 		$label = 'Vendor-trial-cancellation-email-to-customer';
 
@@ -244,7 +252,7 @@ Class CustomerMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 
-	public function reviewReplyByVendor($data){
+	protected function reviewReplyByVendor($data){
 
 //		print_r($data);
 //		return;
@@ -259,7 +267,7 @@ Class CustomerMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 
-	public function orderAfter10Days($data, $delay){
+	protected function orderAfter10Days($data, $delay){
 
 		$label = 'S+10-Customer';
 
@@ -271,7 +279,7 @@ Class CustomerMailer extends Mailer {
 		return $this->common($label,$data,$message_data,$delay);
 	}
 
-	public function orderRenewalMissedcall($data, $delay){
+	protected function orderRenewalMissedcall($data, $delay){
 
 		$label = 'MembershipRenewal-Customer';
 
@@ -283,7 +291,7 @@ Class CustomerMailer extends Mailer {
 		return $this->common($label,$data,$message_data,$delay);
 	}
 
-	public function inviteEmail($type, $data){
+	protected function inviteEmail($type, $data){
 
 		switch ($type){
 			case 'vip_booktrials':
@@ -311,7 +319,7 @@ Class CustomerMailer extends Mailer {
 
 	}
 
-	public function respondToInviteEmail($data){
+	protected function respondToInviteEmail($data){
 
 		$label = 'respond-to-invite-for-trial';
 
@@ -324,7 +332,7 @@ Class CustomerMailer extends Mailer {
 	}
 
 
-	public function healthyTiffinTrial($data){
+	protected function healthyTiffinTrial($data){
 
 		$label = 'HealthyTiffinTrial-Instant-Customer';
 
@@ -336,7 +344,7 @@ Class CustomerMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 
-	public function healthyTiffinMembership($data){
+	protected function healthyTiffinMembership($data){
 
 		$label = 'HealthyTiffinMembership-Instant-Customer';
 
@@ -348,7 +356,7 @@ Class CustomerMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 
-	public function vipReward($data){
+	protected function vipReward($data){
 
 		$label = 'VipReward-Instant-Customer';
 
@@ -360,7 +368,7 @@ Class CustomerMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 
-	public function yogaDayPass($data){
+	protected function yogaDayPass($data){
 
 		$label = 'YogaDayPass-Instant-Customer';
 
@@ -372,7 +380,7 @@ Class CustomerMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 
-	public function nutritionStore($data){
+	protected function nutritionStore($data){
 
 		$label = 'NutritionStore-Customer';
 
@@ -384,7 +392,7 @@ Class CustomerMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 
-	public function landingPageCallback($data){
+	protected function landingPageCallback($data){
 
 		$label = 'FitnessCanvas-Customer';
 
@@ -401,7 +409,7 @@ Class CustomerMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 
-	public function rewardClaim($data){
+	protected function rewardClaim($data){
 
 		$label = $data['label'];
 
@@ -413,7 +421,7 @@ Class CustomerMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 
-	public function campaignRegisterCustomer($data){
+	protected function campaignRegisterCustomer($data){
 
 		$label = 'Campaign-Register-Customer';
 
@@ -425,7 +433,7 @@ Class CustomerMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 
-	public function orderUpdatePaymentAtVendor($data){
+	protected function orderUpdatePaymentAtVendor($data){
 
 		$label = 'OrderUpdatePaymentAtVendor-Customer';
 
@@ -438,7 +446,7 @@ Class CustomerMailer extends Mailer {
 	}
 
 
-	public function referFriend($data){
+	protected function referFriend($data){
 
 		$label = "Refer-friend";
 
@@ -450,7 +458,7 @@ Class CustomerMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 
-	public function instantSlotBooking($data){
+	protected function instantSlotBooking($data){
 
 		$label = 'DietPlan-InstantSlotBooking-Customer';
 
@@ -463,7 +471,7 @@ Class CustomerMailer extends Mailer {
 
 	}
 
-	public function before3HourSlotBooking($data,$delay){
+	protected function before3HourSlotBooking($data,$delay){
 
 		$label = 'DietPlan-Before3HourSlotBooking-Customer';
 
@@ -476,7 +484,7 @@ Class CustomerMailer extends Mailer {
 
 	}
 
-	public function dietPlanAfter15DaysReviewSlotConfirm($data){
+	protected function dietPlanAfter15DaysReviewSlotConfirm($data){
 
         $label = 'DietPlan-After15DaysReview-SlotConfirm-Customer';
 
@@ -489,7 +497,7 @@ Class CustomerMailer extends Mailer {
 
     }
 
-    public function dietPlanAfter15DaysFollowupSlotConfirm($data){
+    protected function dietPlanAfter15DaysFollowupSlotConfirm($data){
 
         $label = 'DietPlan-After15DaysFollowup-SlotConfirm-Customer';
 
@@ -502,7 +510,7 @@ Class CustomerMailer extends Mailer {
 
     }
 
-	public function sendDietPgCustomer($data){
+	protected function sendDietPgCustomer($data){
 
         $label = 'Diet-PG-Customer';
 
@@ -515,7 +523,7 @@ Class CustomerMailer extends Mailer {
 
     }
     
-	public function common($label,$data,$message_data,$delay = 0){
+	protected function common($label,$data,$message_data,$delay = 0){
 
 		if(isset($data['source']) && $data['source'] == 'cleartrip'){
 			return "";
@@ -529,12 +537,12 @@ Class CustomerMailer extends Mailer {
 		$message_data['bcc_emailids'] = ($template->email_bcc != "") ? array_merge(explode(',', $template->email_bcc),array(Config::get('mail.to_mailus'))) : array(Config::get('mail.to_mailus'));
 
 		$message_data['email_subject'] = $email_subject;
-
+		
 		return $this->sendDbToWorker('customer',$email_template, $message_data, $label, $delay);
 
 	}
 
-	public function bladeCompile($value, array $args = array())
+	protected function bladeCompile($value, array $args = array())
 	{
 	    $generated = \Blade::compileString($value);
 
@@ -561,11 +569,16 @@ Class CustomerMailer extends Mailer {
 	    return $content;
 	}
 
-	public function directWorker($emaildata){
+	protected function directWorker($emaildata){
+
+		\Log::info("inside direct worker");
+		// return;
 
         $email_template_data    =   $emaildata['email_template_data'];
 
-		$email_template = 	$this->bladeCompile($emaildata['email_template'],$emaildata['email_template_data']);
+		$template = \Template::where('label',$email_template_data['label'])->first();
+
+		$email_template = 	$this->bladeCompile($template->email_text,$email_template_data);
 
 		$message_data 	= [
 			'user_email' => is_array($emaildata['to']) ? $emaildata['to'] : [$emaildata['to']],

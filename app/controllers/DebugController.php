@@ -15,6 +15,8 @@ use App\Services\Sidekiq as Sidekiq;
 use App\Services\Bulksms as Bulksms;
 use App\Services\Utilities as Utilities;
 use App\Sms\CustomerSms as CustomerSms;
+use App\Services\Cacheapi as Cacheapi;
+
 
 use \Pubnub\Pubnub as Pubnub;
 
@@ -3585,11 +3587,11 @@ public function yes($msg){
 		// print_r($return);
 	}
 		
-	public function vendorReverseMigrate()
+	public function vendorReverseMigrate($vendorIds=[])
 	{
-		$vendorIds = [1939,5988];
 		$ch = curl_init();
 		foreach($vendorIds as $vendorId){
+			Log::info("migratoin url:".Config::get('app.url'));
 			$url = Config::get('app.url').'/reverse/migration/vendor/'.$vendorId;
 			curl_setopt($ch, CURLOPT_URL, $url);
 			$result = curl_exec($ch);
@@ -4525,7 +4527,249 @@ public function yes($msg){
 
     }
 
+    public function conditionTest(){
 
+		$request = [];
+
+		$request['order_id'] = 48495;
+		$customer_id = 1;
+
+		$order = Order::find((int)$request['order_id'])->toArray();
+
+        $fitcashCoupons = Fitcashcoupon::select('_id','code','condition')->where('condition','exists',true)->get();
+
+        $query = Wallet::active()->where('customer_id',(int)$customer_id)->where('balance','>',0);
+
+        if(count($fitcashCoupons) > 0){
+
+            $fitcashCoupons = $fitcashCoupons->toArray();
+
+            foreach ($fitcashCoupons as $coupon) {
+
+            	$code = $coupon['code'];
+
+            	$condition_array = [];
+
+            	foreach ($coupon['condition'] as $condition) {
+
+            		$operator = $condition['operator'];
+            		$field = $condition['field'];
+            		$value = $condition['value'];
+
+            		switch ($operator) {
+            			case 'in':
+
+            				if(isset($order[$field]) && in_array($order[$field],$value)){
+			                    $condition_array[] = 'true';
+			                }else{
+			                	$condition_array[] = 'false';
+			                }
+
+            				break;
+
+            			case 'not_in':
+
+            				if(isset($order[$field]) && !in_array($order[$field],$value)){
+			                    $condition_array[] = 'true';
+			                }else{
+			                	$condition_array[] = 'false';
+			                }
+
+            				break;
+            		}
+
+            	}
+
+            	if(in_array('false', $condition_array)){
+            		$query->where('coupon','!=',$code);
+        		}
+
+            }
+        }
+
+        $allWallets  = $query->OrderBy('_id','asc')->get();
+
+        return $allWallets;
+
+	}
+
+	public function manualtractionupdate($type, $x){
+
+		$x = intval($x);
+	
+		$data = Input::all();
+
+		$service_ids = $data['service_ids'];
+
+		$services = 0;
+		$vendorservices = 0;
+
+		if($type=='increment'){
+
+			$services = Service::whereIn('_id', $service_ids)->increment('traction.sales', $x);
+
+			$vendorservices = Vendorservice::whereIn('_id', $service_ids)->increment('traction.sales', $x);
+
+		}else if($type=='decrement'){
+
+			$services = Service::whereIn('_id', $service_ids)->where('traction.sales', '<=', $x)->update(['traction.sales'=> 0]);
+
+			$vendorservices = Vendorservice::whereIn('_id', $service_ids)->where('traction.sales', '<=', $x)->update(['traction.sales'=> 0]);
+
+			$services += Service::whereIn('_id', $service_ids)->where('traction.sales', '>', $x)->decrement('traction.sales', $x);
+
+			$vendorservices += Vendorservice::whereIn('_id', $service_ids)->where('traction.sales', '>', $x)->decrement('traction.sales', $x);
+
+		}
+
+		return array('services updated'=>$services, 'vendorservices updated'=> $vendorservices);
+
+	}
+
+	public function linkSentNotSuccess(){
+
+		ini_set('memory_limit','512M');
+		ini_set('max_execution_time', 300);
+
+		$orderSuccessCustomerId = Order::active()->where('customer_id','!=','xxxxxxxxxx')->whereIn('type',['memberships','healthytiffinmembership'])->where('created_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-07-01 00:00:00"))))->lists('customer_id');
+
+		$orderSuccessCustomerId = array_unique(array_map("intval", $orderSuccessCustomerId));
+
+		$orderNotSuccessOrderId = Order::whereIn('type',['memberships','healthytiffinmembership'])
+			->where('created_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-07-01 00:00:00"))))
+			->where('status','!=','1')
+			->where("paymentLinkEmailCustomerTiggerCount","exists",true)
+			->where("paymentLinkEmailCustomerTiggerCount",">=",1)
+			->whereNotIn('customer_id',$orderSuccessCustomerId)
+			->lists('_id');
+
+		$orderNotSuccessOrderId = array_map("intval", $orderNotSuccessOrderId);
+
+		$offset = 0;
+		$limit = 10;
+
+		$allOrders = $this->linkSentNotSuccessQuery($offset,$limit,$orderNotSuccessOrderId);
+
+		$customersms = new CustomerSms();
+
+		while(count($allOrders) != 0){
+
+			echo $offset;
+
+			foreach ($allOrders as $order) {
+
+				$data = [];
+
+				$data['payment_link'] = Config::get('app.website')."/paymentlink/".$order['order_id'];
+
+				if(isset($order['ratecard_id']) && $order['ratecard_id'] != ""){
+		            $data['payment_link'] = Config::get('app.website')."/buy/".$order['finder_slug']."/".$order['service_id']."/".$order['ratecard_id']."/".$order['order_id'];
+		        }
+
+		        if(isset($order['no_ratecard_service_duration']) && $order['no_ratecard_service_duration'] != ""){
+		            $data['payment_link'] = Config::get('app.website')."/buy/".$order['finder_slug']."/".$order['service_id']."/true/".$order['order_id'];
+		        }
+
+		        $data['customer_name'] = ucwords($order['customer_name']);
+		        $data['customer_phone'] = $order['customer_phone'];
+		        $data['finder_name'] = ucwords($order['finder_name']);
+
+		       	$customersms->linkSentNotSuccess($data);
+
+				$order->update(['linkSentNotSuccess'=>time()]);
+
+			}
+
+			$offset = $offset + 10;
+
+			$allOrders = $this->linkSentNotSuccessQuery($offset,$limit,$orderNotSuccessOrderId);
+		}
+
+		return array('status'=>'done');
+
+	}
+
+	public function linkSentNotSuccessQuery($offset,$limit,$orderNotSuccessOrderId){
+		
+		$orders  = Order::whereIn('type',['memberships','healthytiffinmembership'])
+			->where('created_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-07-01 00:00:00"))))
+			->where('status','!=','1')
+			->where("paymentLinkEmailCustomerTiggerCount","exists",true)
+			->where("paymentLinkEmailCustomerTiggerCount",">=",1)
+			->whereIn('_id',$orderNotSuccessOrderId)
+			->skip($offset)
+			->take($limit)
+			->where('linkSentNotSuccess','exists',false)
+			->get();
+
+		return $orders;
+
+	}
+
+	public function servicefilterreversemigration(){
+
+		$updated_vendors = [];
+
+		$vendors = Vendor::where('filter.servicesfilter', 'exists', true)->get(['_id', 'filter.servicesfilter']);
+
+		$i = 1;
+		
+		Log::info("Vendors to update:".count($vendors));
+		foreach($vendors as $vendor){
+
+			$result = Finder::where('_id', $vendor['id'])->update(['servicesfilter'=>$vendor['filter']['servicesfilter']]);
+			array_push($updated_vendors, $vendor['_id']);
+			Log::info("Updated:".$i++);
+		}
+		return $updated_vendors;
+	}
+
+
+
+
+	public function payuSuccessDate(){
+
+		ini_set('memory_limit','512M');
+		ini_set('max_execution_time', 300);
+
+		$destinationPath = public_path();
+        $fileName = "pay_order_success.csv";
+        $filePath = $destinationPath.'/'.$fileName;
+
+        $csv_to_array = $this->csv_to_array($filePath);
+
+        if($csv_to_array){
+
+            foreach ($csv_to_array as $key => $value) {
+            	
+                if(strpos(strtolower($value['Transaction ID']),'fit') !== false){
+
+                	$order = Order::find((int) $value['Order ID']);
+
+                	if($order && !isset($order->success_date_added)){
+
+                		$order->success_date = date('Y-m-d H:i:s',strtotime(str_replace("/", "-", $value['Date'])));
+                		$order->success_date_added = time();
+                		$order->update();
+
+                		echo "Yes - ".$value['Transaction ID']."\n";
+
+                	}else{
+
+                		echo "No - ".$value['Transaction ID']."\n";
+                	}
+
+                }else{
+
+                	echo "Error - ".$value['Transaction ID']."\n";
+                }
+
+            }
+        }
+
+        return "done";
+
+	}
 
     
 }

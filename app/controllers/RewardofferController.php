@@ -219,7 +219,6 @@ class RewardofferController extends BaseController {
                     ->orderBy('_id','desc')->first();
 
                     // return $rewardoffer;
-
             if ($rewardoffer){
                 $rewardoffer = $rewardoffer->toArray();
 
@@ -239,19 +238,21 @@ class RewardofferController extends BaseController {
 
                     $reward_type_order = array(
                         'fitness_kit',
+                        'diet_plan',
                         'sessions',
                         'healthy_snacks',
                         'personal_trainer_at_home',
-                        'diet_plan',
                         'healthy_tiffin',
                         'nutrition_store',
                         'fitternity_voucher'
                     );
-
+                    if($ratecard["type"] == "trial" || $ratecard["type"] == "workout session"){
+                        $rewards = [];
+                    }
                     foreach ($reward_type_order as $reward_type_order_value){
-                        if($amount < 2000){
-                            $rewards = [];        
-                        }
+                        // if($amount < 2000){
+                        //     $rewards = [];        
+                        // }
                         foreach ($rewards as $rewards_value){
                             if($rewards_value['reward_type'] == "fitness_kit" || $rewards_value['reward_type'] == "healthy_snacks"){
                                 switch(true){
@@ -339,6 +340,10 @@ class RewardofferController extends BaseController {
                                     case 31:
                                     $validity = 3;
                                     $validity_type = 'months';
+                                    break;
+                                    case 32:
+                                    $validity = 1;
+                                    $validity_type = 'day';
                                     break;
                                     
                                 }
@@ -435,10 +440,10 @@ class RewardofferController extends BaseController {
             'status'                    =>  200,
             'message'                   => "Rewards offers"
         );
-        $data['cross_sell'] = array(
-            'diet_plan' => $customerReward->fitternityDietVendor($amount)
-        );
-        // $data['diet_plan'] = $customerReward->fitternityDietVendor($amount);
+        // $data['cross_sell'] = array(
+        //     'diet_plan' => $customerReward->fitternityDietVendor($amount)
+        // );
+        $data['diet_plan'] = $customerReward->fitternityDietVendor($amount);
 
 
         return  Response::json($data, 200);

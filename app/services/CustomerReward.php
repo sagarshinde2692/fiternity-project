@@ -1,6 +1,8 @@
 <?PHP namespace App\Services;
 use Myreward;
 use Reward;
+use Offer;
+use Coupon;
 use App\Services\Utilities;
 use Validator;
 use Response;
@@ -108,7 +110,7 @@ Class CustomerReward {
     public function giveCashbackOrRewardsOnOrderSuccess($order){
 
         $utilities          =   new Utilities;
-        $valid_ticket_ids   =   [99,100];
+        $valid_ticket_ids   =   [99,100, 262];
 
         try{
             // For Cashback.....
@@ -163,7 +165,7 @@ Class CustomerReward {
                 );
 
                 $utilities->walletTransaction($req,$order->toArray());
-                
+
                 $order->update(array('cashback_amount'=>$cashback_amount));
 
             }elseif(isset($order['reward_id']) && is_array($order['reward_id']) && !empty($order['reward_id'])){
@@ -208,21 +210,37 @@ Class CustomerReward {
 
                 $utilities->walletTransaction($walletData,$order->toArray());
 
-            }/*elseif(isset($order['type']) && $order['type'] == 'events' && isset($order['customer_id']) && isset($order['amount']) && isset($order['ticket_id']) && in_array(intval($order['ticket_id']), $valid_ticket_ids )){
+            }elseif(isset($order['type']) && $order['type'] == 'events' && isset($order['customer_id']) && isset($order['amount']) && isset($order['ticket_id']) ){
+                
+                $fitcash_plus = intval($order['amount']/5);
+
+                if(isset($order['event_type']) && $order['event_type']=='TOI'){
+                    $fitcash_plus = intval($order['amount']);
+                    if($fitcash_plus == 0){
+                        return;
+                    }
+                    Log::info("cashback");
+                }
 
                 $walletData = array(
                     "order_id"=>$order['_id'],
                     "customer_id"=> intval($order['customer_id']),
                     "amount"=> intval($order['amount']),
-                    "amount_fitcash" => intval($order['amount']),
-                    "amount_fitcash_plus" => 0,
+                    "amount_fitcash" => 0,
+                    "amount_fitcash_plus" => $fitcash_plus,
                     "type"=>'CASHBACK',
                     'entry'=>'credit',
-                    "description"=>'CASHBACK ON Events Tickets amount - '.intval($order['amount'])
+                    "description"=>'CASHBACK ON Events Tickets amount - '.$fitcash_plus
                 );
 
+                
+
                 $utilities->walletTransaction($walletData,$order->toArray());
-            }*/
+                $customersms = new CustomerSms();
+                $order->amount_20_percent = $fitcash_plus;
+                $customersms->giveCashbackOnTrialOrderSuccessAndInvite($order->toArray());
+                
+            }
             
         }
         catch (Exception $e) {
@@ -406,7 +424,16 @@ Class CustomerReward {
 
             $customer = \Customer::find($customer_id);
 
-            $current_wallet_balance = \Wallet::active()->where('customer_id',$customer_id)->where('balance','>',0)->sum('balance');/*
+            $utilities = new Utilities;
+
+            $request = [
+               'customer_id'=>$customer_id,
+               'finder_id'=>$finder_id, 
+            ];
+
+            $query = $utilities->getWalletQuery($request);
+            
+            $current_wallet_balance = $query->sum('balance');/*
 
             if(isset($customer->demonetisation)){
 
@@ -909,6 +936,60 @@ Class CustomerReward {
 
         return $data;
 
+    }
+
+
+    public function couponCodeDiscountCheck($ratecard,$couponCode,$customer_id = false, $ticket = null, $ticket_quantity = 1){
+
+
+        if($ticket){
+
+            $price = $ticket['price'] * $ticket_quantity;
+        
+        }else{
+
+            $offer = Offer::where('ratecard_id',$ratecard->_id)->where('hidden', false)->where('start_date','<=',new \DateTime(date("d-m-Y 00:00:00")))->where('end_date','>=',new \DateTime(date("d-m-Y 00:00:00")))->first();
+            if($offer){
+                $price = $offer->price;
+            }else{
+                $price = $ratecard["special_price"] == 0 ? $ratecard["price"] : $ratecard["special_price"];
+            }
+
+        }
+
+        $customer_id = isset($customer_id) ? $customer_id : false;
+
+        $wallet_balance = 0;
+
+        if(!$ticket){
+        
+            $calculation = $this->purchaseGameNew($price,$ratecard["finder_id"],"paymentgateway",false,$customer_id);
+            $wallet_balance = $calculation["amount_deducted_from_wallet"];
+
+        }
+
+        $today_date = date("d-m-Y 00:00:00");
+        $query = Coupon::where('code', strtolower($couponCode))->where('start_date', '<=', new \DateTime($today_date))->where('end_date', '>=', new \DateTime($today_date));
+
+        if($ticket){
+            $query->whereIn('tickets', [$ticket->_id]);
+        }
+        $coupon = $query->first();
+
+        if(isset($coupon)){
+            $discount_amount = $coupon["discount_amount"];
+            $discount_amount = $discount_amount == 0 ? $coupon["discount_percent"]/100 * $price : $discount_amount;
+            $discount_amount = intval($discount_amount);
+            $discount_amount = $discount_amount > $coupon["discount_max"] ? $coupon["discount_max"] : $discount_amount;
+            $discount_price = $price - $discount_amount;
+            $final_amount = $discount_price > $wallet_balance ? $discount_price - $wallet_balance : 0;
+            $resp = array("data"=>array("discount" => $discount_amount, "final_amount" => $final_amount, "wallet_balance" => $wallet_balance, "only_discount" => $discount_price), "coupon_applied" => true);
+        }else{
+            $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false);
+            // $resp = array("status"=> 400, "message" => "Coupon not found", "error_message" => "Coupon is either not valid or expired");
+            // return Response::json($resp,400);    
+        }
+        return $resp;
     }
 
 

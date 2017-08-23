@@ -964,7 +964,34 @@ Route::get('termsandconditions/{type}', 'CustomerController@termsAndConditions')
 
 Route::get('addfitcash', 'DebugController@addFitcash');
 
+Route::get('communication/{sender_class}/{transaction_type}/{label}/{id}/{key}', 'CommunicationsController@sendCommunication');
+
+// Route::get('sendManualCommunication/{id}', 'SchedulebooktrialsController@sendManualCommunication');
 Route::get('getbrands/{city}/{brand_id}', 'FindersController@getbrands');
 Route::get('orderfollowup','DebugController@orderFollowup');
 Route::post('belp/signin','HomeController@belpSignin');
 Route::post('belp/fitnessquiz','HomeController@belpFitnessQuiz');
+Route::post('belp/userdata','HomeController@belpUserData');
+Route::post('belp/showcapture','HomeController@showBelpCapture');
+Route::post('belp/tracking','HomeController@belpTracking');
+
+
+Route::get('conditiontest','DebugController@conditionTest');
+
+Route::get('getmealdetailsbyid', 'ServiceController@getMealDetailsById');
+Route::get('getlocationbyratecard/{ratecard_id}', 'ServiceController@getLocationByRatecard');
+
+
+Route::get('fitternitypersonaltrainersdetail','FindersController@fitternityPersonalTrainersDetail');
+
+
+
+Route::get('linksentnotsuccess','DebugController@linkSentNotSuccess');
+
+Route::post('crashlog','HomeController@crashLog');
+
+Route::get('payusuccessdate','DebugController@payuSuccessDate');
+
+Route::get('servicefilterreversemigration', 'DebugController@servicefilterreversemigration');
+
+

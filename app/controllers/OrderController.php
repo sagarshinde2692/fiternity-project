@@ -71,24 +71,77 @@ class OrderController extends \BaseController {
     public function couponCode(){
         $data = Input::json()->all();
         if(!isset($data['coupon'])){
-            $resp = array("status"=> 400, "message" => "Coupon code missing");
+            $resp = array("status"=> 400, "message" => "Coupon code missing", "error_message" => "Please enter a valid coupon");
             return Response::json($resp,400);
         }
-        if(!isset($data['amount'])){
-            $resp = array("status"=> 400, "message" => "Amount field is missing");
+        // if(!isset($data['amount'])){
+        //     $resp = array("status"=> 400, "message" => "Amount field is missing", "error_message" => "Coupon cannot be applied on this transaction");
+        //     return Response::json($resp,400);
+        // }
+        if(!isset($data['ratecard_id']) && !isset($data['ticket_id'])){
+            $resp = array("status"=> 400, "message" => "Ratecard Id or ticket Id must be present", "error_message" => "Coupon cannot be applied on this transaction");
             return Response::json($resp,400);
         }
 
-        
-        $amount = (int) $data['amount'];
-        if($amount > 600 && $data['coupon'] == "fitnow"){
-            $newamount = ($amount - 500);
-            $resp = array("status"=> "Coupon applied successfully", "amount" => $newamount,"discount_amount" => 500);
-            
-        }else{
-            $resp = array("status"=> "Coupon is either expired or not valid for this transaction", "amount" => $amount,"discount_amount" => 0);
-            return Response::json($resp,406);
+        $jwt_token = Request::header('Authorization');
+        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+            $decoded = customerTokenDecode($jwt_token);
+            $customer_id = (int)$decoded->customer->_id;
         }
+        $couponCode = $data['coupon'];
+
+        $ticket = null;
+        
+        $ticket_quantity = isset($data['ticket_quantity']) ? $data['ticket_quantity'] : 1;
+        
+        
+        if(isset($data['ticket_id'])){
+            $ticket = Ticket::find($data['ticket_id']);
+            if(!$ticket){
+                $resp = array("status"=> 400, "message" => "Ticket not found", "error_message" => "Coupon cannot be applied on this transaction");
+                return Response::json($resp,400);   
+            }
+        }
+
+        $ratecard = null;
+
+        if(isset($data['ratecard_id'])){
+            $ratecard = Ratecard::find($data['ratecard_id']);
+            if(!$ratecard){
+                $resp = array("status"=> 400, "message" => "Ratecard not found", "error_message" => "Coupon cannot be applied on this transaction");
+                return Response::json($resp,400);   
+            }
+        }
+
+        if(isset($data['event_id'])){
+            $customer_id = false;
+        }
+
+        $customer_id = isset($customer_id) ? $customer_id : false;
+        $resp = $this->customerreward->couponCodeDiscountCheck($ratecard,$couponCode,$customer_id, $ticket, $ticket_quantity);
+        if($resp["coupon_applied"]){
+            if(isset($data['event_id']) && isset($data['customer_email'])){
+                                
+                $already_applied_coupon = Customer::where('email', 'like', '%'.$data['customer_email'].'%')->whereIn('applied_promotion_codes',[strtolower($data['coupon'])])->count();
+            
+                if($already_applied_coupon>0){
+                    return Response::json(array('status'=>400,'data'=>array('final_amount'=>($resp['data']['discount']+$resp['data']['final_amount']), "discount" => 0), 'error_message'=>'Coupon already applied', "message" => "Coupon already applied"), 400);
+                }
+            }
+            return $resp;
+        }else{
+            $resp = array("status"=> 400, "message" => "Coupon not found", "error_message" => "Coupon is either not valid or expired", "data"=>$resp["data"]);
+            return Response::json($resp,400);    
+        }
+
+        // if($amount > 600 && $data['coupon'] == "fitnow"){
+        //     $newamount = ($amount - 500);
+        //     $resp = array("status"=> "Coupon applied successfully", "amount" => $newamount,"discount_amount" => 500);
+            
+        // }else{
+        //     $resp = array("status"=> "Coupon is either expired or not valid for this transaction", "amount" => $amount,"discount_amount" => 0);
+        //     return Response::json($resp,406);
+        // }
         return Response::json($resp,200);
     }
 
@@ -150,9 +203,12 @@ class OrderController extends \BaseController {
             return Response::json($resp,401);
         }
 
+        if($order['type']=='events'){
+            $hash_verified = true;
+        }else{
+            $hash_verified = $this->utilities->verifyOrder($data,$order);
+        }
 
-        $hash_verified = $this->utilities->verifyOrder($data,$order);
-        
         if($data['status'] == 'success' && $hash_verified){
             // Give Rewards / Cashback to customer based on selection, on purchase success......
 
@@ -1362,6 +1418,46 @@ class OrderController extends \BaseController {
             }
         }
 
+        if($data['type'] == 'events'){
+
+            $data["profile_link"] = $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$data['customer_email']);
+
+            if(isset($data['ticket_quantity'])){
+
+                if(isset($data['ticket_id'])){
+                    
+                    $ticket = Ticket::where('_id', $data['ticket_id'])->first();
+
+                    if($ticket){
+                        $data['amount_customer'] = $data['amount'] = $data['amount_finder'] = $data['ticket_quantity'] * $ticket->price;
+                    }else{
+                        $resp   =   array('status' => 400,'message' => "Ticket not found");
+                        return Response::json($resp,400);
+                    }
+                    
+                }else{
+
+                    $resp   =   array('status' => 400,'message' => "Ticket id not found");
+                    return Response::json($resp,400);
+                    
+                }
+            }
+
+            $finder = Finder::where('_id', $data['finder_id'])->first(['title']);
+            if($finder){
+                $data['finder_name'] = $finder->title;
+            }
+
+            $event = DbEvent::where('_id', $data['event_id'])->first(['name', 'slug']);
+
+            if($event){
+                $data['event_name'] = $event->name;
+                if($event['slug'] == Config::get('app.my_fitness_party_slug')){
+                    $data['event_type'] = "TOI";
+                }
+            }
+        }
+
         array_set($data, 'service_name_purchase', $data['service_name']);
         array_set($data, 'service_duration_purchase', $data['service_duration']);
 
@@ -2175,6 +2271,7 @@ class OrderController extends \BaseController {
                 }
 
                 $order->unset('cashback');
+                $order->unset('reward_info');
             }
 
             if(isset($order->reward_ids) && count($order->reward_ids) > 0){
@@ -2185,6 +2282,7 @@ class OrderController extends \BaseController {
                 }
 
                 $order->unset('reward_ids');
+                $order->unset('reward_info');
             }
 
             $data['amount_finder'] = $order->amount_finder;
@@ -2400,7 +2498,20 @@ class OrderController extends \BaseController {
                 
                 array_set($data, 'reward_info', $reward_info);
             }
-
+            if(isset($data["coupon_code"]) && $data["coupon_code"] != ""){
+                $ratecard = Ratecard::find($data['ratecard_id']);
+                Log::info("Customer Info". $customer_id);
+                $couponCheck = $this->customerreward->couponCodeDiscountCheck($ratecard,$data["coupon_code"],$customer_id);
+                if(isset($couponCheck["coupon_applied"]) && $couponCheck["coupon_applied"] && !isset($order->coupon_discount_amount)){
+                    $data["amount"] = $data["amount"] > $couponCheck["data"]["discount"] ? $data["amount"] - $couponCheck["data"]["discount"] : 0;
+                    $data["coupon_discount_amount"] = $data["amount"] > $couponCheck["data"]["discount"] ? $couponCheck["data"]["discount"] : $data["amount"];
+                }
+            }
+            if($data['amount'] == 0){
+                $data['full_payment_wallet'] = true;
+            }else{
+                $data['full_payment_wallet'] = false;
+            }
 
             $txnid = "FIT".$order_id;
             $successurl = $order['type'] == "memberships" ? Config::get('app.website')."/paymentsuccess" : Config::get('app.website')."/paymentsuccesstrial";
@@ -2413,7 +2524,9 @@ class OrderController extends \BaseController {
 
             if(isset($data['reward_ids']) && !empty($data['reward_ids']) && isset($data['preferred_payment_date']) && $data['preferred_payment_date']  != ''){
                 $data['order_confirmation_customer']= date('Y-m-d H:i:s',time());
-            } 
+            }
+
+            $order = Order::find($order_id);
 
             $order->update($data);
 

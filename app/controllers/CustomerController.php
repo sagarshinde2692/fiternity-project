@@ -2780,13 +2780,13 @@ class CustomerController extends \BaseController {
 
 		if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android") && isset($_GET['app_version']) && ((float)$_GET['app_version'] >= 2.5)){
 
-			$category_slug = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates"/*,"personal-trainers"*/,"luxury-hotels"/*,"healthy-snacks-and-beverages"*/,"spinning-and-indoor-cycling","healthy-tiffins"/*,"dietitians-and-nutritionists"*//*,"sport-nutrition-supliment-stores"*/,"aerobics","kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness");
+			$category_slug = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates"/*,"personal-trainers"*/,"luxury-hotels"/*,"healthy-snacks-and-beverages"*/,"spinning-and-indoor-cycling"/*,"healthy-tiffins"*//*,"dietitians-and-nutritionists"*//*,"sport-nutrition-supliment-stores"*/,"aerobics","kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness");
 
 			$cache_tag = 'customer_home_by_city_2_5';
 
 		}else{
 
-			$category_slug = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates"/*,"personal-trainers"*//*,"luxury-hotels"*//*,"healthy-snacks-and-beverages"*/,"spinning-and-indoor-cycling","healthy-tiffins"/*,"dietitians-and-nutritionists"*//*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness");
+			$category_slug = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates"/*,"personal-trainers"*//*,"luxury-hotels"*//*,"healthy-snacks-and-beverages"*/,"spinning-and-indoor-cycling"/*,"healthy-tiffins"*//*,"dietitians-and-nutritionists"*//*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness");
 
 			$cache_tag = 'customer_home_by_city';
 
@@ -2795,19 +2795,19 @@ class CustomerController extends \BaseController {
 
 		if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "ios")){
 
-			$category_slug = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","luxury-hotels"/*,"healthy-snacks-and-beverages"*/,"spinning-and-indoor-cycling","healthy-tiffins"/*,"dietitians-and-nutritionists"*//*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness"/*,"personal-trainers"*/);
+			$category_slug = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","luxury-hotels"/*,"healthy-snacks-and-beverages"*/,"spinning-and-indoor-cycling"/*,"healthy-tiffins"*//*,"dietitians-and-nutritionists"*//*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness"/*,"personal-trainers"*/);
 
 			$cat = array();
 
-			$cat['mumbai'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","luxury-hotels"/*,"healthy-snacks-and-beverages"*/,"spinning-and-indoor-cycling","healthy-tiffins"/*,"dietitians-and-nutritionists"*//*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness"/*,"personal-trainers"*/);
+			$cat['mumbai'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","luxury-hotels"/*,"healthy-snacks-and-beverages"*/,"spinning-and-indoor-cycling"/*,"healthy-tiffins"*//*,"dietitians-and-nutritionists"*//*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness"/*,"personal-trainers"*/);
 
-			$cat['pune'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates","healthy-tiffins","cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling"/*,"sport-nutrition-supliment-stores"*/,"aerobics","kids-fitness","pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
+			$cat['pune'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates"/*,"healthy-tiffins"*/,"cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling"/*,"sport-nutrition-supliment-stores"*/,"aerobics","kids-fitness","pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
 
-			$cat['bangalore'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates","healthy-tiffins","cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling"/*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
+			$cat['bangalore'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates"/*,"healthy-tiffins"*/,"cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling"/*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
 
-			$cat['delhi'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates","healthy-tiffins","cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling"/*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
+			$cat['delhi'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates"/*,"healthy-tiffins"*/,"cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling"/*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
 
-			$cat['gurgaon'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates","healthy-tiffins","cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling"/*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
+			$cat['gurgaon'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates"/*,"healthy-tiffins"*/,"cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling"/*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
 
 			$cat['noida'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"mma-and-kick-boxing","dance","kids-fitness","pre-natal-classes");
 
@@ -3161,8 +3161,10 @@ class CustomerController extends \BaseController {
 			return Response::json(array('status' => 401,'message' =>$this->errorMessage($validator->errors())),401);
 		}
 
-		$current_version_android = 3.5;
+		$current_version_android = 3.4;
 		$current_version_ios = 2.3;
+
+		$last_stable_version_android = 3.0;
 
 		if($data["device_type"] == "android"){
 
@@ -3172,7 +3174,7 @@ class CustomerController extends \BaseController {
 				"force_update" => false
 			);
 
-			if(floatval($data["app_version"]) < $current_version_android){
+			if(floatval($data["app_version"]) < $last_stable_version_android){
 
 				$result_android['force_update'] = true;
 			}
@@ -4234,11 +4236,11 @@ class CustomerController extends \BaseController {
 			$response["type"] = $data["type"];
 			
 
-			$followup_date = "";
+			$followup_date = null;
 			
 			if(isset($data["followup_date"])){
 
-				$followup_date = date('M d',strtotime($data["followup_date"]));
+				$followup_date = strtotime($data["followup_date"]);
 
 			}else{
 
@@ -5026,7 +5028,5 @@ class CustomerController extends \BaseController {
 			200
 		);
 	}
-
-
-
+	
 }

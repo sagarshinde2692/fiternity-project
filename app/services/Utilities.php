@@ -1274,7 +1274,7 @@ Class Utilities {
                 
                 if($allDeviceCount == 0 && isset($data['customer_id']) && $data['customer_id'] != ''){
 
-                    $booktrial = \Booktrial::where('created_at','>',new DateTime(date("d-m-Y 00:00:00",strtotime("20-4-2017 00:00:00"))))->where("customer_id",(int)$data['customer_id'])->where('type','booktrials')->count();
+                    $booktrial = \Booktrial::where('created_at','>',new \DateTime(date("d-m-Y 00:00:00",strtotime("20-4-2017 00:00:00"))))->where("customer_id",(int)$data['customer_id'])->where('type','booktrials')->count();
 
                     $description = "app download";
 
@@ -1682,7 +1682,9 @@ Class Utilities {
 
             $amount = $request['amount'];
 
-            $allWallets = Wallet::active()->where('customer_id',(int)$customer_id)->where('balance','>',0)->OrderBy('_id','asc')->get();
+            $query =  $this->getWalletQuery($request);
+
+            $allWallets  = $query->OrderBy('_id','asc')->get();
 
             if(count($allWallets) > 0){
 
@@ -2053,6 +2055,177 @@ Class Utilities {
         }
 
         return "success";
+
+    }
+
+    public function hitURLAfterDelay($url, $delay = 0, $label = 'label', $priority = 0){
+
+        Log::info("Scheduling url:$url");
+        Log::info("delay: $delay");
+
+        if($delay !== 0){
+            $delay = $this->getSeconds($delay);
+        }
+
+        $payload = array('url'=>$url,'delay'=>$delay,'priority'=>$priority,'label' => $label);
+
+        $route  = 'outbound';
+
+        $sidekiq = new Sidekiq();
+        $result  = $sidekiq->sendToQueue($payload,$route);
+
+        if($result['status'] == 200){
+            return $result['task_id'];
+        }else{
+            return $result['status'].':'.$result['reason'];
+        }
+    }
+
+     public function getSeconds($delay){
+
+        if ($delay instanceof DateTime){
+
+            return max(0, $delay->getTimestamp() - $this->getTime());
+
+        }elseif ($delay instanceof \Carbon\Carbon){
+
+            return max(0, $delay->timestamp - $this->getTime());
+
+        }elseif(isset($delay['date'])){
+
+            $time = strtotime($delay['date']) - $this->getTime();
+
+            return $time;
+
+        }else{
+
+            $delay = strtotime($delay) - time();
+        }
+
+        return (int) $delay;
+    }
+    
+    public function getTime(){
+        return time();
+    }
+
+    public function scheduleCommunication($data, $method, $class_name){
+        $transaction_data = $data[0];
+        $transaction_id = isset($transaction_data['_id']) ? $transaction_data['_id'] : $transaction_data['id'];
+        $delay = $data[1];
+        // $transaction_type = (isset($transaction_data['order_id'])) ? "order" : "trial";
+        $key = rand(100000000, 999999999);
+
+        if(in_array($method, ["before3HourSlotBooking", "orderRenewalMissedcall", "sendPaymentLinkAfter3Days", "sendPaymentLinkAfter7Days", "sendPaymentLinkAfter45Days", "purchaseAfter10Days", "purchaseAfter30Days"])){
+            $transaction_type = "order";
+        }else{
+            $transaction_type = "trial";
+        }
+
+        if($transaction_type == "order"){
+            $transaction = \Order::find($transaction_id);
+            
+        }else{
+            $transaction = \Booktrial::find($transaction_id);
+        }
+
+        $communication_keys = isset($transaction->communication_keys)?$transaction->communication_keys:array();
+        $communication_variable = "$class_name-$method";
+        $communication_keys[$communication_variable] = $key;
+        
+
+        $transaction['communication_keys'] = $communication_keys;
+
+        $transaction->update();
+
+        Log::info("Scheduling url from scheduleCommunication function");
+        return $this->hitURLAfterDelay(Config::get('app.url')."/communication/$class_name/$transaction_type/$method/$transaction_id/$key", $delay);
+
+    }
+
+     public function getCategoryImage($category = "no_category"){
+
+        $category_array['gyms'] = array('personal-trainers'=>'http://email.fitternity.com/229/personal.jpg','sport-nutrition-supliment-stores'=>'http://email.fitternity.com/229/nutrition.jpg','yoga'=>'http://email.fitternity.com/229/yoga.jpg');
+        $category_array['zumba'] = array('gyms'=>'http://email.fitternity.com/229/gym.jpg','dance'=>'http://email.fitternity.com/229/dance.jpg','healthy-tiffins'=>'http://email.fitternity.com/229/healthy-tiffin.jpg');
+        $category_array['yoga'] = array('pilates'=>'http://email.fitternity.com/229/pilates.jpg','personal-trainers'=>'http://email.fitternity.com/229/personal.jpg','marathon-training'=>'http://email.fitternity.com/229/marathon.jpg');
+        $category_array['pilates'] = array('yoga'=>'http://email.fitternity.com/229/yoga.jpg','healthy-tiffins'=>'http://email.fitternity.com/229/healthy-tiffin.jpg','marathon-training'=>'http://email.fitternity.com/229/marathon.jpg');
+        $category_array['cross-functional-training'] = array('sport-nutrition-supliment-stores'=>'http://email.fitternity.com/229/nutrition.jpg','personal-trainers'=>'http://email.fitternity.com/229/personal.jpg','healthy-tiffins'=>'http://email.fitternity.com/229/healthy-tiffin.jpg');
+        $category_array['crossfit'] = array('yoga'=>'http://email.fitternity.com/229/yoga.jpg','healthy-tiffins'=>'http://email.fitternity.com/229/healthy-tiffin.jpg','sport-nutrition-supliment-stores'=>'http://email.fitternity.com/229/nutrition.jpg');
+        $category_array['dance'] = array('zumba'=>'http://email.fitternity.com/229/zumba.jpg','mma-and-kick-boxing'=>'http://email.fitternity.com/229/mma&kickboxing.jpg','spinning-and-indoor-cycling'=>'http://email.fitternity.com/229/spinning.jpg');
+        $category_array['mma-and-kick-boxing'] = array('personal-trainers'=>'http://email.fitternity.com/229/personal.jpg','healthy-tiffins'=>'http://email.fitternity.com/229/healthy-tiffin.jpg','cross-functional-training'=>'http://email.fitternity.com/229/cross-functional.jpg');
+        $category_array['spinning-and-indoor-cycling'] = array('gyms'=>'http://email.fitternity.com/229/gym.jpg','dietitians-and-nutritionists'=>'http://email.fitternity.com/229/dietitians.jpg','yoga'=>'http://email.fitternity.com/229/yoga.jpg');
+        $category_array['marathon-training'] = array('dietitians-and-nutritionists'=>'http://email.fitternity.com/229/dietitians.jpg','yoga'=>'http://email.fitternity.com/229/yoga.jpg','cross-functional-training'=>'http://email.fitternity.com/229/cross-functional.jpg');
+
+        if(array_key_exists($category,$category_array)){
+            return $category_array[$category];
+        }else{
+            return array('gyms'=>'http://email.fitternity.com/229/gym.jpg','dance'=>'http://email.fitternity.com/229/dance.jpg','yoga'=>'http://email.fitternity.com/229/yoga.jpg');
+        }
+
+    }
+    public function getWalletQuery($request){
+
+        $query = Wallet::active()->where('customer_id',(int)$request['customer_id'])->where('balance','>',0);
+
+        if(isset($request['finder_id']) && $request['finder_id'] != ""){
+
+            $finder = \Finder::find((int)$request['finder_id']);
+
+            $conditionData = [];
+
+            $conditionData['finder_category_id'] = $finder->category_id;
+
+            $fitcashCoupons = \Fitcashcoupon::select('_id','code','condition')->where('condition','exists',true)->get();
+
+            if(count($fitcashCoupons) > 0){
+
+                $fitcashCoupons = $fitcashCoupons->toArray();
+
+                foreach ($fitcashCoupons as $coupon) {
+
+                    $code = $coupon['code'];
+
+                    $condition_array = [];
+
+                    foreach ($coupon['condition'] as $condition) {
+
+                        $operator = $condition['operator'];
+                        $field = $condition['field'];
+                        $value = $condition['value'];
+
+                        switch ($operator) {
+                            case 'in':
+
+                                if(isset($conditionData[$field]) && in_array($conditionData[$field],$value)){
+                                    $condition_array[] = 'true';
+                                }else{
+                                    $condition_array[] = 'false';
+                                }
+
+                                break;
+
+                            case 'not_in':
+
+                                if(isset($conditionData[$field]) && !in_array($conditionData[$field],$value)){
+                                    $condition_array[] = 'true';
+                                }else{
+                                    $condition_array[] = 'false';
+                                }
+
+                                break;
+                        }
+
+                    }
+
+                    if(in_array('false', $condition_array)){
+                        $query->where('coupon','!=',$code);
+                    }
+
+                }
+            }
+        }
+
+        return $query;
 
     }
 

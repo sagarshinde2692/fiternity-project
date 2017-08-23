@@ -1797,6 +1797,7 @@ class HomeController extends BaseController {
 
         $collection_by_city_list = $cache ? Cache::tags('collection_by_city_list')->has($city) : false;
         if(!$collection_by_city_list){
+            $city = getmy_city($city);
             $citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
             if(!$citydata){
                 return $this->responseNotFound('City does not exist');
@@ -1821,7 +1822,8 @@ class HomeController extends BaseController {
 
     public function getcollecitonfinders($city, $slug, $cache = true){
 
-        $city = strtolower($city);
+        // $city = strtolower($city);
+        $city = getmy_city($city);
         $slug = strtolower($slug);
 
         $finder_by_collection_list = $cache ? Cache::tags('finder_by_collection_list')->has($city."_".$slug) : false;
@@ -2474,11 +2476,11 @@ class HomeController extends BaseController {
         $device_type = $data['device_type'];
         $to = $data['to'];
         if($device_type == "android"){
-            $notification_object = array("notif_id" => 2005,"notif_type" => "promotion", "notif_object" => array("promo_id"=>739423,"promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> "593a9380820095bf3e8b4568","title"=> $data["title"],"text"=> "Message .. Long one maybe"));
+            $notification_object = array("notif_id" => 2005,"notif_type" => "promotion", "notif_object" => array("promo_id"=>739423,"promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> "593a9380820095bf3e8b4568","title"=> $data["title"],"text"=> ""));
         }else{
-            $notification_object = array("aps"=>array("alert"=> array("body" => $data["title"]), "sound" => "default", "badge" => 1), "notif_object" => array("promo_id"=>739423,"notif_type" => "promotion","promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> "593a9380820095bf3e8b4568","title"=> $data["title"],"text"=> "Message .. Long one maybe"));
+            $notification_object = array("aps"=>array("alert"=> array("body" => $data["title"]), "sound" => "default", "badge" => 1), "notif_object" => array("promo_id"=>739423,"notif_type" => "promotion","promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> "593a9380820095bf3e8b4568","title"=> $data["title"],"text"=> ""));
         }
-        $notificationData = array("to" =>array($data['to']),"delay" => 0,"label"=>$data['label'],"app_payload"=>$notification_object);
+        $notificationData = array("to" =>$data['to'],"delay" => 0,"label"=>$data['label'],"app_payload"=>$notification_object);
         $route  = $device_type;
         return $result  = $this->sidekiq->sendToQueue($notificationData,$route);
     }
@@ -2489,33 +2491,132 @@ class HomeController extends BaseController {
     }
 
     public function belpSignin(){
-       $data   =   Input::json()->all();
-       if(!isset($data["email"])){
-           $resp = array("message"=> "Email field can't be blank");
-           return  Response::json($resp, 400);
-       }
-       if(!isset($data["password"])){
-           $resp = array("message"=> "Password field can't be blank");
-           return  Response::json($resp, 400);
-       }
-       $belp_data = Belp::where("email",$data["email"])->first();
-       if(isset($belp_data)){
-            if($belp_data["password"] == $data["password"]){
-                $belp_data["email_id"] = $data["email_id"];
-                $belp_data["name"] = $data["name"];
-                $belp_data->save();
-                unset($belp_data["password"]);
-                $resp = array("data" => $belp_data);
-                return  Response::json($resp, 200);
-            }else{
-                $resp = array("message"=> "Email password doesn't match");
-                return  Response::json($resp, 401);     
+        $data   =   Input::json()->all();
+        if($data['page']=='quiz'){
+            if(!isset($data["email"])){
+                $resp = array("message"=> "Email field can't be blank");
+                return  Response::json($resp, 400);
             }
+
+            if(!isset($data["password"])){
+                $resp = array("message"=> "Password field can't be blank");
+                return  Response::json($resp, 400);
+            }
+
+            $belp_data = Belp::where("email",$data["email"])->first();
+
+            if(isset($belp_data)){
+                if($belp_data["password"] == $data["password"]){
+
+
+                    $belp_data["email_id"] = $data["email_id"];
+                    $belp_data["name"] = $data["name"];
+                    $belp_data->save();
+                    unset($belp_data["password"]);
+                    
+                    $resp = array("data" => $belp_data);
+
+                    return  Response::json($resp, 200);
+                }else{
+                    $resp = array("message"=> "Email password don't match");
+                    return  Response::json($resp, 401);     
+                }
+            }else{
+                $resp = array("message"=> "User doesn't exists");
+                return  Response::json($resp, 401);
+            }
+            
        }else{
-           $resp = array("message"=> "Email doesn't exists");
-           return  Response::json($resp, 401);
+            if(!isset($data["email_id"])){
+                $resp = array("message"=> "Email field can't be blank");
+                return  Response::json($resp, 400);
+            }
+
+            if(!isset($data["password"])){
+                $resp = array("message"=> "Password field can't be blank");
+                return  Response::json($resp, 400);
+            }
+
+            $belp_data = Belp::where("email_id",$data["email_id"])->first();
+
+            if(isset($belp_data)){
+                if($belp_data["password"] == $data["password"]){
+
+                    unset($belp_data["password"]);
+
+
+                    $belp_capture = Belptracking::where("belp_id",$belp_data["id"])->first();
+                    $resp = array("user" => $belp_data, "capture_data"=>$belp_capture);
+
+                    return  Response::json($resp, 200);
+                }else{
+                    $resp = array("message"=> "Email password don't match");
+                    return  Response::json($resp, 401);     
+                }
+            }else{
+                $resp = array("message"=> "User doesn't exists");
+                return  Response::json($resp, 401);
+            }
+            
        }
         
+    }
+
+    public function belpUserData(){
+        $data = Input::json()->all();
+        
+        if(!isset($data['_id'])){
+            $resp = array('status'=>400, 'message'=>'No belp Id found');
+            return  Response::json($resp, 400);
+            
+        }
+        
+        $belp = Belp::where('_id', $data['_id'])->first();
+
+        if(count($belp)==0){
+            $resp = array('status'=>404, 'message'=>'No belp found for this id');
+            return  Response::json($resp, 400);
+            
+        }
+        
+        $keys_array = ['email', 'full_name', 'gender', 'dob'];
+        
+        foreach($keys_array as $key){
+            if(isset($data[$key])){
+                $belp->$key = $data[$key];
+            }
+        }
+
+        $belp->update();
+
+        $resp = array('status'=>200, 'message'=>'Belp data saved');
+        return  Response::json($resp, 200);
+    }
+
+    public function showBelpCapture(){
+
+       $data   =   Input::json()->all();
+        if(!isset($data["belp_id"])){
+            $resp = array("message"=> "No belp Id found");
+            return  Response::json($resp, 400);
+        }else{
+            $belp_data = Belp::where("_id",$data["belp_id"])->first();
+            if(isset($belp_data)){
+                $belp_tracking = Belptracking::where("belp_id",$data["belp_id"])->get();
+                
+                if(count($belp_tracking) == 0 || isset($belp_data->test)){
+                    $resp = array("message"=> "No Belp Capture found");
+                    return  Response::json($resp, 400);
+                }else{
+                    $resp = array("belp_data"=> $belp_tracking[0]);
+                    return  Response::json($resp, 200);
+                }
+            }else{
+                $resp = array("message"=> "Belp user not found");
+                return  Response::json($resp, 400);
+            }
+        }
+
     }
 
     public function belpFitnessQuiz(){
@@ -2527,6 +2628,8 @@ class HomeController extends BaseController {
             $belp_data = Belp::where("_id",$data["belp_id"])->first();
             if(isset($belp_data)){
                 $belp_capture = Belpcapture::where("belp_id",$data["belp_id"])->get();
+            Log::info($belp_capture);
+                
                 // return $belp_data;
                 if(count($belp_capture) == 0 || isset($belp_data->test)){
                     $data["email"] = $belp_data["email"];
@@ -2543,6 +2646,57 @@ class HomeController extends BaseController {
                 return  Response::json($resp, 400);
             }
         }
+    }
+
+    public function belpTracking(){
+        $data   =   Input::json()->all();
+        if(!isset($data["belp_id"])){
+            $resp = array("message"=> "No belp Id found");
+            return  Response::json($resp, 400);
+        }else{
+            $belp_data = Belp::where("_id",$data["belp_id"])->first();
+            if(isset($belp_data)){
+                // $belp_tracking = Belptracking::where("belp_id",$data["belp_id"])->get();
+                // if(count($belp_tracking) == 0 || isset($belp_data->test)){
+                //     // $data["email"] = $belp_data["email"];
+                //     $data["capture_type"] = "belp_capture";
+                //     $storecapture = Belptracking::create($data);
+                //     $resp = array("message"=> "Entry Saved", "capture_id"=>$storecapture->_id);
+                //     return  Response::json($resp, 200);
+                // }else{
+                //     $resp = array("message"=> "Your entry has already reached us");
+                //     return  Response::json($resp, 400);
+                // }
+
+                $result = Belptracking::updateOrCreate(['belp_id'=>$data["belp_id"]], $data);
+                $resp = array("message"=> "Entry Saved", "capture_id"=>$data["belp_id"]);
+                return  Response::json($resp, 200);
+
+            }else{
+                $resp = array("message"=> "Belp user not found");
+                return  Response::json($resp, 400);
+            }
+        }
+    }
+
+    public function crashLog(){
+
+        $data   =   Input::json()->all();
+
+        // $rules = CrashLog::$rules;
+
+		// $validator = Validator::make($data,$rules);
+
+
+		// if ($validator->fails()) {
+		// 	return Response::json(array('status' => 400,'message' => $validator->errors()),400);   
+        // }
+
+        $crashlog = new CrashLog($data);
+        $crashlog->save();
+
+        return array('status'=>200, 'message'=>'Log saved');
+
     }
 
 }

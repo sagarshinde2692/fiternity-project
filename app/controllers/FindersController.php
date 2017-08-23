@@ -374,7 +374,7 @@ class FindersController extends \BaseController {
 
 
 				
-				array_set($finder, 'services', pluck( $finderarr['services'] , ['_id', 'name', 'lat', 'lon', 'serviceratecard', 'session_type', 'workout_tags', 'calorie_burn', 'workout_results', 'short_description','service_trainer','timing','category','subcategory','batches','vip_trial','meal_type','trial','membership', 'offer_available', 'showOnFront', 'traction']  ));
+				array_set($finder, 'services', pluck( $finderarr['services'] , ['_id', 'name', 'lat', 'lon', 'serviceratecard', 'session_type', 'workout_tags', 'calorie_burn', 'workout_results', 'short_description','service_trainer','timing','category','subcategory','batches','vip_trial','meal_type','trial','membership', 'offer_available', 'showOnFront', 'traction', 'timings']  ));
 				array_set($finder, 'categorytags', pluck( $finderarr['categorytags'] , array('_id', 'name', 'slug', 'offering_header') ));
 				array_set($finder, 'findercollections', pluck( $finderarr['findercollections'] , array('_id', 'name', 'slug') ));
 				array_set($finder, 'blogs', pluck( $finderarr['blogs'] , array('_id', 'title', 'slug', 'coverimage') ));
@@ -568,7 +568,7 @@ class FindersController extends \BaseController {
 						$finder['info']['timing'] = $info_timing;
 					}
 
-					
+
 					
 				}
 
@@ -1900,8 +1900,10 @@ class FindersController extends \BaseController {
 		foreach ($services as $service_key => $service_value){
 
 			if(isset($service_value['batches']) && !empty($service_value['batches'])){
-
+				
 				$service_batch[$service_value['name']] = $this->getAllBatches($service_value['batches']);
+			}else if(isset($service_value['timings']) && $service_value['timings'] != ""){
+				$service_batch[$service_value['name']] = $service_value['timings'];
 			}
 		}
 
@@ -1912,12 +1914,20 @@ class FindersController extends \BaseController {
 			foreach ($service_batch as $ser => $btch){
 
 				$info_timing .= "<p><strong>".$ser."</strong></p>";
-				foreach ($btch as $btch_value){
 
-					foreach ($btch_value as $key => $value) {
-						$info_timing .= "<p><i>".$this->matchAndReturn($value)." : </i>". $key ."</p>";
+				if(gettype($btch)=='array'){
+					foreach ($btch as $btch_value){
+
+						foreach ($btch_value as $key => $value) {
+							$info_timing .= "<p><i>".$this->matchAndReturn($value)." : </i>". $key ."</p>";
+						}
+
 					}
+				}else{
 
+					$time = substr($btch, strpos($btch, ":")+1);
+					$days = substr($btch, 0, strpos($btch, ":")-1);
+					$info_timing .= "<p><i>".$days." : </i>$time</p>";
 				}
 			}
 		}
@@ -3216,5 +3226,20 @@ class FindersController extends \BaseController {
 		}
 		return $finders;
 	}
+
+	public function fitternityPersonalTrainersDetail(){
+		try{
+			$finder = Finder::where('title', Config::get('app.fitternity_personal_trainers'))
+			->with(array('services'=>function($query){
+				$query->active()->select(array('id', 'name','finder_id', 'short_description','body','what_i_should_expect', 'workout_intensity','ordering'))->orderBy('ordering');
+				}))
+			->first();
+			return array('finder'=>$finder, 'status'=>200);
+		}catch(Exception $error){
+			return $errorMessage = $this->errorMessage($error);
+		}
+	}
+
+	
 
 }
