@@ -2522,9 +2522,9 @@ if (!function_exists(('getReversehash'))){
         $txnid = $data['txnid'];
         $amount = $data['amount'].".00";
         $productinfo = $service_name." - ".$finder_name;
-        $productinfo = $data['productinfo'] = substr($productinfo,0,100);
-        $firstname = $data['customer_name'];
-        $email = $data['customer_email'];
+        $productinfo = $data['productinfo'] = strtolower(substr($productinfo,0,100));
+        $firstname = strtolower($data['customer_name']);
+        $email = strtolower($data['customer_email']);
         $udf1 = "";
         $udf2 = "";
         $udf3 = "";
@@ -2552,12 +2552,11 @@ if (!function_exists(('getHash'))){
     function getHash($data){
 
         $env = (isset($data['env']) && $data['env'] == 1) ? "stage" : "production";
-
         $data['service_name'] = trim($data['service_name']);
         $data['finder_name'] = trim($data['finder_name']);
 
-        $service_name = preg_replace("/^'|[^A-Za-z0-9 \-]|'$/", ' ', $data['service_name']);
-        $finder_name = preg_replace("/^'|[^A-Za-z0-9 \-]|'$/", ' ', $data['finder_name']);
+        $service_name = preg_replace("/^'|[^A-Za-z0-9 \-]|'$/", ' ', strtolower($data['service_name']));
+        $finder_name = preg_replace("/^'|[^A-Za-z0-9 \-]|'$/", ' ', strtolower($data['finder_name']));
 
         $key = 'gtKFFx';
         $salt = 'eCwWELxi';
@@ -2570,9 +2569,9 @@ if (!function_exists(('getHash'))){
         $txnid = $data['txnid'];
         $amount = $data['amount'];
         $productinfo = $service_name." - ".$finder_name;
-        $productinfo = $data['productinfo'] = substr($productinfo,0,100);
-        $firstname = $data['customer_name'];
-        $email = $data['customer_email'];
+        $productinfo = $data['productinfo'] = strtolower(substr($productinfo,0,100));
+        $firstname = strtolower($data['customer_name']);
+        $email = strtolower($data['customer_email']);
         $udf1 = "";
         $udf2 = "";
         $udf3 = "";
@@ -2605,19 +2604,19 @@ if (!function_exists(('getpayTMhash'))){
         $data['service_name'] = trim($data['service_name']);
         $data['finder_name'] = trim($data['finder_name']);
 
-        $service_name = preg_replace("/^'|[^A-Za-z0-9 \-]|'$/", '', $data['service_name']);
-        $finder_name = preg_replace("/^'|[^A-Za-z0-9 \-]|'$/", '', $data['finder_name']);
+        $service_name = preg_replace("/^'|[^A-Za-z0-9 \-]|'$/", '', strtolower($data['service_name']));
+        $finder_name = preg_replace("/^'|[^A-Za-z0-9 \-]|'$/", '', strtolower($data['finder_name']));
 
         $productinfo = $service_name." - ".$finder_name;
-        $productinfo = $data['productinfo'] = substr($productinfo,0,100);
+        $productinfo = $data['productinfo'] = strtolower(substr($productinfo,0,100));
 
         $key = 'fitterKEY';
         $salt = '1086fit';
         
         $txnid = $data['txnid'];
         $amount = $data['amount'].".00";
-        $firstname = $data['customer_name'];
-        $email = $data['customer_email'];
+        $firstname = strtolower($data['customer_name']);
+        $email = strtolower($data['customer_email']);
         $udf1 = "";
         $udf2 = "";
         $udf3 = "";
@@ -2700,6 +2699,20 @@ if (!function_exists(('getRegId'))){
         }
 
         return $response;
+
+    }
+}
+
+if (!function_exists(('isNotInoperationalDate'))){
+    function isNotInoperationalDate($date, $city_id){
+        // Log::info($city_id);
+        $inoperational_dates = ['2017-08-25'];
+
+        if(in_array($date, $inoperational_dates) && in_array($city_id, [1, 2])){
+            return false;
+        }else{
+            return true;
+        }
 
     }
 }

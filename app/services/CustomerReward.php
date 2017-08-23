@@ -216,6 +216,9 @@ Class CustomerReward {
 
                 if(isset($order['event_type']) && $order['event_type']=='TOI'){
                     $fitcash_plus = intval($order['amount']);
+                    if($fitcash_plus == 0){
+                        return;
+                    }
                     Log::info("cashback");
                 }
 
@@ -936,19 +939,41 @@ Class CustomerReward {
     }
 
 
-    public function couponCodeDiscountCheck($ratecard,$couponCode,$customer_id = false, $service_id = null){
-        $offer = Offer::where('ratecard_id',$ratecard->_id)->where('hidden', false)->where('start_date','<=',new \DateTime(date("d-m-Y 00:00:00")))->where('end_date','>=',new \DateTime(date("d-m-Y 00:00:00")))->first();
+    public function couponCodeDiscountCheck($ratecard,$couponCode,$customer_id = false, $ticket = null, $ticket_quantity = 1, $service_id = null){
+
+
+        if($ticket){
+
+            $price = $ticket['price'] * $ticket_quantity;
+        
+        }else{
+
+            $offer = Offer::where('ratecard_id',$ratecard->_id)->where('hidden', false)->where('start_date','<=',new \DateTime(date("d-m-Y 00:00:00")))->where('end_date','>=',new \DateTime(date("d-m-Y 00:00:00")))->first();
             if($offer){
                 $price = $offer->price;
             }else{
                 $price = $ratecard["special_price"] == 0 ? $ratecard["price"] : $ratecard["special_price"];
             }
+        }
+            
         $customer_id = isset($customer_id) ? $customer_id : false;
-        $calculation = $this->purchaseGameNew($price,$ratecard["finder_id"],"paymentgateway",false,$customer_id);
-        $wallet_balance = $calculation["amount_deducted_from_wallet"];
+        
+        $wallet_balance = 0;
+
+        if(!$ticket){
+        
+            $calculation = $this->purchaseGameNew($price,$ratecard["finder_id"],"paymentgateway",false,$customer_id);
+            $wallet_balance = $calculation["amount_deducted_from_wallet"];
+
+        }
 
         $today_date = date("d-m-Y 00:00:00");
-        $coupon = Coupon::where('code', strtolower($couponCode))->where('start_date', '<=', new \DateTime($today_date))->where('end_date', '>=', new \DateTime($today_date))->first();
+        $query = Coupon::where('code', strtolower($couponCode))->where('start_date', '<=', new \DateTime($today_date))->where('end_date', '>=', new \DateTime($today_date));
+
+        if($ticket){
+            $query->whereIn('tickets', [$ticket->_id]);
+        }
+        $coupon = $query->first();
         if(isset($coupon)){
             $vendor_coupon = false;
             if(isset($coupon['vendor_exclusive']) && $coupon['vendor_exclusive']){
