@@ -2530,14 +2530,14 @@ class OrderController extends \BaseController {
 
             $order->update($data);
 
-            $result['firstname'] = $data['customer_name'];
+            $result['firstname'] = strtolower($data['customer_name']);
             $result['lastname'] = "";
             $result['phone'] = $data['customer_phone'];
-            $result['email'] = $data['customer_email'];
+            $result['email'] = strtolower($data['customer_email']);
             $result['orderid'] = $order_id;
             $result['txnid'] = $txnid;
             $result['amount'] = $data['amount'];
-            $result['productinfo'] = $data['productinfo'];
+            $result['productinfo'] = strtolower($data['productinfo']);
             $result['service_name'] = preg_replace("/^'|[^A-Za-z0-9 \'-]|'$/", '', $data['service_name']);
             $result['successurl'] = $successurl;
             $result['hash'] = $data['payment_hash'];
