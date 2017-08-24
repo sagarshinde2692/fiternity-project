@@ -977,7 +977,7 @@ Class CustomerReward {
         if(isset($coupon)){
             $vendor_coupon = false;
             if(isset($coupon['vendor_exclusive']) && $coupon['vendor_exclusive']){
-
+                $vendor_coupon = true;
                 $jwt_token = Request::header('Authorization');
 
                 if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
@@ -985,7 +985,7 @@ Class CustomerReward {
                     $customer_id = $decoded->customer->_id;
                 }else{
                     Log::info("returning");
-                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false);
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"Not logged in");
                     return $resp;
                 }
 
@@ -997,12 +997,15 @@ Class CustomerReward {
                 Log::info("===========finder_id".$finder_id);
                 Log::info("===========service_id".$service_id);
                 
-    
-                if(!$finder_id || !in_array($finder_id, $coupon['finders']) || !$service_id || !in_array((int)$service_id, $coupon['services'])){
-                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false);
+                if(!$finder_id || !in_array($finder_id, $coupon['finders'])){
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"Vendor not eligible");
                     return $resp;
                 }
-                $vendor_coupon = true;
+
+                if(!$service_id || !in_array((int)$service_id, $coupon['services'])){
+                   $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"Service not eligible");
+                    return $resp;
+                }
             }
             $discount_amount = $coupon["discount_amount"];
             $discount_amount = $discount_amount == 0 ? $coupon["discount_percent"]/100 * $price : $discount_amount;
