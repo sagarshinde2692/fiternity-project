@@ -976,6 +976,7 @@ Class CustomerReward {
         }
         $coupon = $query->first();
 
+
         if(isset($coupon)){
             $fitternity_only_coupon = false;
             
@@ -993,6 +994,7 @@ Class CustomerReward {
                 Log::info("===========customer".$customer_id);
                 $customer = \Customer::find((int)$customer_id);
                 $customer_email = $customer->email;
+                Log::info("===========customer=========".$customer_email);
                 
                 if(!in_array($customer_email, ['utkarshmehrotra@fitternity.com', 'maheshjadhav@fitternity.com'])){
                     $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "fitternity_only_coupon"=>$fitternity_only_coupon, "error_message"=>"Customer not eligible");
