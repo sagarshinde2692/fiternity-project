@@ -132,7 +132,13 @@ class OrderController extends \BaseController {
             }
             return $resp;
         }else{
-            $resp = array("status"=> 400, "message" => "Coupon not found", "error_message" => "Coupon is either not valid or expired", "data"=>$resp["data"]);
+
+            $errorMessage =  "Coupon is either not valid or expired";
+
+            if(isset($resp['vendor_exclusive']) && $resp['vendor_exclusive']){
+                $errorMessage =  $resp['error_message'];
+            }
+            $resp = array("status"=> 400, "message" => "Coupon not found", "error_message" =>$errorMessage, "data"=>$resp["data"]);
             return Response::json($resp,400);    
         }
 
