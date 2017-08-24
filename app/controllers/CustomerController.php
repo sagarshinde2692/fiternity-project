@@ -3570,7 +3570,7 @@ class CustomerController extends \BaseController {
 		}else{
 			$otp = genericGenerateOtp();
 			$customer->lastOtp = $otp;
-			$customer->updated();
+			$customer->update();
 			$customerdata = array(
                 'customer_name' => $customer->name,
                 'customer_email' => $customer->email,
