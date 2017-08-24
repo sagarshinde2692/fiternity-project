@@ -4732,6 +4732,14 @@ public function yes($msg){
 		ini_set('memory_limit','512M');
 		ini_set('max_execution_time', 300);
 
+		Order::where('success_date_added','exists',true)->unset('success_date_added');
+
+		exit();
+
+		Order::where('status','!=','1')->where('success_date','exists',true)->unset('success_date');
+
+		Order::where('status','!=','1')->where('success_date_added','exists',true)->unset('success_date_added');
+
 		$destinationPath = public_path();
         $fileName = "pay_order_success.csv";
         $filePath = $destinationPath.'/'.$fileName;
@@ -4746,7 +4754,7 @@ public function yes($msg){
 
                 	$order = Order::find((int) $value['Order ID']);
 
-                	if($order && !isset($order->success_date_added)){
+                	if($order && !isset($order->success_date_added) && $order->status == "1"){
 
                 		$order->success_date = date('Y-m-d H:i:s',strtotime(str_replace("/", "-", $value['Date'])));
                 		$order->success_date_added = time();
