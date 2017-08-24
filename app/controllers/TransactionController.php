@@ -801,7 +801,13 @@ class TransactionController extends \BaseController {
                 $order->update();
             }
             if(isset($order->coupon_code)){
-                $customer_update 	=	Customer::where('_id', $order->customer_id)->push('applied_promotion_codes', $order->coupon_code, true);	
+                $coupon = Coupon::where('code', strtolower($order['coupon_code']))->first();
+                Log::info("coupon");
+                $fitternity_only_coupon = ($coupon && isset($coupon->fitternity_only) && $coupon->fitternity_only) ? true : false;
+                
+                if(!$fitternity_only_coupon){
+                    $customer_update 	=	Customer::where('_id', $order->customer_id)->push('applied_promotion_codes', $order->coupon_code, true);	
+                }
             }
 
             $this->utilities->setRedundant($order);

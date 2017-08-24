@@ -216,6 +216,20 @@ Class CustomerReward {
 
                 if(isset($order['event_type']) && $order['event_type']=='TOI'){
                     $fitcash_plus = intval($order['amount']);
+                    
+                    if(isset($order['coupon_code'])){
+                        $coupon = Coupon::where('code', strtolower($order['coupon_code']))->first();
+                        Log::info("coupon");
+                        
+                        Log::info($coupon);
+                        if($coupon){
+                            if(isset($coupon->fitternity_only) && $coupon->fitternity_only){
+                                $fitcash_plus = $order['amount_finder'];
+                            }
+                        }
+
+                    }
+
                     if($fitcash_plus == 0){
                         return;
                     }
@@ -225,7 +239,7 @@ Class CustomerReward {
                 $walletData = array(
                     "order_id"=>$order['_id'],
                     "customer_id"=> intval($order['customer_id']),
-                    "amount"=> intval($order['amount']),
+                    "amount"=> $fitcash_plus,
                     "amount_fitcash" => 0,
                     "amount_fitcash_plus" => $fitcash_plus,
                     "type"=>'CASHBACK',
