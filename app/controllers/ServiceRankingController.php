@@ -77,7 +77,7 @@ class ServiceRankingController extends \BaseController {
         ->where('city_id', intval($city))
         ->where('status', '=', '1')
         ->where('flags.state', '!=', 'closed')
-        ->where('flags.trial', '!=', 'disable')
+        ->whereNotIn('flags.trial', array('disable', 'manual'))
         ->with(array('country'=>function($query){$query->select('name');}))
         ->with(array('city'=>function($query){$query->select('name');}))
         ->with(array('category'=>function($query){$query->select('name','meta');}))
