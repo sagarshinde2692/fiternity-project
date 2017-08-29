@@ -4732,13 +4732,15 @@ public function yes($msg){
 		ini_set('memory_limit','512M');
 		ini_set('max_execution_time', 300);
 
-		Order::where('success_date_added','exists',true)->unset('success_date_added');
+		//Order::where('success_date_added','exists',true)->unset('success_date_added');
 
-		exit();
+		//exit();
 
 		Order::where('status','!=','1')->where('success_date','exists',true)->unset('success_date');
 
 		Order::where('status','!=','1')->where('success_date_added','exists',true)->unset('success_date_added');
+
+		exit;
 
 		$destinationPath = public_path();
         $fileName = "success.csv";
