@@ -4779,5 +4779,21 @@ public function yes($msg){
 
 	}
 
+	public function orderStartTommorow(){
+
+		/*$contact_no = ["9967025279","9833086089","9820448016","9920373043","7042349222","9004753662"];
+
+		$message = "Congratulations on purchasing your membership on Fitternity. Since some gyms / studios will remain shut on August 25th on an account of Ganesh Chaturti - kindly confirm with them if you plan to start tomorrow.";
+
+		$sms['sms_type'] = 'transactional';
+		$sms['contact_no'] = $contact_no;
+		$sms['message'] = $message;
+
+		$bulkSms = new Bulksms();
+
+		return $bulkSms->send($sms);*/
+
+	}
+
     
 }
