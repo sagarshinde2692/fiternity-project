@@ -4736,11 +4736,11 @@ public function yes($msg){
 
 		//exit();
 
-		Order::where('status','!=','1')->where('success_date','exists',true)->unset('success_date');
+		// Order::where('status','!=','1')->where('success_date','exists',true)->unset('success_date');
 
-		Order::where('status','!=','1')->where('success_date_added','exists',true)->unset('success_date_added');
+		// Order::where('status','!=','1')->where('success_date_added','exists',true)->unset('success_date_added');
 
-		exit;
+		// exit;
 
 		$destinationPath = public_path();
         $fileName = "success.csv";
