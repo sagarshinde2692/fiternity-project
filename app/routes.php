@@ -997,3 +997,6 @@ Route::get('servicefilterreversemigration', 'DebugController@servicefilterrevers
 //Route::get('orderstarttommorow', 'DebugController@orderStartTommorow');
 
 
+// Route::get('masssms','DebugController@massSms');
+
+Route::get('alertmsg/{date}','DebugController@alertmsg');
