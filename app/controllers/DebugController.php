@@ -4794,6 +4794,28 @@ public function yes($msg){
 		return $bulkSms->send($sms);*/
 
 	}
+	public function alertmsg($date){
+		
+		$date =( date("Y-m-d", strtotime( $date)));
+		Log::info($date);	
+		$booktrials = Booktrial::where('schedule_date',  new DateTime($date))->get([]);
+		$customersms = new CustomerSms();
+		Log::info("Booktrials : ".count($booktrials));
+	
+
+		foreach($booktrials as $key=>$booktrial){
+			$ozonetel = Ozonetelno::where('finder_id', $booktrial->finder_id)->first();
+			$booktrial->finder_no  = $ozonetel->phone_number;
+			$result = $customersms->alertmsg($booktrial->toArray());
+			Log::info($result);
+			Log::info("sent:".$key);
+		}
+		return "Done";
+
+
+	}
+
+	
 
     
 }
