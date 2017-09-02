@@ -4,14 +4,14 @@
 return array(
 
 	//local
-	// 'url' => 'http://fitapi.com',
-	// 'admin_url' => 'http://fitadmin.com',
-	// 'website' => 'https://www.fitternity.com',
-	// 'sidekiq_url' => 'http://kick.fitn.in/', 
-	// 'queue' => 'booktrial',
-	// 'vendor_communication' => false,
-	// 'env' => 'stage',
-	// 'debug' => TRUE,
+	'url' => 'http://fitapi.com',
+	'admin_url' => 'http://fitadmin.com',
+	'website' => 'https://www.fitternity.com',
+	'sidekiq_url' => 'http://kick.fitn.in/', 
+	'queue' => 'booktrial',
+	'vendor_communication' => false,
+	'env' => 'stage',
+	'debug' => TRUE,
 
 	//stage
 	// 'url' => 'http://apistage.fitn.in',
@@ -35,13 +35,13 @@ return array(
 
 	//live
 	'url' => 'https://a1.fitternity.com',
-	'admin_url' => 'https://fitn.in',
-	'website' => 'https://www.fitternity.com',
-	'sidekiq_url' => 'http://nw.fitn.in/',
-	'queue' => 'booktrial',
-	'vendor_communication' => true,
-	'env' => 'production',
-	'debug' => FALSE,
+	// 'admin_url' => 'https://fitn.in',
+	// 'website' => 'https://www.fitternity.com',
+	// 'sidekiq_url' => 'http://nw.fitn.in/',
+	// 'queue' => 'booktrial',
+	// 'vendor_communication' => true,
+	// 'env' => 'production',
+	// 'debug' => FALSE,
 
 	'download_app_link' => 'https://go.onelink.me/I0CO?pid=techfitsms',//https://www.fitternity.com/downloadapp?source=fittech',
 
