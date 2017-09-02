@@ -80,7 +80,7 @@ class FindersController extends \BaseController {
 
 
 
-	public function finderdetail($slug, $cache = true){
+	public function finderdetail($slug, $cache = false){
 		
 		$data   =  array();
 		$tslug  = (string) strtolower($slug);
@@ -439,6 +439,14 @@ class FindersController extends \BaseController {
 					$finder['pay_per_session'] = false;
 				}
 				$pay_per_session = false;
+
+				$info_timing = $this->getInfoTiming($finder['services']);
+
+					if(isset($finder['info']) && $info_timing != ""){
+						$finder['info']['timing'] = $info_timing;
+				}
+
+				// return $info_timing;
 				if(count($finder['services']) > 0 ){
 
 					$serviceArr                             =   [];
@@ -562,12 +570,11 @@ class FindersController extends \BaseController {
 
 					array_set($finder, 'services', $serviceArr);
 
-					$info_timing = $this->getInfoTiming($finder['services']);
+					// $info_timing = $this->getInfoTiming($finder['services']);
 
-					if(isset($finder['info']) && $info_timing != ""){
-						$finder['info']['timing'] = $info_timing;
-					}
-
+					// if(isset($finder['info']) && $info_timing != ""){
+					// 	$finder['info']['timing'] = $info_timing;
+					// }
 
 					
 				}
@@ -2028,14 +2035,14 @@ class FindersController extends \BaseController {
 
 		if(isset($_GET['device_type']) && $_GET['device_type'] == 'android'){
 
-			$items = Service::active()->where('finder_id', $finder_id)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos','trial','membership', 'traction', 'location_id', 'offer_available'))->toArray();
+			$items = Service::active()->where('finder_id', $finder_id)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos','trial','membership', 'traction', 'location_id', 'offer_available', 'ad', 'showOnFront'))->toArray();
 
 		}else{
 
 			$membership_services = Ratecard::where('finder_id', $finder_id)->orWhere('type','membership')->orWhere('type','packages')->lists('service_id');
 			$membership_services = array_map('intval',$membership_services);
 
-			$items = Service::active()->whereIn('_id',$membership_services)->where('finder_id', $finder_id)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos','trial','membership', 'traction', 'location_id','offer_available'))->toArray();
+			$items = Service::active()->whereIn('_id',$membership_services)->where('finder_id', $finder_id)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos','trial','membership', 'traction', 'location_id','offer_available', 'showOnFront'))->toArray();
 
 		}
 
@@ -2295,7 +2302,7 @@ class FindersController extends \BaseController {
 		return $scheduleservices;
 	}
 
-	public function finderDetailApp($slug, $cache = true){
+	public function finderDetailApp($slug, $cache = false){
 
 		$data   =  array();	
 		$tslug  = (string) strtolower($slug);
@@ -2542,7 +2549,7 @@ class FindersController extends \BaseController {
 
 				
 
-				array_set($finder, 'services', pluck( $finderarr['services'] , ['_id', 'name', 'lat', 'lon', 'ratecards', 'serviceratecard', 'session_type', 'trialschedules', 'workoutsessionschedules', 'workoutsession_active_weekdays', 'active_weekdays', 'workout_tags', 'short_description', 'photos','service_trainer','timing','category','subcategory','batches','vip_trial','meal_type','trial','membership']  ));
+				array_set($finder, 'services', pluck( $finderarr['services'] , ['_id', 'name', 'lat', 'lon', 'ratecards', 'serviceratecard', 'session_type', 'trialschedules', 'workoutsessionschedules', 'workoutsession_active_weekdays', 'active_weekdays', 'workout_tags', 'short_description', 'photos','service_trainer','timing','category','subcategory','batches','vip_trial','meal_type','trial','membership', 'timings']  ));
 				array_set($finder, 'categorytags', array_map('ucwords',array_values(array_unique(array_flatten(pluck( $finderarr['categorytags'] , array('name') ))))));
 				array_set($finder, 'locationtags', array_map('ucwords',array_values(array_unique(array_flatten(pluck( $finderarr['locationtags'] , array('name') ))))));
 				array_set($finder, 'offerings', array_map('ucwords',array_values(array_unique(array_flatten(pluck( $finderarr['offerings'] , array('name') ))))));
@@ -2568,7 +2575,7 @@ class FindersController extends \BaseController {
 					}
 					unset($finder['services']);
 				}
-
+				
 
 				if(count($finder['photos']) > 0 ){
 					$photoArr        =   [];
