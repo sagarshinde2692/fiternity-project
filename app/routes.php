@@ -994,4 +994,9 @@ Route::get('payusuccessdate','DebugController@payuSuccessDate');
 
 Route::get('servicefilterreversemigration', 'DebugController@servicefilterreversemigration');
 
+//Route::get('orderstarttommorow', 'DebugController@orderStartTommorow');
 
+
+// Route::get('masssms','DebugController@massSms');
+
+Route::get('alertmsg/{date}','DebugController@alertmsg');

@@ -26,10 +26,13 @@ class Finder extends  \Basemodel {
 
 	public static $withoutAppends = false;
 
+	public static $setAppends = [];
+	
+
 	protected function getArrayableAppends()
 	{
 		if(self::$withoutAppends){
-			return [];
+			return self::$setAppends;
 		}
 		return parent::getArrayableAppends();
 	}
@@ -39,6 +42,9 @@ class Finder extends  \Basemodel {
 	];
 
 	protected $appends = array('finder_coverimage','commercial_type_status', 'business_type_status');
+
+	// protected $dates = array('inoperational_dates');
+
 
 
 	public function setIdAttribute($value){
@@ -78,6 +84,19 @@ class Finder extends  \Basemodel {
 		}
 		return $val;
 	}
+
+	public function getInoperationalDatesArrayAttribute(){
+		
+		$inopertaional_dates = isset($this->inoperational_dates) ? $this->inoperational_dates : [];
+
+		$inopertaional_dates = array_map(function($value){
+			return $value->sec; 
+		}, $inopertaional_dates);
+
+		return $inopertaional_dates;
+		
+	}
+
 
 
 	public function user(){

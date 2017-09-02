@@ -216,6 +216,20 @@ Class CustomerReward {
 
                 if(isset($order['event_type']) && $order['event_type']=='TOI'){
                     $fitcash_plus = intval($order['amount']);
+                    
+                    if(isset($order['coupon_code'])){
+                        $coupon = Coupon::where('code', strtolower($order['coupon_code']))->first();
+                        Log::info("coupon");
+                        
+                        Log::info($coupon);
+                        if($coupon){
+                            if(isset($coupon->fitternity_only) && $coupon->fitternity_only){
+                                $fitcash_plus = $order['amount_finder'];
+                            }
+                        }
+
+                    }
+
                     if($fitcash_plus == 0){
                         return;
                     }
@@ -225,7 +239,7 @@ Class CustomerReward {
                 $walletData = array(
                     "order_id"=>$order['_id'],
                     "customer_id"=> intval($order['customer_id']),
-                    "amount"=> intval($order['amount']),
+                    "amount"=> $fitcash_plus,
                     "amount_fitcash" => 0,
                     "amount_fitcash_plus" => $fitcash_plus,
                     "type"=>'CASHBACK',
@@ -973,9 +987,13 @@ Class CustomerReward {
         if($ticket){
             $query->whereIn('tickets', [$ticket->_id]);
         }
+        
         $coupon = $query->first();
+        
         if(isset($coupon)){
+            
             $vendor_coupon = false;
+            
             if(isset($coupon['vendor_exclusive']) && $coupon['vendor_exclusive']){
                 $vendor_coupon = true;
                 $jwt_token = Request::header('Authorization');
@@ -989,13 +1007,10 @@ Class CustomerReward {
                     return $resp;
                 }
 
-                Log::info("===========customer".$customer_id);
 
                 $customer = \Customer::find((int)$customer_id);
 
                 $finder_id = $customer->finder_id;
-                Log::info("===========finder_id".$finder_id);
-                Log::info("===========service_id".$service_id);
                 
                 if(!$finder_id || !in_array($finder_id, $coupon['finders'])){
                     $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"Vendor not eligible");
@@ -1007,13 +1022,41 @@ Class CustomerReward {
                     return $resp;
                 }
             }
+
+
+
+            $fitternity_only_coupon = false;
+            
+            if(isset($coupon['fitternity_only']) && $coupon['fitternity_only']){
+                $fitternity_only_coupon = true;
+                $jwt_token = Request::header('Authorization');
+                if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+                    $decoded = $this->customerTokenDecode($jwt_token);
+                    $customer_id = $decoded->customer->_id;
+                }else{
+                    Log::info("returning");
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "fitternity_only_coupon"=>$fitternity_only_coupon, "error_message"=>"Not logged in");
+                    return $resp;
+                }
+                Log::info("===========customer".$customer_id);
+                $customer = \Customer::find((int)$customer_id);
+                $customer_email = $customer->email;
+                Log::info("===========customer=========".$customer_email);
+                
+                if(!in_array($customer_email, ['utkarshmehrotra@fitternity.com', 'maheshjadhav@fitternity.com'])){
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "fitternity_only_coupon"=>$fitternity_only_coupon, "error_message"=>"Customer not eligible");
+                    return $resp;
+                }
+                
+            }
+            
             $discount_amount = $coupon["discount_amount"];
             $discount_amount = $discount_amount == 0 ? $coupon["discount_percent"]/100 * $price : $discount_amount;
             $discount_amount = intval($discount_amount);
             $discount_amount = $discount_amount > $coupon["discount_max"] ? $coupon["discount_max"] : $discount_amount;
             $discount_price = $price - $discount_amount;
             $final_amount = $discount_price > $wallet_balance ? $discount_price - $wallet_balance : 0;
-            $resp = array("data"=>array("discount" => $discount_amount, "final_amount" => $final_amount, "wallet_balance" => $wallet_balance, "only_discount" => $discount_price), "coupon_applied" => true, "vendor_coupon"=>$vendor_coupon);
+            $resp = array("data"=>array("discount" => $discount_amount, "final_amount" => $final_amount, "wallet_balance" => $wallet_balance, "only_discount" => $discount_price), "coupon_applied" => true, 'otp'=>$fitternity_only_coupon, "vendor_coupon"=>$vendor_coupon);
         }else{
             $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false);
             // $resp = array("status"=> 400, "message" => "Coupon not found", "error_message" => "Coupon is either not valid or expired");

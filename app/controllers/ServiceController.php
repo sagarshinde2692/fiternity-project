@@ -631,10 +631,18 @@ class ServiceController extends \BaseController {
 
 
 
+
         if(count($items) == 0){
         	return Response::json(array('status'=>401,'message'=>'data is empty'),401);
         }
 
+		Finder::$withoutAppends = true;
+		Finder::$setAppends = ['inoperational_dates_array'];
+
+		$finder_id = $items[0]['finder_id'];
+		// $finder = Finder::find($finder_id, array('inoperational_dates'));
+		$finder = Finder::find($finder_id);
+		
 		$city_id = isset($items[0]['city_id'])?$items[0]['city_id']:0;
 
         $schedules = array();
@@ -656,14 +664,20 @@ class ServiceController extends \BaseController {
             $item['vip_trial'] = "";//isset($item['vip_trial']) ? $item['vip_trial'] : "";
 			$item['address'] = isset($item['address']) ? $item['address'] : "";
 			$trial_status = isset($item['trial']) ? $item['trial'] : "";
-			
-            $weekdayslots = head(array_where($item[$type], function($key, $value) use ($weekday){
-                if($value['weekday'] == $weekday){
-                    return $value;
-                }
-            }));
-			
 
+			// return $item;
+
+			$weekdayslots = false;
+
+
+			if(!in_array($timestamp, $finder['inoperational_dates_array'])){
+				$weekdayslots = head(array_where($item[$type], function($key, $value) use ($weekday){
+					if($value['weekday'] == $weekday){
+						return $value;
+					}
+				}));
+			}
+			
             $time_in_seconds = time_passed_check($item['servicecategory_id']);
 
             $service = array(
@@ -685,6 +699,7 @@ class ServiceController extends \BaseController {
 	    		],
 				'workoutsession_active_weekdays' => $item["workoutsession_active_weekdays"],
 				'trial_active_weekdays' => $item["trial_active_weekdays"],
+				'inoperational_dates_array' => $finder['inoperational_dates_array']
             );
 
             $slots = array();
@@ -701,6 +716,7 @@ class ServiceController extends \BaseController {
 			}else{
 				continue;
 			}
+			
 
 			// return $item;
 			// if($ratecard){
@@ -708,8 +724,6 @@ class ServiceController extends \BaseController {
 			// }
 
 	        $slot_passed_flag = true;
-			
-
 			
             if(count($weekdayslots['slots']) > 0 && isset($ratecard['_id'])){
 
@@ -1061,9 +1075,10 @@ class ServiceController extends \BaseController {
 		$active_weekdays 		=  $type = 'trialschedules' ? $service['trial_active_weekdays'] : $service['workoutsession_active_weekdays'];
 		for($i = 1; $i < 7; $i++){
 			$nextweekday     			=   strtolower(date( "l", strtotime("+".$i." days",$timestamp)));
-			Log::info($nextweekday." ++ ".$service["service_name"]);
-			Log::info($active_weekdays);
-			if(in_array($nextweekday,$active_weekdays)){
+			// Log::info($nextweekday." ++ ".$service["service_name"]);
+			// Log::info($active_weekdays);
+			if(in_array($nextweekday,$active_weekdays) && !in_array(strtotime("+".$i." days",$timestamp), $service['inoperational_dates_array'])){
+				// Log::info("available timestamp:".strtotime("+".$i." days",$timestamp));
 				$v = date("Y-m-d",strtotime("+".$i." days",$timestamp));
 				Log::info("Yahan".$v);
 				return  $v;

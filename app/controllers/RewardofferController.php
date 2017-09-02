@@ -356,7 +356,7 @@ class RewardofferController extends BaseController {
                                     break;
                                     case 32:
                                     $validity = 1;
-                                    $validity_type = 'day';
+                                    $validity_type = 'days';
                                     break;
                                     
                                 }

@@ -4732,8 +4732,18 @@ public function yes($msg){
 		ini_set('memory_limit','512M');
 		ini_set('max_execution_time', 300);
 
+		//Order::where('success_date_added','exists',true)->unset('success_date_added');
+
+		//exit();
+
+		// Order::where('status','!=','1')->where('success_date','exists',true)->unset('success_date');
+
+		// Order::where('status','!=','1')->where('success_date_added','exists',true)->unset('success_date_added');
+
+		// exit;
+
 		$destinationPath = public_path();
-        $fileName = "pay_order_success.csv";
+        $fileName = "success.csv";
         $filePath = $destinationPath.'/'.$fileName;
 
         $csv_to_array = $this->csv_to_array($filePath);
@@ -4746,7 +4756,7 @@ public function yes($msg){
 
                 	$order = Order::find((int) $value['Order ID']);
 
-                	if($order && !isset($order->success_date_added)){
+                	if($order && !isset($order->success_date_added) && $order->status == "1"){
 
                 		$order->success_date = date('Y-m-d H:i:s',strtotime(str_replace("/", "-", $value['Date'])));
                 		$order->success_date_added = time();
@@ -4770,6 +4780,44 @@ public function yes($msg){
         return "done";
 
 	}
+
+	public function orderStartTommorow(){
+
+		/*$contact_no = ["9967025279","9833086089","9820448016","9920373043","7042349222","9004753662"];
+
+		$message = "Congratulations on purchasing your membership on Fitternity. Since some gyms / studios will remain shut on August 25th on an account of Ganesh Chaturti - kindly confirm with them if you plan to start tomorrow.";
+
+		$sms['sms_type'] = 'transactional';
+		$sms['contact_no'] = $contact_no;
+		$sms['message'] = $message;
+
+		$bulkSms = new Bulksms();
+
+		return $bulkSms->send($sms);*/
+
+	}
+	public function alertmsg($date){
+		
+		$date =( date("Y-m-d", strtotime( $date)));
+		Log::info($date);	
+		$booktrials = Booktrial::where('schedule_date',  new DateTime($date))->get([]);
+		$customersms = new CustomerSms();
+		Log::info("Booktrials : ".count($booktrials));
+	
+
+		foreach($booktrials as $key=>$booktrial){
+			$ozonetel = Ozonetelno::where('finder_id', $booktrial->finder_id)->first();
+			$booktrial->finder_no  = $ozonetel->phone_number;
+			$result = $customersms->alertmsg($booktrial->toArray());
+			Log::info($result);
+			Log::info("sent:".$key);
+		}
+		return "Done";
+
+
+	}
+
+	
 
     
 }
