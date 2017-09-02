@@ -710,7 +710,7 @@ class ServiceController extends \BaseController {
 	        // 	default: $ratecard = Ratecard::where('service_id',(int)$item['_id'])->where('type','trial')->first(); break;
 	        // }
 			// return array("name" => $item["name"],"rate"=>$item["serviceratecards"], "item"=>$item);
-			if(isset($item["serviceratecards"]) && isset($item["serviceratecards"][0]) > 0 && isNotInoperationalDate($date, $city_id))
+			if(isset($item["serviceratecards"]) && isset($item["serviceratecards"][0]) > 0 )
 			{
 				$ratecard = $item["serviceratecards"][0];
 			}else{
@@ -741,6 +741,10 @@ class ServiceController extends \BaseController {
 		    	}
 
                 foreach ($weekdayslots['slots'] as $slot) {
+
+					if(!isNotInoperationalDate($date, $city_id, $slot)){
+						continue;
+					}
 
                     $slot_status 		= 	"available";
                     
