@@ -6,6 +6,9 @@
  * @author Sanjay Sahu <sanjay.id7@gmail.com>
  */
 
+use \GuzzleHttp\Exception\RequestException;
+use \GuzzleHttp\Client;
+
 if (!function_exists('checkNull')) {
 
     function checkNull($value){
@@ -2721,6 +2724,119 @@ if (!function_exists(('isNotInoperationalDate'))){
         
         Log::info($slot);
         return true;
+
+    }
+}
+
+if (!function_exists(('geoLocationFinder'))){
+
+    function geoLocationFinder($request){
+
+       // echo"<pre>";print_r($request);exit;
+
+        $client = new Client( ['debug' => false, 'base_uri' => Config::get("app.url")."/"] );
+        $offset  = $request['offset'];
+        $limit   = $request['limit'];
+        $radius  = $request['radius'];
+        $lat    =  $request['lat'];
+        $lon    =  $request['lon'];
+        $category = $request['category'];
+        $keys = $request['keys'];
+        $city = $request['city'];
+
+        $payload = [
+           "category"=>$category,
+           "sort"=>[
+              "order"=>"desc",
+              "sortfield"=>"popularity"
+           ],
+           "offset"=>[
+              "from"=>$offset,
+              "number_of_records"=>$limit
+           ],
+           "location"=>[
+              "geo"=>[
+                  "lat"=>$lat,
+                  "lon"=>$lon,
+                  "radius"=>$radius
+               ],
+              "city"=>$city
+           ],
+           "keys"=>$keys
+        ];
+
+        $url = "http://apistage.fitn.in:5000/search/vendor"; //;$this->api_url."search/getfinderresultsv4";
+        $finder = [];
+
+        try {
+
+           
+            $response  =   json_decode($client->post($url,['json'=>$payload])->getBody()->getContents(),true);
+
+            if(isset($response['results'])){
+
+                $vendor = $response['results'];
+
+                foreach ($vendor as $key => $value) {
+
+                    $address = false;
+
+                    $finder_data = $value;
+
+                    if(in_array('coverimage',$request['keys'])){
+                        $finder_data['coverimage'] = $finder_data['coverimage'];
+                    }
+
+                    if(in_array('offerings',$request['keys']) && isset($finder_data['offerings'])){
+                        $finder_data['remarks'] = implode(",",$finder_data['offerings']);
+                        unset($finder_data['offerings']);
+                    }
+
+                    if(in_array('multiaddress',$request['keys'])){
+
+                        $finder_data['address'] = "";
+
+                        if(!empty($finder_data['multiaddress']) && isset( $finder_data['multiaddress'][0])){
+
+                            $multi_address = $finder_data['multiaddress'][0];
+
+                            $finder_data['address'] = $multi_address['line1'].$multi_address['line2'].$multi_address['line3'].$multi_address['landmark'].$multi_address['pincode'];
+
+                            $address = true;                            
+                        }
+                     
+                        unset($finder_data['multiaddress']);
+                    }
+
+                    if(in_array('contact',$request['keys'])){
+
+                        if(!$address && !empty($finder_data['contact']) && isset($finder_data['contact']['address']) && $finder_data['contact']['address'] != ""){
+
+                            $finder_data['address'] = $finder_data['contact']['address'];
+                        }
+
+                        unset($finder_data['contact']);
+                    }
+
+                    if(in_array('name',$request['keys'])){
+                        $finder_data['title'] = $finder_data['name'];
+                        unset($finder_data['name']);
+                    }
+
+                    $finder[] = $finder_data;
+                }
+            }
+
+            return $finder;
+
+        }catch (RequestException $e) {
+
+            return $finder;
+
+        }catch (Exception $e) {
+
+            return $finder;
+        }
 
     }
 }
