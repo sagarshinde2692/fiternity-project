@@ -218,11 +218,24 @@ class RewardofferController extends BaseController {
                     // ->with('rewards')
                     ->orderBy('_id','desc')->first();
 
-                    // return $rewardoffer;
+                                        // return $rewardoffer;
             if ($rewardoffer){
                 $rewardoffer = $rewardoffer->toArray();
 
+                
+
                 $rewards = isset($rewardoffer['rewards']) ? $rewardoffer['rewards'] : array();
+
+                $diet_inclusive_service = Service::where('finder_id', $finder['_id'])->where('diet_inclusive', true)->get();
+                    
+                if(count($diet_inclusive_service)>0){
+                    
+                    foreach($rewards as $key => $reward){
+                        if($reward['reward_type']=='diet_plan'){
+                            array_splice($rewards, $key, 1);
+                        }
+                    }
+                }
 
                 if(count($rewards) > 0){
                     foreach ($rewards as $key => $value){
