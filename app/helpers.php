@@ -2704,15 +2704,23 @@ if (!function_exists(('getRegId'))){
 }
 
 if (!function_exists(('isNotInoperationalDate'))){
-    function isNotInoperationalDate($date, $city_id){
+    function isNotInoperationalDate($date, $city_id, $slot){
         // Log::info($city_id);
         $inoperational_dates = ['2017-08-25'];
-
         if(in_array($date, $inoperational_dates) && in_array($city_id, [1, 2])){
             return false;
-        }else{
-            return true;
         }
+
+        $inoperational_dates = ['2017-09-05'];
+        
+        if(in_array($date, $inoperational_dates) && in_array($city_id, [1, 2]) && intval($slot['start_time_24_hour_format'])>14){
+            Log::info("passed");
+            return false;
+        }
+
+        
+        Log::info($slot);
+        return true;
 
     }
 }

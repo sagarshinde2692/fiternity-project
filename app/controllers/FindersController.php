@@ -1466,7 +1466,9 @@ class FindersController extends \BaseController {
 
 		$this->updateFinderRatingV2($finder);
 
-		$review_detail = $this->updateFinderRatingV1($reviewdata);$review_detail['reviews'] = Review::active()->where('finder_id',intval($data['finder_id']))->orderBy('_id', 'DESC')->limit(5)->get();
+		$review_detail = $this->updateFinderRatingV1($reviewdata);
+		
+		$review_detail['reviews'] = Review::active()->where('finder_id',intval($data['finder_id']))->orderBy('_id', 'DESC')->limit(5)->get();
 
 		$response = array('status' => 200, 'message' => $message,'id'=>$review_id,'review_detail'=>$review_detail);
 
@@ -1621,7 +1623,7 @@ class FindersController extends \BaseController {
 			//updating elastic search
 			// $this->pushfinder2elastic($finderslug);
 			//sending email
-			/*$email_template = 'emails.review';
+			$email_template = 'emails.review';
 			$email_template_data = array( 'vendor'  =>  ucwords($finderslug) , 'review' => $data['description'] ,  'date'   =>  date("h:i:sa") );
 			$email_message_data = array(
 				'to' => Config::get('mail.to_neha'),
@@ -1631,8 +1633,8 @@ class FindersController extends \BaseController {
 				);
 			$email = Mail::send($email_template, $email_template_data, function($message) use ($email_message_data){
 				// $message->to($email_message_data['to'], $email_message_data['reciver_name'])->bcc($email_message_data['bcc_emailids'])->subject($email_message_data['email_subject']);
-				$message->to('sanjay.id7@gmail.com', $email_message_data['reciver_name'])->bcc($email_message_data['bcc_emailids'])->subject($email_message_data['email_subject']);
-			});*/
+				$message->to('sailismart@fitternity.com', $email_message_data['reciver_name'])->bcc($email_message_data['bcc_emailids'])->subject($email_message_data['email_subject']);
+			});
 
 			//sending response
 			$rating  =  array('average_rating' => $finder->average_rating, 'total_rating_count' => $finder->total_rating_count, 'detail_rating_summary_average' => $finder->detail_rating_summary_average, 'detail_rating_summary_count' => $finder->detail_rating_summary_count);
