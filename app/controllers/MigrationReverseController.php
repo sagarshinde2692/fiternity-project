@@ -1015,7 +1015,7 @@ class MigrationReverseController extends \BaseController {
             }
             $insertData['trial']        = (isset($data['flags']) && isset($data['flags']['trial'])) ? $data['flags']['trial'] : "auto";
             $insertData['membership']   = (isset($data['flags']) && isset($data['flags']['membership'])) ? $data['flags']['membership'] : "auto";
-
+            $insertData['diet_inclusive']        = (isset($data['flags']) && isset($data['flags']['diet_inclusive'])) ? $data['flags']['diet_inclusive'] : false;
             $insertData['show_on']      =   "1";
             $insertData['created_at']   =   $data['created_at'];
             $insertData['updated_at']   =   $data['updated_at'];
@@ -1087,7 +1087,7 @@ class MigrationReverseController extends \BaseController {
             $insertData['duration_type'] = $data['quantity_type'];
             $insertData['created_at'] = $data['created_at'];
             $insertData['updated_at'] = $data['updated_at'];
-
+            
 
             if(isset($data['weight']) && $data['weight'] != ""){
                 $insertData['weight'] = (int)$data['weight'];
@@ -1099,6 +1099,10 @@ class MigrationReverseController extends \BaseController {
 
             if(isset($data['flags'])){
                 $insertData['flags'] = $data['flags'];
+            }
+
+            if(isset($data['diet_ratecard'])){
+                $insertData['diet_ratecard'] = $data['diet_ratecard'];
             }
 
 

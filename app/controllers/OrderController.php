@@ -88,6 +88,8 @@ class OrderController extends \BaseController {
             $decoded = customerTokenDecode($jwt_token);
             $customer_id = (int)$decoded->customer->_id;
         }
+        $service_id = isset($data['service_id']) ? $data['service_id']: null;
+
         $couponCode = $data['coupon'];
 
         $ticket = null;
@@ -118,7 +120,7 @@ class OrderController extends \BaseController {
         }
 
         $customer_id = isset($customer_id) ? $customer_id : false;
-        $resp = $this->customerreward->couponCodeDiscountCheck($ratecard,$couponCode,$customer_id, $ticket, $ticket_quantity);
+        $resp = $this->customerreward->couponCodeDiscountCheck($ratecard,$couponCode,$customer_id, $ticket, $ticket_quantity, $service_id);
         if($resp["coupon_applied"]){
             if(isset($data['event_id']) && isset($data['customer_email'])){
                                 
@@ -133,7 +135,7 @@ class OrderController extends \BaseController {
 
             $errorMessage =  "Coupon is either not valid or expired";
 
-            if(isset($resp['fitternity_only_coupon']) && $resp['fitternity_only_coupon']){
+            if((isset($resp['fitternity_only_coupon']) && $resp['fitternity_only_coupon']) || (isset($resp['vendor_exclusive']) && $resp['vendor_exclusive'])){
                 $errorMessage =  $resp['error_message'];
             }
             $resp = array("status"=> 400, "message" => "Coupon not found", "error_message" =>$errorMessage, "data"=>$resp["data"]);

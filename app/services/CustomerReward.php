@@ -953,7 +953,7 @@ Class CustomerReward {
     }
 
 
-    public function couponCodeDiscountCheck($ratecard,$couponCode,$customer_id = false, $ticket = null, $ticket_quantity = 1){
+    public function couponCodeDiscountCheck($ratecard,$couponCode,$customer_id = false, $ticket = null, $ticket_quantity = 1, $service_id = null){
 
 
         if($ticket){
@@ -968,11 +968,10 @@ Class CustomerReward {
             }else{
                 $price = $ratecard["special_price"] == 0 ? $ratecard["price"] : $ratecard["special_price"];
             }
-
         }
-
+            
         $customer_id = isset($customer_id) ? $customer_id : false;
-
+        
         $wallet_balance = 0;
 
         if(!$ticket){
@@ -988,10 +987,44 @@ Class CustomerReward {
         if($ticket){
             $query->whereIn('tickets', [$ticket->_id]);
         }
+        
         $coupon = $query->first();
-
-
+        
         if(isset($coupon)){
+            
+            $vendor_coupon = false;
+            
+            if(isset($coupon['vendor_exclusive']) && $coupon['vendor_exclusive']){
+                $vendor_coupon = true;
+                $jwt_token = Request::header('Authorization');
+
+                if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+                    $decoded = $this->customerTokenDecode($jwt_token);
+                    $customer_id = $decoded->customer->_id;
+                }else{
+                    Log::info("returning");
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"Not logged in");
+                    return $resp;
+                }
+
+
+                $customer = \Customer::find((int)$customer_id);
+
+                $finder_id = $customer->finder_id;
+                
+                if(!$finder_id || !in_array($finder_id, $coupon['finders'])){
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"Vendor not eligible");
+                    return $resp;
+                }
+
+                if(!$service_id || !in_array((int)$service_id, $coupon['services'])){
+                   $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"Service not eligible");
+                    return $resp;
+                }
+            }
+
+
+
             $fitternity_only_coupon = false;
             
             if(isset($coupon['fitternity_only']) && $coupon['fitternity_only']){
@@ -1016,13 +1049,14 @@ Class CustomerReward {
                 }
                 
             }
+            
             $discount_amount = $coupon["discount_amount"];
             $discount_amount = $discount_amount == 0 ? $coupon["discount_percent"]/100 * $price : $discount_amount;
             $discount_amount = intval($discount_amount);
             $discount_amount = $discount_amount > $coupon["discount_max"] ? $coupon["discount_max"] : $discount_amount;
             $discount_price = $price - $discount_amount;
             $final_amount = $discount_price > $wallet_balance ? $discount_price - $wallet_balance : 0;
-            $resp = array("data"=>array("discount" => $discount_amount, "final_amount" => $final_amount, "wallet_balance" => $wallet_balance, "only_discount" => $discount_price), "coupon_applied" => true, 'otp'=>$fitternity_only_coupon);
+            $resp = array("data"=>array("discount" => $discount_amount, "final_amount" => $final_amount, "wallet_balance" => $wallet_balance, "only_discount" => $discount_price), "coupon_applied" => true, 'otp'=>$fitternity_only_coupon, "vendor_coupon"=>$vendor_coupon);
         }else{
             $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false);
             // $resp = array("status"=> 400, "message" => "Coupon not found", "error_message" => "Coupon is either not valid or expired");
