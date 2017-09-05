@@ -2579,7 +2579,7 @@ class HomeController extends BaseController {
             
         }
         
-        $keys_array = ['email', 'full_name', 'gender', 'dob'];
+        $keys_array = ['email', 'full_name', 'gender', 'dob','phone'];
         
         foreach($keys_array as $key){
             if(isset($data[$key])){
