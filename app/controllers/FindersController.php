@@ -692,7 +692,8 @@ class FindersController extends \BaseController {
                       "slug",
                       "name",
                       "id",
-                      "city"
+                      "city",
+                      "category"
                     ]
                 ];
 
@@ -716,7 +717,8 @@ class FindersController extends \BaseController {
                       "slug",
                       "name",
                       "id",
-                      "city"
+                      "city",
+                      "category"
                     ]
                 ];
 
