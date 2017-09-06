@@ -1605,7 +1605,11 @@ public static function translate_searchresultsv5($es_searchresult_response,$sear
 					}
 					$resultobject->multiaddress = $intersect;
 				}else{
-					$resultobject->multiaddress = isset($result['multiaddress']) && count($result['multiaddress']) > 0 ? $result['multiaddress'] : array();
+					if(isset($result['multiaddress']) && count($result['multiaddress']) > 0){
+						$resultobject->multiaddress = $result['multiaddress'];
+					}else{
+						$address = array(array("line1")=> $resultobject->contact->address,"line2"=>"", "line3"=>"", "location"=>$resultobject->location,"landmark"=>"");
+					}
 				}
 
 				// Decide vendor type
