@@ -1608,7 +1608,8 @@ public static function translate_searchresultsv5($es_searchresult_response,$sear
 					if(isset($result['multiaddress']) && count($result['multiaddress']) > 0){
 						$resultobject->multiaddress = $result['multiaddress'];
 					}else{
-						$address = array(array("line1")=> $resultobject->contact->address,"line2"=>"", "line3"=>"", "location"=>$resultobject->location,"landmark"=>"");
+						$address = array("line1"=> $resultobject->contact->address,"line2"=>"", "line3"=>"", "location"=>array($resultobject->location),"landmark"=>"");
+						$resultobject->multiaddress = array($address);
 					}
 				}
 
