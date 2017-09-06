@@ -278,6 +278,7 @@ if(!function_exists('ifCityPresent')){
             case "pune":
             case "pimpri":
             case "pimpri chinchwad":
+            case "pimpri-chinchwad":
                 $send_city = "pune";
                 $ifcity = true;
                 break;
