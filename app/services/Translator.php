@@ -5,6 +5,8 @@ Use \App\Responsemodels\AutocompleteResult;
 Use \App\Responsemodels\FinderresultResponse;
 Use \App\Responsemodels\FinderResult;
 Use \App\Responsemodels\FinderObject;
+Use \App\Responsemodels\FinderResultNew;
+Use \App\Responsemodels\FinderObjectNew;
 Use \App\Responsemodels\ViptrialResponse;
 Use \App\Responsemodels\VipResult;
 Use \App\Responsemodels\WorkoutSessionObject;
