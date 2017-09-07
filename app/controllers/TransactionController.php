@@ -155,6 +155,12 @@ class TransactionController extends \BaseController {
             return Response::json($finderDetail,$finderDetail['status']);
         }
 
+        $part_payment = (isset($finderDetail['data']['finder_flags']) && isset($finderDetail['data']['finder_flags']['part_payment'])) ? $finderDetail['data']['finder_flags']['part_payment'] : false;
+
+        $cash_pickup = (isset($finderDetail['data']['finder_flags']) && isset($finderDetail['data']['finder_flags']['cash_pickup'])) ? $finderDetail['data']['finder_flags']['cash_pickup'] : false;
+        
+        unset($finderDetail['finder_flags']);
+
         $data = array_merge($data,$finderDetail['data']);
 
         if(isset($data['service_id'])){
@@ -350,7 +356,9 @@ class TransactionController extends \BaseController {
         $resp   =   array(
             'status' => 200,
             'data' => $result,
-            'message' => "Tmp Order Generated Sucessfully"
+            'message' => "Tmp Order Generated Sucessfully",
+            'part_payment' => $part_payment,
+            'cash_pickup' => $cash_pickup
         );
 
         return Response::json($resp);
@@ -1753,7 +1761,7 @@ class TransactionController extends \BaseController {
         $city_id                           =    $finder['city_id'];
         $finder_category                       =    (isset($finder['category']['name']) && $finder['category']['name'] != '') ? $finder['category']['name'] : "";
         $finder_category_slug                  =    (isset($finder['category']['slug']) && $finder['category']['slug'] != '') ? $finder['category']['slug'] : "";
-
+        $finder_flags                       =   isset($finder['flags'])  ? $finder['flags'] : new stdClass();
         $data['finder_city'] =  trim($finder_city);
         $data['finder_location'] =  ucwords(trim($finder_location));
         $data['finder_address'] =  trim($finder_address);
@@ -1776,6 +1784,8 @@ class TransactionController extends \BaseController {
         $data['city_slug'] = $finder_city_slug;
         $data['category_name'] = $finder_category;
         $data['category_slug'] = $finder_category_slug;
+        $data['finder_flags'] = $finder_flags;
+        
 
         return array('status' => 200,'data' =>$data);
     }

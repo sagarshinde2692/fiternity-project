@@ -957,6 +957,10 @@ class HomeController extends BaseController {
                 $booking_details_data['price']['value']= "Rs. ".(string)$item['amount_finder'];
             }
 
+            if(isset($item['payment_mode']) && $item['payment_mode'] == "cod"){
+                $booking_details_data['price']['value']= "Cash payment";
+            }
+
             if($finder_address != ""){
                 $booking_details_data['address']['value'] = $finder_address;
             }

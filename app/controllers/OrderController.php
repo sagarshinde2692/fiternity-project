@@ -2484,6 +2484,12 @@ class OrderController extends \BaseController {
                 $data['customer_address'] = $data['address'] = implode(",", array_values($data['customer_address']));
             }
 
+            if(isset($data['payment_mode']) && $data['payment_mode'] != ''){
+
+                $data['payment_mode']  = $data['payment_mode'];
+
+            }
+
             if(isset($data['reward_ids']) && !empty($data['reward_ids'])){
                 $reward_detail = array();
                 $reward_ids = array_map('intval',$data['reward_ids']);
