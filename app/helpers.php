@@ -2823,6 +2823,10 @@ if (!function_exists(('geoLocationFinder'))){
                         unset($finder_data['name']);
                     }
 
+                    if(in_array('average_rating',$request['keys'])){
+                        $finder_data['average_rating'] = round($finder_data['average_rating'],1);
+                    }
+
                     $finder[] = $finder_data;
                 }
             }
