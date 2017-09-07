@@ -599,7 +599,7 @@ class EmailSmsApiController extends \BaseController {
 
             $data['customer_id'] = autoRegisterCustomer($data);
 
-            $addUpdateDevice = $this->utilities->addUpdateDevice($customer_id);
+            $addUpdateDevice = $this->utilities->addUpdateDevice($data['customer_id']);
 
         }else{
 

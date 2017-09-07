@@ -12,7 +12,7 @@ Use \App\Responsemodels\saleRatecardResponse;
 Use \App\Responsemodels\saleRatecardResult;
 Use \App\Responsemodels\saleRatecardObject;
 use \Input;
-use Log, Config;
+use Log, Config, Request;
 
 // Translator methods to model API responses for client
 
@@ -1498,6 +1498,10 @@ public static function translate_searchresultsv4($es_searchresult_response,$sear
 
 
 public static function translate_searchresultsv5($es_searchresult_response,$search_request = array(),$keys = array(), $customer_email = ""){
+
+		$device_type = (Request::header('Device-Type') && Request::header('Device-Type') != "" && Request::header('Device-Type') != null) ? strtolower(Request::header('Device-Type')) : "";
+		$app_version = (Request::header('App-Version') && Request::header('App-Version') != "" && Request::header('App-Version') != null) ? (float)Request::header('App-Version') : "";
+
 		$finderresult_response 							 = new FinderresultResponse();
 		$finderresult_response->results->aggregationlist = new \stdClass();
 		$finderresult_response->results->aggregations = new \stdClass();
@@ -1518,9 +1522,9 @@ public static function translate_searchresultsv5($es_searchresult_response,$sear
 					}
 				}
 				$result 						= $resultv1['_source'];
-				$finder 						= new FinderResult();
+				$finder 						= new FinderResultNew();
 				$finder->object_type 			= 'vendor';
-				$resultobject 					= new FinderObject();
+				$resultobject 					= new FinderObjectNew();
 				$resultobject->distance 		= isset($resultv1['fields']) ? $resultv1['fields']['distance'][0] : 0;
 				$resultobject->id 				= $result['_id'];
 				$resultobject->category 		= $result['category'];
@@ -1540,7 +1544,7 @@ public static function translate_searchresultsv5($es_searchresult_response,$sear
 				$resultobject->contact->email 	= isset($result['contact']['email']) ? $result['contact']['email'] : "";
 				$resultobject->contact->phone 	= ''; //$result['contact']['phone'];
 				$resultobject->contact->website = isset($result['contact']['website']) ? $result['contact']['website'] : "";
-				$resultobject->coverimage 		= $result['coverimage'];
+				$resultobject->coverimage 		= "https://b.fitn.in/f/c/".$result['coverimage'];
 				$resultobject->finder_coverimage_webp = ""; //isset($result['finder_coverimage_webp']) ? (strpos($result['finder_coverimage_webp'],"default/") > -1 ? "" : $result['finder_coverimage_webp']) : "";
 				$resultobject->finder_coverimage_color = isset($result['finder_coverimage_color']) && $result['finder_coverimage_color'] != "" ? $result['finder_coverimage_color'] : "#FFC107";
 				$resultobject->commercial_type 	= $result['commercial_type'];
@@ -1549,8 +1553,10 @@ public static function translate_searchresultsv5($es_searchresult_response,$sear
 				$resultobject->fitternityno 	= '+917506122637';
 				$resultobject->facilities 		= empty($result['facilities']) ? array() : $result['facilities'];
 				$resultobject->logo 			= $result['logo'];
-				$resultobject->geolocation->lat = $result['geolocation']['lat'];
-				$resultobject->geolocation->long= $result['geolocation']['lon'];
+				$geolocation  					= new \stdClass();
+				$geolocation->lat = (float)$result['geolocation']['lat'];
+				$geolocation->lon = (float)$result['geolocation']['lon'];
+				array_push($resultobject->geolocation,$geolocation);
 				$resultobject->offerings 		= empty($result['offerings']) ? array() : $result['offerings'];
 				$resultobject->price_range 		= $result['price_range'];
 				$resultobject->popularity 		= $result['popularity'];
@@ -1605,7 +1611,12 @@ public static function translate_searchresultsv5($es_searchresult_response,$sear
 					}
 					$resultobject->multiaddress = $intersect;
 				}else{
-					$resultobject->multiaddress = isset($result['multiaddress']) && count($result['multiaddress']) > 0 ? $result['multiaddress'] : array();
+					if(isset($result['multiaddress']) && count($result['multiaddress']) > 0){
+						$resultobject->multiaddress = $result['multiaddress'];
+					}else{
+						$address = array("line1"=> $resultobject->contact->address,"line2"=>"", "line3"=>"", "location"=>array($resultobject->location),"landmark"=>"");
+						$resultobject->multiaddress = array($address);
+					}
 				}
 
 				// Decide vendor type
@@ -1697,32 +1708,32 @@ public static function translate_searchresultsv5($es_searchresult_response,$sear
 			foreach ($aggs['filtered_budgets']['budgets']['buckets'] as $bud) {
 				switch ($bud['key']) {
 					case 'one':
-						$budval0->key = 'less than 1000';
+						$budval0->name = 'less than 1000';
 						$budval0->count = $bud['doc_count'];
 
 						break;
 					case 'two':
-						$budval1->key = '1000-2500';
+						$budval1->name = '1000-2500';
 						$budval1->count = $bud['doc_count'];
 
 						break;
 					case 'three':
-						$budval2->key = '2500-5000';
+						$budval2->name = '2500-5000';
 						$budval2->count = $bud['doc_count'];
 
 						break;
 					case 'four':
-						$budval3->key = '5000-7500';
+						$budval3->name = '5000-7500';
 						$budval3->count = $bud['doc_count'];
 
 						break;
 					case 'five':
-						$budval4->key = '7500-15000';
+						$budval4->name = '7500-15000';
 						$budval4->count = $bud['doc_count'];
 
 						break;
 					case 'six':
-						$budval5->key = '15000 & Above';
+						$budval5->name = '15000 & Above';
 						$budval5->count = $bud['doc_count'];
 						break;
 					default:
@@ -1742,10 +1753,15 @@ public static function translate_searchresultsv5($es_searchresult_response,$sear
         if(!in_array($resultCategory,$noBasicFilterCategories)){
 			foreach ($aggs['filtered_facilities']['facilities']['buckets'] as $fac) {
 				$facval = new \stdClass();
-				$facval->key = $fac['key'];
+				$facval->name = $fac['key'];
 				$facval->slug = str_replace(' ', '-', $fac['key']);
 				$facval->count = $fac['doc_count'];
-				array_push($finderresult_response->results->aggregations->filters, $facval);
+				
+				if($device_type == 'android'){
+					array_push($finderresult_response->results->aggregations->filters, $fac['key']);
+				}else{
+					array_push($finderresult_response->results->aggregations->filters, $facval);
+				}
 			}
 		}
 
@@ -1758,14 +1774,14 @@ public static function translate_searchresultsv5($es_searchresult_response,$sear
 		if($cityfound){
 			foreach ($aggs['filtered_locations']['loccluster']['buckets'] as $cluster) {
 				$clusterval = new \stdClass();
-				$clusterval->key = $cluster['key'];
+				$clusterval->name = $cluster['key'];
 				$clusterval->slug = strtolower(str_replace(' ', '-', $cluster['key']));
 				$clusterval->count = $cluster['doc_count'];
 				$clusterval->regions = array();
 				if(isset($cluster['region']['attrs'])){
 					foreach ($cluster['region']['attrs']['buckets'] as $reg) {
 						$regval = new \stdClass();
-						$regval->key = $reg['key'];
+						$regval->name = $reg['key'];
 						$regval->slug = $reg['attrsValues']['buckets'][0]['key'];
 						$regval->count = $reg['doc_count'];
 						array_push($clusterval->regions, $regval);
@@ -1779,10 +1795,15 @@ public static function translate_searchresultsv5($es_searchresult_response,$sear
 
 		foreach ($aggs['filtered_offerings']['offerings']['buckets'] as $off){
 			$offval = new \stdClass();
-			$offval->key = $off['key'];
+			$offval->name = $off['key'];
 			$offval->slug = str_replace(' ', '-', $off['key']);
 			$offval->count = $off['doc_count'];
-			array_push($finderresult_response->results->aggregations->subcategories, $offval);
+
+			if($device_type == 'android'){
+				array_push($finderresult_response->results->aggregations->subcategories, $off['key']);
+			}else{
+				array_push($finderresult_response->results->aggregations->subcategories, $offval);
+			}
 		}
 
 		// $finderresult_response->results->aggregations->vip_trial = array();
@@ -1797,7 +1818,7 @@ public static function translate_searchresultsv5($es_searchresult_response,$sear
 			$finderresult_response->results->aggregations->locationtags = array();
 			foreach ($aggs['filtered_locationtags']['offerings']['attrs']['buckets'] as $off){
 				$offval = new \stdClass();
-				$offval->key = $off['key'];
+				$offval->name = $off['key'];
 				$offval->slug = $off['attrsValues']['buckets'][0]['key'];
 				//$offval->cluster = $off['locationcluster']['buckets'][0]['key'];
 				$offval->count = $off['doc_count'];
@@ -1811,7 +1832,7 @@ public static function translate_searchresultsv5($es_searchresult_response,$sear
 
 			foreach ($aggs['filtered_trials']['level1']['level2']['daysaggregator']['buckets'] as $off){
 				$offval = new \stdClass();
-				$offval->key = $off['key'];
+				$offval->name = $off['key'];
 				$offval->slug = str_replace(' ', '-', $off['key']);
 				$offval->count = $off['backtolevel1']['backtorootdoc']['doc_count'];
 				array_push($finderresult_response->results->aggregations->trialdays, $offval);
@@ -1831,8 +1852,22 @@ public static function translate_searchresultsv5($es_searchresult_response,$sear
 			}
 			$finderresult_response->results->aggregations->trialdays = $finaltrialdays;
 		}
+
 		$finderresult_response->results->aggregations->categories = array();
-		$finderresult_response->results->aggregations->categories = citywise_categories($currentcity);
+
+		if($device_type == 'android'){
+
+			foreach (citywise_categories($currentcity) as $key => $value) {
+
+				array_push($finderresult_response->results->aggregations->categories, $value['name']);
+			}
+
+		}else{
+
+			$finderresult_response->results->aggregations->categories = citywise_categories($currentcity);
+		}
+
+		
 		// print_r($finderresult_response);
 		return $finderresult_response;
 	}

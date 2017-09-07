@@ -1140,10 +1140,6 @@ class HomeController extends BaseController {
                 $near_by_vendor = [];
             }
 
-            if(isset($item['recommended_booktrial_id']) && $item['recommended_booktrial_id'] != ""){
-                $near_by_vendor = [];
-            }
-
             if(empty($near_by_vendor)){
                 $show_other_vendor = false;
             }
