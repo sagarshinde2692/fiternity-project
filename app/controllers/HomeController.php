@@ -448,7 +448,7 @@ class HomeController extends BaseController {
         if($type != "" && $id != ""){
 
             $booktrialItemArr   =   ["personaltrainertrial","manualtrial","manualautotrial","booktrialfree"];
-            $orderItemArr       =   ["healthytiffintrial","membershipwithpg","membershipwithoutpg","healthytiffinmembership","personaltrainermembership","booktrial","workoutsession","workout-session","booktrials"];
+            $orderItemArr       =   ["healthytiffintrail","healthytiffintrial","membershipwithpg","membershipwithoutpg","healthytiffinmembership","personaltrainermembership","booktrial","workoutsession","workout-session","booktrials"];
             $captureItemArr     =   ["manualmembership"];
 
             $itemData           =   [];
@@ -497,10 +497,11 @@ class HomeController extends BaseController {
             $finder_name = "";
             $finder_location = "";
             $finder_address = "";
+            $all_options_url = "";
 
             if(isset($itemData['finder_id']) && $itemData['finder_id'] != ""){
 
-                $finder = Finder::with(array('location'=>function($query){$query->select('name');}))->find((int)$itemData['finder_id'],array('_id','title','location_id','contact','lat','lon','manual_trial_auto'));
+                $finder = Finder::with(array('city'=>function($query){$query->select('name','slug');}))->with(array('location'=>function($query){$query->select('name','slug');}))->find((int)$itemData['finder_id'],array('_id','title','location_id','contact','lat','lon','manual_trial_auto','city_id'));
 
                 if(isset($finder['title']) && $finder['title'] != ""){
                     $finder_name = ucwords($finder['title']);
@@ -512,6 +513,10 @@ class HomeController extends BaseController {
 
                 if(isset($finder['contact']['address']) && $finder['contact']['address'] != ""){
                     $finder_address = $finder['contact']['address'];
+                }
+
+                if(isset($finder['city']['slug']) && $finder['city']['slug'] != "" && isset($finder['location']['slug']) && $finder['location']['slug'] != ""){
+                    $all_options_url = "/".$finder['city']['slug']."/".$finder['location']['slug'];
                 }
 
             }
@@ -640,6 +645,7 @@ class HomeController extends BaseController {
                     $show_other_vendor = true;
                     break;
                 case 'healthytiffintrial':
+                case 'healthytiffintrail':
                     $subline = "Your Trial request at $finder_name has been received. Please expect a revert shortly.";
                     $steps = [
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
@@ -734,7 +740,7 @@ class HomeController extends BaseController {
             }
 
             $popup_message = "";
-            if(($type == "booktrial" || $type == "healthytiffintrial") && isset($itemData['amount_customer']) && $itemData['amount_customer'] > 0){
+            if(($type == "booktrial" || $type == "healthytiffintrial" || $type == "healthytiffintrail") && isset($itemData['amount_customer']) && $itemData['amount_customer'] > 0){
 
                 $amount_20_percent = (int)($itemData['amount_customer']*20/100);
                 $popup_message = "Rs ".$amount_20_percent." FitCash has been added to your wallet";
@@ -769,6 +775,15 @@ class HomeController extends BaseController {
                     }
 
                 }
+            }else{
+
+                $customer = Customer::find((int)$item['customer_id']);
+            }
+
+            $customer_auto_register = false;
+
+            if($customer && isset($customer['ishulluser']) && $customer['ishulluser'] == 1){
+                $customer_auto_register = true;
             }
 
             $near_by_vendor = [];
@@ -824,14 +839,16 @@ class HomeController extends BaseController {
                           // "photos",
                           // "servicelist",
                           "slug",
-                          "title",
+                          "name",
                           "id",
                           // "total_rating_count",
                           // "vendor_type"
                         ]
                     ];
 
-                    $near_by_vendor = $this->geoLocationFinder($near_by_vendor_request);
+                    $near_by_vendor = geoLocationFinder($near_by_vendor_request);
+
+                    //echo"<pre>";print_r($near_by_vendor);exit;
                 }
 
                 if($fitcash_plus > 0){
@@ -840,7 +857,7 @@ class HomeController extends BaseController {
 
                          $finder_request = [
                             "offset" => 0,
-                            "limit" => 0,
+                            "limit" => 100,
                             "radius" => "3km",
                             "category"=>newcategorymapping($value["category"]),
                             "lat"=>$lat,
@@ -871,7 +888,7 @@ class HomeController extends BaseController {
                             ]
                         ];
 
-                        $category_array[$key]['count'] = count($this->geoLocationFinder($finder_request));
+                        $category_array[$key]['count'] = count(geoLocationFinder($finder_request));
 
                     }
                 }
@@ -896,7 +913,7 @@ class HomeController extends BaseController {
 
             $booking_details_data["booking_id"] = ['field'=>'SUBSCRIPTION CODE','value'=>(string)$item['_id'],'position'=>$position++];
 
-            if(in_array($type,["healthytiffintrial","membershipwithpg","membershipwithoutpg","healthytiffinmembership","personaltrainermembership"])){
+            if(in_array($type,["healthytiffintrail","healthytiffintrial","membershipwithpg","membershipwithoutpg","healthytiffinmembership","personaltrainermembership"])){
                 $booking_details_data["finder_name_location"] = ['field'=>'MEMBERSHIP BOUGHT AT','value'=>$finder_name.", ".$finder_location,'position'=>$position++];
             }
 
@@ -957,12 +974,20 @@ class HomeController extends BaseController {
                 $booking_details_data['price']['value']= "Rs. ".(string)$item['amount_finder'];
             }
 
-            if($finder_address != ""){
-                $booking_details_data['address']['value'] = $finder_address;
-            }
+            if(in_array($type,["healthytiffintrial","healthytiffinmembership"])){
 
-            if(isset($item['finder_address']) && $item['finder_address'] != ""){
-                $booking_details_data['address']['value'] = $item['finder_address'];
+                if(isset($item['customer_address']) && $item['customer_address'] != ""){
+                    $booking_details_data['address']['value'] = $item['customer_address'];
+                }
+
+            }else{
+
+                if($finder_address != ""){
+                    $booking_details_data['address']['value'] = $finder_address;
+                }
+                if(isset($item['finder_address']) && $item['finder_address'] != ""){
+                    $booking_details_data['address']['value'] = $item['finder_address'];
+                }
             }
 
             if(isset($booking_details_data['address']['value'])){
@@ -1093,18 +1118,27 @@ class HomeController extends BaseController {
 
             $reward_details = null;
 
-            /*if(isset($item['reward_ids']) && !empty($item['reward_ids'])){
+            if(isset($item['customer_reward_id']) && $item['customer_reward_id'] != ""){
 
-                $reward_id = (int)$item['reward_ids'][0];
+                $reward_id = (int)$item['customer_reward_id'];
+                $reward = Myreward::select('_id','title','reward_type','description','validity_in_days')->find($reward_id);
 
-                $reward = Reward::select('_id','title','reward_type')->find($reward_id);
+                if($reward){
 
-                $reward_details = [
-                    'reward_id' => $reward->_id,
-                    'reward_type' => $reward->reward_type,
-                    'finder_name'=> (isset($item['finder_name']) && $item['finder_name'] != "") ? $item['finder_name'] : ""
-                ];
-            }*/
+                    $reward_details = [
+                        'reward_id' => $reward->_id,
+                        'reward_type' => $reward->reward_type,
+                        'finder_name'=> (isset($item['finder_name']) && $item['finder_name'] != "") ? $item['finder_name'] : "",
+                        'title'=>$reward->title,
+                        'description'=>$reward->description,
+                        'validity_in_days'=>$reward->validity_in_days
+                    ];
+                }
+            }
+
+            if(isset($item['recommended_booktrial_id']) && $item['recommended_booktrial_id'] != ""){
+                $near_by_vendor = [];
+            }
 
             if(empty($near_by_vendor)){
                 $show_other_vendor = false;
@@ -1136,6 +1170,8 @@ class HomeController extends BaseController {
                 'id'=>$id,
                 'reward_details'=>$reward_details,
                 'show_other_vendor' => $show_other_vendor,
+                'all_options_url' => $all_options_url,
+                'customer_auto_register' => $customer_auto_register
             ];
 
             return Response::json($resp);
@@ -1156,47 +1192,44 @@ class HomeController extends BaseController {
         $payload = [
            "category"=>$category,
            "sort"=>[
-              "sortfield"=>"popularity",
-              "order"=>"desc"
+              "order"=>"desc",
+              "sortfield"=>"popularity"
            ],
            "offset"=>[
               "from"=>$offset,
               "number_of_records"=>$limit
            ],
-           "other_filters"=>[
-
-           ],
            "location"=>[
-              "city"=>$city,
-              "lat"=>$lat,
-              "lon"=>$lon,
-              "radius"=>$radius
+              "geo"=>[
+                  "lat"=>$lat,
+                  "lon"=>$lon,
+                  "radius"=>$radius
+               ],
+              "city"=>$city
            ],
-           "with_locationtags"=>"1",
            "keys"=>$keys
         ];
 
-        //echo"<pre>";print_r($payload);exit;
-
-        $url = $this->api_url."search/getfinderresultsv4";
+        $url = "http://apistage.fitn.in:5000/search/vendor"; //;$this->api_url."search/getfinderresultsv4";
         $finder = [];
 
         try {
+
            
             $response  =   json_decode($this->client->post($url,['json'=>$payload])->getBody()->getContents(),true);
 
-            if(isset($response['results']['resultlist'])){
+            if(isset($response['results'])){
 
-                $vendor = $response['results']['resultlist'];
+                $vendor = $response['results'];
 
                 foreach ($vendor as $key => $value) {
 
                     $address = false;
 
-                    $finder_data = $value['object'];
+                    $finder_data = $value;
 
                     if(in_array('coverimage',$request['keys'])){
-                        $finder_data['coverimage'] = Config::get('app.s3_finderurl.cover').$finder_data['coverimage'];
+                        $finder_data['coverimage'] = $finder_data['coverimage'];
                     }
 
                     if(in_array('offerings',$request['keys'])){
@@ -1230,6 +1263,11 @@ class HomeController extends BaseController {
                         unset($finder_data['contact']);
                     }
 
+                    if(in_array('name',$request['keys'])){
+                        $finder_data['title'] = $finder_data['name'];
+                        unset($finder_data['name']);
+                    }
+
                     $finder[] = $finder_data;
                 }
             }
@@ -1246,7 +1284,6 @@ class HomeController extends BaseController {
         }
 
     }
-
 
 
     public function getFinderCountLocationwise($city = 'mumbai', $cache = true){

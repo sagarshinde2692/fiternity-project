@@ -671,56 +671,58 @@ class FindersController extends \BaseController {
 
 				$skip_categoryid_finders    = [41,42,45,25,46,10,26,40];
 
-				$nearby_same_category = array();
+				
 
-				$nearby_same_category       =   Finder::where('category_id','=',$findercategoryid)
-				->where('commercial_type','!=', 0)
-				->where('location_id','=',$finderlocationid)
-				->where('_id','!=',$finderid)
-				->where('status', '=', '1')
-				->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
-				->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-				->with(array('city'=>function($query){$query->select('_id','name','slug');}))
-				// ->with('offerings')
-				->orderBy('finder_type', 'DESC')
-				->remember(Config::get('app.cachetime'))
-				->take(5)
-				->get(array('_id','average_rating','category_id','coverimage','finder_coverimage', 'slug','title','category','location_id','location','city_id','city','total_rating_count','logo','finder_coverimage','offerings'));
 
-				/*if(count($nearby_same_category) > 0){
+				$nearby_same_category_request = [
+                    "offset" => 0,
+                    "limit" => 4,
+                    "radius" => "3km",
+                    "category"=>newcategorymapping($finderdata["category"]["name"]),
+                    "lat"=>$finderdata["lat"],
+                    "lon"=>$finderdata["lon"],
+                    "city"=>strtolower($finderdata["city"]["name"]),
+                    "keys"=>[
+                      "average_rating",
+                      "business_type",
+                      "commercial_type",
+                      "coverimage",
+                      "location",
+                      "subcategories",
+                      "slug",
+                      "name",
+                      "id",
+                      "city",
+                      "category"
+                    ]
+                ];
 
-					$nearby_same_category->toArray();
+                $nearby_same_category = geoLocationFinder($nearby_same_category_request);
 
-					foreach($nearby_same_category as $key => $finder1){
-						array_set($nearby_same_category[$key], 'offerings', pluck( $finder1['offerings'] , array('_id', 'name', 'slug') ));
-					}
-				}*/
+				$nearby_other_category_request = [
+                    "offset" => 0,
+                    "limit" => 4,
+                    "radius" => "3km",
+                    "category"=>"",
+                    "lat"=>$finderdata["lat"],
+                    "lon"=>$finderdata["lon"],
+                    "city"=>strtolower($finderdata["city"]["name"]),
+                    "keys"=>[
+                      "average_rating",
+                      "business_type",
+                      "commercial_type",
+                      "coverimage",
+                      "location",
+                      "subcategories",
+                      "slug",
+                      "name",
+                      "id",
+                      "city",
+                      "category"
+                    ]
+                ];
 
-				$nearby_other_category = array();    
-
-				$nearby_other_category      =   Finder::where('category_id','!=',$findercategoryid)
-				->whereNotIn('category_id', $skip_categoryid_finders)
-				->where('commercial_type','!=', 0)
-				->where('location_id','=',$finderlocationid)
-				->where('_id','!=',$finderid)
-				->where('status', '=', '1')
-				->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
-				->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-				->with(array('city'=>function($query){$query->select('_id','name','slug');}))
-				// ->with('offerings')
-				->orderBy('finder_type', 'DESC')
-				->remember(Config::get('app.cachetime'))
-				->take(5)
-				->get(array('_id','average_rating','category_id','coverimage','finder_coverimage', 'slug','title','category','location_id','location','city_id','city','total_rating_count','logo','finder_coverimage','offerings'));
-
-				/*if(count($nearby_other_category) > 0){
-
-					$nearby_other_category->toArray();
-
-					foreach($nearby_other_category as $key => $finder1){
-						array_set($nearby_other_category[$key], 'offerings', pluck( $finder1['offerings'] , array('_id', 'name', 'slug') ));
-					}
-				}*/
+                $nearby_other_category = geoLocationFinder($nearby_other_category_request);
 
 				if($finder['city_id'] == 10000){
 					$finder['city']['name'] = $finder['custom_city'];
