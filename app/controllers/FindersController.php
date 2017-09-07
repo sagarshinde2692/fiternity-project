@@ -152,6 +152,26 @@ class FindersController extends \BaseController {
 				// $ratecards           =   Ratecard::with('serviceoffers')->where('finder_id', intval($finder_id))->orderBy('_id', 'desc')->get();
 				$finderarr = $finderarr->toArray();
 
+				if(isset($finderarr['commercial_type']) && $finderarr['commercial_type']==0){
+					if(isset($finderarr['budget'])){
+						if($finderarr['budget'] < 1000){
+							$finderarr['budget'] = "Less than Rs. 1000";
+						}else if($finderarr['budget'] >= 1000 && $finderarr['budget'] < 2500){
+							$finderarr['budget'] = "Rs. 1000- Rs. 2500";
+						}else if($finderarr['budget'] >= 2500 && $finderarr['budget'] < 5000){
+							$finderarr['budget'] = "Rs. 2500- Rs. 5000";
+						}else if($finderarr['budget'] >= 5000 && $finderarr['budget'] < 7500){
+							$finderarr['budget'] = "Rs. 5000- Rs. 7500";
+						}else if($finderarr['budget'] >= 7500 && $finderarr['budget'] < 15000){
+							$finderarr['budget'] = "Rs. 7500- Rs. 15000";
+						}else {
+							$finderarr['budget'] = "Above Rs. 15000";
+						}
+					}else{
+							$finderarr['budget'] = "";
+					}
+				}
+
 				if(!empty($finderarr['reviews'])){
 
 					foreach ($finderarr['reviews'] as $rev_key => $rev_value) {
