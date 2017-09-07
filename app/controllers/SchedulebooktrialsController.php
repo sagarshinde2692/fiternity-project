@@ -1958,6 +1958,23 @@ class SchedulebooktrialsController extends \BaseController {
             $profile_link = $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$customer_email);
             $vendor_link = $this->utilities->getShortenUrl(Config::get('app.website')."/".$finder_slug);
 
+
+            $addUpdateDevice = [];
+
+            $addUpdateDevice['device_type'] = (isset($order['device_type']) && $order['device_type'] != '') ? $order['device_type'] : "";
+            $addUpdateDevice['device_model'] = (isset($order['device_model']) && $order['device_model'] != '') ? $order['device_model'] : "";
+            $addUpdateDevice['app_version'] = (isset($order['app_version']) && $order['app_version'] != '') ? $order['app_version'] : "";
+            $addUpdateDevice['os_version'] = (isset($order['os_version']) && $order['os_version'] != '') ? $order['os_version'] : "";
+            $addUpdateDevice['reg_id'] = (isset($order['gcm_reg_id']) && $order['gcm_reg_id'] != '') ? $order['gcm_reg_id'] : "";
+
+            foreach ($addUpdateDevice as $header_key => $header_value) {
+
+                if($header_key != ""){
+                   $data[$header_key]  = $header_value;
+                }
+                
+            }
+
             $booktrialdata = array(
                 'booktrialid'                   =>      intval($booktrialid),
                 'premium_session'               =>      $premium_session,
@@ -2055,10 +2072,22 @@ class SchedulebooktrialsController extends \BaseController {
                 'order_id'                      =>      $orderid
             );
 
+            if(isset($order['recommended_booktrial_id']) && $order['recommended_booktrial_id'] != ""){
+                $booktrialdata['recommended_booktrial_id'] = (int)$order['recommended_booktrial_id'];
+            }
+
             if ($medical_detail != "" && $medication_detail != "") {
 
                 $customer_info = new CustomerInfo();
                 $response = $customer_info->addHealthInfo($booktrialdata);
+            }
+
+            if(isset($order['promotional_notification_id']) && $order['promotional_notification_id'] != ""){
+                $booktrialdata['promotional_notification_id'] = $order['promotional_notification_id'];
+            }
+
+            if(isset($order['promotional_notification_label']) && $order['promotional_notification_label'] != ""){
+                $booktrialdata['promotional_notification_label'] = $order['promotional_notification_label'];
             }
 
             // Add Cashback and rewards to booktrialdata if exist in orders....
@@ -2774,6 +2803,8 @@ class SchedulebooktrialsController extends \BaseController {
             $profile_link = $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$customer_email);
             $vendor_link = $this->utilities->getShortenUrl(Config::get('app.website')."/".$finder_slug);
 
+
+
             $booktrialdata = array(
 
                 'booktrialid'         =>      $booktrialid,
@@ -2871,6 +2902,24 @@ class SchedulebooktrialsController extends \BaseController {
 
             );
 
+            if(isset($data['promotional_notification_id']) && $data['promotional_notification_id'] != ""){
+                $booktrialdata['promotional_notification_id'] = $data['promotional_notification_id'];
+            }
+
+            if(isset($data['promotional_notification_label']) && $data['promotional_notification_label'] != ""){
+                $booktrialdata['promotional_notification_label'] = $data['promotional_notification_label'];
+            }
+
+            $addUpdateDevice = $this->utilities->addUpdateDevice($customer_id);
+
+            foreach ($addUpdateDevice as $header_key => $header_value) {
+
+                if($header_key != ""){
+                   $booktrialdata[$header_key]  = $header_value;
+                }
+
+            }
+
             if(isset($data['customofferorder_id']) && $data['customofferorder_id'] != ""){
 
                 $booktrialdata['customofferorder_id'] = $data['customofferorder_id'];
@@ -2902,6 +2951,10 @@ class SchedulebooktrialsController extends \BaseController {
 
             // return $this->customersms->bookTrial($booktrialdata);
             // return $booktrialdata;
+
+            if(isset($data['recommended_booktrial_id']) && $data['recommended_booktrial_id'] != ""){
+                $booktrialdata['recommended_booktrial_id'] = (int)$data['recommended_booktrial_id'];
+            }
 
             if(isset($data['_id'])){
                 $booktrialid = (int) $data['_id'];
@@ -4412,16 +4465,28 @@ class SchedulebooktrialsController extends \BaseController {
     }
 
 
-    public function booktrialdetail($captureid){
+    public function booktrialdetail($captureid,$type=false){
 
-        $booktrial      =   Booktrial::with('invite')->with(array('finder'=>function($query){$query->select('*')->with(array('location'=>function($query){$query->select('name');}))->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))->with(array('city'=>function($query){$query->select('_id','name','slug');}));}))->find(intval($captureid));
+        Booktrial::$withoutAppends=true;
+        Order::$withoutAppends=true;
+
+        if(isset($type) && $type == "healthytiffintrail"){
+            $booktrial      =   Order::active()->with(array('finder'=>function($query){$query->select('*')->with(array('location'=>function($query){$query->select('name');}))->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))->with(array('city'=>function($query){$query->select('_id','name','slug');}));}))->find(intval($captureid));
+        }else{
+            $booktrial      =   Booktrial::with('invite')->with(array('finder'=>function($query){$query->select('*')->with(array('location'=>function($query){$query->select('name');}))->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))->with(array('city'=>function($query){$query->select('_id','name','slug');}));}))->find(intval($captureid)); 
+        }
 
         if(!$booktrial){
 
             return $this->responseNotFound('Request not found');
         }
 
-        $dates = array('schedule_date','schedule_date_time','missedcall_date','customofferorder_expiry_date','followup_date');
+        if(isset($type) && $type == "healthytiffintrail"){
+            $dates = array('preferred_starting_date','start_date','start_date_starttime','end_date','preferred_payment_date','success_date','pg_date','preferred_starting_change_date','dietplan_start_date','followup_date', 'order_confirmation_customer','auto_followup_date','requested_preferred_starting_date');
+        }else{         
+            $dates = array('schedule_date','schedule_date_time','missedcall_date','customofferorder_expiry_date','followup_date','auto_followup_date');
+        }
+
 
         foreach ($dates as $key => $value) {
 
@@ -4432,7 +4497,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         $booktrial = $booktrial->toArray();
 
-        $unset = array('customer_emailqueuedids','customer_smsqueuedids','customer_notification_messageids','finder_emailqueuedids','finder_smsqueuedids','customer_auto_sms','followup_date_time');
+        $unset = array('customer_emailqueuedids','customer_smsqueuedids','customer_notification_messageids','finder_emailqueuedids','finder_smsqueuedids','customer_auto_sms','followup_date_time','send_communication');
 
         if(isset($booktrial['schedule_date_time']) && strtotime(Carbon::now()) >= strtotime(Carbon::parse($booktrial['schedule_date_time']))){
 
@@ -4485,6 +4550,28 @@ class SchedulebooktrialsController extends \BaseController {
 		}
 	
 		array_set($booktrial, 'reschedule_enable', $reschedule_enable);
+
+        if(isset($booktrial['preferred_starting_date'])){
+
+            $booktrial['schedule_date_time'] = $booktrial['preferred_starting_date'];
+            $booktrial['schedule_date'] = $booktrial['preferred_starting_date'];
+
+            unset($booktrial['preferred_starting_date']);
+        }
+
+        if(isset($booktrial['status'])){
+
+            unset($booktrial['status']);
+        }
+
+        if(isset($booktrial['order_action'])){
+
+            unset($booktrial['order_action']);
+        }
+
+        if(isset($booktrial['amount_finder']) && $booktrial['amount_finder'] != ""){
+            $booktrial['amount'] = $booktrial['amount_finder'];
+        }
 
         $responsedata   = ['booktrial' => $booktrial,  'message' => 'Booktrial Detail'];
         return Response::json($responsedata, 200);
@@ -5691,5 +5778,6 @@ class SchedulebooktrialsController extends \BaseController {
         $this->sendCommunication1(array('booktrial_id'=>intval($id)));
         return "done";
     }
+ 
 
 }

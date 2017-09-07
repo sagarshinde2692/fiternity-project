@@ -297,6 +297,17 @@ class TransactionController extends \BaseController {
             $data["auto_followup_date"] = date('Y-m-d H:i:s', strtotime("+31 days",strtotime($data['start_date'])));
             $data["followup_status"] = "abandon_cart";
         }
+
+
+        $addUpdateDevice = $this->utilities->addUpdateDevice($data['customer_id']);
+
+        foreach ($addUpdateDevice as $header_key => $header_value) {
+
+            if($header_key != ""){
+               $data[$header_key]  = $header_value;
+            }
+            
+        }
         
         if(isset($old_order_id)){
 
@@ -316,7 +327,6 @@ class TransactionController extends \BaseController {
         }
         
         
-
         if($data['customer_source'] == "android" || $data['customer_source'] == "ios"){
             $mobilehash = $data['payment_related_details_for_mobile_sdk_hash'];
         }
