@@ -780,10 +780,10 @@ class HomeController extends BaseController {
                 $customer = Customer::find((int)$item['customer_id']);
             }
 
-            $customer_auto_regester = false;
+            $customer_auto_register = false;
 
-            if($customer && isset($customer['ishulluser'])){
-                $customer_auto_regester = true;
+            if($customer && isset($customer['ishulluser']) && $customer['ishulluser'] == 1){
+                $customer_auto_register = true;
             }
 
             $near_by_vendor = [];
@@ -846,7 +846,7 @@ class HomeController extends BaseController {
                         ]
                     ];
 
-                    $near_by_vendor = $this->geoLocationFinder($near_by_vendor_request);
+                    $near_by_vendor = geoLocationFinder($near_by_vendor_request);
 
                     //echo"<pre>";print_r($near_by_vendor);exit;
                 }
@@ -888,7 +888,7 @@ class HomeController extends BaseController {
                             ]
                         ];
 
-                        $category_array[$key]['count'] = count($this->geoLocationFinder($finder_request));
+                        $category_array[$key]['count'] = count(geoLocationFinder($finder_request));
 
                     }
                 }
@@ -985,7 +985,6 @@ class HomeController extends BaseController {
                 if($finder_address != ""){
                     $booking_details_data['address']['value'] = $finder_address;
                 }
-
                 if(isset($item['finder_address']) && $item['finder_address'] != ""){
                     $booking_details_data['address']['value'] = $item['finder_address'];
                 }
@@ -1119,11 +1118,10 @@ class HomeController extends BaseController {
 
             $reward_details = null;
 
-            if(isset($item['reward_ids']) && !empty($item['reward_ids'])){
+            if(isset($item['customer_reward_id']) && $item['customer_reward_id'] != ""){
 
-                $reward_id = (int)$item['reward_ids'][0];
-
-                $reward = Reward::select('_id','title','reward_type','description','validity_in_days')->find($reward_id);
+                $reward_id = (int)$item['customer_reward_id'];
+                $reward = Myreward::select('_id','title','reward_type','description','validity_in_days')->find($reward_id);
 
                 if($reward){
 
@@ -1173,7 +1171,7 @@ class HomeController extends BaseController {
                 'reward_details'=>$reward_details,
                 'show_other_vendor' => $show_other_vendor,
                 'all_options_url' => $all_options_url,
-                'customer_auto_regester' => $customer_auto_regester
+                'customer_auto_register' => $customer_auto_register
             ];
 
             return Response::json($resp);
