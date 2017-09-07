@@ -2445,6 +2445,7 @@ if (!function_exists(('newcategorymapping'))){
 
     function newcategorymapping($category)
     {      
+        $category = strtolower($category);
         switch(true){
             case $category == "kids fitness" || $category == "kids fitness classes" :
                 return $category == "kids fitness" ? "kids fitness classes" : "kids fitness";
