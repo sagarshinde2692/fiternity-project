@@ -714,6 +714,9 @@ class FindersController extends \BaseController {
                       "id",
                       "city",
                       "category"
+                    ],
+                    "not"=>[
+                    	"vendor"=>[(int)$finderdata["_id"]]
                     ]
                 ];
 
@@ -739,6 +742,10 @@ class FindersController extends \BaseController {
                       "id",
                       "city",
                       "category"
+                    ],
+                    "not"=>[
+                    	"vendor"=>[(int)$finderdata["_id"]],
+                    	"category"=>[newcategorymapping($finderdata["category"]["name"])]
                     ]
                 ];
 

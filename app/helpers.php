@@ -2746,6 +2746,7 @@ if (!function_exists(('geoLocationFinder'))){
         $category = $request['category'];
         $keys = $request['keys'];
         $city = $request['city'];
+        $not = isset($request['not']) ? $request['not'] : new \stdClass();
 
         $payload = [
            "category"=>$category,
@@ -2765,7 +2766,8 @@ if (!function_exists(('geoLocationFinder'))){
                ],
               "city"=>$city
            ],
-           "keys"=>$keys
+           "keys"=>$keys,
+           "not"=>$not
         ];
 
         $url = "http://apistage.fitn.in:5000/search/vendor"; //;$this->api_url."search/getfinderresultsv4";
