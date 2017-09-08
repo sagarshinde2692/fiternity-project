@@ -14,24 +14,24 @@ return array(
 	// 'debug' => TRUE,
 
 	//stage
-	'url' => 'http://apistage.fitn.in',
-	'admin_url' => 'http://adminstage.fitn.in',
-	'website' => 'http://apistage.fitn.in:2233',
-	'sidekiq_url' => 'http://kick.fitn.in/',
-	'queue' => 'booktrial',
-	'vendor_communication' => false,
-	'env' => 'stage',
-	'debug' => TRUE,
-
-	//beta
-	// 'url' => 'http://beta.fitn.in', 
-	// 'admin_url' => 'http://adminstage.fitn.in', 
-	// 'website' => 'http://apistage.fitn.in:2233', 
-	// 'sidekiq_url' => 'http://kick.fitn.in/', 
-	// 'queue' => 'beta',
+	// 'url' => 'http://apistage.fitn.in',
+	// 'admin_url' => 'http://adminstage.fitn.in',
+	// 'website' => 'http://apistage.fitn.in:2233',
+	// 'sidekiq_url' => 'http://kick.fitn.in/',
+	// 'queue' => 'booktrial',
 	// 'vendor_communication' => false,
 	// 'env' => 'stage',
 	// 'debug' => TRUE,
+
+	//beta
+	'url' => 'http://beta.fitn.in', 
+	'admin_url' => 'http://adminstage.fitn.in', 
+	'website' => 'http://apistage.fitn.in:2233', 
+	'sidekiq_url' => 'http://kick.fitn.in/', 
+	'queue' => 'beta',
+	'vendor_communication' => false,
+	'env' => 'stage',
+	'debug' => TRUE,
 
 	//live
 	// 'url' => 'https://a1.fitternity.com',
