@@ -1120,7 +1120,7 @@ class TransactionController extends \BaseController {
                 $data["amount"] = $data["amount"] > $couponCheck["data"]["discount"] ? $data["amount"] - $couponCheck["data"]["discount"] : 0;
                 $data["coupon_discount_amount"] = $data["amount"] > $couponCheck["data"]["discount"] ? $couponCheck["data"]["discount"] : $data["amount"];
                 if(isset($couponCheck["vendor_coupon"]) && $couponCheck["vendor_coupon"]){
-                    $data["payment_mode"] = "at_the_studio";
+                    $data["payment_mode"] = "at the studio";
                     $data["secondary_payment_mode"] = "cod_membership";
                 }
             }
