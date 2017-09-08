@@ -961,6 +961,10 @@ class HomeController extends BaseController {
                 $booking_details_data['price']['value']= "Cash payment";
             }
 
+            if(isset($item['part_payment']) && $item['part_payment']){
+                $header= "Membership reserved";
+            }
+
             if($finder_address != ""){
                 $booking_details_data['address']['value'] = $finder_address;
             }

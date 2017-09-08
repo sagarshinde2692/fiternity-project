@@ -2490,6 +2490,12 @@ class OrderController extends \BaseController {
 
             }
 
+            if(isset($data['part_payment']) && $data['part_payment'] != ''){
+
+                $data['part_payment']  = $data['part_payment'];
+
+            }
+
             if(isset($data['reward_ids']) && !empty($data['reward_ids'])){
                 $reward_detail = array();
                 $reward_ids = array_map('intval',$data['reward_ids']);
