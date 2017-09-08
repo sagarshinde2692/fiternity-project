@@ -273,6 +273,7 @@ if(!function_exists('ifCityPresent')){
             case "bombay":
             case "thane":
             case "vashi":
+            case "bhiwandi":
             case "navi mumbai":
                 $send_city = "mumbai";
                 $ifcity = true;
@@ -280,6 +281,7 @@ if(!function_exists('ifCityPresent')){
             case "pune":
             case "pimpri":
             case "pimpri chinchwad":
+            case "pimpri-chinchwad":
                 $send_city = "pune";
                 $ifcity = true;
                 break;
@@ -2443,6 +2445,7 @@ if (!function_exists(('newcategorymapping'))){
 
     function newcategorymapping($category)
     {      
+        $category = strtolower($category);
         switch(true){
             case $category == "kids fitness" || $category == "kids fitness classes" :
                 return $category == "kids fitness" ? "kids fitness classes" : "kids fitness";
