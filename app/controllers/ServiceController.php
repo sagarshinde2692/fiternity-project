@@ -1153,4 +1153,120 @@ class ServiceController extends \BaseController {
     	return $diff;
     }
 
+    public function getMealDetailsById(){
+
+    	$request = $_REQUEST;
+
+    	$finder_id = "";
+
+    	if(!isset($request['finder_id']) && !isset($request['service_id'])){
+    		return Response::json(array('status'=>401,'message'=>'finder or service is required'),401);
+    	}
+
+        $query = Service::active()->where('trial','!=','disable')->select('_id','name','short_description','finder_id','trial','meal_type');
+
+        if(isset($request['finder_id']) && $request['finder_id'] != ""){
+        	$query->where('finder_id',(int)$request['finder_id']);
+        	$finder_id = (int)$request['finder_id'];
+        }
+
+        if(isset($request['service_id']) && $request['service_id'] != ""){
+        	$query->where('_id',(int)$request['service_id']);
+        }
+
+        $items = $query->get();
+
+        if(count($items) == 0){
+        	return Response::json(array('status'=>401,'message'=>'data is empty'),401);
+        }
+
+        $services = [];
+		
+        foreach ($items as $k => $item) {
+
+        	$finder_id = (int)$item['finder_id'];
+
+        	$service_data = [
+        		'service_id'=>$item['_id'],
+        		'name'=>$item['name'],
+        		'short_description'=>$item['short_description'],
+        		'finder_id'=>$item['finder_id'],
+        		'meal_type'=>$item['meal_type'],
+        		'ratecard'=>[],
+        		'image'=>''
+        	];
+
+ 
+        	$ratecard = Ratecard::where('service_id',(int)$service_data['service_id'])->where('finder_id',(int)$service_data['finder_id'])->where('type','trial')->get();
+
+        	if($ratecard && count($ratecard) > 0){
+
+        		$service_data['ratecard'] = $ratecard->toArray();
+        	}
+
+        	$services[] = $service_data;
+
+        }
+
+        $data = [];
+
+        $data['service'] = $services;
+
+	    return Response::json($data,200);
+
+    }
+
+    public function getLocationByRatecard($ratecard_id){
+
+    	$data = [];
+    	$data['location'] = [];
+
+    	$ratecard = Ratecard::find((int)$ratecard_id);
+
+		if($ratecard){
+
+			$finder_id = (int)$ratecard['finder_id'];
+			$service_id = (int)$ratecard['service_id'];
+
+			$service = Service::select('_id','meal_type')->active()->find($service_id);
+
+			if($service){
+
+				$meal_type = $service['meal_type'];
+
+				$finder = Finder::find((int)$finder_id)->toArray();
+
+		        $all_locations = [];
+		        $dinner_locations = [];
+		        $lunch_locations = [];
+
+		        if(isset($finder['locationtags']) && !empty($finder['locationtags']) && $finder['locationtags'] != "" && $finder['locationtags'] != null){
+
+		        	$all_locations = Locationtag::whereIn('_id',$finder['locationtags'])->orderBy('name','asc')->lists('name');
+		        }
+
+		        if(isset($finder['lunchlocationtags']) && !empty($finder['lunchlocationtags']) && $finder['lunchlocationtags'] != "" && $finder['lunchlocationtags'] != null){
+
+		        	$lunch_locations = Locationtag::whereIn('_id',$finder['lunchlocationtags'])->orderBy('name','asc')->lists('name');
+		        }
+
+		        if(isset($finder['dinnerlocationtags']) && !empty($finder['dinnerlocationtags']) && $finder['dinnerlocationtags'] != "" && $finder['dinnerlocationtags'] != null){
+
+		        	$dinner_locations = Locationtag::whereIn('_id',$finder['dinnerlocationtags'])->orderBy('name','asc')->lists('name');
+		        }
+
+		        switch ($meal_type) {
+		        	case 'lunch': $location = (!empty($lunch_locations)) ? $lunch_locations : $all_locations; break;
+		        	case 'dinner': $location = (!empty($dinner_locations)) ? $dinner_locations : $all_locations; break;		        	
+		        	default: $location = $all_locations; break;
+		        }
+
+		        $data['location'] = $location;
+			}
+		}
+
+		return Response::json($data,200);
+    }
+
+
 }
