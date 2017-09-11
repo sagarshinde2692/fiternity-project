@@ -635,6 +635,11 @@ class EmailSmsApiController extends \BaseController {
 			
 		}
 
+        if(isset($data['capture_type']) &&  in_array($data['capture_type'],['renewalCallback'])){
+
+            $responseData = $this->addReminderMessage($storecapture);
+        }
+
         $emaildata = array(
             'email_template' => 'emails.finder.landingcallbacks',
             'email_template_data' => array(
@@ -671,7 +676,7 @@ class EmailSmsApiController extends \BaseController {
             default:$message = "Recieved the Request";break;
         }
 
-        $resp  = array('status' => 200,'message'=>$message);
+        $resp  = array('status' => 200,'message'=>$message,'capture'=>$storecapture);
 
         return Response::json($resp);
     }
