@@ -4840,7 +4840,7 @@ public function yes($msg){
 
 	public function autoFollowupUnset(){
 
-		$orders = Order::where('added_auto_followup_date','>=',1499437200)
+		$orders = Order::where('added_auto_followup_date','>=',1499385600)
 					->where('end_date','exists',true)
 					->where('auto_followup_date','exists',true)
 					->get();
