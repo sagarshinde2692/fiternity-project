@@ -2550,6 +2550,11 @@ class OrderController extends \BaseController {
 
             $order->update($data);
 
+            if(isset($data['payment_mode']) && $data['payment_mode'] == 'cod'){
+                $this->customermailer->orderUpdateCOD($order->toArray());
+                $this->customersms->orderUpdateCOD($order->toArray());
+            }
+
             $result['firstname'] = strtolower($data['customer_name']);
             $result['lastname'] = "";
             $result['phone'] = $data['customer_phone'];
