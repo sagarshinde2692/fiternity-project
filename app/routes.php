@@ -1000,3 +1000,4 @@ Route::get('servicefilterreversemigration', 'DebugController@servicefilterrevers
 // Route::get('masssms','DebugController@massSms');
 
 Route::get('alertmsg/{date}','DebugController@alertmsg');
+Route::get('eventupdate','DebugController@eventUpdate');

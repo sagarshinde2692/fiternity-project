@@ -4817,6 +4817,26 @@ public function yes($msg){
 
 	}
 
+
+	public function eventUpdate(){
+
+		//Order::where('type','events')->unset('vertical_type');
+
+		//echo"<pre>";print_r('asdfaf');exit;
+
+		$orders = Order::where('type','events')->get();
+
+		foreach ($orders as $order) {
+
+			$order->vertical_type = "event";
+			$order->membership_duration_type = "event";
+			$order->update();
+		}
+
+		echo"<pre>";print_r('success');exit;
+
+	}
+
 	
 
     
