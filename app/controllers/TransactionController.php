@@ -332,6 +332,7 @@ class TransactionController extends \BaseController {
         }
         if(isset($data['myreward_id']) && $data['type'] == "workout-session"){
             $data['amount'] = 0;
+            $data['full_payment_wallet'] = true;
         }
         $result['firstname'] = strtolower($data['customer_name']);
         $result['lastname'] = "";

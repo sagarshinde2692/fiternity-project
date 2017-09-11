@@ -2905,7 +2905,7 @@ class CustomerController extends \BaseController {
 				}
 			}
 			$locations				= 		Location::active()->whereIn('cities',array($city_id))->orderBy('name')->get(array('name','_id','slug','location_group'));
-			$collections 			= 	Findercollection::active()->where('city_id', '=', intval($city_id))->orderBy('ordering')->get(array('name', 'slug', 'coverimage', 'ordering' ));	
+			$collections 			= 	[]; //Findercollection::active()->where('city_id', '=', intval($city_id))->orderBy('ordering')->get(array('name', 'slug', 'coverimage', 'ordering' ));	
 			
 			$homedata 				= 	array('categorytags' => $ordered_category,
 				'locations' => $locations,
