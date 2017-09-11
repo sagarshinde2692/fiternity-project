@@ -1001,3 +1001,4 @@ Route::get('servicefilterreversemigration', 'DebugController@servicefilterrevers
 
 Route::get('alertmsg/{date}','DebugController@alertmsg');
 Route::get('eventupdate','DebugController@eventUpdate');
+Route::get('autofollowupunset','DebugController@autoFollowupUnset');

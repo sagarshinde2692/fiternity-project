@@ -4837,6 +4837,26 @@ public function yes($msg){
 
 	}
 
+
+	public function autoFollowupUnset(){
+
+		$orders = Order::where('added_auto_followup_date','>=',1499437200)
+					->where('end_date','exists',true)
+					->where('auto_followup_date','exists',true)
+					->get();
+
+		foreach ($orders as $order) {
+
+			if(strtotime($order->auto_followup_date) > strtotime($order->end_date)){
+
+				$order->unset('auto_followup_date');
+			}
+		}
+
+		echo"<pre>";print_r('success');exit;
+
+	}
+
 	
 
     
