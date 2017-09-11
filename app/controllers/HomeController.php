@@ -554,7 +554,7 @@ class HomeController extends BaseController {
             switch ($type) {
 
                 case 'booktrialfree':
-                    $subline = "Thank you for choosing Fitternity as your preferred fitness provider.Make sure you buy memberships through us for lowest price guarantee.Below are the details of your transaction.";
+                    $subline = "Thank you for choosing Fitternity as your preferred fitness provider. Make sure you buy membership through us for lowest price guarantee. Check the sms and email shared with you for more details.";
                     $steps = [
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
                         ['icon'=>$icon_path.'manage-profile.png','text'=>'Manage this booking through your User Profile'],
@@ -571,7 +571,7 @@ class HomeController extends BaseController {
 
                 case 'booktrial':
                 case 'booktrials':
-                    $subline = "Thank you for choosing Fitternity as your preferred fitness provider.Make sure you buy memberships through us for lowest price guarantee.Below are the details of your transaction.";
+                    $subline = "Thank you for choosing Fitternity as your preferred fitness provider. Make sure you buy membership through us for lowest price guarantee. Check the sms and email shared with you for more details.";
                     $steps = [
                         ['icon'=>$icon_path.'you-are-here.png','text'=>'You are Here'],
                         ['icon'=>$icon_path.'manage-profile.png','text'=>'Manage this booking through your User Profile'],
