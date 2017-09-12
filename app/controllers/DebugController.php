@@ -4817,6 +4817,46 @@ public function yes($msg){
 
 	}
 
+
+	public function eventUpdate(){
+
+		//Order::where('type','events')->unset('vertical_type');
+
+		//echo"<pre>";print_r('asdfaf');exit;
+
+		$orders = Order::where('type','events')->get();
+
+		foreach ($orders as $order) {
+
+			$order->vertical_type = "event";
+			$order->membership_duration_type = "event";
+			$order->update();
+		}
+
+		echo"<pre>";print_r('success');exit;
+
+	}
+
+
+	public function autoFollowupUnset(){
+
+		$orders = Order::where('added_auto_followup_date','>=',1499385600)
+					->where('end_date','exists',true)
+					->where('auto_followup_date','exists',true)
+					->get();
+
+		foreach ($orders as $order) {
+
+			if(strtotime($order->auto_followup_date) > strtotime($order->end_date)){
+
+				$order->unset('auto_followup_date');
+			}
+		}
+
+		echo"<pre>";print_r('success');exit;
+
+	}
+
 	
 
     

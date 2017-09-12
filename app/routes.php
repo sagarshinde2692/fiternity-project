@@ -25,6 +25,7 @@ require __DIR__.'/analytics_routes.php';
  // $queries = DB::getQueryLog();
  // var_dump($queries);
 
+
 Route::get('/', function() {  return date('l')." laravel beta 4.2 goes here...."; });
 Route::get('acceptvendormou/{vendormouid}', 'FindersController@acceptVendorMou');
 Route::get('cancelvendormou/{vendormouid}', 'FindersController@cancelVendorMou');
@@ -34,6 +35,8 @@ Route::get('cancelvendormou/{vendormouid}', 'FindersController@cancelVendorMou')
 
 ##############################################################################
 /******************** VENDOR PANEL SECTION START HERE ***********************/
+
+
 
 Route::post('/vendorlogin',  array('as' => 'vendor.login','uses' => 'VendorpanelController@doVendorLogin'));
 
@@ -178,7 +181,7 @@ Route::get('categorytagofferings/{city?}', 'HomeController@getCategorytagsOfferi
 
 
 Route::get('getcapturedetail/{captureid}', 'CaptureController@getCaptureDetail');
-Route::get('booktrialdetail/{captureid}', 'SchedulebooktrialsController@booktrialdetail');
+Route::get('booktrialdetail/{captureid}/{type?}', 'SchedulebooktrialsController@booktrialdetail');
 
 Route::post('feedbackfromcustomer', 'SchedulebooktrialsController@feedbackFromCustomer');
 
@@ -230,7 +233,9 @@ Route::post('customer/addregid', array('as' => 'customer.addregid','uses' => 'Cu
 Route::post('customer/add/webnotification', array('as' => 'customer.addwebnotification','uses' => 'CustomerController@addWebNotification'));
 Route::post('customer/addhealthinfo', array('as' => 'customer.addhealthinfo','uses' => 'CustomerController@addHealthInfo'));
 Route::post('customer/myrewards/create', array('as' => 'customer.createMyReward','uses' => 'MyrewardController@createMyReward'));
-Route::get('customer/home/{city?}', array('as' => 'customer.home','uses' => 'CustomerController@home'));
+Route::group(array('before' => 'device'), function() {
+	Route::get('customer/home/{city?}', array('as' => 'customer.home','uses' => 'CustomerController@home'));
+});
 Route::post('customer/transformation', array('as' => 'customer.transformation','uses' => 'CustomerController@transformation'));
 Route::post('sms/downloadapp', array('as' => 'customer.downloadapp','uses' => 'CustomerController@downloadApp'));
 Route::get('app/forceupdate', array('as' => 'customer.forceupdate','uses' => 'CustomerController@forceUpdate'));
@@ -920,13 +925,12 @@ Route::post('displayemi','CustomerController@displayEmi');
 
 Route::post('trainer/getavailableslots',array('as' => 'trainer/getavailableslots','uses' => 'TrainerController@getAvailableSlots'));
 
-Route::group(array('before' => 'validatetoken'), function() {
+//Route::group(array('before' => 'validatetoken'), function() {
 	Route::post('trainer/bookslot', array('as' => 'trainer.bookslot','uses' => 'TrainerController@bookSlot'));
 	Route::post('transaction/update',array('as' => 'transaction.update','uses' => 'TransactionController@update'));
 	Route::get('customer/orderdetail/{order_id}',array('as' => 'customer.orderdetail','uses' => 'CustomerController@orderDetail'));
-	Route::get('customer/orderdetail/{order_id}',array('as' => 'customer.orderdetail','uses' => 'CustomerController@orderDetail'));
 	Route::post('customer/addreview', array('as' => 'finders.addreviewcustomer','uses' => 'FindersController@addReviewCustomer'));
-});
+//});
 
 Route::get('getdetailrating',array('as' => 'getdetailrating','uses' => 'FindersController@getDetailRating'));
 
@@ -1000,3 +1004,6 @@ Route::get('servicefilterreversemigration', 'DebugController@servicefilterrevers
 // Route::get('masssms','DebugController@massSms');
 
 Route::get('alertmsg/{date}','DebugController@alertmsg');
+Route::get('eventupdate','DebugController@eventUpdate');
+Route::get('autofollowupunset','DebugController@autoFollowupUnset');
+Route::post('customer/promotionalnotification',array('as' => 'customer.promotionalnotification','uses' => 'CustomerController@promotionalNotificationTracking'));

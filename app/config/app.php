@@ -4,6 +4,7 @@
 return array(
 
 	//local
+	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
 	// 'url' => 'http://fitapi.com',
 	// 'admin_url' => 'http://fitadmin.com',
 	// 'website' => 'https://www.fitternity.com',
@@ -14,6 +15,7 @@ return array(
 	// 'debug' => TRUE,
 
 	//stage
+	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
 	// 'url' => 'http://apistage.fitn.in',
 	// 'admin_url' => 'http://adminstage.fitn.in',
 	// 'website' => 'http://apistage.fitn.in:2233',
@@ -24,6 +26,7 @@ return array(
 	// 'debug' => TRUE,
 
 	//beta
+	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
 	// 'url' => 'http://beta.fitn.in', 
 	// 'admin_url' => 'http://adminstage.fitn.in', 
 	// 'website' => 'http://apistage.fitn.in:2233', 
@@ -34,6 +37,7 @@ return array(
 	// 'debug' => TRUE,
 
 	//live
+	'new_search_url' =>'http://c1.fitternity.com/',
 	'url' => 'https://a1.fitternity.com',
 	'admin_url' => 'https://fitn.in',
 	'website' => 'https://www.fitternity.com',
