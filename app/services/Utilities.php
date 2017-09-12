@@ -1251,7 +1251,24 @@ Class Utilities {
 
             if ($device) {
 
-                $device->customer_id = (isset($data['customer_id']) && $data['customer_id'] != '') ? (int)$data['customer_id'] : $device->customer_id;
+                if(isset($data['customer_id']) && $data['customer_id'] != '' && $data['customer_id'] != null && $data['customer_id'] != 'null'){
+                    $device->customer_id = (int)$data['customer_id'];
+                }
+
+                if(isset($data['device_model']) && $data['device_model'] != '' && $data['device_model'] != null && $data['device_model'] != 'null'){
+                    $device->device_model = $data['device_model'];
+                }
+
+                if(isset($data['app_version']) && $data['app_version'] != '' && $data['app_version'] != null && $data['app_version'] != 'null'){
+                    $device->app_version = (float)$data['app_version'];
+                }
+
+                if(isset($data['os_version']) && $data['os_version'] != '' && $data['os_version'] != null && $data['os_version'] != 'null'){
+                    $device->os_version = (float)$data['os_version'];
+                }
+
+                $device->last_visited_date = time();
+
                 $device->update();
 
             } else {
@@ -1267,7 +1284,25 @@ Class Utilities {
                 $device = new Device();
                 $device->_id = $device_id;
                 $device->reg_id = $data['reg_id'];
-                $device->customer_id = (isset($data['customer_id']) && $data['customer_id'] != '') ? (int)$data['customer_id'] : '';
+
+                if(isset($data['customer_id']) && $data['customer_id'] != '' && $data['customer_id'] != null && $data['customer_id'] != 'null'){
+                    $device->customer_id = (int)$data['customer_id'];
+                }
+
+                if(isset($data['device_model']) && $data['device_model'] != '' && $data['device_model'] != null && $data['device_model'] != 'null'){
+                    $device->device_model = $data['device_model'];
+                }
+
+                if(isset($data['app_version']) && $data['app_version'] != '' && $data['app_version'] != null && $data['app_version'] != 'null'){
+                    $device->app_version = (float)$data['app_version'];
+                }
+
+                if(isset($data['os_version']) && $data['os_version'] != '' && $data['os_version'] != null && $data['os_version'] != 'null'){
+                    $device->os_version = (float)$data['os_version'];
+                }
+
+                $device->last_visited_date = time();
+
                 $device->type = $data['type'];
                 $device->status = "1";
                 $device->save();
@@ -2226,6 +2261,63 @@ Class Utilities {
         }
 
         return $query;
+
+    }
+
+
+    public function addUpdateDevice($customer_id = false){
+
+        $header_array = [
+            "Device-Type"=>"",
+            "Device-Model"=>"",
+            "App-Version"=>"",
+            "Os-Version"=>"",
+            "Device-Token"=>"",
+            "Device-Id"=>""
+        ];
+
+        $flag = false;
+
+        foreach ($header_array as $header_key => $header_value) {
+
+            $value = Request::header($header_key);
+
+            if($value != "" && $value != null && $value != 'null'){
+               $header_array[$header_key] =  $value;
+               $flag = true;
+            }
+            
+        }
+
+        if($customer_id && $customer_id != ""){
+          $header_array['customer_id'] = (int)$customer_id;
+        }
+
+        $data = [];
+
+        if($customer_id && $customer_id != ""){
+          $data['customer_id'] = (int)$customer_id;
+        }
+
+        $data['device_id'] = $header_array['Device-Id'];
+        $data['os_version'] = $header_array['Os-Version'];
+        $data['app_version'] = $header_array['App-Version'];
+        $data['device_model'] = $header_array['Device-Model'];
+        $data['type'] = $header_array['Device-Type'];
+        $data['device_type'] = $header_array['Device-Type'];
+        $data['reg_id'] = $header_array['Device-Token'];
+        $data['gcm_reg_id'] = $header_array['Device-Token'];
+
+        $this->addRegId($data);
+
+        unset($data['type']);
+        unset($data['device_id']);
+
+        if($customer_id && $customer_id != ""){
+          unset($data['customer_id']);
+        }
+
+        return $data;
 
     }
 

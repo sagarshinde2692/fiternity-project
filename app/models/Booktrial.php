@@ -5,6 +5,16 @@ class Booktrial extends \Basemodel {
 
 	protected $collection = "booktrials";
 
+	public static $withoutAppends = false;
+
+	protected function getArrayableAppends()
+	{
+		if(self::$withoutAppends){
+			return [];
+		}
+		return parent::getArrayableAppends();
+	}
+
 	protected $dates = array('schedule_date','schedule_date_time','missedcall_date','customofferorder_expiry_date','followup_date','auto_followup_date');
 
 	public function setIdAttribute($value){

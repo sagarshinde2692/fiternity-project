@@ -123,6 +123,15 @@ class TransactionController extends \BaseController {
             return Response::json(array('status' => 404,'message' => error_message($validator->errors())),404);
         }
 
+        if(isset($data['myreward_id']) && $data['type'] == "workout-session"){
+
+            $validateMyReward = $this->validateMyReward($data['myreward_id']);
+
+            if($validateMyReward['status'] != 200){
+                return Response::json($validateMyReward,$validateMyReward['status']);
+            }
+        }
+
         $customerDetail = $this->getCustomerDetail($data);
 
         if($customerDetail['status'] != 200){
@@ -297,6 +306,17 @@ class TransactionController extends \BaseController {
             $data["auto_followup_date"] = date('Y-m-d H:i:s', strtotime("+31 days",strtotime($data['start_date'])));
             $data["followup_status"] = "abandon_cart";
         }
+
+
+        $addUpdateDevice = $this->utilities->addUpdateDevice($data['customer_id']);
+
+        foreach ($addUpdateDevice as $header_key => $header_value) {
+
+            if($header_key != ""){
+               $data[$header_key]  = $header_value;
+            }
+            
+        }
         
         if(isset($old_order_id)){
 
@@ -316,12 +336,12 @@ class TransactionController extends \BaseController {
         }
         
         
-
         if($data['customer_source'] == "android" || $data['customer_source'] == "ios"){
             $mobilehash = $data['payment_related_details_for_mobile_sdk_hash'];
         }
         if(isset($data['myreward_id']) && $data['type'] == "workout-session"){
             $data['amount'] = 0;
+            $data['full_payment_wallet'] = true;
         }
         $result['firstname'] = strtolower($data['customer_name']);
         $result['lastname'] = "";
@@ -2552,5 +2572,32 @@ class TransactionController extends \BaseController {
 
         return "Done";
 	}
+
+
+    public function validateMyReward($myreward_id){
+
+        $myreward = Myreward::find((int)$myreward_id);
+
+        if($myreward){
+
+            $created_at = date('Y-m-d H:i:s',strtotime($myreward->created_at));
+
+            $validity_date_unix = strtotime($created_at . ' +'.(int)$myreward->validity_in_days.' days');
+            $current_date_unix = time();
+
+            if($validity_date_unix < $current_date_unix){
+                return array('status' => 404,'message' => "Validity Is Over");
+            }
+
+            if(!isset($myreward->claimed) || $myreward->claimed < $myreward->quantity){
+                return array('status' => 200,'message' => "Validate Successfully");
+            }else{
+                return array('status' => 404,'message' => "Reward Already Claimed");
+            }
+
+            return array('status' => 200,'message' => "Validate Successfully");
+        }
+
+    }
 
 }

@@ -33,19 +33,34 @@ class CustomerController extends \BaseController {
 
     // Listing Schedule Tirals for Normal Customer
 	public function getAutoBookTrials($customeremail){
-		$selectfields 	=	array('finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt','service_id','what_i_should_carry','what_i_should_expect','origin','trial_attended_finder', 'type','amount');
-		$trials 		=	Booktrial::where('customer_email', '=', $customeremail)
-		->whereIn('booktrial_type', array('auto'))
-		->with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))
-		->with(array('invite'=>function($query){$query->get(array('invitee_name', 'invitee_email','invitee_phone','referrer_booktrial_id'));}))
-		//->with('invite')
-		->orderBy('_id', 'desc')->take(8)
-		->get($selectfields)->toArray();
 
+		$selectfields 	=	array('finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt','service_id','what_i_should_carry','what_i_should_expect','origin','trial_attended_finder', 'type','amount','created_at');
+
+		if(isset($_GET['device_type']) && $_GET['device_type'] == "website"){
+
+			$trials = Booktrial::where('customer_email', '=', $customeremail)
+			->whereIn('booktrial_type', array('auto'))
+			->with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))
+			->with(array('invite'=>function($query){$query->get(array('invitee_name', 'invitee_email','invitee_phone','referrer_booktrial_id'));}))
+			->orderBy('_id', 'desc')->take(8)
+			->get($selectfields);
+
+		}else{
+
+			$trials		=	Booktrial::where('customer_email', '=', $customeremail)
+			->whereIn('booktrial_type', array('auto'))
+			->with(array('finder'=>function($query){$query->select('_id','lon', 'lat', 'contact.address','finder_poc_for_customer_mobile', 'finder_poc_for_customer_name');}))
+			->with(array('invite'=>function($query){$query->get(array('invitee_name', 'invitee_email','invitee_phone','referrer_booktrial_id'));}))
+			->where('going_status_txt','!=','cancel')
+			->orderBy('_id', 'desc')->take(8)
+			->get($selectfields);
+		}
 
 		if(count($trials) < 0){
 			$resp 	= 	array('status' => 200,'trials' => [],'message' => 'No trials scheduled yet :)');
 			return Response::json($resp,200);
+		}else{
+			$trials->toArray();
 		}
 
 		$customertrials  = 	$trial = array();
@@ -53,7 +68,13 @@ class CustomerController extends \BaseController {
 		$upcomingtrials = [];
 		$passedtrials = [];
 		$healthytiffintrail = [];
-		
+		$passed_trials_date_array = [];
+		$upcoming_trials_date_array = [];
+
+		$hour = 60*60;
+		$hour12 = 60*60*12;
+		$hour2 = 60*60*2;
+
 		foreach ($trials as $trial){
 
 			array_set($trial, 'message', '');
@@ -70,49 +91,23 @@ class CustomerController extends \BaseController {
 				}
 			}
 
-
-
 			$scheduleDateTime 				=	Carbon::parse($trial['schedule_date_time']);
 			$slot_datetime_pass_status  	= 	($currentDateTime->diffInMinutes($scheduleDateTime, false) > 0) ? false : true;
 
-			
+			array_set($trial, 'message', "");
 			array_set($trial, 'passed', $slot_datetime_pass_status);
+
+			$trial['interaction_date'] = strtotime($trial['created_at']);
 
 			if($slot_datetime_pass_status){
 
-				$time_diff = strtotime($currentDateTime) - strtotime($scheduleDateTime);
-				$hour2 = 60*60*2;
-
-				$trial_message = '';
-
-				if($time_diff >= $hour2){
-
-					$trial_message = nl2br("Hope you had a chance to attend the session.\nIf you attended, rate your experience and win awesome merchandise and unlock Rs. 250 off");
-				}
-
-				array_set($trial, 'message', $trial_message);
-
 				array_push($passedtrials, $trial);
+
+				$passed_trials_date_array[] = strtotime($trial['created_at']);
 				
 			}else{
 
 				$time_diff = strtotime($scheduleDateTime) - strtotime($currentDateTime);
-
-				$hour = 60*60;
-				$hour12 = 60*60*12;
-				$hour2 = 60*60*2;
-
-				$trial_message = '';
-
-				if($time_diff <= $hour12 && isset($trial['what_i_should_carry']) && $trial['what_i_should_carry'] != ''){
-					$trial_message = nl2br('What to carry : '.str_replace("Optional","\nOptional ",strip_tags($trial['what_i_should_carry'])));
-				}
-
-				if($time_diff <= $hour && isset($trial['finder']['finder_poc_for_customer_name']) && $trial['finder']['finder_poc_for_customer_name'] != ''){
-					$trial_message = nl2br("Hope you are ready for your session.\nContact person : ".ucwords($trial['finder']['finder_poc_for_customer_name'])."\nHave a great workout!");
-				}
-
-				array_set($trial, 'message', $trial_message);
 
 				$going_status_txt = ['rescheduled','cancel'];
 
@@ -139,17 +134,23 @@ class CustomerController extends \BaseController {
 				if(!isset($trial['going_status_txt'])){
 					$reschedule_enable = false;
 				}
+
+				$upcoming_trials_date_array[] = strtotime($trial['created_at']);
 			
 				array_set($trial, 'reschedule_enable', $reschedule_enable);
 
 				array_push($upcomingtrials, $trial);	
 			}
 
-			$healthytiffintrail = array();
 
-			$ht_selectfields 	=	array('finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt','service_id','what_i_should_carry','what_i_should_expect','origin','preferred_starting_date','amount','status','order_action');
 
-			$healthytiffintrail = Order::where('customer_email',$customeremail)
+		}
+
+		$healthytiffintrails = array();
+
+			$ht_selectfields 	=	array('type','finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt','service_id','what_i_should_carry','what_i_should_expect','origin','preferred_starting_date','amount','status','order_action','created_at','customer_address');
+
+			$healthytiffintrails = Order::where('customer_email',$customeremail)
 			->where('type','healthytiffintrail')
 			->orWhere(function($query){$query->where('status',"1")->where('order_action','bought')->where('amount','!=',0);})
 			->orWhere(function($query){$query->where('status',"0")->where('amount','exist',false);})
@@ -157,49 +158,106 @@ class CustomerController extends \BaseController {
 			->orderBy('_id', 'desc')->take(8)
 			->get($ht_selectfields);
 
-			if(count($healthytiffintrail) > 0){
-				$healthytiffintrail = $healthytiffintrail->toArray();
+			if(count($healthytiffintrails) > 0){
 
-				foreach ($healthytiffintrail as $key => $value) {
+				$healthytiffintrails = $healthytiffintrails->toArray();
+
+				foreach ($healthytiffintrails as $key => $healthytiffintrail) {
 
 					foreach ($selectfields as $field) {
 
-						if(!isset($value[$field])){
-							$healthytiffintrail[$key][$field] = "";
+						if(!isset($healthytiffintrail[$field])){
+							$healthytiffintrail[$field] = "";
 						}
 
-						if(isset($value['preferred_starting_date'])){
+						if(isset($healthytiffintrail['preferred_starting_date'])){
 
-							$healthytiffintrail[$key]['schedule_date_time'] = $value['preferred_starting_date'];
-							$healthytiffintrail[$key]['schedule_date'] = $value['preferred_starting_date'];
+							$healthytiffintrail['schedule_date_time'] = $healthytiffintrail['preferred_starting_date'];
+							$healthytiffintrail['schedule_date'] = $healthytiffintrail['preferred_starting_date'];
 
-							unset($healthytiffintrail[$key]['preferred_starting_date']);
+							unset($healthytiffintrail['preferred_starting_date']);
 						}
 
-						if(isset($value['amount'])){
+						if(isset($healthytiffintrail['amount'])){
 
-							unset($healthytiffintrail[$key]['amount']);
+							unset($healthytiffintrail['amount']);
 						}
 
-						if(isset($value['status'])){
+						if(isset($healthytiffintrail['status'])){
 
-							unset($healthytiffintrail[$key]['status']);
+							unset($healthytiffintrail['status']);
 						}
 
-						if(isset($value['order_action'])){
+						if(isset($healthytiffintrail['order_action'])){
 
-							unset($healthytiffintrail[$key]['order_action']);
+							unset($healthytiffintrail['order_action']);
 						}
 
+					}
+
+					$healthytiffintrail['interaction_date'] = strtotime($healthytiffintrail['created_at']);
+
+
+					$scheduleDateTime 				=	Carbon::parse($healthytiffintrail['schedule_date_time']);
+					$slot_datetime_pass_status  	= 	($currentDateTime->diffInMinutes($scheduleDateTime, false) > 0) ? false : true;
+
+					if($slot_datetime_pass_status){
+
+						array_push($passedtrials, $healthytiffintrail);
+						
+						$passed_trials_date_array[] = strtotime($healthytiffintrail['created_at']);
+						
+					}else{
+
+						$time_diff = strtotime($scheduleDateTime) - strtotime($currentDateTime);
+
+						$going_status_txt = ['rescheduled','cancel'];
+
+						if(!isset($healthytiffintrail['going_status_txt'])){
+							$healthytiffintrail['going_status_txt'] = "-";
+						}
+
+						if(!isset($healthytiffintrail['amount'])){
+							$healthytiffintrail['amount'] = 0;
+						}
+
+						if(isset($healthytiffintrail['amount']) && $healthytiffintrail['amount'] == "-"){
+							$healthytiffintrail['amount'] = 0;
+						}
+
+						if($time_diff <= $hour2){
+							$reschedule_enable = false;
+						}elseif(in_array($healthytiffintrail['going_status_txt'], $going_status_txt) || $healthytiffintrail['amount'] > 0  || $healthytiffintrail['type'] == 'workout-session'){
+							$reschedule_enable = false;
+						}else{
+							$reschedule_enable = true;
+						}
+
+						if(!isset($healthytiffintrail['going_status_txt'])){
+							$reschedule_enable = false;
+						}
+
+						$upcoming_trials_date_array[] = strtotime($healthytiffintrail['created_at']);
+					
+						array_set($healthytiffintrail, 'reschedule_enable', $reschedule_enable);
+
+						array_push($upcomingtrials, $healthytiffintrail);	
 					}
 
 				}
 			}
 
+		if(count($upcomingtrials) > 0 && count($upcoming_trials_date_array) > 0){
+
+			array_multisort($upcoming_trials_date_array, SORT_DESC, $upcomingtrials);
+		}
+
+		if(count($passedtrials) > 0 && count($passed_trials_date_array) > 0){
+			array_multisort($passed_trials_date_array, SORT_DESC, $passedtrials);
 		}
 
 		// array_push($customertrials, $trial);
-		$resp 	= 	array('status' => 200,'passedtrials' => $passedtrials,'upcomingtrials' => $upcomingtrials,'healthytiffintrail'=>$healthytiffintrail,'message' => 'List of scheduled trials');
+		$resp 	= 	array('status' => 200,'passedtrials' => $passedtrials,'upcomingtrials' => $upcomingtrials,'healthytiffintrail'=>[],'message' => 'List of scheduled trials');
 		return Response::json($resp,200);
 	}
 
@@ -2719,7 +2777,7 @@ class CustomerController extends \BaseController {
 		return array_multisort($sort_col, $dir, $arr);
 	}
 
-	public function home($city = 'mumbai',$cache = true){
+	public function home($city = 'mumbai',$cache = false){
 
 		$jwt_token = Request::header('Authorization');
 		$upcoming = array();
@@ -2778,54 +2836,47 @@ class CustomerController extends \BaseController {
 			
 		}
 
-		if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android") && isset($_GET['app_version']) && ((float)$_GET['app_version'] >= 2.5)){
-
-			$category_slug = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates"/*,"personal-trainers"*/,"luxury-hotels"/*,"healthy-snacks-and-beverages"*/,"spinning-and-indoor-cycling"/*,"healthy-tiffins"*//*,"dietitians-and-nutritionists"*//*,"sport-nutrition-supliment-stores"*/,"aerobics","kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness");
-
-			$cache_tag = 'customer_home_by_city_2_5';
-
-		}else{
-
-			$category_slug = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates"/*,"personal-trainers"*//*,"luxury-hotels"*//*,"healthy-snacks-and-beverages"*/,"spinning-and-indoor-cycling"/*,"healthy-tiffins"*//*,"dietitians-and-nutritionists"*//*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness");
-
-			$cache_tag = 'customer_home_by_city';
-
-		}
-
-
-		if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "ios")){
-
-			$category_slug = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","luxury-hotels"/*,"healthy-snacks-and-beverages"*/,"spinning-and-indoor-cycling"/*,"healthy-tiffins"*//*,"dietitians-and-nutritionists"*//*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness"/*,"personal-trainers"*/);
-
-			$cat = array();
-
-			$cat['mumbai'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","luxury-hotels"/*,"healthy-snacks-and-beverages"*/,"spinning-and-indoor-cycling"/*,"healthy-tiffins"*//*,"dietitians-and-nutritionists"*//*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness"/*,"personal-trainers"*/);
-
-			$cat['pune'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates"/*,"healthy-tiffins"*/,"cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling"/*,"sport-nutrition-supliment-stores"*/,"aerobics","kids-fitness","pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
-
-			$cat['bangalore'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates"/*,"healthy-tiffins"*/,"cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling"/*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
-
-			$cat['delhi'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates"/*,"healthy-tiffins"*/,"cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling"/*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
-
-			$cat['gurgaon'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates"/*,"healthy-tiffins"*/,"cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling"/*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
-
-			$cat['noida'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"mma-and-kick-boxing","dance","kids-fitness","pre-natal-classes");
-
-			if(isset($cat[$city])){
-				$category_slug = $cat[$city];
+		if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android")){
+			if(isset($_GET['app_version']) && ((float)$_GET['app_version'] >= 2.5)){
+				$category_slug = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","personal-trainers","luxury-hotels","healthy-snacks-and-beverages","spinning-and-indoor-cycling","healthy-tiffins"/*,"dietitians-and-nutritionists"*/,"sport-nutrition-supliment-stores","aerobics","kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness");
+				$cache_tag = 'customer_home_by_city_2_5';
+			}else{
+				$category_slug = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","personal-trainers"/*,"luxury-hotels"*/,"healthy-snacks-and-beverages","spinning-and-indoor-cycling","healthy-tiffins"/*,"dietitians-and-nutritionists"*//*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness");
+				$cache_tag = 'customer_home_by_city';
 			}
+		}else{
+			if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "ios") && ((float)$_GET['app_version'] <= 4.1)){
+				$category_slug = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","luxury-hotels","healthy-snacks-and-beverages","spinning-and-indoor-cycling","healthy-tiffins"/*,"dietitians-and-nutritionists"*/,"sport-nutrition-supliment-stores","kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness","personal-trainers");
+				$cat = array();
+				$cat['mumbai'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","luxury-hotels","healthy-snacks-and-beverages","spinning-and-indoor-cycling","healthy-tiffins"/*,"dietitians-and-nutritionists"*/,"sport-nutrition-supliment-stores","kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness","personal-trainers");
+				$cat['pune'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates","healthy-tiffins","cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling","sport-nutrition-supliment-stores","aerobics","kids-fitness","pre-natal-classes","aerial-fitness","personal-trainers");
+				$cat['bangalore'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates","healthy-tiffins","cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling","sport-nutrition-supliment-stores","kids-fitness","pre-natal-classes","aerial-fitness","personal-trainers");
+				$cat['delhi'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates","healthy-tiffins","cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling","sport-nutrition-supliment-stores","kids-fitness","pre-natal-classes","aerial-fitness","personal-trainers");
+				$cat['gurgaon'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates","healthy-tiffins","cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling","sport-nutrition-supliment-stores","kids-fitness","pre-natal-classes","aerial-fitness","personal-trainers");
+				$cat['noida'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"mma-and-kick-boxing","dance","kids-fitness","pre-natal-classes");
+				if(isset($cat[$city])){
+					$category_slug = $cat[$city];
+				}
+				$cache_tag = 'customer_home_by_city_ios';
+			}else{
 
-			$cache_tag = 'customer_home_by_city_ios';
+				$category_new = citywise_categories($city);
 
+				foreach ($category_new as $key => $value) {
+					if($value["slug"] == "fitness"){
+						unset($category_new[$key]);
+					}
+				}
+
+				$category_new = array_values($category_new);
+
+				$cache_tag = 'customer_home_by_city_ios_4.1';
+			}
 		}
-
 		$customer_home_by_city = $cache ? Cache::tags($cache_tag)->has($city) : false;
-
 		if(!$customer_home_by_city){
-
 			$category = $locations = $popular_finders =	$recent_blogs =	array();
 			$citydata 		=	City::where('slug', '=', $city)->first(array('name','slug'));
-
 			if(!$citydata){
 				if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "ios")){
 					$citydata['name'] 		= 	"mumbai";
@@ -2835,33 +2886,26 @@ class CustomerController extends \BaseController {
 				}
 				
 			}
-
 			$city_name 		= 	$citydata['name'];
 			$city_id		= 	(int) $citydata['_id'];
-
-			$category			= 		Findercategory::active()
-													// ->where('cities',$city_id)
-													->whereIn('slug',$category_slug)->get(array('name','_id','slug'))->toArray();
-			
-			$ordered_category = array();
-
-			foreach ($category_slug as $category_slug_key => $category_slug_value){
-
-				foreach ($category as $category_key => $category_value){
-
-					if($category_value['slug'] == $category_slug_value){
-
-						$category_value['name'] = ucwords($category_value['name']);
-
-						$ordered_category[] = $category_value;
-						break;
+			if(isset($category_new)){
+				$category			= 		$category_new;
+				$ordered_category   = 		$category_new;
+			}else{
+				$category			= 		Findercategory::active()->whereIn('slug',$category_slug)->get(array('name','_id','slug'))->toArray();
+				$ordered_category = array();
+				foreach ($category_slug as $category_slug_key => $category_slug_value){
+					foreach ($category as $category_key => $category_value){
+						if($category_value['slug'] == $category_slug_value){
+							$category_value['name'] = ucwords($category_value['name']);
+							$ordered_category[] = $category_value;
+							break;
+						}
 					}
 				}
 			}
-
 			$locations				= 		Location::active()->whereIn('cities',array($city_id))->orderBy('name')->get(array('name','_id','slug','location_group'));
-
-			$collections 			= 	Findercollection::active()->where('city_id', '=', intval($city_id))->orderBy('ordering')->get(array('name', 'slug', 'coverimage', 'ordering' ));	
+			$collections 			= 	[]; //Findercollection::active()->where('city_id', '=', intval($city_id))->orderBy('ordering')->get(array('name', 'slug', 'coverimage', 'ordering' ));	
 			
 			$homedata 				= 	array('categorytags' => $ordered_category,
 				'locations' => $locations,
@@ -2870,15 +2914,11 @@ class CustomerController extends \BaseController {
 				'collections' => $collections,
 				'banner' => 'http://b.fitn.in/c/welcome/1.jpg'
 				);
-
 			Cache::tags($cache_tag)->put($city,$homedata,Config::get('cache.cache_time'));
 		}
-
 		$result             = Cache::tags($cache_tag)->get($city);
 		$result['upcoming'] = $upcoming;
-
 		// $result['campaign'] =  new \stdClass();
-
 		// $result['campaign'] = array(
 		// 	'image'=>'http://b.fitn.in/iconsv1/womens-day/women_banner_app_50.png',
 		// 	'link'=>'fitternity://www.fitternity.com/search/offer_available/true',
@@ -2887,7 +2927,6 @@ class CustomerController extends \BaseController {
 		// 	'width'=>6,
 		// 	'ratio'=>1/6
 		// );
-
 		if(isset($_REQUEST['device_type']) && $_REQUEST['device_type'] == "ios" ){
 			$result['campaign'] =  new \stdClass();
 			$result['campaign'] = array(
@@ -2899,7 +2938,6 @@ class CustomerController extends \BaseController {
 				'ratio'=>1/6
 			);
 		}
-
 		return Response::json($result);
 	}
 
@@ -3688,7 +3726,7 @@ class CustomerController extends \BaseController {
 
 		Log::info("----------------orderDetail : ".$order_id);
 
-		$decoded = decode_customer_token();
+		//$decoded = decode_customer_token();
 
 		$order_id = (int) $order_id;
 
@@ -3700,17 +3738,21 @@ class CustomerController extends \BaseController {
 	        return Response::json($resp,$resp["status"]);
 	    }
 
-	    if($order->customer_email != $decoded->customer->email){
+	    /*if($order->customer_email != $decoded->customer->email){
 	        $resp   =   array("status" => 401,"message" => "Invalid Customer");
 	        return Response::json($resp,$resp["status"]);
-	    }
+	    }*/
 
 	    $finder = Finder::find((int)$order->finder_id);
 
 	    $data = [];
 	    $data['order_id'] = $order_id;
 	    $data['start_date'] = strtotime($order->start_date);
-	    $data['end_date'] = strtotime($order->end_date);
+
+	    if(isset($order->end_date) && $order->end_date != ""){
+	    	$data['end_date'] = strtotime($order->end_date);
+	    }
+
 	    $data['service_name'] = $order->service_name;
 	    $data['duration'] = $order->service_duration;
 	    $data['subscription_code'] = $order->code;
@@ -3721,9 +3763,14 @@ class CustomerController extends \BaseController {
 	    $finderData = [];
 	    $finderData['id'] = $order->finder_id;
 	    $finderData['name'] = $order->finder_name;
-	    $finderData['address'] = strip_tags($order->finder_address);
-	    $finderData['location'] = $order->finder_location;
-	    $finderData['geo'] = ["lat"=>$order->finder_lat,"lon"=>$order->finder_lon];
+
+	    if(($order->type != "healthytiffinmembership")){
+
+	    	$finderData['address'] = strip_tags($order->finder_address);
+	    	$finderData['location'] = $order->finder_location;
+	    	$finderData['geo'] = ["lat"=>$order->finder_lat,"lon"=>$order->finder_lon];
+	    }
+	    
 	    $finderData['cover_image'] = ($finder['coverimage'] != '') ? Config::get('app.s3_finderurl.cover').$finder['coverimage'] : Config::get('app.s3_finderurl.cover').'default/'.$finder['category_id'].'-'.rand(1, 4).'.jpg';
 	    $data['finder'] = $finderData;
 
@@ -5027,6 +5074,94 @@ class CustomerController extends \BaseController {
 				),
 			200
 		);
+	}
+
+	public function promotionalNotificationTracking(){
+
+		$data = Input::json()->all();
+
+		$header_array = [
+	        "Device-Type"=>"",
+	        "Device-Model"=>"",
+	        "App-Version"=>"",
+	        "Os-Version"=>"",
+	        "Device-Token"=>"",
+	        "Device-Id"=>""
+	    ];
+
+	    $flag = false;
+
+	    foreach ($header_array as $header_key => $header_value) {
+
+	        $value = Request::header($header_key);
+
+	        if($value != "" && $value != null && $value != 'null'){
+	           $header_array[$header_key] =  $value;
+	           $flag = true;
+	        }
+	        
+	    }
+
+	    $customer_id = "";
+
+	    $jwt_token = Request::header('Authorization');
+
+	    if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+
+	        $decoded = customerTokenDecode($jwt_token);
+	        $customer_id = (int)$decoded->customer->_id;
+	    }
+
+	    $data['customer_id'] = $customer_id;
+	    $data['device_id'] = $header_array['Device-Id'];
+	    $data['os_version'] = $header_array['Os-Version'];
+	    $data['app_version'] = $header_array['App-Version'];
+	    $data['device_model'] = $header_array['Device-Model'];
+	    $data['device_type'] = $header_array['Device-Type'];
+	    $data['device_token'] = $header_array['Device-Token'];
+
+	    $rules = [
+			'device_token' => 'required',
+			'label' => 'required',
+			'action'=>'required|in:received,clicked'
+		];
+
+		$validator = Validator::make($data,$rules);
+
+		if($validator->fails()) {
+
+			return Response::json(array('status' => 401,'message' =>$this->errorMessage($validator->errors())),401);
+		}
+
+		if($data['action'] == 'received'){
+			$data['received'] = time();
+		}
+
+		if($data['action'] == 'clicked'){
+			$data['clicked'] = time();
+		}
+
+		unset($data['action']);
+
+		$promotionalNotificationTracking = false;
+		
+		if(isset($data['label']) && isset($data['device_token'])){
+
+			$promotionalNotificationTracking = PromotionalNotificationTracking::where('device_token',$data['device_token'])->where('label',$data['label'])->first();
+		}
+
+		if($promotionalNotificationTracking){
+
+			$promotionalNotificationTracking->update($data);
+
+		}else{
+
+			$promotionalNotificationTracking = new PromotionalNotificationTracking($data);
+			$promotionalNotificationTracking->save();
+		}
+
+		return Response::json(array('status' => 200,'message' => 'Captured Successfully','promotional_notification_id'=>$promotionalNotificationTracking->_id),200);
+
 	}
 	
 }

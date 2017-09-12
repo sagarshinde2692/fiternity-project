@@ -152,6 +152,26 @@ class FindersController extends \BaseController {
 				// $ratecards           =   Ratecard::with('serviceoffers')->where('finder_id', intval($finder_id))->orderBy('_id', 'desc')->get();
 				$finderarr = $finderarr->toArray();
 
+				if(isset($finderarr['commercial_type']) && $finderarr['commercial_type']==0){
+					if(isset($finderarr['budget'])){
+						if($finderarr['budget'] < 1000){
+							$finderarr['budget'] = "Less than Rs. 1000";
+						}else if($finderarr['budget'] >= 1000 && $finderarr['budget'] < 2500){
+							$finderarr['budget'] = "Rs. 1000- Rs. 2500";
+						}else if($finderarr['budget'] >= 2500 && $finderarr['budget'] < 5000){
+							$finderarr['budget'] = "Rs. 2500- Rs. 5000";
+						}else if($finderarr['budget'] >= 5000 && $finderarr['budget'] < 7500){
+							$finderarr['budget'] = "Rs. 5000- Rs. 7500";
+						}else if($finderarr['budget'] >= 7500 && $finderarr['budget'] < 15000){
+							$finderarr['budget'] = "Rs. 7500- Rs. 15000";
+						}else {
+							$finderarr['budget'] = "Above Rs. 15000";
+						}
+					}else{
+							$finderarr['budget'] = "";
+					}
+				}
+
 				if(!empty($finderarr['reviews'])){
 
 					foreach ($finderarr['reviews'] as $rev_key => $rev_value) {
@@ -671,56 +691,65 @@ class FindersController extends \BaseController {
 
 				$skip_categoryid_finders    = [41,42,45,25,46,10,26,40];
 
-				$nearby_same_category = array();
+				
 
-				$nearby_same_category       =   Finder::where('category_id','=',$findercategoryid)
-				->where('commercial_type','!=', 0)
-				->where('location_id','=',$finderlocationid)
-				->where('_id','!=',$finderid)
-				->where('status', '=', '1')
-				->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
-				->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-				->with(array('city'=>function($query){$query->select('_id','name','slug');}))
-				// ->with('offerings')
-				->orderBy('finder_type', 'DESC')
-				->remember(Config::get('app.cachetime'))
-				->take(5)
-				->get(array('_id','average_rating','category_id','coverimage','finder_coverimage', 'slug','title','category','location_id','location','city_id','city','total_rating_count','logo','finder_coverimage','offerings'));
 
-				/*if(count($nearby_same_category) > 0){
+				$nearby_same_category_request = [
+                    "offset" => 0,
+                    "limit" => 4,
+                    "radius" => "3km",
+                    "category"=>newcategorymapping($finderdata["category"]["name"]),
+                    "lat"=>$finderdata["lat"],
+                    "lon"=>$finderdata["lon"],
+                    "city"=>strtolower($finderdata["city"]["name"]),
+                    "keys"=>[
+                      "average_rating",
+                      "business_type",
+                      "commercial_type",
+                      "coverimage",
+                      "location",
+                      "subcategories",
+                      "slug",
+                      "name",
+                      "id",
+                      "city",
+                      "category"
+                    ],
+                    "not"=>[
+                    	"vendor"=>[(int)$finderdata["_id"]]
+                    ]
+                ];
 
-					$nearby_same_category->toArray();
+                $nearby_same_category = geoLocationFinder($nearby_same_category_request);
 
-					foreach($nearby_same_category as $key => $finder1){
-						array_set($nearby_same_category[$key], 'offerings', pluck( $finder1['offerings'] , array('_id', 'name', 'slug') ));
-					}
-				}*/
+				$nearby_other_category_request = [
+                    "offset" => 0,
+                    "limit" => 4,
+                    "radius" => "3km",
+                    "category"=>"",
+                    "lat"=>$finderdata["lat"],
+                    "lon"=>$finderdata["lon"],
+                    "city"=>strtolower($finderdata["city"]["name"]),
+                    "keys"=>[
+                      "average_rating",
+                      "business_type",
+                      "commercial_type",
+                      "coverimage",
+                      "location",
+                      "subcategories",
+                      "slug",
+                      "name",
+                      "id",
+                      "city",
+                      "category"
+                    ],
+                    "not"=>[
+                    	"vendor"=>[(int)$finderdata["_id"]],
+                    	"category"=>[newcategorymapping($finderdata["category"]["name"])]
+                    ]
+                ];
 
-				$nearby_other_category = array();    
-
-				$nearby_other_category      =   Finder::where('category_id','!=',$findercategoryid)
-				->whereNotIn('category_id', $skip_categoryid_finders)
-				->where('commercial_type','!=', 0)
-				->where('location_id','=',$finderlocationid)
-				->where('_id','!=',$finderid)
-				->where('status', '=', '1')
-				->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
-				->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-				->with(array('city'=>function($query){$query->select('_id','name','slug');}))
-				// ->with('offerings')
-				->orderBy('finder_type', 'DESC')
-				->remember(Config::get('app.cachetime'))
-				->take(5)
-				->get(array('_id','average_rating','category_id','coverimage','finder_coverimage', 'slug','title','category','location_id','location','city_id','city','total_rating_count','logo','finder_coverimage','offerings'));
-
-				/*if(count($nearby_other_category) > 0){
-
-					$nearby_other_category->toArray();
-
-					foreach($nearby_other_category as $key => $finder1){
-						array_set($nearby_other_category[$key], 'offerings', pluck( $finder1['offerings'] , array('_id', 'name', 'slug') ));
-					}
-				}*/
+                $nearby_other_category = geoLocationFinder($nearby_other_category_request);
 
 				if($finder['city_id'] == 10000){
 					$finder['city']['name'] = $finder['custom_city'];
@@ -2696,6 +2725,10 @@ class FindersController extends \BaseController {
 					$data['finder']['offer_icon']        =        "";
 					$data['finder']['multiaddress']	     =		  $finder->multiaddress;
 
+					if(isset($data['finder']['multiaddress']	) && count($data['finder']['multiaddress'])>0 && isset($data['finder']['multiaddress']	[0]['location'])){
+						$data['finder']['multiaddress']	[0]['location'] = $finder['location']['name'];
+					}
+
 					
 
 					if(time() >= strtotime(date('2016-12-24 00:00:00')) && (int)$finder['commercial_type'] != 0){
@@ -2848,6 +2881,7 @@ class FindersController extends \BaseController {
 			$finder = Finder::active()->where('slug','=',$tslug)->first();
 
 			if($finder){
+
 				$finderData['finder']['title'] = str_replace('crossfit', 'CrossFit', $finder['title']);
 				$finderData['finder']['title'] = str_replace('Crossfit', 'CrossFit', $finder['title']);
 				if(Request::header('Authorization')){
@@ -2893,6 +2927,19 @@ class FindersController extends \BaseController {
 				}
 			
 			}
+
+			if(isset($finder['flags']) && isset($finder['flags']['state']) && in_array($finder['flags']['state'],['closed','temporarily_shut'])){
+
+				if($finder['flags']['state'] == 'temporarily_shut'){
+
+					$finderData['finder']['offer_icon'] = "https://b.fitn.in/global/finder/temporarily_shut.png";
+
+				}else{
+
+					$finderData['finder']['offer_icon'] = "https://b.fitn.in/global/finder/closed.png";
+					$finderData['finder']['services'] = [];
+				}
+			}	
 
 			if(isset($finderData['finder']['trial']) && $finderData['finder']['trial'] == "disable" ){
 				$finderData['call_for_action_button'] = "";
@@ -3030,6 +3077,13 @@ class FindersController extends \BaseController {
 
 				$finderData['finder']['call_interrupt'] = $call_interrupt;
 			}
+
+			if(isset($finderData['finder']['category_id']) && $finderData['finder']['category_id'] == 42){
+				unset($finderData['finder']['lat']);
+				unset($finderData['finder']['lon']);
+			}
+
+					
 
 		}else{
 
