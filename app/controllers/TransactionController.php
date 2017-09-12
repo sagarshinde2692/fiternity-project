@@ -154,8 +154,9 @@ class TransactionController extends \BaseController {
         if($finderDetail['status'] != 200){
             return Response::json($finderDetail,$finderDetail['status']);
         }
-
-        $data = array_merge($data,$finderDetail['data']);
+        $orderfinderdetail = $finderDetail;
+        unset($orderfinderdetail["data"]["flags"]);
+        $data = array_merge($data,$orderfinderdetail['data']);
 
         if(isset($data['service_id'])){
             $service_id = (int) $data['service_id'];
@@ -271,6 +272,21 @@ class TransactionController extends \BaseController {
         }
         $data['txnid'] = $txnid;
         $hash = getHash($data);
+        Log::info($finderDetail["data"]);
+        if(isset($finderDetail["data"]["flags"]) && isset($finderDetail["data"]["flags"]["part_payment"]) == true && $data["amount"] > 2500){
+            if($finderDetail["data"]["flags"]["part_payment"]){
+                $part_payment_data = $data;
+                $part_payment_data_amount = $data["amount"] - $data["amount_finder"]*0.2;
+                $part_payment_data["amount"] = $part_payment_data_amount > 0 ? $data["amount_finder"]*0.2 : 0;
+                if($part_payment_data["amount"] > 0){
+                    $part_payment_hash = getHash($part_payment_data);
+                }else{
+                    $part_payment_data["amount"] = 0;
+                }
+            }
+            $data["part_payment_calculation"] = array("amount" => $part_payment_data["amount"], "hash" => $part_payment_hash, "full_wallet_payment" => $part_payment_data["amount"] == 0 ? true : false);
+            Log::info($data["part_payment_calculation"]);
+        }
 
         $data = array_merge($data,$hash);
 
@@ -336,6 +352,9 @@ class TransactionController extends \BaseController {
         $result['hash'] = $data['payment_hash'];
         $result['payment_related_details_for_mobile_sdk_hash'] = $mobilehash;
         $result['finder_name'] = strtolower($data['finder_name']);
+        if(isset($data["part_payment_calculation"])){
+            $result['part_payment_calculation'] = $data["part_payment_calculation"];
+        }
         
 
         if(isset($data['full_payment_wallet'])){
@@ -1776,7 +1795,7 @@ class TransactionController extends \BaseController {
         $data['city_slug'] = $finder_city_slug;
         $data['category_name'] = $finder_category;
         $data['category_slug'] = $finder_category_slug;
-
+        $data['flags'] = isset($finder['flags']) ? $finder['flags'] : array();
         return array('status' => 200,'data' =>$data);
     }
 
