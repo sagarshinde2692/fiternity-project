@@ -2725,6 +2725,10 @@ class FindersController extends \BaseController {
 					$data['finder']['offer_icon']        =        "";
 					$data['finder']['multiaddress']	     =		  $finder->multiaddress;
 
+					if(isset($data['finder']['multiaddress']	) && count($data['finder']['multiaddress'])>0 && isset($data['finder']['multiaddress']	[0]['location'])){
+						$data['finder']['multiaddress']	[0]['location'] = $finder['location']['name'];
+					}
+
 					
 
 					if(time() >= strtotime(date('2016-12-24 00:00:00')) && (int)$finder['commercial_type'] != 0){
