@@ -2927,6 +2927,15 @@ class CustomerController extends \BaseController {
 		// 	'width'=>6,
 		// 	'ratio'=>1/6
 		// );
+
+		if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "ios") && ((float)$_GET['app_version'] <= 4.1)){
+			$result['collections'] 			= 	Findercollection::active()->where('city_id', '=', intval($city_id))->orderBy('ordering')->get(array('name', 'slug', 'coverimage', 'ordering' ));	
+		}
+
+		if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android") && ((float)$_GET['app_version'] <= 4.2)){
+			$result['collections'] 			= 	Findercollection::active()->where('city_id', '=', intval($city_id))->orderBy('ordering')->get(array('name', 'slug', 'coverimage', 'ordering' ));
+		}
+		
 		if(isset($_REQUEST['device_type']) && $_REQUEST['device_type'] == "ios" ){
 			$result['campaign'] =  new \stdClass();
 			$result['campaign'] = array(
