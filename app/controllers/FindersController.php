@@ -2759,8 +2759,8 @@ class FindersController extends \BaseController {
 					$data['finder']['offer_icon']        =        "";
 					$data['finder']['multiaddress']	     =		  $finder->multiaddress;
 
-					if(isset($data['finder']['multiaddress']	) && count($data['finder']['multiaddress'])>0 && isset($data['finder']['multiaddress']	[0]['location'])){
-						$data['finder']['multiaddress']	[0]['location'] = $finder['location']['name'];
+					if(isset($data['finder']['multiaddress']	) && count($data['finder']['multiaddress'])>0 && isset($data['finder']['multiaddress'][0]['location'])){
+						$data['finder']['multiaddress']	[0]['location'] = [$finder['location']['name']];
 					}
 
 					
