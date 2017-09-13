@@ -1014,8 +1014,8 @@ class TransactionController extends \BaseController {
             if($data['type'] == "memberships" && isset($data['customer_source']) && ($data['customer_source'] == "android" || $data['customer_source'] == "ios")){
                 $this->appOfferDiscount = in_array($data['finder_id'], $this->appOfferExcludedVendors) ? 0 : $this->appOfferDiscount;
                 $data['app_discount_amount'] = intval($data['amount'] * ($this->appOfferDiscount/100));
-                $customer_discount_percent = $this->utilities->getCustomerDiscount();
-                $data['customer_discount_amount'] = intval($data['amount'] * ($customer_discount_percent/100));
+                $corporate_discount_percent = $this->utilities->getCustomerDiscount();
+                $data['customer_discount_amount'] = intval($data['amount'] * ($corporate_discount_percent/100));
                 $amount = $data['amount'] = $data['amount_customer'] = $data['amount'] - $data['app_discount_amount'] - $data['customer_discount_amount'];
                 $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount'],$data['finder_id'],'paymentgateway',$data['offer_id'],$data['customer_id']);
             }else{
@@ -1605,6 +1605,10 @@ class TransactionController extends \BaseController {
         }
 
         $data['amount'] = $data['amount_finder'];
+
+        $corporate_discount_percent = $this->utilities->getCustomerDiscount();
+        $data['customer_discount_amount'] = intval($data['amount'] * ($corporate_discount_percent/100));
+        $data['amount'] = $data['amount'] - $data['customer_discount_amount'];
 
         $medical_detail                     =   (isset($data['medical_detail']) && $data['medical_detail'] != '') ? $data['medical_detail'] : "";
         $medication_detail                  =   (isset($data['medication_detail']) && $data['medication_detail'] != '') ? $data['medication_detail'] : "";

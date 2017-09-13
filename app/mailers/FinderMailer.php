@@ -518,6 +518,7 @@ Class FinderMailer extends Mailer {
 	}
 
 	public function sendOrderCorporateMail($data){
+		Log::info("OrderCorporateMail-Vendor");
 		return;
 		$label = 'OrderCorporateMail-Vendor';
 

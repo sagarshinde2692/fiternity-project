@@ -15,6 +15,7 @@ use Device;
 use Wallet;
 use WalletTransaction;
 use App\Sms\CustomerSms as CustomerSms;
+use App\Mailers\FinderMailer as FinderMailer;
 
 Class Utilities {
 
