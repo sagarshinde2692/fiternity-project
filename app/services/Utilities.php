@@ -2321,5 +2321,22 @@ Class Utilities {
 
     }
 
+    function getCustomerDiscount(){
+        
+        $jwt_token = Request::header('Authorization');
+        $customer_email = "";
+        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+
+            $decoded = customerTokenDecode($jwt_token);
+            $customer_email = (int)$decoded->customer->email;
+        }
+        
+        if(in_array($customer_email, Config::get('app.customer_discount.emails'))){
+            return Config::get('app.customer_discount.discount');
+        }else{
+            return 0;
+        }
+    }
+
 
 }

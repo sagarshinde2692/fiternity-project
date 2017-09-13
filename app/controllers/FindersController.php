@@ -2300,7 +2300,9 @@ class FindersController extends \BaseController {
 					}else{*/
 						if($rateval['type'] == 'membership' || $rateval['type'] == 'packages'){
 							$this->appOfferDiscount = in_array($finder_id, $this->appOfferExcludedVendors) ? 0 : $this->appOfferDiscount;
-							
+
+							$this->appOfferDiscount = $this->appOfferDiscount + $this->utilities->getCustomerDiscount();
+
 							if($rateval['special_price'] > 0){
 								$app_discount_amount = intval($rateval['special_price'] * ($this->appOfferDiscount/100));
 								$rateval['special_price'] = $rateval['special_price'] - $app_discount_amount;

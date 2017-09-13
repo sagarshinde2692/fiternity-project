@@ -400,11 +400,16 @@ class TempsController extends \BaseController {
             if($finder_id != "" && $amount != "" && $customer_id != ""){
 
                 $device_type = ["android","ios"];
-
+                
+                $this->appOfferDiscount = 0;
+                
                 if($temp->action == "memberships" && isset($_GET['device_type']) &&  in_array($_GET['device_type'], $device_type)){
                     $this->appOfferDiscount = in_array($finder_id, $this->appOfferExcludedVendors) ? 0 : $this->appOfferDiscount;
-                    $amount = $amount - intval($amount * ($this->appOfferDiscount/100));
                 }
+
+                $customer_discount = $this->utilities->getCustomerDiscount();
+
+                $amount = $amount - intval($amount * (($this->appOfferDiscount + $customer_discount)/100));
 
                 $customerReward     =   new CustomerReward();
                 $calculation        =   $customerReward->purchaseGame($amount,$finder_id,"paymentgateway",false,$customer_id);

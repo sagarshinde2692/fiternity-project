@@ -1010,8 +1010,11 @@ class TransactionController extends \BaseController {
 
         if($data['type'] != 'events'){
             if($data['type'] == "memberships" && isset($data['customer_source']) && ($data['customer_source'] == "android" || $data['customer_source'] == "ios")){
+                $this->appOfferDiscount = in_array($data['finder_id'], $this->appOfferExcludedVendors) ? 0 : $this->appOfferDiscount;
                 $data['app_discount_amount'] = intval($data['amount'] * ($this->appOfferDiscount/100));
-                $amount = $data['amount'] = $data['amount_customer'] = $data['amount'] - $data['app_discount_amount'];
+                $customer_discount_percent = $this->utilities->getCustomerDiscount();
+                $data['customer_discount_amount'] = intval($data['amount'] * ($customer_discount_percent/100));
+                $amount = $data['amount'] = $data['amount_customer'] = $data['amount'] - $data['app_discount_amount'] - $data['customer_discount_amount'];
                 $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount'],$data['finder_id'],'paymentgateway',$data['offer_id'],$data['customer_id']);
             }else{
                 $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount_finder'],$data['finder_id'],'paymentgateway',$data['offer_id'],$data['customer_id']);
