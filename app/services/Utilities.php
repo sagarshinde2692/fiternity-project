@@ -2331,11 +2331,50 @@ Class Utilities {
             $customer_email = (int)$decoded->customer->email;
         }
         
-        if(in_array($customer_email, Config::get('app.customer_discount.emails'))){
-            return Config::get('app.customer_discount.discount');
+        if(in_array($customer_email, Config::get('app.corporate_login.emails'))){
+            return Config::get('app.corporate_login.discount');
         }else{
             return 0;
         }
+    }
+
+    function checkCorporateLogin(){
+        
+        $jwt_token = Request::header('Authorization');
+        $customer_email = "";
+        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+
+            $decoded = customerTokenDecode($jwt_token);
+            $customer_email = (int)$decoded->customer->email;
+        }
+        
+        if(in_array($customer_email, Config::get('app.corporate_login.emails'))){
+            return true;
+        }else{
+            return false;
+        }
+    }
+
+    function sendCorporateMail($data){
+        if(isset($data['logged_in_customer_id'])){
+
+            $logged_in_customer_id = $data['logged_in_customer_id'];
+            
+            $customer = Customer::find($logged_in_customer_id);
+
+            if($customer){
+                if(in_array($customer->email, Config::get('app.corporate_login.emails'))){
+                    $data['corporate_email'] = $customer->email;
+                    $data['corporate_name'] = $customer->name;
+                    
+                    $findermailer = new FinderMailer();
+
+                    $findermailer->sendOrderCorporateMail($data);
+                
+                }
+            }
+        }
+
     }
 
 

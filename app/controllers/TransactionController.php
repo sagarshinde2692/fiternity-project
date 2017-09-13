@@ -756,6 +756,8 @@ class TransactionController extends \BaseController {
                 
             }
 
+            $this->utilities->sendCorporateMail($order->toArray());
+
             if(isset($order->preferred_starting_date) && $order->preferred_starting_date != "" && !in_array($finder->category_id, $abundant_category) && $order->type == "memberships" && !isset($order->customer_sms_after3days) && !isset($order->customer_email_after10days) && $order->type != 'diet_plan'){
 
                 $preferred_starting_date = $order->preferred_starting_date;
@@ -1148,6 +1150,11 @@ class TransactionController extends \BaseController {
                 }
             }
         }
+
+        if($this->utilities->checkCorporateLogin()){
+            $data["payment_mode"] = "at the studio";
+        }
+
         if($data['amount'] == 0){
             $data['full_payment_wallet'] = true;
         }else{

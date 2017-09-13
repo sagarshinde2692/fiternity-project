@@ -686,7 +686,7 @@ return array(
 
 	'my_fitness_party_slug' => 'mfp',
 
-	'customer_discount' => array(
+	'corporate_login' => array(
 		'emails' => ['fitmein123@yopmail.com'],
 		'discount' => 2
 	)
