@@ -1153,6 +1153,7 @@ class TransactionController extends \BaseController {
 
         if($this->utilities->checkCorporateLogin()){
             $data["payment_mode"] = "at the studio";
+            $data['full_payment_wallet'] = true;
         }
 
         if($data['amount'] == 0){
