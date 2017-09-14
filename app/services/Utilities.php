@@ -2346,14 +2346,15 @@ Class Utilities {
         if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
 
             $decoded = customerTokenDecode($jwt_token);
-            $customer_email = (int)$decoded->customer->email;
+            $customer_email = $decoded->customer->email;
+
+            if(in_array($customer_email, Config::get('app.corporate_login.emails'))){
+                return true;
+            }
         }
+
+        return false;
         
-        if(in_array($customer_email, Config::get('app.corporate_login.emails'))){
-            return true;
-        }else{
-            return false;
-        }
     }
 
     function sendCorporateMail($data){
