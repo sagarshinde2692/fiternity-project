@@ -362,6 +362,10 @@ class TransactionController extends \BaseController {
             $result['full_payment_wallet'] = $data['full_payment_wallet'];
         }
 
+        if($this->utilities->checkCorporateLogin()){
+            $result['full_payment_wallet'] = true;
+        }
+
         if(in_array($data['type'],$this->membership_array)){
             $redisid = Queue::connection('redis')->push('TransactionController@sendCommunication', array('order_id'=>$order_id),Config::get('app.queue'));
             $order->update(array('redis_id'=>$redisid));
