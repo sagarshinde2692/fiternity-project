@@ -970,14 +970,8 @@ Class Utilities {
             }
         }else{
             // If amount is zero check for wallet amount
-            if($data['amount'] == 0){
-                if($order->amount == 0 && isset($order->full_payment_wallet) && $order->full_payment_wallet == true){
-                    $hash_verified = true;
-                }else{
-                    $hash_verified = false;
-                    // $resp   =   array('status' => 401, 'statustxt' => 'error', 'order' => $order, "message" => "The amount of purchase is invalid");
-                    // return Response::json($resp,401);
-                }
+            if($data['amount'] == 0 || isset($order->full_payment_wallet) && $order->full_payment_wallet == true){
+                $hash_verified = true;
             }else{
                 $hashreverse = getReversehash($order);
                 // Log::info($data["verify_hash"]);

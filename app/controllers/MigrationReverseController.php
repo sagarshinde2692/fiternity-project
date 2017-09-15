@@ -1069,7 +1069,7 @@ class MigrationReverseController extends \BaseController {
     public function ratecard($id){
 
         try{
-
+            Log::info("dsadsadadasdasd reverse");
             $data	=	DB::connection($this->fitapi)->table('ratecards')->where('_id', intval($id))->first();
 
             $insertData['finder_id'] = (int)$data['vendor_id'];
