@@ -119,7 +119,7 @@ class CustomerController extends \BaseController {
 					$trial['amount'] = 0;
 				}
 
-				if(isset($trial['amount']) && $trial['amount'] == "-"){
+				if(isset($trial['amount']) && ($trial['amount'] == "-" || $trial['amount'] == "")){
 					$trial['amount'] = 0;
 				}
 
@@ -2837,7 +2837,10 @@ class CustomerController extends \BaseController {
 		}
 
 		if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android")){
-			if(isset($_GET['app_version']) && ((float)$_GET['app_version'] >= 2.5)){
+			if(isset($_GET['app_version']) && ((float)$_GET['app_version'] >= 4.2)){
+				$category_slug = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates"/*,"personal-trainers"*/,"luxury-hotels","healthy-snacks-and-beverages","spinning-and-indoor-cycling","healthy-tiffins"/*,"dietitians-and-nutritionists"*//*,"sport-nutrition-supliment-stores"*/,"aerobics","kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness");
+				$cache_tag = 'customer_home_by_city_4_2';
+			}elseif(isset($_GET['app_version']) && ((float)$_GET['app_version'] >= 2.5)){
 				$category_slug = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates"/*,"personal-trainers"*/,"luxury-hotels","healthy-snacks-and-beverages","spinning-and-indoor-cycling"/*,"healthy-tiffins"*//*,"dietitians-and-nutritionists"*//*,"sport-nutrition-supliment-stores"*/,"aerobics","kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness");
 				$cache_tag = 'customer_home_by_city_2_5';
 			}else{
