@@ -458,7 +458,10 @@ class RewardofferController extends BaseController {
         // );
         $data['diet_plan'] = $customerReward->fitternityDietVendor($amount);
 
-        $data['corporate_login'] = $this->utilities->checkCorporateLogin();
+        if($this->utilities->checkCorporateLogin()){
+            $data['corporate_login'] = true;
+            unset($data['cashback']);
+        }
 
         return  Response::json($data, 200);
 
