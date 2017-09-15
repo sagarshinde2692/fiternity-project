@@ -201,6 +201,14 @@ class CustomerController extends \BaseController {
 							unset($healthytiffintrail['order_action']);
 						}
 
+						if(!isset($healthytiffintrail['going_status'])){
+							$healthytiffintrail['going_status'] = 0;
+						}
+
+						if(isset($healthytiffintrail['going_status']) && ($healthytiffintrail['going_status'] == "-" || $healthytiffintrail['going_status'] == "")){
+							$healthytiffintrail['going_status'] = 0;
+						}
+
 					}
 
 					$healthytiffintrail['interaction_date'] = strtotime($healthytiffintrail['created_at']);
