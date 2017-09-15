@@ -1596,6 +1596,14 @@ class TransactionController extends \BaseController {
 
         $data['amount'] = $data['amount_finder'];
 
+        if(isset($ratecard['flags']) && isset($ratecard['flags']['convinience_fee_applicable']) && $ratecard['flags']['convinience_fee_applicable']){
+            
+            $convinience_fee_percent = Config::get('app.convinience_fee');
+
+            $data['amount'] = $data['amount'] * (1 + $convinience_fee_percent/100);
+
+        }
+
         $medical_detail                     =   (isset($data['medical_detail']) && $data['medical_detail'] != '') ? $data['medical_detail'] : "";
         $medication_detail                  =   (isset($data['medication_detail']) && $data['medication_detail'] != '') ? $data['medication_detail'] : "";
 
