@@ -697,12 +697,12 @@ class TransactionController extends \BaseController {
                         }
                     }
                     Log::info("outside checkCorporateLogin ");
-                    if($this->utilities->checkCorporateLogin()){
-                        Log::info("outside checkCorporateLogin ");
+                    // if($this->utilities->checkCorporateLogin()){
+                    //     Log::info("outside checkCorporateLogin ");
                         
-                        $emailData["payment_mode"] = "at the studio";
-                        $emailData['customer_email'] =   $emailData['customer_email'].',dhruvsarawagi007@gmail.com';
-                    }
+                    //     $emailData["payment_mode"] = "at the studio";
+                    //     $emailData['customer_email'] =   $emailData['customer_email'].',dhruvsarawagi007@gmail.com';
+                    // }
 
                     //print_pretty($emailData);exit;
                     if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin" && $order->type != 'diet_plan'){
