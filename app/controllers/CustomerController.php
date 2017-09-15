@@ -1030,7 +1030,7 @@ class CustomerController extends \BaseController {
 						'mob'=>$customer['extra']['mob'],
 						'location'=>$customer['extra']['location']
 					),
-					'corporate_login'=>$this->utilities->checkCorporateLogin()
+					'corporate_login'=>$this->utilities->checkCorporateEmail($customer['email'])
 				);
 
 				

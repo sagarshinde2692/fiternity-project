@@ -741,7 +741,7 @@ class HomeController extends BaseController {
             }
 
             if($this->utilities->checkCorporateLogin()){
-                    $header = "Customer will be sent an email and an sms confirmation with the subscription code. Same will be marked to vg@fitmein.in";
+                    $subline = "Customer will be sent an email and an sms confirmation with the subscription code. Same will be marked to vg@fitmein.in";
             }
 
             if(count($item) < 0){

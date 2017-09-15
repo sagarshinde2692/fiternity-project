@@ -2351,6 +2351,16 @@ Class Utilities {
         
     }
 
+    function checkCorporateEmail($customer_email){
+
+        if(in_array($customer_email, Config::get('app.corporate_login.emails'))){
+            return true;
+        }
+
+        return false;
+        
+    }
+
     function sendCorporateMail($data){
         if(isset($data['logged_in_customer_id'])){
 
