@@ -123,6 +123,14 @@ class CustomerController extends \BaseController {
 					$trial['amount'] = 0;
 				}
 
+				if(!isset($trial['going_status'])){
+					$trial['going_status'] = 0;
+				}
+
+				if(isset($trial['going_status']) && ($trial['going_status'] == "-" || $trial['going_status'] == "")){
+					$trial['going_status'] = 0;
+				}
+
 				if($time_diff <= $hour2){
 					$reschedule_enable = false;
 				}elseif(in_array($trial['going_status_txt'], $going_status_txt) || $trial['amount'] > 0  || $trial['type'] == 'workout-session'){
