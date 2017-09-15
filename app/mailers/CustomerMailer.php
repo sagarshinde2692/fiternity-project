@@ -141,9 +141,10 @@ Class CustomerMailer extends Mailer {
 		if(isset($data['event_type']) && $data['event_type']=='TOI'){
 			$label = 'Order-PG-Event-TOI';
 		}
-
+		\Log::info("mailer");
+		\Log::info($data['customer_email']);
 		$message_data 	= array(
-			'user_email' => array($data['customer_email']),
+			'user_email' =>explode(",",$data['customer_email']),
 			'user_name' => $data['customer_name']
 		);
 

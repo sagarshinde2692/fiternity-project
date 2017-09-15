@@ -689,7 +689,10 @@ return array(
 	'corporate_login' => array(
 		'emails' => ['fitmein123@yopmail.com'],
 		'discount' => 2
-	)
+	),
+
+	'fitmein_email' => 'vg@fitmein.in'
+
 
 
 );
