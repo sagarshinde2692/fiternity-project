@@ -317,6 +317,10 @@ class TransactionController extends \BaseController {
             }
             
         }
+
+        if($this->utilities->checkCorporateLogin()){
+            $data['full_payment_wallet'] = true;
+        }
         
         if(isset($old_order_id)){
 
@@ -1155,16 +1159,18 @@ class TransactionController extends \BaseController {
             }
         }
 
-        if($this->utilities->checkCorporateLogin()){
-            $data["payment_mode"] = "at the studio";
-            $data['full_payment_wallet'] = true;
-        }
 
         if($data['amount'] == 0){
             $data['full_payment_wallet'] = true;
         }else{
             $data['full_payment_wallet'] = false;
         }
+        
+        if($this->utilities->checkCorporateLogin()){
+            $data["payment_mode"] = "at the studio";
+            $data['full_payment_wallet'] = true;
+        }
+        
         if(isset($data['reward_ids'])&& count($data['reward_ids']) > 0) {
             $data['reward_ids']   =  array_map('intval', $data['reward_ids']);
         }
