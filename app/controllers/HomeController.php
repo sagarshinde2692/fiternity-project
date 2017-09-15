@@ -7,18 +7,23 @@ use \GuzzleHttp\Exception\RequestException;
 use \GuzzleHttp\Client;
 use App\Notification\CustomerNotification as CustomerNotification;
 use App\Services\Sidekiq as Sidekiq;
+use App\Services\Utilities as Utilities;
+
 class HomeController extends BaseController {
 
 
     protected $api_url = false;
     protected $debug = false;
     protected $client;
+    protected $utilities;
+    
 
 
-    public function __construct(CustomerNotification $customernotification,Sidekiq $sidekiq) {
+    public function __construct(CustomerNotification $customernotification,Sidekiq $sidekiq, Utilities $utilities) {
         $this->customernotification     =   $customernotification;
         $this->sidekiq = $sidekiq;
         $this->api_url = Config::get("app.url")."/";
+        $this->utilities = $utilities;
         $this->initClient();
     }
 
@@ -733,6 +738,10 @@ class HomeController extends BaseController {
                     
                     
                     break;
+            }
+
+            if($this->utilities->checkCorporateLogin()){
+                    $header = "Customer will be sent an email and an sms confirmation with the subscription code. Same will be marked to vg@fitmein.in";
             }
 
             if(count($item) < 0){
