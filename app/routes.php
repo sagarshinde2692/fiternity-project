@@ -1007,3 +1007,7 @@ Route::get('alertmsg/{date}','DebugController@alertmsg');
 Route::get('eventupdate','DebugController@eventUpdate');
 Route::get('autofollowupunset','DebugController@autoFollowupUnset');
 Route::post('customer/promotionalnotification',array('as' => 'customer.promotionalnotification','uses' => 'CustomerController@promotionalNotificationTracking'));
+// Route::get('sendManualCommunication/{id}', 'SchedulebooktrialsController@sendManualCommunication');
+
+
+Route::post('booktrialwithoutreward','SchedulebooktrialsController@booktrialWithoutReward');
