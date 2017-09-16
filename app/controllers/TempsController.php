@@ -13,13 +13,15 @@ use App\Services\CustomerReward as CustomerReward;
 class TempsController extends \BaseController {
 
     protected $customersms;
+    protected $utilities;
 
-    public function __construct(CustomerSms $customersms) {
+    public function __construct(CustomerSms $customersms, Utilities $utilities) {
         //parent::__construct();
         $this->customersms              =   $customersms;
         $this->contact_us_customer_number = Config::get('app.contact_us_customer_number');
         $this->appOfferDiscount 				= Config::get('app.app.discount');
         $this->appOfferExcludedVendors 				= Config::get('app.app.discount_excluded_vendors');
+        $this->utilities = $utilities;
     }
 
     public function errorMessage($errors){
