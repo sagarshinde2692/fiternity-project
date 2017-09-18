@@ -1423,7 +1423,7 @@ Class Utilities {
                     ->sum('amount');
 
                     if($debitAmount - $refundAmount != 0){
-
+                        Log::info("1");
                         return ['status' => 400,'message' => 'Request has been already processed'];
                     }
 
@@ -1438,12 +1438,10 @@ Class Utilities {
                     ->sum('amount');
 
                     if($debitAmount - $refundAmount <= 0){
-
                         return ['status' => 400,'message' => 'Request has been already processed'];
                     }
                     
                 }else{
-
                     return ['status' => 400,'message' => 'Request has been already processed'];
                 }
                 
