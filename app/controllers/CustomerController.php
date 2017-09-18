@@ -1396,6 +1396,8 @@ class CustomerController extends \BaseController {
 		$jwt_alg = Config::get('app.jwt.alg');
 		$decodedToken = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
 
+		Log::info("Decoded token--".json_encode($decodedToken->customer));
+
 		return $decodedToken;
 	}
 
@@ -2796,6 +2798,7 @@ class CustomerController extends \BaseController {
 	public function home($city = 'mumbai',$cache = true){
 
 		$jwt_token = Request::header('Authorization');
+		Log::info($jwt_token);
 		$upcoming = array();
 		
 		// $city = strtolower($city);
@@ -2807,6 +2810,8 @@ class CustomerController extends \BaseController {
 
 				$decoded = $this->customerTokenDecode($jwt_token);
 				$customeremail = $decoded->customer->email;
+
+				Log::info("------------home------------$customeremail");
 
 				$trials = Booktrial::where('customer_email', '=', $customeremail)->where('going_status_txt','!=','cancel')->where('booktrial_type','auto')->where('schedule_date_time','>=',new DateTime())->orderBy('schedule_date_time', 'asc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code')->get();
 

@@ -30,6 +30,9 @@ if (!function_exists('decode_customer_token')) {
         $jwt_key                =   Config::get('app.jwt.key');
         $jwt_alg                =   Config::get('app.jwt.alg');
         $decodedToken           =   JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+
+        Log::info("Decoded token helper--".json_encode($decodedToken->customer));
+
         return $decodedToken;
     }
 
