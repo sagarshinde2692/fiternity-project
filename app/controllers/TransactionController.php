@@ -290,7 +290,7 @@ class TransactionController extends \BaseController {
                     $part_payment_data["amount"] = 0;
                 }
             }
-            $data["part_payment_calculation"] = array("amount" => number_format($part_payment_data["amount"],2), "hash" => $part_payment_hash, "full_wallet_payment" => $part_payment_data["amount"] == 0 ? true : false);
+            $data["part_payment_calculation"] = array("amount" => (int)($part_payment_data["amount"]), "hash" => $part_payment_hash, "full_wallet_payment" => $part_payment_data["amount"] == 0 ? true : false);
             Log::info($data["part_payment_calculation"]);
         }
 
