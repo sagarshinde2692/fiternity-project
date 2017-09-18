@@ -565,7 +565,7 @@ class TransactionController extends \BaseController {
             }
             array_set($data, 'status', '1');
 
-            if(isset($data['part_payment']) && $data['part_payment']){
+            if(isset($order['part_payment']) && $order['part_payment']){
                 array_set($data, 'status', '3');
             }
             array_set($data, 'order_action', 'bought');
