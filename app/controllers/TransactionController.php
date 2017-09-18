@@ -285,7 +285,7 @@ class TransactionController extends \BaseController {
                 $part_payment_data_amount = $data["amount"] - $data["amount_finder"]*0.2;
                 $part_payment_data["amount"] = $part_payment_data_amount > 0 ? $data["amount_finder"]*0.2 : 0;
                 if($part_payment_data["amount"] > 0){
-                    $part_payment_hash = getHash($part_payment_data);
+                    $part_payment_hash = getHash($part_payment_data)['payment_hash'];
                 }else{
                     $part_payment_data["amount"] = 0;
                 }
