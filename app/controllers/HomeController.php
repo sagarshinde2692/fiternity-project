@@ -1145,7 +1145,7 @@ class HomeController extends BaseController {
                 'reward_details'=>$reward_details,
                 'show_other_vendor' => $show_other_vendor,
             ];
-
+            Log::info("the end");
             return Response::json($resp);
         }
     }
