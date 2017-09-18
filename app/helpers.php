@@ -64,7 +64,7 @@ if (!function_exists('sorting_array')) {
 
 if(!function_exists('citywise_category')){
     function citywise_categories($city){
-
+            $city = getmy_city($city);
             $category_slug = [
                 "gyms",
                 "yoga",
@@ -243,6 +243,8 @@ if(!function_exists('getmy_city')){
             case "bombay":
             case "thane":
             case "navi mumbai":
+            case "bhayandar":
+            case "navi":
                 return "mumbai";
                 break;
             case "delhi":
@@ -256,6 +258,12 @@ if(!function_exists('getmy_city')){
             case "gurgaon":
             case "gurugram":
                 return "gurgaon";
+                break;
+            case "pimpri":
+            case "chinchwad":
+            case "poona":
+            case "pimpri-chichwad":
+                return "pune";
                 break;
             default: return $city;
         };
