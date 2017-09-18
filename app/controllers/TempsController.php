@@ -290,6 +290,14 @@ class TempsController extends \BaseController {
 
                 $temp->verified = "Y";
 
+                if(isset($temp['customer_email']) && $temp['customer_email'] != ""){
+                    $email = $temp['customer_email'];
+                }
+
+                if(isset($temp['customer_name']) && $temp['customer_name'] != ""){
+                    $name = $temp['customer_name'];
+                }
+
                 if($email != "" && $name != ""){
 
                     $temp->customer_name = $name;
@@ -306,7 +314,14 @@ class TempsController extends \BaseController {
                 $temp->save();
                 $verified = true;
                 Customer::$withoutAppends = true;
-                $customer = Customer::select('name','email','contact_no','dob','gender')->active()->where('contact_no',$temp['customer_phone'])->orderBy('_id','desc')->first();
+
+                if($customer_id == ""){
+
+                    $customer = Customer::select('name','email','contact_no','dob','gender')->active()->where('contact_no',$temp['customer_phone'])->orderBy('_id','desc')->first();
+                }else{
+
+                    $customer = Customer::find($customer_id,['name','email','contact_no','dob','gender']);
+                }
                 
                 if($customer) {
 

@@ -1128,6 +1128,9 @@ class SchedulebooktrialsController extends \BaseController {
         $data	       =	array_except(Input::json()->all(), array('preferred_starting_date'));
         $postdata       =	Input::json()->all();
 
+        Log::info('bookTrialHealthyTiffinFree',$postdata);
+        
+
         if(empty($data['customer_name'])){
             $resp 	= 	array('status' => 404,'message' => "Data Missing - customer_name");
             return Response::json($resp,404);
@@ -1622,9 +1625,11 @@ class SchedulebooktrialsController extends \BaseController {
     public function bookTrialPaid(){
 
         $data = Input::json()->all();
+
+
         //        return $data;
 
-       Log::info('bookTrialPaid',$data);
+       Log::info('------------bookTrialPaid------------',$data);
 
         if(!isset($data['customer_name']) || $data['customer_name'] == ''){
             $resp 	= 	array('status' => 400,'message' => "Data Missing - customer_name");
@@ -2488,7 +2493,7 @@ class SchedulebooktrialsController extends \BaseController {
         (!is_array($data)) ? $data = $data->toArray() : null;
 
 
-        Log::info('input_data',$data);
+        Log::info('------------bookTrialFree------------',$data);
 
         if(empty($data['customer_name'])){
             $resp 	= 	array('status' => 400,'message' => "Data Missing - customer_name");
