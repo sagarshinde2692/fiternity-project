@@ -61,7 +61,6 @@ class TransactionController extends \BaseController {
     public function capture(){
 
         $data = Input::json()->all();
-         $decoded = decode_customer_token();
         
         foreach ($data as $key => $value) {
 
