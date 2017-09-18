@@ -2555,11 +2555,6 @@ class OrderController extends \BaseController {
                 $this->customersms->orderUpdateCOD($order->toArray());
             }
 
-            if(isset($data['part_payment']) && $data['part_payment'] != ''){
-                $this->customermailer->orderUpdatePartPayment($order->toArray());
-                $this->customersms->orderUpdatePartPayment($order->toArray());
-                $this->findermailer->orderUpdatePartPayment($order->toArray());
-            }
 
             $result['firstname'] = strtolower($data['customer_name']);
             $result['lastname'] = "";
