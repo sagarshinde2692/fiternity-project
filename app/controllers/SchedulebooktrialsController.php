@@ -2578,8 +2578,11 @@ class SchedulebooktrialsController extends \BaseController {
             $before_three_month_trial_count    =    $this->getBeforeThreeMonthTrialCount($finderid);
 
             // Throw an error if user has already booked a trial for that vendor...
+            
             $alreadyBookedTrials = $this->utilities->checkExistingTrialWithFinder($data['customer_email'], $data['customer_phone'], $data['finder_id']);
-            return $alreadyBookedTrials;
+            
+            // return $alreadyBookedTrials;
+            
             if (count($alreadyBookedTrials) > 0) {
                 $resp = array('status' => 403, 'message' => "You have already booked a trial for this vendor, please choose some other vendor");
                 return Response::json($resp, 403);
