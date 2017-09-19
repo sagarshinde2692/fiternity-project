@@ -2330,27 +2330,23 @@ class SchedulebooktrialsController extends \BaseController {
 
                 $delayReminderTimeBefore12Hour      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->subMinutes(60 * 12);
 
-                $send_communication["customer_email_before12hour"] = $this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
+                $hour = (int) date("G", strtotime($delayReminderTimeBefore12Hour));
 
-                // if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
+                if($hour >= 7 && $hour <= 22 ){
+                    $send_communication["customer_email_before12hour"] = $this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);     
                     $send_communication["customer_notification_before12hour"] = $this->customernotification->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
-                // }
+                }
 
             }else{
 
                 $delayReminderAfter30Min    =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->created_at)))->addMinutes(30);
 
                 $send_communication["customer_email_before12hour"] = $this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderAfter30Min);
-
-                // if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
-                    $send_communication["customer_notification_before12hour"] = $this->customernotification->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderAfter30Min);
-                // }
+                $send_communication["customer_notification_before12hour"] = $this->customernotification->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderAfter30Min);
             }
 
             if($currentScheduleDateDiffMin >= (60 * 6)){
-
                 $delayReminderTimeBefore6Hour      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->subMinutes(60 * 6);
-
                 $send_communication["finder_sms_before6hour"] = $this->findersms->bookTrialReminderBefore6Hour($booktrialdata, $delayReminderTimeBefore6Hour);
 
             }
@@ -2370,7 +2366,7 @@ class SchedulebooktrialsController extends \BaseController {
                     $booktrialdata['poc_no'] = Config::get('app.contact_us_customer_number');
                 }
 
-                if($hour >= 9 && $hour <= 21 ){
+                if($hour >= 6 && $hour <= 22 ){
                     $send_communication["customer_sms_before3hour"] = $this->customersms->bookTrialReminderBefore3Hour($booktrialdata, $delayReminderTimeBefore3Hour);
                     $send_communication["customer_notification_before3hour"] = $this->customernotification->bookTrialReminderBefore3Hour($booktrialdata, $delayReminderTimeBefore3Hour);
                 }
