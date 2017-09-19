@@ -2382,7 +2382,7 @@ class OrderController extends \BaseController {
                 }
             }
 
-            if(isset($data['amount_finder'])){
+            if(isset($data['amount_finder']) && !(isset($order['cashback_detail']) && isset($order['cashback_detail']['amount_deducted_from_wallet']) && $order['cashback_detail']['amount_deducted_from_wallet']>0)){
 
                 $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount_finder'],(int)$order->finder_id,$data['payment_mode'],$offer_id);
 
@@ -2568,6 +2568,9 @@ class OrderController extends \BaseController {
             $result['successurl'] = $successurl;
             $result['hash'] = $data['payment_hash'];
             $result['payment_related_details_for_mobile_sdk_hash'] = $mobilehash;
+            if(isset($order['cashback_detail']) && isset($order['cashback_detail']['amount_deducted_from_wallet'])){
+                $result['wallet_amount'] = $order['cashback_detail']['amount_deducted_from_wallet'];
+            }
 
             if($order->payment_mode == "at the studio" /*&& isset($data['reward_info'])*/){
                 $this->findermailer->orderUpdatePaymentAtVendor($order->toArray());
