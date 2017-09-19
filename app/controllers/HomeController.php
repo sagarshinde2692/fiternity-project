@@ -958,7 +958,7 @@ class HomeController extends BaseController {
             }
 
             if(isset($item['payment_mode']) && $item['payment_mode'] == "cod"){
-                $booking_details_data['price']['value']= "Cash payment";
+                $booking_details_data['price']['value']= "Rs. ".(string)$item['amount']." (Cash Pickup)";
             }
 
             if(isset($item['part_payment']) && $item['part_payment']){
