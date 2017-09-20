@@ -974,6 +974,18 @@ class HomeController extends BaseController {
                 $booking_details_data['price']['value']= "Rs. ".(string)$item['amount_finder'];
             }
 
+            if(isset($item['payment_mode']) && $item['payment_mode'] == "cod"){
+                $booking_details_data['price']['value']= "Rs. ".(string)$item['amount']." (Cash Pickup)";
+            }
+
+            if(isset($item['part_payment']) && $item['part_payment']){
+                $header= "Membership reserved";
+            }
+
+            if($finder_address != ""){
+                $booking_details_data['address']['value'] = $finder_address;
+            }
+            
             if(in_array($type,["healthytiffintrial","healthytiffinmembership"])){
 
                 if(isset($item['customer_address']) && $item['customer_address'] != ""){
@@ -1173,7 +1185,7 @@ class HomeController extends BaseController {
                 'all_options_url' => $all_options_url,
                 'customer_auto_register' => $customer_auto_register
             ];
-
+            Log::info("the end");
             return Response::json($resp);
         }
     }

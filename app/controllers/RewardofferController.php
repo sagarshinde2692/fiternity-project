@@ -403,6 +403,10 @@ class RewardofferController extends BaseController {
                 $calculation = $customerReward->purchaseGame($amount,$finder_id,"at the studio");
             }
 
+            if(isset($order->part_payment) && $order->part_payment){
+                $part_payment = true;
+            }
+
         }
 
         $calculation['algo']['cashback'] = (int)$calculation['algo']['cashback'];
@@ -451,13 +455,19 @@ class RewardofferController extends BaseController {
             'rewards'                   =>   $rewards,
             'selection_limit'           =>   $selection_limit,
             'status'                    =>  200,
-            'message'                   => "Rewards offers"
+            'message'                   =>  "Rewards offers",
+            'amount'                    =>  $amount
         );
         // $data['cross_sell'] = array(
         //     'diet_plan' => $customerReward->fitternityDietVendor($amount)
         // );
         $data['diet_plan'] = $customerReward->fitternityDietVendor($amount);
 
+        if(isset($part_payment)){
+
+            $data['amount'] = ($order->customer_amount)/5;
+
+        }
 
         return  Response::json($data, 200);
 
