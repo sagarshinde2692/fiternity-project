@@ -2382,7 +2382,7 @@ class OrderController extends \BaseController {
                 }
             }
 
-            if(isset($data['amount_finder'])){
+            if(isset($data['amount_finder']) && !(isset($order['cashback_detail']) && isset($order['cashback_detail']['amount_deducted_from_wallet']) && $order['cashback_detail']['amount_deducted_from_wallet']>0)){
 
                 $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount_finder'],(int)$order->finder_id,$data['payment_mode'],$offer_id);
 
@@ -2484,6 +2484,44 @@ class OrderController extends \BaseController {
                 $data['customer_address'] = $data['address'] = implode(",", array_values($data['customer_address']));
             }
 
+            if(isset($data['payment_mode']) && $data['payment_mode'] != ''){
+
+                $data['payment_mode']  = $data['payment_mode'];
+
+            }
+
+            if(isset($data['part_payment']) && $data['part_payment']){
+
+                $order['amount'] = $data['amount'] = (int)($order["part_payment_calculation"]['amount']);
+
+                $twenty_percent_amount = (int)($order["amount_customer"]*0.2);
+
+                if(isset($order['wallet_amount'])){
+
+                    if($twenty_percent_amount < $order['wallet_amount']){
+
+                        $data['full_payment_wallet'] = true;
+                        
+                        $refund_amount = $order['wallet_amount']-$twenty_percent_amount;
+
+                        $wallet_data = array(
+                            'customer_id'=>$order['customer_id'],
+                            'amount'=>$refund_amount,
+                            'amount_fitcash' => 0,
+                            'amount_fitcash_plus' => $refund_amount,
+                            'type'=>'CREDIT',
+                            'entry'=>'credit',
+                            'description'=>"Paid for order ".$order['_id'],
+                        );
+                        $walletTransactionResponse = $this->utilities->walletTransaction($wallet_data);
+
+                        $order['wallet_amount'] = $twenty_percent_amount;
+                    }
+
+                }
+
+            }
+
             if(isset($data['reward_ids']) && !empty($data['reward_ids'])){
                 $reward_detail = array();
                 $reward_ids = array_map('intval',$data['reward_ids']);
@@ -2538,6 +2576,12 @@ class OrderController extends \BaseController {
 
             $order->update($data);
 
+            if(isset($data['payment_mode']) && $data['payment_mode'] == 'cod'){
+                $this->customermailer->orderUpdateCOD($order->toArray());
+                $this->customersms->orderUpdateCOD($order->toArray());
+            }
+
+
             $result['firstname'] = strtolower($data['customer_name']);
             $result['lastname'] = "";
             $result['phone'] = $data['customer_phone'];
@@ -2550,6 +2594,10 @@ class OrderController extends \BaseController {
             $result['successurl'] = $successurl;
             $result['hash'] = $data['payment_hash'];
             $result['payment_related_details_for_mobile_sdk_hash'] = $mobilehash;
+            $result['full_payment_wallet'] = $data['full_payment_wallet'];
+            if(isset($order['wallet_amount'])){
+                $result['wallet_amount'] = $order['wallet_amount'];
+            }
 
             if($order->payment_mode == "at the studio" /*&& isset($data['reward_info'])*/){
                 $this->findermailer->orderUpdatePaymentAtVendor($order->toArray());
@@ -2564,7 +2612,7 @@ class OrderController extends \BaseController {
 
             return Response::json($resp);
         }
-
+ 
     }
 
     public function inviteForMembership(){

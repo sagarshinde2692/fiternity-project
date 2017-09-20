@@ -524,6 +524,10 @@ class FindersController extends \BaseController {
 
 								foreach ($service['serviceratecard'] as $ratekey => $rateval){
 
+									if(isset($service['membership']) && $service['membership']=='manual'){
+										$service['serviceratecard'][$ratekey]['direct_payment_enable'] = "0";
+									}
+
 									// Removing womens offer ratecards if present
 									if(isset($rateval['flags'])){
 
