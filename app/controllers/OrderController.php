@@ -2500,16 +2500,16 @@ class OrderController extends \BaseController {
 
                         $data['full_payment_wallet'] = true;
 
-                        $req = array(
+                        $wallet_data = array(
                             'customer_id'=>$order['customer_id'],
                             'amount'=>($order['wallet_amount']-$order['amount']),
                             'amount_fitcash' => 0,
                             'amount_fitcash_plus' => ($order['wallet_amount']-$order['amount']),
-                            'type'=>'REFUND',
+                            'type'=>'CREDIT',
                             'entry'=>'credit',
-                            'description'=>"Refund for order ".$order['_id'],
+                            'description'=>"Refund for part payment difference for order ".$order['_id'],
                         );
-                        $walletTransactionResponse = $this->utilities->walletTransactionOld($req,$data);
+                        $walletTransactionResponse = $this->utilities->walletTransaction($wallet_data);
                     }
 
                 }
