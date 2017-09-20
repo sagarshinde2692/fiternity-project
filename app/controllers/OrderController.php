@@ -2555,7 +2555,9 @@ class OrderController extends \BaseController {
 
              if($order['amount'] < $order['wallet_amount']){
                 $data['full_payment_wallet'] = true;
+                $order['wallet_amount'] = $order['amount'];
              }
+
 
             $txnid = "FIT".$order_id;
             $successurl = $order['type'] == "memberships" ? Config::get('app.website')."/paymentsuccess" : Config::get('app.website')."/paymentsuccesstrial";
@@ -2593,8 +2595,8 @@ class OrderController extends \BaseController {
             $result['hash'] = $data['payment_hash'];
             $result['payment_related_details_for_mobile_sdk_hash'] = $mobilehash;
             $result['full_payment_wallet'] = $data['full_payment_wallet'];
-            if(isset($order['cashback_detail']) && isset($order['cashback_detail']['amount_deducted_from_wallet'])){
-                $result['wallet_amount'] = $order['cashback_detail']['amount_deducted_from_wallet'];
+            if(isset($order['wallet_amount'])){
+                $result['wallet_amount'] = $order['wallet_amount'];
             }
 
             if($order->payment_mode == "at the studio" /*&& isset($data['reward_info'])*/){
