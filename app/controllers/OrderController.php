@@ -2492,19 +2492,23 @@ class OrderController extends \BaseController {
 
             if(isset($data['part_payment']) && $data['part_payment']){
 
-                $order['amount'] = $data['amount'] = (int)($order["amount_customer"]*0.2);
+                $order['amount'] = $data['amount'] = (int)($order["part_payment_calculation"]['amount']);
+
+                $twenty_percent_amount = (int)($order["amount_customer"]*0.2);
 
                 if(isset($order['wallet_amount'])){
 
-                    if($order['amount'] < $order['wallet_amount']){
+                    if($twenty_percent_amount < $order['wallet_amount']){
 
                         $data['full_payment_wallet'] = true;
+                        
+                        $refund_amount = $order['wallet_amount']-$twenty_percent_amount;
 
                         $wallet_data = array(
                             'customer_id'=>$order['customer_id'],
-                            'amount'=>($order['wallet_amount']-$order['amount']),
+                            'amount'=>$refund_amount,
                             'amount_fitcash' => 0,
-                            'amount_fitcash_plus' => ($order['wallet_amount']-$order['amount']),
+                            'amount_fitcash_plus' => $refund_amount,
                             'type'=>'CREDIT',
                             'entry'=>'credit',
                             'description'=>"Paid for order ".$order['_id'],
