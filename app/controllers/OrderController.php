@@ -2498,6 +2498,8 @@ class OrderController extends \BaseController {
 
                     if($order['amount'] < $order['wallet_amount']){
 
+                        $data['full_payment_wallet'] = true;
+
                         $req = array(
                             'customer_id'=>$order['customer_id'],
                             'order_id'=>$order['_id'],
