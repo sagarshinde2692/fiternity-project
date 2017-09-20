@@ -2492,7 +2492,7 @@ class OrderController extends \BaseController {
 
             if(isset($data['part_payment']) && $data['part_payment']){
 
-                $order['amount'] = $order['part_payment_calculation']['amount'];
+                $order['amount'] = $data['amount'] = $order['part_payment_calculation']['amount'];
                 
                 if(isset($order['wallet_amount'])){
 
@@ -2587,6 +2587,7 @@ class OrderController extends \BaseController {
             $result['successurl'] = $successurl;
             $result['hash'] = $data['payment_hash'];
             $result['payment_related_details_for_mobile_sdk_hash'] = $mobilehash;
+            $result['full_payment_wallet'] = $data['full_payment_wallet'];
             if(isset($order['cashback_detail']) && isset($order['cashback_detail']['amount_deducted_from_wallet'])){
                 $result['wallet_amount'] = $order['cashback_detail']['amount_deducted_from_wallet'];
             }
