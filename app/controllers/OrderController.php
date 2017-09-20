@@ -2507,7 +2507,7 @@ class OrderController extends \BaseController {
                             'amount_fitcash_plus' => ($order['wallet_amount']-$order['amount']),
                             'type'=>'CREDIT',
                             'entry'=>'credit',
-                            'description'=>"Refund for part payment difference for order ".$order['_id'],
+                            'description'=>"Paid for order ".$order['_id'],
                         );
                         $walletTransactionResponse = $this->utilities->walletTransaction($wallet_data);
                     }
