@@ -2490,9 +2490,28 @@ class OrderController extends \BaseController {
 
             }
 
-            if(isset($data['part_payment']) && $data['part_payment'] != ''){
+            if(isset($data['part_payment']) && $data['part_payment']){
 
-                $data['part_payment']  = $data['part_payment'];
+                $order['amount'] = $order['part_payment_calculation']['amount'];
+                
+                if(isset($order['wallet_amount'])){
+
+                    if($order['amount'] < $order['wallet_amount']){
+
+                        $req = array(
+                            'customer_id'=>$order['customer_id'],
+                            'order_id'=>$order['_id'],
+                            'amount'=>($order['wallet_amount']-$order['amount']),
+                            'amount_fitcash' => 0,
+                            'amount_fitcash_plus' => ($order['wallet_amount']-$order['amount']),
+                            'type'=>'CREDIT',
+                            'entry'=>'credit',
+                            'description'=>"Refund for order ".$order['_id'],
+                        );
+                        $walletTransactionResponse = $this->utilities->walletTransactionOld($req,$data);
+                    }
+
+                }
 
             }
 
@@ -2585,7 +2604,7 @@ class OrderController extends \BaseController {
 
             return Response::json($resp);
         }
-
+ 
     }
 
     public function inviteForMembership(){
