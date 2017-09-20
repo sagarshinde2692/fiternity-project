@@ -1011,3 +1011,7 @@ Route::post('customer/promotionalnotification',array('as' => 'customer.promotion
 
 
 Route::post('booktrialwithoutreward','SchedulebooktrialsController@booktrialWithoutReward');
+
+Route::get('assitancequestions','HomeController@getAssitanceQuestions');
+
+Route::post('postanswers','HomeController@postAnswers');
