@@ -2514,6 +2514,8 @@ class OrderController extends \BaseController {
                             'description'=>"Paid for order ".$order['_id'],
                         );
                         $walletTransactionResponse = $this->utilities->walletTransaction($wallet_data);
+
+                        $order['wallet_amount'] = $twenty_percent_amount;
                     }
 
                 }
@@ -2556,12 +2558,6 @@ class OrderController extends \BaseController {
             }else{
                 $data['full_payment_wallet'] = false;
             }
-
-             if($order['amount'] < $order['wallet_amount']){
-                $data['full_payment_wallet'] = true;
-                $order['wallet_amount'] = $order['amount'];
-             }
-
 
             $txnid = "FIT".$order_id;
             $successurl = $order['type'] == "memberships" ? Config::get('app.website')."/paymentsuccess" : Config::get('app.website')."/paymentsuccesstrial";
