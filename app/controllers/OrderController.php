@@ -2492,8 +2492,8 @@ class OrderController extends \BaseController {
 
             if(isset($data['part_payment']) && $data['part_payment']){
 
-                $order['amount'] = $data['amount'] = $order['part_payment_calculation']['amount'];
-                
+                $order['amount'] = $data['amount'] = (int)($order["amount_customer"]*0.2);
+
                 if(isset($order['wallet_amount'])){
 
                     if($order['amount'] < $order['wallet_amount']){
@@ -2502,11 +2502,10 @@ class OrderController extends \BaseController {
 
                         $req = array(
                             'customer_id'=>$order['customer_id'],
-                            'order_id'=>$order['_id'],
                             'amount'=>($order['wallet_amount']-$order['amount']),
                             'amount_fitcash' => 0,
                             'amount_fitcash_plus' => ($order['wallet_amount']-$order['amount']),
-                            'type'=>'CREDIT',
+                            'type'=>'REFUND',
                             'entry'=>'credit',
                             'description'=>"Refund for order ".$order['_id'],
                         );
@@ -2553,6 +2552,10 @@ class OrderController extends \BaseController {
             }else{
                 $data['full_payment_wallet'] = false;
             }
+
+             if($order['amount'] < $order['wallet_amount']){
+                $data['full_payment_wallet'] = true;
+             }
 
             $txnid = "FIT".$order_id;
             $successurl = $order['type'] == "memberships" ? Config::get('app.website')."/paymentsuccess" : Config::get('app.website')."/paymentsuccesstrial";

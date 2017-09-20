@@ -282,7 +282,7 @@ class TransactionController extends \BaseController {
         if(isset($finderDetail["data"]["finder_flags"]) && isset($finderDetail["data"]["finder_flags"]["part_payment"]) && $finderDetail["data"]["finder_flags"]["part_payment"]== true && $data["amount"] > 2500){
             if($finderDetail["data"]["finder_flags"]["part_payment"]){
                 $part_payment_data = $data;
-                $part_payment_data_amount = $data["amount"] - $data["amount_customer"]*0.8;
+                $part_payment_data_amount = (int)($data["amount"] - $data["amount_customer"]*0.8);
                 $part_payment_data["amount"] = $part_payment_data_amount > 0 ? $part_payment_data_amount : 0;
 
                 $part_payment_hash ="";
