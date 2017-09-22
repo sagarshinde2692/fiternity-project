@@ -245,11 +245,11 @@ class OzonetelsController extends \BaseController {
 			   
 				    	if($ozonetelNoDetails){
 
-				    		$finder_count = 0;
+				    		//$finder_count = 0;
 
-				    		$finder_count = Finder::active()->where(function($query){$query->orWhere('membership','!=',"disable")->orWhere('trial','!=',"disable")->orWhere('trial','exists',false)->orWhere('membership','exists',false);})->whereIn('city_id',[1,3])->where('_id',(int)$ozonetelNoDetails->finder->_id)->count();
+				    		//$finder_count = Finder::active()->where(function($query){$query->orWhere('membership','!=',"disable")->orWhere('trial','!=',"disable")->orWhere('trial','exists',false)->orWhere('membership','exists',false);})->whereIn('city_id',[1,3])->where('_id',(int)$ozonetelNoDetails->finder->_id)->count();
 
-				    		if($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time && !in_array($this->sunday,["Sunday"]) && (in_array($ozonetelNoDetails->finder->_id, $this->direct_route_to_fitternity_vendor) || $finder_count > 0)){
+				    		if($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time && !in_array($this->sunday,["Sunday"]) && (in_array($ozonetelNoDetails->finder->_id, $this->direct_route_to_fitternity_vendor) /*|| $finder_count > 0*/)){
 
 				    			$capture = $this->getCapture($_REQUEST['sid']);
 								$call_jump = true;
