@@ -684,7 +684,15 @@ return array(
 	'delay_methods' =>["bookTrialReminderAfter2Hour","bookTrialReminderAfter2HourRegular","bookTrialReminderBefore12Hour","bookTrialReminderBefore1Hour","bookTrialReminderBefore20Min","bookTrialReminderBefore3Hour","bookTrialReminderBefore6Hour", "manualBookTrial", "reminderToConfirmManualTrial", "manual2ndBookTrial", "orderRenewalMissedcall", "sendPaymentLinkAfter3Days", "sendPaymentLinkAfter7Days", "sendPaymentLinkAfter45Days", "purchaseAfter10Days", "purchaseAfter30Days"],
 
 
-	'my_fitness_party_slug' => 'mfp'
+	'my_fitness_party_slug' => 'mfp',
+
+	'corporate_login' => array(
+		'emails' => ['fitmein@fitternity.com'],
+		'discount' => 2
+	),
+
+	'fitmein_email' => 'vg@fitmein.in'
+
 
 
 );

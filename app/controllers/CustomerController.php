@@ -1045,8 +1045,9 @@ class CustomerController extends \BaseController {
 					'extra'=>array(
 						'mob'=>$customer['extra']['mob'],
 						'location'=>$customer['extra']['location']
-					)
-				);	
+					),
+					'corporate_login'=>$this->utilities->checkCorporateEmail($customer['email'])
+				);
 
 		$jwt_claim = array(
 			"iat" => Config::get('app.jwt.iat'),
@@ -2887,7 +2888,8 @@ class CustomerController extends \BaseController {
 				$category_new = citywise_categories($city);
 
 				foreach ($category_new as $key => $value) {
-					if($value["slug"] == "fitness"){
+					
+					if(isset($value["slug"]) && $value["slug"] == "fitness"){
 						unset($category_new[$key]);
 					}
 				}
