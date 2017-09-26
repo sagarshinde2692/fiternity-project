@@ -991,6 +991,10 @@ class HomeController extends BaseController {
                 $header= "Membership reserved";
             }
 
+            if(isset($item['payment_mode']) && $item['payment_mode'] == 'cod'){
+                $subline= "Your membership will be activated once your cash is collected. Fitternity team will reach out to you to coordinate the cash pick-up.";
+            }
+
             if($finder_address != ""){
                 $booking_details_data['address']['value'] = $finder_address;
             }
