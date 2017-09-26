@@ -453,6 +453,10 @@ class TransactionController extends \BaseController {
                 return Response::json($resp,$resp["status"]);
             }
 
+            if(isset($data["payment_mode"]) && $data["payment_mode"] == "cod"){
+               $data["secondary_payment_mode"] = "cod_membership";
+            }
+
             if($order->status == "1" && isset($data['preferred_starting_date']) && $data['preferred_starting_date']  != '' && $data['preferred_starting_date']  != '-'){
 
                 $preferred_starting_date = date('Y-m-d 00:00:00', strtotime($data['preferred_starting_date']));
