@@ -1045,8 +1045,9 @@ class CustomerController extends \BaseController {
 					'extra'=>array(
 						'mob'=>$customer['extra']['mob'],
 						'location'=>$customer['extra']['location']
-					)
-				);	
+					),
+					'corporate_login'=>$this->utilities->checkCorporateEmail($customer['email'])
+				);
 
 		$jwt_claim = array(
 			"iat" => Config::get('app.jwt.iat'),
