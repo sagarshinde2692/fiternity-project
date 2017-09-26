@@ -2887,7 +2887,8 @@ class CustomerController extends \BaseController {
 				$category_new = citywise_categories($city);
 
 				foreach ($category_new as $key => $value) {
-					if($value["slug"] == "fitness"){
+					
+					if(isset($value["slug"]) && $value["slug"] == "fitness"){
 						unset($category_new[$key]);
 					}
 				}
