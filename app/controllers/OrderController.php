@@ -2293,6 +2293,10 @@ class OrderController extends \BaseController {
                 $order->unset('reward_info');
             }
 
+            if(isset($data["payment_mode"]) && $data["payment_mode"] == "cod"){
+               $data["secondary_payment_mode"] = "cod_membership";
+            }
+
             $data['amount_finder'] = $order->amount_finder;
             $data['amount'] = $order->amount;
             $data['finder_name'] = $order->finder_name;
