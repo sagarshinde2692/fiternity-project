@@ -698,7 +698,7 @@ class FindersController extends \BaseController {
 				
 
 
-				/*$nearby_same_category_request = [
+				$nearby_same_category_request = [
                     "offset" => 0,
                     "limit" => 4,
                     "radius" => "3km",
@@ -753,40 +753,40 @@ class FindersController extends \BaseController {
                     ]
                 ];
 
-                $nearby_other_category = geoLocationFinder($nearby_other_category_request);*/
+                $nearby_other_category = geoLocationFinder($nearby_other_category_request);
 
-                $nearby_same_category = array();
+                // $nearby_same_category = array();
 
-				$nearby_same_category       =   Finder::where('category_id','=',$findercategoryid)
-				->where('commercial_type','!=', 0)
-				->where('location_id','=',$finderlocationid)
-				->where('_id','!=',$finderid)
-				->where('status', '=', '1')
-				->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
-				->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-				->with(array('city'=>function($query){$query->select('_id','name','slug');}))
-				// ->with('offerings')
-				->orderBy('finder_type', 'DESC')
-				->remember(Config::get('app.cachetime'))
-				->take(5)
-				->get(array('_id','average_rating','category_id','coverimage','finder_coverimage', 'slug','title','category','location_id','location','city_id','city','total_rating_count','logo','finder_coverimage','offerings'));
+				// $nearby_same_category       =   Finder::where('category_id','=',$findercategoryid)
+				// ->where('commercial_type','!=', 0)
+				// ->where('location_id','=',$finderlocationid)
+				// ->where('_id','!=',$finderid)
+				// ->where('status', '=', '1')
+				// ->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
+				// ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+				// ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
+				// // ->with('offerings')
+				// ->orderBy('finder_type', 'DESC')
+				// ->remember(Config::get('app.cachetime'))
+				// ->take(5)
+				// ->get(array('_id','average_rating','category_id','coverimage','finder_coverimage', 'slug','title','category','location_id','location','city_id','city','total_rating_count','logo','finder_coverimage','offerings'));
 
-				$nearby_other_category = array();    
+				// $nearby_other_category = array();    
 
-				$nearby_other_category      =   Finder::where('category_id','!=',$findercategoryid)
-				->whereNotIn('category_id', $skip_categoryid_finders)
-				->where('commercial_type','!=', 0)
-				->where('location_id','=',$finderlocationid)
-				->where('_id','!=',$finderid)
-				->where('status', '=', '1')
-				->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
-				->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-				->with(array('city'=>function($query){$query->select('_id','name','slug');}))
-				// ->with('offerings')
-				->orderBy('finder_type', 'DESC')
-				->remember(Config::get('app.cachetime'))
-				->take(5)
-				->get(array('_id','average_rating','category_id','coverimage','finder_coverimage', 'slug','title','category','location_id','location','city_id','city','total_rating_count','logo','finder_coverimage','offerings'));
+				// $nearby_other_category      =   Finder::where('category_id','!=',$findercategoryid)
+				// ->whereNotIn('category_id', $skip_categoryid_finders)
+				// ->where('commercial_type','!=', 0)
+				// ->where('location_id','=',$finderlocationid)
+				// ->where('_id','!=',$finderid)
+				// ->where('status', '=', '1')
+				// ->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
+				// ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+				// ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
+				// // ->with('offerings')
+				// ->orderBy('finder_type', 'DESC')
+				// ->remember(Config::get('app.cachetime'))
+				// ->take(5)
+				// ->get(array('_id','average_rating','category_id','coverimage','finder_coverimage', 'slug','title','category','location_id','location','city_id','city','total_rating_count','logo','finder_coverimage','offerings'));
 
 
 				if($finder['city_id'] == 10000){
