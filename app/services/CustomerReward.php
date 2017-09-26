@@ -98,12 +98,32 @@ Class CustomerReward {
 
 
     public function saveToMyRewards($reward){
+
         $reward['status']         = "0";
         $myreward               =   new Myreward($reward);
         $last_insertion_id      =   Myreward::max('_id');
         $last_insertion_id      =   isset($last_insertion_id) ? $last_insertion_id :0;
         $myreward->_id          =   ++ $last_insertion_id;
         $myreward->save();
+
+        if(isset($reward['booktrial_id'])){
+
+            $booktrial = \Booktrial::find($reward['booktrial_id']);
+            if($booktrial){
+                $booktrial->customer_reward_id = $myreward->_id;
+                $booktrial->update();
+            }
+        }
+
+        if(isset($reward['order_id'])){
+
+            $order = \Order::find($reward['order_id']);
+            if($order){
+                $order->customer_reward_id = $myreward->_id;
+                $order->update();
+            }
+        }
+        
         return;
     }
 
