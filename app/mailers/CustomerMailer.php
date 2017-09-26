@@ -143,7 +143,7 @@ Class CustomerMailer extends Mailer {
 		}
 
 		$message_data 	= array(
-			'user_email' => array($data['customer_email']),
+			'user_email' =>explode(",",$data['customer_email']),
 			'user_name' => $data['customer_name']
 		);
 

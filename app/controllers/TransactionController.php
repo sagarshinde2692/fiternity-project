@@ -341,6 +341,10 @@ class TransactionController extends \BaseController {
             }
             
         }
+
+        if($this->utilities->checkCorporateLogin()){
+            $data['full_payment_wallet'] = true;
+        }
         
         if(isset($old_order_id)){
 
@@ -390,6 +394,10 @@ class TransactionController extends \BaseController {
 
         if(isset($data['full_payment_wallet'])){
             $result['full_payment_wallet'] = $data['full_payment_wallet'];
+        }
+
+        if($this->utilities->checkCorporateLogin()){
+            $result['full_payment_wallet'] = true;
         }
 
         if(in_array($data['type'],$this->membership_array)){
@@ -776,6 +784,12 @@ class TransactionController extends \BaseController {
                         }
                     }
                     
+                    if($this->utilities->checkCorporateLogin()){
+                        Log::info("outside checkCorporateLogin ");
+                        $emailData['customer_email'] =   $emailData['customer_email'].',vg@fitmein.in';
+                    }
+
+                    //print_pretty($emailData);exit;
                     if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin" && $order->type != 'diet_plan'){
                         if(isset($data["send_communication_customer"]) && $data["send_communication_customer"] != ""){
 
@@ -803,6 +817,7 @@ class TransactionController extends \BaseController {
                 }
             }
 
+            $this->utilities->sendCorporateMail($order->toArray());
 
             if(isset($order->preferred_starting_date) && $order->preferred_starting_date != "" && !in_array($finder->category_id, $abundant_category) && $order->type == "memberships" && !isset($order->customer_sms_after3days) && !isset($order->customer_email_after10days) && $order->type != 'diet_plan'){
 
@@ -1058,8 +1073,11 @@ class TransactionController extends \BaseController {
 
         if($data['type'] != 'events'){
             if($data['type'] == "memberships" && isset($data['customer_source']) && ($data['customer_source'] == "android" || $data['customer_source'] == "ios")){
+                $this->appOfferDiscount = in_array($data['finder_id'], $this->appOfferExcludedVendors) ? 0 : $this->appOfferDiscount;
                 $data['app_discount_amount'] = intval($data['amount'] * ($this->appOfferDiscount/100));
-                $amount = $data['amount'] = $data['amount_customer'] = $data['amount'] - $data['app_discount_amount'];
+                $corporate_discount_percent = $this->utilities->getCustomerDiscount();
+                $data['customer_discount_amount'] = intval($data['amount'] * ($corporate_discount_percent/100));
+                $amount = $data['amount'] = $data['amount_customer'] = $data['amount'] - $data['app_discount_amount'] - $data['customer_discount_amount'];
                 $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount'],$data['finder_id'],'paymentgateway',$data['offer_id'],$data['customer_id']);
             }else{
                 $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount_finder'],$data['finder_id'],'paymentgateway',$data['offer_id'],$data['customer_id']);
@@ -1193,11 +1211,19 @@ class TransactionController extends \BaseController {
                 }
             }
         }
+
+
         if($data['amount'] == 0){
             $data['full_payment_wallet'] = true;
         }else{
             $data['full_payment_wallet'] = false;
         }
+        
+        if($this->utilities->checkCorporateLogin()){
+            $data["payment_mode"] = "at the studio";
+            $data['full_payment_wallet'] = true;
+        }
+        
         if(isset($data['reward_ids'])&& count($data['reward_ids']) > 0) {
             $data['reward_ids']   =  array_map('intval', $data['reward_ids']);
         }
@@ -1643,6 +1669,10 @@ class TransactionController extends \BaseController {
         }
 
         $data['amount'] = $data['amount_finder'];
+
+        $corporate_discount_percent = $this->utilities->getCustomerDiscount();
+        $data['customer_discount_amount'] = intval($data['amount'] * ($corporate_discount_percent/100));
+        $data['amount'] = $data['amount'] - $data['customer_discount_amount'];
 
         $medical_detail                     =   (isset($data['medical_detail']) && $data['medical_detail'] != '') ? $data['medical_detail'] : "";
         $medication_detail                  =   (isset($data['medication_detail']) && $data['medication_detail'] != '') ? $data['medication_detail'] : "";

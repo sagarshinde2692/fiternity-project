@@ -2492,6 +2492,10 @@ class OrderController extends \BaseController {
 
                 $data['payment_mode']  = $data['payment_mode'];
 
+                if($data['payment_mode'] == "cod"){
+                  $data["secondary_payment_mode"] = "cod_membership";
+                }
+
             }
 
             if(isset($data['part_payment']) && $data['part_payment']){

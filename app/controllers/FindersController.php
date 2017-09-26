@@ -10,6 +10,7 @@
 use App\Mailers\FinderMailer as FinderMailer;
 use App\Services\Cacheapi as Cacheapi;
 use App\Services\Cron as Cron;
+use App\Services\Utilities as Utilities;
 
 
 class FindersController extends \BaseController {
@@ -26,7 +27,7 @@ class FindersController extends \BaseController {
 	protected $findermailer;
 	protected $cacheapi;
 
-	public function __construct(FinderMailer $findermailer, Cacheapi $cacheapi) {
+	public function __construct(FinderMailer $findermailer, Cacheapi $cacheapi, Utilities $utilities) {
 
 		parent::__construct();
 		$this->elasticsearch_default_url        =   "http://".Config::get('app.es.host').":".Config::get('app.es.port').'/'.Config::get('app.es.default_index').'/';
@@ -38,6 +39,7 @@ class FindersController extends \BaseController {
 		$this->cacheapi                     =   $cacheapi;
 		$this->appOfferDiscount 				= Config::get('app.app.discount');
 		$this->appOfferExcludedVendors 				= Config::get('app.app.discount_excluded_vendors');
+		$this->utilities 						= $utilities;
 		
 	}
 
@@ -106,17 +108,29 @@ class FindersController extends \BaseController {
 		}
 
 		$customer_email = null;
+		
+		$jwt_token = Request::header('Authorization');
+
+		if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+			
+			$decoded = $this->customerTokenDecode($jwt_token);
+			
+			if($decoded){
+				$customer_email = $decoded->customer->email;
+			}
+
+		}
+
+		$cache_key = $this->updateCacheKey($cache_key);
+
 		if(in_array($tslug, Config::get('app.test_vendors'))){
-			$jwt_token = Request::header('Authorization');
-			if($jwt_token){
-				$decoded = $this->customerTokenDecode($jwt_token);
-				if($decoded){
-					$customer_email = $decoded->customer->email;
-				}
+			if($customer_email){
+				
 				if(!in_array($customer_email, Config::get('app.test_page_users'))){
 
 					return Response::json("not found", 404);
 				}
+
 			}else{
 
 				return Response::json("not found", 404);
@@ -526,6 +540,17 @@ class FindersController extends \BaseController {
 
 									if(isset($service['membership']) && $service['membership']=='manual'){
 										$service['serviceratecard'][$ratekey]['direct_payment_enable'] = "0";
+									}
+									
+									$customerDiscount = $this->utilities->getCustomerDiscount();
+							
+									$discount = $customerDiscount;
+									if($rateval['special_price'] > 0){
+										$discount_amount = intval($rateval['special_price'] * ($discount/100));
+										$service['serviceratecard'][$ratekey]['special_price'] = $rateval['special_price'] - $discount_amount;
+									}else{
+										$discount_amount = intval($rateval['price'] * ($discount/100));
+										$service['serviceratecard'][$ratekey]['price'] = $rateval['price'] - $discount_amount;
 									}
 
 									// Removing womens offer ratecards if present
@@ -2303,14 +2328,20 @@ class FindersController extends \BaseController {
 						array_push($ratecardArr, $rateval);
 					}else{*/
 						if($rateval['type'] == 'membership' || $rateval['type'] == 'packages'){
-							$this->appOfferDiscount = in_array($finder_id, $this->appOfferExcludedVendors) ? 0 : $this->appOfferDiscount;
 							
+							$appOfferDiscount = in_array($finder_id, $this->appOfferExcludedVendors) ? 0 : $this->appOfferDiscount;
+
+							$customerDiscount = $this->utilities->getCustomerDiscount();
+							
+							Log::info("getCustomerDiscount");
+							$discount = $appOfferDiscount + $customerDiscount;
+							// Log::info($discount);
 							if($rateval['special_price'] > 0){
-								$app_discount_amount = intval($rateval['special_price'] * ($this->appOfferDiscount/100));
-								$rateval['special_price'] = $rateval['special_price'] - $app_discount_amount;
+								$discount_amount = intval($rateval['special_price'] * ($discount/100));
+								$rateval['special_price'] = $rateval['special_price'] - $discount_amount;
 							}else{
-								$app_discount_amount = intval($rateval['price'] * ($this->appOfferDiscount/100));
-								$rateval['price'] = $rateval['price'] - $app_discount_amount;
+								$discount_amount = intval($rateval['price'] * ($discount/100));
+								$rateval['price'] = $rateval['price'] - $discount_amount;
 							}
 							array_push($ratecardArr, $rateval);
 						}
@@ -2405,6 +2436,10 @@ class FindersController extends \BaseController {
 		}
 
 		// Log::info($cache_key);
+		$cache_key = $this->updateCacheKey($cache_key);
+
+		Log::info("cache key");
+		Log::info($cache_key);
 
 
 		$customer_email = null;
@@ -3341,6 +3376,30 @@ class FindersController extends \BaseController {
 		}
 	}
 
+	public function updateCacheKey($key){
+		$jwt_token = Request::header('Authorization');
+
+		if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+			
+			$decoded = $this->customerTokenDecode($jwt_token);
+			
+			if($decoded){
+				$customer_email = $decoded->customer->email;
+				Log::info("customer_email");
+				Log::info("$customer_email");
+				
+			}
+
+		}
+
+		if($this->utilities->checkCorporateLogin()){
+			$key = $key.'-corporate';
+			Log::info("key");
+			Log::info($key);
+		}
+
+		return $key;
+	}
 	
 
 }

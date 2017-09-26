@@ -469,6 +469,11 @@ class RewardofferController extends BaseController {
 
         }
 
+        if($this->utilities->checkCorporateLogin()){
+            $data['corporate_login'] = true;
+            unset($data['cashback']);
+        }
+
         return  Response::json($data, 200);
 
     }
