@@ -2301,6 +2301,7 @@ class OrderController extends \BaseController {
             $data['amount'] = $order->amount;
             $data['finder_name'] = $order->finder_name;
             $data['service_name'] = $order->service_name;
+            $data['service_duration'] = $order->service_duration;
 
             $customer_id = $data['customer_id'] = autoRegisterCustomer($data);
 
