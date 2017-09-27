@@ -1011,3 +1011,6 @@ Route::post('customer/promotionalnotification',array('as' => 'customer.promotion
 
 
 Route::post('booktrialwithoutreward','SchedulebooktrialsController@booktrialWithoutReward');
+
+Route::get('rewardamountzero', 'DebugController@rewardAmountZero');
+Route::get('noratecardorder', 'DebugController@noRatecardOrder');

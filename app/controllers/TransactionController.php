@@ -345,6 +345,11 @@ class TransactionController extends \BaseController {
         if($this->utilities->checkCorporateLogin()){
             $data['full_payment_wallet'] = true;
         }
+
+        if(isset($data['myreward_id']) && $data['type'] == "workout-session"){
+            $data['amount'] = 0;
+            $data['full_payment_wallet'] = true;
+        }
         
         if(isset($old_order_id)){
 
@@ -367,10 +372,7 @@ class TransactionController extends \BaseController {
         if($data['customer_source'] == "android" || $data['customer_source'] == "ios"){
             $mobilehash = $data['payment_related_details_for_mobile_sdk_hash'];
         }
-        if(isset($data['myreward_id']) && $data['type'] == "workout-session"){
-            $data['amount'] = 0;
-            $data['full_payment_wallet'] = true;
-        }
+
         $result['firstname'] = strtolower($data['customer_name']);
         $result['lastname'] = "";
         $result['phone'] = $data['customer_phone'];

@@ -4857,6 +4857,37 @@ public function yes($msg){
 
 	}
 
+	public function rewardAmountZero(){
+
+		$orders = Order::where('myreward_id','exists',true)
+					->where('type','workout-session')
+					->get();
+
+		foreach ($orders as $order) {
+
+			$order->amount = 0;
+			$order->update();
+		}
+
+		echo"<pre>";print_r('success');exit;
+
+	}
+
+	public function noRatecardOrder(){
+
+		$orders = Order::where('no_ratecard_service_duration','exists',true)
+					->where('no_ratecard_service_duration','!=',"")
+					->get();
+
+		foreach ($orders as $order) {
+
+			$order->update(['service_duration'=>$order['no_ratecard_service_duration']]);
+		}
+
+		echo"<pre>";print_r('success');exit;
+
+	}
+
 	
 
     
