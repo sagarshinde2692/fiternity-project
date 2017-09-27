@@ -4865,7 +4865,6 @@ public function yes($msg){
 
 		foreach ($orders as $order) {
 
-			$order->amount_customer = 0;
 			$order->amount = 0;
 			$order->update();
 		}
