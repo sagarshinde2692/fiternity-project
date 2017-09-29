@@ -733,7 +733,7 @@ class TransactionController extends \BaseController {
             
                 if($daysToGo > 2){
 
-                    $before2days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(-60 * 24 * 2);
+                    $before2days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $order->preferred_starting_date)->addMinutes(-60 * 24 * 2);
                     $order->cutomerEmailBefore2Days = $this->customermailer->orderUpdatePartPaymentBefore2Days($order->toArray(), $before2days);
                     $order->cutomerSmsBefore2Days = $this->customersms->orderUpdatePartPaymentBefore2Days($order->toArray(), $before2days);
 
