@@ -287,7 +287,7 @@ class TransactionController extends \BaseController {
         $data['txnid'] = $txnid;
         $hash = getHash($data);
         Log::info($finderDetail["data"]);
-        if(isset($finderDetail["data"]["finder_flags"]) && isset($finderDetail["data"]["finder_flags"]["part_payment"]) && $finderDetail["data"]["finder_flags"]["part_payment"]== true && $data["amount"] > 2500){
+        if(isset($finderDetail["data"]["finder_flags"]) && isset($finderDetail["data"]["finder_flags"]["part_payment"]) && $finderDetail["data"]["finder_flags"]["part_payment"]== true && $data["amount_finder"] > 2500){
             if($finderDetail["data"]["finder_flags"]["part_payment"]){
                 $part_payment_data = $data;
                 $part_payment_data_amount = (int)($data["amount"] - $data["amount_customer"]*0.8);
