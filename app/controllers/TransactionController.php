@@ -62,7 +62,6 @@ class TransactionController extends \BaseController {
 
         $data = Input::json()->all();
 
-        
         foreach ($data as $key => $value) {
 
             if(is_string($value)){
@@ -356,7 +355,10 @@ class TransactionController extends \BaseController {
         $result['hash'] = $data['payment_hash'];
         $result['payment_related_details_for_mobile_sdk_hash'] = $mobilehash;
         $result['finder_name'] = strtolower($data['finder_name']);
-        
+        if(isset($data['convinience_fee'])){
+            $result['convinience_fee_charged'] = true;
+            $result['convinience_fee'] = $data['convinience_fee'];
+        }
 
         if(isset($data['full_payment_wallet'])){
             $result['full_payment_wallet'] = $data['full_payment_wallet'];
@@ -1600,7 +1602,9 @@ class TransactionController extends \BaseController {
             
             $convinience_fee_percent = Config::get('app.convinience_fee');
 
-            $data['amount'] = $data['amount'] * (1 + $convinience_fee_percent/100);
+            $data['amount'] = $data['amount'] + $data['amount_finder']*$convinience_fee_percent/100;
+
+            $data['convinience_fee'] = number_format($data['amount_finder'] * $convinience_fee_percent/100, 0);
 
         }
 
