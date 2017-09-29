@@ -724,9 +724,24 @@ class TransactionController extends \BaseController {
             }
 
             if(isset($order['part_payment']) && $order['part_payment']){
+
                 $this->customermailer->orderUpdatePartPayment($order->toArray());
                 $this->customersms->orderUpdatePartPayment($order->toArray());
                 $this->findermailer->orderUpdatePartPayment($order->toArray());
+                
+                $daysToGo = Carbon::now()->diffInDays(\Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date));
+            
+                if($daysToGo > 2){
+
+                    $before2days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(-60 * 24 * 2);
+                    $order->cutomerEmailBefore2Days = $this->customermailer->orderUpdatePartPaymentBefore2Days($order->toArray(), $before2days);
+                    $order->cutomerSmsBefore2Days = $this->customersms->orderUpdatePartPaymentBefore2Days($order->toArray(), $before2days);
+
+                    $order->finderEmailBefore2Days = $this->findermailer->orderUpdatePartPaymentBefore2Days($order->toArray(), $before2days);
+                    $order->finderSmsBefore2Days = $this->findersms->orderUpdatePartPaymentBefore2Days($order->toArray(), $before2days);
+                
+                }
+            
             }else{
 
                 if (filter_var(trim($order['customer_email']), FILTER_VALIDATE_EMAIL) === false){
