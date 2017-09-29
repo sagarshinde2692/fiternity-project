@@ -729,7 +729,7 @@ class TransactionController extends \BaseController {
                 $this->customersms->orderUpdatePartPayment($order->toArray());
                 $this->findermailer->orderUpdatePartPayment($order->toArray());
                 
-                $daysToGo = Carbon::now()->diffInDays(\Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date));
+                $daysToGo = Carbon::now()->diffInDays(\Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $order->preferred_starting_date));
             
                 if($daysToGo > 2){
 
