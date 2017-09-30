@@ -686,7 +686,15 @@ return array(
 
 	'my_fitness_party_slug' => 'mfp',
 
-	'convinience_fee'=>2
+	'convinience_fee'=>2,
+
+	'corporate_login' => array(
+		'emails' => ['fitmein@fitternity.com'],
+		'discount' => 2
+	),
+
+	'fitmein_email' => 'vg@fitmein.in'
+
 
 
 );

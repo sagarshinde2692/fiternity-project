@@ -61,7 +61,7 @@ class TransactionController extends \BaseController {
     public function capture(){
 
         $data = Input::json()->all();
-
+        
         foreach ($data as $key => $value) {
 
             if(is_string($value)){
@@ -163,7 +163,14 @@ class TransactionController extends \BaseController {
             return Response::json($finderDetail,$finderDetail['status']);
         }
 
-        $data = array_merge($data,$finderDetail['data']);
+        $part_payment = (isset($finderDetail['data']['finder_flags']) && isset($finderDetail['data']['finder_flags']['part_payment'])) ? $finderDetail['data']['finder_flags']['part_payment'] : false;
+
+        $cash_pickup = (isset($finderDetail['data']['finder_flags']) && isset($finderDetail['data']['finder_flags']['cash_pickup'])) ? $finderDetail['data']['finder_flags']['cash_pickup'] : false;
+        
+
+        $orderfinderdetail = $finderDetail;
+        $data = array_merge($data,$orderfinderdetail['data']);
+        unset($orderfinderdetail["data"]["finder_flags"]);
 
         if(isset($data['service_id'])){
             $service_id = (int) $data['service_id'];
@@ -279,6 +286,24 @@ class TransactionController extends \BaseController {
         }
         $data['txnid'] = $txnid;
         $hash = getHash($data);
+        Log::info($finderDetail["data"]);
+        if(isset($finderDetail["data"]["finder_flags"]) && isset($finderDetail["data"]["finder_flags"]["part_payment"]) && $finderDetail["data"]["finder_flags"]["part_payment"]== true && $data["amount"] > 2500){
+            if($finderDetail["data"]["finder_flags"]["part_payment"]){
+                $part_payment_data = $data;
+                $part_payment_data_amount = (int)($data["amount"] - $data["amount_customer"]*0.8);
+                $part_payment_data["amount"] = $part_payment_data_amount > 0 ? $part_payment_data_amount : 0;
+
+                $part_payment_hash ="";
+                
+                if($part_payment_data["amount"] > 0){
+                    $part_payment_hash = getHash($part_payment_data)['payment_hash'];
+                }else{
+                    $part_payment_data["amount"] = 0;
+                }
+            }
+            $data["part_payment_calculation"] = array("amount" => (int)($part_payment_data["amount"]), "hash" => $part_payment_hash, "full_wallet_payment" => $part_payment_data["amount"] == 0 ? true : false);
+            Log::info($data["part_payment_calculation"]);
+        }
 
         $data = array_merge($data,$hash);
 
@@ -316,6 +341,15 @@ class TransactionController extends \BaseController {
             }
             
         }
+
+        if($this->utilities->checkCorporateLogin()){
+            $data['full_payment_wallet'] = true;
+        }
+
+        if(isset($data['myreward_id']) && $data['type'] == "workout-session"){
+            $data['amount'] = 0;
+            $data['full_payment_wallet'] = true;
+        }
         
         if(isset($old_order_id)){
 
@@ -338,10 +372,7 @@ class TransactionController extends \BaseController {
         if($data['customer_source'] == "android" || $data['customer_source'] == "ios"){
             $mobilehash = $data['payment_related_details_for_mobile_sdk_hash'];
         }
-        if(isset($data['myreward_id']) && $data['type'] == "workout-session"){
-            $data['amount'] = 0;
-            $data['full_payment_wallet'] = true;
-        }
+
         $result['firstname'] = strtolower($data['customer_name']);
         $result['lastname'] = "";
         $result['phone'] = $data['customer_phone'];
@@ -359,9 +390,20 @@ class TransactionController extends \BaseController {
             $result['convinience_fee_charged'] = true;
             $result['convinience_fee'] = $data['convinience_fee'];
         }
+        if(isset($data['cashback_detail']) && isset($data['cashback_detail']['amount_deducted_from_wallet'])){
+            $result['wallet_amount'] = $data['cashback_detail']['amount_deducted_from_wallet'];
+        }
+        if(isset($data["part_payment_calculation"])){
+            $result['part_payment_calculation'] = $data["part_payment_calculation"];
+        }
+        
 
         if(isset($data['full_payment_wallet'])){
             $result['full_payment_wallet'] = $data['full_payment_wallet'];
+        }
+
+        if($this->utilities->checkCorporateLogin()){
+            $result['full_payment_wallet'] = true;
         }
 
         if(in_array($data['type'],$this->membership_array)){
@@ -372,7 +414,9 @@ class TransactionController extends \BaseController {
         $resp   =   array(
             'status' => 200,
             'data' => $result,
-            'message' => "Tmp Order Generated Sucessfully"
+            'message' => "Tmp Order Generated Sucessfully",
+            'part_payment' => $part_payment,
+            'cash_pickup' => $cash_pickup
         );
 
         return Response::json($resp);
@@ -413,6 +457,10 @@ class TransactionController extends \BaseController {
             if($order->customer_email != $decoded->customer->email){
                 $resp   =   array("status" => 401,"message" => "Invalid Customer");
                 return Response::json($resp,$resp["status"]);
+            }
+
+            if(isset($data["payment_mode"]) && $data["payment_mode"] == "cod"){
+               $data["secondary_payment_mode"] = "cod_membership";
             }
 
             if($order->status == "1" && isset($data['preferred_starting_date']) && $data['preferred_starting_date']  != '' && $data['preferred_starting_date']  != '-'){
@@ -559,6 +607,10 @@ class TransactionController extends \BaseController {
                 array_set($data, 'reward_type', 'cashback');
             }
             array_set($data, 'status', '1');
+
+            if(isset($order['part_payment']) && $order['part_payment']){
+                array_set($data, 'status', '3');
+            }
             array_set($data, 'order_action', 'bought');
 
             if(((!isset($data['order_success_flag']) || $data['order_success_flag'] != 'admin') && !isset($order['success_date'])) || (isset($order['update_success_date']) && $order['update_success_date'] == "1" && isset($data['order_success_flag']) && $data['order_success_flag'] == 'admin')){
@@ -675,10 +727,57 @@ class TransactionController extends \BaseController {
                 $abundant_category = array(42);
             }
 
-            if (filter_var(trim($order['customer_email']), FILTER_VALIDATE_EMAIL) === false){
-                $order->update(['email_not_sent'=>'captureOrderStatus']);
+            if(isset($order['part_payment']) && $order['part_payment']){
+                $this->customermailer->orderUpdatePartPayment($order->toArray());
+                $this->customersms->orderUpdatePartPayment($order->toArray());
+                $this->findermailer->orderUpdatePartPayment($order->toArray());
             }else{
 
+                if (filter_var(trim($order['customer_email']), FILTER_VALIDATE_EMAIL) === false){
+                    $order->update(['email_not_sent'=>'captureOrderStatus']);
+                }else{
+
+                    if(!in_array($finder->category_id, $abundant_category)){
+                        $emailData      =   [];
+                        $emailData      =   $order->toArray();
+                        if($emailData['type'] == 'events'){
+                            if(isset($emailData['event_id']) && $emailData['event_id'] != ''){
+                                $emailData['event'] = DbEvent::find(intval($emailData['event_id']))->toArray();
+                            }
+                            if(isset($emailData['ticket_id']) && $emailData['ticket_id'] != ''){
+                                $emailData['ticket'] = Ticket::find(intval($emailData['ticket_id']))->toArray();
+                            }
+                        }
+
+                        //print_pretty($emailData);exit;
+                        if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin" && $order->type != 'diet_plan'){
+                            if(isset($data["send_communication_customer"]) && $data["send_communication_customer"] != ""){
+
+                                $sndPgMail  =   $this->customermailer->sendPgOrderMail($emailData);
+                            }
+
+                        }else{
+                            $sndPgMail  =   $this->customermailer->sendPgOrderMail($emailData);
+                        }
+                    }
+
+                    //no email to Healthy Snacks Beverages and Healthy Tiffins
+                    if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" && $order->type != 'diet_plan'){
+                        
+                        if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
+                            if(isset($data["send_communication_vendor"]) && $data["send_communication_vendor"] != ""){
+
+                                $sndPgMail  =   $this->findermailer->sendPgOrderMail($order->toArray());
+                            }
+                            
+                        }else{
+                            $sndPgMail  =   $this->findermailer->sendPgOrderMail($order->toArray());
+                        }
+
+                    }
+                }
+
+                //SEND payment gateway SMS TO CUSTOMER and vendor
                 if(!in_array($finder->category_id, $abundant_category)){
                     $emailData      =   [];
                     $emailData      =   $order->toArray();
@@ -690,73 +789,41 @@ class TransactionController extends \BaseController {
                             $emailData['ticket'] = Ticket::find(intval($emailData['ticket_id']))->toArray();
                         }
                     }
+                    
+                    if($this->utilities->checkCorporateLogin()){
+                        Log::info("outside checkCorporateLogin ");
+                        $emailData['customer_email'] =   $emailData['customer_email'].',vg@fitmein.in';
+                    }
 
                     //print_pretty($emailData);exit;
                     if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin" && $order->type != 'diet_plan'){
                         if(isset($data["send_communication_customer"]) && $data["send_communication_customer"] != ""){
 
-                            $sndPgMail  =   $this->customermailer->sendPgOrderMail($emailData);
+                            $sndPgSms   =   $this->customersms->sendPgOrderSms($emailData);
                         }
 
                     }else{
-                        $sndPgMail  =   $this->customermailer->sendPgOrderMail($emailData);
+                        $sndPgSms   =   $this->customersms->sendPgOrderSms($emailData);
                     }
                 }
 
-                //no email to Healthy Snacks Beverages and Healthy Tiffins
+                //no sms to Healthy Snacks Beverages and Healthy Tiffins
                 if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" && $order->type != 'diet_plan'){
                     
                     if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
                         if(isset($data["send_communication_vendor"]) && $data["send_communication_vendor"] != ""){
 
-                            $sndPgMail  =   $this->findermailer->sendPgOrderMail($order->toArray());
+                            $sndPgSms   =   $this->findersms->sendPgOrderSms($order->toArray());
                         }
                         
                     }else{
-                        $sndPgMail  =   $this->findermailer->sendPgOrderMail($order->toArray());
-                    }
-
-                }
-            }
-
-            //SEND payment gateway SMS TO CUSTOMER and vendor
-            if(!in_array($finder->category_id, $abundant_category)){
-                $emailData      =   [];
-                $emailData      =   $order->toArray();
-                if($emailData['type'] == 'events'){
-                    if(isset($emailData['event_id']) && $emailData['event_id'] != ''){
-                        $emailData['event'] = DbEvent::find(intval($emailData['event_id']))->toArray();
-                    }
-                    if(isset($emailData['ticket_id']) && $emailData['ticket_id'] != ''){
-                        $emailData['ticket'] = Ticket::find(intval($emailData['ticket_id']))->toArray();
-                    }
-                }
-                
-                if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin" && $order->type != 'diet_plan'){
-                    if(isset($data["send_communication_customer"]) && $data["send_communication_customer"] != ""){
-
-                        $sndPgSms   =   $this->customersms->sendPgOrderSms($emailData);
-                    }
-
-                }else{
-                    $sndPgSms   =   $this->customersms->sendPgOrderSms($emailData);
-                }
-            }
-
-            //no sms to Healthy Snacks Beverages and Healthy Tiffins
-            if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" && $order->type != 'diet_plan'){
-                
-                if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
-                    if(isset($data["send_communication_vendor"]) && $data["send_communication_vendor"] != ""){
-
                         $sndPgSms   =   $this->findersms->sendPgOrderSms($order->toArray());
                     }
                     
-                }else{
-                    $sndPgSms   =   $this->findersms->sendPgOrderSms($order->toArray());
                 }
-                
             }
+
+            $this->utilities->sendCorporateMail($order->toArray());
 
             if(isset($order->preferred_starting_date) && $order->preferred_starting_date != "" && !in_array($finder->category_id, $abundant_category) && $order->type == "memberships" && !isset($order->customer_sms_after3days) && !isset($order->customer_email_after10days) && $order->type != 'diet_plan'){
 
@@ -1012,8 +1079,11 @@ class TransactionController extends \BaseController {
 
         if($data['type'] != 'events'){
             if($data['type'] == "memberships" && isset($data['customer_source']) && ($data['customer_source'] == "android" || $data['customer_source'] == "ios")){
+                $this->appOfferDiscount = in_array($data['finder_id'], $this->appOfferExcludedVendors) ? 0 : $this->appOfferDiscount;
                 $data['app_discount_amount'] = intval($data['amount'] * ($this->appOfferDiscount/100));
-                $amount = $data['amount'] = $data['amount_customer'] = $data['amount'] - $data['app_discount_amount'];
+                $corporate_discount_percent = $this->utilities->getCustomerDiscount();
+                $data['customer_discount_amount'] = intval($data['amount'] * ($corporate_discount_percent/100));
+                $amount = $data['amount'] = $data['amount_customer'] = $data['amount'] - $data['app_discount_amount'] - $data['customer_discount_amount'];
                 $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount'],$data['finder_id'],'paymentgateway',$data['offer_id'],$data['customer_id']);
             }else{
                 $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount_finder'],$data['finder_id'],'paymentgateway',$data['offer_id'],$data['customer_id']);
@@ -1147,11 +1217,19 @@ class TransactionController extends \BaseController {
                 }
             }
         }
+
+
         if($data['amount'] == 0){
             $data['full_payment_wallet'] = true;
         }else{
             $data['full_payment_wallet'] = false;
         }
+        
+        if($this->utilities->checkCorporateLogin()){
+            $data["payment_mode"] = "at the studio";
+            $data['full_payment_wallet'] = true;
+        }
+        
         if(isset($data['reward_ids'])&& count($data['reward_ids']) > 0) {
             $data['reward_ids']   =  array_map('intval', $data['reward_ids']);
         }
@@ -1598,15 +1676,22 @@ class TransactionController extends \BaseController {
 
         $data['amount'] = $data['amount_finder'];
 
-        if(isset($ratecard['flags']) && isset($ratecard['flags']['convinience_fee_applicable']) && $ratecard['flags']['convinience_fee_applicable']){
-            
-            $convinience_fee_percent = Config::get('app.convinience_fee');
+        if(!isset($_GET['device_type'])){
 
-            $data['amount'] = $data['amount'] + $data['amount_finder']*$convinience_fee_percent/100;
+            if(isset($ratecard['flags']) && isset($ratecard['flags']['convinience_fee_applicable']) && $ratecard['flags']['convinience_fee_applicable']){
+                
+                $convinience_fee_percent = Config::get('app.convinience_fee');
 
-            $data['convinience_fee'] = number_format($data['amount_finder'] * $convinience_fee_percent/100, 0);
+                $data['amount'] = $data['amount'] + number_format($data['amount_finder']*$convinience_fee_percent/100, 0);
 
+                $data['convinience_fee'] = number_format($data['amount_finder'] * $convinience_fee_percent/100, 0);
+
+            }
         }
+
+        $corporate_discount_percent = $this->utilities->getCustomerDiscount();
+        $data['customer_discount_amount'] = intval($data['amount'] * ($corporate_discount_percent/100));
+        $data['amount'] = $data['amount'] - $data['customer_discount_amount'];
 
         $medical_detail                     =   (isset($data['medical_detail']) && $data['medical_detail'] != '') ? $data['medical_detail'] : "";
         $medication_detail                  =   (isset($data['medication_detail']) && $data['medication_detail'] != '') ? $data['medication_detail'] : "";
@@ -1785,7 +1870,7 @@ class TransactionController extends \BaseController {
         $city_id                           =    $finder['city_id'];
         $finder_category                       =    (isset($finder['category']['name']) && $finder['category']['name'] != '') ? $finder['category']['name'] : "";
         $finder_category_slug                  =    (isset($finder['category']['slug']) && $finder['category']['slug'] != '') ? $finder['category']['slug'] : "";
-
+        $finder_flags                       =   isset($finder['flags'])  ? $finder['flags'] : new stdClass();
         $data['finder_city'] =  trim($finder_city);
         $data['finder_location'] =  ucwords(trim($finder_location));
         $data['finder_address'] =  trim($finder_address);
@@ -1808,6 +1893,8 @@ class TransactionController extends \BaseController {
         $data['city_slug'] = $finder_city_slug;
         $data['category_name'] = $finder_category;
         $data['category_slug'] = $finder_category_slug;
+        $data['finder_flags'] = $finder_flags;
+        
 
         return array('status' => 200,'data' =>$data);
     }

@@ -7,18 +7,23 @@ use \GuzzleHttp\Exception\RequestException;
 use \GuzzleHttp\Client;
 use App\Notification\CustomerNotification as CustomerNotification;
 use App\Services\Sidekiq as Sidekiq;
+use App\Services\Utilities as Utilities;
+
 class HomeController extends BaseController {
 
 
     protected $api_url = false;
     protected $debug = false;
     protected $client;
+    protected $utilities;
+    
 
 
-    public function __construct(CustomerNotification $customernotification,Sidekiq $sidekiq) {
+    public function __construct(CustomerNotification $customernotification,Sidekiq $sidekiq, Utilities $utilities) {
         $this->customernotification     =   $customernotification;
         $this->sidekiq = $sidekiq;
         $this->api_url = Config::get("app.url")."/";
+        $this->utilities = $utilities;
         $this->initClient();
     }
 
@@ -335,43 +340,43 @@ class HomeController extends BaseController {
 
 
             //return Response::json($finder_ids);
-            $category_finders 		=		Finder::whereIn('_id', $finder_ids)->with(array('category'=>function($query){$query->select('_id','name','slug');}))
-                ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-                ->remember(Config::get('app.cachetime'))
-                ->get(array('_id','average_rating','category_id','coverimage', 'finder_coverimage', 'slug','title','category','location_id','location','total_rating_count'))
-                ->groupBy('category.name')
-                ->toArray();
+            // $category_finders 		=		Finder::whereIn('_id', $finder_ids)->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+            //     ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+            //     ->remember(Config::get('app.cachetime'))
+            //     ->get(array('_id','average_rating','category_id','coverimage', 'finder_coverimage', 'slug','title','category','location_id','location','total_rating_count'))
+            //     ->groupBy('category.name')
+            //     ->toArray();
 
 
-            $gym_finders_label 			= 		(isset($homepage['gym_finders_label'])) ? $homepage['gym_finders_label'] : "";
-            $yoga_finders_label 		= 		(isset($homepage['yoga_finders_label'])) ? $homepage['yoga_finders_label'] : "";
-            $dance_finders_label 		= 		(isset($homepage['dance_finders_label'])) ? $homepage['dance_finders_label'] : "";
+            // $gym_finders_label 			= 		(isset($homepage['gym_finders_label'])) ? $homepage['gym_finders_label'] : "";
+            // $yoga_finders_label 		= 		(isset($homepage['yoga_finders_label'])) ? $homepage['yoga_finders_label'] : "";
+            // $dance_finders_label 		= 		(isset($homepage['dance_finders_label'])) ? $homepage['dance_finders_label'] : "";
 
-            array_set($popular_finders,  'gym_finders_label', $gym_finders_label);
-            array_set($popular_finders,  'yoga_finders_label', $yoga_finders_label);
-            array_set($popular_finders,  'dance_finders_label', $dance_finders_label);
+            // array_set($popular_finders,  'gym_finders_label', $gym_finders_label);
+            // array_set($popular_finders,  'yoga_finders_label', $yoga_finders_label);
+            // array_set($popular_finders,  'dance_finders_label', $dance_finders_label);
 
-            $gym_finders_ids 		= 		array_map('intval', explode(",", $homepage['gym_finders'] ));
-            $yoga_finders_ids 		= 		array_map('intval', explode(",", $homepage['yoga_finders'] ));
-            $zumba_finders_ids 		= 		array_map('intval', explode(",", $homepage['zumba_finders'] ));
+            // $gym_finders_ids 		= 		array_map('intval', explode(",", $homepage['gym_finders'] ));
+            // $yoga_finders_ids 		= 		array_map('intval', explode(",", $homepage['yoga_finders'] ));
+            // $zumba_finders_ids 		= 		array_map('intval', explode(",", $homepage['zumba_finders'] ));
 
 
-            $gyms_finders 		=		Finder::active()->whereIn('_id', $gym_finders_ids)->with(array('category'=>function($query){$query->select('_id','name','slug');}))
-                ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-                ->remember(Config::get('app.cachetime'))->get(array('_id','average_rating','category_id','coverimage', 'finder_coverimage', 'slug','title','category','location_id','location','total_rating_count'))
-                ->toArray();
-            $yoga_finders 		=		Finder::active()->whereIn('_id', $yoga_finders_ids)->with(array('category'=>function($query){$query->select('_id','name','slug');}))
-                ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-                ->remember(Config::get('app.cachetime'))->get(array('_id','average_rating','category_id','coverimage', 'finder_coverimage', 'slug','title','category','location_id','location','total_rating_count'))
-                ->toArray();
-            $dance_finders 		=		Finder::active()->whereIn('_id', $zumba_finders_ids)->with(array('category'=>function($query){$query->select('_id','name','slug');}))
-                ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-                ->remember(Config::get('app.cachetime'))->get(array('_id','average_rating','category_id','coverimage', 'finder_coverimage', 'slug','title','category','location_id','location','total_rating_count'))
-                ->toArray();
+            // $gyms_finders 		=		Finder::active()->whereIn('_id', $gym_finders_ids)->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+            //     ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+            //     ->remember(Config::get('app.cachetime'))->get(array('_id','average_rating','category_id','coverimage', 'finder_coverimage', 'slug','title','category','location_id','location','total_rating_count'))
+            //     ->toArray();
+            // $yoga_finders 		=		Finder::active()->whereIn('_id', $yoga_finders_ids)->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+            //     ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+            //     ->remember(Config::get('app.cachetime'))->get(array('_id','average_rating','category_id','coverimage', 'finder_coverimage', 'slug','title','category','location_id','location','total_rating_count'))
+            //     ->toArray();
+            // $dance_finders 		=		Finder::active()->whereIn('_id', $zumba_finders_ids)->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+            //     ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
+            //     ->remember(Config::get('app.cachetime'))->get(array('_id','average_rating','category_id','coverimage', 'finder_coverimage', 'slug','title','category','location_id','location','total_rating_count'))
+            //     ->toArray();
 
-            array_set($popular_finders,  'gyms', $gyms_finders);
-            array_set($popular_finders,  'yoga', $yoga_finders);
-            array_set($popular_finders,  'dance', $dance_finders);
+            // array_set($popular_finders,  'gyms', $gyms_finders);
+            // array_set($popular_finders,  'yoga', $yoga_finders);
+            // array_set($popular_finders,  'dance', $dance_finders);
 
 
             $footer_block1_ids 		= 		array_map('intval', explode(",", $homepage['footer_block1_ids'] ));
@@ -404,23 +409,23 @@ class HomeController extends BaseController {
 
             $recent_blogs	 		= 		Blog::where('status', '=', '1')
                 ->with(array('category'=>function($query){$query->select('_id','name','slug');}))
-                ->with('categorytags')
+                // ->with('categorytags')
                 ->with(array('author'=>function($query){$query->select('_id','name','username','email','avatar');}))
                 ->with(array('expert'=>function($query){$query->select('_id','name','username','email','avatar');}))
                 ->orderBy('_id', 'desc')
                 ->remember(Config::get('app.cachetime'))
-                ->get(array('_id','author_id','category_id','categorytags','coverimage','created_at','excerpt','expert_id','slug','title','category','author','expert'))
+                ->get(array('_id','author_id','category_id','coverimage','created_at','excerpt','expert_id','slug','title','category','author','expert'))
                 ->take(4)->toArray();
 
-            $collections 			= 	Findercollection::active()->where('city_id', '=', intval($citydata['_id']))->orderBy('ordering')->get(array('name', 'slug', 'coverimage', 'ordering' ));
+            // $collections 			= 	Findercollection::active()->where('city_id', '=', intval($citydata['_id']))->orderBy('ordering')->get(array('name', 'slug', 'coverimage', 'ordering' ));
 
             $homedata 	= 	array(
-                'popular_finders' => $popular_finders,
+                // 'popular_finders' => $popular_finders,
                 'footer_finders' => $footer_finders,
                 'recent_blogs' => $recent_blogs,
                 'city_name' => $city_name,
                 'city_id' => $city_id,
-                'collections' => $collections
+                // 'collections' => $collections
 
             );
 
@@ -735,6 +740,10 @@ class HomeController extends BaseController {
                     break;
             }
 
+            if($this->utilities->checkCorporateLogin()){
+                    $subline = "Customer will be sent an email and an sms confirmation with the subscription code. Same will be marked to vg@fitmein.in";
+            }
+
             if(count($item) < 0){
                 $item = null;
             }
@@ -974,6 +983,22 @@ class HomeController extends BaseController {
                 $booking_details_data['price']['value']= "Rs. ".(string)$item['amount_finder'];
             }
 
+            if(isset($item['payment_mode']) && $item['payment_mode'] == "cod"){
+                $booking_details_data['price']['value']= "Rs. ".(string)$item['amount']." (Cash Pickup)";
+            }
+
+            if(isset($item['part_payment']) && $item['part_payment']){
+                $header= "Membership reserved";
+            }
+
+            if(isset($item['payment_mode']) && $item['payment_mode'] == 'cod'){
+                $subline= "Your membership will be activated once your cash is collected. Fitternity team will reach out to you to coordinate the cash pick-up.";
+            }
+
+            if($finder_address != ""){
+                $booking_details_data['address']['value'] = $finder_address;
+            }
+            
             if(in_array($type,["healthytiffintrial","healthytiffinmembership"])){
 
                 if(isset($item['customer_address']) && $item['customer_address'] != ""){
@@ -1173,7 +1198,7 @@ class HomeController extends BaseController {
                 'all_options_url' => $all_options_url,
                 'customer_auto_register' => $customer_auto_register
             ];
-
+            Log::info("the end");
             return Response::json($resp);
         }
     }

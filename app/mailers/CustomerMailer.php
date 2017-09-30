@@ -143,7 +143,7 @@ Class CustomerMailer extends Mailer {
 		}
 
 		$message_data 	= array(
-			'user_email' => array($data['customer_email']),
+			'user_email' =>explode(",",$data['customer_email']),
 			'user_name' => $data['customer_name']
 		);
 
@@ -444,6 +444,31 @@ Class CustomerMailer extends Mailer {
 
 		return $this->common($label,$data,$message_data);
 	}
+
+	protected function orderUpdateCOD($data){
+
+		$label = 'OrderUpdateCOD-Customer';
+
+		$message_data 	= array(
+			'user_email' => array($data['customer_email']),
+			'user_name' => $data['customer_name']
+		);
+
+		return $this->common($label,$data,$message_data);
+	}
+
+	protected function orderUpdatePartPayment($data){
+
+		$label = 'OrderUpdatePartPayment-Customer';
+
+		$message_data 	= array(
+			'user_email' => array($data['customer_email']),
+			'user_name' => $data['customer_name']
+		);
+
+		return $this->common($label,$data,$message_data);
+	}
+	
 
 
 	protected function referFriend($data){

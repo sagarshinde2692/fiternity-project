@@ -30,6 +30,9 @@ if (!function_exists('decode_customer_token')) {
         $jwt_key                =   Config::get('app.jwt.key');
         $jwt_alg                =   Config::get('app.jwt.alg');
         $decodedToken           =   JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+
+        Log::info("Decoded token helper--".json_encode($decodedToken->customer));
+
         return $decodedToken;
     }
 
@@ -64,7 +67,7 @@ if (!function_exists('sorting_array')) {
 
 if(!function_exists('citywise_category')){
     function citywise_categories($city){
-
+            $city = getmy_city($city);
             $category_slug = [
                 "gyms",
                 "yoga",
@@ -243,6 +246,8 @@ if(!function_exists('getmy_city')){
             case "bombay":
             case "thane":
             case "navi mumbai":
+            case "bhayandar":
+            case "navi":
                 return "mumbai";
                 break;
             case "delhi":
@@ -256,6 +261,12 @@ if(!function_exists('getmy_city')){
             case "gurgaon":
             case "gurugram":
                 return "gurgaon";
+                break;
+            case "pimpri":
+            case "chinchwad":
+            case "poona":
+            case "pimpri-chichwad":
+                return "pune";
                 break;
             default: return $city;
         };
@@ -2710,22 +2721,13 @@ if (!function_exists(('getRegId'))){
 }
 
 if (!function_exists(('isNotInoperationalDate'))){
-    function isNotInoperationalDate($date, $city_id, $slot=null){
-        // Log::info($city_id);
-        $inoperational_dates = ['2017-08-25'];
-        if(in_array($date, $inoperational_dates) && in_array($city_id, [1, 2])){
+    function isNotInoperationalDate($date, $city_id=null, $slot=null){
+
+        $inoperational_dates = ['2017-09-30', '2017-10-02'];
+        if(in_array($date, $inoperational_dates)){
             return false;
         }
-
-        // $inoperational_dates = ['2017-09-05'];
         
-        // if(in_array($date, $inoperational_dates) && in_array($city_id, [1, 2]) && intval($slot['start_time_24_hour_format'])>14){
-        //     Log::info("passed");
-        //     return false;
-        // }
-
-        
-        Log::info($slot);
         return true;
 
     }

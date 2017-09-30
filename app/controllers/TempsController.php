@@ -13,13 +13,15 @@ use App\Services\CustomerReward as CustomerReward;
 class TempsController extends \BaseController {
 
     protected $customersms;
+    protected $utilities;
 
-    public function __construct(CustomerSms $customersms) {
+    public function __construct(CustomerSms $customersms, Utilities $utilities) {
         //parent::__construct();
         $this->customersms              =   $customersms;
         $this->contact_us_customer_number = Config::get('app.contact_us_customer_number');
         $this->appOfferDiscount 				= Config::get('app.app.discount');
         $this->appOfferExcludedVendors 				= Config::get('app.app.discount_excluded_vendors');
+        $this->utilities = $utilities;
     }
 
     public function errorMessage($errors){
@@ -290,6 +292,14 @@ class TempsController extends \BaseController {
 
                 $temp->verified = "Y";
 
+                if(isset($temp['customer_email']) && $temp['customer_email'] != ""){
+                    $email = $temp['customer_email'];
+                }
+
+                if(isset($temp['customer_name']) && $temp['customer_name'] != ""){
+                    $name = $temp['customer_name'];
+                }
+
                 if($email != "" && $name != ""){
 
                     $temp->customer_name = $name;
@@ -306,7 +316,14 @@ class TempsController extends \BaseController {
                 $temp->save();
                 $verified = true;
                 Customer::$withoutAppends = true;
-                $customer = Customer::select('name','email','contact_no','dob','gender')->active()->where('contact_no',$temp['customer_phone'])->orderBy('_id','desc')->first();
+
+                if($customer_id == ""){
+
+                    $customer = Customer::select('name','email','contact_no','dob','gender')->active()->where('contact_no',$temp['customer_phone'])->orderBy('_id','desc')->first();
+                }else{
+
+                    $customer = Customer::find($customer_id,['name','email','contact_no','dob','gender']);
+                }
                 
                 if($customer) {
 
@@ -400,11 +417,16 @@ class TempsController extends \BaseController {
             if($finder_id != "" && $amount != "" && $customer_id != ""){
 
                 $device_type = ["android","ios"];
-
+                
+                $this->appOfferDiscount = 0;
+                
                 if($temp->action == "memberships" && isset($_GET['device_type']) &&  in_array($_GET['device_type'], $device_type)){
                     $this->appOfferDiscount = in_array($finder_id, $this->appOfferExcludedVendors) ? 0 : $this->appOfferDiscount;
-                    $amount = $amount - intval($amount * ($this->appOfferDiscount/100));
                 }
+
+                $customer_discount = $this->utilities->getCustomerDiscount();
+
+                $amount = $amount - intval($amount * (($this->appOfferDiscount + $customer_discount)/100));
 
                 $customerReward     =   new CustomerReward();
                 $calculation        =   $customerReward->purchaseGame($amount,$finder_id,"paymentgateway",false,$customer_id);
