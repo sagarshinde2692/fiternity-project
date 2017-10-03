@@ -866,7 +866,7 @@ Class CustomerSms extends VersionNextSms{
 
 		$to = $data['customer_phone'];
 
-        return $this->common($label,$to,$data);
+        return $this->common($label,$to,$data, $delay);
 	}
 
 	public function common($label,$to,$data,$delay = 0){
