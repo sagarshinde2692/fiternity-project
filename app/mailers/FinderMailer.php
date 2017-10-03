@@ -553,6 +553,28 @@ Class FinderMailer extends Mailer {
 		return $this->common($label,$data,$message_data);	
 	}
 
+	
+
+	protected function orderUpdatePartPaymentBefore2Days($data, $delay){
+
+		$label = 'OrderUpdatePartPaymentBefore2Days-Vendor';
+
+		if($data['finder_vcc_email'] != ''){
+			$user_email 	=  	explode(',', $data['finder_vcc_email']);
+		}else{
+			$user_email 	= 	array(Config::get('mail.to_mailus'));
+		}
+
+		$user_name = ucwords($data['finder_name']);
+
+		$message_data 	= array(
+			'user_email' => $user_email,
+			'user_name' =>  $user_name,
+		);
+
+		return $this->common($label,$data,$message_data, $delay);
+	}
+
 	public function common($label,$data,$message_data,$delay = 0){
 		// return($message_data['user_email']);
 		if(in_array(Config::get('mail.to_mailus'),$message_data['user_email'])){

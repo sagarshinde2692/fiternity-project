@@ -287,7 +287,7 @@ class TransactionController extends \BaseController {
         $data['txnid'] = $txnid;
         $hash = getHash($data);
         Log::info($finderDetail["data"]);
-        if(isset($finderDetail["data"]["finder_flags"]) && isset($finderDetail["data"]["finder_flags"]["part_payment"]) && $finderDetail["data"]["finder_flags"]["part_payment"]== true && $data["amount"] > 2500){
+        if(isset($finderDetail["data"]["finder_flags"]) && isset($finderDetail["data"]["finder_flags"]["part_payment"]) && $finderDetail["data"]["finder_flags"]["part_payment"]== true && $data["amount_finder"] > 2500){
             if($finderDetail["data"]["finder_flags"]["part_payment"]){
                 $part_payment_data = $data;
                 $part_payment_data_amount = (int)($data["amount"] - $data["amount_customer"]*0.8);
@@ -724,9 +724,25 @@ class TransactionController extends \BaseController {
             }
 
             if(isset($order['part_payment']) && $order['part_payment']){
+
                 $this->customermailer->orderUpdatePartPayment($order->toArray());
                 $this->customersms->orderUpdatePartPayment($order->toArray());
                 $this->findermailer->orderUpdatePartPayment($order->toArray());
+                $this->findersms->orderUpdatePartPayment($order->toArray());
+                
+                $daysToGo = Carbon::now()->diffInDays(\Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $order->preferred_starting_date));
+            
+                if($daysToGo > 2){
+
+                    $before2days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $order->preferred_starting_date)->addMinutes(-60 * 24 * 2);
+                    $order->cutomerEmailBefore2Days = $this->customermailer->orderUpdatePartPaymentBefore2Days($order->toArray(), $before2days);
+                    $order->cutomerSmsBefore2Days = $this->customersms->orderUpdatePartPaymentBefore2Days($order->toArray(), $before2days);
+
+                    $order->finderEmailBefore2Days = $this->findermailer->orderUpdatePartPaymentBefore2Days($order->toArray(), $before2days);
+                    $order->finderSmsBefore2Days = $this->findersms->orderUpdatePartPaymentBefore2Days($order->toArray(), $before2days);
+                
+                }
+            
             }else{
 
                 if (filter_var(trim($order['customer_email']), FILTER_VALIDATE_EMAIL) === false){
