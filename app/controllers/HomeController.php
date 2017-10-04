@@ -3002,7 +3002,7 @@ class HomeController extends BaseController {
             ],
             [
                 "title"=>"Food Partner",
-                "image"=>"https://b.fitn.in/global/toi/partners/nature.jpg"
+                "image"=>"https://b.fitn.in/global/toi/partners/nature.jpeg"
             ]
              
         ];
