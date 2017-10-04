@@ -122,6 +122,36 @@ class TransactionController extends \BaseController {
             return Response::json(array('status' => 404,'message' => error_message($validator->errors())),404);
         }
 
+        if($data['type'] == "events" && isset($data['event_customers']) && count($data['event_customers']) > 0 ){
+
+            $event_customers = $data['event_customers'];
+
+            $event_customer_email = [];
+            $event_customer_phone = [];
+
+            foreach ($event_customers as $customer_data) {
+
+                if(in_array($customer_data["customer_email"],$event_customer_email)){
+
+                    return Response::json(array('status' => 404,'message' => 'cannot enter same email id'),404);
+
+                }else{
+
+                    $event_customer_email[] = strtolower($customer_data["customer_email"]);
+                }
+
+                if(in_array($customer_data["customer_phone"],$event_customer_phone)){
+
+                    return Response::json(array('status' => 404,'message' => 'cannot enter same contact number'),404);
+
+                }else{
+
+                    $event_customer_phone[] = $customer_data["customer_phone"];
+                }
+            }
+            
+        }
+
         if(isset($data['myreward_id']) && $data['type'] == "workout-session"){
 
             $validateMyReward = $this->validateMyReward($data['myreward_id']);
@@ -350,6 +380,8 @@ class TransactionController extends \BaseController {
             $data['amount'] = 0;
             $data['full_payment_wallet'] = true;
         }
+
+        $data["status"] = "0";
         
         if(isset($old_order_id)){
 
