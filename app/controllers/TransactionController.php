@@ -402,6 +402,11 @@ class TransactionController extends \BaseController {
             $result['full_payment_wallet'] = true;
         }
 
+        if($data['type'] == "events" && isset($data['event_customers']) && count($data['event_customers']) > 0 ){
+
+            Queue::connection('redis')->push('TransactionController@autoRegisterCustomer', array('order_id'=>$order_id),Config::get('app.queue'));
+        }
+
         if(in_array($data['type'],$this->membership_array)){
             $redisid = Queue::connection('redis')->push('TransactionController@sendCommunication', array('order_id'=>$order_id),Config::get('app.queue'));
             $order->update(array('redis_id'=>$redisid));
@@ -2696,6 +2701,30 @@ class TransactionController extends \BaseController {
             return array('status' => 200,'message' => "Validate Successfully");
         }
 
+    }
+
+    public  function autoRegisterCustomer($job,$data){
+
+        $job->delete();
+
+        try {
+
+            $event_customers = $data["event_customers"];
+
+            foreach ($event_customers as $customer_data) {
+
+                autoRegisterCustomer($customer_data);
+            }
+
+            return "success";
+
+        } catch (Exception $e) {
+
+            Log::error($e);
+
+            return "error";
+            
+        }
     }
 
 }

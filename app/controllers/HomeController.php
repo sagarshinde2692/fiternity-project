@@ -2761,4 +2761,255 @@ class HomeController extends BaseController {
 
     }
 
+    public function mfp(){
+
+        $data = [];
+
+        $data["upcoming_party"] = [
+            "title"=>"15th October, The Club, Andheri West, Mumbai"
+        ];
+
+        $data["party_items"] = [
+            [
+                "title"=>"CELEBRITY\nTrainers",
+                "image"=>"https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg"
+            ],
+            [
+                "title"=>"PEPPY\nWorkouts",
+                "image"=>"https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg"
+            ],
+            [
+                "title"=>"TRENDY\nMusic",
+                "image"=>"https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg"
+            ],
+            [
+                "title"=>"HEALTHY\nMunchies",
+                "image"=>"https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg"
+            ],
+            [
+                "title"=>"COOL\nGoodies",
+                "image"=>"https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg"
+            ],
+            [
+                "title"=>"FITNESS\nFreaks",
+                "image"=>"https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg"
+            ]
+        ];
+
+        $data["line_up"] = [
+            "title"=>"The Line Up",
+            "venue"=>"The Club",
+            "address"=>"Andheri west, Mumbai",
+            "date"=>"15th October, Sunday",
+            "time"=>"7:15 AM to 10:15 AM",
+            "items"=>[
+                [
+                    "title"=>"Yoga",
+                    "description"=>"A combination of poses and postures to gain body strength, toning and flexibility.",
+                    "calories_burn"=>"Burn 250 Calories",
+                    "image"=>"https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg",
+                    "trainer"=>"With Anshuka Parwani",
+                    "time"=>"7:30 AM - 8:00 AM"
+                ],
+                [
+                    "title"=>"Masala Bhangra",
+                    "description"=>"A cardio based dance workout form performed on dhol beats to achieve fat burn.",
+                    "calories_burn"=>"Burn 700 Calories",
+                    "image"=>"https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg",
+                    "trainer"=>"With Shalini Bhargava",
+                    "time"=>"8:15 AM - 8:45 AM"
+                ],
+                [
+                    "title"=>"Zumba",
+                    "description"=>"A high energy workout on latin american and bollywood music. Best for calorie and fat burning.",
+                    "calories_burn"=>"Burn 700 Calories",
+                    "image"=>"https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg",
+                    "trainer"=>"With Sucheta Pal & Team",
+                    "time"=>"8:15 AM - 8:45 AM"
+                ],
+                [
+                    "title"=>"Bolly Fit",
+                    "description"=>"A high energetic full body dance cardio workout done on bollywood music to sweat out excessive calories.",
+                    "calories_burn"=>"Burn 450 Calories",
+                    "image"=>"https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg",
+                    "trainer"=>"With Naach",
+                    "time"=>"9:00 AM - 9:30 AM"
+                ],
+                [
+                    "title"=>"Pilates",
+                    "description"=>"A combination of core exercises for toning up.",
+                    "calories_burn"=>"Burn 350 Calories",
+                    "image"=>"https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg",
+                    "trainer"=>"With Namrata Purohit",
+                    "time"=>"9:00 AM - 9:30 AM"
+                ],
+                [
+                    "title"=>"Masala Bhangra",
+                    "description"=>"A cardio based dance workout form performed on dhol beats to achieve fat burn.",
+                    "calories_burn"=>"Burn 700 Calories",
+                    "image"=>"https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg",
+                    "trainer"=>"With Shalini Bhargava",
+                    "time"=>"9:45 AM - 10:15 AM"
+                ],
+                [
+                    "title"=>"Zumba",
+                    "description"=>"A high energy workout on latin american and bollywood music. Best for calorie and fat burning.",
+                    "calories_burn"=>"Burn 700 Calories",
+                    "image"=>"https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg",
+                    "trainer"=>"With Sucheta Pal & Team",
+                    "time"=>"9:45 AM - 10:15 AM"
+                ]
+
+            ]
+
+        ];
+
+        $data["all_parties"] = [
+            "drop_down"=>[
+                [
+                    "city"=>"All Cities",
+                    "status"=>true
+                ],
+                [
+                    "city"=>"Mumbai",
+                    "status"=>false
+                ],
+                [
+                    "city"=>"Delhi",
+                    "status"=>false
+                ]
+            ],
+            "cities"=>[
+                [
+                    "image"=>"https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg",
+                    "month"=>"AUG",
+                    "date"=>"27",
+                    "day"=>"SUN",
+                    "city"=>"Mumbai",
+                    "status"=>"passed",
+                    "title"=>"WE KILLED IT!",
+                    "description"=>""
+                ],
+                [
+                    "image"=>"https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg",
+                    "month"=>"SEP",
+                    "date"=>"17",
+                    "day"=>"SUN",
+                    "city"=>"Delhi",
+                    "status"=>"passed",
+                    "title"=>"WE KILLED IT!",
+                    "description"=>""
+                ],
+                [
+                    "image"=>"https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg",
+                    "month"=>"OCT",
+                    "date"=>"15",
+                    "day"=>"SUN",
+                    "city"=>"Mumbai",
+                    "status"=>"current",
+                    "title"=>"Coming Soon!",
+                    "description"=>"Leave your emal id below & stay updated!"
+                ],
+                [
+                    "image"=>"https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg",
+                    "month"=>"OCT",
+                    "date"=>"29",
+                    "day"=>"SUN",
+                    "city"=>"Delhi",
+                    "status"=>"upcoming",
+                    "title"=>"Coming Soon!",
+                    "description"=>"Leave your emal id below & stay updated!"
+                ],
+                [
+                    "image"=>"https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg",
+                    "month"=>"NOV",
+                    "date"=>"12",
+                    "day"=>"SUN",
+                    "city"=>"Mumbai",
+                    "status"=>"upcoming",
+                    "title"=>"Coming Soon!",
+                    "description"=>"Leave your emal id below & stay updated!"
+                ],
+                [
+                    "image"=>"https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg",
+                    "month"=>"NOV",
+                    "date"=>"26",
+                    "day"=>"SUN",
+                    "city"=>"Delhi",
+                    "status"=>"upcoming",
+                    "title"=>"Coming Soon!",
+                    "description"=>"Leave your emal id below & stay updated!"
+                ]
+
+            ],
+
+        ];
+
+        $data["buy_now"] = [
+            "title"=>"BUY TICKETS NOW",
+            "description"=>"Rs 300, all workshops included",
+            "info"=>"Get 100% FitCash +"
+        ];
+
+        $data["madness"] = [
+            "title"=>"Check Out The Madness",
+            "images"=>[
+                "https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg",
+                "https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg",
+                "https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg",
+                "https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg",
+                "https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg",
+                "https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg",
+                "https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg",
+                "https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg"
+            ]
+        ];
+
+        $data["sponsors"] = [
+            [
+                "title"=>"Presenting Sponsor",
+                "image"=>"https://b.fitn.in/global/toi/partners/nature.jpeg"
+            ],
+            [
+                "title"=>"Well-Being Partner",
+                "image"=>"https://b.fitn.in/global/toi/partners/cows.jpeg"
+            ],
+            [
+                "title"=>"Powered By",
+                "image"=>"https://b.fitn.in/global/toi/partners/soie.jpeg"
+            ], 
+            [
+                "title"=>"Delhi Presenting Sponsor and Life Insurance Partner",
+                "image"=>"https://b.fitn.in/global/toi/partners/aegon.jpg"
+            ],
+            [
+                "title"=>"Nutrition Partner",
+                "image"=>"https://b.fitn.in/global/toi/partners/avvatar.jpg"
+            ],
+            [
+                "title"=>"Health Partner",
+                "image"=>"https://b.fitn.in/global/toi/partners/cows.jpg"
+            ],
+            [
+                "title"=>"Food Partner",
+                "image"=>"https://b.fitn.in/global/toi/partners/nature.jpg"
+            ]
+             
+        ];
+
+        $data["what_people_say"] = [
+            [
+                "name"=>"Avani Mehta",
+                "comment"=>"It was an awesome event! Amazing instructors, made the workout so much fun!"
+            ],
+            [
+                "name"=>"Nikita Manchanda",
+                "comment"=>"Ultimate Fitness party experience! it was so much fun that i dint even realise the huge amount of calories i had burnt."
+            ]
+        ];
+
+        return  Response::json($data, 200);
+
+    }
+
 }

@@ -256,6 +256,41 @@ Class CustomerReward {
                     Log::info("cashback");
                 }
 
+
+                if(isset($order['event_id']) && $order['event_id'] == 107){
+
+                    $fitcash_plus = $order['amount'];
+
+                    if(isset($order['event_customers']) && count($order['event_customers']) > 0){
+
+                        $fitcash_plus = intval($order['amount']/count($order['event_customers']));
+
+                        $event_customers = $order["event_customers"];
+
+                        unset($event_customers[0]);
+
+                        foreach ($event_customers as $customer_data) {
+
+                            $customer_id = autoRegisterCustomer($customer_data);
+
+                            $walletData = array(
+                                "order_id"=>$order['_id'],
+                                "customer_id"=> intval($customer_id),
+                                "amount"=> $fitcash_plus,
+                                "amount_fitcash" => 0,
+                                "amount_fitcash_plus" => $fitcash_plus,
+                                "type"=>'CASHBACK',
+                                'entry'=>'credit',
+                                "description"=>'CASHBACK ON Event Tickets MFP amount - '.$fitcash_plus
+                            );
+                        }
+
+                        $utilities->walletTransaction($walletData,$order->toArray());
+
+                    }
+
+                }
+
                 $walletData = array(
                     "order_id"=>$order['_id'],
                     "customer_id"=> intval($order['customer_id']),
@@ -267,7 +302,10 @@ Class CustomerReward {
                     "description"=>'CASHBACK ON Events Tickets amount - '.$fitcash_plus
                 );
 
-                
+                if(isset($order['event_id']) && $order['event_id'] == 107){
+
+                    $walletData["description"] = 'CASHBACK ON Event Tickets MFP amount - '.$fitcash_plus;
+                }
 
                 $utilities->walletTransaction($walletData,$order->toArray());
                 $customersms = new CustomerSms();
