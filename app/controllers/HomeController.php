@@ -2880,7 +2880,7 @@ class HomeController extends BaseController {
                 ]
             ],
             "cities"=>[
-                [
+                /*[
                     "image"=>"https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg",
                     "month"=>"AUG",
                     "date"=>"27",
@@ -2899,7 +2899,7 @@ class HomeController extends BaseController {
                     "status"=>"passed",
                     "title"=>"WE KILLED IT!",
                     "description"=>""
-                ],
+                ],*/
                 [
                     "image"=>"https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg",
                     "month"=>"OCT",
@@ -2907,8 +2907,8 @@ class HomeController extends BaseController {
                     "day"=>"SUN",
                     "city"=>"Mumbai",
                     "status"=>"current",
-                    "title"=>"Coming Soon!",
-                    "description"=>"Leave your emal id below & stay updated!"
+                    "title"=>"The Club",
+                    "description"=>""
                 ],
                 [
                     "image"=>"https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg",
@@ -2917,7 +2917,7 @@ class HomeController extends BaseController {
                     "day"=>"SUN",
                     "city"=>"Delhi",
                     "status"=>"upcoming",
-                    "title"=>"Coming Soon!",
+                    "title"=>"Coming Soon in Delhi!",
                     "description"=>"Leave your emal id below & stay updated!"
                 ],
                 [
@@ -2927,7 +2927,7 @@ class HomeController extends BaseController {
                     "day"=>"SUN",
                     "city"=>"Mumbai",
                     "status"=>"upcoming",
-                    "title"=>"Coming Soon!",
+                    "title"=>"Coming Soon in Mumbai!",
                     "description"=>"Leave your emal id below & stay updated!"
                 ],
                 [
@@ -2937,7 +2937,7 @@ class HomeController extends BaseController {
                     "day"=>"SUN",
                     "city"=>"Delhi",
                     "status"=>"upcoming",
-                    "title"=>"Coming Soon!",
+                    "title"=>"Coming Soon in Delhi!",
                     "description"=>"Leave your emal id below & stay updated!"
                 ]
 
