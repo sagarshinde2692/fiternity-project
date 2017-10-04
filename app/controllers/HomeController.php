@@ -2761,6 +2761,9 @@ class HomeController extends BaseController {
 
     }
 
+
+
+
     public function mfp(){
 
         $data = [];
@@ -2772,27 +2775,27 @@ class HomeController extends BaseController {
         $data["party_items"] = [
             [
                 "title"=>"CELEBRITY\nTrainers",
-                "image"=>"https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg"
+                "image"=>"https://b.fitn.in/global/toi/mfp/about/celebrity_trainer.png"
             ],
             [
                 "title"=>"PEPPY\nWorkouts",
-                "image"=>"https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg"
+                "image"=>"https://b.fitn.in/global/toi/mfp/about/peppy_workouts.png"
             ],
             [
                 "title"=>"TRENDY\nMusic",
-                "image"=>"https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg"
+                "image"=>"https://b.fitn.in/global/toi/mfp/about/trendy_music.png"
             ],
             [
                 "title"=>"HEALTHY\nMunchies",
-                "image"=>"https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg"
+                "image"=>"https://b.fitn.in/global/toi/mfp/about/healthy_munchies.png"
             ],
             [
                 "title"=>"COOL\nGoodies",
-                "image"=>"https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg"
+                "image"=>"https://b.fitn.in/global/toi/mfp/about/cool_goodies.png"
             ],
             [
                 "title"=>"FITNESS\nFreaks",
-                "image"=>"https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg"
+                "image"=>"https://b.fitn.in/global/toi/mfp/about/fitness_freak.png"
             ]
         ];
 
@@ -2807,7 +2810,7 @@ class HomeController extends BaseController {
                     "title"=>"Yoga",
                     "description"=>"A combination of poses and postures to gain body strength, toning and flexibility.",
                     "calories_burn"=>"Burn 250 Calories",
-                    "image"=>"https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg",
+                    "image"=>"https://b.fitn.in/global/toi/mfp/line_up/yoga_23.jpg",
                     "trainer"=>"With Anshuka Parwani",
                     "time"=>"7:30 AM - 8:00 AM"
                 ],
@@ -2815,23 +2818,23 @@ class HomeController extends BaseController {
                     "title"=>"Masala Bhangra",
                     "description"=>"A cardio based dance workout form performed on dhol beats to achieve fat burn.",
                     "calories_burn"=>"Burn 700 Calories",
-                    "image"=>"https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg",
+                    "image"=>"https://b.fitn.in/global/toi/mfp/line_up/masalabhangra_29.jpg",
                     "trainer"=>"With Shalini Bhargava",
-                    "time"=>"8:15 AM - 8:45 AM"
+                    "time"=>"8:15 AM - 8:45 AM, 9:45 AM - 10:15 AM"
                 ],
                 [
                     "title"=>"Zumba",
                     "description"=>"A high energy workout on latin american and bollywood music. Best for calorie and fat burning.",
                     "calories_burn"=>"Burn 700 Calories",
-                    "image"=>"https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg",
+                    "image"=>"https://b.fitn.in/global/toi/mfp/line_up/aquazumba_05.jpg",
                     "trainer"=>"With Sucheta Pal & Team",
-                    "time"=>"8:15 AM - 8:45 AM"
+                    "time"=>"8:15 AM - 8:45 AM, 9:45 AM - 10:15 AM"
                 ],
                 [
                     "title"=>"Bolly Fit",
                     "description"=>"A high energetic full body dance cardio workout done on bollywood music to sweat out excessive calories.",
                     "calories_burn"=>"Burn 450 Calories",
-                    "image"=>"https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg",
+                    "image"=>"https://b.fitn.in/global/toi/mfp/line_up/dancefitness_17.jpg",
                     "trainer"=>"With Naach",
                     "time"=>"9:00 AM - 9:30 AM"
                 ],
@@ -2839,15 +2842,15 @@ class HomeController extends BaseController {
                     "title"=>"Pilates",
                     "description"=>"A combination of core exercises for toning up.",
                     "calories_burn"=>"Burn 350 Calories",
-                    "image"=>"https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg",
+                    "image"=>"https://b.fitn.in/global/toi/mfp/line_up/pilates_35.jpg",
                     "trainer"=>"With Namrata Purohit",
                     "time"=>"9:00 AM - 9:30 AM"
                 ],
-                [
+                /*[
                     "title"=>"Masala Bhangra",
                     "description"=>"A cardio based dance workout form performed on dhol beats to achieve fat burn.",
                     "calories_burn"=>"Burn 700 Calories",
-                    "image"=>"https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg",
+                    "image"=>"https://b.fitn.in/global/toi/mfp/line_up/aquazumba_05.jpg",
                     "trainer"=>"With Shalini Bhargava",
                     "time"=>"9:45 AM - 10:15 AM"
                 ],
@@ -2855,10 +2858,10 @@ class HomeController extends BaseController {
                     "title"=>"Zumba",
                     "description"=>"A high energy workout on latin american and bollywood music. Best for calorie and fat burning.",
                     "calories_burn"=>"Burn 700 Calories",
-                    "image"=>"https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg",
+                    "image"=>"https://b.fitn.in/global/toi/mfp/line_up/aquazumba_05.jpg",
                     "trainer"=>"With Sucheta Pal & Team",
                     "time"=>"9:45 AM - 10:15 AM"
-                ]
+                ]*/
 
             ]
 
@@ -2901,7 +2904,7 @@ class HomeController extends BaseController {
                     "description"=>""
                 ],*/
                 [
-                    "image"=>"https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg",
+                    "image"=>"https://b.fitn.in/global/toi/mfp/all_parties/mumbai.jpg",
                     "month"=>"OCT",
                     "date"=>"15",
                     "day"=>"SUN",
@@ -2911,7 +2914,7 @@ class HomeController extends BaseController {
                     "description"=>""
                 ],
                 [
-                    "image"=>"https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg",
+                    "image"=>"https://b.fitn.in/global/toi/mfp/all_parties/delhi.jpg",
                     "month"=>"OCT",
                     "date"=>"29",
                     "day"=>"SUN",
@@ -2921,7 +2924,7 @@ class HomeController extends BaseController {
                     "description"=>"Share your details to stay updated!"
                 ],
                 [
-                    "image"=>"https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg",
+                    "image"=>"https://b.fitn.in/global/toi/mfp/all_parties/mumbai.jpg",
                     "month"=>"NOV",
                     "date"=>"12",
                     "day"=>"SUN",
@@ -2930,7 +2933,7 @@ class HomeController extends BaseController {
                     "title"=>"Coming Soon to Mumbai!",
                     "description"=>"Share your details to stay updated!"
                 ],
-                [
+                /*[
                     "image"=>"https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg",
                     "month"=>"NOV",
                     "date"=>"26",
@@ -2939,7 +2942,7 @@ class HomeController extends BaseController {
                     "status"=>"upcoming",
                     "title"=>"Coming Soon to Delhi!",
                     "description"=>"Share your details to stay updated!"
-                ]
+                ]*/
 
             ],
 
@@ -2954,26 +2957,33 @@ class HomeController extends BaseController {
         $data["madness"] = [
             "title"=>"Check Out The Madness",
             "images"=>[
-                "https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg",
-                "https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg",
-                "https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg",
-                "https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg",
-                "https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg",
-                "https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg",
-                "https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg",
-                "https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg"
+                "https://b.fitn.in/global/toi/mfp/madness/10_11.jpg",
+                "https://b.fitn.in/global/toi/mfp/madness/11_11.jpg",
+                "https://b.fitn.in/global/toi/mfp/madness/12_11.jpg",
+                "https://b.fitn.in/global/toi/mfp/madness/13_11.jpg",
+                "https://b.fitn.in/global/toi/mfp/madness/14_11.jpg",
+                "https://b.fitn.in/global/toi/mfp/madness/15_11.jpg",
+                "https://b.fitn.in/global/toi/mfp/madness/1_11.jpg",
+                "https://b.fitn.in/global/toi/mfp/madness/2_11.jpg",
+                "https://b.fitn.in/global/toi/mfp/madness/3_11.jpg",
+                "https://b.fitn.in/global/toi/mfp/madness/4_11.jpg",
+                "https://b.fitn.in/global/toi/mfp/madness/5_11.jpg",
+                "https://b.fitn.in/global/toi/mfp/madness/6_11.jpg",
+                "https://b.fitn.in/global/toi/mfp/madness/7_11.jpg",
+                "https://b.fitn.in/global/toi/mfp/madness/8_11.jpg",
+                "https://b.fitn.in/global/toi/mfp/madness/9_11.jpg"
             ]
         ];
 
         $data["sponsors"] = [
             [
                 "title"=>"Presenting Sponsor",
-                "image"=>"https://b.fitn.in/global/toi/partners/nature.jpeg"
+                "image"=>"https://b.fitn.in/global/toi/partners/enrich.png"
             ],
-            [
+            /*[
                 "title"=>"Well-Being Partner",
                 "image"=>"https://b.fitn.in/global/toi/partners/cows.jpeg"
-            ],
+            ],*/
             [
                 "title"=>"Powered By",
                 "image"=>"https://b.fitn.in/global/toi/partners/soie.jpeg"
@@ -2997,14 +3007,14 @@ class HomeController extends BaseController {
              
         ];
 
-        $data["what_people_say"] = [
-            [
-                "name"=>"Avani Mehta",
-                "comment"=>"It was an awesome event! Amazing instructors, made the workout so much fun!"
-            ],
+        $data["what_people_say"] = [ 
             [
                 "name"=>"Nikita Manchanda",
                 "comment"=>"Ultimate Fitness party experience! it was so much fun that i dint even realise the huge amount of calories i had burnt."
+            ],
+            [
+                "name"=>"Avani Mehta",
+                "comment"=>"It was an awesome event! Amazing instructors, made the workout so much fun!"
             ]
         ];
 
