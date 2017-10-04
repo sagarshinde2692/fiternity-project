@@ -604,7 +604,7 @@ class TransactionController extends \BaseController {
             }
             array_set($data, 'status', '1');
 
-            if(isset($order['part_payment']) && $order['part_payment']){
+            if(isset($order['part_payment']) && $order['part_payment'] && (!isset($data['order_success_flag']) || $data['order_success_flag'] != 'admin')){
                 array_set($data, 'status', '3');
             }
             array_set($data, 'order_action', 'bought');
@@ -723,7 +723,7 @@ class TransactionController extends \BaseController {
                 $abundant_category = array(42);
             }
 
-            if(isset($order['part_payment']) && $order['part_payment']){
+            if(isset($order['part_payment']) && $order['part_payment'] && $data['status'] == '3'){
 
                 $this->customermailer->orderUpdatePartPayment($order->toArray());
                 $this->customersms->orderUpdatePartPayment($order->toArray());
