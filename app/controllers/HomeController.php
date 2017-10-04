@@ -2917,8 +2917,8 @@ class HomeController extends BaseController {
                     "day"=>"SUN",
                     "city"=>"Delhi",
                     "status"=>"upcoming",
-                    "title"=>"Coming Soon in Delhi!",
-                    "description"=>"Leave your emal id below & stay updated!"
+                    "title"=>"Coming Soon to Delhi!",
+                    "description"=>"Share your details to stay updated!"
                 ],
                 [
                     "image"=>"https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg",
@@ -2927,8 +2927,8 @@ class HomeController extends BaseController {
                     "day"=>"SUN",
                     "city"=>"Mumbai",
                     "status"=>"upcoming",
-                    "title"=>"Coming Soon in Mumbai!",
-                    "description"=>"Leave your emal id below & stay updated!"
+                    "title"=>"Coming Soon to Mumbai!",
+                    "description"=>"Share your details to stay updated!"
                 ],
                 [
                     "image"=>"https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg",
@@ -2937,8 +2937,8 @@ class HomeController extends BaseController {
                     "day"=>"SUN",
                     "city"=>"Delhi",
                     "status"=>"upcoming",
-                    "title"=>"Coming Soon in Delhi!",
-                    "description"=>"Leave your emal id below & stay updated!"
+                    "title"=>"Coming Soon to Delhi!",
+                    "description"=>"Share your details to stay updated!"
                 ]
 
             ],
