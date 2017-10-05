@@ -2769,7 +2769,8 @@ class HomeController extends BaseController {
         $data = [];
 
         $data["upcoming_party"] = [
-            "title"=>"15th October, The Club<br>Andheri West, Mumbai"
+            "title"=>"15th October, The Club<br>Andheri West, Mumbai",
+            "image"=>"https://b.fitn.in/global/toi/mfp/website_banner/mfpcover.jpg"
         ];
 
         $data["party_items"] = [
@@ -2904,7 +2905,7 @@ class HomeController extends BaseController {
                     "description"=>""
                 ],*/
                 [
-                    "image"=>"https://b.fitn.in/global/toi/mfp/all_parties/mumbai.jpg",
+                    "image"=>"https://b.fitn.in/global/toi/mfp/all_parties/the_club.jpg",
                     "month"=>"OCT",
                     "date"=>"15",
                     "day"=>"SUN",
@@ -2914,7 +2915,7 @@ class HomeController extends BaseController {
                     "description"=>""
                 ],
                 [
-                    "image"=>"https://b.fitn.in/global/toi/mfp/all_parties/delhi.jpg",
+                    "image"=>"https://b.fitn.in/global/toi/mfp/all_parties/delhi_final.jpg",
                     "month"=>"OCT",
                     "date"=>"29",
                     "day"=>"SUN",
@@ -2924,7 +2925,7 @@ class HomeController extends BaseController {
                     "description"=>"Share your details to stay updated!"
                 ],
                 [
-                    "image"=>"https://b.fitn.in/global/toi/mfp/all_parties/mumbai.jpg",
+                    "image"=>"https://b.fitn.in/global/toi/mfp/all_parties/mumbai_final.jpg",
                     "month"=>"NOV",
                     "date"=>"12",
                     "day"=>"SUN",
@@ -2957,20 +2958,20 @@ class HomeController extends BaseController {
         $data["madness"] = [
             "title"=>"Check Out The Madness",
             "images"=>[
-                "https://b.fitn.in/global/toi/mfp/madness/10_11.jpg",
-                "https://b.fitn.in/global/toi/mfp/madness/11_11.jpg",
-                "https://b.fitn.in/global/toi/mfp/madness/12_11.jpg",
-                "https://b.fitn.in/global/toi/mfp/madness/13_11.jpg",
-                "https://b.fitn.in/global/toi/mfp/madness/14_11.jpg",
-                "https://b.fitn.in/global/toi/mfp/madness/15_11.jpg",
-                "https://b.fitn.in/global/toi/mfp/madness/1_11.jpg",
+                "https://b.fitn.in/global/toi/mfp/madness/14.jpg",
+                "https://b.fitn.in/global/toi/mfp/madness/15.jpg",
+                "https://b.fitn.in/global/toi/mfp/madness/21.jpg",
+                "https://b.fitn.in/global/toi/mfp/madness/22.jpg",
                 "https://b.fitn.in/global/toi/mfp/madness/2_11.jpg",
-                "https://b.fitn.in/global/toi/mfp/madness/3_11.jpg",
+                "https://b.fitn.in/global/toi/mfp/madness/3.jpg",
+                "https://b.fitn.in/global/toi/mfp/madness/33.jpg",
+                "https://b.fitn.in/global/toi/mfp/madness/34.jpg",
+                "https://b.fitn.in/global/toi/mfp/madness/4.jpg",
                 "https://b.fitn.in/global/toi/mfp/madness/4_11.jpg",
+                "https://b.fitn.in/global/toi/mfp/madness/5.jpg",
                 "https://b.fitn.in/global/toi/mfp/madness/5_11.jpg",
-                "https://b.fitn.in/global/toi/mfp/madness/6_11.jpg",
-                "https://b.fitn.in/global/toi/mfp/madness/7_11.jpg",
-                "https://b.fitn.in/global/toi/mfp/madness/8_11.jpg",
+                "https://b.fitn.in/global/toi/mfp/madness/6.jpg",
+                "https://b.fitn.in/global/toi/mfp/madness/7.jpg",
                 "https://b.fitn.in/global/toi/mfp/madness/9_11.jpg"
             ]
         ];
