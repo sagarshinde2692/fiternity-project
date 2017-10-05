@@ -273,6 +273,28 @@ Class CustomerReward {
 
                         if(count($event_customers) > 0){
 
+                            $customerData = $order->toArray();
+
+                            if(isset($customerData['event_id']) && $customerData['event_id'] != ''){
+
+                                $event = \DbEvent::find(intval($customerData['event_id']));
+
+                                if($event){
+
+                                    $customerData['event'] = $event->toArray();
+                                }
+                            }
+
+                            if(isset($customerData['ticket_id']) && $customerData['ticket_id'] != ''){
+
+                                $ticket = \Ticket::find(intval($customerData['ticket_id']));
+
+                                if($ticket){
+
+                                    $customerData['ticket'] = $ticket->toArray();
+                                }
+                            }
+
                             foreach ($event_customers as $customer_data) {
 
                                 $customer_id = autoRegisterCustomer($customer_data);
@@ -294,8 +316,7 @@ Class CustomerReward {
                                 $customer_data['amount_20_percent'] = $fitcash_plus;
                                 $customer_data['profile_link'] = $utilities->getShortenUrl(Config::get('app.website')."/profile/".$customer_data['customer_email']);
 
-                                $customerData = $order->toArray();
-
+                                
                                 $customerData['ticket_quantity'] = 1;
                                 $customerData['customer_name'] = $customer_data['customer_name'];
                                 $customerData['customer_phone'] = $customer_data['customer_phone'];
