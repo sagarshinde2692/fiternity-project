@@ -232,6 +232,8 @@ Class CustomerReward {
 
             }elseif(isset($order['type']) && $order['type'] == 'events' && isset($order['customer_id']) && isset($order['amount']) && isset($order['ticket_id']) ){
                 
+                $customersms = new CustomerSms();
+
                 $fitcash_plus = intval($order['amount']/5);
 
                 if(isset($order['event_type']) && $order['event_type']=='TOI'){
@@ -269,24 +271,41 @@ Class CustomerReward {
 
                         unset($event_customers[0]);
 
-                        foreach ($event_customers as $customer_data) {
+                        if(count($event_customers) > 0){
 
-                            $customer_id = autoRegisterCustomer($customer_data);
+                            foreach ($event_customers as $customer_data) {
 
-                            $walletData = array(
-                                "order_id"=>$order['_id'],
-                                "customer_id"=> intval($customer_id),
-                                "amount"=> $fitcash_plus,
-                                "amount_fitcash" => 0,
-                                "amount_fitcash_plus" => $fitcash_plus,
-                                "type"=>'CASHBACK',
-                                'entry'=>'credit',
-                                "description"=>'CASHBACK ON Event Tickets MFP amount - '.$fitcash_plus
-                            );
+                                $customer_id = autoRegisterCustomer($customer_data);
+
+                                $walletData = array(
+                                    "order_id"=>$order['_id'],
+                                    "customer_id"=> intval($customer_id),
+                                    "amount"=> $fitcash_plus,
+                                    "amount_fitcash" => 0,
+                                    "amount_fitcash_plus" => $fitcash_plus,
+                                    "type"=>'CASHBACK',
+                                    'entry'=>'credit',
+                                    "description"=>'Cashback On Event Tickets - Morning Fitness Party' 
+                                );
+
+                                $utilities->walletTransaction($walletData,$order->toArray());
+
+                                $customer_data['type'] = "events";
+                                $customer_data['amount_20_percent'] = $fitcash_plus;
+                                $customer_data['profile_link'] = $utilities->getShortenUrl(Config::get('app.website')."/profile/".$customer_data['customer_email']);
+
+                                $customerData = $order->toArray();
+
+                                $customerData['ticket_quantity'] = 1;
+                                $customerData['customer_name'] = $customer_data['customer_name'];
+                                $customerData['customer_phone'] = $customer_data['customer_phone'];
+                                $customerData['customer_email'] = $customer_data['customer_email'];
+
+                                $customersms->sendPgOrderSms($customerData);
+
+                                $customersms->giveCashbackOnTrialOrderSuccessAndInvite($customer_data);
+                            }
                         }
-
-                        $utilities->walletTransaction($walletData,$order->toArray());
-
                     }
 
                 }
@@ -299,12 +318,12 @@ Class CustomerReward {
                     "amount_fitcash_plus" => $fitcash_plus,
                     "type"=>'CASHBACK',
                     'entry'=>'credit',
-                    "description"=>'CASHBACK ON Events Tickets amount - '.$fitcash_plus
+                    "description"=>'Cashback On Event Tickets amount - '.$fitcash_plus
                 );
 
                 if(isset($order['event_id']) && $order['event_id'] == 107){
 
-                    $walletData["description"] = 'CASHBACK ON Event Tickets MFP amount - '.$fitcash_plus;
+                    $walletData["description"] = 'Cashback On Event Tickets - Morning Fitness Party';
                 }
 
                 $utilities->walletTransaction($walletData,$order->toArray());

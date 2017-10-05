@@ -2769,7 +2769,7 @@ class HomeController extends BaseController {
         $data = [];
 
         $data["upcoming_party"] = [
-            "title"=>"15th October, The Club\nAndheri West, Mumbai"
+            "title"=>"15th October, The Club<br>Andheri West, Mumbai"
         ];
 
         $data["party_items"] = [
