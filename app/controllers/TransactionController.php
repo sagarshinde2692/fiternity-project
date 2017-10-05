@@ -293,6 +293,19 @@ class TransactionController extends \BaseController {
                 $part_payment_data_amount = (int)($data["amount"] - $data["amount_customer"]*0.8);
                 $part_payment_data["amount"] = $part_payment_data_amount > 0 ? $part_payment_data_amount : 0;
 
+                 if(!isset($_GET['device_type'])){
+
+                    if(isset($data['ratecard_flags']) && isset($data['ratecard_flags']['convinience_fee_applicable']) && $data['ratecard_flags']['convinience_fee_applicable']){
+                        
+                        $convinience_fee_percent = Config::get('app.convinience_fee');
+
+                        $part_payment_data['amount'] = $part_payment_data['amount'] + number_format($part_payment_data['amount_finder']*$convinience_fee_percent/100, 0);
+
+                        $part_payment_data['convinience_fee'] = number_format($part_payment_data['amount_finder'] * $convinience_fee_percent/100, 0);
+
+                    }
+                }
+
                 $part_payment_hash ="";
                 
                 if($part_payment_data["amount"] > 0){
@@ -303,6 +316,19 @@ class TransactionController extends \BaseController {
             }
             $data["part_payment_calculation"] = array("amount" => (int)($part_payment_data["amount"]), "hash" => $part_payment_hash, "full_wallet_payment" => $part_payment_data["amount"] == 0 ? true : false);
             Log::info($data["part_payment_calculation"]);
+        }
+
+        if(!isset($_GET['device_type'])){
+
+            if(isset($data['ratecard_flags']) && isset($data['ratecard_flags']['convinience_fee_applicable']) && $data['ratecard_flags']['convinience_fee_applicable']){
+                
+                $convinience_fee_percent = Config::get('app.convinience_fee');
+
+                $data['amount'] = $data['amount'] + number_format($data['amount_finder']*$convinience_fee_percent/100, 0);
+
+                $data['convinience_fee'] = number_format($data['amount_finder'] * $convinience_fee_percent/100, 0);
+
+            }
         }
 
         $data = array_merge($data,$hash);
@@ -1676,18 +1702,7 @@ class TransactionController extends \BaseController {
 
         $data['amount'] = $data['amount_finder'];
 
-        if(!isset($_GET['device_type'])){
-
-            if(isset($ratecard['flags']) && isset($ratecard['flags']['convinience_fee_applicable']) && $ratecard['flags']['convinience_fee_applicable']){
-                
-                $convinience_fee_percent = Config::get('app.convinience_fee');
-
-                $data['amount'] = $data['amount'] + number_format($data['amount_finder']*$convinience_fee_percent/100, 0);
-
-                $data['convinience_fee'] = number_format($data['amount_finder'] * $convinience_fee_percent/100, 0);
-
-            }
-        }
+        
 
         $corporate_discount_percent = $this->utilities->getCustomerDiscount();
         $data['customer_discount_amount'] = intval($data['amount'] * ($corporate_discount_percent/100));
@@ -1807,6 +1822,10 @@ class TransactionController extends \BaseController {
         $data['status'] =  '0';
         $data['payment_mode'] =  'paymentgateway';
         $data['source_of_membership'] =  'real time';
+
+        if(isset($ratecard['flags']) && isset($ratecard['flags']['convinience_fee_applicable'])){
+            $data['ratecard_flags'] = $ratecard['flags'];
+        }
 
         return array('status' => 200,'data' =>$data);
 
