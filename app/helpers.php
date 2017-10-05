@@ -2586,7 +2586,7 @@ if (!function_exists(('getHash'))){
         $txnid = $data['txnid'];
         $amount = $data['amount'];
         $productinfo = $service_name." - ".$finder_name;
-        $productinfo = $data['productinfo'] = strtolower(substr($productinfo,0,100));
+        $productinfo = $data['productinfo'] = trim(strtolower(substr($productinfo,0,100)));
         $firstname = strtolower($data['customer_name']);
         $email = strtolower($data['customer_email']);
         $udf1 = "";
