@@ -275,7 +275,7 @@ class TransactionController extends \BaseController {
                 }
             }
 
-            if(isset($data['coupon_code'])){
+            if(isset($data['coupon_code']) && $data['coupon_code'] != ""){
                 $data['coupon_code'] = strtolower($data['coupon_code']);
                 $already_applied_coupon = Customer::where('_id',$data['customer_id'])->whereIn('applied_promotion_codes',[$data['coupon_code']])->count();
             
