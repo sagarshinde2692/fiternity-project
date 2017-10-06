@@ -2812,7 +2812,7 @@ class HomeController extends BaseController {
                     "description"=>"A combination of poses and postures to gain body strength, toning and flexibility.",
                     "calories_burn"=>"Burn 250 Calories",
                     "image"=>"https://b.fitn.in/global/toi/mfp/line_up/yogafinal.jpg",
-                    "trainer"=>"With Anshuka Parwani",
+                    "trainer"=>"With Sunaina Rekhi",
                     "time"=>"7:30 AM - 8:00 AM"
                 ],
                 [
@@ -2828,7 +2828,7 @@ class HomeController extends BaseController {
                     "description"=>"A high energy workout on latin american and bollywood music. Best for calorie and fat burning.",
                     "calories_burn"=>"Burn 700 Calories",
                     "image"=>"https://b.fitn.in/global/toi/mfp/line_up/Zumbafinal.jpg",
-                    "trainer"=>"With Sucheta Pal & Team",
+                    "trainer"=>"With Sucheta Pal's Team",
                     "time"=>"8:15 AM - 8:45 AM & 9:45 AM - 10:15 AM"
                 ],
                 [
@@ -2836,7 +2836,7 @@ class HomeController extends BaseController {
                     "description"=>"A high energetic full body dance cardio workout done on bollywood music to sweat out excessive calories.",
                     "calories_burn"=>"Burn 450 Calories",
                     "image"=>"https://b.fitn.in/global/toi/mfp/line_up/bollyfitfinal.jpg",
-                    "trainer"=>"With Naach",
+                    "trainer"=>"With Akshay Jain",
                     "time"=>"9:00 AM - 9:30 AM"
                 ],
                 [
