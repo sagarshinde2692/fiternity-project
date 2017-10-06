@@ -4888,6 +4888,51 @@ public function yes($msg){
 
 	}
 
+
+	public function customerSmsLinkSentSept(){
+
+		Order::$withoutAppends=true;
+
+		$success_order_ids  = Order::active()
+			->whereIn('type',['memberships'])
+			->where('created_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-09-01 00:00:00"))))
+			->lists('_id');
+
+		$success_order_ids = array_map("intval", $success_order_ids);
+
+		$link_sent_order  = Order::whereIn('type',['memberships'])
+			->where('created_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-09-01 00:00:00"))))
+			->where('status','!=','1')
+			->where("paymentLinkEmailCustomerTiggerCount","exists",true)
+			->where("paymentLinkEmailCustomerTiggerCount",">=",1)
+			->where('customerSmsLinkSentSept','exists',false)
+			->where('redundant_order','exists',false)
+			->whereNotIn('_id',$success_order_ids)
+			->get(['_id','customer_name','customer_phone','payment_link','finder_name']);
+
+		if(count($link_sent_order) > 0){
+
+			$customersms = new CustomerSms();
+
+			foreach ($link_sent_order as $order) {
+
+				// echo"<pre>";print_r($order);exit;
+
+				$data['customer_phone'] = $order['customer_phone'];
+				$data['message'] = "Hi ".ucwords($order['customer_name'])." Get Rs 300 off to buy your ".ucwords($order['finder_name'])." membership through Fitternity. Apply promo code FITOCT before it expires ".$order['payment_link'];
+
+				$customersms->custom($data);
+
+				//echo"<pre>";print_r('success');exit;
+
+				$order->update(['customerSmsLinkSentSept'=>time()]);
+			}
+		}
+
+		echo"<pre> success";print_r(count($link_sent_order));exit;
+
+	}
+
 	
 
     
