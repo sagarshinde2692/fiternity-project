@@ -821,7 +821,7 @@ class FindersController extends \BaseController {
 					$nearby_other_category = [];
 				}
 
-				$finder_footer = $cache ? Cache::tags('finder_footer')->has($finderdata["city"]["name"]) : false;
+				/*$finder_footer = $cache ? Cache::tags('finder_footer')->has($finderdata["city"]["name"]) : false;
 
 				if(!$finder_footer){
 
@@ -857,7 +857,7 @@ class FindersController extends \BaseController {
 				}else{
 
 					$finder_footer = Cache::tags('finder_footer')->get($finderdata["city"]["name"]);
-				}
+				}*/
 
 				$finder['title'] = str_replace('crossfit', 'CrossFit', $finder['title']);
 				$response['statusfinder']                   =       200;
@@ -866,7 +866,7 @@ class FindersController extends \BaseController {
 				$response['nearby_same_category']           =       $nearby_same_category;
 				$response['nearby_other_category']          =       $nearby_other_category;
 				$response['show_reward_banner'] = true;
-				$response['finder_footer'] 					= 		$finder_footer;
+				//$response['finder_footer'] 					= 		$finder_footer;
 
 				Cache::tags('finder_detail')->put($cache_key,$response,Config::get('cache.cache_time'));
 
