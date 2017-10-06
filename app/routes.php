@@ -1016,3 +1016,7 @@ Route::get('rewardamountzero', 'DebugController@rewardAmountZero');
 Route::get('noratecardorder', 'DebugController@noRatecardOrder');
 
 Route::get('mfp','HomeController@mfp');
+
+Route::get('customsms', 'DebugController@customerSmsLinkSentSept');
+
+
