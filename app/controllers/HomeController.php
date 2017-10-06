@@ -2821,7 +2821,7 @@ class HomeController extends BaseController {
                     "calories_burn"=>"Burn 700 Calories",
                     "image"=>"https://b.fitn.in/global/toi/mfp/line_up/masalabhangra_29.jpg",
                     "trainer"=>"With Shalini Bhargava",
-                    "time"=>"8:15 AM - 8:45 AM, 9:45 AM - 10:15 AM"
+                    "time"=>"8:15 AM - 8:45 AM & 9:45 AM - 10:15 AM"
                 ],
                 [
                     "title"=>"Zumba",
@@ -2829,7 +2829,7 @@ class HomeController extends BaseController {
                     "calories_burn"=>"Burn 700 Calories",
                     "image"=>"https://b.fitn.in/global/toi/mfp/line_up/Zumbafinal.jpg",
                     "trainer"=>"With Sucheta Pal & Team",
-                    "time"=>"8:15 AM - 8:45 AM, 9:45 AM - 10:15 AM"
+                    "time"=>"8:15 AM - 8:45 AM & 9:45 AM - 10:15 AM"
                 ],
                 [
                     "title"=>"Bolly Fit",
