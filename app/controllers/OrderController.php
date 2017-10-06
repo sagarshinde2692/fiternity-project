@@ -2282,7 +2282,8 @@ class OrderController extends \BaseController {
                 $order->unset('reward_info');
             }
 
-            if(isset($order->reward_ids) && count($order->reward_ids) > 0){
+
+            if(isset($order->reward_ids) && count($order->reward_ids) > 0 && !in_array($data['payment_mode'], ['cod']) && !(isset($data['part_payment']) && $data['part_payment'])){ 
 
                 if(isset($order->status) && $order->status == "1"){
                     $resp   =   array("status" => 401,"message" => "We have already received your request");

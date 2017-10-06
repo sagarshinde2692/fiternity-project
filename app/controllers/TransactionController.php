@@ -122,6 +122,36 @@ class TransactionController extends \BaseController {
             return Response::json(array('status' => 404,'message' => error_message($validator->errors())),404);
         }
 
+        if($data['type'] == "events" && isset($data['event_customers']) && count($data['event_customers']) > 0 ){
+
+            $event_customers = $data['event_customers'];
+
+            $event_customer_email = [];
+            $event_customer_phone = [];
+
+            foreach ($event_customers as $customer_data) {
+
+                if(in_array($customer_data["customer_email"],$event_customer_email)){
+
+                    return Response::json(array('status' => 404,'message' => 'cannot enter same email id'),404);
+
+                }else{
+
+                    $event_customer_email[] = strtolower($customer_data["customer_email"]);
+                }
+
+                if(in_array($customer_data["customer_phone"],$event_customer_phone)){
+
+                    return Response::json(array('status' => 404,'message' => 'cannot enter same contact number'),404);
+
+                }else{
+
+                    $event_customer_phone[] = $customer_data["customer_phone"];
+                }
+            }
+            
+        }
+
         if(isset($data['myreward_id']) && $data['type'] == "workout-session"){
 
             $validateMyReward = $this->validateMyReward($data['myreward_id']);
@@ -245,7 +275,7 @@ class TransactionController extends \BaseController {
                 }
             }
 
-            if(isset($data['coupon_code'])){
+            if(isset($data['coupon_code']) && $data['coupon_code'] != ""){
                 $data['coupon_code'] = strtolower($data['coupon_code']);
                 $already_applied_coupon = Customer::where('_id',$data['customer_id'])->whereIn('applied_promotion_codes',[$data['coupon_code']])->count();
             
@@ -350,6 +380,8 @@ class TransactionController extends \BaseController {
             $data['amount'] = 0;
             $data['full_payment_wallet'] = true;
         }
+
+        $data["status"] = "0";
         
         if(isset($old_order_id)){
 
@@ -400,6 +432,11 @@ class TransactionController extends \BaseController {
 
         if($this->utilities->checkCorporateLogin()){
             $result['full_payment_wallet'] = true;
+        }
+
+        if($data['type'] == "events" && isset($data['event_customers']) && count($data['event_customers']) > 0 ){
+
+            Queue::connection('redis')->push('TransactionController@autoRegisterCustomer', array('event_customers'=>$data['event_customers']),Config::get('app.queue'));
         }
 
         if(in_array($data['type'],$this->membership_array)){
@@ -604,7 +641,7 @@ class TransactionController extends \BaseController {
             }
             array_set($data, 'status', '1');
 
-            if(isset($order['part_payment']) && $order['part_payment']){
+            if(isset($order['part_payment']) && $order['part_payment'] && (!isset($data['order_success_flag']) || $data['order_success_flag'] != 'admin')){
                 array_set($data, 'status', '3');
             }
             array_set($data, 'order_action', 'bought');
@@ -723,7 +760,7 @@ class TransactionController extends \BaseController {
                 $abundant_category = array(42);
             }
 
-            if(isset($order['part_payment']) && $order['part_payment']){
+            if(isset($order['part_payment']) && $order['part_payment'] && $data['status'] == '3'){
 
                 $this->customermailer->orderUpdatePartPayment($order->toArray());
                 $this->customersms->orderUpdatePartPayment($order->toArray());
@@ -2696,6 +2733,30 @@ class TransactionController extends \BaseController {
             return array('status' => 200,'message' => "Validate Successfully");
         }
 
+    }
+
+    public  function autoRegisterCustomer($job,$data){
+
+        $job->delete();
+
+        try {
+
+            $event_customers = $data["event_customers"];
+
+            foreach ($event_customers as $customer_data) {
+
+                autoRegisterCustomer($customer_data);
+            }
+
+            return "success";
+
+        } catch (Exception $e) {
+
+            Log::error($e);
+
+            return "error";
+            
+        }
     }
 
 }
