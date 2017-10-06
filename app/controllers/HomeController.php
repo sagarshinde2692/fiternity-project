@@ -2905,7 +2905,7 @@ class HomeController extends BaseController {
                     "description"=>""
                 ],*/
                 [
-                    "image"=>"https://b.fitn.in/global/toi/mfp/all_parties/the_club.jpg",
+                    "image"=>"https://b.fitn.in/global/toi/mfp/all_parties/theclub.jpg",
                     "month"=>"OCT",
                     "date"=>"15",
                     "day"=>"SUN",
