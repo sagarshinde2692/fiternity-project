@@ -5005,7 +5005,7 @@ public function yes($msg){
 		$data = [];
 
 		$data['review'] = Review::active()
-			->where('created_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-09-01 00:00:00"))))
+			->where('updated_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-09-01 00:00:00"))))
 			->where("order_id","exists",true)
 			->where("order_id","!=","")
 			->count();
