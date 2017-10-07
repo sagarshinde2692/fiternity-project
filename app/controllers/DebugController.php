@@ -4933,6 +4933,52 @@ public function yes($msg){
 
 	}
 
+
+	public function linkSentDataSept(){
+
+		$data = [];
+
+		Order::$withoutAppends=true;
+
+		$data['no_of_link_sent']  = Order::whereIn('type',['memberships'])
+			->where('created_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-09-01 00:00:00"))))
+			->where("paymentLinkEmailCustomerTiggerCount","exists",true)
+			->where("paymentLinkEmailCustomerTiggerCount",">=",1)
+			->count();
+
+		$data['no_of_purchase_from_link_sent']  = Order::active()
+		->whereIn('type',['memberships'])
+		->where('created_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-09-01 00:00:00"))))
+		->where("paymentLinkEmailCustomerTiggerCount","exists",true)
+		->where("paymentLinkEmailCustomerTiggerCount",">=",1)
+		->count();
+
+		$link_sent_order  = Order::where('status','!=','1')
+			->whereIn('type',['memberships'])
+			->where('created_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-09-01 00:00:00"))))
+			->where("paymentLinkEmailCustomerTiggerCount","exists",true)
+			->where("paymentLinkEmailCustomerTiggerCount",">=",1)
+			->where('redundant_order','exists',false)
+			->get();
+
+		$data['no_direct_purchase'] = 0;
+
+		foreach ($link_sent_order as $key => $value) {
+
+			$count = Order::active()
+				->whereIn('type',['memberships'])
+				->where('customer_email',$value['customer_email'])
+				->where("paymentLinkEmailCustomerTiggerCount","exists",false)
+				->where('created_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime($value['created_at']))))
+				->count();
+
+			$data['no_direct_purchase'] += $count;
+		}
+
+		return $data;
+
+	}
+
 	
 
     
