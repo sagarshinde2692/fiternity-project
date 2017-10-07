@@ -5021,6 +5021,11 @@ public function yes($msg){
 
 		Order::$withoutAppends=true;
 
+		$data['total'] = Order::active()
+			->where('created_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-09-01 00:00:00"))))
+			->whereIn('type',['memberships','healthytiffinmembership'])
+			->count();
+
 		$manual = Capture::where('updated_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-09-01 00:00:00"))))
 			->where('requested_preferred_starting_date','exists',true)
 			->get();
