@@ -5075,8 +5075,8 @@ public function yes($msg){
 
 		$orderSuccess = Order::active()
 			->where('created_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-09-01 00:00:00"))))
-			->whereIn('type',['memberships','healthytiffinmembership'])
-			->get();
+			->whereIn('type',['memberships'])
+			->get(['created_at','customer_email','status','type']);
 
 		$data['renewal'] = 0;
 		$data['renewal_request'] = 0;
@@ -5086,7 +5086,7 @@ public function yes($msg){
 			$order_count = Order::active()
 				->where('created_at', '<', new DateTime(date("Y-m-d H:i:s",strtotime($value['created_at']))))
 				->where('customer_email',$value['customer_email'])
-				->whereIn('type',['memberships','healthytiffinmembership'])
+				->whereIn('type',['memberships'])
 				->count();
 
 			if($order_count > 0){
@@ -5096,7 +5096,7 @@ public function yes($msg){
 			$renewal_request_count = Order::active()
 				->where('created_at', '<', new DateTime(date("Y-m-d H:i:s",strtotime($value['created_at']))))
 				->where('customer_email',$value['customer_email'])
-				->whereIn('type',['memberships','healthytiffinmembership'])
+				->whereIn('type',['memberships'])
 				->where('renew_membership','requested')
 				->count();
 
