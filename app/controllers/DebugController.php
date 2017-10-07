@@ -4943,6 +4943,7 @@ public function yes($msg){
 		$data['no_of_link_sent']  = Order::whereIn('type',['memberships'])
 			->where('created_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-09-01 00:00:00"))))
 			->where("paymentLinkEmailCustomerTiggerCount","exists",true)
+			->where('redundant_order','exists',false)
 			->where("paymentLinkEmailCustomerTiggerCount",">=",1)
 			->count();
 
