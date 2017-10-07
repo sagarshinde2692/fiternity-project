@@ -5066,6 +5066,50 @@ public function yes($msg){
 
 	}
 
+
+	public function renewalSept(){
+
+		$data = [];
+
+		Order::$withoutAppends=true;
+
+		$orderSuccess = Order::active()
+			->where('created_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-09-01 00:00:00"))))
+			->whereIn('type',['memberships','healthytiffinmembership'])
+			->get();
+
+		$data['renewal'] = 0;
+		$data['renewal_request'] = 0;
+
+		foreach ($orderSuccess as $value) {
+
+			$order_count = Order::active()
+				->where('created_at', '<', new DateTime(date("Y-m-d H:i:s",strtotime($value['created_at']))))
+				->where('customer_email',$value['customer_email'])
+				->whereIn('type',['memberships','healthytiffinmembership'])
+				->count();
+
+			if($order_count > 0){
+				$data['renewal'] += 1; 
+			}
+
+			$renewal_request_count = Order::active()
+				->where('created_at', '<', new DateTime(date("Y-m-d H:i:s",strtotime($value['created_at']))))
+				->where('customer_email',$value['customer_email'])
+				->whereIn('type',['memberships','healthytiffinmembership'])
+				->where('renew_membership','requested')
+				->count();
+
+			if($renewal_request_count > 0){
+				$data['renewal_request'] += 1; 
+			}
+
+		}
+
+		return $data;
+
+	}
+
 	
 
     
