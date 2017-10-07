@@ -1019,4 +1019,9 @@ Route::get('mfp','HomeController@mfp');
 
 Route::get('customsms', 'DebugController@customerSmsLinkSentSept');
 
+Route::get('linksentdatasept', 'DebugController@linkSentDataSept');
+
+
+
+
 
