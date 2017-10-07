@@ -4954,6 +4954,25 @@ public function yes($msg){
 		->where("paymentLinkEmailCustomerTiggerCount",">=",1)
 		->count();
 
+		$link_sent_purchase = Order::active()
+		->whereIn('type',['memberships'])
+		->where('created_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-09-01 00:00:00"))))
+		->where("paymentLinkEmailCustomerTiggerCount","exists",true)
+		->where("paymentLinkEmailCustomerTiggerCount",">=",1)
+		->get();
+
+		$duration = 0;
+
+		foreach ($link_sent_purchase as $key => $value) {
+
+			if(isset($value['success_date'])){
+
+				$duration += (int)((strtotime($value['success_date']) - strtotime($value['created_at']))/86400);
+			}
+		}
+
+		$data['purchase_from_link_sent_average_duration'] = (int)($duration / $data['no_of_purchase_from_link_sent']);
+
 		$link_sent_order  = Order::where('status','!=','1')
 			->whereIn('type',['memberships'])
 			->where('created_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-09-01 00:00:00"))))
