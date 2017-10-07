@@ -5014,6 +5014,53 @@ public function yes($msg){
 
 	}
 
+
+	public function chagneStartDateSept(){
+
+		$data = [];
+
+		Order::$withoutAppends=true;
+
+		$manual = Capture::where('updated_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-09-01 00:00:00"))))
+			->where('requested_preferred_starting_date','exists',true)
+			->get();
+
+		$manual_duration = 0;
+
+		foreach ($manual as $value) {
+
+			$order = Order::find((int)$value['order_id']);
+
+			if(isset($order['success_date'])){
+				$manual_duration += (int)((strtotime($value['created_at']) - strtotime($order['success_date']))/86400);
+			}
+		}
+
+		$data['manual_count'] = count($manual);
+
+		$data['manual_average_duration'] = ceil(($manual_duration / $data['manual_count']));
+
+		$auto = Order::active()
+			->where('preferred_starting_change_date', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-09-01 00:00:00"))))
+			->get();
+
+		$data['auto_count'] = count($auto);
+
+		$auto_duration = 0;
+
+		foreach ($auto as $value) {
+
+			if(isset($value['success_date'])){
+				$auto_duration += (int)((strtotime($value['preferred_starting_change_date']) - strtotime($value['success_date']))/86400);
+			}
+		}
+
+		$data['auto_average_duration'] = ceil(($auto_duration / $data['auto_count']));
+
+		return $data;
+
+	}
+
 	
 
     

@@ -1023,7 +1023,4 @@ Route::get('linksentdatasept', 'DebugController@linkSentDataSept');
 
 Route::get('reviewFromProfileSept', 'DebugController@reviewFromProfileSept');
 
-
-
-
-
+Route::get('chagneStartDateSept', 'DebugController@chagneStartDateSept');
