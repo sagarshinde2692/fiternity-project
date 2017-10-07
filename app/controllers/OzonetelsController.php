@@ -249,7 +249,7 @@ class OzonetelsController extends \BaseController {
 
 				    		//$finder_count = Finder::active()->where(function($query){$query->orWhere('membership','!=',"disable")->orWhere('trial','!=',"disable")->orWhere('trial','exists',false)->orWhere('membership','exists',false);})->whereIn('city_id',[1,3])->where('_id',(int)$ozonetelNoDetails->finder->_id)->count();
 
-				    		if($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time && !in_array($this->sunday,["Sunday","Saturday","Monday"]) && (in_array($ozonetelNoDetails->finder->_id, $this->direct_route_to_fitternity_vendor) /*|| $finder_count > 0*/)){
+				    		if($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time && !in_array($this->sunday,["Sunday"]) && (in_array($ozonetelNoDetails->finder->_id, $this->direct_route_to_fitternity_vendor) /*|| $finder_count > 0*/)){
 
 				    			$capture = $this->getCapture($_REQUEST['sid']);
 								$call_jump = true;
@@ -260,7 +260,7 @@ class OzonetelsController extends \BaseController {
 
 						    	$this->pubNub($_REQUEST,$ozonetelNoDetails->finder->_id,$capture->_id);
 
-							}elseif($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time && !in_array($this->sunday,["Sunday","Saturday","Monday"]) && ( in_array($ozonetelNoDetails->finder->_id, $this->jump_finder_ids) || in_array($ozonetelNoDetails->finder->city_id, [4,8,9]))){
+							}elseif($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time && !in_array($this->sunday,["Sunday"]) && ( in_array($ozonetelNoDetails->finder->_id, $this->jump_finder_ids) || in_array($ozonetelNoDetails->finder->city_id, [4,8,9]))){
 
 				    			if(in_array($ozonetelNoDetails->finder->commercial_type,[1,3]) || ($ozonetelNoDetails->finder->commercial_type == 2 && in_array($ozonetelNoDetails->finder->_id, $this->free_special_finder))){
 
@@ -560,7 +560,7 @@ class OzonetelsController extends \BaseController {
                 //OZONETEL JUMP LOGIC
                 //if(in_array($ozonetelNoDetails->finder->city_id, $city) || in_array($ozonetelNoDetails->finder->_id, $this->jump_finder_ids)) {
 
-                	if($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time && !in_array($this->sunday,["Sunday","Saturday","Monday"]) && in_array($ozonetelNoDetails->finder->_id, $this->jump_finder_ids)){
+                	if($this->jump_start_time < $this->current_date_time && $this->current_date_time < $this->jump_end_time && !in_array($this->sunday,["Sunday"]) && in_array($ozonetelNoDetails->finder->_id, $this->jump_finder_ids)){
 
 			    		$this->ozonetelCollectDtmf = new OzonetelCollectDtmf();
 			    		$this->ozonetelCollectDtmf->addPlayText('Thank you for calling.');
