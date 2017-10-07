@@ -1021,6 +1021,8 @@ Route::get('customsms', 'DebugController@customerSmsLinkSentSept');
 
 Route::get('linksentdatasept', 'DebugController@linkSentDataSept');
 
+Route::get('reviewFromProfileSept', 'DebugController@reviewFromProfileSept');
+
 
 
 

@@ -4999,6 +4999,21 @@ public function yes($msg){
 
 	}
 
+
+	public function reviewFromProfileSept(){
+
+		$data = [];
+
+		$data['review'] = Review::active()
+			->where('updated_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-09-01 00:00:00"))))
+			->where("order_id","exists",true)
+			->where("order_id","!=","")
+			->count();
+
+		return $data;
+
+	}
+
 	
 
     
