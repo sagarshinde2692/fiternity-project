@@ -284,9 +284,11 @@ class TransactionController extends \BaseController {
         if($data['type'] == 'events'){
             $successurl = Config::get('app.website')."/eventpaymentsuccess";
         }
+
         $data['txnid'] = $txnid;
-        $hash = getHash($data);
+
         Log::info($finderDetail["data"]);
+
         if(isset($finderDetail["data"]["finder_flags"]) && isset($finderDetail["data"]["finder_flags"]["part_payment"]) && $finderDetail["data"]["finder_flags"]["part_payment"]== true && $data["amount"] > 2500){
             if($finderDetail["data"]["finder_flags"]["part_payment"]){
                 $part_payment_data = $data;
@@ -314,11 +316,15 @@ class TransactionController extends \BaseController {
                     $part_payment_data["amount"] = 0;
                 }
             }
+
             $data["part_payment_calculation"] = array("amount" => (int)($part_payment_data["amount"]), "hash" => $part_payment_hash, "full_wallet_payment" => $part_payment_data["amount"] == 0 ? true : false);
             Log::info($data["part_payment_calculation"]);
         }
 
-        if(!isset($_GET['device_type'])){
+        
+        $data['base_amount'] = $data['amount'];
+
+        if(!isset($_GET['device_type'])  || !in_array($_GET['device_type'], ['android', 'ios'])){
 
             if(isset($data['ratecard_flags']) && isset($data['ratecard_flags']['convinience_fee_applicable']) && $data['ratecard_flags']['convinience_fee_applicable']){
                 
@@ -331,6 +337,7 @@ class TransactionController extends \BaseController {
             }
         }
 
+        $hash = getHash($data);
         $data = array_merge($data,$hash);
 
         $data = $this->unsetData($data);
