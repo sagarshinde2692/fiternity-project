@@ -946,6 +946,7 @@ class TransactionController extends \BaseController {
                 $after10days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 10);
                 $after30days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 30);
 
+                $this->customersms->purchaseInstant($order->toArray());
                 $order->cutomerSmsPurchaseAfter10Days = $this->customersms->purchaseAfter10Days($order_data,$after10days);
                 $order->cutomerSmsPurchaseAfter30Days = $this->customersms->purchaseAfter30Days($order_data,$after30days);
 
