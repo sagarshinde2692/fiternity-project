@@ -196,8 +196,8 @@ class TransactionController extends \BaseController {
         $part_payment = (isset($finderDetail['data']['finder_flags']) && isset($finderDetail['data']['finder_flags']['part_payment'])) ? $finderDetail['data']['finder_flags']['part_payment'] : false;
 
         $cash_pickup = (isset($finderDetail['data']['finder_flags']) && isset($finderDetail['data']['finder_flags']['cash_pickup'])) ? $finderDetail['data']['finder_flags']['cash_pickup'] : false;
-        
 
+        
         $orderfinderdetail = $finderDetail;
         $data = array_merge($data,$orderfinderdetail['data']);
         unset($orderfinderdetail["data"]["finder_flags"]);
@@ -330,9 +330,13 @@ class TransactionController extends \BaseController {
                         
                         $convinience_fee_percent = Config::get('app.convinience_fee');
 
-                        $part_payment_data['amount'] = $part_payment_data['amount'] + number_format($part_payment_data['amount_finder']*$convinience_fee_percent/100, 0);
+                        $convinience_fee = number_format($part_payment_data['amount_finder']*$convinience_fee_percent/100, 0);
 
-                        $part_payment_data['convinience_fee'] = number_format($part_payment_data['amount_finder'] * $convinience_fee_percent/100, 0);
+                        $convinience_fee = $convinience_fee <= 150 ? $convinience_fee : 150;
+
+                        $part_payment_data['amount'] = $part_payment_data['amount'] + $convinience_fee;
+
+                        $part_payment_data['convinience_fee'] = $convinience_fee;
 
                     }
                 }
@@ -359,9 +363,13 @@ class TransactionController extends \BaseController {
                 
                 $convinience_fee_percent = Config::get('app.convinience_fee');
 
-                $data['amount'] = $data['amount'] + number_format($data['amount_finder']*$convinience_fee_percent/100, 0);
+                $convinience_fee = number_format($part_payment_data['amount_finder']*$convinience_fee_percent/100, 0);
 
-                $data['convinience_fee'] = number_format($data['amount_finder'] * $convinience_fee_percent/100, 0);
+                $convinience_fee = $convinience_fee <= 150 ? $convinience_fee : 150;
+
+                $data['amount'] = $data['amount'] + $convinience_fee;
+
+                $data['convinience_fee'] = $convinience_fee;
 
             }
         }
