@@ -366,7 +366,7 @@ class TransactionController extends \BaseController {
                 
                 $convinience_fee_percent = Config::get('app.convinience_fee');
 
-                $convinience_fee = number_format($part_payment_data['amount_finder']*$convinience_fee_percent/100, 0);
+                $convinience_fee = number_format($data['amount_finder']*$convinience_fee_percent/100, 0);
 
                 $convinience_fee = $convinience_fee <= 150 ? $convinience_fee : 150;
 
