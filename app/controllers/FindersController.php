@@ -821,6 +821,44 @@ class FindersController extends \BaseController {
 					$nearby_other_category = [];
 				}
 
+				/*$finder_footer = $cache ? Cache::tags('finder_footer')->has($finderdata["city"]["name"]) : false;
+
+				if(!$finder_footer){
+
+					$finder_footer = [];
+
+					$category_footer = ['gyms','zumba-classes','functional-training','pilates-classes'];
+
+					foreach ($category_footer as $cat) {
+
+						$finder_footer_request = [
+		                    "offset" => 0,
+		                    "limit" => 5,
+		                    "radius" =>"",//"3km",
+		                    "category"=>newcategorymapping($cat),
+		                    "lat"=>"",//$finderdata["lat"],
+		                    "lon"=>"",//$finderdata["lon"],
+		                    "city"=>strtolower($finderdata["city"]["name"]),
+		                    "keys"=>[
+		                      "slug",
+		                      "name"
+		                    ],
+		                    "not"=>[
+		                    	"vendor"=>[(int)$finderdata["_id"]]
+		                    ]
+		                ];
+
+	            		$finder_footer = array_merge($finder_footer,geoLocationFinder($finder_footer_request));
+
+					}
+
+					Cache::tags('finder_footer')->put($finderdata["city"]["name"],$finder_footer,Config::get(30*24));
+
+				}else{
+
+					$finder_footer = Cache::tags('finder_footer')->get($finderdata["city"]["name"]);
+				}*/
+
 				$finder['title'] = str_replace('crossfit', 'CrossFit', $finder['title']);
 				$response['statusfinder']                   =       200;
 				$response['finder']                         =       $finder;
@@ -828,6 +866,7 @@ class FindersController extends \BaseController {
 				$response['nearby_same_category']           =       $nearby_same_category;
 				$response['nearby_other_category']          =       $nearby_other_category;
 				$response['show_reward_banner'] = true;
+				//$response['finder_footer'] 					= 		$finder_footer;
 
 				Cache::tags('finder_detail')->put($cache_key,$response,Config::get('cache.cache_time'));
 
@@ -994,7 +1033,7 @@ class FindersController extends \BaseController {
 
 
 			$email_message_data = array(
-				'to' => Config::get('mail.to_neha'),
+				'to' => Config::get('mail.to_mailus'),
 				'reciver_name' => 'Fitternity',
 				'bcc_emailids' => Config::get('mail.bcc_emailds_review'),
 				'email_subject' => 'Review given for - ' .ucwords($finderslug)
@@ -1718,7 +1757,7 @@ class FindersController extends \BaseController {
 			$email_template = 'emails.review';
 			$email_template_data = array( 'vendor'  =>  ucwords($finderslug) , 'review' => $data['description'] ,  'date'   =>  date("h:i:sa") );
 			$email_message_data = array(
-				'to' => Config::get('mail.to_neha'),
+				'to' => Config::get('mail.to_mailus'),
 				'reciver_name' => 'Fitternity',
 				'bcc_emailids' => Config::get('mail.bcc_emailds_review'),
 				'email_subject' => 'Review given for - ' .ucwords($finderslug)

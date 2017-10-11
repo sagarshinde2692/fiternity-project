@@ -132,7 +132,7 @@ class EmailSmsApiController extends \BaseController {
         $emaildata = array(
             'email_template'        =>  'emails.finder.booktrial',
             'email_template_data'   =>  $data,
-            'to'                    =>  Config::get('mail.to_neha'),
+            'to'                    =>  Config::get('mail.to_mailus'),
             'bcc_emailds'           =>  Config::get('mail.bcc_emailds_book_trial'),
             'email_subject'         =>  'Request For Book a Trial',
             'send_bcc_status'       =>  1
@@ -170,7 +170,7 @@ class EmailSmsApiController extends \BaseController {
         $emaildata = array(
             'email_template'        =>  'emails.finder.booktrial',
             'email_template_data'   =>  $data,
-            'to'                    =>  Config::get('mail.to_neha'),
+            'to'                    =>  Config::get('mail.to_mailus'),
             'bcc_emailds'           =>  Config::get('mail.bcc_emailds_book_trial'),
             'email_subject'         =>  'Request For 2nd Book a Trial',
             'send_bcc_status'       =>  1
@@ -202,7 +202,7 @@ class EmailSmsApiController extends \BaseController {
                 'findertitle' => Input::json()->get('findertitle'),
                 'finderaddress' => Input::json()->get('finderaddress')
             ),
-            'to'                =>  Config::get('mail.to_neha'),
+            'to'                =>  Config::get('mail.to_mailus'),
             'bcc_emailds'       =>  Config::get('mail.bcc_emailds_finder_lead_pop'),
             'email_subject'     => 'lead generator popup',
             'send_bcc_status'   => 1
@@ -321,7 +321,7 @@ class EmailSmsApiController extends \BaseController {
                 'location' => Input::json()->get('location'),
                 'date' => date("h:i:sa")
             ),
-            'to'                =>  Config::get('mail.to_neha'),
+            'to'                =>  Config::get('mail.to_mailus'),
             'bcc_emailds'       =>  Config::get('mail.bcc_emailds_request_callback_landing_page'),
             'email_subject'     => Input::json()->get('subject'),
             'send_bcc_status'   => 1
@@ -359,7 +359,7 @@ class EmailSmsApiController extends \BaseController {
                 'location' => Input::json()->get('location'),
                 'date' => date("h:i:sa")
             ),
-            'to'                =>  Config::get('mail.to_neha'),
+            'to'                =>  Config::get('mail.to_mailus'),
             'bcc_emailds'       =>  Config::get('mail.bcc_emailds_book_trial_landing_page'),
             'email_subject'     =>  Input::json()->get('subject'),
             'send_bcc_status'   => 1
@@ -424,7 +424,7 @@ class EmailSmsApiController extends \BaseController {
         $emaildata = array(
             'email_template'        =>  'emails.finder.offeravailed',
             'email_template_data'   =>  $data,
-            'to'                    =>  Config::get('mail.to_neha'),
+            'to'                    =>  Config::get('mail.to_mailus'),
             'bcc_emailds'           =>  Config::get('mail.bcc_emailds_finder_offer_pop'),
             'email_subject'         =>  $capture_type_subject ." ".Input::json()->get('vendor'),
             'send_bcc_status'       =>  1
@@ -460,7 +460,7 @@ class EmailSmsApiController extends \BaseController {
         $emaildata = array(
             'email_template'        =>  'emails.finder.fitcardbuy',
             'email_template_data'   =>  $data,
-            'to'                    =>  Config::get('mail.to_neha'),
+            'to'                    =>  Config::get('mail.to_mailus'),
             'bcc_emailds'           =>  Config::get('mail.bcc_emailds_fitcardbuy'),
             'email_subject'         => 'Request for fitcard purchase',
             'send_bcc_status'       =>  1
@@ -651,7 +651,7 @@ class EmailSmsApiController extends \BaseController {
                 'date' => date("h:i:sa"),
                 'label' => 'Capture-landingcallbacks'
             ),
-            'to'                =>  Config::get('mail.to_neha'),
+            'to'                =>  Config::get('mail.to_mailus'),
             'bcc_emailds'       =>  Config::get('mail.bcc_emailds_request_callback_landing_page'),
             'email_subject'     => "Capture - ".ucwords(Input::json()->get('capture_type')),
             'send_bcc_status'   => 1

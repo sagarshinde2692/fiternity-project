@@ -1014,3 +1014,15 @@ Route::post('booktrialwithoutreward','SchedulebooktrialsController@booktrialWith
 
 Route::get('rewardamountzero', 'DebugController@rewardAmountZero');
 Route::get('noratecardorder', 'DebugController@noRatecardOrder');
+
+Route::get('mfp','HomeController@mfp');
+
+Route::get('customsms', 'DebugController@customerSmsLinkSentSept');
+
+Route::get('linksentdatasept', 'DebugController@linkSentDataSept');
+
+Route::get('reviewFromProfileSept', 'DebugController@reviewFromProfileSept');
+
+Route::get('chagneStartDateSept', 'DebugController@chagneStartDateSept');
+
+Route::get('renewalSept', 'DebugController@renewalSept');

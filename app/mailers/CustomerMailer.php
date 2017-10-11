@@ -547,6 +547,20 @@ Class CustomerMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 
     }
+
+	protected function orderUpdatePartPaymentBefore2Days($data, $delay){
+
+        $label = 'OrderUpdatePartPaymentBefore2Days-Customer';
+
+        $message_data 	= array(
+			'user_email' => array($data['customer_email']),
+			'user_name' => $data['customer_name']
+		);
+
+		return $this->common($label,$data,$message_data, $delay);
+
+    }
+
     
 	protected function common($label,$data,$message_data,$delay = 0){
 

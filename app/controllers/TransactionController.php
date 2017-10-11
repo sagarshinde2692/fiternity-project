@@ -122,6 +122,36 @@ class TransactionController extends \BaseController {
             return Response::json(array('status' => 404,'message' => error_message($validator->errors())),404);
         }
 
+        if($data['type'] == "events" && isset($data['event_customers']) && count($data['event_customers']) > 0 ){
+
+            $event_customers = $data['event_customers'];
+
+            $event_customer_email = [];
+            $event_customer_phone = [];
+
+            foreach ($event_customers as $customer_data) {
+
+                if(in_array($customer_data["customer_email"],$event_customer_email)){
+
+                    return Response::json(array('status' => 404,'message' => 'cannot enter same email id'),404);
+
+                }else{
+
+                    $event_customer_email[] = strtolower($customer_data["customer_email"]);
+                }
+
+                if(in_array($customer_data["customer_phone"],$event_customer_phone)){
+
+                    return Response::json(array('status' => 404,'message' => 'cannot enter same contact number'),404);
+
+                }else{
+
+                    $event_customer_phone[] = $customer_data["customer_phone"];
+                }
+            }
+            
+        }
+
         if(isset($data['myreward_id']) && $data['type'] == "workout-session"){
 
             $validateMyReward = $this->validateMyReward($data['myreward_id']);
@@ -245,7 +275,7 @@ class TransactionController extends \BaseController {
                 }
             }
 
-            if(isset($data['coupon_code'])){
+            if(isset($data['coupon_code']) && $data['coupon_code'] != ""){
                 $data['coupon_code'] = strtolower($data['coupon_code']);
                 $already_applied_coupon = Customer::where('_id',$data['customer_id'])->whereIn('applied_promotion_codes',[$data['coupon_code']])->count();
             
@@ -288,8 +318,7 @@ class TransactionController extends \BaseController {
         $data['txnid'] = $txnid;
 
         Log::info($finderDetail["data"]);
-
-        if(isset($finderDetail["data"]["finder_flags"]) && isset($finderDetail["data"]["finder_flags"]["part_payment"]) && $finderDetail["data"]["finder_flags"]["part_payment"]== true && $data["amount"] > 2500){
+        if(isset($finderDetail["data"]["finder_flags"]) && isset($finderDetail["data"]["finder_flags"]["part_payment"]) && $finderDetail["data"]["finder_flags"]["part_payment"]== true && $data["amount_finder"] > 2500){
             if($finderDetail["data"]["finder_flags"]["part_payment"]){
                 $part_payment_data = $data;
                 $part_payment_data_amount = (int)($data["amount"] - $data["amount_customer"]*0.8);
@@ -383,6 +412,8 @@ class TransactionController extends \BaseController {
             $data['amount'] = 0;
             $data['full_payment_wallet'] = true;
         }
+
+        $data["status"] = "0";
         
         if(isset($old_order_id)){
 
@@ -437,6 +468,11 @@ class TransactionController extends \BaseController {
 
         if($this->utilities->checkCorporateLogin()){
             $result['full_payment_wallet'] = true;
+        }
+
+        if($data['type'] == "events" && isset($data['event_customers']) && count($data['event_customers']) > 0 ){
+
+            Queue::connection('redis')->push('TransactionController@autoRegisterCustomer', array('event_customers'=>$data['event_customers']),Config::get('app.queue'));
         }
 
         if(in_array($data['type'],$this->membership_array)){
@@ -641,7 +677,7 @@ class TransactionController extends \BaseController {
             }
             array_set($data, 'status', '1');
 
-            if(isset($order['part_payment']) && $order['part_payment']){
+            if(isset($order['part_payment']) && $order['part_payment'] && (!isset($data['order_success_flag']) || $data['order_success_flag'] != 'admin')){
                 array_set($data, 'status', '3');
             }
             array_set($data, 'order_action', 'bought');
@@ -760,10 +796,26 @@ class TransactionController extends \BaseController {
                 $abundant_category = array(42);
             }
 
-            if(isset($order['part_payment']) && $order['part_payment']){
+            if(isset($order['part_payment']) && $order['part_payment'] && $data['status'] == '3'){
+
                 $this->customermailer->orderUpdatePartPayment($order->toArray());
                 $this->customersms->orderUpdatePartPayment($order->toArray());
                 $this->findermailer->orderUpdatePartPayment($order->toArray());
+                $this->findersms->orderUpdatePartPayment($order->toArray());
+                
+                $daysToGo = Carbon::now()->diffInDays(\Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $order->preferred_starting_date));
+            
+                if($daysToGo > 2){
+
+                    $before2days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $order->preferred_starting_date)->addMinutes(-60 * 24 * 2);
+                    $order->cutomerEmailBefore2Days = $this->customermailer->orderUpdatePartPaymentBefore2Days($order->toArray(), $before2days);
+                    $order->cutomerSmsBefore2Days = $this->customersms->orderUpdatePartPaymentBefore2Days($order->toArray(), $before2days);
+
+                    $order->finderEmailBefore2Days = $this->findermailer->orderUpdatePartPaymentBefore2Days($order->toArray(), $before2days);
+                    $order->finderSmsBefore2Days = $this->findersms->orderUpdatePartPaymentBefore2Days($order->toArray(), $before2days);
+                
+                }
+            
             }else{
 
                 if (filter_var(trim($order['customer_email']), FILTER_VALIDATE_EMAIL) === false){
@@ -2723,6 +2775,30 @@ class TransactionController extends \BaseController {
             return array('status' => 200,'message' => "Validate Successfully");
         }
 
+    }
+
+    public  function autoRegisterCustomer($job,$data){
+
+        $job->delete();
+
+        try {
+
+            $event_customers = $data["event_customers"];
+
+            foreach ($event_customers as $customer_data) {
+
+                autoRegisterCustomer($customer_data);
+            }
+
+            return "success";
+
+        } catch (Exception $e) {
+
+            Log::error($e);
+
+            return "error";
+            
+        }
     }
 
 }

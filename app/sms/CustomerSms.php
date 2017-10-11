@@ -860,6 +860,24 @@ Class CustomerSms extends VersionNextSms{
         return $this->common($label,$to,$data);
 	}
 
+	protected function orderUpdatePartPaymentBefore2Days($data, $delay){
+
+		$label = 'OrderUpdatePartPaymentBefore2Days-Customer';
+
+		$to = $data['customer_phone'];
+
+        return $this->common($label,$to,$data, $delay);
+	}
+
+	public function custom($data){
+
+		$label = 'CustomSms-Customer';
+
+		$to = $data['customer_phone'];
+
+        return $this->common($label,$to,$data);
+	}
+
 	public function common($label,$to,$data,$delay = 0){
 
 		if(isset($data['source']) && $data['source'] == 'cleartrip'){

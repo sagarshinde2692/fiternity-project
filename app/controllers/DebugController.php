@@ -4888,6 +4888,228 @@ public function yes($msg){
 
 	}
 
+
+	public function customerSmsLinkSentSept(){
+
+		Order::$withoutAppends=true;
+
+		$success_order_ids  = Order::active()
+			->whereIn('type',['memberships'])
+			->where('created_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-09-01 00:00:00"))))
+			->lists('_id');
+
+		$success_order_ids = array_map("intval", $success_order_ids);
+
+		$link_sent_order  = Order::whereIn('type',['memberships'])
+			->where('created_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-09-01 00:00:00"))))
+			->where('status','!=','1')
+			->where("paymentLinkEmailCustomerTiggerCount","exists",true)
+			->where("paymentLinkEmailCustomerTiggerCount",">=",1)
+			->where('customerSmsLinkSentSept','exists',false)
+			->where('redundant_order','exists',false)
+			->whereNotIn('_id',$success_order_ids)
+			->get(['_id','customer_name','customer_phone','payment_link','finder_name']);
+
+		if(count($link_sent_order) > 0){
+
+			$customersms = new CustomerSms();
+
+			foreach ($link_sent_order as $order) {
+
+				// echo"<pre>";print_r($order);exit;
+
+				$data['customer_phone'] = $order['customer_phone'];
+				$data['message'] = "Hi ".ucwords($order['customer_name'])." Get Rs 300 off to buy your ".ucwords($order['finder_name'])." membership through Fitternity. Apply promo code FITOCT before it expires ".$order['payment_link'];
+
+				$customersms->custom($data);
+
+				//echo"<pre>";print_r('success');exit;
+
+				$order->update(['customerSmsLinkSentSept'=>time()]);
+			}
+		}
+
+		echo"<pre> success";print_r(count($link_sent_order));exit;
+
+	}
+
+
+	public function linkSentDataSept(){
+
+		$data = [];
+
+		Order::$withoutAppends=true;
+
+		$data['no_of_link_sent']  = Order::whereIn('type',['memberships'])
+			->where('created_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-09-01 00:00:00"))))
+			->where("paymentLinkEmailCustomerTiggerCount","exists",true)
+			->where('redundant_order','exists',false)
+			->where("paymentLinkEmailCustomerTiggerCount",">=",1)
+			->count();
+
+		$data['no_of_purchase_from_link_sent']  = Order::active()
+		->whereIn('type',['memberships'])
+		->where('created_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-09-01 00:00:00"))))
+		->where("paymentLinkEmailCustomerTiggerCount","exists",true)
+		->where("paymentLinkEmailCustomerTiggerCount",">=",1)
+		->count();
+
+		$link_sent_purchase = Order::active()
+		->whereIn('type',['memberships'])
+		->where('created_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-09-01 00:00:00"))))
+		->where("paymentLinkEmailCustomerTiggerCount","exists",true)
+		->where("paymentLinkEmailCustomerTiggerCount",">=",1)
+		->get();
+
+		$duration = 0;
+
+		foreach ($link_sent_purchase as $key => $value) {
+
+			if(isset($value['success_date'])){
+
+				$duration += (int)((strtotime($value['success_date']) - strtotime($value['created_at']))/86400);
+			}
+		}
+
+		$data['purchase_from_link_sent_average_duration'] = (int)($duration / $data['no_of_purchase_from_link_sent']);
+
+		$link_sent_order  = Order::where('status','!=','1')
+			->whereIn('type',['memberships'])
+			->where('created_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-09-01 00:00:00"))))
+			->where("paymentLinkEmailCustomerTiggerCount","exists",true)
+			->where("paymentLinkEmailCustomerTiggerCount",">=",1)
+			->where('redundant_order','exists',false)
+			->get();
+
+		$data['no_direct_purchase'] = 0;
+
+		foreach ($link_sent_order as $key => $value) {
+
+			$count = Order::active()
+				->whereIn('type',['memberships'])
+				->where('customer_email',$value['customer_email'])
+				->where("paymentLinkEmailCustomerTiggerCount","exists",false)
+				->where('created_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime($value['created_at']))))
+				->count();
+
+			$data['no_direct_purchase'] += $count;
+		}
+
+		return $data;
+
+	}
+
+
+	public function reviewFromProfileSept(){
+
+		$data = [];
+
+		$data['review'] = Review::active()
+			->where('updated_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-09-01 00:00:00"))))
+			->where("order_id","exists",true)
+			->where("order_id","!=","")
+			->count();
+
+		return $data;
+
+	}
+
+
+	public function chagneStartDateSept(){
+
+		$data = [];
+
+		Order::$withoutAppends=true;
+
+		$data['total'] = Order::active()
+			->where('created_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-09-01 00:00:00"))))
+			->whereIn('type',['memberships','healthytiffinmembership'])
+			->count();
+
+		$manual = Capture::where('updated_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-09-01 00:00:00"))))
+			->where('requested_preferred_starting_date','exists',true)
+			->get();
+
+		$manual_duration = 0;
+
+		foreach ($manual as $value) {
+
+			$order = Order::find((int)$value['order_id']);
+
+			if(isset($order['success_date'])){
+				$manual_duration += (int)((strtotime($value['created_at']) - strtotime($order['success_date']))/86400);
+			}
+		}
+
+		$data['manual_count'] = count($manual);
+
+		$data['manual_average_duration'] = ceil(($manual_duration / $data['manual_count']));
+
+		$auto = Order::active()
+			->where('preferred_starting_change_date', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-09-01 00:00:00"))))
+			->get();
+
+		$data['auto_count'] = count($auto);
+
+		$auto_duration = 0;
+
+		foreach ($auto as $value) {
+
+			if(isset($value['success_date'])){
+				$auto_duration += (int)((strtotime($value['preferred_starting_change_date']) - strtotime($value['success_date']))/86400);
+			}
+		}
+
+		$data['auto_average_duration'] = ceil(($auto_duration / $data['auto_count']));
+
+		return $data;
+
+	}
+
+
+	public function renewalSept(){
+
+		$data = [];
+
+		Order::$withoutAppends=true;
+
+		$orderSuccess = Order::active()
+			->where('created_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-09-01 00:00:00"))))
+			->whereIn('type',['memberships'])
+			->get(['created_at','customer_email','status','type']);
+
+		$data['renewal'] = 0;
+		$data['renewal_request'] = 0;
+
+		foreach ($orderSuccess as $value) {
+
+			$order_count = Order::active()
+				->where('created_at', '<', new DateTime(date("Y-m-d H:i:s",strtotime($value['created_at']))))
+				->where('customer_email',$value['customer_email'])
+				->whereIn('type',['memberships'])
+				->count();
+
+			if($order_count > 0){
+				$data['renewal'] += 1; 
+			}
+
+			$renewal_request_count = Order::active()
+				->where('created_at', '<', new DateTime(date("Y-m-d H:i:s",strtotime($value['created_at']))))
+				->where('customer_email',$value['customer_email'])
+				->whereIn('type',['memberships'])
+				->where('renew_membership','requested')
+				->count();
+
+			if($renewal_request_count > 0){
+				$data['renewal_request'] += 1; 
+			}
+
+		}
+
+		return $data;
+
+	}
+
 	
 
     
