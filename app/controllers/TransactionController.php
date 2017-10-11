@@ -318,13 +318,16 @@ class TransactionController extends \BaseController {
         $data['txnid'] = $txnid;
 
         Log::info($finderDetail["data"]);
+        
         if(isset($finderDetail["data"]["finder_flags"]) && isset($finderDetail["data"]["finder_flags"]["part_payment"]) && $finderDetail["data"]["finder_flags"]["part_payment"]== true && $data["amount_finder"] > 2500){
+
             if($finderDetail["data"]["finder_flags"]["part_payment"]){
+
                 $part_payment_data = $data;
                 $part_payment_data_amount = (int)($data["amount"] - $data["amount_customer"]*0.8);
                 $part_payment_data["amount"] = $part_payment_data_amount > 0 ? $part_payment_data_amount : 0;
 
-                 if(!isset($_GET['device_type'])){
+                if(!isset($_GET['device_type'])  || !in_array($_GET['device_type'], ['android', 'ios'])){
 
                     if(isset($data['ratecard_flags']) && isset($data['ratecard_flags']['convinience_fee_applicable']) && $data['ratecard_flags']['convinience_fee_applicable']){
                         
