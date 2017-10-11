@@ -813,7 +813,7 @@ class TransactionController extends \BaseController {
                 $this->customersms->orderUpdatePartPayment($order->toArray());
                 $this->findermailer->orderUpdatePartPayment($order->toArray());
                 $this->findersms->orderUpdatePartPayment($order->toArray());
-                $this->findersms->orderUpdatePartPayment($order->toArray());
+                $this->findermailer->partPaymentFitternity($order->toArray());
                 
                 $daysToGo = Carbon::now()->diffInDays(\Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $order->preferred_starting_date));
             
