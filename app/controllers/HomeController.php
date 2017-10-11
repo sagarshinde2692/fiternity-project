@@ -2987,7 +2987,7 @@ class HomeController extends BaseController {
             ],*/
             [
                 "title"=>"Powered By",
-                "image"=>"https://b.fitn.in/global/toi/partners/soie.jpeg"
+                "image"=>"https://b.fitn.in/global/toi/partners/LSLOGO.JPG"
             ], 
             [
                 "title"=>"Delhi Presenting Sponsor and Life Insurance Partner",
