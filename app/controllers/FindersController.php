@@ -1033,7 +1033,7 @@ class FindersController extends \BaseController {
 
 
 			$email_message_data = array(
-				'to' => Config::get('mail.to_neha'),
+				'to' => Config::get('mail.to_mailus'),
 				'reciver_name' => 'Fitternity',
 				'bcc_emailids' => Config::get('mail.bcc_emailds_review'),
 				'email_subject' => 'Review given for - ' .ucwords($finderslug)
@@ -1757,7 +1757,7 @@ class FindersController extends \BaseController {
 			$email_template = 'emails.review';
 			$email_template_data = array( 'vendor'  =>  ucwords($finderslug) , 'review' => $data['description'] ,  'date'   =>  date("h:i:sa") );
 			$email_message_data = array(
-				'to' => Config::get('mail.to_neha'),
+				'to' => Config::get('mail.to_mailus'),
 				'reciver_name' => 'Fitternity',
 				'bcc_emailids' => Config::get('mail.bcc_emailds_review'),
 				'email_subject' => 'Review given for - ' .ucwords($finderslug)
