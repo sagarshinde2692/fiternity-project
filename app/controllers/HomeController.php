@@ -2981,10 +2981,10 @@ class HomeController extends BaseController {
                 "title"=>"Presenting Sponsor",
                 "image"=>"https://b.fitn.in/global/toi/partners/enrich.png"
             ],
-            /*[
+            [
                 "title"=>"Well-Being Partner",
-                "image"=>"https://b.fitn.in/global/toi/partners/cows.jpeg"
-            ],*/
+                "image"=>"https://b.fitn.in/global/toi/partners/riso.png"
+            ],
             [
                 "title"=>"Powered By",
                 "image"=>"https://b.fitn.in/global/toi/partners/LSLOGO.JPG"
