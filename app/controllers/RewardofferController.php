@@ -469,6 +469,10 @@ class RewardofferController extends BaseController {
 
         }
 
+        if(isset($ratecard['flags']) && isset($ratecard['flags']['convinience_fee_applicable']) && $ratecard['flags']['convinience_fee_applicable']){
+            $data['convinience_fee'] = number_format($amount * Config::get('app.convinience_fee')/100.0, 0);
+        }
+
         if($this->utilities->checkCorporateLogin()){
             $data['corporate_login'] = true;
             unset($data['cashback']);
