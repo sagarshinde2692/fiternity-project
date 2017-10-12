@@ -303,16 +303,19 @@ Class CustomerNotification extends Notification{
 	public function common($label,$data,$notif_type,$notif_object,$delay = 0){
 
 		$template = \Template::where('label',$label)->first();
-		$device_type = $data['device_type'];
+		// $device_type = $data['device_type'];
 
 		$device = \Device::where('customer_id', $data['customer_id'])->whereIn('type', ["android", "ios"])->orderBy('_id', 'desc')->first();
 
 		if($device){
+
 			$to = array($device['reg_id']);
 			$device_type = $device['type'];
+
 		}else{
+			
 			\Log::info("no device id");
-			return;
+			return "no device id";
 		}
 
 		$text = $this->bladeCompile($template->notification_text,$data);
