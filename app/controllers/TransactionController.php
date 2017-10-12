@@ -499,6 +499,10 @@ class TransactionController extends \BaseController {
             'cash_pickup' => $cash_pickup
         );
 
+        if(isset($_GET['device_type']) && in_array($_GET['device_type'], ['android', 'ios'])){
+            
+        }
+
         return Response::json($resp);
 
     }
