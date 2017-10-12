@@ -185,6 +185,8 @@ class TransactionController extends \BaseController {
 
         }
 
+        $data['base_amount'] = $data['amount'];
+
         $finder_id = (int) $data['finder_id'];
 
         $finderDetail = $this->getFinderDetail($finder_id);
@@ -319,7 +321,7 @@ class TransactionController extends \BaseController {
 
         Log::info($finderDetail["data"]);
         
-        if(isset($finderDetail["data"]["finder_flags"]) && isset($finderDetail["data"]["finder_flags"]["part_payment"]) && $finderDetail["data"]["finder_flags"]["part_payment"]== true && $data["amount_finder"] > 2500){
+        if($part_payment && $data["amount_finder"] > 2500){
 
             if($finderDetail["data"]["finder_flags"]["part_payment"]){
 
@@ -358,8 +360,7 @@ class TransactionController extends \BaseController {
         }
 
         
-        $data['base_amount'] = $data['amount'];
-
+       
         if(!isset($_GET['device_type'])  || !in_array($_GET['device_type'], ['android', 'ios'])){
 
             if(isset($data['ratecard_flags']) && isset($data['ratecard_flags']['convinience_fee_applicable']) && $data['ratecard_flags']['convinience_fee_applicable']){
@@ -425,6 +426,42 @@ class TransactionController extends \BaseController {
         }
 
         $data["status"] = "0";
+
+        if(isset($data["payment_mode"]) && $data["payment_mode"] == "cod"){
+            $data["secondary_payment_mode"] = "cod_membership";
+        }
+
+        if(isset($data['part_payment']) && $data['part_payment']){
+
+            $order['amount'] = $data['amount'] = (int)($order["part_payment_calculation"]['amount']);
+
+            $twenty_percent_amount = (int)($order["amount_customer"]*0.2);
+
+            if(isset($order['wallet_amount'])){
+
+                if($twenty_percent_amount < $order['wallet_amount']){
+
+                    $data['full_payment_wallet'] = true;
+                    
+                    $refund_amount = $order['wallet_amount']-$twenty_percent_amount;
+
+                    $wallet_data = array(
+                        'customer_id'=>$order['customer_id'],
+                        'amount'=>$refund_amount,
+                        'amount_fitcash' => 0,
+                        'amount_fitcash_plus' => $refund_amount,
+                        'type'=>'CREDIT',
+                        'entry'=>'credit',
+                        'description'=>"Paid for order ".$order['_id'],
+                    );
+                    $walletTransactionResponse = $this->utilities->walletTransaction($wallet_data);
+
+                    $order['wallet_amount'] = $twenty_percent_amount;
+                }
+
+            }
+
+        }
         
         if(isset($old_order_id)){
 
@@ -442,6 +479,12 @@ class TransactionController extends \BaseController {
             $order->_id = $order_id;
             $order->save();
         }
+
+        if(isset($data['payment_mode']) && $data['payment_mode'] == 'cod'){
+            $this->customermailer->orderUpdateCOD($order->toArray());
+            $this->customersms->orderUpdateCOD($order->toArray());
+        }
+
         
         
         if($data['customer_source'] == "android" || $data['customer_source'] == "ios"){
@@ -500,7 +543,13 @@ class TransactionController extends \BaseController {
         );
 
         if(isset($_GET['device_type']) && in_array($_GET['device_type'], ['android', 'ios'])){
-            
+            $resp['order_details'] = $this->getBookingDetails($order->toArray());
+            $resp['payment_details'] = $this->getPaymentDetails($order->toArray());
+            $resp['total_amount_payable'] = array(array(
+                'field' => 'Total Amount Payable',
+                'value' => 'Rs. '.$data['amount']
+            ));
+            $resp['payment_modes'] = $this->getPaymentModes($resp);
         }
 
         return Response::json($resp);
@@ -2816,6 +2865,211 @@ class TransactionController extends \BaseController {
             return "error";
             
         }
+    }
+
+    function getBookingDetails($data){
+        
+        $booking_details = [];
+
+        $position = 0;
+
+        $booking_details_data["booking_id"] = ['field'=>'SUBSCRIPTION CODE','value'=>(string)$data['_id'],'position'=>$position++];
+
+        $booking_details_data["finder_name_location"] = ['field'=>'MEMBERSHIP BOUGHT AT','value'=>$data['finder_name'].", ".$data['finder_location'],'position'=>$position++];
+
+        if(in_array($data['type'],["booktrials","workout-session","manualautotrial"])){
+            $booking_details_data["finder_name_location"] = ['field'=>'SESSION BOOKED AT','value'=>$data['finder_name'].", ".$data['finder_location'],'position'=>$position++];
+        }
+
+        $booking_details_data["service_name"] = ['field'=>'SERVICE NAME','value'=>$data['service_name'],'position'=>$position++];
+
+        $booking_details_data["service_duration"] = ['field'=>'SERVICE DURATION','value'=>$data['service_duration'],'position'=>$position++];
+
+        $booking_details_data["start_date"] = ['field'=>'START DATE','value'=>'-','position'=>$position++];
+
+        $booking_details_data["start_time"] = ['field'=>'START TIME','value'=>'-','position'=>$position++];
+
+        $booking_details_data["address"] = ['field'=>'ADDRESS','value'=>'','position'=>$position++];
+
+        $booking_details_data["price"] = ['field'=>'PRICE','value'=>'Free Via Fitternity','position'=>$position++];
+
+
+        if(isset($data["reward_info"]) && $data["reward_info"] != ""){
+
+            if($data["reward_info"] == 'Cashback'){
+                $booking_details_data["reward"] = ['field'=>'REWARD','value'=>$data["reward_info"],'position'=>$position++];
+            }else{
+                $booking_details_data["reward"] = ['field'=>'REWARD','value'=>$data["reward_info"]." (Avail it from your Profile)",'position'=>$position++];
+            }
+        }
+
+        if(isset($data['start_date']) && $data['start_date'] != ""){
+            $booking_details_data['start_date']['value'] = date('d-m-Y (l)',strtotime($data['start_date']));
+        }
+
+        if(isset($data['schedule_date']) && $data['schedule_date'] != ""){
+            $booking_details_data['start_date']['value'] = date('d-m-Y (l)',strtotime($data['schedule_date']));
+        }
+
+        if(isset($data['preferred_starting_date']) && $data['preferred_starting_date'] != ""){
+            $booking_details_data['start_date']['value'] = date('d-m-Y (l)',strtotime($data['preferred_starting_date']));
+        }
+
+        if(isset($data['start_time']) && $data['start_time'] != ""){
+            $booking_details_data['start_time']['value'] = strtoupper($data['start_time']);
+        }
+
+        if(isset($data['schedule_slot_start_time']) && $data['schedule_slot_start_time'] != ""){
+            $booking_details_data['start_time']['value'] = strtoupper($data['schedule_slot_start_time']);
+        }
+
+        if(isset($data['amount']) && $data['amount'] != ""){
+            $booking_details_data['price']['value'] = "Rs. ".(string)$data['amount'];
+        }
+
+        if(isset($data['amount_finder']) && $data['amount_finder'] != ""){
+            $booking_details_data['price']['value']= "Rs. ".(string)$data['amount_finder'];
+        }
+
+        if(isset($data['payment_mode']) && $data['payment_mode'] == "cod"){
+            $booking_details_data['price']['value']= "Rs. ".(string)$data['amount']." (Cash Pickup)";
+        }
+
+        
+        if($data['finder_address'] != ""){
+            $booking_details_data['address']['value'] = $data['finder_address'];
+        }
+        
+        if(in_array($data['type'],["healthytiffintrial","healthytiffinmembership"])){
+
+            if(isset($data['customer_address']) && $data['customer_address'] != ""){
+                $booking_details_data['address']['value'] = $data['customer_address'];
+            }
+
+        }else{
+
+            if($data['finder_address'] != ""){
+                $booking_details_data['address']['value'] = $data['finder_address'];
+            }
+            if(isset($data['finder_address']) && $data['finder_address'] != ""){
+                $booking_details_data['address']['value'] = $data['finder_address'];
+            }
+        }
+
+        if(isset($booking_details_data['address']['value'])){
+
+            $booking_details_data['address']['value'] = str_replace("  ", " ",$booking_details_data['address']['value']);
+            $booking_details_data['address']['value'] = str_replace(", , ", "",$booking_details_data['address']['value']);
+        }
+
+        if(in_array($data['type'], ['manualtrial','manualautotrial','manualmembership'])){
+            $booking_details_data["start_date"]["field"] = "PREFERRED DATE";
+            $booking_details_data["start_time"]["field"] = "PREFERRED TIME";
+            $booking_details_data["price"]["value"] = "";
+        }
+
+        if(in_array($data['type'], ['booktrial','workoutsession'])){
+            $booking_details_data["start_date"]["field"] = "DATE";
+            $booking_details_data["start_time"]["field"] = "TIME";
+        }
+
+        if(isset($data['preferred_day']) && $data['preferred_day'] != ""){
+            $booking_details_data['start_date']['field'] = 'PREFERRED DAY';
+            $booking_details_data['start_date']['value'] = $data['preferred_day'];
+        }
+
+        if(isset($data['preferred_time']) && $data['preferred_time'] != ""){
+            $booking_details_data['start_time']['field'] = 'PREFERRED TIME';
+            $booking_details_data['start_time']['value'] = $data['preferred_time'];
+        }
+
+        if(isset($data['"preferred_service']) && $data['"preferred_service'] != "" && $data['"preferred_service'] != null){
+            $booking_details_data['service_name']['field'] = 'PREFERRED SERVICE';
+            $booking_details_data['service_name']['value'] = $data['preferred_service'];
+        }
+
+        $booking_details_all = [];
+        foreach ($booking_details_data as $key => $value) {
+
+            $booking_details_all[$value['position']] = ['field'=>$value['field'],'value'=>$value['value']];
+        }
+
+        foreach ($booking_details_all as $key => $value) {
+
+            if($value['value'] != "" && $value['value'] != "-"){
+                $booking_details[] = $value;
+            }
+
+        }
+
+        return $booking_details;
+    }
+
+    function getPaymentDetails($data){
+        $payment_details = [];
+        $payment_details[] = array(
+            'field' => 'Total Amount',
+            'value' => 'Rs. '.$data['base_amount']
+        );
+        if(isset($data['cashback_detail']) && isset($data['cashback_detail']['amount_deducted_from_wallet']) && $data['cashback_detail']['amount_deducted_from_wallet'] > 0){
+
+            $payment_details[] = array(
+                'field' => 'Fitcash Applied',
+                'value' => '-Rs. '.$data['cashback_detail']['amount_deducted_from_wallet']
+            );
+        }
+        
+        if(isset($data['convinience_fee']) && $data['convinience_fee'] > 0){
+
+            $payment_details[] = array(
+                'field' => 'Fitcash Applied',
+                'value' => '+Rs. '.$data['cashback_detail']['amount_deducted_from_wallet']
+            );
+        }
+
+        return $payment_details;
+
+    }
+
+    function getPaymentModes($data){
+        $payment_modes = [];
+        $payment_modes[] = array(
+            'title' => 'Online Payment',
+            'subtitle' => 'Transact online with netbanking, card and wallet',
+            'value' => 'paymentgateway',
+        );
+
+
+        $emi = $this->utilities->displayEmi(array('amount'=>$data['data']['amount']));
+
+        if(count($emi['bankList']) > 0){
+            $payment_modes[] = array(
+                'title' => 'EMI',
+                'subtitle' => 'Transact online with credit installments',
+                'value' => 'emi',
+            );
+        }
+
+
+        if($data['cash_pickup']){
+            $payment_modes[] = array(
+                'title' => 'Cash Pickup',
+                'subtitle' => 'Schedule cash payment pick up',
+                'value' => 'cod',
+            );
+        }
+
+
+
+        if($data['part_payment']){
+            $payment_modes[] = array(
+                'title' => 'Reserve Payment',
+                'subtitle' => 'Pay 20% to reserve membership adn pay rest on joining',
+                'value' => 'cod',
+            );
+        }
+
+        return $payment_modes;
     }
 
 }

@@ -2383,5 +2383,101 @@ Class Utilities {
 
     }
 
+    public function displayEmi($data){
+		$bankNames=array();
+		$bankList= array();
+	 	$emiStruct = Config::get('app.emi_struct');
+		$response = array(
+			"bankList"=>array(),
+			"emiData"=>array(),
+			"higerMinVal" => array()
+			);
+		foreach ($emiStruct as $emi) {
+			if(isset($data['bankName']) && !isset($data['amount'])){
+				if($emi['bankName'] == $data['bankName']){
+					if(!in_array($emi['bankName'], $bankList)){
+						array_push($bankList, $emi['bankName']);
+					}
+					Log::info("inside1");
+					$emiData = array();
+						$emiData['total_amount'] =  "";
+						$emiData['emi'] ="";
+						$emiData['months'] = (string)$emi['bankTitle'];
+						$emiData['bankName'] = $emi['bankName'];
+						$emiData['bankCode'] = $emi['bankCode'];
+						$emiData['rate'] = (string)$emi['rate'];
+						$emiData['minval'] = (string)$emi['minval'];
+					array_push($response['emiData'], $emiData);
+				}
+			
+			}elseif(isset($data['bankName'])&&isset($data['amount'])){
+					if($emi['bankName'] == $data['bankName'] && $data['amount']>=$emi['minval']){
+						Log::info("inside2");
+						$emiData = array();
+						if(!in_array($emi['bankName'], $bankList)){
+							array_push($bankList, $emi['bankName']);
+						}
+						$emiData['total_amount'] =  (string)round($data['amount']*(100+$emi['rate'])/100, 2);
+						$emiData['emi'] =(string)round($emiData['total_amount']/$emi['bankTitle'], 2);
+						$emiData['months'] = (string)$emi['bankTitle'];
+						$emiData['bankName'] = $emi['bankName'];
+						$emiData['bankCode'] = $emi['bankCode'];
+						$emiData['rate'] = (string)$emi['rate'];
+						$emiData['minval'] = (string)$emi['minval'];
+						array_push($response['emiData'], $emiData);
+					}elseif($emi['bankName'] == $data['bankName']){
+						$emiData = array();
+						$emiData['bankName'] = $emi['bankName'];
+						$emiData['bankCode'] = $emi['bankCode'];
+						$emiData['minval'] = (string)$emi['minval'];
+						array_push($response['higerMinVal'], $emiData);
+						break;
+					}
+			}elseif(isset($data['amount']) && !(isset($data['bankName']))){
+				if($data['amount']>=$emi['minval']){
+					if(!in_array($emi['bankName'], $bankList)){
+						array_push($bankList, $emi['bankName']);
+					}
+					Log::info("inside3");
+					$emiData = array();
+					$emiData['total_amount'] =  (string)round($data['amount']*(100+$emi['rate'])/100, 2);
+					$emiData['emi'] =(string)round($emiData['total_amount']/$emi['bankTitle'], 2);
+					$emiData['months'] = (string)$emi['bankTitle'];
+					$emiData['bankName'] = $emi['bankName'];
+						$emiData['bankCode'] = $emi['bankCode'];
+					$emiData['rate'] = (string)$emi['rate'];
+					$emiData['minval'] = (string)$emi['minval'];
+					array_push($response['emiData'], $emiData);
+				}else{
+					$key = array_search($emi['bankName'], $bankNames);
+					if(!is_int($key)){
+						array_push($bankNames, $emi['bankName']);
+						$emiData = array();
+						$emiData['bankName'] = $emi['bankName'];
+						$emiData['bankCode'] = $emi['bankCode'];
+						$emiData['minval'] = (string)$emi['minval'];
+						array_push($response['higerMinVal'], $emiData);
+					}
+				}
+			}else{
+				if(!in_array($emi['bankName'], $bankList)){
+						array_push($bankList, $emi['bankName']);
+					}
+				Log::info("inside4");
+				$emiData = array();
+						$emiData['total_amount'] =  "";
+						$emiData['emi'] ="";
+						$emiData['months'] = (string)$emi['bankTitle'];
+						$emiData['bankName'] = $emi['bankName'];
+						$emiData['bankCode'] = $emi['bankCode'];
+						$emiData['rate'] = (string)(string)$emi['rate'];
+						$emiData['minval'] = (string)$emi['minval'];
+				array_push($response['emiData'], $emiData);
+			}
+		}
+		$response['bankList'] = $bankList;
+	    return $response;
+	}
+
 
 }
