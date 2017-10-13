@@ -169,7 +169,7 @@ class TransactionController extends \BaseController {
 
         $data = array_merge($data,$customerDetail['data']); 
           
-        
+        $payment_mode = isset($data['payment_mode']) ? $data['payment_mode'] : "";
 
         if(isset($data['ratecard_id'])){
             
@@ -184,6 +184,14 @@ class TransactionController extends \BaseController {
             $data = array_merge($data,$ratecardDetail['data']);
 
         }
+
+        if($payment_mode=='cod'){
+
+            $data['payment_mode'] = 'cod';
+
+            $data["secondary_payment_mode"] = "cod_membership";
+            
+        }        
 
         $data['base_amount'] = $data['amount'];
 
@@ -428,7 +436,6 @@ class TransactionController extends \BaseController {
         $data["status"] = "0";
 
         if(isset($data["payment_mode"]) && $data["payment_mode"] == "cod"){
-            $data["secondary_payment_mode"] = "cod_membership";
         }
 
         if(isset($data['part_payment']) && $data['part_payment']){
@@ -467,6 +474,7 @@ class TransactionController extends \BaseController {
 
             if($order){
                $order->update($data); 
+               return $order;
             }else{
                 $order = new Order($data);
                 $order->_id = $order_id;
@@ -549,6 +557,7 @@ class TransactionController extends \BaseController {
                 'field' => 'Total Amount Payable',
                 'value' => 'Rs. '.$data['amount']
             ));
+            if(isset($order->amount) && $order->amount)
             $resp['data']['payment_modes'] = $this->getPaymentModes($resp);
         }
 
@@ -590,10 +599,6 @@ class TransactionController extends \BaseController {
             if($order->customer_email != $decoded->customer->email){
                 $resp   =   array("status" => 401,"message" => "Invalid Customer");
                 return Response::json($resp,$resp["status"]);
-            }
-
-            if(isset($data["payment_mode"]) && $data["payment_mode"] == "cod"){
-               $data["secondary_payment_mode"] = "cod_membership";
             }
 
             if($order->status == "1" && isset($data['preferred_starting_date']) && $data['preferred_starting_date']  != '' && $data['preferred_starting_date']  != '-'){
@@ -2891,9 +2896,6 @@ class TransactionController extends \BaseController {
 
         $booking_details_data["address"] = ['field'=>'ADDRESS','value'=>'','position'=>$position++];
 
-        $booking_details_data["price"] = ['field'=>'PRICE','value'=>'Free Via Fitternity','position'=>$position++];
-
-
         if(isset($data["reward_info"]) && $data["reward_info"] != ""){
 
             if($data["reward_info"] == 'Cashback'){
@@ -2923,19 +2925,6 @@ class TransactionController extends \BaseController {
             $booking_details_data['start_time']['value'] = strtoupper($data['schedule_slot_start_time']);
         }
 
-        if(isset($data['amount']) && $data['amount'] != ""){
-            $booking_details_data['price']['value'] = "Rs. ".(string)$data['amount'];
-        }
-
-        if(isset($data['amount_finder']) && $data['amount_finder'] != ""){
-            $booking_details_data['price']['value']= "Rs. ".(string)$data['amount_finder'];
-        }
-
-        if(isset($data['payment_mode']) && $data['payment_mode'] == "cod"){
-            $booking_details_data['price']['value']= "Rs. ".(string)$data['amount']." (Cash Pickup)";
-        }
-
-        
         if($data['finder_address'] != ""){
             $booking_details_data['address']['value'] = $data['finder_address'];
         }
@@ -2965,7 +2954,6 @@ class TransactionController extends \BaseController {
         if(in_array($data['type'], ['manualtrial','manualautotrial','manualmembership'])){
             $booking_details_data["start_date"]["field"] = "PREFERRED DATE";
             $booking_details_data["start_time"]["field"] = "PREFERRED TIME";
-            $booking_details_data["price"]["value"] = "";
         }
 
         if(in_array($data['type'], ['booktrial','workoutsession'])){
