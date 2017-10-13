@@ -356,8 +356,8 @@ class TransactionController extends \BaseController {
 
                 $part_payment_hash ="";
                 
-                if($part_payment_data["amount"] > 0){
-                    $part_payment_hash = getHash($part_payment_data)['payment_hash'];
+                if($part_payment_data["amount"] > 0 ){
+                    $part_payment_hash = isset($data['part_payment_calculation']['hash']) ? $data['part_payment_calculation']['hash'] :  getHash($part_payment_data)['payment_hash'];
                 }else{
                     $part_payment_data["amount"] = 0;
                 }
@@ -384,6 +384,38 @@ class TransactionController extends \BaseController {
                 $data['convinience_fee'] = $convinience_fee;
 
             }
+        }
+
+        if(isset($data['part_payment']) && $data['part_payment']){
+            
+            $data['amount'] = (int)($order["part_payment_calculation"]['amount']);
+
+            $twenty_percent_amount = (int)($order["amount_customer"]*0.2);
+
+            if(isset($order['wallet_amount'])){
+
+                if($twenty_percent_amount < $order['wallet_amount']){
+
+                    $data['full_payment_wallet'] = true;
+                    
+                    $refund_amount = $order['wallet_amount']-$twenty_percent_amount;
+
+                    $wallet_data = array(
+                        'customer_id'=>$order['customer_id'],
+                        'amount'=>$refund_amount,
+                        'amount_fitcash' => 0,
+                        'amount_fitcash_plus' => $refund_amount,
+                        'type'=>'CREDIT',
+                        'entry'=>'credit',
+                        'description'=>"Paid for order ".$order['_id'],
+                    );
+                    $walletTransactionResponse = $this->utilities->walletTransaction($wallet_data);
+
+                    $data['wallet_amount'] = $twenty_percent_amount;
+                }
+
+            }
+
         }
 
         $hash = getHash($data);
@@ -435,42 +467,6 @@ class TransactionController extends \BaseController {
 
         $data["status"] = "0";
 
-        if(isset($data["payment_mode"]) && $data["payment_mode"] == "cod"){
-        }
-
-        if(isset($data['part_payment']) && $data['part_payment']){
-            
-
-            $order['amount'] = $data['amount'] = (int)($order["part_payment_calculation"]['amount']);
-
-            $twenty_percent_amount = (int)($order["amount_customer"]*0.2);
-
-            if(isset($order['wallet_amount'])){
-
-                if($twenty_percent_amount < $order['wallet_amount']){
-
-                    $data['full_payment_wallet'] = true;
-                    
-                    $refund_amount = $order['wallet_amount']-$twenty_percent_amount;
-
-                    $wallet_data = array(
-                        'customer_id'=>$order['customer_id'],
-                        'amount'=>$refund_amount,
-                        'amount_fitcash' => 0,
-                        'amount_fitcash_plus' => $refund_amount,
-                        'type'=>'CREDIT',
-                        'entry'=>'credit',
-                        'description'=>"Paid for order ".$order['_id'],
-                    );
-                    $walletTransactionResponse = $this->utilities->walletTransaction($wallet_data);
-
-                    $data['wallet_amount'] = $twenty_percent_amount;
-                }
-
-            }
-
-        }
-        
         if(isset($old_order_id)){
 
             if($order){
