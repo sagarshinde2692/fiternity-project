@@ -474,7 +474,6 @@ class TransactionController extends \BaseController {
 
             if($order){
                $order->update($data); 
-               return $order;
             }else{
                 $order = new Order($data);
                 $order->_id = $order_id;
