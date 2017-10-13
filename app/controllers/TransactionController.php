@@ -543,13 +543,13 @@ class TransactionController extends \BaseController {
         );
 
         if(isset($_GET['device_type']) && in_array($_GET['device_type'], ['android', 'ios'])){
-            $resp['order_details'] = $this->getBookingDetails($order->toArray());
-            $resp['payment_details'] = $this->getPaymentDetails($order->toArray());
-            $resp['total_amount_payable'] = array(array(
+            $resp['data']['order_details'] = $this->getBookingDetails($order->toArray());
+            $resp['data']['payment_details'] = $this->getPaymentDetails($order->toArray());
+            $resp['data']['total_amount_payable'] = array(array(
                 'field' => 'Total Amount Payable',
                 'value' => 'Rs. '.$data['amount']
             ));
-            $resp['payment_modes'] = $this->getPaymentModes($resp);
+            $resp['data']['payment_modes'] = $this->getPaymentModes($resp);
         }
 
         return Response::json($resp);
