@@ -439,6 +439,7 @@ class TransactionController extends \BaseController {
         }
 
         if(isset($data['part_payment']) && $data['part_payment']){
+            
 
             $order['amount'] = $data['amount'] = (int)($order["part_payment_calculation"]['amount']);
 
@@ -463,7 +464,7 @@ class TransactionController extends \BaseController {
                     );
                     $walletTransactionResponse = $this->utilities->walletTransaction($wallet_data);
 
-                    $order['wallet_amount'] = $twenty_percent_amount;
+                    $data['wallet_amount'] = $twenty_percent_amount;
                 }
 
             }
