@@ -2723,7 +2723,7 @@ if (!function_exists(('getRegId'))){
 if (!function_exists(('isNotInoperationalDate'))){
     function isNotInoperationalDate($date, $city_id=null, $slot=null){
 
-        $inoperational_dates = ['2017-09-30', '2017-10-02'];
+        $inoperational_dates = ['2017-10-19'];
         if(in_array($date, $inoperational_dates)){
             return false;
         }
