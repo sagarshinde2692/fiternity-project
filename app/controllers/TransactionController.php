@@ -3065,7 +3065,7 @@ class TransactionController extends \BaseController {
             $payment_modes[] = array(
                 'title' => 'Reserve Payment',
                 'subtitle' => 'Pay 20% to reserve membership adn pay rest on joining',
-                'value' => 'cod',
+                'value' => 'part_payment',
             );
         }
 
