@@ -2383,5 +2383,24 @@ Class Utilities {
 
     }
 
+    function checkFinderState($finder_id){
+
+        Finder::$withoutAppends = true;
+
+        $finder = Finder::find((int)$finder_id);
+
+        $state_array = ["closed","temporarily_shut"];
+
+        $response = array('status'=>200, 'message'=>'Can book Session or Membership');
+
+        if(isset($finder['flags']['state']) && in_array($finder['flags']['state'],$state_array)){
+
+            $response = array('status'=>400, 'message'=>'Connot book Session or Membership');
+        }
+
+        return $response;
+
+    }
+
 
 }

@@ -88,6 +88,15 @@ class TransactionController extends \BaseController {
             return Response::json(array('status'=>400, 'message'=>'Ratecard Id or ticket Id is required'));
         }
 
+        if(isset($data['finder_id']) && $data['finder_id'] != ""){
+
+            $checkFinderState = $this->utilities->checkFinderState($data['finder_id']);
+
+            if($checkFinderState['status'] != 200){
+                return Response::json($checkFinderState,$checkFinderState['status']);
+            }
+        }
+
         $workout = array('vip_booktrials','3daystrial','booktrials','workout-session');
         if(in_array($data['type'],$workout)){
 
