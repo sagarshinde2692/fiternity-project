@@ -5110,6 +5110,32 @@ public function yes($msg){
 
 	}
 
+
+	public function createQrCode(){
+
+		$folder_path = public_path().'/qrcodes/';
+
+        $this->createFolder($folder_path);
+
+		$qrcode = QrCode::format('eps')->generate('fitternity', $folder_path.'qrcode.eps');
+
+		echo"<pre>";print_r('success');exit;
+
+
+	}
+
+	
+
+	public function createFolder($path){
+
+		if(!is_dir($path)){
+			mkdir($path, 0777);
+			chmod($path, 0777);
+		}	
+
+		return $path;
+	}
+
 	
 
     
