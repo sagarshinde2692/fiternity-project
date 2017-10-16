@@ -347,7 +347,7 @@ class TransactionController extends \BaseController {
                 $part_payment_data_amount = (int)($data["amount"] - $data["amount_customer"]*0.8);
                 $part_payment_data["amount"] = $part_payment_data_amount > 0 ? $part_payment_data_amount : 0;
 
-                if(!isset($_GET['device_type'])  || !in_array($_GET['device_type'], ['android', 'ios'])){
+                // if(!isset($_GET['device_type'])  || !in_array($_GET['device_type'], ['android', 'ios'])){
 
                     if(isset($data['ratecard_flags']) && isset($data['ratecard_flags']['convinience_fee_applicable']) && $data['ratecard_flags']['convinience_fee_applicable']){
                         
@@ -362,7 +362,7 @@ class TransactionController extends \BaseController {
                         $part_payment_data['convinience_fee'] = $convinience_fee;
 
                     }
-                }
+                // }
 
                 $part_payment_hash ="";
                 
@@ -379,7 +379,7 @@ class TransactionController extends \BaseController {
 
         
        
-        if(!isset($_GET['device_type'])  || !in_array($_GET['device_type'], ['android', 'ios'])){
+        // if(!isset($_GET['device_type'])  || !in_array($_GET['device_type'], ['android', 'ios'])){
 
             if(isset($data['ratecard_flags']) && isset($data['ratecard_flags']['convinience_fee_applicable']) && $data['ratecard_flags']['convinience_fee_applicable']){
                 
@@ -394,7 +394,7 @@ class TransactionController extends \BaseController {
                 $data['convinience_fee'] = $convinience_fee;
 
             }
-        }
+        // }
 
         if(isset($data['part_payment']) && $data['part_payment']){
             
