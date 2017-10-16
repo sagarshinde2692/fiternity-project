@@ -211,7 +211,10 @@ class TransactionController extends \BaseController {
 
         $part_payment = (isset($finderDetail['data']['finder_flags']) && isset($finderDetail['data']['finder_flags']['part_payment'])) ? $finderDetail['data']['finder_flags']['part_payment'] : false;
 
-        $cash_pickup = (isset($finderDetail['data']['finder_flags']) && isset($finderDetail['data']['finder_flags']['cash_pickup'])) ? $finderDetail['data']['finder_flags']['cash_pickup'] : false;
+        // $cash_pickup = (isset($finderDetail['data']['finder_flags']) && isset($finderDetail['data']['finder_flags']['cash_pickup'])) ? $finderDetail['data']['finder_flags']['cash_pickup'] : false;
+
+        $cash_pickup = (isset($data['amount_finder']) && $data['amount_finder']>2500 && !$updating_part_payment) ? true : false;
+        
 
         
         $orderfinderdetail = $finderDetail;
@@ -3055,13 +3058,11 @@ class TransactionController extends \BaseController {
         }
 
 
-        if($data['cash_pickup']){
-            $payment_modes[] = array(
-                'title' => 'Cash Pickup',
-                'subtitle' => 'Schedule cash payment pick up',
-                'value' => 'cod',
-            );
-        }
+        $payment_modes[] = array(
+            'title' => 'Cash Pickup',
+            'subtitle' => 'Schedule cash payment pick up',
+            'value' => 'cod',
+        );
 
 
 
