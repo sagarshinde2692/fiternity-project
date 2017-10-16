@@ -124,6 +124,10 @@ class TransactionController extends \BaseController {
 
         $updating_payment_mode = ((isset($data['payment_mode']) && $data['payment_mode'] == 'cod') || (isset($data['part_payment']) && $data['part_payment'])) ? true : false;
 
+        $updating_part_payment = (isset($data['part_payment']) && $data['part_payment']) ? true : false;
+
+        $updating_cod = (isset($data['payment_mode']) && $data['payment_mode'] == 'cod') ? true : false;
+
         if($data['type'] == "events" && isset($data['event_customers']) && count($data['event_customers']) > 0 ){
 
             $event_customers = $data['event_customers'];
@@ -560,13 +564,13 @@ class TransactionController extends \BaseController {
             
             $resp['data']['total_amount_payable'] = array(array(
                 'field' => 'Total Amount Payable',
-                'value' => 'Rs. '.$data['amount']
+                'value' => 'Rs. '.$order['amount']
             ));
 
-            if(isset($data['part_payment']) && $data['part_patment']){
+            if($updating_part_payment){
                  $resp['data']['total_amount_payable'] = array(array(
                 'field' => 'Total Amount Payable (20%)',
-                'value' => 'Rs. '.$data['amount']
+                'value' => 'Rs. '.$order['amount']
             ));
             }
 
