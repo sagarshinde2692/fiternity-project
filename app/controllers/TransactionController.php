@@ -294,14 +294,18 @@ class TransactionController extends \BaseController {
                 }
             }
         }
+
+        if(!((isset($data['payment_mode']) && $data['payment_mode'] == 'cod') || (isset($data['part_payment']) && $data['part_payment']))) {
+
+            $cashbackRewardWallet =$this->getCashbackRewardWallet($data,$order);
+
+            if($cashbackRewardWallet['status'] != 200){
+                return Response::json($cashbackRewardWallet,$cashbackRewardWallet['status']);
+            }
+
+            $data = array_merge($data,$cashbackRewardWallet['data']);
             
-        $cashbackRewardWallet =$this->getCashbackRewardWallet($data,$order);
-
-        if($cashbackRewardWallet['status'] != 200){
-            return Response::json($cashbackRewardWallet,$cashbackRewardWallet['status']);
-        }
-
-        $data = array_merge($data,$cashbackRewardWallet['data']);
+        } 
 
         $txnid = "";
         $successurl = "";
