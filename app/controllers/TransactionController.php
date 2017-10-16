@@ -122,6 +122,8 @@ class TransactionController extends \BaseController {
             return Response::json(array('status' => 404,'message' => error_message($validator->errors())),404);
         }
 
+        $updating_payment_mode = ((isset($data['payment_mode']) && $data['payment_mode'] == 'cod') || (isset($data['part_payment']) && $data['part_payment'])) ? true : false;
+
         if($data['type'] == "events" && isset($data['event_customers']) && count($data['event_customers']) > 0 ){
 
             $event_customers = $data['event_customers'];
@@ -295,7 +297,7 @@ class TransactionController extends \BaseController {
             }
         }
 
-        if(!((isset($data['payment_mode']) && $data['payment_mode'] == 'cod') || (isset($data['part_payment']) && $data['part_payment']))) {
+        if(!$updating_payment_mode) {
 
             $cashbackRewardWallet =$this->getCashbackRewardWallet($data,$order);
 
@@ -333,7 +335,7 @@ class TransactionController extends \BaseController {
 
         Log::info($finderDetail["data"]);
         
-        if($part_payment && $data["amount_finder"] > 2500){
+        if(!$updating_payment_mode && $part_payment && $data["amount_finder"] > 2500){
 
             if($finderDetail["data"]["finder_flags"]["part_payment"]){
 
