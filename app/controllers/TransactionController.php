@@ -553,14 +553,26 @@ class TransactionController extends \BaseController {
         );
 
         if(isset($_GET['device_type']) && in_array($_GET['device_type'], ['android', 'ios'])){
+            
             $resp['data']['order_details'] = $this->getBookingDetails($order->toArray());
+            
             $resp['data']['payment_details'] = $this->getPaymentDetails($order->toArray());
+            
             $resp['data']['total_amount_payable'] = array(array(
                 'field' => 'Total Amount Payable',
                 'value' => 'Rs. '.$data['amount']
             ));
-            if(isset($order->amount) && $order->amount)
-            $resp['data']['payment_modes'] = $this->getPaymentModes($resp);
+
+            if(isset($data['part_payment']) && $data['part_patment']){
+                 $resp['data']['total_amount_payable'] = array(array(
+                'field' => 'Total Amount Payable (20%)',
+                'value' => 'Rs. '.$data['amount']
+            ));
+            }
+
+            if(isset($order->amount) && $order->amount){
+                $resp['data']['payment_modes'] = $this->getPaymentModes($resp);
+            }
         }
 
         return Response::json($resp);
@@ -2880,9 +2892,7 @@ class TransactionController extends \BaseController {
 
         $position = 0;
 
-        $booking_details_data["booking_id"] = ['field'=>'SUBSCRIPTION CODE','value'=>(string)$data['_id'],'position'=>$position++];
-
-        $booking_details_data["finder_name_location"] = ['field'=>'MEMBERSHIP BOUGHT AT','value'=>$data['finder_name'].", ".$data['finder_location'],'position'=>$position++];
+        $booking_details_data["finder_name_location"] = ['field'=>'STUDIO NAME','value'=>$data['finder_name'].", ".$data['finder_location'],'position'=>$position++];
 
         if(in_array($data['type'],["booktrials","workout-session","manualautotrial"])){
             $booking_details_data["finder_name_location"] = ['field'=>'SESSION BOOKED AT','value'=>$data['finder_name'].", ".$data['finder_location'],'position'=>$position++];
