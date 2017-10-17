@@ -2502,9 +2502,11 @@ class OrderController extends \BaseController {
 
             if(isset($data['part_payment']) && $data['part_payment']){
 
-                $order['amount'] = $data['amount'] = (int)($order["part_payment_calculation"]['amount']);
+                $data['amount'] = (int)($order["part_payment_calculation"]['amount']);
 
-                $twenty_percent_amount = (int)($order["amount_customer"]*0.2);
+                $twenty_percent_amount = $data['amount'];
+
+                $data['remaining_amount'] = $order['amount_customer'] - $data['amount'];
 
                 if(isset($order['wallet_amount'])){
 
