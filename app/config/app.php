@@ -52,7 +52,7 @@ return array(
     'business' => 'http://business.fitternity.com',
 
     'app' =>array(
-		'discount'		=> 			0,
+		'discount'		=> 			10,
 		'discount_excluded_vendors' => [1747,1813,4528,4530,9984,10081],
 	),
 
