@@ -375,7 +375,7 @@ class TransactionController extends \BaseController {
                 }
             }
 
-            $data["part_payment_calculation"] = array("amount" => (int)($part_payment_data["amount"]), "hash" => $part_payment_hash, "convinience_fee"=>$part_payment_data['convinience_fee'], "full_wallet_payment" => $part_payment_data["amount"] == 0 ? true : false);
+            $data["part_payment_calculation"] = array("amount" => (int)($part_payment_data["amount"]), "hash" => $part_payment_hash, "convinience_fee"=>isset($part_payment_data['convinience_fee']) ? $part_payment_data['convinience_fee'] : 0, "full_wallet_payment" => $part_payment_data["amount"] == 0 ? true : false);
             Log::info($data["part_payment_calculation"]);
         }
 
