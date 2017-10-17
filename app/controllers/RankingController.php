@@ -416,10 +416,10 @@ public function chunkIndex($index_name, $city_id,$skip,$take){
                 //    Offer or ratecard flags
                 // $flags = array("disc25or50" => "false","discother" => "false");
                 if(isset($service["flags"])){
-                    if($service["flags"]['disc25or50']){
+                    if(isset($service["flags"]['disc25or50'])){
                         $flags["disc25or50"] = true;
                     }
-                    if($service["flags"]['discother']){
+                    if(isset($service["flags"]['discother'])){
                         $flags["discother"] = true;
                     }
                     if(isset($service["flags"]["offerFor"]) && $service["flags"]["offerFor"] != ""){
