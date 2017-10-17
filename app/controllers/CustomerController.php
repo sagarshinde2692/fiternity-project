@@ -2966,17 +2966,20 @@ class CustomerController extends \BaseController {
 			$result['collections'] 			= 	Findercollection::active()->where('city_id', '=', intval($city_id))->orderBy('ordering')->get(array('name', 'slug', 'coverimage', 'ordering' ));
 		}
 
-		if(isset($_REQUEST['device_type']) && $_REQUEST['device_type'] == "ios" ){
-			$result['campaign'] =  new \stdClass();
-			$result['campaign'] = array(
-				'image'=>'http://b.fitn.in/iconsv1/offers/generic_banner.png',
-				'link'=>'',
-				'title'=>'FitStart 2017',
-				'height'=>1,
-				'width'=>6,
-				'ratio'=>1/6
-			);
-		}
+		// if(isset($_REQUEST['device_type']) && $_REQUEST['device_type'] == "ios" ){
+			
+		// }
+		$result['campaign'] =  new \stdClass();
+		$result['campaign'] = array(
+			// 'image'=>'http://b.fitn.in/iconsv1/offers/generic_banner.png',
+			'image'=>'http://b.fitn.in/global/diwali/diwali_banner.png',
+			'link'=>'',
+			'title'=>'FitStart 2017',
+			'height'=>1,
+			'width'=>6,
+			'ratio'=>1/6
+		);
+		
 		return Response::json($result);
 	}
 
