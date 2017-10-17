@@ -3420,6 +3420,7 @@ class FindersController extends \BaseController {
 
 		$location_slug = $finderdata["location"]["slug"];
 		$location_name = $finderdata["location"]["name"];
+		$city_slug = $finderdata["city"]["slug"];
 
 		$data = [
 			[
@@ -3427,23 +3428,23 @@ class FindersController extends \BaseController {
 				'row'=>[
 					[
 						'name'=>'Gyms in '.$location_name,
-						'link'=> Config::get('app.website').'/'.$location_slug.'/gyms'
+						'link'=> Config::get('app.website').'/'.$city_slug.'/'.$location_slug.'/gyms'
 					],
 					[
 						'name'=>'Zumba Classes in '.$location_name,
-						'link'=> Config::get('app.website').'/'.$location_slug.'/zumba-classes'
+						'link'=> Config::get('app.website').'/'.$city_slug.'/'.$location_slug.'/zumba-classes'
 					],
 					[
 						'name'=>'Cross Functional Fitness in '.$location_name,
-						'link'=> Config::get('app.website').'/'.$location_slug.'/functional-training'
+						'link'=> Config::get('app.website').'/'.$city_slug.'/'.$location_slug.'/functional-training'
 					],
 					[
 						'name'=>'Yoga Classes in '.$location_name,
-						'link'=> Config::get('app.website').'/'.$location_slug.'/yoga-classes'
+						'link'=> Config::get('app.website').'/'.$city_slug.'/'.$location_slug.'/yoga-classes'
 					],
 					[
 						'name'=>'Pilates Classes in '.$location_name,
-						'link'=> Config::get('app.website').'/'.$location_slug.'/pilates-classes'
+						'link'=> Config::get('app.website').'/'.$city_slug.'/'.$location_slug.'/pilates-classes'
 					]
 
 				]
@@ -3453,23 +3454,23 @@ class FindersController extends \BaseController {
 				'row'=>[
 					[
 						'name'=>'MMA & Kickboxing Classes in '.$location_name,
-						'link'=> Config::get('app.website').'/'.$location_slug.'/mma-and-kick-boxing-classes'
+						'link'=> Config::get('app.website').'/'.$city_slug.'/'.$location_slug.'/mma-and-kick-boxing-classes'
 					],
 					[
 						'name'=>'Fitness Studios in '.$location_name,
-						'link'=> Config::get('app.website').'/'.$location_slug.'/fitness-studios'
+						'link'=> Config::get('app.website').'/'.$city_slug.'/'.$location_slug.'/fitness-studios'
 					],
 					[
 						'name'=>'Dance Classes in '.$location_name,
-						'link'=> Config::get('app.website').'/'.$location_slug.'/dance-classes'
+						'link'=> Config::get('app.website').'/'.$city_slug.'/'.$location_slug.'/dance-classes'
 					],
 					[
 						'name'=>'Marathon Training in '.$location_name,
-						'link'=> Config::get('app.website').'/'.$location_slug.'/marathon-training'
+						'link'=> Config::get('app.website').'/'.$city_slug.'/'.$location_slug.'/marathon-training'
 					],
 					[
 						'name'=>'Swimming in '.$location_name,
-						'link'=> Config::get('app.website').'/'.$location_slug.'/swimming-pools'
+						'link'=> Config::get('app.website').'/'.$city_slug.'/'.$location_slug.'/swimming-pools'
 					]
 
 				]
