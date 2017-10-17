@@ -841,7 +841,7 @@ class FindersController extends \BaseController {
 				$response['nearby_same_category']           =       $nearby_same_category;
 				$response['nearby_other_category']          =       $nearby_other_category;
 				$response['show_reward_banner'] = true;
-				//$response['finder_footer'] 					= 		$finder_footer;
+				$response['finder_footer'] 					= 		$finder_footer;
 
 				Cache::tags('finder_detail')->put($cache_key,$response,Config::get('cache.cache_time'));
 
@@ -3479,12 +3479,12 @@ class FindersController extends \BaseController {
 		$request = [
             "offset" => 0,
             "limit" => 15,
-            "radius" =>"10km",
+            "radius" =>"5km",
             "category"=>"",
             "lat"=>"",
             "lon"=>"",
-            "city"=>"",
-            "region"=>strtolower($finderdata["location"]["name"]),
+            "city"=>strtolower($finderdata["city"]["name"]),
+            "region"=>[strtolower($finderdata["location"]["name"])],
             "keys"=>[
               "slug",
               "name"
@@ -3498,29 +3498,32 @@ class FindersController extends \BaseController {
 
 	    $finders = [];
 
-	    foreach ($geoLocationFinder as $value) {
+	    if(count($geoLocationFinder)){
 
-	    	$finders[] = [
-	    		'name'=>$value['name'],
-	    		'link'=> Config::get('app.website').'/'.$value['slug']
-	    	];
-	    }
+		    foreach ($geoLocationFinder as $value) {
 
-	    $finders = array_chunk($finders,5);
+		    	$finders[] = [
+		    		'name'=>$value['title'],
+		    		'link'=> Config::get('app.website').'/'.$value['slug']
+		    	];
+		    }
+
+		    $finders = array_chunk($finders,5);
+		}
 
 	    $data[] = [
 	    	'title'=>'Recommended in '.$location_name,
-	    	'row'=>$finders[0]
+	    	'row'=> isset($finders[0]) ? $finders[0] : []
 	    ];
 
 	    $data[] = [
 	    	'title'=>'Top Fitness Options in '.$location_name,
-	    	'row'=>$finders[1]
+	    	'row'=> isset($finders[1]) ? $finders[1] : []
 	    ];
 
 	    $data[] = [
 	    	'title'=>'Trending Places in '.$location_name,
-	    	'row'=>$finders[3]
+	    	'row'=> isset($finders[2]) ? $finders[2] : []
 	    ];
 
 		return $data;
