@@ -357,14 +357,14 @@ class TransactionController extends \BaseController {
 
                         $convinience_fee = $convinience_fee <= 150 ? $convinience_fee : 150;
                         
-                        $part_payment_data["amount"] = $convinience_fee;
-                        
                         $part_payment_data['convinience_fee'] = $convinience_fee;
 
                     }
                 }
                 
-                $part_payment_data["amount"] = $part_payment_data["amount"] + (int)($data["amount"] - ($data["amount_customer"] - $convinience_fee)*0.8);
+                $part_payment_data["amount"] = (int)($data["amount"] - ($data["amount_customer"] - $convinience_fee)*0.8);
+
+                Log::info("part_payment:::::".$part_payment_data["amount"]);
 
                 $part_payment_hash ="";
                 
@@ -375,7 +375,7 @@ class TransactionController extends \BaseController {
                 }
             }
 
-            $data["part_payment_calculation"] = array("amount" => (int)($part_payment_data["amount"]), "hash" => $part_payment_hash, "full_wallet_payment" => $part_payment_data["amount"] == 0 ? true : false);
+            $data["part_payment_calculation"] = array("amount" => (int)($part_payment_data["amount"]), "hash" => $part_payment_hash, "convinience_fee"=>$part_payment_data['convinience_fee'], "full_wallet_payment" => $part_payment_data["amount"] == 0 ? true : false);
             Log::info($data["part_payment_calculation"]);
         }
 
