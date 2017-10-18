@@ -2529,7 +2529,7 @@ class OrderController extends \BaseController {
                             'amount_fitcash_plus' => $refund_amount,
                             'type'=>'CREDIT',
                             'entry'=>'credit',
-                            'description'=>"Paid for order ".$order['_id'],
+                            'description'=>"Refund for Order ID: ".$order['_id'],
                         );
                         $walletTransactionResponse = $this->utilities->walletTransaction($wallet_data);
 
