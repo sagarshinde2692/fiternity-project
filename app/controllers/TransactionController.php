@@ -361,8 +361,10 @@ class TransactionController extends \BaseController {
 
                     }
                 }
+
+                $coupon_discount = isset($data['coupon_discount_amount']) ? $data['coupon_discount_amount'] : 0;
                 
-                $part_payment_data["amount"] = (int)($data["amount"] - ($data["amount_customer"] - $convinience_fee)*0.8);
+                $part_payment_data["amount"] = (int)($data["amount"] + $coupon_discount - ($data["amount_customer"] - $convinience_fee)*0.8);
 
                 Log::info("part_payment:::::".$part_payment_data["amount"]);
 
