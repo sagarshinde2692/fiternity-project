@@ -2508,8 +2508,6 @@ class OrderController extends \BaseController {
 
                 $coupon_discount = isset($order["coupon_discount_amount"]) ? $order["coupon_discount_amount"] : 0;
 
-                $data['remaining_amount'] = $order['amount_customer'] - $data['amount'] - $coupon_discount;
-
                 if(isset($order['wallet_amount'])){
 
                     if($twenty_percent_amount < $order['wallet_amount']){
@@ -2529,10 +2527,15 @@ class OrderController extends \BaseController {
                         );
                         $walletTransactionResponse = $this->utilities->walletTransaction($wallet_data);
 
-                        $order['wallet_amount'] = $twenty_percent_amount;
+                        $data['wallet_amount'] = $order['wallet_amount'] = $twenty_percent_amount;
                     }
 
                 }
+                
+                $fitcash_applied = isset($order['wallet_amount']) ? $order['wallet_amount'] : 0;
+
+                $data['remaining_amount'] = $order['amount_customer'] - $data['amount'] - $coupon_discount - $order['wallet_amount'];
+                
 
             }
 
