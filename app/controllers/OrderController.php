@@ -2506,7 +2506,7 @@ class OrderController extends \BaseController {
 
                 $twenty_percent_amount = $data['amount'];
 
-                $coupon_discount = isset($data["coupon_discount_amount"]) ? $data["coupon_discount_amount"] : 0;
+                $coupon_discount = isset($order["coupon_discount_amount"]) ? $order["coupon_discount_amount"] : 0;
 
                 $data['remaining_amount'] = $order['amount_customer'] - $data['amount'] - $coupon_discount;
 
