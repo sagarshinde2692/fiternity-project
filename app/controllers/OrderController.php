@@ -2504,7 +2504,11 @@ class OrderController extends \BaseController {
 
                 $data['amount'] = (int)($order["part_payment_calculation"]['amount']);
 
-                $twenty_percent_amount = $data['amount'];
+                $convinience_fee = isset($order['convinience_fee']) ? $order['convinience_fee'] : 0;
+
+                $twenty_percent_amount = $convinience_fee + (int)(($order["amount_customer"] - $convinience_fee)*0.2);
+
+                Log::info('$twenty_percent_amount::'.$twenty_percent_amount);
 
                 $coupon_discount = isset($order["coupon_discount_amount"]) ? $order["coupon_discount_amount"] : 0;
 
@@ -2515,6 +2519,8 @@ class OrderController extends \BaseController {
                         $data['full_payment_wallet'] = true;
                         
                         $refund_amount = $order['wallet_amount']-$twenty_percent_amount;
+
+                        Log::info("returning wallet::".$refund_amount);
 
                         $wallet_data = array(
                             'customer_id'=>$order['customer_id'],
