@@ -325,6 +325,10 @@ return array(
 			'path'							=> 'ozonetel/',
 			'url'							=> 'http://b.fitn.in/ozonetel/',
 		),
+		'qrcode' =>array(
+			'path'							=> 'qrcode/',
+			'url'							=> 'http://b.fitn.in/qrcode/',
+		),
 	),
 
 	'customer_care_number' => '+919699998838',

@@ -2285,6 +2285,10 @@ class SchedulebooktrialsController extends \BaseController {
 
             $booktrial = Booktrial::findOrFail($booktrial_id);
 
+            $booktrail->qrcode = $this->utilities->createQrCode($booktrial['code']);
+            $booktrial->update();
+
+
             $dates = array('schedule_date','schedule_date_time','missedcall_date','customofferorder_expiry_date','followup_date','auto_followup_date');
 
 	        foreach ($dates as $key => $value) {
@@ -5849,6 +5853,24 @@ class SchedulebooktrialsController extends \BaseController {
         
         
         
+    }
+
+
+    public function locateTrial($code){
+
+        $booktrial = Booktrial::where('code',$code)->find();
+
+        if($booktrial){
+
+            $message = "We located your booking of ".ucwords($booktrial['service_name'])." at ".$booktrial['schedule_slot_start_time'];
+
+            $response = array('status' => 200,'message' => $message);
+        }
+
+        $response = array('status' => 400,'message' =>'Sorry! Cannot locate your booking');
+
+        return Response::json($response, $response['status']);
+
     }
 
 

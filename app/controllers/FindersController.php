@@ -2148,7 +2148,7 @@ class FindersController extends \BaseController {
 	}
 
 
-	public function getTrialSchedule($finder_id,$category){
+	public function getTrialSchedule($finder_id,$category = false){
 
 		$currentDateTime        =   date('Y-m-d');
 		$finder_id               =   (int) $finder_id;
@@ -2224,7 +2224,7 @@ class FindersController extends \BaseController {
 				'description'=>'Burn Fat | Super Cardio'
 			);
 
-			if($category->_id == 42 || $category->_id == 45){
+			if($category && ($category->_id == 42 || $category->_id == 45)){
 
 				$extra_info = [];
 

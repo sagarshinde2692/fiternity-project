@@ -1028,3 +1028,10 @@ Route::get('chagneStartDateSept', 'DebugController@chagneStartDateSept');
 Route::get('renewalSept', 'DebugController@renewalSept');
 
 Route::get('createQrCode', 'DebugController@createQrCode');
+
+Route::get('locatetrial/{code}','SchedulebooktrialsController@locateTrial');
+
+
+Route::get('servicemembership/{finder_id}','FindersController@getTrialSchedule');
+
+

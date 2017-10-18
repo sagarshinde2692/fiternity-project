@@ -2402,5 +2402,45 @@ Class Utilities {
 
     }
 
+    public function createFolder($path){
+
+        if(!is_dir($path)){
+            mkdir($path, 0777);
+            chmod($path, 0777);
+        }   
+
+        return $path;
+    }
+
+
+    public function createQrCode($text){
+
+        $folder_path = public_path().'/qrcodes/';
+
+        $this->createFolder($folder_path);
+
+        $filename = time().'.png';
+
+        $file_path = $folder_path.$filename;
+
+        \QrCode::format('png')->generate($text, $file_path);
+
+        chmod($file_path, 0777);
+
+        $aws_filename = $filename;
+
+        $s3 = \AWS::get('s3');
+        $s3->putObject(array(
+            'Bucket'     => Config::get('app.aws.bucket'),
+            'Key'        => Config::get('app.aws.qrcode.path').$aws_filename,
+            'SourceFile' => $file_path,
+        ));
+
+        unlink($file_path);
+
+        return $aws_filename;
+
+    }
+
 
 }

@@ -5113,14 +5113,11 @@ public function yes($msg){
 
 	public function createQrCode(){
 
-		$folder_path = public_path().'/qrcodes/';
+		$utilities = new Utilities();
 
-        $this->createFolder($folder_path);
-
-		$qrcode = QrCode::format('eps')->generate('fitternity', $folder_path.'qrcode.eps');
-
-		echo"<pre>";print_r('success');exit;
-
+		$createQrCode  = $utilities->createQrCode('Hello Fitternity');
+		
+		return $createQrCode;
 
 	}
 
