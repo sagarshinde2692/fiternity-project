@@ -504,7 +504,7 @@ class TransactionController extends \BaseController {
             'status' => 200,
             'data' => $result,
             'message' => "Tmp Order Generated Sucessfully",
-            'part_payment' => $part_payment,
+            // 'part_payment' => $part_payment,
             'cash_pickup' => $cash_pickup
         );
 
