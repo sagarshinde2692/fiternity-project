@@ -2981,7 +2981,7 @@ class CustomerController extends \BaseController {
 		);
 
 		if(isset($_REQUEST['device_type']) && $_REQUEST['device_type'] == "android"){
-			$result['campaign']['link'] = 'ftrnty://ftrnty.com/search';
+			$result['campaign']['link'] = 'ftrnty://ftrnty.com/search/all';
 		}
 		
 		return Response::json($result);
