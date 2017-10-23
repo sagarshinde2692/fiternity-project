@@ -2979,6 +2979,10 @@ class CustomerController extends \BaseController {
 			'width'=>6,
 			'ratio'=>1/6
 		);
+
+		if(isset($_REQUEST['device_type']) && $_REQUEST['device_type'] == "android"){
+			$result['campaign']['link'] = null;
+		}
 		
 		return Response::json($result);
 	}
