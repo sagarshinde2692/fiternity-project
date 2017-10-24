@@ -3023,4 +3023,53 @@ class HomeController extends BaseController {
 
     }
 
+
+    public function careerCapture(){
+
+        $data = Input::json()->all();
+
+        $rules = [
+            'email' => 'required|email|max:255',
+            'name' => 'required',
+            // 'phone'=>'required',
+            // 'interest'=>'required', 
+        ];
+
+        $validator = Validator::make($data, $rules);
+
+        if ($validator->fails()) {
+
+            $response = array('status' => 400,'message' =>error_message($validator->errors()));
+
+            return Response::json(
+                $response,
+                $response['status']
+            );
+
+        }
+
+        if(empty($data)){
+
+            return Response::json(
+                array(
+                    'status' => 400,
+                    'message' => "Error!",
+                    ),
+                400
+            );
+
+        }
+
+        Career::create($data);
+
+        return Response::json(
+            array(
+                'status' => 200,
+                'message' => "Thankyou for the Application",
+                ),
+            200
+        );
+
+    }
+
 }
