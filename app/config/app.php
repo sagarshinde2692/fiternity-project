@@ -53,7 +53,7 @@ return array(
 
     'app' =>array(
 		'discount'		=> 			10,
-		'discount_excluded_vendors' => [9459,1484,4821,4818],
+		'discount_excluded_vendors' => [9459,1484,1458,576,1647,1486,9883,1451,1452,401,1487,1457,2522,1488,1460,4830,4829,4831,4827,4821,4818],
 	),
 	'fitternity_vendors' => [11907,9869,9891,11128],
 	
