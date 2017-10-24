@@ -2950,7 +2950,7 @@ class FindersController extends \BaseController {
 						}
 					}
 
-					if($commercial_type == 0){
+					if($commercial_type == 0 || in_array($finder['_id'], $cult_Ids)){
 						$data['call_for_action_button']       =      "";
 					}
 
