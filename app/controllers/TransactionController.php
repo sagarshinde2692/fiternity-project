@@ -3025,11 +3025,19 @@ class TransactionController extends \BaseController {
                 'value' => '-Rs. '.$data['cashback_detail']['amount_deducted_from_wallet']
             );
         }
+
+        if(isset($data['coupon_discount_amount']) && $data['coupon_discount_amount'] > 0){
+
+            $payment_details[] = array(
+                'field' => 'Coupon Discount',
+                'value' => '-Rs. '.$data['coupon_discount_amount']
+            );
+        }
         
         if(isset($data['convinience_fee']) && $data['convinience_fee'] > 0){
 
             $payment_details[] = array(
-                'field' => 'Fitcash Applied',
+                'field' => 'Convinience fee',
                 'value' => '+Rs. '.$data['cashback_detail']['amount_deducted_from_wallet']
             );
         }
