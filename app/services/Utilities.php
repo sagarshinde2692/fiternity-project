@@ -2393,7 +2393,7 @@ Class Utilities {
 
         $response = array('status'=>200, 'message'=>'Can book Session or Membership');
 
-        if(isset($finder['flags']['state']) && in_array($finder['flags']['state'],$state_array)){
+        if(isset($finder['flags']['state']) && in_array($finder['flags']['state'],$state_array) && !in_array($finder['_id'],Config::get('fitternity_vendors'))){
 
             $response = array('status'=>400, 'message'=>'Connot book Session or Membership');
         }
