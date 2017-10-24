@@ -324,7 +324,9 @@ Class CustomerReward {
 
                                 $customersms->sendPgOrderSms($customerData);
 
-                                $customersms->giveCashbackOnTrialOrderSuccessAndInvite($customer_data);
+                                if($fitcash_plus > 0){
+                                    $customersms->giveCashbackOnTrialOrderSuccessAndInvite($customer_data);
+                                }
                             }
                         }
                     }
@@ -348,10 +350,12 @@ Class CustomerReward {
                 }
 
                 $utilities->walletTransaction($walletData,$order->toArray());
-                $customersms = new CustomerSms();
-                $order->amount_20_percent = $fitcash_plus;
-                $customersms->giveCashbackOnTrialOrderSuccessAndInvite($order->toArray());
                 
+                if($fitcash_plus > 0){
+                    $customersms = new CustomerSms();
+                    $order->amount_20_percent = $fitcash_plus;
+                    $customersms->giveCashbackOnTrialOrderSuccessAndInvite($order->toArray());
+                }            
             }
             
         }
@@ -1119,6 +1123,11 @@ Class CustomerReward {
                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"Service not eligible");
                     return $resp;
                 }
+            }
+            $excluded_vendors = isset($coupon["finders_exclude"]) ? $coupon["finders_exclude"] : [];
+            if(isset($ratecard['finder_id']) && in_array($ratecard['finder_id'], $excluded_vendors)){
+                $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"Coupon not valid for this transaction");
+                return $resp;
             }
 
 

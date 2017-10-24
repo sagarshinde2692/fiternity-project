@@ -837,7 +837,7 @@ Class Utilities {
                         ->where('service_id',(int)$order->service_id)
                         ->where('finder_id',(int)$order->finder_id)
                         ->where('customer_email',$order->customer_email)
-                        ->where('_id','!=',(int)$order->_id)
+                        ->where('_id','<',(int)$order->_id)
                         ->where('payment_mode','paymentgateway')
                         ->where('paymentLinkEmailCustomerTiggerCount','exists',false)
                         ->where('created_at', '>=', new \DateTime( date("d-m-Y 00:00:00", strtotime("-44 days"))))
@@ -875,7 +875,7 @@ Class Utilities {
                         ->where('service_id',(int)$order->service_id)
                         ->where('finder_id',(int)$order->finder_id)
                         ->where('customer_email',$order->customer_email)
-                        ->where('_id','!=',(int)$order->_id)
+                        ->where('_id','<',(int)$order->_id)
                         ->where('created_at', '>=', new \DateTime( date("d-m-Y 00:00:00", strtotime("-44 days"))))
                         ->whereIn('payment_mode',['paymentgateway','cod'])
                         ->where('paymentLinkEmailCustomerTiggerCount','exists',true)
@@ -2478,6 +2478,25 @@ Class Utilities {
 		$response['bankList'] = $bankList;
 	    return $response;
 	}
+    function checkFinderState($finder_id){
+        $response = array('status'=>200, 'message'=>'Can book Session or Membership');
+        if(in_array($finder_id,Config::get('app.fitternity_vendors'))){
+            return $response;
+        }
+        Finder::$withoutAppends = true;
+
+        $finder = Finder::find((int)$finder_id);
+
+        $state_array = ["closed","temporarily_shut"];
+
+        if(isset($finder['flags']['state']) && in_array($finder['flags']['state'],$state_array)){
+
+            $response = array('status'=>400, 'message'=>'Connot book Session or Membership');
+        }
+
+        return $response;
+
+    }
 
 
 }

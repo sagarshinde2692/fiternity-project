@@ -1026,3 +1026,6 @@ Route::get('reviewFromProfileSept', 'DebugController@reviewFromProfileSept');
 Route::get('chagneStartDateSept', 'DebugController@chagneStartDateSept');
 
 Route::get('renewalSept', 'DebugController@renewalSept');
+
+Route::post('career/capture','HomeController@careerCapture');
+

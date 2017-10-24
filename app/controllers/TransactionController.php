@@ -88,6 +88,15 @@ class TransactionController extends \BaseController {
             return Response::json(array('status'=>400, 'message'=>'Ratecard Id or ticket Id is required'));
         }
 
+        if(isset($data['finder_id']) && $data['finder_id'] != ""){
+
+            $checkFinderState = $this->utilities->checkFinderState($data['finder_id']);
+
+            if($checkFinderState['status'] != 200){
+                return Response::json($checkFinderState,$checkFinderState['status']);
+            }
+        }
+
         $workout = array('vip_booktrials','3daystrial','booktrials','workout-session');
         if(in_array($data['type'],$workout)){
 
@@ -555,7 +564,7 @@ class TransactionController extends \BaseController {
             'status' => 200,
             'data' => $result,
             'message' => "Tmp Order Generated Sucessfully",
-            'part_payment' => $part_payment,
+            // 'part_payment' => $part_payment,
             'cash_pickup' => $cash_pickup
         );
 
@@ -2275,13 +2284,13 @@ class TransactionController extends \BaseController {
             //$order->customerSmsSendPaymentLinkAfter30Days = $this->customersms->sendPaymentLinkAfter30Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+30 days",$now)));
             $order->customerSmsSendPaymentLinkAfter45Days = $this->customersms->sendPaymentLinkAfter45Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+45 days",$now)));
 
-            if(isset($order['reg_id']) && $order['reg_id'] != "" && isset($order['device_type']) && $order['device_type'] != ""){
+            //if(isset($order['reg_id']) && $order['reg_id'] != "" && isset($order['device_type']) && $order['device_type'] != ""){
                 $order->customerNotificationSendPaymentLinkAfter3Days = $this->customernotification->sendPaymentLinkAfter3Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+3 days",$now)));
                 $order->customerNotificationSendPaymentLinkAfter7Days = $this->customernotification->sendPaymentLinkAfter7Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+7 days",$now)));
                 /*$order->customerNotificationSendPaymentLinkAfter15Days = $this->customernotification->sendPaymentLinkAfter15Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+15 days",$now)));
                 $order->customerNotificationSendPaymentLinkAfter30Days = $this->customernotification->sendPaymentLinkAfter30Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+30 days",$now)));*/
                 $order->customerNotificationSendPaymentLinkAfter45Days = $this->customernotification->sendPaymentLinkAfter45Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+45 days",$now)));
-            }
+           // }
 
             $url = Config::get('app.url')."/addwallet?customer_id=".$order["customer_id"]."&order_id=".$order_id;
 

@@ -2272,6 +2272,16 @@ class OrderController extends \BaseController {
                 return Response::json($resp,$resp["status"]);
             }
 
+
+            if(isset($order['finder_id']) && $order['finder_id'] != ""){
+
+                $checkFinderState = $this->utilities->checkFinderState($order['finder_id']);
+
+                if($checkFinderState['status'] != 200){
+                    return Response::json($checkFinderState,$checkFinderState['status']);
+                }
+            }
+
             if(isset($order->cashback) && $order->cashback == true){
 
                 if(isset($order->status) && $order->status == "1"){
