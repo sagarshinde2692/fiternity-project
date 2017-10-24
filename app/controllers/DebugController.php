@@ -4942,6 +4942,7 @@ public function yes($msg){
 
 		$data['no_of_link_sent']  = Order::whereIn('type',['memberships'])
 			->where('created_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-09-01 00:00:00"))))
+			->where('created_at', '<', new DateTime(date("Y-m-d H:i:s",strtotime("2017-10-01 00:00:00"))))
 			->where("paymentLinkEmailCustomerTiggerCount","exists",true)
 			->where('redundant_order','exists',false)
 			->where("paymentLinkEmailCustomerTiggerCount",">=",1)
@@ -4950,6 +4951,7 @@ public function yes($msg){
 		$data['no_of_purchase_from_link_sent']  = Order::active()
 		->whereIn('type',['memberships'])
 		->where('created_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-09-01 00:00:00"))))
+		->where('created_at', '<', new DateTime(date("Y-m-d H:i:s",strtotime("2017-10-01 00:00:00"))))
 		->where("paymentLinkEmailCustomerTiggerCount","exists",true)
 		->where("paymentLinkEmailCustomerTiggerCount",">=",1)
 		->count();
@@ -4957,6 +4959,7 @@ public function yes($msg){
 		$link_sent_purchase = Order::active()
 		->whereIn('type',['memberships'])
 		->where('created_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-09-01 00:00:00"))))
+		->where('created_at', '<', new DateTime(date("Y-m-d H:i:s",strtotime("2017-10-01 00:00:00"))))
 		->where("paymentLinkEmailCustomerTiggerCount","exists",true)
 		->where("paymentLinkEmailCustomerTiggerCount",">=",1)
 		->get();
@@ -4976,6 +4979,7 @@ public function yes($msg){
 		$link_sent_order  = Order::where('status','!=','1')
 			->whereIn('type',['memberships'])
 			->where('created_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-09-01 00:00:00"))))
+			->where('created_at', '<', new DateTime(date("Y-m-d H:i:s",strtotime("2017-10-01 00:00:00"))))
 			->where("paymentLinkEmailCustomerTiggerCount","exists",true)
 			->where("paymentLinkEmailCustomerTiggerCount",">=",1)
 			->where('redundant_order','exists',false)
@@ -5006,6 +5010,7 @@ public function yes($msg){
 
 		$data['review'] = Review::active()
 			->where('updated_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-09-01 00:00:00"))))
+			->where('updated_at', '<', new DateTime(date("Y-m-d H:i:s",strtotime("2017-10-01 00:00:00"))))
 			->where("order_id","exists",true)
 			->where("order_id","!=","")
 			->count();
@@ -5023,10 +5028,12 @@ public function yes($msg){
 
 		$data['total'] = Order::active()
 			->where('created_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-09-01 00:00:00"))))
+			->where('created_at', '<', new DateTime(date("Y-m-d H:i:s",strtotime("2017-10-01 00:00:00"))))
 			->whereIn('type',['memberships','healthytiffinmembership'])
 			->count();
 
 		$manual = Capture::where('updated_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-09-01 00:00:00"))))
+			->where('created_at', '<', new DateTime(date("Y-m-d H:i:s",strtotime("2017-10-01 00:00:00"))))
 			->where('requested_preferred_starting_date','exists',true)
 			->get();
 
@@ -5047,6 +5054,7 @@ public function yes($msg){
 
 		$auto = Order::active()
 			->where('preferred_starting_change_date', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-09-01 00:00:00"))))
+			->where('preferred_starting_change_date', '<', new DateTime(date("Y-m-d H:i:s",strtotime("2017-10-01 00:00:00"))))
 			->get();
 
 		$data['auto_count'] = count($auto);
@@ -5075,6 +5083,7 @@ public function yes($msg){
 
 		$orderSuccess = Order::active()
 			->where('created_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-09-01 00:00:00"))))
+			->where('created_at', '<', new DateTime(date("Y-m-d H:i:s",strtotime("2017-10-01 00:00:00"))))
 			->whereIn('type',['memberships'])
 			->get(['created_at','customer_email','status','type']);
 
