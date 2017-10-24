@@ -324,7 +324,9 @@ Class CustomerReward {
 
                                 $customersms->sendPgOrderSms($customerData);
 
-                                $customersms->giveCashbackOnTrialOrderSuccessAndInvite($customer_data);
+                                if($fitcash_plus > 0){
+                                    $customersms->giveCashbackOnTrialOrderSuccessAndInvite($customer_data);
+                                }
                             }
                         }
                     }
@@ -348,10 +350,12 @@ Class CustomerReward {
                 }
 
                 $utilities->walletTransaction($walletData,$order->toArray());
-                $customersms = new CustomerSms();
-                $order->amount_20_percent = $fitcash_plus;
-                $customersms->giveCashbackOnTrialOrderSuccessAndInvite($order->toArray());
                 
+                if($fitcash_plus > 0){
+                    $customersms = new CustomerSms();
+                    $order->amount_20_percent = $fitcash_plus;
+                    $customersms->giveCashbackOnTrialOrderSuccessAndInvite($order->toArray());
+                }            
             }
             
         }
