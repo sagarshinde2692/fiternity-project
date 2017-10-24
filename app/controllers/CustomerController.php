@@ -3705,8 +3705,13 @@ class CustomerController extends \BaseController {
 						if(!in_array($emi['bankName'], $bankList)){
 							array_push($bankList, $emi['bankName']);
 						}
-						$emiData['total_amount'] =  (string)round($data['amount']*(100+$emi['rate'])/100, 2);
-						$emiData['emi'] =(string)round($emiData['total_amount']/$emi['bankTitle'], 2);
+                        $interest = $emi['rate']/1200.00;
+                        $t = pow(1+$interest, $emi['bankTitle']);
+                        $x = $data['amount'] * $interest * $t;
+                        $y = $t - 1;
+                        $emiData['emi'] = round($x / $y,0);
+                        $emiData['total_amount'] =  (string)($emiData['emi'] * $emi['bankTitle']);
+                        $emiData['emi'] = (string)$emiData['emi'];
 						$emiData['months'] = (string)$emi['bankTitle'];
 						$emiData['bankName'] = $emi['bankName'];
 						$emiData['bankCode'] = $emi['bankCode'];
@@ -3728,11 +3733,16 @@ class CustomerController extends \BaseController {
 					}
 					Log::info("inside3");
 					$emiData = array();
-					$emiData['total_amount'] =  (string)round($data['amount']*(100+$emi['rate'])/100, 2);
-					$emiData['emi'] =(string)round($emiData['total_amount']/$emi['bankTitle'], 2);
+                    $interest = $emi['rate']/1200.00;
+                    $t = pow(1+$interest, $emi['bankTitle']);
+                    $x = $data['amount'] * $interest * $t;
+                    $y = $t - 1;
+                    $emiData['emi'] = round($x / $y,0);
+                    $emiData['total_amount'] =  (string)($emiData['emi'] * $emi['bankTitle']);
+                    $emiData['emi'] = (string)$emiData['emi'];
 					$emiData['months'] = (string)$emi['bankTitle'];
 					$emiData['bankName'] = $emi['bankName'];
-						$emiData['bankCode'] = $emi['bankCode'];
+                    $emiData['bankCode'] = $emi['bankCode'];
 					$emiData['rate'] = (string)$emi['rate'];
 					$emiData['minval'] = (string)$emi['minval'];
 					array_push($response['emiData'], $emiData);
