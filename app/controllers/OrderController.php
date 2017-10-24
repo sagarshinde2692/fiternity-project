@@ -130,7 +130,8 @@ class OrderController extends \BaseController {
                     return Response::json(array('status'=>400,'data'=>array('final_amount'=>($resp['data']['discount']+$resp['data']['final_amount']), "discount" => 0), 'error_message'=>'Coupon already applied', "message" => "Coupon already applied"), 400);
                 }
             }
-            return $resp;
+            $resp['status'] = 200;
+            return Response::json($resp,200);
         }else{
 
             $errorMessage =  "Coupon is either not valid or expired";
