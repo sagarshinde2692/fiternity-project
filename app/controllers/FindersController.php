@@ -2667,8 +2667,8 @@ class FindersController extends \BaseController {
 
 					}
 				}
-
-				if(isset($finderarr['category_id']) && $finderarr['category_id'] == 41){
+				$cult_Ids = array(12140,12141,12142,12143,12144,12145,12146,11110,4307,10514,9882,5986,9412,9881,9589);
+				if((isset($finderarr['category_id']) && $finderarr['category_id'] == 41) || in_array($finderarr['_id'], $cult_Ids)){
 					$finder['trial'] = 'disable';
 					$finder['membership'] = 'disable';
 				}
@@ -2950,7 +2950,7 @@ class FindersController extends \BaseController {
 						}
 					}
 
-					if($commercial_type == 0){
+					if($commercial_type == 0 || in_array($finder['_id'], $cult_Ids)){
 						$data['call_for_action_button']       =      "";
 					}
 
