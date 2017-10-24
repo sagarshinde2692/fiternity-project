@@ -2385,7 +2385,7 @@ Class Utilities {
 
     function checkFinderState($finder_id){
         $response = array('status'=>200, 'message'=>'Can book Session or Membership');
-        if(in_array($finder_id,Config::get('fitternity_vendors'))){
+        if(in_array((int)$finder_id,Config::get('fitternity_vendors'))){
             return $response;
         }
         Finder::$withoutAppends = true;
