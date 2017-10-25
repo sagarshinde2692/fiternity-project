@@ -5032,7 +5032,7 @@ public function yes($msg){
 			->whereIn('type',['memberships','healthytiffinmembership'])
 			->count();
 
-		$manual = Capture::where('updated_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-09-01 00:00:00"))))
+		$manual = Capture::where('created_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-09-01 00:00:00"))))
 			->where('created_at', '<', new DateTime(date("Y-m-d H:i:s",strtotime("2017-10-01 00:00:00"))))
 			->where('requested_preferred_starting_date','exists',true)
 			->get();
@@ -5079,43 +5079,123 @@ public function yes($msg){
 
 		$data = [];
 
-		Order::$withoutAppends=true;
-
-		$orderSuccess = Order::active()
-			->where('created_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-09-01 00:00:00"))))
-			->where('created_at', '<', new DateTime(date("Y-m-d H:i:s",strtotime("2017-10-01 00:00:00"))))
-			->whereIn('type',['memberships'])
-			->get(['created_at','customer_email','status','type']);
-
 		$data['renewal'] = 0;
 		$data['renewal_request'] = 0;
 
-		foreach ($orderSuccess as $value) {
+		Order::$withoutAppends=true;
 
-			$order_count = Order::active()
-				->where('created_at', '<', new DateTime(date("Y-m-d H:i:s",strtotime($value['created_at']))))
-				->where('customer_email',$value['customer_email'])
-				->whereIn('type',['memberships'])
-				->count();
+		$data['renewal'] += Order::active()
+			->where('end_date', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-08-02 00:00:00"))))
+			->where('end_date', '<', new DateTime(date("Y-m-d H:i:s",strtotime("2017-10-07 00:00:00"))))
+			->whereIn('type',['memberships'])
+			->where('duration_day','>=',30)
+			->where('duration_day','<',90)
+			->count();
 
-			if($order_count > 0){
-				$data['renewal'] += 1; 
-			}
+		$data['renewal'] += Order::active()
+			->where('end_date', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-08-02 00:00:00"))))
+			->where('end_date', '<', new DateTime(date("Y-m-d H:i:s",strtotime("2017-10-15 00:00:00"))))
+			->whereIn('type',['memberships'])
+			->where('duration_day','>=',90)
+			->where('duration_day','<',180)
+			->count();
 
-			$renewal_request_count = Order::active()
-				->where('created_at', '<', new DateTime(date("Y-m-d H:i:s",strtotime($value['created_at']))))
-				->where('customer_email',$value['customer_email'])
-				->whereIn('type',['memberships'])
-				->where('renew_membership','requested')
-				->count();
+		$data['renewal'] += Order::active()
+			->where('end_date', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-08-02 00:00:00"))))
+			->where('end_date', '<', new DateTime(date("Y-m-d H:i:s",strtotime("2017-11-01 00:00:00"))))
+			->whereIn('type',['memberships'])
+			->where('duration_day','>=',180)
+			->count();
 
-			if($renewal_request_count > 0){
-				$data['renewal_request'] += 1; 
-			}
-
-		}
+		$data['renewal_request'] = Capture::where('created_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-09-01 00:00:00"))))
+			->where('created_at', '<', new DateTime(date("Y-m-d H:i:s",strtotime("2017-10-01 00:00:00"))))
+			->where('capture_type','renew-membership')
+			->count();
 
 		return $data;
+
+	}
+
+
+	public function vendorLocation(){
+
+		$vendor_ids = Vendor::where('multiaddress','size',1)->get(['multiaddress','_id','slug']);
+
+		$service_ids = [];
+
+		foreach ($vendor_ids as $value) {
+
+			$id = $value['_id'];
+
+			$address = $value['multiaddress'][0];
+
+			$vendorServices = Vendorservice::where('vendor_id',$id)->get(['address','name']);
+
+			if(!empty($vendorServices)){
+
+				$vendorServices = $vendorServices->toArray();
+
+				foreach($vendorServices as $service){
+
+					$flag = false;
+
+					$result = [
+						'vendor'=>$value['slug'],
+						'service'=>$service['name'],
+						'vendor_id'=>$id,
+						'service_id'=>$service['_id'],
+						'issue'=>''
+					];
+
+					$issue = [];
+
+					if($service['address']['line1'] != $address['line1']){
+						$issue[] = 'line1';
+						$flag = true;
+					}
+
+					if($service['address']['line2'] != $address['line2']){
+						$issue[] = 'line2';
+						$flag = true;
+					}
+
+					if($service['address']['line3'] != $address['line3']){
+						$issue[] = 'line3';
+						$flag = true;
+					}
+
+					if($service['address']['landmark'] != $address['landmark']){
+						$issue[] = 'landmark';
+						$flag = true;
+					}
+
+					if($service['address']['pincode'] != $address['pincode']){
+						$issue[] = 'pincode';
+						$flag = true;
+					}
+
+					$result['issue'] = implode(',',$issue);
+
+					if($flag){
+
+						$service_ids[] = $result;
+					}
+
+				}
+			}
+		}
+
+		header("Content-type: application/csv");
+		header("Content-Disposition: attachment; filename=vendorService.csv");
+		$fp = fopen('php://output', 'w');
+		$i=0;
+		fputcsv($fp, ['Vendor','Service','Venodor ID','Service ID','Issue']);
+		foreach ($service_ids as $row) {
+		fputcsv($fp, $row);
+		$i++;
+		}
+		fclose($fp);
+
 
 	}
 
