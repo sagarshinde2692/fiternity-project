@@ -561,6 +561,19 @@ Class CustomerMailer extends Mailer {
 
     }
 
+    protected function linkSentNotSuccess($data){
+
+        $label = 'LinkSentNotSuccess-Customer';
+
+        $message_data 	= array(
+			'user_email' => array($data['customer_email']),
+			'user_name' => $data['customer_name']
+		);
+
+		return $this->common($label,$data,$message_data);
+
+    }
+
     
 	protected function common($label,$data,$message_data,$delay = 0){
 

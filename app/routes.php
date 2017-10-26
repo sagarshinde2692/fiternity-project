@@ -1033,3 +1033,7 @@ Route::get('vendorLocation','DebugController@vendorLocation');
 
 Route::get('copyVendorAddress','DebugController@copyVendorAddress');
 
+Route::get('linkSentOct','DebugController@linkSentOct');
+
+
+

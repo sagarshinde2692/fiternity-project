@@ -5256,6 +5256,58 @@ public function yes($msg){
 
 	}
 
+
+	public function linkSentOct(){
+
+		$customermailer = new CustomerMailer();
+
+		$successOrderEmailId = Order::active()
+			->where('created_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-10-01 00:00:00"))))
+			->whereIn('type',['memberships'])
+			->lists('customer_email');
+
+		$successOrderEmailId = array_unique($successOrderEmailId);
+
+		$linkSentOrders = Order::whereIn('type',['memberships'])
+			->where('created_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-10-01 00:00:00"))))
+			->where('status','!=','1')
+			->where("paymentLinkEmailCustomerTiggerCount","exists",true)
+			->where("paymentLinkEmailCustomerTiggerCount",">=",1)
+			->whereNotIn('customer_email',$successOrderEmailId)
+			->where('redundant_order','exists',false)
+			->where('linkSentNotSuccess','exists',false)
+			->where('ratecard_id','!=','')
+			->lists('customer_email');
+
+		if(!empty($linkSentOrders)){
+
+			$linkSentOrders = array_unique($linkSentOrders);
+
+			foreach ($linkSentOrders as $customer_email) {
+
+				$order = Order::whereIn('type',['memberships'])
+				->where('created_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-10-01 00:00:00"))))
+				->where('status','!=','1')
+				->where("paymentLinkEmailCustomerTiggerCount","exists",true)
+				->where("paymentLinkEmailCustomerTiggerCount",">=",1)
+				->where('customer_email',$customer_email)
+				->where('redundant_order','exists',false)
+				->where('ratecard_id','!=','')
+				->orderBy('id','desc')
+				->first();
+
+				$order = $order->toArray();
+
+				$customermailer->linkSentNotSuccess($order);
+
+				Order::where('customer_email',$customer_email)->update(['linkSentNotSuccess'=>time()]);
+			}
+		}
+
+		echo"<pre>";print_r(count($linkSentOrders));exit;
+
+	}
+
 	
 
     
