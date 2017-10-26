@@ -65,6 +65,8 @@ class TrainerController extends \BaseController {
 			$schedules_query->where('trainer_id',$oldTrainerSlotBooking->trainer_id);
 			$call_for = "followup";
 
+		}else if(isset($request['trainer_id'])){
+			$schedules_query->where('trainer_id',new mongoID($request['trainer_id']));
 		}
 
 		$schedules = $schedules_query->get();
@@ -94,7 +96,7 @@ class TrainerController extends \BaseController {
 
 				foreach ($slots as $slot_key => $slot_value) {
 					$scheduleDateTimeUnix           =  strtotime(strtoupper($date." ".$slot_value['start_hour'].".00.00"));
-					$slot_datetime_pass_status      =   (($scheduleDateTimeUnix - time()) > 60*60*2) ? false : true;
+					$slot_datetime_pass_status      =   (($scheduleDateTimeUnix - time()) > 60*60*24) ? false : true;
 					if($slot_datetime_pass_status){
 						$slots[$slot_key]['available'] = false;
 					}
@@ -114,10 +116,10 @@ class TrainerController extends \BaseController {
 					foreach ($trainerSlotBooking as $value) {
 
 						foreach ($slots as $slot_key => $slot_value) {
-
+							
 							if($value['slot'] == $slot_value['slot']){
 								$slots[$slot_key]['available'] = false;
-								break;
+
 							}
 						}
 					}
@@ -179,17 +181,32 @@ class TrainerController extends \BaseController {
 
         try {
 
-        	$jwt_token  = Request::header('Authorization');
-			$jwt_key = Config::get('app.jwt.key');
-			$jwt_alg = Config::get('app.jwt.alg');
-			$decoded = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+        	if(!isset($data['source']) || $data['source'] != 'cthulhu'){
+				$jwt_token  = Request::header('Authorization');
+				$jwt_key = Config::get('app.jwt.key');
+				$jwt_alg = Config::get('app.jwt.alg');
+				$decoded = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
 
-			$data['customer_email'] = $decoded->customer->email;
-			$data['customer_name'] = $decoded->customer->name;
-			$data['customer_phone'] = $decoded->customer->contact_no;
-			$data['customer_id'] = $decoded->customer->_id;
+				$data['customer_email'] = $decoded->customer->email;
+				$data['customer_name'] = $decoded->customer->name;
+				$data['customer_phone'] = $decoded->customer->contact_no;
+				$data['customer_id'] = $decoded->customer->_id;
+				
+			}else{
+				
 
-			
+				if( !isset($data['key']) || $data['key'] != '1jhvv123vhjc323@(*Bb@##*yhjj2Jhasda78&*gu'){
+					return array('status'=>404, 'message'=>'Not Authorized');
+				}
+
+				unset($data['key']);
+				$customer = Customer::find($data['customer_id']);
+				$data['customer_email'] = $customer->email;
+				$data['customer_name'] = $customer->name;
+				$data['customer_phone'] = $customer->contact_no;
+				$data['customer_id'] = $customer->_id;
+			}
+
 			$data['call_for'] = "first";
 
 			$date = $data['date'] = date('d-m-Y',strtotime($data['date']));
