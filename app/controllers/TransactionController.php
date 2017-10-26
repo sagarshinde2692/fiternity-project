@@ -222,7 +222,7 @@ class TransactionController extends \BaseController {
 
         // $cash_pickup = (isset($finderDetail['data']['finder_flags']) && isset($finderDetail['data']['finder_flags']['cash_pickup'])) ? $finderDetail['data']['finder_flags']['cash_pickup'] : false;
 
-        $cash_pickup = (isset($data['amount_finder']) && $data['amount_finder']>2500 && !$updating_part_payment) ? true : false;
+        $cash_pickup = (isset($data['amount_finder']) && $data['amount_finder'] >= 3000 && !$updating_part_payment) ? true : false;
         
 
         
@@ -351,12 +351,12 @@ class TransactionController extends \BaseController {
 
         Log::info($finderDetail["data"]);
         
-        if(!$updating_payment_mode && $part_payment && $data["amount_finder"] > 2500){
+        if(!$updating_payment_mode && $part_payment && $data["amount_finder"] >= 3000){
 
             if($finderDetail["data"]["finder_flags"]["part_payment"]){
 
                 $part_payment_data = $data;
-                $part_payment_data_amount = (int)($data["amount"] - $data["amount_customer"]*0.8);
+                $part_payment_data_amount = (int)($data["amount_finder"] - $data["amount_finder"]*0.8);
                 $part_payment_data["amount"] = $part_payment_data_amount > 0 ? $part_payment_data_amount : 0;
 
                 // if(!isset($_GET['device_type'])  || !in_array($_GET['device_type'], ['android', 'ios'])){
@@ -3075,11 +3075,13 @@ class TransactionController extends \BaseController {
         }
 
 
-        $payment_modes[] = array(
-            'title' => 'Cash Pickup',
-            'subtitle' => 'Schedule cash payment pick up',
-            'value' => 'cod',
-        );
+        if(!empty($data['cash_pickup']) && $data['cash_pickup']){
+            $payment_modes[] = array(
+                'title' => 'Cash Pickup',
+                'subtitle' => 'Schedule cash payment pick up',
+                'value' => 'cod',
+            );
+        }
 
 
 
