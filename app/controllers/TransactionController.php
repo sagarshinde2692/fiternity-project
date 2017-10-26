@@ -237,7 +237,7 @@ class TransactionController extends \BaseController {
 
         // $cash_pickup = (isset($finderDetail['data']['finder_flags']) && isset($finderDetail['data']['finder_flags']['cash_pickup'])) ? $finderDetail['data']['finder_flags']['cash_pickup'] : false;
 
-        $cash_pickup = (isset($data['amount_finder']) && $data['amount_finder']>2500 && !$updating_part_payment) ? true : false;
+        $cash_pickup = (isset($data['amount_finder']) && $data['amount_finder'] >= 3000 && !$updating_part_payment) ? true : false;
         
 
 
@@ -366,7 +366,7 @@ class TransactionController extends \BaseController {
 
         Log::info($finderDetail["data"]);
         
-        if(!$updating_payment_mode && $part_payment && $data["amount_finder"] > 2500){
+        if(!$updating_payment_mode && $part_payment && $data["amount_finder"] >= 3000){
 
             if($finderDetail["data"]["finder_flags"]["part_payment"]){
 
@@ -3088,11 +3088,13 @@ class TransactionController extends \BaseController {
         }
 
 
-        $payment_modes[] = array(
-            'title' => 'Cash Pickup',
-            'subtitle' => 'Schedule cash payment pick up',
-            'value' => 'cod',
-        );
+        if(!empty($data['cash_pickup']) && $data['cash_pickup']){
+            $payment_modes[] = array(
+                'title' => 'Cash Pickup',
+                'subtitle' => 'Schedule cash payment pick up',
+                'value' => 'cod',
+            );
+        }
 
 
 
