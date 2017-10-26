@@ -2969,20 +2969,20 @@ class CustomerController extends \BaseController {
 		// if(isset($_REQUEST['device_type']) && $_REQUEST['device_type'] == "ios" ){
 			
 		// }
-		$result['campaign'] =  new \stdClass();
-		$result['campaign'] = array(
-			// 'image'=>'http://b.fitn.in/iconsv1/offers/generic_banner.png',
-			'image'=>'http://b.fitn.in/global/diwali/diwali_banner.png',
-			'link'=>'',
-			'title'=>'FitStart 2017',
-			'height'=>1,
-			'width'=>6,
-			'ratio'=>1/6
-		);
+		// $result['campaign'] =  new \stdClass();
+		// $result['campaign'] = array(
+		// 	// 'image'=>'http://b.fitn.in/iconsv1/offers/generic_banner.png',
+		// 	'image'=>'http://b.fitn.in/global/diwali/diwali_banner.png',
+		// 	'link'=>'',
+		// 	'title'=>'FitStart 2017',
+		// 	'height'=>1,
+		// 	'width'=>6,
+		// 	'ratio'=>1/6
+		// );
 
-		if(isset($_REQUEST['device_type']) && $_REQUEST['device_type'] == "android"){
-			$result['campaign']['link'] = 'ftrnty://ftrnty.com/search/all';
-		}
+		// if(isset($_REQUEST['device_type']) && $_REQUEST['device_type'] == "android"){
+		// 	$result['campaign']['link'] = 'ftrnty://ftrnty.com/search/all';
+		// }
 		
 		return Response::json($result);
 	}
