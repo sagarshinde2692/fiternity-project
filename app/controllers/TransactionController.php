@@ -210,6 +210,21 @@ class TransactionController extends \BaseController {
 
         $data['base_amount'] = $data['amount'];
 
+
+        if(isset($data['ratecard_flags']) && isset($data['ratecard_flags']['convinience_fee_applicable']) && $data['ratecard_flags']['convinience_fee_applicable']){
+            
+            $convinience_fee_percent = Config::get('app.convinience_fee');
+
+            $convinience_fee = number_format($data['amount_finder']*$convinience_fee_percent/100, 0);
+
+            $convinience_fee = $convinience_fee <= 150 ? $convinience_fee : 150;
+
+            $data['amount'] = $data['customer_amount'] = $data['amount'] + $convinience_fee;
+
+            $data['convinience_fee'] = $convinience_fee;
+
+        }
+
         $finder_id = (int) $data['finder_id'];
 
         $finderDetail = $this->getFinderDetail($finder_id);
@@ -225,7 +240,7 @@ class TransactionController extends \BaseController {
         $cash_pickup = (isset($data['amount_finder']) && $data['amount_finder']>2500 && !$updating_part_payment) ? true : false;
         
 
-        
+
         $orderfinderdetail = $finderDetail;
         $data = array_merge($data,$orderfinderdetail['data']);
         unset($orderfinderdetail["data"]["finder_flags"]);
@@ -356,25 +371,28 @@ class TransactionController extends \BaseController {
             if($finderDetail["data"]["finder_flags"]["part_payment"]){
 
                 $part_payment_data = $data;
-                $part_payment_data_amount = (int)($data["amount"] - $data["amount_customer"]*0.8);
-                $part_payment_data["amount"] = $part_payment_data_amount > 0 ? $part_payment_data_amount : 0;
 
-                // if(!isset($_GET['device_type'])  || !in_array($_GET['device_type'], ['android', 'ios'])){
+                $convinience_fee = 0;
 
-                    if(isset($data['ratecard_flags']) && isset($data['ratecard_flags']['convinience_fee_applicable']) && $data['ratecard_flags']['convinience_fee_applicable']){
-                        
-                        $convinience_fee_percent = Config::get('app.convinience_fee');
+                $part_payment_data["amount"] = 0;
 
-                        $convinience_fee = number_format($part_payment_data['amount_finder']*$convinience_fee_percent/100, 0);
+                if(isset($data['ratecard_flags']) && isset($data['ratecard_flags']['convinience_fee_applicable']) && $data['ratecard_flags']['convinience_fee_applicable']){
+                    
+                    $convinience_fee_percent = Config::get('app.convinience_fee');
 
-                        $convinience_fee = $convinience_fee <= 150 ? $convinience_fee : 150;
+                    $convinience_fee = number_format($part_payment_data['amount_finder']*$convinience_fee_percent/100, 0);
 
-                        $part_payment_data['amount'] = $part_payment_data['amount'] + $convinience_fee;
+                    $convinience_fee = $convinience_fee <= 150 ? $convinience_fee : 150;
+                    
+                    $part_payment_data['convinience_fee'] = $convinience_fee;
 
-                        $part_payment_data['convinience_fee'] = $convinience_fee;
+                }
 
-                    }
-                // }
+                $coupon_discount = isset($data['coupon_discount_amount']) ? $data['coupon_discount_amount'] : 0;
+                
+                $part_payment_data["amount"] = (int)($data["amount"] + $coupon_discount - ($data["amount_customer"] - $convinience_fee)*0.8);
+
+                Log::info("part_payment:::::".$part_payment_data["amount"]);
 
                 $part_payment_hash ="";
                 
@@ -385,60 +403,55 @@ class TransactionController extends \BaseController {
                 }
             }
 
-            $data["part_payment_calculation"] = array("amount" => (int)($part_payment_data["amount"]), "hash" => $part_payment_hash, "full_wallet_payment" => $part_payment_data["amount"] == 0 ? true : false);
+            $data["part_payment_calculation"] = array("amount" => (int)($part_payment_data["amount"]), "hash" => $part_payment_hash, "convinience_fee"=>isset($part_payment_data['convinience_fee']) ? $part_payment_data['convinience_fee'] : 0, "full_wallet_payment" => $part_payment_data["amount"] == 0 ? true : false);
             Log::info($data["part_payment_calculation"]);
         }
 
         
-       
-        // if(!isset($_GET['device_type'])  || !in_array($_GET['device_type'], ['android', 'ios'])){
-
-            if(isset($data['ratecard_flags']) && isset($data['ratecard_flags']['convinience_fee_applicable']) && $data['ratecard_flags']['convinience_fee_applicable']){
-                
-                $convinience_fee_percent = Config::get('app.convinience_fee');
-
-                $convinience_fee = number_format($data['amount_finder']*$convinience_fee_percent/100, 0);
-
-                $convinience_fee = $convinience_fee <= 150 ? $convinience_fee : 150;
-
-                $data['amount'] = $data['amount'] + $convinience_fee;
-
-                $data['convinience_fee'] = $convinience_fee;
-
-            }
-        // }
-
         if(isset($data['part_payment']) && $data['part_payment']){
-            
+        
             $data['amount'] = (int)($order["part_payment_calculation"]['amount']);
 
-            $twenty_percent_amount = (int)($order["amount_customer"]*0.2);
+                $convinience_fee = isset($order['convinience_fee']) ? $order['convinience_fee'] : 0;
 
-            if(isset($order['wallet_amount'])){
+                $twenty_percent_amount = $convinience_fee + (int)(($order["amount_customer"] - $convinience_fee)*0.2);
 
-                if($twenty_percent_amount < $order['wallet_amount']){
+                Log::info('$twenty_percent_amount::'.$twenty_percent_amount);
 
-                    $data['full_payment_wallet'] = true;
-                    
-                    $refund_amount = $order['wallet_amount']-$twenty_percent_amount;
+                $coupon_discount = isset($order["coupon_discount_amount"]) ? $order["coupon_discount_amount"] : 0;
 
-                    $wallet_data = array(
-                        'customer_id'=>$order['customer_id'],
-                        'amount'=>$refund_amount,
-                        'amount_fitcash' => 0,
-                        'amount_fitcash_plus' => $refund_amount,
-                        'type'=>'CREDIT',
-                        'entry'=>'credit',
-                        'description'=>"Paid for order ".$order['_id'],
-                    );
-                    $walletTransactionResponse = $this->utilities->walletTransaction($wallet_data);
+                if(isset($order['wallet_amount'])){
 
-                    $data['wallet_amount'] = $twenty_percent_amount;
+                    if($twenty_percent_amount < $order['wallet_amount']){
+
+                        $data['full_payment_wallet'] = true;
+                        
+                        $refund_amount = $order['wallet_amount']-$twenty_percent_amount;
+
+                        Log::info("returning wallet::".$refund_amount);
+
+                        $wallet_data = array(
+                            'customer_id'=>$order['customer_id'],
+                            'amount'=>$refund_amount,
+                            'amount_fitcash' => 0,
+                            'amount_fitcash_plus' => $refund_amount,
+                            'type'=>'CREDIT',
+                            'entry'=>'credit',
+                            'description'=>"Refund for Order ID: ".$order['_id'],
+                        );
+                        $walletTransactionResponse = $this->utilities->walletTransaction($wallet_data);
+
+                        $data['wallet_amount'] = $order['wallet_amount'] = $twenty_percent_amount;
+                    }
+
                 }
+                
+                $fitcash_applied = isset($order['wallet_amount']) ? $order['wallet_amount'] : 0;
 
-            }
+                $data['remaining_amount'] = $order['amount_customer'] - $data['amount'] - $coupon_discount - $order['wallet_amount'];
 
         }
+        
 
         $hash = getHash($data);
         $data = array_merge($data,$hash);
