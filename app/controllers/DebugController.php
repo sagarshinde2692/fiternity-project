@@ -5119,7 +5119,7 @@ public function yes($msg){
 
 	public function vendorLocation(){
 
-		$vendor_ids = Vendor::where('multiaddress','size',1)->get(['multiaddress','_id','slug']);
+		$vendor_ids = Vendor::where('hidden',false)->where('multiaddress','size',1)->get(['multiaddress','_id','slug','commercial'])->toArray();
 
 		$service_ids = [];
 
@@ -5129,7 +5129,7 @@ public function yes($msg){
 
 			$address = $value['multiaddress'][0];
 
-			$vendorServices = Vendorservice::where('vendor_id',$id)->get(['address','name']);
+			$vendorServices = Vendorservice::where('hidden',false)->where('vendor_id',$id)->get(['address','name','location_id']);
 
 			if(!empty($vendorServices)){
 
@@ -5142,6 +5142,7 @@ public function yes($msg){
 					$result = [
 						'vendor'=>$value['slug'],
 						'service'=>$service['name'],
+						'commercial_type'=>$value['commercial']['type'],
 						'vendor_id'=>$id,
 						'service_id'=>$service['_id'],
 						'issue'=>''
@@ -5174,6 +5175,11 @@ public function yes($msg){
 						$flag = true;
 					}
 
+					if($service['location_id'] != $address['location_id'][0]){
+						$issue[] = 'location_id';
+						$flag = true;
+					}
+
 					$result['issue'] = implode(',',$issue);
 
 					if($flag){
@@ -5189,13 +5195,116 @@ public function yes($msg){
 		header("Content-Disposition: attachment; filename=vendorService.csv");
 		$fp = fopen('php://output', 'w');
 		$i=0;
-		fputcsv($fp, ['Vendor','Service','Venodor ID','Service ID','Issue']);
+		fputcsv($fp, ['Vendor','Service','Commercial Type','Venodor ID','Service ID','Issue']);
 		foreach ($service_ids as $row) {
 		fputcsv($fp, $row);
 		$i++;
 		}
 		fclose($fp);
 
+
+	}
+
+
+	public function copyVendorAddress(){
+
+		// Vendor::where('copy_address','exists',true)->unset('copy_address');
+
+		$vendors = Vendor::where('copy_address','exists',false)->where('hidden',false)->where('multiaddress','size',1)->get(['multiaddress','_id']);
+
+		$service_ids = [];
+
+		foreach ($vendors as $vendor) {
+
+			$id = $vendor['_id'];
+
+			$address = $vendor['multiaddress'][0];
+
+			$vendorServices = Vendorservice::where('hidden',false)->where('vendor_id',$id)->get();
+
+			if(!empty($vendorServices)){
+
+				foreach($vendorServices as $service){
+
+					$service_address = [
+						'line1'=>$address['line1'],
+						'line2'=>$address['line2'],
+						'line3'=>$address['line3'],
+						'landmark'=>$address['landmark'],
+						'pincode'=>$address['pincode']
+					];
+
+					$service->address = $service_address;
+					$service->location_id = $address['location_id'][0];
+					$service->update();
+
+					$adminService = Service::find($service['_id']);
+
+					if($adminService){
+						$adminService->address = implode(",", $service_address);
+						$adminService->location_id = $address['location_id'][0];
+						$adminService->update(); 
+					}
+
+				}
+
+				$vendor->update(['copy_address'=>time()]);
+			}
+		}
+
+		echo"<pre>";print_r(count($vendors));exit;
+
+	}
+
+
+	public function linkSentOct(){
+
+		$customermailer = new CustomerMailer();
+
+		$successOrderEmailId = Order::active()
+			->where('created_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-10-01 00:00:00"))))
+			->whereIn('type',['memberships'])
+			->lists('customer_email');
+
+		$successOrderEmailId = array_unique($successOrderEmailId);
+
+		$linkSentOrders = Order::whereIn('type',['memberships'])
+			->where('created_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-10-01 00:00:00"))))
+			->where('status','!=','1')
+			->where("paymentLinkEmailCustomerTiggerCount","exists",true)
+			->where("paymentLinkEmailCustomerTiggerCount",">=",1)
+			->whereNotIn('customer_email',$successOrderEmailId)
+			->where('redundant_order','exists',false)
+			->where('linkSentNotSuccess','exists',false)
+			->where('ratecard_id','!=','')
+			->lists('customer_email');
+
+		if(!empty($linkSentOrders)){
+
+			$linkSentOrders = array_unique($linkSentOrders);
+
+			foreach ($linkSentOrders as $customer_email) {
+
+				$order = Order::whereIn('type',['memberships'])
+				->where('created_at', '>=', new DateTime(date("Y-m-d H:i:s",strtotime("2017-10-01 00:00:00"))))
+				->where('status','!=','1')
+				->where("paymentLinkEmailCustomerTiggerCount","exists",true)
+				->where("paymentLinkEmailCustomerTiggerCount",">=",1)
+				->where('customer_email',$customer_email)
+				->where('redundant_order','exists',false)
+				->where('ratecard_id','!=','')
+				->orderBy('id','desc')
+				->first();
+
+				$order = $order->toArray();
+
+				$customermailer->linkSentNotSuccess($order);
+
+				Order::where('customer_email',$customer_email)->update(['linkSentNotSuccess'=>time()]);
+			}
+		}
+
+		echo"<pre>";print_r(count($linkSentOrders));exit;
 
 	}
 
