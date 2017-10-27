@@ -2744,7 +2744,7 @@ class HomeController extends BaseController {
     public function postAnswers(){
         $data = Input::json()->all();
         $capture = new Capture($data);
-        $capture->type = "assistance_response";
+        $capture->capture_type = "assistance_response";
         $capture->save();
         return array('status'=>200, 'message'=>'Saved successfully', 'capture'=>  $capture);
 
