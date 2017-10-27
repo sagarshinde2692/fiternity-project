@@ -2743,11 +2743,10 @@ class HomeController extends BaseController {
 
     public function postAnswers(){
         $data = Input::json()->all();
-        $id = AssistanceAnswer::max('_id') + 1;
-        $answers = new AssistanceAnswer($data);
-        $answers->_id = $id;
-        $answers->save();
-        return array('status'=>200, 'message'=>'Saved successfully');
+        $capture = new Capture($data);
+        $capture->type = "assistance_response";
+        $capture->save();
+        return array('status'=>200, 'message'=>'Saved successfully', 'capture'=>  $capture);
 
     }
 
