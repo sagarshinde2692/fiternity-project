@@ -1125,8 +1125,13 @@ Class CustomerReward {
                 }
             }
             $excluded_vendors = isset($coupon["finders_exclude"]) ? $coupon["finders_exclude"] : [];
-            $included_vendors = isset($coupon["finders"]) ? $coupon["finders"] : [];
             if(isset($ratecard['finder_id']) && in_array($ratecard['finder_id'], $excluded_vendors)){
+                $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"Coupon not valid for this transaction");
+                return $resp;
+            }
+            $included_vendors = isset($coupon["finders"]) ? $coupon["finders"] : [];
+            Log::info($included_vendors);
+            if(isset($ratecard['finder_id']) && count($included_vendors) > 0 && !in_array($ratecard['finder_id'], $included_vendors)){
                 $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"Coupon not valid for this transaction");
                 return $resp;
             }
