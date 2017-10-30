@@ -378,9 +378,9 @@ class TransactionController extends \BaseController {
 
                 //$coupon_discount = isset($data['coupon_discount_amount']) ? $data['coupon_discount_amount'] : 0;
                 
-                $part_payment_data["amount"] = (int)($data["amount"] + $coupon_discount - ($data["amount_customer"] - $convinience_fee)*0.8);
+                // $part_payment_data["amount"] = (int)($data["amount"] + $coupon_discount - ($data["amount_customer"] - $convinience_fee)*0.8);
 
-                $part_payment_data["amount"] = $convinience_fee + ceil(($data["amount_customer"] * (20 / 100)));
+                $part_payment_data["amount"] = $convinience_fee + ceil(($data["amount_finder"] * (20 / 100)));
 
                 Log::info("part_payment:::::".$part_payment_data["amount"]);
 
@@ -1281,6 +1281,21 @@ class TransactionController extends \BaseController {
 
         $amount = $data['amount_customer'] = $data['amount'];
 
+        if(isset($data['ratecard_flags']) && isset($data['ratecard_flags']['convinience_fee_applicable']) && $data['ratecard_flags']['convinience_fee_applicable']){
+            
+            $convinience_fee_percent = Config::get('app.convinience_fee');
+
+            $convinience_fee = number_format($data['amount_finder']*$convinience_fee_percent/100, 0);
+
+            $convinience_fee = $convinience_fee <= 150 ? $convinience_fee : 150;
+
+            $amount += $convinience_fee;
+
+            $data['amount_customer'] += $convinience_fee;
+
+            $data['convinience_fee'] = $convinience_fee;
+        }
+
         if($data['type'] != 'events'){
 
             if($data['type'] == "memberships" && isset($data['customer_source']) && ($data['customer_source'] == "android" || $data['customer_source'] == "ios")){
@@ -1326,20 +1341,7 @@ class TransactionController extends \BaseController {
                     }
                 }
             }
-
-            if(isset($data['ratecard_flags']) && isset($data['ratecard_flags']['convinience_fee_applicable']) && $data['ratecard_flags']['convinience_fee_applicable']){
             
-                $convinience_fee_percent = Config::get('app.convinience_fee');
-
-                $convinience_fee = number_format($data['amount_finder']*$convinience_fee_percent/100, 0);
-
-                $convinience_fee = $convinience_fee <= 150 ? $convinience_fee : 150;
-
-                $amount += $convinience_fee;
-
-                $data['convinience_fee'] = $convinience_fee;
-            }
-
             $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($amount,$data['finder_id'],'paymentgateway',$data['offer_id'],$data['customer_id']);
 
             if(isset($data['cashback']) && $data['cashback'] == true){
@@ -1443,7 +1445,7 @@ class TransactionController extends \BaseController {
             }
         }
 
-        $data['amount'] = $data['amount_customer'] = $amount;
+        $data['amount'] = $amount;
 
         if($data['amount'] == 0){
             $data['full_payment_wallet'] = true;
