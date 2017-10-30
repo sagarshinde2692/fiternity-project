@@ -208,22 +208,7 @@ class TransactionController extends \BaseController {
             
         }        
 
-        $data['base_amount'] = $data['amount'];
-
-
-        if(isset($data['ratecard_flags']) && isset($data['ratecard_flags']['convinience_fee_applicable']) && $data['ratecard_flags']['convinience_fee_applicable']){
-            
-            $convinience_fee_percent = Config::get('app.convinience_fee');
-
-            $convinience_fee = number_format($data['amount_finder']*$convinience_fee_percent/100, 0);
-
-            $convinience_fee = $convinience_fee <= 150 ? $convinience_fee : 150;
-
-            $data['amount'] = $data['customer_amount'] = $data['amount'] + $convinience_fee;
-
-            $data['convinience_fee'] = $convinience_fee;
-
-        }
+        
 
         $finder_id = (int) $data['finder_id'];
 
@@ -233,7 +218,7 @@ class TransactionController extends \BaseController {
             return Response::json($finderDetail,$finderDetail['status']);
         }
 
-        $part_payment = (isset($finderDetail['data']['finder_flags']) && isset($finderDetail['data']['finder_flags']['part_payment'])) ? $finderDetail['data']['finder_flags']['part_payment'] : false;
+        
 
         // $cash_pickup = (isset($finderDetail['data']['finder_flags']) && isset($finderDetail['data']['finder_flags']['cash_pickup'])) ? $finderDetail['data']['finder_flags']['cash_pickup'] : false;
 
@@ -338,7 +323,8 @@ class TransactionController extends \BaseController {
 
             $data = array_merge($data,$cashbackRewardWallet['data']);
             
-        } 
+        }
+
 
         $txnid = "";
         $successurl = "";
@@ -365,14 +351,16 @@ class TransactionController extends \BaseController {
         $data['txnid'] = $txnid;
 
         Log::info($finderDetail["data"]);
+
+        $part_payment = (isset($finderDetail['data']['finder_flags']) && isset($finderDetail['data']['finder_flags']['part_payment'])) ? $finderDetail['data']['finder_flags']['part_payment'] : false;
         
-        if(!$updating_payment_mode && $part_payment && $data["amount_finder"] >= 3000){
+        if(!$updating_payment_mode && $part_payment && $data["amount_finder"] >= 2500){
 
             if($finderDetail["data"]["finder_flags"]["part_payment"]){
 
                 $part_payment_data = $data;
 
-                $convinience_fee = 0;
+                $convinience_fee = $part_payment_data['convinience_fee'] = 0;
 
                 $part_payment_data["amount"] = 0;
 
@@ -388,9 +376,11 @@ class TransactionController extends \BaseController {
 
                 }
 
-                $coupon_discount = isset($data['coupon_discount_amount']) ? $data['coupon_discount_amount'] : 0;
+                //$coupon_discount = isset($data['coupon_discount_amount']) ? $data['coupon_discount_amount'] : 0;
                 
                 $part_payment_data["amount"] = (int)($data["amount"] + $coupon_discount - ($data["amount_customer"] - $convinience_fee)*0.8);
+
+                $part_payment_data["amount"] = $convinience_fee + ceil(($data["amount_customer"] * (20 / 100)));
 
                 Log::info("part_payment:::::".$part_payment_data["amount"]);
 
@@ -451,7 +441,22 @@ class TransactionController extends \BaseController {
                 $data['remaining_amount'] = $order['amount_customer'] - $data['amount'] - $coupon_discount - $order['wallet_amount'];
 
         }
-        
+
+        $data['base_amount'] = $data['amount'];
+
+        if(isset($data['ratecard_flags']) && isset($data['ratecard_flags']['convinience_fee_applicable']) && $data['ratecard_flags']['convinience_fee_applicable']){
+            
+            $convinience_fee_percent = Config::get('app.convinience_fee');
+
+            $convinience_fee = number_format($data['amount_finder']*$convinience_fee_percent/100, 0);
+
+            $convinience_fee = $convinience_fee <= 150 ? $convinience_fee : 150;
+
+            $data['amount'] = $data['amount_customer'] = $data['amount'] + $convinience_fee;
+
+            $data['convinience_fee'] = $convinience_fee;
+
+        }
 
         $hash = getHash($data);
         $data = array_merge($data,$hash);
@@ -1277,26 +1282,75 @@ class TransactionController extends \BaseController {
         $amount = $data['amount_customer'] = $data['amount'];
 
         if($data['type'] != 'events'){
+
             if($data['type'] == "memberships" && isset($data['customer_source']) && ($data['customer_source'] == "android" || $data['customer_source'] == "ios")){
+
                 $this->appOfferDiscount = in_array($data['finder_id'], $this->appOfferExcludedVendors) ? 0 : $this->appOfferDiscount;
-                $data['app_discount_amount'] = intval($data['amount'] * ($this->appOfferDiscount/100));
-                $corporate_discount_percent = $this->utilities->getCustomerDiscount();
-                $data['customer_discount_amount'] = intval($data['amount'] * ($corporate_discount_percent/100));
-                $amount = $data['amount'] = $data['amount_customer'] = $data['amount'] - $data['app_discount_amount'] - $data['customer_discount_amount'];
-                $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount'],$data['finder_id'],'paymentgateway',$data['offer_id'],$data['customer_id']);
-            }else{
-                $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount_finder'],$data['finder_id'],'paymentgateway',$data['offer_id'],$data['customer_id']);
+                $data['app_discount_amount'] = intval($data['amount_finder'] * ($this->appOfferDiscount/100));
+
+                $amount -= $data['app_discount_amount'];
             }
 
+            $corporate_discount_percent = $this->utilities->getCustomerDiscount();
+            $data['customer_discount_amount'] = intval($data['amount_finder'] * ($corporate_discount_percent/100));
+
+            $amount -= $data['customer_discount_amount'];
+
+            if(isset($data["coupon_code"]) && $data["coupon_code"] != ""){
+
+                $ticket_quantity = isset($data['ticket_quantity'])?$data['ticket_quantity']:1;
+                $ticket = null;
+                if(isset($data['ticket_id'])){
+                    $ticket = Ticket::find($data['ticket_id']);
+                    if(!$ticket){
+                        $resp = array('status'=>400, 'message'=>'Ticket not found');
+                        return Response::json($resp, 400);
+                    }
+                }
+                
+                $ratecard = isset($data['ratecard_id'])?Ratecard::find($data['ratecard_id']):null;
+                Log::info("Customer Info". $customer_id);
+                $service_id = isset($data['service_id']) ? $data['service_id'] : null;
+                
+                $couponCheck = $this->customerreward->couponCodeDiscountCheck($ratecard,$data["coupon_code"],$customer_id, $ticket, $ticket_quantity, $service_id);
+
+                if(isset($couponCheck["coupon_applied"]) && $couponCheck["coupon_applied"]){
+
+                    $data["coupon_discount_amount"] = $amount > $couponCheck["data"]["discount"] ? $couponCheck["data"]["discount"] : $amount;
+
+                    $amount -= $data["coupon_discount_amount"];
+
+                    if(isset($couponCheck["vendor_coupon"]) && $couponCheck["vendor_coupon"]){
+                        $data["payment_mode"] = "at the studio";
+                        $data["secondary_payment_mode"] = "cod_membership";
+                    }
+                }
+            }
+
+            if(isset($data['ratecard_flags']) && isset($data['ratecard_flags']['convinience_fee_applicable']) && $data['ratecard_flags']['convinience_fee_applicable']){
+            
+                $convinience_fee_percent = Config::get('app.convinience_fee');
+
+                $convinience_fee = number_format($data['amount_finder']*$convinience_fee_percent/100, 0);
+
+                $convinience_fee = $convinience_fee <= 150 ? $convinience_fee : 150;
+
+                $amount += $convinience_fee;
+
+                $data['convinience_fee'] = $convinience_fee;
+            }
+
+            $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($amount,$data['finder_id'],'paymentgateway',$data['offer_id'],$data['customer_id']);
+
             if(isset($data['cashback']) && $data['cashback'] == true){
-                $data['amount'] = $data['amount'] - $data['cashback_detail']['amount_discounted'];
+                $amount -= $data['cashback_detail']['amount_discounted'];
             }
 
             if(!isset($data['repetition'])){
 
                 if(isset($data['wallet']) && $data['wallet'] == true){
                     $data['wallet_amount'] = $data['cashback_detail']['amount_deducted_from_wallet'];
-                    $data['amount'] = $data['amount'] - $data['wallet_amount'];
+                    $amount -= $data['wallet_amount'];
                 }
 
                 if(isset($data['wallet_amount']) && $data['wallet_amount'] > 0){
@@ -1333,7 +1387,7 @@ class TransactionController extends \BaseController {
                 if(isset($new_data['wallet']) && $new_data['wallet'] == true){
 
                     $data['wallet_amount'] = $data['cashback_detail']['amount_deducted_from_wallet'];
-                    $data['amount'] = $data['amount'] - $data['wallet_amount'];
+                    $amount -= $data['wallet_amount'];
 
                     $req = array(
                         'customer_id'=>$data['customer_id'],
@@ -1389,34 +1443,7 @@ class TransactionController extends \BaseController {
             }
         }
 
-        
-        if(isset($data["coupon_code"]) && $data["coupon_code"] != ""){
-            $ticket_quantity = isset($data['ticket_quantity'])?$data['ticket_quantity']:1;
-            $ticket = null;
-            if(isset($data['ticket_id'])){
-                $ticket = Ticket::find($data['ticket_id']);
-                if(!$ticket){
-                    $resp = array('status'=>400, 'message'=>'Ticket not found');
-                    return Response::json($resp, 400);
-                }
-            }
-            
-            $ratecard = isset($data['ratecard_id'])?Ratecard::find($data['ratecard_id']):null;
-            Log::info("Customer Info". $customer_id);
-            $service_id = isset($data['service_id']) ? $data['service_id'] : null;
-            
-            $couponCheck = $this->customerreward->couponCodeDiscountCheck($ratecard,$data["coupon_code"],$customer_id, $ticket, $ticket_quantity, $service_id);
-
-            if(isset($couponCheck["coupon_applied"]) && $couponCheck["coupon_applied"]){
-                $data["amount"] = $data["amount"] > $couponCheck["data"]["discount"] ? $data["amount"] - $couponCheck["data"]["discount"] : 0;
-                $data["coupon_discount_amount"] = $data["amount"] > $couponCheck["data"]["discount"] ? $couponCheck["data"]["discount"] : $data["amount"];
-                if(isset($couponCheck["vendor_coupon"]) && $couponCheck["vendor_coupon"]){
-                    $data["payment_mode"] = "at the studio";
-                    $data["secondary_payment_mode"] = "cod_membership";
-                }
-            }
-        }
-
+        $data['amount'] = $data['amount_customer'] = $amount;
 
         if($data['amount'] == 0){
             $data['full_payment_wallet'] = true;
@@ -1877,9 +1904,9 @@ class TransactionController extends \BaseController {
 
         
 
-        $corporate_discount_percent = $this->utilities->getCustomerDiscount();
+       /* $corporate_discount_percent = $this->utilities->getCustomerDiscount();
         $data['customer_discount_amount'] = intval($data['amount'] * ($corporate_discount_percent/100));
-        $data['amount'] = $data['amount'] - $data['customer_discount_amount'];
+        $data['amount'] = $data['amount'] - $data['customer_discount_amount'];*/
 
         $medical_detail                     =   (isset($data['medical_detail']) && $data['medical_detail'] != '') ? $data['medical_detail'] : "";
         $medication_detail                  =   (isset($data['medication_detail']) && $data['medication_detail'] != '') ? $data['medication_detail'] : "";
