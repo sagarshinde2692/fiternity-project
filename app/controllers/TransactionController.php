@@ -356,13 +356,14 @@ class TransactionController extends \BaseController {
         
         if(!$updating_payment_mode && $part_payment && $data["amount_finder"] >= 2500){
 
+            $part_payment_data = $data;
+
+            $convinience_fee = $part_payment_data['convinience_fee'] = 0;
+
+            $part_payment_data["amount"] = 0;
+
+
             if($finderDetail["data"]["finder_flags"]["part_payment"]){
-
-                $part_payment_data = $data;
-
-                $convinience_fee = $part_payment_data['convinience_fee'] = 0;
-
-                $part_payment_data["amount"] = 0;
 
                 if(isset($data['ratecard_flags']) && isset($data['ratecard_flags']['convinience_fee_applicable']) && $data['ratecard_flags']['convinience_fee_applicable']){
                     
@@ -376,13 +377,19 @@ class TransactionController extends \BaseController {
 
                 }
 
-                //$coupon_discount = isset($data['coupon_discount_amount']) ? $data['coupon_discount_amount'] : 0;
-                
-                // $part_payment_data["amount"] = (int)($data["amount"] + $coupon_discount - ($data["amount_customer"] - $convinience_fee)*0.8);
+                $part_payment_amount = $convinience_fee + ceil(($data["amount_finder"] * (20 / 100)));
 
-                $part_payment_data["amount"] = $convinience_fee + ceil(($data["amount_finder"] * (20 / 100)));
+                $part_payment_data["amount"] = $part_payment_amount;
 
-                Log::info("part_payment:::::".$part_payment_data["amount"]);
+                if(isset($data['cashback_detail']) && isset($data['cashback_detail']['amount_deducted_from_wallet'])){
+
+                    $part_payment_data["amount"] = 0;
+
+                    if($part_payment_amount > $data['cashback_detail']['amount_deducted_from_wallet']){
+                        $part_payment_data["amount"] = $part_payment_amount - $data['cashback_detail']['amount_deducted_from_wallet'];
+                    }
+
+                }
 
                 $part_payment_hash ="";
                 
@@ -393,56 +400,91 @@ class TransactionController extends \BaseController {
                 }
             }
 
-            $data["part_payment_calculation"] = array("amount" => (int)($part_payment_data["amount"]), "hash" => $part_payment_hash, "convinience_fee"=>isset($part_payment_data['convinience_fee']) ? $part_payment_data['convinience_fee'] : 0, "full_wallet_payment" => $part_payment_data["amount"] == 0 ? true : false);
-            Log::info($data["part_payment_calculation"]);
+            $data["part_payment_calculation"] = array(
+                "amount" => (int)($part_payment_data["amount"]),
+                "hash" => $part_payment_hash,
+                "convinience_fee"=>$part_payment_data['convinience_fee'],
+                "full_wallet_payment" => $part_payment_data["amount"] == 0 ? true : false,
+                "part_payment_amount"=>$part_payment_amount
+            );
+
         }
 
         
         if(isset($data['part_payment']) && $data['part_payment']){
-        
-            $data['amount'] = (int)($order["part_payment_calculation"]['amount']);
 
-                $convinience_fee = isset($order['convinience_fee']) ? $order['convinience_fee'] : 0;
+            if(isset($order['wallet_amount']) && ((int) $order['wallet_amount']) >= 0){
 
-                $twenty_percent_amount = $convinience_fee + (int)(($order["amount_customer"] - $convinience_fee)*0.2);
+                $req = array(
+                    'customer_id'=>$order['customer_id'],
+                    'order_id'=>$order['_id'],
+                    'amount'=>$order['wallet_amount'],
+                    'type'=>'REFUND',
+                    'entry'=>'credit',
+                    'description'=>'Refund for Order ID: '.$order['_id'],
+                );
 
-                Log::info('$twenty_percent_amount::'.$twenty_percent_amount);
-
-                $coupon_discount = isset($order["coupon_discount_amount"]) ? $order["coupon_discount_amount"] : 0;
-
-                if(isset($order['wallet_amount'])){
-
-                    if($twenty_percent_amount < $order['wallet_amount']){
-
-                        $data['full_payment_wallet'] = true;
-                        
-                        $refund_amount = $order['wallet_amount']-$twenty_percent_amount;
-
-                        Log::info("returning wallet::".$refund_amount);
-
-                        $wallet_data = array(
-                            'customer_id'=>$order['customer_id'],
-                            'amount'=>$refund_amount,
-                            'amount_fitcash' => 0,
-                            'amount_fitcash_plus' => $refund_amount,
-                            'type'=>'CREDIT',
-                            'entry'=>'credit',
-                            'description'=>"Refund for Order ID: ".$order['_id'],
-                        );
-                        $walletTransactionResponse = $this->utilities->walletTransaction($wallet_data);
-
-                        $data['wallet_amount'] = $order['wallet_amount'] = $twenty_percent_amount;
-                    }
-
-                }
+                $walletTransactionResponse = $this->utilities->walletTransaction($req,$order->toArray());
                 
-                $fitcash_applied = isset($order['wallet_amount']) ? $order['wallet_amount'] : 0;
+                /*if($walletTransactionResponse['status'] != 200){
+                    return Response::json($walletTransactionResponse,$walletTransactionResponse['status']);
+                }*/
 
-                $data['remaining_amount'] = $order['amount_customer'] - $data['amount'] - $coupon_discount - $order['wallet_amount'];
+                //echo"<pre>";print_r($order["part_payment_calculation"]);exit;
+
+                $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($order['amount'],$data['finder_id'],'paymentgateway',$data['offer_id'],$data['customer_id'],$order["part_payment_calculation"]["part_payment_amount"]);
+
+                //echo"<pre>";print_r($cashback_detail);exit;
+        
+
+                if(isset($order['wallet']) && $order['wallet'] == true){
+
+                    $order['wallet_amount'] = $order['cashback_detail']['amount_deducted_from_wallet'];
+                }
+
+                if(isset($order['wallet_amount']) && $order['wallet_amount'] > 0){
+
+                    $req = array(
+                        'customer_id'=>$data['customer_id'],
+                        'order_id'=>$data['order_id'],
+                        'amount'=>$order['wallet_amount'],
+                        'type'=>'DEBIT',
+                        'entry'=>'debit',
+                        'description'=> $this->utilities->getDescription($data),
+                        'finder_id'=>$data['finder_id']
+                    );
+
+                    $walletTransactionResponse = $this->utilities->walletTransactionNew($req);
+                    
+                    if($walletTransactionResponse['status'] == 200){
+                        $data['wallet_transaction_debit'] = $walletTransactionResponse['wallet_transaction_debit'];
+                    }
+                }
+
+                $data['remaining_amount'] = $order['amount_customer'] - $order["part_payment_calculation"]["part_payment_amount"];
+
+                if(isset($order['coupon_discount_amount']) && $order['coupon_discount_amount'] > 0){
+
+                    $data['remaining_amount'] -= $order['coupon_discount_amount'];
+                }
+
+                if(isset($order['customer_discount_amount']) && $order['customer_discount_amount'] > 0){
+
+                    $data['remaining_amount'] -= $order['customer_discount_amount'];
+                }
+
+                if(isset($order['app_discount_amount']) && $order['app_discount_amount'] > 0){
+
+                    $data['remaining_amount'] -= $order['app_discount_amount'];
+                }
+
+                $data['amount'] = $order["part_payment_calculation"]["amount"];
+
+            }
 
         }
 
-        $data['base_amount'] = $data['amount'];
+        $data['convinience_fee'] = 0;
 
         if(isset($data['ratecard_flags']) && isset($data['ratecard_flags']['convinience_fee_applicable']) && $data['ratecard_flags']['convinience_fee_applicable']){
             
@@ -452,11 +494,11 @@ class TransactionController extends \BaseController {
 
             $convinience_fee = $convinience_fee <= 150 ? $convinience_fee : 150;
 
-            $data['amount'] = $data['amount_customer'] = $data['amount'] + $convinience_fee;
-
             $data['convinience_fee'] = $convinience_fee;
 
         }
+
+        $data['base_amount'] = $order['amount_customer'] - $data['convinience_fee'] ;
 
         $hash = getHash($data);
         $data = array_merge($data,$hash);
@@ -3084,12 +3126,28 @@ class TransactionController extends \BaseController {
                 'value' => '-Rs. '.$data['coupon_discount_amount']
             );
         }
+
+        if(isset($data['customer_discount_amount']) && $data['customer_discount_amount'] > 0){
+
+            $payment_details[] = array(
+                'field' => 'Corporate Discount',
+                'value' => '-Rs. '.$data['customer_discount_amount']
+            );
+        }
+
+        if(isset($data['app_discount_amount']) && $data['app_discount_amount'] > 0){
+
+            $payment_details[] = array(
+                'field' => 'App Discount',
+                'value' => '-Rs. '.$data['app_discount_amount']
+            );
+        }
         
         if(isset($data['convinience_fee']) && $data['convinience_fee'] > 0){
 
             $payment_details[] = array(
                 'field' => 'Convinience fee',
-                'value' => '+Rs. '.$data['cashback_detail']['amount_deducted_from_wallet']
+                'value' => '+Rs. '.$data['convinience_fee']
             );
         }
 
@@ -3127,7 +3185,7 @@ class TransactionController extends \BaseController {
 
 
 
-        if($data['part_payment']){
+        if(!empty($data['part_payment']) && $data['part_payment']){
             $payment_modes[] = array(
                 'title' => 'Reserve Payment',
                 'subtitle' => 'Pay 20% to reserve membership adn pay rest on joining',

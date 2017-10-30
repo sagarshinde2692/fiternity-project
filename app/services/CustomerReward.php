@@ -520,7 +520,7 @@ Class CustomerReward {
         }*/
     }
 
-   public function purchaseGameNew($amount,$finder_id,$payment_mode = "paymentgateway",$offer_id = false,$customer_id = false){
+   public function purchaseGameNew($amount,$finder_id,$payment_mode = "paymentgateway",$offer_id = false,$customer_id = false,$part_payment_amount = false){
 
         $current_wallet_balance = 0;
         $wallet = 0;
@@ -650,6 +650,10 @@ Class CustomerReward {
 
         if($amount > 50000){
             $setAlgo = array('cashback'=>0,'fitcash'=>0,'discount'=>0);
+        }
+
+        if($part_payment_amount){
+            $amount = $part_payment_amount;
         }
 
         $original_amount = $amount;
@@ -914,7 +918,7 @@ Class CustomerReward {
     }
 
 
-    public function purchaseGame($amount,$finder_id,$payment_mode = "paymentgateway",$offer_id = false,$customer_id = false){
+    public function purchaseGame($amount,$finder_id,$payment_mode = "paymentgateway",$offer_id = false,$customer_id = false,$part_payment_amount = false){
 
         $jwt_token = Request::header('Authorization');
 
@@ -929,7 +933,7 @@ Class CustomerReward {
 
         if(isset($customer->demonetisation)){
 
-            return $this->purchaseGameNew($amount,$finder_id,$payment_mode,$offer_id,$customer_id);
+            return $this->purchaseGameNew($amount,$finder_id,$payment_mode,$offer_id,$customer_id,$part_payment_amount);
 
         }
 
