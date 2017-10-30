@@ -2828,7 +2828,7 @@ class HomeController extends BaseController {
                             "description"=>"A cardio based dance workout form performed on dhol beats to achieve fat burn.",
                             "calories_burn"=>"Burn 700 Calories",
                             "image"=>"https://cdn.fitn.in/Mfp-delhi/masalab-web.jpg",
-                            "trainer"=>"With Shalini Nupur",
+                            "trainer"=>"With Nupur",
                             "time"=>"8:15 AM - 8:45 AM"
                         ],
                         [
@@ -2861,7 +2861,7 @@ class HomeController extends BaseController {
                             "calories_burn"=>"Burn 350 Calories",
                             "image"=>"https://cdn.fitn.in/Mfp-delhi/crushfitness.jpg",
                             "trainer"=>"With Crush Fitness",
-                            "time"=>"9:00 AM - 9:30 AM"
+                            "time"=>"9:45 AM - 10:15 AM"
                         ],
                         // [
                         //     "title"=>"Pilates",
