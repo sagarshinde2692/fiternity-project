@@ -357,7 +357,7 @@ class FindersController extends \BaseController {
 
 				if(isset($finderarr['knowlarityno']) && $finderarr['knowlarityno'] != ''){
 					$finderarr['knowlarityno']['phone_number'] = '+91'.$finderarr['knowlarityno']['phone_number'];
-					$finderarr['knowlarityno']['extension'] = strlen($finderarr['knowlarityno']['extension']) < 2 ?  "0".$finderarr['knowlarityno']['extension'] : $finderarr['knowlarityno']['extension'];
+					$finderarr['knowlarityno']['extension'] = strlen($finderarr['knowlarityno']['extension']) < 2 && $finderarr['knowlarityno']['extension'] >= 1  ?  "0".$finderarr['knowlarityno']['extension'] : $finderarr['knowlarityno']['extension'];
 					$finder['knowlarityno'] = $finderarr['knowlarityno'];
 					$finder['ozonetelno'] = $finder['knowlarityno'];
 				}
