@@ -177,4 +177,8 @@ class Finder extends  \Basemodel {
 		return $this->belongsTo('Brand');
 	}
 
+	public function knowlarityno(){
+		return $this->hasOne('KnowlarityNo','vendor_id');
+	}
+
 }
