@@ -82,7 +82,7 @@ class FindersController extends \BaseController {
 
 
 
-	public function finderdetail($slug, $cache = true){
+	public function finderdetail($slug, $cache = false){
 		
 		$data   =  array();
 		$tslug  = (string) strtolower($slug);
@@ -153,6 +153,7 @@ class FindersController extends \BaseController {
 				->with('offerings')
 				->with('facilities')
 				->with(array('ozonetelno'=>function($query){$query->select('*')->where('status','=','1');}))
+				->with(array('knowlarityno'=>function($query){$query->select('*')->where('status',true);}))
 				->with(array('services'=>function($query){$query->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))->where('status','=','1')->orderBy('ordering', 'ASC');}))
 				->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1')->orderBy('updated_at', 'DESC')->limit(5);}))
 				// ->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1')->orderBy('_id', 'DESC');}))
@@ -352,6 +353,13 @@ class FindersController extends \BaseController {
 				if(isset($finderarr['ozonetelno']) && $finderarr['ozonetelno'] != ''){
 					$finderarr['ozonetelno']['phone_number'] = '+'.$finderarr['ozonetelno']['phone_number'];
 					$finder['ozonetelno'] = $finderarr['ozonetelno'];
+				}
+
+				if(isset($finderarr['knowlarityno']) && $finderarr['knowlarityno'] != ''){
+					$finderarr['knowlarityno']['phone_number'] = '+91'.$finderarr['knowlarityno']['phone_number'];
+					$finderarr['knowlarityno']['extension'] = strlen($finderarr['knowlarityno']['extension']) < 2 && $finderarr['knowlarityno']['extension'] >= 1  ?  "0".$finderarr['knowlarityno']['extension'] : $finderarr['knowlarityno']['extension'];
+					$finder['knowlarityno'] = $finderarr['knowlarityno'];
+					$finder['ozonetelno'] = $finder['knowlarityno'];
 				}
 
 				$finder['review_count']     =   Review::active()->where('finder_id',$finderarr['_id'])->count();
@@ -2532,10 +2540,10 @@ class FindersController extends \BaseController {
 				->with('offerings')
 				->with('facilities')
 				->with(array('ozonetelno'=>function($query){$query->select('*')->where('status','=','1');}))
+				->with(array('knowlarityno'=>function($query){$query->select('*')->where('status',true);}))
 				->with(array('services'=>function($query){$query->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}))
 				->with(array('reviews'=>function($query){$query->select('_id','finder_id','customer_id','rating','description','updated_at')->where('status','=','1')->with(array('customer'=>function($query){$query->select('_id','name','picture')->where('status','=','1');}))->orderBy('updated_at', 'DESC')->limit(1);}))
 				->first(array('_id','slug','title','lat','lon','category_id','category','location_id','location','city_id','city','categorytags','locationtags','offerings','facilities','coverimage','finder_coverimage','contact','average_rating','photos','info','manual_trial_enable','manual_trial_auto','trial','commercial_type','multiaddress','membership','flags'));
-
 
 			$finder = false;
 
@@ -2807,6 +2815,13 @@ class FindersController extends \BaseController {
 					$finder['ozonetelno']['phone_number'] = '+'.$finder['ozonetelno']['phone_number'].$extension;
 					$finder['contact']['phone'] = $finder['ozonetelno']['phone_number'];
 					unset($finder['ozonetelno']);
+					unset($finder['contact']['website']);
+				}
+				if(isset($finderarr['knowlarityno']) && $finderarr['knowlarityno'] != ''){
+					$extension = (isset($finder['knowlarityno']['extension']) && $finder['knowlarityno']['extension'] != "") ? ",,".$finder['knowlarityno']['extension'] : "";
+					$finder['knowlarityno']['phone_number'] = '+91'.$finder['knowlarityno']['phone_number'].$extension;
+					$finder['contact']['phone'] = $finder['knowlarityno']['phone_number'];
+					unset($finder['knowlarityno']);
 					unset($finder['contact']['website']);
 				}
 				if(isset($finderarr['multiaddress']) && count($finderarr['multiaddress']) > 0){
