@@ -1095,7 +1095,7 @@ Class CustomerReward {
         if(isset($coupon)){
             
             $vendor_coupon = false;
-            if(isset($coupon["ticket_id"]) && !$ticket){
+            if(isset($coupon["tickets"]) && !$ticket){
                 $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"Coupon not valid for this transaction");
                 return $resp;
             }
