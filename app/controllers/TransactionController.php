@@ -3027,15 +3027,43 @@ class TransactionController extends \BaseController {
             $booking_details_data["finder_name_location"] = ['field'=>'SESSION BOOKED AT','value'=>$data['finder_name'].", ".$data['finder_location'],'position'=>$position++];
         }
 
-        $booking_details_data["service_name"] = ['field'=>'SERVICE NAME','value'=>$data['service_name'],'position'=>$position++];
+        $booking_details_data["service_name"] = ['field'=>'SERVICE','value'=>$data['service_name'],'position'=>$position++];
 
-        $booking_details_data["service_duration"] = ['field'=>'SERVICE DURATION','value'=>$data['service_duration'],'position'=>$position++];
+        $booking_details_data["service_duration"] = ['field'=>'DURATION','value'=>$data['service_duration'],'position'=>$position++];
 
         $booking_details_data["start_date"] = ['field'=>'START DATE','value'=>'-','position'=>$position++];
 
         $booking_details_data["start_time"] = ['field'=>'START TIME','value'=>'-','position'=>$position++];
 
         $booking_details_data["address"] = ['field'=>'ADDRESS','value'=>'','position'=>$position++];
+
+        if(isset($data['reward_ids']) && !empty($data['reward_ids'])){
+
+            $reward_detail = array();
+
+            $reward_ids = array_map('intval',$data['reward_ids']);
+
+            $rewards = Reward::whereIn('_id',$reward_ids)->get(array('_id','title','quantity','reward_type','quantity_type'));
+
+            if(count($rewards) > 0){
+
+                foreach ($rewards as $value) {
+
+                    $title = $value->title;
+
+                    $reward_detail[] = ($value->reward_type == 'nutrition_store') ? $title : $value->quantity." ".$title;
+                    
+                    array_set($data, 'reward_type', $value->reward_type);
+
+                }
+
+                $reward_info = (!empty($reward_detail)) ? implode(" + ",$reward_detail) : "";
+
+                array_set($data, 'reward_info', $reward_info);
+                
+            }
+
+        }
 
         if(isset($data["reward_info"]) && $data["reward_info"] != ""){
 
