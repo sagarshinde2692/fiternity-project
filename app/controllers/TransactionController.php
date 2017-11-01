@@ -1408,11 +1408,16 @@ class TransactionController extends \BaseController {
                 $amount -= $data['cashback_detail']['amount_discounted'];
             }
 
+            
+
             if(!isset($data['repetition'])){
+
+                if(isset($data['cashback_detail']['amount_deducted_from_wallet']) && $data['cashback_detail']['amount_deducted_from_wallet'] > 0){
+                    $amount -= $data['cashback_detail']['amount_deducted_from_wallet'];
+                }
 
                 if(isset($data['wallet']) && $data['wallet'] == true){
                     $data['wallet_amount'] = $data['cashback_detail']['amount_deducted_from_wallet'];
-                    $amount -= $data['wallet_amount'];
                 }
 
                 if(isset($data['wallet_amount']) && $data['wallet_amount'] > 0){
@@ -1448,8 +1453,11 @@ class TransactionController extends \BaseController {
 
                 if(isset($new_data['wallet']) && $new_data['wallet'] == true){
 
+                    if(isset($data['cashback_detail']['amount_deducted_from_wallet']) && $data['cashback_detail']['amount_deducted_from_wallet'] > 0){
+                        $amount -= $data['cashback_detail']['amount_deducted_from_wallet'];
+                    }
+
                     $data['wallet_amount'] = $data['cashback_detail']['amount_deducted_from_wallet'];
-                    $amount -= $data['wallet_amount'];
 
                     if(isset($data['wallet_amount']) && $data['wallet_amount'] > 0){
 
