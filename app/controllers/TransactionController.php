@@ -134,7 +134,7 @@ class TransactionController extends \BaseController {
         $updating_payment_mode = ((isset($data['payment_mode']) && $data['payment_mode'] == 'cod') || (isset($data['part_payment']) && $data['part_payment'])) ? true : false;
 
 
-        if(!empty($data['paymentmode_selected'])){
+        if(isset($data['paymentmode_selected']) && $data['paymentmode_selected'] != ""){
 
             switch ($data['paymentmode_selected']) {
                 case 'part_payment': $data['part_payment'] = true;break;
@@ -1461,27 +1461,30 @@ class TransactionController extends \BaseController {
                     $data['wallet_amount'] = $data['cashback_detail']['amount_deducted_from_wallet'];
                     $amount -= $data['wallet_amount'];
 
-                    $req = array(
-                        'customer_id'=>$data['customer_id'],
-                        'order_id'=>$data['order_id'],
-                        'amount'=>$data['wallet_amount'],
-                        'type'=>'DEBIT',
-                        'entry'=>'debit',
-                        'description'=> $this->utilities->getDescription($data),
-                        'finder_id'=>$data['finder_id']
-                    );
-                    $walletTransactionResponse = $this->utilities->walletTransactionNew($req);
-                    
-                    if($walletTransactionResponse['status'] != 200){
-                        return $walletTransactionResponse;
-                    }else{
-                        $data['wallet_transaction_debit'] = $walletTransactionResponse['wallet_transaction_debit'];
-                    }
+                    if(isset($data['wallet_amount']) && $data['wallet_amount'] > 0){
 
-                    // Schedule Check orderfailure and refund wallet amount in that case....
-                    $url = Config::get('app.url').'/orderfailureaction/'.$data['order_id'].'/'.$customer_id;
-                    $delay = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addHours(4);
-                    $data['wallet_refund_sidekiq'] = $this->hitURLAfterDelay($url, $delay);
+                        $req = array(
+                            'customer_id'=>$data['customer_id'],
+                            'order_id'=>$data['order_id'],
+                            'amount'=>$data['wallet_amount'],
+                            'type'=>'DEBIT',
+                            'entry'=>'debit',
+                            'description'=> $this->utilities->getDescription($data),
+                            'finder_id'=>$data['finder_id']
+                        );
+                        $walletTransactionResponse = $this->utilities->walletTransactionNew($req);
+                        
+                        if($walletTransactionResponse['status'] != 200){
+                            return $walletTransactionResponse;
+                        }else{
+                            $data['wallet_transaction_debit'] = $walletTransactionResponse['wallet_transaction_debit'];
+                        }
+
+                        // Schedule Check orderfailure and refund wallet amount in that case....
+                        $url = Config::get('app.url').'/orderfailureaction/'.$data['order_id'].'/'.$customer_id;
+                        $delay = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addHours(4);
+                        $data['wallet_refund_sidekiq'] = $this->hitURLAfterDelay($url, $delay);
+                    }
 
                 }else{
 
