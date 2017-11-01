@@ -642,7 +642,12 @@ class TransactionController extends \BaseController {
             
             $resp['data']['order_details'] = $this->getBookingDetails($order->toArray());
 
-            $payment_mode_type_array = ['paymentgateway','emi','cod','part_payment'];
+            $payment_mode_type_array = ['paymentgateway','emi','cod'];
+
+            if(isset($finderDetail['data']['finder_flags']) && isset($finderDetail['data']['finder_flags']['part_payment'])){
+
+                $payment_mode_type_array[] = 'part_payment';
+            }
 
             $payment_details = [];
 
