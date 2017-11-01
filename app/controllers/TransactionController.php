@@ -426,7 +426,7 @@ class TransactionController extends \BaseController {
         
         if(isset($data['part_payment']) && $data['part_payment']){
 
-            if(isset($order['wallet_amount']) && ((int) $order['wallet_amount']) >= 0){
+            if(isset($order['wallet_amount']) && ((int) $order['wallet_amount']) > 0){
 
                 $req = array(
                     'customer_id'=>$order['customer_id'],
@@ -438,72 +438,62 @@ class TransactionController extends \BaseController {
                 );
 
                 $walletTransactionResponse = $this->utilities->walletTransaction($req,$order->toArray());
-                
-                /*if($walletTransactionResponse['status'] != 200){
-                    return Response::json($walletTransactionResponse,$walletTransactionResponse['status']);
-                }*/
-
-                //echo"<pre>";print_r($order["part_payment_calculation"]);exit;
-
-                $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($order['amount'],$data['finder_id'],'paymentgateway',$data['offer_id'],$data['customer_id'],$order["part_payment_calculation"]["part_payment_amount"]);
-
-                //echo"<pre>";print_r($cashback_detail);exit;
-        
-
-                if(isset($order['wallet']) && $order['wallet'] == true){
-
-                    $order['wallet_amount'] = $order['cashback_detail']['amount_deducted_from_wallet'];
-                }
-
-                if(isset($order['wallet_amount']) && $order['wallet_amount'] > 0){
-
-                    $req = array(
-                        'customer_id'=>$data['customer_id'],
-                        'order_id'=>$data['order_id'],
-                        'amount'=>$order['wallet_amount'],
-                        'type'=>'DEBIT',
-                        'entry'=>'debit',
-                        'description'=> $this->utilities->getDescription($data),
-                        'finder_id'=>$data['finder_id']
-                    );
-
-                    $walletTransactionResponse = $this->utilities->walletTransactionNew($req);
-                    
-                    if($walletTransactionResponse['status'] == 200){
-                        $data['wallet_transaction_debit'] = $walletTransactionResponse['wallet_transaction_debit'];
-                    }
-                }
-
-                $data['remaining_amount'] = $order['amount_customer'];
-
-                if(isset($order["part_payment_calculation"]["part_payment_amount"]) && $order["part_payment_calculation"]["part_payment_amount"] > 0){
-
-                    $data['remaining_amount'] -= $order["part_payment_calculation"]["part_payment_amount"];
-                }
-
-                if(isset($order["part_payment_calculation"]["convinience_fee"]) && $order["part_payment_calculation"]["convinience_fee"] > 0){
-
-                    $data['remaining_amount'] -= $order["part_payment_calculation"]["convinience_fee"];
-                }
-
-                if(isset($order['coupon_discount_amount']) && $order['coupon_discount_amount'] > 0){
-
-                    $data['remaining_amount'] -= $order['coupon_discount_amount'];
-                }
-
-                if(isset($order['customer_discount_amount']) && $order['customer_discount_amount'] > 0){
-
-                    $data['remaining_amount'] -= $order['customer_discount_amount'];
-                }
-
-                if(isset($order['app_discount_amount']) && $order['app_discount_amount'] > 0){
-
-                    $data['remaining_amount'] -= $order['app_discount_amount'];
-                }
-
-                $data['amount'] = $order["part_payment_calculation"]["amount"];
-
             }
+
+            $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($order['amount'],$data['finder_id'],'paymentgateway',$data['offer_id'],$data['customer_id'],$order["part_payment_calculation"]["part_payment_amount"]);
+
+            if(isset($data['wallet']) && $data['wallet'] == true){
+
+                $data['wallet_amount'] = $data['cashback_detail']['amount_deducted_from_wallet'];
+            }
+
+            if(isset($data['wallet_amount']) && $data['wallet_amount'] > 0){
+
+                $req = array(
+                    'customer_id'=>$data['customer_id'],
+                    'order_id'=>$data['order_id'],
+                    'amount'=>$data['wallet_amount'],
+                    'type'=>'DEBIT',
+                    'entry'=>'debit',
+                    'description'=> $this->utilities->getDescription($data),
+                    'finder_id'=>$data['finder_id']
+                );
+
+                $walletTransactionResponse = $this->utilities->walletTransactionNew($req);
+                
+                if($walletTransactionResponse['status'] == 200){
+                    $data['wallet_transaction_debit'] = $walletTransactionResponse['wallet_transaction_debit'];
+                }
+            }
+
+            $data['remaining_amount'] = $order['amount_customer'];
+
+            if(isset($order["part_payment_calculation"]["part_payment_amount"]) && $order["part_payment_calculation"]["part_payment_amount"] > 0){
+
+                $data['remaining_amount'] -= $order["part_payment_calculation"]["part_payment_amount"];
+            }
+
+            if(isset($order["part_payment_calculation"]["convinience_fee"]) && $order["part_payment_calculation"]["convinience_fee"] > 0){
+
+                $data['remaining_amount'] -= $order["part_payment_calculation"]["convinience_fee"];
+            }
+
+            if(isset($order['coupon_discount_amount']) && $order['coupon_discount_amount'] > 0){
+
+                $data['remaining_amount'] -= $order['coupon_discount_amount'];
+            }
+
+            if(isset($order['customer_discount_amount']) && $order['customer_discount_amount'] > 0){
+
+                $data['remaining_amount'] -= $order['customer_discount_amount'];
+            }
+
+            if(isset($order['app_discount_amount']) && $order['app_discount_amount'] > 0){
+
+                $data['remaining_amount'] -= $order['app_discount_amount'];
+            }
+
+            $data['amount'] = $order["part_payment_calculation"]["amount"];
 
         }
 
