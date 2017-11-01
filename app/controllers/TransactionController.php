@@ -133,6 +133,19 @@ class TransactionController extends \BaseController {
 
         $updating_payment_mode = ((isset($data['payment_mode']) && $data['payment_mode'] == 'cod') || (isset($data['part_payment']) && $data['part_payment'])) ? true : false;
 
+
+        if(!empty($data['paymentmode_selected'])){
+
+            switch ($data['paymentmode_selected']) {
+                case 'part_payment': $data['part_payment'] = true;break;
+                case 'cod': $data['payment_mode'] = 'cod';break;
+                case 'emi': $data['payment_mode'] = 'paymentgateway';break;
+                case 'paymentgateway': $data['payment_mode'] = 'paymentgateway';break;
+                default:break;
+            }
+
+        }
+
         $updating_part_payment = (isset($data['part_payment']) && $data['part_payment']) ? true : false;
 
         $updating_cod = (isset($data['payment_mode']) && $data['payment_mode'] == 'cod') ? true : false;
