@@ -3137,7 +3137,7 @@ class TransactionController extends \BaseController {
 
         $amount_payable = [];
 
-        $amount_payable[0] = array(
+        $amount_payable= array(
             'field' => 'Total Amount Payable',
             'value' => 'Rs. '.$data['amount']
         );
@@ -3149,7 +3149,7 @@ class TransactionController extends \BaseController {
                 'value' => 'Rs. '.$data['part_payment_calculation']['part_payment_amount']
             );
 
-            $amount_payable[0] = array(
+            $amount_payable = array(
                 'field' => 'Total Amount Payable (20%)',
                 'value' => 'Rs. '.$data['part_payment_calculation']['amount']
             );
