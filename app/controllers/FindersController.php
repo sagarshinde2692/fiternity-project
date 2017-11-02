@@ -361,6 +361,9 @@ class FindersController extends \BaseController {
 					$finder['knowlarityno'] = $finderarr['knowlarityno'];
 					$finder['ozonetelno'] = $finder['knowlarityno'];
 				}
+				if($finderarr['city_id'] == 4 || $finderarr['city_id'] == 8 || $finderarr['city_id'] == 9){
+					unset($finder['ozonetelno']);
+				}
 
 				$finder['review_count']     =   Review::active()->where('finder_id',$finderarr['_id'])->count();
 
@@ -2810,7 +2813,7 @@ class FindersController extends \BaseController {
 
 				$finder['review_count']     =   Review::active()->where('finder_id',$finderarr['_id'])->count();
 				$finder['average_rating']   =   (isset($finder['average_rating']) && $finder['average_rating'] != "") ? round($finder['average_rating'],1) : 0;
-
+				
 				if(isset($finderarr['ozonetelno']) && $finderarr['ozonetelno'] != '' && isset($finder['contact']['phone']) && $finder['contact']['phone'] != ""){
 
 					$extension = (isset($finder['ozonetelno']['extension']) && $finder['ozonetelno']['extension'] != "") ? ",".$finder['ozonetelno']['extension'] : "";
@@ -2825,6 +2828,9 @@ class FindersController extends \BaseController {
 					$finder['contact']['phone'] = $finder['knowlarityno']['phone_number'];
 					unset($finder['knowlarityno']);
 					unset($finder['contact']['website']);
+				}
+				if($finderarr['city_id'] == 4 || $finderarr['city_id'] == 8 || $finderarr['city_id'] == 9){
+					$finder['contact']['phone'] = $finderarr['contact']['phone'];
 				}
 				if(isset($finderarr['multiaddress']) && count($finderarr['multiaddress']) > 0){
 					$finder['multiaddress'] = $finderarr['multiaddress'];
