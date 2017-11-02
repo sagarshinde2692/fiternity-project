@@ -3129,6 +3129,7 @@ class HomeController extends BaseController {
                 ),
             200
         );
+    }
     public function getAssitanceQuestions(){
         $questions = AssistanceQuestion::all();
         return $questions;
