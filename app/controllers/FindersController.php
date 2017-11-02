@@ -361,15 +361,15 @@ class FindersController extends \BaseController {
 					$finder['knowlarityno'] = $finderarr['knowlarityno'];
 					$finder['ozonetelno'] = $finder['knowlarityno'];
 				}
-				if($finderarr['city_id'] == 4 || $finderarr['city_id'] == 8 || $finderarr['city_id'] == 9){
-					$direct_Fitternity_delhi_vendors = [4929,4968,5027,5066,5145,5355,5603,5609,5617,5709,6047,6411,6412,6499,6534,6876,6895,6979,7136,7448,7657,7907,7909,8289,8837,8878,9125,9171,9178,9201,9337,9397,9415,9417,9600,9624,9726,9728,9876,9878,9888,9913,10245,10568,10570,10624,10847,10957,10962,10993,11034,11040,11134,11176,11274,11374,6993,10987,8470,8823,6446,9855,11028,11030,11031,9854];
-					if(in_array($finderarr["_id"],$direct_Fitternity_delhi_vendors)){
-						$finder['contact']['phone'] = Config::get('app.contact_us_customer_number');
-					}else{
-						$finder['contact']['phone'] = $finderarr['contact']['phone'];
-					}
-					unset($finder['ozonetelno']);
-				}
+				// if($finderarr['city_id'] == 4 || $finderarr['city_id'] == 8 || $finderarr['city_id'] == 9){
+				// 	$direct_Fitternity_delhi_vendors = [4929,4968,5027,5066,5145,5355,5603,5609,5617,5709,6047,6411,6412,6499,6534,6876,6895,6979,7136,7448,7657,7907,7909,8289,8837,8878,9125,9171,9178,9201,9337,9397,9415,9417,9600,9624,9726,9728,9876,9878,9888,9913,10245,10568,10570,10624,10847,10957,10962,10993,11034,11040,11134,11176,11274,11374,6993,10987,8470,8823,6446,9855,11028,11030,11031,9854];
+				// 	if(in_array($finderarr["_id"],$direct_Fitternity_delhi_vendors)){
+				// 		$finder['contact']['phone'] = Config::get('app.contact_us_customer_number');
+				// 	}else{
+				// 		$finder['contact']['phone'] = $finderarr['contact']['phone'];
+				// 	}
+				// 	unset($finder['ozonetelno']);
+				// }
 
 				$finder['review_count']     =   Review::active()->where('finder_id',$finderarr['_id'])->count();
 
@@ -2835,14 +2835,14 @@ class FindersController extends \BaseController {
 					unset($finder['knowlarityno']);
 					unset($finder['contact']['website']);
 				}
-				if($finderarr['city_id'] == 4 || $finderarr['city_id'] == 8 || $finderarr['city_id'] == 9){
-					$direct_Fitternity_delhi_vendors = [4929,4968,5027,5066,5145,5355,5603,5609,5617,5709,6047,6411,6412,6499,6534,6876,6895,6979,7136,7448,7657,7907,7909,8289,8837,8878,9125,9171,9178,9201,9337,9397,9415,9417,9600,9624,9726,9728,9876,9878,9888,9913,10245,10568,10570,10624,10847,10957,10962,10993,11034,11040,11134,11176,11274,11374,6993,10987,8470,8823,6446,9855,11028,11030,11031,9854];
-					if(in_array($finderarr["_id"],$direct_Fitternity_delhi_vendors)){
-						$finder['contact']['phone'] = Config::get('app.contact_us_customer_number');
-					}else{
-						$finder['contact']['phone'] = $finderarr['contact']['phone'];
-					}
-				}
+				// if($finderarr['city_id'] == 4 || $finderarr['city_id'] == 8 || $finderarr['city_id'] == 9){
+				// 	$direct_Fitternity_delhi_vendors = [4929,4968,5027,5066,5145,5355,5603,5609,5617,5709,6047,6411,6412,6499,6534,6876,6895,6979,7136,7448,7657,7907,7909,8289,8837,8878,9125,9171,9178,9201,9337,9397,9415,9417,9600,9624,9726,9728,9876,9878,9888,9913,10245,10568,10570,10624,10847,10957,10962,10993,11034,11040,11134,11176,11274,11374,6993,10987,8470,8823,6446,9855,11028,11030,11031,9854];
+				// 	if(in_array($finderarr["_id"],$direct_Fitternity_delhi_vendors)){
+				// 		$finder['contact']['phone'] = Config::get('app.contact_us_customer_number');
+				// 	}else{
+				// 		$finder['contact']['phone'] = $finderarr['contact']['phone'];
+				// 	}
+				// }
 				if(isset($finderarr['multiaddress']) && count($finderarr['multiaddress']) > 0){
 					$finder['multiaddress'] = $finderarr['multiaddress'];
 				}else{
