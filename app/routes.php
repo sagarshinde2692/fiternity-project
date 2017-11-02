@@ -1037,3 +1037,6 @@ Route::get('linkSentOct','DebugController@linkSentOct');
 
 
 
+Route::get('assitancequestions','HomeController@getAssitanceQuestions');
+
+Route::post('postanswers','HomeController@postAnswers');
