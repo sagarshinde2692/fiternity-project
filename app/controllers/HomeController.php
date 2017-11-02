@@ -3000,6 +3000,7 @@ class HomeController extends BaseController {
                     ]
                 ];
         
+                //for mumbai
                 $data["sponsors"] = [
                     [
                         "title"=>"Presenting Sponsor",
@@ -3031,6 +3032,41 @@ class HomeController extends BaseController {
                     ]
                      
                 ];
+
+                //for delhi
+                $data["sponsors"] = [
+                    [
+                        "title"=>"Presented By",
+                        "image"=>"https://cdn.fitn.in/Mfp-delhi/sponsor-logos/Aegonlife-Logo.png"
+                    ],
+                    [
+                        "title"=>"Powered By",
+                        "image"=>"https://b.fitn.in/global/toi/partners/LSLOGO.JPG"
+                    ],
+                    [
+                        "title"=>"Live Better Partner",
+                        "image"=>"https://cdn.fitn.in/Mfp-delhi/sponsor-logos/Glen%20Logo.png"
+                    ],
+
+                    [
+                        "title"=>"Freshness Partner",
+                        "image"=>"https://cdn.fitn.in/Mfp-delhi/sponsor-logos/Hitachi-1-01.jpg"
+                    ],
+                    [
+                        "title"=>"Musical Instrument Partner",
+                        "image"=>"https://cdn.fitn.in/Mfp-delhi/sponsor-logos/Casio-logo.png"
+                    ],
+                    [
+                        "title"=>"Venue Partner",
+                        "image"=>"https://cdn.fitn.in/Mfp-delhi/sponsor-logos/lalit-logo.png"
+                    ],
+                    [
+                        "title"=>"Radio Partner",
+                        "image"=>"https://cdn.fitn.in/Mfp-delhi/sponsor-logos/New-Fever%20Logo-white.png"
+                    ]
+                     
+                ];
+
         
                 $data["what_people_say"] = [ 
                     [
