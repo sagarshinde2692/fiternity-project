@@ -9,7 +9,7 @@
 
 class Ozonetelmissedcallno extends  \Basemodel {
 
-	protected $collection = "misscallnos";
+	protected $collection = "missedcallnos";
 
 	protected $connection = "mongodb2";
 	
