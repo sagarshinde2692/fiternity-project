@@ -9,7 +9,10 @@
 
 class Ozonetelmissedcallno extends  \Basemodel {
 
-	protected $collection = "ozonetelmissedcallnos";
+	protected $collection = "misscallnos";
+
+	protected $connection = "mongodb2";
+	
 
 	public function finder(){
 		return $this->belongsTo('Finder','finder_id');
