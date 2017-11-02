@@ -131,10 +131,9 @@ class TransactionController extends \BaseController {
             return Response::json(array('status' => 404,'message' => error_message($validator->errors())),404);
         }
 
-        $updating_payment_mode = ((isset($data['payment_mode']) && $data['payment_mode'] == 'cod') || (isset($data['part_payment']) && $data['part_payment'])) ? true : false;
-
-
         if(isset($data['paymentmode_selected']) && $data['paymentmode_selected'] != ""){
+
+            $data['part_payment'] = false;
 
             switch ($data['paymentmode_selected']) {
                 case 'part_payment': $data['part_payment'] = true;break;
@@ -145,6 +144,8 @@ class TransactionController extends \BaseController {
             }
 
         }
+
+        $updating_payment_mode = ((isset($data['payment_mode']) && $data['payment_mode'] == 'cod') || (isset($data['part_payment']) && $data['part_payment'])) ? true : false;
 
         $updating_part_payment = (isset($data['part_payment']) && $data['part_payment']) ? true : false;
 

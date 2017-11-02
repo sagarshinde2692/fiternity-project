@@ -942,6 +942,8 @@ class HomeController extends BaseController {
 
             $booking_details_data["price"] = ['field'=>'PRICE','value'=>'Free Via Fitternity','position'=>$position++];
 
+            $booking_details_data["amount_paid"] = ['field'=>'AMOUNT PAID','value'=>'','position'=>$position++];
+
             if($poc != ""){ 
                 $booking_details_data["poc"] = ['field'=>'POINT OF CONTACT','value'=>$poc,'position'=>$position++];
             }
@@ -988,7 +990,15 @@ class HomeController extends BaseController {
             }
 
             if(isset($item['part_payment']) && $item['part_payment']){
+
                 $header= "Membership reserved";
+
+                $booking_details_data['amount_paid']['value'] = "Rs. ".(string)$item['amount'];
+
+                if($item['amount'] == 0){
+                    $booking_details_data['amount_paid']['value'] = "Rs. ".(string)$item['wallet_amount'] . " Paid via Fitcash+";
+                }
+
             }
 
             if(isset($item['payment_mode']) && $item['payment_mode'] == 'cod'){
