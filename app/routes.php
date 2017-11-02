@@ -1039,3 +1039,6 @@ Route::get('testDelay','DebugController@testDelay');
 
 
 
+Route::get('assitancequestions','HomeController@getAssitanceQuestions');
+
+Route::post('postanswers','HomeController@postAnswers');
