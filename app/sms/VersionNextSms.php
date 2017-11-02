@@ -257,6 +257,9 @@ abstract Class VersionNextSms {
     }*/
 
     public function sendToWorker($to, $message, $label = 'label', $delay = 0){
+
+
+        $arrayLabel = ['PurchaseAfter10Days-Customer','PurchaseAfter30Days-Customer'];
         
         $sidekiq = new Sidekiq();
 
@@ -268,6 +271,12 @@ abstract Class VersionNextSms {
         }
 
         if($delay !== 0){
+
+            if(in_array($label,$arrayLabel)){
+
+                $delay = $getDelayTime($delay);   
+            }
+
             $delay = $this->getSeconds($delay);
         }
 
@@ -280,6 +289,28 @@ abstract Class VersionNextSms {
             return $result['task_id'];
         }else{
             return $result['status'].':'.$result['reason'];
+        }
+
+    }
+
+
+    public function getDelayTime($delay){
+
+        $hour = (int) date("G", strtotime($delay));
+
+        if($hour >= 7 && $hour <= 22 ){
+
+            return $delay;
+            
+        }else{
+
+            if($hour > 22 && $hour <= 24){
+                $delay = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d 20:00:00',strtotime($delay)));
+            }else{
+                $delay = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d 20:00:00',strtotime($delay)))->subDay();
+            }
+
+            return $delay;
         }
 
     }

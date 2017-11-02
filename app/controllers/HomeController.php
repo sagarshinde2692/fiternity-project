@@ -3062,7 +3062,7 @@ class HomeController extends BaseController {
                     ],
                     [
                         "title"=>"Radio Partner",
-                        "image"=>"https://cdn.fitn.in/Mfp-delhi/sponsor-logos/New-Fever%20Logo-white.png"
+                        "image"=>"https://cdn.fitn.in/Mfp-delhi/sponsor-logos/red-fever-updated.png"
                     ]
                      
                 ];

@@ -1035,6 +1035,8 @@ Route::get('copyVendorAddress','DebugController@copyVendorAddress');
 
 Route::get('linkSentOct','DebugController@linkSentOct');
 
+Route::get('testDelay','DebugController@testDelay');
+
 
 
 Route::get('assitancequestions','HomeController@getAssitanceQuestions');

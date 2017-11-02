@@ -5308,6 +5308,37 @@ public function yes($msg){
 
 	}
 
+	public function testDelay(){
+
+		$date = '2017-2-12 21:05:05';
+
+		$date = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $date);//date('Y-m-d H:i:s',strtotime($date));
+
+		return $this->getDelayTime($date);
+
+	}
+
+	public function getDelayTime($delay){
+
+        $hour = (int) date("G", strtotime($delay));
+
+        if($hour >= 7 && $hour <= 22 ){
+
+            return $delay;
+            
+        }else{
+
+            if($hour > 22 && $hour <= 24){
+                $delay = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d 20:00:00',strtotime($delay)));
+            }else{
+                $delay = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d 20:00:00',strtotime($delay)))->subDay();
+            }
+
+            return $delay;
+        }
+
+    }
+
 	
 
     
