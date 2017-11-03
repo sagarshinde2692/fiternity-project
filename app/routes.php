@@ -1029,3 +1029,4 @@ Route::get('renewalSept', 'DebugController@renewalSept');
 
 Route::post('career/capture','HomeController@careerCapture');
 
+Route::post('transaction/summary','SchedulebooktrialsController@transactionSummary');

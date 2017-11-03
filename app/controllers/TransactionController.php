@@ -145,8 +145,6 @@ class TransactionController extends \BaseController {
 
         }
 
-        $updating_payment_mode = ((isset($data['payment_mode']) && $data['payment_mode'] == 'cod') || (isset($data['part_payment']) && $data['part_payment'])) ? true : false;
-
         $updating_part_payment = (isset($data['part_payment']) && $data['part_payment']) ? true : false;
 
         $updating_cod = (isset($data['payment_mode']) && $data['payment_mode'] == 'cod') ? true : false;
@@ -236,9 +234,7 @@ class TransactionController extends \BaseController {
 
         // $cash_pickup = (isset($finderDetail['data']['finder_flags']) && isset($finderDetail['data']['finder_flags']['cash_pickup'])) ? $finderDetail['data']['finder_flags']['cash_pickup'] : false;
 
-        $cash_pickup = (isset($data['amount_finder']) && $data['amount_finder'] >= 3000 && !$updating_part_payment) ? true : false;
-        
-
+        $cash_pickup = (isset($data['amount_finder']) && $data['amount_finder'] >= 3000) ? true : false;
 
         $orderfinderdetail = $finderDetail;
         $data = array_merge($data,$orderfinderdetail['data']);
@@ -327,7 +323,7 @@ class TransactionController extends \BaseController {
             }
         }
 
-        if(!$updating_payment_mode) {
+        if(!$updating_part_payment) {
 
             $cashbackRewardWallet =$this->getCashbackRewardWallet($data,$order);
 
@@ -368,7 +364,7 @@ class TransactionController extends \BaseController {
 
         $part_payment = (isset($finderDetail['data']['finder_flags']) && isset($finderDetail['data']['finder_flags']['part_payment'])) ? $finderDetail['data']['finder_flags']['part_payment'] : false;
         
-        if(!$updating_payment_mode && $part_payment && $data["amount_finder"] >= 2500){
+        if(!$updating_part_payment && $part_payment && $data["amount_finder"] >= 2500){
 
             $part_payment_data = $data;
 
@@ -638,7 +634,7 @@ class TransactionController extends \BaseController {
             'status' => 200,
             'data' => $result,
             'message' => "Tmp Order Generated Sucessfully",
-            // 'part_payment' => $part_payment,
+            'part_payment' => $part_payment,
             'cash_pickup' => $cash_pickup
         );
 
@@ -662,8 +658,6 @@ class TransactionController extends \BaseController {
             }
             
             $resp['data']['payment_details'] = $payment_details;
-            
-            
 
             if(isset($order->amount) && $order->amount){
                 $resp['data']['payment_modes'] = $this->getPaymentModes($resp);
