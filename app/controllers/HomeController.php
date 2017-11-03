@@ -989,6 +989,10 @@ class HomeController extends BaseController {
                 $booking_details_data['price']['value']= "Rs. ".(string)$item['amount']." (Cash Pickup)";
             }
 
+            if(isset($item['myreward_id']) && $item['myreward_id'] != ""){
+                $booking_details_data['price']['value']= "Free Via Fitternity";
+            }
+
             if(isset($item['part_payment']) && $item['part_payment']){
 
                 $header= "Membership reserved";
