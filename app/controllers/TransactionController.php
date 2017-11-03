@@ -806,52 +806,59 @@ class TransactionController extends \BaseController {
 
             $this->utilities->demonetisation($order);
 
-            $this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
+            
 
-            if(isset($order->reward_ids) && !empty($order->reward_ids)){
-
-                $reward_detail = array();
-
-                $reward_ids = array_map('intval',$order->reward_ids);
-
-                $rewards = Reward::whereIn('_id',$reward_ids)->get(array('_id','title','quantity','reward_type','quantity_type'));
-
-                if(count($rewards) > 0){
-
-                    foreach ($rewards as $value) {
-
-                        $title = $value->title;
-
-                        if($value->reward_type == 'personal_trainer_at_studio' && isset($order->finder_name) && isset($order->finder_location)){
-                            $title = "Personal Training At ".$order->finder_name." (".$order->finder_location.")";
-                        }
-
-                        $reward_detail[] = ($value->reward_type == 'nutrition_store') ? $title : $value->quantity." ".$title;
-                        $profile_link = $value->reward_type == 'diet_plan' ? $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$data['customer_email']."#diet-plan") : $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$data['customer_email']);
-                        array_set($data, 'reward_type', $value->reward_type);
-
-                    }
-
-                    $reward_info = (!empty($reward_detail)) ? implode(" + ",$reward_detail) : "";
-
-                    array_set($data, 'reward_info', $reward_info);
-                    
-                }
-
-            }
-
-            if(isset($order->cashback) && $order->cashback === true && isset($order->cashback_detail) ){
-
-                $reward_info = "Cashback";
-                
-                array_set($data, 'reward_info', $reward_info);
-                array_set($data, 'reward_type', 'cashback');
-            }
             array_set($data, 'status', '1');
 
             if(isset($order['part_payment']) && $order['part_payment'] && (!isset($data['order_success_flag']) || $data['order_success_flag'] != 'admin')){
                 array_set($data, 'status', '3');
             }
+
+            if($data['status'] == '1'){
+
+                $this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
+
+                if(isset($order->reward_ids) && !empty($order->reward_ids)){
+
+                    $reward_detail = array();
+
+                    $reward_ids = array_map('intval',$order->reward_ids);
+
+                    $rewards = Reward::whereIn('_id',$reward_ids)->get(array('_id','title','quantity','reward_type','quantity_type'));
+
+                    if(count($rewards) > 0){
+
+                        foreach ($rewards as $value) {
+
+                            $title = $value->title;
+
+                            if($value->reward_type == 'personal_trainer_at_studio' && isset($order->finder_name) && isset($order->finder_location)){
+                                $title = "Personal Training At ".$order->finder_name." (".$order->finder_location.")";
+                            }
+
+                            $reward_detail[] = ($value->reward_type == 'nutrition_store') ? $title : $value->quantity." ".$title;
+                            $profile_link = $value->reward_type == 'diet_plan' ? $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$data['customer_email']."#diet-plan") : $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$data['customer_email']);
+                            array_set($data, 'reward_type', $value->reward_type);
+
+                        }
+
+                        $reward_info = (!empty($reward_detail)) ? implode(" + ",$reward_detail) : "";
+
+                        array_set($data, 'reward_info', $reward_info);
+                        
+                    }
+
+                }
+
+                if(isset($order->cashback) && $order->cashback === true && isset($order->cashback_detail) ){
+
+                    $reward_info = "Cashback";
+                    
+                    array_set($data, 'reward_info', $reward_info);
+                    array_set($data, 'reward_type', 'cashback');
+                }
+            }
+            
             array_set($data, 'order_action', 'bought');
 
             if(((!isset($data['order_success_flag']) || $data['order_success_flag'] != 'admin') && !isset($order['success_date'])) || (isset($order['update_success_date']) && $order['update_success_date'] == "1" && isset($data['order_success_flag']) && $data['order_success_flag'] == 'admin')){
