@@ -3175,8 +3175,8 @@ class TransactionController extends \BaseController {
 
         if($payment_mode_type == 'part_payment'){
 
-            $amount_summary[0] = array(
-                'field' => 'Total Amount',
+            $amount_summary[] = array(
+                'field' => 'Booking Amount (20%)',
                 'value' => 'Rs. '.$data['part_payment_calculation']['part_payment_amount']
             );
 
