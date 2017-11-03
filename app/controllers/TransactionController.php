@@ -644,7 +644,7 @@ class TransactionController extends \BaseController {
 
             $payment_mode_type_array = ['paymentgateway','emi','cod'];
 
-            if(isset($finderDetail['data']['finder_flags']) && isset($finderDetail['data']['finder_flags']['part_payment'])){
+            if(!$updating_part_payment && $part_payment && $data["amount_finder"] >= 2500){
 
                 $payment_mode_type_array[] = 'part_payment';
             }
