@@ -1127,17 +1127,20 @@ Class CustomerReward {
                     return $resp;
                 }
             }
-            $excluded_vendors = isset($coupon["finders_exclude"]) ? $coupon["finders_exclude"] : [];
-            if(isset($ratecard['finder_id']) && in_array($ratecard['finder_id'], $excluded_vendors)){
-                $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"Coupon not valid for this transaction");
-                return $resp;
-            }
-            $included_vendors = isset($coupon["finders"]) ? $coupon["finders"] : [];
-            // Log::info($included_vendors);
-            // Log::info("ratecard['finder_id']".$ratecard['finder_id']);
-            if(isset($ratecard['finder_id']) && count($included_vendors) > 0 && !in_array($ratecard['finder_id'], $included_vendors)){
-                $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"Coupon not valid for this transaction");
-                return $resp;
+
+            if(!$vendor_coupon){
+                $excluded_vendors = isset($coupon["finders_exclude"]) ? $coupon["finders_exclude"] : [];
+                if(isset($ratecard['finder_id']) && in_array($ratecard['finder_id'], $excluded_vendors)){
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"Coupon not valid for this transaction");
+                    return $resp;
+                }
+                $included_vendors = isset($coupon["finders"]) ? $coupon["finders"] : [];
+                // Log::info($included_vendors);
+                // Log::info("ratecard['finder_id']".$ratecard['finder_id']);
+                if(isset($ratecard['finder_id']) && count($included_vendors) > 0 && !in_array($ratecard['finder_id'], $included_vendors)){
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"Coupon not valid for this transaction");
+                    return $resp;
+                }
             }
 
 
