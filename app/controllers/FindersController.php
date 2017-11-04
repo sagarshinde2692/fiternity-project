@@ -2148,6 +2148,30 @@ class FindersController extends \BaseController {
 	}
 
 
+	public function serviceMembership($finder_id){
+
+		$response = [
+			'status'=>200,
+			'message'=>'Success'
+		];
+
+		$response['memberships'] = $this->getTrialSchedule($finder_id);
+
+		if(empty($response['memberships'])){
+
+			$response = [
+				'status'=>400,
+				'message'=>'No results found',
+				'memberships'=>[]
+			];
+
+			return Response::json($response,200);
+		}
+
+		return Response::json($response,200);
+	}
+
+
 	public function getTrialSchedule($finder_id,$category = false){
 
 		$currentDateTime        =   date('Y-m-d');
