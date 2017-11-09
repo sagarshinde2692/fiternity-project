@@ -496,8 +496,31 @@ class EmailSmsApiController extends \BaseController {
     public function landingpagecallback(){
 
         $data = Input::json()->all();
-        Log::info('capture data');
-        Log::info($data);
+
+        if(isset($data['capture_type']) && $data['capture_type'] == 'claim_listing'){
+
+            $rules = [
+                'customer_email'=>'required|email|max:255',
+                'customer_name'=>'required',
+                'customer_phone'=>'required',
+                'finder_id'=>'required'
+            ];
+
+            $validator = Validator::make($data, $rules);
+
+            if ($validator->fails()) {
+
+                $response = array('status' => 400,'message' =>error_message($validator->errors()));
+
+                return Response::json(
+                    $response,
+                    $response['status']
+                );
+
+            }
+            
+        }
+
         if($data['capture_type'] == 'fitness_canvas'){
             $count = Capture::where('capture_type','fitness_canvas')->where('phone','LIKE','%'.substr($data['phone'], -9).'%')->count();
 
@@ -657,14 +680,22 @@ class EmailSmsApiController extends \BaseController {
             'send_bcc_status'   => 1
         );
 
-        $capture_type = array('fitness_canvas','renew-membership');
+        $capture_type = array('fitness_canvas','renew-membership','claim_listing');
 
         if(in_array($data['capture_type'],$capture_type)){
 
-            $this->customermailer->landingPageCallback($data);
-            $this->customersms->landingPageCallback($data);
+            if($data['capture_type'] == 'claim_listing'){
+
+                $this->findermailer->claimListing($data);
+
+            }else{
+
+                $this->customermailer->landingPageCallback($data);
+                $this->customersms->landingPageCallback($data);
+            }
 
         }else{
+
             $this->customermailer->directWorker($emaildata);
             
         }
@@ -673,6 +704,7 @@ class EmailSmsApiController extends \BaseController {
         switch ($data['capture_type']) {
             case 'renew-membership':$message = "Thank you for your request, We will curate a renew subscription for you and get back";break;
             case 'change_start_date_request':$message = "Thank you for your request, Our team will get in touch with you within 24 hours to process the request";break;
+            case 'claim_listing':$message = "Thank You! Your request has been submitted. We will get in touch with you on ".$data['customer_phone']." or ".$data['customer_email']." as soon as possible!";break;
             default:$message = "Recieved the Request";break;
         }
 

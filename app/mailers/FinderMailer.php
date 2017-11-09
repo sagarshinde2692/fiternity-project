@@ -585,6 +585,20 @@ Class FinderMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 
+	protected function claimListing($data){
+
+		$label = 'ClaimListing-Fitternity';
+
+		$user_email 	=  	['silkeshakadam@fitternity.com','rahulsachdev@fitternity.com','niveditasomani@fitternity.com','dharatanna@fitternity.com'];
+
+		$message_data 	= array(
+			'user_email' => $user_email,
+			'user_name' =>  'Fitterntiy Team',
+		);
+
+		return $this->common($label,$data,$message_data);
+	}
+
 	public function common($label,$data,$message_data,$delay = 0){
 		// return($message_data['user_email']);
 		if(in_array(Config::get('mail.to_mailus'),$message_data['user_email'])){
