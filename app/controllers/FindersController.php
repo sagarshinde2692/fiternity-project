@@ -840,43 +840,18 @@ class FindersController extends \BaseController {
 					$nearby_other_category = [];
 				}
 
-				/*$finder_footer = $cache ? Cache::tags('finder_footer')->has($finderdata["city"]["name"]) : false;
+				$finder_footer = $cache ? Cache::tags('finder_footer')->has($finderdata["location"]["slug"]) : false;
 
 				if(!$finder_footer){
 
-					$finder_footer = [];
+					$finder_footer = $this->vendorFooter($finderdata);
 
-					$category_footer = ['gyms','zumba-classes','functional-training','pilates-classes'];
-
-					foreach ($category_footer as $cat) {
-
-						$finder_footer_request = [
-		                    "offset" => 0,
-		                    "limit" => 5,
-		                    "radius" =>"",//"3km",
-		                    "category"=>newcategorymapping($cat),
-		                    "lat"=>"",//$finderdata["lat"],
-		                    "lon"=>"",//$finderdata["lon"],
-		                    "city"=>strtolower($finderdata["city"]["name"]),
-		                    "keys"=>[
-		                      "slug",
-		                      "name"
-		                    ],
-		                    "not"=>[
-		                    	"vendor"=>[(int)$finderdata["_id"]]
-		                    ]
-		                ];
-
-	            		$finder_footer = array_merge($finder_footer,geoLocationFinder($finder_footer_request));
-
-					}
-
-					Cache::tags('finder_footer')->put($finderdata["city"]["name"],$finder_footer,Config::get(30*24));
+					Cache::tags('finder_footer')->put($finderdata["location"]["slug"],$finder_footer,1440);
 
 				}else{
 
-					$finder_footer = Cache::tags('finder_footer')->get($finderdata["city"]["name"]);
-				}*/
+					$finder_footer = Cache::tags('finder_footer')->get($finderdata["location"]["slug"]);
+				}
 
 				$finder['title'] = str_replace('crossfit', 'CrossFit', $finder['title']);
 				$response['statusfinder']                   =       200;
@@ -885,7 +860,7 @@ class FindersController extends \BaseController {
 				$response['nearby_same_category']           =       $nearby_same_category;
 				$response['nearby_other_category']          =       $nearby_other_category;
 				$response['show_reward_banner'] = true;
-				//$response['finder_footer'] 					= 		$finder_footer;
+				$response['finder_footer'] 					= 		$finder_footer;
 
 				Cache::tags('finder_detail')->put($cache_key,$response,Config::get('cache.cache_time'));
 
@@ -3472,6 +3447,122 @@ class FindersController extends \BaseController {
 		}
 
 		return $key;
+	}
+
+
+	public function vendorFooter($finderdata){
+
+		$location_slug = $finderdata["location"]["slug"];
+		$location_name = $finderdata["location"]["name"];
+		$city_slug = $finderdata["city"]["slug"];
+
+		$data = [
+			[
+				'title'=>'Explore Fitness in '.$location_name,
+				'row'=>[
+					[
+						'name'=>'Gyms in '.$location_name,
+						'link'=> Config::get('app.website').'/'.$city_slug.'/'.$location_slug.'/gyms'
+					],
+					[
+						'name'=>'Zumba Classes in '.$location_name,
+						'link'=> Config::get('app.website').'/'.$city_slug.'/'.$location_slug.'/zumba-classes'
+					],
+					[
+						'name'=>'Cross Functional Fitness in '.$location_name,
+						'link'=> Config::get('app.website').'/'.$city_slug.'/'.$location_slug.'/functional-training'
+					],
+					[
+						'name'=>'Yoga Classes in '.$location_name,
+						'link'=> Config::get('app.website').'/'.$city_slug.'/'.$location_slug.'/yoga-classes'
+					],
+					[
+						'name'=>'Pilates Classes in '.$location_name,
+						'link'=> Config::get('app.website').'/'.$city_slug.'/'.$location_slug.'/pilates-classes'
+					]
+
+				]
+			],
+			[
+				'title'=>'Explore Fitness in '.$location_name,
+				'row'=>[
+					[
+						'name'=>'MMA & Kickboxing Classes in '.$location_name,
+						'link'=> Config::get('app.website').'/'.$city_slug.'/'.$location_slug.'/mma-and-kick-boxing-classes'
+					],
+					[
+						'name'=>'Fitness Studios in '.$location_name,
+						'link'=> Config::get('app.website').'/'.$city_slug.'/'.$location_slug.'/fitness-studios'
+					],
+					[
+						'name'=>'Dance Classes in '.$location_name,
+						'link'=> Config::get('app.website').'/'.$city_slug.'/'.$location_slug.'/dance-classes'
+					],
+					[
+						'name'=>'Marathon Training in '.$location_name,
+						'link'=> Config::get('app.website').'/'.$city_slug.'/'.$location_slug.'/marathon-training'
+					],
+					[
+						'name'=>'Swimming in '.$location_name,
+						'link'=> Config::get('app.website').'/'.$city_slug.'/'.$location_slug.'/swimming-pools'
+					]
+
+				]
+			]
+		];
+
+		$request = [
+            "offset" => 0,
+            "limit" => 15,
+            "radius" =>"5km",
+            "category"=>"",
+            "lat"=>"",
+            "lon"=>"",
+            "city"=>strtolower($finderdata["city"]["name"]),
+            "region"=>[strtolower($finderdata["location"]["name"])],
+            "keys"=>[
+              "slug",
+              "name"
+            ],
+            "not"=>[
+            	"vendor"=>[(int)$finderdata["_id"]]
+            ]
+        ];
+
+	    $geoLocationFinder = geoLocationFinder($request);
+
+	    $finders = [];
+
+	    if(count($geoLocationFinder)){
+
+		    foreach ($geoLocationFinder as $value) {
+
+		    	$finders[] = [
+		    		'name'=>$value['title'],
+		    		'link'=> Config::get('app.website').'/'.$value['slug']
+		    	];
+		    }
+
+		    $finders = array_chunk($finders,5);
+		}
+
+	    $data[] = [
+	    	'title'=>'Recommended in '.$location_name,
+	    	'row'=> isset($finders[0]) ? $finders[0] : []
+	    ];
+
+	    $data[] = [
+	    	'title'=>'Top Fitness Options in '.$location_name,
+	    	'row'=> isset($finders[1]) ? $finders[1] : []
+	    ];
+
+	    $data[] = [
+	    	'title'=>'Trending Places in '.$location_name,
+	    	'row'=> isset($finders[2]) ? $finders[2] : []
+	    ];
+
+		return $data;
+
 	}
 	
 

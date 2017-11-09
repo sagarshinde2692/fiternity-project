@@ -3551,6 +3551,9 @@ class CustomerController extends \BaseController {
 					$walletData["amount_fitcash"] = 0;
 					$walletData["amount_fitcash_plus"] = $cashback_amount;
 					$walletData["description"] = "Added FitCash+ on PROMOTION Rs - ".$cashback_amount;
+					if(isset($fitcashcode["valid_till"])){
+						$walletData["validity"] = $fitcashcode["valid_till"];
+					}
 				}
 
 				$this->utilities->walletTransaction($walletData);

@@ -333,6 +333,11 @@ Class CustomerReward {
 
                 }
 
+                if(isset($order['event_id']) && $order['event_id'] == 108){
+
+                    $fitcash_plus = $order['amount'];
+                }
+
                 $walletData = array(
                     "order_id"=>$order['_id'],
                     "customer_id"=> intval($order['customer_id']),

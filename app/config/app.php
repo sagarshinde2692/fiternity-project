@@ -338,7 +338,7 @@ return array(
 	'renewal_customer_number' => '+917400062844',
 	'purchase_fitness_concierge' => 'David',
 	'purchase_customer_number' => '+917400062844',
-	'order_missed_call_no' => '+912233010070',
+	'order_missed_call_no' => '+912230148070',
 	'confirm_order_customer_number' => '+917400062841',
 	'renewal_linksent_fitness_concierge' => 'David',
 	'renewal_linksent_customer_number' => '+917400062844',
