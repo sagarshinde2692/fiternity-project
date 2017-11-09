@@ -2747,28 +2747,30 @@ if (!function_exists(('geoLocationFinder'))){
         $keys = $request['keys'];
         $city = $request['city'];
         $not = isset($request['not']) ? $request['not'] : new \stdClass();
+        $region = isset($request['region']) ? $request['region'] : [];
 
         $payload = [
-           "category"=>$category,
-           "sort"=>[
+            "category"=>$category,
+            "sort"=>[
               "order"=>"desc",
               "sortfield"=>"popularity"
-           ],
-           "offset"=>[
+          ],
+          "offset"=>[
               "from"=>$offset,
               "number_of_records"=>$limit
-           ],
-           "location"=>[
+          ],
+          "location"=>[
               "geo"=>[
                   "lat"=>$lat,
                   "lon"=>$lon,
                   "radius"=>$radius
-               ],
+              ],
+              "regions"=>$region,
               "city"=>$city
-           ],
-           "keys"=>$keys,
-           "not"=>$not
-        ];
+          ],
+          "keys"=>$keys,
+          "not"=>$not
+      ];
 
         $url = Config::get('app.new_search_url')."/search/vendor";
 
