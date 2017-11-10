@@ -3516,16 +3516,35 @@ class CustomerController extends \BaseController {
 			if($customer_update){
 
 				$cashback_amount = $fitcashcode['amount'];
+
 				$customer 	=	Customer::find($customer_id);	
 
-				$customerwallet 		= 		Customerwallet::where('customer_id',$customer_id)->orderBy('_id', 'desc')->first();
-				if($customerwallet){
-					$customer_balance 	=	$customerwallet['balance'] + $cashback_amount;				
-					$customer_balance_fitcashplus = $customerwallet['balance_fitcash_plus'];
-				}else{
-					$customer_balance 	=	 $cashback_amount;
-					$customer_balance_fitcashplus = 0;
+				// $customerwallet 		= 		Customerwallet::where('customer_id',$customer_id)->orderBy('_id', 'desc')->first();
+				// if($customerwallet){
+				// 	$customer_balance 	=	$customerwallet['balance'] + $cashback_amount;				
+				// 	$customer_balance_fitcashplus = $customerwallet['balance_fitcash_plus'];
+				// }else{
+				// 	$customer_balance 	=	 $cashback_amount;
+				// 	$customer_balance_fitcashplus = 0;
+				// }
+
+
+				$current_wallet_balance = Wallet::active()->where('customer_id',$customer_id)->where('balance','>',0)->sum('balance');
+
+				if (isset($fitcashcode['topup']) && $fitcashcode['topup']){
+
+					if($cashback_amount > $current_wallet_balance){
+
+						$cashback_amount = $cashback_amount - $current_wallet_balance;
+
+					}else{
+
+						$resp 	= 	array('status' => 400,'message' => "You have already enough balance");
+						return  Response::json($resp, 400);
+					}
+
 				}
+
 				
 				$walletData = array(
 					"customer_id"=> $customer_id,
