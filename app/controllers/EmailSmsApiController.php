@@ -7,6 +7,7 @@ use App\Services\Sidekiq as Sidekiq;
 Use App\Mailers\CustomerMailer as CustomerMailer;
 use App\Sms\CustomerSms as CustomerSms;
 use App\Services\Utilities as Utilities;
+Use App\Mailers\FinderMailer as FinderMailer;
 
 class EmailSmsApiController extends \BaseController {
 
@@ -17,19 +18,22 @@ class EmailSmsApiController extends \BaseController {
     protected $customermailer;
     protected $customersms;
     protected $utilities;
+    protected $findermailer;
 
     public function __construct(
         Cloudagent $cloudagent,
         Sidekiq $sidekiq,
         CustomerMailer $customermailer,
         CustomerSms $customersms,
-        Utilities $utilities
+        Utilities $utilities,
+        FinderMailer $findermailer
     ){
         $this->cloudagent       =   $cloudagent;
         $this->sidekiq          =   $sidekiq;
         $this->customermailer           =   $customermailer;
         $this->customersms              =   $customersms;
         $this->utilities            =   $utilities;
+        $this->findermailer             =   $findermailer;
     }
 
     public function sendSMS($smsdata){
@@ -641,7 +645,16 @@ class EmailSmsApiController extends \BaseController {
         array_set($data, 'ticket_number',random_numbers(5));
 
         if(isset($data['finder_id']) && $data['finder_id'] != ""){
+
             $data['finder_id'] = (int)$data['finder_id'];
+
+            Finder::$withoutAppends=true;
+
+            $finder = Finder::with(array('location'=>function($query){$query->select('name');}))->with(array('city'=>function($query){$query->select('name');}))->find($data['finder_id'],['_id','city_id','location_id','title']);
+
+            $data['finder_name'] = ucwords($finder['title']);
+            $data['finder_city'] = ucwords($finder['city']['name']);
+            $data['finder_location'] = ucwords($finder['location']['name']);
         }
 
         $storecapture   = Capture::create($data);
