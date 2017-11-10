@@ -498,7 +498,7 @@ class TransactionController extends \BaseController {
             
             $convinience_fee_percent = Config::get('app.convinience_fee');
 
-            $convinience_fee = number_format($data['amount_finder']*$convinience_fee_percent/100, 0);
+            $convinience_fee = $data['amount_finder']*$convinience_fee_percent/100;
 
             $convinience_fee = $convinience_fee <= 150 ? $convinience_fee : 150;
 
@@ -628,14 +628,19 @@ class TransactionController extends \BaseController {
             $order->update(array('redis_id'=>$redisid));
         }
 
-        $cash_pickup = $emi_applicable = (isset($data['amount']) && $data['amount'] >= 3000) ? true : false;
+        $cash_pickup_applicable = (isset($data['amount']) && $data['amount'] >= 3000) ? true : false;
+
+        $emi_applicable = $this->utilities->displayEmi(array('amount'=>$data['amount']));
+
+        $part_payment_applicable = (!$updating_part_payment && $part_payment && $data["amount_finder"] >= 3000) ? true : false;
 
         $resp   =   array(
             'status' => 200,
             'data' => $result,
             'message' => "Tmp Order Generated Sucessfully",
-            'part_payment' => $part_payment,
-            'cash_pickup' => $cash_pickup
+            'part_payment' => $part_payment_applicable,
+            'cash_pickup' => $cash_pickup_applicable,
+            'emi'=>$emi_applicable
         );
 
         if(isset($_GET['device_type']) && in_array($_GET['device_type'], ['android', 'ios'])){
@@ -649,12 +654,12 @@ class TransactionController extends \BaseController {
                 $payment_mode_type_array[] = 'emi';
             }
 
-            if($cash_pickup){
+            if($cash_pickup_applicable){
 
                 $payment_mode_type_array[] = 'cod';
             }
 
-            if(!$updating_part_payment && $part_payment && $data["amount_finder"] >= 3000){
+            if($part_payment_applicable){
 
                 $payment_mode_type_array[] = 'part_payment';
             }
@@ -1357,7 +1362,7 @@ class TransactionController extends \BaseController {
             
             $convinience_fee_percent = Config::get('app.convinience_fee');
 
-            $convinience_fee = number_format($data['amount_finder']*$convinience_fee_percent/100, 0);
+            $convinience_fee = $data['amount_finder']*$convinience_fee_percent/100;
 
             $convinience_fee = $convinience_fee <= 150 ? $convinience_fee : 150;
 
@@ -3265,7 +3270,7 @@ class TransactionController extends \BaseController {
 
         $emi = $this->utilities->displayEmi(array('amount'=>$data['data']['amount']));
 
-        if(count($emi['bankList']) > 0){
+        if(!empty($data['emi']) && $data['emi']){
             $payment_modes[] = array(
                 'title' => 'EMI',
                 'subtitle' => 'Transact online with credit installments',
