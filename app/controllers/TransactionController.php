@@ -234,8 +234,6 @@ class TransactionController extends \BaseController {
 
         // $cash_pickup = (isset($finderDetail['data']['finder_flags']) && isset($finderDetail['data']['finder_flags']['cash_pickup'])) ? $finderDetail['data']['finder_flags']['cash_pickup'] : false;
 
-        $cash_pickup = (isset($data['amount_finder']) && $data['amount_finder'] >= 3000) ? true : false;
-
         $orderfinderdetail = $finderDetail;
         $data = array_merge($data,$orderfinderdetail['data']);
         unset($orderfinderdetail["data"]["finder_flags"]);
@@ -364,7 +362,7 @@ class TransactionController extends \BaseController {
 
         $part_payment = (isset($finderDetail['data']['finder_flags']) && isset($finderDetail['data']['finder_flags']['part_payment'])) ? $finderDetail['data']['finder_flags']['part_payment'] : false;
         
-        if(!$updating_part_payment && $part_payment && $data["amount_finder"] >= 2500){
+        if(!$updating_part_payment && $part_payment && $data["amount_finder"] >= 3000){
 
             $part_payment_data = $data;
 
@@ -437,7 +435,7 @@ class TransactionController extends \BaseController {
                 $walletTransactionResponse = $this->utilities->walletTransaction($req,$order->toArray());
             }
 
-            $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($order['amount'],$data['finder_id'],'paymentgateway',$data['offer_id'],$data['customer_id'],$order["part_payment_calculation"]["part_payment_amount"]);
+            $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($order['amount'],$data['finder_id'],'paymentgateway',$data['offer_id'],false/*$data['customer_id']*/,$order["part_payment_calculation"]["part_payment_amount"]);
 
             if(isset($data['wallet']) && $data['wallet'] == true){
 
@@ -630,6 +628,8 @@ class TransactionController extends \BaseController {
             $order->update(array('redis_id'=>$redisid));
         }
 
+        $cash_pickup = $emi_applicable = (isset($data['amount']) && $data['amount'] >= 3000) ? true : false;
+
         $resp   =   array(
             'status' => 200,
             'data' => $result,
@@ -642,9 +642,19 @@ class TransactionController extends \BaseController {
             
             $resp['data']['order_details'] = $this->getBookingDetails($order->toArray());
 
-            $payment_mode_type_array = ['paymentgateway','emi','cod'];
+            $payment_mode_type_array = ['paymentgateway'];
 
-            if(!$updating_part_payment && $part_payment && $data["amount_finder"] >= 2500){
+            if($emi_applicable){
+
+                $payment_mode_type_array[] = 'emi';
+            }
+
+            if($cash_pickup){
+
+                $payment_mode_type_array[] = 'cod';
+            }
+
+            if(!$updating_part_payment && $part_payment && $data["amount_finder"] >= 3000){
 
                 $payment_mode_type_array[] = 'part_payment';
             }
@@ -1404,7 +1414,7 @@ class TransactionController extends \BaseController {
                 }
             }
             
-            $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($amount,$data['finder_id'],'paymentgateway',$data['offer_id'],$data['customer_id']);
+            $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($amount,$data['finder_id'],'paymentgateway',$data['offer_id'],false/*$data['customer_id']*/);
 
             if(isset($data['cashback']) && $data['cashback'] == true){
                 $amount -= $data['cashback_detail']['amount_discounted'];
@@ -3277,7 +3287,7 @@ class TransactionController extends \BaseController {
         if(!empty($data['part_payment']) && $data['part_payment']){
             $payment_modes[] = array(
                 'title' => 'Reserve Payment',
-                'subtitle' => 'Pay 20% to reserve membership adn pay rest on joining',
+                'subtitle' => 'Pay 20% to reserve membership and pay rest on joining',
                 'value' => 'part_payment',
             );
         }
