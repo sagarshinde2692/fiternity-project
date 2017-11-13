@@ -3023,4 +3023,228 @@ class HomeController extends BaseController {
 
     }
 
+
+
+    public function getNetBankingOptions(){
+
+        $data = [];
+
+        $data['options'] = [
+            [
+                "code"=>"BBCB",
+                "bank"=>"Bank of Baroda Corporate Banking"
+            ],
+            [
+                "code"=>"ALLB",
+                "bank"=>"Allahabad Bank NetBanking"
+            ],
+            [
+                "code"=>"ADBB",
+                "bank"=>"Andhra Bank"
+            ],
+            [
+                "code"=>"AXIB",
+                "bank"=>"AXIS Bank NetBanking"
+            ],
+            [
+                "code"=>"BBKB",
+                "bank"=>"Bank of Bahrain and Kuwait"
+            ],
+            [
+                "code"=>"BBRB",
+                "bank"=>"Bank of Baroda Retail Banking"
+            ],
+            [
+                "code"=>"BOIB",
+                "bank"=>"Bank of India"
+            ],
+            [
+                "code"=>"BOMB",
+                "bank"=>"Bank of Maharashtra"
+            ],
+            [
+                "code"=>"CABB",
+                "bank"=>"Canara Bank"
+            ],
+            [
+                "code"=>"CSBN",
+                "bank"=>"Catholic Syrian Bank"
+            ],
+            [
+                "code"=>"CBIB",
+                "bank"=>"Central Bank Of India"
+            ],
+            [
+                "code"=>"CITNB",
+                "bank"=>"Citi Bank NetBanking"
+            ],
+            [
+                "code"=>"CUBB",
+                "bank"=>"CityUnion"
+            ],
+            [
+                "code"=>"CRPB",
+                "bank"=>"Corporation Bank"
+            ],
+            [
+                "code"=>"DCBCORP",
+                "bank"=>"DCB Bank - Corporate Netbanking"
+            ],
+            [
+                "code"=>"DENN",
+                "bank"=>"Dena Bank"
+            ],
+            [
+                "code"=>"DSHB",
+                "bank"=>"Deutsche Bank"
+            ],
+            [
+                "code"=>"DCBB",
+                "bank"=>"Development Credit Bank"
+            ],
+            [
+                "code"=>"FEDB",
+                "bank"=>"Federal Bank"
+            ],
+            [
+                "code"=>"HDFB",
+                "bank"=>"HDFC Bank"
+            ],
+            [
+                "code"=>"ICIB",
+                "bank"=>"ICICI Netbanking"
+            ],
+            [
+                "code"=>"INDB",
+                "bank"=>"Indian Bank"
+            ],
+            [
+                "code"=>"INOB",
+                "bank"=>"Indian Overseas Bank"
+            ],
+            [
+                "code"=>"INIB",
+                "bank"=>"IndusInd Bank"
+            ],
+            [
+                "code"=>"IDBB",
+                "bank"=>"Industrial Development Bank of India"
+            ],
+            [
+                "code"=>"INGB",
+                "bank"=>"ING Vysya Bank"
+            ],
+            [
+                "code"=>"JAKB",
+                "bank"=>"Jammu and Kashmir Bank"
+            ],
+            [
+                "code"=>"KRKB",
+                "bank"=>"Karnataka Bank"
+            ],
+            [
+                "code"=>"KRVB",
+                "bank"=>"Karur Vysya"
+            ],
+            [
+                "code"=>"KRVB",
+                "bank"=>"Karur Vysya - Corporate Netbanking"
+            ],
+            [
+                "code"=>"162B",
+                "bank"=>"Kotak Bank"
+            ],
+            [
+                "code"=>"LVCB",
+                "bank"=>"Laxmi Vilas Bank-Corporate"
+            ],
+            [
+                "code"=>"LVRB",
+                "bank"=>"Laxmi Vilas Bank-Retail"
+            ],
+            [
+                "code"=>"OBCB",
+                "bank"=>"Oriental Bank of Commerce"
+            ],
+            [
+                "code"=>"PNBB",
+                "bank"=>"Punjab National Bank - Retail Banking"
+            ],
+            [
+                "code"=>"CPNB",
+                "bank"=>"Punjab National Bank-Corporate"
+            ],
+            [
+                "code"=>"RTN",
+                "bank"=>"Ratnakar Bank "
+            ],
+            [
+                "code"=>"SRSWT",
+                "bank"=>"Saraswat Bank"
+            ],
+            [
+                "code"=>"SVCB",
+                "bank"=>"Shamrao Vitthal Co-operative Bank"
+            ],
+            [
+                "code"=>"SOIB",
+                "bank"=>"South Indian Bank"
+            ],
+            [
+                "code"=>"SDCB",
+                "bank"=>"Standard Chartered Bank"
+            ],
+            [
+                "code"=>"SBBJB",
+                "bank"=>"State Bank of Bikaner and Jaipur"
+            ],
+            [
+                "code"=>"SBHB",
+                "bank"=>"State Bank of Hyderabad"
+            ],
+            [
+                "code"=>"SBIB",
+                "bank"=>"State Bank of India"
+            ],
+            [
+                "code"=>"SBMB",
+                "bank"=>"State Bank of Mysore"
+            ],
+            [
+                "code"=>"SBPB",
+                "bank"=>"State Bank of Patiala"
+            ],
+            [
+                "code"=>"SBTB",
+                "bank"=>"State Bank of Travancore"
+            ],
+            [
+                "code"=>"UBIBC",
+                "bank"=>"Union Bank - Corporate Netbanking"
+            ],
+            [
+                "code"=>"UBIB",
+                "bank"=>"Union Bank of India"
+            ],
+            [
+                "code"=>"UNIB",
+                "bank"=>"United Bank Of India"
+            ],
+            [
+                "code"=>"VJYB",
+                "bank"=>"Vijaya Bank"
+            ],
+            [
+                "code"=>"YESB",
+                "bank"=>"Yes Bank"
+            ]
+        ];
+
+        $data['status'] = 200;
+        $data['message'] = 'Bank Options';
+
+        return  Response::json($data,200);
+
+    }
+
 }

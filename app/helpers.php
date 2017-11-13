@@ -2850,6 +2850,20 @@ if (!function_exists(('geoLocationFinder'))){
     }
 }
 
+if (!function_exists('decodeKioskVendorToken')) {
+
+    function decodeKioskVendorToken(){
+
+        $jwt_token              =   Request::header('Authorization-Vendor');
+        $jwt_key                =   Config::get('jwt.kiosk.key');
+        $jwt_alg                =   Config::get('jwt.kiosk.alg');
+        $decodedToken           =   JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+
+        return $decodedToken;
+    }
+
+}
+
 
 
 ?>

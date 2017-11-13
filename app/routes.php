@@ -1034,4 +1034,8 @@ Route::get('locatetrial/{code}','SchedulebooktrialsController@locateTrial');
 
 Route::get('servicemembership/{finder_id}','FindersController@serviceMembership');
 
+Route::get('getnetbankingoptions','HomeController@getNetBankingOptions');
+
+
+
 

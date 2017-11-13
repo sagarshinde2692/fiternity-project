@@ -5858,13 +5858,19 @@ class SchedulebooktrialsController extends \BaseController {
 
     public function locateTrial($code){
 
-        $booktrial = Booktrial::where('code',$code)->find();
+        $decodeKioskVendorToken = decodeKioskVendorToken();
+
+        $vendor = $decodeKioskVendorToken->vendor;
+
+        $booktrial = Booktrial::where('code',$code)->where('finder_id',$vendor['_id'])->first();
 
         if($booktrial){
 
             $message = "We located your booking of ".ucwords($booktrial['service_name'])." at ".$booktrial['schedule_slot_start_time'];
 
-            $response = array('status' => 200,'message' => $message);
+            $createCustomerToken = createCustomerToken((int)$booktrial['customer_id']);
+
+            $response = array('status' => 200,'message' => $message,'token'=>$createCustomerToken);
         }
 
         $response = array('status' => 400,'message' =>'Sorry! Cannot locate your booking');

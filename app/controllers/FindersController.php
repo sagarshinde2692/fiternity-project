@@ -2155,9 +2155,9 @@ class FindersController extends \BaseController {
 			'message'=>'Success'
 		];
 
-		$response['memberships'] = $this->getTrialSchedule($finder_id);
+		$getTrialSchedule = $this->getTrialSchedule($finder_id);
 
-		if(empty($response['memberships'])){
+		if(empty($getTrialSchedule)){
 
 			$response = [
 				'status'=>400,
@@ -2167,6 +2167,44 @@ class FindersController extends \BaseController {
 
 			return Response::json($response,200);
 		}
+
+		foreach ($getTrialSchedule as $key => $value) {
+
+			if(empty($value['ratecard'])){
+
+				unset($getTrialSchedule[$key]);
+
+			}else{
+
+				$ratecards = $value['ratecard'];
+
+				foreach ($ratecards as $ratecard_key => $ratecard_value) {
+
+					if($ratecard_value['direct_payment_enable'] == '0'){
+
+						unset($ratecards[$ratecard_key]);
+					}
+
+				}
+
+				$ratecards = array_values($ratecards);
+
+				if(!empty($ratecards)){
+
+					$getTrialSchedule['ratecard'] = $ratecards;
+
+				}else{
+
+					unset($getTrialSchedule[$key]);
+				}
+
+			}
+
+		}
+		
+		$getTrialSchedule = array_values($getTrialSchedule);
+
+		$response['memberships'] = $getTrialSchedule;
 
 		return Response::json($response,200);
 	}

@@ -406,9 +406,42 @@ class TempsController extends \BaseController {
                                 $amount = $ratecard->price;
                             }
 
-                            $return = array('workout_session_available'=>true,'customer_data'=>$customer_data,'trial_booked'=>true,'status' => 200,'message' => 'Already Booked Trial. Book a Workout Session starting from Rs '.$amount.'.','verified' => $verified,'token'=>$customerToken,'ratecard_id'=>(int)$ratecard->_id,'amount'=>(int)$amount,'fitternity_no'=>$fitternity_no);
+                            $return = array('workout_session_available'=>true,'customer_data'=>$customer_data,'trial_booked'=>true,'status' => 200,'message' => '','verified' => $verified,'token'=>$customerToken,'ratecard_id'=>(int)$ratecard->_id,'amount'=>(int)$amount,'fitternity_no'=>$fitternity_no);
                         }
                     }
+                }
+
+                if($temp->action == "locate_trial"){
+
+                    $message = 'Sorry! Cannot locate your booking';
+
+                    $return = array('customer_data'=>$customer_data,'locate_trial'=>false,'status' => 200,'message' => $message,'verified' => $verified,'token'=>$customerToken);
+
+                    $decodeKioskVendorToken = decodeKioskVendorToken();
+
+                    $vendor = $decodeKioskVendorToken->vendor;
+
+                    $finder_id = (int)$vendor->_id;
+
+                    Booktrial::$withoutAppends = true;
+
+                    $booktrial = Booktrial::where('customer_phone', $temp->customer_phone)
+                                ->where('finder_id', '=',$finder_id)
+                                ->where('type','booktrials')
+                                ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
+                                ->orderBy('_id','desc')
+                                ->first();
+
+                    if($booktrial){
+
+                        $message = "We located your booking of ".ucwords($booktrial['service_name'])." at ".$booktrial['schedule_slot_start_time'];
+
+                        $return = array('customer_data'=>$customer_data,'locate_trial'=>true,'status' => 200,'message' => $message,'verified' => $verified,'token'=>$customerToken);
+
+                    }
+                     
+                    return Response::json($return,200);
+
                 }
 
             }
