@@ -3564,6 +3564,78 @@ class FindersController extends \BaseController {
 		return $data;
 
 	}
+
+	public function reportReview(){
+
+		$jwt_token = Request::header('Authorization');
+		$decoded = $this->customerTokenDecode($jwt_token);
+
+		$rules = [
+		    'review_id' => 'required|integer|numeric',
+		    'description' => 'required'
+		];
+
+		$data = Input::json()->all();
+
+		$validator = Validator::make($data,$rules);
+
+		if ($validator->fails()) {
+			return Response::json(array('status' => 400,'message' => error_message($validator->errors())),400);
+		}
+
+		$review = Review::find($data['review_id']);
+
+		if($review){
+
+			$review_data = $review->toArray();
+
+			$reports = [];
+
+			if(!empty($review_data['reports'])){
+
+				$reports = $review_data['reports'];
+			}
+
+			$data = [
+				'customer_id' => (int)$decoded->customer->_id,
+				'customer_name' => $decoded->customer->name,
+				'customer_email' => $decoded->customer->email,
+				'customer_phone' => $decoded->customer->contact_no,
+				'description'=>$data['description']
+			];
+
+			$reports[] = $data;
+
+			$review->update(['reports'=>$reports]);
+
+			$data['fitternity_email'] = [
+				'pranjalisalvi@fitternity.com',
+				'sailismart@fitternity.com'
+			];
+			
+			$data['review'] = $review_data['description'];
+
+			Finder::$withoutAppends=true;
+
+			$finder = Finder::with(array('location'=>function($query){$query->select('name');}))->with(array('city'=>function($query){$query->select('name');}))->find($review_data['finder_id'],['_id','title','location_id','city_id']);
+
+			$data['finder_name'] = ucwords($finder['title']);
+			$data['finder_location'] = ucwords($finder['location']['name']);
+			$data['finder_city'] = ucwords($finder['city']['name']);
+
+			$this->findermailer->reportReview($data);
+
+			$response = ['status' => 200, 'message' => 'Reported a review Successfully'];
+
+			return Response::json($response, 200);
+
+		}
+
+		$response = ['status' => 400, 'message' => 'Review Not Found'];
+
+		return Response::json($response, 400);
+	
+	}
 	
 
 }
