@@ -214,7 +214,7 @@ class RewardofferController extends BaseController {
                     ->where('amount_min','<', $amount)
                     ->where('amount_max','>=', $amount)
                     // ->whereNotIn('reward_type',['personal_trainer_at_home'])
-                    ->with(array('rewards'=> function($query){$query->select('*')->where('reward_type','!=','personal_trainer_at_home');}  ))
+                    ->with(array('rewards'=> function($query){$query->select('*')->whereNotIn('reward_type',['healthy_snacks', 'personal_trainer_at_home']);}  ))
                     // ->with('rewards')
                     ->orderBy('_id','desc')->first();
 
