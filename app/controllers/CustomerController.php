@@ -742,11 +742,11 @@ class CustomerController extends \BaseController {
 
 	}
 
-	public function encodeKioskVendorToken($vendor){
+	public function encodeKioskVendorToken($kiosk_user){
 
 		Finder::$withoutAppends=true;
 
-		$finder = Finder::with(array('location'=>function($query){$query->select('name');}))->with(array('city'=>function($query){$query->select('name');}))->find((int)$vendor_user['finder_id']);
+		$finder = Finder::with(array('location'=>function($query){$query->select('name');}))->with(array('city'=>function($query){$query->select('name');}))->find((int)$kiosk_user['finder_id']);
 
 		$data = [
 			'_id'=>$finder['_id'],
