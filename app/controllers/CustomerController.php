@@ -724,16 +724,16 @@ class CustomerController extends \BaseController {
 			return array('status' => 400,'message' =>$this->errorMessage($validator->errors()));  
 		}
 
-		$vendor_user = Vendoruser::where('type','kiosk')->where('email',$data['email'])->get();
+		$kiosk_user = KioskUser::where('type','kiosk')->where('email',$data['email'])->first();
 
-		if($vendor_user){
+		if($kiosk_user){
 
-			if($vendor_user['password'] != md5($data['password'])){
+			if($kiosk_user['password'] != md5($data['password'])){
 
 				return Response::json(array('status' => 400,'message' => 'Incorrect Password'),400);
 			}
 
-			$encodeKioskVendorToken = $this->encodeKioskVendorToken($vendor_user);
+			$encodeKioskVendorToken = $this->encodeKioskVendorToken($kiosk_user);
 
 			return Response::json($encodeKioskVendorToken,$encodeKioskVendorToken['status']);
 		}

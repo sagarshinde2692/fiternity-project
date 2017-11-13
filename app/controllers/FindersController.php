@@ -2191,7 +2191,7 @@ class FindersController extends \BaseController {
 
 				if(!empty($ratecards)){
 
-					$getTrialSchedule['ratecard'] = $ratecards;
+					$getTrialSchedule[$key]['ratecard'] = $ratecards;
 
 				}else{
 
