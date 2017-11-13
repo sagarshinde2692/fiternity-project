@@ -288,6 +288,8 @@ Route::group(array('before' => 'validatetoken'), function() {
 
 	Route::get('getwalletdetails/{limit?}/{offset?}',  array('as' => 'customer.getWalletDetails','uses' => 'CustomerController@getWalletDetails'));
 
+	Route::post('reportareview', array('as' => 'finderdetails.reportareview','uses' => 'FindersController@reportReview'));
+
 });
 
 /******************** CUSTOMERS SECTION END HERE ********************/
