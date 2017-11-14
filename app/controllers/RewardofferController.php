@@ -301,7 +301,7 @@ class RewardofferController extends BaseController {
                                         $rewards_value['contents'] =  $rewards_value['reward_type'] == "fitness_kit" ? ["Shaker", "Gym Bag", "T-shirt"] : ["Pop Mak – Roasted Flavoured Makhana (small)", "Honey Chew Pouch (5 flavours)","Baked Pizza Stick Dippers","Pop Mak – Roasted Flavoured Makhana (big)","Colonel & Co. Nachos with Dip", "Kettle Chips"];
                                         $rewards_value['description'] = $rewards_value['reward_type'] == "fitness_kit" ? "Get uber-cool fitness merchandise to complement your workout. The quirky yet functional kit will include the following:<br> - Shaker <br> - Gym Bag <br> - T-Shirt (1)* <br><br>* As per design availability" : "Ensure you avoid those extra calories by munching on tasty snacks. Get a specially curated hamper which contains: <br> - Pop Mak – Roasted Flavoured Makhana (small) <br> - Honey Chew Pouch (5 flavours) <br> - Baked Pizza Stick Dippers <br> - Pop Mak – Roasted Flavoured Makhana (big) <br> - Colonel & Co. Nachos with Dip <br> - Kettle Chips";
                                         $rewards_value['image'] =  $rewards_value['reward_type'] == "fitness_kit" ? "https://b.fitn.in/gamification/reward/goodies/Kit_5_10_11_2017.jpg" : "https://b.fitn.in/gamification/reward/goodies/hamper-2.jpg";
-                                        $rewards_value['gallery'] = $rewards_value['reward_type'] == "fitness_kit" ? ["https://b.fitn.in/gamification/reward/goodies/Kit_5_10_11_2017.jpg", "https://b.fitn.in/gamification/reward/goodies/Kit_2,3,4,5,6,7,8.jpg", "https://b.fitn.in/gamification/reward/goodies/Kit_4,5,6,7,8.jpg", "https://b.fitn.in/gamification/reward/goodies/Kit_5,6,7,8.jpg"] : [];
+                                        $rewards_value['gallery'] = $rewards_value['reward_type'] == "fitness_kit" ? ["https://b.fitn.in/gamification/reward/goodies/Kit_5_10_11_2017.jpg", "https://b.fitn.in/gamification/reward/goodies/Kit_2,3,4,5,6,7,8.jpg", "https://b.fitn.in/gamification/reward/goodies/Kit_4,5,6,7,8.jpg", "https://b.fitn.in/gamification/reward/goodies/Kit_5,6,7,8(1).jpg"] : [];
                                         break;
                                     case (15000 <= $amount && $amount < 20000) :
                                         $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 2100 : 1600;
@@ -309,7 +309,7 @@ class RewardofferController extends BaseController {
                                         $rewards_value['description'] = $rewards_value['reward_type'] == "fitness_kit" ? "Get uber-cool fitness merchandise to complement your workout. The quirky yet functional kit will include the following:<br> - Gym Bag <br> - Shaker <br> - Shoe Bag <br> - T-shirt (1)* <br><br>* As per design availability" : "Ensure you avoid those extra calories by munching on tasty snacks. Get a specially curated hamper which contains: <br> - Pop Mak – Roasted Flavoured Makhana (small) <br> - 2 Honey Chew Pouch (5 flavours) <br> - Good Juicery (Sugar Free Sparkling) Juice <br> - Baked Pizza Stick Dippers <br> - Colonel & Co. Nachos with Dip <br> - Kettle Chips <br> - Wholewheat Thins";
                                         $rewards_value['image'] =  $rewards_value['reward_type'] == "fitness_kit" ? "https://b.fitn.in/gamification/reward/goodies/Kit_6_10_11_2017.jpg" : "https://b.fitn.in/gamification/reward/goodies/hamper-2.jpg";
                                         $rewards_value['gallery'] = $rewards_value['reward_type'] == "fitness_kit" ? ["https://b.fitn.in/gamification/reward/goodies/Kit_6_10_11_2017.jpg", 
-                                        "https://b.fitn.in/gamification/reward/goodies/Kit_4,5,6,7,8.jpg", "https://b.fitn.in/gamification/reward/goodies/Kit_2,3,4,5,6,7,8.jpg", "https://b.fitn.in/gamification/reward/goodies/Kit_2,3,6.jpg", "https://b.fitn.in/gamification/reward/goodies/Kit_5,6,7,8.jpg"] : [];
+                                        "https://b.fitn.in/gamification/reward/goodies/Kit_4,5,6,7,8.jpg", "https://b.fitn.in/gamification/reward/goodies/Kit_2,3,4,5,6,7,8.jpg", "https://b.fitn.in/gamification/reward/goodies/Kit_2,3,6.jpg", "https://b.fitn.in/gamification/reward/goodies/Kit_5,6,7,8(1).jpg"] : [];
                                         break;
                                     case (20000 <= $amount && $amount < 25000) :
                                         $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 2550 : 2020;
@@ -319,7 +319,7 @@ class RewardofferController extends BaseController {
                                         $rewards_value['gallery'] = $rewards_value['reward_type'] == "fitness_kit" ? ["https://b.fitn.in/gamification/reward/goodies/Kit_7_10_11_2017.jpg", 
                                         "https://b.fitn.in/gamification/reward/goodies/Kit_4,5,6,7,8.jpg",
                                         "https://b.fitn.in/gamification/reward/goodies/Kit_2,3,4,5,6,7,8.jpg", 
-                                        "https://b.fitn.in/gamification/reward/goodies/Kit_5,6,7,8.jpg",
+                                        "https://b.fitn.in/gamification/reward/goodies/Kit_5,6,7,8(1).jpg",
                                         "https://b.fitn.in/gamification/reward/goodies/Kit_7,8.jpg", "https://b.fitn.in/gamification/reward/goodies/Kit_3,7,8.jpg"] : [];
                                         break;
                                     case (25000 <= $amount) :
@@ -330,7 +330,7 @@ class RewardofferController extends BaseController {
                                         $rewards_value['gallery'] = $rewards_value['reward_type'] == "fitness_kit" ? ["https://b.fitn.in/gamification/reward/goodies/Kit_8_10_11_2017.jpg", 
                                         "https://b.fitn.in/gamification/reward/goodies/Kit_4,5,6,7,8.jpg",
                                         "https://b.fitn.in/gamification/reward/goodies/Kit_2,3,4,5,6,7,8.jpg",  
-                                        "https://b.fitn.in/gamification/reward/goodies/Kit_5,6,7,8.jpg", 
+                                        "https://b.fitn.in/gamification/reward/goodies/Kit_5,6,7,8(1).jpg", 
                                         "https://b.fitn.in/gamification/reward/goodies/Kit_7,8.jpg", "https://b.fitn.in/gamification/reward/goodies/Kit_3,7,8.jpg", 
                                         "https://b.fitn.in/gamification/reward/goodies/Kit_8only(1).jpg","https://b.fitn.in/gamification/reward/goodies/Kit_8only.jpg"] : [];
                                         break;
