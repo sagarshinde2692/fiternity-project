@@ -222,8 +222,8 @@ class RewardofferController extends BaseController {
             if ($rewardoffer){
                 $rewardoffer = $rewardoffer->toArray();
 
-                
 
+                
                 $rewards = isset($rewardoffer['rewards']) ? $rewardoffer['rewards'] : array();
 
                 $diet_inclusive_service = Service::where('finder_id', $finder['_id'])->where('diet_inclusive', true)->get();
@@ -456,7 +456,7 @@ class RewardofferController extends BaseController {
             $duration_month = ceil($duration_day/30) + 2;
         }
 
-        $cashback['description'] = "Enjoy FitCash+ of Rs. ".$calculation['wallet_amount'].". FitCash+ is fully redeemable for any booking / purchase on Fitternity ranging from workout sessions, memberships, diet plan and healthy tiffin subscription with a validity of ".$duration_month." months";
+        $cashback['description'] = "Get Rs ".$calculation['wallet_amount'].". Fitcash+ in your wallet as cashback which is fully redeemable against any Memberships/Session & Diet Plan purchase on Fitternity. Earned cashback is valid for ".$duration_month." months";
 
         $renewal_cashback  = array('title'=>'Discount on Renewal');
         $selection_limit = 1;
