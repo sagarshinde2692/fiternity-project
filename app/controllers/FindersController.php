@@ -513,9 +513,9 @@ class FindersController extends \BaseController {
 								$service = $service;
 
 							$service['offer_icon'] = "";
-
-							if(isset($service['offer_available']) && $service['offer_available'] == true){
-
+							
+							if(isset($service['offer_available']) && $service['offer_available'] == true && !in_array($finder['_id'], Config::get('app.hot_offer_excluded_vendors'))){
+								
 								$service['offer_icon'] = "https://b.fitn.in/iconsv1/fitmania/mob_offer_ratecard.png";
 							}															
 
@@ -2275,7 +2275,7 @@ class FindersController extends \BaseController {
 				'short_description' => isset($item['short_description']) ? $item['short_description'] : ""
 			);
 
-			if(isset($item['offer_available']) && $item['offer_available'] == true){
+			if(isset($item['offer_available']) && $item['offer_available'] == true && !in_array($finder_id, Config::get('app.hot_offer_excluded_vendors'))){
 
 				$service['offer_icon'] = "https://b.fitn.in/iconsv1/fitmania/women_offer_ratecard.png";
 			}
