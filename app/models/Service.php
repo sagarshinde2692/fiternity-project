@@ -248,7 +248,7 @@ class Service extends \Basemodel{
 					
                 }
 //                var_dump($ratecardoffers);exit;
-				if(isset($this['offer_available']) && $this->offer_available && !$offer_exists){
+				if(isset($this['offer_available']) && $this->offer_available && !$offer_exists && !in_array($this['finder_id'], Config::get('app.hot_offer_excluded_vendors'))){
 					if(isset($value['type']) && ($value['type']=='membership' || $value['type']=='packages')){
 						if(isset($value['validity']) && isset($value['validity_type'])){
 							
