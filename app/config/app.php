@@ -695,7 +695,9 @@ return array(
 		'discount' => 2
 	),
 
-	'fitmein_email' => 'vg@fitmein.in'
+	'fitmein_email' => 'vg@fitmein.in',
+
+	'hot_offer_excluded_vendors' => [941]
 
 
 
