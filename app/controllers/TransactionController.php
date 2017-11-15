@@ -3197,6 +3197,54 @@ class TransactionController extends \BaseController {
 
         if($payment_mode_type == 'part_payment'){
 
+            $remaining_amount = $data['amount_customer'];
+
+            if(isset($data["part_payment_calculation"]["part_payment_amount"]) && $data["part_payment_calculation"]["part_payment_amount"] > 0){
+
+                $remaining_amount -= $data["part_payment_calculation"]["part_payment_amount"];
+            }
+
+            if(isset($data["part_payment_calculation"]["convinience_fee"]) && $data["part_payment_calculation"]["convinience_fee"] > 0){
+
+                $remaining_amount -= $data["part_payment_calculation"]["convinience_fee"];
+            }
+
+            if(isset($data['coupon_discount_amount']) && $data['coupon_discount_amount'] > 0){
+
+                $remaining_amount -= $data['coupon_discount_amount'];
+
+                $amount_summary[] = array(
+                    'field' => 'Coupon Discount',
+                    'value' => '-Rs. '.$data['coupon_discount_amount']
+                );
+            }
+
+            if(isset($data['customer_discount_amount']) && $data['customer_discount_amount'] > 0){
+
+                $remaining_amount -= $data['customer_discount_amount'];
+
+                $amount_summary[] = array(
+                    'field' => 'Corporate Discount',
+                    'value' => '-Rs. '.$data['customer_discount_amount']
+                );
+            }
+
+            if(isset($data['app_discount_amount']) && $data['app_discount_amount'] > 0){
+
+                $remaining_amount -= $data['app_discount_amount'];
+
+                $amount_summary[] = array(
+                    'field' => 'App Discount',
+                    'value' => '-Rs. '.$data['app_discount_amount']
+                );
+            }
+
+            $amount_summary[] = array(
+                'field' => 'Remaining Amount Payable',
+                'value' => 'Rs. '.$$remaining_amount
+            );
+
+
             $amount_summary[] = array(
                 'field' => 'Booking Amount (20%)',
                 'value' => 'Rs. '.$data['part_payment_calculation']['part_payment_amount']

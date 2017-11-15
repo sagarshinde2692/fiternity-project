@@ -927,7 +927,7 @@ class HomeController extends BaseController {
             }
 
             if(in_array($type,["personaltrainertrial","manualtrial","manualautotrial","booktrialfree","booktrial","workoutsession","workout-session","booktrials"])){
-                $booking_details_data["finder_name_location"] = ['field'=>'SESSION BOOKED AT','value'=>$finder_name.", ".$finder_location,'position'=>$position++];
+                $booking_details_data["finder_name_location"] = ['field'=>'BOOKING AT','value'=>$finder_name.", ".$finder_location,'position'=>$position++];
             }
 
             $booking_details_data["service_name"] = ['field'=>'SERVICE NAME','value'=>$service_name,'position'=>$position++];
