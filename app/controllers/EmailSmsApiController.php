@@ -693,18 +693,21 @@ class EmailSmsApiController extends \BaseController {
             'send_bcc_status'   => 1
         );
 
-        $capture_type = array('fitness_canvas','renew-membership','claim_listing');
+        $capture_type = array('fitness_canvas','renew-membership','claim_listing','add_business');
 
         if(in_array($data['capture_type'],$capture_type)){
 
-            if($data['capture_type'] == 'claim_listing'){
-
-                $this->findermailer->claimListing($data);
-
-            }else{
-
-                $this->customermailer->landingPageCallback($data);
-                $this->customersms->landingPageCallback($data);
+            switch ($data['capture_type']) {
+                case 'claim_listing':
+                    $this->findermailer->claimListing($data);
+                    break;
+                case 'add_business':
+                    $this->findermailer->addBusiness($data);
+                    break;
+                default:
+                    $this->customermailer->landingPageCallback($data);
+                    $this->customersms->landingPageCallback($data);
+                    break;
             }
 
         }else{
@@ -718,6 +721,7 @@ class EmailSmsApiController extends \BaseController {
             case 'renew-membership':$message = "Thank you for your request, We will curate a renew subscription for you and get back";break;
             case 'change_start_date_request':$message = "Thank you for your request, Our team will get in touch with you within 24 hours to process the request";break;
             case 'claim_listing':$message = "Thank You! Your request has been submitted. We will get in touch with you on ".$data['customer_phone']." or ".$data['customer_email']." as soon as possible!";break;
+            case 'add_business' : $message = "Thank You for sharing this information. We will verify it as soon as possible.";break;
             default:$message = "Recieved the Request";break;
         }
 

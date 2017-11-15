@@ -599,6 +599,20 @@ Class FinderMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 
+	protected function addBusiness($data){
+
+		$label = 'AddBusiness-Fitternity';
+
+		$user_email 	=  	['silkeshakadam@fitternity.com','rahulsachdev@fitternity.com','niveditasomani@fitternity.com','dharatanna@fitternity.com','pranjalisalvi@fitternity.com','sailismart@fitternity.com'];
+
+		$message_data 	= array(
+			'user_email' => $user_email,
+			'user_name' =>  'Fitterntiy Team',
+		);
+
+		return $this->common($label,$data,$message_data);
+	}
+
 	public function reportReview ($data){
 
 		$label = 'ReportReview-Fitternity';
