@@ -5926,11 +5926,11 @@ class SchedulebooktrialsController extends \BaseController {
 
         $service_duration = $this->getServiceDuration($ratecard);
 
-        $booking_details_data["finder_name_location"] = ['field'=>'SESSION BOOKED AT','value'=>$finder_name.", ".$finder_location,'position'=>$position++];
+        $booking_details_data["finder_name_location"] = ['field'=>'BOOKING AT','value'=>$finder_name.", ".$finder_location,'position'=>$position++];
 
         $booking_details_data["service_name"] = ['field'=>'SERVICE NAME','value'=>$service['name'],'position'=>$position++];
 
-        $booking_details_data["service_duration"] = ['field'=>'SERVICE DURATION','value'=>$service_duration,'position'=>$position++];
+        $booking_details_data["service_duration"] = ['field'=>'DURATION','value'=>$service_duration,'position'=>$position++];
 
         $booking_details_data["start_date"] = ['field'=>'START DATE','value'=>'-','position'=>$position++];
 

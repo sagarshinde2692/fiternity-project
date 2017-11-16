@@ -321,7 +321,7 @@ class TransactionController extends \BaseController {
             }
         }
 
-        if(!$updating_part_payment) {
+        if(!$updating_part_payment || !isset($data['myreward_id'])) {
 
             $cashbackRewardWallet =$this->getCashbackRewardWallet($data,$order);
 

@@ -548,7 +548,7 @@ class HomeController extends BaseController {
             $preferred_starting_date = (isset($itemData['preferred_starting_date'])) ? $itemData['preferred_starting_date'] : "";
 
             $header     =   "Congratulations!";
-            $note       =   "Note: If you face any issues or need assistance for the  session - please call us on 022-61222222 and we will resolve it immediately";
+            $note       =   "Note: If you face any issues or need assistance for the  session - please call us on 022-61094444 and we will resolve it immediately";
             $icon_path  =   "https://b.fitn.in/iconsv1/success-pages/";
             $show_invite = false;
             $id_for_invite = (int) $id;
@@ -1141,7 +1141,7 @@ class HomeController extends BaseController {
                 "title"=>"Done",
                 "description"=>"Hope you had a great experience. \n If you need any help, you can reach out to us on on below details",
                 "email"=>"info@fitternity.com",
-                "phone"=>"022-61222222"
+                "phone"=>"022-61094444"
             ];
 
             $feedback = [
