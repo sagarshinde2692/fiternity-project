@@ -2543,7 +2543,9 @@ class SchedulebooktrialsController extends \BaseController {
                 return Response::json($resp, 404);
             }
         }
-
+        if(substr($data["customer_phone"], -10) == "7838038094"){
+            return Response::json("Can't book anything for you.",400);
+        }
 
         try {
 
