@@ -776,7 +776,7 @@ class CustomerController extends \BaseController {
 
 		$token = JWT::encode($jwt_claim,$jwt_key,$jwt_alg);
 
-		return array('status' => 200,'message' => 'Successfull Login', 'token' => $token);
+		return array('status' => 200,'message' => 'Successfull Login', 'token' => $token, 'finder_id'=> (int)$finder['_id']);
 	}
 
 	public function emailLogin($data){

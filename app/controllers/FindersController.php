@@ -3501,6 +3501,60 @@ class FindersController extends \BaseController {
 
 		return $key;
 	}
+
+
+	public function kisokDashboard($finder_id){
+
+		Finder::$withoutAppends=true;
+
+		$finder = Finder::find((int)$finder_id);
+
+		if(!$finder){
+
+			return Response::json(["message"=>"Vendor not found","status"=>404], 404);
+		}
+
+		$response = [
+			"status"=>200,
+			"message"=>"Successfully retrieved.",
+			"response"=>[
+				"about"=>[
+					"description"=>"Fitternity is the one stop shop for everything fitness. Discover, compare, try & buy through fitternity.",
+					"details"=>[
+						[
+							"title"=>"Book unlimited free trials to explre fitness forms around you.",
+							"image"=>"http://itisimage.com/trial.jpg"
+						],
+						[
+							"title"=>"Book unlimited free trials to explre fitness forms around you.",
+							"image"=>"http://itisimage.com/trial.jpg"
+						]
+					]
+				],
+				"options"=>[
+					[
+						"title"=>"Access Trial Booking",
+						"description"=>"Some description",
+						"image"=>"http://someImageForOptions/small.jpg",
+						"banner_image"=>"http://bannerKeLiye/badaWalaImage.jpg",
+						"id"=>1
+					],
+					[
+						"title"=>"Explore Membership",
+						"description"=>"Some description",
+						"image"=>"http://someImageForOptions/small.jpg",
+						"banner_image"=>"http://bannerKeLiye/badaWalaImage.jpg",
+						"id"=>2
+					]
+				],
+				"title"=>"Welcome to ".ucwords($finder['title']),
+				"powered"=>"Powered by Fitternity"
+			]
+		];
+
+		return Response::json($response,$response['status']);
+
+	}
 	
 
 }

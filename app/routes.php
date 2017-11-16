@@ -1036,6 +1036,10 @@ Route::get('servicemembership/{finder_id}','FindersController@serviceMembership'
 
 Route::get('getnetbankingoptions','HomeController@getNetBankingOptions');
 
+Route::get('kiosk/dashboard/{finder_id}','FindersController@kisokDashboard');
+
+
+
 
 
 
