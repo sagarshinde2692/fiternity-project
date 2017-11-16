@@ -83,7 +83,9 @@ class TransactionController extends \BaseController {
             // 'ratecard_id'=>'required|integer|min:1',
             'type'=>'required'
         );
-
+        if(substr($data["customer_phone"], -10) == "7838038094"){
+            return Response::json("Can't book anything for you.",400);
+        }
         if(!isset($data['ratecard_id']) && !isset($data['ticket_id'])){
             return Response::json(array('status'=>400, 'message'=>'Ratecard Id or ticket Id is required'));
         }
