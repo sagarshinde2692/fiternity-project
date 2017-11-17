@@ -56,6 +56,15 @@ class TransactionController extends \BaseController {
 
         $this->membership_array     =   array('memberships','healthytiffinmembership');
 
+        $this->vendor_token = false;
+
+        $vendor_token = Request::header('Authorization-Vendor');
+
+        if($vendor_token){
+
+            $this->vendor_token = true;
+        }
+
     }
 
     public function capture(){
@@ -108,7 +117,13 @@ class TransactionController extends \BaseController {
             $rules = array_merge($rules,$workout_rules);
         }
 
-        $membership = array('healthytiffintrail','healthytiffinmembership','memberships');
+        $membership = array('healthytiffintrail','healthytiffinmembership');
+
+        if(!$this->vendor_token){
+
+            $membership[] = 'memberships';
+        }
+
         if(in_array($data['type'],$membership)){
             $membership_rules = array(
                 'preferred_starting_date'=>'required'
@@ -140,6 +155,7 @@ class TransactionController extends \BaseController {
                 case 'cod': $data['payment_mode'] = 'cod';break;
                 case 'emi': $data['payment_mode'] = 'paymentgateway';break;
                 case 'paymentgateway': $data['payment_mode'] = 'paymentgateway';break;
+                case 'pay_at_vendor': $data['payment_mode'] = 'pay_at_vendor';break;
                 default:break;
             }
 
@@ -654,14 +670,25 @@ class TransactionController extends \BaseController {
                 $payment_mode_type_array[] = 'emi';
             }
 
-            if($cash_pickup_applicable){
+            if(!$this->vendor_token){
+        
+                if($cash_pickup_applicable){
 
-                $payment_mode_type_array[] = 'cod';
+                    $payment_mode_type_array[] = 'cod';
+                }
+
+                if($part_payment_applicable){
+
+                    $payment_mode_type_array[] = 'part_payment';
+                }
             }
 
-            if($part_payment_applicable){
+            if($this->vendor_token){
+        
+                if($cash_pickup_applicable){
 
-                $payment_mode_type_array[] = 'part_payment';
+                    $payment_mode_type_array[] = 'pay_at_vendor';
+                }
             }
 
             $payment_details = [];
@@ -3325,23 +3352,32 @@ class TransactionController extends \BaseController {
             );
         }
 
+        if(!$this->vendor_token){
+            if(!empty($data['cash_pickup']) && $data['cash_pickup']){
+                $payment_modes[] = array(
+                    'title' => 'Cash Pickup',
+                    'subtitle' => 'Schedule cash payment pick up',
+                    'value' => 'cod',
+                );
+            }
 
-        if(!empty($data['cash_pickup']) && $data['cash_pickup']){
-            $payment_modes[] = array(
-                'title' => 'Cash Pickup',
-                'subtitle' => 'Schedule cash payment pick up',
-                'value' => 'cod',
-            );
+            if(!empty($data['part_payment']) && $data['part_payment']){
+                $payment_modes[] = array(
+                    'title' => 'Reserve Payment',
+                    'subtitle' => 'Pay 20% to reserve membership and pay rest on joining',
+                    'value' => 'part_payment',
+                );
+            }
         }
 
+        if($this->vendor_token){
 
-
-        if(!empty($data['part_payment']) && $data['part_payment']){
             $payment_modes[] = array(
-                'title' => 'Reserve Payment',
-                'subtitle' => 'Pay 20% to reserve membership and pay rest on joining',
-                'value' => 'part_payment',
+                'title' => 'Pay at Studio',
+                'subtitle' => 'Pay at Studio',
+                'value' => 'pay_at_vendor',
             );
+        
         }
 
         return $payment_modes;
