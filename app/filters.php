@@ -204,7 +204,7 @@ Route::filter('device',function(){
 
     if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
 
-        Log::info('_device_filter_jwt_token'.$jwt_token);
+        Log::info('_device_filter_jwt_token : '.$jwt_token);
 
         $jwt_key    =   Config::get('app.jwt.key');
         $jwt_alg    =   Config::get('app.jwt.alg');
