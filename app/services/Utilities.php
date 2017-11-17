@@ -2039,7 +2039,18 @@ Class Utilities {
 
         $customer = \Customer::find((int)$order['customer_id']);
 
-        if($customer && isset($customer['old_customer']) && !$customer['old_customer'] && isset($customer['referrer_id']) && $customer['referrer_id'] != 0 && isset($order['amount_customer']) && $order['amount_customer'] > 0){
+        $customer_referral_count = 0;
+
+        $customer_ids = \Customer::where('contact_no','LIKE','%'.substr($order['customer_phone'], -8).'%')->lists('_id');
+
+        if(!empty($customer_ids)){
+
+            $customer_ids = array_map('intval',$customer_ids);
+
+            $customer_referral_count = Wallet::whereIn('customer_id',$customer_ids)->where('type','REFERRAL')->count();
+        }
+
+        if($customer_referral_count == 0 && $customer && isset($customer['old_customer']) && !$customer['old_customer'] && isset($customer['referrer_id']) && $customer['referrer_id'] != 0 && isset($order['amount_customer']) && $order['amount_customer'] > 0){
 
             Log::info("inside first transaction");
 
