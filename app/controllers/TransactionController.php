@@ -3347,4 +3347,167 @@ class TransactionController extends \BaseController {
         return $payment_modes;
     }
 
+    public function checkCouponCode(){
+
+        $data = Input::json()->all();
+
+        if(!isset($data['coupon'])){
+            $resp = array("status"=> 400, "message" => "Coupon code missing", "error_message" => "Please enter a valid coupon");
+            return Response::json($resp,400);
+        }
+
+        if(!isset($data['ratecard_id']) && !isset($data['ticket_id'])){
+            $resp = array("status"=> 400, "message" => "Ratecard Id or ticket Id must be present", "error_message" => "Coupon cannot be applied on this transaction");
+            return Response::json($resp,400);
+        }
+
+        $jwt_token = Request::header('Authorization');
+
+        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+            $decoded = customerTokenDecode($jwt_token);
+            $customer_id = (int)$decoded->customer->_id;
+        }
+
+        $service_id = isset($data['service_id']) ? $data['service_id']: null;
+
+        $couponCode = $data['coupon'];
+
+        $ticket = null;
+        
+        $ticket_quantity = isset($data['ticket_quantity']) ? $data['ticket_quantity'] : 1;
+        
+        
+        if(isset($data['ticket_id'])){
+            $ticket = Ticket::find($data['ticket_id']);
+            if(!$ticket){
+                $resp = array("status"=> 400, "message" => "Ticket not found", "error_message" => "Coupon cannot be applied on this transaction");
+                return Response::json($resp,400);   
+            }
+        }
+
+        $ratecard = null;
+        $amount_finder = 0;
+        $amount = 0;
+        $offer_id = false;
+        $finder_id = false;
+
+        if(isset($data['ratecard_id'])){
+
+            $ratecard = Ratecard::find($data['ratecard_id']);
+
+            if(!$ratecard){
+                $resp = array("status"=> 400, "message" => "Ratecard not found", "error_message" => "Coupon cannot be applied on this transaction");
+                return Response::json($resp,400);   
+            }
+
+            $finder_id = (int)$ratecard['finder_id'];
+
+            if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
+                $amount_finder = $ratecard['special_price'];
+            }else{
+                $amount_finder = $ratecard['price'];
+            }
+
+            $offer_id = false;
+
+            $offer = Offer::where('ratecard_id',$ratecard['_id'])
+                    ->where('hidden', false)
+                    ->orderBy('order', 'asc')
+                    ->where('start_date','<=',new DateTime(date("d-m-Y 00:00:00")))
+                    ->where('end_date','>=',new DateTime(date("d-m-Y 00:00:00")))
+                    ->first();
+
+            if($offer){
+                $offer_id = $offer->_id;
+                $amount_finder = $offer->price;
+            }
+
+            $amount = $amount_finder;
+
+            if($ratecard != null && $ratecard['type'] == "membership" && isset($_GET['device_type']) && in_array($_GET['device_type'], ["ios","android"])){
+
+                $this->appOfferDiscount = in_array($finder_id, $this->appOfferExcludedVendors) ? 0 : $this->appOfferDiscount;
+
+                $app_discount_amount = intval($amount_finder * ($this->appOfferDiscount/100));
+
+                $amount -= $app_discount_amount;
+            }
+
+            if(isset($ratecard['flags']) && isset($ratecard['flags']['convinience_fee_applicable']) && $ratecard['flags']['convinience_fee_applicable']){
+                
+                $convinience_fee_percent = Config::get('app.convinience_fee');
+
+                $convinience_fee = $amount_finder*$convinience_fee_percent/100;
+
+                $convinience_fee = $convinience_fee <= 150 ? $convinience_fee : 150;
+
+                $amount += $convinience_fee;
+            }
+
+
+            $corporate_discount_percent = $this->utilities->getCustomerDiscount();
+            $customer_discount_amount = intval($amount_finder * ($corporate_discount_percent/100));
+
+            $amount -= $customer_discount_amount;
+
+            if($amount > 0){
+
+                $cashback_detail = $this->customerreward->purchaseGame($amount,$finder_id,'paymentgateway',$offer_id,false);
+
+                if(isset($data['cashback']) && $data['cashback'] == true){
+                    $amount -= $cashback_detail['amount_discounted'];
+                }
+
+
+                if(isset($cashback_detail['amount_deducted_from_wallet']) && $cashback_detail['amount_deducted_from_wallet'] > 0){
+                    $amount -= $cashback_detail['amount_deducted_from_wallet'];
+                }
+            }
+
+        }
+
+        if(isset($data['event_id'])){
+            $customer_id = false;
+        }
+
+        $customer_id = isset($customer_id) ? $customer_id : false;
+
+        $resp = $this->customerreward->couponCodeDiscountCheck($ratecard,$couponCode,$customer_id, $ticket, $ticket_quantity, $service_id);
+
+        if($resp["coupon_applied"]){
+
+            if(isset($data['event_id']) && isset($data['customer_email'])){
+                                
+                $already_applied_coupon = Customer::where('email', 'like', '%'.$data['customer_email'].'%')->whereIn('applied_promotion_codes',[strtolower($data['coupon'])])->count();
+            
+                if($already_applied_coupon>0){
+                    return Response::json(array('status'=>400,'data'=>array('final_amount'=>($resp['data']['discount']+$resp['data']['final_amount']), "discount" => 0), 'error_message'=>'Coupon already applied', "message" => "Coupon already applied"), 400);
+                }
+            }
+
+            if($ratecard != null){
+
+                $resp["data"]["discount"] = $amount > $resp["data"]["discount"] ? $resp["data"]["discount"] : $amount;
+            }
+
+            $resp['status'] = 200;
+
+            return Response::json($resp,200);
+
+        }else{
+
+            $errorMessage =  "Coupon is either not valid or expired";
+
+            if((isset($resp['fitternity_only_coupon']) && $resp['fitternity_only_coupon']) || (isset($resp['vendor_exclusive']) && $resp['vendor_exclusive'])){
+                $errorMessage =  $resp['error_message'];
+            }
+
+            $resp = array("status"=> 400, "message" => "Coupon not found", "error_message" =>$errorMessage, "data"=>$resp["data"]);
+
+            return Response::json($resp,400);    
+        }
+
+        return Response::json($resp,200);
+    }
+
 }
