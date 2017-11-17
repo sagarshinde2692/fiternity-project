@@ -196,6 +196,10 @@ Route::filter('device',function(){
         
     }
 
+    Log::info("Customer_token");
+    
+    Log::info(Request::header('Authorization'));
+
     Log::info('header_array',$header_array);
 
     $customer_id = "";
