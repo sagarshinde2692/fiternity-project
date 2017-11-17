@@ -2543,7 +2543,9 @@ class SchedulebooktrialsController extends \BaseController {
                 return Response::json($resp, 404);
             }
         }
-        if(substr($data["customer_phone"], -10) == "7838038094"){
+        $asshole_numbers = ["7838038094","7982850036","8220720704"];
+        
+        if(in_array(substr($data["customer_phone"], -10), $asshole_numbers)){
             return Response::json("Can't book anything for you.",400);
         }
 
