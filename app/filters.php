@@ -204,8 +204,30 @@ Route::filter('device',function(){
 
     if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
 
-        $decoded = customerTokenDecode($jwt_token);
-        $customer_id = (int)$decoded->customer->_id;
+        Log::info('_device_filter_jwt_token'.$jwt_token);
+
+        $jwt_key    =   Config::get('app.jwt.key');
+        $jwt_alg    =   Config::get('app.jwt.alg');
+
+        try{
+
+            if(Cache::tags('blacklist_customer_token')->has($jwt_token)){
+                return Response::json(array('status' => 400,'message' => 'User logged out'),400);
+            }
+
+            $decoded = customerTokenDecode($jwt_token);
+            $customer_id = (int)$decoded->customer->_id;
+
+        }catch(DomainException $e){
+            return Response::json(array('status' => 400,'message' => 'Token incorrect'),400);
+        }catch(ExpiredException $e){
+            return Response::json(array('status' => 400,'message' => 'Token expired'),400);
+        }catch(SignatureInvalidException $e){
+            return Response::json(array('status' => 400,'message' => 'Signature verification failed'),400);
+        }catch(Exception $e){
+            return Response::json(array('status' => 400,'message' => 'Token incorrect'),400);
+        }
+        
     }
 
     $data = [];
