@@ -2288,7 +2288,7 @@ class OrderController extends \BaseController {
                     return Response::json($resp,$resp["status"]);
                 }
                
-                if($data['payment_mode'] != 'cod'){
+                if(!isset($data['payment_mode']) || $data['payment_mode'] != 'cod'){
 
                     $order->unset('cashback');
                     $order->unset('reward_info');
