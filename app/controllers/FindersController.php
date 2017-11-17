@@ -3523,11 +3523,19 @@ class FindersController extends \BaseController {
 					"details"=>[
 						[
 							"title"=>"Book unlimited free trials to explre fitness forms around you.",
-							"image"=>"http://itisimage.com/trial.jpg"
+							"image"=>"http://b.fitn.in/kiosk/bowl-vegetable.png"
 						],
 						[
 							"title"=>"Book unlimited free trials to explre fitness forms around you.",
-							"image"=>"http://itisimage.com/trial.jpg"
+							"image"=>"http://b.fitn.in/kiosk/excercise.png"
+						],
+						[
+							"title"=>"Book unlimited free trials to explre fitness forms around you.",
+							"image"=>"http://b.fitn.in/kiosk/lunchbox.png"
+						],
+						[
+							"title"=>"Book unlimited free trials to explre fitness forms around you.",
+							"image"=>"http://b.fitn.in/kiosk/puzzle.png"
 						]
 					]
 				],
@@ -3535,16 +3543,34 @@ class FindersController extends \BaseController {
 					[
 						"title"=>"Access Trial Booking",
 						"description"=>"Some description",
-						"image"=>"http://someImageForOptions/small.jpg",
-						"banner_image"=>"http://bannerKeLiye/badaWalaImage.jpg",
-						"id"=>1
+						"image"=>"http://b.fitn.in/global/tabapp-homescreen/access-trials-small.png",
+						"banner_image"=>"http://b.fitn.in/global/tabapp-homescreen/accesstrial-big-1.png",
+						"id"=>1,
+						'type'=>'booktrial'
 					],
 					[
 						"title"=>"Explore Membership",
 						"description"=>"Some description",
-						"image"=>"http://someImageForOptions/small.jpg",
-						"banner_image"=>"http://bannerKeLiye/badaWalaImage.jpg",
-						"id"=>2
+						"image"=>"http://b.fitn.in/global/tabapp-homescreen/explorememberships-small.png",
+						"banner_image"=>"http://b.fitn.in/global/tabapp-homescreen/explorememberships-big-1.png",
+						"id"=>2,
+						"type"=>'membership'
+					],
+					[
+						"title"=>"Post a Review",
+						"description"=>"Post a Review",
+						"image"=>"http://b.fitn.in/global/tabapp-homescreen/post-review-small.png",
+						"banner_image"=>"http://b.fitn.in/global/tabapp-homescreen/postreview-big.png",
+						"id"=>3,
+						'type'=>'post_review'
+					],
+					[
+						"title"=>"Online Diet Consultation",
+						"description"=>"Online Diet Consultation",
+						"image"=>"http://b.fitn.in/global/tabapp-homescreen/explorememberships-small.png",
+						"banner_image"=>"http://b.fitn.in/global/tabapp-homescreen/explorememberships-big-1.png",
+						"id"=>4,
+						"type"=>"diet_plan"
 					]
 				],
 				"title"=>"Welcome to ".ucwords($finder['title']),
