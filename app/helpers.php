@@ -26,14 +26,34 @@ if (!function_exists('checkNull')) {
 if (!function_exists('decode_customer_token')) {
 
     function decode_customer_token(){
+
         $jwt_token              =   Request::header('Authorization');
         $jwt_key                =   Config::get('app.jwt.key');
         $jwt_alg                =   Config::get('app.jwt.alg');
-        $decodedToken           =   JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
 
-        Log::info("Decoded token helper--".json_encode($decodedToken->customer));
+        try{
 
-        return $decodedToken;
+            if(Cache::tags('blacklist_customer_token')->has($jwt_token)){
+                return Response::json(array('status' => 400,'message' => 'User logged out'),400);
+            }
+
+            $decodedToken = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+            return $decodedToken;
+
+        }catch(DomainException $e){
+            return Response::json(array('status' => 400,'message' => 'Token incorrect, Please login again'),400);
+        }catch(ExpiredException $e){
+
+            JWT::$leeway = 720000;
+
+            $decodedToken = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+            return $decodedToken;
+            
+        }catch(SignatureInvalidException $e){
+            return Response::json(array('status' => 400,'message' => 'Signature verification failed, Please login again'),400);
+        }catch(Exception $e){
+            return Response::json(array('status' => 400,'message' => 'Token incorrect, Please login again'),400);
+        }
     }
 
 }
@@ -2656,9 +2676,31 @@ if (!function_exists(('customerTokenDecode'))){
         $jwt_token = $token;
         $jwt_key = Config::get('app.jwt.key');
         $jwt_alg = Config::get('app.jwt.alg');
-        $decodedToken = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
 
-        return $decodedToken;
+
+        try{
+
+            if(Cache::tags('blacklist_customer_token')->has($jwt_token)){
+                return Response::json(array('status' => 400,'message' => 'User logged out'),400);
+            }
+
+            $decodedToken = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+            return $decodedToken;
+
+        }catch(DomainException $e){
+            return Response::json(array('status' => 400,'message' => 'Token incorrect, Please login again'),400);
+        }catch(ExpiredException $e){
+
+            JWT::$leeway = 720000;
+
+            $decodedToken = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+            return $decodedToken;
+            
+        }catch(SignatureInvalidException $e){
+            return Response::json(array('status' => 400,'message' => 'Signature verification failed, Please login again'),400);
+        }catch(Exception $e){
+            return Response::json(array('status' => 400,'message' => 'Token incorrect, Please login again'),400);
+        }
     }
 }
 

@@ -204,6 +204,8 @@ Route::filter('device',function(){
 
     if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
 
+        Log::info('_device_filter_jwt_token : '.$jwt_token);
+
         $decoded = customerTokenDecode($jwt_token);
         $customer_id = (int)$decoded->customer->_id;
     }
