@@ -1483,7 +1483,7 @@ public function emailToFitmaniaVendors (){
                     array('title'=>'Lowest price guarantee','description'=>'Get the best price when buying a membership','image'=>'https://b.fitn.in/global/vip-assests/icon/lowest.png'),
                     array('title'=>'Buy and get your VIP trial-fee back!','description'=>'Get your VIP trial fee re-imbursed when you buy a membership','image'=>'https://b.fitn.in/global/vip-assests/icon/trial.png'),
                     array('title'=>'Invite your FIT buddies to join you','description'=>'Extend an exclusive invite to your friends from your favourite profile. They enjoy the same benefits as you','image'=>'https://b.fitn.in/global/vip-assests/icon/invite.png'),
-                    array('title'=>'Fitness Concierge at your service','description'=>'Get personal assistance for queries on +912261222222','image'=>'https://b.fitn.in/global/vip-assests/icon/concierge.png'),
+                    array('title'=>'Fitness Concierge at your service','description'=>'Get personal assistance for queries on +912261094444','image'=>'https://b.fitn.in/global/vip-assests/icon/concierge.png'),
                 );
                 break;
             case 'membership':

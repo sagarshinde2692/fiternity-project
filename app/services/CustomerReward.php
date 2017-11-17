@@ -324,7 +324,9 @@ Class CustomerReward {
 
                                 $customersms->sendPgOrderSms($customerData);
 
-                                $customersms->giveCashbackOnTrialOrderSuccessAndInvite($customer_data);
+                                if($fitcash_plus > 0){
+                                    $customersms->giveCashbackOnTrialOrderSuccessAndInvite($customer_data);
+                                }
                             }
                         }
                     }
@@ -348,10 +350,12 @@ Class CustomerReward {
                 }
 
                 $utilities->walletTransaction($walletData,$order->toArray());
-                $customersms = new CustomerSms();
-                $order->amount_20_percent = $fitcash_plus;
-                $customersms->giveCashbackOnTrialOrderSuccessAndInvite($order->toArray());
                 
+                if($fitcash_plus > 0){
+                    $customersms = new CustomerSms();
+                    $order->amount_20_percent = $fitcash_plus;
+                    $customersms->giveCashbackOnTrialOrderSuccessAndInvite($order->toArray());
+                }            
             }
             
         }
@@ -516,7 +520,7 @@ Class CustomerReward {
         }*/
     }
 
-   public function purchaseGameNew($amount,$finder_id,$payment_mode = "paymentgateway",$offer_id = false,$customer_id = false){
+   public function purchaseGameNew($amount,$finder_id,$payment_mode = "paymentgateway",$offer_id = false,$customer_id = false,$part_payment_amount = false){
 
         $current_wallet_balance = 0;
         $wallet = 0;
@@ -646,6 +650,10 @@ Class CustomerReward {
 
         if($amount > 50000){
             $setAlgo = array('cashback'=>0,'fitcash'=>0,'discount'=>0);
+        }
+
+        if($part_payment_amount){
+            $amount = $part_payment_amount;
         }
 
         $original_amount = $amount;
@@ -910,7 +918,7 @@ Class CustomerReward {
     }
 
 
-    public function purchaseGame($amount,$finder_id,$payment_mode = "paymentgateway",$offer_id = false,$customer_id = false){
+    public function purchaseGame($amount,$finder_id,$payment_mode = "paymentgateway",$offer_id = false,$customer_id = false,$part_payment_amount = false){
 
         $jwt_token = Request::header('Authorization');
 
@@ -925,7 +933,7 @@ Class CustomerReward {
 
         if(isset($customer->demonetisation)){
 
-            return $this->purchaseGameNew($amount,$finder_id,$payment_mode,$offer_id,$customer_id);
+            return $this->purchaseGameNew($amount,$finder_id,$payment_mode,$offer_id,$customer_id,$part_payment_amount);
 
         }
 
@@ -1119,6 +1127,11 @@ Class CustomerReward {
                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"Service not eligible");
                     return $resp;
                 }
+            }
+            $excluded_vendors = isset($coupon["finders_exclude"]) ? $coupon["finders_exclude"] : [];
+            if(isset($ratecard['finder_id']) && in_array($ratecard['finder_id'], $excluded_vendors)){
+                $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"Coupon not valid for this transaction");
+                return $resp;
             }
 
 

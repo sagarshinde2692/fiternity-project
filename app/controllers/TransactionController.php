@@ -131,6 +131,24 @@ class TransactionController extends \BaseController {
             return Response::json(array('status' => 404,'message' => error_message($validator->errors())),404);
         }
 
+        if(isset($data['paymentmode_selected']) && $data['paymentmode_selected'] != ""){
+
+            $data['part_payment'] = false;
+
+            switch ($data['paymentmode_selected']) {
+                case 'part_payment': $data['part_payment'] = true;break;
+                case 'cod': $data['payment_mode'] = 'cod';break;
+                case 'emi': $data['payment_mode'] = 'paymentgateway';break;
+                case 'paymentgateway': $data['payment_mode'] = 'paymentgateway';break;
+                default:break;
+            }
+
+        }
+
+        $updating_part_payment = (isset($data['part_payment']) && $data['part_payment']) ? true : false;
+
+        $updating_cod = (isset($data['payment_mode']) && $data['payment_mode'] == 'cod') ? true : false;
+
         if($data['type'] == "events" && isset($data['event_customers']) && count($data['event_customers']) > 0 ){
 
             $event_customers = $data['event_customers'];
@@ -178,7 +196,7 @@ class TransactionController extends \BaseController {
 
         $data = array_merge($data,$customerDetail['data']); 
           
-        
+        $payment_mode = isset($data['payment_mode']) ? $data['payment_mode'] : "";
 
         if(isset($data['ratecard_id'])){
             
@@ -194,6 +212,16 @@ class TransactionController extends \BaseController {
 
         }
 
+        if($payment_mode=='cod'){
+
+            $data['payment_mode'] = 'cod';
+
+            $data["secondary_payment_mode"] = "cod_membership";
+            
+        }        
+
+        
+
         $finder_id = (int) $data['finder_id'];
 
         $finderDetail = $this->getFinderDetail($finder_id);
@@ -202,11 +230,10 @@ class TransactionController extends \BaseController {
             return Response::json($finderDetail,$finderDetail['status']);
         }
 
-        $part_payment = (isset($finderDetail['data']['finder_flags']) && isset($finderDetail['data']['finder_flags']['part_payment'])) ? $finderDetail['data']['finder_flags']['part_payment'] : false;
-
-        $cash_pickup = (isset($finderDetail['data']['finder_flags']) && isset($finderDetail['data']['finder_flags']['cash_pickup'])) ? $finderDetail['data']['finder_flags']['cash_pickup'] : false;
-
         
+
+        // $cash_pickup = (isset($finderDetail['data']['finder_flags']) && isset($finderDetail['data']['finder_flags']['cash_pickup'])) ? $finderDetail['data']['finder_flags']['cash_pickup'] : false;
+
         $orderfinderdetail = $finderDetail;
         $data = array_merge($data,$orderfinderdetail['data']);
         unset($orderfinderdetail["data"]["finder_flags"]);
@@ -293,14 +320,19 @@ class TransactionController extends \BaseController {
                 }
             }
         }
-            
-        $cashbackRewardWallet =$this->getCashbackRewardWallet($data,$order);
 
-        if($cashbackRewardWallet['status'] != 200){
-            return Response::json($cashbackRewardWallet,$cashbackRewardWallet['status']);
+        if(!$updating_part_payment && !isset($data['myreward_id'])) {
+
+            $cashbackRewardWallet =$this->getCashbackRewardWallet($data,$order);
+
+            if($cashbackRewardWallet['status'] != 200){
+                return Response::json($cashbackRewardWallet,$cashbackRewardWallet['status']);
+            }
+
+            $data = array_merge($data,$cashbackRewardWallet['data']);
+            
         }
 
-        $data = array_merge($data,$cashbackRewardWallet['data']);
 
         $txnid = "";
         $successurl = "";
@@ -327,64 +359,154 @@ class TransactionController extends \BaseController {
         $data['txnid'] = $txnid;
 
         Log::info($finderDetail["data"]);
+
+        $part_payment = (isset($finderDetail['data']['finder_flags']) && isset($finderDetail['data']['finder_flags']['part_payment'])) ? $finderDetail['data']['finder_flags']['part_payment'] : false;
         
-        if(isset($finderDetail["data"]["finder_flags"]) && isset($finderDetail["data"]["finder_flags"]["part_payment"]) && $finderDetail["data"]["finder_flags"]["part_payment"]== true && $data["amount_finder"] > 2500){
+        if(!$updating_part_payment && $part_payment && $data["amount_finder"] >= 3000){
+
+            $part_payment_data = $data;
+
+            $convinience_fee = $part_payment_data['convinience_fee'] = 0;
+
+            $part_payment_data["amount"] = 0;
+
 
             if($finderDetail["data"]["finder_flags"]["part_payment"]){
 
-                $part_payment_data = $data;
-                $part_payment_data_amount = (int)($data["amount"] - $data["amount_customer"]*0.8);
-                $part_payment_data["amount"] = $part_payment_data_amount > 0 ? $part_payment_data_amount : 0;
+                if(isset($data['ratecard_flags']) && isset($data['ratecard_flags']['convinience_fee_applicable']) && $data['ratecard_flags']['convinience_fee_applicable']){
+                    
+                    $convinience_fee_percent = Config::get('app.convinience_fee');
 
-                if(!isset($_GET['device_type'])  || !in_array($_GET['device_type'], ['android', 'ios'])){
+                    $convinience_fee = $part_payment_data['amount_finder']*$convinience_fee_percent/100;
 
-                    if(isset($data['ratecard_flags']) && isset($data['ratecard_flags']['convinience_fee_applicable']) && $data['ratecard_flags']['convinience_fee_applicable']){
-                        
-                        $convinience_fee_percent = Config::get('app.convinience_fee');
+                    $convinience_fee = $convinience_fee <= 150 ? $convinience_fee : 150;
+                    
+                    $part_payment_data['convinience_fee'] = $convinience_fee;
 
-                        $convinience_fee = number_format($part_payment_data['amount_finder']*$convinience_fee_percent/100, 0);
+                }
 
-                        $convinience_fee = $convinience_fee <= 150 ? $convinience_fee : 150;
+                $part_payment_amount = ceil(($data["amount_finder"] * (20 / 100)));
 
-                        $part_payment_data['amount'] = $part_payment_data['amount'] + $convinience_fee;
+                $part_payment_data["amount"] = $convinience_fee + $part_payment_amount;
 
-                        $part_payment_data['convinience_fee'] = $convinience_fee;
+                if(isset($data['cashback_detail']) && isset($data['cashback_detail']['amount_deducted_from_wallet'])){
 
+                    $part_payment_data["amount"] = 0;
+
+                    if(($convinience_fee + $part_payment_amount) > $data['cashback_detail']['amount_deducted_from_wallet']){
+                        $part_payment_data["amount"] = ($convinience_fee + $part_payment_amount) - $data['cashback_detail']['amount_deducted_from_wallet'];
                     }
+
                 }
 
                 $part_payment_hash ="";
                 
-                if($part_payment_data["amount"] > 0){
-                    $part_payment_hash = getHash($part_payment_data)['payment_hash'];
+                if($part_payment_data["amount"] > 0 ){
+                    $part_payment_hash = isset($data['part_payment_calculation']['hash']) ? $data['part_payment_calculation']['hash'] :  getHash($part_payment_data)['payment_hash'];
                 }else{
                     $part_payment_data["amount"] = 0;
                 }
             }
 
-            $data["part_payment_calculation"] = array("amount" => (int)($part_payment_data["amount"]), "hash" => $part_payment_hash, "full_wallet_payment" => $part_payment_data["amount"] == 0 ? true : false);
-            Log::info($data["part_payment_calculation"]);
+            $data["part_payment_calculation"] = array(
+                "amount" => (int)($part_payment_data["amount"]),
+                "hash" => $part_payment_hash,
+                "convinience_fee"=>$part_payment_data['convinience_fee'],
+                "full_wallet_payment" => $part_payment_data["amount"] == 0 ? true : false,
+                "part_payment_amount"=>$part_payment_amount
+            );
+
         }
 
         
-        $data['base_amount'] = $data['amount'];
+        if(isset($data['part_payment']) && $data['part_payment']){
 
-        if(!isset($_GET['device_type'])  || !in_array($_GET['device_type'], ['android', 'ios'])){
+            if(isset($order['wallet_amount']) && ((int) $order['wallet_amount']) > 0){
 
-            if(isset($data['ratecard_flags']) && isset($data['ratecard_flags']['convinience_fee_applicable']) && $data['ratecard_flags']['convinience_fee_applicable']){
-                
-                $convinience_fee_percent = Config::get('app.convinience_fee');
+                $req = array(
+                    'customer_id'=>$order['customer_id'],
+                    'order_id'=>$order['_id'],
+                    'amount'=>$order['wallet_amount'],
+                    'type'=>'REFUND',
+                    'entry'=>'credit',
+                    'description'=>'Refund for Order ID: '.$order['_id'],
+                );
 
-                $convinience_fee = number_format($data['amount_finder']*$convinience_fee_percent/100, 0);
-
-                $convinience_fee = $convinience_fee <= 150 ? $convinience_fee : 150;
-
-                $data['amount'] = $data['amount'] + $convinience_fee;
-
-                $data['convinience_fee'] = $convinience_fee;
-
+                $walletTransactionResponse = $this->utilities->walletTransaction($req,$order->toArray());
             }
+
+            $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($order['amount'],$data['finder_id'],'paymentgateway',$data['offer_id'],false/*$data['customer_id']*/,$order["part_payment_calculation"]["part_payment_amount"]);
+
+            if(isset($data['wallet']) && $data['wallet'] == true){
+
+                $data['wallet_amount'] = $data['cashback_detail']['amount_deducted_from_wallet'];
+            }
+
+            if(isset($data['wallet_amount']) && $data['wallet_amount'] > 0){
+
+                $req = array(
+                    'customer_id'=>$data['customer_id'],
+                    'order_id'=>$data['order_id'],
+                    'amount'=>$data['wallet_amount'],
+                    'type'=>'DEBIT',
+                    'entry'=>'debit',
+                    'description'=> $this->utilities->getDescription($data),
+                    'finder_id'=>$data['finder_id']
+                );
+
+                $walletTransactionResponse = $this->utilities->walletTransactionNew($req);
+                
+                if($walletTransactionResponse['status'] == 200){
+                    $data['wallet_transaction_debit'] = $walletTransactionResponse['wallet_transaction_debit'];
+                }
+            }
+
+            $data['remaining_amount'] = $order['amount_customer'];
+
+            if(isset($order["part_payment_calculation"]["part_payment_amount"]) && $order["part_payment_calculation"]["part_payment_amount"] > 0){
+
+                $data['remaining_amount'] -= $order["part_payment_calculation"]["part_payment_amount"];
+            }
+
+            if(isset($order["part_payment_calculation"]["convinience_fee"]) && $order["part_payment_calculation"]["convinience_fee"] > 0){
+
+                $data['remaining_amount'] -= $order["part_payment_calculation"]["convinience_fee"];
+            }
+
+            if(isset($order['coupon_discount_amount']) && $order['coupon_discount_amount'] > 0){
+
+                $data['remaining_amount'] -= $order['coupon_discount_amount'];
+            }
+
+            if(isset($order['customer_discount_amount']) && $order['customer_discount_amount'] > 0){
+
+                $data['remaining_amount'] -= $order['customer_discount_amount'];
+            }
+
+            if(isset($order['app_discount_amount']) && $order['app_discount_amount'] > 0){
+
+                $data['remaining_amount'] -= $order['app_discount_amount'];
+            }
+
+            $data['amount'] = $order["part_payment_calculation"]["amount"];
+
         }
+
+        $data['convinience_fee'] = 0;
+
+        if(isset($data['ratecard_flags']) && isset($data['ratecard_flags']['convinience_fee_applicable']) && $data['ratecard_flags']['convinience_fee_applicable']){
+            
+            $convinience_fee_percent = Config::get('app.convinience_fee');
+
+            $convinience_fee = $data['amount_finder']*$convinience_fee_percent/100;
+
+            $convinience_fee = $convinience_fee <= 150 ? $convinience_fee : 150;
+
+            $data['convinience_fee'] = $convinience_fee;
+
+        }
+
+        $data['base_amount'] = $order['amount_customer'] - $data['convinience_fee'] ;
 
         $hash = getHash($data);
         $data = array_merge($data,$hash);
@@ -434,7 +556,7 @@ class TransactionController extends \BaseController {
         }
 
         $data["status"] = "0";
-        
+
         if(isset($old_order_id)){
 
             if($order){
@@ -451,6 +573,12 @@ class TransactionController extends \BaseController {
             $order->_id = $order_id;
             $order->save();
         }
+
+        if(isset($data['payment_mode']) && $data['payment_mode'] == 'cod'){
+            $this->customermailer->orderUpdateCOD($order->toArray());
+            $this->customersms->orderUpdateCOD($order->toArray());
+        }
+
         
         
         if($data['customer_source'] == "android" || $data['customer_source'] == "ios"){
@@ -477,9 +605,9 @@ class TransactionController extends \BaseController {
         if(isset($data['cashback_detail']) && isset($data['cashback_detail']['amount_deducted_from_wallet'])){
             $result['wallet_amount'] = $data['cashback_detail']['amount_deducted_from_wallet'];
         }
-        if(isset($data["part_payment_calculation"])){
+        /*if(isset($data["part_payment_calculation"])){
             $result['part_payment_calculation'] = $data["part_payment_calculation"];
-        }
+        }*/
         
 
         if(isset($data['full_payment_wallet'])){
@@ -500,13 +628,56 @@ class TransactionController extends \BaseController {
             $order->update(array('redis_id'=>$redisid));
         }
 
+        $cash_pickup_applicable = (isset($data['amount']) && $data['amount'] >= 3000) ? true : false;
+
+        $emi_applicable = $this->utilities->displayEmi(array('amount'=>$data['amount']));
+
+        $part_payment_applicable = (!$updating_part_payment && $part_payment && $data["amount_finder"] >= 3000) ? true : false;
+
         $resp   =   array(
             'status' => 200,
             'data' => $result,
             'message' => "Tmp Order Generated Sucessfully",
-            'part_payment' => $part_payment,
-            'cash_pickup' => $cash_pickup
+            'part_payment' => $part_payment_applicable,
+            'cash_pickup' => $cash_pickup_applicable,
+            'emi'=>$emi_applicable
         );
+
+        if(isset($_GET['device_type']) && in_array($_GET['device_type'], ['android', 'ios'])){
+            
+            $resp['data']['order_details'] = $this->getBookingDetails($order->toArray());
+
+            $payment_mode_type_array = ['paymentgateway'];
+
+            if($emi_applicable){
+
+                $payment_mode_type_array[] = 'emi';
+            }
+
+            if($cash_pickup_applicable){
+
+                $payment_mode_type_array[] = 'cod';
+            }
+
+            if($part_payment_applicable){
+
+                $payment_mode_type_array[] = 'part_payment';
+            }
+
+            $payment_details = [];
+
+            foreach ($payment_mode_type_array as $payment_mode_type) {
+
+                $payment_details[$payment_mode_type] = $this->getPaymentDetails($order->toArray(),$payment_mode_type);
+
+            }
+            
+            $resp['data']['payment_details'] = $payment_details;
+
+            if(isset($order->amount) && $order->amount){
+                $resp['data']['payment_modes'] = $this->getPaymentModes($resp);
+            }
+        }
 
         return Response::json($resp);
 
@@ -546,10 +717,6 @@ class TransactionController extends \BaseController {
             if($order->customer_email != $decoded->customer->email){
                 $resp   =   array("status" => 401,"message" => "Invalid Customer");
                 return Response::json($resp,$resp["status"]);
-            }
-
-            if(isset($data["payment_mode"]) && $data["payment_mode"] == "cod"){
-               $data["secondary_payment_mode"] = "cod_membership";
             }
 
             if($order->status == "1" && isset($data['preferred_starting_date']) && $data['preferred_starting_date']  != '' && $data['preferred_starting_date']  != '-'){
@@ -654,52 +821,59 @@ class TransactionController extends \BaseController {
 
             $this->utilities->demonetisation($order);
 
-            $this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
+            
 
-            if(isset($order->reward_ids) && !empty($order->reward_ids)){
-
-                $reward_detail = array();
-
-                $reward_ids = array_map('intval',$order->reward_ids);
-
-                $rewards = Reward::whereIn('_id',$reward_ids)->get(array('_id','title','quantity','reward_type','quantity_type'));
-
-                if(count($rewards) > 0){
-
-                    foreach ($rewards as $value) {
-
-                        $title = $value->title;
-
-                        if($value->reward_type == 'personal_trainer_at_studio' && isset($order->finder_name) && isset($order->finder_location)){
-                            $title = "Personal Training At ".$order->finder_name." (".$order->finder_location.")";
-                        }
-
-                        $reward_detail[] = ($value->reward_type == 'nutrition_store') ? $title : $value->quantity." ".$title;
-                        $profile_link = $value->reward_type == 'diet_plan' ? $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$data['customer_email']."#diet-plan") : $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$data['customer_email']);
-                        array_set($data, 'reward_type', $value->reward_type);
-
-                    }
-
-                    $reward_info = (!empty($reward_detail)) ? implode(" + ",$reward_detail) : "";
-
-                    array_set($data, 'reward_info', $reward_info);
-                    
-                }
-
-            }
-
-            if(isset($order->cashback) && $order->cashback === true && isset($order->cashback_detail) ){
-
-                $reward_info = "Cashback";
-                
-                array_set($data, 'reward_info', $reward_info);
-                array_set($data, 'reward_type', 'cashback');
-            }
             array_set($data, 'status', '1');
 
             if(isset($order['part_payment']) && $order['part_payment'] && (!isset($data['order_success_flag']) || $data['order_success_flag'] != 'admin')){
                 array_set($data, 'status', '3');
             }
+
+            if($data['status'] == '1'){
+
+                $this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
+
+                if(isset($order->reward_ids) && !empty($order->reward_ids)){
+
+                    $reward_detail = array();
+
+                    $reward_ids = array_map('intval',$order->reward_ids);
+
+                    $rewards = Reward::whereIn('_id',$reward_ids)->get(array('_id','title','quantity','reward_type','quantity_type'));
+
+                    if(count($rewards) > 0){
+
+                        foreach ($rewards as $value) {
+
+                            $title = $value->title;
+
+                            if($value->reward_type == 'personal_trainer_at_studio' && isset($order->finder_name) && isset($order->finder_location)){
+                                $title = "Personal Training At ".$order->finder_name." (".$order->finder_location.")";
+                            }
+
+                            $reward_detail[] = ($value->reward_type == 'nutrition_store') ? $title : $value->quantity." ".$title;
+                            $profile_link = $value->reward_type == 'diet_plan' ? $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$data['customer_email']."#diet-plan") : $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$data['customer_email']);
+                            array_set($data, 'reward_type', $value->reward_type);
+
+                        }
+
+                        $reward_info = (!empty($reward_detail)) ? implode(" + ",$reward_detail) : "";
+
+                        array_set($data, 'reward_info', $reward_info);
+                        
+                    }
+
+                }
+
+                if(isset($order->cashback) && $order->cashback === true && isset($order->cashback_detail) ){
+
+                    $reward_info = "Cashback";
+                    
+                    array_set($data, 'reward_info', $reward_info);
+                    array_set($data, 'reward_type', 'cashback');
+                }
+            }
+            
             array_set($data, 'order_action', 'bought');
 
             if(((!isset($data['order_success_flag']) || $data['order_success_flag'] != 'admin') && !isset($order['success_date'])) || (isset($order['update_success_date']) && $order['update_success_date'] == "1" && isset($data['order_success_flag']) && $data['order_success_flag'] == 'admin')){
@@ -1184,27 +1358,51 @@ class TransactionController extends \BaseController {
 
         $amount = $data['amount_customer'] = $data['amount'];
 
+        if(isset($data['ratecard_flags']) && isset($data['ratecard_flags']['convinience_fee_applicable']) && $data['ratecard_flags']['convinience_fee_applicable']){
+            
+            $convinience_fee_percent = Config::get('app.convinience_fee');
+
+            $convinience_fee = $data['amount_finder']*$convinience_fee_percent/100;
+
+            $convinience_fee = $convinience_fee <= 150 ? $convinience_fee : 150;
+
+            $amount += $convinience_fee;
+
+            $data['amount_customer'] += $convinience_fee;
+
+            $data['convinience_fee'] = $convinience_fee;
+        }
+
         if($data['type'] != 'events'){
+
             if($data['type'] == "memberships" && isset($data['customer_source']) && ($data['customer_source'] == "android" || $data['customer_source'] == "ios")){
+
                 $this->appOfferDiscount = in_array($data['finder_id'], $this->appOfferExcludedVendors) ? 0 : $this->appOfferDiscount;
-                $data['app_discount_amount'] = intval($data['amount'] * ($this->appOfferDiscount/100));
-                $corporate_discount_percent = $this->utilities->getCustomerDiscount();
-                $data['customer_discount_amount'] = intval($data['amount'] * ($corporate_discount_percent/100));
-                $amount = $data['amount'] = $data['amount_customer'] = $data['amount'] - $data['app_discount_amount'] - $data['customer_discount_amount'];
-                $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount'],$data['finder_id'],'paymentgateway',$data['offer_id'],$data['customer_id']);
-            }else{
-                $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount_finder'],$data['finder_id'],'paymentgateway',$data['offer_id'],$data['customer_id']);
+                $data['app_discount_amount'] = intval($data['amount_finder'] * ($this->appOfferDiscount/100));
+
+                $amount -= $data['app_discount_amount'];
             }
 
+            $corporate_discount_percent = $this->utilities->getCustomerDiscount();
+            $data['customer_discount_amount'] = intval($data['amount_finder'] * ($corporate_discount_percent/100));
+
+            $amount -= $data['customer_discount_amount'];
+
+            
+            $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($amount,$data['finder_id'],'paymentgateway',$data['offer_id'],false/*$data['customer_id']*/);
+
             if(isset($data['cashback']) && $data['cashback'] == true){
-                $data['amount'] = $data['amount'] - $data['cashback_detail']['amount_discounted'];
+                $amount -= $data['cashback_detail']['amount_discounted'];
             }
 
             if(!isset($data['repetition'])){
 
+                if(isset($data['cashback_detail']['amount_deducted_from_wallet']) && $data['cashback_detail']['amount_deducted_from_wallet'] > 0){
+                    $amount -= $data['cashback_detail']['amount_deducted_from_wallet'];
+                }
+
                 if(isset($data['wallet']) && $data['wallet'] == true){
                     $data['wallet_amount'] = $data['cashback_detail']['amount_deducted_from_wallet'];
-                    $data['amount'] = $data['amount'] - $data['wallet_amount'];
                 }
 
                 if(isset($data['wallet_amount']) && $data['wallet_amount'] > 0){
@@ -1240,30 +1438,36 @@ class TransactionController extends \BaseController {
 
                 if(isset($new_data['wallet']) && $new_data['wallet'] == true){
 
-                    $data['wallet_amount'] = $data['cashback_detail']['amount_deducted_from_wallet'];
-                    $data['amount'] = $data['amount'] - $data['wallet_amount'];
-
-                    $req = array(
-                        'customer_id'=>$data['customer_id'],
-                        'order_id'=>$data['order_id'],
-                        'amount'=>$data['wallet_amount'],
-                        'type'=>'DEBIT',
-                        'entry'=>'debit',
-                        'description'=> $this->utilities->getDescription($data),
-                        'finder_id'=>$data['finder_id']
-                    );
-                    $walletTransactionResponse = $this->utilities->walletTransactionNew($req);
-                    
-                    if($walletTransactionResponse['status'] != 200){
-                        return $walletTransactionResponse;
-                    }else{
-                        $data['wallet_transaction_debit'] = $walletTransactionResponse['wallet_transaction_debit'];
+                    if(isset($data['cashback_detail']['amount_deducted_from_wallet']) && $data['cashback_detail']['amount_deducted_from_wallet'] > 0){
+                        $amount -= $data['cashback_detail']['amount_deducted_from_wallet'];
                     }
 
-                    // Schedule Check orderfailure and refund wallet amount in that case....
-                    $url = Config::get('app.url').'/orderfailureaction/'.$data['order_id'].'/'.$customer_id;
-                    $delay = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addHours(4);
-                    $data['wallet_refund_sidekiq'] = $this->hitURLAfterDelay($url, $delay);
+                    $data['wallet_amount'] = $data['cashback_detail']['amount_deducted_from_wallet'];
+
+                    if(isset($data['wallet_amount']) && $data['wallet_amount'] > 0){
+
+                        $req = array(
+                            'customer_id'=>$data['customer_id'],
+                            'order_id'=>$data['order_id'],
+                            'amount'=>$data['wallet_amount'],
+                            'type'=>'DEBIT',
+                            'entry'=>'debit',
+                            'description'=> $this->utilities->getDescription($data),
+                            'finder_id'=>$data['finder_id']
+                        );
+                        $walletTransactionResponse = $this->utilities->walletTransactionNew($req);
+                        
+                        if($walletTransactionResponse['status'] != 200){
+                            return $walletTransactionResponse;
+                        }else{
+                            $data['wallet_transaction_debit'] = $walletTransactionResponse['wallet_transaction_debit'];
+                        }
+
+                        // Schedule Check orderfailure and refund wallet amount in that case....
+                        $url = Config::get('app.url').'/orderfailureaction/'.$data['order_id'].'/'.$customer_id;
+                        $delay = \Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addHours(4);
+                        $data['wallet_refund_sidekiq'] = $this->hitURLAfterDelay($url, $delay);
+                    }
 
                 }else{
 
@@ -1295,36 +1499,40 @@ class TransactionController extends \BaseController {
                 }
 
             }
-        }
 
-        
-        if(isset($data["coupon_code"]) && $data["coupon_code"] != ""){
-            $ticket_quantity = isset($data['ticket_quantity'])?$data['ticket_quantity']:1;
-            $ticket = null;
-            if(isset($data['ticket_id'])){
-                $ticket = Ticket::find($data['ticket_id']);
-                if(!$ticket){
-                    $resp = array('status'=>400, 'message'=>'Ticket not found');
-                    return Response::json($resp, 400);
+            if(isset($data["coupon_code"]) && $data["coupon_code"] != ""){
+
+                $ticket_quantity = isset($data['ticket_quantity'])?$data['ticket_quantity']:1;
+                $ticket = null;
+                if(isset($data['ticket_id'])){
+                    $ticket = Ticket::find($data['ticket_id']);
+                    if(!$ticket){
+                        $resp = array('status'=>400, 'message'=>'Ticket not found');
+                        return Response::json($resp, 400);
+                    }
+                }
+                
+                $ratecard = isset($data['ratecard_id'])?Ratecard::find($data['ratecard_id']):null;
+                Log::info("Customer Info". $customer_id);
+                $service_id = isset($data['service_id']) ? $data['service_id'] : null;
+                
+                $couponCheck = $this->customerreward->couponCodeDiscountCheck($ratecard,$data["coupon_code"],$customer_id, $ticket, $ticket_quantity, $service_id);
+
+                if(isset($couponCheck["coupon_applied"]) && $couponCheck["coupon_applied"]){
+
+                    $data["coupon_discount_amount"] = $amount > $couponCheck["data"]["discount"] ? $couponCheck["data"]["discount"] : $amount;
+
+                    $amount -= $data["coupon_discount_amount"];
+
+                    if(isset($couponCheck["vendor_coupon"]) && $couponCheck["vendor_coupon"]){
+                        $data["payment_mode"] = "at the studio";
+                        $data["secondary_payment_mode"] = "cod_membership";
+                    }
                 }
             }
-            
-            $ratecard = isset($data['ratecard_id'])?Ratecard::find($data['ratecard_id']):null;
-            Log::info("Customer Info". $customer_id);
-            $service_id = isset($data['service_id']) ? $data['service_id'] : null;
-            
-            $couponCheck = $this->customerreward->couponCodeDiscountCheck($ratecard,$data["coupon_code"],$customer_id, $ticket, $ticket_quantity, $service_id);
-
-            if(isset($couponCheck["coupon_applied"]) && $couponCheck["coupon_applied"]){
-                $data["amount"] = $data["amount"] > $couponCheck["data"]["discount"] ? $data["amount"] - $couponCheck["data"]["discount"] : 0;
-                $data["coupon_discount_amount"] = $data["amount"] > $couponCheck["data"]["discount"] ? $couponCheck["data"]["discount"] : $data["amount"];
-                if(isset($couponCheck["vendor_coupon"]) && $couponCheck["vendor_coupon"]){
-                    $data["payment_mode"] = "at the studio";
-                    $data["secondary_payment_mode"] = "cod_membership";
-                }
-            }
         }
 
+        $data['amount'] = $amount;
 
         if($data['amount'] == 0){
             $data['full_payment_wallet'] = true;
@@ -1785,9 +1993,9 @@ class TransactionController extends \BaseController {
 
         
 
-        $corporate_discount_percent = $this->utilities->getCustomerDiscount();
+       /* $corporate_discount_percent = $this->utilities->getCustomerDiscount();
         $data['customer_discount_amount'] = intval($data['amount'] * ($corporate_discount_percent/100));
-        $data['amount'] = $data['amount'] - $data['customer_discount_amount'];
+        $data['amount'] = $data['amount'] - $data['customer_discount_amount'];*/
 
         $medical_detail                     =   (isset($data['medical_detail']) && $data['medical_detail'] != '') ? $data['medical_detail'] : "";
         $medication_detail                  =   (isset($data['medication_detail']) && $data['medication_detail'] != '') ? $data['medication_detail'] : "";
@@ -2821,6 +3029,485 @@ class TransactionController extends \BaseController {
             return "error";
             
         }
+    }
+
+    function getBookingDetails($data){
+        
+        $booking_details = [];
+
+        $position = 0;
+
+        $booking_details_data["finder_name_location"] = ['field'=>'STUDIO NAME','value'=>$data['finder_name'].", ".$data['finder_location'],'position'=>$position++];
+
+        if(in_array($data['type'],["booktrials","workout-session","manualautotrial"])){
+            $booking_details_data["finder_name_location"] = ['field'=>'SESSION BOOKED AT','value'=>$data['finder_name'].", ".$data['finder_location'],'position'=>$position++];
+        }
+
+        $booking_details_data["service_name"] = ['field'=>'SERVICE','value'=>$data['service_name'],'position'=>$position++];
+
+        $booking_details_data["service_duration"] = ['field'=>'DURATION','value'=>$data['service_duration'],'position'=>$position++];
+
+        $booking_details_data["start_date"] = ['field'=>'START DATE','value'=>'-','position'=>$position++];
+
+        $booking_details_data["start_time"] = ['field'=>'START TIME','value'=>'-','position'=>$position++];
+
+        $booking_details_data["address"] = ['field'=>'ADDRESS','value'=>'','position'=>$position++];
+
+        if(isset($data['reward_ids']) && !empty($data['reward_ids'])){
+
+            $reward_detail = array();
+
+            $reward_ids = array_map('intval',$data['reward_ids']);
+
+            $rewards = Reward::whereIn('_id',$reward_ids)->get(array('_id','title','quantity','reward_type','quantity_type'));
+
+            if(count($rewards) > 0){
+
+                foreach ($rewards as $value) {
+
+                    $title = $value->title;
+
+                    $reward_detail[] = ($value->reward_type == 'nutrition_store') ? $title : $value->quantity." ".$title;
+                    
+                    array_set($data, 'reward_type', $value->reward_type);
+
+                }
+
+                $reward_info = (!empty($reward_detail)) ? implode(" + ",$reward_detail) : "";
+
+                array_set($data, 'reward_info', $reward_info);
+                
+            }
+
+        }
+
+        if(isset($data["reward_info"]) && $data["reward_info"] != ""){
+
+            if($data["reward_info"] == 'Cashback'){
+                $booking_details_data["reward"] = ['field'=>'REWARD','value'=>$data["reward_info"],'position'=>$position++];
+            }else{
+                $booking_details_data["reward"] = ['field'=>'REWARD','value'=>$data["reward_info"]." (Avail it from your Profile)",'position'=>$position++];
+            }
+        }
+
+        if(isset($data['start_date']) && $data['start_date'] != ""){
+            $booking_details_data['start_date']['value'] = date('d-m-Y (l)',strtotime($data['start_date']));
+        }
+
+        if(isset($data['schedule_date']) && $data['schedule_date'] != ""){
+            $booking_details_data['start_date']['value'] = date('d-m-Y (l)',strtotime($data['schedule_date']));
+        }
+
+        if(isset($data['preferred_starting_date']) && $data['preferred_starting_date'] != ""){
+            $booking_details_data['start_date']['value'] = date('d-m-Y (l)',strtotime($data['preferred_starting_date']));
+        }
+
+        if(isset($data['start_time']) && $data['start_time'] != ""){
+            $booking_details_data['start_time']['value'] = strtoupper($data['start_time']);
+        }
+
+        if(isset($data['schedule_slot_start_time']) && $data['schedule_slot_start_time'] != ""){
+            $booking_details_data['start_time']['value'] = strtoupper($data['schedule_slot_start_time']);
+        }
+
+        if($data['finder_address'] != ""){
+            $booking_details_data['address']['value'] = $data['finder_address'];
+        }
+        
+        if(in_array($data['type'],["healthytiffintrial","healthytiffinmembership"])){
+
+            if(isset($data['customer_address']) && $data['customer_address'] != ""){
+                $booking_details_data['address']['value'] = $data['customer_address'];
+            }
+
+        }else{
+
+            if($data['finder_address'] != ""){
+                $booking_details_data['address']['value'] = $data['finder_address'];
+            }
+            if(isset($data['finder_address']) && $data['finder_address'] != ""){
+                $booking_details_data['address']['value'] = $data['finder_address'];
+            }
+        }
+
+        if(isset($booking_details_data['address']['value'])){
+
+            $booking_details_data['address']['value'] = str_replace("  ", " ",$booking_details_data['address']['value']);
+            $booking_details_data['address']['value'] = str_replace(", , ", "",$booking_details_data['address']['value']);
+        }
+
+        if(in_array($data['type'], ['manualtrial','manualautotrial','manualmembership'])){
+            $booking_details_data["start_date"]["field"] = "PREFERRED DATE";
+            $booking_details_data["start_time"]["field"] = "PREFERRED TIME";
+        }
+
+        if(in_array($data['type'], ['booktrial','workoutsession'])){
+            $booking_details_data["start_date"]["field"] = "DATE";
+            $booking_details_data["start_time"]["field"] = "TIME";
+        }
+
+        if(isset($data['preferred_day']) && $data['preferred_day'] != ""){
+            $booking_details_data['start_date']['field'] = 'PREFERRED DAY';
+            $booking_details_data['start_date']['value'] = $data['preferred_day'];
+        }
+
+        if(isset($data['preferred_time']) && $data['preferred_time'] != ""){
+            $booking_details_data['start_time']['field'] = 'PREFERRED TIME';
+            $booking_details_data['start_time']['value'] = $data['preferred_time'];
+        }
+
+        if(isset($data['"preferred_service']) && $data['"preferred_service'] != "" && $data['"preferred_service'] != null){
+            $booking_details_data['service_name']['field'] = 'PREFERRED SERVICE';
+            $booking_details_data['service_name']['value'] = $data['preferred_service'];
+        }
+
+        $booking_details_all = [];
+        foreach ($booking_details_data as $key => $value) {
+
+            $booking_details_all[$value['position']] = ['field'=>$value['field'],'value'=>$value['value']];
+        }
+
+        foreach ($booking_details_all as $key => $value) {
+
+            if($value['value'] != "" && $value['value'] != "-"){
+                $booking_details[] = $value;
+            }
+
+        }
+
+        return $booking_details;
+    }
+
+    function getPaymentDetails($data,$payment_mode_type){
+
+        $amount_summary = [];
+
+        $amount_summary[0] = array(
+            'field' => 'Total Amount',
+            'value' => 'Rs. '.$data['amount_finder']
+        );
+
+        $amount_payable = [];
+
+        $amount_payable= array(
+            'field' => 'Total Amount Payable',
+            'value' => 'Rs. '.$data['amount']
+        );
+
+        if($payment_mode_type == 'part_payment'){
+
+            $remaining_amount = $data['amount_customer'];
+
+            if(isset($data["part_payment_calculation"]["part_payment_amount"]) && $data["part_payment_calculation"]["part_payment_amount"] > 0){
+
+                $remaining_amount -= $data["part_payment_calculation"]["part_payment_amount"];
+            }
+
+            if(isset($data["part_payment_calculation"]["convinience_fee"]) && $data["part_payment_calculation"]["convinience_fee"] > 0){
+
+                $remaining_amount -= $data["part_payment_calculation"]["convinience_fee"];
+            }
+
+            if(isset($data['coupon_discount_amount']) && $data['coupon_discount_amount'] > 0){
+
+                $remaining_amount -= $data['coupon_discount_amount'];
+
+                $amount_summary[] = array(
+                    'field' => 'Coupon Discount',
+                    'value' => '-Rs. '.$data['coupon_discount_amount']
+                );
+            }
+
+            if(isset($data['customer_discount_amount']) && $data['customer_discount_amount'] > 0){
+
+                $remaining_amount -= $data['customer_discount_amount'];
+
+                $amount_summary[] = array(
+                    'field' => 'Corporate Discount',
+                    'value' => '-Rs. '.$data['customer_discount_amount']
+                );
+            }
+
+            if(isset($data['app_discount_amount']) && $data['app_discount_amount'] > 0){
+
+                $remaining_amount -= $data['app_discount_amount'];
+
+                $amount_summary[] = array(
+                    'field' => 'App Discount',
+                    'value' => '-Rs. '.$data['app_discount_amount']
+                );
+            }
+
+            $amount_summary[] = array(
+                'field' => 'Remaining Amount Payable',
+                'value' => 'Rs. '.$$remaining_amount
+            );
+
+
+            $amount_summary[] = array(
+                'field' => 'Booking Amount (20%)',
+                'value' => 'Rs. '.$data['part_payment_calculation']['part_payment_amount']
+            );
+
+            $amount_payable = array(
+                'field' => 'Total Amount Payable (20%)',
+                'value' => 'Rs. '.$data['part_payment_calculation']['amount']
+            );
+
+        }
+
+        if(isset($data['cashback_detail']) && isset($data['cashback_detail']['amount_deducted_from_wallet']) && $data['cashback_detail']['amount_deducted_from_wallet'] > 0){
+
+            $amount_summary[] = array(
+                'field' => 'Fitcash Applied',
+                'value' => '-Rs. '.$data['cashback_detail']['amount_deducted_from_wallet']
+            );
+        }
+
+        if($payment_mode_type != 'part_payment' && isset($data['coupon_discount_amount']) && $data['coupon_discount_amount'] > 0){
+
+            $amount_summary[] = array(
+                'field' => 'Coupon Discount',
+                'value' => '-Rs. '.$data['coupon_discount_amount']
+            );
+        }
+
+        if($payment_mode_type != 'part_payment' && isset($data['customer_discount_amount']) && $data['customer_discount_amount'] > 0){
+
+            $amount_summary[] = array(
+                'field' => 'Corporate Discount',
+                'value' => '-Rs. '.$data['customer_discount_amount']
+            );
+        }
+
+        if($payment_mode_type != 'part_payment' && isset($data['app_discount_amount']) && $data['app_discount_amount'] > 0){
+
+            $amount_summary[] = array(
+                'field' => 'App Discount',
+                'value' => '-Rs. '.$data['app_discount_amount']
+            );
+        }
+        
+        if(isset($data['convinience_fee']) && $data['convinience_fee'] > 0){
+
+            $amount_summary[] = array(
+                'field' => 'Convinience fee',
+                'value' => '+Rs. '.$data['convinience_fee']
+            );
+        }
+
+        $payment_details  = [];
+
+        $payment_details['amount_summary'] = $amount_summary;
+        $payment_details['amount_payable'] = $amount_payable;
+
+        return $payment_details;
+
+    }
+
+    function getPaymentModes($data){
+
+        $payment_modes = [];
+        $payment_modes[] = array(
+            'title' => 'Online Payment',
+            'subtitle' => 'Transact online with netbanking, card and wallet',
+            'value' => 'paymentgateway',
+        );
+
+
+        $emi = $this->utilities->displayEmi(array('amount'=>$data['data']['amount']));
+
+        if(!empty($data['emi']) && $data['emi']){
+            $payment_modes[] = array(
+                'title' => 'EMI',
+                'subtitle' => 'Transact online with credit installments',
+                'value' => 'emi',
+            );
+        }
+
+
+        if(!empty($data['cash_pickup']) && $data['cash_pickup']){
+            $payment_modes[] = array(
+                'title' => 'Cash Pickup',
+                'subtitle' => 'Schedule cash payment pick up',
+                'value' => 'cod',
+            );
+        }
+
+
+
+        if(!empty($data['part_payment']) && $data['part_payment']){
+            $payment_modes[] = array(
+                'title' => 'Reserve Payment',
+                'subtitle' => 'Pay 20% to reserve membership and pay rest on joining',
+                'value' => 'part_payment',
+            );
+        }
+
+        return $payment_modes;
+    }
+
+    public function checkCouponCode(){
+
+        $data = Input::json()->all();
+
+        if(!isset($data['coupon'])){
+            $resp = array("status"=> 400, "message" => "Coupon code missing", "error_message" => "Please enter a valid coupon");
+            return Response::json($resp,400);
+        }
+
+        if(!isset($data['ratecard_id']) && !isset($data['ticket_id'])){
+            $resp = array("status"=> 400, "message" => "Ratecard Id or ticket Id must be present", "error_message" => "Coupon cannot be applied on this transaction");
+            return Response::json($resp,400);
+        }
+
+        $jwt_token = Request::header('Authorization');
+
+        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+            $decoded = customerTokenDecode($jwt_token);
+            $customer_id = (int)$decoded->customer->_id;
+        }
+
+        $service_id = isset($data['service_id']) ? $data['service_id']: null;
+
+        $couponCode = $data['coupon'];
+
+        $ticket = null;
+        
+        $ticket_quantity = isset($data['ticket_quantity']) ? $data['ticket_quantity'] : 1;
+        
+        
+        if(isset($data['ticket_id'])){
+            $ticket = Ticket::find($data['ticket_id']);
+            if(!$ticket){
+                $resp = array("status"=> 400, "message" => "Ticket not found", "error_message" => "Coupon cannot be applied on this transaction");
+                return Response::json($resp,400);   
+            }
+        }
+
+        $ratecard = null;
+        $amount_finder = 0;
+        $amount = 0;
+        $offer_id = false;
+        $finder_id = false;
+
+        if(isset($data['ratecard_id'])){
+
+            $ratecard = Ratecard::find($data['ratecard_id']);
+
+            if(!$ratecard){
+                $resp = array("status"=> 400, "message" => "Ratecard not found", "error_message" => "Coupon cannot be applied on this transaction");
+                return Response::json($resp,400);   
+            }
+
+            $finder_id = (int)$ratecard['finder_id'];
+
+            if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
+                $amount_finder = $ratecard['special_price'];
+            }else{
+                $amount_finder = $ratecard['price'];
+            }
+
+            $offer_id = false;
+
+            $offer = Offer::where('ratecard_id',$ratecard['_id'])
+                    ->where('hidden', false)
+                    ->orderBy('order', 'asc')
+                    ->where('start_date','<=',new DateTime(date("d-m-Y 00:00:00")))
+                    ->where('end_date','>=',new DateTime(date("d-m-Y 00:00:00")))
+                    ->first();
+
+            if($offer){
+                $offer_id = $offer->_id;
+                $amount_finder = $offer->price;
+            }
+
+            $amount = $amount_finder;
+
+            if($ratecard != null && $ratecard['type'] == "membership" && isset($_GET['device_type']) && in_array($_GET['device_type'], ["ios","android"])){
+
+                $this->appOfferDiscount = in_array($finder_id, $this->appOfferExcludedVendors) ? 0 : $this->appOfferDiscount;
+
+                $app_discount_amount = intval($amount_finder * ($this->appOfferDiscount/100));
+
+                $amount -= $app_discount_amount;
+            }
+
+            if(isset($ratecard['flags']) && isset($ratecard['flags']['convinience_fee_applicable']) && $ratecard['flags']['convinience_fee_applicable']){
+                
+                $convinience_fee_percent = Config::get('app.convinience_fee');
+
+                $convinience_fee = $amount_finder*$convinience_fee_percent/100;
+
+                $convinience_fee = $convinience_fee <= 150 ? $convinience_fee : 150;
+
+                $amount += $convinience_fee;
+            }
+
+
+            $corporate_discount_percent = $this->utilities->getCustomerDiscount();
+            $customer_discount_amount = intval($amount_finder * ($corporate_discount_percent/100));
+
+            $amount -= $customer_discount_amount;
+
+            if($amount > 0){
+
+                $cashback_detail = $this->customerreward->purchaseGame($amount,$finder_id,'paymentgateway',$offer_id,false);
+
+                if(isset($data['cashback']) && $data['cashback'] == true){
+                    $amount -= $cashback_detail['amount_discounted'];
+                }
+
+
+                if(isset($cashback_detail['amount_deducted_from_wallet']) && $cashback_detail['amount_deducted_from_wallet'] > 0){
+                    $amount -= $cashback_detail['amount_deducted_from_wallet'];
+                }
+            }
+
+        }
+
+        if(isset($data['event_id'])){
+            $customer_id = false;
+        }
+
+        $customer_id = isset($customer_id) ? $customer_id : false;
+
+        $resp = $this->customerreward->couponCodeDiscountCheck($ratecard,$couponCode,$customer_id, $ticket, $ticket_quantity, $service_id);
+
+        if($resp["coupon_applied"]){
+
+            if(isset($data['event_id']) && isset($data['customer_email'])){
+                                
+                $already_applied_coupon = Customer::where('email', 'like', '%'.$data['customer_email'].'%')->whereIn('applied_promotion_codes',[strtolower($data['coupon'])])->count();
+            
+                if($already_applied_coupon>0){
+                    return Response::json(array('status'=>400,'data'=>array('final_amount'=>($resp['data']['discount']+$resp['data']['final_amount']), "discount" => 0), 'error_message'=>'Coupon already applied', "message" => "Coupon already applied"), 400);
+                }
+            }
+
+            if($ratecard != null){
+
+                $resp["data"]["discount"] = $amount > $resp["data"]["discount"] ? $resp["data"]["discount"] : $amount;
+            }
+
+            $resp['status'] = 200;
+
+            return Response::json($resp,200);
+
+        }else{
+
+            $errorMessage =  "Coupon is either not valid or expired";
+
+            if((isset($resp['fitternity_only_coupon']) && $resp['fitternity_only_coupon']) || (isset($resp['vendor_exclusive']) && $resp['vendor_exclusive'])){
+                $errorMessage =  $resp['error_message'];
+            }
+
+            $resp = array("status"=> 400, "message" => "Coupon not found", "error_message" =>$errorMessage, "data"=>$resp["data"]);
+
+            return Response::json($resp,400);    
+        }
+
+        return Response::json($resp,200);
     }
 
 }

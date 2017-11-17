@@ -548,7 +548,7 @@ class HomeController extends BaseController {
             $preferred_starting_date = (isset($itemData['preferred_starting_date'])) ? $itemData['preferred_starting_date'] : "";
 
             $header     =   "Congratulations!";
-            $note       =   "Note: If you face any issues or need assistance for the  session - please call us on 022-61222222 and we will resolve it immediately";
+            $note       =   "Note: If you face any issues or need assistance for the  session - please call us on 022-61094444 and we will resolve it immediately";
             $icon_path  =   "https://b.fitn.in/iconsv1/success-pages/";
             $show_invite = false;
             $id_for_invite = (int) $id;
@@ -927,7 +927,7 @@ class HomeController extends BaseController {
             }
 
             if(in_array($type,["personaltrainertrial","manualtrial","manualautotrial","booktrialfree","booktrial","workoutsession","workout-session","booktrials"])){
-                $booking_details_data["finder_name_location"] = ['field'=>'SESSION BOOKED AT','value'=>$finder_name.", ".$finder_location,'position'=>$position++];
+                $booking_details_data["finder_name_location"] = ['field'=>'BOOKING AT','value'=>$finder_name.", ".$finder_location,'position'=>$position++];
             }
 
             $booking_details_data["service_name"] = ['field'=>'SERVICE NAME','value'=>$service_name,'position'=>$position++];
@@ -941,6 +941,8 @@ class HomeController extends BaseController {
             $booking_details_data["address"] = ['field'=>'ADDRESS','value'=>'','position'=>$position++];
 
             $booking_details_data["price"] = ['field'=>'PRICE','value'=>'Free Via Fitternity','position'=>$position++];
+
+            $booking_details_data["amount_paid"] = ['field'=>'AMOUNT PAID','value'=>'','position'=>$position++];
 
             if($poc != ""){ 
                 $booking_details_data["poc"] = ['field'=>'POINT OF CONTACT','value'=>$poc,'position'=>$position++];
@@ -987,8 +989,20 @@ class HomeController extends BaseController {
                 $booking_details_data['price']['value']= "Rs. ".(string)$item['amount']." (Cash Pickup)";
             }
 
+            if(isset($item['myreward_id']) && $item['myreward_id'] != ""){
+                $booking_details_data['price']['value']= "Free Via Fitternity";
+            }
+
             if(isset($item['part_payment']) && $item['part_payment']){
+
                 $header= "Membership reserved";
+
+                $booking_details_data['amount_paid']['value'] = "Rs. ".(string)$item['amount'];
+
+                if($item['amount'] == 0){
+                    $booking_details_data['amount_paid']['value'] = "Rs. ".(string)$item['wallet_amount'] . " Paid via Fitcash+";
+                }
+
             }
 
             if(isset($item['payment_mode']) && $item['payment_mode'] == 'cod'){
@@ -1127,7 +1141,7 @@ class HomeController extends BaseController {
                 "title"=>"Done",
                 "description"=>"Hope you had a great experience. \n If you need any help, you can reach out to us on on below details",
                 "email"=>"info@fitternity.com",
-                "phone"=>"022-61222222"
+                "phone"=>"022-61094444"
             ];
 
             $feedback = [
@@ -3024,7 +3038,6 @@ class HomeController extends BaseController {
     }
 
 
-
     public function getNetBankingOptions(){
 
         $data = [];
@@ -3244,6 +3257,53 @@ class HomeController extends BaseController {
         $data['message'] = 'Bank Options';
 
         return  Response::json($data,200);
+    }
+
+    public function careerCapture(){
+
+        $data = Input::json()->all();
+
+        $rules = [
+            'email' => 'required|email|max:255',
+            'name' => 'required',
+            // 'phone'=>'required',
+            // 'interest'=>'required', 
+        ];
+
+        $validator = Validator::make($data, $rules);
+
+        if ($validator->fails()) {
+
+            $response = array('status' => 400,'message' =>error_message($validator->errors()));
+
+            return Response::json(
+                $response,
+                $response['status']
+            );
+
+        }
+
+        if(empty($data)){
+
+            return Response::json(
+                array(
+                    'status' => 400,
+                    'message' => "Error!",
+                    ),
+                400
+            );
+
+        }
+
+        Career::create($data);
+
+        return Response::json(
+            array(
+                'status' => 200,
+                'message' => "Thankyou for the Application",
+                ),
+            200
+        );
 
     }
 

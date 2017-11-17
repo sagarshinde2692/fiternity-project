@@ -15,15 +15,15 @@ return array(
 	'debug' => TRUE,
 
 	//stage
-	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
-	// 'url' => 'http://apistage.fitn.in',
-	// 'admin_url' => 'http://adminstage.fitn.in',
-	// 'website' => 'http://apistage.fitn.in:2233',
-	// 'sidekiq_url' => 'http://kick.fitn.in/',
-	// 'queue' => 'booktrial',
-	// 'vendor_communication' => false,
-	// 'env' => 'stage',
-	// 'debug' => TRUE,
+	'new_search_url' =>'http://apistage.fitn.in:5000/',
+	'url' => 'http://apistage.fitn.in',
+	'admin_url' => 'http://adminstage.fitn.in',
+	'website' => 'http://apistage.fitn.in:2233',
+	'sidekiq_url' => 'http://kick.fitn.in/',
+	'queue' => 'booktrial',
+	'vendor_communication' => false,
+	'env' => 'stage',
+	'debug' => TRUE,
 
 	//beta
 	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
@@ -52,9 +52,11 @@ return array(
     'business' => 'http://business.fitternity.com',
 
     'app' =>array(
-		'discount'		=> 			0,
-		'discount_excluded_vendors' => [1747,1813,4528,4530,9984,10081],
+		'discount'		=> 			10,
+		'discount_excluded_vendors' => [9459,1484,1458,576,1647,1486,9883,1451,1452,401,1487,1457,2522,1488,1460,4830,4829,4831,4827,4821,4818],
 	),
+	'fitternity_vendors' => [11907,9869,9891,11128],
+	
 
 	/*
 	|--------------------------------------------------------------------------

@@ -315,7 +315,10 @@ Route::get('couponcodeusedforhealthytiffinbyphoneno/{phoneno}',  array('as' => '
 
 Route::get('orderdetail/{orderid}',  array('as' => 'orders.orderdetail','uses' => 'OrderController@getOrderDetail'));
 
-Route::post('checkcouponcode',  array('as' => 'orders.couponcode','uses' => 'OrderController@couponCode'));
+// Route::post('checkcouponcode',  array('as' => 'orders.couponcode','uses' => 'OrderController@couponCode'));
+
+Route::post('checkcouponcode',  array('as' => 'transaction.couponcode','uses' => 'TransactionController@checkCouponCode'));
+
 Route::post('generatecodorder',  array('as' => 'orders.generatecodorder','uses' => 'OrderController@generateCodOrder'));
 Route::post('generatetmporder',  array('as' => 'orders.generatetmporder','uses' => 'OrderController@generateTmpOrder'));
 Route::post('capturepayment',  array('as' => 'order.buymembership','uses' => 'OrderController@captureOrderStatus'));
@@ -1038,8 +1041,6 @@ Route::get('getnetbankingoptions','HomeController@getNetBankingOptions');
 
 Route::get('kiosk/dashboard/{finder_id}','FindersController@kisokDashboard');
 
+Route::post('career/capture','HomeController@careerCapture');
 
-
-
-
-
+Route::post('transaction/summary','SchedulebooktrialsController@transactionSummary');
