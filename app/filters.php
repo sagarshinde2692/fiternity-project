@@ -196,10 +196,6 @@ Route::filter('device',function(){
         
     }
 
-    Log::info("Customer_token");
-    
-    Log::info(Request::header('Authorization'));
-
     Log::info('header_array',$header_array);
 
     $customer_id = "";
@@ -223,13 +219,13 @@ Route::filter('device',function(){
             $customer_id = (int)$decoded->customer->_id;
 
         }catch(DomainException $e){
-            return Response::json(array('status' => 400,'message' => 'Token incorrect'),400);
+            return Response::json(array('status' => 400,'message' => 'Token incorrect, Please login again'),400);
         }catch(ExpiredException $e){
-            return Response::json(array('status' => 400,'message' => 'Token expired'),400);
+            return Response::json(array('status' => 400,'message' => 'Token expired, Please login again'),400);
         }catch(SignatureInvalidException $e){
-            return Response::json(array('status' => 400,'message' => 'Signature verification failed'),400);
+            return Response::json(array('status' => 400,'message' => 'Signature verification failed, Please login again'),400);
         }catch(Exception $e){
-            return Response::json(array('status' => 400,'message' => 'Token incorrect'),400);
+            return Response::json(array('status' => 400,'message' => 'Token incorrect, Please login again'),400);
         }
         
     }
