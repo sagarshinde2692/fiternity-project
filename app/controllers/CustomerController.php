@@ -637,6 +637,8 @@ class CustomerController extends \BaseController {
 
 			$this->addCustomerRegId($data);
 
+			$response['customer_data'] = $customer->toArray();
+
 			return Response::json($response,200);
 		}
 	}
