@@ -956,7 +956,7 @@ Class Utilities {
 
 
     public function verifyOrder($data,$order){
-        if((isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin") || $order->pg_type == "PAYTM"){
+        if((isset($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin'])) || $order->pg_type == "PAYTM"){
             if($order->pg_type == "PAYTM" && !(isset($data["order_success_flag"]))){
                 $hashreverse = getpayTMhash($order);
                 if($data["verify_hash"] == $hashreverse['reverse_hash']){
@@ -965,7 +965,7 @@ Class Utilities {
                     $hash_verified = false;
                 }
             }
-            if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
+            if(isset($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin'])){
                 $hash_verified = true;
             }
         }else{

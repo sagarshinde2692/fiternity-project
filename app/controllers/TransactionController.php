@@ -724,9 +724,99 @@ class TransactionController extends \BaseController {
             }
         }
 
+
+        if($data['payment_mode'] == 'at the studio' && isset($data['wallet']) && $data['wallet']){
+
+            $otp_data = [
+                'otp'=>$this->generateOtp(),
+                'finder_vcc_mobile'=>$data['finder_vcc_mobile'],
+                'payment_mode'=>$data['payment_mode']
+            ];
+
+            $order->update(['otp_data'=>$otp_data]);
+
+            $this->findersms->genericOtp($otp_data);
+
+            $resp['vendor_otp'] = $otp_data['otp'];
+        }
+
         return Response::json($resp);
 
     }
+
+    public function generateOtp($length = 4)
+    {      
+        $characters = '0123456789';
+        $result = '';
+        $charactersLength = strlen($characters);
+
+        for ($p = 0; $p < $length; $p++)
+        {
+            $result .= $characters[rand(0, $charactersLength - 1)];
+        }
+
+        return $result;
+    }
+
+    public function verifyVendorOtpKiosk(){
+
+        $data = Input::json()->all();
+
+        $rules = array(
+            'order_id'=>'required',
+            'otp'=>'required'
+        );
+
+        $validator = Validator::make($data,$rules);
+
+        if ($validator->fails()) {
+            return Response::json(array('status' => 401,'message' => error_message($validator->errors())),200);
+        }
+
+        $order = Order::find((int)$data['order_id']);
+
+        if(!$order){
+
+            return Response::json(['status' => 401, "message" => "Order Not Found"],200);
+        }
+
+        if($order->status == "1"){
+
+            return Response::json(['status' => 401, "message" => "Already Status Successfull"],200);
+        }
+
+        $decodeKioskVendorToken = decodeKioskVendorToken();
+
+        $vendor = $decodeKioskVendorToken->vendor;
+
+        $finder_id = (int)$vendor->_id;
+
+        if($finder_id != $order['finder_id']){
+
+            return Response::json(['status' => 401, "message" => "Incorrect Vendor"],200);
+        }
+
+        if(!isset($order['otp_data'])){
+
+            return Response::json(['status' => 401, "message" => "OTP data not found"],200);
+        }
+
+        if($order['otp_data']['otp'] != $data['otp']){
+
+            return Response::json(['status' => 401, "message" => "Incorrect OTP"],200);
+        }
+
+        $data['status'] = 'success';
+        $data['order_success_flag'] = 'kiosk';
+        $data['order_id'] = (int)$data['order_id'];
+        $data['customer_email'] = $order['customer_email'];
+        $data['send_communication_customer'] = 1;
+        $data['send_communication_vendor'] = 1;
+
+        return $this->successCommon($data);
+
+    }
+
 
     public function update(){
         

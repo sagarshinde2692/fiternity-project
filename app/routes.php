@@ -1044,3 +1044,6 @@ Route::get('kiosk/dashboard/{finder_id}','FindersController@kisokDashboard');
 Route::post('career/capture','HomeController@careerCapture');
 
 Route::post('transaction/summary','SchedulebooktrialsController@transactionSummary');
+
+Route::post('kiosk/vendor/verifyotp','TransactionController@verifyVendorOtpKiosk');
+
