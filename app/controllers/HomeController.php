@@ -2762,326 +2762,318 @@ class HomeController extends BaseController {
     }
 
 
-
-
     public function mfp(){
         
-                $data = [];
-        
-                $data["upcoming_party"] = [
-                    "title"=>"5th November, The Lalit<br>Connaught Place, New Delhi",
-                    "image"=>"https://b.fitn.in/global/toi/mfp/website_banner/mfpcover.jpg"
-                ];
-        
-                $data["party_items"] = [
-                    [
-                        "title"=>"CELEBRITY\nTrainers",
-                        "image"=>"https://b.fitn.in/global/toi/mfp/about/celebrity_trainer.png"
-                    ],
-                    [
-                        "title"=>"PEPPY\nWorkouts",
-                        "image"=>"https://b.fitn.in/global/toi/mfp/about/peppy_workouts.png"
-                    ],
-                    [
-                        "title"=>"TRENDY\nMusic",
-                        "image"=>"https://b.fitn.in/global/toi/mfp/about/trendy_music.png"
-                    ],
-                    [
-                        "title"=>"HEALTHY\nMunchies",
-                        "image"=>"https://b.fitn.in/global/toi/mfp/about/healthy_munchies.png"
-                    ],
-                    [
-                        "title"=>"COOL\nGoodies",
-                        "image"=>"https://b.fitn.in/global/toi/mfp/about/cool_goodies.png"
-                    ],
-                    [
-                        "title"=>"FITNESS\nFreaks",
-                        "image"=>"https://b.fitn.in/global/toi/mfp/about/fitness_freak.png"
-                    ]
-                ];
-        
-                $data["line_up"] = [
-                    "title"=>"The Line Up",
-                    "venue"=>"The Lalit",
-                    "address"=>"Connaught Place, New Delhi",
-                    "date"=>"5th November Sunday",
-                    "time"=>"7:15 AM to 10:15 AM",
-                    "items"=>[
-                        [
-                            "title"=>"Yoga",
-                            "description"=>"A combination of poses and postures to gain body strength, toning and flexibility.",
-                            "calories_burn"=>"Burn 250 Calories",
-                            "image"=>"https://b.fitn.in/global/toi/mfp/line_up/yogafinal.jpg",
-                            "trainer"=>"With Seema Sondhi",
-                            "time"=>"7:30 AM - 8:00 AM"
-                        ],
-                        [
-                            "title"=>"Aqua Yoga",
-                            "description"=>"A low-impact aquatic yoga poses performed in warm water to gain strength & balance",
-                            "calories_burn"=>"Burn 220 Calories",
-                            "image"=>"https://cdn.fitn.in/Mfp-delhi/aqua-yoga.jpg",
-                            "trainer"=>"With Manisha Kohli",
-                            "time"=>"8:15 AM - 8:45 AM"
-                        ],
-                        [
-                            "title"=>"Masala Bhangra",
-                            "description"=>"A cardio based dance workout form performed on dhol beats to achieve fat burn.",
-                            "calories_burn"=>"Burn 700 Calories",
-                            "image"=>"https://cdn.fitn.in/Mfp-delhi/masalab-web.jpg",
-                            "trainer"=>"With Nupur",
-                            "time"=>"8:15 AM - 8:45 AM"
-                        ],
-                        [
-                            "title"=>"Aqua Zumba",
-                            "description"=>"High energy workout conducted in a swimming pool on trendy music for muscle tonning",
-                            "calories_burn"=>"Burn 750 Calories",
-                            "image"=>"https://cdn.fitn.in/Mfp-delhi/aqua-zumba.jpg",
-                            "trainer"=>"With Sucheta Pal's Team",
-                            "time"=>"9:00 AM - 9:30 AM & 9:45 AM - 10:15 AM"
-                        ],
-                        // [
-                        //     "title"=>"Bolly Fit",
-                        //     "description"=>"A high energetic full body dance cardio workout done on bollywood music to sweat out excessive calories.",
-                        //     "calories_burn"=>"Burn 450 Calories",
-                        //     "image"=>"https://b.fitn.in/global/toi/mfp/line_up/bollyfitfinal.jpg",
-                        //     "trainer"=>"With Akshay Jain",
-                        //     "time"=>"9:00 AM - 9:30 AM"
-                        // ],
-                        [
-                            "title"=>"Capoeira",
-                            "description"=>"A brazilian form of dance & martial arts to increase endurance & flexibility.",
-                            "calories_burn"=>"Burn 260 Calories",
-                            "image"=>"https://cdn.fitn.in/Mfp-delhi/capo-web.jpg",
-                            "trainer"=>"With Shiva",
-                            "time"=>"9:00 AM - 9:30 AM"
-                        ],
-                        [
-                            "title"=>"Crush Club",
-                            "description"=>"A high energetic full body dance cardio workout done on bollywood music to sweat out excessive calories.",
-                            "calories_burn"=>"Burn 350 Calories",
-                            "image"=>"https://cdn.fitn.in/Mfp-delhi/crushfitness.jpg",
-                            "trainer"=>"With Crush Fitness",
-                            "time"=>"9:45 AM - 10:15 AM"
-                        ],
-                        // [
-                        //     "title"=>"Pilates",
-                        //     "description"=>"A combination of core exercises for toning up.",
-                        //     "calories_burn"=>"Burn 350 Calories",
-                        //     "image"=>"https://b.fitn.in/global/toi/mfp/line_up/pilatesfinal.jpg",
-                        //     "trainer"=>"With Namrata Purohit",
-                        //     "time"=>"9:00 AM - 9:30 AM"
-                        // ],
-                        /*[
-                            "title"=>"Masala Bhangra",
-                            "description"=>"A cardio based dance workout form performed on dhol beats to achieve fat burn.",
-                            "calories_burn"=>"Burn 700 Calories",
-                            "image"=>"https://b.fitn.in/global/toi/mfp/line_up/aquazumba_05.jpg",
-                            "trainer"=>"With Shalini Bhargava",
-                            "time"=>"9:45 AM - 10:15 AM"
-                        ],
-                        [
-                            "title"=>"Zumba",
-                            "description"=>"A high energy workout on latin american and bollywood music. Best for calorie and fat burning.",
-                            "calories_burn"=>"Burn 700 Calories",
-                            "image"=>"https://b.fitn.in/global/toi/mfp/line_up/aquazumba_05.jpg",
-                            "trainer"=>"With Sucheta Pal & Team",
-                            "time"=>"9:45 AM - 10:15 AM"
-                        ]*/
-        
-                    ]
-        
-                ];
-        
-                $data["all_parties"] = [
-                    "drop_down"=>[
-                        [
-                            "city"=>"All Cities",
-                            "status"=>true
-                        ],
-                        [
-                            "city"=>"Mumbai",
-                            "status"=>false
-                        ],
-                        [
-                            "city"=>"Delhi",
-                            "status"=>false
-                        ]
-                    ],
-                    "cities"=>[
-                        /*[
-                            "image"=>"https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg",
-                            "month"=>"AUG",
-                            "date"=>"27",
-                            "day"=>"SUN",
-                            "city"=>"Mumbai",
-                            "status"=>"passed",
-                            "title"=>"WE KILLED IT!",
-                            "description"=>""
-                        ],
-                        [
-                            "image"=>"https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg",
-                            "month"=>"SEP",
-                            "date"=>"17",
-                            "day"=>"SUN",
-                            "city"=>"Delhi",
-                            "status"=>"passed",
-                            "title"=>"WE KILLED IT!",
-                            "description"=>""
-                        ],*/
-                        // [
-                        //     "image"=>"https://b.fitn.in/global/toi/mfp/all_parties/theclub.jpg",
-                        //     "month"=>"OCT",
-                        //     "date"=>"15",
-                        //     "day"=>"SUN",
-                        //     "city"=>"Mumbai",
-                        //     "status"=>"current",
-                        //     "title"=>"The Club",
-                        //     "description"=>""
-                        // ],
-                        [
-                            "image"=>"https://b.fitn.in/global/toi/mfp/all_parties/delhi_final.jpg",
-                            "month"=>"Nov",
-                            "date"=>"5",
-                            "day"=>"SUN",
-                            "city"=>"Delhi",
-                            "status"=>"current",
-                            "title"=>"The Lalit!",
-                            "description"=>""
-                        ],
-                        [
-                            "image"=>"https://b.fitn.in/global/toi/mfp/all_parties/mumbai_final.jpg",
-                            "month"=>"NOV",
-                            "date"=>"12",
-                            "day"=>"SUN",
-                            "city"=>"Mumbai",
-                            "status"=>"upcoming",
-                            "title"=>"Coming Soon to Mumbai!",
-                            "description"=>"Share your details to stay updated!"
-                        ],
-                        /*[
-                            "image"=>"https://b.fitn.in/f/g/full/3332/3332_1491302052985.jpg",
-                            "month"=>"NOV",
-                            "date"=>"26",
-                            "day"=>"SUN",
-                            "city"=>"Delhi",
-                            "status"=>"upcoming",
-                            "title"=>"Coming Soon to Delhi!",
-                            "description"=>"Share your details to stay updated!"
-                        ]*/
-        
-                    ],
-        
-                ];
-        
-                $data["buy_now"] = [
-                    "title"=>"BUY TICKETS NOW",
-                    "description"=>"Rs 300, all workshops included",
-                    "info"=>"Get 100% FitCash +"
-                ];
-        
-                $data["madness"] = [
-                    "title"=>"Check Out The Madness",
-                    "images"=>[
-                        "https://b.fitn.in/global/toi/mfp/madness/14.jpg",
-                        "https://b.fitn.in/global/toi/mfp/madness/15.jpg",
-                        "https://b.fitn.in/global/toi/mfp/madness/21.jpg",
-                        "https://b.fitn.in/global/toi/mfp/madness/22.jpg",
-                        "https://b.fitn.in/global/toi/mfp/madness/2_11.jpg",
-                        "https://b.fitn.in/global/toi/mfp/madness/3.jpg",
-                        "https://b.fitn.in/global/toi/mfp/madness/33.jpg",
-                        "https://b.fitn.in/global/toi/mfp/madness/34.jpg",
-                        "https://b.fitn.in/global/toi/mfp/madness/4.jpg",
-                        "https://b.fitn.in/global/toi/mfp/madness/4_11.jpg",
-                        "https://b.fitn.in/global/toi/mfp/madness/5.jpg",
-                        "https://b.fitn.in/global/toi/mfp/madness/5_11.jpg",
-                        "https://b.fitn.in/global/toi/mfp/madness/6.jpg",
-                        "https://b.fitn.in/global/toi/mfp/madness/7.jpg",
-                        "https://b.fitn.in/global/toi/mfp/madness/9_11.jpg"
-                    ]
-                ];
-        
-                //for mumbai
-                $data["sponsors"] = [
-                    [
-                        "title"=>"Presenting Sponsor",
-                        "image"=>"https://b.fitn.in/global/toi/partners/enrich.png"
-                    ],
-                    [
-                        "title"=>"Well-Being Partner",
-                        "image"=>"https://b.fitn.in/global/toi/partners/riso.png"
-                    ],
-                    [
-                        "title"=>"Powered By",
-                        "image"=>"https://b.fitn.in/global/toi/partners/LSLOGO.JPG"
-                    ], 
-                    [
-                        "title"=>"Delhi Presenting Sponsor and Life Insurance Partner",
-                        "image"=>"https://b.fitn.in/global/toi/partners/aegon.jpg"
-                    ],
-                    [
-                        "title"=>"Nutrition Partner",
-                        "image"=>"https://b.fitn.in/global/toi/partners/avvatar.jpg"
-                    ],
-                    [
-                        "title"=>"Health Partner",
-                        "image"=>"https://b.fitn.in/global/toi/partners/cows.jpg"
-                    ],
-                    [
-                        "title"=>"Food Partner",
-                        "image"=>"https://b.fitn.in/global/toi/partners/nature.jpeg"
-                    ]
-                     
-                ];
+        $data = [];
 
-                //for delhi
-                $data["sponsors"] = [
-                    [
-                        "title"=>"Presented By",
-                        "image"=>"https://cdn.fitn.in/Mfp-delhi/sponsor-logos/Aegonlife-Logo.png"
-                    ],
-                    [
-                        "title"=>"Powered By",
-                        "image"=>"https://b.fitn.in/global/toi/partners/LSLOGO.JPG"
-                    ],
-                    [
-                        "title"=>"Live Better Partner",
-                        "image"=>"https://cdn.fitn.in/Mfp-delhi/sponsor-logos/Glen%20Logo.png"
-                    ],
+        $data['isEventUpcoming'] = time() <= strtotime(date('2017-11-26 12:00:00')) ? true : false;
 
-                    [
-                        "title"=>"Freshness Partner",
-                        "image"=>"https://cdn.fitn.in/Mfp-delhi/sponsor-logos/Hitachi-1-01.jpg"
-                    ],
-                    [
-                        "title"=>"Musical Instrument Partner",
-                        "image"=>"https://cdn.fitn.in/Mfp-delhi/sponsor-logos/Casio-logo.png"
-                    ],
-                    [
-                        "title"=>"Venue Partner",
-                        "image"=>"https://cdn.fitn.in/Mfp-delhi/sponsor-logos/lalit-logo.png"
-                    ],
-                    [
-                        "title"=>"Radio Partner",
-                        "image"=>"https://cdn.fitn.in/Mfp-delhi/sponsor-logos/red-fever-updated.png"
-                    ]
-                     
-                ];
+        $data["upcoming_party"] = [
+            "title"=>"26th November, Verbana<br>Kamala Mills",
+            "image"=>"https://b.fitn.in/global/toi/mfp/website_banner/mfpcover.jpg"
+        ];
 
-        
-                $data["what_people_say"] = [ 
-                    [
-                        "name"=>"Nikita Manchanda",
-                        "comment"=>"Ultimate Fitness party experience! it was so much fun that i dint even realise the huge amount of calories i had burnt."
-                    ],
-                    [
-                        "name"=>"Avani Mehta",
-                        "comment"=>"It was an awesome event! Amazing instructors, made the workout so much fun!"
-                    ]
-                ];
-        
-                return  Response::json($data, 200);
-        
-            }
+        $data["party_items"] = [
+            [
+                "title"=>"CELEBRITY\nTrainers",
+                "image"=>"https://b.fitn.in/global/toi/mfp/about/celebrity_trainer.png"
+            ],
+            [
+                "title"=>"PEPPY\nWorkouts",
+                "image"=>"https://b.fitn.in/global/toi/mfp/about/peppy_workouts.png"
+            ],
+            [
+                "title"=>"TRENDY\nMusic",
+                "image"=>"https://b.fitn.in/global/toi/mfp/about/trendy_music.png"
+            ],
+            [
+                "title"=>"HEALTHY\nMunchies",
+                "image"=>"https://b.fitn.in/global/toi/mfp/about/healthy_munchies.png"
+            ],
+            [
+                "title"=>"COOL\nGoodies",
+                "image"=>"https://b.fitn.in/global/toi/mfp/about/cool_goodies.png"
+            ],
+            [
+                "title"=>"FITNESS\nFreaks",
+                "image"=>"https://b.fitn.in/global/toi/mfp/about/fitness_freak.png"
+            ]
+        ];
+
+        $data["line_up"] = [
+            "title"=>"The Line Up",
+            "venue"=>"Verbana & 18.99 Latitude",
+            "address"=>"4th Floor, Oasis complex, Kamala Mills, Gate no.4, Lower Parel, Mumbai",
+            "date"=>"26th November Sunday",
+            "time"=>"8:00 AM to 11:00 AM",
+            "items"=>[
+                [
+                    "title"=>"Shivfit Functional Training",
+                    "description"=>" A functional training circuit using only body weight for for core & strength building.",
+                    "calories_burn"=>"Burn 450 Calories",
+                    "image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/masalab-web.jpg",
+                    "trainer"=>"With Shivoham",
+                    "time"=>"8:00 AM - 8:30 AM"
+                ],
+                [
+                    "title"=>"Zumba",
+                    "description"=>"A high energy workout on latin american and bollywood music. Best for calorie and fat burning.",
+                    "calories_burn"=>"Burn 700 Calories",
+                    "image"=>"https://b.fitn.in/global/toi/mfp/line_up/aquazumba_05.jpg",
+                    "trainer"=>"With Sucheta Pal",
+                    "time"=>"8:45 AM - 9:15 AM"
+                ],
+                [
+                    "title"=>"Masala Bhangra",
+                    "description"=>"A cardio based dance workout form performed on dhol beats to achieve fat burn.",
+                    "calories_burn"=>"Burn 700 Calories",
+                    "image"=>"https://cdn.fitn.in/Mfp-delhi/masalab-web.jpg",
+                    "trainer"=>"With Shalini Bhargava",
+                    "time"=>"8:45 AM - 9:15 AM"
+                ],
+                [
+                    "title"=>"Bolly X",
+                    "description"=>"A high energetic full body dance cardio workout done on bollywood music to sweat out excessive calories.",
+                    "calories_burn"=>"Burn 450 Calories",
+                    "image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/bollyfit.jpg",
+                    "trainer"=>"With Rubin & Wilson",
+                    "time"=>"9:30 AM - 10:00 AM"
+                ],
+                [
+                    "title"=>"3-2-1 Workout",
+                    "description"=>"A high intensity full body functional workout inclusive of cardio, core & strength training.",
+                    "calories_burn"=>"Burn 450 Calories",
+                    "image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/ramona.jpg",
+                    "trainer"=>"With Ramona Braganza",
+                    "time"=>"9:30 AM - 10:00 AM"
+                ],
+                [
+                    "title"=>"Yo Workout",
+                    "description"=>"A full body workout that works on all muscles with only body weight.",
+                    "calories_burn"=>"Burn 450 Calories",
+                    "image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/mickeymehta.jpg",
+                    "trainer"=>"With Mickey Mehta",
+                    "time"=>"9:30 AM - 10:00 AM"
+                ],
+                // [
+                //     "title"=>"Aqua Yoga",
+                //     "description"=>"A low-impact aquatic yoga poses performed in warm water to gain strength & balance",
+                //     "calories_burn"=>"Burn 220 Calories",
+                //     "image"=>"https://cdn.fitn.in/Mfp-delhi/aqua-yoga.jpg",
+                //     "trainer"=>"With Manisha Kohli",
+                //     "time"=>"8:15 AM - 8:45 AM"
+                // ],
+                // [
+                //     "title"=>"Aqua Zumba",
+                //     "description"=>"High energy workout conducted in a swimming pool on trendy music for muscle tonning",
+                //     "calories_burn"=>"Burn 750 Calories",
+                //     "image"=>"https://cdn.fitn.in/Mfp-delhi/aqua-zumba.jpg",
+                //     "trainer"=>"With Sucheta Pal's Team",
+                //     "time"=>"9:00 AM - 9:30 AM & 9:45 AM - 10:15 AM"
+                // ],
+                // [
+                //     "title"=>"Bolly Fit",
+                //     "description"=>"A high energetic full body dance cardio workout done on bollywood music to sweat out excessive calories.",
+                //     "calories_burn"=>"Burn 450 Calories",
+                //     "image"=>"https://b.fitn.in/global/toi/mfp/line_up/bollyfitfinal.jpg",
+                //     "trainer"=>"With Akshay Jain",
+                //     "time"=>"9:00 AM - 9:30 AM"
+                // ],
+                // [
+                //     "title"=>"Capoeira",
+                //     "description"=>"A brazilian form of dance & martial arts to increase endurance & flexibility.",
+                //     "calories_burn"=>"Burn 260 Calories",
+                //     "image"=>"https://cdn.fitn.in/Mfp-delhi/capo-web.jpg",
+                //     "trainer"=>"With Shiva",
+                //     "time"=>"9:00 AM - 9:30 AM"
+                // ],
+                // [
+                //     "title"=>"Crush Club",
+                //     "description"=>"A high energetic full body dance cardio workout done on bollywood music to sweat out excessive calories.",
+                //     "calories_burn"=>"Burn 350 Calories",
+                //     "image"=>"https://cdn.fitn.in/Mfp-delhi/crushfitness.jpg",
+                //     "trainer"=>"With Crush Fitness",
+                //     "time"=>"9:45 AM - 10:15 AM"
+                // ],
+                // [
+                //     "title"=>"Pilates",
+                //     "description"=>"A combination of core exercises for toning up.",
+                //     "calories_burn"=>"Burn 350 Calories",
+                //     "image"=>"https://b.fitn.in/global/toi/mfp/line_up/pilatesfinal.jpg",
+                //     "trainer"=>"With Namrata Purohit",
+                //     "time"=>"9:00 AM - 9:30 AM"
+                // ],
+                // [
+                //     "title"=>"Masala Bhangra",
+                //     "description"=>"A cardio based dance workout form performed on dhol beats to achieve fat burn.",
+                //     "calories_burn"=>"Burn 700 Calories",
+                //     "image"=>"https://b.fitn.in/global/toi/mfp/line_up/aquazumba_05.jpg",
+                //     "trainer"=>"With Shalini Bhargava",
+                //     "time"=>"9:45 AM - 10:15 AM"
+                // ],
+                // [
+                //     "title"=>"Zumba",
+                //     "description"=>"A high energy workout on latin american and bollywood music. Best for calorie and fat burning.",
+                //     "calories_burn"=>"Burn 700 Calories",
+                //     "image"=>"https://b.fitn.in/global/toi/mfp/line_up/aquazumba_05.jpg",
+                //     "trainer"=>"With Sucheta Pal & Team",
+                //     "time"=>"9:45 AM - 10:15 AM"
+                // ]
+
+            ]
+
+        ];
+
+        $data["all_parties"] = [
+            "drop_down"=>[
+                [
+                    "city"=>"All Cities",
+                    "status"=>true
+                ],
+                [
+                    "city"=>"Mumbai",
+                    "status"=>false
+                ],
+                [
+                    "city"=>"Delhi",
+                    "status"=>false
+                ]
+            ],
+            "cities"=>[
+                [
+                    "image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/verbena-locationcard.jpg",
+                    "month"=>"NOV",
+                    "date"=>"26",
+                    "day"=>"SUN",
+                    "city"=>"Mumbai",
+                    "status"=>"current",
+                    "title"=>"Verbana & 18.99 Latitude",
+                    "description"=>""
+                ],
+                [
+                    "image"=>"https://b.fitn.in/global/toi/mfp/all_parties/delhi_final.jpg",
+                    "month"=>"NOV",
+                    "date"=>"26",
+                    "day"=>"SUN",
+                    "city"=>"Delhi",
+                    "status"=>"upcoming",
+                    "title"=>"Coming Soon to Delhi!",
+                    "description"=>"Share your details to stay updated!"
+                ]
+
+            ],
+
+        ];
+
+        $data["buy_now"] = [
+            "title"=>"BUY TICKETS NOW",
+            "description"=>"Rs 300, all workshops included",
+            "info"=>"Get 100% FitCash +"
+        ];
+
+        $data["madness"] = [
+            "title"=>"Check Out The Madness",
+            "images"=>[
+                "https://b.fitn.in/global/toi/mfp/madness/14.jpg",
+                "https://b.fitn.in/global/toi/mfp/madness/15.jpg",
+                "https://b.fitn.in/global/toi/mfp/madness/21.jpg",
+                "https://b.fitn.in/global/toi/mfp/madness/22.jpg",
+                "https://b.fitn.in/global/toi/mfp/madness/2_11.jpg",
+                "https://b.fitn.in/global/toi/mfp/madness/3.jpg",
+                "https://b.fitn.in/global/toi/mfp/madness/33.jpg",
+                "https://b.fitn.in/global/toi/mfp/madness/34.jpg",
+                "https://b.fitn.in/global/toi/mfp/madness/4.jpg",
+                "https://b.fitn.in/global/toi/mfp/madness/4_11.jpg",
+                "https://b.fitn.in/global/toi/mfp/madness/5.jpg",
+                "https://b.fitn.in/global/toi/mfp/madness/5_11.jpg",
+                "https://b.fitn.in/global/toi/mfp/madness/6.jpg",
+                "https://b.fitn.in/global/toi/mfp/madness/7.jpg",
+                "https://b.fitn.in/global/toi/mfp/madness/9_11.jpg"
+            ]
+        ];
+
+        //for mumbai
+        $data["sponsors"] = [
+            [
+                "title"=>"Presenting Sponsor",
+                "image"=>"https://b.fitn.in/global/toi/partners/enrich.png"
+            ],
+            [
+                "title"=>"Well-Being Partner",
+                "image"=>"https://b.fitn.in/global/toi/partners/riso.png"
+            ],
+            [
+                "title"=>"Powered By",
+                "image"=>"https://b.fitn.in/global/toi/partners/LSLOGO.JPG"
+            ], 
+            [
+                "title"=>"Delhi Presenting Sponsor and Life Insurance Partner",
+                "image"=>"https://b.fitn.in/global/toi/partners/aegon.jpg"
+            ],
+            [
+                "title"=>"Nutrition Partner",
+                "image"=>"https://b.fitn.in/global/toi/partners/avvatar.jpg"
+            ],
+            [
+                "title"=>"Health Partner",
+                "image"=>"https://b.fitn.in/global/toi/partners/cows.jpg"
+            ],
+            [
+                "title"=>"Food Partner",
+                "image"=>"https://b.fitn.in/global/toi/partners/nature.jpeg"
+            ]
+             
+        ];
+
+        //for delhi
+        /*$data["sponsors"] = [
+            [
+                "title"=>"Presented By",
+                "image"=>"https://cdn.fitn.in/Mfp-delhi/sponsor-logos/Aegonlife-Logo.png"
+            ],
+            [
+                "title"=>"Powered By",
+                "image"=>"https://b.fitn.in/global/toi/partners/LSLOGO.JPG"
+            ],
+            [
+                "title"=>"Live Better Partner",
+                "image"=>"https://cdn.fitn.in/Mfp-delhi/sponsor-logos/Glen%20Logo.png"
+            ],
+
+            [
+                "title"=>"Freshness Partner",
+                "image"=>"https://cdn.fitn.in/Mfp-delhi/sponsor-logos/Hitachi-1-01.jpg"
+            ],
+            [
+                "title"=>"Musical Instrument Partner",
+                "image"=>"https://cdn.fitn.in/Mfp-delhi/sponsor-logos/Casio-logo.png"
+            ],
+            [
+                "title"=>"Venue Partner",
+                "image"=>"https://cdn.fitn.in/Mfp-delhi/sponsor-logos/lalit-logo.png"
+            ],
+            [
+                "title"=>"Radio Partner",
+                "image"=>"https://cdn.fitn.in/Mfp-delhi/sponsor-logos/red-fever-updated.png"
+            ]
+             
+        ];*/
+
+
+        $data["what_people_say"] = [ 
+            [
+                "name"=>"Nikita Manchanda",
+                "comment"=>"Ultimate Fitness party experience! it was so much fun that i dint even realise the huge amount of calories i had burnt."
+            ],
+            [
+                "name"=>"Avani Mehta",
+                "comment"=>"It was an awesome event! Amazing instructors, made the workout so much fun!"
+            ]
+        ];
+
+        return  Response::json($data, 200);
+
+    }
 
 
     public function careerCapture(){
