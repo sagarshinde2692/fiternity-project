@@ -159,7 +159,7 @@ class TransactionController extends \BaseController {
                 case 'cod': $data['payment_mode'] = 'cod';break;
                 case 'emi': $data['payment_mode'] = 'paymentgateway';break;
                 case 'paymentgateway': $data['payment_mode'] = 'paymentgateway';break;
-                case 'pay_at_vendor': $data['payment_mode'] = 'pay_at_vendor';break;
+                case 'pay_at_vendor': $data['payment_mode'] = 'at the studio';break;
                 default:break;
             }
 
