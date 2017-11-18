@@ -131,6 +131,10 @@ class TransactionController extends \BaseController {
             return Response::json(array('status' => 404,'message' => error_message($validator->errors())),404);
         }
 
+        if(isset($data['wallet']) && !$data['wallet']){
+            $data['paymentmode_selected'] = 'paymentgateway';
+        }
+
         if(isset($data['paymentmode_selected']) && $data['paymentmode_selected'] != ""){
 
             $data['part_payment'] = false;
@@ -435,6 +439,17 @@ class TransactionController extends \BaseController {
                 );
 
                 $walletTransactionResponse = $this->utilities->walletTransaction($req,$order->toArray());
+
+                if(isset($order['wallet_refund_sidekiq']) && $order['wallet_refund_sidekiq'] != ''){
+                    try {
+                        $this->sidekiq->delete($order['wallet_refund_sidekiq']);
+                    }catch(\Exception $exception){
+                        Log::error($exception);
+                    }
+                }
+
+                $order->unset('wallet');
+                $order->unset('wallet_amount');
             }
 
             $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($order['amount'],$data['finder_id'],'paymentgateway',$data['offer_id'],false,$order["part_payment_calculation"]["part_payment_and_convinience_fee_amount"]);
@@ -3254,6 +3269,19 @@ class TransactionController extends \BaseController {
                 'value' => 'Rs. '.$remaining_amount
             );
 
+            $amount_summary[] = array(
+                'field' => 'Booking Amount (20%)',
+                'value' => 'Rs. '.$data['part_payment_calculation']['part_payment_amount']
+            );
+
+            if(isset($data['convinience_fee']) && $data['convinience_fee'] > 0){
+
+                $amount_summary[] = array(
+                    'field' => 'Convenience Fee',
+                    'value' => '+Rs. '.$data['convinience_fee']
+                );
+            }
+
             $cashback_detail = $this->customerreward->purchaseGame($data['amount'],$data['finder_id'],'paymentgateway',$data['offer_id'],false,$data["part_payment_calculation"]["part_payment_and_convinience_fee_amount"]);
 
             if($cashback_detail['amount_deducted_from_wallet'] > 0){
@@ -3265,56 +3293,52 @@ class TransactionController extends \BaseController {
 
             }
 
-            $amount_summary[] = array(
-                'field' => 'Booking Amount (20%)',
-                'value' => 'Rs. '.$data['part_payment_calculation']['part_payment_amount']
-            );
-
             $amount_payable = array(
                 'field' => 'Total Amount Payable (20%)',
                 'value' => 'Rs. '.$data['part_payment_calculation']['amount']
             );
 
-        }
+        }else{
 
-        if($payment_mode_type != 'part_payment' && isset($data['cashback_detail']) && isset($data['cashback_detail']['amount_deducted_from_wallet']) && $data['cashback_detail']['amount_deducted_from_wallet'] > 0){
+            if(isset($data['cashback_detail']) && isset($data['cashback_detail']['amount_deducted_from_wallet']) && $data['cashback_detail']['amount_deducted_from_wallet'] > 0){
 
-            $amount_summary[] = array(
-                'field' => 'Fitcash Applied',
-                'value' => '-Rs. '.$data['cashback_detail']['amount_deducted_from_wallet']
-            );
-        }
+                $amount_summary[] = array(
+                    'field' => 'Fitcash Applied',
+                    'value' => '-Rs. '.$data['cashback_detail']['amount_deducted_from_wallet']
+                );
+            }
 
-        if($payment_mode_type != 'part_payment' && isset($data['coupon_discount_amount']) && $data['coupon_discount_amount'] > 0){
+            if(isset($data['coupon_discount_amount']) && $data['coupon_discount_amount'] > 0){
 
-            $amount_summary[] = array(
-                'field' => 'Coupon Discount',
-                'value' => '-Rs. '.$data['coupon_discount_amount']
-            );
-        }
+                $amount_summary[] = array(
+                    'field' => 'Coupon Discount',
+                    'value' => '-Rs. '.$data['coupon_discount_amount']
+                );
+            }
 
-        if($payment_mode_type != 'part_payment' && isset($data['customer_discount_amount']) && $data['customer_discount_amount'] > 0){
+            if(isset($data['customer_discount_amount']) && $data['customer_discount_amount'] > 0){
 
-            $amount_summary[] = array(
-                'field' => 'Corporate Discount',
-                'value' => '-Rs. '.$data['customer_discount_amount']
-            );
-        }
+                $amount_summary[] = array(
+                    'field' => 'Corporate Discount',
+                    'value' => '-Rs. '.$data['customer_discount_amount']
+                );
+            }
 
-        if($payment_mode_type != 'part_payment' && isset($data['app_discount_amount']) && $data['app_discount_amount'] > 0){
+            if(isset($data['app_discount_amount']) && $data['app_discount_amount'] > 0){
 
-            $amount_summary[] = array(
-                'field' => 'App Discount',
-                'value' => '-Rs. '.$data['app_discount_amount']
-            );
-        }
-        
-        if(isset($data['convinience_fee']) && $data['convinience_fee'] > 0){
+                $amount_summary[] = array(
+                    'field' => 'App Discount',
+                    'value' => '-Rs. '.$data['app_discount_amount']
+                );
+            }
+            
+            if(isset($data['convinience_fee']) && $data['convinience_fee'] > 0){
 
-            $amount_summary[] = array(
-                'field' => 'Convenience Fee',
-                'value' => '+Rs. '.$data['convinience_fee']
-            );
+                $amount_summary[] = array(
+                    'field' => 'Convenience Fee',
+                    'value' => '+Rs. '.$data['convinience_fee']
+                );
+            }
         }
 
         $payment_details  = [];
