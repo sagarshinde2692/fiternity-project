@@ -2767,7 +2767,7 @@ class HomeController extends BaseController {
         $data = [];
 
         $data['isEventUpcoming'] = time() <= strtotime(date('2017-11-26 12:00:00')) ? true : false;
-
+        $data['logo'] = "http://b.fitn.in/global/toi/mfp/mfpmum-26th/mfplogo26.png";
         $data["upcoming_party"] = [
             "title"=>"26th November, Verbana<br>Kamala Mills",
             "image"=>"https://b.fitn.in/global/toi/mfp/website_banner/mfpcover.jpg"
@@ -2853,7 +2853,7 @@ class HomeController extends BaseController {
                     "calories_burn"=>"Burn 450 Calories",
                     "image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/mickeymehta.jpg",
                     "trainer"=>"With Mickey Mehta",
-                    "time"=>"9:30 AM - 10:00 AM"
+                    "time"=>"10:15 AM - 10:45 AM"
                 ],
                 // [
                 //     "title"=>"Aqua Yoga",
