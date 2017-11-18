@@ -1512,14 +1512,18 @@ class TransactionController extends \BaseController {
                         }
 
                         $order->unset('wallet');
-                        $order->unset('wallet_amount');
+                        $order->unset('wallet_amount');   
 
-                        $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($amount,$data['finder_id'],'paymentgateway',$data['offer_id'],false);
+                    }
 
-                        if(isset($data['cashback']) && $data['cashback'] == true){
-                            $amount -= $data['cashback_detail']['amount_discounted'];
-                        }
+                    $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($amount,$data['finder_id'],'paymentgateway',$data['offer_id'],false);
 
+                    if(isset($data['cashback']) && $data['cashback'] == true){
+                        $amount -= $data['cashback_detail']['amount_discounted'];
+                    }
+
+                    if(isset($data['cashback_detail']['amount_deducted_from_wallet']) && $data['cashback_detail']['amount_deducted_from_wallet'] > 0){
+                        $amount -= $data['cashback_detail']['amount_deducted_from_wallet'];
                     }
 
                 }
