@@ -413,7 +413,8 @@ class TransactionController extends \BaseController {
                 "hash" => $part_payment_hash,
                 "convinience_fee"=>$part_payment_data['convinience_fee'],
                 "full_wallet_payment" => $part_payment_data["amount"] == 0 ? true : false,
-                "part_payment_amount"=>$part_payment_amount
+                "part_payment_amount"=>$part_payment_amount,
+                "part_payment_and_convinience_fee_amount"=>$part_payment_amount + $convinience_fee
             );
 
         }
@@ -430,12 +431,13 @@ class TransactionController extends \BaseController {
                     'type'=>'REFUND',
                     'entry'=>'credit',
                     'description'=>'Refund for Order ID: '.$order['_id'],
+                    'full_amount'=>true
                 );
 
                 $walletTransactionResponse = $this->utilities->walletTransaction($req,$order->toArray());
             }
 
-            $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($order['amount'],$data['finder_id'],'paymentgateway',$data['offer_id'],false/*$data['customer_id']*/,$order["part_payment_calculation"]["part_payment_amount"]);
+            $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($order['amount'],$data['finder_id'],'paymentgateway',$data['offer_id'],false,$order["part_payment_calculation"]["part_payment_and_convinience_fee_amount"]);
 
             if(isset($data['wallet']) && $data['wallet'] == true){
 
@@ -555,6 +557,10 @@ class TransactionController extends \BaseController {
             $data['full_payment_wallet'] = true;
         }
 
+        if($data['amount'] == 0){
+            $data['full_payment_wallet'] = true;
+        }
+
         $data["status"] = "0";
 
         if(isset($old_order_id)){
@@ -614,9 +620,6 @@ class TransactionController extends \BaseController {
             $result['full_payment_wallet'] = $data['full_payment_wallet'];
         }
 
-        if($this->utilities->checkCorporateLogin()){
-            $result['full_payment_wallet'] = true;
-        }
 
         if($data['type'] == "events" && isset($data['event_customers']) && count($data['event_customers']) > 0 ){
 
@@ -3241,9 +3244,19 @@ class TransactionController extends \BaseController {
 
             $amount_summary[] = array(
                 'field' => 'Remaining Amount Payable',
-                'value' => 'Rs. '.$$remaining_amount
+                'value' => 'Rs. '.$remaining_amount
             );
 
+            $cashback_detail = $this->customerreward->purchaseGame($data['amount'],$data['finder_id'],'paymentgateway',$data['offer_id'],false,$data["part_payment_calculation"]["part_payment_and_convinience_fee_amount"]);
+
+            if($cashback_detail['amount_deducted_from_wallet'] > 0){
+
+                $amount_summary[] = array(
+                    'field' => 'Fitcash Applied',
+                    'value' => '-Rs. '.$cashback_detail['amount_deducted_from_wallet']
+                );
+
+            }
 
             $amount_summary[] = array(
                 'field' => 'Booking Amount (20%)',
@@ -3257,7 +3270,7 @@ class TransactionController extends \BaseController {
 
         }
 
-        if(isset($data['cashback_detail']) && isset($data['cashback_detail']['amount_deducted_from_wallet']) && $data['cashback_detail']['amount_deducted_from_wallet'] > 0){
+        if($payment_mode_type != 'part_payment' && isset($data['cashback_detail']) && isset($data['cashback_detail']['amount_deducted_from_wallet']) && $data['cashback_detail']['amount_deducted_from_wallet'] > 0){
 
             $amount_summary[] = array(
                 'field' => 'Fitcash Applied',
