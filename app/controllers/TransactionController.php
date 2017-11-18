@@ -1480,6 +1480,7 @@ class TransactionController extends \BaseController {
                             'type'=>'REFUND',
                             'entry'=>'credit',
                             'description'=>'Refund for Order ID: '.$order['_id'],
+                            'full_amount'=>true,
                         );
 
                         $walletTransactionResponse = $this->utilities->walletTransactionNew($req);
@@ -3291,7 +3292,7 @@ class TransactionController extends \BaseController {
         if(isset($data['convinience_fee']) && $data['convinience_fee'] > 0){
 
             $amount_summary[] = array(
-                'field' => 'Convinience fee',
+                'field' => 'Convenience Fee',
                 'value' => '+Rs. '.$data['convinience_fee']
             );
         }
