@@ -425,9 +425,9 @@ class TempsController extends \BaseController {
 
                     Booktrial::$withoutAppends = true;
 
-                    $booktrial = Booktrial::where('customer_phone', $temp->customer_phone)
+                    $booktrial = Booktrial::where('customer_phone','LIKE','%'.substr($temp->customer_phone, -10).'%')
                                 ->where('finder_id', '=',$finder_id)
-                                ->where('type','booktrials')
+                                // ->where('type','booktrials')
                                 ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
                                 ->orderBy('_id','desc')
                                 ->first();
