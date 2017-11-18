@@ -137,6 +137,17 @@ class TempsController extends \BaseController {
                 $temp->proceed_without_otp = "N";
                 $temp->source = "website";
 
+                if($data['action'] == "locate_trial"){
+
+                    $decodeKioskVendorToken = decodeKioskVendorToken();
+
+                    $vendor = $decodeKioskVendorToken->vendor;
+
+                    $temp->finder_id = (int)$vendor->_id;
+
+                    $temp->source = "kiosk";
+                }
+
                 if(isset($data['finder_id']) && $data['finder_id'] != ""){
                     $temp->finder_id = (int) $data['finder_id'];
                 }
@@ -448,7 +459,7 @@ class TempsController extends \BaseController {
 
                             $customer_data['dob'] = isset($customer_data['dob']) && $customer_data['dob'] != "" ? $customer_data['dob'] : "";
                             $customer_data['gender'] = isset($customer_data['gender']) && $customer_data['gender'] != "" ? $customer_data['gender'] : "";
-                            $customer_data['contact_no'] = $customer_phone;
+                            $customer_data['contact_no'] = $temp->customer_phone;
                             $customer_id = (int)$customer->_id;
 
                         }
