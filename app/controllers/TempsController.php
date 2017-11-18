@@ -434,6 +434,25 @@ class TempsController extends \BaseController {
 
                     if($booktrial){
 
+                        Customer::$withoutAppends = true;
+                        $customer = Customer::select('name','email','contact_no','dob','gender')->find((int)$booktrial->customer_id);
+
+                        if($customer) {
+
+                            if($customerToken == ""){
+
+                                $customerToken = createCustomerToken((int)$customer->_id);
+                            }
+
+                            $customer_data = $customer->toArray();
+
+                            $customer_data['dob'] = isset($customer_data['dob']) && $customer_data['dob'] != "" ? $customer_data['dob'] : "";
+                            $customer_data['gender'] = isset($customer_data['gender']) && $customer_data['gender'] != "" ? $customer_data['gender'] : "";
+                            $customer_data['contact_no'] = $customer_phone;
+                            $customer_id = (int)$customer->_id;
+
+                        }
+
                         $message = "We located your booking of ".ucwords($booktrial['service_name'])." at ".$booktrial['schedule_slot_start_time'];
 
                         $return = array('customer_data'=>$customer_data,'locate_trial'=>true,'status' => 200,'message' => $message,'verified' => $verified,'token'=>$customerToken);
