@@ -1498,7 +1498,7 @@ Class Utilities {
 
                 $request_amount_balance = $request_amount = $request['amount'];
 
-                if($current_wallet_balance < $wallet_limit && ($current_wallet_balance + (int)$request['amount']) > $wallet_limit){
+                if(!isset($request['full_amount']) && $current_wallet_balance < $wallet_limit && ($current_wallet_balance + (int)$request['amount']) > $wallet_limit){
                     $request_amount_balance = $request_amount = $request['amount'] = (int)($wallet_limit - $current_wallet_balance);
                 }
 
