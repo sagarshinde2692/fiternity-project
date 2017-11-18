@@ -2819,7 +2819,7 @@ class HomeController extends BaseController {
                     "title"=>"Zumba",
                     "description"=>"A high energy workout on latin american and bollywood music. Best for calorie and fat burning.",
                     "calories_burn"=>"Burn 700 Calories",
-                    "image"=>"https://b.fitn.in/global/toi/mfp/line_up/aquazumba_05.jpg",
+                    "image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/zumbafinal.jpg",
                     "trainer"=>"With Sucheta Pal",
                     "time"=>"8:45 AM - 9:15 AM"
                 ],
@@ -2843,7 +2843,7 @@ class HomeController extends BaseController {
                     "title"=>"3-2-1 Workout",
                     "description"=>"A high intensity full body functional workout inclusive of cardio, core & strength training.",
                     "calories_burn"=>"Burn 450 Calories",
-                    "image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/ramona.jpg",
+                    "image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/ramonaupdated.jpg",
                     "trainer"=>"With Ramona Braganza",
                     "time"=>"9:30 AM - 10:00 AM"
                 ],
