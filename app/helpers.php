@@ -2949,44 +2949,44 @@ if (!function_exists('formFields')) {
 
         $data = [
             [
-                'name'=>'dob',
-                'field'=>'DOB',
-                'data_type'=>'string'
+                'field'=>'dob',
+                'title'=>'DOB',
+                'data_type'=>'text'
             ],
             [
-                'name'=>'blood_group',
-                'field'=>'Blood group',
-                'data_type'=>'string'
+                'field'=>'blood_group',
+                'title'=>'Blood group',
+                'data_type'=>'text'
             ],
             [
-                'name'=>'emergency_contact_number',
-                'field'=>'Emergency Contact Number',
-                'data_type'=>'string'
+                'field'=>'emergency_contact_number',
+                'title'=>'Emergency Contact Number',
+                'data_type'=>'text'
             ],
             [
-                'name'=>'recommended_to_workout',
-                'field'=>'Were you recommended to workout by a doctor',
-                'data_type'=>'string',
+                'field'=>'recommended_to_workout',
+                'title'=>'Were you recommended to workout by a doctor',
+                'data_type'=>'text',
             ],
             [
-                'name'=>'medical_condition',
-                'field'=>'Medical Condition',
-                'data_type'=>'string',
+                'field'=>'medical_condition',
+                'title'=>'Medical Condition',
+                'data_type'=>'text',
             ],
             [
-                'name'=>'prescriptive_medication',
-                'field'=>'Do you take any prescriptive medication',
-                'data_type'=>'string',
+                'field'=>'prescriptive_medication',
+                'title'=>'Do you take any prescriptive medication',
+                'data_type'=>'text',
             ],
             [
-                'name'=>'smoke',
-                'field'=>'Do you smoke',
-                'data_type'=>'string',
+                'field'=>'smoke',
+                'title'=>'Do you smoke',
+                'data_type'=>'text',
             ],
             [
-                'name'=>'consume_alcohol',
-                'field'=>'Do you consume alcohol',
-                'data_type'=>'string',
+                'field'=>'consume_alcohol',
+                'title'=>'Do you consume alcohol',
+                'data_type'=>'text',
             ],          
         ];
 

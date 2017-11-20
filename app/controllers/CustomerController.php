@@ -5326,5 +5326,37 @@ class CustomerController extends \BaseController {
 		);
         
     }
+
+
+    public function getFormFields(){
+
+    	$data = [];
+
+    	if(isset($_GET['booktrial_id']) && $_GET['booktrial_id'] != ""){
+
+    		Booktrial::$withoutAppends=true;
+
+        	$transaction = Booktrial::find((int)$_GET['booktrial_id']);
+
+        	if($transaction){
+
+        		$data = array_only($transaction->toArray(), ['finder_id','city_id','customer_id','customer_email','customer_phone','customer_name']);
+
+        		$data['booktrial_id'] = (int)$_GET['booktrial_id'];
+        	}
+        }
+
+        $form_fields = formFields();
+
+        return Response::json(
+			array(
+				'status' => 200,
+				'form_fields' => $form_fields,
+				'data'=>$data
+				),
+			200
+		);
+
+    }
 	
 }

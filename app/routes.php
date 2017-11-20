@@ -1049,3 +1049,5 @@ Route::post('kiosk/vendor/verifyotp','TransactionController@verifyVendorOtpKiosk
 
 Route::post('customer/capture','CustomerController@customerCapture');
 
+Route::get('customer/getformfields','CustomerController@getFormFields');
+
