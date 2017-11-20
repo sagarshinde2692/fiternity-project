@@ -325,6 +325,8 @@ class TransactionController extends \BaseController {
             }
         }
 
+        $data['amount_final'] = $data["amount_finder"];
+
         if(!$updating_part_payment && !isset($data['myreward_id'])) {
 
             $cashbackRewardWallet =$this->getCashbackRewardWallet($data,$order);
@@ -667,7 +669,7 @@ class TransactionController extends \BaseController {
 
             $payment_mode_type_array = ['paymentgateway'];
 
-            if($emi_applicable){
+            if($emi_applicable && isset($order->amount_final) && $order->amount_final){
 
                 $payment_mode_type_array[] = 'emi';
             }
@@ -692,7 +694,7 @@ class TransactionController extends \BaseController {
             
             $resp['data']['payment_details'] = $payment_details;
 
-            if(isset($order->amount) && $order->amount){
+            if(isset($order->amount_final) && $order->amount_final ){
                 $resp['data']['payment_modes'] = $this->getPaymentModes($resp);
             }
         }
@@ -1561,6 +1563,8 @@ class TransactionController extends \BaseController {
                 }
             }
         }
+
+        $data['amount_final'] = $amount;
 
         if(isset($data['wallet']) && $data['wallet'] == true){
             $data['amount'] = $amount;
@@ -3223,7 +3227,7 @@ class TransactionController extends \BaseController {
 
         $amount_payable= array(
             'field' => 'Total Amount Payable',
-            'value' => 'Rs. '.$data['amount']
+            'value' => 'Rs. '.$data['amount_final']
         );
 
         if($payment_mode_type == 'part_payment'){
