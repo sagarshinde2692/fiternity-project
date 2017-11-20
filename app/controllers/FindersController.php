@@ -3560,7 +3560,7 @@ class FindersController extends \BaseController {
 				"options"=>[
 					[
 						"title"=>"Access Trial Booking",
-						"description"=>"Activate your workout trial by scanning the QR code or punching your subscription code",
+						"description"=>"Quick step to activate your workout trial & instant trial booking.",
 						"image"=>"http://b.fitn.in/global/tabapp-homescreen/access-trials-small.png",
 						"banner_image"=>"http://b.fitn.in/global/tabapp-homescreen/accesstrial-big-1.png",
 						"id"=>1,
@@ -3568,7 +3568,7 @@ class FindersController extends \BaseController {
 					],
 					[
 						"title"=>"Explore Membership",
-						"description"=>"Explore Membership",
+						"description"=>"Quick buy with free rewards & flexible payment options.",
 						"image"=>"http://b.fitn.in/global/tabapp-homescreen/explorememberships-small.png",
 						"banner_image"=>"http://b.fitn.in/global/tabapp-homescreen/explorememberships-big-1.png",
 						"id"=>2,
@@ -3576,7 +3576,7 @@ class FindersController extends \BaseController {
 					],
 					[
 						"title"=>"Post a Review",
-						"description"=>"Post a Review",
+						"description"=>"Rate your experience & help fellow fitness enthusiasts.",
 						"image"=>"http://b.fitn.in/global/tabapp-homescreen/post-review-small.png",
 						"banner_image"=>"http://b.fitn.in/global/tabapp-homescreen/postreview-big.png",
 						"id"=>3,
@@ -3584,7 +3584,7 @@ class FindersController extends \BaseController {
 					],
 					/*[
 						"title"=>"Online Diet Consultation",
-						"description"=>"Online Diet Consultation",
+						"description"=>"Coming soon",
 						"image"=>"http://b.fitn.in/global/tabapp-homescreen/coming-soon-small.png",
 						"banner_image"=>"http://b.fitn.in/global/tabapp-homescreen/diet-big-1.png",
 						"id"=>4,
