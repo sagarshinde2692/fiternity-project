@@ -1047,3 +1047,5 @@ Route::post('transaction/summary','SchedulebooktrialsController@transactionSumma
 
 Route::post('kiosk/vendor/verifyotp','TransactionController@verifyVendorOtpKiosk');
 
+Route::post('customer/capture','CustomerController@customerCapture');
+

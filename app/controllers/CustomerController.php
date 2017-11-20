@@ -5294,5 +5294,37 @@ class CustomerController extends \BaseController {
 		return Response::json(array('status' => 200,'message' => 'Captured Successfully','promotional_notification_id'=>$promotionalNotificationTracking->_id),200);
 
 	}
+
+	public function customerCapture(){
+
+		$data = Input::json()->all();
+
+        if(isset($data['customer_id']) && $data['customer_id'] != ""){
+        	$data['customer_id'] = (int)$data['customer_id'];
+        }
+
+        if(isset($data['order_id']) && $data['order_id'] != ""){
+        	$data['order_id'] = (int)$data['order_id'];
+        }
+
+        if(isset($data['booktrial_id']) && $data['booktrial_id'] != ""){
+        	$data['booktrial_id'] = (int)$data['booktrial_id'];
+        }
+
+        if(isset($data['finder_id']) && $data['finder_id'] != ""){
+        	$data['finder_id'] = (int)$data['finder_id'];
+        }
+
+        CustomerCapture::create($data);
+
+        return Response::json(
+			array(
+				'status' => 200,
+				'message' => "Thankyou for the details",
+				),
+			200
+		);
+        
+    }
 	
 }

@@ -2943,6 +2943,58 @@ if (!function_exists('addTemp')) {
     }
 }
 
+if (!function_exists('formFields')) {
+
+    function formFields(){
+
+        $data = [
+            [
+                'name'=>'dob',
+                'field'=>'DOB',
+                'data_type'=>'string'
+            ],
+            [
+                'name'=>'blood_group',
+                'field'=>'Blood group',
+                'data_type'=>'string'
+            ],
+            [
+                'name'=>'emergency_contact_number',
+                'field'=>'Emergency Contact Number',
+                'data_type'=>'string'
+            ],
+            [
+                'name'=>'recommended_to_workout',
+                'field'=>'Were you recommended to workout by a doctor',
+                'data_type'=>'string',
+            ],
+            [
+                'name'=>'medical_condition',
+                'field'=>'Medical Condition',
+                'data_type'=>'string',
+            ],
+            [
+                'name'=>'prescriptive_medication',
+                'field'=>'Do you take any prescriptive medication',
+                'data_type'=>'string',
+            ],
+            [
+                'name'=>'smoke',
+                'field'=>'Do you smoke',
+                'data_type'=>'string',
+            ],
+            [
+                'name'=>'consume_alcohol',
+                'field'=>'Do you consume alcohol',
+                'data_type'=>'string',
+            ],          
+        ];
+
+        return $data;
+    }
+
+}
+
 
 
 ?>

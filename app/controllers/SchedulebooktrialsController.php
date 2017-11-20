@@ -66,6 +66,15 @@ class SchedulebooktrialsController extends \BaseController {
         $this->customerreward            =   $customerreward;
         $this->jwtauth 	=	$jwtauth;
 
+        $this->vendor_token = false;
+
+        $vendor_token = Request::header('Authorization-Vendor');
+
+        if($vendor_token){
+
+            $this->vendor_token = true;
+        }
+
     }
     /**
      * Display the ScheduleBookTrial.
@@ -647,8 +656,6 @@ class SchedulebooktrialsController extends \BaseController {
 
     public function manualBookTrial() {
 
-
-
         $data = Input::json()->all();
 
         if(empty($data['customer_name'])){
@@ -671,19 +678,32 @@ class SchedulebooktrialsController extends \BaseController {
             return  Response::json($resp, 400);
         }
 
-        if(empty($data['finder_id'])){
-            $resp 	= 	array('status' => 400,'message' => "Data Missing - finder_id");
-            return  Response::json($resp, 400);
-        }
+        if(!$this->vendor_token){
 
-        if(empty($data['finder_name'])){
-            $resp 	= 	array('status' => 400,'message' => "Data Missing - finder_name");
-            return  Response::json($resp, 400);
-        }
+            if(empty($data['finder_id'])){
+                $resp 	= 	array('status' => 400,'message' => "Data Missing - finder_id");
+                return  Response::json($resp, 400);
+            }
 
-        if(empty($data['city_id'])){
-            $resp 	= 	array('status' => 400,'message' => "Data Missing - city_id");
-            return  Response::json($resp, 400);
+            if(empty($data['finder_name'])){
+                $resp 	= 	array('status' => 400,'message' => "Data Missing - finder_name");
+                return  Response::json($resp, 400);
+            }
+
+            if(empty($data['city_id'])){
+                $resp 	= 	array('status' => 400,'message' => "Data Missing - city_id");
+                return  Response::json($resp, 400);
+            }
+
+        }else{
+
+            $decodeKioskVendorToken = decodeKioskVendorToken();
+
+            $vendor =  json_decode($decodeKioskVendorToken->vendor,true);
+
+            $data['finder_id'] = (int)$vendor['_id'];
+            $data['finder_name'] = $vendor['name'];
+            $data['city_id'] = $vendor['city']['_id'];
         }
 
         // Throw an error if user has already booked a trial for that vendor...
@@ -789,11 +809,15 @@ class SchedulebooktrialsController extends \BaseController {
             'note_to_trainer'                =>      $note_to_trainer,
         );
 
+        if($this->vendor_token){
+
+            $booktrialdata['source'] = $data['kiosk'];
+        }
+
 
         if(isset($data['customer_address']) && $data['customer_address'] != ''){
             $booktrialdata['customer_address_array'] = $data['customer_address'];
         }
-
 
         //         return $booktrialdata;
         $booktrial = new Booktrial($booktrialdata);
@@ -802,7 +826,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         //        return $booktrial;
 
-        if($trialbooked){
+        if($trialbooked && !$this->vendor_token){
 
 
             if($booktrialdata['manual_trial_auto'] === '1'){
@@ -843,6 +867,19 @@ class SchedulebooktrialsController extends \BaseController {
         }
 
         $resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'booktrial' => $booktrial, 'message' => "Book a Trial");
+
+        if($this->vendor_token){
+
+            $form_fields = formFields();
+
+            $resp   =  [
+                'status' => 200,
+                'message' => "Successfully Booked a Trial",
+                'form_fields'=>$form_fields
+            ];
+
+        }
+
         return Response::json($resp,200);
     }
 
@@ -6086,6 +6123,10 @@ class SchedulebooktrialsController extends \BaseController {
         $response = array('status' => 400,'message' =>'Sorry! Cannot locate your booking');
 
         return Response::json($response, $response['status']);
+
+    }
+
+    public function addCustomerForm(){
 
     }
 
