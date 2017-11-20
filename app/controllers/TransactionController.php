@@ -1562,7 +1562,9 @@ class TransactionController extends \BaseController {
             }
         }
 
-        $data['amount'] = $amount;
+        if(isset($data['wallet']) && $data['wallet'] == true){
+            $data['amount'] = $amount;
+        }
 
         if($data['amount'] == 0){
             $data['full_payment_wallet'] = true;
