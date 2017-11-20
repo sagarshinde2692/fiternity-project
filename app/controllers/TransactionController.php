@@ -1570,6 +1570,15 @@ class TransactionController extends \BaseController {
                         $data["secondary_payment_mode"] = "cod_membership";
                     }
                 }
+                
+            }else{
+
+                if($order && isset($order['coupon_code'])){
+
+                    $order->unset('coupon_code');
+                    $order->unset('coupon_discount_amount');
+                }
+
             }
         }
 
