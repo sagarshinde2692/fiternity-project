@@ -5299,6 +5299,8 @@ class CustomerController extends \BaseController {
 
 		$data = Input::json()->all();
 
+		$transaction_data = [];
+
         if(isset($data['customer_id']) && $data['customer_id'] != ""){
         	$data['customer_id'] = (int)$data['customer_id'];
         }
@@ -5308,12 +5310,35 @@ class CustomerController extends \BaseController {
         }
 
         if(isset($data['booktrial_id']) && $data['booktrial_id'] != ""){
+
         	$data['booktrial_id'] = (int)$data['booktrial_id'];
+
+        	Booktrial::$withoutAppends=true;
+
+        	$transaction = Booktrial::find((int)$data['booktrial_id']);
         }
 
         if(isset($data['finder_id']) && $data['finder_id'] != ""){
         	$data['finder_id'] = (int)$data['finder_id'];
         }
+
+        if($transaction){
+
+        	$array_only = [
+        		'finder_id',
+        		'city_id',
+        		'customer_id',
+        		'customer_email',
+        		'customer_phone',
+        		'customer_name'
+        	];
+
+    		$transaction_data = array_only($transaction->toArray(),$array_only);
+    	}
+
+    	if(!empty($transaction_data)){
+    		$data = array_merge($data,$transaction_data);
+    	}
 
         CustomerCapture::create($data);
 
