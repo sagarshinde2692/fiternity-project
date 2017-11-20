@@ -513,7 +513,7 @@ class TransactionController extends \BaseController {
 
         $data['convinience_fee'] = 0;
 
-        if(isset($data['ratecard_flags']) && isset($data['ratecard_flags']['convinience_fee_applicable']) && $data['ratecard_flags']['convinience_fee_applicable']){
+        if(isset($data['ratecard_flags']) && isset($data['ratecard_flags']['convinience_fee_applicable']) && $data['ratecard_flags']['convinience_fee_applicable'] && $data['type'] == "memberships"){
             
             $convinience_fee_percent = Config::get('app.convinience_fee');
 
