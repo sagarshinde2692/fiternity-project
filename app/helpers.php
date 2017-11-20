@@ -2864,6 +2864,85 @@ if (!function_exists('decodeKioskVendorToken')) {
 
 }
 
+if (!function_exists('generateOtp')) {
+
+    function generateOtp($length = 4){
+
+        $characters = '0123456789';
+        $result = '';
+        $charactersLength = strlen($characters);
+
+        for ($p = 0; $p < $length; $p++)
+        {
+            $result .= $characters[rand(0, $charactersLength - 1)];
+        }
+
+        return $result;
+    }
+
+}
+
+if (!function_exists('addTemp')) {
+
+    function addTemp($data){
+
+        $temp = new Temp($data);
+        $temp->otp = generateOtp();
+        $temp->attempt = 1;
+        $temp->verified = "N";
+        $temp->proceed_without_otp = "N";
+        $temp->source = "website";
+
+        if($data['action'] == "vendor_otp"){
+
+            $decodeKioskVendorToken = decodeKioskVendorToken();
+
+            $vendor = $decodeKioskVendorToken->vendor;
+
+            $temp->finder_id = (int)$vendor->_id;
+
+            $temp->source = "kiosk";
+        }
+
+        if(isset($data['order_id']) && $data['order_id'] != ""){
+            $temp->order_id = (int) $data['order_id'];
+        }
+
+        if(isset($data['finder_id']) && $data['finder_id'] != ""){
+            $temp->finder_id = (int) $data['finder_id'];
+        }
+
+        if(isset($data['service_id']) && $data['service_id'] != ""){
+            $temp->service_id = (int) $data['service_id'];
+        }
+
+        if(isset($data['ratecard_id']) && $data['ratecard_id'] != ""){
+            $temp->ratecard_id = (int) $data['ratecard_id'];
+
+            $ratecard = Ratecard::find((int) $data['ratecard_id']);
+
+            if($ratecard){
+                $temp->finder_id = (int) $ratecard->finder_id;
+                $temp->service_id = (int) $ratecard->service_id;
+            }
+
+        }
+
+        if(isset($_GET['device_type']) && $_GET['device_type'] != ""){
+            $temp->source = $_GET['device_type'];
+        }
+
+        if(isset($_GET['app_version']) && $_GET['app_version'] != ""){
+            $temp->version = $_GET['app_version'];
+        }
+
+        $temp->save();
+
+        return $temp->toArray();
+
+    }
+}
+
 
 
 ?>

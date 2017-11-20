@@ -9,14 +9,17 @@
 use App\Sms\CustomerSms as CustomerSms;
 use App\Services\Utilities as Utilities;
 use App\Services\CustomerReward as CustomerReward;
+use App\Sms\FinderSms as FinderSms;
 
 class TempsController extends \BaseController {
 
     protected $customersms;
     protected $utilities;
+    protected $findersms;
 
-    public function __construct(CustomerSms $customersms, Utilities $utilities) {
+    public function __construct(CustomerSms $customersms, Utilities $utilities, FinderSms $findersms) {
         //parent::__construct();
+        $this->findersms            =   $findersms;
         $this->customersms              =   $customersms;
         $this->contact_us_customer_number = Config::get('app.contact_us_customer_number');
         $this->appOfferDiscount 				= Config::get('app.app.discount');
@@ -630,14 +633,25 @@ class TempsController extends \BaseController {
 
             $temp->attempt = $temp->attempt + 1;
             $temp->save();
-        
-            if($temp->attempt >= 1 && $temp->attempt <= 3){
 
-                $data = $temp->toArray();
-                $this->customersms->genericOtp($data);
+            $data = $temp->toArray();
+
+            if($temp->action == 'vendor_otp'){
+
+                $this->findersms->genericOtp($data);
+
+            }else{
+
+                if($temp->attempt >= 1 && $temp->attempt <= 3){
+
+                    $data = $temp->toArray();
+                    $this->customersms->genericOtp($data);
+                }
+
             }
 
             return Response::json(array('status' => 200,'attempt' => $temp->attempt,'sender_id'=>'FTRNTY'),200);
+
         }else{
             return Response::json(array('status' => 400,'message' => 'Not Found'),400);
         }

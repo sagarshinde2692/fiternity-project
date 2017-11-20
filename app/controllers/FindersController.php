@@ -2205,6 +2205,24 @@ class FindersController extends \BaseController {
 		$getTrialSchedule = array_values($getTrialSchedule);
 
 		$response['memberships'] = $getTrialSchedule;
+		$response['perks'] = [
+			[
+				"image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/percentage.png",
+				"title"=>"Lowest Price Garantee"
+			],
+			[
+				"image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/gifts.png",
+				"title"=>"Complementry Reward"
+			],
+			[
+				"image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/creditcards.png",
+				"title"=>"Flexiable EMI and Payment Options"
+			],
+			[
+				"image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/earnfitcashicon.png",
+				"title"=>"Earn Fitcash+ and Cashback"
+			]
+		];
 
 		return Response::json($response,200);
 	}
@@ -3522,27 +3540,27 @@ class FindersController extends \BaseController {
 					"description"=>"Fitternity is the one stop shop for everything fitness. Discover, compare, try & buy through fitternity.",
 					"details"=>[
 						[
-							"title"=>"Book unlimited free trials to explre fitness forms around you.",
-							"image"=>"http://b.fitn.in/kiosk/bowl-vegetable.png"
+							"title"=>"Book unlimited free trials to explore fitness forms around you.",
+							"image"=>"http://b.fitn.in/kiosk/puzzle.png"
 						],
 						[
-							"title"=>"Book unlimited free trials to explre fitness forms around you.",
+							"title"=>"Buy Gym / group class memberships across fitness centres in your city.",
 							"image"=>"http://b.fitn.in/kiosk/excercise.png"
 						],
 						[
-							"title"=>"Book unlimited free trials to explre fitness forms around you.",
-							"image"=>"http://b.fitn.in/kiosk/lunchbox.png"
+							"title"=>"Get personalised online diet consultation for workout performance enhancement.",
+							"image"=>"http://b.fitn.in/kiosk/bowl-vegetable.png"
 						],
 						[
-							"title"=>"Book unlimited free trials to explre fitness forms around you.",
-							"image"=>"http://b.fitn.in/kiosk/puzzle.png"
+							"title"=>"Book healthy, calorie counted yet tasty tiffin subscription.",
+							"image"=>"http://b.fitn.in/kiosk/lunchbox.png"
 						]
 					]
 				],
 				"options"=>[
 					[
 						"title"=>"Access Trial Booking",
-						"description"=>"Some description",
+						"description"=>"Activate your workout trial by scanning the QR code or punching your subscription code",
 						"image"=>"http://b.fitn.in/global/tabapp-homescreen/access-trials-small.png",
 						"banner_image"=>"http://b.fitn.in/global/tabapp-homescreen/accesstrial-big-1.png",
 						"id"=>1,
@@ -3550,7 +3568,7 @@ class FindersController extends \BaseController {
 					],
 					[
 						"title"=>"Explore Membership",
-						"description"=>"Some description",
+						"description"=>"Explore Membership",
 						"image"=>"http://b.fitn.in/global/tabapp-homescreen/explorememberships-small.png",
 						"banner_image"=>"http://b.fitn.in/global/tabapp-homescreen/explorememberships-big-1.png",
 						"id"=>2,
@@ -3564,14 +3582,14 @@ class FindersController extends \BaseController {
 						"id"=>3,
 						'type'=>'post_review'
 					],
-					[
+					/*[
 						"title"=>"Online Diet Consultation",
 						"description"=>"Online Diet Consultation",
-						"image"=>"http://b.fitn.in/global/tabapp-homescreen/explorememberships-small.png",
-						"banner_image"=>"http://b.fitn.in/global/tabapp-homescreen/explorememberships-big-1.png",
+						"image"=>"http://b.fitn.in/global/tabapp-homescreen/coming-soon-small.png",
+						"banner_image"=>"http://b.fitn.in/global/tabapp-homescreen/diet-big-1.png",
 						"id"=>4,
 						"type"=>"diet_plan"
-					]
+					]*/
 				],
 				"title"=>"Welcome to ".ucwords($finder['title']),
 				"powered"=>"Powered by Fitternity"

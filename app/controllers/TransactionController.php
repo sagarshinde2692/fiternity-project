@@ -594,6 +594,11 @@ class TransactionController extends \BaseController {
 
         $data["status"] = "0";
 
+        if(isset($data['paymentmode_selected']) && $data['paymentmode_selected'] == 'pay_at_vendor'){
+
+            $data['payment_mode'] = 'at the studio';
+        }
+
         if(isset($old_order_id)){
 
             if($order){
@@ -727,17 +732,28 @@ class TransactionController extends \BaseController {
 
         if($data['payment_mode'] == 'at the studio' && isset($data['wallet']) && $data['wallet']){
 
+            $data = array_only($data,['finder_id','order_id','service_id','ratecard_id','payment_mode','finder_vcc_mobile']);
+
+            $data['action'] = "vendor_otp";
+
+            $addTemp = addTemp($data);
+
             $otp_data = [
-                'otp'=>$this->generateOtp(),
+                'otp'=>$addTemp['otp'],
                 'finder_vcc_mobile'=>$data['finder_vcc_mobile'],
-                'payment_mode'=>$data['payment_mode']
+                'payment_mode'=>$data['payment_mode'],
+                'temp_id'=>$addTemp['_id']
             ];
 
             $order->update(['otp_data'=>$otp_data]);
 
             $this->findersms->genericOtp($otp_data);
 
-            $resp['vendor_otp'] = $otp_data['otp'];
+            $resp['vendor_otp'] = $addTemp['otp'];
+
+            $resp['data']['verify_otp_url'] = Config::get('app.website')."/kiosk/vendor/verifyotp";
+            $resp['data']['resend_otp_url'] = Config::get('app.website')."/temp/regenerateotp/".$addTemp['_id'];
+
         }
 
         return Response::json($resp);
@@ -1352,6 +1368,11 @@ class TransactionController extends \BaseController {
             $this->utilities->sendDemonetisationCustomerSms($order);
 
             $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
+
+            if($order['payment_mode'] == 'at the studio'){
+                $resp   =   array('status' => 200,"message" => "Transaction Successful");
+            }
+
             return Response::json($resp);
 
         }else{
