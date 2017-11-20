@@ -341,6 +341,8 @@ class TransactionController extends \BaseController {
             }
         }
 
+        $data['amount_final'] = $data["amount_finder"];
+
         if(!$updating_part_payment && !isset($data['myreward_id'])) {
 
             $cashbackRewardWallet =$this->getCashbackRewardWallet($data,$order);
@@ -442,6 +444,13 @@ class TransactionController extends \BaseController {
         
         if(isset($data['part_payment']) && $data['part_payment']){
 
+            $convinience_fee = 0;
+
+            if(isset($order["part_payment_calculation"]["convinience_fee"]) && $order["part_payment_calculation"]["convinience_fee"] > 0){
+
+                $convinience_fee = $order["part_payment_calculation"]["convinience_fee"];
+            }
+
             if(isset($order['wallet_amount']) && ((int) $order['wallet_amount']) > 0){
 
                 $req = array(
@@ -468,7 +477,7 @@ class TransactionController extends \BaseController {
                 $order->unset('wallet_amount');
             }
 
-            $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($order['amount'],$data['finder_id'],'paymentgateway',$data['offer_id'],false,$order["part_payment_calculation"]["part_payment_and_convinience_fee_amount"]);
+            $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($order['amount'],$data['finder_id'],'paymentgateway',$data['offer_id'],false,$order["part_payment_calculation"]["part_payment_and_convinience_fee_amount"],$convinience_fee);
 
             if(isset($data['wallet']) && $data['wallet'] == true){
 
@@ -527,7 +536,7 @@ class TransactionController extends \BaseController {
 
         $data['convinience_fee'] = 0;
 
-        if(isset($data['ratecard_flags']) && isset($data['ratecard_flags']['convinience_fee_applicable']) && $data['ratecard_flags']['convinience_fee_applicable']){
+        if(isset($data['ratecard_flags']) && isset($data['ratecard_flags']['convinience_fee_applicable']) && $data['ratecard_flags']['convinience_fee_applicable'] && $data['type'] == "memberships"){
             
             $convinience_fee_percent = Config::get('app.convinience_fee');
 
@@ -688,7 +697,7 @@ class TransactionController extends \BaseController {
 
             $payment_mode_type_array = ['paymentgateway'];
 
-            if($emi_applicable){
+            if($emi_applicable && isset($order->amount_final) && $order->amount_final){
 
                 $payment_mode_type_array[] = 'emi';
             }
@@ -724,7 +733,7 @@ class TransactionController extends \BaseController {
             
             $resp['data']['payment_details'] = $payment_details;
 
-            if(isset($order->amount) && $order->amount){
+            if(isset($order->amount_final) && $order->amount_final ){
                 $resp['data']['payment_modes'] = $this->getPaymentModes($resp);
             }
         }
@@ -1514,6 +1523,8 @@ class TransactionController extends \BaseController {
 
         $amount = $data['amount_customer'] = $data['amount'];
 
+        $convinience_fee = 0;
+
         if(isset($data['ratecard_flags']) && isset($data['ratecard_flags']['convinience_fee_applicable']) && $data['ratecard_flags']['convinience_fee_applicable']){
             
             $convinience_fee_percent = Config::get('app.convinience_fee');
@@ -1545,7 +1556,7 @@ class TransactionController extends \BaseController {
             $amount -= $data['customer_discount_amount'];
 
             
-            $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($amount,$data['finder_id'],'paymentgateway',$data['offer_id'],false/*$data['customer_id']*/);
+            $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($amount,$data['finder_id'],'paymentgateway',$data['offer_id'],false,false,$convinience_fee);
 
             if(isset($data['cashback']) && $data['cashback'] == true){
                 $amount -= $data['cashback_detail']['amount_discounted'];
@@ -1654,7 +1665,7 @@ class TransactionController extends \BaseController {
 
                     }
 
-                    $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($amount,$data['finder_id'],'paymentgateway',$data['offer_id'],false);
+                    $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($amount,$data['finder_id'],'paymentgateway',$data['offer_id'],false,false,$convinience_fee);
 
                     if(isset($data['cashback']) && $data['cashback'] == true){
                         $amount -= $data['cashback_detail']['amount_discounted'];
@@ -1700,7 +1711,11 @@ class TransactionController extends \BaseController {
             }
         }
 
-        $data['amount'] = $amount;
+        $data['amount_final'] = $amount;
+
+        if(isset($data['wallet']) && $data['wallet'] == true){
+            $data['amount'] = $amount;
+        }
 
         if($data['amount'] == 0){
             $data['full_payment_wallet'] = true;
@@ -3359,7 +3374,7 @@ class TransactionController extends \BaseController {
 
         $amount_payable= array(
             'field' => 'Total Amount Payable',
-            'value' => 'Rs. '.$data['amount']
+            'value' => 'Rs. '.$data['amount_final']
         );
 
         if($payment_mode_type == 'part_payment'){
