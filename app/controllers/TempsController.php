@@ -142,17 +142,48 @@ class TempsController extends \BaseController {
                 }
 
                 if(isset($data['service_id']) && $data['service_id'] != ""){
+
                     $temp->service_id = (int) $data['service_id'];
+
+                    $trial_type = [
+                        "booktrail",
+                        "booktrial",
+                        "typeofsession",
+                        "booktrials"
+                    ];
+
+                    if(in_array($data['action'],$trial_type) && isset($data['service_id']) && $data['service_id'] != "" && !isset($data['ratecard_id'])){
+
+                        $ratecard = Ratecard::where('type','trial')->where('service_id',(int)$data['service_id'])->orderBy('id','desc')->first();
+
+                        if($ratecard){
+
+                            if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
+                                $temp->price = (int)$ratecard['special_price'];
+                            }else{
+                                $temp->price = (int)$ratecard['price'];
+                            }
+                        }
+                    }
                 }
 
                 if(isset($data['ratecard_id']) && $data['ratecard_id'] != ""){
+                    
                     $temp->ratecard_id = (int) $data['ratecard_id'];
 
                     $ratecard = Ratecard::find((int) $data['ratecard_id']);
 
                     if($ratecard){
+
                         $temp->finder_id = (int) $ratecard->finder_id;
                         $temp->service_id = (int) $ratecard->service_id;
+
+                        if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
+                            $temp->price = (int)$ratecard['special_price'];
+                        }else{
+                            $temp->price = (int)$ratecard['price'];
+                        }
+
                     }
 
                 }
