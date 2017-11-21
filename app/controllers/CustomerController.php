@@ -5322,7 +5322,7 @@ class CustomerController extends \BaseController {
         	$data['finder_id'] = (int)$data['finder_id'];
         }
 
-        if($transaction){
+        if(isset($transaction)){
 
         	$array_only = [
         		'finder_id',

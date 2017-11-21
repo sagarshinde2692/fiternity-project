@@ -6119,7 +6119,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             $createCustomerToken = createCustomerToken((int)$booktrial['customer_id']);
 
-            $response = array('status' => 200,'message' => $message,'token'=>$createCustomerToken);
+            $response = array('status' => 200,'message' => $message,'token'=>$createCustomerToken,'booktrial_id'=> (int)$booktrial['_id']);
         }
 
         return Response::json($response, $response['status']);
