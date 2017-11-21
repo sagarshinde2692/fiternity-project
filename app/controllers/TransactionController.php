@@ -3264,6 +3264,10 @@ class TransactionController extends \BaseController {
 
         }
 
+        if(isset($data['cashback']) && $data['cashback']){
+            array_set($data,'reward_info','Cashback');
+        }
+
         if(isset($data["reward_info"]) && $data["reward_info"] != ""){
 
             if($data["reward_info"] == 'Cashback'){
