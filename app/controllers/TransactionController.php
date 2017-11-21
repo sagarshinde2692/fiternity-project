@@ -1387,7 +1387,7 @@ class TransactionController extends \BaseController {
 
         $convinience_fee = 0;
 
-        if(isset($data['ratecard_flags']) && isset($data['ratecard_flags']['convinience_fee_applicable']) && $data['ratecard_flags']['convinience_fee_applicable']){
+        if(isset($data['ratecard_flags']) && isset($data['ratecard_flags']['convinience_fee_applicable']) && $data['ratecard_flags']['convinience_fee_applicable'] && $data['type'] == "memberships"){
             
             $convinience_fee_percent = Config::get('app.convinience_fee');
 
@@ -3328,6 +3328,14 @@ class TransactionController extends \BaseController {
 
         }else{
 
+            if(isset($data['convinience_fee']) && $data['convinience_fee'] > 0){
+
+                $amount_summary[] = array(
+                    'field' => 'Convenience Fee',
+                    'value' => '+Rs. '.$data['convinience_fee']
+                );
+            }
+
             if(isset($data['cashback_detail']) && isset($data['cashback_detail']['amount_deducted_from_wallet']) && $data['cashback_detail']['amount_deducted_from_wallet'] > 0){
 
                 $amount_summary[] = array(
@@ -3357,14 +3365,6 @@ class TransactionController extends \BaseController {
                 $amount_summary[] = array(
                     'field' => 'App Discount',
                     'value' => '-Rs. '.$data['app_discount_amount']
-                );
-            }
-            
-            if(isset($data['convinience_fee']) && $data['convinience_fee'] > 0){
-
-                $amount_summary[] = array(
-                    'field' => 'Convenience Fee',
-                    'value' => '+Rs. '.$data['convinience_fee']
                 );
             }
         }
