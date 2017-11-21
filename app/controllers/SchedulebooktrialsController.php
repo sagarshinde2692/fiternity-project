@@ -6115,7 +6115,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         if(isset($booktrial)){
 
-            $message = "We located your booking of ".ucwords($booktrial['service_name'])." at ".$booktrial['schedule_slot_start_time'];
+            $message = "Your Trial booking for ".ucwords($booktrial['finder_name'])." has been verified for ".date('d-m-Y',strtotime($booktrial['schedule_date']));
 
             $createCustomerToken = createCustomerToken((int)$booktrial['customer_id']);
 
