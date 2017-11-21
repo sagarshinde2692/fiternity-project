@@ -6109,7 +6109,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         $vendor = $decodeKioskVendorToken->vendor;
 
-        $booktrial = Booktrial::where('code',$code)->where('finder_id',$vendor['_id'])->first();
+        $booktrial = Booktrial::where('code',$code)->where('finder_id',$vendor['_id'])->orderBy('_id','desc')->first();
 
         if($booktrial){
 

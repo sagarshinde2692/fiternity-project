@@ -40,6 +40,15 @@ class FindersController extends \BaseController {
 		$this->appOfferDiscount 				= Config::get('app.app.discount');
 		$this->appOfferExcludedVendors 				= Config::get('app.app.discount_excluded_vendors');
 		$this->utilities 						= $utilities;
+
+		$this->vendor_token = false;
+
+        $vendor_token = Request::header('Authorization-Vendor');
+
+        if($vendor_token){
+
+            $this->vendor_token = true;
+        }
 		
 	}
 
@@ -1518,6 +1527,29 @@ class FindersController extends \BaseController {
 			unset($data['"notification_id']);
 		}
 
+		if(isset($data['review_for']) && in_array($data['review_for'],['membership','session'])){
+
+			switch ($data['review_for']) {
+				case 'membership' :
+					$transaction = Order::active()->where('finder_id',(int)$data["finder_id"])->where('customer_id',(int)$data["customer_id"])->orderBy('_id','desc')->first();
+					if($transaction){
+						$data["order_id"] = (int)$transaction['_id'];
+					}
+					break;
+				case 'session' :
+					$transaction = Booktrial::where('finder_id',(int)$data["finder_id"])->where('customer_id',(int)$data["customer_id"])->orderBy('_id','desc')->first();
+					if($transaction){
+						$data["booktrial_id"] = (int)$transaction['_id'];
+					}
+					break;
+				default : break;
+			}
+		}
+
+		if($this->vendor_token){
+			$data['source'] = 'kiosk';
+		}
+
 		Log::info('review data',$data);
 
 		return $this->addReview($data);
@@ -1565,6 +1597,10 @@ class FindersController extends \BaseController {
 
 		if(isset($data['agent_email'])){
 			$reviewdata['agent_email'] = $data['agent_email'];
+		}
+
+		if(isset($data['booktrial_id']) && $data['booktrial_id'] != ""){
+			$reviewdata['booktrial_id'] = (int)$data['booktrial_id'];
 		}
 
 		$finder = Finder::find(intval($data['finder_id']));
