@@ -699,7 +699,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             $decodeKioskVendorToken = decodeKioskVendorToken();
 
-            $vendor =  json_decode($decodeKioskVendorToken->vendor,true);
+            json_decode(json_encode($decodeKioskVendorToken->vendor),true);
 
             $data['finder_id'] = (int)$vendor['_id'];
             $data['finder_name'] = $vendor['name'];
@@ -6107,11 +6107,13 @@ class SchedulebooktrialsController extends \BaseController {
 
         $decodeKioskVendorToken = decodeKioskVendorToken();
 
-        $vendor = $decodeKioskVendorToken->vendor;
+        $vendor = json_decode(json_encode($decodeKioskVendorToken->vendor),true);
 
-        $booktrial = Booktrial::where('code',$code)->where('finder_id',$vendor['_id'])->orderBy('_id','desc')->first();
+        $response = array('status' => 400,'message' =>'Sorry! Cannot locate your booking');
 
-        if($booktrial){
+        $booktrial = Booktrial::where('code',$code)->where('finder_id',(int)$vendor['_id'])->orderBy('_id','desc')->first();
+
+        if(isset($booktrial)){
 
             $message = "We located your booking of ".ucwords($booktrial['service_name'])." at ".$booktrial['schedule_slot_start_time'];
 
@@ -6120,13 +6122,7 @@ class SchedulebooktrialsController extends \BaseController {
             $response = array('status' => 200,'message' => $message,'token'=>$createCustomerToken);
         }
 
-        $response = array('status' => 400,'message' =>'Sorry! Cannot locate your booking');
-
         return Response::json($response, $response['status']);
-
-    }
-
-    public function addCustomerForm(){
 
     }
 
