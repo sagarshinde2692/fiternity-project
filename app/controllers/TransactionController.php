@@ -3564,8 +3564,18 @@ class TransactionController extends \BaseController {
             }
 
             $resp['status'] = 200;
+            $resp['message'] = $resp['success_message'] = "Rs. ".$resp["data"]["discount"]." has been applied Successfully";
 
-            return Response::json($resp,200);
+            if($resp["data"]["discount"] <= 0){
+
+                $resp['status'] = 400;
+                $resp['message'] = $resp['error_message'] = "Cannot apply Coupon";
+                $resp["coupon_applied"] = false;
+
+                unset($resp['success_message']);
+            }
+
+            return Response::json($resp,$resp['status']);
 
         }else{
 
