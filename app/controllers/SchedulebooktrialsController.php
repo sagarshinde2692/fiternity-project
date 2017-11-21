@@ -699,7 +699,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             $decodeKioskVendorToken = decodeKioskVendorToken();
 
-            json_decode(json_encode($decodeKioskVendorToken->vendor),true);
+            $vendor = json_decode(json_encode($decodeKioskVendorToken->vendor),true);
 
             $data['finder_id'] = (int)$vendor['_id'];
             $data['finder_name'] = $vendor['name'];
