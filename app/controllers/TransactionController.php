@@ -1525,7 +1525,7 @@ class TransactionController extends \BaseController {
 
         $convinience_fee = 0;
 
-        if(isset($data['ratecard_flags']) && isset($data['ratecard_flags']['convinience_fee_applicable']) && $data['ratecard_flags']['convinience_fee_applicable']){
+        if(isset($data['ratecard_flags']) && isset($data['ratecard_flags']['convinience_fee_applicable']) && $data['ratecard_flags']['convinience_fee_applicable'] && $data['type'] == "memberships"){
             
             $convinience_fee_percent = Config::get('app.convinience_fee');
 
@@ -1708,6 +1708,15 @@ class TransactionController extends \BaseController {
                         $data["secondary_payment_mode"] = "cod_membership";
                     }
                 }
+                
+            }else{
+
+                if($order && isset($order['coupon_code'])){
+
+                    $order->unset('coupon_code');
+                    $order->unset('coupon_discount_amount');
+                }
+
             }
         }
 
@@ -3461,6 +3470,14 @@ class TransactionController extends \BaseController {
 
         }else{
 
+            if(isset($data['convinience_fee']) && $data['convinience_fee'] > 0){
+
+                $amount_summary[] = array(
+                    'field' => 'Convenience Fee',
+                    'value' => '+Rs. '.$data['convinience_fee']
+                );
+            }
+
             if(isset($data['cashback_detail']) && isset($data['cashback_detail']['amount_deducted_from_wallet']) && $data['cashback_detail']['amount_deducted_from_wallet'] > 0){
 
                 $amount_summary[] = array(
@@ -3490,14 +3507,6 @@ class TransactionController extends \BaseController {
                 $amount_summary[] = array(
                     'field' => 'App Discount',
                     'value' => '-Rs. '.$data['app_discount_amount']
-                );
-            }
-            
-            if(isset($data['convinience_fee']) && $data['convinience_fee'] > 0){
-
-                $amount_summary[] = array(
-                    'field' => 'Convenience Fee',
-                    'value' => '+Rs. '.$data['convinience_fee']
                 );
             }
         }
@@ -3706,8 +3715,18 @@ class TransactionController extends \BaseController {
             }
 
             $resp['status'] = 200;
+            $resp['message'] = $resp['success_message'] = "Rs. ".$resp["data"]["discount"]." has been applied Successfully";
 
-            return Response::json($resp,200);
+            if($resp["data"]["discount"] <= 0){
+
+                $resp['status'] = 400;
+                $resp['message'] = $resp['error_message'] = "Cannot apply Coupon";
+                $resp["coupon_applied"] = false;
+
+                unset($resp['success_message']);
+            }
+
+            return Response::json($resp,$resp['status']);
 
         }else{
 
