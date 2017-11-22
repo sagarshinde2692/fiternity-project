@@ -872,7 +872,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             $form_fields = formFields();
 
-            $kiosk_form_url = Config::get('app.website').'/kioskform?booktrial_id='.$booktrial['_id'];
+            $kiosk_form_url = Config::get('app.website').'/kiosktrialform?booktrial_id='.$booktrial['_id'];
 
             $resp   =  [
                 'status' => 200,
@@ -6121,7 +6121,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             $createCustomerToken = createCustomerToken((int)$booktrial['customer_id']);
 
-            $kiosk_form_url = Config::get('app.website').'/kioskform?booktrial_id='.$booktrial['_id'];
+            $kiosk_form_url = Config::get('app.website').'/kiosktrialform?booktrial_id='.$booktrial['_id'];
 
             $response = [
                 'status' => 200,

@@ -469,7 +469,7 @@ class TempsController extends \BaseController {
 
                         $message = "Your Trial booking at ".ucwords($booktrial['finder_name'])." has been verified for ".date('d-m-Y',strtotime($booktrial['schedule_date']));
 
-                        $kiosk_form_url = Config::get('app.website').'/kioskform?booktrial_id='.$booktrial['_id'];
+                        $kiosk_form_url = Config::get('app.website').'/kiosktrialform?booktrial_id='.$booktrial['_id'];
 
                         $return = [
                             'customer_data'=>$customer_data,

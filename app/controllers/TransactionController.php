@@ -359,17 +359,25 @@ class TransactionController extends \BaseController {
         $txnid = "";
         $successurl = "";
         $mobilehash = "";
-        if($data['customer_source'] == "android" || $data['customer_source'] == "ios"){
+
+        if(in_array($data['customer_source'],['android','ios','kiosk'])){
+
             $txnid = "MFIT".$data['_id'];
+
             if(isset($old_order_id)){
                 $txnid = "MFIT".$data['_id']."-R".$data['repetition'];
             }
-            $successurl = $data['customer_source'] == "android" ? Config::get('app.website')."/paymentsuccessandroid" : Config::get('app.website')."/paymentsuccessios";
+
+            $successurl = $data['customer_source'] == "ios" ? Config::get('app.website')."/paymentsuccessios" : Config::get('app.website')."/paymentsuccessandroid";
+
         }else{
+
             $txnid = "FIT".$data['_id'];
+
             if(isset($old_order_id)){
                 $txnid = "FIT".$data['_id']."-R".$data['repetition'];
             }
+
             $successurl = $data['type'] == "memberships" ? Config::get('app.website')."/paymentsuccess" : Config::get('app.website')."/paymentsuccesstrial";
         }
         
@@ -632,7 +640,7 @@ class TransactionController extends \BaseController {
 
         
         
-        if($data['customer_source'] == "android" || $data['customer_source'] == "ios"){
+        if(in_array($data['customer_source'],['android','ios','kiosk'])){
             $mobilehash = $data['payment_related_details_for_mobile_sdk_hash'];
         }
 
@@ -1542,7 +1550,7 @@ class TransactionController extends \BaseController {
 
         if($data['type'] != 'events'){
 
-            if($data['type'] == "memberships" && isset($data['customer_source']) && ($data['customer_source'] == "android" || $data['customer_source'] == "ios")){
+            if($data['type'] == "memberships" && isset($data['customer_source']) && (in_array($data['customer_source'],['android','ios','kiosk']))){
 
                 $this->appOfferDiscount = in_array($data['finder_id'], $this->appOfferExcludedVendors) ? 0 : $this->appOfferDiscount;
                 $data['app_discount_amount'] = intval($data['amount_finder'] * ($this->appOfferDiscount/100));
@@ -1760,7 +1768,7 @@ class TransactionController extends \BaseController {
 
         $amount = $data['amount_customer'] = $data['amount'];
 
-        if($data['type'] == "memberships" && isset($data['customer_source']) && ($data['customer_source'] == "android" || $data['customer_source'] == "ios")){
+        if($data['type'] == "memberships" && isset($data['customer_source']) && (in_array($data['customer_source'],['android','ios','kiosk']))){
             $this->appOfferDiscount = in_array($data['finder_id'], $this->appOfferExcludedVendors) ? 0 : $this->appOfferDiscount;
             $data['app_discount_amount'] = intval($data['amount'] * ($this->appOfferDiscount/100));
             $amount = $data['amount'] = $data['amount_customer'] = $data['amount'] - $data['app_discount_amount'];
