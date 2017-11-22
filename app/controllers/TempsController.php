@@ -467,9 +467,20 @@ class TempsController extends \BaseController {
 
                         }
 
-                        $message = "Your Trial booking for ".ucwords($booktrial['finder_name'])." has been verified for ".date('d-m-Y',strtotime($booktrial['schedule_date']));
+                        $message = "Your Trial booking at ".ucwords($booktrial['finder_name'])." has been verified for ".date('d-m-Y',strtotime($booktrial['schedule_date']));
 
-                        $return = array('customer_data'=>$customer_data,'locate_trial'=>true,'status' => 200,'message' => $message,'verified' => $verified,'token'=>$customerToken);
+                        $kiosk_form_url = Config::get('app.website').'/kioskform?booktrial_id='.$booktrial['_id'];
+
+                        $return = [
+                            'customer_data'=>$customer_data,
+                            'locate_trial'=>true,
+                            'status' => 200,
+                            'message' => $message,
+                            'verified' => $verified,
+                            'token'=>$customerToken,
+                            'booktrial_id'=> (int)$booktrial['_id'],
+                            'kiosk_form_url'=>$kiosk_form_url
+                        ];
 
                     }
                      

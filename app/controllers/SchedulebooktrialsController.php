@@ -6115,11 +6115,19 @@ class SchedulebooktrialsController extends \BaseController {
 
         if(isset($booktrial)){
 
-            $message = "Your Trial booking for ".ucwords($booktrial['finder_name'])." has been verified for ".date('d-m-Y',strtotime($booktrial['schedule_date']));
+            $message = "Your Trial booking at ".ucwords($booktrial['finder_name'])." has been verified for ".date('d-m-Y',strtotime($booktrial['schedule_date']));
 
             $createCustomerToken = createCustomerToken((int)$booktrial['customer_id']);
 
-            $response = array('status' => 200,'message' => $message,'token'=>$createCustomerToken,'booktrial_id'=> (int)$booktrial['_id']);
+            $kiosk_form_url = Config::get('app.website').'/kioskform?booktrial_id='.$booktrial['_id'];
+
+            $response = [
+                'status' => 200,
+                'message' => $message,
+                'token'=>$createCustomerToken,
+                'booktrial_id'=> (int)$booktrial['_id'],
+                'kiosk_form_url'=>$kiosk_form_url
+            ];
         }
 
         return Response::json($response, $response['status']);
