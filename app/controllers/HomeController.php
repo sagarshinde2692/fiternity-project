@@ -997,13 +997,21 @@ class HomeController extends BaseController {
 
                 $header= "Membership reserved";
 
-                $booking_details_data['amount_paid']['value'] = "Rs. ".(string)$item['amount'];
+                if($item['amount']){
 
-                if($item['amount'] == 0){
+                    $booking_details_data['amount_paid']['value'] = "Rs. ".(string)$item['amount'];
+
+                    if($item['amount']){
+                        $booking_details_data['amount_paid']['value'] = "Rs. ".(string)$item['amount']." (Rs. ".$item['wallet_amount']." Paid via Fitcash+)";
+                    }
+
+                }else{
+
                     $booking_details_data['amount_paid']['value'] = "Rs. ".(string)$item['wallet_amount'] . " Paid via Fitcash+";
                 }
 
             }
+
 
             if(isset($item['payment_mode']) && $item['payment_mode'] == 'cod'){
                 $subline= "Your membership will be activated once your cash is collected. Fitternity team will reach out to you to coordinate the cash pick-up.";
