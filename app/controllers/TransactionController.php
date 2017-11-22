@@ -3571,7 +3571,7 @@ class TransactionController extends \BaseController {
 
             $payment_modes[] = array(
                 'title' => 'Pay at Studio',
-                'subtitle' => 'Pay at Studio',
+                'subtitle' => 'Transact via paying cash at the Center',
                 'value' => 'pay_at_vendor',
             );
         
