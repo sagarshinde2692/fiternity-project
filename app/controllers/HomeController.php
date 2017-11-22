@@ -958,15 +958,15 @@ class HomeController extends BaseController {
             }
 
             if(isset($item['start_date']) && $item['start_date'] != ""){
-                $booking_details_data['start_date']['value'] = date('d-m-Y (l)',strtotime($item['start_date']));
+                $booking_details_data['start_date']['value'] = date('D, d M Y',strtotime($item['start_date']));
             }
 
             if(isset($item['schedule_date']) && $item['schedule_date'] != ""){
-                $booking_details_data['start_date']['value'] = date('d-m-Y (l)',strtotime($item['schedule_date']));
+                $booking_details_data['start_date']['value'] = date('D, d M Y',strtotime($item['schedule_date']));
             }
 
             if(isset($item['preferred_starting_date']) && $item['preferred_starting_date'] != ""){
-                $booking_details_data['start_date']['value'] = date('d-m-Y (l)',strtotime($item['preferred_starting_date']));
+                $booking_details_data['start_date']['value'] = date('D, d M Y',strtotime($item['preferred_starting_date']));
             }
 
             if(isset($item['start_time']) && $item['start_time'] != ""){
@@ -1016,34 +1016,34 @@ class HomeController extends BaseController {
 
                     $booking_details_data['amount_paid']['field'] = "Payment Summary";
 
-                    $booking_details_data['amount_paid']['value'] = "Rs. ".(string)$item['amount_finder']." Base Amount";
+                    $booking_details_data['amount_paid']['value'] = " Rs. ".(string)$item['amount_finder']." Base Amount";
 
                     if(isset($item['convinience_fee']) && $item['convinience_fee'] > 0){
 
-                        $booking_details_data['amount_paid']['value'] .= "<br/> +Rs. ".$item['convinience_fee']." Convenience Fee";
+                        $booking_details_data['amount_paid']['value'] .= "<br/>+Rs. ".$item['convinience_fee']." Convenience Fee";
                     }
 
                     if(isset($item['wallet_amount']) && $item['wallet_amount'] > 0){
 
-                        $booking_details_data['amount_paid']['value'] .= "<br/> -Rs. ".$item['wallet_amount']." Fitcash Applied";
+                        $booking_details_data['amount_paid']['value'] .= "<br/>-Rs. ".$item['wallet_amount']." Fitcash Applied";
                     }
 
                     if(isset($item['coupon_discount_amount']) && $item['coupon_discount_amount'] > 0){
 
-                        $booking_details_data['amount_paid']['value'] .= "<br/> -Rs. ".$item['coupon_discount_amount']." Coupon Discount";
+                        $booking_details_data['amount_paid']['value'] .= "<br/>-Rs. ".$item['coupon_discount_amount']." Coupon Discount";
                     }
 
                     if(isset($item['customer_discount_amount']) && $item['customer_discount_amount'] > 0){
 
-                        $booking_details_data['amount_paid']['value'] .= "<br/> -Rs. ".$item['customer_discount_amount']." Corporate Discount";
+                        $booking_details_data['amount_paid']['value'] .= "<br/>-Rs. ".$item['customer_discount_amount']." Corporate Discount";
                     }
 
                     if(isset($item['app_discount_amount']) && $item['app_discount_amount'] > 0){
 
-                        $booking_details_data['amount_paid']['value'] .= "<br/> -Rs. ".$item['app_discount_amount']." App Discount";
+                        $booking_details_data['amount_paid']['value'] .= "<br/>-Rs. ".$item['app_discount_amount']." App Discount";
                     }
 
-                    $booking_details_data['amount_paid']['value'] .= "<br/> -Rs. ".$item['amount']." Paid";
+                    $booking_details_data['amount_paid']['value'] .= "<br/> Rs. ".$item['amount']." Paid";
 
                 }
             }
