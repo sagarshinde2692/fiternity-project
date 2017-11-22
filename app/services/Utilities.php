@@ -2344,7 +2344,7 @@ Class Utilities {
         }
     }
 
-    function checkCorporateLogin($customer_email){
+    function checkCorporateLogin($customer_email = ""){
 
         if(!isset($customer_email) ||  $customer_email != ""){
             $jwt_token = Request::header('Authorization');
