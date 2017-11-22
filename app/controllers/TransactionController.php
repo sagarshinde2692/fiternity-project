@@ -622,6 +622,7 @@ class TransactionController extends \BaseController {
         $result['orderid'] = $data['_id'];
         $result['txnid'] = $txnid;
         $result['amount'] = $data['amount'];
+        $result['amount_final'] = $data['amount_final'];
         $result['productinfo'] = strtolower($data['productinfo']);
         $result['service_name'] = preg_replace("/^'|[^A-Za-z0-9 \'-]|'$/", '', strtolower($data['service_name']));
         $result['successurl'] = $successurl;
