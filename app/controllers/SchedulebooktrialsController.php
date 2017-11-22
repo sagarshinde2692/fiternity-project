@@ -811,7 +811,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         if($this->vendor_token){
 
-            $booktrialdata['source'] = $data['kiosk'];
+            $booktrialdata['source'] = 'kiosk';
         }
 
 
@@ -872,10 +872,12 @@ class SchedulebooktrialsController extends \BaseController {
 
             $form_fields = formFields();
 
+            $kiosk_form_url = Config::get('app.website').'/kioskform?booktrial_id='.$booktrial['_id'];
+
             $resp   =  [
                 'status' => 200,
                 'message' => "Successfully Booked a Trial",
-                'form_fields'=>$form_fields
+                'kiosk_form_url'=>$kiosk_form_url
             ];
 
         }
