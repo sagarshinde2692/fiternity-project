@@ -2243,19 +2243,19 @@ class FindersController extends \BaseController {
 		$response['memberships'] = $getTrialSchedule;
 		$response['perks'] = [
 			[
-				"image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/percentage.png",
+				"image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/lowest-price.png",
 				"title"=>"Lowest Price Garantee"
 			],
 			[
-				"image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/gifts.png",
+				"image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/rewards.png",
 				"title"=>"Complementry Reward"
 			],
 			[
-				"image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/creditcards.png",
+				"image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/flexible.png",
 				"title"=>"Flexiable EMI and Payment Options"
 			],
 			[
-				"image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/earnfitcashicon.png",
+				"image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/fitcash.png",
 				"title"=>"Earn Fitcash+ and Cashback"
 			]
 		];
@@ -3577,22 +3577,23 @@ class FindersController extends \BaseController {
 					"details"=>[
 						[
 							"title"=>"Book unlimited free trials to explore fitness forms around you.",
-							"image"=>"http://b.fitn.in/kiosk/puzzle.png"
+							"image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/point1.png"
 						],
 						[
 							"title"=>"Buy Gym / group class memberships across fitness centres in your city.",
-							"image"=>"http://b.fitn.in/kiosk/excercise.png"
+							"image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/point2.png"
 						],
 						[
 							"title"=>"Get personalised online diet consultation for workout performance enhancement.",
-							"image"=>"http://b.fitn.in/kiosk/bowl-vegetable.png"
+							"image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/point3.png"
 						],
 						[
 							"title"=>"Book healthy, calorie counted yet tasty tiffin subscription.",
-							"image"=>"http://b.fitn.in/kiosk/lunchbox.png"
+							"image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/point4.png"
 						]
 					]
 				],
+
 				"options"=>[
 					[
 						"title"=>"Access Trial Booking",
