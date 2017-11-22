@@ -2519,7 +2519,7 @@ Class Utilities {
 
         $file_path = $folder_path.$filename;
 
-        \QrCode::format('png')->generate($text, $file_path);
+        \QrCode::format('png')->size(200)->margin(0)->generate($text, $file_path);
 
         chmod($file_path, 0777);
 
