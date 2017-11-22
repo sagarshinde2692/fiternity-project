@@ -2344,20 +2344,19 @@ Class Utilities {
         }
     }
 
-    function checkCorporateLogin(){
-        
-        $jwt_token = Request::header('Authorization');
-        $customer_email = "";
-        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+    function checkCorporateLogin($customer_email){
 
-            $decoded = customerTokenDecode($jwt_token);
-            $customer_email = $decoded->customer->email;
-
-            if(in_array($customer_email, Config::get('app.corporate_login.emails'))){
-                return true;
+        if(!isset($customer_email) ||  $customer_email != ""){
+            $jwt_token = Request::header('Authorization');
+            if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+    
+                $decoded = customerTokenDecode($jwt_token);
+                $customer_email = $decoded->customer->email;
             }
         }
-
+        if(in_array($customer_email, Config::get('app.corporate_login.emails'))){
+            return true;
+        }
         return false;
         
     }

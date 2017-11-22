@@ -5337,7 +5337,82 @@ public function yes($msg){
             return $delay;
         }
 
-    }
+	}
+	
+
+// 	public function campaignConversion(){
+// 		$data = Input::all();
+
+// 		if(isset($data["start_date"])){
+// 			$orderDatetimeCustomerController.php:2873
+//  = date("Y-m-d H:i:s",strtotime("-30 days",strtotime($data["start_date"])));	
+// 		}
+// 		if(isset($data["end_date"])){
+// 			$orderEndDatetime = date("Y-m-d H:i:s",strtotime("-30 days",strtotime($data["end_date"])));	
+// 		}
+		
+// 		$query = '{
+// 			"aggregations": {
+// 			  "vendor": {
+// 				"terms": {
+// 				  "field": "slug",
+// 				  "size": 1
+// 				}
+// 			  }
+// 			},
+// 			"from": 0,
+// 			"size": 200,
+// 			"query": {
+// 			  "filtered": {
+// 				"filter": {
+// 				  "bool": {
+// 					"must": [
+// 					  {
+// 						"range": {
+// 						  "timestamp": {
+// 							"gt": "'.$orderEndDatetime.'",
+// 							"lt": "'.$orderDatetime.'"
+// 						  }
+// 						}
+// 					  }
+// 					],
+// 					"should": [
+// 					  {
+// 						"terms": {
+// 						  "useridentifier": [
+// 							"'.$unique_identifiers.'"
+// 						  ]
+// 						}
+// 					  },
+// 					  {
+// 						"terms": {
+// 						  "userid": [
+// 							"'.$unique_identifiers.'"
+// 						  ]
+// 						}
+// 					  }
+// 					]
+// 				  }
+// 				}
+// 			  }
+// 			},
+// 			"sort": {
+// 			  "timestamp": {
+// 				"order": "desc"
+// 			  }
+// 			}
+// 		  }';
+			 
+// 			$request = array(
+// 				'url' => "http://fitternityelk:admin@52.74.67.151:8060/kyulogs/_search",
+// 				'port' => 8060,
+// 				'method' => 'POST',
+// 				'postfields' => $query
+// 				);
+// 				// .strtolower(implode('","', $keylist)).
+			
+// 			$search_results     =   json_decode(es_curl_request($request),true);
+// 	}
 
 	
 

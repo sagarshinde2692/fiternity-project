@@ -3426,7 +3426,7 @@ class FindersController extends \BaseController {
 
 	public function updateCacheKey($key){
 		$jwt_token = Request::header('Authorization');
-
+		$customer_email = "";
 		if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
 			
 			$decoded = $this->customerTokenDecode($jwt_token);
@@ -3440,7 +3440,7 @@ class FindersController extends \BaseController {
 
 		}
 
-		if($this->utilities->checkCorporateLogin()){
+		if($this->utilities->checkCorporateLogin($customer_email)){
 			$key = $key.'-corporate';
 			Log::info("key");
 			Log::info($key);
