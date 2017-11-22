@@ -656,9 +656,9 @@ class TransactionController extends \BaseController {
             $order->update(array('redis_id'=>$redisid));
         }
 
-        $cash_pickup_applicable = (isset($data['amount']) && $data['amount'] >= 3000) ? true : false;
+        $cash_pickup_applicable = (isset($data['amount_final']) && $data['amount_final'] >= 3000) ? true : false;
 
-        $emi_applicable = $this->utilities->displayEmi(array('amount'=>$data['amount']));
+        $emi_applicable = $this->utilities->displayEmi(array('amount_final'=>$data['amount_final']));
 
         $part_payment_applicable = (!$updating_part_payment && $part_payment && $data["amount_finder"] >= 3000) ? true : false;
 
