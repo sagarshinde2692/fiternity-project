@@ -1014,7 +1014,7 @@ class HomeController extends BaseController {
 
                 }else{
 
-                    $booking_details_data['amount_paid']['field'] = "Payment Summary";
+                    $booking_details_data['amount_paid']['field'] = "PAYMENT SUMMARY";
 
                     $booking_details_data['amount_paid']['value'] = " Rs. ".(string)$item['amount_finder']." Base Amount";
 
