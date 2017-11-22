@@ -993,23 +993,59 @@ class HomeController extends BaseController {
                 $booking_details_data['price']['value']= "Free Via Fitternity";
             }
 
-            if(isset($item['part_payment']) && $item['part_payment']){
+            if(isset($item['type']) && $item['type'] == 'memberships'){
 
-                $header= "Membership reserved";
+                if(isset($item['part_payment']) && $item['part_payment']){
 
-                if($item['amount']){
+                    $header= "Membership reserved";
 
-                    $booking_details_data['amount_paid']['value'] = "Rs. ".(string)$item['amount'];
+                    if($item['amount']){
 
-                    if($item['wallet_amount']){
-                        $booking_details_data['amount_paid']['value'] = "Rs. ".($item['amount']+$item['wallet_amount'])." (Rs. ".$item['remaining_amount']." to be Paid at Gym/Studio)";
+                        $booking_details_data['amount_paid']['value'] = "Rs. ".(string)$item['amount'];
+
+                        if($item['wallet_amount']){
+                            $booking_details_data['amount_paid']['value'] = "Rs. ".($item['amount']+$item['wallet_amount'])." (Rs. ".$item['remaining_amount']." to be Paid at Gym/Studio)";
+                        }
+
+                    }else{
+
+                        $booking_details_data['amount_paid']['value'] = "Rs. ".(string)$item['wallet_amount'] . " Paid via Fitcash+";
                     }
 
                 }else{
 
-                    $booking_details_data['amount_paid']['value'] = "Rs. ".(string)$item['wallet_amount'] . " Paid via Fitcash+";
-                }
+                    $booking_details_data['amount_paid']['field'] = "Payment Summary";
 
+                    $booking_details_data['amount_paid']['value'] = "Rs. ".(string)$item['amount_finder']." Base Value";
+
+                    if(isset($item['convinience_fee']) && $item['convinience_fee'] > 0){
+
+                        $booking_details_data['amount_paid']['value'] .= "\n +Rs. ".$item['convinience_fee']." Convenience Fee";
+                    }
+
+                    if(isset($item['wallet_amount']) && $item['wallet_amount'] > 0){
+
+                        $booking_details_data['amount_paid']['value'] .= "\n -Rs. ".$item['wallet_amount']." Fitcash Applied";
+                    }
+
+                    if(isset($item['coupon_discount_amount']) && $item['coupon_discount_amount'] > 0){
+
+                        $booking_details_data['amount_paid']['value'] .= "\n -Rs. ".$item['coupon_discount_amount']." Coupon Discount";
+                    }
+
+                    if(isset($item['customer_discount_amount']) && $item['customer_discount_amount'] > 0){
+
+                        $booking_details_data['amount_paid']['value'] .= "\n -Rs. ".$item['customer_discount_amount']." Corporate Discount";
+                    }
+
+                    if(isset($item['app_discount_amount']) && $item['app_discount_amount'] > 0){
+
+                        $booking_details_data['amount_paid']['value'] .= "\n -Rs. ".$item['app_discount_amount']." App Discount";
+                    }
+
+                    $booking_details_data['amount_paid']['value'] .= "\n -Rs. ".$item['amount']." Paid";
+
+                }
             }
 
 
