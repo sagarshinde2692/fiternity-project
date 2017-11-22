@@ -1001,8 +1001,8 @@ class HomeController extends BaseController {
 
                     $booking_details_data['amount_paid']['value'] = "Rs. ".(string)$item['amount'];
 
-                    if($item['amount']){
-                        $booking_details_data['amount_paid']['value'] = "Rs. ".(string)$item['amount']." (Rs. ".$item['wallet_amount']." Paid via Fitcash+)";
+                    if($item['wallet_amount']){
+                        $booking_details_data['amount_paid']['value'] = "Rs. ".($item['amount']+$item['wallet_amount'])." (Rs. ".$item['remaining_amount']." to be Paid at Gym/Studio)";
                     }
 
                 }else{
