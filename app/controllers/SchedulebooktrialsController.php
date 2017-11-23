@@ -2091,7 +2091,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'vendor_link'                   =>      $vendor_link,
                 'finder_location_slug'          =>      $finder_location_slug,
                 'order_id'                      =>      $orderid,
-                'membership'                    =>      $membership
+                'membership'                    =>      $membership,
+                'pre_trial_vendor_confirmation' =>      $pre_trial_vendor_confirmation
             );
 
             if(isset($order['recommended_booktrial_id']) && $order['recommended_booktrial_id'] != ""){
@@ -2944,7 +2945,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'profile_link'                  =>      $profile_link,
                 'vendor_link'                   =>      $vendor_link,
                 'finder_location_slug'          =>      $finder_location_slug,
-                'membership'                    =>      $membership
+                'membership'                    =>      $membership,
+                'pre_trial_vendor_confirmation' =>      $pre_trial_vendor_confirmation
 
             );
 
