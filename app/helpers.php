@@ -3008,7 +3008,8 @@ if (!function_exists('formFields')) {
                 'field'=>'emergency_contact_number',
                 'title'=>'Emergency Contact Number',
                 'data_type'=>'text',
-                'input_type'=>'text'
+                'input_type'=>'text',
+                'required'=>true
             ],
             [
                 'field'=>'recommended_to_workout',
