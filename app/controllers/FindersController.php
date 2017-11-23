@@ -2244,19 +2244,19 @@ class FindersController extends \BaseController {
 		$response['perks'] = [
 			[
 				"image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/lowest-price.png",
-				"title"=>"Lowest Price Garantee"
+				"title"=>"Lowest price guarantee"
 			],
 			[
 				"image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/rewards.png",
-				"title"=>"Complementry Reward"
+				"title"=>"Complementary rewards"
 			],
 			[
 				"image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/flexible.png",
-				"title"=>"Flexiable EMI and Payment Options"
+				"title"=>"Flexible EMI & payment options"
 			],
 			[
 				"image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/fitcash.png",
-				"title"=>"Earn Fitcash+ and Cashback"
+				"title"=>"Earn Fitcash+ & cashback"
 			]
 		];
 
