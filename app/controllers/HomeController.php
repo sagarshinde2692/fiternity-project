@@ -548,7 +548,7 @@ class HomeController extends BaseController {
             $preferred_starting_date = (isset($itemData['preferred_starting_date'])) ? $itemData['preferred_starting_date'] : "";
 
             $header     =   "Congratulations!";
-            $note       =   "Note: If you face any issues or need assistance for the  session - please call us on 022-61222222 and we will resolve it immediately";
+            $note       =   "Note: If you face any issues or need assistance for the  session - please call us on 022-61094444 and we will resolve it immediately";
             $icon_path  =   "https://b.fitn.in/iconsv1/success-pages/";
             $show_invite = false;
             $id_for_invite = (int) $id;
@@ -927,7 +927,7 @@ class HomeController extends BaseController {
             }
 
             if(in_array($type,["personaltrainertrial","manualtrial","manualautotrial","booktrialfree","booktrial","workoutsession","workout-session","booktrials"])){
-                $booking_details_data["finder_name_location"] = ['field'=>'SESSION BOOKED AT','value'=>$finder_name.", ".$finder_location,'position'=>$position++];
+                $booking_details_data["finder_name_location"] = ['field'=>'BOOKING AT','value'=>$finder_name.", ".$finder_location,'position'=>$position++];
             }
 
             $booking_details_data["service_name"] = ['field'=>'SERVICE NAME','value'=>$service_name,'position'=>$position++];
@@ -941,6 +941,8 @@ class HomeController extends BaseController {
             $booking_details_data["address"] = ['field'=>'ADDRESS','value'=>'','position'=>$position++];
 
             $booking_details_data["price"] = ['field'=>'PRICE','value'=>'Free Via Fitternity','position'=>$position++];
+
+            $booking_details_data["amount_paid"] = ['field'=>'AMOUNT PAID','value'=>'','position'=>$position++];
 
             if($poc != ""){ 
                 $booking_details_data["poc"] = ['field'=>'POINT OF CONTACT','value'=>$poc,'position'=>$position++];
@@ -956,15 +958,15 @@ class HomeController extends BaseController {
             }
 
             if(isset($item['start_date']) && $item['start_date'] != ""){
-                $booking_details_data['start_date']['value'] = date('d-m-Y (l)',strtotime($item['start_date']));
+                $booking_details_data['start_date']['value'] = date('D, d M Y',strtotime($item['start_date']));
             }
 
             if(isset($item['schedule_date']) && $item['schedule_date'] != ""){
-                $booking_details_data['start_date']['value'] = date('d-m-Y (l)',strtotime($item['schedule_date']));
+                $booking_details_data['start_date']['value'] = date('D, d M Y',strtotime($item['schedule_date']));
             }
 
             if(isset($item['preferred_starting_date']) && $item['preferred_starting_date'] != ""){
-                $booking_details_data['start_date']['value'] = date('d-m-Y (l)',strtotime($item['preferred_starting_date']));
+                $booking_details_data['start_date']['value'] = date('D, d M Y',strtotime($item['preferred_starting_date']));
             }
 
             if(isset($item['start_time']) && $item['start_time'] != ""){
@@ -987,9 +989,65 @@ class HomeController extends BaseController {
                 $booking_details_data['price']['value']= "Rs. ".(string)$item['amount']." (Cash Pickup)";
             }
 
-            if(isset($item['part_payment']) && $item['part_payment']){
-                $header= "Membership reserved";
+            if(isset($item['myreward_id']) && $item['myreward_id'] != ""){
+                $booking_details_data['price']['value']= "Free Via Fitternity";
             }
+
+            if(isset($item['type']) && $item['type'] == 'memberships'){
+
+                if(isset($item['part_payment']) && $item['part_payment']){
+
+                    $header= "Membership reserved";
+
+                    if($item['amount']){
+
+                        $booking_details_data['amount_paid']['value'] = "Rs. ".(string)$item['amount'];
+
+                        if($item['wallet_amount']){
+                            $booking_details_data['amount_paid']['value'] = "Rs. ".($item['amount']+$item['wallet_amount'])." (Rs. ".$item['remaining_amount']." to be Paid at Gym/Studio)";
+                        }
+
+                    }else{
+
+                        $booking_details_data['amount_paid']['value'] = "Rs. ".(string)$item['wallet_amount'] . " Paid via Fitcash+";
+                    }
+
+                }/*else{
+
+                    $booking_details_data['amount_paid']['field'] = "PAYMENT SUMMARY";
+
+                    $booking_details_data['amount_paid']['value'] = " Rs. ".(string)$item['amount_finder']." Base Amount";
+
+                    if(isset($item['convinience_fee']) && $item['convinience_fee'] > 0){
+
+                        $booking_details_data['amount_paid']['value'] .= "<br/>+Rs. ".$item['convinience_fee']." Convenience Fee";
+                    }
+
+                    if(isset($item['wallet_amount']) && $item['wallet_amount'] > 0){
+
+                        $booking_details_data['amount_paid']['value'] .= "<br/>-Rs. ".$item['wallet_amount']." Fitcash Applied";
+                    }
+
+                    if(isset($item['coupon_discount_amount']) && $item['coupon_discount_amount'] > 0){
+
+                        $booking_details_data['amount_paid']['value'] .= "<br/>-Rs. ".$item['coupon_discount_amount']." Coupon Discount";
+                    }
+
+                    if(isset($item['customer_discount_amount']) && $item['customer_discount_amount'] > 0){
+
+                        $booking_details_data['amount_paid']['value'] .= "<br/>-Rs. ".$item['customer_discount_amount']." Corporate Discount";
+                    }
+
+                    if(isset($item['app_discount_amount']) && $item['app_discount_amount'] > 0){
+
+                        $booking_details_data['amount_paid']['value'] .= "<br/>-Rs. ".$item['app_discount_amount']." App Discount";
+                    }
+
+                    $booking_details_data['amount_paid']['value'] .= "<br/> Rs. ".$item['amount']." Paid";
+
+                }*/
+            }
+
 
             if(isset($item['payment_mode']) && $item['payment_mode'] == 'cod'){
                 $subline= "Your membership will be activated once your cash is collected. Fitternity team will reach out to you to coordinate the cash pick-up.";
@@ -1127,7 +1185,7 @@ class HomeController extends BaseController {
                 "title"=>"Done",
                 "description"=>"Hope you had a great experience. \n If you need any help, you can reach out to us on on below details",
                 "email"=>"info@fitternity.com",
-                "phone"=>"022-61222222"
+                "phone"=>"022-61094444"
             ];
 
             $feedback = [

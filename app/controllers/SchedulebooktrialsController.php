@@ -5855,5 +5855,215 @@ class SchedulebooktrialsController extends \BaseController {
         
     }
 
+    public function transactionSummary(){
+
+        $item = Input::json()->all();
+
+        $rules = [
+            'ratecard_id' => 'required',
+            'type' => 'required'
+        ];
+
+        $validator = Validator::make($item,$rules);
+
+        if($validator->fails()) {
+
+            return Response::json(array('status' => 401,'message' =>$this->errorMessage($validator->errors())),401);
+        }
+
+        $ratecard_id = (int)$item['ratecard_id'];
+
+        $ratecard = Ratecard::find($ratecard_id);
+
+        if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
+            $item['amount'] = $ratecard['special_price'];
+        }else{
+            $item['amount'] = $ratecard['price'];
+        }
+
+        $service = Service::find($ratecard['service_id']);
+
+        $finder_name = "";
+        $finder_location = "";
+        $finder_address = "";
+
+        $finder = Finder::with(array('city'=>function($query){$query->select('name','slug');}))->with(array('location'=>function($query){$query->select('name','slug');}))->find((int)$ratecard['finder_id'],array('_id','title','location_id','contact','lat','lon','manual_trial_auto','city_id'));
+
+        if(isset($finder['title']) && $finder['title'] != ""){
+            $finder_name = ucwords($finder['title']);
+        }
+
+        if(isset($finder['location']['name']) && $finder['location']['name'] != ""){
+            $finder_location = ucwords($finder['location']['name']);
+        }
+
+        if(isset($finder['contact']['address']) && $finder['contact']['address'] != ""){
+            $finder_address = $finder['contact']['address'];
+        }
+
+        if(isset($service['address']) && $service['address'] != ""){
+            $finder_address = $service['address'];
+        }
+
+        if(isset($item['schedule_slot']) && $item['schedule_slot'] != ""){
+            $slot_times                        =    explode('-',$item['schedule_slot']);
+            $item['schedule_slot_start_time']          =    $slot_times[0];
+            $item['schedule_slot_end_time']            =    $slot_times[1];
+        }
+
+        $poc = $poc_name = $poc_number = "";
+
+        if(isset($finder['finder_poc_for_customer_name']) && $finder['finder_poc_for_customer_name'] != ""){
+            $poc_name = $finder['finder_poc_for_customer_name'];
+        }
+
+        if(isset($finder['finder_poc_for_customer_no']) && $finder['finder_poc_for_customer_no'] != ""){
+            $poc_number = " (".$finder['finder_poc_for_customer_no'].")";
+        }
+
+        $poc = $poc_name.$poc_number;
+
+
+        $booking_details = [];
+
+        $position = 0;
+
+        $service_duration = $this->getServiceDuration($ratecard);
+
+        $booking_details_data["finder_name_location"] = ['field'=>'BOOKING AT','value'=>$finder_name.", ".$finder_location,'position'=>$position++];
+
+        $booking_details_data["service_name"] = ['field'=>'SERVICE NAME','value'=>$service['name'],'position'=>$position++];
+
+        $booking_details_data["service_duration"] = ['field'=>'DURATION','value'=>$service_duration,'position'=>$position++];
+
+        $booking_details_data["start_date"] = ['field'=>'START DATE','value'=>'-','position'=>$position++];
+
+        $booking_details_data["start_time"] = ['field'=>'START TIME','value'=>'-','position'=>$position++];
+
+        $booking_details_data["address"] = ['field'=>'ADDRESS','value'=>'','position'=>$position++];
+
+        $booking_details_data["price"] = ['field'=>'PRICE','value'=>'Free Via Fitternity','position'=>$position++];
+
+        if($poc != ""){ 
+            $booking_details_data["poc"] = ['field'=>'POINT OF CONTACT','value'=>$poc,'position'=>$position++];
+        }
+
+        if(isset($item['start_date']) && $item['start_date'] != ""){
+            $booking_details_data['start_date']['value'] = date('d-m-Y (l)',strtotime($item['start_date']));
+        }
+
+        if(isset($item['schedule_date']) && $item['schedule_date'] != ""){
+            $booking_details_data['start_date']['value'] = date('d-m-Y (l)',strtotime($item['schedule_date']));
+        }
+
+        if(isset($item['preferred_starting_date']) && $item['preferred_starting_date'] != ""){
+            $booking_details_data['start_date']['value'] = date('d-m-Y (l)',strtotime($item['preferred_starting_date']));
+        }
+
+        if(isset($item['start_time']) && $item['start_time'] != ""){
+            $booking_details_data['start_time']['value'] = strtoupper($item['start_time']);
+        }
+
+        if(isset($item['schedule_slot_start_time']) && $item['schedule_slot_start_time'] != ""){
+            $booking_details_data['start_time']['value'] = strtoupper($item['schedule_slot_start_time']);
+        }
+
+        if(isset($item['amount']) && $item['amount'] != ""){
+            $booking_details_data['price']['value'] = "Rs. ".(string)$item['amount'];
+        }
+
+        if(isset($item['amount_finder']) && $item['amount_finder'] != ""){
+            $booking_details_data['price']['value']= "Rs. ".(string)$item['amount_finder'];
+        }
+
+        if(isset($item['payment_mode']) && $item['payment_mode'] == "cod"){
+            $booking_details_data['price']['value']= "Rs. ".(string)$item['amount']." (Cash Pickup)";
+        }
+
+        if(isset($item['myreward_id']) && $item['myreward_id'] != ""){
+            $booking_details_data['price']['value']= "Free Via Fitternity";
+        }
+
+        if(isset($item['part_payment']) && $item['part_payment']){
+            $header= "Membership reserved";
+        }
+
+        if(isset($item['payment_mode']) && $item['payment_mode'] == 'cod'){
+            $subline= "Your membership will be activated once your cash is collected. Fitternity team will reach out to you to coordinate the cash pick-up.";
+        }
+
+        if($finder_address != ""){
+            $booking_details_data['address']['value'] = $finder_address;
+        }
+
+        if(in_array($item['type'],["healthytiffintrial","healthytiffinmembership"])){
+            
+            if(isset($item['customer_address']) && $item['customer_address'] != ""){
+                $booking_details_data['address']['value'] = $item['customer_address'];
+            }
+
+        }else{
+
+            if($finder_address != ""){
+                $booking_details_data['address']['value'] = $finder_address;
+            }
+            if(isset($item['finder_address']) && $item['finder_address'] != ""){
+                $booking_details_data['address']['value'] = $item['finder_address'];
+            }
+        }
+
+        if(isset($booking_details_data['address']['value'])){
+
+            $booking_details_data['address']['value'] = str_replace("  ", " ",$booking_details_data['address']['value']);
+            $booking_details_data['address']['value'] = str_replace(", , ", "",$booking_details_data['address']['value']);
+        }
+
+        if(in_array($item['type'], ['manualtrial','manualautotrial','manualmembership'])){
+            $booking_details_data["start_date"]["field"] = "PREFERRED DATE";
+            $booking_details_data["start_time"]["field"] = "PREFERRED TIME";
+            $booking_details_data["price"]["value"] = "";
+        }
+
+        if(in_array($item['type'], ['booktrialfree','booktrial','workout-session'])){
+            $booking_details_data["start_date"]["field"] = "DATE";
+            $booking_details_data["start_time"]["field"] = "TIME";
+            $booking_details_data["service_duration"]["value"] = "1 Session";
+        }
+
+        if(isset($item['preferred_day']) && $item['preferred_day'] != ""){
+            $booking_details_data['start_date']['field'] = 'PREFERRED DAY';
+            $booking_details_data['start_date']['value'] = $item['preferred_day'];
+        }
+
+        if(isset($item['preferred_time']) && $item['preferred_time'] != ""){
+            $booking_details_data['start_time']['field'] = 'PREFERRED TIME';
+            $booking_details_data['start_time']['value'] = $item['preferred_time'];
+        }
+
+        if(isset($item['"preferred_service']) && $item['"preferred_service'] != "" && $item['"preferred_service'] != null){
+            $booking_details_data['service_name']['field'] = 'PREFERRED SERVICE';
+            $booking_details_data['service_name']['value'] = $item['preferred_service'];
+        }
+
+        $booking_details_all = [];
+        foreach ($booking_details_data as $key => $value) {
+
+            $booking_details_all[$value['position']] = ['field'=>$value['field'],'value'=>$value['value']];
+        }
+
+        foreach ($booking_details_all as $key => $value) {
+
+            if($value['value'] != "" && $value['value'] != "-"){
+                $booking_details[] = $value;
+            }
+
+        }
+
+        $response = array('status' => 200,'summary' => $booking_details);
+
+        return Response::json($response, $response['status']);
+
+    }
+
 
 }

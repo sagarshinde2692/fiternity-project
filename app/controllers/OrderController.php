@@ -130,7 +130,8 @@ class OrderController extends \BaseController {
                     return Response::json(array('status'=>400,'data'=>array('final_amount'=>($resp['data']['discount']+$resp['data']['final_amount']), "discount" => 0), 'error_message'=>'Coupon already applied', "message" => "Coupon already applied"), 400);
                 }
             }
-            return $resp;
+            $resp['status'] = 200;
+            return Response::json($resp,200);
         }else{
 
             $errorMessage =  "Coupon is either not valid or expired";
@@ -2512,9 +2513,15 @@ class OrderController extends \BaseController {
 
             if(isset($data['part_payment']) && $data['part_payment']){
 
-                $order['amount'] = $data['amount'] = (int)($order["part_payment_calculation"]['amount']);
+                $data['amount'] = (int)($order["part_payment_calculation"]['amount']);
 
-                $twenty_percent_amount = (int)($order["amount_customer"]*0.2);
+                $convinience_fee = isset($order['convinience_fee']) ? $order['convinience_fee'] : 0;
+
+                $twenty_percent_amount = $convinience_fee + (int)(($order["amount_customer"] - $convinience_fee)*0.2);
+
+                Log::info('$twenty_percent_amount::'.$twenty_percent_amount);
+
+                $coupon_discount = isset($order["coupon_discount_amount"]) ? $order["coupon_discount_amount"] : 0;
 
                 if(isset($order['wallet_amount'])){
 
@@ -2524,6 +2531,8 @@ class OrderController extends \BaseController {
                         
                         $refund_amount = $order['wallet_amount']-$twenty_percent_amount;
 
+                        Log::info("returning wallet::".$refund_amount);
+
                         $wallet_data = array(
                             'customer_id'=>$order['customer_id'],
                             'amount'=>$refund_amount,
@@ -2531,14 +2540,19 @@ class OrderController extends \BaseController {
                             'amount_fitcash_plus' => $refund_amount,
                             'type'=>'CREDIT',
                             'entry'=>'credit',
-                            'description'=>"Paid for order ".$order['_id'],
+                            'description'=>"Refund for Order ID: ".$order['_id'],
                         );
                         $walletTransactionResponse = $this->utilities->walletTransaction($wallet_data);
 
-                        $order['wallet_amount'] = $twenty_percent_amount;
+                        $data['wallet_amount'] = $order['wallet_amount'] = $twenty_percent_amount;
                     }
 
                 }
+                
+                $fitcash_applied = isset($order['wallet_amount']) ? $order['wallet_amount'] : 0;
+
+                $data['remaining_amount'] = $order['amount_customer'] - $data['amount'] - $coupon_discount - $order['wallet_amount'];
+                
 
             }
 

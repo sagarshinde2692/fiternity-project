@@ -215,7 +215,7 @@ public function postCapture(){
 
 			$smsdata = [
 				'send_to' => Input::json()->get('phone'),
-				'message_body'=> "We have received your request for Personal trainer. Our Fitness Concierge Manager will contact you within the next 48 hours to assist you. For any further queries you can call us on 022-61222222."
+				'message_body'=> "We have received your request for Personal trainer. Our Fitness Concierge Manager will contact you within the next 48 hours to assist you. For any further queries you can call us on 022-61094444."
 			];
 			$this->sendSMS($smsdata);
 		}

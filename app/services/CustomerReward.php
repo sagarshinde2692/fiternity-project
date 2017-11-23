@@ -525,7 +525,7 @@ Class CustomerReward {
         }*/
     }
 
-   public function purchaseGameNew($amount,$finder_id,$payment_mode = "paymentgateway",$offer_id = false,$customer_id = false){
+   public function purchaseGameNew($amount,$finder_id,$payment_mode = "paymentgateway",$offer_id = false,$customer_id = false,$part_payment_amount = false,$convinience_fee=false){
 
         $current_wallet_balance = 0;
         $wallet = 0;
@@ -657,9 +657,21 @@ Class CustomerReward {
             $setAlgo = array('cashback'=>0,'fitcash'=>0,'discount'=>0);
         }
 
+        $cashback_amount = $amount; 
+
+        if($cashback_amount){
+            $cashback_amount = $amount-$convinience_fee;
+        }
+
+        if($part_payment_amount){
+            $amount = $part_payment_amount;
+        }
+
         $original_amount = $amount;
-        $wallet_amount = round($amount * $setAlgo['fitcash'] / 100);
-        $amount_discounted = round($amount * $setAlgo['discount'] / 100); 
+
+        $wallet_amount = round($cashback_amount * $setAlgo['fitcash'] / 100);
+        $amount_discounted = round($cashback_amount * $setAlgo['discount'] / 100);
+
         $wallet_algo = round(($amount * $commision / 100) * ($wallet_percentage / 100));
         $amount_deducted_from_wallet = $amount > $current_wallet_balance ? $current_wallet_balance : $amount;
         $final_amount_discount_only = $original_amount - $amount_discounted;
@@ -919,7 +931,7 @@ Class CustomerReward {
     }
 
 
-    public function purchaseGame($amount,$finder_id,$payment_mode = "paymentgateway",$offer_id = false,$customer_id = false){
+    public function purchaseGame($amount,$finder_id,$payment_mode = "paymentgateway",$offer_id = false,$customer_id = false,$part_payment_amount = false,$convinience_fee=false){
 
         $jwt_token = Request::header('Authorization');
 
@@ -934,11 +946,11 @@ Class CustomerReward {
 
         if(isset($customer->demonetisation)){
 
-            return $this->purchaseGameNew($amount,$finder_id,$payment_mode,$offer_id,$customer_id);
+            return $this->purchaseGameNew($amount,$finder_id,$payment_mode,$offer_id,$customer_id,$part_payment_amount,$convinience_fee);
 
         }
 
-        return $this->purchaseGameOld($amount,$finder_id,$payment_mode,$offer_id,$customer_id);
+        return $this->purchaseGameOld($amount,$finder_id,$payment_mode,$offer_id,$customer_id,$part_payment_amount,$convinience_fee);
 
     }
 
