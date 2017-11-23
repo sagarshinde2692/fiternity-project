@@ -1400,6 +1400,8 @@ class TransactionController extends \BaseController {
 
             $data['amount_customer'] += $convinience_fee;
 
+            $data['amount'] += $convinience_fee;
+
             $data['convinience_fee'] = $convinience_fee;
         }
 
@@ -2167,7 +2169,7 @@ class TransactionController extends \BaseController {
         $data['payment_mode'] =  'paymentgateway';
         $data['source_of_membership'] =  'real time';
 
-        if(isset($ratecard['flags']) && isset($ratecard['flags']['convinience_fee_applicable'])){
+        if($this->convinienceFeeFlag() && isset($ratecard['flags']) && isset($ratecard['flags']['convinience_fee_applicable'])){
             $data['ratecard_flags'] = $ratecard['flags'];
         }
 
@@ -3507,7 +3509,7 @@ class TransactionController extends \BaseController {
                 $amount -= $app_discount_amount;
             }
 
-            if(isset($ratecard['flags']) && isset($ratecard['flags']['convinience_fee_applicable']) && $ratecard['flags']['convinience_fee_applicable']){
+            if($this->convinienceFeeFlag() && isset($ratecard['flags']) && isset($ratecard['flags']['convinience_fee_applicable']) && $ratecard['flags']['convinience_fee_applicable']){
                 
                 $convinience_fee_percent = Config::get('app.convinience_fee');
 
@@ -3592,6 +3594,55 @@ class TransactionController extends \BaseController {
         }
 
         return Response::json($resp,200);
+    }
+
+
+    public function convinienceFeeFlag(){
+
+        $flag = true;
+
+         $header_array = [
+            "Device-Type"=>"",
+            "App-Version"=>"",
+            "Authorization-Vendor"
+        ];
+
+        foreach ($header_array as $header_key => $header_value) {
+
+            $value = Request::header($header_key);
+
+            if($value != "" && $value != null && $value != 'null'){
+               $header_array[$header_key] =  $value;
+            }
+            
+        }
+
+        $data['device_type'] = $header_array['Device-Type'];
+        $data['app_version'] = $header_array['App-Version'];
+        $data['authorization_vendor'] = $header_array['Authorization-Vendor'];
+
+        if(isset($_GET['device_type']) && $_GET['device_type'] == 'ios' && isset($_GET['app_version']) && (float)$_GET['app_version'] < 4.4){
+            $flag = false;
+        }
+
+        if(isset($_GET['device_type']) && $_GET['device_type'] == 'android' && isset($_GET['app_version']) && (float)$_GET['app_version'] < 4.3){
+            $flag = false;
+        }
+
+        if($data['device_type'] == 'ios' && (float)$data['app_version'] < 4.4){
+            $flag = false;
+        }
+
+        if($data['device_type'] == 'android' && (float)$data['app_version'] < 4.3){
+            $flag = false;
+        }
+
+        if($data['authorization_vendor'] != "" && $data['authorization_vendor'] != null && $data['authorization_vendor'] != 'null'){
+           $flag = true;
+        }
+
+        return $flag;
+
     }
 
 }
