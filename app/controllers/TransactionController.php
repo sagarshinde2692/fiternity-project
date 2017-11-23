@@ -3780,19 +3780,22 @@ class TransactionController extends \BaseController {
         $data['app_version'] = $header_array['App-Version'];
         $data['authorization_vendor'] = $header_array['Authorization-Vendor'];
 
-        if(isset($_GET['device_type']) && $_GET['device_type'] == 'ios' && isset($_GET['app_version']) && (float)$_GET['app_version'] < 4.4){
+        $version_ios = '4.3';
+        $version_android = '4.3';
+
+        if(isset($_GET['device_type']) && $_GET['device_type'] == 'ios' && isset($_GET['app_version']) && (float)$_GET['app_version'] < $version_ios){
             $flag = false;
         }
 
-        if(isset($_GET['device_type']) && $_GET['device_type'] == 'android' && isset($_GET['app_version']) && (float)$_GET['app_version'] < 4.3){
+        if(isset($_GET['device_type']) && $_GET['device_type'] == 'android' && isset($_GET['app_version']) && (float)$_GET['app_version'] < $version_android){
             $flag = false;
         }
 
-        if($data['device_type'] == 'ios' && (float)$data['app_version'] < 4.4){
+        if($data['device_type'] == 'ios' && (float)$data['app_version'] < $version_ios){
             $flag = false;
         }
 
-        if($data['device_type'] == 'android' && (float)$data['app_version'] < 4.3){
+        if($data['device_type'] == 'android' && (float)$data['app_version'] < $version_android){
             $flag = false;
         }
 
