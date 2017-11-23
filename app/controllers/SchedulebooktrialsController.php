@@ -6113,7 +6113,12 @@ class SchedulebooktrialsController extends \BaseController {
 
         $response = array('status' => 400,'message' =>'Sorry! Cannot locate your booking');
 
-        $booktrial = Booktrial::where('code',$code)->where('finder_id',(int)$vendor['_id'])->orderBy('_id','desc')->first();
+        $booktrial = Booktrial::where('code',$code)
+           ->where('finder_id',(int)$vendor['_id'])
+           ->where('created_at','>',new MongoDate(strtotime(date('Y-m-d 00:00:00'))))
+           ->where('created_at','<',new MongoDate(strtotime(date('Y-m-d 23:59:59'))))
+           ->orderBy('_id','desc')
+           ->first();
 
         $locate_data = [
             'code'=>$code,
