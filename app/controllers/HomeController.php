@@ -1012,7 +1012,7 @@ class HomeController extends BaseController {
                         $booking_details_data['amount_paid']['value'] = "Rs. ".(string)$item['wallet_amount'] . " Paid via Fitcash+";
                     }
 
-                }else{
+                }/*else{
 
                     $booking_details_data['amount_paid']['field'] = "PAYMENT SUMMARY";
 
@@ -1045,7 +1045,7 @@ class HomeController extends BaseController {
 
                     $booking_details_data['amount_paid']['value'] .= "<br/> Rs. ".$item['amount']." Paid";
 
-                }
+                }*/
             }
 
 
