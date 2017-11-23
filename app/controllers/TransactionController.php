@@ -3604,7 +3604,7 @@ class TransactionController extends \BaseController {
          $header_array = [
             "Device-Type"=>"",
             "App-Version"=>"",
-            "Authorization-Vendor"
+            "Authorization-Vendor"=>""
         ];
 
         foreach ($header_array as $header_key => $header_value) {
