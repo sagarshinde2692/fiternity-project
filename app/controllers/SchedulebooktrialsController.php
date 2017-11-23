@@ -6115,7 +6115,33 @@ class SchedulebooktrialsController extends \BaseController {
 
         $booktrial = Booktrial::where('code',$code)->where('finder_id',(int)$vendor['_id'])->orderBy('_id','desc')->first();
 
+        $locate_data = [
+            'code'=>$code,
+            'finder_id'=>(int)$vendor['_id'],
+        ];
+
+        $locateTransaction = LocateTransaction::create($locate_data); 
+
         if(isset($booktrial)){
+
+            $locateTransaction->transaction_id = (int)$booktrial['_id'];
+            $locateTransaction->transaction_type = 'Booktrial';
+            $locateTransaction->update();
+
+            $customerCapture = CustomerCapture::where('booktrial_id',(int)$booktrial['_id'])->first();
+
+            if($customerCapture){
+
+                $response = array('status' => 400,'message' =>'Already verified your booking');
+
+                return Response::json($response,$response['status']);
+
+            }
+
+            $booktrial->post_trial_status = 'attended';
+            $booktrial->post_trial_initail_status = 'interested';
+            $booktrial->post_trial_status_updated_by_kiosk = time();
+            $booktrial->update();
 
             $message = "Your Trial booking at ".ucwords($booktrial['finder_name'])." has been verified for ".date('d-m-Y',strtotime($booktrial['schedule_date']));
 
