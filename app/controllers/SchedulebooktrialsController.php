@@ -6137,7 +6137,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             if($customerCapture){
 
-                $response = array('status' => 400,'message' =>'Already verified your booking');
+                $response = array('status' => 400,'message' =>'Already located your booking');
 
                 return Response::json($response,$response['status']);
 
@@ -6148,7 +6148,7 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrial->post_trial_status_updated_by_kiosk = time();
             $booktrial->update();
 
-            $message = "Your Trial booking at ".ucwords($booktrial['finder_name'])." has been verified for ".date('d-m-Y',strtotime($booktrial['schedule_date']));
+            $message = "Hi ".ucwords($booktrial['customer_name']).", your booking at ".ucwords($booktrial['finder_name'])." for ".strtoupper($booktrial['schedule_slot_start_time'])." on ".date('D, d M Y',strtotime($booktrial['schedule_date']))." has been successfully located";
 
             $createCustomerToken = createCustomerToken((int)$booktrial['customer_id']);
 
