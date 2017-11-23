@@ -956,7 +956,7 @@ Class Utilities {
 
 
     public function verifyOrder($data,$order){
-        if((isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin") || $order->pg_type == "PAYTM"){
+        if((isset($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin'])) || $order->pg_type == "PAYTM"){
             if($order->pg_type == "PAYTM" && !(isset($data["order_success_flag"]))){
                 $hashreverse = getpayTMhash($order);
                 if($data["verify_hash"] == $hashreverse['reverse_hash']){
@@ -965,7 +965,7 @@ Class Utilities {
                     $hash_verified = false;
                 }
             }
-            if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
+            if(isset($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin'])){
                 $hash_verified = true;
             }
         }else{
@@ -2505,6 +2505,46 @@ Class Utilities {
         }
 
         return $response;
+
+    }
+
+    public function createFolder($path){
+
+        if(!is_dir($path)){
+            mkdir($path, 0777);
+            chmod($path, 0777);
+        }   
+
+        return $path;
+    }
+
+
+    public function createQrCode($text){
+
+        $folder_path = public_path().'/qrcodes/';
+
+        $this->createFolder($folder_path);
+
+        $filename = time().'.png';
+
+        $file_path = $folder_path.$filename;
+
+        \QrCode::format('png')->size(200)->margin(0)->generate($text, $file_path);
+
+        chmod($file_path, 0777);
+
+        $aws_filename = $filename;
+
+        $s3 = \AWS::get('s3');
+        $s3->putObject(array(
+            'Bucket'     => Config::get('app.aws.bucket'),
+            'Key'        => Config::get('app.aws.qrcode.path').$aws_filename,
+            'SourceFile' => $file_path,
+        ));
+
+        unlink($file_path);
+
+        return $aws_filename;
 
     }
 

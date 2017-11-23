@@ -56,6 +56,15 @@ class TransactionController extends \BaseController {
 
         $this->membership_array     =   array('memberships','healthytiffinmembership');
 
+        $this->vendor_token = false;
+
+        $vendor_token = Request::header('Authorization-Vendor');
+
+        if($vendor_token){
+
+            $this->vendor_token = true;
+        }
+
     }
 
     public function capture(){
@@ -112,7 +121,13 @@ class TransactionController extends \BaseController {
             $rules = array_merge($rules,$workout_rules);
         }
 
-        $membership = array('healthytiffintrail','healthytiffinmembership','memberships');
+        $membership = array('healthytiffintrail','healthytiffinmembership');
+
+        if(!$this->vendor_token){
+
+            $membership[] = 'memberships';
+        }
+
         if(in_array($data['type'],$membership)){
             $membership_rules = array(
                 'preferred_starting_date'=>'required'
@@ -148,6 +163,7 @@ class TransactionController extends \BaseController {
                 case 'cod': $data['payment_mode'] = 'cod';break;
                 case 'emi': $data['payment_mode'] = 'paymentgateway';break;
                 case 'paymentgateway': $data['payment_mode'] = 'paymentgateway';break;
+                case 'pay_at_vendor': $data['payment_mode'] = 'at the studio';break;
                 default:break;
             }
 
@@ -347,17 +363,25 @@ class TransactionController extends \BaseController {
         $txnid = "";
         $successurl = "";
         $mobilehash = "";
-        if($data['customer_source'] == "android" || $data['customer_source'] == "ios"){
+
+        if(in_array($data['customer_source'],['android','ios','kiosk'])){
+
             $txnid = "MFIT".$data['_id'];
+
             if(isset($old_order_id)){
                 $txnid = "MFIT".$data['_id']."-R".$data['repetition'];
             }
-            $successurl = $data['customer_source'] == "android" ? Config::get('app.website')."/paymentsuccessandroid" : Config::get('app.website')."/paymentsuccessios";
+
+            $successurl = $data['customer_source'] == "ios" ? Config::get('app.website')."/paymentsuccessios" : Config::get('app.website')."/paymentsuccessandroid";
+
         }else{
+
             $txnid = "FIT".$data['_id'];
+
             if(isset($old_order_id)){
                 $txnid = "FIT".$data['_id']."-R".$data['repetition'];
             }
+
             $successurl = $data['type'] == "memberships" ? Config::get('app.website')."/paymentsuccess" : Config::get('app.website')."/paymentsuccesstrial";
         }
         
@@ -591,6 +615,11 @@ class TransactionController extends \BaseController {
 
         $data["status"] = "0";
 
+        if(isset($data['paymentmode_selected']) && $data['paymentmode_selected'] == 'pay_at_vendor'){
+
+            $data['payment_mode'] = 'at the studio';
+        }
+
         if(isset($old_order_id)){
 
             if($order){
@@ -615,7 +644,7 @@ class TransactionController extends \BaseController {
 
         
         
-        if($data['customer_source'] == "android" || $data['customer_source'] == "ios"){
+        if(in_array($data['customer_source'],['android','ios','kiosk'])){
             $mobilehash = $data['payment_related_details_for_mobile_sdk_hash'];
         }
 
@@ -686,14 +715,25 @@ class TransactionController extends \BaseController {
                 $payment_mode_type_array[] = 'emi';
             }
 
-            if($cash_pickup_applicable){
+            if(!$this->vendor_token){
+        
+                if($cash_pickup_applicable){
 
-                $payment_mode_type_array[] = 'cod';
+                    $payment_mode_type_array[] = 'cod';
+                }
+
+                if($part_payment_applicable){
+
+                    $payment_mode_type_array[] = 'part_payment';
+                }
             }
 
-            if($part_payment_applicable){
+            if($this->vendor_token){
+        
+                if($cash_pickup_applicable){
 
-                $payment_mode_type_array[] = 'part_payment';
+                    $payment_mode_type_array[] = 'pay_at_vendor';
+                }
             }
 
             $payment_details = [];
@@ -711,9 +751,110 @@ class TransactionController extends \BaseController {
             }
         }
 
+
+        if($data['payment_mode'] == 'at the studio' && isset($data['wallet']) && $data['wallet']){
+
+            $data = array_only($data,['finder_id','order_id','service_id','ratecard_id','payment_mode','finder_vcc_mobile']);
+
+            $data['action'] = "vendor_otp";
+
+            $addTemp = addTemp($data);
+
+            $otp_data = [
+                'otp'=>$addTemp['otp'],
+                'finder_vcc_mobile'=>$data['finder_vcc_mobile'],
+                'payment_mode'=>$data['payment_mode'],
+                'temp_id'=>$addTemp['_id']
+            ];
+
+            $order->update(['otp_data'=>$otp_data]);
+
+            $this->findersms->genericOtp($otp_data);
+
+            $resp['vendor_otp'] = $addTemp['otp'];
+
+            $resp['data']['verify_otp_url'] = Config::get('app.website')."/kiosk/vendor/verifyotp";
+            $resp['data']['resend_otp_url'] = Config::get('app.website')."/temp/regenerateotp/".$addTemp['_id'];
+
+        }
+
         return Response::json($resp);
 
     }
+
+    public function generateOtp($length = 4)
+    {      
+        $characters = '0123456789';
+        $result = '';
+        $charactersLength = strlen($characters);
+
+        for ($p = 0; $p < $length; $p++)
+        {
+            $result .= $characters[rand(0, $charactersLength - 1)];
+        }
+
+        return $result;
+    }
+
+    public function verifyVendorOtpKiosk(){
+
+        $data = Input::json()->all();
+
+        $rules = array(
+            'order_id'=>'required',
+            'otp'=>'required'
+        );
+
+        $validator = Validator::make($data,$rules);
+
+        if ($validator->fails()) {
+            return Response::json(array('status' => 400,'message' => error_message($validator->errors())),400);
+        }
+
+        $order = Order::find((int)$data['order_id']);
+
+        if(!$order){
+
+            return Response::json(['status' => 400, "message" => "Order Not Found"],400);
+        }
+
+        if($order->status == "1"){
+
+            return Response::json(['status' => 400, "message" => "Already Status Successfull"],400);
+        }
+
+        $decodeKioskVendorToken = decodeKioskVendorToken();
+
+        $vendor = $decodeKioskVendorToken->vendor;
+
+        $finder_id = (int)$vendor->_id;
+
+        if($finder_id != $order['finder_id']){
+
+            return Response::json(['status' => 400, "message" => "Incorrect Vendor"],400);
+        }
+
+        if(!isset($order['otp_data'])){
+
+            return Response::json(['status' => 400, "message" => "OTP data not found"],400);
+        }
+
+        if($order['otp_data']['otp'] != $data['otp']){
+
+            return Response::json(['status' => 400, "message" => "Incorrect OTP"],400);
+        }
+
+        $data['status'] = 'success';
+        $data['order_success_flag'] = 'kiosk';
+        $data['order_id'] = (int)$data['order_id'];
+        $data['customer_email'] = $order['customer_email'];
+        $data['send_communication_customer'] = 1;
+        $data['send_communication_vendor'] = 1;
+
+        return $this->successCommon($data);
+
+    }
+
 
     public function update(){
         
@@ -1249,6 +1390,11 @@ class TransactionController extends \BaseController {
             $this->utilities->sendDemonetisationCustomerSms($order);
 
             $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
+
+            if($order['payment_mode'] == 'at the studio'){
+                $resp   =   array('status' => 200,"message" => "Transaction Successful");
+            }
+
             return Response::json($resp);
 
         }else{
@@ -1411,7 +1557,7 @@ class TransactionController extends \BaseController {
 
         if($data['type'] != 'events'){
 
-            if($data['type'] == "memberships" && isset($data['customer_source']) && ($data['customer_source'] == "android" || $data['customer_source'] == "ios")){
+            if($data['type'] == "memberships" && isset($data['customer_source']) && (in_array($data['customer_source'],['android','ios','kiosk']))){
 
                 $this->appOfferDiscount = in_array($data['finder_id'], $this->appOfferExcludedVendors) ? 0 : $this->appOfferDiscount;
                 $data['app_discount_amount'] = intval($data['amount_finder'] * ($this->appOfferDiscount/100));
@@ -1629,7 +1775,7 @@ class TransactionController extends \BaseController {
 
         $amount = $data['amount_customer'] = $data['amount'];
 
-        if($data['type'] == "memberships" && isset($data['customer_source']) && ($data['customer_source'] == "android" || $data['customer_source'] == "ios")){
+        if($data['type'] == "memberships" && isset($data['customer_source']) && (in_array($data['customer_source'],['android','ios','kiosk']))){
             $this->appOfferDiscount = in_array($data['finder_id'], $this->appOfferExcludedVendors) ? 0 : $this->appOfferDiscount;
             $data['app_discount_amount'] = intval($data['amount'] * ($this->appOfferDiscount/100));
             $amount = $data['amount'] = $data['amount_customer'] = $data['amount'] - $data['app_discount_amount'];
@@ -3142,6 +3288,10 @@ class TransactionController extends \BaseController {
 
         }
 
+        if(isset($data['cashback']) && $data['cashback']){
+            array_set($data,'reward_info','Cashback');
+        }
+
         if(isset($data["reward_info"]) && $data["reward_info"] != ""){
 
             if($data["reward_info"] == 'Cashback'){
@@ -3405,23 +3555,32 @@ class TransactionController extends \BaseController {
             );
         }
 
+        if(!$this->vendor_token){
+            if(!empty($data['cash_pickup']) && $data['cash_pickup']){
+                $payment_modes[] = array(
+                    'title' => 'Cash Pickup',
+                    'subtitle' => 'Schedule cash payment pick up',
+                    'value' => 'cod',
+                );
+            }
 
-        if(!empty($data['cash_pickup']) && $data['cash_pickup']){
-            $payment_modes[] = array(
-                'title' => 'Cash Pickup',
-                'subtitle' => 'Schedule cash payment pick up',
-                'value' => 'cod',
-            );
+            if(!empty($data['part_payment']) && $data['part_payment']){
+                $payment_modes[] = array(
+                    'title' => 'Reserve Payment',
+                    'subtitle' => 'Pay 20% to reserve membership and pay rest on joining',
+                    'value' => 'part_payment',
+                );
+            }
         }
 
+        if($this->vendor_token){
 
-
-        if(!empty($data['part_payment']) && $data['part_payment']){
             $payment_modes[] = array(
-                'title' => 'Reserve Payment',
-                'subtitle' => 'Pay 20% to reserve membership and pay rest on joining',
-                'value' => 'part_payment',
+                'title' => 'Pay at Studio',
+                'subtitle' => 'Transact via paying cash at the Center',
+                'value' => 'pay_at_vendor',
             );
+        
         }
 
         return $payment_modes;

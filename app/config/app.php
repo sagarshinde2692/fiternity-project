@@ -160,6 +160,7 @@ return array(
 		//'Aloha\Twilio\TwilioServiceProvider',
 		'Hernandev\HipchatLaravel\HipchatLaravelServiceProvider',
 		'Aws\Laravel\AwsServiceProvider',
+		'SimpleSoftwareIO\QrCode\QrCodeServiceProvider'
 	),
 
 	/*
@@ -233,7 +234,8 @@ return array(
 		//'Twilio' 			=> 'Aloha\Twilio\Facades\Twilio',
 		'HipChat'         	=> 'Hernandev\HipchatLaravel\Facade\HipChat',
 		'AWS' 				=> 'Aws\Laravel\AwsFacade',
-		'DbEvent' 					=> 'App\Models\Event',
+		'DbEvent' 			=> 'App\Models\Event',
+		'QrCode' 			=> 'SimpleSoftwareIO\QrCode\Facades\QrCode'
 	),
 
 	'cachetime' 					=> 	10,
@@ -324,6 +326,10 @@ return array(
 		'ozonetel' =>array(
 			'path'							=> 'ozonetel/',
 			'url'							=> 'http://b.fitn.in/ozonetel/',
+		),
+		'qrcode' =>array(
+			'path'							=> 'qrcode/',
+			'url'							=> 'http://b.fitn.in/qrcode/',
 		),
 	),
 

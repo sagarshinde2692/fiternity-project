@@ -66,6 +66,15 @@ class SchedulebooktrialsController extends \BaseController {
         $this->customerreward            =   $customerreward;
         $this->jwtauth 	=	$jwtauth;
 
+        $this->vendor_token = false;
+
+        $vendor_token = Request::header('Authorization-Vendor');
+
+        if($vendor_token){
+
+            $this->vendor_token = true;
+        }
+
     }
     /**
      * Display the ScheduleBookTrial.
@@ -647,8 +656,6 @@ class SchedulebooktrialsController extends \BaseController {
 
     public function manualBookTrial() {
 
-
-
         $data = Input::json()->all();
 
         if(empty($data['customer_name'])){
@@ -671,19 +678,32 @@ class SchedulebooktrialsController extends \BaseController {
             return  Response::json($resp, 400);
         }
 
-        if(empty($data['finder_id'])){
-            $resp 	= 	array('status' => 400,'message' => "Data Missing - finder_id");
-            return  Response::json($resp, 400);
-        }
+        if(!$this->vendor_token){
 
-        if(empty($data['finder_name'])){
-            $resp 	= 	array('status' => 400,'message' => "Data Missing - finder_name");
-            return  Response::json($resp, 400);
-        }
+            if(empty($data['finder_id'])){
+                $resp 	= 	array('status' => 400,'message' => "Data Missing - finder_id");
+                return  Response::json($resp, 400);
+            }
 
-        if(empty($data['city_id'])){
-            $resp 	= 	array('status' => 400,'message' => "Data Missing - city_id");
-            return  Response::json($resp, 400);
+            if(empty($data['finder_name'])){
+                $resp 	= 	array('status' => 400,'message' => "Data Missing - finder_name");
+                return  Response::json($resp, 400);
+            }
+
+            if(empty($data['city_id'])){
+                $resp 	= 	array('status' => 400,'message' => "Data Missing - city_id");
+                return  Response::json($resp, 400);
+            }
+
+        }else{
+
+            $decodeKioskVendorToken = decodeKioskVendorToken();
+
+            $vendor = json_decode(json_encode($decodeKioskVendorToken->vendor),true);
+
+            $data['finder_id'] = (int)$vendor['_id'];
+            $data['finder_name'] = $vendor['name'];
+            $data['city_id'] = $vendor['city']['_id'];
         }
 
         // Throw an error if user has already booked a trial for that vendor...
@@ -789,11 +809,15 @@ class SchedulebooktrialsController extends \BaseController {
             'note_to_trainer'                =>      $note_to_trainer,
         );
 
+        if($this->vendor_token){
+
+            $booktrialdata['source'] = 'kiosk';
+        }
+
 
         if(isset($data['customer_address']) && $data['customer_address'] != ''){
             $booktrialdata['customer_address_array'] = $data['customer_address'];
         }
-
 
         //         return $booktrialdata;
         $booktrial = new Booktrial($booktrialdata);
@@ -802,7 +826,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         //        return $booktrial;
 
-        if($trialbooked){
+        if($trialbooked && !$this->vendor_token){
 
 
             if($booktrialdata['manual_trial_auto'] === '1'){
@@ -843,6 +867,21 @@ class SchedulebooktrialsController extends \BaseController {
         }
 
         $resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'booktrial' => $booktrial, 'message' => "Book a Trial");
+
+        if($this->vendor_token){
+
+            $form_fields = formFields();
+
+            $kiosk_form_url = Config::get('app.website').'/kiosktrialform?booktrial_id='.$booktrial['_id'];
+
+            $resp   =  [
+                'status' => 200,
+                'message' => "Successfully Booked a Trial",
+                'kiosk_form_url'=>$kiosk_form_url
+            ];
+
+        }
+
         return Response::json($resp,200);
     }
 
@@ -2284,6 +2323,10 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrial_id = (int)$data['booktrial_id'];
 
             $booktrial = Booktrial::findOrFail($booktrial_id);
+
+            $booktrail->qrcode = $this->utilities->createQrCode($booktrial['code']);
+            $booktrial->update();
+
 
             $dates = array('schedule_date','schedule_date_time','missedcall_date','customofferorder_expiry_date','followup_date','auto_followup_date');
 
@@ -6060,6 +6103,69 @@ class SchedulebooktrialsController extends \BaseController {
         }
 
         $response = array('status' => 200,'summary' => $booking_details);
+
+        return Response::json($response, $response['status']);
+
+    }
+
+
+    public function locateTrial($code){
+
+        $decodeKioskVendorToken = decodeKioskVendorToken();
+
+        $vendor = json_decode(json_encode($decodeKioskVendorToken->vendor),true);
+
+        $response = array('status' => 400,'message' =>'Sorry! Cannot locate your booking');
+
+        $booktrial = Booktrial::where('code',$code)
+           ->where('finder_id',(int)$vendor['_id'])
+           ->where('created_at','>',new MongoDate(strtotime(date('Y-m-d 00:00:00'))))
+           ->where('created_at','<',new MongoDate(strtotime(date('Y-m-d 23:59:59'))))
+           ->orderBy('_id','desc')
+           ->first();
+
+        $locate_data = [
+            'code'=>$code,
+            'finder_id'=>(int)$vendor['_id'],
+        ];
+
+        $locateTransaction = LocateTransaction::create($locate_data); 
+
+        if(isset($booktrial)){
+
+            $locateTransaction->transaction_id = (int)$booktrial['_id'];
+            $locateTransaction->transaction_type = 'Booktrial';
+            $locateTransaction->update();
+
+            $customerCapture = CustomerCapture::where('booktrial_id',(int)$booktrial['_id'])->first();
+
+            if($customerCapture){
+
+                $response = array('status' => 400,'message' =>'Already located your booking');
+
+                return Response::json($response,$response['status']);
+
+            }
+
+            $booktrial->post_trial_status = 'attended';
+            $booktrial->post_trial_initail_status = 'interested';
+            $booktrial->post_trial_status_updated_by_kiosk = time();
+            $booktrial->update();
+
+            $message = "Hi ".ucwords($booktrial['customer_name']).", your booking at ".ucwords($booktrial['finder_name'])." for ".strtoupper($booktrial['schedule_slot_start_time'])." on ".date('D, d M Y',strtotime($booktrial['schedule_date']))." has been successfully located";
+
+            $createCustomerToken = createCustomerToken((int)$booktrial['customer_id']);
+
+            $kiosk_form_url = Config::get('app.website').'/kiosktrialform?booktrial_id='.$booktrial['_id'];
+
+            $response = [
+                'status' => 200,
+                'message' => $message,
+                'token'=>$createCustomerToken,
+                'booktrial_id'=> (int)$booktrial['_id'],
+                'kiosk_form_url'=>$kiosk_form_url
+            ];
+        }
 
         return Response::json($response, $response['status']);
 

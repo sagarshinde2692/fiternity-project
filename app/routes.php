@@ -1032,6 +1032,17 @@ Route::get('chagneStartDateSept', 'DebugController@chagneStartDateSept');
 
 Route::get('renewalSept', 'DebugController@renewalSept');
 
+Route::get('createQrCode', 'DebugController@createQrCode');
+
+Route::get('locatetrial/{code}','SchedulebooktrialsController@locateTrial');
+
+
+Route::get('servicemembership/{finder_id}','FindersController@serviceMembership');
+
+Route::get('getnetbankingoptions','HomeController@getNetBankingOptions');
+
+Route::get('kiosk/dashboard/{finder_id}','FindersController@kisokDashboard');
+
 Route::post('career/capture','HomeController@careerCapture');
 
 Route::get('vendorLocation','DebugController@vendorLocation');
@@ -1050,3 +1061,10 @@ Route::post('postanswers','HomeController@postAnswers');
 
 Route::post('campaignconversion', 'DebugController@campaignConversion');
 Route::post('transaction/summary','SchedulebooktrialsController@transactionSummary');
+
+Route::post('kiosk/vendor/verifyotp','TransactionController@verifyVendorOtpKiosk');
+
+Route::post('customer/capture','CustomerController@customerCapture');
+
+Route::get('customer/getformfields','CustomerController@getFormFields');
+
