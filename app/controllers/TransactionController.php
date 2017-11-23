@@ -814,6 +814,7 @@ class TransactionController extends \BaseController {
             return Response::json(['status' => 401, "message" => "Order Not Found"],200);
         }
 
+
         if($order->status == "1"){
 
             return Response::json(['status' => 401, "message" => "Already Status Successfull"],200);
@@ -837,7 +838,7 @@ class TransactionController extends \BaseController {
 
         if($order['otp_data']['otp'] != $data['otp']){
 
-            return Response::json(['status' => 401, "message" => "Incorrect OTP"],200);
+            return Response::json(['status' => 401, "message" => "Incorrect OTP","data"=>new stdClass()],200);
         }
 
         $data['status'] = 'success';
