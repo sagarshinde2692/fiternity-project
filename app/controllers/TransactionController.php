@@ -804,20 +804,19 @@ class TransactionController extends \BaseController {
         $validator = Validator::make($data,$rules);
 
         if ($validator->fails()) {
-            return Response::json(array('status' => 401,'message' => error_message($validator->errors())),200);
+            return Response::json(array('status' => 400,'message' => error_message($validator->errors())),400);
         }
 
         $order = Order::find((int)$data['order_id']);
 
         if(!$order){
 
-            return Response::json(['status' => 401, "message" => "Order Not Found"],200);
+            return Response::json(['status' => 400, "message" => "Order Not Found"],400);
         }
-
 
         if($order->status == "1"){
 
-            return Response::json(['status' => 401, "message" => "Already Status Successfull"],200);
+            return Response::json(['status' => 400, "message" => "Already Status Successfull"],400);
         }
 
         $decodeKioskVendorToken = decodeKioskVendorToken();
@@ -828,17 +827,17 @@ class TransactionController extends \BaseController {
 
         if($finder_id != $order['finder_id']){
 
-            return Response::json(['status' => 401, "message" => "Incorrect Vendor"],200);
+            return Response::json(['status' => 400, "message" => "Incorrect Vendor"],400);
         }
 
         if(!isset($order['otp_data'])){
 
-            return Response::json(['status' => 401, "message" => "OTP data not found"],200);
+            return Response::json(['status' => 400, "message" => "OTP data not found"],400);
         }
 
         if($order['otp_data']['otp'] != $data['otp']){
 
-            return Response::json(['status' => 401, "message" => "Incorrect OTP","data"=>new stdClass()],200);
+            return Response::json(['status' => 400, "message" => "Incorrect OTP"],400);
         }
 
         $data['status'] = 'success';
