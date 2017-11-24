@@ -1,4 +1,4 @@
-<?php
+    <?php
 
 use App\Services\Utilities as Utilities;
 use App\Services\CustomerReward as CustomerReward;
@@ -189,7 +189,9 @@ class RewardofferController extends BaseController {
         $findercategory_id      =   intval($finder->category_id);
         $rewards                =   [];
 
-        if(isset($finder->purchase_gamification_disable) && $finder->purchase_gamification_disable == "1"){
+
+
+        if((isset($finder->purchase_gamification_disable) && $finder->purchase_gamification_disable == "1") || (isset($amount) && $amount < 2000)){
             $rewards = array();
         }else{
 

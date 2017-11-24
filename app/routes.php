@@ -317,7 +317,10 @@ Route::get('couponcodeusedforhealthytiffinbyphoneno/{phoneno}',  array('as' => '
 
 Route::get('orderdetail/{orderid}',  array('as' => 'orders.orderdetail','uses' => 'OrderController@getOrderDetail'));
 
-Route::post('checkcouponcode',  array('as' => 'orders.couponcode','uses' => 'OrderController@couponCode'));
+// Route::post('checkcouponcode',  array('as' => 'orders.couponcode','uses' => 'OrderController@couponCode'));
+
+Route::post('checkcouponcode',  array('as' => 'transaction.couponcode','uses' => 'TransactionController@checkCouponCode'));
+
 Route::post('generatecodorder',  array('as' => 'orders.generatecodorder','uses' => 'OrderController@generateCodOrder'));
 Route::post('generatetmporder',  array('as' => 'orders.generatetmporder','uses' => 'OrderController@generateTmpOrder'));
 Route::post('capturepayment',  array('as' => 'order.buymembership','uses' => 'OrderController@captureOrderStatus'));
@@ -1029,6 +1032,17 @@ Route::get('chagneStartDateSept', 'DebugController@chagneStartDateSept');
 
 Route::get('renewalSept', 'DebugController@renewalSept');
 
+Route::get('createQrCode', 'DebugController@createQrCode');
+
+Route::get('locatetrial/{code}','SchedulebooktrialsController@locateTrial');
+
+
+Route::get('servicemembership/{finder_id}','FindersController@serviceMembership');
+
+Route::get('getnetbankingoptions','HomeController@getNetBankingOptions');
+
+Route::get('kiosk/dashboard/{finder_id}','FindersController@kisokDashboard');
+
 Route::post('career/capture','HomeController@careerCapture');
 
 Route::get('vendorLocation','DebugController@vendorLocation');
@@ -1046,3 +1060,11 @@ Route::get('assitancequestions','HomeController@getAssitanceQuestions');
 Route::post('postanswers','HomeController@postAnswers');
 
 Route::post('campaignconversion', 'DebugController@campaignConversion');
+Route::post('transaction/summary','SchedulebooktrialsController@transactionSummary');
+
+Route::post('kiosk/vendor/verifyotp','TransactionController@verifyVendorOtpKiosk');
+
+Route::post('customer/capture','CustomerController@customerCapture');
+
+Route::get('customer/getformfields','CustomerController@getFormFields');
+

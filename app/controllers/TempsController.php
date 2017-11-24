@@ -9,14 +9,17 @@
 use App\Sms\CustomerSms as CustomerSms;
 use App\Services\Utilities as Utilities;
 use App\Services\CustomerReward as CustomerReward;
+use App\Sms\FinderSms as FinderSms;
 
 class TempsController extends \BaseController {
 
     protected $customersms;
     protected $utilities;
+    protected $findersms;
 
-    public function __construct(CustomerSms $customersms, Utilities $utilities) {
+    public function __construct(CustomerSms $customersms, Utilities $utilities, FinderSms $findersms) {
         //parent::__construct();
+        $this->findersms            =   $findersms;
         $this->customersms              =   $customersms;
         $this->contact_us_customer_number = Config::get('app.contact_us_customer_number');
         $this->appOfferDiscount 				= Config::get('app.app.discount');
@@ -137,22 +140,64 @@ class TempsController extends \BaseController {
                 $temp->proceed_without_otp = "N";
                 $temp->source = "website";
 
+                if($data['action'] == "locate_trial"){
+
+                    $decodeKioskVendorToken = decodeKioskVendorToken();
+
+                    $vendor = $decodeKioskVendorToken->vendor;
+
+                    $temp->finder_id = (int)$vendor->_id;
+
+                    $temp->source = "kiosk";
+                }
+
                 if(isset($data['finder_id']) && $data['finder_id'] != ""){
                     $temp->finder_id = (int) $data['finder_id'];
                 }
 
                 if(isset($data['service_id']) && $data['service_id'] != ""){
+
                     $temp->service_id = (int) $data['service_id'];
+
+                    $trial_type = [
+                        "booktrail",
+                        "booktrial",
+                        "typeofsession",
+                        "booktrials"
+                    ];
+
+                    if(in_array($data['action'],$trial_type) && isset($data['service_id']) && $data['service_id'] != "" && !isset($data['ratecard_id'])){
+
+                        $ratecard = Ratecard::where('type','trial')->where('service_id',(int)$data['service_id'])->orderBy('id','desc')->first();
+
+                        if($ratecard){
+
+                            if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
+                                $temp->price = (int)$ratecard['special_price'];
+                            }else{
+                                $temp->price = (int)$ratecard['price'];
+                            }
+                        }
+                    }
                 }
 
                 if(isset($data['ratecard_id']) && $data['ratecard_id'] != ""){
+                    
                     $temp->ratecard_id = (int) $data['ratecard_id'];
 
                     $ratecard = Ratecard::find((int) $data['ratecard_id']);
 
                     if($ratecard){
+
                         $temp->finder_id = (int) $ratecard->finder_id;
                         $temp->service_id = (int) $ratecard->service_id;
+
+                        if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
+                            $temp->price = (int)$ratecard['special_price'];
+                        }else{
+                            $temp->price = (int)$ratecard['price'];
+                        }
+
                     }
 
                 }
@@ -406,9 +451,79 @@ class TempsController extends \BaseController {
                                 $amount = $ratecard->price;
                             }
 
-                            $return = array('workout_session_available'=>true,'customer_data'=>$customer_data,'trial_booked'=>true,'status' => 200,'message' => 'Already Booked Trial. Book a Workout Session starting from Rs '.$amount.'.','verified' => $verified,'token'=>$customerToken,'ratecard_id'=>(int)$ratecard->_id,'amount'=>(int)$amount,'fitternity_no'=>$fitternity_no);
+                            $return = array('workout_session_available'=>true,'customer_data'=>$customer_data,'trial_booked'=>true,'status' => 200,'message' => '','verified' => $verified,'token'=>$customerToken,'ratecard_id'=>(int)$ratecard->_id,'amount'=>(int)$amount,'fitternity_no'=>$fitternity_no);
                         }
                     }
+                }
+
+                if($temp->action == "locate_trial"){
+
+                    $message = 'Sorry! Cannot locate your booking';
+
+                    $return = array('customer_data'=>$customer_data,'locate_trial'=>false,'status' => 200,'message' => $message,'verified' => $verified,'token'=>$customerToken);
+
+                    $decodeKioskVendorToken = decodeKioskVendorToken();
+
+                    $vendor = $decodeKioskVendorToken->vendor;
+
+                    $finder_id = (int)$vendor->_id;
+
+                    Booktrial::$withoutAppends = true;
+
+                    $booktrial = Booktrial::where('customer_phone','LIKE','%'.substr($temp->customer_phone, -10).'%')
+                                ->where('finder_id', '=',$finder_id)
+                                // ->where('type','booktrials')
+                                ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
+                                ->where('created_at','>',new MongoDate(strtotime(date('Y-m-d 00:00:00'))))
+                                ->where('created_at','<',new MongoDate(strtotime(date('Y-m-d 23:59:59'))))
+                                ->orderBy('_id','desc')
+                                ->first();
+
+                    if($booktrial){
+
+                        Customer::$withoutAppends = true;
+                        $customer = Customer::select('name','email','contact_no','dob','gender')->find((int)$booktrial->customer_id);
+
+                        if($customer) {
+
+                            if($customerToken == ""){
+
+                                $customerToken = createCustomerToken((int)$customer->_id);
+                            }
+
+                            $customer_data = $customer->toArray();
+
+                            $customer_data['dob'] = isset($customer_data['dob']) && $customer_data['dob'] != "" ? $customer_data['dob'] : "";
+                            $customer_data['gender'] = isset($customer_data['gender']) && $customer_data['gender'] != "" ? $customer_data['gender'] : "";
+                            $customer_data['contact_no'] = $temp->customer_phone;
+                            $customer_id = (int)$customer->_id;
+
+                        }
+
+                        $booktrial->post_trial_status = 'attended';
+                        $booktrial->post_trial_initail_status = 'interested';
+                        $booktrial->post_trial_status_updated_by_kiosk = time();
+                        $booktrial->update();
+
+                        $message = "Hi ".ucwords($booktrial['customer_name']).", your booking at ".ucwords($booktrial['finder_name'])." for ".strtoupper($booktrial['schedule_slot_start_time'])." on ".date('D, d M Y',strtotime($booktrial['schedule_date']))." has been successfully located";
+
+                        $kiosk_form_url = Config::get('app.website').'/kiosktrialform?booktrial_id='.$booktrial['_id'];
+
+                        $return = [
+                            'customer_data'=>$customer_data,
+                            'locate_trial'=>true,
+                            'status' => 200,
+                            'message' => $message,
+                            'verified' => $verified,
+                            'token'=>$customerToken,
+                            'booktrial_id'=> (int)$booktrial['_id'],
+                            'kiosk_form_url'=>$kiosk_form_url
+                        ];
+
+                    }
+                     
+                    return Response::json($return,200);
+
                 }
 
             }
@@ -567,14 +682,25 @@ class TempsController extends \BaseController {
 
             $temp->attempt = $temp->attempt + 1;
             $temp->save();
-        
-            if($temp->attempt >= 1 && $temp->attempt <= 3){
 
-                $data = $temp->toArray();
-                $this->customersms->genericOtp($data);
+            $data = $temp->toArray();
+
+            if($temp->action == 'vendor_otp'){
+
+                $this->findersms->genericOtp($data);
+
+            }else{
+
+                if($temp->attempt >= 1 && $temp->attempt <= 3){
+
+                    $data = $temp->toArray();
+                    $this->customersms->genericOtp($data);
+                }
+
             }
 
             return Response::json(array('status' => 200,'attempt' => $temp->attempt,'sender_id'=>'FTRNTY'),200);
+
         }else{
             return Response::json(array('status' => 400,'message' => 'Not Found'),400);
         }

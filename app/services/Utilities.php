@@ -956,7 +956,7 @@ Class Utilities {
 
 
     public function verifyOrder($data,$order){
-        if((isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin") || $order->pg_type == "PAYTM"){
+        if((isset($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin'])) || $order->pg_type == "PAYTM"){
             if($order->pg_type == "PAYTM" && !(isset($data["order_success_flag"]))){
                 $hashreverse = getpayTMhash($order);
                 if($data["verify_hash"] == $hashreverse['reverse_hash']){
@@ -965,7 +965,7 @@ Class Utilities {
                     $hash_verified = false;
                 }
             }
-            if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
+            if(isset($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin'])){
                 $hash_verified = true;
             }
         }else{
@@ -1498,7 +1498,7 @@ Class Utilities {
 
                 $request_amount_balance = $request_amount = $request['amount'];
 
-                if($current_wallet_balance < $wallet_limit && ($current_wallet_balance + (int)$request['amount']) > $wallet_limit){
+                if(!isset($request['full_amount']) && $current_wallet_balance < $wallet_limit && ($current_wallet_balance + (int)$request['amount']) > $wallet_limit){
                     $request_amount_balance = $request_amount = $request['amount'] = (int)($wallet_limit - $current_wallet_balance);
                 }
 
@@ -2393,6 +2393,101 @@ Class Utilities {
 
     }
 
+    public function displayEmi($data){
+		$bankNames=array();
+		$bankList= array();
+	 	$emiStruct = Config::get('app.emi_struct');
+		$response = array(
+			"bankList"=>array(),
+			"emiData"=>array(),
+			"higerMinVal" => array()
+			);
+		foreach ($emiStruct as $emi) {
+			if(isset($data['bankName']) && !isset($data['amount'])){
+				if($emi['bankName'] == $data['bankName']){
+					if(!in_array($emi['bankName'], $bankList)){
+						array_push($bankList, $emi['bankName']);
+					}
+					Log::info("inside1");
+					$emiData = array();
+						$emiData['total_amount'] =  "";
+						$emiData['emi'] ="";
+						$emiData['months'] = (string)$emi['bankTitle'];
+						$emiData['bankName'] = $emi['bankName'];
+						$emiData['bankCode'] = $emi['bankCode'];
+						$emiData['rate'] = (string)$emi['rate'];
+						$emiData['minval'] = (string)$emi['minval'];
+					array_push($response['emiData'], $emiData);
+				}
+			
+			}elseif(isset($data['bankName'])&&isset($data['amount'])){
+					if($emi['bankName'] == $data['bankName'] && $data['amount']>=$emi['minval']){
+						Log::info("inside2");
+						$emiData = array();
+						if(!in_array($emi['bankName'], $bankList)){
+							array_push($bankList, $emi['bankName']);
+						}
+						$emiData['total_amount'] =  (string)round($data['amount']*(100+$emi['rate'])/100, 2);
+						$emiData['emi'] =(string)round($emiData['total_amount']/$emi['bankTitle'], 2);
+						$emiData['months'] = (string)$emi['bankTitle'];
+						$emiData['bankName'] = $emi['bankName'];
+						$emiData['bankCode'] = $emi['bankCode'];
+						$emiData['rate'] = (string)$emi['rate'];
+						$emiData['minval'] = (string)$emi['minval'];
+						array_push($response['emiData'], $emiData);
+					}elseif($emi['bankName'] == $data['bankName']){
+						$emiData = array();
+						$emiData['bankName'] = $emi['bankName'];
+						$emiData['bankCode'] = $emi['bankCode'];
+						$emiData['minval'] = (string)$emi['minval'];
+						array_push($response['higerMinVal'], $emiData);
+						break;
+					}
+			}elseif(isset($data['amount']) && !(isset($data['bankName']))){
+				if($data['amount']>=$emi['minval']){
+					if(!in_array($emi['bankName'], $bankList)){
+						array_push($bankList, $emi['bankName']);
+					}
+					Log::info("inside3");
+					$emiData = array();
+					$emiData['total_amount'] =  (string)round($data['amount']*(100+$emi['rate'])/100, 2);
+					$emiData['emi'] =(string)round($emiData['total_amount']/$emi['bankTitle'], 2);
+					$emiData['months'] = (string)$emi['bankTitle'];
+					$emiData['bankName'] = $emi['bankName'];
+						$emiData['bankCode'] = $emi['bankCode'];
+					$emiData['rate'] = (string)$emi['rate'];
+					$emiData['minval'] = (string)$emi['minval'];
+					array_push($response['emiData'], $emiData);
+				}else{
+					$key = array_search($emi['bankName'], $bankNames);
+					if(!is_int($key)){
+						array_push($bankNames, $emi['bankName']);
+						$emiData = array();
+						$emiData['bankName'] = $emi['bankName'];
+						$emiData['bankCode'] = $emi['bankCode'];
+						$emiData['minval'] = (string)$emi['minval'];
+						array_push($response['higerMinVal'], $emiData);
+					}
+				}
+			}else{
+				if(!in_array($emi['bankName'], $bankList)){
+						array_push($bankList, $emi['bankName']);
+					}
+				Log::info("inside4");
+				$emiData = array();
+						$emiData['total_amount'] =  "";
+						$emiData['emi'] ="";
+						$emiData['months'] = (string)$emi['bankTitle'];
+						$emiData['bankName'] = $emi['bankName'];
+						$emiData['bankCode'] = $emi['bankCode'];
+						$emiData['rate'] = (string)(string)$emi['rate'];
+						$emiData['minval'] = (string)$emi['minval'];
+				array_push($response['emiData'], $emiData);
+			}
+		}
+		$response['bankList'] = $bankList;
+	    return $response;
+	}
     function checkFinderState($finder_id){
         $response = array('status'=>200, 'message'=>'Can book Session or Membership');
         if(in_array($finder_id,Config::get('app.fitternity_vendors'))){
@@ -2410,6 +2505,46 @@ Class Utilities {
         }
 
         return $response;
+
+    }
+
+    public function createFolder($path){
+
+        if(!is_dir($path)){
+            mkdir($path, 0777);
+            chmod($path, 0777);
+        }   
+
+        return $path;
+    }
+
+
+    public function createQrCode($text){
+
+        $folder_path = public_path().'/qrcodes/';
+
+        $this->createFolder($folder_path);
+
+        $filename = time().'.png';
+
+        $file_path = $folder_path.$filename;
+
+        \QrCode::format('png')->size(200)->margin(0)->generate($text, $file_path);
+
+        chmod($file_path, 0777);
+
+        $aws_filename = $filename;
+
+        $s3 = \AWS::get('s3');
+        $s3->putObject(array(
+            'Bucket'     => Config::get('app.aws.bucket'),
+            'Key'        => Config::get('app.aws.qrcode.path').$aws_filename,
+            'SourceFile' => $file_path,
+        ));
+
+        unlink($file_path);
+
+        return $aws_filename;
 
     }
 

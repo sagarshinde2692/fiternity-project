@@ -637,6 +637,8 @@ class CustomerController extends \BaseController {
 
 			$this->addCustomerRegId($data);
 
+			$response['customer_data'] = array_only($customer->toArray(), ['name','email','contact_no','dob','gender']);
+
 			return Response::json($response,200);
 		}
 	}
@@ -645,6 +647,11 @@ class CustomerController extends \BaseController {
 	public function customerLogin(){
 
 		$data = Input::json()->all();
+
+		if(isset($data['vendor_login']) && $data['vendor_login']){
+
+			return $this->vendorLogin($data);
+		}
 
 		if(isset($data['identity']) && !empty($data['identity'])){
 
@@ -706,13 +713,81 @@ class CustomerController extends \BaseController {
 		}
 	}
 
+	public function vendorLogin($data){
+
+		$rules = [
+			'email' => 'required|email',
+			'password' => 'required'
+		];
+
+		$validator = Validator::make($data = Input::json()->all(),$rules);
+
+		if($validator->fails()) {
+			return array('status' => 400,'message' =>$this->errorMessage($validator->errors()));  
+		}
+
+		$kiosk_user = KioskUser::where('type','kiosk')->where('email',$data['email'])->first();
+
+		if($kiosk_user){
+
+			if($kiosk_user['password'] != md5($data['password'])){
+
+				return Response::json(array('status' => 400,'message' => 'Incorrect Password'),400);
+			}
+
+			$encodeKioskVendorToken = $this->encodeKioskVendorToken($kiosk_user);
+
+			return Response::json($encodeKioskVendorToken,$encodeKioskVendorToken['status']);
+		}
+
+		return Response::json(array('status' => 400,'message' => 'Vendor Not Found'),400);
+
+	}
+
+	public function encodeKioskVendorToken($kiosk_user){
+
+		Finder::$withoutAppends=true;
+
+		$finder = Finder::with(array('location'=>function($query){$query->select('name','slug');}))->with(array('city'=>function($query){$query->select('name','slug');}))->find((int)$kiosk_user['finder_id']);
+
+		$data = [
+			'_id'=>$finder['_id'],
+			'slug'=>$finder['slug'],
+			'name'=>ucwords($finder['name']),
+			'location'=>[
+				'_id'=>$finder['location']['_id'],
+				'name'=>ucwords($finder['location']['name']),
+				'slug'=>$finder['location']['slug']
+			],
+			'city'=>[
+				'_id'=>$finder['city']['_id'],
+				'name'=>ucwords($finder['city']['name']),
+				'slug'=>$finder['city']['slug']
+			]
+		];
+
+		$jwt_claim = array(
+			"iat" => Config::get('jwt.kiosk.iat'),
+			"nbf" => Config::get('jwt.kiosk.nbf'),
+			"exp" => Config::get('jwt.kiosk.exp'),
+			"vendor" => $data
+		);
+		
+		$jwt_key = Config::get('jwt.kiosk.key');
+		$jwt_alg = Config::get('jwt.kiosk.alg');
+
+		$token = JWT::encode($jwt_claim,$jwt_key,$jwt_alg);
+
+		return array('status' => 200,'message' => 'Successfull Login', 'token' => $token, 'finder_id'=> (int)$finder['_id']);
+	}
+
 	public function emailLogin($data){
 
 		$rules = [
-		'email' => 'required|email',
-		'password' => 'required'
+			'email' => 'required|email',
+			'password' => 'required'
 		];
-		Log::info($data);
+
 		$validator = Validator::make($data = Input::json()->all(),$rules);
 
 		if($validator->fails()) {
@@ -5241,5 +5316,106 @@ class CustomerController extends \BaseController {
 		return Response::json(array('status' => 200,'message' => 'Captured Successfully','promotional_notification_id'=>$promotionalNotificationTracking->_id),200);
 
 	}
+
+	public function customerCapture(){
+
+		$data = Input::json()->all();
+
+		if(empty($data)){
+
+			return Response::json(
+			array(
+					'status' => 400,
+					'message' => "Empty Data",
+					),
+				200
+			);
+
+		}
+
+		$transaction_data = [];
+
+        if(isset($data['customer_id']) && $data['customer_id'] != ""){
+        	$data['customer_id'] = (int)$data['customer_id'];
+        }
+
+        if(isset($data['order_id']) && $data['order_id'] != ""){
+        	$data['order_id'] = (int)$data['order_id'];
+        }
+
+        if(isset($data['booktrial_id']) && $data['booktrial_id'] != ""){
+
+        	$data['booktrial_id'] = (int)$data['booktrial_id'];
+
+        	Booktrial::$withoutAppends=true;
+
+        	$transaction = Booktrial::find((int)$data['booktrial_id']);
+        }
+
+        if(isset($data['finder_id']) && $data['finder_id'] != ""){
+        	$data['finder_id'] = (int)$data['finder_id'];
+        }
+
+        if(isset($transaction)){
+
+        	$array_only = [
+        		'finder_id',
+        		'city_id',
+        		'customer_id',
+        		'customer_email',
+        		'customer_phone',
+        		'customer_name'
+        	];
+
+    		$transaction_data = array_only($transaction->toArray(),$array_only);
+    	}
+
+    	if(!empty($transaction_data)){
+    		$data = array_merge($data,$transaction_data);
+    	}
+
+        CustomerCapture::create($data);
+
+        return Response::json(
+			array(
+				'status' => 200,
+				'message' => "Thankyou for the details",
+				),
+			200
+		);
+        
+    }
+
+
+    public function getFormFields(){
+
+    	$data = [];
+
+    	if(isset($_GET['booktrial_id']) && $_GET['booktrial_id'] != ""){
+
+    		Booktrial::$withoutAppends=true;
+
+        	$transaction = Booktrial::find((int)$_GET['booktrial_id']);
+
+        	if($transaction){
+
+        		$data = array_only($transaction->toArray(), ['finder_id','city_id','customer_id','customer_email','customer_phone','customer_name']);
+
+        		$data['booktrial_id'] = (int)$_GET['booktrial_id'];
+        	}
+        }
+
+        $form_fields = formFields();
+
+        return Response::json(
+			array(
+				'status' => 200,
+				'form_fields' => $form_fields,
+				'data'=>$data
+				),
+			200
+		);
+
+    }
 	
 }

@@ -40,6 +40,15 @@ class FindersController extends \BaseController {
 		$this->appOfferDiscount 				= Config::get('app.app.discount');
 		$this->appOfferExcludedVendors 				= Config::get('app.app.discount_excluded_vendors');
 		$this->utilities 						= $utilities;
+
+		$this->vendor_token = false;
+
+        $vendor_token = Request::header('Authorization-Vendor');
+
+        if($vendor_token){
+
+            $this->vendor_token = true;
+        }
 		
 	}
 
@@ -1512,6 +1521,29 @@ class FindersController extends \BaseController {
 			unset($data['"notification_id']);
 		}
 
+		if(isset($data['review_for']) && in_array($data['review_for'],['membership','session'])){
+
+			switch ($data['review_for']) {
+				case 'membership' :
+					$transaction = Order::active()->where('finder_id',(int)$data["finder_id"])->where('customer_id',(int)$data["customer_id"])->orderBy('_id','desc')->first();
+					if($transaction){
+						$data["order_id"] = (int)$transaction['_id'];
+					}
+					break;
+				case 'session' :
+					$transaction = Booktrial::where('finder_id',(int)$data["finder_id"])->where('customer_id',(int)$data["customer_id"])->orderBy('_id','desc')->first();
+					if($transaction){
+						$data["booktrial_id"] = (int)$transaction['_id'];
+					}
+					break;
+				default : break;
+			}
+		}
+
+		if($this->vendor_token){
+			$data['source'] = 'kiosk';
+		}
+
 		Log::info('review data',$data);
 
 		return $this->addReview($data);
@@ -1559,6 +1591,10 @@ class FindersController extends \BaseController {
 
 		if(isset($data['agent_email'])){
 			$reviewdata['agent_email'] = $data['agent_email'];
+		}
+
+		if(isset($data['booktrial_id']) && $data['booktrial_id'] != ""){
+			$reviewdata['booktrial_id'] = (int)$data['booktrial_id'];
 		}
 
 		$finder = Finder::find(intval($data['finder_id']));
@@ -2142,7 +2178,87 @@ class FindersController extends \BaseController {
 	}
 
 
-	public function getTrialSchedule($finder_id,$category){
+	public function serviceMembership($finder_id){
+
+		$response = [
+			'status'=>200,
+			'message'=>'Success'
+		];
+
+		$getTrialSchedule = $this->getTrialSchedule($finder_id);
+
+		if(empty($getTrialSchedule)){
+
+			$response = [
+				'status'=>400,
+				'message'=>'No results found',
+				'memberships'=>[]
+			];
+
+			return Response::json($response,200);
+		}
+
+		foreach ($getTrialSchedule as $key => $value) {
+
+			if(empty($value['ratecard'])){
+
+				unset($getTrialSchedule[$key]);
+
+			}else{
+
+				$ratecards = $value['ratecard'];
+
+				foreach ($ratecards as $ratecard_key => $ratecard_value) {
+
+					if($ratecard_value['direct_payment_enable'] == '0'){
+
+						unset($ratecards[$ratecard_key]);
+					}
+
+				}
+
+				$ratecards = array_values($ratecards);
+
+				if(!empty($ratecards)){
+
+					$getTrialSchedule[$key]['ratecard'] = $ratecards;
+
+				}else{
+
+					unset($getTrialSchedule[$key]);
+				}
+
+			}
+
+		}
+		
+		$getTrialSchedule = array_values($getTrialSchedule);
+
+		$response['memberships'] = $getTrialSchedule;
+		$response['perks'] = [
+			[
+				"image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/lowest-price.png",
+				"title"=>"Lowest price guarantee"
+			],
+			[
+				"image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/rewards.png",
+				"title"=>"Complementary rewards"
+			],
+			[
+				"image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/flexible.png",
+				"title"=>"Flexible EMI & payment options"
+			],
+			[
+				"image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/fitcash.png",
+				"title"=>"Earn Fitcash+ & cashback"
+			]
+		];
+
+		return Response::json($response,200);
+	}
+
+
+	public function getTrialSchedule($finder_id,$category = false){
 
 		$currentDateTime        =   date('Y-m-d');
 		$finder_id               =   (int) $finder_id;
@@ -2218,7 +2334,7 @@ class FindersController extends \BaseController {
 				'description'=>'Burn Fat | Super Cardio'
 			);
 
-			if($category->_id == 42 || $category->_id == 45){
+			if($category && ($category->_id == 42 || $category->_id == 45)){
 
 				$extra_info = [];
 
@@ -3634,7 +3750,85 @@ class FindersController extends \BaseController {
 		$response = ['status' => 400, 'message' => 'Review Not Found'];
 
 		return Response::json($response, 400);
-	
+	}
+
+	public function kisokDashboard($finder_id){
+
+		Finder::$withoutAppends=true;
+
+		$finder = Finder::find((int)$finder_id);
+
+		if(!$finder){
+
+			return Response::json(["message"=>"Vendor not found","status"=>404], 404);
+		}
+
+		$response = [
+			"status"=>200,
+			"message"=>"Successfully retrieved.",
+			"response"=>[
+				"about"=>[
+					"description"=>"Fitternity is the one stop shop for everything fitness. Discover, compare, try & buy through fitternity.",
+					"details"=>[
+						[
+							"title"=>"Book unlimited free trials to explore fitness forms around you.",
+							"image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/point1.png"
+						],
+						[
+							"title"=>"Buy Gym / group class memberships across fitness centres in your city.",
+							"image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/point2.png"
+						],
+						[
+							"title"=>"Get personalised online diet consultation for workout performance enhancement.",
+							"image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/point3.png"
+						],
+						[
+							"title"=>"Book healthy, calorie counted yet tasty tiffin subscription.",
+							"image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/point4.png"
+						]
+					]
+				],
+
+				"options"=>[
+					[
+						"title"=>"Access Trial Booking",
+						"description"=>"Quick step to activate your workout trial & instant trial booking.",
+						"image"=>"http://b.fitn.in/global/tabapp-homescreen/access-trials-small.png",
+						"banner_image"=>"http://b.fitn.in/global/tabapp-homescreen/accesstrial-big-1.png",
+						"id"=>1,
+						'type'=>'booktrial'
+					],
+					[
+						"title"=>"Explore Membership",
+						"description"=>"Quick buy with free rewards & flexible payment options.",
+						"image"=>"http://b.fitn.in/global/tabapp-homescreen/explorememberships-small.png",
+						"banner_image"=>"http://b.fitn.in/global/tabapp-homescreen/explorememberships-big-1.png",
+						"id"=>2,
+						"type"=>'membership'
+					],
+					[
+						"title"=>"Post a Review",
+						"description"=>"Rate your experience & help fellow fitness enthusiasts.",
+						"image"=>"http://b.fitn.in/global/tabapp-homescreen/post-review-small.png",
+						"banner_image"=>"http://b.fitn.in/global/tabapp-homescreen/postreview-big.png",
+						"id"=>3,
+						'type'=>'post_review'
+					],
+					/*[
+						"title"=>"Online Diet Consultation",
+						"description"=>"Coming soon",
+						"image"=>"http://b.fitn.in/global/tabapp-homescreen/coming-soon-small.png",
+						"banner_image"=>"http://b.fitn.in/global/tabapp-homescreen/diet-big-1.png",
+						"id"=>4,
+						"type"=>"diet_plan"
+					]*/
+				],
+				"title"=>"Welcome to ".ucwords($finder['title']),
+				"powered"=>"Powered by Fitternity"
+			]
+		];
+
+		return Response::json($response,$response['status']);
 	}
 	
 
