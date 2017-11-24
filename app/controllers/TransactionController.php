@@ -3732,7 +3732,7 @@ class TransactionController extends \BaseController {
                 }
             }
 
-            if($ratecard != null && $ticket != null){
+            if($ratecard != null && $ticket == null){
 
                 $resp["data"]["discount"] = $amount > $resp["data"]["discount"] ? $resp["data"]["discount"] : $amount;
             }
