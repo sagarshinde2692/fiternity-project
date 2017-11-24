@@ -2324,7 +2324,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             $booktrial = Booktrial::findOrFail($booktrial_id);
 
-            $booktrail->qrcode = $this->utilities->createQrCode($booktrial['code']);
+            $booktrial->qrcode = $this->utilities->createQrCode($booktrial['code']);
             $booktrial->update();
 
 
