@@ -2185,7 +2185,7 @@ class FindersController extends \BaseController {
 			'message'=>'Success'
 		];
 		$device_id = Request::header('Device-Id');
-		Log::info("kiosk hai",$device_id);
+		Log::info($device_id);
 		$getTrialSchedule = $this->getTrialSchedule($finder_id);
 
 		if(empty($getTrialSchedule)){
