@@ -66,6 +66,15 @@ class SchedulebooktrialsController extends \BaseController {
         $this->customerreward            =   $customerreward;
         $this->jwtauth 	=	$jwtauth;
 
+        $this->vendor_token = false;
+
+        $vendor_token = Request::header('Authorization-Vendor');
+
+        if($vendor_token){
+
+            $this->vendor_token = true;
+        }
+
     }
     /**
      * Display the ScheduleBookTrial.
@@ -647,8 +656,6 @@ class SchedulebooktrialsController extends \BaseController {
 
     public function manualBookTrial() {
 
-
-
         $data = Input::json()->all();
 
         if(empty($data['customer_name'])){
@@ -671,19 +678,32 @@ class SchedulebooktrialsController extends \BaseController {
             return  Response::json($resp, 400);
         }
 
-        if(empty($data['finder_id'])){
-            $resp 	= 	array('status' => 400,'message' => "Data Missing - finder_id");
-            return  Response::json($resp, 400);
-        }
+        if(!$this->vendor_token){
 
-        if(empty($data['finder_name'])){
-            $resp 	= 	array('status' => 400,'message' => "Data Missing - finder_name");
-            return  Response::json($resp, 400);
-        }
+            if(empty($data['finder_id'])){
+                $resp 	= 	array('status' => 400,'message' => "Data Missing - finder_id");
+                return  Response::json($resp, 400);
+            }
 
-        if(empty($data['city_id'])){
-            $resp 	= 	array('status' => 400,'message' => "Data Missing - city_id");
-            return  Response::json($resp, 400);
+            if(empty($data['finder_name'])){
+                $resp 	= 	array('status' => 400,'message' => "Data Missing - finder_name");
+                return  Response::json($resp, 400);
+            }
+
+            if(empty($data['city_id'])){
+                $resp 	= 	array('status' => 400,'message' => "Data Missing - city_id");
+                return  Response::json($resp, 400);
+            }
+
+        }else{
+
+            $decodeKioskVendorToken = decodeKioskVendorToken();
+
+            $vendor = json_decode(json_encode($decodeKioskVendorToken->vendor),true);
+
+            $data['finder_id'] = (int)$vendor['_id'];
+            $data['finder_name'] = $vendor['name'];
+            $data['city_id'] = $vendor['city']['_id'];
         }
 
         // Throw an error if user has already booked a trial for that vendor...
@@ -789,11 +809,15 @@ class SchedulebooktrialsController extends \BaseController {
             'note_to_trainer'                =>      $note_to_trainer,
         );
 
+        if($this->vendor_token){
+
+            $booktrialdata['source'] = 'kiosk';
+        }
+
 
         if(isset($data['customer_address']) && $data['customer_address'] != ''){
             $booktrialdata['customer_address_array'] = $data['customer_address'];
         }
-
 
         //         return $booktrialdata;
         $booktrial = new Booktrial($booktrialdata);
@@ -802,7 +826,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         //        return $booktrial;
 
-        if($trialbooked){
+        if($trialbooked && !$this->vendor_token){
 
 
             if($booktrialdata['manual_trial_auto'] === '1'){
@@ -843,6 +867,21 @@ class SchedulebooktrialsController extends \BaseController {
         }
 
         $resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'booktrial' => $booktrial, 'message' => "Book a Trial");
+
+        if($this->vendor_token){
+
+            $form_fields = formFields();
+
+            $kiosk_form_url = Config::get('app.website').'/kiosktrialform?booktrial_id='.$booktrial['_id'];
+
+            $resp   =  [
+                'status' => 200,
+                'message' => "Successfully Booked a Trial",
+                'kiosk_form_url'=>$kiosk_form_url
+            ];
+
+        }
+
         return Response::json($resp,200);
     }
 
@@ -2284,6 +2323,10 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrial_id = (int)$data['booktrial_id'];
 
             $booktrial = Booktrial::findOrFail($booktrial_id);
+
+            $booktrail->qrcode = $this->utilities->createQrCode($booktrial['code']);
+            $booktrial->update();
+
 
             $dates = array('schedule_date','schedule_date_time','missedcall_date','customofferorder_expiry_date','followup_date','auto_followup_date');
 
@@ -5853,6 +5896,371 @@ class SchedulebooktrialsController extends \BaseController {
         
         
         
+    }
+
+    public function transactionSummary(){
+
+        $item = Input::json()->all();
+
+        $rules = [
+            'ratecard_id' => 'required',
+            'type' => 'required'
+        ];
+
+        $validator = Validator::make($item,$rules);
+
+        if($validator->fails()) {
+
+            return Response::json(array('status' => 401,'message' =>$this->errorMessage($validator->errors())),401);
+        }
+
+        $ratecard_id = (int)$item['ratecard_id'];
+
+        $ratecard = Ratecard::find($ratecard_id);
+
+        if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
+            $item['amount'] = $ratecard['special_price'];
+        }else{
+            $item['amount'] = $ratecard['price'];
+        }
+
+        $service = Service::find($ratecard['service_id']);
+
+        $finder_name = "";
+        $finder_location = "";
+        $finder_address = "";
+
+        $finder = Finder::with(array('city'=>function($query){$query->select('name','slug');}))->with(array('location'=>function($query){$query->select('name','slug');}))->find((int)$ratecard['finder_id'],array('_id','title','location_id','contact','lat','lon','manual_trial_auto','city_id'));
+
+        if(isset($finder['title']) && $finder['title'] != ""){
+            $finder_name = ucwords($finder['title']);
+        }
+
+        if(isset($finder['location']['name']) && $finder['location']['name'] != ""){
+            $finder_location = ucwords($finder['location']['name']);
+        }
+
+        if(isset($finder['contact']['address']) && $finder['contact']['address'] != ""){
+            $finder_address = $finder['contact']['address'];
+        }
+
+        if(isset($service['address']) && $service['address'] != ""){
+            $finder_address = $service['address'];
+        }
+
+        if(isset($item['schedule_slot']) && $item['schedule_slot'] != ""){
+            $slot_times                        =    explode('-',$item['schedule_slot']);
+            $item['schedule_slot_start_time']          =    $slot_times[0];
+            $item['schedule_slot_end_time']            =    $slot_times[1];
+        }
+
+        $poc = $poc_name = $poc_number = "";
+
+        if(isset($finder['finder_poc_for_customer_name']) && $finder['finder_poc_for_customer_name'] != ""){
+            $poc_name = $finder['finder_poc_for_customer_name'];
+        }
+
+        if(isset($finder['finder_poc_for_customer_no']) && $finder['finder_poc_for_customer_no'] != ""){
+            $poc_number = " (".$finder['finder_poc_for_customer_no'].")";
+        }
+
+        $poc = $poc_name.$poc_number;
+
+
+        $booking_details = [];
+
+        $position = 0;
+
+        $service_duration = $this->getServiceDuration($ratecard);
+
+        $booking_details_data["finder_name_location"] = ['field'=>'BOOKING AT','value'=>$finder_name.", ".$finder_location,'position'=>$position++];
+
+        $booking_details_data["service_name"] = ['field'=>'SERVICE NAME','value'=>$service['name'],'position'=>$position++];
+
+        $booking_details_data["service_duration"] = ['field'=>'DURATION','value'=>$service_duration,'position'=>$position++];
+
+        $booking_details_data["start_date"] = ['field'=>'START DATE','value'=>'-','position'=>$position++];
+
+        $booking_details_data["start_time"] = ['field'=>'START TIME','value'=>'-','position'=>$position++];
+
+        $booking_details_data["address"] = ['field'=>'ADDRESS','value'=>'','position'=>$position++];
+
+        $booking_details_data["price"] = ['field'=>'PRICE','value'=>'Free Via Fitternity','position'=>$position++];
+
+        if($poc != ""){ 
+            $booking_details_data["poc"] = ['field'=>'POINT OF CONTACT','value'=>$poc,'position'=>$position++];
+        }
+
+        if(isset($item['start_date']) && $item['start_date'] != ""){
+            $booking_details_data['start_date']['value'] = date('d-m-Y (l)',strtotime($item['start_date']));
+        }
+
+        if(isset($item['schedule_date']) && $item['schedule_date'] != ""){
+            $booking_details_data['start_date']['value'] = date('d-m-Y (l)',strtotime($item['schedule_date']));
+        }
+
+        if(isset($item['preferred_starting_date']) && $item['preferred_starting_date'] != ""){
+            $booking_details_data['start_date']['value'] = date('d-m-Y (l)',strtotime($item['preferred_starting_date']));
+        }
+
+        if(isset($item['start_time']) && $item['start_time'] != ""){
+            $booking_details_data['start_time']['value'] = strtoupper($item['start_time']);
+        }
+
+        if(isset($item['schedule_slot_start_time']) && $item['schedule_slot_start_time'] != ""){
+            $booking_details_data['start_time']['value'] = strtoupper($item['schedule_slot_start_time']);
+        }
+
+        if(isset($item['amount']) && $item['amount'] != ""){
+            $booking_details_data['price']['value'] = "Rs. ".(string)$item['amount'];
+        }
+
+        if(isset($item['amount_finder']) && $item['amount_finder'] != ""){
+            $booking_details_data['price']['value']= "Rs. ".(string)$item['amount_finder'];
+        }
+
+        if(isset($item['payment_mode']) && $item['payment_mode'] == "cod"){
+            $booking_details_data['price']['value']= "Rs. ".(string)$item['amount']." (Cash Pickup)";
+        }
+
+        if(isset($item['myreward_id']) && $item['myreward_id'] != ""){
+            $booking_details_data['price']['value']= "Free Via Fitternity";
+        }
+
+        if(isset($item['part_payment']) && $item['part_payment']){
+            $header= "Membership reserved";
+        }
+
+        if(isset($item['payment_mode']) && $item['payment_mode'] == 'cod'){
+            $subline= "Your membership will be activated once your cash is collected. Fitternity team will reach out to you to coordinate the cash pick-up.";
+        }
+
+        if($finder_address != ""){
+            $booking_details_data['address']['value'] = $finder_address;
+        }
+
+        if(in_array($item['type'],["healthytiffintrial","healthytiffinmembership"])){
+            
+            if(isset($item['customer_address']) && $item['customer_address'] != ""){
+                $booking_details_data['address']['value'] = $item['customer_address'];
+            }
+
+        }else{
+
+            if($finder_address != ""){
+                $booking_details_data['address']['value'] = $finder_address;
+            }
+            if(isset($item['finder_address']) && $item['finder_address'] != ""){
+                $booking_details_data['address']['value'] = $item['finder_address'];
+            }
+        }
+
+        if(isset($booking_details_data['address']['value'])){
+
+            $booking_details_data['address']['value'] = str_replace("  ", " ",$booking_details_data['address']['value']);
+            $booking_details_data['address']['value'] = str_replace(", , ", "",$booking_details_data['address']['value']);
+        }
+
+        if(in_array($item['type'], ['manualtrial','manualautotrial','manualmembership'])){
+            $booking_details_data["start_date"]["field"] = "PREFERRED DATE";
+            $booking_details_data["start_time"]["field"] = "PREFERRED TIME";
+            $booking_details_data["price"]["value"] = "";
+        }
+
+        if(in_array($item['type'], ['booktrialfree','booktrial','workout-session'])){
+            $booking_details_data["start_date"]["field"] = "DATE";
+            $booking_details_data["start_time"]["field"] = "TIME";
+            $booking_details_data["service_duration"]["value"] = "1 Session";
+        }
+
+        if(isset($item['preferred_day']) && $item['preferred_day'] != ""){
+            $booking_details_data['start_date']['field'] = 'PREFERRED DAY';
+            $booking_details_data['start_date']['value'] = $item['preferred_day'];
+        }
+
+        if(isset($item['preferred_time']) && $item['preferred_time'] != ""){
+            $booking_details_data['start_time']['field'] = 'PREFERRED TIME';
+            $booking_details_data['start_time']['value'] = $item['preferred_time'];
+        }
+
+        if(isset($item['"preferred_service']) && $item['"preferred_service'] != "" && $item['"preferred_service'] != null){
+            $booking_details_data['service_name']['field'] = 'PREFERRED SERVICE';
+            $booking_details_data['service_name']['value'] = $item['preferred_service'];
+        }
+
+        $booking_details_all = [];
+        foreach ($booking_details_data as $key => $value) {
+
+            $booking_details_all[$value['position']] = ['field'=>$value['field'],'value'=>$value['value']];
+        }
+
+        foreach ($booking_details_all as $key => $value) {
+
+            if($value['value'] != "" && $value['value'] != "-"){
+                $booking_details[] = $value;
+            }
+
+        }
+
+        $response = array('status' => 200,'summary' => $booking_details);
+
+        return Response::json($response, $response['status']);
+
+    }
+
+    public function getServiceDuration($ratecard){
+
+        $duration_day = 1;
+
+        if(isset($ratecard['validity']) && $ratecard['validity'] != '' && $ratecard['validity'] != 0){
+
+            $duration_day = $ratecard['validity'];
+        }
+
+        if(isset($ratecard['validity']) && $ratecard['validity'] != '' && $ratecard['validity_type'] == "days"){
+
+            $ratecard['validity_type'] = 'Days';
+
+            if(($ratecard['validity'] % 30) == 0){
+
+                $month = ($ratecard['validity']/30);
+
+                if($month == 1){
+                    $ratecard['validity_type'] = 'Month';
+                    $ratecard['validity'] = $month;
+                }
+
+                if($month > 1 && $month < 12){
+                    $ratecard['validity_type'] = 'Months';
+                    $ratecard['validity'] = $month;
+                }
+
+                if($month == 12){
+                    $ratecard['validity_type'] = 'Year';
+                    $ratecard['validity'] = 1;
+                }
+
+            }
+              
+        }
+
+        if(isset($ratecard['validity']) && $ratecard['validity'] != '' && $ratecard['validity_type'] == "months"){
+
+            $ratecard['validity_type'] = 'Months';
+
+            if($ratecard['validity'] == 1){
+                $ratecard['validity_type'] = 'Month';
+            }
+
+            if(($ratecard['validity'] % 12) == 0){
+
+                $year = ($ratecard['validity']/12);
+
+                if($year == 1){
+                    $ratecard['validity_type'] = 'Year';
+                    $ratecard['validity'] = $year;
+                }
+
+                if($year > 1){
+                    $ratecard['validity_type'] = 'Years';
+                    $ratecard['validity'] = $year;
+                }
+            }
+              
+        }
+
+        if(isset($ratecard['validity']) && $ratecard['validity'] != '' && $ratecard['validity_type'] == "year"){
+
+            $year = $ratecard['validity'];
+
+            if($year == 1){
+                $ratecard['validity_type'] = 'Year';
+            }
+
+            if($year > 1){
+                $ratecard['validity_type'] = 'Years';
+            }
+              
+        }
+
+        $service_duration = "";
+
+        if($ratecard['duration'] > 0){
+            $service_duration .= $ratecard['duration'] ." ".ucwords($ratecard['duration_type']);
+        }
+        if($ratecard['duration'] > 0 && $ratecard['validity'] > 0){
+            $service_duration .= " - ";
+        }
+        if($ratecard['validity'] > 0){
+            $service_duration .=  $ratecard['validity'] ." ".ucwords($ratecard['validity_type']);
+        }
+
+        ($service_duration == "") ? $service_duration = "-" : null;
+
+        return $service_duration;
+    }
+
+
+    public function locateTrial($code){
+
+        $decodeKioskVendorToken = decodeKioskVendorToken();
+
+        $vendor = json_decode(json_encode($decodeKioskVendorToken->vendor),true);
+
+        $response = array('status' => 400,'message' =>'Sorry! Cannot locate your booking');
+
+        $booktrial = Booktrial::where('code',$code)
+           ->where('finder_id',(int)$vendor['_id'])
+           ->where('created_at','>',new MongoDate(strtotime(date('Y-m-d 00:00:00'))))
+           ->where('created_at','<',new MongoDate(strtotime(date('Y-m-d 23:59:59'))))
+           ->orderBy('_id','desc')
+           ->first();
+
+        $locate_data = [
+            'code'=>$code,
+            'finder_id'=>(int)$vendor['_id'],
+        ];
+
+        $locateTransaction = LocateTransaction::create($locate_data); 
+
+        if(isset($booktrial)){
+
+            $locateTransaction->transaction_id = (int)$booktrial['_id'];
+            $locateTransaction->transaction_type = 'Booktrial';
+            $locateTransaction->update();
+
+            $customerCapture = CustomerCapture::where('booktrial_id',(int)$booktrial['_id'])->first();
+
+            if($customerCapture){
+
+                $response = array('status' => 400,'message' =>'Already located your booking');
+
+                return Response::json($response,$response['status']);
+
+            }
+
+            $booktrial->post_trial_status = 'attended';
+            $booktrial->post_trial_initail_status = 'interested';
+            $booktrial->post_trial_status_updated_by_kiosk = time();
+            $booktrial->update();
+
+            $message = "Hi ".ucwords($booktrial['customer_name']).", your booking at ".ucwords($booktrial['finder_name'])." for ".strtoupper($booktrial['schedule_slot_start_time'])." on ".date('D, d M Y',strtotime($booktrial['schedule_date']))." has been successfully located";
+
+            $createCustomerToken = createCustomerToken((int)$booktrial['customer_id']);
+
+            $kiosk_form_url = Config::get('app.website').'/kiosktrialform?booktrial_id='.$booktrial['_id'];
+
+            $response = [
+                'status' => 200,
+                'message' => $message,
+                'token'=>$createCustomerToken,
+                'booktrial_id'=> (int)$booktrial['_id'],
+                'kiosk_form_url'=>$kiosk_form_url
+            ];
+        }
+
+        return Response::json($response, $response['status']);
+
     }
 
 

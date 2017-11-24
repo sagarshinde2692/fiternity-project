@@ -5414,6 +5414,28 @@ public function yes($msg){
 // 			$search_results     =   json_decode(es_curl_request($request),true);
 // 	}
 
+	public function createQrCode(){
+
+		$utilities = new Utilities();
+
+		$createQrCode  = $utilities->createQrCode('Hello Fitternity');
+		
+		return $createQrCode;
+
+	}
+
+	
+
+	public function createFolder($path){
+
+		if(!is_dir($path)){
+			mkdir($path, 0777);
+			chmod($path, 0777);
+		}	
+
+		return $path;
+	}
+
 	
 
     

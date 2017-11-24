@@ -548,7 +548,7 @@ class HomeController extends BaseController {
             $preferred_starting_date = (isset($itemData['preferred_starting_date'])) ? $itemData['preferred_starting_date'] : "";
 
             $header     =   "Congratulations!";
-            $note       =   "Note: If you face any issues or need assistance for the  session - please call us on 022-61222222 and we will resolve it immediately";
+            $note       =   "Note: If you face any issues or need assistance for the  session - please call us on 022-61094444 and we will resolve it immediately";
             $icon_path  =   "https://b.fitn.in/iconsv1/success-pages/";
             $show_invite = false;
             $id_for_invite = (int) $id;
@@ -927,7 +927,7 @@ class HomeController extends BaseController {
             }
 
             if(in_array($type,["personaltrainertrial","manualtrial","manualautotrial","booktrialfree","booktrial","workoutsession","workout-session","booktrials"])){
-                $booking_details_data["finder_name_location"] = ['field'=>'SESSION BOOKED AT','value'=>$finder_name.", ".$finder_location,'position'=>$position++];
+                $booking_details_data["finder_name_location"] = ['field'=>'BOOKING AT','value'=>$finder_name.", ".$finder_location,'position'=>$position++];
             }
 
             $booking_details_data["service_name"] = ['field'=>'SERVICE NAME','value'=>$service_name,'position'=>$position++];
@@ -941,6 +941,8 @@ class HomeController extends BaseController {
             $booking_details_data["address"] = ['field'=>'ADDRESS','value'=>'','position'=>$position++];
 
             $booking_details_data["price"] = ['field'=>'PRICE','value'=>'Free Via Fitternity','position'=>$position++];
+
+            $booking_details_data["amount_paid"] = ['field'=>'AMOUNT PAID','value'=>'','position'=>$position++];
 
             if($poc != ""){ 
                 $booking_details_data["poc"] = ['field'=>'POINT OF CONTACT','value'=>$poc,'position'=>$position++];
@@ -956,15 +958,15 @@ class HomeController extends BaseController {
             }
 
             if(isset($item['start_date']) && $item['start_date'] != ""){
-                $booking_details_data['start_date']['value'] = date('d-m-Y (l)',strtotime($item['start_date']));
+                $booking_details_data['start_date']['value'] = date('D, d M Y',strtotime($item['start_date']));
             }
 
             if(isset($item['schedule_date']) && $item['schedule_date'] != ""){
-                $booking_details_data['start_date']['value'] = date('d-m-Y (l)',strtotime($item['schedule_date']));
+                $booking_details_data['start_date']['value'] = date('D, d M Y',strtotime($item['schedule_date']));
             }
 
             if(isset($item['preferred_starting_date']) && $item['preferred_starting_date'] != ""){
-                $booking_details_data['start_date']['value'] = date('d-m-Y (l)',strtotime($item['preferred_starting_date']));
+                $booking_details_data['start_date']['value'] = date('D, d M Y',strtotime($item['preferred_starting_date']));
             }
 
             if(isset($item['start_time']) && $item['start_time'] != ""){
@@ -987,9 +989,72 @@ class HomeController extends BaseController {
                 $booking_details_data['price']['value']= "Rs. ".(string)$item['amount']." (Cash Pickup)";
             }
 
-            if(isset($item['part_payment']) && $item['part_payment']){
-                $header= "Membership reserved";
+            if(isset($item['myreward_id']) && $item['myreward_id'] != ""){
+                $booking_details_data['price']['value']= "Free Via Fitternity";
             }
+
+            if(in_array($type,["booktrialfree","booktrial","workoutsession","workout-session","booktrials"])){
+
+                if(isset($item['code']) && $item['code'] != ""){
+                    $booking_details_data['booking_id']['value'] = $item['code'];
+                }
+            }
+
+            if(isset($item['type']) && $item['type'] == 'memberships'){
+
+                if(isset($item['part_payment']) && $item['part_payment']){
+
+                    $header= "Membership reserved";
+
+                    if($item['amount']){
+
+                        $booking_details_data['amount_paid']['value'] = "Rs. ".(string)$item['amount'];
+
+                        if($item['wallet_amount']){
+                            $booking_details_data['amount_paid']['value'] = "Rs. ".($item['amount']+$item['wallet_amount'])." (Rs. ".$item['remaining_amount']." to be Paid at Gym/Studio)";
+                        }
+
+                    }else{
+
+                        $booking_details_data['amount_paid']['value'] = "Rs. ".(string)$item['wallet_amount'] . " Paid via Fitcash+";
+                    }
+
+                }/*else{
+
+                    $booking_details_data['amount_paid']['field'] = "PAYMENT SUMMARY";
+
+                    $booking_details_data['amount_paid']['value'] = " Rs. ".(string)$item['amount_finder']." Base Amount";
+
+                    if(isset($item['convinience_fee']) && $item['convinience_fee'] > 0){
+
+                        $booking_details_data['amount_paid']['value'] .= "<br/>+Rs. ".$item['convinience_fee']." Convenience Fee";
+                    }
+
+                    if(isset($item['wallet_amount']) && $item['wallet_amount'] > 0){
+
+                        $booking_details_data['amount_paid']['value'] .= "<br/>-Rs. ".$item['wallet_amount']." Fitcash Applied";
+                    }
+
+                    if(isset($item['coupon_discount_amount']) && $item['coupon_discount_amount'] > 0){
+
+                        $booking_details_data['amount_paid']['value'] .= "<br/>-Rs. ".$item['coupon_discount_amount']." Coupon Discount";
+                    }
+
+                    if(isset($item['customer_discount_amount']) && $item['customer_discount_amount'] > 0){
+
+                        $booking_details_data['amount_paid']['value'] .= "<br/>-Rs. ".$item['customer_discount_amount']." Corporate Discount";
+                    }
+
+                    if(isset($item['app_discount_amount']) && $item['app_discount_amount'] > 0){
+
+                        $booking_details_data['amount_paid']['value'] .= "<br/>-Rs. ".$item['app_discount_amount']." App Discount";
+                    }
+
+                    $booking_details_data['amount_paid']['value'] .= "<br/> Rs. ".$item['amount']." Paid";
+
+                }*/
+            }
+
 
             if(isset($item['payment_mode']) && $item['payment_mode'] == 'cod'){
                 $subline= "Your membership will be activated once your cash is collected. Fitternity team will reach out to you to coordinate the cash pick-up.";
@@ -1127,7 +1192,7 @@ class HomeController extends BaseController {
                 "title"=>"Done",
                 "description"=>"Hope you had a great experience. \n If you need any help, you can reach out to us on on below details",
                 "email"=>"info@fitternity.com",
-                "phone"=>"022-61222222"
+                "phone"=>"022-61094444"
             ];
 
             $feedback = [
@@ -3075,6 +3140,227 @@ class HomeController extends BaseController {
 
     }
 
+
+    public function getNetBankingOptions(){
+
+        $data = [];
+
+        $data['options'] = [
+            [
+                "code"=>"BBCB",
+                "bank"=>"Bank of Baroda Corporate Banking"
+            ],
+            [
+                "code"=>"ALLB",
+                "bank"=>"Allahabad Bank NetBanking"
+            ],
+            [
+                "code"=>"ADBB",
+                "bank"=>"Andhra Bank"
+            ],
+            [
+                "code"=>"AXIB",
+                "bank"=>"AXIS Bank NetBanking"
+            ],
+            [
+                "code"=>"BBKB",
+                "bank"=>"Bank of Bahrain and Kuwait"
+            ],
+            [
+                "code"=>"BBRB",
+                "bank"=>"Bank of Baroda Retail Banking"
+            ],
+            [
+                "code"=>"BOIB",
+                "bank"=>"Bank of India"
+            ],
+            [
+                "code"=>"BOMB",
+                "bank"=>"Bank of Maharashtra"
+            ],
+            [
+                "code"=>"CABB",
+                "bank"=>"Canara Bank"
+            ],
+            [
+                "code"=>"CSBN",
+                "bank"=>"Catholic Syrian Bank"
+            ],
+            [
+                "code"=>"CBIB",
+                "bank"=>"Central Bank Of India"
+            ],
+            [
+                "code"=>"CITNB",
+                "bank"=>"Citi Bank NetBanking"
+            ],
+            [
+                "code"=>"CUBB",
+                "bank"=>"CityUnion"
+            ],
+            [
+                "code"=>"CRPB",
+                "bank"=>"Corporation Bank"
+            ],
+            [
+                "code"=>"DCBCORP",
+                "bank"=>"DCB Bank - Corporate Netbanking"
+            ],
+            [
+                "code"=>"DENN",
+                "bank"=>"Dena Bank"
+            ],
+            [
+                "code"=>"DSHB",
+                "bank"=>"Deutsche Bank"
+            ],
+            [
+                "code"=>"DCBB",
+                "bank"=>"Development Credit Bank"
+            ],
+            [
+                "code"=>"FEDB",
+                "bank"=>"Federal Bank"
+            ],
+            [
+                "code"=>"HDFB",
+                "bank"=>"HDFC Bank"
+            ],
+            [
+                "code"=>"ICIB",
+                "bank"=>"ICICI Netbanking"
+            ],
+            [
+                "code"=>"INDB",
+                "bank"=>"Indian Bank"
+            ],
+            [
+                "code"=>"INOB",
+                "bank"=>"Indian Overseas Bank"
+            ],
+            [
+                "code"=>"INIB",
+                "bank"=>"IndusInd Bank"
+            ],
+            [
+                "code"=>"IDBB",
+                "bank"=>"Industrial Development Bank of India"
+            ],
+            [
+                "code"=>"INGB",
+                "bank"=>"ING Vysya Bank"
+            ],
+            [
+                "code"=>"JAKB",
+                "bank"=>"Jammu and Kashmir Bank"
+            ],
+            [
+                "code"=>"KRKB",
+                "bank"=>"Karnataka Bank"
+            ],
+            [
+                "code"=>"KRVB",
+                "bank"=>"Karur Vysya"
+            ],
+            [
+                "code"=>"KRVB",
+                "bank"=>"Karur Vysya - Corporate Netbanking"
+            ],
+            [
+                "code"=>"162B",
+                "bank"=>"Kotak Bank"
+            ],
+            [
+                "code"=>"LVCB",
+                "bank"=>"Laxmi Vilas Bank-Corporate"
+            ],
+            [
+                "code"=>"LVRB",
+                "bank"=>"Laxmi Vilas Bank-Retail"
+            ],
+            [
+                "code"=>"OBCB",
+                "bank"=>"Oriental Bank of Commerce"
+            ],
+            [
+                "code"=>"PNBB",
+                "bank"=>"Punjab National Bank - Retail Banking"
+            ],
+            [
+                "code"=>"CPNB",
+                "bank"=>"Punjab National Bank-Corporate"
+            ],
+            [
+                "code"=>"RTN",
+                "bank"=>"Ratnakar Bank "
+            ],
+            [
+                "code"=>"SRSWT",
+                "bank"=>"Saraswat Bank"
+            ],
+            [
+                "code"=>"SVCB",
+                "bank"=>"Shamrao Vitthal Co-operative Bank"
+            ],
+            [
+                "code"=>"SOIB",
+                "bank"=>"South Indian Bank"
+            ],
+            [
+                "code"=>"SDCB",
+                "bank"=>"Standard Chartered Bank"
+            ],
+            [
+                "code"=>"SBBJB",
+                "bank"=>"State Bank of Bikaner and Jaipur"
+            ],
+            [
+                "code"=>"SBHB",
+                "bank"=>"State Bank of Hyderabad"
+            ],
+            [
+                "code"=>"SBIB",
+                "bank"=>"State Bank of India"
+            ],
+            [
+                "code"=>"SBMB",
+                "bank"=>"State Bank of Mysore"
+            ],
+            [
+                "code"=>"SBPB",
+                "bank"=>"State Bank of Patiala"
+            ],
+            [
+                "code"=>"SBTB",
+                "bank"=>"State Bank of Travancore"
+            ],
+            [
+                "code"=>"UBIBC",
+                "bank"=>"Union Bank - Corporate Netbanking"
+            ],
+            [
+                "code"=>"UBIB",
+                "bank"=>"Union Bank of India"
+            ],
+            [
+                "code"=>"UNIB",
+                "bank"=>"United Bank Of India"
+            ],
+            [
+                "code"=>"VJYB",
+                "bank"=>"Vijaya Bank"
+            ],
+            [
+                "code"=>"YESB",
+                "bank"=>"Yes Bank"
+            ]
+        ];
+
+        $data['status'] = 200;
+        $data['message'] = 'Bank Options';
+
+        return  Response::json($data,200);
+    }
 
     public function careerCapture(){
 

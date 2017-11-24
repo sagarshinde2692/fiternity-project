@@ -244,6 +244,15 @@ Class FinderSms extends VersionNextSms{
 		return $this->common($label,$to,$data);
 	}
 
+	protected function genericOtp ($data){
+
+		$label = 'Generic-Otp-Customer';
+
+		$to = explode(',', $data['finder_vcc_mobile']);
+
+		return $this->common($label,$to,$data);
+	}
+
 
 	public function common($label,$to,$data,$delay = 0){
 
