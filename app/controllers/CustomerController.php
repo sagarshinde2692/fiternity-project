@@ -748,7 +748,7 @@ class CustomerController extends \BaseController {
 
 		Finder::$withoutAppends=true;
 
-		$finder = Finder::with(array('location'=>function($query){$query->select('name');}))->with(array('city'=>function($query){$query->select('name');}))->find((int)$kiosk_user['finder_id']);
+		$finder = Finder::with(array('location'=>function($query){$query->select('name','slug');}))->with(array('city'=>function($query){$query->select('name','slug');}))->find((int)$kiosk_user['finder_id']);
 
 		$data = [
 			'_id'=>$finder['_id'],
