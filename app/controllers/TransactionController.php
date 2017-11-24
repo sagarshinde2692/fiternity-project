@@ -3719,7 +3719,7 @@ class TransactionController extends \BaseController {
 
         $customer_id = isset($customer_id) ? $customer_id : false;
 
-        $resp = $this->customerreward->couponCodeDiscountCheck($ratecard,$couponCode,$customer_id, $ticket, $ticket_quantity, $service_id);
+        $resp = $this->customerreward->couponCodeDiscountCheck($ratecard,$couponCode,$customer_id, $ticket, $ticket_quantity, $service_id); 
 
         if($resp["coupon_applied"]){
 
