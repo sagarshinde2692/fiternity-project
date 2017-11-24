@@ -160,7 +160,7 @@ return array(
 		//'Aloha\Twilio\TwilioServiceProvider',
 		'Hernandev\HipchatLaravel\HipchatLaravelServiceProvider',
 		'Aws\Laravel\AwsServiceProvider',
-		// 'SimpleSoftwareIO\QrCode\QrCodeServiceProvider'
+		'SimpleSoftwareIO\QrCode\QrCodeServiceProvider'
 	),
 
 	/*
@@ -235,7 +235,7 @@ return array(
 		'HipChat'         	=> 'Hernandev\HipchatLaravel\Facade\HipChat',
 		'AWS' 				=> 'Aws\Laravel\AwsFacade',
 		'DbEvent' 			=> 'App\Models\Event',
-		// 'QrCode' 			=> 'SimpleSoftwareIO\QrCode\Facades\QrCode'
+		'QrCode' 			=> 'SimpleSoftwareIO\QrCode\Facades\QrCode'
 	),
 
 	'cachetime' 					=> 	10,
