@@ -5321,6 +5321,18 @@ class CustomerController extends \BaseController {
 
 		$data = Input::json()->all();
 
+		if(empty($data)){
+
+			return Response::json(
+			array(
+					'status' => 400,
+					'message' => "Empty Data",
+					),
+				200
+			);
+
+		}
+
 		$transaction_data = [];
 
         if(isset($data['customer_id']) && $data['customer_id'] != ""){
