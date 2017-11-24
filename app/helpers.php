@@ -44,7 +44,7 @@ if (!function_exists('decode_customer_token')) {
             return Response::json(array('status' => 400,'message' => 'Token incorrect, Please login again'),400);
         }catch(ExpiredException $e){
 
-            JWT::$leeway = 720000;
+            JWT::$leeway = 7200000;
 
             $decodedToken = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
             return $decodedToken;
@@ -2691,7 +2691,7 @@ if (!function_exists(('customerTokenDecode'))){
             return Response::json(array('status' => 400,'message' => 'Token incorrect, Please login again'),400);
         }catch(ExpiredException $e){
 
-            JWT::$leeway = 720000;
+            JWT::$leeway = 7200000;
 
             $decodedToken = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
             return $decodedToken;
