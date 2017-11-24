@@ -2324,8 +2324,8 @@ class SchedulebooktrialsController extends \BaseController {
 
             $booktrial = Booktrial::findOrFail($booktrial_id);
 
-            /*$booktrail->qrcode = $this->utilities->createQrCode($booktrial['code']);
-            $booktrial->update();*/
+            $booktrial->qrcode = $this->utilities->createQrCode($booktrial['code']);
+            $booktrial->update();
 
 
             $dates = array('schedule_date','schedule_date_time','missedcall_date','customofferorder_expiry_date','followup_date','auto_followup_date');
