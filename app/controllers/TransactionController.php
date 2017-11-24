@@ -696,13 +696,16 @@ class TransactionController extends \BaseController {
 
         $part_payment_applicable = (!$updating_part_payment && $part_payment && $data["amount_finder"] >= 3000) ? true : false;
 
+        $pay_at_vendor_applicable = true;
+
         $resp   =   array(
             'status' => 200,
             'data' => $result,
             'message' => "Tmp Order Generated Sucessfully",
             'part_payment' => $part_payment_applicable,
             'cash_pickup' => $cash_pickup_applicable,
-            'emi'=>$emi_applicable
+            'emi'=>$emi_applicable,
+            'pay_at_vendor'=>$pay_at_vendor_applicable
         );
 
         if(isset($_GET['device_type']) && in_array($_GET['device_type'], ['android', 'ios'])){
@@ -731,7 +734,7 @@ class TransactionController extends \BaseController {
 
             if($this->vendor_token){
         
-                if($cash_pickup_applicable){
+                if($pay_at_vendor_applicable){
 
                     $payment_mode_type_array[] = 'pay_at_vendor';
                 }
