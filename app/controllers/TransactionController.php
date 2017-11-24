@@ -395,6 +395,7 @@ class TransactionController extends \BaseController {
         Log::info($finderDetail["data"]);
 
         $part_payment = (isset($finderDetail['data']['finder_flags']) && isset($finderDetail['data']['finder_flags']['part_payment'])) ? $finderDetail['data']['finder_flags']['part_payment'] : false;
+        $cash_pickup = (isset($finderDetail['data']['finder_flags']) && isset($finderDetail['data']['finder_flags']['cash_pickup'])) ? $finderDetail['data']['finder_flags']['cash_pickup'] : false;
         
         if(!$updating_part_payment && $part_payment && $data["amount_finder"] >= 3000){
 
@@ -689,7 +690,7 @@ class TransactionController extends \BaseController {
             $order->update(array('redis_id'=>$redisid));
         }
 
-        $cash_pickup_applicable = (isset($data['amount_final']) && $data['amount_final'] >= 3000) ? true : false;
+        $cash_pickup_applicable = ($cash_pickup && isset($data['amount_final']) && $data['amount_final'] >= 3000) ? true : false;
 
         $emi_applicable = $this->utilities->displayEmi(array('amount_final'=>$data['amount_final']));
 
@@ -890,6 +891,10 @@ class TransactionController extends \BaseController {
             if($order->customer_email != $decoded->customer->email){
                 $resp   =   array("status" => 401,"message" => "Invalid Customer");
                 return Response::json($resp,$resp["status"]);
+            }
+
+            if(isset($data["payment_mode"]) && $data["payment_mode"] == "cod"){
+               $data["secondary_payment_mode"] = "cod_membership";
             }
 
             if($order->status == "1" && isset($data['preferred_starting_date']) && $data['preferred_starting_date']  != '' && $data['preferred_starting_date']  != '-'){
