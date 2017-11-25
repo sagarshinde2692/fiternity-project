@@ -1108,7 +1108,6 @@ Class CustomerReward {
         }
         
         $coupon = $query->first();
-        Log::info("",$coupon->toArray());
         
         if(isset($coupon)){
             
