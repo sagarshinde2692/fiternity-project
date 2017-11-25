@@ -1742,6 +1742,20 @@ class TransactionController extends \BaseController {
                 }
 
             }
+        }else{
+            $couponCheck = $this->customerreward->couponCodeDiscountCheck($ratecard,$data["coupon_code"],$customer_id, $ticket, $ticket_quantity, $service_id);
+            
+            if(isset($couponCheck["coupon_applied"]) && $couponCheck["coupon_applied"]){
+
+                $data["coupon_discount_amount"] = $amount > $couponCheck["data"]["discount"] ? $couponCheck["data"]["discount"] : $amount;
+
+                $amount -= $data["coupon_discount_amount"];
+
+                if(isset($couponCheck["vendor_coupon"]) && $couponCheck["vendor_coupon"]){
+                    $data["payment_mode"] = "at the studio";
+                    $data["secondary_payment_mode"] = "cod_membership";
+                }
+            }
         }
 
         $data['amount_final'] = $amount;
