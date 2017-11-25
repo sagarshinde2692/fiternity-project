@@ -1743,6 +1743,7 @@ class TransactionController extends \BaseController {
 
             }
         }else{
+            $ratecard = isset($data['ratecard_id'])?Ratecard::find($data['ratecard_id']):null;
             $couponCheck = $this->customerreward->couponCodeDiscountCheck($ratecard,$data["coupon_code"],$customer_id, $ticket, $ticket_quantity, $service_id);
             
             if(isset($couponCheck["coupon_applied"]) && $couponCheck["coupon_applied"]){
