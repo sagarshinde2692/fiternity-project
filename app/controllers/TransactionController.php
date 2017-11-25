@@ -1743,9 +1743,24 @@ class TransactionController extends \BaseController {
 
             }
         }else{
-            $ratecard = isset($data['ratecard_id'])?Ratecard::find($data['ratecard_id']):null;
-            $couponCheck = $this->customerreward->couponCodeDiscountCheck($ratecard,$data["coupon_code"],$customer_id, $ticket, $ticket_quantity, $service_id);
+            if(isset($data["coupon_code"]) && $data["coupon_code"] != ""){
+                
+            $ticket_quantity = isset($data['ticket_quantity'])?$data['ticket_quantity']:1;
+            $ticket = null;
+            if(isset($data['ticket_id'])){
+                $ticket = Ticket::find($data['ticket_id']);
+                if(!$ticket){
+                    $resp = array('status'=>400, 'message'=>'Ticket not found');
+                    return Response::json($resp, 400);
+                }
+            }
             
+            $ratecard = isset($data['ratecard_id'])?Ratecard::find($data['ratecard_id']):null;
+            Log::info("Customer Info". $customer_id);
+            $service_id = isset($data['service_id']) ? $data['service_id'] : null;
+            
+            $couponCheck = $this->customerreward->couponCodeDiscountCheck($ratecard,$data["coupon_code"],$customer_id, $ticket, $ticket_quantity, $service_id);
+
             if(isset($couponCheck["coupon_applied"]) && $couponCheck["coupon_applied"]){
 
                 $data["coupon_discount_amount"] = $amount > $couponCheck["data"]["discount"] ? $couponCheck["data"]["discount"] : $amount;
@@ -1757,6 +1772,8 @@ class TransactionController extends \BaseController {
                     $data["secondary_payment_mode"] = "cod_membership";
                 }
             }
+            
+        }
         }
 
         $data['amount_final'] = $amount;
