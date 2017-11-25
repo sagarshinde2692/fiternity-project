@@ -941,14 +941,14 @@ Class CustomerReward {
             $decoded = $this->customerTokenDecode($jwt_token);
             $customer_id = $decoded->customer->_id;
         }
+        return $this->purchaseGameNew($amount,$finder_id,$payment_mode,$offer_id,$customer_id,$part_payment_amount,$convinience_fee);
+        // $customer = \Customer::find($customer_id);
+        
+        // if(isset($customer->demonetisation)){
 
-        $customer = \Customer::find($customer_id);
+        //     return $this->purchaseGameNew($amount,$finder_id,$payment_mode,$offer_id,$customer_id,$part_payment_amount,$convinience_fee);
 
-        if(isset($customer->demonetisation) || $finder_id == 12064){
-
-            return $this->purchaseGameNew($amount,$finder_id,$payment_mode,$offer_id,$customer_id,$part_payment_amount,$convinience_fee);
-
-        }
+        // }
 
         return $this->purchaseGameOld($amount,$finder_id,$payment_mode,$offer_id,$customer_id,$part_payment_amount,$convinience_fee);
 
@@ -1108,6 +1108,7 @@ Class CustomerReward {
         }
         
         $coupon = $query->first();
+
         
         if(isset($coupon)){
             
