@@ -350,6 +350,7 @@ class TransactionController extends \BaseController {
         if(!$updating_part_payment && !isset($data['myreward_id'])) {
 
             $cashbackRewardWallet =$this->getCashbackRewardWallet($data,$order);
+            Log::info("cashbackRewardWallet",$cashbackRewardWallet);
 
             if($cashbackRewardWallet['status'] != 200){
                 return Response::json($cashbackRewardWallet,$cashbackRewardWallet['status']);
