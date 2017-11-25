@@ -944,7 +944,7 @@ Class CustomerReward {
 
         $customer = \Customer::find($customer_id);
 
-        if(isset($customer->demonetisation)){
+        if(isset($customer->demonetisation) || $finder_id == 12064){
 
             return $this->purchaseGameNew($amount,$finder_id,$payment_mode,$offer_id,$customer_id,$part_payment_amount,$convinience_fee);
 
