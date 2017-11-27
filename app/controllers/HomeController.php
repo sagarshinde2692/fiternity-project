@@ -2831,7 +2831,8 @@ class HomeController extends BaseController {
         
         $data = [];
 
-        $data['isEventUpcoming'] = time() <= strtotime(date('2017-11-26 12:00:00')) ? true : false;
+        // $data['isEventUpcoming'] = time() <= strtotime(date('2017-11-26 12:00:00')) ? true : false;
+        $data['isEventUpcoming'] = false;
         $data['logo'] = "http://b.fitn.in/global/toi/mfp/mfpmum-26th/mfplogo26.png";
         $data["upcoming_party"] = [
             "title"=>"26th November, Verbana<br>Kamala Mills",
