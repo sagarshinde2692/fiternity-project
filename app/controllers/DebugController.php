@@ -5436,6 +5436,57 @@ public function yes($msg){
 		return $path;
 	}
 
+
+	public function customerDemonetiseIssue(){
+
+		$emails = Customer::where('status','exists',false)->lists('email');
+
+		echo"<pre>";print_r($emails);exit;
+
+		$ids = Customer::where('status','exists',false)->lists('_id');
+
+		$ids = array_map('intval',$ids);
+
+		$new_customer_emails =  Customer::where('status','exists',true)->whereIn('email',$emails)
+		    ->lists('email');
+
+		/*$new_customer_ids =  Customer::where('status','exists',false)->whereIn('email',$emails)
+		    ->whereNotIn('_id',$ids)
+		    ->lists('email');
+
+		//$new_customer_ids = array_map('intval',$new_customer_ids);
+
+		$delete_customer_ids =  Customer::where('status','exists',false)->whereIn('email',$emails)
+		    ->whereNotIn('_id',$new_customer_ids)
+		    ->lists('ids');*/
+
+		
+
+		echo"<pre>";print_r($new_customer_emails);exit;
+
+
+
+
+		/*$data = [];
+
+		$customer_ids = Customer::orwhere('status','exists',false)->orwhere('demonetisation','exists',false)->lists('_id');
+
+		$customer_ids = array_map('intval',$customer_ids);
+
+		$data['order_count'] = Order::whereIn('customer_id',$customer_ids)->lists('customer_id');
+
+		$data['trial_count'] = Booktrial::whereIn('customer_id',$customer_ids)->lists('customer_id');
+
+		$data['capture_count'] = Capture::whereIn('customer_id',$customer_ids)->lists('customer_id');
+
+		$data['wallet_count'] = Wallet::whereIn('customer_id',$customer_ids)->count();
+
+		$data['customer_wallet_count'] = Customerwallet::whereIn('customer_id',$customer_ids)->count();
+
+		return $data;*/
+
+	}
+
 	
 
     
