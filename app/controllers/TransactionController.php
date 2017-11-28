@@ -620,6 +620,7 @@ class TransactionController extends \BaseController {
         if(isset($data['paymentmode_selected']) && $data['paymentmode_selected'] == 'pay_at_vendor'){
 
             $data['payment_mode'] = 'at the studio';
+            $data["secondary_payment_mode"] = "at_vendor_post";
         }
 
         if(isset($old_order_id)){
