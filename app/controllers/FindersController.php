@@ -1555,11 +1555,43 @@ class FindersController extends \BaseController {
 			$data = Input::json()->all();
 		}
 
+		$jwt_token = Request::header('Authorization');
+
+	    if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+
+	        $decoded = customerTokenDecode($jwt_token);
+	        $data['customer_id'] = (int)$decoded->customer->_id;
+	    }
+
 		// return Input::json()->all();
 		$validator = Validator::make($data, Review::$rules);
+		
 		if ($validator->fails()) {
 			$response = array('status' => 400, 'message' => 'Could not create a review.', 'errors' => $validator->errors());
 			return Response::json($response, 400);
+		}
+
+		if(isset($data['review_for']) && in_array($data['review_for'],['membership','session'])){
+
+			switch ($data['review_for']) {
+				case 'membership' :
+					$transaction = Order::active()->where('finder_id',(int)$data["finder_id"])->where('customer_id',(int)$data["customer_id"])->orderBy('_id','desc')->first();
+					if($transaction){
+						$data["order_id"] = (int)$transaction['_id'];
+					}
+					break;
+				case 'session' :
+					$transaction = Booktrial::where('finder_id',(int)$data["finder_id"])->where('customer_id',(int)$data["customer_id"])->orderBy('_id','desc')->first();
+					if($transaction){
+						$data["booktrial_id"] = (int)$transaction['_id'];
+					}
+					break;
+				default : break;
+			}
+		}
+
+		if($this->vendor_token){
+			$data['source'] = 'kiosk';
 		}
 
 		$reviewdata = [
