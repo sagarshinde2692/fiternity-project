@@ -2032,6 +2032,9 @@ class SchedulebooktrialsController extends \BaseController {
                 
             }
 
+            $pre_trial_vendor_confirmation = (isset($finderid) && in_array($finderid, Config::get('app.trial_auto_confirm_finder_ids'))) ? 'confirmed' : 'yet_to_connect';
+            
+
             $booktrialdata = array(
                 'booktrialid'                   =>      intval($booktrialid),
                 'premium_session'               =>      $premium_session,
@@ -2127,7 +2130,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'vendor_link'                   =>      $vendor_link,
                 'finder_location_slug'          =>      $finder_location_slug,
                 'order_id'                      =>      $orderid,
-                'membership'                    =>      $membership
+                'membership'                    =>      $membership,
+                'pre_trial_vendor_confirmation' =>      $pre_trial_vendor_confirmation
             );
 
             if(isset($order['recommended_booktrial_id']) && $order['recommended_booktrial_id'] != ""){
@@ -2886,7 +2890,8 @@ class SchedulebooktrialsController extends \BaseController {
             $pay_as_you_go_link = $this->utilities->getShortenUrl(Config::get('app.website')."/workout/".$finder_city_slug."?regions=".$finder_location_slug);
             $profile_link = $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$customer_email);
             $vendor_link = $this->utilities->getShortenUrl(Config::get('app.website')."/".$finder_slug);
-
+            
+            $pre_trial_vendor_confirmation = (isset($data['finder_id']) && in_array($data['finder_id'], Config::get('app.trial_auto_confirm_finder_ids'))) ? 'confirmed' : 'yet_to_connect';
 
 
             $booktrialdata = array(
@@ -2983,7 +2988,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'profile_link'                  =>      $profile_link,
                 'vendor_link'                   =>      $vendor_link,
                 'finder_location_slug'          =>      $finder_location_slug,
-                'membership'                    =>      $membership
+                'membership'                    =>      $membership,
+                'pre_trial_vendor_confirmation' =>      $pre_trial_vendor_confirmation
 
             );
 
