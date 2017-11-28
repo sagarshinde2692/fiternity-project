@@ -1068,3 +1068,6 @@ Route::post('customer/capture','CustomerController@customerCapture');
 
 Route::get('customer/getformfields','CustomerController@getFormFields');
 
+Route::get('customerDemonetiseIssue', 'DebugController@customerDemonetiseIssue');
+
+
