@@ -3694,7 +3694,7 @@ class FindersController extends \BaseController {
 				'row'=>[
 					[
 						'name'=>'List of gyms that are open for 24 hours near me in '.$city_slug.' for a workout with a trainer and for weight loss. Get address, location, fees, and reviews',
-						'link'=> Config::get('app.website').'/'.$city_slug.'/gyms'
+						'link'=> Config::get('app.website').'/'.$city_slug.'/gyms/24-hour-facility'
 					]
 
 				]
