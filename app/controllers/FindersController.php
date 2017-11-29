@@ -3602,8 +3602,9 @@ class FindersController extends \BaseController {
 	public function vendorFooter($finderdata){
 
 		$location_slug = $finderdata["location"]["slug"];
-		$location_name = $finderdata["location"]["name"];
+		$location_name = ucwords($finderdata["location"]["name"]);
 		$city_slug = $finderdata["city"]["slug"];
+		$city_name = ucwords($finderdata["city"]["name"]);
 
 		$data = [
 			[
@@ -3657,6 +3658,46 @@ class FindersController extends \BaseController {
 					]
 
 				]
+			],
+			[
+				'title'=>'Find classes for beginners in '.$city_name,
+				'row'=>[
+					[
+						'name'=>' Yoga classes for beginners',
+						'link'=> Config::get('app.website').'/'.$city_slug.'/yoga-classes'
+					],
+					[
+						'name'=>'Zumba classes for beginners',
+						'link'=> Config::get('app.website').'/'.$city_slug.'/zumba-classes'
+					],
+					[
+						'name'=>'CrossFit classes for beginners',
+						'link'=> Config::get('app.website').'/'.$city_slug.'/functional-training'
+					],
+					[
+						'name'=>'Gyms for beginners',
+						'link'=> Config::get('app.website').'/'.$city_slug.'/gyms'
+					],
+					[
+						'name'=>'Dance classes for beginners',
+						'link'=> Config::get('app.website').'/'.$city_slug.'/dance-classes'
+					],
+					[
+						'name'=>'Pilates for beginners',
+						'link'=> Config::get('app.website').'/'.$city_slug.'/pilates-classes'
+					]
+
+				]
+			],
+			[
+				'title'=>'24 hours open gyms near me in '.$city_name,
+				'row'=>[
+					[
+						'name'=>'List of gyms that are open for 24 hours near me in '.$city_slug.' for a workout with a trainer and for weight loss. Get address, location, fees, and reviews',
+						'link'=> Config::get('app.website').'/'.$city_slug.'/gyms'
+					]
+
+				]
 			]
 		];
 
@@ -3695,20 +3736,26 @@ class FindersController extends \BaseController {
 		    $finders = array_chunk($finders,5);
 		}
 
-	    $data[] = [
-	    	'title'=>'Recommended in '.$location_name,
-	    	'row'=> isset($finders[0]) ? $finders[0] : []
-	    ];
+		if(isset($finders[0])){
+		    $data[] = [
+		    	'title'=>'Recommended in '.$location_name,
+		    	'row'=> $finders[0]
+		    ];
+		}
 
-	    $data[] = [
-	    	'title'=>'Top Fitness Options in '.$location_name,
-	    	'row'=> isset($finders[1]) ? $finders[1] : []
-	    ];
+		if(isset($finders[1])){
+		    $data[] = [
+		    	'title'=>'Top Fitness Options in '.$location_name,
+		    	'row'=> $finders[1]
+		    ];
+		}
 
-	    $data[] = [
-	    	'title'=>'Trending Places in '.$location_name,
-	    	'row'=> isset($finders[2]) ? $finders[2] : []
-	    ];
+		if(isset($finders[2])){
+		    $data[] = [
+		    	'title'=>'Trending Places in '.$location_name,
+		    	'row'=> $finders[2]
+		    ];
+		}
 
 		return $data;
 
