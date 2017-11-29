@@ -2902,7 +2902,11 @@ if (!function_exists('decodeKioskVendorToken')) {
         $jwt_key                =   Config::get('jwt.kiosk.key');
         $jwt_alg                =   Config::get('jwt.kiosk.alg');
         $decodedToken           =   JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+
         Log::info("Vendor Token : ".$jwt_token);
+
+        Log::info("decodeKioskVendorToken : ",json_decode(json_encode($decodedToken),true));
+
         return $decodedToken;
     }
 
@@ -3058,6 +3062,22 @@ if (!function_exists('formFields')) {
         return $data;
     }
 
+}
+
+if (!function_exists('isKioskVendor')) {
+
+    function isKioskVendor($finder_id){
+
+        $isKioskVendor = false;
+
+        $count = KioskUser::where('finder_id',(int) $finder_id)->where('type','kiosk')->count();
+
+        if($count){
+            $isKioskVendor = true;
+        }
+
+        return $isKioskVendor;
+    }
 }
 
 

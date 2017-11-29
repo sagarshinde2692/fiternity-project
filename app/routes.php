@@ -1071,4 +1071,6 @@ Route::get('customer/getformfields','CustomerController@getFormFields');
 
 Route::get('customerDemonetiseIssue', 'DebugController@customerDemonetiseIssue');
 
+Route::get('locatetrialcommunication/{booktrial_id}','SchedulebooktrialsController@locateTrialCommunication');
+
 
