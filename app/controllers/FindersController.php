@@ -3690,10 +3690,10 @@ class FindersController extends \BaseController {
 				]
 			],
 			[
-				'title'=>'24 hours open gyms near me in '.$city_name,
+				'title'=>'24 hours open gyms in '.$city_name,
 				'row'=>[
 					[
-						'name'=>'List of gyms that are open for 24 hours near me in '.$city_slug.' for a workout with a trainer and for weight loss. Get address, location, fees, and reviews',
+						'name'=>'24 hours open gyms near me in '.$city_name,
 						'link'=> Config::get('app.website').'/'.$city_slug.'/gyms/24-hour-facility'
 					]
 
