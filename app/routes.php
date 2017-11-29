@@ -231,6 +231,7 @@ Route::get('customerdetail/email/{customeremail}',  array('as' => 'customer.cust
 Route::get('isregistered/{email}/{id?}/{collection?}',  array('as' => 'customer.isregistered','uses' => 'CustomerController@isRegistered'));
 Route::post('customer/addregid', array('as' => 'customer.addregid','uses' => 'CustomerController@addRegId'));
 Route::post('customer/add/webnotification', array('as' => 'customer.addwebnotification','uses' => 'CustomerController@addWebNotification'));
+Route::post('customer/update/webnotification', array('as' => 'customer.updatewebnotification','uses' => 'CustomerController@updateWebNotification'));
 Route::post('customer/addhealthinfo', array('as' => 'customer.addhealthinfo','uses' => 'CustomerController@addHealthInfo'));
 Route::post('customer/myrewards/create', array('as' => 'customer.createMyReward','uses' => 'MyrewardController@createMyReward'));
 Route::group(array('before' => 'device'), function() {
