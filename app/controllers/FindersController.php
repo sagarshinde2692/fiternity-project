@@ -1555,11 +1555,43 @@ class FindersController extends \BaseController {
 			$data = Input::json()->all();
 		}
 
+		$jwt_token = Request::header('Authorization');
+
+	    if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+
+	        $decoded = customerTokenDecode($jwt_token);
+	        $data['customer_id'] = (int)$decoded->customer->_id;
+	    }
+
 		// return Input::json()->all();
 		$validator = Validator::make($data, Review::$rules);
+		
 		if ($validator->fails()) {
 			$response = array('status' => 400, 'message' => 'Could not create a review.', 'errors' => $validator->errors());
 			return Response::json($response, 400);
+		}
+
+		if(isset($data['review_for']) && in_array($data['review_for'],['membership','session'])){
+
+			switch ($data['review_for']) {
+				case 'membership' :
+					$transaction = Order::active()->where('finder_id',(int)$data["finder_id"])->where('customer_id',(int)$data["customer_id"])->orderBy('_id','desc')->first();
+					if($transaction){
+						$data["order_id"] = (int)$transaction['_id'];
+					}
+					break;
+				case 'session' :
+					$transaction = Booktrial::where('finder_id',(int)$data["finder_id"])->where('customer_id',(int)$data["customer_id"])->orderBy('_id','desc')->first();
+					if($transaction){
+						$data["booktrial_id"] = (int)$transaction['_id'];
+					}
+					break;
+				default : break;
+			}
+		}
+
+		if($this->vendor_token){
+			$data['source'] = 'kiosk';
 		}
 
 		$reviewdata = [
@@ -3570,8 +3602,9 @@ class FindersController extends \BaseController {
 	public function vendorFooter($finderdata){
 
 		$location_slug = $finderdata["location"]["slug"];
-		$location_name = $finderdata["location"]["name"];
+		$location_name = ucwords($finderdata["location"]["name"]);
 		$city_slug = $finderdata["city"]["slug"];
+		$city_name = ucwords($finderdata["city"]["name"]);
 
 		$data = [
 			[
@@ -3625,6 +3658,46 @@ class FindersController extends \BaseController {
 					]
 
 				]
+			],
+			[
+				'title'=>'Find classes for beginners in '.$city_name,
+				'row'=>[
+					[
+						'name'=>' Yoga classes for beginners',
+						'link'=> Config::get('app.website').'/'.$city_slug.'/yoga-classes'
+					],
+					[
+						'name'=>'Zumba classes for beginners',
+						'link'=> Config::get('app.website').'/'.$city_slug.'/zumba-classes'
+					],
+					[
+						'name'=>'CrossFit classes for beginners',
+						'link'=> Config::get('app.website').'/'.$city_slug.'/functional-training'
+					],
+					[
+						'name'=>'Gyms for beginners',
+						'link'=> Config::get('app.website').'/'.$city_slug.'/gyms'
+					],
+					[
+						'name'=>'Dance classes for beginners',
+						'link'=> Config::get('app.website').'/'.$city_slug.'/dance-classes'
+					],
+					[
+						'name'=>'Pilates for beginners',
+						'link'=> Config::get('app.website').'/'.$city_slug.'/pilates-classes'
+					]
+
+				]
+			],
+			[
+				'title'=>'24 hours open gyms in '.$city_name,
+				'row'=>[
+					[
+						'name'=>'24 hours open gyms near me in '.$city_name,
+						'link'=> Config::get('app.website').'/'.$city_slug.'/gyms/24-hour-facility'
+					]
+
+				]
 			]
 		];
 
@@ -3663,20 +3736,26 @@ class FindersController extends \BaseController {
 		    $finders = array_chunk($finders,5);
 		}
 
-	    $data[] = [
-	    	'title'=>'Recommended in '.$location_name,
-	    	'row'=> isset($finders[0]) ? $finders[0] : []
-	    ];
+		if(isset($finders[0])){
+		    $data[] = [
+		    	'title'=>'Recommended in '.$location_name,
+		    	'row'=> $finders[0]
+		    ];
+		}
 
-	    $data[] = [
-	    	'title'=>'Top Fitness Options in '.$location_name,
-	    	'row'=> isset($finders[1]) ? $finders[1] : []
-	    ];
+		if(isset($finders[1])){
+		    $data[] = [
+		    	'title'=>'Top Fitness Options in '.$location_name,
+		    	'row'=> $finders[1]
+		    ];
+		}
 
-	    $data[] = [
-	    	'title'=>'Trending Places in '.$location_name,
-	    	'row'=> isset($finders[2]) ? $finders[2] : []
-	    ];
+		if(isset($finders[2])){
+		    $data[] = [
+		    	'title'=>'Trending Places in '.$location_name,
+		    	'row'=> $finders[2]
+		    ];
+		}
 
 		return $data;
 

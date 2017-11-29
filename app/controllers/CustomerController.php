@@ -525,7 +525,9 @@ class CustomerController extends \BaseController {
 			return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),400);
 		}else{
 
-			$customer = Customer::where('email','=',$data['email'])->where('identity','!=','email')->first();
+			// $customer = Customer::where('email','=',$data['email'])->where('identity','!=','email')->first();
+
+			$customer = Customer::where('email','=',$data['email'])->first();
 			
 			if(empty($customer)){
 
