@@ -6214,7 +6214,7 @@ class SchedulebooktrialsController extends \BaseController {
         $vendor = json_decode(json_encode($decodeKioskVendorToken->vendor),true);
 
         $response = array('status' => 400,'message' =>'Sorry! Cannot locate your booking');
-
+        Log::info("Kiosk find at vendor ".$vendor['_id']."and the code used :".$code);
         $booktrial = Booktrial::where('code',$code)
            ->where('finder_id',(int)$vendor['_id'])
            ->where('created_at','>',new MongoDate(strtotime(date('Y-m-d 00:00:00'))))
@@ -6226,7 +6226,7 @@ class SchedulebooktrialsController extends \BaseController {
             'code'=>$code,
             'finder_id'=>(int)$vendor['_id'],
         ];
-
+        
         $locateTransaction = LocateTransaction::create($locate_data); 
 
         if(isset($booktrial)){
