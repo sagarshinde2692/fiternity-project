@@ -3064,6 +3064,22 @@ if (!function_exists('formFields')) {
 
 }
 
+if (!function_exists('isKioskVendor')) {
+
+    function isKioskVendor($finder_id){
+
+        $isKioskVendor = false;
+
+        $count = KioskUser::where('finder_id',(int) $finder_id)->where('type','kiosk')->count();
+
+        if($count){
+            $isKioskVendor = true;
+        }
+
+        return $isKioskVendor;
+    }
+}
+
 
 
 ?>
