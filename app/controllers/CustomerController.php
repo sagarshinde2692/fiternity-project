@@ -5191,9 +5191,35 @@ class CustomerController extends \BaseController {
 		$device->endpoint = $addWebDevice['endpoint'];
 		$device->keys = $addWebDevice['keys'];
 		$device->status = "1";
+		$device->city_id = isset($data["city_id"]) ? array($data["city_id"]) : array();
 		// return $device;
 		$device->save();
 		return Response::json(array('status' => 200,'message' => 'success','device'=>$device),200);
+	}
+
+	public function updateWebNotification(){
+		$data = Input::json()->all();
+		$resp = Response::json(array('status' => 400,'message' => 'Customer Id not found'),400);
+		if(isset($data["customer_id"])){
+			$deviceFound = Device::where("endpoint",$data["endpoint"])->first();
+			if($deviceFound){
+				$deviceFound->customer_id = (int) $data["customer_id"];
+				if(isset($deviceFound->city_id)){
+					if(isset($data["city_id"]) && !in_array($data["city_id"],$deviceFound['city_id'])){
+						$cityIdsFound = $deviceFound['city_id'];
+						array_push($cityIdsFound,$data["city_id"]);
+						$deviceFound->city_id = $cityIdsFound;
+					}
+				}else{
+					$deviceFound['city_id'] = array($data["city_id"]);	
+				}
+				$deviceFound->save();
+				$resp = Response::json(array('status' => 200,'message' => 'success','device'=>$deviceFound),200);
+			}else{
+				$resp = Response::json(array('status' => 400,'message' => 'Device not found'),400);
+			}
+		}
+		return $resp;
 	}
 
 	public function feedback(){
