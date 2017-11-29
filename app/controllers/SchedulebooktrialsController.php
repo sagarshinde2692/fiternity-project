@@ -812,6 +812,8 @@ class SchedulebooktrialsController extends \BaseController {
         if($this->vendor_token){
 
             $booktrialdata['source'] = 'kiosk';
+            $booktrialdata['final_lead_stage'] = 'trial_stage';
+            $booktrialdata['final_lead_status'] = 'confirmed';
         }
 
 
@@ -2446,26 +2448,25 @@ class SchedulebooktrialsController extends \BaseController {
                 $delayReminderTimeBefore20Min      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->subMinutes(20);
 
                 $send_communication["customer_sms_before20Min"] = $this->customersms->bookTrialReminderBefore20Min($booktrialdata, $delayReminderTimeBefore20Min);
-
-                // if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
-                    $send_communication["customer_notification_before20Min"] = $this->customernotification->bookTrialReminderBefore20Min($booktrialdata, $delayReminderTimeBefore20Min);
-                // }
+                
+                $send_communication["customer_notification_before20Min"] = $this->customernotification->bookTrialReminderBefore20Min($booktrialdata, $delayReminderTimeBefore20Min);
 
                 $booktrial->missedcall_batch = $batch;
             }
 
-            $delayReminderTimeAfter90Min      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->addMinutes(90);
 
-            $send_communication["customer_sms_after2hour"] = $this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter90Min);
-            $send_communication["customer_email_after2hour"] = $this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter90Min);
+            if(!isKioskVendor($booktrialdata['finder_id'])){
+
+                $delayReminderTimeAfter90Min      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->addMinutes(90);
+
+                $send_communication["customer_sms_after2hour"] = $this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter90Min);
+                $send_communication["customer_email_after2hour"] = $this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter90Min);
+                $send_communication["customer_notification_after2hour"] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter90Min);
+            }
 
             if($booktrialdata['type'] == "booktrials" && isset($booktrialdata['amount']) && $booktrialdata['amount'] != "" && $booktrialdata['amount'] > 0){
                 $this->customersms->giveCashbackOnTrialOrderSuccessAndInvite($booktrialdata);
             }
-
-            // if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
-                $send_communication["customer_notification_after2hour"] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter90Min);
-            // }
 
             $booktrial->send_communication = $send_communication;
             $booktrial->auto_followup_date = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',time()))->addDays(31);
@@ -6214,7 +6215,9 @@ class SchedulebooktrialsController extends \BaseController {
         $vendor = json_decode(json_encode($decodeKioskVendorToken->vendor),true);
 
         $response = array('status' => 400,'message' =>'Sorry! Cannot locate your booking');
+
         Log::info("Kiosk find at vendor ".$vendor['_id']."and the code used :".$code);
+        
         $booktrial = Booktrial::where('code',$code)
            ->where('finder_id',(int)$vendor['_id'])
            ->where('created_at','>',new MongoDate(strtotime(date('Y-m-d 00:00:00'))))
@@ -6245,6 +6248,13 @@ class SchedulebooktrialsController extends \BaseController {
 
             }
 
+            $url = Config::get('app.url')."/locatetrialcommunication/".$booktrial["_id"];
+
+            if(!isset($booktrial->customerCommunicationAfterOneHour)){
+
+                $booktrial->customerCommunicationAfterOneHour = $this->utilities->hitURLAfterDelay($url,date('Y-m-d H:i:s',strtotime("+1 hours",time())));
+            }
+
             $booktrial->post_trial_status = 'attended';
             $booktrial->post_trial_initail_status = 'interested';
             $booktrial->post_trial_status_updated_by_kiosk = time();
@@ -6255,6 +6265,7 @@ class SchedulebooktrialsController extends \BaseController {
             $createCustomerToken = createCustomerToken((int)$booktrial['customer_id']);
 
             $kiosk_form_url = Config::get('app.website').'/kiosktrialform?booktrial_id='.$booktrial['_id'];
+
 
             $response = [
                 'status' => 200,
@@ -6267,6 +6278,58 @@ class SchedulebooktrialsController extends \BaseController {
 
         return Response::json($response, $response['status']);
 
+    }
+
+    public function locateTrialCommunication($booktrial_id){
+
+        $booktrial_id = (int)$booktrial_id;
+
+        $booktrial = Booktrial::find((int)$booktrial_id);
+
+        $response = [
+            'status' => 400,
+            'message' => 'off pubnub',
+        ]; 
+
+        if($booktrial){
+
+            $this->pubnub($booktrial->toArray());
+
+            $response = [
+                'status' => 200,
+                'message' => 'on pubnub',
+            ]; 
+
+        }
+
+        return Response::json($response, $response['status']);
+    }
+
+    public function pubNub($data){
+
+        $finder_id = (int) $data['finder_id'];
+        $booktrial_id = (int) $data['_id'];
+
+        $finder = Finder::with(array('location'=>function($query){$query->select('name','slug');}))->with(array('city'=>function($query){$query->select('name','slug');}))->find((int)$finder_id);
+
+        $array['finder_id'] = $finder_id;
+        $array['finder_name'] = ucwords($finder['title']);
+        $array['finder_commercial_type'] = (int)$finder['commercial_type'];
+        $array['finder_location'] = ucwords($finder['location']['name']);
+        $array['finder_city'] = ucwords($finder['city']['name']);
+        $array['customer_number'] = $data['customer_phone'];
+        $array['customer_name'] = $data['customer_name'];
+        $array['booktrial_id'] = $booktrial_id;
+        $array['vendor'] = ucwords($finder['title'])." | ".ucwords($finder['location']['name'])." | ".ucwords($finder['city']['name']);
+        $array['finder_slug'] = $finder['slug'];
+
+        Log::info("pubNub array : ",$array);
+
+        $pubnub = new \Pubnub\Pubnub('pub-c-df66f0bb-9e6f-488d-a205-38862765609d', 'sub-c-d9cf3842-cf1f-11e6-90ff-0619f8945a4f');
+ 
+        $pubnub->publish('fitternity_ozonetel',$array);
+
+        return 'success';
     }
 
 
