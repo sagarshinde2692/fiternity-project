@@ -3625,6 +3625,12 @@ class SchedulebooktrialsController extends \BaseController {
                 'note_to_trainer'               =>      $note_to_trainer,
                 'service_category'              =>      $service_category
             );
+            
+            if(isset($schedule_date) && isset($old_schedule_date)){
+                if($schedule_date != $old_schedule_date){
+                    $booktrialdata['pre_trial_vendor_confirmation'] = (isset($finderid) && in_array($finderid, Config::get('app.trial_auto_confirm_finder_ids'))) ? 'confirmed' : 'yet_to_connect';
+                }
+            }
 
 
             if($update_only_info == ''){
