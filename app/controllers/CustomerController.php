@@ -29,6 +29,15 @@ class CustomerController extends \BaseController {
 		$this->utilities	=	$utilities;
 		$this->customerreward = $customerreward;
 
+		$this->vendor_token = false;
+
+        $vendor_token = Request::header('Authorization-Vendor');
+
+        if($vendor_token){
+
+            $this->vendor_token = true;
+        }
+
 	}
 
     // Listing Schedule Tirals for Normal Customer
@@ -523,11 +532,15 @@ class CustomerController extends \BaseController {
 		if ($validator->fails()) {
 
 			return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),400);
+
 		}else{
 
-			// $customer = Customer::where('email','=',$data['email'])->where('identity','!=','email')->first();
+			$customer = Customer::where('email','=',$data['email'])->where('identity','!=','email')->first();
 
-			$customer = Customer::where('email','=',$data['email'])->first();
+			if($this->vendor_token && isset($data['contact_no']) && $data['contact_no'] != ""){
+
+				$customer = Customer::where('email','=',$data['email'])->first();
+			}
 			
 			if(empty($customer)){
 
