@@ -514,6 +514,8 @@ class CustomerController extends \BaseController {
 
 		$data = Input::json()->all();
 
+		Log::info('register',$data);
+
 		$inserted_id = Customer::max('_id') + 1;
 
 		$rules = [
