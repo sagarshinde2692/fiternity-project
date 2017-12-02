@@ -673,11 +673,6 @@ class SchedulebooktrialsController extends \BaseController {
             return  Response::json($resp, 400);
         }
 
-        if(empty($data['customer_phone'])){
-            $resp 	= 	array('status' => 400,'message' => "Data Missing - customer_phone");
-            return  Response::json($resp, 400);
-        }
-
         if(!$this->vendor_token){
 
             if(empty($data['finder_id'])){
@@ -695,6 +690,11 @@ class SchedulebooktrialsController extends \BaseController {
                 return  Response::json($resp, 400);
             }
 
+            if(empty($data['customer_phone'])){
+                $resp   =   array('status' => 400,'message' => "Data Missing - customer_phone");
+                return  Response::json($resp, 400);
+            }
+
         }else{
 
             $decodeKioskVendorToken = decodeKioskVendorToken();
@@ -706,11 +706,16 @@ class SchedulebooktrialsController extends \BaseController {
             $data['city_id'] = $vendor['city']['_id'];
         }
 
-        // Throw an error if user has already booked a trial for that vendor...
-        $alreadyBookedTrials = $this->utilities->checkExistingTrialWithFinder($data['customer_email'], $data['customer_phone'], $data['finder_id']);
-        if (count($alreadyBookedTrials) > 0) {
-            $resp = array('status' => 403, 'message' => "You have already booked a trial for this vendor");
-            return Response::json($resp, 403);
+
+        if(!$this->vendor_token){
+
+            // Throw an error if user has already booked a trial for that vendor...
+            $alreadyBookedTrials = $this->utilities->checkExistingTrialWithFinder($data['customer_email'], $data['customer_phone'], $data['finder_id']);
+
+            if (count($alreadyBookedTrials) > 0) {
+                $resp = array('status' => 403, 'message' => "You have already booked a trial for this vendor");
+                return Response::json($resp, 403);
+            }
         }
 
         $disableTrial = $this->disableTrial($data);
