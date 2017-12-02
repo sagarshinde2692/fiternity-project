@@ -456,7 +456,7 @@ class TempsController extends \BaseController {
                     }
                 }
 
-                if($temp->action == "locate_trial"){
+                if(in_array($temp->action,['locate_trial','prebook'])){
 
                     $message = 'Sorry! Cannot locate your booking';
 
