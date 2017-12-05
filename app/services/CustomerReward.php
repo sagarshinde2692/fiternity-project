@@ -260,6 +260,7 @@ Class CustomerReward {
 
 
                 if(isset($order['event_id']) && $order['event_id'] == 108){
+                    
 
                     $fitcash_plus = $order['amount'];
 
