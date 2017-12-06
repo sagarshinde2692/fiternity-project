@@ -140,7 +140,7 @@ class TempsController extends \BaseController {
                 $temp->proceed_without_otp = "N";
                 $temp->source = "website";
 
-                if($data['action'] == "locate_trial"){
+                if(in_array($temp->action,['locate_trial','prebook'])){
 
                     $decodeKioskVendorToken = decodeKioskVendorToken();
 
