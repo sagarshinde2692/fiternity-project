@@ -330,7 +330,7 @@ class TransactionController extends \BaseController {
 
             if($event){
                 $data['event_name'] = $event->name;
-                if($event['slug'] == Config::get('app.my_fitness_party_slug')){
+                if(in_array($event['slug'],Config::get('app.my_fitness_party_slug'))){
                     $data['event_type'] = "TOI";
                 }
             }
