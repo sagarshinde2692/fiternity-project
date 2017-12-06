@@ -259,7 +259,7 @@ Class CustomerReward {
                 }
 
 
-                if(isset($order['event_id']) && $order['event_id'] == 108){
+                if(isset($order['event_id']) && in_array($order['event_id'],[108,128])){
 
                     $fitcash_plus = $order['amount'];
 
@@ -349,7 +349,7 @@ Class CustomerReward {
                     "description"=>'Cashback On Event Tickets amount - '.$fitcash_plus
                 );
 
-                if(isset($order['event_id']) && $order['event_id'] == 108){
+                if(isset($order['event_id']) && in_array($order['event_id'],[108,128])){
 
                     $walletData["description"] = 'Cashback On Event Tickets - Morning Fitness Party';
                 }
