@@ -2860,7 +2860,7 @@ class HomeController extends BaseController {
                 $data['logo'] = "http://b.fitn.in/global/toi/mfp/mfpmum-26th/mfplogo26.png";
                 break;
             default:
-                $data['logo'] = "http://b.fitn.in/global/toi/mfp/mfpmum-26th/mfplogo26.png";
+                $data['logo'] = "https://b.fitn.in/global/toi/newmorningfitnesspartylogo.png";
                 break;
         }
 
