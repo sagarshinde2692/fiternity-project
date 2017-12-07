@@ -3910,6 +3910,143 @@ class FindersController extends \BaseController {
 
 		return Response::json($response,$response['status']);
 	}
+
+	public function getServiceDuration($ratecard){
+
+        $duration_day = 1;
+
+        if(isset($ratecard['validity']) && $ratecard['validity'] != '' && $ratecard['validity'] != 0){
+
+            $duration_day = $ratecard['validity'];
+        }
+
+        if(isset($ratecard['validity']) && $ratecard['validity'] != '' && $ratecard['validity_type'] == "days"){
+
+            $ratecard['validity_type'] = 'Days';
+
+            if(($ratecard['validity'] % 30) == 0){
+
+                $month = ($ratecard['validity']/30);
+
+                if($month == 1){
+                    $ratecard['validity_type'] = 'Month';
+                    $ratecard['validity'] = $month;
+                }
+
+                if($month > 1 && $month < 12){
+                    $ratecard['validity_type'] = 'Months';
+                    $ratecard['validity'] = $month;
+                }
+
+                if($month == 12){
+                    $ratecard['validity_type'] = 'Year';
+                    $ratecard['validity'] = 1;
+                }
+
+            }
+              
+        }
+
+        if(isset($ratecard['validity']) && $ratecard['validity'] != '' && $ratecard['validity_type'] == "months"){
+
+            $ratecard['validity_type'] = 'Months';
+
+            if($ratecard['validity'] == 1){
+                $ratecard['validity_type'] = 'Month';
+            }
+
+            if(($ratecard['validity'] % 12) == 0){
+
+                $year = ($ratecard['validity']/12);
+
+                if($year == 1){
+                    $ratecard['validity_type'] = 'Year';
+                    $ratecard['validity'] = $year;
+                }
+
+                if($year > 1){
+                    $ratecard['validity_type'] = 'Years';
+                    $ratecard['validity'] = $year;
+                }
+            }
+              
+        }
+
+        if(isset($ratecard['validity']) && $ratecard['validity'] != '' && $ratecard['validity_type'] == "year"){
+
+            $year = $ratecard['validity'];
+
+            if($year == 1){
+                $ratecard['validity_type'] = 'Year';
+            }
+
+            if($year > 1){
+                $ratecard['validity_type'] = 'Years';
+            }
+              
+        }
+
+        $service_duration = "";
+
+        if($ratecard['duration'] > 0){
+            $service_duration .= $ratecard['duration'] ." ".ucwords($ratecard['duration_type']);
+        }
+        if($ratecard['duration'] > 0 && $ratecard['validity'] > 0){
+            $service_duration .= " - ";
+        }
+        if($ratecard['validity'] > 0){
+            $service_duration .=  $ratecard['validity'] ." ".ucwords($ratecard['validity_type']);
+        }
+
+        ($service_duration == "") ? $service_duration = "-" : null;
+
+        return $service_duration;
+    }
+
+	public function ratecardMembership($service_id){
+
+		$response = [
+			'status'=>200,
+			'message'=>'Success'
+		];
+
+		$service_id = (int) $service_id;
+
+		$ratecards = Ratecard::where('service_id',$service_id)->whereIn('type',['membership','packages'])->get();
+
+		$ratecard_data = [];
+
+		foreach ($ratecards as $ratecard_key => $ratecard_value) {
+
+			if($ratecard_value['direct_payment_enable'] == '0'){
+
+				unset($ratecards[$ratecard_key]);
+				continue;
+			}
+
+			if(isset($ratecard_value['special_price']) && $ratecard_value['special_price'] != 0){
+                $ratecard_price = $ratecard_value['special_price'];
+            }else{
+                $ratecard_price = $ratecard_value['price'];
+            }
+
+            $data = [
+            	'finder_id'=>$ratecard_value['finder_id'],
+            	'service_id'=>$ratecard_value['service_id']
+            ];
+
+            $data['amount'] = $ratecard_price;
+            $data['ratecard_id'] = $ratecard_value['_id'];
+            $data['service_duration'] = $this->getServiceDuration($ratecard_value);
+
+            $ratecard_data[] = $data; 
+
+		}
+
+		$response['ratecards'] = $ratecard_data;
+
+		return Response::json($response,200);
+	}
 	
 
 }
