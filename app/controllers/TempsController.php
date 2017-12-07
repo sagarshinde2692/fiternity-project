@@ -474,8 +474,8 @@ class TempsController extends \BaseController {
                                 ->where('finder_id', '=',$finder_id)
                                 // ->where('type','booktrials')
                                 ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
-                                ->where('created_at','>',new MongoDate(strtotime(date('Y-m-d 00:00:00'))))
-                                ->where('created_at','<',new MongoDate(strtotime(date('Y-m-d 23:59:59'))))
+                                ->where('schedule_date_time','>',new MongoDate(strtotime(date('Y-m-d 00:00:00'))))
+                                ->where('schedule_date_time','<',new MongoDate(strtotime(date('Y-m-d 23:59:59'))))
                                 ->orderBy('_id','desc')
                                 ->first();
 
