@@ -2918,7 +2918,7 @@ class HomeController extends BaseController {
                     "description"=>"A sequence of fluid postures where the movements are primal, athletic & imitate the locomotive patterns of animals.",
                     "calories_burn"=>"Burn 594 Calories",
                     "image"=>"https://b.fitn.in/global/toi/mfp/december/mum/decmum_yog.png",
-                    "trainer"=>"",
+                    "trainer"=>"With Nam",
                     "time"=>"8:00 AM - 8:30 AM"
                 ],
                 [
@@ -2927,7 +2927,7 @@ class HomeController extends BaseController {
                     "description"=>"A functional training circuit using only body weight for core & strength building.",
                     "calories_burn"=>"Burn 450 Calories",
                     "image"=>"https://b.fitn.in/global/toi/mfp/december/mum/decmum_crsofit.png",
-                    "trainer"=>"",
+                    "trainer"=>"With Abbas Ali",
                     "time"=>"8:45 AM - 9:15 AM"
                 ],
                 [
@@ -2935,7 +2935,7 @@ class HomeController extends BaseController {
                     "description"=>"A high energetic full body dance cardio workout done on bollywood music to sweat out excessive calories.",
                     "calories_burn"=>"Burn 450 Calories",
                     "image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/bollyfit.jpg",
-                    "trainer"=>"",
+                    "trainer"=>" with Team Change",
                     "time"=>"9:30 AM - 10:00 AM"
                 ],
                 [
@@ -2944,7 +2944,7 @@ class HomeController extends BaseController {
                     "description"=>"A low-impact aquatic yoga poses performed in warm water to gain strength & balance.",
                     "calories_burn"=>"Burn 220 Calories",
                     "image"=>"https://cdn.fitn.in/Mfp-delhi/aqua-zumba.jpg",
-                    "trainer"=>"",
+                    "trainer"=>"With Sucheta Pal",
                     "time"=>"10:15 AM - 10:45 AM & 11:00 AM - 11:30 AM"
                 ],
             ]
@@ -2958,39 +2958,47 @@ class HomeController extends BaseController {
                 "venue"=>"The Park hotel, Connaught Place",
                 "address"=>"15, Parliament Street, New Delhi, Delhi 110001",
                 "date"=>"17th December Sunday",
-                "time"=>"8:00 AM to 10:45 AM",
+                "time"=>"8:00 AM to 11:30 AM",
                 "items"=>[
+                    [
+                        "title"=>"Pilates",
+                        "description"=>"A combination of core exercises for toning up.",
+                        "calories_burn"=>"Burn 350 Calories",
+                        "image"=>"https://b.fitn.in/global/toi/mfp/line_up/pilatesfinal.jpg",
+                        "trainer"=>"With Taru",
+                        "time"=>"8:00 AM - 8:30 AM"
+                    ],
                     [
                         "title"=>"KickBoxing",
                         "description"=>"A  martial arts form of attack & defence which incorporates kicking and boxing for strength & endurance.",
                         "calories_burn"=>"Burn 550 Calories",
                         "image"=>"https://b.fitn.in/global/toi/mfp/december/del/decdel_kickboxing.png",
-                        "trainer"=>"",
-                        "time"=>"8:00 AM - 8:30 AM"
+                        "trainer"=>"With Boxfit",
+                        "time"=>"8:45 AM - 9:15 AM"
                     ],
                     [
                         "title"=>"Crush Club",
                         "description"=>"A high energetic full body dance cardio workout done on bollywood music to sweat out excessive calories.",
                         "calories_burn"=>"Burn 450 Calories",
                         "image"=>"https://b.fitn.in/global/toi/mfp/december/del/decdel_dance.png",
-                        "trainer"=>"",
-                        "time"=>"8:45 AM - 9:15 AM"
+                        "trainer"=>"With Crush Fitness",
+                        "time"=>"9:30 AM - 10:00 AM"
                     ], 
                     [
                         "title"=>"Crossfit",
                         "description"=>"A functional training circuit using only body weight for for core & strength building.",
                         "calories_burn"=>"Burn 550 Calories",
                         "image"=>"https://b.fitn.in/global/toi/mfp/december/del/decdel_crossfit.png",
-                        "trainer"=>"",
-                        "time"=>"9:30 AM - 10:00 AM"
+                        "trainer"=>"With Sahil",
+                        "time"=>"10:15 AM - 10:45 AM"
                     ],
                     [
                         "title"=>"Masala Bhangra",
                         "description"=>"A cardio based dance workout form performed on dhol beats to achieve fat burn.",
                         "calories_burn"=>"Burn 700 Calories",
                         "image"=>"https://cdn.fitn.in/Mfp-delhi/masalab-web.jpg",
-                        "trainer"=>"",
-                        "time"=>"10:15 AM - 10:45 AM"
+                        "trainer"=>"With Nupur Banerji",
+                        "time"=>"11:00 AM - 11:30 AM"
                     ],
                     // [
                     //     "title"=>"Shivfit Functional Training",
