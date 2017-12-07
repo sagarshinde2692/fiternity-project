@@ -38,6 +38,8 @@ class CustomerController extends \BaseController {
             $this->vendor_token = true;
         }
 
+        $this->error_status = ($this->vendor_token) ? 200 : 400;
+
 	}
 
     // Listing Schedule Tirals for Normal Customer
@@ -533,16 +535,16 @@ class CustomerController extends \BaseController {
 
 		if ($validator->fails()) {
 
-			return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),400);
+			return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),$this->error_status);
 
 		}else{
 
 			$customer = Customer::where('email','=',$data['email'])->where('identity','!=','email')->first();
 
-			if($this->vendor_token && isset($data['contact_no']) && $data['contact_no'] != ""){
+			/*if($this->vendor_token && isset($data['contact_no']) && $data['contact_no'] != ""){
 
 				$customer = Customer::where('email','=',$data['email'])->first();
-			}
+			}*/
 			
 			if(empty($customer)){
 
@@ -554,7 +556,7 @@ class CustomerController extends \BaseController {
 
 					if ($new_validator->fails()) {
 
-						return Response::json(array('status' => 400,'message' => $this->errorMessage($new_validator->errors())),400);
+						return Response::json(array('status' => 400,'message' => $this->errorMessage($new_validator->errors())),$this->error_status);
 
 					}else{
 
