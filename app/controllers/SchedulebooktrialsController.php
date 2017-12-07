@@ -6255,7 +6255,7 @@ class SchedulebooktrialsController extends \BaseController {
 
                 $response = array('status' => 400,'message' =>'Already located your booking');
 
-                return Response::json($response,$response['status']);
+                return Response::json($response,200);
 
             }
 
@@ -6287,7 +6287,7 @@ class SchedulebooktrialsController extends \BaseController {
             ];
         }
 
-        return Response::json($response, $response['status']);
+        return Response::json($response,200);
 
     }
 

@@ -3840,7 +3840,7 @@ class FindersController extends \BaseController {
 
 		if(!$finder){
 
-			return Response::json(["message"=>"Vendor not found","status"=>404], 404);
+			return Response::json(["message"=>"Vendor not found","status"=>404], 200);
 		}
 
 		$response = [

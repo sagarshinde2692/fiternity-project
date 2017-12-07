@@ -817,20 +817,24 @@ class TransactionController extends \BaseController {
 
         $validator = Validator::make($data,$rules);
 
+        $app_version  = (float)Request::header('App-Version');
+
+        $status = ($app_version > 1.06) ? 200 : 400;
+
         if ($validator->fails()) {
-            return Response::json(array('status' => 400,'message' => error_message($validator->errors())),400);
+            return Response::json(array('status' => 400,'message' => error_message($validator->errors())),$status);
         }
 
         $order = Order::find((int)$data['order_id']);
 
         if(!$order){
 
-            return Response::json(['status' => 400, "message" => "Order Not Found"],400);
+            return Response::json(['status' => 400, "message" => "Order Not Found"],$status);
         }
 
         if($order->status == "1"){
 
-            return Response::json(['status' => 400, "message" => "Already Status Successfull"],400);
+            return Response::json(['status' => 400, "message" => "Already Status Successfull"],$status);
         }
 
         $decodeKioskVendorToken = decodeKioskVendorToken();
@@ -841,17 +845,17 @@ class TransactionController extends \BaseController {
 
         if($finder_id != $order['finder_id']){
 
-            return Response::json(['status' => 400, "message" => "Incorrect Vendor"],400);
+            return Response::json(['status' => 400, "message" => "Incorrect Vendor"],$status);
         }
 
         if(!isset($order['otp_data'])){
 
-            return Response::json(['status' => 400, "message" => "OTP data not found"],400);
+            return Response::json(['status' => 400, "message" => "OTP data not found"],$status);
         }
 
         if($order['otp_data']['otp'] != $data['otp']){
 
-            return Response::json(['status' => 400, "message" => "Incorrect OTP"],400);
+            return Response::json(['status' => 400, "message" => "Incorrect OTP"],$status);
         }
 
         $data['status'] = 'success';
@@ -864,6 +868,7 @@ class TransactionController extends \BaseController {
         return $this->successCommon($data);
 
     }
+
 
 
     public function update(){

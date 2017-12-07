@@ -34,6 +34,8 @@ class TempsController extends \BaseController {
 
             $this->vendor_token = true;
         }
+
+        $this->error_status = ($this->vendor_token) ? 200 : 400;
     }
 
     public function errorMessage($errors){
@@ -87,7 +89,7 @@ class TempsController extends \BaseController {
 
             if ($validator->fails()) {
 
-                return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),400);
+                return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),$this->error_status);
 
             }else{
 
@@ -115,6 +117,8 @@ class TempsController extends \BaseController {
                 );
 
             $response = array('status'=>400,'message'=>$message['type'].' : '.$message['message'].' in '.$message['file'].' on '.$message['line']);
+
+            return Response::json($response,$this->error_status);
             
             Log::error($e);       
         }
@@ -344,7 +348,11 @@ class TempsController extends \BaseController {
                 $finder_id = (int)$temp->finder_id;
             }
 
-            $return =  array('status' => 200,'verified' => $verified,'token'=>$customerToken,'trial_booked'=>false,'customer_data'=>$customer_data,'fitternity_no'=>$fitternity_no);
+            $return =  array('status' => 200,'verified' => $verified,'token'=>$customerToken,'trial_booked'=>false,'customer_data'=>$customer_data,'fitternity_no'=>$fitternity_no,"message"=>'Incorrect OTP');
+
+            if($this->vendor_token){
+                $return['status'] = 400;
+            }
 
             if($temp->otp == $otp){
 
@@ -398,7 +406,7 @@ class TempsController extends \BaseController {
 
                 }
 
-                $return = array('status' => 200,'verified' => $verified,'token'=>$customerToken,'trial_booked'=>false,'customer_data'=>$customer_data,'fitternity_no'=>$fitternity_no);
+                $return = array('status' => 200,'verified' => $verified,'token'=>$customerToken,'trial_booked'=>false,'customer_data'=>$customer_data,'fitternity_no'=>$fitternity_no,'message'=>'Successfully Verified');
 
                 if(isset($temp->service_id) && $temp->service_id != "" && $temp->action == "booktrials"){
                     
@@ -464,7 +472,7 @@ class TempsController extends \BaseController {
                                 $amount = $ratecard->price;
                             }
 
-                            $return = array('workout_session_available'=>true,'customer_data'=>$customer_data,'trial_booked'=>true,'status' => 200,'message' => '','verified' => $verified,'token'=>$customerToken,'ratecard_id'=>(int)$ratecard->_id,'amount'=>(int)$amount,'fitternity_no'=>$fitternity_no);
+                            $return = array('workout_session_available'=>true,'customer_data'=>$customer_data,'trial_booked'=>true,'status' => 200,'message' => 'Already Booked Trial. Book a Workout Session starting from Rs '.$amount.'.','verified' => $verified,'token'=>$customerToken,'ratecard_id'=>(int)$ratecard->_id,'amount'=>(int)$amount,'fitternity_no'=>$fitternity_no);
                         }
                     }
                 }
@@ -579,7 +587,7 @@ class TempsController extends \BaseController {
 
         }else{
 
-            return Response::json(array('status' => 400,'message' => 'Not Found'),400);
+            return Response::json(array('status' => 400,'message' => 'Not Found'),$this->error_status);
         }
     }
 
@@ -715,7 +723,7 @@ class TempsController extends \BaseController {
             return Response::json(array('status' => 200,'attempt' => $temp->attempt,'sender_id'=>'FTRNTY'),200);
 
         }else{
-            return Response::json(array('status' => 400,'message' => 'Not Found'),400);
+            return Response::json(array('status' => 400,'message' => 'Not Found'),$this->error_status);
         }
     }
 
