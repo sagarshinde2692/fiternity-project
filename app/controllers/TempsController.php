@@ -25,6 +25,15 @@ class TempsController extends \BaseController {
         $this->appOfferDiscount 				= Config::get('app.app.discount');
         $this->appOfferExcludedVendors 				= Config::get('app.app.discount_excluded_vendors');
         $this->utilities = $utilities;
+
+        $this->vendor_token = false;
+
+        $vendor_token = Request::header('Authorization-Vendor');
+
+        if($vendor_token){
+
+            $this->vendor_token = true;
+        }
     }
 
     public function errorMessage($errors){
@@ -208,6 +217,10 @@ class TempsController extends \BaseController {
 
                 if(isset($_GET['app_version']) && $_GET['app_version'] != ""){
                     $temp->version = $_GET['app_version'];
+                }
+
+                if($this->vendor_token){
+                    $temp->source = "kiosk";
                 }
 
                 $temp->save();
