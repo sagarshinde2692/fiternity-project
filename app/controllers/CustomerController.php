@@ -858,7 +858,7 @@ class CustomerController extends \BaseController {
 			return array('status' => 400,'message' => 'Customer does not exists');
 		}
 
-		$customer = Customer::where('email','=',$data['email'])->where('status','=','1')->first();
+		$customer = Customer::where('email','=',$data['email'])->where('status','=','1')->orderBy('_id', 'DESC')->first();
 
 		if(empty($customer)){
 			return array('status' => 400,'message' => 'Customer is inactive');
@@ -878,6 +878,11 @@ class CustomerController extends \BaseController {
 			$account_link = $customer['account_link'];
 			$account_link[$data['identity']] = 1;
 			$customer->account_link = $account_link;
+		}
+
+		if($this->vendor_token && isset($data['contact_no']) && $data['contact_no'] != ""){
+
+			$customer->contact_no = $data['contact_no'];
 		}
 
 		$customer->last_visited = Carbon::now();
