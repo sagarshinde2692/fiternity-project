@@ -1436,7 +1436,7 @@ class HomeController extends BaseController {
 
 
 
-    public function getFooterByCity($city = 'mumbai',$cache = true){
+    public function getFooterByCity($city = 'mumbai',$cache = false){
 
         $footer_by_city = $cache ? Cache::tags('footer_by_city')->has($city) : false;
 
@@ -1461,12 +1461,12 @@ class HomeController extends BaseController {
             $footer_block5_ids 			= 		array_map('intval', explode(",", $homepage['footer_block5_ids'] ));
             $footer_block6_ids 			= 		array_map('intval', explode(",", $homepage['footer_block6_ids'] ));
 
-            $footer_block1_finders 		=		Finder::active()->whereIn('_id', $footer_block1_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title'))->toArray();
-            $footer_block2_finders 		=		Finder::active()->whereIn('_id', $footer_block2_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title'))->toArray();
-            $footer_block3_finders 		=		Finder::active()->whereIn('_id', $footer_block3_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title'))->toArray();
-            $footer_block4_finders 		=		Finder::active()->whereIn('_id', $footer_block4_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title'))->toArray();
-            $footer_block5_finders 		=		Finder::active()->whereIn('_id', $footer_block5_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title'))->toArray();
-            $footer_block6_finders 		=		Finder::active()->whereIn('_id', $footer_block6_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title'))->toArray();
+            $footer_block1_finders 		=		Finder::active()->with(array('location'=>function($query){$query->select('name');}))->whereIn('_id', $footer_block1_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title','location_id'))->toArray();
+            $footer_block2_finders 		=		Finder::active()->with(array('location'=>function($query){$query->select('name');}))->whereIn('_id', $footer_block2_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title','location_id'))->toArray();
+            $footer_block3_finders 		=		Finder::active()->with(array('location'=>function($query){$query->select('name');}))->whereIn('_id', $footer_block3_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title','location_id'))->toArray();
+            $footer_block4_finders 		=		Finder::active()->with(array('location'=>function($query){$query->select('name');}))->whereIn('_id', $footer_block4_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title','location_id'))->toArray();
+            $footer_block5_finders 		=		Finder::active()->with(array('location'=>function($query){$query->select('name');}))->whereIn('_id', $footer_block5_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title','location_id'))->toArray();
+            $footer_block6_finders 		=		Finder::active()->with(array('location'=>function($query){$query->select('name');}))->whereIn('_id', $footer_block6_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title','location_id'))->toArray();
 
             array_set($footer_finders,  'footer_block1_finders', $footer_block1_finders);
             array_set($footer_finders,  'footer_block2_finders', $footer_block2_finders);
@@ -1482,9 +1482,71 @@ class HomeController extends BaseController {
             array_set($footer_finders,  'footer_block5_title', (isset($homepage['footer_block5_title']) && $homepage['footer_block5_title'] != '') ? $homepage['footer_block5_title'] : '');
             array_set($footer_finders,  'footer_block6_title', (isset($homepage['footer_block6_title']) && $homepage['footer_block6_title'] != '') ? $homepage['footer_block6_title'] : '');
 
+            foreach ($footer_finders as $block => $finders) {
+
+                if(!empty($finders) && is_array($finders)){
+
+                    foreach ($finders as $finder_key => $finder_value) {
+
+                        if(strpos($finder_value['slug'],'gold') !== false){
+                            $footer_finders[$block][$finder_key]['title'] = $finder_value['title'].' '.$finder_value['location']['name'];
+                        }
+
+                        $array = [
+                            "_id",
+                            "location_id",
+                            "finder_coverimage",
+                            "commercial_type_status",
+                            "business_type_status",
+                            "location"
+                        ];
+
+                        foreach ($array as $value) {
+                            unset($footer_finders[$block][$finder_key][$value]);
+                        }
+                    }
+                }
+            }
+
+            $defaultfinders = [];
+
             // Default City vendors
             $defaultfinders = Finder::where('city_id',10000)->active()->get(array('title','slug','custom_city','custom_location'))->groupBy('custom_city');
-            $footerdata 	= 	array('footer_finders' => $footer_finders, 'city_name' => $city_name, 'city_id' => $city_id,'default_vendors'=>$defaultfinders);
+
+            if(!empty($defaultfinders)){
+
+                $defaultfinders = json_decode($defaultfinders,true);
+
+                foreach ($defaultfinders as $city => $finders) {
+
+                    if(!empty($finders) && is_array($finders)){
+
+                        foreach ($finders as $finder_key => $finder_value) {
+
+                            $array = [
+                                "_id",
+                                "finder_coverimage",
+                                "commercial_type_status",
+                                "business_type_status",
+                                "custom_city",
+                                "custom_location"
+                            ];
+
+                            foreach ($array as $value) {
+                                unset($defaultfinders[$city][$finder_key][$value]);
+                            }
+                        }
+                    }
+                }
+            }
+            
+            $footerdata 	= 	array(
+                'footer_finders' => $footer_finders,
+                'city_name' => $city_name,
+                'city_id' => $city_id,
+                'default_vendors'=>$defaultfinders
+            );
+
             // $footerdata 	= 	array('footer_finders' => $footer_finders, 'city_name' => $city_name, 'city_id' => $city_id);
             Cache::tags('footer_by_city')->put($city, $footerdata, Config::get('cache.cache_time'));
         }
