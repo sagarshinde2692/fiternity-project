@@ -1194,7 +1194,8 @@ Class CustomerReward {
             $discount_amount = $discount_amount > $coupon["discount_max"] ? $coupon["discount_max"] : $discount_amount;
             $discount_price = $price - $discount_amount;
             $final_amount = $discount_price > $wallet_balance ? $discount_price - $wallet_balance : 0;
-            $resp = array("data"=>array("discount" => $discount_amount, "final_amount" => $final_amount, "wallet_balance" => $wallet_balance, "only_discount" => $discount_price), "coupon_applied" => true, 'otp'=>$fitternity_only_coupon, "vendor_coupon"=>$vendor_coupon);
+            $vendor_routed_coupon = isset($coupon["vendor_routed_coupon"]) ? $coupon["vendor_routed_coupon"] : false;
+            $resp = array("data"=>array("discount" => $discount_amount, "final_amount" => $final_amount, "wallet_balance" => $wallet_balance, "only_discount" => $discount_price), "coupon_applied" => true, 'otp'=>$fitternity_only_coupon, "vendor_coupon"=>$vendor_coupon, "vendor_routed_coupon" => $vendor_routed_coupon);
         }else{
             $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false);
             // $resp = array("status"=> 400, "message" => "Coupon not found", "error_message" => "Coupon is either not valid or expired");
