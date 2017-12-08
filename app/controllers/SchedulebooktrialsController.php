@@ -6231,8 +6231,8 @@ class SchedulebooktrialsController extends \BaseController {
         
         $booktrial = Booktrial::where('code',$code)
            ->where('finder_id',(int)$vendor['_id'])
-           ->where('created_at','>',new MongoDate(strtotime(date('Y-m-d 00:00:00'))))
-           ->where('created_at','<',new MongoDate(strtotime(date('Y-m-d 23:59:59'))))
+           ->where('schedule_date_time','>',new MongoDate(strtotime(date('Y-m-d 00:00:00'))))
+           ->where('schedule_date_time','<',new MongoDate(strtotime(date('Y-m-d 23:59:59'))))
            ->orderBy('_id','desc')
            ->first();
 

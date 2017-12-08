@@ -25,6 +25,15 @@ class TempsController extends \BaseController {
         $this->appOfferDiscount 				= Config::get('app.app.discount');
         $this->appOfferExcludedVendors 				= Config::get('app.app.discount_excluded_vendors');
         $this->utilities = $utilities;
+
+        $this->vendor_token = false;
+
+        $vendor_token = Request::header('Authorization-Vendor');
+
+        if($vendor_token){
+
+            $this->vendor_token = true;
+        }
     }
 
     public function errorMessage($errors){
@@ -208,6 +217,10 @@ class TempsController extends \BaseController {
 
                 if(isset($_GET['app_version']) && $_GET['app_version'] != ""){
                     $temp->version = $_GET['app_version'];
+                }
+
+                if($this->vendor_token){
+                    $temp->source = "kiosk";
                 }
 
                 $temp->save();
@@ -474,8 +487,8 @@ class TempsController extends \BaseController {
                                 ->where('finder_id', '=',$finder_id)
                                 // ->where('type','booktrials')
                                 ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
-                                ->where('created_at','>',new MongoDate(strtotime(date('Y-m-d 00:00:00'))))
-                                ->where('created_at','<',new MongoDate(strtotime(date('Y-m-d 23:59:59'))))
+                                ->where('schedule_date_time','>',new MongoDate(strtotime(date('Y-m-d 00:00:00'))))
+                                ->where('schedule_date_time','<',new MongoDate(strtotime(date('Y-m-d 23:59:59'))))
                                 ->orderBy('_id','desc')
                                 ->first();
 
