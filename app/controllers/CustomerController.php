@@ -515,7 +515,14 @@ class CustomerController extends \BaseController {
 
 	public function customerExists($email){
 
-		$customer = Customer::active()->where('email',$email)->orderBy('_id','desc')->first();
+		$response = [
+			'status' => 400,
+			'message'=>'Customer does not Exists'
+		];
+
+		Customer::$withoutAppends=true;
+
+		$customer = Customer::active()->where('email',$email)->first();
 
 		if($customer){
 
@@ -529,11 +536,6 @@ class CustomerController extends \BaseController {
 				]
 			];
 		}
-
-		$response = [
-			'status' => 400,
-			'message'=>'Customer does not Exists'
-		];
 
 		return Response::json($response);
 
