@@ -3736,7 +3736,7 @@ class TransactionController extends \BaseController {
                                 
                 $already_applied_coupon = Customer::where('email', 'like', '%'.$data['customer_email'].'%')->whereIn('applied_promotion_codes',[strtolower($data['coupon'])])->count();
             
-                if($already_applied_coupon>0){
+                if($already_applied_coupon>0 && !$resp["vendor_routed_coupon"]){
                     return Response::json(array('status'=>400,'data'=>array('final_amount'=>($resp['data']['discount']+$resp['data']['final_amount']), "discount" => 0), 'error_message'=>'Coupon already applied', "message" => "Coupon already applied"), 400);
                 }
             }
@@ -3748,14 +3748,15 @@ class TransactionController extends \BaseController {
 
             $resp['status'] = 200;
             $resp['message'] = $resp['success_message'] = "Rs. ".$resp["data"]["discount"]." has been applied Successfully";
-
-            if($resp["data"]["discount"] <= 0){
-
-                $resp['status'] = 400;
-                $resp['message'] = $resp['error_message'] = "Cannot apply Coupon";
-                $resp["coupon_applied"] = false;
-
-                unset($resp['success_message']);
+            if(!$resp["vendor_routed_coupon"]){
+                if($resp["data"]["discount"] <= 0){
+    
+                    $resp['status'] = 400;
+                    $resp['message'] = $resp['error_message'] = "Cannot apply Coupon";
+                    $resp["coupon_applied"] = false;
+    
+                    unset($resp['success_message']);
+                }
             }
 
             return Response::json($resp,$resp['status']);
