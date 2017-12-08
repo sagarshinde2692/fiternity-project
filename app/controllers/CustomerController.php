@@ -727,7 +727,17 @@ class CustomerController extends \BaseController {
 					$this->addCustomerRegId($data);
 				}
 
-				return Response::json($response,$this->error_status);
+				if(isset($resp["customer_data"])){
+
+					$response['customer_data'] = $resp["customer_data"];
+				}
+
+				if($response['status'] != 200){
+
+					return Response::json($response,$this->error_status);
+				}
+
+				return Response::json($response,$response['status']);
 
 			}elseif($data['identity'] == 'google' || $data['identity'] == 'facebook' || $data['identity'] == 'twitter'){
 
