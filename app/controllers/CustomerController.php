@@ -512,6 +512,33 @@ class CustomerController extends \BaseController {
 
 	}
 
+
+	public function customerExists($email){
+
+		$customer = Customer::active()->where('email',$email)->orderBy('_id','desc')->first();
+
+		if($customer){
+
+			$response = [
+				'status' => 200,
+				'message'=>'Customer Exists',
+				'data'=>[
+					'name'=>$customer['name'],
+					'email'=>$customer['email'],
+					'contact_no'=>$customer['contact_no'],
+				]
+			];
+		}
+
+		$response = [
+			'status' => 400,
+			'message'=>'Customer does not Exists'
+		];
+
+		return Response::json($response);
+
+	}
+
 	public function register(){
 
 		$data = Input::json()->all();
@@ -539,7 +566,7 @@ class CustomerController extends \BaseController {
 
 		}else{
 
-			$customer = Customer::where('email','=',$data['email'])->where('identity','!=','email')->first();
+			$customer = Customer::active()->where('email','=',$data['email'])->where('identity','!=','email')->first();
 
 			/*if($this->vendor_token && isset($data['contact_no']) && $data['contact_no'] != ""){
 
@@ -548,7 +575,7 @@ class CustomerController extends \BaseController {
 			
 			if(empty($customer)){
 
-				$ishullcustomer = Customer::where('email','=',$data['email'])->where('ishulluser',1)->first();
+				$ishullcustomer = Customer::active()->where('email','=',$data['email'])->where('ishulluser',1)->first();
 
 				if(empty($ishullcustomer)){
 
