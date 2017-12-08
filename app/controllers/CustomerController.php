@@ -727,7 +727,7 @@ class CustomerController extends \BaseController {
 					$this->addCustomerRegId($data);
 				}
 
-				return Response::json($response,$response['status']);
+				return Response::json($response,$this->error_status);
 
 			}elseif($data['identity'] == 'google' || $data['identity'] == 'facebook' || $data['identity'] == 'twitter'){
 
@@ -873,8 +873,10 @@ class CustomerController extends \BaseController {
 		$customer->last_visited = Carbon::now();
 		$customer->update();
 		$resp = $this->checkIfpopPup($customer);
+
+		$customer_data = array_only($customer->toArray(), ['name','email','contact_no','dob','gender']);
 		
-		return array("token" => $this->createToken($customer), "popup" => $resp);
+		return array("token" => $this->createToken($customer),"popup" => $resp,"customer_data"=>$customer_data);
 	}
 
 	public function checkIfpopPup($customer, $customdata=array()){
