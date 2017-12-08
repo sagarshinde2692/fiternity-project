@@ -5459,6 +5459,60 @@ class CustomerController extends \BaseController {
 			200
 		);
 
-    }
+	}
+	
+	public function invitePreRegister(){
+		$data = Input::all();
+
+		$rules = [
+			'capture_id' => 'required',
+			'invitees' => 'required|array'
+		];
+
+		$invitees = $data['invitees'];
+		
+		$capture = Capture::find($data['capture_id']);
+
+		$customer_id = $capture->customer_id;
+
+		$customer = Customer::find($customer_id);
+
+		$customer_phone = $customer->contact_no;
+		
+
+		foreach($invitees as $invitee){
+			
+			if( substr($customer_phone, -10) == substr($invitee, -10)){
+				$resp = array('status'=>400, 'message' => 'Cannot invite yourself');
+				return Response::json($resp, 400);
+			}
+		
+		}
+
+		$capture->save();
+
+		Log::info($customer);
+		$referral_code = $customer->referral_code;
+		
+		$shorten_url = new ShortenUrl();
+		
+		$pre_register_url = $shorten_url->getShortenUrl("fitternity.com/mfp?referral_code=$capture->_id")['url'];
+
+		foreach($invitees as $invitee){
+
+			$data = array(
+				'customer_phone' => $invitee,
+				'pre_register_url' => $pre_register_url,
+				'inviter_name' => ucwords($customer->name)
+			);
+
+			Log::info($data);
+
+			$this->customersms->invitePreRegister($data);
+		
+		}
+
+
+	}
 	
 }

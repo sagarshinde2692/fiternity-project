@@ -534,6 +534,52 @@ class EmailSmsApiController extends \BaseController {
             }
         }
 
+        if($data['capture_type'] == 'sale_pre_register_2018'){
+
+            $rules = [
+                'customer_email'=>'required|email|max:255',
+                'customer_name'=>'required',
+                'customer_phone'=>'required',
+            ];
+
+            $validator = Validator::make($data, $rules);
+
+            if ($validator->fails()) {
+
+                $response = array('status' => 400,'message' =>error_message($validator->errors()));
+
+                return Response::json(
+                    $response,
+                    $response['status']
+                );
+
+            }
+            
+            $capture = Capture::where('capture_type', 'sale_pre_register_2018')->where(function($query) use ($data){ return $query->orWhere('customer_email', $data['customer_email'])->orWhere('customer_phone', $data['customer_phone']);})->first();
+            
+            if($capture){
+                $resp = array('status' => 400,'message' => "You have already pre registered for the sale");
+                return Response::json($resp,$resp['status']);
+            }
+
+            if(isset($data['referral_code']) && $data['referral_code'] != ''){
+                
+                $capture = Capture::find($data['referral_code']);
+                
+                $wallet_data = [
+                    'customer_id' => $capture->customer_id,
+                    'amount' => 50,
+                    'amount_fitcash' => 0,
+                    'amount_fitcash_plus' => 50,
+                    'type' => "INVITE",
+                    "entry"=>'credit',
+                    'description' => "Fitcashplus for invitation",
+                ];
+                Log::info($wallet_data);
+                $walletTransaction = $this->utilities->walletTransactionNew($wallet_data);
+            }
+        }
+
         $jwt_token = Request::header('Authorization');
 
         if($jwt_token){
