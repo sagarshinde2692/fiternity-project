@@ -556,7 +556,7 @@ class CustomerController extends \BaseController {
 
 					if ($new_validator->fails()) {
 
-						return Response::json(array('status' => 400,'message' => $this->errorMessage($new_validator->errors())),$this->error_status);
+						return Response::json(array('status' => 401,'message' => $this->errorMessage($new_validator->errors())),$this->error_status);
 
 					}else{
 
