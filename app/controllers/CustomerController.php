@@ -1253,7 +1253,9 @@ class CustomerController extends \BaseController {
 		$data = Input::json()->all();
 
 		if(isset($data['email']) && !empty($data['email'])){
-			$customer = Customer::where('email','=',$data['email'])->first();
+
+			$customer = Customer::active()->where('email','=',$data['email'])->first();
+			
 			if(!empty($customer)){
 
 				$token = $this->createPasswordToken($customer);
