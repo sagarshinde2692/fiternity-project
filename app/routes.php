@@ -1074,3 +1074,5 @@ Route::get('customerDemonetiseIssue', 'DebugController@customerDemonetiseIssue')
 Route::get('locatetrialcommunication/{booktrial_id}','SchedulebooktrialsController@locateTrialCommunication');
 
 Route::get('ratecardmembership/{service_id}','FindersController@ratecardMembership');
+
+Route::post('invitepreregister','CustomerController@invitePreRegister');

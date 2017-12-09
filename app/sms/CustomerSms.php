@@ -859,14 +859,42 @@ Class CustomerSms extends VersionNextSms{
 
         return $this->common($label,$to,$data);
 	}
-
+	
 	protected function orderUpdatePartPaymentBefore2Days($data, $delay){
-
+		
 		$label = 'OrderUpdatePartPaymentBefore2Days-Customer';
-
+		
 		$to = $data['customer_phone'];
-
+		
         return $this->common($label,$to,$data, $delay);
+	}
+	
+	protected function invitePreRegister($data){
+		
+		$label = "Pre-Regster-Invite-Customer";
+		
+		$to = $data['customer_phone'];
+		
+		return $this->common($label,$to,$data);
+
+	}
+
+	protected function salePreregister($data){
+		
+		$label = "Pre-Regster-Customer";
+		
+		$to = $data['customer_phone'];
+		
+		return $this->common($label,$to,$data);
+	}
+
+	protected function fitcashPreRegister($data){
+
+		$label = "Fitcash-Pre-Regster-Customer";
+		
+		$to = $data['customer_phone'];
+		
+		return $this->common($label,$to,$data);
 	}
 
 	public function custom($data){
