@@ -565,18 +565,22 @@ class EmailSmsApiController extends \BaseController {
             if(isset($data['referral_code']) && $data['referral_code'] != ''){
                 
                 $capture = Capture::find($data['referral_code']);
+
+                if($capture && isset($capture->customer_id)){
+
+                    $wallet_data = [
+                        'customer_id' => $capture->customer_id,
+                        'amount' => 50,
+                        'amount_fitcash' => 0,
+                        'amount_fitcash_plus' => 50,
+                        'type' => "INVITE",
+                        "entry"=>'credit',
+                        'description' => "Fitcashplus for invitation",
+                    ];
+                    Log::info($wallet_data);
+                    $walletTransaction = $this->utilities->walletTransactionNew($wallet_data);
+                }
                 
-                $wallet_data = [
-                    'customer_id' => $capture->customer_id,
-                    'amount' => 50,
-                    'amount_fitcash' => 0,
-                    'amount_fitcash_plus' => 50,
-                    'type' => "INVITE",
-                    "entry"=>'credit',
-                    'description' => "Fitcashplus for invitation",
-                ];
-                Log::info($wallet_data);
-                $walletTransaction = $this->utilities->walletTransactionNew($wallet_data);
             }
         }
 
