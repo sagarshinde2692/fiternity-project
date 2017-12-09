@@ -5512,6 +5512,7 @@ class CustomerController extends \BaseController {
 		
 		}
 
+		return Response::json(array('status' => 200,'message'=> "Invites sent"), 200);
 
 	}
 	
