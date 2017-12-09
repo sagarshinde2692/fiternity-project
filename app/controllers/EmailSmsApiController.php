@@ -583,8 +583,6 @@ class EmailSmsApiController extends \BaseController {
                     
                     $walletTransaction = $this->utilities->walletTransactionNew($wallet_data);
 
-                    $shorten_url = 
-                    
                     $capture->wallet_url = $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$capture->customer_email."#wallet");
                     
                     $this->customersms->fitcashPreRegister($capture->toArray());
