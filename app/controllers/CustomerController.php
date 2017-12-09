@@ -5496,12 +5496,14 @@ class CustomerController extends \BaseController {
 		
 		$shorten_url = new ShortenUrl();
 		
-		$pre_register_url = $shorten_url->getShortenUrl("fitternity.com/mfp?referral_code=$capture->_id")['url'];
+		$pre_register_url = $shorten_url->getShortenUrl("fitternity.com/pre-register?referral_code=$capture->_id")['url'];
 
 		foreach($invitees as $invitee){
 
 			$data = array(
 				'customer_phone' => $invitee,
+				// 'customer_phone' => $invitee['phone'],
+				// 'invitee_name' => $invitee['name'],
 				'pre_register_url' => $pre_register_url,
 				'inviter_name' => ucwords($customer->name)
 			);

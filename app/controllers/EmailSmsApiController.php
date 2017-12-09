@@ -8,6 +8,7 @@ Use App\Mailers\CustomerMailer as CustomerMailer;
 use App\Sms\CustomerSms as CustomerSms;
 use App\Services\Utilities as Utilities;
 Use App\Mailers\FinderMailer as FinderMailer;
+use Illuminate\Support\Facades\Config;
 
 class EmailSmsApiController extends \BaseController {
 
@@ -577,8 +578,17 @@ class EmailSmsApiController extends \BaseController {
                         "entry"=>'credit',
                         'description' => "Fitcashplus for invitation",
                     ];
+                    
                     Log::info($wallet_data);
+                    
                     $walletTransaction = $this->utilities->walletTransactionNew($wallet_data);
+
+                    $shorten_url = 
+                    
+                    $capture->wallet_url = $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$capture->customer_email."#wallet");
+                    
+                    $this->customersms->fitcashPreRegister($capture->toArray());
+                        
                 }
                 
             }
@@ -743,7 +753,7 @@ class EmailSmsApiController extends \BaseController {
             'send_bcc_status'   => 1
         );
 
-        $capture_type = array('fitness_canvas','renew-membership','claim_listing','add_business');
+        $capture_type = array('fitness_canvas','renew-membership','claim_listing','add_business', 'sale_pre_register_2018');
 
         if(in_array($data['capture_type'],$capture_type)){
 
@@ -753,6 +763,9 @@ class EmailSmsApiController extends \BaseController {
                     break;
                 case 'add_business':
                     $this->findermailer->addBusiness($data);
+                    break;
+                case 'sale_pre_register_2018':
+                    $this->customersms->salePreregister($data);
                     break;
                 default:
                     $this->customermailer->landingPageCallback($data);
