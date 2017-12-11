@@ -1076,3 +1076,7 @@ Route::get('locatetrialcommunication/{booktrial_id}','SchedulebooktrialsControll
 Route::get('ratecardmembership/{service_id}','FindersController@ratecardMembership');
 
 Route::post('invitepreregister','CustomerController@invitePreRegister');
+
+Route::group(array('before' => 'validatetoken'), function() {
+	Route::post('walletordercapture', array('as' => 'transaction.walletOrderCapture','uses' => 'TransactionController@walletOrderCapture'));
+});

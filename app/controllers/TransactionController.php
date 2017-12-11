@@ -3829,4 +3829,123 @@ class TransactionController extends \BaseController {
 
     }
 
+    public function walletOrderCapture(){
+        
+        $data = Input::all();
+
+        $rules = array(
+            'amount'=>'required',
+            'customer_email'=>'required|email',
+            'customer_phone'=>'required',
+            'customer_source'=>'required',
+            'type'=>'required'
+        );
+
+        $validator = Validator::make($data,$rules);
+
+        $customerDetail = $this->getCustomerDetail($data);
+        
+        if($customerDetail['status'] != 200){
+            return Response::json($customerDetail,$customerDetail['status']);
+        }
+        
+        if($data['type'] != 'wallet'){
+            return Response::json(array('message'=>'Invalid parameters'), 400);
+        }
+
+        $data = array_merge($data,$customerDetail['data']); 
+        
+        $data["fitcash_amount"] = $data['amount'] + ($data['amount'] <= 1000 ? $data['amount'] : 1000);
+        
+        $data['amount_finder'] = $data['amount'];
+        
+        $data['status'] = "0";
+        
+        $order_id = $data['_id'] = $data['order_id'] = Order::max('_id') + 1;
+
+        $txnid = "";
+        $successurl = "";
+        $mobilehash = "";
+        if($data['customer_source'] == "android" || $data['customer_source'] == "ios"){
+            $txnid = "MFIT".$data['_id'];
+            $successurl = $data['customer_source'] == "android" ? Config::get('app.website')."/paymentsuccessandroid" : Config::get('app.website')."/paymentsuccessios";
+        }else{
+            $txnid = "FIT".$data['_id'];
+            $successurl = Config::get('app.website')."/paymentsuccessproduct";
+        }
+        $data['txnid'] = $txnid;
+        $data['finder_name'] = 'Fitternity Pledge';
+        $data['finder_slug'] = 'fitternity-pledge';
+        
+        $data['service_name'] = 'Fitternity Pledge';
+        $data['service_id'] = 100000;
+        
+        $hash = getHash($data);
+        $data = array_merge($data,$hash);
+        
+        $order = new Order($data);
+
+        $order->_id = $order_id;
+        
+        $order->save();
+        
+        $result['firstname'] = strtolower($data['customer_name']);
+        $result['lastname'] = "";
+        $result['phone'] = $data['customer_phone'];
+        $result['email'] = strtolower($data['customer_email']);
+        $result['orderid'] = $data['_id'];
+        $result['txnid'] = $txnid;
+        $result['amount'] = $data['amount'];
+        $result['productinfo'] = strtolower($data['productinfo']);
+        $result['service_name'] = preg_replace("/^'|[^A-Za-z0-9 \'-]|'$/", '', strtolower($data['service_name']));
+        $result['successurl'] = $successurl;
+        $result['hash'] = $data['payment_hash'];
+        $result['payment_related_details_for_mobile_sdk_hash'] = $mobilehash;
+        $result['finder_name'] = strtolower($data['finder_name']);
+        $resp   =   array(
+            'status' => 200,
+            'data' => $result,
+            'message' => "Tmp Order Generated Sucessfully"
+        );
+        return Response::json($resp);
+
+    }
+
+    public function walletOrderSuccess(){
+
+        $data = Input::all();
+        
+        $rules = array(
+            'order_id'=>'required'
+        );
+
+        $validator = Validator::make($data,$rules);
+
+        if ($validator->fails()) {
+            return Response::json(array('status' => 404,'message' => error_message($validator->errors())),404);
+        }
+        
+        $order_id   =   (int) $data['order_id'];
+        $order      =   Order::findOrFail($order_id);
+
+        if(isset($order->status) && $order->status == '1'){
+
+            $resp   =   array('status' => 401, 'statustxt' => 'error', "message" => "Already Status Successfull");
+            return Response::json($resp,401);
+
+        }
+
+        $hash_verified = $this->utilities->verifyOrder($data,$order);
+
+        if($data['status'] == 'success' && $hash_verified){
+
+            array_set($data, 'status', '1');
+
+            // $redisid = Queue::connection('redis')->push('TransactionController@sendCommunication', array('order_id'=>$order_id),Config::get('app.queue'));
+            
+            // $order->update(array('redis_id'=>$redisid));
+            
+        }
+    }
+
 }
