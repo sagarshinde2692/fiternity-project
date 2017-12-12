@@ -2631,6 +2631,10 @@ class TransactionController extends \BaseController {
                 $now = strtotime(date('Y-m-d 11:00:00'));
             }
 
+            if(isset($order['type']) && $order['type'] == 'wallet'){
+
+            }
+
             $order->customerSmsSendPaymentLinkAfter3Days = $this->customersms->sendPaymentLinkAfter3Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+3 days",$now)));
             $order->customerSmsSendPaymentLinkAfter7Days = $this->customersms->sendPaymentLinkAfter7Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+7 days",$now)));
             //$order->customerSmsSendPaymentLinkAfter15Days = $this->customersms->sendPaymentLinkAfter15Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+15 days",$now)));
@@ -3874,8 +3878,8 @@ class TransactionController extends \BaseController {
             $successurl = Config::get('app.website')."/paymentsuccessproduct";
         }
         $data['txnid'] = $txnid;
-        $data['finder_name'] = 'Fitternity Pledge';
-        $data['finder_slug'] = 'fitternity-pledge';
+        $data['finder_name'] = 'Fitternity';
+        $data['finder_slug'] = 'fitternity';
         
         $data['service_name'] = 'Fitternity Pledge';
         $data['service_id'] = 100000;
@@ -3937,15 +3941,53 @@ class TransactionController extends \BaseController {
 
         $hash_verified = $this->utilities->verifyOrder($data,$order);
 
+
         if($data['status'] == 'success' && $hash_verified){
 
             array_set($data, 'status', '1');
 
-            // $redisid = Queue::connection('redis')->push('TransactionController@sendCommunication', array('order_id'=>$order_id),Config::get('app.queue'));
+            $req = array(
+                "customer_id"=>$order['customer_id'],
+                "order_id"=>$order['_id'],
+                "amount"=>$order['fitcash_amount'],
+                "amount_fitcash" => 0,
+                "amount_fitcash_plus" => $order['fitcash_amount'],
+                "type"=>'CREDIT',
+                'entry'=>'credit',
+                'description'=>"Fitcash credited for PLEDGE",
+            );
+
+            Log::info($req);
+
+            $wallet = $this->utilities->walletTransaction($req, $order->toArray());
+
+            Log::info("wallet");
+
+            Log::info($wallet);
             
-            // $order->update(array('redis_id'=>$redisid));
+            $redisid = Queue::connection('redis')->push('TransactionController@sendCommunication', array('order_id'=>$order_id),Config::get('app.queue'));
+            
+            $order->redis_id = $redisid;
+
+            $order->update();
+
+            $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
+            
+        } else {
+           
+            if($hash_verified == false){
+             
+                $order->hash_verified = false;
+                $order->update();
+                
+            }
+           
+            $resp 	= 	array('status' => 200, 'statustxt' => 'failed', 'message' => "Transaction Failed :)");
             
         }
+        
+        return Response::json($resp);
+            
     }
 
 }

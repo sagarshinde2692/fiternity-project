@@ -1078,5 +1078,9 @@ Route::get('ratecardmembership/{service_id}','FindersController@ratecardMembersh
 Route::post('invitepreregister','CustomerController@invitePreRegister');
 
 Route::group(array('before' => 'validatetoken'), function() {
+	
 	Route::post('walletordercapture', array('as' => 'transaction.walletOrderCapture','uses' => 'TransactionController@walletOrderCapture'));
+	
+	Route::post('walletordersuccess', array('as' => 'transaction.walletOrderSuccess','uses' => 'TransactionController@walletOrderSuccess'));
+	
 });
