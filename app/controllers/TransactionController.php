@@ -2621,6 +2621,14 @@ class TransactionController extends \BaseController {
 
             $order = Order::find($order_id);
 
+            if(isset($order['type']) && $order['type'] == 'wallet'){
+                
+                $this->customersms->pledge($order->toArray());
+                
+                return "success";
+            
+            }
+
             $this->utilities->removeOrderCommunication($order);
 
             $nineAM = strtotime(date('Y-m-d 09:00:00'));
@@ -2631,9 +2639,7 @@ class TransactionController extends \BaseController {
                 $now = strtotime(date('Y-m-d 11:00:00'));
             }
 
-            if(isset($order['type']) && $order['type'] == 'wallet'){
-
-            }
+            
 
             $order->customerSmsSendPaymentLinkAfter3Days = $this->customersms->sendPaymentLinkAfter3Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+3 days",$now)));
             $order->customerSmsSendPaymentLinkAfter7Days = $this->customersms->sendPaymentLinkAfter7Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+7 days",$now)));
@@ -3939,7 +3945,9 @@ class TransactionController extends \BaseController {
 
         }
 
-        $hash_verified = $this->utilities->verifyOrder($data,$order);
+        // $hash_verified = $this->utilities->verifyOrder($data,$order);
+
+        $hash_verified = true;
 
 
         if($data['status'] == 'success' && $hash_verified){
@@ -3966,8 +3974,10 @@ class TransactionController extends \BaseController {
             Log::info($wallet);
             
             $redisid = Queue::connection('redis')->push('TransactionController@sendCommunication', array('order_id'=>$order_id),Config::get('app.queue'));
-            
+
             $order->redis_id = $redisid;
+
+            $order->wallet_balance = $this->utilities->getWalletBalance($order['customer_id']);
 
             $order->update();
 
