@@ -3027,7 +3027,7 @@ class HomeController extends BaseController {
                         "description"=>"A combination of core exercises for toning up.",
                         "calories_burn"=>"Burn 350 Calories",
                         "image"=>"https://b.fitn.in/global/toi/mfp/line_up/pilatesfinal.jpg",
-                        "trainer"=>"With Taru",
+                        "trainer"=>"With Taru (Team Red Mat)",
                         "time"=>"8:00 AM - 8:30 AM"
                     ],
                     [
@@ -3035,7 +3035,7 @@ class HomeController extends BaseController {
                         "description"=>"A  martial arts form of attack & defence which incorporates kicking and boxing for strength & endurance.",
                         "calories_burn"=>"Burn 550 Calories",
                         "image"=>"https://b.fitn.in/global/toi/mfp/december/del/decdel_kickboxing.png",
-                        "trainer"=>"With Boxfit",
+                        "trainer"=>"With Team Boxfit",
                         "time"=>"8:45 AM - 9:15 AM"
                     ],
                     [
@@ -3051,7 +3051,7 @@ class HomeController extends BaseController {
                         "description"=>"A functional training circuit using only body weight for for core & strength building.",
                         "calories_burn"=>"Burn 550 Calories",
                         "image"=>"https://b.fitn.in/global/toi/mfp/december/del/decdel_crossfit.png",
-                        "trainer"=>"With Sahil",
+                        "trainer"=>"With Team 3607",
                         "time"=>"10:15 AM - 10:45 AM"
                     ],
                     [
@@ -3279,7 +3279,15 @@ class HomeController extends BaseController {
             [
                 "title"=>"Food Partner",
                 "image"=>"https://b.fitn.in/global/toi/partners/nature.jpeg"
-            ]   
+            ],
+            [
+                "title"=>"Fashion Partner",
+                "image"=>"https://b.fitn.in/global/toi/partners/Leo_Logo_Black1.jpg"
+            ],
+            [
+                "title"=>"Venue Partner",
+                "image"=>"https://b.fitn.in/global/toi/partners/Sun_n_Sand_logo.jpg"
+            ],   
         ];
 
         if($city == 'delhi'){
@@ -3308,11 +3316,15 @@ class HomeController extends BaseController {
                 ],
                 [
                     "title"=>"Venue Partner",
-                    "image"=>"https://cdn.fitn.in/Mfp-delhi/sponsor-logos/lalit-logo.png"
+                    "image"=>"https://b.fitn.in/global/toi/partners/The_Park_Hotels.jpg"
                 ],
                 [
                     "title"=>"Radio Partner",
                     "image"=>"https://cdn.fitn.in/Mfp-delhi/sponsor-logos/red-fever-updated.png"
+                ],
+                [
+                    "title"=>"Fashion Partner",
+                    "image"=>"https://b.fitn.in/global/toi/partners/Leo_Logo_Black1.jpg"
                 ]
                  
             ];
