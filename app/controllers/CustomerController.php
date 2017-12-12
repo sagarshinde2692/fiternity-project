@@ -5473,6 +5473,8 @@ class CustomerController extends \BaseController {
 		
 		$capture = Capture::find($data['capture_id']);
 
+		$capture->invitees = $invitees;
+
 		$customer_id = $capture->customer_id;
 
 		$customer = Customer::find($customer_id);
