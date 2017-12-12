@@ -2621,7 +2621,7 @@ class TransactionController extends \BaseController {
 
             $order = Order::find($order_id);
 
-            if(isset($order['type']) && $order['type'] == 'wallet'){
+            if(isset($data['type']) && $data['type'] == 'wallet'){
                 
                 $this->customersms->pledge($order->toArray());
                 
@@ -3952,7 +3952,7 @@ class TransactionController extends \BaseController {
 
         if($data['status'] == 'success' && $hash_verified){
 
-            array_set($data, 'status', '1');
+            $order->status = "1";
 
             $req = array(
                 "customer_id"=>$order['customer_id'],
@@ -3966,6 +3966,8 @@ class TransactionController extends \BaseController {
             );
 
             Log::info($req);
+
+            $order->wallet_req = $req;
 
             $wallet = $this->utilities->walletTransaction($req, $order->toArray());
 
