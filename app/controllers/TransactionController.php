@@ -2621,7 +2621,7 @@ class TransactionController extends \BaseController {
 
             $order = Order::find($order_id);
 
-            if(isset($data['type']) && $data['type'] == 'wallet'){
+            if(isset($order['type']) && $order['type'] == 'wallet'){
                 
                 $this->customersms->pledge($order->toArray());
                 
@@ -3980,6 +3980,8 @@ class TransactionController extends \BaseController {
             $order->redis_id = $redisid;
 
             $order->wallet_balance = $this->utilities->getWalletBalance($order['customer_id']);
+
+            $order->website = "www.fitternity.com";
 
             $order->update();
 
