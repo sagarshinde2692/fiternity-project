@@ -903,6 +903,8 @@ Class CustomerSms extends VersionNextSms{
 
 		$to = $data['customer_phone'];
 
+		// $to = '7506026203';
+
         return $this->common($label,$to,$data);
 	}
 

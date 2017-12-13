@@ -1076,3 +1076,5 @@ Route::get('locatetrialcommunication/{booktrial_id}','SchedulebooktrialsControll
 Route::get('ratecardmembership/{service_id}','FindersController@ratecardMembership');
 
 Route::post('invitepreregister','CustomerController@invitePreRegister');
+
+// Route::get('sendSms1', 'DebugController@sendSms1');

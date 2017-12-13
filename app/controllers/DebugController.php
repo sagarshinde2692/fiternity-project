@@ -5487,6 +5487,31 @@ public function yes($msg){
 
 	}
 
+	function sendSms1(){
+		Log::info("asdas");
+
+		$customersms = new CustomerSms();
+		
+		if (($handle = fopen("test.csv", "r")) !== FALSE) {
+
+			while (($data = fgetcsv($handle, 1000, ",")) !== FALSE) {
+				// Log::info($data);
+				$customer_data = [
+					'customer_name' => ucwords($data[1]),
+					'customer_phone' => $data[0],
+				];
+
+				
+				$result = $customersms->custom($customer_data);
+
+				Log::info($customer_data);
+			}
+			fclose($handle);
+		}
+
+		return "done";
+	}
+
 	
 
     
