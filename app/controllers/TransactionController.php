@@ -3868,8 +3868,15 @@ class TransactionController extends \BaseController {
         }
 
         $data = array_merge($data,$customerDetail['data']);
+
+        Log::info("before pledge");
+
+        Log::info($data);
         
         $prev_pledge_amount = Order::active()->where('customer_id', $data['customer_id'])->where('type', 'wallet')->sum('fitternity_share');
+
+        Log::info("prev pledge");
+        Log::info($prev_pledge_amount);
 
         $limit = 1000 - $prev_pledge_amount;
 
