@@ -182,7 +182,7 @@ Class Utilities {
 
         if(isset($customer->demonetisation) ){
 
-            return $this->walletTransactionNew($request);
+            return $this->walletTransactionNew($request, $data);
         }
 
         return $this->walletTransactionOld($request,$data);
@@ -1404,9 +1404,15 @@ Class Utilities {
 
     }
 
-    public function walletTransactionNew($request){
+    public function walletTransactionNew($request, $data=false){
 
         $wallet_limit = 2500;
+
+        if($data && isset($data['type']) && $data['type'] == 'wallet'){
+            Log::info("icreasing wallet");
+            $wallet_limit = 100000;
+        
+        }
 
         $customer_id = (int)$request['customer_id'];
 
