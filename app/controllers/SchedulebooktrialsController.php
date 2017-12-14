@@ -75,6 +75,8 @@ class SchedulebooktrialsController extends \BaseController {
             $this->vendor_token = true;
         }
 
+        $this->error_status = ($this->vendor_token) ? 200 : 400;
+
     }
     /**
      * Display the ScheduleBookTrial.
@@ -660,39 +662,39 @@ class SchedulebooktrialsController extends \BaseController {
 
         if(empty($data['customer_name'])){
             $resp 	= 	array('status' => 400,'message' => "Data Missing - customer_name");
-            return  Response::json($resp, 400);
+            return  Response::json($resp, $this->error_status);
         }
 
         if(empty($data['customer_email'])){
             $resp 	= 	array('status' => 400,'message' => "Data Missing - customer_email");
-            return  Response::json($resp, 400);
+            return  Response::json($resp, $this->error_status);
         }
 
         if (filter_var(trim($data['customer_email']), FILTER_VALIDATE_EMAIL) === false){
             $resp 	= 	array('status' => 400,'message' => "Invalid Email Id");
-            return  Response::json($resp, 400);
+            return  Response::json($resp, $this->error_status);
         }
 
         if(!$this->vendor_token){
 
             if(empty($data['finder_id'])){
                 $resp 	= 	array('status' => 400,'message' => "Data Missing - finder_id");
-                return  Response::json($resp, 400);
+                return  Response::json($resp, $this->error_status);
             }
 
             if(empty($data['finder_name'])){
                 $resp 	= 	array('status' => 400,'message' => "Data Missing - finder_name");
-                return  Response::json($resp, 400);
+                return  Response::json($resp, $this->error_status);
             }
 
             if(empty($data['city_id'])){
                 $resp 	= 	array('status' => 400,'message' => "Data Missing - city_id");
-                return  Response::json($resp, 400);
+                return  Response::json($resp, $this->error_status);
             }
 
             if(empty($data['customer_phone'])){
                 $resp   =   array('status' => 400,'message' => "Data Missing - customer_phone");
-                return  Response::json($resp, 400);
+                return  Response::json($resp, $this->error_status);
             }
 
         }else{
@@ -714,7 +716,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             if (count($alreadyBookedTrials) > 0) {
                 $resp = array('status' => 403, 'message' => "You have already booked a trial for this vendor");
-                return Response::json($resp, 403);
+                return Response::json($resp, $this->error_status);
             }
         }
 
@@ -722,7 +724,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         if($disableTrial['status'] != 200){
 
-            return Response::json($disableTrial,$disableTrial['status']);
+            return Response::json($disableTrial,$this->error_status);
         }
 
         // return $data	= Input::json()->all();

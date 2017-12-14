@@ -142,7 +142,7 @@ class TempsController extends \BaseController {
 
             if ($validator->fails()) {
 
-                return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),400);
+                return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),$this->error_status);
 
             }else{
 
@@ -250,7 +250,7 @@ class TempsController extends \BaseController {
             Log::error($e);
         }
 
-        return Response::json($response,$response['status']);
+        return Response::json($response,$this->vendor_token ? 200 : $response['status']);
 
     }
 
@@ -756,7 +756,7 @@ class TempsController extends \BaseController {
         }
 
         
-        return Response::json($response,$response['status']); 
+        return Response::json($response, $this->vendor_token ? 200 : $response['status']); 
 
     }
 

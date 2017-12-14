@@ -12,6 +12,17 @@ class RewardofferController extends BaseController {
         Utilities $utilities
     ) {
         $this->utilities = $utilities;
+        
+        $this->vendor_token = false;
+        
+        $vendor_token = Request::header('Authorization-Vendor');
+
+        if($vendor_token){
+
+            $this->vendor_token = true;
+        }
+
+        $this->error_status = ($this->vendor_token) ? 200 : 400;
     }
 
 
@@ -103,7 +114,7 @@ class RewardofferController extends BaseController {
             $rules      =   ['finder_id'=>'required', 'amount'=>'required', 'type'=>'required'];
             $validator  =   Validator::make($data,$rules);
             if ($validator->fails()) {
-                return Response::json(array('status' => 401,'message' => $this->utilities->errorMessage($validator->errors())),401);
+                return Response::json(array('status' => 401,'message' => $this->utilities->errorMessage($validator->errors())),$this->error_status);
             }
             $device             =   isset($data["device_type"]) ? $data["device_type"] : "";
             $finder_id          =   (int)$data['finder_id'];
@@ -158,7 +169,7 @@ class RewardofferController extends BaseController {
         $device     =   isset($data["device_type"]) ? $data["device_type"] : "";
         $validator  =   Validator::make($data,$rules);
         if ($validator->fails()) {
-            return Response::json(array('status' => 401,'message' => $this->utilities->errorMessage($validator->errors())),401);
+            return Response::json(array('status' => 401,'message' => $this->utilities->errorMessage($validator->errors())),$this->error_status);
         }
 
         $finder_id      =   (int)$data['finder_id'];
@@ -175,7 +186,7 @@ class RewardofferController extends BaseController {
         }
         if(!$ratecard && count($order) == 0){
             $resp   =   array('status' => 401,'message' => "Ratecard Not Present");
-            return  Response::json($resp, 401);
+            return  Response::json($resp, $this->error_status);
         }
 
         /*if(isset($ratecard->special_price) && $ratecard->special_price > 0 && $ratecard->special_price != ""){

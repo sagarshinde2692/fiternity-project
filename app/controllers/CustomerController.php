@@ -1282,14 +1282,14 @@ class CustomerController extends \BaseController {
 					$this->customermailer->forgotPassword($customer_data);
 					return Response::json(array('status' => 200,'message' => 'token successfull created and mail send', 'token' => $token),200);
 				}else{
-					return Response::json(array('status' => 400,'message' => 'Customer email not present'),400);
+					return Response::json(array('status' => 400,'message' => 'Customer email not present'),$this->error_status);
 				}
 
 			}else{
-				return Response::json(array('status' => 400,'message' => 'Customer not found'),400);
+				return Response::json(array('status' => 400,'message' => 'Customer not found'),$this->error_status);
 			}
 		}else{
-			return Response::json(array('status' => 400,'message' => 'Empty email'),400);
+			return Response::json(array('status' => 400,'message' => 'Empty email'),$this->error_status);
 		}
 
 	}

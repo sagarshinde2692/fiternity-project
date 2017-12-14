@@ -48,7 +48,10 @@ class FindersController extends \BaseController {
         if($vendor_token){
 
             $this->vendor_token = true;
-        }
+		}
+
+		$this->error_status = ($this->vendor_token) ? 200 : 400;
+		
 		
 	}
 
@@ -1568,7 +1571,7 @@ class FindersController extends \BaseController {
 		
 		if ($validator->fails()) {
 			$response = array('status' => 400, 'message' => 'Could not create a review.', 'errors' => $validator->errors());
-			return Response::json($response, 400);
+			return Response::json($response, $this->error_status);
 		}
 
 		if(isset($data['review_for']) && in_array($data['review_for'],['membership','session'])){
