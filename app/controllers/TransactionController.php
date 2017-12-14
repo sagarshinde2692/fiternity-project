@@ -398,9 +398,9 @@ class TransactionController extends \BaseController {
         $data['txnid'] = $txnid;
 
         Log::info($finderDetail["data"]);
-
-        $part_payment = (isset($finderDetail['data']['finder_flags']) && isset($finderDetail['data']['finder_flags']['part_payment'])) ? $finderDetail['data']['finder_flags']['part_payment'] : false;
-        $cash_pickup = (isset($finderDetail['data']['finder_flags']) && isset($finderDetail['data']['finder_flags']['cash_pickup'])) ? $finderDetail['data']['finder_flags']['cash_pickup'] : false;
+        $tmp_finder_flags = (array) $finderDetail['data']['finder_flags'];
+        $part_payment = (!empty($tmp_finder_flags) && isset($finderDetail['data']['finder_flags']['part_payment'])) ? $finderDetail['data']['finder_flags']['part_payment'] : false;
+        $cash_pickup = (!empty($tmp_finder_flags) && isset($finderDetail['data']['finder_flags']['cash_pickup'])) ? $finderDetail['data']['finder_flags']['cash_pickup'] : false;
         
         if(!$updating_part_payment && $part_payment && $data["amount_finder"] >= 3000){
 
