@@ -2621,6 +2621,14 @@ class TransactionController extends \BaseController {
 
             $order = Order::find($order_id);
 
+            if(isset($order['type']) && $order['type'] == 'wallet'){
+                
+                $this->customersms->pledge($order->toArray());
+                
+                return "success";
+            
+            }
+
             $this->utilities->removeOrderCommunication($order);
 
             $nineAM = strtotime(date('Y-m-d 09:00:00'));
@@ -2630,6 +2638,8 @@ class TransactionController extends \BaseController {
             if($now <= $nineAM || $now >= $ninePM){
                 $now = strtotime(date('Y-m-d 11:00:00'));
             }
+
+            
 
             $order->customerSmsSendPaymentLinkAfter3Days = $this->customersms->sendPaymentLinkAfter3Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+3 days",$now)));
             $order->customerSmsSendPaymentLinkAfter7Days = $this->customersms->sendPaymentLinkAfter7Days($order->toArray(), date('Y-m-d H:i:s', strtotime("+7 days",$now)));
@@ -3827,6 +3837,171 @@ class TransactionController extends \BaseController {
 
         return $flag;
 
+    }
+
+    public function walletOrderCapture(){
+        
+        $data = Input::all();
+
+        $rules = array(
+            'amount'=>'required',
+            'customer_email'=>'required|email',
+            'customer_phone'=>'required',
+            'customer_source'=>'required',
+            'type'=>'required'
+        );
+
+        $validator = Validator::make($data,$rules);
+
+        $customerDetail = $this->getCustomerDetail($data);
+        
+        if($customerDetail['status'] != 200){
+            return Response::json($customerDetail,$customerDetail['status']);
+        }
+        
+        if($data['type'] != 'wallet'){
+            return Response::json(array('message'=>'Invalid parameters'), 400);
+        }
+
+        $data = array_merge($data,$customerDetail['data']); 
+        
+        $data["fitcash_amount"] = $data['amount'] + ($data['amount'] <= 1000 ? $data['amount'] : 1000);
+        
+        $data['amount_finder'] = $data['amount'];
+        
+        $data['status'] = "0";
+        
+        $order_id = $data['_id'] = $data['order_id'] = Order::max('_id') + 1;
+
+        $txnid = "";
+        $successurl = "";
+        $mobilehash = "";
+        if($data['customer_source'] == "android" || $data['customer_source'] == "ios"){
+            $txnid = "MFIT".$data['_id'];
+            $successurl = $data['customer_source'] == "android" ? Config::get('app.website')."/paymentsuccessandroid" : Config::get('app.website')."/paymentsuccessios";
+        }else{
+            $txnid = "FIT".$data['_id'];
+            $successurl = Config::get('app.website')."/paymentsuccessproduct";
+        }
+        $data['txnid'] = $txnid;
+        $data['finder_name'] = 'Fitternity';
+        $data['finder_slug'] = 'fitternity';
+        
+        $data['service_name'] = 'Fitternity Pledge';
+        $data['service_id'] = 100000;
+        
+        $hash = getHash($data);
+        $data = array_merge($data,$hash);
+        
+        $order = new Order($data);
+
+        $order->_id = $order_id;
+        
+        $order->save();
+        
+        $result['firstname'] = strtolower($data['customer_name']);
+        $result['lastname'] = "";
+        $result['phone'] = $data['customer_phone'];
+        $result['email'] = strtolower($data['customer_email']);
+        $result['orderid'] = $data['_id'];
+        $result['txnid'] = $txnid;
+        $result['amount'] = $data['amount'];
+        $result['productinfo'] = strtolower($data['productinfo']);
+        $result['service_name'] = preg_replace("/^'|[^A-Za-z0-9 \'-]|'$/", '', strtolower($data['service_name']));
+        $result['successurl'] = $successurl;
+        $result['hash'] = $data['payment_hash'];
+        $result['payment_related_details_for_mobile_sdk_hash'] = $mobilehash;
+        $result['finder_name'] = strtolower($data['finder_name']);
+        $resp   =   array(
+            'status' => 200,
+            'data' => $result,
+            'message' => "Tmp Order Generated Sucessfully"
+        );
+        return Response::json($resp);
+
+    }
+
+    public function walletOrderSuccess(){
+
+        $data = Input::all();
+        
+        $rules = array(
+            'order_id'=>'required'
+        );
+
+        $validator = Validator::make($data,$rules);
+
+        if ($validator->fails()) {
+            return Response::json(array('status' => 404,'message' => error_message($validator->errors())),404);
+        }
+        
+        $order_id   =   (int) $data['order_id'];
+        $order      =   Order::findOrFail($order_id);
+
+        if(isset($order->status) && $order->status == '1'){
+
+            $resp   =   array('status' => 401, 'statustxt' => 'error', "message" => "Already Status Successfull");
+            return Response::json($resp,401);
+
+        }
+
+        // $hash_verified = $this->utilities->verifyOrder($data,$order);
+
+        $hash_verified = true;
+
+
+        if($data['status'] == 'success' && $hash_verified){
+
+            $order->status = "1";
+
+            $req = array(
+                "customer_id"=>$order['customer_id'],
+                "order_id"=>$order['_id'],
+                "amount"=>$order['fitcash_amount'],
+                "amount_fitcash" => 0,
+                "amount_fitcash_plus" => $order['fitcash_amount'],
+                "type"=>'CREDIT',
+                'entry'=>'credit',
+                'description'=>"Fitcash credited for PLEDGE",
+            );
+
+            Log::info($req);
+
+            $order->wallet_req = $req;
+
+            $wallet = $this->utilities->walletTransaction($req, $order->toArray());
+
+            Log::info("wallet");
+
+            Log::info($wallet);
+            
+            $redisid = Queue::connection('redis')->push('TransactionController@sendCommunication', array('order_id'=>$order_id),Config::get('app.queue'));
+
+            $order->redis_id = $redisid;
+
+            $order->wallet_balance = $this->utilities->getWalletBalance($order['customer_id']);
+
+            $order->website = "www.fitternity.com";
+
+            $order->update();
+
+            $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
+            
+        } else {
+           
+            if($hash_verified == false){
+             
+                $order->hash_verified = false;
+                $order->update();
+                
+            }
+           
+            $resp 	= 	array('status' => 200, 'statustxt' => 'failed', 'message' => "Transaction Failed :)");
+            
+        }
+        
+        return Response::json($resp);
+            
     }
 
 }
