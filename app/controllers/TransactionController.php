@@ -3843,6 +3843,10 @@ class TransactionController extends \BaseController {
         
         $data = Input::all();
 
+        Log::info("wallet capture");
+
+        Log::info($data);
+
         $rules = array(
             'amount'=>'required',
             'customer_email'=>'required|email',
@@ -3924,6 +3928,10 @@ class TransactionController extends \BaseController {
     public function walletOrderSuccess(){
 
         $data = Input::all();
+
+        Log::info("wallet success");
+        
+        Log::info($data);
         
         $rules = array(
             'order_id'=>'required'
