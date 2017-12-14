@@ -3867,9 +3867,19 @@ class TransactionController extends \BaseController {
             return Response::json(array('message'=>'Invalid parameters'), 400);
         }
 
-        $data = array_merge($data,$customerDetail['data']); 
+        $data = array_merge($data,$customerDetail['data']);
         
-        $data["fitcash_amount"] = $data['amount'] + ($data['amount'] <= 1000 ? $data['amount'] : 1000);
+        $prev_pledge_amount = Order::active()->where('customer_id', $data['customer_id'])->where('type', 'wallet')->sum('fitternity_share');
+
+        $limit = 1000 - $prev_pledge_amount;
+
+        if($limit == 0){
+            return Response::json(array('message'=>'Pledge limit exceeded'), 400);
+        }
+
+        $data["fitternity_share"] = $data['amount'] <= $limit ? $data['amount'] : $limit;
+        
+        $data["fitcash_amount"] = $data['amount'] + $data["fitternity_share"];
         
         $data['amount_finder'] = $data['amount'];
         
