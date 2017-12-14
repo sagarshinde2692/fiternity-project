@@ -3878,7 +3878,7 @@ class TransactionController extends \BaseController {
         Log::info("prev pledge");
         Log::info($fitternity_share);
 
-        $data['fitternity_share_change'] = $data['fitternity_share'] != $fitternity_share ? true : false;
+        $data['fitternity_share_change'] = ((int)$data['fitternity_share']) != $fitternity_share ? true : false;
 
         $data["fitternity_share"] = $fitternity_share;
         
@@ -4045,7 +4045,9 @@ class TransactionController extends \BaseController {
 
         $remaining_limit = 1000 - $prev_pledge_amount;
 
-        return (int)$remaining_limit;
+        $fitternity_share = $data['amount'] <= $remaining_limit ? $data['amount'] : $remaining_limit;
+
+        return (int)$fitternity_share;
     
     }
 
