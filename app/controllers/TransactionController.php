@@ -3927,7 +3927,7 @@ class TransactionController extends \BaseController {
 
     public function walletOrderSuccess(){
 
-        $data = Input::all();
+        $data = Input::json()->all();
 
         Log::info("wallet success");
         
