@@ -3878,7 +3878,7 @@ class TransactionController extends \BaseController {
         Log::info("prev pledge");
         Log::info($fitternity_share);
 
-        $data['fitternity_share_change'] = $data['fitternity_share'] != $fitternity_share ? true : false;
+        $data['fitternity_share_change'] = ((int)$data['fitternity_share']) != $fitternity_share ? true : false;
 
         $data["fitternity_share"] = $fitternity_share;
         
