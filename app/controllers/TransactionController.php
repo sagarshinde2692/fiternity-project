@@ -4045,7 +4045,9 @@ class TransactionController extends \BaseController {
 
         $remaining_limit = 1000 - $prev_pledge_amount;
 
-        return (int)$remaining_limit;
+        $fitternity_share = $data['amount'] <= $remaining_limit ? $data['amount'] : $remaining_limit;
+
+        return (int)$fitternity_share;
     
     }
 
