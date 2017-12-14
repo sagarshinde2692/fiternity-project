@@ -3872,19 +3872,15 @@ class TransactionController extends \BaseController {
         Log::info("before pledge");
 
         Log::info($data);
-        
-        $prev_pledge_amount = Order::active()->where('customer_id', $data['customer_id'])->where('type', 'wallet')->sum('fitternity_share');
+
+        $fitternity_share = $this->getFitternityShareAmount($data);
 
         Log::info("prev pledge");
-        Log::info($prev_pledge_amount);
+        Log::info($fitternity_share);
 
-        $limit = 1000 - $prev_pledge_amount;
+        $data['fitternity_share_change'] = $data['fitternity_share'] != $fitternity_share ? true : false;
 
-        if($limit == 0){
-            return Response::json(array('message'=>'Pledge limit exceeded'), 400);
-        }
-
-        $data["fitternity_share"] = $data['amount'] <= $limit ? $data['amount'] : $limit;
+        $data["fitternity_share"] = $fitternity_share;
         
         $data["fitcash_amount"] = $data['amount'] + $data["fitternity_share"];
         
@@ -3933,6 +3929,10 @@ class TransactionController extends \BaseController {
         $result['hash'] = $data['payment_hash'];
         $result['payment_related_details_for_mobile_sdk_hash'] = $mobilehash;
         $result['finder_name'] = strtolower($data['finder_name']);
+        $result['fitternity_share'] = $data['fitternity_share'];
+        $result['fitternity_share_change'] = $data['fitternity_share_change'];
+        
+        
         $resp   =   array(
             'status' => 200,
             'data' => $result,
@@ -3978,6 +3978,14 @@ class TransactionController extends \BaseController {
         if($data['status'] == 'success' && $hash_verified){
 
             $order->status = "1";
+
+            $fitternity_share = $this->getFitternityShareAmount($order->toArray());
+
+            $order->fitternity_share_change_success = $order->fitternity_share != $fitternity_share ? true : false;
+            
+            $order->fitternity_share = $fitternity_share;
+
+            $order->fitcash_amount = $order->amount + $fitternity_share;
 
             $req = array(
                 "customer_id"=>$order['customer_id'],
@@ -4027,6 +4035,18 @@ class TransactionController extends \BaseController {
         
         return Response::json($resp);
             
+    }
+
+    public function getFitternityShareAmount($data){
+        
+        Log::info( Order::active()->where('customer_id', $data['customer_id'])->where('type', 'wallet')->get());
+        
+        $prev_pledge_amount = Order::active()->where('customer_id', $data['customer_id'])->where('type', 'wallet')->sum('fitternity_share');
+
+        $remaining_limit = 1000 - $prev_pledge_amount;
+
+        return $remaining_limit;
+    
     }
 
 }
