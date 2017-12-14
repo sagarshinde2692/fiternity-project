@@ -666,7 +666,7 @@ class FindersController extends \BaseController {
 					array_set($finder, 'fitmania_offer_exist', false);
 				}
 
-				if(isset($finderarr['brand_id'])){
+				if(isset($finderarr['brand_id']) && $finderarr['city_id'] != 10000){
 
 					$brand = Brand::find((int)$finderarr['brand_id']);
 
