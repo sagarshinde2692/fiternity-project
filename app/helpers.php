@@ -3088,7 +3088,9 @@ if (!function_exists('invalidateDuplicatePhones')) {
     
         function invalidateDuplicatePhones($data, $customer_id){
             
-            if(isset($data['source']) && $data['source'] == 'kiosk' && isset($data['customer_phone']) && $data['customer_phone'] != ''){
+            Log::info("Inside invalidateDuplicatePhones");
+
+            if(isset($data['customer_source']) && $data['customer_source'] == 'kiosk' && isset($data['customer_phone']) && $data['customer_phone'] != ''){
                 
                 Log::info("Pushing contacts to secondary");
 
