@@ -3104,22 +3104,22 @@ if (!function_exists('invalidateDuplicatePhones')) {
 
                 Log::info($duplicateCustomers);
 
-                foreach($duplicateCustomers as $customer){
+                // foreach($duplicateCustomers as $customer){
                     
-                    $secondary_contact_no = array();
+                //     $secondary_contact_no = array();
 
-                    if(isset($customer->secondary_contact_no)){
-                        $secondary_contact_no = $customer->secondary_contact_no;
-                    }
+                //     if(isset($customer->secondary_contact_no)){
+                //         $secondary_contact_no = $customer->secondary_contact_no;
+                //     }
 
-                    array_push($secondary_contact_no, substr($data['customer_phone'], -10));
+                //     array_push($secondary_contact_no, substr($data['customer_phone'], -10));
 
-                    $customer->secondary_contact_no = $secondary_contact_no;
+                //     $customer->secondary_contact_no = $secondary_contact_no;
 
-                    $customer->contact_no = '';
+                //     $customer->contact_no = '';
 
-                    $customer->update();
-                }
+                //     $customer->update();
+                // }
                 
 
             }
