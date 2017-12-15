@@ -773,11 +773,13 @@ class TempsController extends \BaseController {
     function getAllCustomersByPhone($data){
         $customer_data = [];
         Customer::$withoutAppends = true;
+        Log::info("getAllCustomersByPhone");
+        Log::info($data);
         $customers = Customer::active()->select('name','email','contact_no','dob','gender')->where('email', 'exists', true)->where('contact_no','LIKE','%'.substr($data['customer_phone'], -10).'%')->orderBy('_id','desc')->get();
 
-        if(count($customers) == 0){
-            $customers = Customer::active()->select('name','email','contact_no','dob','gender')->where('email', 'exists', true)->where('secondary_contact_no', substr($data['customer_phone'], -10))->orderBy('_id','desc')->get();
-        }
+        // if(count($customers) == 0){
+        //     $customers = Customer::active()->select('name','email','contact_no','dob','gender')->where('email', 'exists', true)->where('secondary_contact_no', substr($data['customer_phone'], -10))->orderBy('_id','desc')->get();
+        // }
 
         foreach($customers as $customer) {
             
