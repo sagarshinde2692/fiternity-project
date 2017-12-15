@@ -3554,4 +3554,8 @@ class HomeController extends BaseController {
 
     }
 
+    public function getCrashLog($count = 1){
+        return CrashLog::orderBy('_id', 'desc')->take($count)->get();
+    }
+
 }
