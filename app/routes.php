@@ -1085,3 +1085,5 @@ Route::group(array('before' => 'validatetoken'), function() {
 	Route::post('walletordersuccess', array('as' => 'transaction.walletOrderSuccess','uses' => 'TransactionController@walletOrderSuccess'));
 	
 });
+
+Route::post('customer/sendvendornumber','CustomerController@sendVendorNumberToCustomer');

@@ -5519,5 +5519,28 @@ class CustomerController extends \BaseController {
 		return Response::json(array('status' => 200,'message'=> "Invites sent"), 200);
 
 	}
+
+	public function sendVendorNumberToCustomer(){
+
+		$data = Input::json()->all();
+
+		$rules = [
+			'vendor_number' => 'required',
+			'customer_number' => 'required'
+		];
+
+		$validator = Validator::make($data,$rules);
+
+		if($validator->fails()) {
+			return Response::json(['status' => 400,'message' =>$this->errorMessage($validator->errors())]);  
+		}
+
+		$data['customer_phone'] = $data['customer_number'];
+
+		$this->customersms->sendVendorNumber($data);
+
+		return Response::json(['status' => 200,'message'=> "SMS Sent"]);
+
+	}
 	
 }
