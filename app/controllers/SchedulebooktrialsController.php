@@ -735,6 +735,7 @@ class SchedulebooktrialsController extends \BaseController {
         $finder_name 		       =	Input::json()->get('finder_name');
         $finder				       =	Finder::active()->where('_id','=',intval($finder_id))->first();
         $customer_id		       = 	autoRegisterCustomer($data);
+        invalidateDuplicatePhones($data, $customer_id);
         $customer_name		       = 	$data['customer_name'];
         $customer_email		       = 	$data['customer_email'];
         $customer_phone		       = 	$data['customer_phone'];

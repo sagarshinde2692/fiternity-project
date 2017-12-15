@@ -2231,7 +2231,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         $customer->demonetisation = time();
                         $customer->save();
 
-                        invalidateDuplicatePhones($data, $customer->toArray());
+                        // invalidateDuplicatePhones($data, $customer->toArray());
 
                         return $inserted_id;
 
@@ -2277,7 +2277,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
 
                         }
 
-                        invalidateDuplicatePhones($data, $customer->toArray());
+                        // invalidateDuplicatePhones($data, $customer->toArray());
                         
                         return $customer->_id;
                     }
@@ -3086,7 +3086,7 @@ if (!function_exists('isKioskVendor')) {
 
 if (!function_exists('invalidateDuplicatePhones')) {
     
-        function invalidateDuplicatePhones($data, $customer){
+        function invalidateDuplicatePhones($data, $customer_id){
             
             if(isset($data['source']) && $data['source'] == 'kiosk' && isset($data['customer_phone']) && $data['customer_phone'] != ''){
                 
@@ -3094,9 +3094,9 @@ if (!function_exists('invalidateDuplicatePhones')) {
 
                 Customer::$withoutAppends = true;
                 
-                $duplicateCustomers = Customer::where('contact_no','LIKE','%'.substr($data['customer_phone'], -10).'%')->whereNot('_id', $customer['_id'])->get(['name','email','contact_no', 'secondary_contact_no']);
+                $duplicateCustomers = Customer::where('contact_no','LIKE','%'.substr($data['customer_phone'], -10).'%')->whereNot('_id', $customer_id)->get(['name','email','contact_no', 'secondary_contact_no']);
 
-                $duplicateCustomerIds  = array_map('intval', $duplicateCustomers['_id']);
+                // $duplicateCustomerIds  = array_map('intval', $duplicateCustomers['_id']);
 
                 Log::info("====Duplicate Customers=======");
 
