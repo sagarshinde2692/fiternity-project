@@ -779,10 +779,9 @@ class TempsController extends \BaseController {
             
             $customer = $customer->toArray();
 
-            $customer['customerToken'] = createCustomerToken((int)$customer->_id);
+            $customer['customerToken'] = createCustomerToken((int)$customer['_id']);
             $customer['dob'] = isset($customer['dob']) && $customer['dob'] != "" ? $customer['dob'] : "";
             $customer['gender'] = isset($customer['gender']) && $customer['gender'] != "" ? $customer['gender'] : "";
-            $customer_id = (int)$customer->_id;
             array_push($customer_data, $customer);
         }
         return $customer_data;
