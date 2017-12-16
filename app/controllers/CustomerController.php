@@ -880,24 +880,25 @@ class CustomerController extends \BaseController {
 			$customer->account_link = $account_link;
 		}
 
-		
 
 		$customer->last_visited = Carbon::now();
 		$customer->update();
 
-		if($this->vendor_token && isset($data['contact_no']) && $data['contact_no'] != ""){
-			
-			setVerifiedContact($customer->_id, $data['contact_no']);
-			$customer->contact_no = $data['contact_no'];
 		
-		}
 		$resp = $this->checkIfpopPup($customer);
-
+		
         $customer_data = array_only($customer->toArray(), ['name','email','contact_no','dob','gender']);
         
         $token = $this->createToken($customer);
-
-        $customer_data['token'] = $token['token'];
+		
+		if($this->vendor_token && isset($data['contact_no']) && $data['contact_no'] != ""){
+			
+			setVerifiedContact($customer->_id, $data['contact_no']);
+			$customer_data['contact_no'] = $data['contact_no'];
+		
+		}
+		
+		$customer_data['token'] = $token['token'];
 		
 		return array("token" => $token,"popup" => $resp,"customer_data"=>$customer_data);
 	}
