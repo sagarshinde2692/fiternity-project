@@ -3007,36 +3007,50 @@ if (!function_exists('formFields')) {
 
         $data = [
             [
-                'field'=>'dob',
-                'title'=>'DOB',
-                'data_type'=>'text',
-                'input_type'=>'text'
+                'field'=>'age',
+                'title'=>'Age',
+                'data_type'=>'number',
+                'input_type'=>'number',
+                'required'=>true
             ],
             [
                 'field'=>'blood_group',
                 'title'=>'Blood group',
                 'data_type'=>'text',
-                'input_type'=>'text'
+                'input_type'=>'select',
+                'options'=>[
+                    'A+',
+                    'A-',
+                    'B+',
+                    'B-',
+                    'AB+',
+                    'AB-',
+                    'O+',
+                    'O-'
+                ],
+                'required'=>true
             ],
-            [
+           /* [
                 'field'=>'emergency_contact_number',
                 'title'=>'Emergency Contact Number',
                 'data_type'=>'text',
                 'input_type'=>'text',
                 'required'=>true
-            ],
-            [
+            ],*/
+           /* [
                 'field'=>'recommended_to_workout',
                 'title'=>'Were you recommended to workout by a doctor',
                 'data_type'=>'text',
-                'input_type'=>'text'
-            ],
-            [
+                'input_type'=>'text',
+                'required'=>true
+            ],*/
+            /*[
                 'field'=>'medical_condition',
                 'title'=>'Medical Condition',
                 'data_type'=>'text',
-                'input_type'=>'text'
-            ],
+                'input_type'=>'text',
+                'required'=>true
+            ],*/
             [
                 'field'=>'prescriptive_medication',
                 'title'=>'Do you take any prescriptive medication',
@@ -3045,7 +3059,8 @@ if (!function_exists('formFields')) {
                 'options'=>[
                     'Yes',
                     'No'
-                ]
+                ],
+                'required'=>true
             ],
             [
                 'field'=>'smoke',
@@ -3055,7 +3070,8 @@ if (!function_exists('formFields')) {
                 'options'=>[
                     'Yes',
                     'No'
-                ]
+                ],
+                'required'=>true
             ],
             [
                 'field'=>'consume_alcohol',
@@ -3065,7 +3081,8 @@ if (!function_exists('formFields')) {
                 'options'=>[
                     'Yes',
                     'No'
-                ]
+                ],
+                'required'=>true
             ],          
         ];
 
