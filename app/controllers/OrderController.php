@@ -2288,9 +2288,13 @@ class OrderController extends \BaseController {
                     $resp   =   array("status" => 401,"message" => "We have already received your request");
                     return Response::json($resp,$resp["status"]);
                 }
+               
+                if(!isset($data['payment_mode']) || $data['payment_mode'] != 'cod'){
 
-                $order->unset('cashback');
-                $order->unset('reward_info');
+                    $order->unset('cashback');
+                    $order->unset('reward_info');
+
+                }
             }
 
 

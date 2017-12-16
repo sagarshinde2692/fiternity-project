@@ -191,7 +191,7 @@ class RewardofferController extends BaseController {
 
 
 
-        if((isset($finder->purchase_gamification_disable) && $finder->purchase_gamification_disable == "1") || (isset($amount) && $amount < 2000)){
+        if(isset($finder->purchase_gamification_disable) && $finder->purchase_gamification_disable == "1"){
             $rewards = array();
         }else{
 
