@@ -797,7 +797,11 @@ class TempsController extends \BaseController {
             Log::info($defaultCustomer);
            
             if(count($defaultCustomer) == 1){
+               
                 $customers = $defaultCustomer;
+
+                $customers[0]['contact_no'] = substr($data['customer_phone'], -10);
+
             }
         }
         foreach($customers as $customer) {
