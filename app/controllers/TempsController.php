@@ -790,7 +790,7 @@ class TempsController extends \BaseController {
             Log::info($defaultCustomer);
             
             if(count($defaultCustomer) == 0){
-                $defaultCustomer = Customer::active()->select('name','email','contact_no','dob','gender')->where('email', 'exists', true)->where('secondary_verified_no', substr($data['customer_phone']))->orderBy('_id','desc')->get();
+                $defaultCustomer = Customer::active()->select('name','email','contact_no','dob','gender')->where('email', 'exists', true)->where('secondary_verified_no', substr($data['customer_phone'], -10))->orderBy('_id','desc')->get();
             }
 
             Log::info("Customers by primary secondary contact no");
