@@ -3113,51 +3113,35 @@ if (!function_exists('setDefaultAccount')) {
     function setDefaultAccount($data, $customer_id){
         
         Log::info("Inside setDefaultAccount");
-
+        Log::info($data);
         if( ((isset($data['source']) && $data['source'] == 'kiosk') || (isset($data['customer_source']) && $data['customer_source'] == 'kiosk')) && isset($data['customer_phone']) && $data['customer_phone'] != ''){
             
             Log::info("Creating default account");
-
             Customer::$withoutAppends = true;
-
             $defaultCustomer = Customer::find(intval($customer_id));
-
             $defaultCustomer->default_account = true;
-
             $duplicateCustomers = Customer::where('contact_no','LIKE','%'.substr($data['customer_phone'], -10).'%')->whereNot('_id', $customer_id)->lists('_id');
-
             if(count($duplicateCustomers) > 0){
-
                 $defaultCustomer->attached_accounts = $duplicateCustomers;
             
             }
-
             Log::info("====Duplicate Customers=======");
-
             Log::info($duplicateCustomers);
-
             $defaultCustomer->update();
             
             // foreach($duplicateCustomers as $customer){
                 
             //     $secondary_contact_no = array();
-
             //     if(isset($customer->secondary_contact_no)){
             //         $secondary_contact_no = $customer->secondary_contact_no;
             //     }
-
             //     array_push($secondary_contact_no, substr($data['customer_phone'], -10));
-
             //     $customer->secondary_contact_no = $secondary_contact_no;
-
             //     $customer->contact_no = '';
-
             //     $customer->update();
             // }
             
-
         }
-
         return;
     }
 }
@@ -3165,29 +3149,29 @@ if (!function_exists('setDefaultAccount')) {
 if (!function_exists('setVerifiedContact')) {
     
     function setVerifiedContact($customer_id, $contact_no){
+        Log::info("customer_id");
+        Log::info("$customer_id");
+        Log::info("contact_no");
+        Log::info("$contact_no");
         
         $customer = Customer::find(intval($customer_id));
-
         if(!isset($customer->contact_no) || $customer->contact_no == ''){
             
             $customer->contact_no = trim($contact_no);
             
         }
-
         if(substr($customer->contact_no, -10) == substr( trim($contact_no), -10)){
             
             $customer->contact_no_verified = true;
         
         }else{
-
-            $secondary_verified_no = isset($customer->$secondary_verified_no) ? $customer->$secondary_verified_no : array();
-
-            array_push($secondary_verified_no, trim($contact_no));
-
-            $customer->$secondary_verified_no = $secondary_verified_no;
-
+            $secondary_verified_no = isset($customer->secondary_verified_no) ? $customer->secondary_verified_no : array();
+            if(in_array(trim($contact_no), $secondary_verified_no)){
+                
+                array_push($secondary_verified_no, trim($contact_no));
+            }
+            $customer->secondary_verified_no = $secondary_verified_no;
         }
-
         $customer->update();
        
     }

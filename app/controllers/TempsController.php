@@ -777,23 +777,22 @@ class TempsController extends \BaseController {
         Customer::$withoutAppends = true;
         Log::info("getAllCustomersByPhone");
         Log::info($data);
-
         $customers = Customer::active()->select('name','email','contact_no','dob','gender')->where('email', 'exists', true)->where('contact_no','LIKE','%'.substr($data['customer_phone'], -10).'%')->orderBy('_id','desc')->get();
         
         if(count($customers) > 1){
-
             $defaultCustomer = Customer::active()->select('name','email','contact_no','dob','gender')->where('email', 'exists', true)->where('contact_no','LIKE','%'.substr($data['customer_phone'], -10).'%')->where('default_account', true)->orderBy('_id','desc')->get();
-
+            
+            if(count($defaultCustomer) == 0){
+                $defaultCustomer = Customer::active()->select('name','email','contact_no','dob','gender')->where('email', 'exists', true)->where('secondary_verified_no', substr($data['customer_phone']))->orderBy('_id','desc')->get();
+            }
+           
+            if(count($defaultCustomer) == 1){
+                $customers = $defaultCustomer;
+            }
         }
-
-        if(count($defaultCustomer) == 1){
-            $customers = $defaultCustomer;
-        }
-
         foreach($customers as $customer) {
             
             $customer = $customer->toArray();
-
             $customer['customerToken'] = createCustomerToken((int)$customer['_id']);
             $customer['dob'] = isset($customer['dob']) && $customer['dob'] != "" ? $customer['dob'] : "";
             $customer['gender'] = isset($customer['gender']) && $customer['gender'] != "" ? $customer['gender'] : "";
