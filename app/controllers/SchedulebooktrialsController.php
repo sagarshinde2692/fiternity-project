@@ -735,11 +735,10 @@ class SchedulebooktrialsController extends \BaseController {
         $finder_name 		       =	Input::json()->get('finder_name');
         $finder				       =	Finder::active()->where('_id','=',intval($finder_id))->first();
         $customer_id		       = 	autoRegisterCustomer($data);
-        // invalidateDuplicatePhones($data, $customer_id);
         $customer_name		       = 	$data['customer_name'];
         $customer_email		       = 	$data['customer_email'];
         $customer_phone		       = 	$data['customer_phone'];
-
+        
         $preferred_location	       = 	(isset($data['preferred_location']) && $data['preferred_location'] != '') ? $data['preferred_location'] : "";
         $preferred_service	       = 	(isset($data['preferred_service']) && $data['preferred_service'] != '') ? $data['preferred_service'] : "";
         $preferred_day		       = 	(isset($data['preferred_day']) && $data['preferred_day'] != '') ? $data['preferred_day'] : "";
@@ -751,14 +750,16 @@ class SchedulebooktrialsController extends \BaseController {
         $customer_address	        =	(isset($data['customer_address']) && $data['customer_address'] != '') ? implode(',', array_values($data['customer_address'])) : "";
         $customer_note	 	       =	(isset($data['customer_note']) && $data['customer_note'] != '') ? $data['customer_note'] : "";
         $note_to_trainer              =   (isset($data['note_to_trainer']) && $data['note_to_trainer'] != '') ? $data['note_to_trainer'] : "";
-
+        
         $device_type				       = 	(isset($data['device_type']) && $data['device_type'] != '') ? $data['device_type'] : "";
         $gcm_reg_id					       = 	(isset($data['gcm_reg_id']) && $data['gcm_reg_id'] != '') ? $data['gcm_reg_id'] : "";
-
+        
         $social_referrer			       = 	(isset($data['social_referrer']) && $data['social_referrer'] != '') ? $data['social_referrer'] : "";
         $referrer_object			       = 	(isset($data['referrer_object']) && $data['referrer_object'] != '') ? $data['referrer_object'] : "";
         $transacted_after			       = 	(isset($data['transacted_after']) && $data['transacted_after'] != '') ? $data['transacted_after'] : "";
-
+        
+        setDefaultAccount($data, $customer_id);
+        
         if($device_type != '' && $gcm_reg_id != ''){
 
             $regData = array();

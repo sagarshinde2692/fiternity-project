@@ -881,8 +881,10 @@ class CustomerController extends \BaseController {
 		}
 
 		if($this->vendor_token && isset($data['contact_no']) && $data['contact_no'] != ""){
-
-			$customer->contact_no = $data['contact_no'];
+			
+			setVerifiedContact($customer->_id, $data['contact_no']);
+			// $customer->contact_no = $data['contact_no'];
+		
 		}
 
 		$customer->last_visited = Carbon::now();

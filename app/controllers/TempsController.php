@@ -376,6 +376,8 @@ class TempsController extends \BaseController {
                     $data['customer_phone'] = $temp['customer_phone'];
                     $data['customer_id'] = autoRegisterCustomer($data);
 
+                    setVerifiedContact($data['customer_id'], $data['customer_phone']);
+
                     $customer_id = $temp->customer_id = $data['customer_id'];
                 }
 
@@ -775,11 +777,18 @@ class TempsController extends \BaseController {
         Customer::$withoutAppends = true;
         Log::info("getAllCustomersByPhone");
         Log::info($data);
-        $customers = Customer::active()->select('name','email','contact_no','dob','gender')->where('email', 'exists', true)->where('contact_no','LIKE','%'.substr($data['customer_phone'], -10).'%')->orderBy('_id','desc')->get();
 
-        // if(count($customers) == 0){
-        //     $customers = Customer::active()->select('name','email','contact_no','dob','gender')->where('email', 'exists', true)->where('secondary_contact_no', substr($data['customer_phone'], -10))->orderBy('_id','desc')->get();
-        // }
+        $customers = Customer::active()->select('name','email','contact_no','dob','gender')->where('email', 'exists', true)->where('contact_no','LIKE','%'.substr($data['customer_phone'], -10).'%')->orderBy('_id','desc')->get();
+        
+        if(count($customers) > 1){
+
+            $defaultCustomer = Customer::active()->select('name','email','contact_no','dob','gender')->where('email', 'exists', true)->where('contact_no','LIKE','%'.substr($data['customer_phone'], -10).'%')->where('default_account', true)->orderBy('_id','desc')->get();
+
+        }
+
+        if(count($defaultCustomer) == 1){
+            $customers = $defaultCustomer;
+        }
 
         foreach($customers as $customer) {
             

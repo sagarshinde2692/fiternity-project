@@ -2241,8 +2241,14 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
 
                         try {
 
-                            if (isset($data['customer_phone']) && $data['customer_phone'] != "") {
-                                $customerData['contact_no'] = trim($data['customer_phone']);
+                            if (isset($data['customer_phone']) && $data['customer_phone'] != "" ) {
+
+                                if(!isset($customer->contact_no) || $customer->contact_no == ''){
+                                    
+                                    $customerData['contact_no'] = trim($data['customer_phone']);
+
+                                }
+
                             }
 
                             if (isset($data['otp']) && $data['otp'] != "") {
@@ -3084,49 +3090,90 @@ if (!function_exists('isKioskVendor')) {
     }
 }
 
-if (!function_exists('invalidateDuplicatePhones')) {
+if (!function_exists('setDefaultAccount')) {
     
-        function invalidateDuplicatePhones($data, $customer_id){
+    function setDefaultAccount($data, $customer_id){
+        
+        Log::info("Inside setDefaultAccount");
+
+        if(isset($data['customer_source']) && $data['customer_source'] == 'kiosk' && isset($data['customer_phone']) && $data['customer_phone'] != ''){
             
-            Log::info("Inside invalidateDuplicatePhones");
+            Log::info("Creating default account");
 
-            if(isset($data['customer_source']) && $data['customer_source'] == 'kiosk' && isset($data['customer_phone']) && $data['customer_phone'] != ''){
-                
-                Log::info("Pushing contacts to secondary");
+            Customer::$withoutAppends = true;
 
-                Customer::$withoutAppends = true;
-                
-                $duplicateCustomers = Customer::where('contact_no','LIKE','%'.substr($data['customer_phone'], -10).'%')->whereNot('_id', $customer_id)->get(['name','email','contact_no', 'secondary_contact_no']);
+            $defaultCustomer = Customer::find(intval($customer_id));
 
-                // $duplicateCustomerIds  = array_map('intval', $duplicateCustomers['_id']);
+            $defaultCustomer->default_account = true;
 
-                Log::info("====Duplicate Customers=======");
+            $duplicateCustomers = Customer::where('contact_no','LIKE','%'.substr($data['customer_phone'], -10).'%')->whereNot('_id', $customer_id)->lists('_id');
 
-                Log::info($duplicateCustomers);
+            if(count($duplicateCustomers) > 0){
 
-                // foreach($duplicateCustomers as $customer){
-                    
-                //     $secondary_contact_no = array();
-
-                //     if(isset($customer->secondary_contact_no)){
-                //         $secondary_contact_no = $customer->secondary_contact_no;
-                //     }
-
-                //     array_push($secondary_contact_no, substr($data['customer_phone'], -10));
-
-                //     $customer->secondary_contact_no = $secondary_contact_no;
-
-                //     $customer->contact_no = '';
-
-                //     $customer->update();
-                // }
-                
-
+                $defaultCustomer->attached_accounts = $duplicateCustomers;
+            
             }
-    
-            return;
+
+            Log::info("====Duplicate Customers=======");
+
+            Log::info($duplicateCustomers);
+
+            $defaultCustomer->update();
+            
+            // foreach($duplicateCustomers as $customer){
+                
+            //     $secondary_contact_no = array();
+
+            //     if(isset($customer->secondary_contact_no)){
+            //         $secondary_contact_no = $customer->secondary_contact_no;
+            //     }
+
+            //     array_push($secondary_contact_no, substr($data['customer_phone'], -10));
+
+            //     $customer->secondary_contact_no = $secondary_contact_no;
+
+            //     $customer->contact_no = '';
+
+            //     $customer->update();
+            // }
+            
+
         }
+
+        return;
     }
+}
+
+if (!function_exists('setVerifiedContact')) {
+    
+    function setVerifiedContact($customer_id, $contact_no){
+        
+        $customer = Customer::find(intval($customer_id));
+
+        if(!isset($customer->contact_no) || $customer->contact_no == ''){
+            
+            $customer->contact_no = trim($contact_no);
+            
+        }
+
+        if(substr($customer->contact_no, -10) == substr( trim($contact_no), -10)){
+            
+            $customer->contact_no_verified = true;
+        
+        }else{
+
+            $secondary_verified_no = isset($customer->$secondary_verified_no) ? $customer->$secondary_verified_no : array();
+
+            array_push($secondary_verified_no, trim($contact_no));
+
+            $customer->$secondary_verified_no = $secondary_verified_no;
+
+        }
+
+        $customer->update();
+       
+    }
+}
 
 
 

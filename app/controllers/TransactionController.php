@@ -1410,9 +1410,9 @@ class TransactionController extends \BaseController {
 
             $this->utilities->sendDemonetisationCustomerSms($order);
 
-            // if(isset($order->customer_id)){
-            //     invalidateDuplicatePhones($order->toArray(), $order->customer_id);
-            // }
+            if(isset($order->customer_id)){
+                setDefaultAccount($order->toArray(), $order->customer_id);
+            }
 
             $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
 
@@ -1486,6 +1486,10 @@ class TransactionController extends \BaseController {
             $customer->update($customerData);
 
             $data['customer_address'] = $data['address'] = implode(",", array_values($data['customer_address']));
+        }
+
+        if(isset($data['customer_phone']) && $data['customer_phone'] != ''){
+            setVerifiedContact($customer_id, $data['customer_phone']);
         }
 
         $device_type = (isset($data['device_type']) && $data['device_type'] != '') ? $data['device_type'] : "";
