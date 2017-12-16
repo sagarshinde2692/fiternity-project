@@ -842,7 +842,7 @@ class CustomerController extends \BaseController {
 
 		    if($kiosk_tab){
 
-		    	$data['old_vendor_id'] = (int)$kiosk_user['finder_id'];
+		    	$data['old_vendor_id'] = (int)$kiosk_tab['vendor_id'];
 
 		    	if($data['vendor_id'] != $kiosk_tab['vendor_id']){
 
