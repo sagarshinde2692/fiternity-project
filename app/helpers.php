@@ -2231,6 +2231,8 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         $customer->demonetisation = time();
                         $customer->save();
 
+                        // invalidateDuplicatePhones($data, $customer->toArray());
+
                         return $inserted_id;
 
                     } else {
@@ -2275,6 +2277,8 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
 
                         }
 
+                        // invalidateDuplicatePhones($data, $customer->toArray());
+                        
                         return $customer->_id;
                     }
 
@@ -3096,6 +3100,50 @@ if (!function_exists('isKioskVendor')) {
         return $isKioskVendor;
     }
 }
+
+if (!function_exists('invalidateDuplicatePhones')) {
+    
+        function invalidateDuplicatePhones($data, $customer_id){
+            
+            Log::info("Inside invalidateDuplicatePhones");
+
+            if(isset($data['customer_source']) && $data['customer_source'] == 'kiosk' && isset($data['customer_phone']) && $data['customer_phone'] != ''){
+                
+                Log::info("Pushing contacts to secondary");
+
+                Customer::$withoutAppends = true;
+                
+                $duplicateCustomers = Customer::where('contact_no','LIKE','%'.substr($data['customer_phone'], -10).'%')->whereNot('_id', $customer_id)->get(['name','email','contact_no', 'secondary_contact_no']);
+
+                // $duplicateCustomerIds  = array_map('intval', $duplicateCustomers['_id']);
+
+                Log::info("====Duplicate Customers=======");
+
+                Log::info($duplicateCustomers);
+
+                // foreach($duplicateCustomers as $customer){
+                    
+                //     $secondary_contact_no = array();
+
+                //     if(isset($customer->secondary_contact_no)){
+                //         $secondary_contact_no = $customer->secondary_contact_no;
+                //     }
+
+                //     array_push($secondary_contact_no, substr($data['customer_phone'], -10));
+
+                //     $customer->secondary_contact_no = $secondary_contact_no;
+
+                //     $customer->contact_no = '';
+
+                //     $customer->update();
+                // }
+                
+
+            }
+    
+            return;
+        }
+    }
 
 
 

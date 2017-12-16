@@ -406,7 +406,13 @@ class TempsController extends \BaseController {
 
                 }
 
-                $return = array('status' => 200,'verified' => $verified,'token'=>$customerToken,'trial_booked'=>false,'customer_data'=>$customer_data,'fitternity_no'=>$fitternity_no,'message'=>'Successfully Verified');
+                if($temp['source'] == 'kiosk'){
+
+                    $customer_data = $this->getAllCustomersByPhone($temp);
+
+                }
+
+                $return = array('status' => 200,'verified' => $verified,'token'=>$customerToken,'trial_booked'=>false,'customer_data'=>$customer_data,'fitternity_no'=>$fitternity_no, 'message'=>'Successfully Verified');
 
                 if(isset($temp->service_id) && $temp->service_id != "" && $temp->action == "booktrials"){
                     
@@ -502,25 +508,29 @@ class TempsController extends \BaseController {
 
                     if($booktrial){
 
-                        Customer::$withoutAppends = true;
-                        $customer = Customer::select('name','email','contact_no','dob','gender')->find((int)$booktrial->customer_id);
+                        // Customer::$withoutAppends = true;
+                        // $customer = Customer::select('name','email','contact_no','dob','gender')->find((int)$booktrial->customer_id);
+                        
+                        
+                        
+                        // if($customer) {
 
-                        if($customer) {
+                        //     if($customerToken == ""){
 
-                            if($customerToken == ""){
+                        //         $customerToken = createCustomerToken((int)$customer->_id);
+                        //     }
 
-                                $customerToken = createCustomerToken((int)$customer->_id);
-                            }
+                        //     $customer_data = $customer->toArray();
 
-                            $customer_data = $customer->toArray();
+                        //     $customer_data['dob'] = isset($customer_data['dob']) && $customer_data['dob'] != "" ? $customer_data['dob'] : "";
+                        //     $customer_data['gender'] = isset($customer_data['gender']) && $customer_data['gender'] != "" ? $customer_data['gender'] : "";
+                        //     $customer_data['contact_no'] = $temp->customer_phone;
+                        //     $customer_id = (int)$customer->_id;
 
-                            $customer_data['dob'] = isset($customer_data['dob']) && $customer_data['dob'] != "" ? $customer_data['dob'] : "";
-                            $customer_data['gender'] = isset($customer_data['gender']) && $customer_data['gender'] != "" ? $customer_data['gender'] : "";
-                            $customer_data['contact_no'] = $temp->customer_phone;
-                            $customer_id = (int)$customer->_id;
-
-                        }
-
+                        // }
+                        
+                        $customer_data = $this->getAllCustomersByPhone($temp);
+                        
                         $booktrial->post_trial_status = 'attended';
                         $booktrial->post_trial_initail_status = 'interested';
                         $booktrial->post_trial_status_updated_by_kiosk = time();
@@ -536,7 +546,7 @@ class TempsController extends \BaseController {
                             'status' => 200,
                             'message' => $message,
                             'verified' => $verified,
-                            'token'=>$customerToken,
+                            // 'token'=>$customerToken,
                             'booktrial_id'=> (int)$booktrial['_id'],
                             'kiosk_form_url'=>$kiosk_form_url
                         ];
@@ -758,6 +768,29 @@ class TempsController extends \BaseController {
         
         return Response::json($response, $this->vendor_token ? 200 : $response['status']); 
 
+    }
+
+    function getAllCustomersByPhone($data){
+        $customer_data = [];
+        Customer::$withoutAppends = true;
+        Log::info("getAllCustomersByPhone");
+        Log::info($data);
+        $customers = Customer::active()->select('name','email','contact_no','dob','gender')->where('email', 'exists', true)->where('contact_no','LIKE','%'.substr($data['customer_phone'], -10).'%')->orderBy('_id','desc')->get();
+
+        // if(count($customers) == 0){
+        //     $customers = Customer::active()->select('name','email','contact_no','dob','gender')->where('email', 'exists', true)->where('secondary_contact_no', substr($data['customer_phone'], -10))->orderBy('_id','desc')->get();
+        // }
+
+        foreach($customers as $customer) {
+            
+            $customer = $customer->toArray();
+
+            $customer['customerToken'] = createCustomerToken((int)$customer['_id']);
+            $customer['dob'] = isset($customer['dob']) && $customer['dob'] != "" ? $customer['dob'] : "";
+            $customer['gender'] = isset($customer['gender']) && $customer['gender'] != "" ? $customer['gender'] : "";
+            array_push($customer_data, $customer);
+        }
+        return $customer_data;
     }
 
 }

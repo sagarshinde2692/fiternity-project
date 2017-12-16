@@ -889,9 +889,13 @@ class CustomerController extends \BaseController {
 		$customer->update();
 		$resp = $this->checkIfpopPup($customer);
 
-		$customer_data = array_only($customer->toArray(), ['name','email','contact_no','dob','gender']);
+        $customer_data = array_only($customer->toArray(), ['name','email','contact_no','dob','gender']);
+        
+        $token = $this->createToken($customer);
+
+        $customer_data['token'] = $token['token'];
 		
-		return array("token" => $this->createToken($customer),"popup" => $resp,"customer_data"=>$customer_data);
+		return array("token" => $token,"popup" => $resp,"customer_data"=>$customer_data);
 	}
 
 	public function checkIfpopPup($customer, $customdata=array()){

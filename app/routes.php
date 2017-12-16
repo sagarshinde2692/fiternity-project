@@ -1077,3 +1077,4 @@ Route::get('ratecardmembership/{service_id}','FindersController@ratecardMembersh
 
 Route::get('customerexists/{email}','CustomerController@customerExists');
 
+Route::get('getcrashlogs/{count}','HomeController@getCrashLog');
