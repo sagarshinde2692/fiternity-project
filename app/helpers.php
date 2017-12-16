@@ -2951,6 +2951,39 @@ if (!function_exists('addTemp')) {
         $temp->proceed_without_otp = "N";
         $temp->source = "website";
 
+        
+        if(isset($data['order_id']) && $data['order_id'] != ""){
+            $temp->order_id = (int) $data['order_id'];
+        }
+        
+        if(isset($data['finder_id']) && $data['finder_id'] != ""){
+            $temp->finder_id = (int) $data['finder_id'];
+        }
+        
+        if(isset($data['service_id']) && $data['service_id'] != ""){
+            $temp->service_id = (int) $data['service_id'];
+        }
+        
+        if(isset($data['ratecard_id']) && $data['ratecard_id'] != ""){
+            $temp->ratecard_id = (int) $data['ratecard_id'];
+            
+            $ratecard = Ratecard::find((int) $data['ratecard_id']);
+            
+            if($ratecard){
+                $temp->finder_id = (int) $ratecard->finder_id;
+                $temp->service_id = (int) $ratecard->service_id;
+            }
+            
+        }
+        
+        if(isset($_GET['device_type']) && $_GET['device_type'] != ""){
+            $temp->source = $_GET['device_type'];
+        }
+        
+        if(isset($_GET['app_version']) && $_GET['app_version'] != ""){
+            $temp->version = $_GET['app_version'];
+        }
+        
         if($data['action'] == "vendor_otp"){
 
             $decodeKioskVendorToken = decodeKioskVendorToken();
@@ -2960,38 +2993,6 @@ if (!function_exists('addTemp')) {
             $temp->finder_id = (int)$vendor->_id;
 
             $temp->source = "kiosk";
-        }
-
-        if(isset($data['order_id']) && $data['order_id'] != ""){
-            $temp->order_id = (int) $data['order_id'];
-        }
-
-        if(isset($data['finder_id']) && $data['finder_id'] != ""){
-            $temp->finder_id = (int) $data['finder_id'];
-        }
-
-        if(isset($data['service_id']) && $data['service_id'] != ""){
-            $temp->service_id = (int) $data['service_id'];
-        }
-
-        if(isset($data['ratecard_id']) && $data['ratecard_id'] != ""){
-            $temp->ratecard_id = (int) $data['ratecard_id'];
-
-            $ratecard = Ratecard::find((int) $data['ratecard_id']);
-
-            if($ratecard){
-                $temp->finder_id = (int) $ratecard->finder_id;
-                $temp->service_id = (int) $ratecard->service_id;
-            }
-
-        }
-
-        if(isset($_GET['device_type']) && $_GET['device_type'] != ""){
-            $temp->source = $_GET['device_type'];
-        }
-
-        if(isset($_GET['app_version']) && $_GET['app_version'] != ""){
-            $temp->version = $_GET['app_version'];
         }
 
         $temp->save();
@@ -3113,7 +3114,7 @@ if (!function_exists('setDefaultAccount')) {
         
         Log::info("Inside setDefaultAccount");
 
-        if(isset($data['customer_source']) && $data['customer_source'] == 'kiosk' && isset($data['customer_phone']) && $data['customer_phone'] != ''){
+        if( ((isset($data['source']) && $data['source'] == 'kiosk') || (isset($data['customer_source']) && $data['customer_source'] == 'kiosk')) && isset($data['customer_phone']) && $data['customer_phone'] != ''){
             
             Log::info("Creating default account");
 
