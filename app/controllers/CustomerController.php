@@ -14,6 +14,7 @@ use App\Services\CustomerInfo as CustomerInfo;
 use App\Services\CustomerReward as CustomerReward;
 use App\Services\ShortenUrl as ShortenUrl;
 use App\Services\Emi as Emi;
+use App\Mailers\FinderMailer as FinderMailer;
 
 class CustomerController extends \BaseController {
 
@@ -22,12 +23,19 @@ class CustomerController extends \BaseController {
 	protected $utilities;
 
 
-	public function __construct(CustomerMailer $customermailer,CustomerSms $customersms,Utilities $utilities,CustomerReward $customerreward) {
+	public function __construct(
+		CustomerMailer $customermailer,
+		CustomerSms $customersms,
+		Utilities $utilities,
+		CustomerReward $customerreward,
+		FinderMailer $findermailer
+	) {
 
 		$this->customermailer	=	$customermailer;
 		$this->customersms	=	$customersms;
 		$this->utilities	=	$utilities;
 		$this->customerreward = $customerreward;
+		$this->findermailer             =   $findermailer;
 
 		$this->vendor_token = false;
 
@@ -794,6 +802,59 @@ class CustomerController extends \BaseController {
 			}
 
 			$encodeKioskVendorToken = $this->encodeKioskVendorToken($kiosk_user);
+
+			$header_array = [
+		        "Device-Model"=>"",
+		        "App-Version"=>"",
+		        "Os-Version"=>"",
+		        "Device-Serial"=>"",
+		        "Device-Id"=>""
+		    ];
+
+		    foreach ($header_array as $header_key => $header_value) {
+
+		        $value = Request::header($header_key);
+
+		        if($value != "" && $value != null && $value != 'null'){
+		           $header_array[$header_key] =  trim($value);
+		        }
+		        
+		    }
+
+		    $data = [];
+
+		    $data['brand'] = $header_array['Device-Model'];
+		    $data['os_version'] = $header_array['Os-Version'];
+		    $data['app_version'] = $header_array['App-Version'];
+		    $data['serialNumber'] = $header_array['Device-Serial'];
+		    $data['device_id'] = $header_array['Device-Id'];
+		    $data['vendor_id'] = (int)$kiosk_user['finder_id'];
+
+		    Finder::$withoutAppends=true;
+
+		    $finder = Finder::find((int)$kiosk_user['finder_id']);
+
+		    if($finder){
+		    	$data['city_id'] = (int)$finder['city_id'];
+		    }
+
+		    $kiosk_tab = KioskTab::where('serialNumber',$data['serialNumber'])->first();
+
+		    if($kiosk_tab){
+
+		    	$data['old_vendor_id'] = (int)$kiosk_user['finder_id'];
+
+		    	if($data['vendor_id'] != $kiosk_tab['vendor_id']){
+
+		    		$this->findermailer->kioskTabVendorChange($data);
+		    	}
+
+		    	// $kiosk_tab->update($data);
+
+		    }else{
+
+		    	KioskTab::create($data);
+		    }
 
 			return Response::json($encodeKioskVendorToken,$encodeKioskVendorToken['status']);
 		}
