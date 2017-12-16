@@ -783,7 +783,7 @@ class TempsController extends \BaseController {
         Log::info($customers);
 
         
-        if(count($customers) > 1){
+        if(count($customers) != 1){
             $defaultCustomer = Customer::active()->select('name','email','contact_no','dob','gender')->where('email', 'exists', true)->where('contact_no','LIKE','%'.substr($data['customer_phone'], -10).'%')->where('default_account', true)->orderBy('_id','desc')->get();
 
             Log::info("Customers by primary contact no default");
