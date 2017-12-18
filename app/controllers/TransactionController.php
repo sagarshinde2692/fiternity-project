@@ -783,6 +783,21 @@ class TransactionController extends \BaseController {
 
                     $addTemp_flag = false;
                 }
+
+                $temp = Temp::find($temp_id);
+
+                if(!$temp){
+
+                    return Response::json(['status' => 400, "message" => "Internal Error"],$this->error_status);
+                }
+
+                if($temp->verified == "Y"){
+
+                    return Response::json(array('status' => 400,'message' => 'Already Verified'),$this->error_status);
+                }
+
+                $otp_data['otp'] = $temp['otp'];
+
             }
 
             if($addTemp_flag){
@@ -790,7 +805,6 @@ class TransactionController extends \BaseController {
                 $addTemp = addTemp($data);
 
                 $otp_data = [
-                    'otp'=>$addTemp['otp'],
                     'finder_vcc_mobile'=>$data['finder_vcc_mobile'],
                     'payment_mode'=>$data['payment_mode'],
                     'temp_id'=>$addTemp['_id'],
@@ -798,6 +812,8 @@ class TransactionController extends \BaseController {
                 ];
 
                 $order->update(['otp_data'=>$otp_data]);
+
+                $otp_data['otp'] = $addTemp['otp'];
             }
 
             $otp_data['customer_name'] = $data['customer_name'];
@@ -881,6 +897,30 @@ class TransactionController extends \BaseController {
         if($order['otp_data']['otp'] != $data['otp']){
 
             return Response::json(['status' => 400, "message" => "Incorrect OTP"],$status);
+        }
+
+        $temp_id = $order['otp_data']['temp_id'];
+
+        $temp = Temp::find($temp_id);
+
+        if(!$temp){
+
+            return Response::json(['status' => 400, "message" => "Internal Error"],$status);
+        }
+
+        if($temp['otp'] != $data['otp']){
+
+            return Response::json(['status' => 400, "message" => "Incorrect OTP"],$status);
+        }
+
+        if($temp->verified == "Y"){
+
+            return Response::json(array('status' => 400,'message' => 'Already Verified'),$status);
+
+        }else{
+
+            $temp->verified = "Y";
+            $temp->save();
         }
 
         $data['status'] = 'success';
