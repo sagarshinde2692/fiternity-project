@@ -415,10 +415,11 @@ class RewardofferController extends BaseController {
         }
 
         $cashback = null;
+        
+        $customerReward     =   new CustomerReward();
 
         if($amount > 30000){   
             
-            $customerReward     =   new CustomerReward();
             $calculation        =   $customerReward->purchaseGame($amount,$finder_id);
 
             if(isset($data['order_id']) && $data['order_id'] != ""){
