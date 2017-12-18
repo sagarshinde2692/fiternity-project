@@ -993,11 +993,20 @@ class HomeController extends BaseController {
                 $booking_details_data['price']['value']= "Free Via Fitternity";
             }
 
-            if(in_array($type,["booktrialfree","booktrial","workoutsession","workout-session","booktrials"])){
+            if(in_array($type,["booktrialfree"])){
 
                 if(isset($item['code']) && $item['code'] != ""){
                     $booking_details_data['booking_id']['value'] = $item['code'];
                 }
+
+            }
+
+            if(in_array($type, ["booktrial","workoutsession","workout-session","booktrials"])){
+
+                if(isset($item['booktrial_id']) && $item['booktrial_id'] != ""){
+                    $booking_details_data['booking_id']['value'] = $item['booktrial_id'];
+                }
+
             }
 
             if(isset($item['type']) && $item['type'] == 'memberships'){
