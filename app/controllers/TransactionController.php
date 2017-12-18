@@ -783,7 +783,7 @@ class TransactionController extends \BaseController {
 
                     $addTemp_flag = false;
                 }
-
+                $temp_id = $order['otp_data']['temp_id'];
                 $temp = Temp::find($temp_id);
 
                 if(!$temp){
