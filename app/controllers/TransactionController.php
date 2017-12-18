@@ -787,8 +787,8 @@ class TransactionController extends \BaseController {
 
             $resp['vendor_otp'] = $addTemp['otp'];
 
-            $resp['data']['verify_otp_url'] = Config::get('app.website')."/kiosk/vendor/verifyotp";
-            $resp['data']['resend_otp_url'] = Config::get('app.website')."/temp/regenerateotp/".$addTemp['_id'];
+            $resp['data']['verify_otp_url'] = Config::get('app.url')."/kiosk/vendor/verifyotp";
+            $resp['data']['resend_otp_url'] = Config::get('app.url')."/temp/regenerateotp/".$addTemp['_id'];
 
         }
 
