@@ -789,7 +789,7 @@ class CustomerController extends \BaseController {
 		];
 
 		$validator = Validator::make($data = Input::json()->all(),$rules);
-
+		Log::info("Vendor login",$data);
 		if($validator->fails()) {
 			return array('status' => 400,'message' =>$this->errorMessage($validator->errors()));  
 		}
