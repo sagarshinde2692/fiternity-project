@@ -3086,7 +3086,7 @@ class CustomerController extends \BaseController {
 				$category_slug = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","luxury-hotels"/*,"healthy-snacks-and-beverages"*/,"spinning-and-indoor-cycling"/*,"healthy-tiffins"*//*,"dietitians-and-nutritionists"*//*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness"/*,"personal-trainers"*/);
 				$cat = array();
 				$cat['mumbai'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","luxury-hotels"/*,"healthy-snacks-and-beverages"*/,"spinning-and-indoor-cycling"/*,"healthy-tiffins"*//*,"dietitians-and-nutritionists"*//*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness"/*,"personal-trainers"*/);
-				$cat['pune'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates"/*,"healthy-tiffins"*/,"cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling"/*,"sport-nutrition-supliment-stores"*/,"aerobics","kids-fitness","pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
+				$cat['pune'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates"/*,"healthy-tiffins"*/,"cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling"/*,"sport-nutrition-supliment-stores"*/,"aerobics"/*,"kids-fitness"*/,"pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
 				$cat['bangalore'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates"/*,"healthy-tiffins"*/,"cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling"/*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
 				$cat['delhi'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates"/*,"healthy-tiffins"*/,"cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling"/*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
 				$cat['gurgaon'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates"/*,"healthy-tiffins"*/,"cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling"/*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
@@ -3195,8 +3195,32 @@ class CustomerController extends \BaseController {
 		// if(isset($_REQUEST['device_type']) && $_REQUEST['device_type'] == "android"){
 		// 	$result['campaign']['link'] = 'ftrnty://ftrnty.com/search/all';
 		// }
+
+		if(isset($_REQUEST['device_type']) && $_REQUEST['device_type'] == "ios" && isset($_REQUEST['app_version']) && ((float)$_GET['app_version'] >= 4.4)){
+
+			$result['campaigns'] =  [];
+
+			$result['campaigns'][] = [
+				'image'=>'http://b.fitn.in/iconsv1/offers/generic_banner.png',
+				'link'=>'',
+				'title'=>'1',
+				'height'=>1,
+				'width'=>6,
+				'ratio'=>1/6
+			];
+
+			$result['campaigns'][] = [
+				'image'=>'http://b.fitn.in/global/diwali/diwali_banner.png',
+				'link'=>'',
+				'title'=>'2',
+				'height'=>1,
+				'width'=>6,
+				'ratio'=>1/6
+			];
+		}
 		
 		return Response::json($result);
+		
 	}
 
 
