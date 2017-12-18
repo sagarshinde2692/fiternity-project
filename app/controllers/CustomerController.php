@@ -693,7 +693,9 @@ class CustomerController extends \BaseController {
 
 			$this->addCustomerRegId($data);
 
-			$response['customer_data'] = array_only($customer->toArray(), ['name','email','contact_no','dob','gender']);
+			$response['customer_data'] = array_only($customer->toArray(), ['_id','name','email','contact_no','dob','gender']);
+			$response['customer_data']["token"] = $response["token"];
+			Log::info("Customer Register",$response);
 
 			return Response::json($response,200);
 		}
