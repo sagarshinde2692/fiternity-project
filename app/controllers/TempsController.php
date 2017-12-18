@@ -807,38 +807,32 @@ class TempsController extends \BaseController {
         Log::info("getAllCustomersByPhone");
         Log::info($data);
 
-        if($data->action == 'prebook'){
             
-            $customers = Customer::select('name','email','contact_no','dob','gender')->where('_id', (int)$booktrial->customer_id)->get();
+        $customers = Customer::active()->select('name','email','contact_no','dob','gender')->where('email', 'exists', true)->where('contact_no','LIKE','%'.substr($data['customer_phone'], -10).'%')->orderBy('_id','desc')->get();
+        
+        Log::info("Customers by primary contact no");
+        Log::info($customers);
+
+        
+        if(count($customers) != 1){
+            $defaultCustomer = Customer::active()->select('name','email','contact_no','dob','gender')->where('email', 'exists', true)->where('contact_no','LIKE','%'.substr($data['customer_phone'], -10).'%')->where('default_account', true)->orderBy('_id','desc')->get();
+
+            Log::info("Customers by primary contact no default");
+            Log::info($defaultCustomer);
             
-        }else{
+            if(count($defaultCustomer) == 0){
+                $defaultCustomer = Customer::active()->select('name','email','contact_no','dob','gender')->where('email', 'exists', true)->where('secondary_verified_no', substr($data['customer_phone'], -10))->orderBy('_id','desc')->get();
+            }
+
+            Log::info("Customers by primary secondary contact no");
+            Log::info($defaultCustomer);
             
-            $customers = Customer::active()->select('name','email','contact_no','dob','gender')->where('email', 'exists', true)->where('contact_no','LIKE','%'.substr($data['customer_phone'], -10).'%')->orderBy('_id','desc')->get();
-            
-            Log::info("Customers by primary contact no");
-            Log::info($customers);
-    
-            
-            if(count($customers) != 1){
-                $defaultCustomer = Customer::active()->select('name','email','contact_no','dob','gender')->where('email', 'exists', true)->where('contact_no','LIKE','%'.substr($data['customer_phone'], -10).'%')->where('default_account', true)->orderBy('_id','desc')->get();
-    
-                Log::info("Customers by primary contact no default");
-                Log::info($defaultCustomer);
+            if(count($defaultCustomer) == 1){
                 
-                if(count($defaultCustomer) == 0){
-                    $defaultCustomer = Customer::active()->select('name','email','contact_no','dob','gender')->where('email', 'exists', true)->where('secondary_verified_no', substr($data['customer_phone'], -10))->orderBy('_id','desc')->get();
-                }
-    
-                Log::info("Customers by primary secondary contact no");
-                Log::info($defaultCustomer);
-                
-                if(count($defaultCustomer) == 1){
-                    
-                    $customers = $defaultCustomer;
-    
-                    $customers[0]['contact_no'] = substr($data['customer_phone'], -10);
-    
-                }
+                $customers = $defaultCustomer;
+
+                $customers[0]['contact_no'] = substr($data['customer_phone'], -10);
+
             }
         }
         
