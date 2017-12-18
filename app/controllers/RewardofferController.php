@@ -418,7 +418,7 @@ class RewardofferController extends BaseController {
         
         $customerReward     =   new CustomerReward();
 
-        if($amount > 30000){   
+        if($amount < 50000){   
             
             $calculation        =   $customerReward->purchaseGame($amount,$finder_id);
 
