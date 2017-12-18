@@ -28,11 +28,16 @@ class TempsController extends \BaseController {
 
         $this->vendor_token = false;
 
+        $this->kiosk_app_version = false;
+
         $vendor_token = Request::header('Authorization-Vendor');
 
         if($vendor_token){
 
             $this->vendor_token = true;
+
+            $this->kiosk_app_version = Request::header('App-Version');
+        
         }
 
         $this->error_status = ($this->vendor_token) ? 200 : 400;
@@ -408,7 +413,7 @@ class TempsController extends \BaseController {
 
                 }
 
-                if($temp['source'] == 'kiosk' && isset($_GET['app_version']) && $_GET['app_version'] >= 1.07){
+                if($temp['source'] == 'kiosk' && $this->kiosk_app_version && $this->kiosk_app_version >= 1.07){
 
                     $customer_data = $this->getAllCustomersByPhone($temp);
 
@@ -514,9 +519,8 @@ class TempsController extends \BaseController {
 
                         $kiosk_form_url = Config::get('app.website').'/kiosktrialform?booktrial_id='.$booktrial['_id'];
 
-                        if(isset($_GET['app_version']) && $_GET['app_version'] >= 1.07){
+                        if($this->kiosk_app_version && $this->kiosk_app_version >= 1.07){
                             
-
                             $customer_data = $this->getAllCustomersByPhone($temp);
     
                             $return = [
