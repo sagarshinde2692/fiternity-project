@@ -765,30 +765,51 @@ class TransactionController extends \BaseController {
             }
         }
 
-
         if($data['payment_mode'] == 'at the studio' && isset($data['wallet']) && $data['wallet']){
 
             $data = array_only($data,['finder_id','order_id','service_id','ratecard_id','payment_mode','finder_vcc_mobile']);
 
             $data['action'] = "vendor_otp";
 
-            $addTemp = addTemp($data);
+            $addTemp_flag  = true;
 
-            $otp_data = [
-                'otp'=>$addTemp['otp'],
-                'finder_vcc_mobile'=>$data['finder_vcc_mobile'],
-                'payment_mode'=>$data['payment_mode'],
-                'temp_id'=>$addTemp['_id']
-            ];
+            if(isset($order['otp_data'])){
 
-            $order->update(['otp_data'=>$otp_data]);
+                $old_order = $order->toArray();
+
+                $otp_data = $old_order['otp_data'];
+
+                if(isset($otp_data['created_at']) && ((time() - $otp_data['created_at']) / 60) < 3){
+
+                    $addTemp_flag = false;
+                }
+            }
+
+            if($addTemp_flag){
+
+                $addTemp = addTemp($data);
+
+                $otp_data = [
+                    'otp'=>$addTemp['otp'],
+                    'finder_vcc_mobile'=>$data['finder_vcc_mobile'],
+                    'payment_mode'=>$data['payment_mode'],
+                    'temp_id'=>$addTemp['_id'],
+                    'created_at'=>time()
+                ];
+
+                $order->update(['otp_data'=>$otp_data]);
+            }
+
+            $otp_data['customer_name'] = $data['customer_name'];
+            $otp_data['service_name'] = $data['service_name'];
+            $otp_data['service_duration'] = $data['service_duration'];
 
             $this->findersms->genericOtp($otp_data);
 
-            $resp['vendor_otp'] = $addTemp['otp'];
+            $resp['vendor_otp'] = $otp_data['otp'];
 
             $resp['data']['verify_otp_url'] = Config::get('app.url')."/kiosk/vendor/verifyotp";
-            $resp['data']['resend_otp_url'] = Config::get('app.url')."/temp/regenerateotp/".$addTemp['_id'];
+            $resp['data']['resend_otp_url'] = Config::get('app.url')."/temp/regenerateotp/".$otp_data['temp_id'];
 
         }
 
