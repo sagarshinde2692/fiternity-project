@@ -808,6 +808,7 @@ class TransactionController extends \BaseController {
                     'finder_vcc_mobile'=>$data_otp['finder_vcc_mobile'],
                     'payment_mode'=>$data_otp['payment_mode'],
                     'temp_id'=>$addTemp['_id'],
+                    'otp'=>$addTemp['otp'],
                     'created_at'=>time()
                 ];
 
@@ -818,7 +819,7 @@ class TransactionController extends \BaseController {
 
             $otp_data['customer_name'] = $data['customer_name'];
             $otp_data['service_name'] = $data['service_name'];
-            $otp_data['service_duration'] = $data['service_duration'];
+            $otp_data['service_duration'] = $data_otp['service_duration'];
 
             $this->findersms->genericOtp($otp_data);
 
