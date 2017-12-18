@@ -948,7 +948,7 @@ class CustomerController extends \BaseController {
 		
 		$resp = $this->checkIfpopPup($customer);
 		
-        $customer_data = array_only($customer->toArray(), ['name','email','contact_no','dob','gender']);
+        $customer_data = array_only($customer->toArray(), ['_id','name','email','contact_no','dob','gender']);
         
         $token = $this->createToken($customer);
 		
