@@ -1004,7 +1004,15 @@ class HomeController extends BaseController {
             if(in_array($type, ["booktrial","workoutsession","workout-session","booktrials"])){
 
                 if(isset($item['booktrial_id']) && $item['booktrial_id'] != ""){
-                    $booking_details_data['booking_id']['value'] = $item['booktrial_id'];
+
+                    $order_booktrial = Booktrial::find(intval($item['booktrial_id']));
+
+                    if(isset($order_booktrial['code'])){
+                        
+                        $booking_details_data['booking_id']['value'] = $order_booktrial['code'];
+                    
+                    }
+
                 }
 
             }
