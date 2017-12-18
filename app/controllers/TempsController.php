@@ -515,6 +515,14 @@ class TempsController extends \BaseController {
 
                     if($booktrial){
 
+                        if(isset($booktrial['customer_sms_after24hour']) && $booktrial['customer_sms_after24hour'] != ""){
+                         
+                            $booktrial->unset('customer_sms_after24hour');
+                         
+                            $this->sidekiq->delete($booktrial['customer_sms_after24hour']);
+                        
+                        }
+
                         $message = "Hi ".ucwords($booktrial['customer_name']).", your booking at ".ucwords($booktrial['finder_name'])." for ".strtoupper($booktrial['schedule_slot_start_time'])." on ".date('D, d M Y',strtotime($booktrial['schedule_date']))." has been successfully located";
 
                         $kiosk_form_url = Config::get('app.website').'/kiosktrialform?booktrial_id='.$booktrial['_id'];
