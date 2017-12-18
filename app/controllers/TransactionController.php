@@ -767,9 +767,9 @@ class TransactionController extends \BaseController {
 
         if($data['payment_mode'] == 'at the studio' && isset($data['wallet']) && $data['wallet']){
 
-            $data = array_only($data,['finder_id','order_id','service_id','ratecard_id','payment_mode','finder_vcc_mobile']);
+            $data_otp = array_only($data,['finder_id','order_id','service_id','ratecard_id','payment_mode','finder_vcc_mobile']);
 
-            $data['action'] = "vendor_otp";
+            $data_otp['action'] = "vendor_otp";
 
             $addTemp_flag  = true;
 
@@ -802,11 +802,11 @@ class TransactionController extends \BaseController {
 
             if($addTemp_flag){
 
-                $addTemp = addTemp($data);
+                $addTemp = addTemp($data_otp);
 
                 $otp_data = [
-                    'finder_vcc_mobile'=>$data['finder_vcc_mobile'],
-                    'payment_mode'=>$data['payment_mode'],
+                    'finder_vcc_mobile'=>$data_otp['finder_vcc_mobile'],
+                    'payment_mode'=>$data_otp['payment_mode'],
                     'temp_id'=>$addTemp['_id'],
                     'created_at'=>time()
                 ];
