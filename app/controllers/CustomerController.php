@@ -3218,6 +3218,31 @@ class CustomerController extends \BaseController {
 				'ratio'=>1/6
 			];
 		}
+
+	    $lat = isset($_REQUEST['lat']) && $_REQUEST['lat'] != "" ? $_REQUEST['lat'] : "";
+        $lon = isset($_REQUEST['lon']) && $_REQUEST['lon'] != "" ? $_REQUEST['lon'] : "";
+
+		$near_by_vendor_request = [
+            "offset" => 0,
+            "limit" => 9,
+            "radius" => "3km",
+            "category"=>"",
+            "lat"=>$lat,
+            "lon"=>$lon,
+            "city"=>strtolower($city),
+            "keys"=>[
+              "average_rating",
+              "contact",
+              "coverimage",
+              "location",
+              "multiaddress",
+              "slug",
+              "name",
+              "id",
+            ]
+        ];
+
+        $result['near_by_vendor'] = geoLocationFinder($near_by_vendor_request);
 		
 		return Response::json($result);
 		
