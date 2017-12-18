@@ -819,7 +819,7 @@ class TransactionController extends \BaseController {
 
             $otp_data['customer_name'] = $data['customer_name'];
             $otp_data['service_name'] = $data['service_name'];
-            $otp_data['service_duration'] = $data_otp['service_duration'];
+            $otp_data['service_duration'] = $data['service_duration'];
 
             $this->findersms->genericOtp($otp_data);
 
