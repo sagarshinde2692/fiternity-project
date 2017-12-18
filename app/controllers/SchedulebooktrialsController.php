@@ -75,6 +75,8 @@ class SchedulebooktrialsController extends \BaseController {
             $this->vendor_token = true;
         }
 
+        $this->error_status = ($this->vendor_token) ? 200 : 400;
+
     }
     /**
      * Display the ScheduleBookTrial.
@@ -660,39 +662,39 @@ class SchedulebooktrialsController extends \BaseController {
 
         if(empty($data['customer_name'])){
             $resp 	= 	array('status' => 400,'message' => "Data Missing - customer_name");
-            return  Response::json($resp, 400);
+            return  Response::json($resp, $this->error_status);
         }
 
         if(empty($data['customer_email'])){
             $resp 	= 	array('status' => 400,'message' => "Data Missing - customer_email");
-            return  Response::json($resp, 400);
+            return  Response::json($resp, $this->error_status);
         }
 
         if (filter_var(trim($data['customer_email']), FILTER_VALIDATE_EMAIL) === false){
             $resp 	= 	array('status' => 400,'message' => "Invalid Email Id");
-            return  Response::json($resp, 400);
+            return  Response::json($resp, $this->error_status);
         }
 
         if(!$this->vendor_token){
 
             if(empty($data['finder_id'])){
                 $resp 	= 	array('status' => 400,'message' => "Data Missing - finder_id");
-                return  Response::json($resp, 400);
+                return  Response::json($resp, $this->error_status);
             }
 
             if(empty($data['finder_name'])){
                 $resp 	= 	array('status' => 400,'message' => "Data Missing - finder_name");
-                return  Response::json($resp, 400);
+                return  Response::json($resp, $this->error_status);
             }
 
             if(empty($data['city_id'])){
                 $resp 	= 	array('status' => 400,'message' => "Data Missing - city_id");
-                return  Response::json($resp, 400);
+                return  Response::json($resp, $this->error_status);
             }
 
             if(empty($data['customer_phone'])){
                 $resp   =   array('status' => 400,'message' => "Data Missing - customer_phone");
-                return  Response::json($resp, 400);
+                return  Response::json($resp, $this->error_status);
             }
 
         }else{
@@ -714,7 +716,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             if (count($alreadyBookedTrials) > 0) {
                 $resp = array('status' => 403, 'message' => "You have already booked a trial for this vendor");
-                return Response::json($resp, 403);
+                return Response::json($resp, $this->error_status);
             }
         }
 
@@ -722,7 +724,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         if($disableTrial['status'] != 200){
 
-            return Response::json($disableTrial,$disableTrial['status']);
+            return Response::json($disableTrial,$this->error_status);
         }
 
         // return $data	= Input::json()->all();
@@ -736,7 +738,7 @@ class SchedulebooktrialsController extends \BaseController {
         $customer_name		       = 	$data['customer_name'];
         $customer_email		       = 	$data['customer_email'];
         $customer_phone		       = 	$data['customer_phone'];
-
+        
         $preferred_location	       = 	(isset($data['preferred_location']) && $data['preferred_location'] != '') ? $data['preferred_location'] : "";
         $preferred_service	       = 	(isset($data['preferred_service']) && $data['preferred_service'] != '') ? $data['preferred_service'] : "";
         $preferred_day		       = 	(isset($data['preferred_day']) && $data['preferred_day'] != '') ? $data['preferred_day'] : "";
@@ -748,14 +750,16 @@ class SchedulebooktrialsController extends \BaseController {
         $customer_address	        =	(isset($data['customer_address']) && $data['customer_address'] != '') ? implode(',', array_values($data['customer_address'])) : "";
         $customer_note	 	       =	(isset($data['customer_note']) && $data['customer_note'] != '') ? $data['customer_note'] : "";
         $note_to_trainer              =   (isset($data['note_to_trainer']) && $data['note_to_trainer'] != '') ? $data['note_to_trainer'] : "";
-
+        
         $device_type				       = 	(isset($data['device_type']) && $data['device_type'] != '') ? $data['device_type'] : "";
         $gcm_reg_id					       = 	(isset($data['gcm_reg_id']) && $data['gcm_reg_id'] != '') ? $data['gcm_reg_id'] : "";
-
+        
         $social_referrer			       = 	(isset($data['social_referrer']) && $data['social_referrer'] != '') ? $data['social_referrer'] : "";
         $referrer_object			       = 	(isset($data['referrer_object']) && $data['referrer_object'] != '') ? $data['referrer_object'] : "";
         $transacted_after			       = 	(isset($data['transacted_after']) && $data['transacted_after'] != '') ? $data['transacted_after'] : "";
-
+        
+        setDefaultAccount($data, $customer_id);
+        
         if($device_type != '' && $gcm_reg_id != ''){
 
             $regData = array();
@@ -2138,7 +2142,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'finder_location_slug'          =>      $finder_location_slug,
                 'order_id'                      =>      $orderid,
                 'membership'                    =>      $membership,
-                'pre_trial_vendor_confirmation' =>      $pre_trial_vendor_confirmation
+                'pre_trial_vendor_confirmation' =>      $pre_trial_vendor_confirmation,
+                'vendor_kiosk'                  =>      isKioskVendor($finderid)
             );
 
             if(isset($order['recommended_booktrial_id']) && $order['recommended_booktrial_id'] != ""){
@@ -2995,8 +3000,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'vendor_link'                   =>      $vendor_link,
                 'finder_location_slug'          =>      $finder_location_slug,
                 'membership'                    =>      $membership,
-                'pre_trial_vendor_confirmation' =>      $pre_trial_vendor_confirmation
-
+                'pre_trial_vendor_confirmation' =>      $pre_trial_vendor_confirmation,
+                'vendor_kiosk'                  =>      isKioskVendor($finderid)
             );
 
             if(isset($data['promotional_notification_id']) && $data['promotional_notification_id'] != ""){
@@ -6255,7 +6260,7 @@ class SchedulebooktrialsController extends \BaseController {
 
                 $response = array('status' => 400,'message' =>'Already located your booking');
 
-                return Response::json($response,$response['status']);
+                return Response::json($response,200);
 
             }
 
@@ -6287,7 +6292,7 @@ class SchedulebooktrialsController extends \BaseController {
             ];
         }
 
-        return Response::json($response, $response['status']);
+        return Response::json($response,200);
 
     }
 

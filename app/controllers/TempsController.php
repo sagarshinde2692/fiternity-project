@@ -28,12 +28,19 @@ class TempsController extends \BaseController {
 
         $this->vendor_token = false;
 
+        $this->kiosk_app_version = false;
+
         $vendor_token = Request::header('Authorization-Vendor');
 
         if($vendor_token){
 
             $this->vendor_token = true;
+
+            $this->kiosk_app_version = Request::header('App-Version');
+        
         }
+
+        $this->error_status = ($this->vendor_token) ? 200 : 400;
     }
 
     public function errorMessage($errors){
@@ -87,7 +94,7 @@ class TempsController extends \BaseController {
 
             if ($validator->fails()) {
 
-                return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),400);
+                return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),$this->error_status);
 
             }else{
 
@@ -115,6 +122,8 @@ class TempsController extends \BaseController {
                 );
 
             $response = array('status'=>400,'message'=>$message['type'].' : '.$message['message'].' in '.$message['file'].' on '.$message['line']);
+
+            return Response::json($response,$this->error_status);
             
             Log::error($e);       
         }
@@ -138,7 +147,7 @@ class TempsController extends \BaseController {
 
             if ($validator->fails()) {
 
-                return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),400);
+                return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),$this->error_status);
 
             }else{
 
@@ -246,7 +255,7 @@ class TempsController extends \BaseController {
             Log::error($e);
         }
 
-        return Response::json($response,$response['status']);
+        return Response::json($response,$this->vendor_token ? 200 : $response['status']);
 
     }
 
@@ -344,7 +353,11 @@ class TempsController extends \BaseController {
                 $finder_id = (int)$temp->finder_id;
             }
 
-            $return =  array('status' => 200,'verified' => $verified,'token'=>$customerToken,'trial_booked'=>false,'customer_data'=>$customer_data,'fitternity_no'=>$fitternity_no);
+            $return =  array('status' => 200,'verified' => $verified,'token'=>$customerToken,'trial_booked'=>false,'customer_data'=>$customer_data,'fitternity_no'=>$fitternity_no,"message"=>'Incorrect OTP');
+
+            if($this->vendor_token){
+                $return['status'] = 400;
+            }
 
             if($temp->otp == $otp){
 
@@ -367,6 +380,8 @@ class TempsController extends \BaseController {
                     $data['customer_email'] = $temp['customer_email'];
                     $data['customer_phone'] = $temp['customer_phone'];
                     $data['customer_id'] = autoRegisterCustomer($data);
+
+                    setVerifiedContact($data['customer_id'], $data['customer_phone']);
 
                     $customer_id = $temp->customer_id = $data['customer_id'];
                 }
@@ -398,7 +413,13 @@ class TempsController extends \BaseController {
 
                 }
 
-                $return = array('status' => 200,'verified' => $verified,'token'=>$customerToken,'trial_booked'=>false,'customer_data'=>$customer_data,'fitternity_no'=>$fitternity_no);
+                if($temp['source'] == 'kiosk' && $this->kiosk_app_version && $this->kiosk_app_version >= 1.07){
+
+                    $customer_data = $this->getAllCustomersByPhone($temp);
+
+                }
+
+                $return = array('status' => 200,'verified' => $verified,'token'=>$customerToken,'trial_booked'=>false,'customer_data'=>$customer_data,'fitternity_no'=>$fitternity_no, 'message'=>'Successfully Verified');
 
                 if(isset($temp->service_id) && $temp->service_id != "" && $temp->action == "booktrials"){
                     
@@ -464,7 +485,7 @@ class TempsController extends \BaseController {
                                 $amount = $ratecard->price;
                             }
 
-                            $return = array('workout_session_available'=>true,'customer_data'=>$customer_data,'trial_booked'=>true,'status' => 200,'message' => '','verified' => $verified,'token'=>$customerToken,'ratecard_id'=>(int)$ratecard->_id,'amount'=>(int)$amount,'fitternity_no'=>$fitternity_no);
+                            $return = array('workout_session_available'=>true,'customer_data'=>$customer_data,'trial_booked'=>true,'status' => 200,'message' => 'Already Booked Trial. Book a Workout Session starting from Rs '.$amount.'.','verified' => $verified,'token'=>$customerToken,'ratecard_id'=>(int)$ratecard->_id,'amount'=>(int)$amount,'fitternity_no'=>$fitternity_no);
                         }
                     }
                 }
@@ -494,44 +515,70 @@ class TempsController extends \BaseController {
 
                     if($booktrial){
 
-                        Customer::$withoutAppends = true;
-                        $customer = Customer::select('name','email','contact_no','dob','gender')->find((int)$booktrial->customer_id);
+                        if(isset($booktrial['customer_sms_after24hour']) && $booktrial['customer_sms_after24hour'] != ""){
+                         
+                            $booktrial->unset('customer_sms_after24hour');
+                         
+                            $this->sidekiq->delete($booktrial['customer_sms_after24hour']);
+                        
+                        }
 
-                        if($customer) {
+                        $message = "Hi ".ucwords($booktrial['customer_name']).", your booking at ".ucwords($booktrial['finder_name'])." for ".strtoupper($booktrial['schedule_slot_start_time'])." on ".date('D, d M Y',strtotime($booktrial['schedule_date']))." has been successfully located";
 
-                            if($customerToken == ""){
+                        $kiosk_form_url = Config::get('app.website').'/kiosktrialform?booktrial_id='.$booktrial['_id'];
 
-                                $customerToken = createCustomerToken((int)$customer->_id);
+                        if($this->kiosk_app_version && $this->kiosk_app_version >= 1.07){
+                            
+                            $customer_data = $this->getAllCustomersByPhone($temp);
+    
+                            $return = [
+                                'customer_data'=>$customer_data,
+                                'locate_trial'=>true,
+                                'status' => 200,
+                                'message' => $message,
+                                'verified' => $verified,
+                                // 'token'=>$customerToken,
+                                'booktrial_id'=> (int)$booktrial['_id'],
+                                'kiosk_form_url'=>$kiosk_form_url
+                            ];
+
+                        }else{
+                            
+                            Customer::$withoutAppends = true;
+                            $customer = Customer::select('name','email','contact_no','dob','gender')->find((int)$booktrial->customer_id);
+                            
+                            if($customer) {
+    
+                                if($customerToken == ""){
+    
+                                    $customerToken = createCustomerToken((int)$customer->_id);
+                                }
+    
+                                $customer_data = $customer->toArray();
+    
+                                $customer_data['dob'] = isset($customer_data['dob']) && $customer_data['dob'] != "" ? $customer_data['dob'] : "";
+                                $customer_data['gender'] = isset($customer_data['gender']) && $customer_data['gender'] != "" ? $customer_data['gender'] : "";
+                                $customer_data['contact_no'] = $temp->customer_phone;
+                                $customer_id = (int)$customer->_id;
+    
                             }
 
-                            $customer_data = $customer->toArray();
-
-                            $customer_data['dob'] = isset($customer_data['dob']) && $customer_data['dob'] != "" ? $customer_data['dob'] : "";
-                            $customer_data['gender'] = isset($customer_data['gender']) && $customer_data['gender'] != "" ? $customer_data['gender'] : "";
-                            $customer_data['contact_no'] = $temp->customer_phone;
-                            $customer_id = (int)$customer->_id;
-
+                            $return = [
+                                'customer_data'=>$customer_data,
+                                'locate_trial'=>true,
+                                'status' => 200,
+                                'message' => $message,
+                                'verified' => $verified,
+                                'token'=>$customerToken,
+                                'booktrial_id'=> (int)$booktrial['_id'],
+                                'kiosk_form_url'=>$kiosk_form_url
+                            ];
                         }
 
                         $booktrial->post_trial_status = 'attended';
                         $booktrial->post_trial_initail_status = 'interested';
                         $booktrial->post_trial_status_updated_by_kiosk = time();
                         $booktrial->update();
-
-                        $message = "Hi ".ucwords($booktrial['customer_name']).", your booking at ".ucwords($booktrial['finder_name'])." for ".strtoupper($booktrial['schedule_slot_start_time'])." on ".date('D, d M Y',strtotime($booktrial['schedule_date']))." has been successfully located";
-
-                        $kiosk_form_url = Config::get('app.website').'/kiosktrialform?booktrial_id='.$booktrial['_id'];
-
-                        $return = [
-                            'customer_data'=>$customer_data,
-                            'locate_trial'=>true,
-                            'status' => 200,
-                            'message' => $message,
-                            'verified' => $verified,
-                            'token'=>$customerToken,
-                            'booktrial_id'=> (int)$booktrial['_id'],
-                            'kiosk_form_url'=>$kiosk_form_url
-                        ];
 
                     }
                      
@@ -579,7 +626,7 @@ class TempsController extends \BaseController {
 
         }else{
 
-            return Response::json(array('status' => 400,'message' => 'Not Found'),400);
+            return Response::json(array('status' => 400,'message' => 'Not Found'),$this->error_status);
         }
     }
 
@@ -715,7 +762,7 @@ class TempsController extends \BaseController {
             return Response::json(array('status' => 200,'attempt' => $temp->attempt,'sender_id'=>'FTRNTY'),200);
 
         }else{
-            return Response::json(array('status' => 400,'message' => 'Not Found'),400);
+            return Response::json(array('status' => 400,'message' => 'Not Found'),$this->error_status);
         }
     }
 
@@ -748,8 +795,62 @@ class TempsController extends \BaseController {
         }
 
         
-        return Response::json($response,$response['status']); 
+        return Response::json($response, $this->vendor_token ? 200 : $response['status']); 
 
+    }
+
+    function getAllCustomersByPhone($data){
+        
+        $customer_data = [];
+        Customer::$withoutAppends = true;
+        
+        Log::info("getAllCustomersByPhone");
+        Log::info($data);
+
+        if($data->action == 'prebook'){
+            
+            $customers = Customer::select('name','email','contact_no','dob','gender')->where('_id', (int)$booktrial->customer_id)->get();
+            
+        }else{
+            
+            $customers = Customer::active()->select('name','email','contact_no','dob','gender')->where('email', 'exists', true)->where('contact_no','LIKE','%'.substr($data['customer_phone'], -10).'%')->orderBy('_id','desc')->get();
+            
+            Log::info("Customers by primary contact no");
+            Log::info($customers);
+    
+            
+            if(count($customers) != 1){
+                $defaultCustomer = Customer::active()->select('name','email','contact_no','dob','gender')->where('email', 'exists', true)->where('contact_no','LIKE','%'.substr($data['customer_phone'], -10).'%')->where('default_account', true)->orderBy('_id','desc')->get();
+    
+                Log::info("Customers by primary contact no default");
+                Log::info($defaultCustomer);
+                
+                if(count($defaultCustomer) == 0){
+                    $defaultCustomer = Customer::active()->select('name','email','contact_no','dob','gender')->where('email', 'exists', true)->where('secondary_verified_no', substr($data['customer_phone'], -10))->orderBy('_id','desc')->get();
+                }
+    
+                Log::info("Customers by primary secondary contact no");
+                Log::info($defaultCustomer);
+                
+                if(count($defaultCustomer) == 1){
+                    
+                    $customers = $defaultCustomer;
+    
+                    $customers[0]['contact_no'] = substr($data['customer_phone'], -10);
+    
+                }
+            }
+        }
+        
+        foreach($customers as $customer) {
+            
+            $customer = $customer->toArray();
+            $customer['customerToken'] = createCustomerToken((int)$customer['_id']);
+            $customer['dob'] = isset($customer['dob']) && $customer['dob'] != "" ? $customer['dob'] : "";
+            $customer['gender'] = isset($customer['gender']) && $customer['gender'] != "" ? $customer['gender'] : "";
+            array_push($customer_data, $customer);
+        }
+        return $customer_data;
     }
 
 }

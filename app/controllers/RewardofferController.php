@@ -12,6 +12,17 @@ class RewardofferController extends BaseController {
         Utilities $utilities
     ) {
         $this->utilities = $utilities;
+        
+        $this->vendor_token = false;
+        
+        $vendor_token = Request::header('Authorization-Vendor');
+
+        if($vendor_token){
+
+            $this->vendor_token = true;
+        }
+
+        $this->error_status = ($this->vendor_token) ? 200 : 400;
     }
 
 
@@ -103,7 +114,7 @@ class RewardofferController extends BaseController {
             $rules      =   ['finder_id'=>'required', 'amount'=>'required', 'type'=>'required'];
             $validator  =   Validator::make($data,$rules);
             if ($validator->fails()) {
-                return Response::json(array('status' => 401,'message' => $this->utilities->errorMessage($validator->errors())),401);
+                return Response::json(array('status' => 401,'message' => $this->utilities->errorMessage($validator->errors())),$this->error_status);
             }
             $device             =   isset($data["device_type"]) ? $data["device_type"] : "";
             $finder_id          =   (int)$data['finder_id'];
@@ -158,7 +169,7 @@ class RewardofferController extends BaseController {
         $device     =   isset($data["device_type"]) ? $data["device_type"] : "";
         $validator  =   Validator::make($data,$rules);
         if ($validator->fails()) {
-            return Response::json(array('status' => 401,'message' => $this->utilities->errorMessage($validator->errors())),401);
+            return Response::json(array('status' => 401,'message' => $this->utilities->errorMessage($validator->errors())),$this->error_status);
         }
 
         $finder_id      =   (int)$data['finder_id'];
@@ -175,7 +186,7 @@ class RewardofferController extends BaseController {
         }
         if(!$ratecard && count($order) == 0){
             $resp   =   array('status' => 401,'message' => "Ratecard Not Present");
-            return  Response::json($resp, 401);
+            return  Response::json($resp, $this->error_status);
         }
 
         /*if(isset($ratecard->special_price) && $ratecard->special_price > 0 && $ratecard->special_price != ""){
@@ -403,62 +414,68 @@ class RewardofferController extends BaseController {
             }
         }
 
+        $cashback = null;
+        
         $customerReward     =   new CustomerReward();
-        $calculation        =   $customerReward->purchaseGame($amount,$finder_id);
 
-        if(isset($data['order_id']) && $data['order_id'] != ""){
+        if($amount < 50000){   
+            
+            $calculation        =   $customerReward->purchaseGame($amount,$finder_id);
 
-            $order_id = (int) $data['order_id'];
+            if(isset($data['order_id']) && $data['order_id'] != ""){
 
-            $order = Order::find($order_id);
+                $order_id = (int) $data['order_id'];
 
-            if(isset($order->payment_mode) && $order->payment_mode == "at the studio"){
-                $calculation = $customerReward->purchaseGame($amount,$finder_id,"at the studio");
+                $order = Order::find($order_id);
+
+                if(isset($order->payment_mode) && $order->payment_mode == "at the studio"){
+                    $calculation = $customerReward->purchaseGame($amount,$finder_id,"at the studio");
+                }
+
+                if(isset($order->part_payment) && $order->part_payment){
+                    $part_payment = true;
+                }
+
             }
 
-            if(isset($order->part_payment) && $order->part_payment){
-                $part_payment = true;
+            $calculation['algo']['cashback'] = (int)$calculation['algo']['cashback'];
+
+            $cashback  = array(
+                // 'title'=>$calculation['algo']['cashback'].'% Discount on Purchase',
+                'title'=>$calculation['algo']['cashback'].'% Instant Cashback on Purchase',
+                'percentage'=>$calculation['algo']['cashback'].'%',
+                'commision'=>$calculation['algo']['cashback'],
+                'calculation'=>$calculation,
+                'info'          =>  "",//"You can only pay upto 10% of the booking amount through FitCash. \n\nIt is calculated basis the amount, type and duration of the purchase.  \n\nYour total FitCash balance is Rs. ".$calculation['current_wallet_balance_only_fitcash']." FitCash applicable for this transaction is Rs. ".$calculation['amount_deducted_from_wallet'],
+                'description'=>$calculation['description']
+            );
+            /*if($calculation["current_wallet_balance_only_fitcash_plus"] > 0){
+                $cashback["info"] = "You can only pay upto 10% of the booking amount through FitCash. \n\nIt is calculated basis the amount, type and duration of the purchase.  \n\nYour total FitCash balance is Rs. ".$calculation['current_wallet_balance_only_fitcash_plus']."\n\nYour total FitCash+ balance is Rs. ".$calculation['current_wallet_balance_only_fitcash']." FitCash applicable for this transaction is Rs. ".$calculation['amount_deducted_from_wallet'];
+            }*/
+
+            unset($cashback['calculation']['description']);
+
+            if(isset($ratecard['validity']) && $ratecard['validity'] != ""){
+
+                switch ($ratecard['validity_type']){
+                    case 'days': 
+                        $duration_day = (int)$ratecard['validity'];break;
+                    case 'months': 
+                        $duration_day = (int)($ratecard['validity'] * 30) ; break;
+                    case 'year': 
+                        $duration_day = (int)($ratecard['validity'] * 30 * 12); break;
+                    default : $duration_day =  $ratecard['validity']; break;
+                }
             }
 
-        }
+            $duration_month = 0;
 
-        $calculation['algo']['cashback'] = (int)$calculation['algo']['cashback'];
-
-        $cashback  = array(
-            // 'title'=>$calculation['algo']['cashback'].'% Discount on Purchase',
-            'title'=>$calculation['algo']['cashback'].'% Instant Cashback on Purchase',
-            'percentage'=>$calculation['algo']['cashback'].'%',
-            'commision'=>$calculation['algo']['cashback'],
-            'calculation'=>$calculation,
-            'info'          =>  "",//"You can only pay upto 10% of the booking amount through FitCash. \n\nIt is calculated basis the amount, type and duration of the purchase.  \n\nYour total FitCash balance is Rs. ".$calculation['current_wallet_balance_only_fitcash']." FitCash applicable for this transaction is Rs. ".$calculation['amount_deducted_from_wallet'],
-            'description'=>$calculation['description']
-        );
-        /*if($calculation["current_wallet_balance_only_fitcash_plus"] > 0){
-            $cashback["info"] = "You can only pay upto 10% of the booking amount through FitCash. \n\nIt is calculated basis the amount, type and duration of the purchase.  \n\nYour total FitCash balance is Rs. ".$calculation['current_wallet_balance_only_fitcash_plus']."\n\nYour total FitCash+ balance is Rs. ".$calculation['current_wallet_balance_only_fitcash']." FitCash applicable for this transaction is Rs. ".$calculation['amount_deducted_from_wallet'];
-        }*/
-
-        unset($cashback['calculation']['description']);
-
-        if(isset($ratecard['validity']) && $ratecard['validity'] != ""){
-
-            switch ($ratecard['validity_type']){
-                case 'days': 
-                    $duration_day = (int)$ratecard['validity'];break;
-                case 'months': 
-                    $duration_day = (int)($ratecard['validity'] * 30) ; break;
-                case 'year': 
-                    $duration_day = (int)($ratecard['validity'] * 30 * 12); break;
-                default : $duration_day =  $ratecard['validity']; break;
+            if(isset($duration_day)){
+                $duration_month = ceil($duration_day/30) + 2;
             }
+
+            $cashback['description'] = "Get Rs ".$calculation['wallet_amount'].". Fitcash+ in your wallet as cashback which is fully redeemable against any Memberships/Session & Diet Plan purchase on Fitternity. Earned cashback is valid for ".$duration_month." months";
         }
-
-        $duration_month = 0;
-
-        if(isset($duration_day)){
-            $duration_month = ceil($duration_day/30) + 2;
-        }
-
-        $cashback['description'] = "Get Rs ".$calculation['wallet_amount'].". Fitcash+ in your wallet as cashback which is fully redeemable against any Memberships/Session & Diet Plan purchase on Fitternity. Earned cashback is valid for ".$duration_month." months";
 
         $renewal_cashback  = array('title'=>'Discount on Renewal');
         $selection_limit = 1;

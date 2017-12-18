@@ -1136,7 +1136,7 @@ class HomeController extends BaseController {
                     "vendor"=>[
                         [ 
                             "image"=>"http://b.fitn.in/success-pages/swimming+session.png",
-                            "title"=>"Book Swiming Sessions",
+                            "title"=>"Book Swimming Sessions",
                             "details"=>[
                                 ['field'=>'Avg. Calorie Burn','value'=>'750 KCAL'],
                                 //['field'=>'Avg. Price Per Session','value'=>'Rs 200'],
@@ -3626,6 +3626,10 @@ class HomeController extends BaseController {
         $capture->save();
         return array('status'=>200, 'message'=>'Saved successfully', 'capture'=>  $capture);
 
+    }
+
+    public function getCrashLog($count = 1){
+        return CrashLog::orderBy('_id', 'desc')->take($count)->get();
     }
 
 }

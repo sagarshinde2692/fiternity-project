@@ -1087,3 +1087,6 @@ Route::group(array('before' => 'validatetoken'), function() {
 });
 
 Route::post('customer/sendvendornumber','CustomerController@sendVendorNumberToCustomer');
+Route::get('customerexists/{email}','CustomerController@customerExists');
+
+Route::get('getcrashlogs/{count}','HomeController@getCrashLog');

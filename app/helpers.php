@@ -2231,6 +2231,8 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         $customer->demonetisation = time();
                         $customer->save();
 
+                        // invalidateDuplicatePhones($data, $customer->toArray());
+
                         return $inserted_id;
 
                     } else {
@@ -2239,8 +2241,14 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
 
                         try {
 
-                            if (isset($data['customer_phone']) && $data['customer_phone'] != "") {
-                                $customerData['contact_no'] = trim($data['customer_phone']);
+                            if (isset($data['customer_phone']) && $data['customer_phone'] != "" ) {
+
+                                if(!isset($customer->contact_no) || $customer->contact_no == ''){
+                                    
+                                    $customerData['contact_no'] = trim($data['customer_phone']);
+
+                                }
+
                             }
 
                             if (isset($data['otp']) && $data['otp'] != "") {
@@ -2275,6 +2283,8 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
 
                         }
 
+                        // invalidateDuplicatePhones($data, $customer->toArray());
+                        
                         return $customer->_id;
                     }
 
@@ -2941,6 +2951,39 @@ if (!function_exists('addTemp')) {
         $temp->proceed_without_otp = "N";
         $temp->source = "website";
 
+        
+        if(isset($data['order_id']) && $data['order_id'] != ""){
+            $temp->order_id = (int) $data['order_id'];
+        }
+        
+        if(isset($data['finder_id']) && $data['finder_id'] != ""){
+            $temp->finder_id = (int) $data['finder_id'];
+        }
+        
+        if(isset($data['service_id']) && $data['service_id'] != ""){
+            $temp->service_id = (int) $data['service_id'];
+        }
+        
+        if(isset($data['ratecard_id']) && $data['ratecard_id'] != ""){
+            $temp->ratecard_id = (int) $data['ratecard_id'];
+            
+            $ratecard = Ratecard::find((int) $data['ratecard_id']);
+            
+            if($ratecard){
+                $temp->finder_id = (int) $ratecard->finder_id;
+                $temp->service_id = (int) $ratecard->service_id;
+            }
+            
+        }
+        
+        if(isset($_GET['device_type']) && $_GET['device_type'] != ""){
+            $temp->source = $_GET['device_type'];
+        }
+        
+        if(isset($_GET['app_version']) && $_GET['app_version'] != ""){
+            $temp->version = $_GET['app_version'];
+        }
+        
         if($data['action'] == "vendor_otp"){
 
             $decodeKioskVendorToken = decodeKioskVendorToken();
@@ -2950,38 +2993,6 @@ if (!function_exists('addTemp')) {
             $temp->finder_id = (int)$vendor->_id;
 
             $temp->source = "kiosk";
-        }
-
-        if(isset($data['order_id']) && $data['order_id'] != ""){
-            $temp->order_id = (int) $data['order_id'];
-        }
-
-        if(isset($data['finder_id']) && $data['finder_id'] != ""){
-            $temp->finder_id = (int) $data['finder_id'];
-        }
-
-        if(isset($data['service_id']) && $data['service_id'] != ""){
-            $temp->service_id = (int) $data['service_id'];
-        }
-
-        if(isset($data['ratecard_id']) && $data['ratecard_id'] != ""){
-            $temp->ratecard_id = (int) $data['ratecard_id'];
-
-            $ratecard = Ratecard::find((int) $data['ratecard_id']);
-
-            if($ratecard){
-                $temp->finder_id = (int) $ratecard->finder_id;
-                $temp->service_id = (int) $ratecard->service_id;
-            }
-
-        }
-
-        if(isset($_GET['device_type']) && $_GET['device_type'] != ""){
-            $temp->source = $_GET['device_type'];
-        }
-
-        if(isset($_GET['app_version']) && $_GET['app_version'] != ""){
-            $temp->version = $_GET['app_version'];
         }
 
         $temp->save();
@@ -2997,36 +3008,50 @@ if (!function_exists('formFields')) {
 
         $data = [
             [
-                'field'=>'dob',
-                'title'=>'DOB',
-                'data_type'=>'text',
-                'input_type'=>'text'
+                'field'=>'age',
+                'title'=>'Age',
+                'data_type'=>'number',
+                'input_type'=>'number',
+                'required'=>true
             ],
             [
                 'field'=>'blood_group',
                 'title'=>'Blood group',
                 'data_type'=>'text',
-                'input_type'=>'text'
+                'input_type'=>'select',
+                'options'=>[
+                    'A+',
+                    'A-',
+                    'B+',
+                    'B-',
+                    'AB+',
+                    'AB-',
+                    'O+',
+                    'O-'
+                ],
+                'required'=>true
             ],
-            [
+           /* [
                 'field'=>'emergency_contact_number',
                 'title'=>'Emergency Contact Number',
                 'data_type'=>'text',
                 'input_type'=>'text',
                 'required'=>true
-            ],
-            [
+            ],*/
+           /* [
                 'field'=>'recommended_to_workout',
                 'title'=>'Were you recommended to workout by a doctor',
                 'data_type'=>'text',
-                'input_type'=>'text'
-            ],
-            [
+                'input_type'=>'text',
+                'required'=>true
+            ],*/
+            /*[
                 'field'=>'medical_condition',
                 'title'=>'Medical Condition',
                 'data_type'=>'text',
-                'input_type'=>'text'
-            ],
+                'input_type'=>'text',
+                'required'=>true
+            ],*/
             [
                 'field'=>'prescriptive_medication',
                 'title'=>'Do you take any prescriptive medication',
@@ -3035,7 +3060,8 @@ if (!function_exists('formFields')) {
                 'options'=>[
                     'Yes',
                     'No'
-                ]
+                ],
+                'required'=>true
             ],
             [
                 'field'=>'smoke',
@@ -3045,7 +3071,8 @@ if (!function_exists('formFields')) {
                 'options'=>[
                     'Yes',
                     'No'
-                ]
+                ],
+                'required'=>true
             ],
             [
                 'field'=>'consume_alcohol',
@@ -3055,7 +3082,8 @@ if (!function_exists('formFields')) {
                 'options'=>[
                     'Yes',
                     'No'
-                ]
+                ],
+                'required'=>true
             ],          
         ];
 
@@ -3077,6 +3105,75 @@ if (!function_exists('isKioskVendor')) {
         }
 
         return $isKioskVendor;
+    }
+}
+
+if (!function_exists('setDefaultAccount')) {
+    
+    function setDefaultAccount($data, $customer_id){
+        
+        Log::info("Inside setDefaultAccount");
+        Log::info($data);
+        if( ((isset($data['source']) && $data['source'] == 'kiosk') || (isset($data['customer_source']) && $data['customer_source'] == 'kiosk')) && isset($data['customer_phone']) && $data['customer_phone'] != ''){
+            
+            Log::info("Creating default account");
+            Customer::$withoutAppends = true;
+            $defaultCustomer = Customer::find(intval($customer_id));
+            $defaultCustomer->default_account = true;
+            $duplicateCustomers = Customer::where('contact_no','LIKE','%'.substr($data['customer_phone'], -10).'%')->whereNot('_id', $customer_id)->lists('_id');
+            if(count($duplicateCustomers) > 0){
+                $defaultCustomer->attached_accounts = $duplicateCustomers;
+            
+            }
+            Log::info("====Duplicate Customers=======");
+            Log::info($duplicateCustomers);
+            $defaultCustomer->update();
+            
+            // foreach($duplicateCustomers as $customer){
+                
+            //     $secondary_contact_no = array();
+            //     if(isset($customer->secondary_contact_no)){
+            //         $secondary_contact_no = $customer->secondary_contact_no;
+            //     }
+            //     array_push($secondary_contact_no, substr($data['customer_phone'], -10));
+            //     $customer->secondary_contact_no = $secondary_contact_no;
+            //     $customer->contact_no = '';
+            //     $customer->update();
+            // }
+            
+        }
+        return;
+    }
+}
+
+if (!function_exists('setVerifiedContact')) {
+    
+    function setVerifiedContact($customer_id, $contact_no){
+        Log::info("customer_id");
+        Log::info("$customer_id");
+        Log::info("contact_no");
+        Log::info("$contact_no");
+        
+        $customer = Customer::find(intval($customer_id));
+        if(!isset($customer->contact_no) || $customer->contact_no == ''){
+            
+            $customer->contact_no = trim($contact_no);
+            
+        }
+        if(substr($customer->contact_no, -10) == substr( trim($contact_no), -10)){
+            
+            $customer->contact_no_verified = true;
+        
+        }else{
+            $secondary_verified_no = isset($customer->secondary_verified_no) ? $customer->secondary_verified_no : array();
+            if(in_array(trim($contact_no), $secondary_verified_no)){
+                
+                array_push($secondary_verified_no, trim($contact_no));
+            }
+            $customer->secondary_verified_no = $secondary_verified_no;
+        }
+        $customer->update();
+       
     }
 }
 
