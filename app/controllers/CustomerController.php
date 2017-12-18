@@ -14,6 +14,7 @@ use App\Services\CustomerInfo as CustomerInfo;
 use App\Services\CustomerReward as CustomerReward;
 use App\Services\ShortenUrl as ShortenUrl;
 use App\Services\Emi as Emi;
+use App\Mailers\FinderMailer as FinderMailer;
 
 class CustomerController extends \BaseController {
 
@@ -22,12 +23,19 @@ class CustomerController extends \BaseController {
 	protected $utilities;
 
 
-	public function __construct(CustomerMailer $customermailer,CustomerSms $customersms,Utilities $utilities,CustomerReward $customerreward) {
+	public function __construct(
+		CustomerMailer $customermailer,
+		CustomerSms $customersms,
+		Utilities $utilities,
+		CustomerReward $customerreward,
+		FinderMailer $findermailer
+	) {
 
 		$this->customermailer	=	$customermailer;
 		$this->customersms	=	$customersms;
 		$this->utilities	=	$utilities;
 		$this->customerreward = $customerreward;
+		$this->findermailer             =   $findermailer;
 
 		$this->vendor_token = false;
 
@@ -37,6 +45,8 @@ class CustomerController extends \BaseController {
 
             $this->vendor_token = true;
         }
+
+        $this->error_status = ($this->vendor_token) ? 200 : 400;
 
 	}
 
@@ -510,6 +520,35 @@ class CustomerController extends \BaseController {
 
 	}
 
+
+	public function customerExists($email){
+
+		$response = [
+			'status' => 400,
+			'message'=>'Customer does not Exists'
+		];
+
+		Customer::$withoutAppends=true;
+
+		$customer = Customer::active()->where('email',$email)->first();
+
+		if($customer){
+
+			$response = [
+				'status' => 200,
+				'message'=>'Customer Exists',
+				'data'=>[
+					'name'=>$customer['name'],
+					'email'=>$customer['email'],
+					'contact_no'=>$customer['contact_no'],
+				]
+			];
+		}
+
+		return Response::json($response);
+
+	}
+
 	public function register(){
 
 		$data = Input::json()->all();
@@ -533,20 +572,20 @@ class CustomerController extends \BaseController {
 
 		if ($validator->fails()) {
 
-			return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),400);
+			return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),$this->error_status);
 
 		}else{
 
-			$customer = Customer::where('email','=',$data['email'])->where('identity','!=','email')->first();
+			$customer = Customer::active()->where('email','=',$data['email'])->where('identity','!=','email')->first();
 
-			if($this->vendor_token && isset($data['contact_no']) && $data['contact_no'] != ""){
+			/*if($this->vendor_token && isset($data['contact_no']) && $data['contact_no'] != ""){
 
 				$customer = Customer::where('email','=',$data['email'])->first();
-			}
+			}*/
 			
 			if(empty($customer)){
 
-				$ishullcustomer = Customer::where('email','=',$data['email'])->where('ishulluser',1)->first();
+				$ishullcustomer = Customer::active()->where('email','=',$data['email'])->where('ishulluser',1)->first();
 
 				if(empty($ishullcustomer)){
 
@@ -554,7 +593,7 @@ class CustomerController extends \BaseController {
 
 					if ($new_validator->fails()) {
 
-						return Response::json(array('status' => 400,'message' => $this->errorMessage($new_validator->errors())),400);
+						return Response::json(array('status' => 401,'message' => $this->errorMessage($new_validator->errors())),$this->error_status);
 
 					}else{
 
@@ -696,6 +735,16 @@ class CustomerController extends \BaseController {
 					$this->addCustomerRegId($data);
 				}
 
+				if(isset($resp["customer_data"])){
+
+					$response['customer_data'] = $resp["customer_data"];
+				}
+
+				if($response['status'] != 200){
+
+					return Response::json($response,$this->error_status);
+				}
+
 				return Response::json($response,$response['status']);
 
 			}elseif($data['identity'] == 'google' || $data['identity'] == 'facebook' || $data['identity'] == 'twitter'){
@@ -753,6 +802,59 @@ class CustomerController extends \BaseController {
 			}
 
 			$encodeKioskVendorToken = $this->encodeKioskVendorToken($kiosk_user);
+
+			$header_array = [
+		        "Device-Model"=>"",
+		        "App-Version"=>"",
+		        "Os-Version"=>"",
+		        "Device-Serial"=>"",
+		        "Device-Id"=>""
+		    ];
+
+		    foreach ($header_array as $header_key => $header_value) {
+
+		        $value = Request::header($header_key);
+
+		        if($value != "" && $value != null && $value != 'null'){
+		           $header_array[$header_key] =  trim($value);
+		        }
+		        
+		    }
+
+		    $data = [];
+
+		    $data['brand'] = $header_array['Device-Model'];
+		    $data['os_version'] = $header_array['Os-Version'];
+		    $data['app_version'] = $header_array['App-Version'];
+		    $data['serialNumber'] = $header_array['Device-Serial'];
+		    $data['device_id'] = $header_array['Device-Id'];
+		    $data['vendor_id'] = (int)$kiosk_user['finder_id'];
+
+		    Finder::$withoutAppends=true;
+
+		    $finder = Finder::find((int)$kiosk_user['finder_id']);
+
+		    if($finder){
+		    	$data['city_id'] = (int)$finder['city_id'];
+		    }
+
+		    $kiosk_tab = KioskTab::where('serialNumber',$data['serialNumber'])->first();
+
+		    if($kiosk_tab){
+
+		    	$data['old_vendor_id'] = (int)$kiosk_tab['vendor_id'];
+
+		    	if($data['vendor_id'] != $kiosk_tab['vendor_id']){
+
+		    		$this->findermailer->kioskTabVendorChange($data);
+		    	}
+
+		    	// $kiosk_tab->update($data);
+
+		    }else{
+
+		    	KioskTab::create($data);
+		    }
 
 			return Response::json($encodeKioskVendorToken,$encodeKioskVendorToken['status']);
 		}
@@ -817,7 +919,7 @@ class CustomerController extends \BaseController {
 			return array('status' => 400,'message' => 'Customer does not exists');
 		}
 
-		$customer = Customer::where('email','=',$data['email'])->where('status','=','1')->first();
+		$customer = Customer::where('email','=',$data['email'])->where('status','=','1')->orderBy('_id', 'DESC')->first();
 
 		if(empty($customer)){
 			return array('status' => 400,'message' => 'Customer is inactive');
@@ -839,11 +941,27 @@ class CustomerController extends \BaseController {
 			$customer->account_link = $account_link;
 		}
 
+
 		$customer->last_visited = Carbon::now();
 		$customer->update();
+
+		
 		$resp = $this->checkIfpopPup($customer);
 		
-		return array("token" => $this->createToken($customer), "popup" => $resp);
+        $customer_data = array_only($customer->toArray(), ['_id','name','email','contact_no','dob','gender']);
+        
+        $token = $this->createToken($customer);
+		
+		if($this->vendor_token && isset($data['contact_no']) && $data['contact_no'] != ""){
+			
+			setVerifiedContact($customer->_id, $data['contact_no']);
+			$customer_data['contact_no'] = $data['contact_no'];
+		
+		}
+		
+		$customer_data['token'] = $token['token'];
+		
+		return array("token" => $token,"popup" => $resp,"customer_data"=>$customer_data);
 	}
 
 	public function checkIfpopPup($customer, $customdata=array()){
@@ -1222,7 +1340,9 @@ class CustomerController extends \BaseController {
 		$data = Input::json()->all();
 
 		if(isset($data['email']) && !empty($data['email'])){
-			$customer = Customer::where('email','=',$data['email'])->first();
+
+			$customer = Customer::active()->where('email','=',$data['email'])->first();
+			
 			if(!empty($customer)){
 
 				$token = $this->createPasswordToken($customer);
@@ -1232,14 +1352,14 @@ class CustomerController extends \BaseController {
 					$this->customermailer->forgotPassword($customer_data);
 					return Response::json(array('status' => 200,'message' => 'token successfull created and mail send', 'token' => $token),200);
 				}else{
-					return Response::json(array('status' => 400,'message' => 'Customer email not present'),400);
+					return Response::json(array('status' => 400,'message' => 'Customer email not present'),$this->error_status);
 				}
 
 			}else{
-				return Response::json(array('status' => 400,'message' => 'Customer not found'),400);
+				return Response::json(array('status' => 400,'message' => 'Customer not found'),$this->error_status);
 			}
 		}else{
-			return Response::json(array('status' => 400,'message' => 'Empty email'),400);
+			return Response::json(array('status' => 400,'message' => 'Empty email'),$this->error_status);
 		}
 
 	}
@@ -2966,7 +3086,7 @@ class CustomerController extends \BaseController {
 				$category_slug = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","luxury-hotels"/*,"healthy-snacks-and-beverages"*/,"spinning-and-indoor-cycling"/*,"healthy-tiffins"*//*,"dietitians-and-nutritionists"*//*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness"/*,"personal-trainers"*/);
 				$cat = array();
 				$cat['mumbai'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","luxury-hotels"/*,"healthy-snacks-and-beverages"*/,"spinning-and-indoor-cycling"/*,"healthy-tiffins"*//*,"dietitians-and-nutritionists"*//*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness"/*,"personal-trainers"*/);
-				$cat['pune'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates"/*,"healthy-tiffins"*/,"cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling"/*,"sport-nutrition-supliment-stores"*/,"aerobics","kids-fitness","pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
+				$cat['pune'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates"/*,"healthy-tiffins"*/,"cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling"/*,"sport-nutrition-supliment-stores"*/,"aerobics"/*,"kids-fitness"*/,"pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
 				$cat['bangalore'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates"/*,"healthy-tiffins"*/,"cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling"/*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
 				$cat['delhi'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates"/*,"healthy-tiffins"*/,"cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling"/*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
 				$cat['gurgaon'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates"/*,"healthy-tiffins"*/,"cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling"/*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
@@ -3075,8 +3195,56 @@ class CustomerController extends \BaseController {
 		// if(isset($_REQUEST['device_type']) && $_REQUEST['device_type'] == "android"){
 		// 	$result['campaign']['link'] = 'ftrnty://ftrnty.com/search/all';
 		// }
+
+		if(isset($_REQUEST['device_type']) && $_REQUEST['device_type'] == "ios" && isset($_REQUEST['app_version']) && ((float)$_GET['app_version'] >= 4.4)){
+
+			$result['campaigns'] =  [];
+
+			$result['campaigns'][] = [
+				'image'=>'http://b.fitn.in/iconsv1/offers/generic_banner.png',
+				'link'=>'',
+				'title'=>'1',
+				'height'=>1,
+				'width'=>6,
+				'ratio'=>1/6
+			];
+
+			$result['campaigns'][] = [
+				'image'=>'http://b.fitn.in/global/diwali/diwali_banner.png',
+				'link'=>'',
+				'title'=>'2',
+				'height'=>1,
+				'width'=>6,
+				'ratio'=>1/6
+			];
+			$lat = isset($_REQUEST['lat']) && $_REQUEST['lat'] != "" ? $_REQUEST['lat'] : "";
+			$lon = isset($_REQUEST['lon']) && $_REQUEST['lon'] != "" ? $_REQUEST['lon'] : "";
+
+			$near_by_vendor_request = [
+				"offset" => 0,
+				"limit" => 9,
+				"radius" => "3km",
+				"category"=>"",
+				"lat"=>$lat,
+				"lon"=>$lon,
+				"city"=>strtolower($city),
+				"keys"=>[
+				"average_rating",
+				"contact",
+				"coverimage",
+				"location",
+				"multiaddress",
+				"slug",
+				"name",
+				"id",
+				]
+			];
+
+			$result['near_by_vendor'] = geoLocationFinder($near_by_vendor_request);
+		}
 		
 		return Response::json($result);
+		
 	}
 
 

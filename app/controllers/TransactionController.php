@@ -57,13 +57,15 @@ class TransactionController extends \BaseController {
         $this->membership_array     =   array('memberships','healthytiffinmembership');
 
         $this->vendor_token = false;
-
+        
         $vendor_token = Request::header('Authorization-Vendor');
 
         if($vendor_token){
 
             $this->vendor_token = true;
         }
+
+        $this->error_status = ($this->vendor_token) ? 200 : 400;
 
     }
 
@@ -81,7 +83,7 @@ class TransactionController extends \BaseController {
         Log::info('------------transactionCapture---------------',$data);
 
         if(!isset($data['type'])){
-            return Response::json(array('status' => 404,'message' =>'type field is required'),404);
+            return Response::json(array('status' => 404,'message' =>'type field is required'), $this->error_status);
         }
 
         $rules = array(
@@ -95,10 +97,10 @@ class TransactionController extends \BaseController {
         $asshole_numbers = ["7838038094","7982850036","8220720704","8510829603"];
         
         if(in_array(substr($data["customer_phone"], -10), $asshole_numbers)){
-            return Response::json("Can't book anything for you.",400);
+            return Response::json("Can't book anything for you.", $this->error_status);
         }
         if(!isset($data['ratecard_id']) && !isset($data['ticket_id'])){
-            return Response::json(array('status'=>400, 'message'=>'Ratecard Id or ticket Id is required'));
+            return Response::json(array('status'=>400, 'message'=>'Ratecard Id or ticket Id is required'), $this->error_status);
         }
 
         if(isset($data['finder_id']) && $data['finder_id'] != ""){
@@ -106,7 +108,7 @@ class TransactionController extends \BaseController {
             $checkFinderState = $this->utilities->checkFinderState($data['finder_id']);
 
             if($checkFinderState['status'] != 200){
-                return Response::json($checkFinderState,$checkFinderState['status']);
+                return Response::json($checkFinderState, $this->error_status);
             }
         }
 
@@ -147,7 +149,7 @@ class TransactionController extends \BaseController {
         $validator = Validator::make($data,$rules);
 
         if ($validator->fails()) {
-            return Response::json(array('status' => 404,'message' => error_message($validator->errors())),404);
+            return Response::json(array('status' => 404,'message' => error_message($validator->errors())),$this->error_status);
         }
 
         if(isset($data['wallet']) && !$data['wallet']){
@@ -184,7 +186,7 @@ class TransactionController extends \BaseController {
 
                 if(in_array($customer_data["customer_email"],$event_customer_email)){
 
-                    return Response::json(array('status' => 404,'message' => 'cannot enter same email id'),404);
+                    return Response::json(array('status' => 404,'message' => 'cannot enter same email id'),$this->error_status);
 
                 }else{
 
@@ -193,7 +195,7 @@ class TransactionController extends \BaseController {
 
                 if(in_array($customer_data["customer_phone"],$event_customer_phone)){
 
-                    return Response::json(array('status' => 404,'message' => 'cannot enter same contact number'),404);
+                    return Response::json(array('status' => 404,'message' => 'cannot enter same contact number'),$this->error_status);
 
                 }else{
 
@@ -208,14 +210,14 @@ class TransactionController extends \BaseController {
             $validateMyReward = $this->validateMyReward($data['myreward_id']);
 
             if($validateMyReward['status'] != 200){
-                return Response::json($validateMyReward,$validateMyReward['status']);
+                return Response::json($validateMyReward,$this->error_status);
             }
         }
 
         $customerDetail = $this->getCustomerDetail($data);
 
         if($customerDetail['status'] != 200){
-            return Response::json($customerDetail,$customerDetail['status']);
+            return Response::json($customerDetail,$this->error_status);
         }
 
         $data = array_merge($data,$customerDetail['data']); 
@@ -229,7 +231,7 @@ class TransactionController extends \BaseController {
             $ratecardDetail = $this->getRatecardDetail($data);
 
             if($ratecardDetail['status'] != 200){
-                return Response::json($ratecardDetail,$ratecardDetail['status']);
+                return Response::json($ratecardDetail,$this->error_status);
             }
 
             $data = array_merge($data,$ratecardDetail['data']);
@@ -251,7 +253,7 @@ class TransactionController extends \BaseController {
         $finderDetail = $this->getFinderDetail($finder_id);
 
         if($finderDetail['status'] != 200){
-            return Response::json($finderDetail,$finderDetail['status']);
+            return Response::json($finderDetail,$this->error_status);
         }
 
         
@@ -268,7 +270,7 @@ class TransactionController extends \BaseController {
             $serviceDetail = $this->getServiceDetail($service_id);
 
             if($serviceDetail['status'] != 200){
-                return Response::json($serviceDetail,$serviceDetail['status']);
+                return Response::json($serviceDetail,$this->error_status);
             }
 
             $data = array_merge($data,$serviceDetail['data']);
@@ -315,13 +317,13 @@ class TransactionController extends \BaseController {
                     $data['amount_customer'] = $data['amount'] = $data['amount_finder'] = $data['ticket_quantity'] * $ticket->price;
                 }else{
                     $resp   =   array('status' => 400,'message' => "Ticket not found");
-                    return Response::json($resp,400);
+                    return Response::json($resp,$this->error_status);
                 }
                 
             }else{
 
                 $resp   =   array('status' => 400,'message' => "Ticket id not found");
-                return Response::json($resp,400);
+                return Response::json($resp,$this->error_status);
                 
             }
 
@@ -344,7 +346,7 @@ class TransactionController extends \BaseController {
                 $already_applied_coupon = Customer::where('_id',$data['customer_id'])->whereIn('applied_promotion_codes',[$data['coupon_code']])->count();
             
                 if($already_applied_coupon>0){
-                    return Response::json(array('status'=>400, 'message'=>'Coupon already applied'), 400);
+                    return Response::json(array('status'=>400, 'message'=>'Coupon already applied'), $this->error_status);
                 }
             }
         }
@@ -357,7 +359,7 @@ class TransactionController extends \BaseController {
             Log::info("cashbackRewardWallet",$cashbackRewardWallet);
 
             if($cashbackRewardWallet['status'] != 200){
-                return Response::json($cashbackRewardWallet,$cashbackRewardWallet['status']);
+                return Response::json($cashbackRewardWallet,$this->error_status);
             }
 
             $data = array_merge($data,$cashbackRewardWallet['data']);
@@ -698,7 +700,9 @@ class TransactionController extends \BaseController {
 
         $cash_pickup_applicable = ($cash_pickup && isset($data['amount_final']) && $data['amount_final'] >= 3000) ? true : false;
 
-        $emi_applicable = $this->utilities->displayEmi(array('amount_final'=>$data['amount_final']));
+        // $emi_applicable = $this->utilities->displayEmi(array('amount_final'=>$data['amount_final']));
+
+        $emi_applicable = (isset($data['amount_final']) && $data['amount_final'] >= 2500) ? true : false;
 
         $part_payment_applicable = (!$updating_part_payment && $part_payment && $data["amount_finder"] >= 3000) ? true : false;
 
@@ -761,30 +765,67 @@ class TransactionController extends \BaseController {
             }
         }
 
-
         if($data['payment_mode'] == 'at the studio' && isset($data['wallet']) && $data['wallet']){
 
             $data = array_only($data,['finder_id','order_id','service_id','ratecard_id','payment_mode','finder_vcc_mobile']);
 
             $data['action'] = "vendor_otp";
 
-            $addTemp = addTemp($data);
+            $addTemp_flag  = true;
 
-            $otp_data = [
-                'otp'=>$addTemp['otp'],
-                'finder_vcc_mobile'=>$data['finder_vcc_mobile'],
-                'payment_mode'=>$data['payment_mode'],
-                'temp_id'=>$addTemp['_id']
-            ];
+            if(isset($order['otp_data'])){
 
-            $order->update(['otp_data'=>$otp_data]);
+                $old_order = $order->toArray();
+
+                $otp_data = $old_order['otp_data'];
+
+                if(isset($otp_data['created_at']) && ((time() - $otp_data['created_at']) / 60) < 3){
+
+                    $addTemp_flag = false;
+                }
+
+                $temp = Temp::find($temp_id);
+
+                if(!$temp){
+
+                    return Response::json(['status' => 400, "message" => "Internal Error"],$this->error_status);
+                }
+
+                if($temp->verified == "Y"){
+
+                    return Response::json(array('status' => 400,'message' => 'Already Verified'),$this->error_status);
+                }
+
+                $otp_data['otp'] = $temp['otp'];
+
+            }
+
+            if($addTemp_flag){
+
+                $addTemp = addTemp($data);
+
+                $otp_data = [
+                    'finder_vcc_mobile'=>$data['finder_vcc_mobile'],
+                    'payment_mode'=>$data['payment_mode'],
+                    'temp_id'=>$addTemp['_id'],
+                    'created_at'=>time()
+                ];
+
+                $order->update(['otp_data'=>$otp_data]);
+
+                $otp_data['otp'] = $addTemp['otp'];
+            }
+
+            $otp_data['customer_name'] = $data['customer_name'];
+            $otp_data['service_name'] = $data['service_name'];
+            $otp_data['service_duration'] = $data['service_duration'];
 
             $this->findersms->genericOtp($otp_data);
 
-            $resp['vendor_otp'] = $addTemp['otp'];
+            $resp['vendor_otp'] = $otp_data['otp'];
 
-            $resp['data']['verify_otp_url'] = Config::get('app.website')."/kiosk/vendor/verifyotp";
-            $resp['data']['resend_otp_url'] = Config::get('app.website')."/temp/regenerateotp/".$addTemp['_id'];
+            $resp['data']['verify_otp_url'] = Config::get('app.url')."/kiosk/vendor/verifyotp";
+            $resp['data']['resend_otp_url'] = Config::get('app.url')."/temp/regenerateotp/".$otp_data['temp_id'];
 
         }
 
@@ -817,20 +858,24 @@ class TransactionController extends \BaseController {
 
         $validator = Validator::make($data,$rules);
 
+        $app_version  = (float)Request::header('App-Version');
+
+        $status = ($app_version > 1.06) ? 200 : 400;
+
         if ($validator->fails()) {
-            return Response::json(array('status' => 400,'message' => error_message($validator->errors())),400);
+            return Response::json(array('status' => 400,'message' => error_message($validator->errors())),$status);
         }
 
         $order = Order::find((int)$data['order_id']);
 
         if(!$order){
 
-            return Response::json(['status' => 400, "message" => "Order Not Found"],400);
+            return Response::json(['status' => 400, "message" => "Order Not Found"],$status);
         }
 
         if($order->status == "1"){
 
-            return Response::json(['status' => 400, "message" => "Already Status Successfull"],400);
+            return Response::json(['status' => 400, "message" => "Already Status Successfull"],$status);
         }
 
         $decodeKioskVendorToken = decodeKioskVendorToken();
@@ -841,17 +886,41 @@ class TransactionController extends \BaseController {
 
         if($finder_id != $order['finder_id']){
 
-            return Response::json(['status' => 400, "message" => "Incorrect Vendor"],400);
+            return Response::json(['status' => 400, "message" => "Incorrect Vendor"],$status);
         }
 
         if(!isset($order['otp_data'])){
 
-            return Response::json(['status' => 400, "message" => "OTP data not found"],400);
+            return Response::json(['status' => 400, "message" => "OTP data not found"],$status);
         }
 
         if($order['otp_data']['otp'] != $data['otp']){
 
-            return Response::json(['status' => 400, "message" => "Incorrect OTP"],400);
+            return Response::json(['status' => 400, "message" => "Incorrect OTP"],$status);
+        }
+
+        $temp_id = $order['otp_data']['temp_id'];
+
+        $temp = Temp::find($temp_id);
+
+        if(!$temp){
+
+            return Response::json(['status' => 400, "message" => "Internal Error"],$status);
+        }
+
+        if($temp['otp'] != $data['otp']){
+
+            return Response::json(['status' => 400, "message" => "Incorrect OTP"],$status);
+        }
+
+        if($temp->verified == "Y"){
+
+            return Response::json(array('status' => 400,'message' => 'Already Verified'),$status);
+
+        }else{
+
+            $temp->verified = "Y";
+            $temp->save();
         }
 
         $data['status'] = 'success';
@@ -864,6 +933,7 @@ class TransactionController extends \BaseController {
         return $this->successCommon($data);
 
     }
+
 
 
     public function update(){
@@ -1403,6 +1473,10 @@ class TransactionController extends \BaseController {
 
             $this->utilities->sendDemonetisationCustomerSms($order);
 
+            if(isset($order->customer_id)){
+                setDefaultAccount($order->toArray(), $order->customer_id);
+            }
+
             $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
 
             if($order['payment_mode'] == 'at the studio'){
@@ -1475,6 +1549,10 @@ class TransactionController extends \BaseController {
             $customer->update($customerData);
 
             $data['customer_address'] = $data['address'] = implode(",", array_values($data['customer_address']));
+        }
+
+        if(isset($data['customer_phone']) && $data['customer_phone'] != ''){
+            setVerifiedContact($customer_id, $data['customer_phone']);
         }
 
         $device_type = (isset($data['device_type']) && $data['device_type'] != '') ? $data['device_type'] : "";

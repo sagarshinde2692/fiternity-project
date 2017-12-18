@@ -993,11 +993,20 @@ class HomeController extends BaseController {
                 $booking_details_data['price']['value']= "Free Via Fitternity";
             }
 
-            if(in_array($type,["booktrialfree","booktrial","workoutsession","workout-session","booktrials"])){
+            if(in_array($type,["booktrialfree"])){
 
                 if(isset($item['code']) && $item['code'] != ""){
                     $booking_details_data['booking_id']['value'] = $item['code'];
                 }
+
+            }
+
+            if(in_array($type, ["booktrial","workoutsession","workout-session","booktrials"])){
+
+                if(isset($item['booktrial_id']) && $item['booktrial_id'] != ""){
+                    $booking_details_data['booking_id']['value'] = $item['booktrial_id'];
+                }
+
             }
 
             if(isset($item['type']) && $item['type'] == 'memberships'){
@@ -1136,7 +1145,7 @@ class HomeController extends BaseController {
                     "vendor"=>[
                         [ 
                             "image"=>"http://b.fitn.in/success-pages/swimming+session.png",
-                            "title"=>"Book Swiming Sessions",
+                            "title"=>"Book Swimming Sessions",
                             "details"=>[
                                 ['field'=>'Avg. Calorie Burn','value'=>'750 KCAL'],
                                 //['field'=>'Avg. Price Per Session','value'=>'Rs 200'],
@@ -3626,6 +3635,10 @@ class HomeController extends BaseController {
         $capture->save();
         return array('status'=>200, 'message'=>'Saved successfully', 'capture'=>  $capture);
 
+    }
+
+    public function getCrashLog($count = 1){
+        return CrashLog::orderBy('_id', 'desc')->take($count)->get();
     }
 
 }
