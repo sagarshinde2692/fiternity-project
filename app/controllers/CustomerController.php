@@ -5695,22 +5695,49 @@ class CustomerController extends \BaseController {
 		$data = Input::json()->all();
 
 		$rules = [
-			'vendor_number' => 'required',
+			'finder_id' => 'required',
 			'customer_number' => 'required'
 		];
 
 		$validator = Validator::make($data,$rules);
 
 		if($validator->fails()) {
-			return Response::json(['status' => 400,'message' =>$this->errorMessage($validator->errors())]);  
+			return Response::json(['status' => 400,'message' =>$this->errorMessage($validator->errors())],400);
 		}
 
-		$data['customer_phone'] = $data['customer_number'];
+		Booktrial::$withoutAppends=true;
 
-		$this->customersms->sendVendorNumber($data);
+		$finder = Finder::find((int)$data['finder_id']);
 
-		return Response::json(['status' => 200,'message'=> "SMS Sent"]);
+		if($finder){
 
+			$data['finder_number'] = "";
+
+			if(isset($finder['contact']['phone']) && $finder['contact']['phone'] != ""){
+
+				$data['finder_number'] = $finder['contact']['phone'];
+			}
+
+			$data['finder_name'] = ucwords($finder->title);
+
+			$knowlarity_no = KnowlarityNo::where('status',true)->where('vendor_id',(int)$data['finder_id'])->first();
+
+			if($knowlarity_no){
+
+				$extension = (isset($knowlarity_no['extension']) && $knowlarity_no['extension'] != "") ? " (extension : ".$knowlarity_no['extension'].")" : "";
+
+				$data['finder_number'] = "+91".$knowlarity_no['phone_number'].$extension;
+
+			}
+
+			$data['customer_phone'] = $data['customer_number'];
+
+			$this->customersms->sendVendorNumber($data);
+
+			return Response::json(['status' => 200,'message'=> "SMS Sent"]);
+		}
+
+		return Response::json(['status' => 400,'message'=> "Vendor Not Found"],400);
 	}
 	
 }
