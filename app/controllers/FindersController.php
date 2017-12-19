@@ -2951,10 +2951,22 @@ class FindersController extends \BaseController {
 				if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios','android']) && isset($_GET['app_version']) && (float)$_GET['app_version'] >= 4.4){
 
 					$finder['assured'] = null;
+					$assured_flag = false;
 
-					$finder['assured'] = [
-						"icon"=>"https://a.fitn.in/fitimages/vendor/exclusive-selling.png",
-						"data"=>[
+					if(isset($finder['flags']) && isset($finder['flags']['exclusive_partner']) && $finder['flags']['exclusive_partner']){
+						$assured_flag = true;
+						$finder['assured']['icon'] = 'https://a.fitn.in/fitimages/vendor/exclusive-selling.png';
+
+					}
+
+					if(isset($finder['flags']) && isset($finder['flags']['official_partner']) && $finder['flags']['official_partner']){
+						$assured_flag = true;
+						$finder['assured']['icon'] = 'https://a.fitn.in/fitimages/vendor/official-selling.png';
+					}
+
+					if($assured_flag){
+
+						$finder['assured']['data'] = [
 							[
 								"icon" => "https://b.fitn.in/iconsv1/fitternity-assured/realtime-booking.png", 
 								"name" =>"Real-Time Booking"
@@ -2971,8 +2983,9 @@ class FindersController extends \BaseController {
 								"icon" => "https://b.fitn.in/iconsv1/fitternity-assured/lowest-price.png",
 								"name" =>"Lowest Price"
 							]
-						]
-					];
+						];
+					}
+
 				}
 
 				$finder['review_count']     =   Review::active()->where('finder_id',$finderarr['_id'])->count();
