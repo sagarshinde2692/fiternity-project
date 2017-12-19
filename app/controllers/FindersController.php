@@ -2663,6 +2663,10 @@ class FindersController extends \BaseController {
 			$cache_name = "finder_detail_ios_3_2";
 		}
 
+		if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios','android']) && isset($_GET['app_version']) && (float)$_GET['app_version'] >= 4.4){
+			$cache_name = "finder_detail_4_4";
+		}
+
 
 		$finder_detail = $cache ? Cache::tags($cache_name)->has($cache_key) : false;
 
@@ -2951,10 +2955,22 @@ class FindersController extends \BaseController {
 					$finder['assured'] = [
 						"icon"=>"https://a.fitn.in/fitimages/vendor/exclusive-selling.png",
 						"data"=>[
-							["icon" => "https://b.fitn.in/iconsv1/fitternity-assured/realtime-booking.png", "name" =>"Real-Time Booking"],
-							["icon" => "https://b.fitn.in/iconsv1/fitternity-assured/service-fullfillment.png", "name" =>"Secured Payment"],
-							["icon" => "https://b.fitn.in/iconsv1/fitternity-assured/service-fullfillment.png", "name" =>"100% Service Fulfillment"],
-							["icon" => "https://b.fitn.in/iconsv1/fitternity-assured/lowest-price.png", "name" =>"Lowest Price"]
+							[
+								"icon" => "https://b.fitn.in/iconsv1/fitternity-assured/realtime-booking.png", 
+								"name" =>"Real-Time Booking"
+							],
+							[
+								"icon" => "https://b.fitn.in/iconsv1/fitternity-assured/service-fullfillment.png",
+								"name" =>"Secured Payment"
+							],
+							[
+								"icon" => "https://b.fitn.in/iconsv1/fitternity-assured/service-fullfillment.png",
+								"name" =>"100% Service Fulfillment"
+							],
+							[
+								"icon" => "https://b.fitn.in/iconsv1/fitternity-assured/lowest-price.png",
+								"name" =>"Lowest Price"
+							]
 						]
 					];
 				}
