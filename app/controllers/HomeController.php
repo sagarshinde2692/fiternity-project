@@ -2742,7 +2742,7 @@ class HomeController extends BaseController {
                 $resp = array("message"=> "Password field can't be blank");
                 return  Response::json($resp, 400);
             }
-
+            $data["email_id"] = strtolower($data["email_id"]);
             $belp_data = Belp::where("email_id",$data["email_id"])->first();
 
             if(isset($belp_data)){
