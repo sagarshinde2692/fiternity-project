@@ -418,7 +418,7 @@ class RewardofferController extends BaseController {
         
         $customerReward     =   new CustomerReward();
 
-        if($amount < 50000){   
+        if($amount < 50000 || !isset($_GET['device_type'])){   
             
             $calculation        =   $customerReward->purchaseGame($amount,$finder_id);
 
