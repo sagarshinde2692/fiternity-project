@@ -3760,6 +3760,25 @@ class FindersController extends \BaseController {
 		    ];
 		}
 
+		$data[] = [
+			'title'=>'Fitness Options for Ladies',
+			'row'=>[
+				[
+					'name'=>'Gyms for Ladies',
+					'link'=> Config::get('app.website').'/ladies-gym-mumbai'
+				],
+				[
+					'name'=>'Yoga Classes for Ladies',
+					'link'=> Config::get('app.website').'/ladies-yoga-mumbai'
+				],
+				[
+					'name'=>'Fitness Studios for Ladies',
+					'link'=> Config::get('app.website').'/ladies-fitness-studios-mumbai'
+				]
+
+			]
+		];
+
 		return $data;
 
 	}

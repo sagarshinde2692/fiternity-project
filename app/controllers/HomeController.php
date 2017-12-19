@@ -1505,9 +1505,9 @@ class HomeController extends BaseController {
 
                     foreach ($finders as $finder_key => $finder_value) {
 
-                        if(strpos($finder_value['slug'],'gold') !== false){
+                        // if(strpos($finder_value['slug'],'gold') !== false){
                             $footer_finders[$block][$finder_key]['title'] = $finder_value['title'].' '.$finder_value['location']['name'];
-                        }
+                        // }
 
                         $array = [
                             "_id",
