@@ -2944,6 +2944,21 @@ class FindersController extends \BaseController {
 					];
 				}
 
+				if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios','android']) && isset($_GET['app_version']) && (float)$_GET['app_version'] >= 4.4){
+
+					$finder['assured'] = null;
+
+					$finder['assured'] = [
+						"icon"=>"https://a.fitn.in/fitimages/vendor/exclusive-selling.png",
+						"data"=>[
+							["icon" => "https://b.fitn.in/iconsv1/fitternity-assured/realtime-booking.png", "name" =>"Real-Time Booking"],
+							["icon" => "https://b.fitn.in/iconsv1/fitternity-assured/service-fullfillment.png", "name" =>"Secured Payment"],
+							["icon" => "https://b.fitn.in/iconsv1/fitternity-assured/service-fullfillment.png", "name" =>"100% Service Fulfillment"],
+							["icon" => "https://b.fitn.in/iconsv1/fitternity-assured/lowest-price.png", "name" =>"Lowest Price"]
+						]
+					];
+				}
+
 				$finder['review_count']     =   Review::active()->where('finder_id',$finderarr['_id'])->count();
 				$finder['average_rating']   =   (isset($finder['average_rating']) && $finder['average_rating'] != "") ? round($finder['average_rating'],1) : 0;
 				
