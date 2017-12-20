@@ -3431,7 +3431,7 @@ class TransactionController extends \BaseController {
             $booking_details_data['address']['value'] = $data['finder_address'];
         }
         
-        if(in_array($data['type'],["healthytiffintrial","healthytiffinmembership"])){
+        if(in_array($data['type'],["healthytiffintrial","healthytiffintrail","healthytiffinmembership"])){
 
             if(isset($data['customer_address']) && $data['customer_address'] != ""){
                 $booking_details_data['address']['value'] = $data['customer_address'];
@@ -3476,6 +3476,15 @@ class TransactionController extends \BaseController {
         if(isset($data['"preferred_service']) && $data['"preferred_service'] != "" && $data['"preferred_service'] != null){
             $booking_details_data['service_name']['field'] = 'PREFERRED SERVICE';
             $booking_details_data['service_name']['value'] = $data['preferred_service'];
+        }
+
+        if(in_array($data['type'],["healthytiffintrial","healthytiffintrail"]) && isset($data['ratecard_remarks']) && $data['ratecard_remarks'] != ""){
+            $booking_details_data['service_duration']['value'] = ucwords($data['ratecard_remarks']);
+        }
+
+        if(in_array($type,["healthytiffintrail","healthytiffintrial","healthytiffinmembership"])){
+            $booking_details_data['finder_name_location']['field'] = 'BOUGHT AT';
+            $booking_details_data['finder_name_location']['value'] = $finder_name;
         }
 
         $booking_details_all = [];
