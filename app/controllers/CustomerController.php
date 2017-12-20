@@ -3204,7 +3204,7 @@ class CustomerController extends \BaseController {
 
 			$result['campaigns'][] = [
 				'image'=>'https://b.fitn.in/global/ios_homescreen_banner/pledge_1.png',
-				'link'=>'',
+				'link'=>'ftrnty://ftrnty.com/s/gyms/1234',
 				'title'=>'1',
 				'height'=>100,
 				'width'=>375,
@@ -3213,7 +3213,7 @@ class CustomerController extends \BaseController {
 
 			$result['campaigns'][] = [
 				'image'=>'https://b.fitn.in/global/ios_homescreen_banner/pledge_2.png',
-				'link'=>'',
+				'link'=>'https://b.fitn.in/global/ios_homescreen_banner/pledge_2.png',
 				'title'=>'2',
 				'height'=>100,
 				'width'=>375,
@@ -3222,7 +3222,7 @@ class CustomerController extends \BaseController {
 
 			$result['campaigns'][] = [
 				'image'=>'https://b.fitn.in/global/ios_homescreen_banner/pledge_3.png',
-				'link'=>'',
+				'link'=>'https://www.fitternity.com',
 				'title'=>'2',
 				'height'=>100,
 				'width'=>375,
@@ -3231,7 +3231,7 @@ class CustomerController extends \BaseController {
 
 			$result['campaigns'][] = [
 				'image'=>'https://b.fitn.in/global/ios_homescreen_banner/pledge_4.png',
-				'link'=>'',
+				'link'=>'https://google.com',
 				'title'=>'2',
 				'height'=>100,
 				'width'=>375,
