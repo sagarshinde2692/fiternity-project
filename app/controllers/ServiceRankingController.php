@@ -113,6 +113,7 @@ class ServiceRankingController extends \BaseController {
                 ->whereNotIn('servicesubcategory_id', array(112))
                 ->with('category')
                 ->with('subcategory')
+                ->with('serviceratecard')
                 ->with(array('location'=>function($query){$query->select('name','locationcluster_id' );}))
                 ->latest()
                 ->get();
@@ -249,10 +250,11 @@ public function UpdateScheduleOfThisFinderInSessionSearch($finderid){
         try{
             $finderdata = $finderdocument->toArray();
             $score = $this->generateRank($finderdocument);                
-            $serviceitems = Service::with('category')
+            $serviceitems = Service::where('finder_id',$finderdata['_id'])->active()
+            ->with('category')
             ->with('subcategory')
             ->with(array('location'=>function($query){$query->select('name','locationcluster_id' );}))
-            ->where('finder_id',$finderdata['_id'])                                    ->active()
+            ->with('serviceratecard')
             // ->latest()
             ->get();
 

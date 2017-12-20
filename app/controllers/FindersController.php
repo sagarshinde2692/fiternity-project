@@ -94,7 +94,7 @@ class FindersController extends \BaseController {
 
 
 
-	public function finderdetail($slug, $cache = true){
+	public function finderdetail($slug, $cache = false){
 		
 		$data   =  array();
 		$tslug  = (string) strtolower($slug);
@@ -153,20 +153,22 @@ class FindersController extends \BaseController {
 
 		if(!$finder_detail){
 			//Log::info("Not cached in detail");
-
+			Finder::$withoutAppends=true;
+			Service::$withoutAppends=true;
+			Service::$setAppends=['active_weekdays','serviceratecard'];
 			$finderarr = Finder::active()->where('slug','=',$tslug)
 				->with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title','detail_rating');}))
 				->with(array('city'=>function($query){$query->select('_id','name','slug');}))
 				->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-				->with('findercollections')
-				->with('blogs')
-				->with('categorytags')
-				->with('locationtags')
-				->with('offerings')
-				->with('facilities')
+				// ->with('findercollections')
+				// ->with('blogs')
+				// ->with('categorytags')
+				// ->with('locationtags')
+				// ->with('offerings')
+				// ->with('facilities')
 				->with(array('ozonetelno'=>function($query){$query->select('*')->where('status','=','1');}))
 				->with(array('knowlarityno'=>function($query){$query->select('*')->where('status',true);}))
-				->with(array('services'=>function($query){$query->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))->where('status','=','1')->orderBy('ordering', 'ASC');}))
+				->with(array('services'=>function($query){$query->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->where('status','=','1')->orderBy('ordering', 'ASC');}))
 				->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1')->orderBy('updated_at', 'DESC')->limit(5);}))
 				// ->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1')->orderBy('_id', 'DESC');}))
 				->first();
@@ -267,8 +269,6 @@ class FindersController extends \BaseController {
 					$finder["breadcrumb"] = array("link"=>"/".$finderarr['city']['slug']."/".$finderarr['location']['slug']."/".str_replace(" ","-",$newcat));
 				}
 				if(isset($finderarr['category_id']) && $finderarr['category_id'] == 5){
-
-//                    echo "ad";exit;
 					if(isset($finderarr['services']) && count($finderarr['services']) > 0){
 						//for servcie category gym
 						$finder_gym_service  = [];
@@ -383,18 +383,21 @@ class FindersController extends \BaseController {
 				// 	unset($finder['ozonetelno']);
 				// }
 
-				$finder['review_count']     =   Review::active()->where('finder_id',$finderarr['_id'])->count();
+				$finder['review_count']     =   $finderarr["total_rating_count"];
 
 				$finder['offer_icon'] = "";
 				$finder['offer_icon_mob'] = "";
 
 				$finder['associate_finder'] = null;
+
+				// Check
 				if(isset($finderarr['associate_finder']) && $finderarr['associate_finder'] != ''){
 
 					$associate_finder = array_map('intval',$finderarr['associate_finder']);
 					$associate_finder = Finder::active()->whereIn('_id',$associate_finder)->get(array('_id','title','slug'))->toArray();
 					$finder['associate_finder'] = $associate_finder;
 				}
+				// End Check
 
 				foreach($finderarr['services'] as &$service){
 					if(!isset($service['traction']) || !isset($service['traction']['sales']) || !isset($service['traction']['trials'])){
@@ -439,8 +442,8 @@ class FindersController extends \BaseController {
 				
 				array_set($finder, 'services', pluck( $finderarr['services'] , ['_id', 'name', 'lat', 'lon', 'serviceratecard', 'session_type', 'workout_tags', 'calorie_burn', 'workout_results', 'short_description','service_trainer','timing','category','subcategory','batches','vip_trial','meal_type','trial','membership', 'offer_available', 'showOnFront', 'traction', 'timings']  ));
 				array_set($finder, 'categorytags', pluck( $finderarr['categorytags'] , array('_id', 'name', 'slug', 'offering_header') ));
-				array_set($finder, 'findercollections', pluck( $finderarr['findercollections'] , array('_id', 'name', 'slug') ));
-				array_set($finder, 'blogs', pluck( $finderarr['blogs'] , array('_id', 'title', 'slug', 'coverimage') ));
+				// array_set($finder, 'findercollections', pluck( $finderarr['findercollections'] , array('_id', 'name', 'slug') ));
+				// array_set($finder, 'blogs', pluck( $finderarr['blogs'] , array('_id', 'title', 'slug', 'coverimage') ));
 				array_set($finder, 'locationtags', pluck( $finderarr['locationtags'] , array('_id', 'name', 'slug') ));
 				array_set($finder, 'offerings', pluck( $finderarr['offerings'] , array('_id', 'name', 'slug') ));
 				array_set($finder, 'facilities', pluck( $finderarr['facilities'] , array('_id', 'name', 'slug') ));
@@ -583,41 +586,41 @@ class FindersController extends \BaseController {
 									}
 
 									// Removing womens offer ratecards if present
-									if(isset($rateval['flags'])){
+									// if(isset($rateval['flags'])){
 
-										if(isset($rateval['flags']['discother']) && $rateval['flags']['discother'] == true){
-											if(isset($service['serviceratecard'][$ratekey]['offers']) && count($service['serviceratecard'][$ratekey]['offers']) == 0){
-												unset($service['serviceratecard'][$ratekey]);
-												continue;
-											}
-										}
+									// 	if(isset($rateval['flags']['discother']) && $rateval['flags']['discother'] == true){
+									// 		if(isset($service['serviceratecard'][$ratekey]['offers']) && count($service['serviceratecard'][$ratekey]['offers']) == 0){
+									// 			unset($service['serviceratecard'][$ratekey]);
+									// 			continue;
+									// 		}
+									// 	}
 
-										if(isset($rateval['flags']['disc25or50']) && $rateval['flags']['disc25or50'] == true){
-											if(isset($service['serviceratecard'][$ratekey]['offers']) && count($service['serviceratecard'][$ratekey]['offers']) == 0){
-												unset($service['serviceratecard'][$ratekey]);
-												continue;
-											}
-										}
-									}
-									if(isset($rateval['flags']) && ((isset($rateval['flags']['disc25or50']) && $rateval['flags']['disc25or50']) || (isset($rateval['flags']['discother']) && $rateval['flags']['discother']))){
-										$finder['offer_icon'] = "https://b.fitn.in/iconsv1/womens-day/women-day-banner.svg";
-										$finder['offer_icon_mob'] = "https://b.fitn.in/iconsv1/womens-day/exclusive.svg";
-									}
+									// 	if(isset($rateval['flags']['disc25or50']) && $rateval['flags']['disc25or50'] == true){
+									// 		if(isset($service['serviceratecard'][$ratekey]['offers']) && count($service['serviceratecard'][$ratekey]['offers']) == 0){
+									// 			unset($service['serviceratecard'][$ratekey]);
+									// 			continue;
+									// 		}
+									// 	}
+									// }
+									// if(isset($rateval['flags']) && ((isset($rateval['flags']['disc25or50']) && $rateval['flags']['disc25or50']) || (isset($rateval['flags']['discother']) && $rateval['flags']['discother']))){
+									// 	$finder['offer_icon'] = "https://b.fitn.in/iconsv1/womens-day/women-day-banner.svg";
+									// 	$finder['offer_icon_mob'] = "https://b.fitn.in/iconsv1/womens-day/exclusive.svg";
+									// }
 									// else{
 									// 	$finder['offer_icon'] = "https://b.fitn.in/iconsv1/womens-day/womens-day-mobile-banner.svg";
 									// }
-									if(!empty($rateval['_id']) && isset($rateval['_id'])){
+									// if(!empty($rateval['_id']) && isset($rateval['_id'])){
 
-										$ratecardoffersRecardsCount  =   Offer::where('ratecard_id', intval($rateval['_id']))->where('hidden', false)->orderBy('order', 'asc')
-											->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
-											->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()) ))
-											->count();
+									// 	$ratecardoffersRecardsCount  =   Offer::where('ratecard_id', intval($rateval['_id']))->where('hidden', false)->orderBy('order', 'asc')
+									// 		->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
+									// 		->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()) ))
+									// 		->count();
 
-										if($ratecardoffersRecardsCount > 0){  
+									// 	if($ratecardoffersRecardsCount > 0){  
 
-											$service['offer_icon'] = "https://b.fitn.in/iconsv1/fitmania/offer_available_vendor.png";
-										}
-									}
+									// 		$service['offer_icon'] = "https://b.fitn.in/iconsv1/fitmania/offer_available_vendor.png";
+									// 	}
+									// }
 								}
 							}
 
@@ -671,12 +674,12 @@ class FindersController extends \BaseController {
 					$finder['offerings'] = $tempoffering;
 				}
 
-				$fitmania_offer_cnt     =   Serviceoffer::where('finder_id', '=', intval($finderarr['_id']))->where("active" , "=" , 1)->whereIn("type" ,["fitmania-dod", "fitmania-dow","fitmania-membership-giveaways"])->count();
-				if($fitmania_offer_cnt > 0){
-					array_set($finder, 'fitmania_offer_exist', true);
-				}else{
-					array_set($finder, 'fitmania_offer_exist', false);
-				}
+				// $fitmania_offer_cnt     =   Serviceoffer::where('finder_id', '=', intval($finderarr['_id']))->where("active" , "=" , 1)->whereIn("type" ,["fitmania-dod", "fitmania-dow","fitmania-membership-giveaways"])->count();
+				// if($fitmania_offer_cnt > 0){
+				// 	array_set($finder, 'fitmania_offer_exist', true);
+				// }else{
+				// 	array_set($finder, 'fitmania_offer_exist', false);
+				// }
 
 				if(isset($finderarr['brand_id']) && $finderarr['city_id'] != 10000){
 
@@ -2445,9 +2448,10 @@ class FindersController extends \BaseController {
 
 					if(!isset($rateval['offers']) || (isset($rateval['offers']) && count($rateval['offers'])==0)){
 						if(!empty($rateval['_id']) && isset($rateval['_id'])){
-							$ratecardoffersRecards  =   Offer::where('ratecard_id', intval($rateval['_id']))->where('hidden', false)->orderBy('order', 'asc')
+							$ratecardoffersRecards  =   Offer::where('ratecard_id', intval($rateval['_id']))->where('hidden', false)
 								->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
 								->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()) ))
+								->orderBy('order', 'asc')
 								->get(['start_date','end_date','price','type','allowed_qty','remarks'])
 								->toArray();
 
