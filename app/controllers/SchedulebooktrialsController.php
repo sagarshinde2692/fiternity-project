@@ -6121,7 +6121,7 @@ class SchedulebooktrialsController extends \BaseController {
             $booking_details_data['service_duration']['value'] = ucwords($item['ratecard_remarks']);
         }
 
-        if(in_array($type,["healthytiffintrail","healthytiffintrial","healthytiffinmembership"])){
+        if(in_array($item['type'],["healthytiffintrail","healthytiffintrial","healthytiffinmembership"])){
             $booking_details_data['finder_name_location']['field'] = 'BOUGHT AT';
             $booking_details_data['finder_name_location']['value'] = $finder_name;
         }

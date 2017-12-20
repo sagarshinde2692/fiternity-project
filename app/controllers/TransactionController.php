@@ -3482,9 +3482,9 @@ class TransactionController extends \BaseController {
             $booking_details_data['service_duration']['value'] = ucwords($data['ratecard_remarks']);
         }
 
-        if(in_array($type,["healthytiffintrail","healthytiffintrial","healthytiffinmembership"])){
+        if(in_array($data['type'],["healthytiffintrail","healthytiffintrial","healthytiffinmembership"])){
             $booking_details_data['finder_name_location']['field'] = 'BOUGHT AT';
-            $booking_details_data['finder_name_location']['value'] = $finder_name;
+            $booking_details_data['finder_name_location']['value'] = $data['finder_name'];
         }
 
         $booking_details_all = [];
