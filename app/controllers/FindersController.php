@@ -2314,7 +2314,8 @@ class FindersController extends \BaseController {
 		}
 
 		$membership_services = array_map('intval',$membership_services);*/
-
+		Service::$withoutAppends=true;
+		Service::$setAppends=['active_weekdays','serviceratecard'];
 		if(isset($_GET['device_type']) && $_GET['device_type'] == 'android'){
 
 			$items = Service::active()->where('finder_id', $finder_id)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos','trial','membership', 'traction', 'location_id', 'offer_available', 'ad', 'showOnFront'))->toArray();
@@ -2672,7 +2673,9 @@ class FindersController extends \BaseController {
 
 		if(!$finder_detail){
 			//Log::info("Not Cached in app");
-
+			Finder::$withoutAppends=true;
+			Service::$withoutAppends=true;
+			Service::$setAppends=['active_weekdays','serviceratecard'];
 			$finderarr = Finder::active()->where('slug','=',$tslug)
 				->with(array('category'=>function($query){$query->select('_id','name','slug','detail_rating');}))
 				->with(array('city'=>function($query){$query->select('_id','name','slug');}))
