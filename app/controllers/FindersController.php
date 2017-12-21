@@ -2968,19 +2968,19 @@ class FindersController extends \BaseController {
 
 						$finder['assured']['data'] = [
 							[
-								"icon" => "https://b.fitn.in/iconsv1/fitternity-assured/realtime-booking.png", 
+								"icon" => "https://b.fitn.in/global/fitternityassured-app/assuredicon-alarm.png", 
 								"name" =>"Real-Time Booking"
 							],
 							[
-								"icon" => "https://b.fitn.in/iconsv1/fitternity-assured/service-fullfillment.png",
+								"icon" => "https://b.fitn.in/global/fitternityassured-app/assuredicon-card.png",
 								"name" =>"Secured Payment"
 							],
 							[
-								"icon" => "https://b.fitn.in/iconsv1/fitternity-assured/service-fullfillment.png",
+								"icon" => "https://b.fitn.in/global/fitternityassured-app/assuredicon-allthebest.png",
 								"name" =>"100% Service Fulfillment"
 							],
 							[
-								"icon" => "https://b.fitn.in/iconsv1/fitternity-assured/lowest-price.png",
+								"icon" => "https://b.fitn.in/global/fitternityassured-app/assuredicon-lowestprice.png",
 								"name" =>"Lowest Price"
 							]
 						];
