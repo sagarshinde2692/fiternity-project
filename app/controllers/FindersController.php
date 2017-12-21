@@ -3548,6 +3548,8 @@ class FindersController extends \BaseController {
 
 	public function fitternityDietVedorDetail(){
 		try{
+			Service::$withoutAppends=true;
+			Service::$setAppends=['active_weekdays','serviceratecard'];
 			$finder = Finder::where('title', 'Fitternity Diet Vendor')
 			->with(array('services'=>function($query){
 				$query->active()->select(array('id', 'name','finder_id', 'short_description','body','what_i_should_expect', 'workout_intensity','ordering'))->orderBy('ordering');
