@@ -383,7 +383,7 @@ class FindersController extends \BaseController {
 				// 	unset($finder['ozonetelno']);
 				// }
 
-				$finder['review_count']     =   $finderarr["total_rating_count"];
+				$finder['review_count']     =   isset($finderarr["total_rating_count"]) ? $finderarr["total_rating_count"] : 0;
 
 				$finder['offer_icon'] = "";
 				$finder['offer_icon_mob'] = "";
