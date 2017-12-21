@@ -957,7 +957,7 @@ class HomeController extends BaseController {
                 }
             }
 
-            if(isset($item["membership"]) && !empty($item["membership"])){
+            /*if(isset($item["membership"]) && !empty($item["membership"])){
 
                 if(isset($item["membership"]["cashback"]) && $item["membership"]["cashback"]){
                     $booking_details_data["reward"] = ['field'=>'PREBOOK REWARD','value'=>'Cashback','position'=>$position++];
@@ -966,7 +966,29 @@ class HomeController extends BaseController {
                 if(isset($item["membership"]["reward"]) && isset($item["membership"]["reward"]["title"])){
                     $booking_details_data["reward"] = ['field'=>'PREBOOK REWARD','value'=>$item["membership"]["reward"]["title"],'position'=>$position++];
                 }
+            }*/
+
+            if(isset($item["membership"]) && !empty($item["membership"])){
+
+                if(isset($item["membership"]['cashback']) && $item["membership"]['cashback'] === true){
+
+                    $booking_details_data["reward"] = ['field'=>'PREBOOK REWARD','value'=>'Cashback','position'=>$position++];
+                }
+
+                if(isset($item["membership"]["reward_ids"]) && isset($item["membership"]["reward_ids"]) && !empty($item["membership"]["reward_ids"])){
+
+                    $reward_id = $item["membership"]["reward_ids"][0];
+
+                    $reward = Reward::find($reward_id,['title']);
+
+                    if($reward){
+
+                        $booking_details_data["reward"] = ['field'=>'PREBOOK REWARD','value'=>$reward['title'],'position'=>$position++];
+                    }
+                }
+
             }
+
 
             if(isset($item['start_date']) && $item['start_date'] != ""){
                 $booking_details_data['start_date']['value'] = date('D, d M Y',strtotime($item['start_date']));
