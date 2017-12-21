@@ -2676,6 +2676,7 @@ class FindersController extends \BaseController {
 			Finder::$withoutAppends=true;
 			Service::$withoutAppends=true;
 			Service::$setAppends=['active_weekdays','serviceratecard'];
+			Finder::$setAppends=['finder_coverimage'];
 			$finderarr = Finder::active()->where('slug','=',$tslug)
 				->with(array('category'=>function($query){$query->select('_id','name','slug','detail_rating');}))
 				->with(array('city'=>function($query){$query->select('_id','name','slug');}))
