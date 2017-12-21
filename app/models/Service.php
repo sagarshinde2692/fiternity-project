@@ -36,7 +36,7 @@ class Service extends \Basemodel{
 	}
 
 //    protected $appends = array('active_weekdays', 'workoutsession_active_weekdays', 'service_coverimage', 'service_coverimage_thumb', 'service_ratecards', 'service_trainer','serviceratecard','servicebatches');
-    protected $appends = array('active_weekdays', 'workoutsession_active_weekdays', 'service_coverimage', 'service_coverimage_thumb', 'service_trainer','serviceratecard','servicebatches', 'trial_active_weekdays');
+    protected $appends = array('active_weekdays', 'workoutsession_active_weekdays', 'service_coverimage', 'service_coverimage_thumb', 'service_trainer','servicebatches', 'trial_active_weekdays');
 	// protected $appends = array('active_weekdays', 'workoutsession_active_weekdays', 'service_coverimage', 'service_coverimage_thumb', 'service_ratecards');
 
 	public function setIdAttribute($value){
