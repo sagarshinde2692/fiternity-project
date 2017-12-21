@@ -34,7 +34,7 @@ return array(
 	// 'queue' => 'beta',
 	// 'vendor_communication' => false,
 	// 'env' => 'stage',
-	// 'debug' => TRUE,
+	'debug' => TRUE,
 
 	//live
 	'new_search_url' =>'http://c1.fitternity.com/',
@@ -45,7 +45,7 @@ return array(
 	'queue' => 'booktrial',
 	'vendor_communication' => true,
 	'env' => 'production',
-	'debug' => FALSE,
+	// 'debug' => FALSE,
 
 	'download_app_link' => 'https://go.onelink.me/I0CO?pid=techfitsms',//https://www.fitternity.com/downloadapp?source=fittech',
 
