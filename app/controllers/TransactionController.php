@@ -3407,6 +3407,27 @@ class TransactionController extends \BaseController {
             }
         }
 
+        if(isset($data["membership"]) && !empty($data["membership"])){
+
+            if(isset($data["membership"]['cashback']) && $data["membership"]['cashback'] === true){
+
+                $booking_details_data["reward"] = ['field'=>'PREBOOK REWARD','value'=>'Cashback','position'=>$position++];
+            }
+
+            if(isset($data["membership"]["reward_ids"]) && isset($data["membership"]["reward_ids"]) && !empty($data["membership"]["reward_ids"])){
+
+                $reward_id = $data["membership"]["reward_ids"][0];
+
+                $reward = Reward::find($reward_id,['title']);
+
+                if($reward){
+
+                    $booking_details_data["reward"] = ['field'=>'PREBOOK REWARD','value'=>$reward['title'],'position'=>$position++];
+                }
+            }
+
+        }
+
         if(isset($data['start_date']) && $data['start_date'] != ""){
             $booking_details_data['start_date']['value'] = date('d-m-Y (l)',strtotime($data['start_date']));
         }
@@ -3431,7 +3452,7 @@ class TransactionController extends \BaseController {
             $booking_details_data['address']['value'] = $data['finder_address'];
         }
         
-        if(in_array($data['type'],["healthytiffintrial","healthytiffinmembership"])){
+        if(in_array($data['type'],["healthytiffintrial","healthytiffintrail","healthytiffinmembership"])){
 
             if(isset($data['customer_address']) && $data['customer_address'] != ""){
                 $booking_details_data['address']['value'] = $data['customer_address'];
@@ -3476,6 +3497,15 @@ class TransactionController extends \BaseController {
         if(isset($data['"preferred_service']) && $data['"preferred_service'] != "" && $data['"preferred_service'] != null){
             $booking_details_data['service_name']['field'] = 'PREFERRED SERVICE';
             $booking_details_data['service_name']['value'] = $data['preferred_service'];
+        }
+
+        if(in_array($data['type'],["healthytiffintrial","healthytiffintrail"]) && isset($data['ratecard_remarks']) && $data['ratecard_remarks'] != ""){
+            $booking_details_data['service_duration']['value'] = ucwords($data['ratecard_remarks']);
+        }
+
+        if(in_array($data['type'],["healthytiffintrail","healthytiffintrial","healthytiffinmembership"])){
+            $booking_details_data['finder_name_location']['field'] = 'BOUGHT AT';
+            $booking_details_data['finder_name_location']['value'] = $data['finder_name'];
         }
 
         $booking_details_all = [];

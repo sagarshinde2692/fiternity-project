@@ -2668,6 +2668,10 @@ class FindersController extends \BaseController {
 			$cache_name = "finder_detail_ios_3_2";
 		}
 
+		if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios','android']) && isset($_GET['app_version']) && (float)$_GET['app_version'] >= 4.4){
+			$cache_name = "finder_detail_4_4";
+		}
+
 
 		$finder_detail = $cache ? Cache::tags($cache_name)->has($cache_key) : false;
 
@@ -2952,6 +2956,46 @@ class FindersController extends \BaseController {
 					];
 				}
 
+				if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios','android']) && isset($_GET['app_version']) && (float)$_GET['app_version'] >= 4.4){
+
+					$finder['assured'] = null;
+					$assured_flag = false;
+
+					if(isset($finder['flags']) && isset($finder['flags']['exclusive_partner']) && $finder['flags']['exclusive_partner']){
+						$assured_flag = true;
+						$finder['assured']['icon'] = 'https://a.fitn.in/fitimages/vendor/exclusive-selling.png';
+
+					}
+
+					if(isset($finder['flags']) && isset($finder['flags']['official_partner']) && $finder['flags']['official_partner']){
+						$assured_flag = true;
+						$finder['assured']['icon'] = 'https://a.fitn.in/fitimages/vendor/official-selling.png';
+					}
+
+					if($assured_flag){
+
+						$finder['assured']['data'] = [
+							[
+								"icon" => "https://b.fitn.in/global/fitternityassured-app/assuredicon-alarm.png", 
+								"name" =>"Real-Time Booking"
+							],
+							[
+								"icon" => "https://b.fitn.in/global/fitternityassured-app/assuredicon-card.png",
+								"name" =>"Secured Payment"
+							],
+							[
+								"icon" => "https://b.fitn.in/global/fitternityassured-app/assuredicon-allthebest.png",
+								"name" =>"100% Service Fulfillment"
+							],
+							[
+								"icon" => "https://b.fitn.in/global/fitternityassured-app/assuredicon-lowestprice.png",
+								"name" =>"Lowest Price"
+							]
+						];
+					}
+
+				}
+
 				$finder['review_count']     =   Review::active()->where('finder_id',$finderarr['_id'])->count();
 				$finder['average_rating']   =   (isset($finder['average_rating']) && $finder['average_rating'] != "") ? round($finder['average_rating'],1) : 0;
 				
@@ -3012,10 +3056,10 @@ class FindersController extends \BaseController {
 
 					
 
-					if(time() >= strtotime(date('2016-12-24 00:00:00')) && (int)$finder['commercial_type'] != 0){
+					/*if(time() >= strtotime(date('2016-12-24 00:00:00')) && (int)$finder['commercial_type'] != 0){
 
 						$data['finder']['offer_icon'] = "https://b.fitn.in/iconsv1/fitmania/offer_avail_red.png";
-					}
+					}*/
 					
 					
 					$category_id = Servicecategory::where('slug', $category_slug)->where('parent_id', 0)->first(['_id']);
