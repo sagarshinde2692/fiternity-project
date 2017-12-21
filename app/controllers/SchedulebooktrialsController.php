@@ -6326,6 +6326,13 @@ class SchedulebooktrialsController extends \BaseController {
 
             $this->pubnub($booktrial->toArray());
 
+            $booktrialdata = $booktrial->toArray();
+            
+            $booktrialdata['wallet_balance'] = $this->utilities->getWalletBalance((int)$booktrialdata['customer_id']);
+
+            $send_communication["customer_email_locate_trial_plus_1"] = $this->customermailer->locateTrialReminderAfter1Hour($booktrialdata);
+            $send_communication["customer_sms_locate_trial_plus_1"] = $this->customersms->locateTrialReminderAfter1Hour($booktrialdata);
+
             $response = [
                 'status' => 200,
                 'message' => 'on pubnub',
