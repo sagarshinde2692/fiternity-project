@@ -3407,6 +3407,27 @@ class TransactionController extends \BaseController {
             }
         }
 
+        if(isset($data["membership"]) && !empty($data["membership"])){
+
+            if(isset($data["membership"]['cashback']) && $data["membership"]['cashback'] === true){
+
+                $booking_details_data["reward"] = ['field'=>'PREBOOK REWARD','value'=>'Cashback','position'=>$position++];
+            }
+
+            if(isset($data["membership"]["reward_ids"]) && isset($data["membership"]["reward_ids"]) && !empty($data["membership"]["reward_ids"])){
+
+                $reward_id = $data["membership"]["reward_ids"][0];
+
+                $reward = Reward::find($reward_id,['title']);
+
+                if($reward){
+
+                    $booking_details_data["reward"] = ['field'=>'PREBOOK REWARD','value'=>$reward['title'],'position'=>$position++];
+                }
+            }
+
+        }
+
         if(isset($data['start_date']) && $data['start_date'] != ""){
             $booking_details_data['start_date']['value'] = date('d-m-Y (l)',strtotime($data['start_date']));
         }

@@ -3048,10 +3048,10 @@ class FindersController extends \BaseController {
 
 					
 
-					if(time() >= strtotime(date('2016-12-24 00:00:00')) && (int)$finder['commercial_type'] != 0){
+					/*if(time() >= strtotime(date('2016-12-24 00:00:00')) && (int)$finder['commercial_type'] != 0){
 
 						$data['finder']['offer_icon'] = "https://b.fitn.in/iconsv1/fitmania/offer_avail_red.png";
-					}
+					}*/
 					
 					
 					$category_id = Servicecategory::where('slug', $category_slug)->where('parent_id', 0)->first(['_id']);
