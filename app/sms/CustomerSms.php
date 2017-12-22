@@ -926,6 +926,25 @@ Class CustomerSms extends VersionNextSms{
 		return $this->common($label,$to,$data);
 	}
 
+	protected function locateTrialReminderAfter1Hour($data){
+
+		$label = 'LocateTrialReminderAfter1Hour-Customer';
+
+		$to = $data['customer_phone'];
+
+        return $this->common($label,$to,$data);
+	}
+
+	protected function bookTrialReminderAfter24Hour($data,$delay){
+
+        $label = 'AutoTrial-ReminderAfter24Hour-Customer';
+
+        $to = $data['customer_phone'];
+
+        return $this->common($label,$to,$data,$delay);
+
+    }
+
 	public function common($label,$to,$data,$delay = 0){
 
 		if(isset($data['source']) && $data['source'] == 'cleartrip'){
