@@ -2044,7 +2044,11 @@ class SchedulebooktrialsController extends \BaseController {
             }
 
             $pre_trial_vendor_confirmation = (isset($finderid) && in_array($finderid, Config::get('app.trial_auto_confirm_finder_ids'))) ? 'confirmed' : 'yet_to_connect';
-            
+
+            $booktrial_link = $this->utilities->getShortenUrl(Config::get('app.website')."/buy/".$finder_slug."/".$service_id);
+            $workout_article_link = $utilities->getShortenUrl(Config::get('app.website')."/article/complete-guide-to-help-you-prepare-for-the-first-week-of-your-workout");
+            $download_app_link = Config::get('app.download_app_link');
+            $diet_plan_link = $utilities->getShortenUrl(Config::get('app.website')."/diet-plan");
 
             $booktrialdata = array(
                 'booktrialid'                   =>      intval($booktrialid),
@@ -2143,7 +2147,11 @@ class SchedulebooktrialsController extends \BaseController {
                 'order_id'                      =>      $orderid,
                 'membership'                    =>      $membership,
                 'pre_trial_vendor_confirmation' =>      $pre_trial_vendor_confirmation,
-                'vendor_kiosk'                  =>      isKioskVendor($finderid)
+                'vendor_kiosk'                  =>      isKioskVendor($finderid),
+                'booktrial_link'                =>      $booktrial_link,
+                'workout_article_link'          =>      $workout_article_link,
+                'download_app_link'             =>      $download_app_link,
+                'diet_plan_link'                =>      $diet_plan_link,
             );
 
             if(isset($order['recommended_booktrial_id']) && $order['recommended_booktrial_id'] != ""){
@@ -2901,9 +2909,12 @@ class SchedulebooktrialsController extends \BaseController {
             $pay_as_you_go_link = $this->utilities->getShortenUrl(Config::get('app.website')."/workout/".$finder_city_slug."?regions=".$finder_location_slug);
             $profile_link = $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$customer_email);
             $vendor_link = $this->utilities->getShortenUrl(Config::get('app.website')."/".$finder_slug);
-            
             $pre_trial_vendor_confirmation = (isset($data['finder_id']) && in_array($data['finder_id'], Config::get('app.trial_auto_confirm_finder_ids'))) ? 'confirmed' : 'yet_to_connect';
 
+            $booktrial_link = $this->utilities->getShortenUrl(Config::get('app.website')."/buy/".$finder_slug."/".$service_id);
+            $workout_article_link = $utilities->getShortenUrl(Config::get('app.website')."/article/complete-guide-to-help-you-prepare-for-the-first-week-of-your-workout");
+            $download_app_link = Config::get('app.download_app_link');
+            $diet_plan_link = $utilities->getShortenUrl(Config::get('app.website')."/diet-plan");
 
             $booktrialdata = array(
 
@@ -3001,7 +3012,11 @@ class SchedulebooktrialsController extends \BaseController {
                 'finder_location_slug'          =>      $finder_location_slug,
                 'membership'                    =>      $membership,
                 'pre_trial_vendor_confirmation' =>      $pre_trial_vendor_confirmation,
-                'vendor_kiosk'                  =>      isKioskVendor($finderid)
+                'vendor_kiosk'                  =>      isKioskVendor($finderid),
+                'booktrial_link'                =>      $booktrial_link,
+                'workout_article_link'          =>      $workout_article_link,
+                'download_app_link'             =>      $download_app_link,
+                'diet_plan_link'                =>      $diet_plan_link,
             );
 
             if(isset($data['promotional_notification_id']) && $data['promotional_notification_id'] != ""){
