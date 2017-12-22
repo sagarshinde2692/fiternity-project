@@ -163,7 +163,7 @@ class FindersController extends \BaseController {
 				// ->with('findercollections')
 				// ->with('blogs')
 				// ->with('categorytags')
-				// ->with('locationtags')
+				->with('locationtags')
 				->with('offerings')
 				->with('facilities')
 				->with(array('ozonetelno'=>function($query){$query->select('*')->where('status','=','1');}))
