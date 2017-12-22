@@ -2909,7 +2909,7 @@ class SchedulebooktrialsController extends \BaseController {
             $pre_trial_vendor_confirmation = (isset($data['finder_id']) && in_array($data['finder_id'], Config::get('app.trial_auto_confirm_finder_ids'))) ? 'confirmed' : 'yet_to_connect';
 
             $booktrial_link = $this->utilities->getShortenUrl(Config::get('app.website')."/buy/".$finder_slug."/".$service_id);
-            $workout_article_link = $utilities->getShortenUrl(Config::get('app.website')."/article/complete-guide-to-help-you-prepare-for-the-first-week-of-your-workout");
+            $workout_article_link = $this->utilities->getShortenUrl(Config::get('app.website')."/article/complete-guide-to-help-you-prepare-for-the-first-week-of-your-workout");
             $download_app_link = Config::get('app.download_app_link');
             $diet_plan_link = $utilities->getShortenUrl(Config::get('app.website')."/diet-plan");
 
