@@ -3147,7 +3147,7 @@ class FindersController extends \BaseController {
 
 					$category_id                                =   intval($finder['category']['_id']);
 					$commercial_type                            =   intval($finder['commercial_type']);
-					$bookTrialArr                               =   [5,6,12,42,43,32,36,7,35,13,10,11,47,14,25,9];
+					$bookTrialArr                               =   [5,6,12,42,43,32,36,7,35,13,10,11,47,14,25,9,8];
 
 
 
