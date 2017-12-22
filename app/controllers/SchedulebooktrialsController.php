@@ -5947,6 +5947,8 @@ class SchedulebooktrialsController extends \BaseController {
             $item['amount'] = $ratecard['price'];
         }
 
+        $item['ratecard_remarks']  = (isset($ratecard['remarks'])) ? $ratecard['remarks'] : "";
+
         $service = Service::find($ratecard['service_id']);
 
         $finder_name = "";
@@ -6062,10 +6064,14 @@ class SchedulebooktrialsController extends \BaseController {
             $booking_details_data['address']['value'] = $finder_address;
         }
 
-        if(in_array($item['type'],["healthytiffintrial","healthytiffinmembership"])){
+        if(in_array($item['type'],["healthytiffintrail","healthytiffintrial","healthytiffinmembership"])){
             
             if(isset($item['customer_address']) && $item['customer_address'] != ""){
                 $booking_details_data['address']['value'] = $item['customer_address'];
+            }
+
+            if(isset($item['address']) && $item['address'] != ""){
+                $booking_details_data['address']['value'] = $item['address'];
             }
 
         }else{
@@ -6109,6 +6115,15 @@ class SchedulebooktrialsController extends \BaseController {
         if(isset($item['"preferred_service']) && $item['"preferred_service'] != "" && $item['"preferred_service'] != null){
             $booking_details_data['service_name']['field'] = 'PREFERRED SERVICE';
             $booking_details_data['service_name']['value'] = $item['preferred_service'];
+        }
+
+        if(in_array($item['type'],["healthytiffintrial","healthytiffintrail"]) && isset($item['ratecard_remarks']) && $item['ratecard_remarks'] != ""){
+            $booking_details_data['service_duration']['value'] = ucwords($item['ratecard_remarks']);
+        }
+
+        if(in_array($item['type'],["healthytiffintrail","healthytiffintrial","healthytiffinmembership"])){
+            $booking_details_data['finder_name_location']['field'] = 'BOUGHT AT';
+            $booking_details_data['finder_name_location']['value'] = $finder_name;
         }
 
         $booking_details_all = [];
@@ -6310,6 +6325,13 @@ class SchedulebooktrialsController extends \BaseController {
         if($booktrial){
 
             $this->pubnub($booktrial->toArray());
+
+            $booktrialdata = $booktrial->toArray();
+            
+            $booktrialdata['wallet_balance'] = $this->utilities->getWalletBalance((int)$booktrialdata['customer_id']);
+
+            $send_communication["customer_email_locate_trial_plus_1"] = $this->customermailer->locateTrialReminderAfter1Hour($booktrialdata);
+            $send_communication["customer_sms_locate_trial_plus_1"] = $this->customersms->locateTrialReminderAfter1Hour($booktrialdata);
 
             $response = [
                 'status' => 200,
