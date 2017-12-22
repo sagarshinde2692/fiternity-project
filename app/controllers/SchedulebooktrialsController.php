@@ -2202,23 +2202,13 @@ class SchedulebooktrialsController extends \BaseController {
             }
 
             //give fitcash+ for first workout session
-            $give_fitcash_plus = true;
-            $allOrderIds = Order::active()->where("customer_id",$customer_id)->where('type','workout-session')->lists("_id");
+            $give_fitcash_plus = false;
 
-            if(!empty($allOrderIds)){
-
-                $allOrderIds = array_map("intval", $allOrderIds);
-
-                $customerWalletCount = Customerwallet::where("customer_id",$customer_id)->whereIn("order_id",$allOrderIds)->count();
-
-                $give_fitcash_plus = false;
-
-                if($customerWalletCount == 0){
-                    $give_fitcash_plus = true;
-                }
+            if($type == "workout-session" && !isset($data['myreward_id']) && isset($order['amount_customer']) && $order['amount_customer'] >= 450){
+                $give_fitcash_plus = true;
             }
 
-            /*if($give_fitcash_plus && $type == "workout-session"){
+            if($give_fitcash_plus){
 
                 $walletData = array(
                     "customer_id"=> $customer_id,
@@ -2232,7 +2222,7 @@ class SchedulebooktrialsController extends \BaseController {
                 );
 
                 $this->utilities->walletTransaction($walletData);
-            }*/
+            }
 
             $booktrialdata['give_fitcash_plus'] = $give_fitcash_plus;
 
@@ -2434,8 +2424,15 @@ class SchedulebooktrialsController extends \BaseController {
                 }
 
                 if($hour >= 7 && $hour <= 22 ){
+
                     $send_communication["customer_sms_before3hour"] = $this->customersms->bookTrialReminderBefore3Hour($booktrialdata, $delayReminderTimeBefore3Hour);
                     $send_communication["customer_notification_before3hour"] = $this->customernotification->bookTrialReminderBefore3Hour($booktrialdata, $delayReminderTimeBefore3Hour);
+                }else{
+
+                    $delayReminderAfter45Min    =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->created_at)))->addMinutes(45);
+
+                    $send_communication["customer_sms_before3hour"] = $this->customersms->bookTrialReminderBefore3Hour($booktrialdata, $delayReminderAfter45Min);
+                    $send_communication["customer_notification_before3hour"] = $this->customernotification->bookTrialReminderBefore3Hour($booktrialdata, $delayReminderAfter45Min);
                 }
 
             }
