@@ -1090,3 +1090,5 @@ Route::post('customer/sendvendornumber','CustomerController@sendVendorNumberToCu
 Route::get('customerexists/{email}','CustomerController@customerExists');
 
 Route::get('getcrashlogs/{count}','HomeController@getCrashLog');
+
+Route::post('transaction/checkoutsummary','TransactionController@checkoutSummary');

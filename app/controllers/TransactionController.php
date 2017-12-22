@@ -718,7 +718,7 @@ class TransactionController extends \BaseController {
             'pay_at_vendor'=>$pay_at_vendor_applicable
         );
 
-        if(isset($_GET['device_type']) && in_array($_GET['device_type'], ['android', 'ios'])){
+        // if(isset($_GET['device_type']) && in_array($_GET['device_type'], ['android', 'ios'])){
             
             $resp['data']['order_details'] = $this->getBookingDetails($order->toArray());
 
@@ -763,7 +763,7 @@ class TransactionController extends \BaseController {
             if(isset($order->amount_final) && $order->amount_final ){
                 $resp['data']['payment_modes'] = $this->getPaymentModes($resp);
             }
-        }
+        // }
 
         if($data['payment_mode'] == 'at the studio' && isset($data['wallet']) && $data['wallet']){
 
@@ -4130,6 +4130,209 @@ class TransactionController extends \BaseController {
 
         return (int)$fitternity_share;
     
+    }
+
+    public function checkoutSummary(){
+
+        $data = Input::json()->all();
+
+        if(!isset($data['ratecard_id'])){
+            
+            return Response::json(array('status'=>400, 'message'=>'ratecard id not present'), $this->error_status);
+        
+        }
+            
+        $result = [
+
+            'order_details' => [],
+            'payment_details' => [
+                'amount_summary' => [],
+                'amount_payable' => []
+            ]
+        ];
+
+        if(isset($data['ratecard_id'])){
+            
+            $ratecard_id = (int) $data['ratecard_id'];
+
+            $ratecardDetail = $this->getRatecardDetail($data);
+
+            if($ratecardDetail['status'] != 200){
+                return Response::json($ratecardDetail,$this->error_status);
+            }
+
+            $data = array_merge($data,$ratecardDetail['data']);
+            
+            $data['amount_payable'] = $data['amount'];
+
+            $ratecard = Ratecard::find(intval($data['ratecard_id']));
+
+            $result['payment_details']['amount_summary'][] = [
+                'field' => 'Price',
+                'value' => 'Rs. '.(string)$ratecard['price']
+            ];
+
+            $data['you_save'] = 0;
+            
+            if($data['amount'] < $ratecard['price']){
+                
+                $result['payment_details']['amount_summary'][] = [
+                    'field' => 'Negotiated Price',
+                    'value' => 'Rs. '.(string)$data['amount']
+                ];
+                
+                $data['you_save'] = $ratecard['price'] - $data['amount'];
+
+
+            }
+
+            if(isset($ratecardDetail["data"]["ratecard_flags"]) && isset($ratecardDetail["data"]["ratecard_flags"]["convinience_fee_applicable"]) && $ratecardDetail["data"]["ratecard_flags"]["convinience_fee_applicable"]){
+                
+                $convinience_fee_percent = Config::get('app.convinience_fee');
+                
+                $convinience_fee = round($data['amount'] * $convinience_fee_percent/100);
+                
+                $convinience_fee = $convinience_fee <= 150 ? $convinience_fee : 150;
+
+                $data['convinience_fee'] = $convinience_fee;
+                
+                
+                $data['amount_payable'] = $data['amount_payable'] + $data['convinience_fee'];
+                
+                $result['payment_details']['amount_summary'][] = [
+                    'field' => 'Convenience fee',
+                    'value' => '+Rs. '.(string)$data['convinience_fee']
+                ];
+            }
+
+            $jwt_token = Request::header('Authorization');
+            
+            Log::info('jwt_token checkout summary: '.$jwt_token);
+                
+            if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+                
+                $decoded = customerTokenDecode($jwt_token);
+                
+                $customer_id = $decoded->customer->_id;
+
+                $data['wallet_balance'] = $this->utilities->getWalletBalance($customer_id);
+
+                $data['fitcash_applied'] = $data['amount_payable'] > $data['wallet_balance'] ? $data['wallet_balance'] : $data['amount_payable'];
+                
+                $data['amount_payable'] -= $data['fitcash_applied'];
+                
+                $result['payment_details']['amount_summary'][] = [
+                    'field' => 'Fitcash Applied',
+                    'value' => '-Rs. '.(string)$data['fitcash_applied']
+                ];
+            }
+
+            if(isset($data['coupon'])){
+
+                $resp = $this->customerreward->couponCodeDiscountCheck($ratecard, $data['coupon']);
+
+                if($resp["coupon_applied"]){
+                    
+                    $data['coupon_discount'] = $data['amount_payable'] > $resp['data']['discount'] ? $resp['data']['discount'] : $data['amount_payable'];
+
+                    $data['amount_payable'] = $data['amount_payable'] - $data['coupon_discount'];
+                    
+                    $data['you_save'] += $data['coupon_discount'];
+                    
+                    $result['payment_details']['amount_summary'][] = [
+                        'field' => 'Coupon Discount',
+                        'value' => '-Rs. '.(string)$data['coupon_discount']
+                    ];
+                
+                }
+
+            }
+
+            if($data['you_save'] > 0){
+                $result['payment_details']['amount_summary'][] = [
+                    'field' => 'You save',
+                    'value' => 'Rs. '.(string)$data['you_save']
+                ];
+            }
+
+            $result['payment_details']['amount_payable'] = [
+                'field' => 'Total Amount Payable',
+                'value' => 'Rs. '.(string)$data['amount_payable']
+            ];
+
+            $finder_id = (int) $data['finder_id'];
+            
+            $finderDetail = $this->getFinderDetail($finder_id);
+    
+            if($finderDetail['status'] != 200){
+                return Response::json($finderDetail,$this->error_status);
+            }
+    
+            $data = array_merge($data,$finderDetail['data']);
+    
+            if(isset($data['service_id'])){
+                $service_id = (int) $data['service_id'];
+    
+                $serviceDetail = $this->getServiceDetail($service_id);
+
+                if($serviceDetail['status'] != 200){
+                    return Response::json($serviceDetail,$this->error_status);
+                }
+
+                $data = array_merge($data,$serviceDetail['data']);
+            }
+
+            $result['order_details'] = [
+                [
+                    "field"=> "STUDIO NAME",
+                    "value"=> $data['finder_name']
+                ],
+                [
+                    "field"=> "SERVICE",
+                    "value"=>  $data['service_name']
+                ],
+                [
+                    "field"=> "DURATION",
+                    "value"=> $data['service_duration']
+                ],
+                [
+                    "field"=> "ADDRESS",
+                    "value"=> $data['finder_address']
+                ]
+            ];
+
+        }
+
+        return $result;
+
+
+        // $order_id = $data['order_id'];
+
+        // $order = Order::find(intval($order_id));
+
+        // $resp   =   array(
+        //     'status' => 200,
+        //     'data' => ['amount' => $order->amount],
+        //     'amount' => $order->amount
+        // );
+
+            
+        // $resp['data']['order_details'] = $this->getBookingDetails($order->toArray());
+
+        
+        // $payment_mode_type_array = ['paymentgateway','emi','cod','part_payment','pay_at_vendor'];
+        // $payment_details = [];
+
+        // foreach ($payment_mode_type_array as $payment_mode_type) {
+
+        //     $payment_details[$payment_mode_type] = $this->getPaymentDetails($order->toArray(),$payment_mode_type);
+
+        // }
+        
+        // $resp['data']['payment_details'] = $payment_details;
+
+        // return Response::json($resp);
+
     }
 
 }
