@@ -3198,51 +3198,71 @@ class CustomerController extends \BaseController {
 		// 	$result['campaign']['link'] = 'ftrnty://ftrnty.com/search/all';
 		// }
 
-		if(isset($_REQUEST['device_type']) && $_REQUEST['device_type'] == "ios" && isset($_REQUEST['app_version']) && ((float)$_GET['app_version'] >= 4.4)){
+		if(isset($_REQUEST['device_type']) && in_array($_REQUEST['device_type'],['ios','android']) && isset($_REQUEST['app_version']) && ((float)$_GET['app_version'] >= 4.4)){
 
 			$result['campaigns'] =  [];
 
 			$result['campaigns'][] = [
-				'image'=>'http://b.fitn.in/iconsv1/offers/generic_banner.png',
-				'link'=>'',
+				'image'=>'https://b.fitn.in/global/ios_homescreen_banner/pledge_1.png',
+				'link'=>'ftrnty://ftrnty.com/s/gyms/1234',
 				'title'=>'1',
-				'height'=>1,
-				'width'=>6,
-				'ratio'=>1/6
+				'height'=>100,
+				'width'=>375,
+				'ratio'=>(float) number_format(100/375,2)
 			];
 
 			$result['campaigns'][] = [
-				'image'=>'http://b.fitn.in/global/diwali/diwali_banner.png',
-				'link'=>'',
+				'image'=>'https://b.fitn.in/global/ios_homescreen_banner/pledge_2.png',
+				'link'=>'https://b.fitn.in/global/ios_homescreen_banner/pledge_2.png',
 				'title'=>'2',
-				'height'=>1,
-				'width'=>6,
-				'ratio'=>1/6
+				'height'=>100,
+				'width'=>375,
+				'ratio'=>(float) number_format(100/375,2)
 			];
+
+			$result['campaigns'][] = [
+				'image'=>'https://b.fitn.in/global/ios_homescreen_banner/pledge_3.png',
+				'link'=>'https://www.fitternity.com',
+				'title'=>'2',
+				'height'=>100,
+				'width'=>375,
+				'ratio'=>(float) number_format(100/375,2)
+			];
+
+			$result['campaigns'][] = [
+				'image'=>'https://b.fitn.in/global/ios_homescreen_banner/pledge_4.png',
+				'link'=>'https://google.com',
+				'title'=>'2',
+				'height'=>100,
+				'width'=>375,
+				'ratio'=>(float) number_format(100/375,2)
+			];
+
 			$lat = isset($_REQUEST['lat']) && $_REQUEST['lat'] != "" ? $_REQUEST['lat'] : "";
-			$lon = isset($_REQUEST['lon']) && $_REQUEST['lon'] != "" ? $_REQUEST['lon'] : "";
+	        $lon = isset($_REQUEST['lon']) && $_REQUEST['lon'] != "" ? $_REQUEST['lon'] : "";
 
 			$near_by_vendor_request = [
-				"offset" => 0,
-				"limit" => 9,
-				"radius" => "3km",
-				"category"=>"",
-				"lat"=>$lat,
-				"lon"=>$lon,
-				"city"=>strtolower($city),
-				"keys"=>[
-				"average_rating",
-				"contact",
-				"coverimage",
-				"location",
-				"multiaddress",
-				"slug",
-				"name",
-				"id",
-				]
-			];
+	            "offset" => 0,
+	            "limit" => 9,
+	            "radius" => "3km",
+	            "category"=>"",
+	            "lat"=>$lat,
+	            "lon"=>$lon,
+	            "city"=>strtolower($city),
+	            "keys"=>[
+	              "average_rating",
+	              "contact",
+	              "coverimage",
+	              "location",
+	              "multiaddress",
+	              "slug",
+	              "name",
+	              "id",
+	              "subcategories"
+	            ]
+	        ];
 
-			$result['near_by_vendor'] = geoLocationFinder($near_by_vendor_request);
+	        $result['near_by_vendor'] = geoLocationFinder($near_by_vendor_request);
 		}
 		
 		return Response::json($result);
