@@ -3204,8 +3204,8 @@ class CustomerController extends \BaseController {
 
 			$result['campaigns'][] = [
 				'image'=>'https://b.fitn.in/global/ios_homescreen_banner/pledge_1.png',
-				'link'=>'ftrnty://ftrnty.com/s/gyms/1234',
-				'title'=>'1',
+				'link'=>'ftrnty://ftrnty.com/abc',
+				'title'=>'Pledge for Fitness',
 				'height'=>100,
 				'width'=>375,
 				'ratio'=>(float) number_format(100/375,2)
@@ -3213,8 +3213,8 @@ class CustomerController extends \BaseController {
 
 			$result['campaigns'][] = [
 				'image'=>'https://b.fitn.in/global/ios_homescreen_banner/pledge_2.png',
-				'link'=>'https://b.fitn.in/global/ios_homescreen_banner/pledge_2.png',
-				'title'=>'2',
+				'link'=>'ftrnty://ftrnty.com/abc',
+				'title'=>'Save with Fitness',
 				'height'=>100,
 				'width'=>375,
 				'ratio'=>(float) number_format(100/375,2)
@@ -3222,8 +3222,8 @@ class CustomerController extends \BaseController {
 
 			$result['campaigns'][] = [
 				'image'=>'https://b.fitn.in/global/ios_homescreen_banner/pledge_3.png',
-				'link'=>'https://www.fitternity.com',
-				'title'=>'2',
+				'link'=>'ftrnty://ftrnty.com/abc',
+				'title'=>'Sale',
 				'height'=>100,
 				'width'=>375,
 				'ratio'=>(float) number_format(100/375,2)
@@ -3231,8 +3231,8 @@ class CustomerController extends \BaseController {
 
 			$result['campaigns'][] = [
 				'image'=>'https://b.fitn.in/global/ios_homescreen_banner/pledge_4.png',
-				'link'=>'https://google.com',
-				'title'=>'2',
+				'link'=>'ftrnty://ftrnty.com/abc',
+				'title'=>'Fitness Sale',
 				'height'=>100,
 				'width'=>375,
 				'ratio'=>(float) number_format(100/375,2)
