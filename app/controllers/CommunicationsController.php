@@ -170,6 +170,11 @@ class CommunicationsController extends \BaseController {
 
 		}
 
+		if(isset($data['customer_id']) && $data['customer_id'] != ""){
+
+			$data['wallet_balance'] = $this->utilities->getWalletBalance((int)$data['customer_id']);
+		}
+
 		return $data;
 	}
 
