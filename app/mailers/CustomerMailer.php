@@ -242,6 +242,8 @@ Class CustomerMailer extends Mailer {
 	
 	protected function cancelBookTrialByVendor($data){
 
+		return 'no email';
+
 		$label = 'Vendor-trial-cancellation-email-to-customer';
 
 		$message_data 	= array(

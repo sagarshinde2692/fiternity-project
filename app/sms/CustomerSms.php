@@ -86,7 +86,7 @@ Class CustomerSms extends VersionNextSms{
 
 	protected function cancelBookTrialByVendor ($data){
 
-		$label = 'Vendor-trial-cancellation-email-to-customer';
+		$label = 'CancelTrialByVendor-Customer';
 
 		$to = $data['customer_phone'];
 
