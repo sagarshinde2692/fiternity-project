@@ -3366,50 +3366,6 @@ class TransactionController extends \BaseController {
 
         $booking_details_data["address"] = ['field'=>'ADDRESS','value'=>'','position'=>$position++];
 
-<<<<<<< Updated upstream
-        if(isset($data['reward_ids']) && !empty($data['reward_ids'])){
-
-            $reward_detail = array();
-
-            $reward_ids = array_map('intval',$data['reward_ids']);
-
-            $rewards = Reward::whereIn('_id',$reward_ids)->get(array('_id','title','quantity','reward_type','quantity_type'));
-
-            if(count($rewards) > 0){
-
-                foreach ($rewards as $value) {
-
-                    $title = $value->title;
-
-                    $reward_detail[] = ($value->reward_type == 'nutrition_store') ? $title : $value->quantity." ".$title;
-                    
-                    array_set($data, 'reward_type', $value->reward_type);
-
-                }
-
-                $reward_info = (!empty($reward_detail)) ? implode(" + ",$reward_detail) : "";
-
-                array_set($data, 'reward_info', $reward_info);
-                
-            }
-
-        }
-
-        if(isset($data['cashback']) && $data['cashback']){
-            array_set($data,'reward_info','Cashback');
-        }
-
-        if(isset($data["reward_info"]) && $data["reward_info"] != ""){
-
-            if($data["reward_info"] == 'Cashback'){
-                $booking_details_data["reward"] = ['field'=>'REWARD','value'=>$data["reward_info"],'position'=>$position++];
-            }else{
-                $booking_details_data["reward"] = ['field'=>'REWARD','value'=>$data["reward_info"]." (Avail it from your Profile)",'position'=>$position++];
-            }
-        }
-
-=======
->>>>>>> Stashed changes
         if(isset($data['start_date']) && $data['start_date'] != ""){
             $booking_details_data['start_date']['value'] = date('d-m-Y (l)',strtotime($data['start_date']));
         }
@@ -3524,7 +3480,7 @@ class TransactionController extends \BaseController {
 
             $rewards = Reward::whereIn('_id',$reward_ids)->get(array('_id','title','quantity','reward_type','quantity_type', 'payload'));
 
-            $reward_amount = $reward['payload']['amount'];
+            $reward_amount = 0;
 
             if(count($rewards) > 0){
 
@@ -3533,6 +3489,8 @@ class TransactionController extends \BaseController {
                     $title = $value->title;
 
                     $reward_detail[] = ($value->reward_type == 'nutrition_store') ? $title : $value->quantity." ".$title;
+
+                    $reward_amount += $value['payload']['amount'];
                     
                     array_set($data, 'reward_type', $value->reward_type);
 
