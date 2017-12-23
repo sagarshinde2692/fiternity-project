@@ -4167,24 +4167,18 @@ class TransactionController extends \BaseController {
 
             $ratecard = Ratecard::find(intval($data['ratecard_id']));
 
-            $result['payment_details']['amount_summary'][] = [
-                'field' => 'Price',
-                'value' => 'Rs. '.(string)$ratecard['price']
-            ];
-
+            
             $data['you_save'] = 0;
             
             if($data['amount'] < $ratecard['price']){
                 
                 $result['payment_details']['amount_summary'][] = [
-                    'field' => 'Negotiated Price',
+                    'field' => 'Price',
                     'value' => 'Rs. '.(string)$data['amount']
                 ];
-                
-                $data['you_save'] = $ratecard['price'] - $data['amount'];
-
 
             }
+
 
             if(isset($ratecardDetail["data"]["ratecard_flags"]) && isset($ratecardDetail["data"]["ratecard_flags"]["convinience_fee_applicable"]) && $ratecardDetail["data"]["ratecard_flags"]["convinience_fee_applicable"]){
                 
@@ -4220,15 +4214,46 @@ class TransactionController extends \BaseController {
                 $data['fitcash_applied'] = $data['amount_payable'] > $data['wallet_balance'] ? $data['wallet_balance'] : $data['amount_payable'];
                 
                 $data['amount_payable'] -= $data['fitcash_applied'];
-                
-                $result['payment_details']['amount_summary'][] = [
-                    'field' => 'Fitcash Applied',
-                    'value' => '-Rs. '.(string)$data['fitcash_applied']
-                ];
+                if($data['fitcash_applied'] > 0){
+
+                    $result['payment_details']['amount_summary'][] = [
+                        'field' => 'Fitcash Applied',
+                        'value' => '-Rs. '.(string)$data['fitcash_applied']
+                    ];
+
+                }
             }
 
-            if(isset($data['coupon'])){
+            if(isset($data['reward_ids'])){
 
+                $reward = Reward::find(intval($data['reward_ids'][0]));
+
+                if($reward){
+
+                    $result['payment_details']['amount_summary'][] = [
+                        'field' => 'Reward',
+                        'value' => $reward['title']." worth Rs. ".(string)$reward['payload']['amount']
+                    ];
+
+                    $data['you_save'] += $reward['payload']['amount'];
+                
+                }
+            }
+
+            if(isset($data['cashback'])){
+                
+
+                $result['payment_details']['amount_summary'][] = [
+                    'field' => 'Cashback',
+                    'value' => (string)$data['cashback']." Fitcash+"
+                ];
+
+                $data['you_save'] += intval($data['cashback']);
+                
+            }
+                
+            if(isset($data['coupon'])){
+                
                 $resp = $this->customerreward->couponCodeDiscountCheck($ratecard, $data['coupon']);
 
                 if($resp["coupon_applied"]){
@@ -4296,12 +4321,12 @@ class TransactionController extends \BaseController {
                     "value"=> $data['service_duration']
                 ],
                 [
-                    "field"=> "ADDRESS",
-                    "value"=> $data['finder_address']
-                ],
-                [
                     "field"=> "REMARKS",
                     "value"=> $data['ratecard_remarks']
+                ],
+                [
+                    "field"=> "ADDRESS",
+                    "value"=> $data['finder_address']
                 ]
             ];
 
