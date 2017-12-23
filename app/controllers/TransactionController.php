@@ -2387,7 +2387,7 @@ class TransactionController extends \BaseController {
             'diet_plan'=>'short_term_membership'
         );
 
-        (isset($set_vertical_type[$data['type']])) ? $data['vertical_type'] = $set_vertical_type[$data['type']] : null;
+        (isset($data['type']) && isset($set_vertical_type[$data['type']])) ? $data['vertical_type'] = $set_vertical_type[$data['type']] : null;
 
         if(isset($data['finder_category_id'])){
 
@@ -2399,7 +2399,7 @@ class TransactionController extends \BaseController {
 
         }
 
-        (isset($set_membership_duration_type[$data['type']])) ? $data['membership_duration_type'] = $set_membership_duration_type[$data['type']] : null;
+       (isset($data['type']) && isset($set_membership_duration_type[$data['type']])) ? $data['membership_duration_type'] = $set_membership_duration_type[$data['type']] : null;
 
         (isset($data['duration_day']) && $data['duration_day'] >= 30 && $data['duration_day'] <= 90) ? $data['membership_duration_type'] = 'short_term_membership' : null;
 
