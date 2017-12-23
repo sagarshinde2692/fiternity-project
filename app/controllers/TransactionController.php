@@ -4173,7 +4173,7 @@ class TransactionController extends \BaseController {
             if($data['amount'] < $ratecard['price']){
                 
                 $result['payment_details']['amount_summary'][] = [
-                    'field' => 'Price',
+                    'field' => 'Total Amount',
                     'value' => 'Rs. '.(string)$data['amount']
                 ];
 
