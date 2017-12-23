@@ -654,6 +654,8 @@ class CustomerController extends \BaseController {
 					}
 
 					$customer_id = $ishullcustomer->_id;
+
+					$customer = $ishullcustomer;
 					
 				}
 
