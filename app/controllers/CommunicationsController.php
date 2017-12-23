@@ -175,6 +175,16 @@ class CommunicationsController extends \BaseController {
 			$data['wallet_balance'] = $this->utilities->getWalletBalance((int)$data['customer_id']);
 		}
 
+		$data['booktrial_link'] = "";
+		
+		if(isset($data['finder_slug']) && $data['service_id']){
+			$data['booktrial_link'] = $this->utilities->getShortenUrl(Config::get('app.website')."/buy/".$data['finder_slug']."/".$data['service_id']);
+		}
+
+        $data['workout_article_link'] = $this->utilities->getShortenUrl(Config::get('app.website')."/article/complete-guide-to-help-you-prepare-for-the-first-week-of-your-workout");
+        $data['download_app_link'] = Config::get('app.download_app_link');
+        $data['diet_plan_link'] = $this->utilities->getShortenUrl(Config::get('app.website')."/diet-plan");
+
 		return $data;
 	}
 
