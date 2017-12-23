@@ -362,6 +362,7 @@ return array(
 	'direct_vendor_number' => '+919699998838',
 	'direct_ozonetel_vendor_number' => '+919699998838',
 	'direct_ozonetel_customer_number' => '+919867592381',
+	'sooraj_number'=>'+919699998838',
 
 	's3_finderurl'  => array(
 		'cover' 			=> 'https://b.fitn.in/f/c/',

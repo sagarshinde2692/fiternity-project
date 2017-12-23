@@ -2044,7 +2044,11 @@ class SchedulebooktrialsController extends \BaseController {
             }
 
             $pre_trial_vendor_confirmation = (isset($finderid) && in_array($finderid, Config::get('app.trial_auto_confirm_finder_ids'))) ? 'confirmed' : 'yet_to_connect';
-            
+
+            $booktrial_link = $this->utilities->getShortenUrl(Config::get('app.website')."/buy/".$finder_slug."/".$service_id);
+            $workout_article_link = $this->utilities->getShortenUrl(Config::get('app.website')."/article/complete-guide-to-help-you-prepare-for-the-first-week-of-your-workout");
+            $download_app_link = Config::get('app.download_app_link');
+            $diet_plan_link = $this->utilities->getShortenUrl(Config::get('app.website')."/diet-plan");
 
             $booktrialdata = array(
                 'booktrialid'                   =>      intval($booktrialid),
@@ -2143,7 +2147,11 @@ class SchedulebooktrialsController extends \BaseController {
                 'order_id'                      =>      $orderid,
                 'membership'                    =>      $membership,
                 'pre_trial_vendor_confirmation' =>      $pre_trial_vendor_confirmation,
-                'vendor_kiosk'                  =>      isKioskVendor($finderid)
+                'vendor_kiosk'                  =>      isKioskVendor($finderid),
+                'booktrial_link'                =>      $booktrial_link,
+                'workout_article_link'          =>      $workout_article_link,
+                'download_app_link'             =>      $download_app_link,
+                'diet_plan_link'                =>      $diet_plan_link,
             );
 
             if(isset($order['recommended_booktrial_id']) && $order['recommended_booktrial_id'] != ""){
@@ -2194,23 +2202,13 @@ class SchedulebooktrialsController extends \BaseController {
             }
 
             //give fitcash+ for first workout session
-            $give_fitcash_plus = true;
-            $allOrderIds = Order::active()->where("customer_id",$customer_id)->where('type','workout-session')->lists("_id");
+            $give_fitcash_plus = false;
 
-            if(!empty($allOrderIds)){
-
-                $allOrderIds = array_map("intval", $allOrderIds);
-
-                $customerWalletCount = Customerwallet::where("customer_id",$customer_id)->whereIn("order_id",$allOrderIds)->count();
-
-                $give_fitcash_plus = false;
-
-                if($customerWalletCount == 0){
-                    $give_fitcash_plus = true;
-                }
+            if($type == "workout-session" && !isset($data['myreward_id']) && isset($order['amount_customer']) && $order['amount_customer'] >= 450){
+                $give_fitcash_plus = true;
             }
 
-            /*if($give_fitcash_plus && $type == "workout-session"){
+            if($give_fitcash_plus){
 
                 $walletData = array(
                     "customer_id"=> $customer_id,
@@ -2224,7 +2222,7 @@ class SchedulebooktrialsController extends \BaseController {
                 );
 
                 $this->utilities->walletTransaction($walletData);
-            }*/
+            }
 
             $booktrialdata['give_fitcash_plus'] = $give_fitcash_plus;
 
@@ -2394,6 +2392,12 @@ class SchedulebooktrialsController extends \BaseController {
                 if($hour >= 7 && $hour <= 22 ){
                     $send_communication["customer_email_before12hour"] = $this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);     
                     $send_communication["customer_notification_before12hour"] = $this->customernotification->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
+                }else{
+
+                    $delayReminderAfter30Min    =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->created_at)))->addMinutes(30);
+
+                    $send_communication["customer_email_before12hour"] = $this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderAfter30Min);
+                    $send_communication["customer_notification_before12hour"] = $this->customernotification->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderAfter30Min);
                 }
 
             }else{
@@ -2426,8 +2430,15 @@ class SchedulebooktrialsController extends \BaseController {
                 }
 
                 if($hour >= 7 && $hour <= 22 ){
+
                     $send_communication["customer_sms_before3hour"] = $this->customersms->bookTrialReminderBefore3Hour($booktrialdata, $delayReminderTimeBefore3Hour);
                     $send_communication["customer_notification_before3hour"] = $this->customernotification->bookTrialReminderBefore3Hour($booktrialdata, $delayReminderTimeBefore3Hour);
+                }else{
+
+                    $delayReminderAfter45Min    =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->created_at)))->addMinutes(45);
+
+                    $send_communication["customer_sms_before3hour"] = $this->customersms->bookTrialReminderBefore3Hour($booktrialdata, $delayReminderAfter45Min);
+                    $send_communication["customer_notification_before3hour"] = $this->customernotification->bookTrialReminderBefore3Hour($booktrialdata, $delayReminderAfter45Min);
                 }
 
             }
@@ -2472,6 +2483,11 @@ class SchedulebooktrialsController extends \BaseController {
                 $send_communication["customer_sms_after2hour"] = $this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter90Min);
                 $send_communication["customer_email_after2hour"] = $this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter90Min);
                 $send_communication["customer_notification_after2hour"] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter90Min);
+            }else{
+
+                $delayReminderTimeAfter24Hour      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->addMinutes(60*24);
+
+                $send_communication["customer_sms_after24hour"] = $this->customersms->bookTrialReminderAfter24Hour($booktrialdata, $delayReminderTimeAfter24Hour);
             }
 
             if($booktrialdata['type'] == "booktrials" && isset($booktrialdata['amount']) && $booktrialdata['amount'] != "" && $booktrialdata['amount'] > 0){
@@ -2901,9 +2917,12 @@ class SchedulebooktrialsController extends \BaseController {
             $pay_as_you_go_link = $this->utilities->getShortenUrl(Config::get('app.website')."/workout/".$finder_city_slug."?regions=".$finder_location_slug);
             $profile_link = $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$customer_email);
             $vendor_link = $this->utilities->getShortenUrl(Config::get('app.website')."/".$finder_slug);
-            
             $pre_trial_vendor_confirmation = (isset($data['finder_id']) && in_array($data['finder_id'], Config::get('app.trial_auto_confirm_finder_ids'))) ? 'confirmed' : 'yet_to_connect';
 
+            $booktrial_link = $this->utilities->getShortenUrl(Config::get('app.website')."/buy/".$finder_slug."/".$service_id);
+            $workout_article_link = $this->utilities->getShortenUrl(Config::get('app.website')."/article/complete-guide-to-help-you-prepare-for-the-first-week-of-your-workout");
+            $download_app_link = Config::get('app.download_app_link');
+            $diet_plan_link = $this->utilities->getShortenUrl(Config::get('app.website')."/diet-plan");
 
             $booktrialdata = array(
 
@@ -3001,7 +3020,11 @@ class SchedulebooktrialsController extends \BaseController {
                 'finder_location_slug'          =>      $finder_location_slug,
                 'membership'                    =>      $membership,
                 'pre_trial_vendor_confirmation' =>      $pre_trial_vendor_confirmation,
-                'vendor_kiosk'                  =>      isKioskVendor($finderid)
+                'vendor_kiosk'                  =>      isKioskVendor($finderid),
+                'booktrial_link'                =>      $booktrial_link,
+                'workout_article_link'          =>      $workout_article_link,
+                'download_app_link'             =>      $download_app_link,
+                'diet_plan_link'                =>      $diet_plan_link,
             );
 
             if(isset($data['promotional_notification_id']) && $data['promotional_notification_id'] != ""){
@@ -6290,6 +6313,14 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrial->post_trial_initail_status = 'interested';
             $booktrial->post_trial_status_updated_by_kiosk = time();
             $booktrial->update();
+
+            if(isset($booktrial['customer_sms_after24hour']) && $booktrial['customer_sms_after24hour'] != ""){
+                         
+                $booktrial->unset('customer_sms_after24hour');
+             
+                $this->sidekiq->delete($booktrial['customer_sms_after24hour']);
+            
+            }
 
             $message = "Hi ".ucwords($booktrial['customer_name']).", your booking at ".ucwords($booktrial['finder_name'])." for ".strtoupper($booktrial['schedule_slot_start_time'])." on ".date('D, d M Y',strtotime($booktrial['schedule_date']))." has been successfully located";
 
