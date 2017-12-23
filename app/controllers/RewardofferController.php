@@ -109,6 +109,8 @@ class RewardofferController extends BaseController {
     public function getRewardOffers(){
 
         $data       = Input::json()->all();
+
+        Log::info('getRewardOffers',$data);
         $order              =   array();
         if(isset($data) && isset($data['type']) && $data['type'] == 'workout-session'){
             $rules      =   ['finder_id'=>'required', 'amount'=>'required', 'type'=>'required'];
