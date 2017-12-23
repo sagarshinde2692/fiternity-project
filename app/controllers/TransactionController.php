@@ -4298,6 +4298,10 @@ class TransactionController extends \BaseController {
                 [
                     "field"=> "ADDRESS",
                     "value"=> $data['finder_address']
+                ],
+                [
+                    "field"=> "REMARKS",
+                    "value"=> $data['ratecard_remarks']
                 ]
             ];
 
