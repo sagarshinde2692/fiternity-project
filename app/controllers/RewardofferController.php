@@ -405,7 +405,7 @@ class RewardofferController extends BaseController {
 
                                 $reward_ordered[] = $rewards_value;
 
-                                break;
+                                // break;
                             }
                         }
                     }
