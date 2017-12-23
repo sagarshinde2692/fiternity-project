@@ -3517,9 +3517,9 @@ class TransactionController extends \BaseController {
         if(isset($data["reward_info"]) && $data["reward_info"] != ""){
 
             if($data["reward_info"] == 'Cashback'){
-                $reward = ['field'=>'REWARD','value'=>$data["reward_info"]." worth Rs. $reward_amount"];
+                $reward = ['field'=>'Reward','value'=>$data["reward_info"]." worth Rs. $reward_amount"];
             }else{
-                $reward = ['field'=>'REWARD','value'=>$data["reward_info"]." worth Rs. $reward_amount"." (Avail it from your Profile)"];
+                $reward = ['field'=>'Reward','value'=>$data["reward_info"]." worth Rs. $reward_amount"." (Avail it from your Profile)"];
             }
 
             $you_save += $reward_amount;
@@ -3529,7 +3529,7 @@ class TransactionController extends \BaseController {
 
             if(isset($data["membership"]['cashback']) && $data["membership"]['cashback'] === true){
 
-                $reward = ['field'=>'PREBOOK REWARD','value'=>'Cashback'];
+                $reward = ['field'=>'Prebook Reward','value'=>'Cashback'];
             }
 
             if(isset($data["membership"]["reward_ids"]) && isset($data["membership"]["reward_ids"]) && !empty($data["membership"]["reward_ids"])){
@@ -3540,7 +3540,7 @@ class TransactionController extends \BaseController {
 
                 if($reward){
 
-                    $reward = ['field'=>'PREBOOK REWARD','value'=>$reward['title']];
+                    $reward = ['field'=>'Prebook Reward','value'=>$reward['title']];
                 }
             }
 
@@ -4280,6 +4280,27 @@ class TransactionController extends \BaseController {
                 }
             }
 
+            if(isset($data['coupon'])){
+                
+                $resp = $this->customerreward->couponCodeDiscountCheck($ratecard, $data['coupon']);
+
+                if($resp["coupon_applied"]){
+                    
+                    $data['coupon_discount'] = $data['amount_payable'] > $resp['data']['discount'] ? $resp['data']['discount'] : $data['amount_payable'];
+
+                    $data['amount_payable'] = $data['amount_payable'] - $data['coupon_discount'];
+                    
+                    $data['you_save'] += $data['coupon_discount'];
+                    
+                    $result['payment_details']['amount_summary'][] = [
+                        'field' => 'Coupon Discount',
+                        'value' => '-Rs. '.(string)$data['coupon_discount']
+                    ];
+                
+                }
+
+            }
+
             if(isset($data['reward_ids'])){
 
                 $reward = Reward::find(intval($data['reward_ids'][0]));
@@ -4308,26 +4329,7 @@ class TransactionController extends \BaseController {
                 
             }
                 
-            if(isset($data['coupon'])){
-                
-                $resp = $this->customerreward->couponCodeDiscountCheck($ratecard, $data['coupon']);
-
-                if($resp["coupon_applied"]){
-                    
-                    $data['coupon_discount'] = $data['amount_payable'] > $resp['data']['discount'] ? $resp['data']['discount'] : $data['amount_payable'];
-
-                    $data['amount_payable'] = $data['amount_payable'] - $data['coupon_discount'];
-                    
-                    $data['you_save'] += $data['coupon_discount'];
-                    
-                    $result['payment_details']['amount_summary'][] = [
-                        'field' => 'Coupon Discount',
-                        'value' => '-Rs. '.(string)$data['coupon_discount']
-                    ];
-                
-                }
-
-            }
+            
 
             if($data['you_save'] > 0){
                 $result['payment_details']['amount_summary'][] = [
