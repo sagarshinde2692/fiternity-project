@@ -2204,7 +2204,7 @@ class SchedulebooktrialsController extends \BaseController {
             //give fitcash+ for first workout session
             $give_fitcash_plus = false;
 
-            if($type == "workout-session" && !isset($data['myreward_id']) && isset($order['amount_customer']) && $order['amount_customer'] >= 450){
+            if($type == "workout-session" && !isset($data['myreward_id']) && isset($order['amount']) && $order['amount'] >= 500){
                 $give_fitcash_plus = true;
             }
 
