@@ -4226,14 +4226,12 @@ class TransactionController extends \BaseController {
             
             $data['you_save'] = 0;
             
-            if($data['amount'] < $ratecard['price']){
                 
-                $result['payment_details']['amount_summary'][] = [
-                    'field' => 'Total Amount',
-                    'value' => 'Rs. '.(string)$data['amount']
-                ];
+            $result['payment_details']['amount_summary'][] = [
+                'field' => 'Total Amount',
+                'value' => 'Rs. '.(string)$data['amount']
+            ];
 
-            }
 
 
             if(isset($ratecardDetail["data"]["ratecard_flags"]) && isset($ratecardDetail["data"]["ratecard_flags"]["convinience_fee_applicable"]) && $ratecardDetail["data"]["ratecard_flags"]["convinience_fee_applicable"]){
