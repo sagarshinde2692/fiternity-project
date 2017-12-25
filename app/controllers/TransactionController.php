@@ -3516,10 +3516,12 @@ class TransactionController extends \BaseController {
 
         if(isset($data["reward_info"]) && $data["reward_info"] != ""){
 
+            $reward_info = $data['reward_info'];
+
             if($data["reward_info"] == 'Cashback'){
-                $reward = ['field'=>'Reward','value'=>$data["reward_info"]." worth Rs. $reward_amount"];
+                $reward = ['field'=>"Reward ($reward_info)",'value'=>"Rs. $reward_amount"];
             }else{
-                $reward = ['field'=>'Reward','value'=>$data["reward_info"]." worth Rs. $reward_amount"." (Avail it from your Profile)"];
+                $reward = ['field'=>"Reward ($reward_info)",'value'=>"Rs. $reward_amount"];
             }
 
             $you_save += $reward_amount;
@@ -3546,7 +3548,7 @@ class TransactionController extends \BaseController {
 
         }
 
-        if($payment_mode_type == 'part_payment'){
+        if($payment_mode_type == 'part_payment' && isset($data['part_payment_calculation'])){
 
             $remaining_amount = $data['amount_customer'];
 
@@ -4192,11 +4194,11 @@ class TransactionController extends \BaseController {
 
         $data = Input::json()->all();
 
-        if(!isset($data['ratecard_id'])){
+        // if(!isset($data['ratecard_id'])){
             
-            return Response::json(array('status'=>400, 'message'=>'ratecard id not present'), $this->error_status);
+        //     return Response::json(array('status'=>400, 'message'=>'ratecard id not present'), $this->error_status);
         
-        }
+        // }
             
         $result = [
 
@@ -4304,13 +4306,15 @@ class TransactionController extends \BaseController {
                 $reward = Reward::find(intval($data['reward_ids'][0]));
 
                 if($reward){
-
+                    $reward_title = $reward['title'];
+                    $reward_amount = $reward['payload']['amount'];
+                    
                     $result['payment_details']['amount_summary'][] = [
-                        'field' => 'Reward',
-                        'value' => $reward['title']." worth Rs. ".(string)$reward['payload']['amount']
+                        'field' => "Reward ($reward_title)",
+                        'value' =>  "Rs. $reward_amount"
                     ];
 
-                    $data['you_save'] += $reward['payload']['amount'];
+                    $data['you_save'] += $reward_amount;
                 
                 }
             }
@@ -4319,8 +4323,8 @@ class TransactionController extends \BaseController {
                 
 
                 $result['payment_details']['amount_summary'][] = [
-                    'field' => 'Reward',
-                    'value' => "Cashback worth Rs. ".$data['cashback']
+                    'field' => 'Reward (Cashback)',
+                    'value' => "Rs. ".$data['cashback']
                 ];
 
                 $data['you_save'] += intval($data['cashback']);
@@ -4364,60 +4368,66 @@ class TransactionController extends \BaseController {
             }
 
             $result['order_details'] = [
-                [
+                "studio_name"=>[
                     "field"=> "STUDIO NAME",
                     "value"=> $data['finder_name']
                 ],
-                [
+                "service_name"=>[
                     "field"=> "SERVICE",
                     "value"=>  $data['service_name']
                 ],
-                [
+                "service_duration"=>[
                     "field"=> "DURATION",
                     "value"=> $data['service_duration']
                 ],
-                [
+                "remarks"=>[
                     "field"=> "REMARKS",
                     "value"=> $data['ratecard_remarks']
                 ],
-                [
+                "address"=>[
                     "field"=> "ADDRESS",
                     "value"=> $data['finder_address']
                 ]
             ];
 
+            if($data['finder_category_id']==42){
+                if(isset($result['order_details']['address'])){
+                    unset($result['order_details']['address']);
+                };
+            }
+
+            if($data['finder_slug'] == 'fitternity-diet-vendor-andheri-east'){
+                
+                unset($result['order_details']['studio_name']);
+                
+                if(isset($result['order_details']['address'])){
+                    unset($result['order_details']['address']);
+                }                    
+            }
+            $result['order_details'] = array_values($result['order_details']);
+
+        }else{
+
+            $order_id = $data['order_id'];
+    
+            $order = Order::find(intval($order_id));
+                
+            $result['order_details'] = $this->getBookingDetails($order->toArray());
+    
+            $payment_mode_type_array = ['paymentgateway','emi','cod','part_payment','pay_at_vendor'];
+
+            $payment_details = [];
+    
+            foreach ($payment_mode_type_array as $payment_mode_type) {
+    
+                $payment_details[$payment_mode_type] = $this->getPaymentDetails($order->toArray(),$payment_mode_type);
+    
+            }
+            
+            $result['payment_details'] = $payment_details;
         }
 
         return $result;
-
-
-        // $order_id = $data['order_id'];
-
-        // $order = Order::find(intval($order_id));
-
-        // $resp   =   array(
-        //     'status' => 200,
-        //     'data' => ['amount' => $order->amount],
-        //     'amount' => $order->amount
-        // );
-
-            
-        // $resp['data']['order_details'] = $this->getBookingDetails($order->toArray());
-
-        
-        // $payment_mode_type_array = ['paymentgateway','emi','cod','part_payment','pay_at_vendor'];
-        // $payment_details = [];
-
-        // foreach ($payment_mode_type_array as $payment_mode_type) {
-
-        //     $payment_details[$payment_mode_type] = $this->getPaymentDetails($order->toArray(),$payment_mode_type);
-
-        // }
-        
-        // $resp['data']['payment_details'] = $payment_details;
-
-        // return Response::json($resp);
-
     }
 
 }
