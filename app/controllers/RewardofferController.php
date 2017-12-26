@@ -295,8 +295,12 @@ class RewardofferController extends BaseController {
 
                             if(in_array($rewards_value['reward_type'],["fitness_kit","healthy_snacks"]) && $category_id != null){
 
-                                $contents = [];
-                                $payload_amount = 0;
+                                $reward_data  = [ 
+                                    'contents'=>[],
+                                    'payload_amount'=>0,
+                                    'image'=>'',
+                                    'gallery'=>[]
+                                ];
 
                                 $reward_type_info = $rewards_value['reward_type'];
 
@@ -326,8 +330,10 @@ class RewardofferController extends BaseController {
                                             foreach ($content_data as $content_key => $content_value) {
 
                                                 if(in_array($category_id,$content_value['category_id'])){
-                                                    $contents = $content_value['product'];
-                                                    $payload_amount = $content_value['amount'];
+                                                    $reward_data['contents'] = $content_value['product'];
+                                                    $reward_data['payload_amount'] = $content_value['amount'];
+                                                    $reward_data['image'] = $content_value['image'];
+                                                    $reward_data['gallery'] = $content_value['gallery'];
                                                     break;
                                                 }
                                             }
@@ -343,8 +349,10 @@ class RewardofferController extends BaseController {
 
                                             if($amount >= $data_value['min'] ){
 
-                                                $contents = $data_value['content'][0]['product'];
-                                                $payload_amount = $data_value['content'][0]['amount'];
+                                                $reward_data['contents'] = $data_value['content'][0]['product'];
+                                                $reward_data['payload_amount'] = $data_value['content'][0]['amount'];
+                                                $reward_data['image'] = $data_value['content'][0]['image'];
+                                                $reward_data['gallery'] = $data_value['content'][0]['gallery'];
 
                                                 break;
                                             }
@@ -741,10 +749,12 @@ class RewardofferController extends BaseController {
 
                                     }else{
 
-                                        $rewards_value['description'] = "We have shaped the perfect fitness kit for you. Strike off these workout essentials from your cheat sheet & get going. <br>- ".implode(" <br>- ",$contents);
+                                        $rewards_value['description'] = "We have shaped the perfect fitness kit for you. Strike off these workout essentials from your cheat sheet & get going. <br>- ".implode(" <br>- ",$reward_data['contents']);
 
-                                        $rewards_value['contents'] = $contents;
-                                        $rewards_value['payload']['amount'] = $payload_amount;
+                                        $rewards_value['contents'] = $reward_data['contents'];
+                                        $rewards_value['payload']['amount'] = $reward_data['payload_amount'];
+                                        $rewards_value['image'] = $reward_data['image'];
+                                        $rewards_value['gallery'] = $reward_data['gallery'];
                                     }
                                 }
 
