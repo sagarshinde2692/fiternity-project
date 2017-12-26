@@ -337,7 +337,7 @@ class RewardofferController extends BaseController {
                                         }
                                     }
 
-                                    if(empty($content_data)){
+                                    if(empty($contents)){
 
                                         foreach ($fitness_kit_array as $data_key => $data_value) {
 
@@ -734,14 +734,14 @@ class RewardofferController extends BaseController {
 
                                     if($rewards_value['reward_type'] == 'healthy_snacks'){
 
-                                        $rewards_value['description'] = "Ensure you avoid those extra calories by munching on tasty snacks. Get a specially curated hamper which contains. <br> ".implode(" <br> ",$rewards_value['contents']);
+                                        $rewards_value['description'] = "Ensure you avoid those extra calories by munching on tasty snacks. Get a specially curated hamper which contains. <br>- ".implode(" <br>- ",$rewards_value['contents']);
 
                                         $rewards_value['image'] = "https://b.fitn.in/gamification/reward/goodies/hamper-2.jpg";
                                         $rewards_value['gallery'] = [];
 
                                     }else{
 
-                                        $rewards_value['description'] = "We have shaped the perfect fitness kit for you. Strike off these workout essentials from your cheat sheet & get going. <br> ".implode(" <br> ",$contents);
+                                        $rewards_value['description'] = "We have shaped the perfect fitness kit for you. Strike off these workout essentials from your cheat sheet & get going. <br>- ".implode(" <br>- ",$contents);
 
                                         $rewards_value['contents'] = $contents;
                                         $rewards_value['payload']['amount'] = $payload_amount;
