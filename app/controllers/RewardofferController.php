@@ -177,6 +177,18 @@ class RewardofferController extends BaseController {
         $ratecard_id    =   (int)$data['ratecard_id'];
         $ratecard       =   Ratecard::where('_id',$ratecard_id)->where('finder_id',$finder_id)->first();
 
+
+        $service = Service::find((int)$ratecard->service_id);
+
+        // echo"<pre>";print_r($service->servicecategory_id);exit;
+
+        $category_id = null;
+
+        if($service){
+
+            $category_id = $service->servicecategory_id;
+        }
+
         if(isset($data['order_id']) && $data['order_id'] != ""){
             $order_id   = (int) $data['order_id'];
             $order      = Order::find($order_id);
@@ -281,7 +293,12 @@ class RewardofferController extends BaseController {
                         // }
                         foreach ($rewards as $rewards_value){
 
-                            if(in_array($rewards_value['reward_type'],["fitness_kit","healthy_snacks"])){
+                            // echo"<pre>";print_r($category_id);exit;
+
+                            if(in_array($rewards_value['reward_type'],["fitness_kit","healthy_snacks"]) && $category_id != null){
+
+                                $contents = [];
+                                $payload_amount = 0;
 
                                 $reward_type_info = $rewards_value['reward_type'];
 
@@ -290,11 +307,43 @@ class RewardofferController extends BaseController {
                                     $pos = strpos($rewards_value['title'],'2');
 
                                     if($pos === false){
-                                        $reward_type_info = 'fitness_kit';    
+
+                                        $reward_type_info = 'fitness_kit';
+
+                                        $fitness_kit_array = Config::get('app.fitness_kit');
                                     }else{
                                         $reward_type_info = 'fitness_kit_2';
+
+                                        $fitness_kit_array = Config::get('app.fitness_kit_2');    
                                     }
+
+                                    rsort($fitness_kit_array);
+
+                                    foreach ($fitness_kit_array as $data_key => $data_value) {
+
+                                        if($amount >= $data_value['min'] ){
+
+                                            $content_data = $data_value['content'];
+
+                                            foreach ($content_data as $content_key => $content_value) {
+
+                                                if(in_array($category_id,$content_value['category_id'])){
+                                                    $contents = $content_value['product'];
+                                                    $payload_amount = $content_value['amount'];
+                                                    break;
+                                                }
+                                            }
+
+                                            break;
+
+                                        }
+                                    }
+
                                 }
+
+                               // echo"<pre>";print_r($contents);exit;
+
+
 
                                 $array = [];
 
@@ -681,14 +730,17 @@ class RewardofferController extends BaseController {
 
                                     if($rewards_value['reward_type'] == 'healthy_snacks'){
 
-                                        $rewards_value['description'] = "Ensure you avoid those extra calories by munching on tasty snacks. Get a specially curated hamper which contains : ".implode(" <br> ",$rewards_value['contents']);
+                                        $rewards_value['description'] = "Ensure you avoid those extra calories by munching on tasty snacks. Get a specially curated hamper which contains. <br> ".implode(" <br> ",$rewards_value['contents']);
 
                                         $rewards_value['image'] = "https://b.fitn.in/gamification/reward/goodies/hamper-2.jpg";
                                         $rewards_value['gallery'] = [];
 
                                     }else{
 
-                                        $rewards_value['description'] = "Get uber-cool fitness merchandise to complement your workout. The quirky yet functional kit will include the following : ".implode(" <br> ",$rewards_value['contents']);
+                                        $rewards_value['description'] = "We have shaped the perfect fitness kit for you. Strike off these workout essentials from your cheat sheet & get going. <br> ".implode(" <br> ",$contents);
+
+                                        $rewards_value['contents'] = $contents;
+                                        $rewards_value['payload']['amount'] = $payload_amount;
                                     }
                                 }
 
