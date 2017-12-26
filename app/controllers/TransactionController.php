@@ -3366,6 +3366,45 @@ class TransactionController extends \BaseController {
 
         $booking_details_data["address"] = ['field'=>'ADDRESS','value'=>'','position'=>$position++];
 
+        if(isset($data['reward_ids']) && !empty($data['reward_ids'])){
+            $reward_detail = array();
+            $reward_ids = array_map('intval',$data['reward_ids']);
+            $rewards = Reward::whereIn('_id',$reward_ids)->get(array('_id','title','quantity','reward_type','quantity_type'));
+            if(count($rewards) > 0){
+                foreach ($rewards as $value) {
+                    $title = $value->title;
+                    $reward_detail[] = ($value->reward_type == 'nutrition_store') ? $title : $value->quantity." ".$title;
+                    
+                    array_set($data, 'reward_type', $value->reward_type);
+                }
+                $reward_info = (!empty($reward_detail)) ? implode(" + ",$reward_detail) : "";
+                array_set($data, 'reward_info', $reward_info);
+                
+            }
+        }
+        if(isset($data['cashback']) && $data['cashback']){
+            array_set($data,'reward_info','Cashback');
+        }
+        if(isset($data["reward_info"]) && $data["reward_info"] != ""){
+            if($data["reward_info"] == 'Cashback'){
+                $booking_details_data["reward"] = ['field'=>'REWARD','value'=>$data["reward_info"],'position'=>$position++];
+            }else{
+                $booking_details_data["reward"] = ['field'=>'REWARD','value'=>$data["reward_info"]." (Avail it from your Profile)",'position'=>$position++];
+            }
+        }
+        if(isset($data["membership"]) && !empty($data["membership"])){
+            if(isset($data["membership"]['cashback']) && $data["membership"]['cashback'] === true){
+                $booking_details_data["reward"] = ['field'=>'PREBOOK REWARD','value'=>'Cashback','position'=>$position++];
+            }
+            if(isset($data["membership"]["reward_ids"]) && isset($data["membership"]["reward_ids"]) && !empty($data["membership"]["reward_ids"])){
+                $reward_id = $data["membership"]["reward_ids"][0];
+                $reward = Reward::find($reward_id,['title']);
+                if($reward){
+                    $booking_details_data["reward"] = ['field'=>'PREBOOK REWARD','value'=>$reward['title'],'position'=>$position++];
+                }
+            }
+        }
+
         if(isset($data['start_date']) && $data['start_date'] != ""){
             $booking_details_data['start_date']['value'] = date('d-m-Y (l)',strtotime($data['start_date']));
         }
@@ -3472,81 +3511,7 @@ class TransactionController extends \BaseController {
             'value' => 'Rs. '.$data['amount_final']
         );
 
-        if(isset($data['reward_ids']) && !empty($data['reward_ids'])){
-            
-            $reward_detail = array();
-
-            $reward_ids = array_map('intval',$data['reward_ids']);
-
-            $rewards = Reward::whereIn('_id',$reward_ids)->get(array('_id','title','quantity','reward_type','quantity_type', 'payload'));
-
-            $reward_amount = 0;
-
-            if(count($rewards) > 0){
-
-                foreach ($rewards as $value) {
-
-                    $title = $value->title;
-
-                    $reward_detail[] = ($value->reward_type == 'nutrition_store') ? $title : $value->quantity." ".$title;
-
-                    $reward_amount += $value['payload']['amount'];
-                    
-                    array_set($data, 'reward_type', $value->reward_type);
-
-                }
-
-                $reward_info = (!empty($reward_detail)) ? implode(" + ",$reward_detail) : "";
-
-                array_set($data, 'reward_info', $reward_info);
-                
-            }
-
-        }
-
-        $reward = [];
-
-        if(isset($data['cashback']) && $data['cashback']){
-            
-            array_set($data,'reward_info','Cashback');
-            
-            $reward_amount = $data['cashback_detail']['wallet_amount'];
         
-        }
-
-        if(isset($data["reward_info"]) && $data["reward_info"] != ""){
-
-            $reward_info = $data['reward_info'];
-
-            if($data["reward_info"] == 'Cashback'){
-                $reward = ['field'=>"Reward ($reward_info)",'value'=>"Rs. $reward_amount"];
-            }else{
-                $reward = ['field'=>"Reward ($reward_info)",'value'=>"Rs. $reward_amount"];
-            }
-
-            $you_save += $reward_amount;
-        }
-
-        if(isset($data["membership"]) && !empty($data["membership"])){
-
-            if(isset($data["membership"]['cashback']) && $data["membership"]['cashback'] === true){
-
-                $reward = ['field'=>'Prebook Reward','value'=>'Cashback'];
-            }
-
-            if(isset($data["membership"]["reward_ids"]) && isset($data["membership"]["reward_ids"]) && !empty($data["membership"]["reward_ids"])){
-
-                $reward_id = $data["membership"]["reward_ids"][0];
-
-                $reward = Reward::find($reward_id,['title']);
-
-                if($reward){
-
-                    $reward = ['field'=>'Prebook Reward','value'=>$reward['title']];
-                }
-            }
-
-        }
 
         if($payment_mode_type == 'part_payment' && isset($data['part_payment_calculation'])){
 
@@ -3683,17 +3648,15 @@ class TransactionController extends \BaseController {
             $amount_summary[] = $reward;
         }
 
-        if($you_save > 0){
-            $amount_summary[] = array(
-                'field' => 'You save',
-                'value' => 'Rs. '.$you_save
-            );
-        }
-
+        
         $payment_details  = [];
-
+        
         $payment_details['amount_summary'] = $amount_summary;
         $payment_details['amount_payable'] = $amount_payable;
+        
+        if($you_save > 0){
+            $payment_details['note'] = "Your total savings on this transaction ".$you_save;
+        }
 
         return $payment_details;
 
@@ -4205,7 +4168,8 @@ class TransactionController extends \BaseController {
             'order_details' => [],
             'payment_details' => [
                 'amount_summary' => [],
-                'amount_payable' => []
+                'amount_payable' => [],
+                'note'=>""
             ]
         ];
 
@@ -4290,7 +4254,7 @@ class TransactionController extends \BaseController {
 
                     $data['amount_payable'] = $data['amount_payable'] - $data['coupon_discount'];
                     
-                    $data['you_save'] += $data['coupon_discount'];
+                    // $data['you_save'] += $data['coupon_discount'];
                     
                     $result['payment_details']['amount_summary'][] = [
                         'field' => 'Coupon Discount',
@@ -4301,50 +4265,12 @@ class TransactionController extends \BaseController {
 
             }
 
-            if(isset($data['reward_ids'])){
-
-                $reward = Reward::find(intval($data['reward_ids'][0]));
-
-                if($reward){
-                    $reward_title = $reward['title'];
-                    $reward_amount = $reward['payload']['amount'];
-                    
-                    $result['payment_details']['amount_summary'][] = [
-                        'field' => "Reward ($reward_title)",
-                        'value' =>  "Rs. $reward_amount"
-                    ];
-
-                    $data['you_save'] += $reward_amount;
-                
-                }
-            }
-
-            if(isset($data['cashback'])){
-                
-
-                $result['payment_details']['amount_summary'][] = [
-                    'field' => 'Reward (Cashback)',
-                    'value' => "Rs. ".$data['cashback']
-                ];
-
-                $data['you_save'] += intval($data['cashback']);
-                
-            }
-                
-            
-
-            if($data['you_save'] > 0){
-                $result['payment_details']['amount_summary'][] = [
-                    'field' => 'You save',
-                    'value' => 'Rs. '.(string)$data['you_save']
-                ];
-            }
-
             $result['payment_details']['amount_payable'] = [
                 'field' => 'Total Amount Payable',
                 'value' => 'Rs. '.(string)$data['amount_payable']
             ];
 
+            
             $finder_id = (int) $data['finder_id'];
             
             $finderDetail = $this->getFinderDetail($finder_id);
@@ -4384,13 +4310,47 @@ class TransactionController extends \BaseController {
                     "field"=> "REMARKS",
                     "value"=> $data['ratecard_remarks']
                 ],
-                "address"=>[
-                    "field"=> "ADDRESS",
-                    "value"=> $data['finder_address']
-                ]
+                "reward"=>[]
+                // "address"=>[
+                //     "field"=> "ADDRESS",
+                //     "value"=> $data['finder_address']
+                // ]
             ];
 
+            if(isset($data['reward_ids'])){
+                
+                $reward = Reward::find(intval($data['reward_ids'][0]));
+
+                if($reward){
+                    $reward_title = $reward['title'];
+                    $reward_amount = $reward['payload']['amount'];
+                    
+                    $result['order_details']['reward'] = [
+                        'field' => "REWARD",
+                        'value' =>  "$reward_title worth Rs. $reward_amount"
+                    ];
+
+                    $data['you_save'] += $reward_amount;
+                
+                }
+            }
+
+            if(isset($data['cashback'])){
+                
+
+                $result['order_details']['reward'] = [
+                    'field' => 'REWARD',
+                    'value' => "Cashback worth Rs. ".$data['cashback']
+                ];
+
+                $data['you_save'] += intval($data['cashback']);
+                
+            }
+
             if($data['finder_category_id']==42){
+                
+                $result['order_details']['studio_name']['field'] = "TIFFIN SERVICE";
+
                 if(isset($result['order_details']['address'])){
                     unset($result['order_details']['address']);
                 };
@@ -4405,6 +4365,11 @@ class TransactionController extends \BaseController {
                 }                    
             }
             $result['order_details'] = array_values($result['order_details']);
+
+            if($data['you_save'] > 0){
+                $result['payment_details']['note'] = "Your total savings on this transaction ".$data['you_save'];
+            }
+
 
         }else{
 
