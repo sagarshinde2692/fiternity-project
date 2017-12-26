@@ -4157,12 +4157,6 @@ class TransactionController extends \BaseController {
 
         $data = Input::json()->all();
 
-        // if(!isset($data['ratecard_id'])){
-            
-        //     return Response::json(array('status'=>400, 'message'=>'ratecard id not present'), $this->error_status);
-        
-        // }
-            
         $result = [
 
             'order_details' => [],
@@ -4173,7 +4167,13 @@ class TransactionController extends \BaseController {
             ]
         ];
 
-        if(isset($data['ratecard_id'])){
+        if(!isset($data['order_id'])){
+
+            if(!isset($data['ratecard_id'])){
+                
+                return Response::json(array('status'=>400, 'message'=>'ratecard id not present'), $this->error_status);
+            
+            }
             
             $ratecard_id = (int) $data['ratecard_id'];
 
@@ -4189,10 +4189,10 @@ class TransactionController extends \BaseController {
 
             $ratecard = Ratecard::find(intval($data['ratecard_id']));
 
+            $data['ratecard_price'] = $ratecard['price'];
             
             $data['you_save'] = 0;
             
-                
             $result['payment_details']['amount_summary'][] = [
                 'field' => 'Total Amount',
                 'value' => 'Rs. '.(string)$data['amount']
@@ -4295,22 +4295,21 @@ class TransactionController extends \BaseController {
 
             $result['order_details'] = [
                 "studio_name"=>[
-                    "field"=> "STUDIO NAME",
+                    "field"=> "",
                     "value"=> $data['finder_name']
                 ],
                 "service_name"=>[
-                    "field"=> "SERVICE",
+                    "field"=> "",
                     "value"=>  $data['service_name']
                 ],
-                "service_duration"=>[
-                    "field"=> "DURATION",
-                    "value"=> $data['service_duration']
+                "duration_amount"=>[
+                    "field"=> $data['service_duration'],
+                    "value"=> "Rs. ".$data['ratecard_price']
                 ],
                 "remarks"=>[
                     "field"=> "REMARKS",
                     "value"=> $data['ratecard_remarks']
-                ],
-                "reward"=>[]
+                ]
                 // "address"=>[
                 //     "field"=> "ADDRESS",
                 //     "value"=> $data['finder_address']
@@ -4349,7 +4348,7 @@ class TransactionController extends \BaseController {
 
             if($data['finder_category_id']==42){
                 
-                $result['order_details']['studio_name']['field'] = "TIFFIN SERVICE";
+                // $result['order_details']['studio_name']['field'] = "TIFFIN SERVICE";
 
                 if(isset($result['order_details']['address'])){
                     unset($result['order_details']['address']);
@@ -4376,20 +4375,41 @@ class TransactionController extends \BaseController {
             $order_id = $data['order_id'];
     
             $order = Order::find(intval($order_id));
-                
-            $result['order_details'] = $this->getBookingDetails($order->toArray());
-    
-            $payment_mode_type_array = ['paymentgateway','emi','cod','part_payment','pay_at_vendor'];
 
-            $payment_details = [];
-    
-            foreach ($payment_mode_type_array as $payment_mode_type) {
-    
-                $payment_details[$payment_mode_type] = $this->getPaymentDetails($order->toArray(),$payment_mode_type);
-    
-            }
+            $ratecard = Ratecard::find(intval($order->ratecard_id));
+                
+            $order_details= $this->getBookingDetails($order->toArray());
             
-            $result['payment_details'] = $payment_details;
+            $result['order_details'] = [];
+
+            foreach($order_details as $value){
+                if(in_array($value['field'], ['ADDRESS', 'START DATE'])){
+                    continue;
+                }
+
+                if(!in_array($value['field'], ['REWARD', 'DURATION'])){
+                    $value['field'] = "";
+                }
+
+                if(in_array($value['field'], ['DURATION'])){
+                    $value['field'] = $value['value'];
+                    $value['value'] = "Rs. ".$ratecard['price'];
+                }
+
+                $result['order_details'][] = $value;
+
+            }
+            // $payment_mode_type_array = ['paymentgateway','emi','cod','part_payment','pay_at_vendor'];
+
+            // $payment_details = [];
+    
+            // foreach ($payment_mode_type_array as $payment_mode_type) {
+    
+            //     $payment_details[$payment_mode_type] = $this->getPaymentDetails($order->toArray(),$payment_mode_type);
+    
+            // }
+            
+            $result['payment_details'] = $this->getPaymentDetails($order->toArray(),'paymentgateway');
         }
 
         return $result;
