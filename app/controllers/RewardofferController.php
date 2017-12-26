@@ -293,8 +293,6 @@ class RewardofferController extends BaseController {
                         // }
                         foreach ($rewards as $rewards_value){
 
-                            // echo"<pre>";print_r($category_id);exit;
-
                             if(in_array($rewards_value['reward_type'],["fitness_kit","healthy_snacks"]) && $category_id != null){
 
                                 $contents = [];
@@ -310,11 +308,11 @@ class RewardofferController extends BaseController {
 
                                         $reward_type_info = 'fitness_kit';
 
-                                        $fitness_kit_array = Config::get('app.fitness_kit');
+                                        $fitness_kit_array = Config::get('fitness_kit.fitness_kit');
                                     }else{
                                         $reward_type_info = 'fitness_kit_2';
 
-                                        $fitness_kit_array = Config::get('app.fitness_kit_2');    
+                                        $fitness_kit_array = Config::get('fitness_kit.fitness_kit_2');    
                                     }
 
                                     rsort($fitness_kit_array);
@@ -339,20 +337,26 @@ class RewardofferController extends BaseController {
                                         }
                                     }
 
+                                    if(empty($content_data)){
+
+                                        foreach ($fitness_kit_array as $data_key => $data_value) {
+
+                                            if($amount >= $data_value['min'] ){
+
+                                                $contents = $data_value['content'][0]['product'];
+                                                $payload_amount = $data_value['content'][0]['amount'];
+
+                                                break;
+                                            }
+                                        }
+                                    }
+
                                 }
-
-                               // echo"<pre>";print_r($contents);exit;
-
-
 
                                 $array = [];
 
                                 switch(true){
                                     case $amount < 2000 :
-                                        // $rewards_value['payload']['amount'] = $rewards_value['reward_type'] == "fitness_kit" ? 750 : 650;
-                                        // $rewards_value['contents'] = $rewards_value['reward_type'] == "fitness_kit" ?  ["Shaker", "Badge"] : ["Pop Mak – Roasted Flavoured Makhana 50gm", "2 Honey Chew Pouch (5 flavours) 20gm", "3 Vegan Protein Bar 1 piece", "4 Stroopwaffle (Caramel Wafer Biscuits/ Cookies) 1 piece", "5 Baked Pizza Stick Dippers 75gm", "6 Roasted Mexican Chickpea 100gm" ];
-                                        // $rewards_value['description'] = $rewards_value['reward_type'] == "fitness_kit" ? "Start your membership with the right products and gear. Get a super-cool fitness kit which contains the following:<br> - Shaker <br> - Badge" : $rewards_value['description'];
-                                        // $rewards_value['image'] =  $rewards_value['reward_type'] == "fitness_kit" ? "https://b.fitn.in/gamification/reward/goodies/kit-1-20-12-2016.jpg" : "https://b.fitn.in/gamification/reward/goodies/hamper-2.jpg";
                                         break;
                                     case (2000 <= $amount && $amount < 5000) :
 
