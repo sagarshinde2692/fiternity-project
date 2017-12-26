@@ -5265,7 +5265,10 @@ class CustomerController extends \BaseController {
 		
 		$referrer = Customer::where('referral_code', $code)->where('status', '1')->first();
 
-		if($referrer && isset($customer->old_customer) && $customer->old_customer == false && !isset($customer->referrer_id) && $customer_id != $referrer->_id){
+	
+		
+
+		if(isset($_GET['device_type']) && in_array($_GET['device_type'], ['ios', 'android']) && $referrer && isset($customer->old_customer) && $customer->old_customer == false && !isset($customer->referrer_id) && $customer_id != $referrer->_id){
 
 			$customer->referrer_id = $referrer->_id;
 			$customer->save();
