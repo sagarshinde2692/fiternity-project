@@ -504,7 +504,11 @@ class OrderController extends \BaseController {
             }
 
             $this->utilities->sendDemonetisationCustomerSms($order);
-
+            try{
+                $this->utilities->addAmountToReferrer($order);
+            }catch(Excepton $e){
+                Log::error($e);
+            }
             $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
             return Response::json($resp);
         }else{
