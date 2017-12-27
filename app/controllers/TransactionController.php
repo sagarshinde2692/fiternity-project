@@ -3077,6 +3077,7 @@ class TransactionController extends \BaseController {
                 
                 $transaction['wallet_balance'] = $wallet_balance;
                 $transaction['top_up'] = $top_up;
+                $transation['top_up_amount'] = $amount;
 
                 switch ($time) {
                     case 'LPlus15':

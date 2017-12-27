@@ -306,7 +306,7 @@ class RewardofferController extends BaseController {
 
                                 if($reward_type_info == 'fitness_kit'){
 
-                                    $pos = strpos($rewards_value['title'],'2');
+                                    $pos = strpos($rewards_value['title'],'Veteran');
 
                                     if($pos === false){
 

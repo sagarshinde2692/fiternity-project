@@ -1,6 +1,6 @@
 <?php
 
-$url = 'http://b.fitn.in/gamification/reward/goodies/';
+$url = 'https://b.fitn.in/gamification/reward/goodies/';
 
 $products = [
 	'Workout Friendly Armband'=>[
