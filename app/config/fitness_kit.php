@@ -66,8 +66,7 @@ return [
 			'content'=>[
 				[
 					"product" => [
-						$products["Drawstring Shoe Bag"]["title"],
-						$products["Workout Friendly Armband"]["title"]
+						$products["Cool-Water Bottle"]["title"]
 					],
 					'category_id'=>[
 						19,
@@ -75,12 +74,11 @@ return [
 						114,
 						123
 					],
-					'amount'=>450,
-					'image' => $url.'zumba1/zumba1.1.png',
+					'amount'=>400,
+					'image' => $url.'zumba2/zumba2.1.png',
                     'gallery'=>[
-                    	$url.'zumba1/zumba1.1.png',
-                     	$products["Drawstring Shoe Bag"]["url"],
-						$products["Workout Friendly Armband"]["url"]	   
+                    	$url.'zumba2/zumba2.1.png',
+                     	$products["Cool-Water Bottle"]["url"]   
                     ]
 				],
 				[
@@ -124,8 +122,8 @@ return [
 			'content'=>[
 				[
 					"product" => [
-						$products["Casual Tote Bag"]["title"],
-						$products["Workout Friendly Armband"]["title"]
+						$products["Drawstring Shoe Bag"]["title"],
+						$products["Compact Hand Towel"]["title"]
 					],
 					'category_id'=>[
 						19,
@@ -133,12 +131,12 @@ return [
 						114,
 						123
 					],
-					'amount'=>550,
-					'image' => $url.'zumba1/zumba1.2.png',
+					'amount'=>500,
+					'image' => $url.'zumba2/zumba2.2.png',
                     'gallery'=>[
-                    	$url.'zumba1/zumba1.2.png',
-                     	$products["Casual Tote Bag"]["url"],
-						$products["Workout Friendly Armband"]["url"]
+                    	$url.'zumba2/zumba2.2.png',
+                     	$products["Drawstring Shoe Bag"]["url"],
+						$products["Compact Hand Towel"]["url"]
                     ]
 				],
 				[
@@ -184,8 +182,8 @@ return [
 			'content'=>[
 				[
 					"product" => [
-						$products["Drawstring Shoe Bag"]["title"],
-						$products["Cool-Water Bottle"]["title"]
+						$products["Casual Tote Bag"]["title"],
+						$products["Workout Friendly Armband"]["title"]
 					],
 					'category_id'=>[
 						19,
@@ -194,11 +192,11 @@ return [
 						123
 					],
 					'amount'=>550,
-					'image' => $url.'zumba1/zumba1.3.png',
+					'image' => $url.'zumba2/zumba2.3.png',
                     'gallery'=>[
-                    	$url.'zumba1/zumba1.3.png',
-                     	$products["Drawstring Shoe Bag"]["url"],
-						$products["Cool-Water Bottle"]["url"]
+                    	$url.'zumba2/zumba2.3.png',
+                     	$products["Casual Tote Bag"]["url"],
+						$products["Workout Friendly Armband"]["url"] 
                     ]
 				],
 				[
@@ -246,9 +244,8 @@ return [
 			'content'=>[
 				[
 					"product" => [
-						$products["Casual Tote Bag"]["title"],
-						$products["Cool-Water Bottle"]["title"],
-						$products["Compact Hand Towel"]["title"]
+						$products["Drawstring Shoe Bag"]["title"],
+						$products["Breather T-Shirt"]["title"]
 					],
 					'category_id'=>[
 						19,
@@ -256,13 +253,12 @@ return [
 						114,
 						123
 					],
-					'amount'=>1000,
-					'image' => $url.'zumba1/zumba1.4.png',
+					'amount'=>700,
+					'image' => $url.'zumba2/zumba2.4.png',
                     'gallery'=>[
-                    	$url.'zumba1/zumba1.4.png',
-                     	$products["Casual Tote Bag"]["url"],
-						$products["Cool-Water Bottle"]["url"],
-						$products["Compact Hand Towel"]["url"] 
+                    	$url.'zumba2/zumba2.4.png',
+                     	$products["Drawstring Shoe Bag"]["url"],
+						$products["Breather T-Shirt"]["url"]
                     ]
 				],
 				[
@@ -308,10 +304,9 @@ return [
 			'content'=>[
 				[
 					"product" => [
-						$products["Casual Tote Bag"]["title"],
-						$products["Cool-Water Bottle"]["title"],
-						$products["Compact Hand Towel"]["title"],
-						$products["Workout Friendly Armband"]["title"]
+						$products["Drawstring Shoe Bag"]["title"],
+						$products["Breather T-Shirt"]["title"],
+						$products["Earphone Detangler"]["title"]
 					],
 					'category_id'=>[
 						19,
@@ -319,14 +314,13 @@ return [
 						114,
 						123
 					],
-					'amount'=>1300,
-					'image' => $url.'zumba1/zumba1.5.png',
+					'amount'=>950,
+					'image' => $url.'zumba2/zumba2.5.png',
                     'gallery'=>[
-                    	$url.'zumba1/zumba1.5.png',
-                     	$products["Casual Tote Bag"]["url"],
-						$products["Cool-Water Bottle"]["url"],
-						$products["Compact Hand Towel"]["url"],
-						$products["Workout Friendly Armband"]["url"] 
+                    	$url.'zumba2/zumba2.5.png',
+                     	$products["Drawstring Shoe Bag"]["url"],
+						$products["Breather T-Shirt"]["url"],
+						$products["Earphone Detangler"]["url"]
                     ]
 				],
 				[
@@ -376,11 +370,9 @@ return [
 			'content'=>[
 				[
 					"product" => [
-						$products["Casual Tote Bag"]["title"],
-						$products["Cool-Water Bottle"]["title"],
-						$products["Compact Hand Towel"]["title"],
-						$products["Workout Friendly Armband"]["title"],
-						$products["Earphone Detangler"]["title"]
+						$products["Drawstring Shoe Bag"]["title"],
+						$products["Breather T-Shirt"]["title"],
+						$products["Compact Hand Towel"]["title"]
 					],
 					'category_id'=>[
 						19,
@@ -388,15 +380,13 @@ return [
 						114,
 						123
 					],
-					'amount'=>1800,
-					'image' => $url.'zumba1/zumba1.6.png',
+					'amount'=>1050,
+					'image' => $url.'zumba2/zumba2.6.png',
                     'gallery'=>[
-                    	$url.'zumba1/zumba1.6.png',
-                     	$products["Casual Tote Bag"]["url"],
-						$products["Cool-Water Bottle"]["url"],
-						$products["Compact Hand Towel"]["url"],
-						$products["Workout Friendly Armband"]["url"],
-						$products["Earphone Detangler"]["url"]   
+                    	$url.'zumba2/zumba2.6.png',
+                    	$products["Drawstring Shoe Bag"]["url"],
+						$products["Breather T-Shirt"]["url"],
+						$products["Compact Hand Towel"]["url"]
                     ]
 				],
 				[
@@ -446,31 +436,6 @@ return [
 			'min'=>25000,
 			'max'=>0,
 			'content'=>[
-				[
-					"product" => [
-						$products["Casual Tote Bag"]["title"],
-						$products["Cool-Water Bottle"]["title"],
-						$products["Compact Hand Towel"]["title"],
-						$products["Workout Friendly Armband"]["title"],
-						$products["Breather T-Shirt"]["title"]
-					],
-					'category_id'=>[
-						19,
-						2,
-						114,
-						123
-					],
-					'amount'=>1850,
-					'image' => $url.'zumba1/zumba1.7.png',
-                    'gallery'=>[
-                    	$url.'zumba1/zumba1.7.png',
-                     	$products["Casual Tote Bag"]["url"],
-						$products["Cool-Water Bottle"]["url"],
-						$products["Compact Hand Towel"]["url"],
-						$products["Workout Friendly Armband"]["url"],
-						$products["Breather T-Shirt"]["url"]   
-                    ]
-				],
 				[
 					"product" => [
 						$products["Breather T-Shirt"]["title"],
@@ -526,7 +491,8 @@ return [
 			'content'=>[
 				[
 					"product" => [
-						$products["Cool-Water Bottle"]["title"]
+						$products["Drawstring Shoe Bag"]["title"],
+						$products["Workout Friendly Armband"]["title"]
 					],
 					'category_id'=>[
 						19,
@@ -534,11 +500,12 @@ return [
 						114,
 						123
 					],
-					'amount'=>400,
-					'image' => $url.'zumba2/zumba2.1.png',
+					'amount'=>450,
+					'image' => $url.'zumba1/zumba1.1.png',
                     'gallery'=>[
-                    	$url.'zumba2/zumba2.1.png',
-                     	$products["Cool-Water Bottle"]["url"]   
+                    	$url.'zumba1/zumba1.1.png',
+                     	$products["Drawstring Shoe Bag"]["url"],
+						$products["Workout Friendly Armband"]["url"]	   
                     ]
 				],
 				[
@@ -580,8 +547,8 @@ return [
 			'content'=>[
 				[
 					"product" => [
-						$products["Drawstring Shoe Bag"]["title"],
-						$products["Compact Hand Towel"]["title"]
+						$products["Casual Tote Bag"]["title"],
+						$products["Workout Friendly Armband"]["title"]
 					],
 					'category_id'=>[
 						19,
@@ -589,12 +556,12 @@ return [
 						114,
 						123
 					],
-					'amount'=>500,
-					'image' => $url.'zumba2/zumba2.2.png',
+					'amount'=>550,
+					'image' => $url.'zumba1/zumba1.2.png',
                     'gallery'=>[
-                    	$url.'zumba2/zumba2.2.png',
-                     	$products["Drawstring Shoe Bag"]["url"],
-						$products["Compact Hand Towel"]["url"]
+                    	$url.'zumba1/zumba1.2.png',
+                     	$products["Casual Tote Bag"]["url"],
+						$products["Workout Friendly Armband"]["url"]
                     ]
 				],
 				[
@@ -638,8 +605,8 @@ return [
 			'content'=>[
 				[
 					"product" => [
-						$products["Casual Tote Bag"]["title"],
-						$products["Workout Friendly Armband"]["title"]
+						$products["Drawstring Shoe Bag"]["title"],
+						$products["Cool-Water Bottle"]["title"]
 					],
 					'category_id'=>[
 						19,
@@ -648,11 +615,11 @@ return [
 						123
 					],
 					'amount'=>550,
-					'image' => $url.'zumba2/zumba2.3.png',
+					'image' => $url.'zumba1/zumba1.3.png',
                     'gallery'=>[
-                    	$url.'zumba2/zumba2.3.png',
-                     	$products["Casual Tote Bag"]["url"],
-						$products["Workout Friendly Armband"]["url"] 
+                    	$url.'zumba1/zumba1.3.png',
+                     	$products["Drawstring Shoe Bag"]["url"],
+						$products["Cool-Water Bottle"]["url"]
                     ]
 				],
 				[
@@ -698,8 +665,9 @@ return [
 			'content'=>[
 				[
 					"product" => [
-						$products["Drawstring Shoe Bag"]["title"],
-						$products["Breather T-Shirt"]["title"]
+						$products["Casual Tote Bag"]["title"],
+						$products["Cool-Water Bottle"]["title"],
+						$products["Compact Hand Towel"]["title"]
 					],
 					'category_id'=>[
 						19,
@@ -707,12 +675,13 @@ return [
 						114,
 						123
 					],
-					'amount'=>700,
-					'image' => $url.'zumba2/zumba2.4.png',
+					'amount'=>1000,
+					'image' => $url.'zumba1/zumba1.4.png',
                     'gallery'=>[
-                    	$url.'zumba2/zumba2.4.png',
-                     	$products["Drawstring Shoe Bag"]["url"],
-						$products["Breather T-Shirt"]["url"]
+                    	$url.'zumba1/zumba1.4.png',
+                     	$products["Casual Tote Bag"]["url"],
+						$products["Cool-Water Bottle"]["url"],
+						$products["Compact Hand Towel"]["url"] 
                     ]
 				],
 				[
@@ -761,9 +730,10 @@ return [
 			'content'=>[
 				[
 					"product" => [
-						$products["Drawstring Shoe Bag"]["title"],
-						$products["Breather T-Shirt"]["title"],
-						$products["Earphone Detangler"]["title"]
+						$products["Casual Tote Bag"]["title"],
+						$products["Cool-Water Bottle"]["title"],
+						$products["Compact Hand Towel"]["title"],
+						$products["Workout Friendly Armband"]["title"]
 					],
 					'category_id'=>[
 						19,
@@ -771,13 +741,14 @@ return [
 						114,
 						123
 					],
-					'amount'=>950,
-					'image' => $url.'zumba2/zumba2.5.png',
+					'amount'=>1300,
+					'image' => $url.'zumba1/zumba1.5.png',
                     'gallery'=>[
-                    	$url.'zumba2/zumba2.5.png',
-                     	$products["Drawstring Shoe Bag"]["url"],
-						$products["Breather T-Shirt"]["url"],
-						$products["Earphone Detangler"]["url"]
+                    	$url.'zumba1/zumba1.5.png',
+                     	$products["Casual Tote Bag"]["url"],
+						$products["Cool-Water Bottle"]["url"],
+						$products["Compact Hand Towel"]["url"],
+						$products["Workout Friendly Armband"]["url"] 
                     ]
 				],
 				[
@@ -827,9 +798,11 @@ return [
 			'content'=>[
 				[
 					"product" => [
-						$products["Drawstring Shoe Bag"]["title"],
-						$products["Breather T-Shirt"]["title"],
-						$products["Compact Hand Towel"]["title"]
+						$products["Casual Tote Bag"]["title"],
+						$products["Cool-Water Bottle"]["title"],
+						$products["Compact Hand Towel"]["title"],
+						$products["Workout Friendly Armband"]["title"],
+						$products["Earphone Detangler"]["title"]
 					],
 					'category_id'=>[
 						19,
@@ -837,15 +810,17 @@ return [
 						114,
 						123
 					],
-					'amount'=>1050,
-					'image' => $url.'zumba2/zumba2.6.png',
+					'amount'=>1800,
+					'image' => $url.'zumba1/zumba1.6.png',
                     'gallery'=>[
-                    	$url.'zumba2/zumba2.6.png',
-                    	$products["Drawstring Shoe Bag"]["url"],
-						$products["Breather T-Shirt"]["url"],
-						$products["Compact Hand Towel"]["url"]
+                    	$url.'zumba1/zumba1.6.png',
+                     	$products["Casual Tote Bag"]["url"],
+						$products["Cool-Water Bottle"]["url"],
+						$products["Compact Hand Towel"]["url"],
+						$products["Workout Friendly Armband"]["url"],
+						$products["Earphone Detangler"]["url"]   
                     ]
-				],
+				],	
 				[
 					"product" => [
 						$products["Cool-Water Bottle"]["title"],
@@ -888,7 +863,38 @@ return [
                     ]
 				]
 			]
-		]
+		],
+		[
+			'min'=>25000,
+			'max'=>0,
+			'content'=>[
+				[
+					"product" => [
+						$products["Casual Tote Bag"]["title"],
+						$products["Cool-Water Bottle"]["title"],
+						$products["Compact Hand Towel"]["title"],
+						$products["Workout Friendly Armband"]["title"],
+						$products["Breather T-Shirt"]["title"]
+					],
+					'category_id'=>[
+						19,
+						2,
+						114,
+						123
+					],
+					'amount'=>1850,
+					'image' => $url.'zumba1/zumba1.7.png',
+                    'gallery'=>[
+                    	$url.'zumba1/zumba1.7.png',
+                     	$products["Casual Tote Bag"]["url"],
+						$products["Cool-Water Bottle"]["url"],
+						$products["Compact Hand Towel"]["url"],
+						$products["Workout Friendly Armband"]["url"],
+						$products["Breather T-Shirt"]["url"]   
+                    ]
+				]
+			]
+		],
 	]
 
 ];
