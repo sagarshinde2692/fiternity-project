@@ -4339,7 +4339,7 @@ class TransactionController extends \BaseController {
 
                 $result['order_details']['reward'] = [
                     'field' => 'REWARD(Cashback)',
-                    'value' => $data['cashback']
+                    'value' => "Rs. "+$data['cashback']
                 ];
 
                 $data['you_save'] += intval($data['cashback']);
