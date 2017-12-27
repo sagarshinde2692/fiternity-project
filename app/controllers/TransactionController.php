@@ -4295,11 +4295,11 @@ class TransactionController extends \BaseController {
 
             $result['order_details'] = [
                 "studio_name"=>[
-                    "field"=> "",
+                    "field"=> "STUDIO",
                     "value"=> $data['finder_name']
                 ],
                 "service_name"=>[
-                    "field"=> "",
+                    "field"=> "SERVICE NAME",
                     "value"=>  $data['service_name']
                 ],
                 "duration_amount"=>[
@@ -4325,8 +4325,8 @@ class TransactionController extends \BaseController {
                     $reward_amount = $reward['payload']['amount'];
                     
                     $result['order_details']['reward'] = [
-                        'field' => "REWARD",
-                        'value' =>  "$reward_title worth Rs. $reward_amount"
+                        'field' => "REWARD($reward_title)",
+                        'value' =>  $reward_amount
                     ];
 
                     $data['you_save'] += $reward_amount;
@@ -4338,8 +4338,8 @@ class TransactionController extends \BaseController {
                 
 
                 $result['order_details']['reward'] = [
-                    'field' => 'REWARD',
-                    'value' => "Cashback worth Rs. ".$data['cashback']
+                    'field' => 'REWARD(Cashback)',
+                    'value' => $data['cashback']
                 ];
 
                 $data['you_save'] += intval($data['cashback']);
@@ -4366,7 +4366,10 @@ class TransactionController extends \BaseController {
             $result['order_details'] = array_values($result['order_details']);
 
             if($data['you_save'] > 0){
-                $result['payment_details']['note'] = "Your total savings on this transaction ".$data['you_save'];
+                $result['payment_details']['savings'] = [
+                    'field' => 'Your total savings',
+                    'value' => $data['you_save']
+                ];
             }
 
 
