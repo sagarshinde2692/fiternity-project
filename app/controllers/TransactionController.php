@@ -4303,8 +4303,8 @@ class TransactionController extends \BaseController {
                     "value"=>  $data['service_name']
                 ],
                 "duration_amount"=>[
-                    "field"=> $data['service_duration'],
-                    "value"=> "Rs. ".$data['ratecard_price']
+                    "field"=> "DURATION",
+                    "value"=> $data['service_duration']
                 ],
                 "remarks"=>[
                     "field"=> "REMARKS",
@@ -4326,7 +4326,7 @@ class TransactionController extends \BaseController {
                     
                     $result['order_details']['reward'] = [
                         'field' => "REWARD($reward_title)",
-                        'value' =>  $reward_amount
+                        'value' =>  "Rs. "+$reward_amount
                     ];
 
                     $data['you_save'] += $reward_amount;
@@ -4368,7 +4368,7 @@ class TransactionController extends \BaseController {
             if($data['you_save'] > 0){
                 $result['payment_details']['savings'] = [
                     'field' => 'Your total savings',
-                    'value' => $data['you_save']
+                    'value' => "Rs.".$data['you_save']
                 ];
             }
 
