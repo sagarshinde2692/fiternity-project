@@ -1819,6 +1819,10 @@ class TransactionController extends \BaseController {
                     $data["payment_mode"] = "at the studio";
                     $data["secondary_payment_mode"] = "cod_membership";
                 }
+
+                if(strtolower($data["coupon_code"]) == 'fit2018'){
+                    $data['routed_order'] = true;
+                }
             }
             
         }else{
@@ -1827,6 +1831,12 @@ class TransactionController extends \BaseController {
 
                 $order->unset('coupon_code');
                 $order->unset('coupon_discount_amount');
+            }
+
+            if($order && isset($order['routed_order'])){
+                
+                $order->unset('routed_order');
+            
             }
 
         }
