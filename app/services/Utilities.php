@@ -2355,8 +2355,8 @@ Class Utilities {
         if(!isset($customer_email) ||  $customer_email != ""){
             $jwt_token = Request::header('Authorization');
             if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
-    
                 $decoded = customerTokenDecode($jwt_token);
+                Log::info("Customer Decoded Token",$decoded->toArray());
                 $customer_email = $decoded->customer->email;
             }
         }
