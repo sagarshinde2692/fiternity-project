@@ -3616,6 +3616,8 @@ class TransactionController extends \BaseController {
                     'field' => 'Fitcash Applied',
                     'value' => '-Rs. '.$data['cashback_detail']['amount_deducted_from_wallet']
                 );
+                $you_save += $data['cashback_detail']['amount_deducted_from_wallet'];
+                
             }
 
             if(isset($data['coupon_discount_amount']) && $data['coupon_discount_amount'] > 0){
@@ -3624,6 +3626,7 @@ class TransactionController extends \BaseController {
                     'field' => 'Coupon Discount',
                     'value' => '-Rs. '.$data['coupon_discount_amount']
                 );
+                $you_save += $data['coupon_discount_amount'];
                 
             }
 
@@ -3633,6 +3636,9 @@ class TransactionController extends \BaseController {
                     'field' => 'Corporate Discount',
                     'value' => '-Rs. '.$data['customer_discount_amount']
                 );
+                $you_save += $data['coupon_discount_amount'];
+                
+                
             }
 
             if(isset($data['app_discount_amount']) && $data['app_discount_amount'] > 0){
@@ -3641,6 +3647,9 @@ class TransactionController extends \BaseController {
                     'field' => 'App Discount',
                     'value' => '-Rs. '.$data['app_discount_amount']
                 );
+
+                $you_save += $data['app_discount_amount'];
+                
             }
         }
 
@@ -3655,7 +3664,10 @@ class TransactionController extends \BaseController {
         $payment_details['amount_payable'] = $amount_payable;
         
         if($you_save > 0){
-            $payment_details['note'] = "Your total savings on this transaction ".$you_save;
+            $result['payment_details']['savings'] = [
+                'field' => 'Your total savings',
+                'value' => "Rs.".$you_save
+            ];
         }
 
         return $payment_details;
@@ -4167,15 +4179,36 @@ class TransactionController extends \BaseController {
             ]
         ];
 
-        if(!isset($data['order_id'])){
+        $ratecard_id = null;
 
-            if(!isset($data['ratecard_id'])){
+        $data['you_save'] = 0;
+
+        if(!isset($data['ratecard_id']) && !isset($data['order_id'])){
                 
-                return Response::json(array('status'=>400, 'message'=>'ratecard id not present'), $this->error_status);
+                return Response::json(array('status'=>400, 'message'=>'Order id or Ratecard id is required'), $this->error_status);
+        }
+
+        if(!isset($data['ratecard_id'])){
+
+            $order = Order::find(intval($data['order_id']));
+
+            if(isset($order->ratecard_id) && $order->ratecard_id != ''){
+               
+                $ratecard_id = $order->ratecard_id;
             
             }
+        
+        }else{
+
+                $ratecard_id = intval($data['ratecard_id']);
+        }
+
+
+        if($ratecard_id && $ratecard_id != ''){
+
+            $data['ratecard_id'] = $ratecard_id;
             
-            $ratecard_id = (int) $data['ratecard_id'];
+            Log::info("idifiifififififi");
 
             $ratecardDetail = $this->getRatecardDetail($data);
 
@@ -4191,14 +4224,12 @@ class TransactionController extends \BaseController {
 
             $data['ratecard_price'] = $ratecard['price'];
             
-            $data['you_save'] = 0;
+            
             
             $result['payment_details']['amount_summary'][] = [
                 'field' => 'Total Amount',
                 'value' => 'Rs. '.(string)$data['amount']
             ];
-
-
 
             if(isset($ratecardDetail["data"]["ratecard_flags"]) && isset($ratecardDetail["data"]["ratecard_flags"]["convinience_fee_applicable"]) && $ratecardDetail["data"]["ratecard_flags"]["convinience_fee_applicable"]){
                 
@@ -4241,6 +4272,8 @@ class TransactionController extends \BaseController {
                         'value' => '-Rs. '.(string)$data['fitcash_applied']
                     ];
 
+                    $data['you_save'] += $data['fitcash_applied'];
+
                 }
             }
 
@@ -4254,7 +4287,7 @@ class TransactionController extends \BaseController {
 
                     $data['amount_payable'] = $data['amount_payable'] - $data['coupon_discount'];
                     
-                    // $data['you_save'] += $data['coupon_discount'];
+                    $data['you_save'] += $data['coupon_discount'];
                     
                     $result['payment_details']['amount_summary'][] = [
                         'field' => 'Coupon Discount',
@@ -4295,20 +4328,20 @@ class TransactionController extends \BaseController {
 
             $result['order_details'] = [
                 "studio_name"=>[
-                    "field"=> "STUDIO",
+                    "field"=> "",
                     "value"=> $data['finder_name']
                 ],
                 "service_name"=>[
-                    "field"=> "SERVICE NAME",
+                    "field"=> "",
                     "value"=>  $data['service_name']
                 ],
                 "duration_amount"=>[
-                    "field"=> "DURATION",
-                    "value"=> $data['service_duration']
+                    "field"=> $data['service_duration'],
+                    "value"=> $data['amount']
                 ],
                 "remarks"=>[
                     "field"=> "REMARKS",
-                    "value"=> $data['ratecard_remarks']
+                    "value"=> "Rs. ".$data['ratecard_remarks']
                 ]
                 // "address"=>[
                 //     "field"=> "ADDRESS",
@@ -4325,8 +4358,8 @@ class TransactionController extends \BaseController {
                     $reward_amount = $reward['payload']['amount'];
                     
                     $result['order_details']['reward'] = [
-                        'field' => "REWARD($reward_title)",
-                        'value' =>  "Rs. "+$reward_amount
+                        'field' => "REWARD ($reward_title)",
+                        'value' =>  "Rs. ".$reward_amount
                     ];
 
                     $data['you_save'] += $reward_amount;
@@ -4368,51 +4401,199 @@ class TransactionController extends \BaseController {
             if($data['you_save'] > 0){
                 $result['payment_details']['savings'] = [
                     'field' => 'Your total savings',
-                    'value' => "Rs.".$data['you_save']
+                    'value' => "Rs. ".$data['you_save'],
+                    'amount' => $data['you_save']
                 ];
             }
 
 
         }else{
 
+            Log::info("elelelelelelel");
+            
+
             $order_id = $data['order_id'];
     
             $order = Order::find(intval($order_id));
 
-            $ratecard = Ratecard::find(intval($order->ratecard_id));
-                
-            $order_details= $this->getBookingDetails($order->toArray());
+            $result['order_details'] = [
+                "studio_name"=>[
+                    "field"=> "",
+                    "value"=> $order['finder_name']
+                ],
+                "service_name"=>[
+                    "field"=> "",
+                    "value"=>  $order['service_name']
+                ],
+                "duration_amount"=>[
+                    "field"=> $order['service_duration'],
+                    "value"=> "Rs. ".$order['amount']
+                ]
+                // "address"=>[
+                //     "field"=> "ADDRESS",
+                //     "value"=> $data['finder_address']
+                // ]
+            ];
+
+
+            $data['you_save'] = 0;
+
+            $result['payment_details']['amount_summary'][] = [
+                'field' => 'Total Amount',
+                'value' => 'Rs. '.(string)$order['amount']
+            ];
+
+            $data['amount_payable'] = $order['amount'];
+
+            $jwt_token = Request::header('Authorization');
             
-            $result['order_details'] = [];
+            Log::info('jwt_token checkout summary: '.$jwt_token);
+                
+            if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+                
+                $decoded = customerTokenDecode($jwt_token);
+                
+                $customer_id = $decoded->customer->_id;
 
-            foreach($order_details as $value){
-                if(in_array($value['field'], ['ADDRESS', 'START DATE'])){
-                    continue;
+                $data['wallet_balance'] = $this->utilities->getWalletBalance($customer_id);
+
+                $data['fitcash_applied'] = $data['amount_payable'] > $data['wallet_balance'] ? $data['wallet_balance'] : $data['amount_payable'];
+                
+                $data['amount_payable'] -= $data['fitcash_applied'];
+                if($data['fitcash_applied'] > 0){
+
+                    $result['payment_details']['amount_summary'][] = [
+                        'field' => 'Fitcash Applied',
+                        'value' => '-Rs. '.(string)$data['fitcash_applied']
+                    ];
+
+                    $data['you_save'] += $data['fitcash_applied'];
+
                 }
+            }
 
-                if(!in_array($value['field'], ['REWARD', 'DURATION'])){
-                    $value['field'] = "";
+            if(isset($data['coupon'])){
+                
+                $resp = $this->customerreward->couponCodeDiscountCheck($ratecard, $data['coupon']);
+
+                if($resp["coupon_applied"]){
+                    
+                    $data['coupon_discount'] = $data['amount_payable'] > $resp['data']['discount'] ? $resp['data']['discount'] : $data['amount_payable'];
+
+                    $data['amount_payable'] = $data['amount_payable'] - $data['coupon_discount'];
+                    
+                    $data['you_save'] += $data['coupon_discount'];
+                    
+                    $result['payment_details']['amount_summary'][] = [
+                        'field' => 'Coupon Discount',
+                        'value' => '-Rs. '.(string)$data['coupon_discount']
+                    ];
+                
                 }
-
-                if(in_array($value['field'], ['DURATION'])){
-                    $value['field'] = $value['value'];
-                    $value['value'] = "Rs. ".$ratecard['price'];
-                }
-
-                $result['order_details'][] = $value;
 
             }
-            // $payment_mode_type_array = ['paymentgateway','emi','cod','part_payment','pay_at_vendor'];
 
-            // $payment_details = [];
-    
-            // foreach ($payment_mode_type_array as $payment_mode_type) {
-    
-            //     $payment_details[$payment_mode_type] = $this->getPaymentDetails($order->toArray(),$payment_mode_type);
-    
-            // }
+            if(isset($data['reward_ids'])){
+                
+                $reward = Reward::find(intval($data['reward_ids'][0]));
+
+                if($reward){
+                    $reward_title = $reward['title'];
+                    $reward_amount = $reward['payload']['amount'];
+                    
+                    $result['order_details']['reward'] = [
+                        'field' => "REWARD ($reward_title)",
+                        'value' =>  "Rs. ".$reward_amount
+                    ];
+
+                    $data['you_save'] += $reward_amount;
+                
+                }
+            }
+
+            if(isset($data['cashback'])){
+                
+
+                $result['order_details']['reward'] = [
+                    'field' => 'REWARD (Cashback)',
+                    'value' => "Rs. "+$data['cashback']
+                ];
+
+                $data['you_save'] += intval($data['cashback']);
+
+            }
+                
+
+            $result['payment_details']['amount_payable'] = [
+                'field' => 'Total Amount Payable',
+                'value' => 'Rs. '.(string)$data['amount_payable']
+            ];
+
+            if($data['you_save'] > 0){
+                $result['payment_details']['savings'] = [
+                    'field' => 'Your total savings',
+                    'value' => "Rs. ".$data['you_save'],
+                ];
+            }
+            // $result['order_details'] = array_values($result['order_details']);
             
-            $result['payment_details'] = $this->getPaymentDetails($order->toArray(),'paymentgateway');
+
+        //     $ratecard = Ratecard::find(intval($order->ratecard_id));
+                
+        //     $order_details= $this->getBookingDetails($order->toArray());
+            
+        //     $result['order_details'] = [];
+
+        //     $reward_amount = 0;
+
+        //     if(isset($order['reward_ids']) && !empty($order['reward_ids'])){
+        //         $reward_ids = array_map('intval',$data['reward_ids']);
+        //         $rewards = Reward::whereIn('_id',$reward_ids)->get(array('payload'));
+        //         if(count($rewards) > 0){
+        //             foreach ($rewards as $value) {
+        //                 $reward_amount += $value['payload']['price'];
+        //             }
+        //         }
+        //     }
+        //     if(isset($order['cashback']) && $order['cashback']){
+        //         $reward_amount += $order['cashback_detail']['wallet_amount'];
+        //     }
+
+        //     foreach($order_details as $value){
+        //         if(in_array($value['field'], ['ADDRESS', 'START DATE'])){
+        //             continue;
+        //         }
+
+        //         if(!in_array($value['field'], ['REWARD', 'DURATION'])){
+        //             $value['field'] = "";
+        //         }
+
+        //         if(in_array($value['field'], ['DURATION'])){
+        //             $value['field'] = "";
+        //             $value['value'] = "Rs. ".$ratecard['price'];
+        //         }
+
+        //         $result['order_details'][] = $value;
+
+        //     }
+
+        //     $result['payment_details'] = $this->getPaymentDetails($order->toArray(),'paymentgateway');
+            
+        //     if($reward_amount > 0){
+        //         if(isset($result['payment_details']['savings'])){
+        //             $savings_amount = $reward_amount + $result['payment_details']['savings']['amount'];
+        //             $result['payment_details']['savings'] = [
+        //                 'field' => 'Your total savings',
+        //                 'value' => "Rs. ".$savings_amount
+        //             ];
+        //         }else{
+        //             $result['payment_details']['savings'] = [
+        //                 'field' => 'Your total savings',
+        //                 'value' => "Rs.".$reward_amount
+        //             ];
+        //         }
+        //     }
+            
         }
 
         return $result;
