@@ -3377,44 +3377,45 @@ class TransactionController extends \BaseController {
         $booking_details_data["address"] = ['field'=>'ADDRESS','value'=>'','position'=>$position++];
 
         if(isset($data['reward_ids']) && !empty($data['reward_ids'])){
+
             $reward_detail = array();
+
             $reward_ids = array_map('intval',$data['reward_ids']);
+
             $rewards = Reward::whereIn('_id',$reward_ids)->get(array('_id','title','quantity','reward_type','quantity_type'));
+
             if(count($rewards) > 0){
+
                 foreach ($rewards as $value) {
+
                     $title = $value->title;
+
                     $reward_detail[] = ($value->reward_type == 'nutrition_store') ? $title : $value->quantity." ".$title;
                     
                     array_set($data, 'reward_type', $value->reward_type);
+            
                 }
+            
                 $reward_info = (!empty($reward_detail)) ? implode(" + ",$reward_detail) : "";
+            
                 array_set($data, 'reward_info', $reward_info);
                 
             }
         }
+
         if(isset($data['cashback']) && $data['cashback']){
             array_set($data,'reward_info','Cashback');
         }
+
         if(isset($data["reward_info"]) && $data["reward_info"] != ""){
+
             if($data["reward_info"] == 'Cashback'){
                 $booking_details_data["reward"] = ['field'=>'REWARD','value'=>$data["reward_info"],'position'=>$position++];
             }else{
                 $booking_details_data["reward"] = ['field'=>'REWARD','value'=>$data["reward_info"]." (Avail it from your Profile)",'position'=>$position++];
             }
         }
-        if(isset($data["membership"]) && !empty($data["membership"])){
-            if(isset($data["membership"]['cashback']) && $data["membership"]['cashback'] === true){
-                $booking_details_data["reward"] = ['field'=>'PREBOOK REWARD','value'=>'Cashback','position'=>$position++];
-            }
-            if(isset($data["membership"]["reward_ids"]) && isset($data["membership"]["reward_ids"]) && !empty($data["membership"]["reward_ids"])){
-                $reward_id = $data["membership"]["reward_ids"][0];
-                $reward = Reward::find($reward_id,['title']);
-                if($reward){
-                    $booking_details_data["reward"] = ['field'=>'PREBOOK REWARD','value'=>$reward['title'],'position'=>$position++];
-                }
-            }
-        }
-
+         
         if(isset($data["membership"]) && !empty($data["membership"])){
 
             if(isset($data["membership"]['cashback']) && $data["membership"]['cashback'] === true){
