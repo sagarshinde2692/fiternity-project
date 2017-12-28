@@ -2064,7 +2064,7 @@ Class Utilities {
 
             $previous_referral_order_ids = Wallet::where('customer_id', $customer['referrer_id'])->where('description', 'Referral fitcashplus to referrer')->lists('order_id');
 
-            $customer_phones = Order::whereIn('_id', $previous_referral_order_ids)->lists('customer_phone');
+            $customer_phones = \Order::whereIn('_id', $previous_referral_order_ids)->lists('customer_phone');
 
             $match = preg_grep('%'.substr($order['customer_phone'], -10).'%', $customer_phones);            
 
