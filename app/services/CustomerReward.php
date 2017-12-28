@@ -104,11 +104,11 @@ Class CustomerReward {
 
                     $reward_data_flag = false;
 
-                    $reward_type_info = $rewards_value['reward_type'];
+                    $reward_type_info = $reward['reward_type'];
 
                     if($reward_type_info == 'fitness_kit'){
 
-                        $pos = strpos($rewards_value['title'],'(Kit B)');
+                        $pos = strpos($reward['title'],'(Kit B)');
 
                         if($pos === false){
 
@@ -193,7 +193,7 @@ Class CustomerReward {
 
             $order = \Order::find($reward['order_id']);
             if($order){
-                
+
                 $order->customer_reward_id = $myreward->_id;
 
                 if(isset($reward['content'])){
