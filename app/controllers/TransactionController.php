@@ -4217,7 +4217,8 @@ class TransactionController extends \BaseController {
                 'amount_summary' => [],
                 'amount_payable' => [],
                 'note'=>""
-            ]
+            ],
+            'full_wallet_payment' => false
         ];
 
         $ratecard_id = null;
@@ -4344,6 +4345,9 @@ class TransactionController extends \BaseController {
                 'value' => 'Rs. '.(string)$data['amount_payable']
             ];
 
+            if($data['amount_payable'] == 0){
+                $result['full_wallet_payment'] = true;
+            }
             
             $finder_id = (int) $data['finder_id'];
             
@@ -4569,6 +4573,10 @@ class TransactionController extends \BaseController {
                 'field' => 'Total Amount Payable',
                 'value' => 'Rs. '.(string)$data['amount_payable']
             ];
+
+            if($data['amount_payable'] == 0){
+                $result['full_wallet_payment'] = true;
+            }
 
             if($data['you_save'] > 0){
                 $result['payment_details']['savings'] = [
