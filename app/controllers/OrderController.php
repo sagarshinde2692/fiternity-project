@@ -2844,7 +2844,7 @@ class OrderController extends \BaseController {
             // Generate bitly for landing page with invite_id and booktrial_id
             // 'www.fitternity.com/buy/'.$orderData['finder_slug'].'/'.$orderData['service_id']finder-slug/service_id
             // 'www.fitternity.com/'.$orderData['finder_city'].'/'.$finder_cat_slug['slug']
-            $url = 'www.fitternity.com/buy/'.$orderData['finder_slug'].'/'.$orderData['service_id'];
+            $url = 'www.fitternity.com/'.$orderData['finder_slug']; //'www.fitternity.com/buy/'.$orderData['finder_slug'].'/'.$orderData['service_id'];
             $url2 = 'www.fitternity.com/'.$orderData['finder_city'].'/'.$finder_cat_slug[0]['slug'].'/'.$locationSlug;
             $shorten_url = new ShortenUrl();
             $url = $shorten_url->getShortenUrl($url);
