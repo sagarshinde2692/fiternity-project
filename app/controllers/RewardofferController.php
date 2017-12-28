@@ -394,37 +394,13 @@ class RewardofferController extends BaseController {
                                 $array = [];
 
                                 switch(true){
+                                    
                                     case $amount < 2000 :
                                         break;
+
                                     case (2000 <= $amount && $amount < 5000) :
 
                                         $array = [
-                                            'fitness_kit' => [
-                                                'payload_amount' => 650,
-                                                'contents' => [
-                                                    "Shoe Bag",
-                                                    "Shaker"
-                                                ],
-                                                'image' => "https://b.fitn.in/gamification/reward/goodies/Kit_2_10_11_2017.jpg",
-                                                'gallery'=>[
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_2_10_11_2017.jpg",
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_2,3,6.jpg",
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_2,3,4,5,6,7,8.jpg"
-                                                ]
-                                            ],
-                                            'fitness_kit_2' => [
-                                                'payload_amount' => 650,
-                                                'contents' => [
-                                                    "Shoe Bag",
-                                                    "Shaker"
-                                                ],
-                                                'image' => "https://b.fitn.in/gamification/reward/goodies/Kit_2_10_11_2017.jpg",
-                                                'gallery'=>[
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_2_10_11_2017.jpg",
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_2,3,6.jpg",
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_2,3,4,5,6,7,8.jpg"
-                                                ]
-                                            ],
                                             'healthy_snacks' => [
                                                 'payload_amount' => 300,
                                                 'contents' => [
@@ -442,36 +418,6 @@ class RewardofferController extends BaseController {
                                     case (5000 <= $amount && $amount < 7500) :
 
                                         $array = [
-                                            'fitness_kit' => [
-                                                'payload_amount' => 100,
-                                                'contents' => [
-                                                    "Shoe Bag",
-                                                    "Shaker",
-                                                    "Earphone Detangler"
-                                                ],
-                                                'image' => "https://b.fitn.in/gamification/reward/goodies/Kit_3_10_11_2017.jpg",
-                                                'gallery'=>[
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_3_10_11_2017.jpg",
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_2,3,6.jpg",
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_2,3,4,5,6,7,8.jpg",
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_3,7,8.jpg"
-                                                ]
-                                            ],
-                                            'fitness_kit_2' => [
-                                                'payload_amount' => 100,
-                                                'contents' => [
-                                                    "Shoe Bag 2",
-                                                    "Shaker 2",
-                                                    "Earphone Detangler 2"
-                                                ],
-                                                'image' => "https://b.fitn.in/gamification/reward/goodies/Kit_3_10_11_2017.jpg",
-                                                'gallery'=>[
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_3_10_11_2017.jpg",
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_2,3,6.jpg",
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_2,3,4,5,6,7,8.jpg",
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_3,7,8.jpg"
-                                                ]
-                                            ],
                                             'healthy_snacks' => [
                                                 'payload_amount' => 510,
                                                 'contents' => [
@@ -490,32 +436,6 @@ class RewardofferController extends BaseController {
                                     case (7500 <= $amount && $amount < 10000) :
 
                                         $array = [
-                                            'fitness_kit' => [
-                                                'payload_amount' => 1350,
-                                                'contents' => [
-                                                    "Gym Bag",
-                                                    "Shaker"
-                                                ],
-                                                'image' => "https://b.fitn.in/gamification/reward/goodies/Kit_4_10_11_2017.jpg",
-                                                'gallery'=>[
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_4_10_11_2017.jpg",
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_4,5,6,7,8.jpg",
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_2,3,4,5,6,7,8.jpg"
-                                                ]
-                                            ],
-                                            'fitness_kit_2' => [
-                                                'payload_amount' => 1350,
-                                                'contents' => [
-                                                    "Gym Bag",
-                                                    "Shaker"
-                                                ],
-                                                'image' => "https://b.fitn.in/gamification/reward/goodies/Kit_4_10_11_2017.jpg",
-                                                'gallery'=>[
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_4_10_11_2017.jpg",
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_4,5,6,7,8.jpg",
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_2,3,4,5,6,7,8.jpg"
-                                                ]
-                                            ],
                                             'healthy_snacks' => [
                                                 'payload_amount' => 700,
                                                 'contents' => [
@@ -534,36 +454,6 @@ class RewardofferController extends BaseController {
                                     case (10000 <= $amount && $amount < 15000) :
 
                                         $array = [
-                                            'fitness_kit' => [
-                                                'payload_amount' => 1950,
-                                                'contents' => [
-                                                    "Gym Bag",
-                                                    "Shaker",
-                                                    "T-shirt"
-                                                ],
-                                                'image' => "https://b.fitn.in/gamification/reward/goodies/Kit_5_10_11_2017.jpg",
-                                                'gallery'=>[
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_5_10_11_2017.jpg",
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_2,3,4,5,6,7,8.jpg",
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_4,5,6,7,8.jpg",
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_5,6,7,8(1).jpg"
-                                                ]
-                                            ],
-                                            'fitness_kit_2' => [
-                                                'payload_amount' => 1950,
-                                                'contents' => [
-                                                    "Gym Bag",
-                                                    "Shaker",
-                                                    "T-shirt"
-                                                ],
-                                                'image' => "https://b.fitn.in/gamification/reward/goodies/Kit_5_10_11_2017.jpg",
-                                                'gallery'=>[
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_5_10_11_2017.jpg",
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_2,3,4,5,6,7,8.jpg",
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_4,5,6,7,8.jpg",
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_5,6,7,8(1).jpg"
-                                                ]
-                                            ],
                                             'healthy_snacks' => [
                                                 'payload_amount' => 1600,
                                                 'contents' => [
@@ -583,40 +473,6 @@ class RewardofferController extends BaseController {
                                     case (15000 <= $amount && $amount < 20000) :
 
                                         $array = [
-                                            'fitness_kit' => [
-                                                'payload_amount' => 2100,
-                                                'contents' => [
-                                                    "Gym Bag",
-                                                    "Shaker",
-                                                    "T-shirt",
-                                                    "Shoe Bag"
-                                                ],
-                                                'image' => "https://b.fitn.in/gamification/reward/goodies/Kit_6_10_11_2017.jpg",
-                                                'gallery'=>[
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_6_10_11_2017.jpg",
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_4,5,6,7,8.jpg",
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_2,3,4,5,6,7,8.jpg",
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_2,3,6.jpg",
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_5,6,7,8(1).jpg"
-                                                ]
-                                            ],
-                                           'fitness_kit_2' => [
-                                                'payload_amount' => 2100,
-                                                'contents' => [
-                                                    "Gym Bag",
-                                                    "Shaker",
-                                                    "T-shirt",
-                                                    "Shoe Bag"
-                                                ],
-                                                'image' => "https://b.fitn.in/gamification/reward/goodies/Kit_6_10_11_2017.jpg",
-                                                'gallery'=>[
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_6_10_11_2017.jpg",
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_4,5,6,7,8.jpg",
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_2,3,4,5,6,7,8.jpg",
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_2,3,6.jpg",
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_5,6,7,8(1).jpg"
-                                                ]
-                                            ],
                                             'healthy_snacks' => [
                                                 'payload_amount' => 1600,
                                                 'contents' => [
@@ -638,44 +494,6 @@ class RewardofferController extends BaseController {
                                     case (20000 <= $amount && $amount < 25000) :
 
                                         $array = [
-                                            'fitness_kit' => [
-                                                'payload_amount' => 2550,
-                                                'contents' => [
-                                                    "T - Shirt",
-                                                    "Tote Bag",
-                                                    "Shaker",
-                                                    "Earphone Detangler",
-                                                    "Gym Bag"
-                                                ],
-                                                'image' => "https://b.fitn.in/gamification/reward/goodies/Kit_7_10_11_2017.jpg",
-                                                'gallery'=>[
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_7_10_11_2017.jpg", 
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_4,5,6,7,8.jpg",
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_2,3,4,5,6,7,8.jpg", 
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_5,6,7,8(1).jpg",
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_7,8.jpg",
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_3,7,8.jpg"
-                                                ]
-                                            ],
-                                            'fitness_kit_2' => [
-                                                'payload_amount' => 2550,
-                                                'contents' => [
-                                                    "T - Shirt",
-                                                    "Tote Bag",
-                                                    "Shaker",
-                                                    "Earphone Detangler",
-                                                    "Gym Bag"
-                                                ],
-                                                'image' => "https://b.fitn.in/gamification/reward/goodies/Kit_7_10_11_2017.jpg",
-                                                'gallery'=>[
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_7_10_11_2017.jpg", 
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_4,5,6,7,8.jpg",
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_2,3,4,5,6,7,8.jpg", 
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_5,6,7,8(1).jpg",
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_7,8.jpg",
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_3,7,8.jpg"
-                                                ]
-                                            ],
                                             'healthy_snacks' => [
                                                 'payload_amount' => 2020,
                                                 'contents' => [
@@ -697,52 +515,6 @@ class RewardofferController extends BaseController {
                                     case (25000 <= $amount) :
 
                                         $array = [
-                                            'fitness_kit' => [
-                                                'payload_amount' => 3325,
-                                                'contents' => [
-                                                    "T - Shirt",
-                                                    "Tote Bag",
-                                                    "Shaker",
-                                                    "Earphone Detangler",
-                                                    "Gym Bag",
-                                                    "Mug",
-                                                    "Skipping Rope"
-                                                ],
-                                                'image' => "https://b.fitn.in/gamification/reward/goodies/Kit_8_10_11_2017.jpg",
-                                                'gallery'=>[
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_8_10_11_2017.jpg", 
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_4,5,6,7,8.jpg",
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_2,3,4,5,6,7,8.jpg",  
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_5,6,7,8(1).jpg", 
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_7,8.jpg",
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_3,7,8.jpg", 
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_8only(1).jpg",
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_8only.jpg"
-                                                ]
-                                            ],
-                                            'fitness_kit_2' => [
-                                                'payload_amount' => 3325,
-                                                'contents' => [
-                                                    "T - Shirt",
-                                                    "Tote Bag",
-                                                    "Shaker",
-                                                    "Earphone Detangler",
-                                                    "Gym Bag",
-                                                    "Mug",
-                                                    "Skipping Rope"
-                                                ],
-                                                'image' => "https://b.fitn.in/gamification/reward/goodies/Kit_8_10_11_2017.jpg",
-                                                'gallery'=>[
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_8_10_11_2017.jpg", 
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_4,5,6,7,8.jpg",
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_2,3,4,5,6,7,8.jpg",  
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_5,6,7,8(1).jpg", 
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_7,8.jpg",
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_3,7,8.jpg", 
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_8only(1).jpg",
-                                                    "https://b.fitn.in/gamification/reward/goodies/Kit_8only.jpg"
-                                                ]
-                                            ],
                                             'healthy_snacks' => [
                                                 'payload_amount' => 2600,
                                                 'contents' => [
@@ -763,29 +535,27 @@ class RewardofferController extends BaseController {
                                         break;
                                 }
 
-                                if(!empty($array)){
+                                if(!empty($array) && $reward_type_info == 'healthy_snacks'){
 
                                     $rewards_value['payload']['amount'] = $array[$reward_type_info]['payload_amount'];
                                     $rewards_value['contents'] = $array[$reward_type_info]['contents'];
                                     $rewards_value['image'] = $array[$reward_type_info]['image'];
                                     $rewards_value['gallery'] = $array[$reward_type_info]['gallery'];
 
-                                    if($rewards_value['reward_type'] == 'healthy_snacks'){
+                                    $rewards_value['description'] = "Ensure you avoid those extra calories by munching on tasty snacks. Get a specially curated hamper which contains. <br>- ".implode(" <br>- ",$rewards_value['contents']);
 
-                                        $rewards_value['description'] = "Ensure you avoid those extra calories by munching on tasty snacks. Get a specially curated hamper which contains. <br>- ".implode(" <br>- ",$rewards_value['contents']);
+                                    /*$rewards_value['image'] = "https://b.fitn.in/gamification/reward/goodies/hamper-2.jpg";
+                                    $rewards_value['gallery'] = [];*/
+                                }
 
-                                        $rewards_value['image'] = "https://b.fitn.in/gamification/reward/goodies/hamper-2.jpg";
-                                        $rewards_value['gallery'] = [];
+                                if(in_array($rewards_value['reward_type'],["fitness_kit"])){
 
-                                    }else{
+                                    $rewards_value['description'] = "We have shaped the perfect fitness kit for you. Strike off these workout essentials from your cheat sheet & get going. <br>- ".implode(" <br>- ",$reward_data['contents']);
 
-                                        $rewards_value['description'] = "We have shaped the perfect fitness kit for you. Strike off these workout essentials from your cheat sheet & get going. <br>- ".implode(" <br>- ",$reward_data['contents']);
-
-                                        $rewards_value['contents'] = $reward_data['contents'];
-                                        $rewards_value['payload']['amount'] = $reward_data['payload_amount'];
-                                        $rewards_value['image'] = $reward_data['image'];
-                                        $rewards_value['gallery'] = $reward_data['gallery'];
-                                    }
+                                    $rewards_value['contents'] = $reward_data['contents'];
+                                    $rewards_value['payload']['amount'] = $reward_data['payload_amount'];
+                                    $rewards_value['image'] = $reward_data['image'];
+                                    $rewards_value['gallery'] = $reward_data['gallery'];
                                 }
 
                                 
