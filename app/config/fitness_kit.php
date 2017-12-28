@@ -44,11 +44,11 @@ $products = [
 		'url'=>$url.'products/tshirtcfm.png'
 	],
 	'Yoga Mat'=>[
-		"title"=>'Workout Friendly Armband',
+		"title"=>'Yoga Mat',
 		'url'=>$url.'products/yogamat.png'
 	],
 	'Yoga Mat Bag'=>[
-		"title"=>'Workout Friendly Armband',
+		"title"=>'Yoga Mat Bag',
 		'url'=>$url.'products/yogamatbag.png'
 	],
 	'Breather T-Shirt'=>[
@@ -94,10 +94,7 @@ return [
 					],
 					'amount'=>400,
 					'image' => $url.'crossfit/crossfit1.1.png',
-                    'gallery'=>[
-                    	$url.'crossfit/crossfit1.1.png',
-                     	$products["Cool-Water Bottle"]["url"],   
-                    ]
+                    'gallery'=>[]
 				],
 				[
 					"product" => [
@@ -295,10 +292,7 @@ return [
 					],
 					'amount'=>800,
 					'image' => $url.'yoga/yoga1.4.png',
-                    'gallery'=>[
-                    	$url.'yoga/yoga1.4.png',
-                     	$products["Yoga Mat"]["url"],
-                    ]
+                    'gallery'=>[]
 				]
 			]
 		],
@@ -333,7 +327,7 @@ return [
 					"product" => [
 						$products["Waterproof Gym Bag"]["title"],
 						$products["Shaker"]["title"],
-						$products["Breather T-Shirt"]["title"]
+						$products["Tshirt Crossfit"]["title"]
 					],
 					'category_id'=>[
 						111,
@@ -346,13 +340,13 @@ return [
                     	$url.'crossfit/crossfit1.5.png',
                      	$products["Waterproof Gym Bag"]["url"],
 						$products["Shaker"]["url"],
-						$products["Breather T-Shirt"]["url"]	   
+						$products["Tshirt Crossfit"]["url"]	   
                     ]
 				],
 				[
 					"product" => [
 						$products["Casual Tote Bag"]["title"],
-						$products["Breather T-Shirt"]["title"],
+						$products["Tshirt Yoga Zumba"]["title"],
 						$products["Cool-Water Bottle"]["title"]
 					],
 					'category_id'=>[
@@ -364,7 +358,7 @@ return [
                     'gallery'=>[
                     	$url.'yoga/yoga1.5.png',
                      	$products["Casual Tote Bag"]["url"],
-						$products["Breather T-Shirt"]["url"],
+						$products["Tshirt Yoga Zumba"]["url"],
 						$products["Cool-Water Bottle"]["url"]  
                     ]
 				]
@@ -403,7 +397,7 @@ return [
 					"product" => [
 						$products["Waterproof Gym Bag"]["title"],
 						$products["Shaker"]["title"],
-						$products["Breather T-Shirt"]["title"],
+						$products["Tshirt Crossfit"]["title"],
 						$products["Workout Friendly Armband"]["title"]
 					],
 					'category_id'=>[
@@ -417,7 +411,7 @@ return [
                     	$url.'crossfit/crossfit1.6.png',
                      	$products["Waterproof Gym Bag"]["url"],
 						$products["Shaker"]["url"],
-						$products["Breather T-Shirt"]["url"],
+						$products["Tshirt Crossfit"]["url"],
 						$products["Workout Friendly Armband"]["url"] 
                     ]
 				],
@@ -425,7 +419,7 @@ return [
 					"product" => [
 						$products["Yoga Mat"]["title"],
 						$products["Cool-Water Bottle"]["title"],
-						$products["Breather T-Shirt"]["title"]
+						$products["Tshirt Yoga Zumba"]["title"]
 					],
 					'category_id'=>[
 						1,
@@ -437,7 +431,7 @@ return [
                     	$url.'yoga/yoga1.6.png',
                      	$products["Yoga Mat"]["url"],
 						$products["Cool-Water Bottle"]["url"],
-						$products["Breather T-Shirt"]["url"]
+						$products["Tshirt Yoga Zumba"]["url"]
                     ]
 				]
 			]
@@ -452,7 +446,7 @@ return [
 						$products["Cool-Water Bottle"]["title"],
 						$products["Compact Hand Towel"]["title"],
 						$products["Workout Friendly Armband"]["title"],
-						$products["Breather T-Shirt"]["title"]
+						$products["Tshirt Yoga Zumba"]["title"]
 					],
 					'category_id'=>[
 						19,
@@ -468,12 +462,12 @@ return [
 						$products["Cool-Water Bottle"]["url"],
 						$products["Compact Hand Towel"]["url"],
 						$products["Workout Friendly Armband"]["url"],
-						$products["Breather T-Shirt"]["url"]   
+						$products["Tshirt Yoga Zumba"]["url"]   
                     ]
 				],
 				[
 					"product" => [
-						$products["Breather T-Shirt"]["title"],
+						$products["Tshirt Crossfit"]["title"],
 						$products["Compact Hand Towel"]["title"],
 						$products["Waterproof Gym Bag"]["title"],
 						$products["Earphone Detangler"]["title"]
@@ -487,7 +481,7 @@ return [
 					'image' => $url.'crossfit/crossfit1.7.png',
                     'gallery'=>[
                     	$url.'crossfit/crossfit1.7.png',
-                     	$products["Breather T-Shirt"]["url"],
+                     	$products["Tshirt Crossfit"]["url"],
 						$products["Compact Hand Towel"]["url"],
 						$products["Waterproof Gym Bag"]["url"],
 						$products["Earphone Detangler"]["url"]
@@ -498,7 +492,7 @@ return [
 						$products["Yoga Mat"]["title"],
 						$products["Yoga Mat Bag"]["title"],
 						$products["Cool-Water Bottle"]["title"],
-						$products["Breather T-Shirt"]["title"]
+						$products["Tshirt Yoga Zumba"]["title"]
 					],
 					'category_id'=>[
 						1,
@@ -511,7 +505,7 @@ return [
                      	$products["Yoga Mat"]["url"],
 						$products["Yoga Mat Bag"]["url"],
 						$products["Cool-Water Bottle"]["url"],
-						$products["Breather T-Shirt"]["url"]
+						$products["Tshirt Yoga Zumba"]["url"]
                     ]
 				]
 			]
@@ -536,10 +530,7 @@ return [
 					],
 					'amount'=>400,
 					'image' => $url.'zumba/zumba2.1.png',
-                    'gallery'=>[
-                    	$url.'zumba/zumba2.1.png',
-                     	$products["Cool-Water Bottle"]["url"]   
-                    ]
+                    'gallery'=>[]
 				],
 				[
 					"product" => [
@@ -552,10 +543,7 @@ return [
 					],
 					'amount'=>300,
 					'image' => $url.'crossfit/crossfit2.1.png',
-                    'gallery'=>[
-                    	$url.'crossfit/crossfit2.1.png',
-                     	$products["Shaker"]["url"],   
-                    ]
+                    'gallery'=>[]
 				],
 				[
 					"product" => [
@@ -567,10 +555,7 @@ return [
 					],
 					'amount'=>400,
 					'image' => $url.'yoga/yoga2.1.png',
-                    'gallery'=>[
-                    	$url.'yoga/yoga2.1.png',
-                     	$products["Cool-Water Bottle"]["url"]
-                    ]
+                    'gallery'=>[]
 				]
 			]
 		],
@@ -625,10 +610,7 @@ return [
 					],
 					'amount'=>500,
 					'image' => $url.'yoga/yoga2.2.png',
-                    'gallery'=>[
-                    	$url.'yoga/yoga2.2.png',
-                     	$products["Yoga Mat Bag"]["url"]
-                    ]
+                    'gallery'=>[]
 				]
 			]
 		],
@@ -658,7 +640,7 @@ return [
 				[
 					"product" => [
 						$products["Cool-Water Bottle"]["title"],
-						$products["Breather T-Shirt"]["title"]
+						$products["Tshirt Crossfit"]["title"]
 					],
 					'category_id'=>[
 						111,
@@ -670,7 +652,7 @@ return [
                     'gallery'=>[
                     	$url.'crossfit/crossfit2.3.png',
                      	$products["Cool-Water Bottle"]["url"],
-						$products["Breather T-Shirt"]["url"]
+						$products["Tshirt Crossfit"]["url"]
                     ]
 				],
 				[
@@ -699,7 +681,7 @@ return [
 				[
 					"product" => [
 						$products["Drawstring Shoe Bag"]["title"],
-						$products["Breather T-Shirt"]["title"]
+						$products["Tshirt Yoga Zumba"]["title"]
 					],
 					'category_id'=>[
 						19,
@@ -712,13 +694,13 @@ return [
                     'gallery'=>[
                     	$url.'zumba/zumba2.4.png',
                      	$products["Drawstring Shoe Bag"]["url"],
-						$products["Breather T-Shirt"]["url"]
+						$products["Tshirt Yoga Zumba"]["url"]
                     ]
 				],
 				[
 					"product" => [
 						$products["Waterproof Gym Bag"]["title"],
-						$products["Breather T-Shirt"]["title"]
+						$products["Tshirt Crossfit"]["title"]
 					],
 					'category_id'=>[
 						111,
@@ -730,7 +712,7 @@ return [
                     'gallery'=>[
                     	$url.'crossfit/crossfit2.4.png',
                      	$products["Waterproof Gym Bag"]["url"],
-						$products["Breather T-Shirt"]["url"]
+						$products["Tshirt Crossfit"]["url"]
                     ]
 				],
 				[
@@ -762,7 +744,7 @@ return [
 				[
 					"product" => [
 						$products["Drawstring Shoe Bag"]["title"],
-						$products["Breather T-Shirt"]["title"],
+						$products["Tshirt Yoga Zumba"]["title"],
 						$products["Earphone Detangler"]["title"]
 					],
 					'category_id'=>[
@@ -776,7 +758,7 @@ return [
                     'gallery'=>[
                     	$url.'zumba/zumba2.5.png',
                      	$products["Drawstring Shoe Bag"]["url"],
-						$products["Breather T-Shirt"]["url"],
+						$products["Tshirt Yoga Zumba"]["url"],
 						$products["Earphone Detangler"]["url"]
                     ]
 				],
@@ -828,7 +810,7 @@ return [
 				[
 					"product" => [
 						$products["Drawstring Shoe Bag"]["title"],
-						$products["Breather T-Shirt"]["title"],
+						$products["Tshirt Yoga Zumba"]["title"],
 						$products["Compact Hand Towel"]["title"]
 					],
 					'category_id'=>[
@@ -842,7 +824,7 @@ return [
                     'gallery'=>[
                     	$url.'zumba/zumba2.6.png',
                     	$products["Drawstring Shoe Bag"]["url"],
-						$products["Breather T-Shirt"]["url"],
+						$products["Tshirt Yoga Zumba"]["url"],
 						$products["Compact Hand Towel"]["url"]
                     ]
 				],
