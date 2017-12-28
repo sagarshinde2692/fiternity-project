@@ -98,6 +98,17 @@ Class CustomerReward {
 
                 if($order && isset($order['amount_finder'])){
 
+                    $ratecard_id    =   (int)$order['ratecard_id'];
+                    $ratecard       =   \Ratecard::find($ratecard_id);
+
+                    $service = \Service::find((int)$ratecard->service_id);
+                    $service_category_id = null;
+
+                    if($service){
+
+                        $service_category_id = (int)$service->servicecategory_id;
+                    }
+
                     $amount = (int) $order['amount_finder'];
 
                     $reward['content'] = [];
@@ -106,7 +117,7 @@ Class CustomerReward {
 
                     $reward_type_info = $reward['reward_type'];
 
-                    if($reward_type_info == 'fitness_kit'){
+                    if($reward_type_info == 'fitness_kit' && $service_category_id != null){
 
                         $pos = strpos($reward['title'],'(Kit B)');
 
