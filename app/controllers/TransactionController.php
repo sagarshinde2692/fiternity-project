@@ -4535,7 +4535,7 @@ class TransactionController extends \BaseController {
                     'value' => "Rs. ".$data['you_save'],
                 ];
             }
-            // $result['order_details'] = array_values($result['order_details']);
+            $result['order_details'] = array_values($result['order_details']);
             
 
         //     $ratecard = Ratecard::find(intval($order->ratecard_id));
