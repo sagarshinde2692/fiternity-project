@@ -1821,7 +1821,7 @@ class TransactionController extends \BaseController {
                 }
 
                 if(strtolower($data["coupon_code"]) == 'fit2018'){
-                    $data['routed_order'] = true;
+                    $data['routed_order'] = "1";
                 }
             }
             
