@@ -182,11 +182,27 @@ class RewardofferController extends BaseController {
 
         // echo"<pre>";print_r($service->servicecategory_id);exit;
 
-        $category_id = null;
+        $service_category_id = null;
+        $service_category_slug = "";
+        $finder_category_id = null;
 
         if($service){
 
-            $category_id = $service->servicecategory_id;
+            $service_category_id = (int)$service->servicecategory_id;
+
+            $service_category = Servicecategory::find($service_category_id);
+
+            if($service_category){
+
+                $service_category_slug = $service_category['slug'];
+
+                $finder_category = Findercategory::active()->where('slug',$service_category_slug)->first();
+
+                if($finder_category){
+                    $finder_category_id = (int)$finder_category['_id'];
+                }
+            }
+
         }
 
         if(isset($data['order_id']) && $data['order_id'] != ""){
@@ -234,6 +250,10 @@ class RewardofferController extends BaseController {
             //         ->with(array('rewards'=> function($query){$query->select('*')->where('reward_type','!=','diet_plan');}  ))
             //         ->orderBy('_id','desc')->first();
             // }
+
+            if($finder_category_id != null){
+                $findercategory_id = $finder_category_id;
+            }
 
             $rewardoffer           =   Rewardoffer::active()->where('findercategory_id', $findercategory_id)
                     ->where('amount_min','<', $amount)
@@ -293,7 +313,7 @@ class RewardofferController extends BaseController {
                         // }
                         foreach ($rewards as $rewards_value){
 
-                            if(in_array($rewards_value['reward_type'],["fitness_kit","healthy_snacks"]) && $category_id != null){
+                            if(in_array($rewards_value['reward_type'],["fitness_kit","healthy_snacks"]) && $service_category_id != null){
 
                                 $reward_data  = [ 
                                     'contents'=>[],
@@ -329,7 +349,7 @@ class RewardofferController extends BaseController {
 
                                             foreach ($content_data as $content_key => $content_value) {
 
-                                                if(in_array($category_id,$content_value['category_id'])){
+                                                if(in_array($service_category_id,$content_value['category_id'])){
                                                     $reward_data['contents'] = $content_value['product'];
                                                     $reward_data['payload_amount'] = $content_value['amount'];
                                                     $reward_data['image'] = $content_value['image'];
@@ -343,7 +363,7 @@ class RewardofferController extends BaseController {
                                         }
                                     }
 
-                                    if(empty($contents)){
+                                    if(empty($content_data)){
 
                                         foreach ($fitness_kit_array as $data_key => $data_value) {
 
