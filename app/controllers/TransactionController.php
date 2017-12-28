@@ -1519,6 +1519,8 @@ class TransactionController extends \BaseController {
     }
 
     public function getCustomerDetail($data){
+
+        $data['customer_email'] = trim(strtolower($data['customer_email']));
         
         $customer_id = $data['customer_id'] = autoRegisterCustomer($data);
 
