@@ -2691,24 +2691,30 @@ if (!function_exists(('customerTokenDecode'))){
         try{
 
             if(Cache::tags('blacklist_customer_token')->has($jwt_token)){
+                Log::info("Yes1");
                 return Response::json(array('status' => 400,'message' => 'User logged out'),400);
             }
 
             $decodedToken = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+            Log::info("Yes2");
             return $decodedToken;
 
         }catch(DomainException $e){
+            Log::info("Yes3");
             return Response::json(array('status' => 400,'message' => 'Token incorrect, Please login again'),400);
         }catch(ExpiredException $e){
 
             JWT::$leeway = (86400*365);
 
             $decodedToken = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+            Log::info("Yes4");
             return $decodedToken;
             
         }catch(SignatureInvalidException $e){
+            Log::info("Yes5");
             return Response::json(array('status' => 400,'message' => 'Signature verification failed, Please login again'),400);
         }catch(Exception $e){
+            Log::info("Yes6");
             return Response::json(array('status' => 400,'message' => 'Token incorrect, Please login again'),400);
         }
     }
