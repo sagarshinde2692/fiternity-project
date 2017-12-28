@@ -640,16 +640,16 @@ class RewardofferController extends BaseController {
 
                     if($pos === false){
 
-                        $fitness_kit_1 = $rewards_key;
+                        $fitness_kit_1 = (int)$rewards_key;
 
                     }else{
 
-                       $fitness_kit_2 = $rewards_key;  
+                       $fitness_kit_2 = (int)$rewards_key;  
                     }
                 }
             }
 
-            if($fitness_kit_1 != null && $fitness_kit_2 != null && $fitness_kit_1 > $fitness_kit_2 ){
+            if($fitness_kit_1 > $fitness_kit_2){
 
                 $data_fitness_kit_1 = $rewards[$fitness_kit_1];
                 $data_fitness_kit_2 = $rewards[$fitness_kit_2];

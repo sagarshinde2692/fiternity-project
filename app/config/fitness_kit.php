@@ -90,6 +90,7 @@ return [
 					'category_id'=>[
 						111,
 						65,
+						5,
 						3
 					],
 					'amount'=>400,
@@ -146,6 +147,7 @@ return [
 					'category_id'=>[
 						111,
 						65,
+						5,
 						3
 					],
 					'amount'=>650,
@@ -206,6 +208,7 @@ return [
 					'category_id'=>[
 						111,
 						65,
+						5,
 						3
 					],
 					'amount'=>950,
@@ -271,6 +274,7 @@ return [
 					'category_id'=>[
 						111,
 						65,
+						5,
 						3
 					],
 					'amount'=>1300,
@@ -332,6 +336,7 @@ return [
 					'category_id'=>[
 						111,
 						65,
+						5,
 						3
 					],
 					'amount'=>1500,
@@ -403,6 +408,7 @@ return [
 					'category_id'=>[
 						111,
 						65,
+						5,
 						3
 					],
 					'amount'=>1800,
@@ -476,6 +482,7 @@ return [
 					'category_id'=>[
 						111,
 						65,
+						5,
 						3
 					],
 					'amount'=>2100,
@@ -541,6 +548,7 @@ return [
 					'category_id'=>[
 						111,
 						65,
+						5,
 						3
 					],
 					'amount'=>300,
@@ -592,6 +600,7 @@ return [
 					'category_id'=>[
 						111,
 						65,
+						5,
 						3
 					],
 					'amount'=>600,
@@ -647,6 +656,7 @@ return [
 					'category_id'=>[
 						111,
 						65,
+						5,
 						3
 					],
 					'amount'=>950,
@@ -707,6 +717,7 @@ return [
 					'category_id'=>[
 						111,
 						65,
+						5,
 						3
 					],
 					'amount'=>1200,
@@ -774,6 +785,7 @@ return [
 					'category_id'=>[
 						111,
 						65,
+						5,
 						3
 					],
 					'amount'=>1450,
@@ -840,6 +852,7 @@ return [
 					'category_id'=>[
 						111,
 						65,
+						5,
 						3
 					],
 					'amount'=>1700,
