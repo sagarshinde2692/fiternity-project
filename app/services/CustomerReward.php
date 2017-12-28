@@ -91,6 +91,80 @@ Class CustomerReward {
             isset($data['booktrial_id']) ? $reward['booktrial_id'] = (int) $data['booktrial_id'] : null;
             isset($data['order_id']) ? $reward['order_id'] = (int) $data['order_id'] : null;
 
+
+            if(isset($data['order_id'])){
+
+                $order = \Order::find($data['order_id']);
+
+                if($order && isset($order['amount_finder'])){
+
+                    $amount = (int) $order['amount_finder'];
+
+                    $data['content'] = [];
+
+                    $reward_data_flag = false;
+
+                    $reward_type_info = $rewards_value['reward_type'];
+
+                    if($reward_type_info == 'fitness_kit'){
+
+                        $pos = strpos($rewards_value['title'],'(Kit B)');
+
+                        if($pos === false){
+
+                            $reward_type_info = 'fitness_kit';
+
+                            $fitness_kit_array = Config::get('fitness_kit.fitness_kit');
+                        }else{
+                            $reward_type_info = 'fitness_kit_2';
+
+                            $fitness_kit_array = Config::get('fitness_kit.fitness_kit_2');    
+                        }
+
+                        rsort($fitness_kit_array);
+
+                        foreach ($fitness_kit_array as $data_key => $data_value) {
+
+                            if($amount >= $data_value['min'] ){
+
+                                $content_data = $data_value['content'];
+
+                                foreach ($content_data as $content_key => $content_value) {
+
+                                    if(in_array($service_category_id,$content_value['category_id'])){
+
+                                        $data['content'] = $content_value['product'];
+
+                                        $reward_data_flag = true;
+
+                                        break;
+                                    }
+                                }
+
+                                break;
+
+                            }
+                        }
+
+                        if(!$reward_data_flag){
+
+                            foreach ($fitness_kit_array as $data_key => $data_value) {
+
+                                if($amount >= $data_value['min'] ){
+
+                                    $data['content'] = $data_value['content'][0]['product'];
+
+                                    break;
+                                }
+                            }
+                        }
+
+                    }
+
+                }
+
+            }
+
             $this->saveToMyRewards($reward);
         }
     }
@@ -119,7 +193,13 @@ Class CustomerReward {
 
             $order = \Order::find($reward['order_id']);
             if($order){
+                
                 $order->customer_reward_id = $myreward->_id;
+
+                if(isset($reward['content'])){
+                    $order->reward_content = $reward['content'];
+                }
+
                 $order->update();
             }
         }
