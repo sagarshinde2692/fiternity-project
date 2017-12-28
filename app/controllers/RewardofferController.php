@@ -198,6 +198,10 @@ class RewardofferController extends BaseController {
 
                 $finder_category = Findercategory::active()->where('slug',$service_category_slug)->first();
 
+                if($service_category_slug == 'martial-arts'){
+                     $finder_category = Findercategory::active()->where('slug','mma-and-kick-boxing')->first();  
+                }
+                
                 if($finder_category){
                     $finder_category_id = (int)$finder_category['_id'];
                 }

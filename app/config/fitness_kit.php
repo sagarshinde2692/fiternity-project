@@ -88,7 +88,7 @@ return [
 					'category_id'=>[
 						111,
 						65,
-						8
+						3
 					],
 					'amount'=>400,
 					'image' => $url.'crossfit1/crossfit1.1.png',
@@ -147,7 +147,7 @@ return [
 					'category_id'=>[
 						111,
 						65,
-						8
+						3
 					],
 					'amount'=>650,
 					'image' => $url.'crossfit1/crossfit1.2.png',
@@ -207,7 +207,7 @@ return [
 					'category_id'=>[
 						111,
 						65,
-						8
+						3
 					],
 					'amount'=>950,
 					'image' => $url.'crossfit1/crossfit1.3.png',
@@ -270,7 +270,7 @@ return [
 					'category_id'=>[
 						111,
 						65,
-						8
+						3
 					],
 					'amount'=>1300,
 					'image' => $url.'crossfit1/crossfit1.4.png',
@@ -332,7 +332,7 @@ return [
 					'category_id'=>[
 						111,
 						65,
-						8
+						3
 					],
 					'amount'=>1500,
 					'image' => $url.'crossfit1/crossfit1.5.png',
@@ -399,7 +399,7 @@ return [
 					'category_id'=>[
 						111,
 						65,
-						8
+						3
 					],
 					'amount'=>450,
 					'image' => $url.'crossfit1/crossfit1.6.png',
@@ -446,7 +446,7 @@ return [
 					'category_id'=>[
 						111,
 						65,
-						8
+						3
 					],
 					'amount'=>2100,
 					'image' => $url.'crossfit1/crossfit1.7.png',
@@ -515,7 +515,7 @@ return [
 					'category_id'=>[
 						111,
 						65,
-						8
+						3
 					],
 					'amount'=>300,
 					'image' => $url.'crossfit2/crossfit2.1.png',
@@ -572,7 +572,7 @@ return [
 					'category_id'=>[
 						111,
 						65,
-						8
+						3
 					],
 					'amount'=>600,
 					'image' => $url.'crossfit2/crossfit2.2.png',
@@ -630,7 +630,7 @@ return [
 					'category_id'=>[
 						111,
 						65,
-						8
+						3
 					],
 					'amount'=>950,
 					'image' => $url.'crossfit2/crossfit2.3.png',
@@ -692,7 +692,7 @@ return [
 					'category_id'=>[
 						111,
 						65,
-						8
+						3
 					],
 					'amount'=>1900,
 					'image' => $url.'crossfit2/crossfit2.4.png',
@@ -761,7 +761,7 @@ return [
 					'category_id'=>[
 						111,
 						65,
-						8
+						3
 					],
 					'amount'=>1450,
 					'image' => $url.'yoga2/yoga2.5.png',
@@ -831,7 +831,7 @@ return [
 					'category_id'=>[
 						111,
 						65,
-						8
+						3
 					],
 					'amount'=>1700,
 					'image' => $url.'crossfit2/crossfit2.6.png',
