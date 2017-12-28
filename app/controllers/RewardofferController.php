@@ -326,6 +326,8 @@ class RewardofferController extends BaseController {
                                     'gallery'=>[]
                                 ];
 
+                                $reward_data_flag = false;
+
                                 $reward_type_info = $rewards_value['reward_type'];
 
                                 if($reward_type_info == 'fitness_kit'){
@@ -354,10 +356,14 @@ class RewardofferController extends BaseController {
                                             foreach ($content_data as $content_key => $content_value) {
 
                                                 if(in_array($service_category_id,$content_value['category_id'])){
+
                                                     $reward_data['contents'] = $content_value['product'];
                                                     $reward_data['payload_amount'] = $content_value['amount'];
                                                     $reward_data['image'] = $content_value['image'];
                                                     $reward_data['gallery'] = $content_value['gallery'];
+
+                                                    $reward_data_flag = true;
+
                                                     break;
                                                 }
                                             }
@@ -367,7 +373,7 @@ class RewardofferController extends BaseController {
                                         }
                                     }
 
-                                    if(empty($content_data)){
+                                    if(!$reward_data_flag){
 
                                         foreach ($fitness_kit_array as $data_key => $data_value) {
 
