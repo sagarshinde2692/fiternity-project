@@ -2047,14 +2047,14 @@ Class Utilities {
 
         $customer_referral_count = 0;
 
-        $customer_ids = \Customer::where('contact_no','LIKE','%'.substr($order['customer_phone'], -8).'%')->lists('_id');
+        // $customer_ids = \Customer::where('contact_no','LIKE','%'.substr($order['customer_phone'], -10).'%')->lists('_id');
 
-        if(!empty($customer_ids)){
+        // if(!empty($customer_ids)){
 
-            $customer_ids = array_map('intval',$customer_ids);
+        //     $customer_ids = array_map('intval',$customer_ids);
 
-            $customer_referral_count = Wallet::whereIn('customer_id',$customer_ids)->where('type','REFERRAL')->count();
-        }
+        //     $customer_referral_count = Wallet::whereIn('customer_id',$customer_ids)->where('type','REFERRAL')->where('description', 'Referral fitcashplus to referrer')->count();
+        // }
 
         if($customer_referral_count == 0 && $customer && isset($customer['old_customer']) && !$customer['old_customer'] && isset($customer['referrer_id']) && $customer['referrer_id'] != 0 && isset($order['amount_customer']) && $order['amount_customer'] > 400){
 
@@ -2062,7 +2062,7 @@ Class Utilities {
 
             $referrer = \Customer::find((int)$customer->referrer_id);
 
-            if($referrer){
+            if($referrer && ((!isset($customer->contact_no) || !isset($referrer->contact_no)) || (substr($customer->contact_no, -10) != substr($referrer->contact_no, -10)))){
 
                 $wallet_data = [
                     'customer_id' => $customer->referrer_id,
