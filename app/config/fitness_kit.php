@@ -353,7 +353,7 @@ return [
 						1,
 						4
 					],
-					'amount'=>1900,
+					'amount'=>1200,
 					'image' => $url.'yoga/yoga1.5.png',
                     'gallery'=>[
                     	$url.'yoga/yoga1.5.png',
@@ -382,7 +382,7 @@ return [
 						114,
 						123
 					],
-					'amount'=>1800,
+					'amount'=>1550,
 					'image' => $url.'zumba/zumba1.6.png',
                     'gallery'=>[
                     	$url.'zumba/zumba1.6.png',
@@ -405,7 +405,7 @@ return [
 						65,
 						3
 					],
-					'amount'=>450,
+					'amount'=>1800,
 					'image' => $url.'crossfit/crossfit1.6.png',
                     'gallery'=>[
                     	$url.'crossfit/crossfit1.6.png',
@@ -470,7 +470,8 @@ return [
 						$products["Tshirt Crossfit"]["title"],
 						$products["Compact Hand Towel"]["title"],
 						$products["Waterproof Gym Bag"]["title"],
-						$products["Earphone Detangler"]["title"]
+						$products["Earphone Detangler"]["title"],
+						$products["Shaker"]["title"],
 					],
 					'category_id'=>[
 						111,
@@ -484,7 +485,8 @@ return [
                      	$products["Tshirt Crossfit"]["url"],
 						$products["Compact Hand Towel"]["url"],
 						$products["Waterproof Gym Bag"]["url"],
-						$products["Earphone Detangler"]["url"]
+						$products["Earphone Detangler"]["url"],
+						$products["Shaker"]["url"],
                     ]
 				],
 				[
@@ -707,7 +709,7 @@ return [
 						65,
 						3
 					],
-					'amount'=>1900,
+					'amount'=>1200,
 					'image' => $url.'crossfit/crossfit2.4.png',
                     'gallery'=>[
                     	$url.'crossfit/crossfit2.4.png',
