@@ -92,15 +92,15 @@ Class CustomerReward {
             isset($data['order_id']) ? $reward['order_id'] = (int) $data['order_id'] : null;
 
 
-            if(isset($data['order_id'])){
+            if(isset($reward['order_id'])){
 
-                $order = \Order::find($data['order_id']);
+                $order = \Order::find($reward['order_id']);
 
                 if($order && isset($order['amount_finder'])){
 
                     $amount = (int) $order['amount_finder'];
 
-                    $data['content'] = [];
+                    $reward['content'] = [];
 
                     $reward_data_flag = false;
 
@@ -133,7 +133,7 @@ Class CustomerReward {
 
                                     if(in_array($service_category_id,$content_value['category_id'])){
 
-                                        $data['content'] = $content_value['product'];
+                                        $reward['content'] = $content_value['product'];
 
                                         $reward_data_flag = true;
 
@@ -152,7 +152,7 @@ Class CustomerReward {
 
                                 if($amount >= $data_value['min'] ){
 
-                                    $data['content'] = $data_value['content'][0]['product'];
+                                    $reward['content'] = $data_value['content'][0]['product'];
 
                                     break;
                                 }
