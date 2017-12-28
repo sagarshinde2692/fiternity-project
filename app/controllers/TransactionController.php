@@ -4341,7 +4341,7 @@ class TransactionController extends \BaseController {
                 ],
                 "remarks"=>[
                     "field"=> "REMARKS",
-                    "value"=> "Rs. ".$data['ratecard_remarks']
+                    "value"=> $data['ratecard_remarks']
                 ]
                 // "address"=>[
                 //     "field"=> "ADDRESS",
