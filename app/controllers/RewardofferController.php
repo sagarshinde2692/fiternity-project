@@ -393,146 +393,149 @@ class RewardofferController extends BaseController {
 
                                 $array = [];
 
-                                switch(true){
-                                    
-                                    case $amount < 2000 :
-                                        break;
+                                if($reward_type_info == 'healthy_snacks'){
 
-                                    case (2000 <= $amount && $amount < 5000) :
+                                    switch(true){
+                                        
+                                        case $amount < 2000 :
+                                            break;
 
-                                        $array = [
-                                            'healthy_snacks' => [
-                                                'payload_amount' => 300,
-                                                'contents' => [
-                                                    "Pop Mak – Roasted Flavoured Makhana (small)",
-                                                    "2 Honey Chew Pouch (5 flavours)",
-                                                    "Good Juicery (Sugar Free Sparkling) Juice"
+                                        case (2000 <= $amount && $amount < 5000) :
+
+                                            $array = [
+                                                'healthy_snacks' => [
+                                                    'payload_amount' => 300,
+                                                    'contents' => [
+                                                        "Pop Mak – Roasted Flavoured Makhana (small)",
+                                                        "2 Honey Chew Pouch (5 flavours)",
+                                                        "Good Juicery (Sugar Free Sparkling) Juice"
+                                                    ],
+                                                    'image' => "https://b.fitn.in/gamification/reward/goodies/hamper-2.jpg",
+                                                    'gallery'=>[]
                                                 ],
-                                                'image' => "https://b.fitn.in/gamification/reward/goodies/hamper-2.jpg",
-                                                'gallery'=>[]
-                                            ],
-                                        ];
+                                            ];
 
-                                        break;
+                                            break;
 
-                                    case (5000 <= $amount && $amount < 7500) :
+                                        case (5000 <= $amount && $amount < 7500) :
 
-                                        $array = [
-                                            'healthy_snacks' => [
-                                                'payload_amount' => 510,
-                                                'contents' => [
-                                                    "Pop Mak – Roasted Flavoured Makhana (small)",
-                                                    "2 Honey Chew Pouch (5 flavours)",
-                                                    "Good Juicery (Sugar Free Sparkling) Juice",
-                                                    "Baked Pizza Stick Dippers"
+                                            $array = [
+                                                'healthy_snacks' => [
+                                                    'payload_amount' => 510,
+                                                    'contents' => [
+                                                        "Pop Mak – Roasted Flavoured Makhana (small)",
+                                                        "2 Honey Chew Pouch (5 flavours)",
+                                                        "Good Juicery (Sugar Free Sparkling) Juice",
+                                                        "Baked Pizza Stick Dippers"
+                                                    ],
+                                                    'image' => "https://b.fitn.in/gamification/reward/goodies/hamper-2.jpg",
+                                                    'gallery'=>[]
                                                 ],
-                                                'image' => "https://b.fitn.in/gamification/reward/goodies/hamper-2.jpg",
-                                                'gallery'=>[]
-                                            ],
-                                        ];
+                                            ];
 
-                                        break;
+                                            break;
 
-                                    case (7500 <= $amount && $amount < 10000) :
+                                        case (7500 <= $amount && $amount < 10000) :
 
-                                        $array = [
-                                            'healthy_snacks' => [
-                                                'payload_amount' => 700,
-                                                'contents' => [
-                                                    "2 Pop Mak – Roasted Flavoured Makhana (small)",
-                                                    "Honey Chew Pouch (5 flavours)",
-                                                    "2 Good Juicery (Sugar Free Sparkling) Juice",
-                                                    "Baked Pizza Stick Dippers"
+                                            $array = [
+                                                'healthy_snacks' => [
+                                                    'payload_amount' => 700,
+                                                    'contents' => [
+                                                        "2 Pop Mak – Roasted Flavoured Makhana (small)",
+                                                        "Honey Chew Pouch (5 flavours)",
+                                                        "2 Good Juicery (Sugar Free Sparkling) Juice",
+                                                        "Baked Pizza Stick Dippers"
+                                                    ],
+                                                    'image' => "https://b.fitn.in/gamification/reward/goodies/hamper-2.jpg",
+                                                    'gallery'=>[]
                                                 ],
-                                                'image' => "https://b.fitn.in/gamification/reward/goodies/hamper-2.jpg",
-                                                'gallery'=>[]
-                                            ],
-                                        ];
+                                            ];
 
-                                        break;
+                                            break;
 
-                                    case (10000 <= $amount && $amount < 15000) :
+                                        case (10000 <= $amount && $amount < 15000) :
 
-                                        $array = [
-                                            'healthy_snacks' => [
-                                                'payload_amount' => 1600,
-                                                'contents' => [
-                                                    "Pop Mak – Roasted Flavoured Makhana (small)",
-                                                    "Honey Chew Pouch (5 flavours)",
-                                                    "Baked Pizza Stick Dippers",
-                                                    "Pop Mak – Roasted Flavoured Makhana (big)",
-                                                    "Colonel & Co. Nachos with Dip", "Kettle Chips"
+                                            $array = [
+                                                'healthy_snacks' => [
+                                                    'payload_amount' => 1600,
+                                                    'contents' => [
+                                                        "Pop Mak – Roasted Flavoured Makhana (small)",
+                                                        "Honey Chew Pouch (5 flavours)",
+                                                        "Baked Pizza Stick Dippers",
+                                                        "Pop Mak – Roasted Flavoured Makhana (big)",
+                                                        "Colonel & Co. Nachos with Dip", "Kettle Chips"
+                                                    ],
+                                                    'image' => "https://b.fitn.in/gamification/reward/goodies/hamper-2.jpg",
+                                                    'gallery'=>[]
                                                 ],
-                                                'image' => "https://b.fitn.in/gamification/reward/goodies/hamper-2.jpg",
-                                                'gallery'=>[]
-                                            ],
-                                        ];
+                                            ];
 
-                                        break;
+                                            break;
 
-                                    case (15000 <= $amount && $amount < 20000) :
+                                        case (15000 <= $amount && $amount < 20000) :
 
-                                        $array = [
-                                            'healthy_snacks' => [
-                                                'payload_amount' => 1600,
-                                                'contents' => [
-                                                    "Pop Mak – Roasted Flavoured Makhana (small)",
-                                                    "2 Honey Chew Pouch (5 flavours)",
-                                                    "Good Juicery (Sugar Free Sparkling) Juice",
-                                                    "Baked Pizza Stick Dippers",
-                                                    "Colonel & Co. Nachos with Dip",
-                                                    "3 Kettle Chips",
-                                                    "Wholewheat Thins"
-                                                 ],
-                                                'image' => "https://b.fitn.in/gamification/reward/goodies/hamper-2.jpg",
-                                                'gallery'=>[]
-                                            ],
-                                        ];
-
-                                        break;
-
-                                    case (20000 <= $amount && $amount < 25000) :
-
-                                        $array = [
-                                            'healthy_snacks' => [
-                                                'payload_amount' => 2020,
-                                                'contents' => [
-                                                    "Pop Mak – Roasted Flavoured Makhana (small)",
-                                                    "2 Honey Chew Pouch (5 flavours)",
-                                                    "Good Juicery (Sugar Free Sparkling) Juice",
-                                                    "2 Pop Mak – Roasted Flavoured Makhana (big)",
-                                                    "Baked Pizza Stick Dippers",
-                                                    "Colonel & Co. Nachos with Dip",
-                                                    "2 Kettle Chips","Wholewheat Thins"
+                                            $array = [
+                                                'healthy_snacks' => [
+                                                    'payload_amount' => 1600,
+                                                    'contents' => [
+                                                        "Pop Mak – Roasted Flavoured Makhana (small)",
+                                                        "2 Honey Chew Pouch (5 flavours)",
+                                                        "Good Juicery (Sugar Free Sparkling) Juice",
+                                                        "Baked Pizza Stick Dippers",
+                                                        "Colonel & Co. Nachos with Dip",
+                                                        "3 Kettle Chips",
+                                                        "Wholewheat Thins"
+                                                     ],
+                                                    'image' => "https://b.fitn.in/gamification/reward/goodies/hamper-2.jpg",
+                                                    'gallery'=>[]
                                                 ],
-                                                'image' => "https://b.fitn.in/gamification/reward/goodies/hamper-2.jpg",
-                                                'gallery'=>[]
-                                            ],
-                                        ];
+                                            ];
 
-                                        break;
+                                            break;
 
-                                    case (25000 <= $amount) :
+                                        case (20000 <= $amount && $amount < 25000) :
 
-                                        $array = [
-                                            'healthy_snacks' => [
-                                                'payload_amount' => 2600,
-                                                'contents' => [
-                                                    "Pop Mak – Roasted Flavoured Makhana ",
-                                                    "2 Honey Chew Pouch (5 flavours)",
-                                                    "2 Good Juicery (Sugar Free Sparkling) Juice",
-                                                    "2 Baked Pizza Stick Dippers",
-                                                    "Colonel & Co. Nachos with Dip",
-                                                    "Banana & Chia Granola Crunchers",
-                                                    "Wholewheat Thins",
-                                                    "2 Pop Mak – Roasted Flavoured Makhana"
+                                            $array = [
+                                                'healthy_snacks' => [
+                                                    'payload_amount' => 2020,
+                                                    'contents' => [
+                                                        "Pop Mak – Roasted Flavoured Makhana (small)",
+                                                        "2 Honey Chew Pouch (5 flavours)",
+                                                        "Good Juicery (Sugar Free Sparkling) Juice",
+                                                        "2 Pop Mak – Roasted Flavoured Makhana (big)",
+                                                        "Baked Pizza Stick Dippers",
+                                                        "Colonel & Co. Nachos with Dip",
+                                                        "2 Kettle Chips","Wholewheat Thins"
+                                                    ],
+                                                    'image' => "https://b.fitn.in/gamification/reward/goodies/hamper-2.jpg",
+                                                    'gallery'=>[]
                                                 ],
-                                                'image' => "https://b.fitn.in/gamification/reward/goodies/hamper-2.jpg",
-                                                'gallery'=>[]
-                                            ],
-                                        ];
+                                            ];
 
-                                        break;
+                                            break;
+
+                                        case (25000 <= $amount) :
+
+                                            $array = [
+                                                'healthy_snacks' => [
+                                                    'payload_amount' => 2600,
+                                                    'contents' => [
+                                                        "Pop Mak – Roasted Flavoured Makhana ",
+                                                        "2 Honey Chew Pouch (5 flavours)",
+                                                        "2 Good Juicery (Sugar Free Sparkling) Juice",
+                                                        "2 Baked Pizza Stick Dippers",
+                                                        "Colonel & Co. Nachos with Dip",
+                                                        "Banana & Chia Granola Crunchers",
+                                                        "Wholewheat Thins",
+                                                        "2 Pop Mak – Roasted Flavoured Makhana"
+                                                    ],
+                                                    'image' => "https://b.fitn.in/gamification/reward/goodies/hamper-2.jpg",
+                                                    'gallery'=>[]
+                                                ],
+                                            ];
+
+                                            break;
+                                    }
                                 }
 
                                 if(!empty($array) && $reward_type_info == 'healthy_snacks'){
@@ -622,6 +625,39 @@ class RewardofferController extends BaseController {
 
                 }
             }
+        }
+
+        if(!empty($rewards)){
+
+            $fitness_kit_1 = null;
+            $fitness_kit_2 = null;
+
+            foreach ($rewards as $rewards_key => $rewards_value) {
+
+                if($rewards_value['reward_type'] == 'fitness_kit'){
+
+                    $pos = strpos($rewards_value['title'],'(Kit B)');
+
+                    if($pos === false){
+
+                        $fitness_kit_1 = $rewards_key;
+
+                    }else{
+
+                       $fitness_kit_2 = $rewards_key;  
+                    }
+                }
+            }
+
+            if($fitness_kit_1 != null && $fitness_kit_2 != null && $fitness_kit_1 > $fitness_kit_2 ){
+
+                $data_fitness_kit_1 = $rewards[$fitness_kit_1];
+                $data_fitness_kit_2 = $rewards[$fitness_kit_2];
+
+                $rewards[$fitness_kit_1] = $data_fitness_kit_2;
+                $rewards[$fitness_kit_2] = $data_fitness_kit_1;
+            }
+
         }
 
         $cashback = null;
