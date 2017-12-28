@@ -2314,7 +2314,10 @@ class OrderController extends \BaseController {
             }
 
             if(isset($data["payment_mode"]) && $data["payment_mode"] == "cod"){
-               $data["secondary_payment_mode"] = "cod_membership";
+                
+                $data['cod_otp'] = random_numbers(5);
+                $data["secondary_payment_mode"] = "cod_membership";
+            
             }
 
             $data['amount_finder'] = $order->amount_finder;
