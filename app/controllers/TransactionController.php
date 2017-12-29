@@ -4382,7 +4382,7 @@ class TransactionController extends \BaseController {
                 ],
                 "duration_amount"=>[
                     "field"=> $data['service_duration'],
-                    "value"=> $data['amount']
+                    "value"=> "Rs. ".$data['amount']
                 ],
                 "remarks"=>[
                     "field"=> "REMARKS",
@@ -4404,7 +4404,7 @@ class TransactionController extends \BaseController {
                     
                     $result['order_details']['reward'] = [
                         'field' => "REWARD ($reward_title)",
-                        'value' =>  "Rs. ".$reward_amount
+                        'value' =>  ""
                     ];
 
                     $data['you_save'] += $reward_amount;
@@ -4548,7 +4548,7 @@ class TransactionController extends \BaseController {
                     
                     $result['order_details']['reward'] = [
                         'field' => "REWARD ($reward_title)",
-                        'value' =>  "Rs. ".$reward_amount
+                        'value' =>  ""
                     ];
 
                     $data['you_save'] += $reward_amount;
