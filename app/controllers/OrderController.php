@@ -2315,7 +2315,8 @@ class OrderController extends \BaseController {
 
             if(isset($data["payment_mode"]) && $data["payment_mode"] == "cod"){
                 
-                $data['cod_otp'] = random_numbers(5);
+                $data['cod_otp'] = $this->utilities->generateRandomString();
+                
                 $data["secondary_payment_mode"] = "cod_membership";
             
             }
