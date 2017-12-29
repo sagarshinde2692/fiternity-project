@@ -789,9 +789,9 @@ return [
 						3
 					],
 					'amount'=>1450,
-					'image' => $url.'yogakit/yoga2.5.png',
+					'image' => $url.'crossfitkit/crossfit2.5.png',
                     'gallery'=>[
-                    	$url.'yogakit/yoga2.5.png',
+                    	$url.'crossfitkit/crossfit2.5.png',
                      	$products["Shaker"]["url"],
 						$products["Waterproof Gym Bag"]["url"],
 						$products["Compact Hand Towel"]["url"],
@@ -808,9 +808,9 @@ return [
 						4
 					],
 					'amount'=>1300,
-					'image' => $url.'crossfitkit/crossfit2.5.png',
+					'image' => $url.'yogakit/yoga2.5.png',
                     'gallery'=>[
-                    	$url.'crossfitkit/crossfit2.5.png',
+                    	$url.'yogakit/yoga2.5.png',
                      	$products["Yoga Mat"]["url"],
 						$products["Yoga Mat Bag"]["url"]  
                     ]
