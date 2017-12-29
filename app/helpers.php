@@ -2886,6 +2886,10 @@ if (!function_exists(('geoLocationFinder'))){
                         $finder_data['average_rating'] = round($finder_data['average_rating'],1);
                     }
 
+                    if(in_array('category',$request['keys'])){
+                        $finder_data['category'] = ucwords($finder_data['category']);
+                    }
+
                     $finder[] = $finder_data;
                 }
             }
