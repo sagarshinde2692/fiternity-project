@@ -833,7 +833,7 @@ class HomeController extends BaseController {
                         "keys"=>[
                           "average_rating",
                           // "business_type",
-                          // "categorytags",
+                          "categorytags",
                           // "commercial_type",
                           "contact",
                           "coverimage",
