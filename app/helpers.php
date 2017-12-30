@@ -2233,12 +2233,8 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         $customer->ishulluser = 1;
                         $customer->old_customer = false;
                         $customer->demonetisation = time();
-                        
-                        registerMail($customer->_id);
-                       
-
                         $customer->save();
-
+                        registerMail($customer->_id);
                        
 
                         
@@ -3214,7 +3210,7 @@ if (!function_exists('registerMail')) {
     
     function registerMail($customer_id){
         try{
-            
+            Log::info
             $customerData = Customer::find($customer_id);
             
             if(!isset($customerData->welcome_mail_sent) || !$customerData->welcome_mail_sent){
