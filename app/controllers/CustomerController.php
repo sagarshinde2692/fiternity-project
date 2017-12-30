@@ -3530,7 +3530,7 @@ class CustomerController extends \BaseController {
 		}
 
 		$current_version_android = 3.4;
-		$current_version_ios = 4.1;
+		$current_version_ios = 2.3;
 
 		$last_stable_version_android = 3.0;
 
@@ -3553,7 +3553,7 @@ class CustomerController extends \BaseController {
 		$result_ios = array(
 			"title" => "Version ".$current_version_ios." is available on App Store",
 			"description" => "Version ".$current_version_ios." is available on App Store",
-			"force_update" => true,
+			"force_update" => false,
 			"available_version" => $current_version_ios,
 		);
 
