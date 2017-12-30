@@ -642,6 +642,8 @@ class ServiceController extends \BaseController {
 		$finder_id = $items[0]['finder_id'];
 		// $finder = Finder::find($finder_id, array('inoperational_dates'));
 		$finder = Finder::find($finder_id);
+
+		$findercategory_id = isset($finder->category_id) ? $finder->category_id : null;
 		
 		$city_id = isset($items[0]['city_id'])?$items[0]['city_id']:0;
 
@@ -742,7 +744,7 @@ class ServiceController extends \BaseController {
 
                 foreach ($weekdayslots['slots'] as $slot) {
 
-					if(!isNotInoperationalDate($date, $city_id, $slot)){
+					if(!isNotInoperationalDate($date, $city_id, $slot, $findercategory_id)){
 						continue;
 					}
 
