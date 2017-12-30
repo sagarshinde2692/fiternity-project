@@ -591,9 +591,9 @@ class TransactionController extends \BaseController {
 
         $data['profile_link'] = $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$data['customer_email']);
 
-        $data['workout_article_link'] = $utilities->getShortenUrl(Config::get('app.website')."/article/complete-guide-to-help-you-prepare-for-the-first-week-of-your-workout");
+        $data['workout_article_link'] = $this->utilities->getShortenUrl(Config::get('app.website')."/article/complete-guide-to-help-you-prepare-for-the-first-week-of-your-workout");
         $data['download_app_link'] = Config::get('app.download_app_link');
-        $data['diet_plan_link'] = $utilities->getShortenUrl(Config::get('app.website')."/diet-plan");
+        $data['diet_plan_link'] = $this->utilities->getShortenUrl(Config::get('app.website')."/diet-plan");
 
         if(in_array($data['type'],$this->membership_array) && isset($data['start_date'])){
 

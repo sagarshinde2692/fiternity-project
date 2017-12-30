@@ -1176,12 +1176,12 @@ class HomeController extends BaseController {
                     $subline = "Hi ".$item['customer_name'].", your ".$booking_details_data['service_duration']['value']." meal subscription with ".$booking_details_data["finder_name_location"]['value']." has been confirmed.We have also sent you a confirmation Email and SMS";
                 }
 
+                if(isset($item['payment_mode']) && $item['payment_mode'] == 'cod'){
+                    $subline= "Hi ".$item['customer_name'].", your ".$booking_details_data['service_duration']['value']." at ".$booking_details_data["finder_name_location"]['value']." has been confirmed. It will be activated once we collect your cash payment. We have also sent you a confirmation Email and SMS";
+                }
+
                 $booking_details_data = array_only($booking_details_data, ['booking_id','price','address','poc']);
 
-            }
-            
-            if(isset($item['payment_mode']) && $item['payment_mode'] == 'cod'){
-                $subline= "Hi ".$item['customer_name'].", your ".$booking_details_data['service_duration']['value']." at ".$booking_details_data["finder_name_location"]['value']." has been confirmed. It will be activated once we collect your cash payment. We have also sent you a confirmation Email and SMS";
             }
 
             $booking_details_all = [];

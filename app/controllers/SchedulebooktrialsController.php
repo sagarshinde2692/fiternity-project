@@ -6004,9 +6004,9 @@ class SchedulebooktrialsController extends \BaseController {
 
         $booking_details_data["service_duration"] = ['field'=>'DURATION','value'=>$service_duration,'position'=>$position++];
 
-        $booking_details_data["start_date"] = ['field'=>'START DATE','value'=>'-','position'=>$position++];
+        $booking_details_data["start_date"] = ['field'=>'DATE','value'=>'-','position'=>$position++];
 
-        $booking_details_data["start_time"] = ['field'=>'START TIME','value'=>'-','position'=>$position++];
+        $booking_details_data["start_time"] = ['field'=>'TIME','value'=>'-','position'=>$position++];
 
         $booking_details_data["address"] = ['field'=>'ADDRESS','value'=>'','position'=>$position++];
 
