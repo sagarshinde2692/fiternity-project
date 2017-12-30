@@ -619,7 +619,7 @@ class CustomerController extends \BaseController {
 						$customer->old_customer = false;
 						$customer->save();
 						$customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email'],'password'=>$data['password']);
-						$this->customermailer->register($customer_data);
+						// $this->customermailer->register($customer_data);
 
 						Log::info('Customer Register : '.json_encode(array('customer_details' => $customer)));
 
