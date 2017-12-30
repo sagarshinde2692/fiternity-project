@@ -699,30 +699,8 @@ class CustomerController extends \BaseController {
 			$response['customer_data']["token"] = $response["token"];
 			Log::info("Customer Register",$response);
 
-
-			try{
-				
-				$customerData = Customer::find($data["customer_id"]);
-				
-				if(!isset($customerData->welcome_mail_sent) || !$customerData->welcome_mail_sent){
-					
-					$wallet_balance = $this->utilities->getWalletBalance($data["customer_id"]);
-					
-					if($wallet_balance > 0){
-	
-						$this->customermailer->registerFitcash($customerData->toArray());
-	
-					}else{
-	
-						$this->customermailer->registerNoFitcash($customerData->toArray());
-	
-					}
-					$customerData->welcome_mail_sent = true;
-				}
-
-			}catch(Exception $e){
-				Log::info($e);
-			}
+            registerMail($data["customer_id"]);
+			
 
 			return Response::json($response,200);
 		}
@@ -1216,7 +1194,7 @@ class CustomerController extends \BaseController {
 			$customer->referral_code = $this->generateReferralCode($customer->name);
 			$customer->old_customer = false;
 			$customer->save();
-
+            registerMail($customer->_id);
 			$response = array('status' => 200,'customer'=>$customer);
 		}
 
