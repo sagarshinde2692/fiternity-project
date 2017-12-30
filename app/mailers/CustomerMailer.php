@@ -592,8 +592,8 @@ Class CustomerMailer extends Mailer {
 		$label = 'RegisterNoFitcash-Customer';
 		
 		$message_data 	= array(
-			'user_email' => array($data['customer_email']),
-			'user_name' => $data['customer_name']
+			'user_email' => array($data['email']),
+			'user_name' => $data['name']
 		);
 
 		return $this->common($label,$data,$message_data);
@@ -603,8 +603,8 @@ Class CustomerMailer extends Mailer {
 		$label = 'RegisterFitcash-Customer';
 		
 		$message_data 	= array(
-			'user_email' => array($data['customer_email']),
-			'user_name' => $data['customer_name']
+			'user_email' => array($data['email']),
+			'user_name' => $data['name']
 		);
 
 		return $this->common($label,$data,$message_data);
