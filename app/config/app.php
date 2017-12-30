@@ -708,6 +708,4 @@ return array(
 
 	'trial_auto_confirm_finder_ids' => []
 
-
-
 );

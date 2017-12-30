@@ -1105,11 +1105,6 @@ class HomeController extends BaseController {
                 }*/
             }
 
-
-            if(isset($item['payment_mode']) && $item['payment_mode'] == 'cod'){
-                $subline= "Your membership will be activated once your cash is collected. Fitternity team will reach out to you to coordinate the cash pick-up.";
-            }
-
             if($finder_address != ""){
                 $booking_details_data['address']['value'] = $finder_address;
             }
@@ -1169,6 +1164,24 @@ class HomeController extends BaseController {
             if(in_array($type,["healthytiffintrail","healthytiffintrial","healthytiffinmembership"])){
                 $booking_details_data['finder_name_location']['field'] = 'BOUGHT AT';
                 $booking_details_data['finder_name_location']['value'] = $finder_name;
+            }
+
+
+            if(in_array($type,["membershipwithpg","membershipwithoutpg","healthytiffinmembership"])){
+
+                $header = "Membership Confirmed";
+                $subline = "Hi ".$item['customer_name'].", your ".$booking_details_data['service_duration']['value']." at ".$booking_details_data["finder_name_location"]['value']." has been confirmed.We have also sent you a confirmation Email and SMS";
+
+                if($type == "healthytiffinmembership"){
+                    $subline = "Hi ".$item['customer_name'].", your ".$booking_details_data['service_duration']['value']." meal subscription with ".$booking_details_data["finder_name_location"]['value']." has been confirmed.We have also sent you a confirmation Email and SMS";
+                }
+
+                if(isset($item['payment_mode']) && $item['payment_mode'] == 'cod'){
+                    $subline= "Hi ".$item['customer_name'].", your ".$booking_details_data['service_duration']['value']." at ".$booking_details_data["finder_name_location"]['value']." has been confirmed. It will be activated once we collect your cash payment. We have also sent you a confirmation Email and SMS";
+                }
+
+                $booking_details_data = array_only($booking_details_data, ['booking_id','price','address','poc']);
+
             }
 
             $booking_details_all = [];
@@ -1238,8 +1251,8 @@ class HomeController extends BaseController {
             }
 
             $invite = [
-                "description"=>"<b>Did you know?</b><br/>Working out with a friend can improve your performance by 87%",
-                "message"=>"Awesome! Lets invite your buddies to join you!",
+                "description"=>"Did you know that your chances of working out everyday increases by 87% with a friend?",
+                "message"=>"invite your friends to join you here!",
                 "confirm"=>"Now you have invited your workout buddies,you are sure to have a lot of fun",
                 'show_invite' => $show_invite,
                 'id_for_invite' => $id_for_invite,
@@ -1248,9 +1261,9 @@ class HomeController extends BaseController {
             ];
 
             $conclusion = [
-                "title"=>"Done",
-                "description"=>"Hope you had a great experience. \n If you need any help, you can reach out to us on on below details",
-                "email"=>"info@fitternity.com",
+                "title"=>"Any Queries? Contact Us",
+                "description"=>"Any Queries? Contact Us",
+                "email"=>"support@fitternity.com",
                 "phone"=>"022-61094444"
             ];
 
@@ -1282,7 +1295,33 @@ class HomeController extends BaseController {
                         'description'=>$reward->description,
                         'validity_in_days'=>$reward->validity_in_days
                     ];
+
+                    if($reward->reward_type == 'sessions'){
+                        $reward_details['description'] = "Get access to multiple fitness sessions with instant booking at your convinience. Try Crossfit, Pilates, Yoga, MMA, Zumba & much more.Available across: - 5 Cities - Mumbai, Bangalore, Delhi, Pune & Gurgaon - 2500 fitness centers";
+                    }
+
+                    if($reward->reward_type == 'diet_plan'){
+                        $reward_details['description'] = "Select convinient date and time for your first diet consultation with our expert dietitian. \n - Telephonic consultation with your dietician \n - Personalised & customised diet plan \n - Regular follow-ups & progress tracking \n - Healthy recepies & hacks";
+                    }
+
+                    if($reward->reward_type == 'fitness_kit' && isset($item['reward_description']) && $item['reward_description'] != ""){
+                        $reward_details['description'] = $item['reward_description'];
+                    }
+
                 }
+            }
+
+            if(!isset($_GET['device_type']) && in_array($type,["membershipwithpg","membershipwithoutpg","healthytiffinmembership"]) && isset($item['cashback']) && $item['cashback'] && isset($item['cashback_detail']['wallet_amount'])){
+
+                $reward_details = [
+                    'reward_id' => null,
+                    'reward_type' => 'cashback',
+                    'finder_name'=> (isset($item['finder_name']) && $item['finder_name'] != "") ? $item['finder_name'] : "",
+                    'title'=>'Instant Cashback',
+                    'description'=>'₹'.$item['cashback_detail']['wallet_amount'].'+ has been added in form of FitCash+ in your wallet. You can find it in your profile and use it to explore different wokrkout forms and healthy tiffins.',
+                    'validity_in_days'=>null
+                ];
+
             }
 
             if(isset($item['recommended_booktrial_id']) && $item['recommended_booktrial_id'] != ""){

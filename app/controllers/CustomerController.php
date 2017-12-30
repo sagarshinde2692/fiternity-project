@@ -3213,32 +3213,41 @@ class CustomerController extends \BaseController {
 				'ratio'=>(float) number_format(100/375,2)
 			];
 
-			// $result['campaigns'][] = [
-			// 	'image'=>'https://b.fitn.in/global/ios_homescreen_banner/pledge_2.png',
-			// 	'link'=>'ftrnty://ftrnty.com/abc',
-			// 	'title'=>'Save with Fitness',
-			// 	'height'=>100,
-			// 	'width'=>375,
-			// 	'ratio'=>(float) number_format(100/375,2)
-			// ];
+			$result['campaigns'][] = [
+				'image'=>'https://b.fitn.in/global/ios_homescreen_banner/fitnesssale-appbanner.png',
+				'link'=>'ftrnty://ftrnty.com/abc',
+				'title'=>'Fitness Sale',
+				'height'=>100,
+				'width'=>375,
+				'ratio'=>(float) number_format(100/375,2)
+			];
 
-			// $result['campaigns'][] = [
-			// 	'image'=>'https://b.fitn.in/global/ios_homescreen_banner/pledge_3.png',
-			// 	'link'=>'ftrnty://ftrnty.com/abc',
-			// 	'title'=>'Sale',
-			// 	'height'=>100,
-			// 	'width'=>375,
-			// 	'ratio'=>(float) number_format(100/375,2)
-			// ];
+			$result['campaigns'][] = [
+				'image'=>'https://b.fitn.in/global/ios_homescreen_banner/emi-app-banner.png',
+				'link'=>'ftrnty://ftrnty.com/abc',
+				'title'=>'Easy EMI',
+				'height'=>100,
+				'width'=>375,
+				'ratio'=>(float) number_format(100/375,2)
+			];
 
-			// $result['campaigns'][] = [
-			// 	'image'=>'https://b.fitn.in/global/ios_homescreen_banner/pledge_4.png',
-			// 	'link'=>'ftrnty://ftrnty.com/abc',
-			// 	'title'=>'Fitness Sale',
-			// 	'height'=>100,
-			// 	'width'=>375,
-			// 	'ratio'=>(float) number_format(100/375,2)
-			// ];
+			$result['campaigns'][] = [
+				'image'=>'https://b.fitn.in/global/ios_homescreen_banner/upto60off-appbanner.png',
+				'link'=>'ftrnty://ftrnty.com/abc',
+				'title'=>'Save with Fitness',
+				'height'=>100,
+				'width'=>375,
+				'ratio'=>(float) number_format(100/375,2)
+			];
+
+			$result['campaigns'][] = [
+				'image'=>'https://b.fitn.in/global/ios_homescreen_banner/complimentary-rewards-appbanner.png',
+				'link'=>'ftrnty://ftrnty.com/abc',
+				'title'=>'Complimentary Rewards',
+				'height'=>100,
+				'width'=>375,
+				'ratio'=>(float) number_format(100/375,2)
+			];
 
 			$lat = isset($_REQUEST['lat']) && $_REQUEST['lat'] != "" ? $_REQUEST['lat'] : "";
 	        $lon = isset($_REQUEST['lon']) && $_REQUEST['lon'] != "" ? $_REQUEST['lon'] : "";
@@ -3260,7 +3269,8 @@ class CustomerController extends \BaseController {
 	              "slug",
 	              "name",
 	              "id",
-	              "subcategories"
+	              "categorytags",
+	              "category"
 	            ]
 	        ];
 
