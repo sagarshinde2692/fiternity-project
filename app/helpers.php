@@ -3210,7 +3210,7 @@ if (!function_exists('registerMail')) {
     
     function registerMail($customer_id){
         try{
-            Log::info
+            Log::info("inside register====================");
             $customerData = Customer::find($customer_id);
             
             if(!isset($customerData->welcome_mail_sent) || !$customerData->welcome_mail_sent){
