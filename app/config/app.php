@@ -706,6 +706,6 @@ return array(
 
 	'hot_offer_excluded_vendors' => [941],
 
-	'trial_auto_confirm_finder_ids' => [],
+	'trial_auto_confirm_finder_ids' => []
 
 );

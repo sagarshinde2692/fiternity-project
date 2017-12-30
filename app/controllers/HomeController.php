@@ -1297,15 +1297,15 @@ class HomeController extends BaseController {
                     ];
 
                     if($reward->reward_type == 'sessions'){
-                        $$reward_details['description'] = "Get access to multiple fitness sessions with instant booking at your convinience. Try Crossfit, Pilates, Yoga, MMA, Zumba & much more.Available across: - 5 Cities - Mumbai, Bangalore, Delhi, Pune & Gurgaon - 2500 fitness centers";
+                        $reward_details['description'] = "Get access to multiple fitness sessions with instant booking at your convinience. Try Crossfit, Pilates, Yoga, MMA, Zumba & much more.Available across: - 5 Cities - Mumbai, Bangalore, Delhi, Pune & Gurgaon - 2500 fitness centers";
                     }
 
                     if($reward->reward_type == 'diet_plan'){
-                        $$reward_details['description'] = "Select convinient date and time for your first diet consultation with our expert dietitian. \n - Telephonic consultation with your dietician \n - Personalised & customised diet plan \n - Regular follow-ups & progress tracking \n - Healthy recepies & hacks";
+                        $reward_details['description'] = "Select convinient date and time for your first diet consultation with our expert dietitian. \n - Telephonic consultation with your dietician \n - Personalised & customised diet plan \n - Regular follow-ups & progress tracking \n - Healthy recepies & hacks";
                     }
 
                     if($reward->reward_type == 'fitness_kit' && isset($item['reward_description']) && $item['reward_description'] != ""){
-                        $$reward_details['description'] = $item['reward_description'];
+                        $reward_details['description'] = $item['reward_description'];
                     }
 
                 }
