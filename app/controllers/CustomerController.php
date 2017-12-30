@@ -3269,7 +3269,7 @@ class CustomerController extends \BaseController {
 	              "slug",
 	              "name",
 	              "id",
-	              "subcategories",
+	              "categorytags",
 	              "category"
 	            ]
 	        ];
