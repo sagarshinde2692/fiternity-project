@@ -820,6 +820,10 @@ class EmailSmsApiController extends \BaseController {
             'referrer_object' =>  (Input::json()->get('referrer_object')) ? Input::json()->get('referrer_object') : ''
         );
 
+        if($data['preferred_time'] == null){
+            $data['preferred_time'] = Input::json()->get('preferredTime');
+        }
+
         array_set($data, 'capture_status', 'yet to connect');
 
         $emaildata = array(
