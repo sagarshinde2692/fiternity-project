@@ -428,16 +428,15 @@ class HomeController extends BaseController {
 				'width'=>375,
 				'ratio'=>(float) number_format(100/375,2)
             ];
-            
             $campaigns[] = [
-                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Webbanner-Emi.png',
-                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Mobbanner-EMI.png',
+                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Rewards-banner-web-1.png',
+                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/mobbanner-rewards.png',
 				'link'=>'',
-				'title'=>'Save with Fitness',
+				'title'=>'Rewards with every purchase',
 				'height'=>100,
 				'width'=>375,
 				'ratio'=>(float) number_format(100/375,2)
-            ];
+			];
             
             $campaigns[] = [
                 'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/webbanner-sale60%25.png',
@@ -450,14 +449,14 @@ class HomeController extends BaseController {
 			];
 
 			$campaigns[] = [
-                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Rewards-banner-web-1.png',
-                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/mobbanner-rewards.png',
+                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Webbanner-Emi.png',
+                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Mobbanner-EMI.png',
 				'link'=>'',
-				'title'=>'Pledge for Fitness',
+				'title'=>'Save with Fitness',
 				'height'=>100,
 				'width'=>375,
 				'ratio'=>(float) number_format(100/375,2)
-			];
+            ];
 
 
             $homedata 	= 	array(

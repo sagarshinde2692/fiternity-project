@@ -3204,14 +3204,14 @@ class CustomerController extends \BaseController {
 
 			$result['campaigns'] =  [];
 
-			$result['campaigns'][] = [
-				'image'=>'https://b.fitn.in/global/ios_homescreen_banner/pledge_1.png',
-				'link'=>'ftrnty://ftrnty.com/abc',
-				'title'=>'Pledge for Fitness',
-				'height'=>100,
-				'width'=>375,
-				'ratio'=>(float) number_format(100/375,2)
-			];
+			// $result['campaigns'][] = [
+			// 	'image'=>'https://b.fitn.in/global/ios_homescreen_banner/pledge_1.png',
+			// 	'link'=>'ftrnty://ftrnty.com/abc',
+			// 	'title'=>'Pledge for Fitness',
+			// 	'height'=>100,
+			// 	'width'=>375,
+			// 	'ratio'=>(float) number_format(100/375,2)
+			// ];
 
 			$result['campaigns'][] = [
 				'image'=>'https://b.fitn.in/global/ios_homescreen_banner/fitnesssale-appbanner.png',
@@ -3221,15 +3221,15 @@ class CustomerController extends \BaseController {
 				'width'=>375,
 				'ratio'=>(float) number_format(100/375,2)
 			];
-
 			$result['campaigns'][] = [
-				'image'=>'https://b.fitn.in/global/ios_homescreen_banner/emi-app-banner.png',
+				'image'=>'https://b.fitn.in/global/ios_homescreen_banner/complimentary-rewards-appbanner.png',
 				'link'=>'ftrnty://ftrnty.com/abc',
-				'title'=>'Easy EMI',
+				'title'=>'Complimentary Rewards',
 				'height'=>100,
 				'width'=>375,
 				'ratio'=>(float) number_format(100/375,2)
 			];
+			
 
 			$result['campaigns'][] = [
 				'image'=>'https://b.fitn.in/global/ios_homescreen_banner/upto60off-appbanner.png',
@@ -3241,9 +3241,9 @@ class CustomerController extends \BaseController {
 			];
 
 			$result['campaigns'][] = [
-				'image'=>'https://b.fitn.in/global/ios_homescreen_banner/complimentary-rewards-appbanner.png',
+				'image'=>'https://b.fitn.in/global/ios_homescreen_banner/emi-app-banner.png',
 				'link'=>'ftrnty://ftrnty.com/abc',
-				'title'=>'Complimentary Rewards',
+				'title'=>'Easy EMI',
 				'height'=>100,
 				'width'=>375,
 				'ratio'=>(float) number_format(100/375,2)
