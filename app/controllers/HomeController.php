@@ -419,6 +419,35 @@ class HomeController extends BaseController {
 
             // $collections 			= 	Findercollection::active()->where('city_id', '=', intval($citydata['_id']))->orderBy('ordering')->get(array('name', 'slug', 'coverimage', 'ordering' ));
             $campaigns=  [];
+            $campaigns[] = [
+                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Webbanner-Fitnesssale.png',
+                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/mobbanner-fitnesssale.png',
+				'link'=>'',
+				'title'=>'Sale',
+				'height'=>100,
+				'width'=>375,
+				'ratio'=>(float) number_format(100/375,2)
+            ];
+            
+            $campaigns[] = [
+                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Webbanner-Emi.png',
+                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Mobbanner-EMI.png',
+				'link'=>'',
+				'title'=>'Save with Fitness',
+				'height'=>100,
+				'width'=>375,
+				'ratio'=>(float) number_format(100/375,2)
+            ];
+            
+            $campaigns[] = [
+                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/webbanner-sale60%25.png',
+                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/mobbanner-sale60%25.png',
+				'link'=>'',
+				'title'=>'Fitness Sale',
+				'height'=>100,
+				'width'=>375,
+				'ratio'=>(float) number_format(100/375,2)
+			];
 
 			$campaigns[] = [
                 'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Rewards-banner-web-1.png',
@@ -430,35 +459,6 @@ class HomeController extends BaseController {
 				'ratio'=>(float) number_format(100/375,2)
 			];
 
-			$campaigns[] = [
-                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Webbanner-Emi.png',
-                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Mobbanner-EMI.png',
-				'link'=>'',
-				'title'=>'Save with Fitness',
-				'height'=>100,
-				'width'=>375,
-				'ratio'=>(float) number_format(100/375,2)
-			];
-
-			$campaigns[] = [
-                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Webbanner-Fitnesssale.png',
-                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/mobbanner-fitnesssale.png',
-				'link'=>'',
-				'title'=>'Sale',
-				'height'=>100,
-				'width'=>375,
-				'ratio'=>(float) number_format(100/375,2)
-			];
-
-			$campaigns[] = [
-                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/webbanner-sale60%25.png',
-                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/mobbanner-sale60%25.png',
-				'link'=>'',
-				'title'=>'Fitness Sale',
-				'height'=>100,
-				'width'=>375,
-				'ratio'=>(float) number_format(100/375,2)
-			];
 
             $homedata 	= 	array(
                 // 'popular_finders' => $popular_finders,
