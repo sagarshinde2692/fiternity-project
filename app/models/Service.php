@@ -248,37 +248,37 @@ class Service extends \Basemodel{
 					
                 }
 //                var_dump($ratecardoffers);exit;
-				if(isset($this['offer_available']) && $this->offer_available && !$offer_exists && !in_array($this['finder_id'], Config::get('app.hot_offer_excluded_vendors'))){
-					if(isset($value['type']) && ($value['type']=='membership' || $value['type']=='packages')){
-						if(isset($value['validity']) && isset($value['validity_type'])){
+				// if(isset($this['offer_available']) && $this->offer_available && !$offer_exists && !in_array($this['finder_id'], Config::get('app.hot_offer_excluded_vendors'))){
+				// 	if(isset($value['type']) && ($value['type']=='membership' || $value['type']=='packages')){
+				// 		if(isset($value['validity']) && isset($value['validity_type'])){
 							
-							if($value['validity_type']=='year'){
-								$validity = $value['validity'] * 365;
-							}else if($value['validity_type']=='months'){
-								$validity = $value['validity'] * 30;
-							}else if($value['validity_type']=='days'){
-								$validity = $value['validity'];
-							}
-							if($validity){
-								if($validity > $max_validity){
-									$second_max_validity = $max_validity;
-									$second_max_validity_ids = $max_validity_ids;
-									$max_validity_ids = [$value['_id']];
-									$max_validity = $validity;
-								}else if($validity > $second_max_validity && $validity < $max_validity){
-									$second_max_validity = $validity;
-									$second_max_validity_ids = [$value['_id']];
-								}else if($validity == $max_validity){
-									array_push($max_validity_ids, $value['_id']);
-								}else if($validity == $second_max_validity){
-									array_push($second_max_validity_ids, $value['_id']);
-								}
-							}
+				// 			if($value['validity_type']=='year'){
+				// 				$validity = $value['validity'] * 365;
+				// 			}else if($value['validity_type']=='months'){
+				// 				$validity = $value['validity'] * 30;
+				// 			}else if($value['validity_type']=='days'){
+				// 				$validity = $value['validity'];
+				// 			}
+				// 			if($validity){
+				// 				if($validity > $max_validity){
+				// 					$second_max_validity = $max_validity;
+				// 					$second_max_validity_ids = $max_validity_ids;
+				// 					$max_validity_ids = [$value['_id']];
+				// 					$max_validity = $validity;
+				// 				}else if($validity > $second_max_validity && $validity < $max_validity){
+				// 					$second_max_validity = $validity;
+				// 					$second_max_validity_ids = [$value['_id']];
+				// 				}else if($validity == $max_validity){
+				// 					array_push($max_validity_ids, $value['_id']);
+				// 				}else if($validity == $second_max_validity){
+				// 					array_push($second_max_validity_ids, $value['_id']);
+				// 				}
+				// 			}
 							
 							
-						}
-					}
-				}
+				// 		}
+				// 	}
+				// }
 
                 $value['offers']  = $ratecardoffers;
 
@@ -314,17 +314,17 @@ class Service extends \Basemodel{
 				array_push($ratecards, $value);
 			}
 
-			if(isset($this['offer_available']) && $this->offer_available && !$offer_exists){
-				$max_validity_ids = array_merge($max_validity_ids, $second_max_validity_ids);
-				foreach($ratecards as &$value){
-					if((in_array($value['_id'], $max_validity_ids))){
-						// Log::info($value);
-						// if($value[])
-						$value['offers'][0]['offer_text'] = '';
-						$value['offers'][0]['offer_icon'] = 'https://b.fitn.in/iconsv1/fitmania/hot_offer_vendor.png';
-					}
-				}
-			}
+			// if(isset($this['offer_available']) && $this->offer_available && !$offer_exists){
+			// 	$max_validity_ids = array_merge($max_validity_ids, $second_max_validity_ids);
+			// 	foreach($ratecards as &$value){
+			// 		if((in_array($value['_id'], $max_validity_ids))){
+			// 			// Log::info($value);
+			// 			// if($value[])
+			// 			$value['offers'][0]['offer_text'] = '';
+			// 			$value['offers'][0]['offer_icon'] = 'https://b.fitn.in/iconsv1/fitmania/hot_offer_vendor.png';
+			// 		}
+			// 	}
+			// }
 			
 		}
 
