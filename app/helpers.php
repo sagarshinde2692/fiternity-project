@@ -2788,7 +2788,7 @@ if (!function_exists(('isNotInoperationalDate'))){
 
         $inoperational_dates = ['2018-01-01'];
 
-        if($findercategory_id && in_array($findercategory_id, [5]) && in_array($date, $inoperational_dates)){
+        if($findercategory_id && !in_array($findercategory_id, [5]) && in_array($date, $inoperational_dates)){
             return false;
         }
         
