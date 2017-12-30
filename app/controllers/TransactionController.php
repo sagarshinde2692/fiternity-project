@@ -1149,6 +1149,10 @@ class TransactionController extends \BaseController {
             array_set($data, 'followup_status', 'catch_up');
             array_set($data, 'followup_status_count', 1);
 
+            $data['workout_article_link'] = $this->utilities->getShortenUrl(Config::get('app.website')."/article/complete-guide-to-help-you-prepare-for-the-first-week-of-your-workout");
+            $data['download_app_link'] = Config::get('app.download_app_link');
+            $data['diet_plan_link'] = $this->utilities->getShortenUrl(Config::get('app.website')."/diet-plan");
+
             if(isset($order->payment_mode) && $order->payment_mode == "paymentgateway"){
             
                 array_set($data, 'membership_bought_at', 'Fitternity Payu Mode');
