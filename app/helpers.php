@@ -2696,7 +2696,7 @@ if (!function_exists(('customerTokenDecode'))){
             }
 
             $decodedToken = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
-            Log::info($decodedToken);
+            // Log::info($decodedToken);
             return $decodedToken;
 
         }catch(DomainException $e){
