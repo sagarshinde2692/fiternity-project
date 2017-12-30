@@ -3221,7 +3221,7 @@ if (!function_exists('registerMail')) {
                 $customermailer = new CustomerMailer();
                 $utilities = new Utilities();
                 
-                $wallet_balance = $utilities->getWalletBalance($data["customer_id"]);
+                $wallet_balance = $utilities->getWalletBalance($customer_id);
                 $customerData->wallet_balance = $wallet_balance;
                 if($wallet_balance > 0){
         
