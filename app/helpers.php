@@ -2696,7 +2696,7 @@ if (!function_exists(('customerTokenDecode'))){
             }
 
             $decodedToken = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
-            Log::info("Yes2");
+            // Log::info($decodedToken);
             return $decodedToken;
 
         }catch(DomainException $e){
@@ -2779,12 +2779,19 @@ if (!function_exists(('getRegId'))){
 }
 
 if (!function_exists(('isNotInoperationalDate'))){
-    function isNotInoperationalDate($date, $city_id=null, $slot=null){
+    function isNotInoperationalDate($date, $city_id=null, $slot=null, $findercategory_id=null){
 
-        $inoperational_dates = ['2017-12-25', '2018-01-01'];
+        $inoperational_dates = ['2017-12-25'];
         if(in_array($date, $inoperational_dates)){
             return false;
         }
+
+        $inoperational_dates = ['2018-01-01'];
+
+        if($findercategory_id && in_array($findercategory_id, [5]) && in_array($date, $inoperational_dates)){
+            return false;
+        }
+        
         
         return true;
 

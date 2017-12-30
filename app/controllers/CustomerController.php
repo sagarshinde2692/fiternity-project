@@ -3213,14 +3213,14 @@ class CustomerController extends \BaseController {
 				'ratio'=>(float) number_format(100/375,2)
 			];
 
-			$result['campaigns'][] = [
-				'image'=>'https://b.fitn.in/global/ios_homescreen_banner/pledge_2.png',
-				'link'=>'ftrnty://ftrnty.com/abc',
-				'title'=>'Save with Fitness',
-				'height'=>100,
-				'width'=>375,
-				'ratio'=>(float) number_format(100/375,2)
-			];
+			// $result['campaigns'][] = [
+			// 	'image'=>'https://b.fitn.in/global/ios_homescreen_banner/pledge_2.png',
+			// 	'link'=>'ftrnty://ftrnty.com/abc',
+			// 	'title'=>'Save with Fitness',
+			// 	'height'=>100,
+			// 	'width'=>375,
+			// 	'ratio'=>(float) number_format(100/375,2)
+			// ];
 
 			$result['campaigns'][] = [
 				'image'=>'https://b.fitn.in/global/ios_homescreen_banner/pledge_3.png',
@@ -3231,14 +3231,14 @@ class CustomerController extends \BaseController {
 				'ratio'=>(float) number_format(100/375,2)
 			];
 
-			$result['campaigns'][] = [
-				'image'=>'https://b.fitn.in/global/ios_homescreen_banner/pledge_4.png',
-				'link'=>'ftrnty://ftrnty.com/abc',
-				'title'=>'Fitness Sale',
-				'height'=>100,
-				'width'=>375,
-				'ratio'=>(float) number_format(100/375,2)
-			];
+			// $result['campaigns'][] = [
+			// 	'image'=>'https://b.fitn.in/global/ios_homescreen_banner/pledge_4.png',
+			// 	'link'=>'ftrnty://ftrnty.com/abc',
+			// 	'title'=>'Fitness Sale',
+			// 	'height'=>100,
+			// 	'width'=>375,
+			// 	'ratio'=>(float) number_format(100/375,2)
+			// ];
 
 			$lat = isset($_REQUEST['lat']) && $_REQUEST['lat'] != "" ? $_REQUEST['lat'] : "";
 	        $lon = isset($_REQUEST['lon']) && $_REQUEST['lon'] != "" ? $_REQUEST['lon'] : "";
@@ -3530,7 +3530,7 @@ class CustomerController extends \BaseController {
 		}
 
 		$current_version_android = 3.4;
-		$current_version_ios = 2.3;
+		$current_version_ios = 4.4;
 
 		$last_stable_version_android = 3.0;
 
