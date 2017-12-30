@@ -177,6 +177,7 @@ class RewardofferController extends BaseController {
         $amount         =   (int)$data['amount'];
         $ratecard_id    =   (int)$data['ratecard_id'];
         $ratecard       =   Ratecard::where('_id',$ratecard_id)->where('finder_id',$finder_id)->first();
+        $service_id     =   (int)$data['service_id'];
 
         if(isset($data['order_id']) && $data['order_id'] != ""){
             $order_id   = (int) $data['order_id'];
@@ -200,6 +201,10 @@ class RewardofferController extends BaseController {
         $finder                 =   Finder::find($finder_id);
         $findercategory_id      =   intval($finder->category_id);
         $rewards                =   [];
+        $finder_name            =   $finder->title;
+        $service                =   Service::find($service_id);   
+        $service_name           =   $service->name;
+        $service_duration       =   $ratecard->service_duration;               
 
 
 
@@ -493,6 +498,10 @@ class RewardofferController extends BaseController {
         //     'diet_plan' => $customerReward->fitternityDietVendor($amount)
         // );
         $data['diet_plan'] = $customerReward->fitternityDietVendor($amount);
+
+        $service_duration = $ratecard['validity'].' '.$ratecard['validity_type'];
+
+        $data['text'] = "Buying $service_name at $finder_name for $service_duration makes you eligible for a COMPLIMENTARY reward from Fitternity! Scroll options below & select";
 
         if(isset($part_payment)){
 
