@@ -3222,14 +3222,14 @@ class CustomerController extends \BaseController {
 			// 	'ratio'=>(float) number_format(100/375,2)
 			// ];
 
-			$result['campaigns'][] = [
-				'image'=>'https://b.fitn.in/global/ios_homescreen_banner/pledge_3.png',
-				'link'=>'ftrnty://ftrnty.com/abc',
-				'title'=>'Sale',
-				'height'=>100,
-				'width'=>375,
-				'ratio'=>(float) number_format(100/375,2)
-			];
+			// $result['campaigns'][] = [
+			// 	'image'=>'https://b.fitn.in/global/ios_homescreen_banner/pledge_3.png',
+			// 	'link'=>'ftrnty://ftrnty.com/abc',
+			// 	'title'=>'Sale',
+			// 	'height'=>100,
+			// 	'width'=>375,
+			// 	'ratio'=>(float) number_format(100/375,2)
+			// ];
 
 			// $result['campaigns'][] = [
 			// 	'image'=>'https://b.fitn.in/global/ios_homescreen_banner/pledge_4.png',
