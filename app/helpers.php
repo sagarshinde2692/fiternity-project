@@ -9,6 +9,9 @@
 use \GuzzleHttp\Exception\RequestException;
 use \GuzzleHttp\Client;
 
+use App\Mailers\CustomerMailer as CustomerMailer;
+
+
 if (!function_exists('checkNull')) {
 
     function checkNull($value){
@@ -2229,7 +2232,21 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         $customer->ishulluser = 1;
                         $customer->old_customer = false;
                         $customer->demonetisation = time();
+                        
+                        try{
+                            $customermailer = new CustomerMailer();
+                            $customermailer->registerNoFitcash($customer->toArray());
+                            $customer->welcome_mail_sent = true;
+                        }catch(Exception $e){
+                            Log::info($e);
+                        }
+                       
+
                         $customer->save();
+
+                       
+
+                        
 
                         // invalidateDuplicatePhones($data, $customer->toArray());
 
