@@ -177,7 +177,7 @@ class RewardofferController extends BaseController {
         $amount         =   (int)$data['amount'];
         $ratecard_id    =   (int)$data['ratecard_id'];
         $ratecard       =   Ratecard::where('_id',$ratecard_id)->where('finder_id',$finder_id)->first();
-        $service_id     =   (int)$data['service_id'];
+        $service_id     =   $ratecard['service_id'];
 
         if(isset($data['order_id']) && $data['order_id'] != ""){
             $order_id   = (int) $data['order_id'];
