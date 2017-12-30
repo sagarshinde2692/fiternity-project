@@ -591,6 +591,10 @@ class TransactionController extends \BaseController {
 
         $data['profile_link'] = $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$data['customer_email']);
 
+        $data['workout_article_link'] = $utilities->getShortenUrl(Config::get('app.website')."/article/complete-guide-to-help-you-prepare-for-the-first-week-of-your-workout");
+        $data['download_app_link'] = Config::get('app.download_app_link');
+        $data['diet_plan_link'] = $utilities->getShortenUrl(Config::get('app.website')."/diet-plan");
+
         if(in_array($data['type'],$this->membership_array) && isset($data['start_date'])){
 
             $data["auto_followup_date"] = date('Y-m-d H:i:s', strtotime("+31 days",strtotime($data['start_date'])));
@@ -1384,12 +1388,14 @@ class TransactionController extends \BaseController {
 
                 $order_data['category_array'] = $this->getCategoryImage($category_slug);
 
-                $after10days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 10);
-                $after30days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 30);
+                $after1days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 1);
+                $after7days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 7);
+                $after15days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 15);
 
                 $this->customersms->purchaseInstant($order->toArray());
-                $order->cutomerSmsPurchaseAfter10Days = $this->customersms->purchaseAfter10Days($order_data,$after10days);
-                $order->cutomerSmsPurchaseAfter30Days = $this->customersms->purchaseAfter30Days($order_data,$after30days);
+                $order->cutomerSmsPurchaseAfter1Days = $this->customersms->purchaseAfter1Days($order_data,$after1days);
+                $order->cutomerSmsPurchaseAfter7Days = $this->customersms->purchaseAfter7Days($order_data,$after7days);
+                $order->cutomerSmsPurchaseAfter15Days = $this->customersms->purchaseAfter15Days($order_data,$after15days);
 
                 $order->update();
 

@@ -1105,11 +1105,6 @@ class HomeController extends BaseController {
                 }*/
             }
 
-
-            if(isset($item['payment_mode']) && $item['payment_mode'] == 'cod'){
-                $subline= "Your membership will be activated once your cash is collected. Fitternity team will reach out to you to coordinate the cash pick-up.";
-            }
-
             if($finder_address != ""){
                 $booking_details_data['address']['value'] = $finder_address;
             }
@@ -1183,6 +1178,10 @@ class HomeController extends BaseController {
 
                 $booking_details_data = array_only($booking_details_data, ['booking_id','price','address','poc']);
 
+            }
+            
+            if(isset($item['payment_mode']) && $item['payment_mode'] == 'cod'){
+                $subline= "Hi ".$item['customer_name'].", your ".$booking_details_data['service_duration']['value']." at ".$booking_details_data["finder_name_location"]['value']." has been confirmed. It will be activated once we collect your cash payment. We have also sent you a confirmation Email and SMS";
             }
 
             $booking_details_all = [];
