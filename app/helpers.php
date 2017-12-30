@@ -3190,6 +3190,51 @@ if (!function_exists('setVerifiedContact')) {
     }
 }
 
+if (!function_exists('vendorsByBrand')) {
+    
+    function vendorsByBrand($request){
+            
+        $client = new Client( ['debug' => false, 'base_uri' => Config::get("app.url")."/"] );
+        $offset  = 0;
+        $limit   = 50;
+        $brand_id = $request['brand_id'];
+        $city = $request['city'];
+        $keys = [ "id","address","average_rating","business_type","categorytags","commercial_type","contact","coverimage","distance","facilities","geolocation","location","locationtags","multiaddress","name","offer_available","offerings","photos","servicelist","slug","total_rating_count","vendor_type","subcategories","tractionscore","trial_offer","membership_offer" ];
+        
+        // $brand_id = $request['brand_id'];
+        $payload = [ 
+            "category"=> "",
+            "keys"=> $keys,
+            "location"=> [ "city"=> $city ],
+            "brand"=> $brand_id,
+            "offset"=> [ "from"=> $offset, "number_of_records"=> $limit ],
+            "other_filters"=> [] 
+        ];
+
+        $url = Config::get('app.new_search_url')."/search/vendor";
+
+        $finders = [];
+
+        try {
+            
+            $response  =   json_decode($client->post($url,['json'=>$payload])->getBody()->getContents(),true);
+
+            if(isset($response['results'])){
+
+                return $finders = $response['results'];
+
+            }
+
+        }catch (RequestException $e) {
+            return $finders;
+
+        }catch (Exception $e) {
+            return $finders;
+        }
+            
+    }
+}
+
 
 
 ?>

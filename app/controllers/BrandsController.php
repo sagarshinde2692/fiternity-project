@@ -14,33 +14,33 @@ class BrandsController extends \BaseController {
     }
 
 
-    public function brandDetail($slug, $cache = false){
-
-        $data = array();
-        $slug = (string) $slug;
-
-        $brand_detail = $cache ? Cache::tags('brand_detail')->has($slug) : false;
+    public function brandDetail($slug, $city, $cache = false){
+        
+        $brand_detail = $cache ? Cache::tags('brand_detail')->has("$slug-$city") : false;
 
         if(!$brand_detail){
 
             $brand = Brand::where('slug','=',$slug)->firstOrFail();
+
+            $finder_ids = isset($brand->finder_id) ? $brand->finder_id : [];
                     
             if($brand){
 
-                $finders     =   Finder::with(array('category'=>function($query){$query->select('_id','name','slug','related_finder_title');}))
-                                            ->with(array('location'=>function($query){$query->select('_id','name','slug');}))
-                                            ->with(array('city'=>function($query){$query->select('_id','name','slug');}))
-                                            ->where('status', '=', '1')
-                                            ->whereIn('_id', array_map('intval',$brand->finder_id))
-                                            ->get();
+                $request = [
+                    'brand_id' => $brand->_id,
+                    'city'  => $city
+                ];
+                
+                $finders = vendorsByBrand($request);
+                
                 $data = array(
                         'brand'     => $brand,
                         'finders'    => $finders
                     );
 
-                Cache::tags('brand_detail')->put($slug,$data,Config::get('cache.cache_time'));
+                Cache::tags('brand_detail')->put("$slug-$city" ,$data,Config::get('cache.cache_time'));
                 
-                return Response::json(Cache::tags('brand_detail')->get($slug));
+                return Response::json(Cache::tags('brand_detail')->get("$slug-$city"));
                 
             }else{
                 return Response::json(array('status' => 400,'message' => 'brand not found'),400);
