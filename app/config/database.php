@@ -6,15 +6,15 @@
 // $password = "";
 
 //stage
-$host = "localhost";
-$username = "admin";
-$password = "fit123";
-$options = ['db' => 'admin','authMechanism' => 'MONGODB-CR']; // sets the authentication database required by mongo 3]
+// $host = "localhost";
+// $username = "admin";
+// $password = "fit123";
+// $options = ['db' => 'admin','authMechanism' => 'MONGODB-CR']; // sets the authentication database required by mongo 3]
 
 //production
-// $host = "54.179.134.14";
-// $username = "";
-// $password = "";
+$host = "54.179.134.14";
+$username = "";
+$password = "";
 
 return array(
 
@@ -70,7 +70,7 @@ return array(
 			'database' => 'fitadmin',
 		    'username' => $username,
 		    'password' => $password,
-			'options' => $options
+			// 'options' => $options
 			// 'options' => [
 			// 		'db' => 'admin' // sets the authentication database required by mongo 3
 			// 	]
@@ -83,7 +83,7 @@ return array(
 			'database' => 'fitapi',
             'username' => $username,
             'password' => $password,
-			'options' => $options
+			// 'options' => $options
 			// 'options' => [
 			// 	'db' => 'admin' // sets the authentication database required by mongo 3
 			// ]
