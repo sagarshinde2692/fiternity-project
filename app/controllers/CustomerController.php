@@ -619,7 +619,7 @@ class CustomerController extends \BaseController {
 						$customer->old_customer = false;
 						$customer->save();
 						$customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email'],'password'=>$data['password']);
-						$this->customermailer->register($customer_data);
+						// $this->customermailer->register($customer_data);
 
 						Log::info('Customer Register : '.json_encode(array('customer_details' => $customer)));
 
@@ -698,6 +698,9 @@ class CustomerController extends \BaseController {
 			$response['customer_data'] = array_only($customer->toArray(), ['_id','name','email','contact_no','dob','gender']);
 			$response['customer_data']["token"] = $response["token"];
 			Log::info("Customer Register",$response);
+
+            registerMail($data["customer_id"]);
+			
 
 			return Response::json($response,200);
 		}
@@ -1191,7 +1194,7 @@ class CustomerController extends \BaseController {
 			$customer->referral_code = $this->generateReferralCode($customer->name);
 			$customer->old_customer = false;
 			$customer->save();
-
+            registerMail($customer->_id);
 			$response = array('status' => 200,'customer'=>$customer);
 		}
 

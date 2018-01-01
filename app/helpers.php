@@ -9,6 +9,10 @@
 use \GuzzleHttp\Exception\RequestException;
 use \GuzzleHttp\Client;
 
+use App\Mailers\CustomerMailer as CustomerMailer;
+
+use App\Services\Utilities as Utilities;
+
 if (!function_exists('checkNull')) {
 
     function checkNull($value){
@@ -2230,6 +2234,10 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         $customer->old_customer = false;
                         $customer->demonetisation = time();
                         $customer->save();
+                        registerMail($customer->_id);
+                       
+
+                        
 
                         // invalidateDuplicatePhones($data, $customer->toArray());
 
@@ -3194,6 +3202,39 @@ if (!function_exists('setVerifiedContact')) {
             $customer->secondary_verified_no = $secondary_verified_no;
         }
         $customer->update();
+       
+    }
+}
+
+if (!function_exists('registerMail')) {
+    
+    function registerMail($customer_id){
+        try{
+            Log::info("inside register====================");
+            $customerData = Customer::find($customer_id);
+            
+            if(!isset($customerData->welcome_mail_sent) || !$customerData->welcome_mail_sent){
+                $customermailer = new CustomerMailer();
+                $utilities = new Utilities();
+                
+                $wallet_balance = $utilities->getWalletBalance($customer_id);
+                $customerData->wallet_balance = $wallet_balance;
+                if($wallet_balance > 0){
+        
+                    $customermailer->registerFitcash($customerData->toArray());
+        
+                }else{
+        
+                    $customermailer->registerNoFitcash($customerData->toArray());
+        
+                }
+                $customerData->welcome_mail_sent = true;
+                $customerData->update();
+            }
+        
+        }catch(Exception $e){
+            Log::info($e);
+        }
        
     }
 }
