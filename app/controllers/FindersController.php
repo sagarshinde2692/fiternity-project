@@ -529,10 +529,10 @@ class FindersController extends \BaseController {
 
 							$service['offer_icon'] = "";
 							
-							if(isset($service['offer_available']) && $service['offer_available'] == true && !in_array($finder['_id'], Config::get('app.hot_offer_excluded_vendors'))){
+							// if(isset($service['offer_available']) && $service['offer_available'] == true && !in_array($finder['_id'], Config::get('app.hot_offer_excluded_vendors'))){
 								
-								$service['offer_icon'] = "https://b.fitn.in/iconsv1/fitmania/mob_offer_ratecard.png";
-							}															
+							// 	$service['offer_icon'] = "https://b.fitn.in/iconsv1/fitmania/mob_offer_ratecard.png";
+							// }															
 
 							if(isset($service['category']) && isset($service['category']['_id'])){
 								$category_id                =   intval($service['category']['_id']);
@@ -2431,10 +2431,10 @@ class FindersController extends \BaseController {
 				'short_description' => isset($item['short_description']) ? $item['short_description'] : ""
 			);
 
-			if(isset($item['offer_available']) && $item['offer_available'] == true && !in_array($finder_id, Config::get('app.hot_offer_excluded_vendors'))){
+			// if(isset($item['offer_available']) && $item['offer_available'] == true && !in_array($finder_id, Config::get('app.hot_offer_excluded_vendors'))){
 
-				$service['offer_icon'] = "https://b.fitn.in/iconsv1/fitmania/women_offer_ratecard.png";
-			}
+			// 	$service['offer_icon'] = "https://b.fitn.in/iconsv1/fitmania/women_offer_ratecard.png";
+			// }
 
 
 			if(count($item['serviceratecard']) > 0){
@@ -2459,7 +2459,7 @@ class FindersController extends \BaseController {
 
 							if(count($ratecardoffersRecards) > 0){ 
 
-								$service['offer_icon'] = "https://b.fitn.in/iconsv1/fitmania/mob_offer_ratecard.png";
+								// $service['offer_icon'] = "https://b.fitn.in/iconsv1/fitmania/mob_offer_ratecard.png";
 								//$offer_icon_vendor = "https://b.fitn.in/iconsv1/fitmania/offer_available_search.png";
 								
 								foreach ($ratecardoffersRecards as $ratecardoffersRecard){
