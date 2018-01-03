@@ -814,6 +814,10 @@ public function newglobalsearch(){
     if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android" || strtolower($_GET['device_type']) == "ios" || strtolower($_GET['device_type']) == "web")){
         $device_type = strtolower($_GET['device_type']);
     }
+    if($device_type == "ios"){
+        $lat      =         isset($location['geo']) && isset($location['geo']['lat']) ? $location['geo']['lat'] : '';
+        $lon      =         isset($location['geo']) && isset($location['geo']['lon']) ? $location['geo']['lon'] : '';
+    }
    
    
         //  $keys    =          array_diff($keys1, array(''));

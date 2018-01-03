@@ -3346,6 +3346,10 @@ class FindersController extends \BaseController {
 					}
 
 				}
+				if($finderData['finder']['commercial_type'] == 0){
+					$finderData['finder']['trial'] = "disable";
+					$finderData['finder']['membership'] = "disable";
+				}
 
 				if(isset($_GET['notification_id']) && $_GET['notification_id'] != ''){
 					$finderData['finder']['contact']['phone'] = Config::get('app.followup_customer_number');
