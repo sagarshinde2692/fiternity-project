@@ -4138,9 +4138,9 @@ class TransactionController extends \BaseController {
 
         }
 
-        // $hash_verified = $this->utilities->verifyOrder($data,$order);
+        $hash_verified = $this->utilities->verifyOrder($data,$order);
 
-        $hash_verified = true;
+        // $hash_verified = true;
 
 
         if($data['status'] == 'success' && $hash_verified){
