@@ -26,6 +26,14 @@ class BrandsController extends \BaseController {
                     
             if($brand){
 
+                if(isset($brand->coverImage)){
+                    $brand->coverImage = "b.fitn.in/brand/cover/".$brand->coverImage;
+                }
+
+                if(isset($brand->logo)){
+                    $brand->logo = "b.fitn.in/brand/logo/".$brand->logo;
+                }
+
                 $request = [
                     'brand_id' => $brand->_id,
                     'city'  => $city
