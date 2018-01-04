@@ -27,11 +27,11 @@ class BrandsController extends \BaseController {
             if($brand){
 
                 if(isset($brand->coverImage)){
-                    $brand->coverImage = "b.fitn.in/brand/cover/".$brand->coverImage;
+                    $brand->coverImage = "https://b.fitn.in/brand/cover/".$brand->coverImage;
                 }
 
                 if(isset($brand->logo)){
-                    $brand->logo = "b.fitn.in/brand/logo/".$brand->logo;
+                    $brand->logo = "https://b.fitn.in/brand/logo/".$brand->logo;
                 }
 
                 $request = [
