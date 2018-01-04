@@ -3226,10 +3226,10 @@ if (!function_exists('vendorsByBrand')) {
             // }
 
         }catch (RequestException $e) {
-            return $finders;
+            return [];
 
         }catch (Exception $e) {
-            return $finders;
+            return [];
         }
             
     }
