@@ -3213,17 +3213,17 @@ if (!function_exists('vendorsByBrand')) {
 
         $url = Config::get('app.new_search_url')."/search/vendor";
 
-        $finders = [];
-
         try {
             
             $response  =   json_decode($client->post($url,['json'=>$payload])->getBody()->getContents(),true);
 
-            if(isset($response['results'])){
+            return $response;            
 
-                return $finders = $response['results'];
+            // if(isset($response['results'])){
 
-            }
+            //     return $finders = $response['results'];
+
+            // }
 
         }catch (RequestException $e) {
             return $finders;
