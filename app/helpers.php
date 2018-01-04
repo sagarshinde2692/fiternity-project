@@ -3226,9 +3226,11 @@ if (!function_exists('vendorsByBrand')) {
             // }
 
         }catch (RequestException $e) {
+            \Log::info($e);
             return [];
 
         }catch (Exception $e) {
+            \Log::info($e);
             return [];
         }
             
