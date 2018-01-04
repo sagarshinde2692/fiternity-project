@@ -422,7 +422,7 @@ class HomeController extends BaseController {
             $campaigns[] = [
                 'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Webbanner-Fitnesssale.png',
                 'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/mobbanner-fitnesssale.png',
-				'link'=>'',
+				'link'=>Config::get('app.website').'/'.$city.'/fitness?trials=1',
 				'title'=>'Sale',
 				'height'=>100,
 				'width'=>375,
@@ -431,7 +431,7 @@ class HomeController extends BaseController {
             $campaigns[] = [
                 'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Rewards-banner-web-1.png',
                 'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/mobbanner-rewards.png',
-				'link'=>'',
+				'link'=>Config::get('app.website').'/rewards',
 				'title'=>'Rewards with every purchase',
 				'height'=>100,
 				'width'=>375,
@@ -441,7 +441,7 @@ class HomeController extends BaseController {
             $campaigns[] = [
                 'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/webbanner-sale60%25.png',
                 'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/mobbanner-sale60%25.png',
-				'link'=>'',
+				'link'=>Config::get('app.website').'/'.$city.'/fitness?trials=1',
 				'title'=>'Fitness Sale',
 				'height'=>100,
 				'width'=>375,
@@ -451,7 +451,7 @@ class HomeController extends BaseController {
 			$campaigns[] = [
                 'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Webbanner-Emi.png',
                 'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Mobbanner-EMI.png',
-				'link'=>'',
+				'link'=>Config::get('app.website').'/emi',
 				'title'=>'Save with Fitness',
 				'height'=>100,
 				'width'=>375,
