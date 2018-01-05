@@ -3898,6 +3898,7 @@ class FindersController extends \BaseController {
 			$data['finder_name'] = ucwords($finder['title']);
 			$data['finder_location'] = ucwords($finder['location']['name']);
 			$data['finder_city'] = ucwords($finder['city']['name']);
+			$data['city_id'] = (int)$finder['city']['_id'];
 
 			$this->findermailer->reportReview($data);
 
