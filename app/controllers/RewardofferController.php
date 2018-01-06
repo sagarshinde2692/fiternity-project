@@ -259,20 +259,13 @@ class RewardofferController extends BaseController {
             $service_name           =   $service->name;
         }
 
-        if(isset($ratecard) && isset($ratecard->service_duration)){
-            $service_duration       =   $ratecard->service_duration;
-        }
-
-        if(isset($ratecard)){
-
+        if($ratecard){
             $service_duration = $ratecard['validity'].' '.$ratecard['validity_type'];
         }
 
         if(isset($order) && isset($order->service_duration)){
             $service_duration       =   $order->service_duration;
         }               
-
-
 
         if(isset($finder->purchase_gamification_disable) && $finder->purchase_gamification_disable == "1"){
             $rewards = array();
