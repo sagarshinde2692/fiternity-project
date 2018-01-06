@@ -768,6 +768,51 @@ Class FinderMailer extends Mailer {
 	public function reportReview ($data){
 
 		$label = 'ReportReview-Fitternity';
+		
+		$data['fitternity_email'] = [
+			'pranjalisalvi@fitternity.com',
+			'dharatanna@fitternity.com'
+		];
+
+		if(isset($data['city_id']) && $data['city_id'] != ""){
+
+			switch ($data['city_id']) {
+				case 1 : 
+					$data['fitternity_email'] = [
+						'kevalshah@fitternity.com',
+						'mitmehta@fitternity.com',
+						'dharatanna@fitternity.com',
+						'pranjalisalvi@fitternity.com' 
+					];
+					break;
+				case 2 : 
+					$data['fitternity_email'] = [
+						'mitmehta@fitternity.com',
+						'vishankkapoor@fitternity.com',
+						'dharatanna@fitternity.com',
+						'pranjalisalvi@fitternity.com' 
+					];
+					break;
+				case 3 : 
+					$data['fitternity_email'] = [
+						'silkeshakadam@fitternity.com',
+						'dharatanna@fitternity.com',
+						'pranjalisalvi@fitternity.com' 
+					];
+					break;
+				case 4 : 
+				case 8 : 
+					$data['fitternity_email'] = [
+						'vikramkhanna@fitternity.com',
+						'niveditasomani@fitternity.com',
+						'dharatanna@fitternity.com',
+						'pranjalisalvi@fitternity.com' 
+					];
+					break;
+				default:
+					break;
+			}
+		}
 
 		$user_email = $data['fitternity_email'];
 		$user_name = 'Fitternity Team';
