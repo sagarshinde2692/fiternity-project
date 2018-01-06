@@ -1326,7 +1326,7 @@ class HomeController extends BaseController {
             if(isset($item['customer_reward_id']) && $item['customer_reward_id'] != ""){
 
                 $reward_id = (int)$item['customer_reward_id'];
-                $reward = Myreward::select('_id','title','reward_type','description','validity_in_days')->find($reward_id);
+                $reward = Myreward::select('_id','title','reward_type','description','validity_in_days','image')->find($reward_id);
 
                 if($reward){
 
@@ -1339,16 +1339,32 @@ class HomeController extends BaseController {
                         'validity_in_days'=>$reward->validity_in_days
                     ];
 
+                    if(isset($reward->image) && $reward->image != ""){
+                        $reward_details['image'] = $reward->image;
+                    }
+
                     if($reward->reward_type == 'sessions'){
                         $reward_details['description'] = "Get access to multiple fitness sessions with instant booking at your convinience. Try Crossfit, Pilates, Yoga, MMA, Zumba & much more.Available across: - 5 Cities - Mumbai, Bangalore, Delhi, Pune & Gurgaon - 2500 fitness centers";
+                        $reward_details['image'] = 'https://b.fitn.in/gamification/reward/sessions.jpg';
                     }
 
                     if($reward->reward_type == 'diet_plan'){
                         $reward_details['description'] = "Select convinient date and time for your first diet consultation with our expert dietitian. \n - Telephonic consultation with your dietician \n - Personalised & customised diet plan \n - Regular follow-ups & progress tracking \n - Healthy recepies & hacks";
+                        $reward_details['image'] = 'https://b.fitn.in/gamification/reward/diet_plan.jpg';
                     }
 
-                    if($reward->reward_type == 'fitness_kit' && isset($item['reward_description']) && $item['reward_description'] != ""){
-                        $reward_details['description'] = $item['reward_description'];
+                    if($reward->reward_type == 'fitness_kit'){
+
+                        $reward_details['tshirt_size'] = [
+                            'S',
+                            'M',
+                            'L',
+                            'XL'
+                        ];
+
+                        if(isset($item['reward_content']) && is_array($item['reward_content']) && !empty($item['reward_content'])){
+                            $reward_details['description'] = "We have shaped the perfect fitness kit for you. Strike off these workout essentials from your cheat sheet & get going. <br>- ".implode(" <br>- ",$item['reward_content']);
+                        }
                     }
 
                 }
@@ -1362,7 +1378,8 @@ class HomeController extends BaseController {
                     'finder_name'=> (isset($item['finder_name']) && $item['finder_name'] != "") ? $item['finder_name'] : "",
                     'title'=>'Instant Cashback',
                     'description'=>'₹'.$item['cashback_detail']['wallet_amount'].'+ has been added in form of FitCash+ in your wallet. You can find it in your profile and use it to explore different wokrkout forms and healthy tiffins.',
-                    'validity_in_days'=>null
+                    'validity_in_days'=>null,
+                    'image'=>'https://b.fitn.in/gamification/reward/cashback.jpg'
                 ];
 
             }
