@@ -3231,7 +3231,7 @@ class CustomerController extends \BaseController {
 
 				$result['campaigns'][] = [
 					'image'=>'https://b.fitn.in/global/ios_homescreen_banner/fitnesssale-appbanner.png',
-					'link'=>'ftrnty://ftrnty.com/abc',
+					'link'=>'ftrnty://ftrnty.com/search/all',
 					'title'=>'Fitness Sale',
 					'height'=>100,
 					'width'=>375,
@@ -3242,7 +3242,7 @@ class CustomerController extends \BaseController {
 
 			$result['campaigns'][] = [
 				'image'=>'https://b.fitn.in/global/ios_homescreen_banner/complimentary-rewards-appbanner.png',
-				'link'=>'https://www.fitternity.com/rewards',
+				'link'=>'https://www.fitternity.com/rewards?mobile_app=true',
 				'title'=>'Complimentary Rewards',
 				'height'=>100,
 				'width'=>375,
@@ -3264,7 +3264,7 @@ class CustomerController extends \BaseController {
 
 				$result['campaigns'][] = [
 					'image'=>'https://b.fitn.in/global/ios_homescreen_banner/upto60off-appbanner.png',
-					'link'=>'ftrnty://ftrnty.com/abc',
+					'link'=>'ftrnty://ftrnty.com/search/all',
 					'title'=>'Save with Fitness',
 					'height'=>100,
 					'width'=>375,
@@ -3275,7 +3275,7 @@ class CustomerController extends \BaseController {
 			
 			$result['campaigns'][] = [
 				'image'=>'https://b.fitn.in/global/ios_homescreen_banner/emi-app-banner.png',
-				'link'=>'https://www.fitternity.com/emi',
+				'link'=>'https://www.fitternity.com/emi?mobile_app=true',
 				'title'=>'Easy EMI',
 				'height'=>100,
 				'width'=>375,
