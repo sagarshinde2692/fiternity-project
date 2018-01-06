@@ -177,11 +177,27 @@ class RewardofferController extends BaseController {
         $amount         =   (int)$data['amount'];
         $ratecard_id    =   (int)$data['ratecard_id'];
         $ratecard       =   Ratecard::where('_id',$ratecard_id)->where('finder_id',$finder_id)->first();
-        $service_id     =   $ratecard['service_id'];
+        $service_id = 99999999;
 
 
-        $service = Service::find((int)$ratecard->service_id);
+        if($ratecard){
 
+            $service_id     =  (int) $ratecard['service_id'];
+        }
+
+        if(isset($data['order_id']) && $data['order_id'] != ""){
+
+            $order = Order::find((int) $data['order_id']);
+
+            if($order && isset($order['service_id']) && $order['service_id'] != ""){
+
+                $service_id     =  (int) $order['service_id'];
+            }
+
+        }
+
+
+        $service = Service::find($service_id);
         // echo"<pre>";print_r($service->servicecategory_id);exit;
 
         $service_category_id = null;
@@ -234,11 +250,22 @@ class RewardofferController extends BaseController {
         $findercategory_id      =   intval($finder->category_id);
         $rewards                =   [];
         $finder_name            =   $finder->title;
-        $service                =   Service::find($service_id);   
-        $service_name           =   $service->name;
-        $service_duration       =   $ratecard->service_duration;               
 
 
+        $service_name           =   "";
+        $service_duration       =   "";
+
+        if(isset($service) && isset($service->name)){
+            $service_name           =   $service->name;
+        }
+
+        if($ratecard){
+            $service_duration = $ratecard['validity'].' '.$ratecard['validity_type'];
+        }
+
+        if(isset($order) && isset($order->service_duration)){
+            $service_duration       =   $order->service_duration;
+        }               
 
         if(isset($finder->purchase_gamification_disable) && $finder->purchase_gamification_disable == "1"){
             $rewards = array();
@@ -314,7 +341,7 @@ class RewardofferController extends BaseController {
                         'nutrition_store',
                         'fitternity_voucher'
                     );
-                    if($ratecard["type"] == "trial" || $ratecard["type"] == "workout session"){
+                    if(isset($ratecard) && ($ratecard["type"] == "trial" || $ratecard["type"] == "workout session")){
                         $rewards = [];
                     }
                     foreach ($reward_type_order as $reward_type_order_value){
@@ -744,8 +771,6 @@ class RewardofferController extends BaseController {
         //     'diet_plan' => $customerReward->fitternityDietVendor($amount)
         // );
         $data['diet_plan'] = $customerReward->fitternityDietVendor($amount);
-
-        $service_duration = $ratecard['validity'].' '.$ratecard['validity_type'];
 
         $data['text'] = "Buying $service_name at $finder_name for $service_duration makes you eligible for a COMPLIMENTARY reward from Fitternity! Scroll options below & select";
 
