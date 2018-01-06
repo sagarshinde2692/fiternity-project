@@ -889,8 +889,15 @@ class FindersController extends \BaseController {
 				$response['nearby_same_category']           =       $nearby_same_category;
 				$response['nearby_other_category']          =       $nearby_other_category;
 				$response['show_reward_banner'] = true;
-				$response['finder_footer'] 					= 		$finder_footer;
-				$response['payment_options']				=		$this->getPaymentModes($payment_options_data);
+				$response['finder_footer']				= 		$finder_footer;
+				$response['finder']['payment_options']				=		$this->getPaymentModes($payment_options_data);
+
+				if(isset($finder['flags']) && isset($finder['flags']['state']) && in_array($finder['flags']['state'],['closed','temporarily_shut'])){
+
+					$response['finder']['membership'] = "disable";
+					$response['finder']['trial'] = "disable";
+					$response['finder']['payment_options'] = [];
+				}
 
 				Cache::tags('finder_detail')->put($cache_key,$response,Config::get('cache.cache_time'));
 
