@@ -799,7 +799,7 @@ class CustomerController extends \BaseController {
 			return array('status' => 400,'message' =>$this->errorMessage($validator->errors()));  
 		}
 
-		$kiosk_user = KioskUser::where('type','kiosk')->where('email',$data['email'])->first();
+		$kiosk_user = KioskUser::where('hidden',false)->where('type','kiosk')->where('email',$data['email'])->first();
 
 		if($kiosk_user){
 
