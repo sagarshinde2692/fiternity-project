@@ -3048,7 +3048,7 @@ class TransactionController extends \BaseController {
                 $req['entry'] = "credit";
                 $req['type'] = "FITCASHPLUS";
                 $req['amount_fitcash_plus'] = $amount;
-                $req['description'] = "Added FitCash+, Expires On : ".date('d-m-Y',time()+(86400*60));
+                $req['description'] = "Added FitCash+ as Fitternity Bonus, Expires On : ".date('d-m-Y',time()+(86400*60));
                 $req["validity"] = time()+(86400*60);
                 $req['for'] = $time;
 
@@ -3099,7 +3099,7 @@ class TransactionController extends \BaseController {
                 
                 $transaction['wallet_balance'] = $wallet_balance;
                 $transaction['top_up'] = $top_up;
-                $transation['top_up_amount'] = $amount;
+                $transaction['top_up_amount'] = $amount;
 
                 switch ($time) {
                     case 'LPlus15':

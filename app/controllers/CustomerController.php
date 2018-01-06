@@ -3216,36 +3216,66 @@ class CustomerController extends \BaseController {
 			// 	'ratio'=>(float) number_format(100/375,2)
 			// ];
 
-			$result['campaigns'][] = [
-				'image'=>'https://b.fitn.in/global/ios_homescreen_banner/fitnesssale-appbanner.png',
-				'link'=>'ftrnty://ftrnty.com/abc',
-				'title'=>'Fitness Sale',
-				'height'=>100,
-				'width'=>375,
-				'ratio'=>(float) number_format(100/375,2)
-			];
+			if($_REQUEST['device_type'] == 'ios'){
+
+				$result['campaigns'][] = [
+					'image'=>'https://b.fitn.in/global/ios_homescreen_banner/fitnesssale-appbanner.png',
+					'link'=>'ftrnty://fitternity.com/',
+					'title'=>'Fitness Sale',
+					'height'=>100,
+					'width'=>375,
+					'ratio'=>(float) number_format(100/375,2)
+				];
+
+			}else{
+
+				$result['campaigns'][] = [
+					'image'=>'https://b.fitn.in/global/ios_homescreen_banner/fitnesssale-appbanner.png',
+					'link'=>'ftrnty://ftrnty.com/abc',
+					'title'=>'Fitness Sale',
+					'height'=>100,
+					'width'=>375,
+					'ratio'=>(float) number_format(100/375,2)
+				];
+
+			}
+
 			$result['campaigns'][] = [
 				'image'=>'https://b.fitn.in/global/ios_homescreen_banner/complimentary-rewards-appbanner.png',
-				'link'=>'ftrnty://ftrnty.com/abc',
+				'link'=>'https://www.fitternity.com/rewards',
 				'title'=>'Complimentary Rewards',
 				'height'=>100,
 				'width'=>375,
 				'ratio'=>(float) number_format(100/375,2)
 			];
+
+			if($_REQUEST['device_type'] == 'ios'){
+
+				$result['campaigns'][] = [
+					'image'=>'https://b.fitn.in/global/ios_homescreen_banner/upto60off-appbanner.png',
+					'link'=>'ftrnty://fitternity.com/',
+					'title'=>'Save with Fitness',
+					'height'=>100,
+					'width'=>375,
+					'ratio'=>(float) number_format(100/375,2)
+				];
+
+			}else{
+
+				$result['campaigns'][] = [
+					'image'=>'https://b.fitn.in/global/ios_homescreen_banner/upto60off-appbanner.png',
+					'link'=>'ftrnty://ftrnty.com/abc',
+					'title'=>'Save with Fitness',
+					'height'=>100,
+					'width'=>375,
+					'ratio'=>(float) number_format(100/375,2)
+				];
+
+			}
 			
-
-			$result['campaigns'][] = [
-				'image'=>'https://b.fitn.in/global/ios_homescreen_banner/upto60off-appbanner.png',
-				'link'=>'ftrnty://ftrnty.com/abc',
-				'title'=>'Save with Fitness',
-				'height'=>100,
-				'width'=>375,
-				'ratio'=>(float) number_format(100/375,2)
-			];
-
 			$result['campaigns'][] = [
 				'image'=>'https://b.fitn.in/global/ios_homescreen_banner/emi-app-banner.png',
-				'link'=>'ftrnty://ftrnty.com/abc',
+				'link'=>'https://www.fitternity.com/emi',
 				'title'=>'Easy EMI',
 				'height'=>100,
 				'width'=>375,
