@@ -98,10 +98,7 @@ Class CustomerReward {
 
                 if($order && isset($order['amount_finder'])){
 
-                    $ratecard_id    =   (int)$order['ratecard_id'];
-                    $ratecard       =   \Ratecard::find($ratecard_id);
-
-                    $service = \Service::find((int)$ratecard->service_id);
+                    $service = \Service::find((int)$order->service_id);
                     $service_category_id = null;
 
                     if($service){

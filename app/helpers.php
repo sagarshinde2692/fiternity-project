@@ -3127,7 +3127,7 @@ if (!function_exists('isKioskVendor')) {
 
         $isKioskVendor = false;
 
-        $count = KioskUser::where('finder_id',(int) $finder_id)->where('type','kiosk')->count();
+        $count = KioskUser::where('hidden',false)->where('finder_id',(int) $finder_id)->where('type','kiosk')->count();
 
         if($count){
             $isKioskVendor = true;
