@@ -26,6 +26,14 @@ class BrandsController extends \BaseController {
                     
             if($brand){
 
+                if($brand->coverImage == ""){
+                    unset($brand->coverImage);
+                }
+
+                if($brand->logo == ""){
+                    unset($brand->logo);
+                }
+
                 if(isset($brand->coverImage)){
                     $brand->coverImage = "https://b.fitn.in/brand/cover/".$brand->coverImage;
                 }
