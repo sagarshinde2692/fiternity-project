@@ -728,7 +728,7 @@ Route::get('ozonetel/customercalltovendor/missedcall',  array('as' => 'ozonetel.
 ##############################################################################
 /******************** BRAND SECTION START HERE *******************************/
 
-Route::get('branddetail/{slug}', array('as' => 'brands.branddetail','uses' => 'BrandsController@brandDetail'));
+Route::post('branddetail/{slug}/{city}', array('as' => 'brands.branddetail','uses' => 'BrandsController@brandDetail'));
 
 ##############################################################################
 /******************** BRAND SECTION END HERE *******************************/

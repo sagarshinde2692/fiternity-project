@@ -1906,7 +1906,11 @@ class MigrationReverseController extends \BaseController {
                 'name' =>  trim($brand->name),
                 'status' =>  (isset($brand->hidden) && $brand->hidden === false) ? "1" : "0",
                 'created_at' =>  (isset($brand->created_at)) ? $brand->created_at : $brand->updated_at,
-                'updated_at' =>  $brand->updated_at
+                'updated_at' =>  $brand->updated_at,
+                'slug' => $brand->slug,
+                'description' => isset($brand->description) ? $brand->description : "",
+                'coverImage' => isset($brand->media) && isset($brand->media['images']) && isset($brand->media['images']['cover']) ? $brand->media['images']['cover'] : "",
+                'logo' => isset($brand->media) && isset($brand->media['images']) && isset($brand->media['images']['logo']) ? $brand->media['images']['logo'] : "",
             ];
 
             $_exists_cnt =   DB::connection($this->fitadmin)->table('brands')->where('_id', intval($id) )->count();
