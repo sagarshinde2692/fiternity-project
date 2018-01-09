@@ -726,6 +726,7 @@ class MigrationReverseController extends \BaseController {
                     'timing' 	=>  (isset($Finder->info['delivery_timing'])) ? trim($Finder->info['delivery_timing']) : "",
                     'delivery_address' 	=>  (isset($Finder->info['delivery_address'])) ? trim($Finder->info['delivery_address']) : "",
                     'service' 	=>  (isset($Finder->info['service'])) ? "<ul><li>". implode("</li><li>", $Finder->info['service'])."</li></ul>" : "",
+                    'gstin'     => (isset($Finder->info) && isset($Finder->info['gstin'])) ? $Finder->info['gstin'] : "",
                 ],
                 'meta' 	=>  [
                     'title' 	=>  (isset($Finder->seo['title'])) ? trim($Finder->seo['title']) : "",
