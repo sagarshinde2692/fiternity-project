@@ -3594,8 +3594,8 @@ class CustomerController extends \BaseController {
 		}
 
 		$result_ios = array(
-			"title" => "Version ".$current_version_ios." is available on App Store",
-			"description" => "Version ".$current_version_ios." is available on App Store",
+			"title" => "Update required",
+			"description" => "Fitternity app has been updated and you need to install a newer version of the application.",
 			"force_update" => false,
 			"available_version" => $current_version_ios,
 		);
