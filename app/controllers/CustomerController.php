@@ -5680,7 +5680,7 @@ class CustomerController extends \BaseController {
 
         	if($transaction){
 
-        		$data = array_only($transaction->toArray(), ['finder_id','city_id','customer_id','customer_email','customer_phone','customer_name']);
+        		$data = array_only($transaction->toArray(), ['finder_id','city_id','customer_id','customer_email','customer_phone','customer_name','finder_name']);
 
         		$data['booktrial_id'] = (int)$_GET['booktrial_id'];
         	}
@@ -5692,7 +5692,10 @@ class CustomerController extends \BaseController {
 			array(
 				'status' => 200,
 				'form_fields' => $form_fields,
-				'data'=>$data
+				'data'=>$data,
+				'header'=> "Fill this form",
+				'indemnity' => array("header"=>"I Agree to Terms & Conditions of ".$data['finder_name'],"description" => "I expressly agree to indemnify and hold the Gym/Studio harmless against any and all claims, demands, damages, rights of action, or causes of action, of any person or entity, that may arise from injuries or damages sustained by me or my guest. I am aware that this is a waiver and a release of liability and I voluntarily agree to its terms.
+				")
 				),
 			200
 		);
