@@ -5694,7 +5694,8 @@ class CustomerController extends \BaseController {
 				'form_fields' => $form_fields,
 				'data'=>$data,
 				'header'=> "Fill this form",
-				'indemnity' => array("header"=>"I Agree to terms& conditions of ".$data['finder_name'],"description" => "whereas the gym has made available certain facilities of physical exercise at its premises:AND WHEREAS the Gym has offered the membership on the express condition that the gym shall not, under any nature, arising out of any accident, injury, disability, grevious hurt, fatality, negligence, etc. happening/occuring to the member in the gym premises or elsewhere due to ad/or attributable to be arising out of the exercises conducted in the gym and/pr malfunctioning or breakdown of any equipment of gym: and whereas the gym may agree to enroll a member only upon the member unconditionally and irrevocably agreeing and accepting these conditions and also releasing and waving in favour of the gym all the right, claim, etc., if any, occurring to the member due to these injuries, fatalities or eventualities as aforesaid")
+				'indemnity' => array("header"=>"I Agree to Terms & Conditions of ".$data['finder_name'],"description" => "I expressly agree to indemnify and hold the Gym/Studio harmless against any and all claims, demands, damages, rights of action, or causes of action, of any person or entity, that may arise from injuries or damages sustained by me or my guest. I am aware that this is a waiver and a release of liability and I voluntarily agree to its terms.
+				")
 				),
 			200
 		);
