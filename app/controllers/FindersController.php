@@ -1795,13 +1795,21 @@ class FindersController extends \BaseController {
 				'amount'=>$fitcash_amount,
 				'title1'=>'₹'.$fitcash_amount.' FITCASH+',
 				'title2'=>'Has been added',
-				'description'=>'You have earned ₹'.$fitcash_amount.' FitCash+ in your fitternity wallet',
+				'description'=>'Find this on Fitternity Wallet & use it to purchase your membership',
+			];
+
+			$response['membership'] = [
+				'image'=>'https://b.fitn.in/gamification/reward/cashback.jpg',
+				'amount'=>$fitcash_amount,
+				'title1'=>'Membership On',
+				'title2'=>'Lowest prices',
+				'description'=>'Use this ₹'.$fitcash_amount.' off before it gets expired to buy membership on this tab at lowest price with complimentary rewards'
 			];		
 
 			$response['message'] = "Thanks for your review!";
 			$response['message_title'] = "Done!";
 
-			$response['rewards'] = [
+			/*$response['rewards'] = [
 				'description'=>'use fitcash+ to buy membership & win below rewards',
 				'items'=>[
 					[
@@ -1821,7 +1829,7 @@ class FindersController extends \BaseController {
 						'image'=>'https://b.fitn.in/gamification/reward/sessions.jpg'
 					],
 				]
-			];
+			];*/
 		}
 
 		return Response::json($response, 200);
