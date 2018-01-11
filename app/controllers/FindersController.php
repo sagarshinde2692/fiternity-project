@@ -1793,7 +1793,7 @@ class FindersController extends \BaseController {
 			$response['fitcash'] = [
 				'image'=>'https://b.fitn.in/gamification/reward/cashback.jpg',
 				'amount'=>(string)$fitcash_amount,
-				'title1'=>strtoupper('₹'.$fitcash_amount.' FITCASH+'),
+				'title1'=>strtoupper('<b>₹'.$fitcash_amount.'</b> FITCASH+'),
 				'title2'=>strtoupper('Has been added'),
 				'description'=>'Find this on <b>Fitternity Wallet</b> & use it to purchase your membership',
 			];
