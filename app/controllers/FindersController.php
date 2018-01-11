@@ -1772,7 +1772,7 @@ class FindersController extends \BaseController {
 
 		$booktrial_count = Booktrial::where('finder_id',(int)$data["finder_id"])->where('customer_id',(int)$data["customer_id"])->count();
 
-		if($this->vendor_token && $fresh_review && $booktrial_count > 0 && $order_count == 0){
+		if($this->vendor_token /*&& $fresh_review && $booktrial_count > 0 && $order_count == 0*/){
 
 			$fitcash_amount = 250;
 
