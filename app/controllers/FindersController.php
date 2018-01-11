@@ -1708,7 +1708,11 @@ class FindersController extends \BaseController {
 			}
 		}
 
+		$fresh_review = true;
+
 		if($review){
+
+			$fresh_review = false;
 
 			$review->update($reviewdata);
 			$message = 'Review Updated Successfully';
@@ -1720,6 +1724,24 @@ class FindersController extends \BaseController {
 			$review = new Review($reviewdata);
 			$review_id = $review->_id = $inserted_id;
 			$review->save();
+
+			if($this->vendor_token){
+
+				$req = array(
+	                "customer_id"=>$data['customer_id'],
+	                "review_id"=>$review_id,
+	                "finder_id"=>$data['finder_id'],
+	                "amount"=>250,
+	                "amount_fitcash" => 0,
+	                "amount_fitcash_plus" => 250,
+	                "type"=>'CREDIT',
+	                'entry'=>'credit',
+	                'description'=>"Fitcash+ Added for reviewing ".ucwords($finder['title']),
+	            );
+
+				$this->utilities->walletTransaction($req);
+
+			}
 
 			$message = 'Review Created Successfully';
 		}
@@ -1745,17 +1767,40 @@ class FindersController extends \BaseController {
 		$this->cacheapi->flushTagKey('finder_detail_ios',$finder->slug);
 		$this->cacheapi->flushTagKey('finder_detail_ios_3_2',$finder->slug);
 
-		if($this->vendor_token){
+
+		$order_count = Order::active()->where('finder_id',(int)$data["finder_id"])->where('customer_id',(int)$data["customer_id"])->count();
+
+		$booktrial_count = Booktrial::where('finder_id',(int)$data["finder_id"])->where('customer_id',(int)$data["customer_id"])->count();
+
+		if($this->vendor_token && $fresh_review && $booktrial_count > 0 && $order_count == 0){
+
+			$fitcash_amount = 250;
+
+			$req = array(
+                "customer_id"=>$data['customer_id'],
+                "review_id"=>$review_id,
+                "finder_id"=>$data['finder_id'],
+                "amount"=>$fitcash_amount,
+                "amount_fitcash" => 0,
+                "amount_fitcash_plus" => $fitcash_amount,
+                "type"=>'CREDIT',
+                'entry'=>'credit',
+                'description'=>"Fitcash+ Added for reviewing ".ucwords($finder['title']),
+            );
+
+			$this->utilities->walletTransaction($req);
+
+			$response['fitcash'] = [
+				'image'=>'https://b.fitn.in/gamification/reward/cashback.jpg',
+				'amount'=>$fitcash_amount,
+				'title1'=>'₹'.$fitcash_amount.' FITCASH+',
+				'title2'=>'Has been added',
+				'description'=>'You have earned ₹'.$fitcash_amount.' FitCash+ in your fitternity wallet',
+			];		
 
 			$response['message'] = "Thanks for your review!";
 			$response['message_title'] = "Done!";
-			$response['fitcash'] = [
-				'image'=>'https://b.fitn.in/gamification/reward/cashback.jpg',
-				'amount'=>'250',
-				'title1'=>'250 FITCASH',
-				'title2'=>'Has been added',
-				'description'=>'You have earned ₹250 FitCash+ in your fitternity wallet',
-			];
+
 			$response['rewards'] = [
 				'description'=>'use fitcash+ to buy membership & win below rewards',
 				'items'=>[
@@ -1772,13 +1817,13 @@ class FindersController extends \BaseController {
 						'image'=>'https://b.fitn.in/gamification/reward/diet_plan.jpg'
 					],
 					[
-						'title'=>'Workout Sesseion',
+						'title'=>'Workout Session',
 						'image'=>'https://b.fitn.in/gamification/reward/sessions.jpg'
 					],
 				]
-			]; 
+			];
 		}
-		
+
 		return Response::json($response, 200);
 	}
 
