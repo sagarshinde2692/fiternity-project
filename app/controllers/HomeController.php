@@ -1421,7 +1421,13 @@ class HomeController extends BaseController {
                 'all_options_url' => $all_options_url,
                 'customer_auto_register' => $customer_auto_register
             ];
-            Log::info("the end");
+
+            $data = [
+                'booked_locate'=>'booked'
+            ];
+                
+            $resp['kiosk'] = $this->utilities->trialBookedLocateScreen($data);
+
             return Response::json($resp);
         }
     }
