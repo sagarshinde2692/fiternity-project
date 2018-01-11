@@ -1793,17 +1793,17 @@ class FindersController extends \BaseController {
 			$response['fitcash'] = [
 				'image'=>'https://b.fitn.in/gamification/reward/cashback.jpg',
 				'amount'=>(string)$fitcash_amount,
-				'title1'=>'₹'.$fitcash_amount.' FITCASH+',
-				'title2'=>'Has been added',
-				'description'=>'Find this on Fitternity Wallet & use it to purchase your membership',
+				'title1'=>strtoupper('₹'.$fitcash_amount.' FITCASH+'),
+				'title2'=>strtoupper('Has been added'),
+				'description'=>'Find this on <b>Fitternity Wallet</b> & use it to purchase your membership',
 			];
 
 			$response['membership'] = [
 				'image'=>'https://b.fitn.in/gamification/reward/cashback.jpg',
 				'amount'=>(string)$fitcash_amount,
-				'title1'=>'Membership On',
-				'title2'=>'Lowest prices',
-				'description'=>'Use this ₹'.$fitcash_amount.' off before it gets expired to buy membership on this tab at lowest price with complimentary rewards'
+				'title1'=>strtoupper('Membership On'),
+				'title2'=>strtoupper('Lowest prices'),
+				'description'=>'Use this <b>₹'.$fitcash_amount.' off</b> before it gets expired to buy membership on this tab at lowest price with complimentary rewards'
 			];		
 
 			$response['message'] = "Thanks for your valuable feedback!";
