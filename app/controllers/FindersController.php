@@ -1806,7 +1806,7 @@ class FindersController extends \BaseController {
 				'description'=>'Use this ₹'.$fitcash_amount.' off before it gets expired to buy membership on this tab at lowest price with complimentary rewards'
 			];		
 
-			$response['message'] = "Thanks for your review!";
+			$response['message'] = "Thanks for your valuable feedback!";
 			$response['message_title'] = "Done!";
 
 			/*$response['rewards'] = [
