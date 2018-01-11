@@ -5650,7 +5650,7 @@ class CustomerController extends \BaseController {
 
         	if($transaction){
 
-        		$data = array_only($transaction->toArray(), ['finder_id','city_id','customer_id','customer_email','customer_phone','customer_name']);
+        		$data = array_only($transaction->toArray(), ['finder_id','city_id','customer_id','customer_email','customer_phone','customer_name','finder_name']);
 
         		$data['booktrial_id'] = (int)$_GET['booktrial_id'];
         	}
@@ -5662,7 +5662,9 @@ class CustomerController extends \BaseController {
 			array(
 				'status' => 200,
 				'form_fields' => $form_fields,
-				'data'=>$data
+				'data'=>$data,
+				'header'=> "Fill this form",
+				'indemnity' => array("header"=>"I Agree to terms& conditions of ".$data['finder_name'],"description" => "whereas the gym has made available certain facilities of physical exercise at its premises:AND WHEREAS the Gym has offered the membership on the express condition that the gym shall not, under any nature, arising out of any accident, injury, disability, grevious hurt, fatality, negligence, etc. happening/occuring to the member in the gym premises or elsewhere due to ad/or attributable to be arising out of the exercises conducted in the gym and/pr malfunctioning or breakdown of any equipment of gym: and whereas the gym may agree to enroll a member only upon the member unconditionally and irrevocably agreeing and accepting these conditions and also releasing and waving in favour of the gym all the right, claim, etc., if any, occurring to the member due to these injuries, fatalities or eventualities as aforesaid")
 				),
 			200
 		);
