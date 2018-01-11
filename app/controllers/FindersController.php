@@ -1830,6 +1830,8 @@ class FindersController extends \BaseController {
 					],
 				]
 			];*/
+
+			$response['review_detail'] = null;
 		}
 
 		return Response::json($response, 200);
