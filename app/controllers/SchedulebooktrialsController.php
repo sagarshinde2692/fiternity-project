@@ -6336,6 +6336,12 @@ class SchedulebooktrialsController extends \BaseController {
                 'booktrial_id'=> (int)$booktrial['_id'],
                 'kiosk_form_url'=>$kiosk_form_url
             ];
+
+            $data = [
+                'booked_locate'=>'locate'
+            ];
+
+            $response = array_merge($response,$this->utilities->trialBookedLocateScreen($data));
         }
 
         return Response::json($response,200);

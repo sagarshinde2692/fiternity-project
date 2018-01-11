@@ -531,17 +531,6 @@ class TempsController extends \BaseController {
                             
                             $customer_data = $this->getAllCustomersByPhone($temp);
     
-                            $return = [
-                                'customer_data'=>$customer_data,
-                                'locate_trial'=>true,
-                                'status' => 200,
-                                'message' => $message,
-                                'verified' => $verified,
-                                // 'token'=>$customerToken,
-                                'booktrial_id'=> (int)$booktrial['_id'],
-                                'kiosk_form_url'=>$kiosk_form_url
-                            ];
-
                         }else{
                             
                             Customer::$withoutAppends = true;
@@ -562,23 +551,29 @@ class TempsController extends \BaseController {
                                 $customer_id = (int)$customer->_id;
     
                             }
-
-                            $return = [
-                                'customer_data'=>$customer_data,
-                                'locate_trial'=>true,
-                                'status' => 200,
-                                'message' => $message,
-                                'verified' => $verified,
-                                'token'=>$customerToken,
-                                'booktrial_id'=> (int)$booktrial['_id'],
-                                'kiosk_form_url'=>$kiosk_form_url
-                            ];
                         }
+
+                        $return = [
+                            'customer_data'=>$customer_data,
+                            'locate_trial'=>true,
+                            'status' => 200,
+                            'message' => $message,
+                            'verified' => $verified,
+                            'token'=>$customerToken,
+                            'booktrial_id'=> (int)$booktrial['_id'],
+                            'kiosk_form_url'=>$kiosk_form_url
+                        ];
 
                         $booktrial->post_trial_status = 'attended';
                         $booktrial->post_trial_initail_status = 'interested';
                         $booktrial->post_trial_status_updated_by_kiosk = time();
                         $booktrial->update();
+
+                        $data = [
+                            'booked_locate'=>'locate'
+                        ];
+
+                        $return = array_merge($return,$this->utilities->trialBookedLocateScreen($data));
 
                     }
                      

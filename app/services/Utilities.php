@@ -2568,5 +2568,52 @@ Class Utilities {
 
     }
 
+    public function trialBookedLocateScreen($data = false){
+
+        $fitcash_amount = 250;
+
+        $response['message_title'] = "DONE!";
+
+        $response['message'] = 'Great! Your session has been booked. Enjoy your workout!';
+
+        if(isset($data['booked_locate']) && $data['booked_locate'] == 'locate'){
+            $response['message'] = 'Great! Your session has been activated. Enjoy your workout!';
+        }
+
+        $response['title'] = 'MAKE MOST OF FITTERNITY!';
+
+        $response['review'] = [
+            'image'=>'https://b.fitn.in/gamification/reward/cashback.jpg',
+            'amount'=>(string)$fitcash_amount,
+            'title1'=>strtoupper('<b>review</b>'),
+            'title2'=>strtoupper('<b>₹'.$fitcash_amount.'</b> FITCASH+'),
+            'description'=>'<b>Post your trial</b> make sure you review your experience on this tab & get <b>₹'.$fitcash_amount.' Fitcash+</b> in your Fitternity Wallet that can be used to purchase your membership',
+        ];
+
+        $response['rewards'] = [
+            'title'=>strtoupper('use fitcash+ to buy membership & win below rewards'),
+            'description'=>'Buy Membership at <b>lowest price</b> & choose a complimentary rewad from the options below',
+            'items'=>[
+                [
+                    'title'=>'Instant Cashback',
+                    'image'=>'https://b.fitn.in/gamification/reward/cashback.jpg',
+                    'worth'=>'worth ₹ 2500'
+                ],
+                [
+                    'title'=>'Merchandise Kit',
+                    'image'=>'https://b.fitn.in/gamification/reward/fitness_kit.jpg',
+                    'worth'=>'worth ₹ 2500'
+                ],
+                [
+                    'title'=>'Diet Consultation',
+                    'image'=>'https://b.fitn.in/gamification/reward/diet_plan.jpg',
+                    'worth'=>'worth ₹ 2500'
+                ]
+            ]
+        ];
+
+        return $response;
+    }
+
 
 }
