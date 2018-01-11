@@ -953,7 +953,7 @@ class FindersController extends \BaseController {
 
         $payment_modes[] = array(
             'title' => 'Online Payment',
-            'subtitle' => 'Transact online with netbanking, card and wallet',
+            'subtitle' => 'Buy Memberships with net banking, Paytm & other wallets',
             'value' => 'paymentgateway',
         );
 
@@ -961,7 +961,7 @@ class FindersController extends \BaseController {
  
             $payment_modes[] = array(
                 'title' => 'EMI',
-                'subtitle' => 'Transact online with credit installments',
+                'subtitle' => 'Buy fitness memberships by paying only 2% extra',
                 'value' => 'emi',
             );
         }
@@ -969,7 +969,7 @@ class FindersController extends \BaseController {
         if(!empty($data['cash_pickup']) && $data['cash_pickup']){
             $payment_modes[] = array(
                 'title' => 'Cash Pickup',
-                'subtitle' => 'Schedule cash payment pick up',
+                'subtitle' => 'Schedule cash payment pick up from convenient location',
                 'value' => 'cod',
             );
         }
