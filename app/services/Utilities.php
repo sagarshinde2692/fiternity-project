@@ -1671,6 +1671,14 @@ Class Utilities {
                 $wallet->coupon = $request['code'];
             }
 
+            if(isset($request['review_id']) && $request['review_id'] != ""){
+                $wallet->review_id = (int)$request['review_id'];
+            }
+
+            if(isset($request['finder_id']) && $request['finder_id'] != ""){
+                $wallet->finder_id = (int)$request['finder_id'];
+            }
+
             $wallet->save();
 
             $data['wallet_id'] = $wallet->_id;
