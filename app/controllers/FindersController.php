@@ -1774,7 +1774,7 @@ class FindersController extends \BaseController {
 
 		if($this->vendor_token /*&& $fresh_review && $booktrial_count > 0 && $order_count == 0*/){
 
-			$fitcash_amount = 250;
+			$fitcash_amount = 150;
 
 			$req = array(
                 "customer_id"=>$data['customer_id'],

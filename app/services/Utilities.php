@@ -2570,7 +2570,7 @@ Class Utilities {
 
     public function trialBookedLocateScreen($data = false){
 
-        $fitcash_amount = 250;
+        $fitcash_amount = 150;
 
         $response['message_title'] = "DONE!";
 
