@@ -12,7 +12,16 @@ class ServiceController extends \BaseController {
 
 	public function __construct() {
 
-		parent::__construct();	
+		parent::__construct();
+
+		$this->vendor_token = false;
+        
+        $vendor_token = Request::header('Authorization-Vendor');
+
+        if($vendor_token){
+
+            $this->vendor_token = true;
+        }
 	}
 
 	public function getServiceCategorys(){
@@ -425,6 +434,11 @@ class ServiceController extends \BaseController {
         $timestamp    =   strtotime($date);
         $weekday      =   strtolower(date( "l", $timestamp));
 
+        if($this->vendor_token){
+
+        	$currentDateTime = time() - 7200;
+        }
+
         $date = date('d-m-Y',strtotime($date));
 
         $item = Service::active()->where('_id', '=', $service_id)->first(array('_id','name','finder_id', 'workoutsessionschedules','servicecategory_id'));
@@ -592,6 +606,7 @@ class ServiceController extends \BaseController {
 
     		$request = $_REQUEST;
     		$request['requested_date'] = (isset($request['date']) && $request['date'] != "") ? date('Y-m-d',strtotime($request['date'])) : date("Y-m-d");
+    		$request['date'] = $request['requested_date'];
     	}
 
     	if(!isset($request['finder_id']) && !isset($request['service_id'])){
@@ -599,6 +614,12 @@ class ServiceController extends \BaseController {
     	}
 
         $currentDateTime        =   time();
+
+        if($this->vendor_token){
+
+        	$currentDateTime = time() - 7200; 
+        }
+
         $date         			=   (isset($request['date']) && $request['date'] != "") ? date('Y-m-d',strtotime($request['date'])) : date("Y-m-d");
         $timestamp    			=   strtotime($date);
         $weekday     			=   strtolower(date( "l", $timestamp));
@@ -780,7 +801,7 @@ class ServiceController extends \BaseController {
                     try{
 
                     	$scheduleDateTimeUnix               =  strtotime(strtoupper($date." ".$slot['start_time']));
-                        $slot_datetime_pass_status      =   (($scheduleDateTimeUnix - time()) > $time_in_seconds) ? false : true;
+                        $slot_datetime_pass_status      =   (($scheduleDateTimeUnix - $currentDateTime) > $time_in_seconds) ? false : true;
 
                         ($slot_datetime_pass_status == false) ? $slot_passed_flag = false : null;
 
@@ -1106,6 +1127,11 @@ class ServiceController extends \BaseController {
         $weekday     			=   strtolower(date( "l", $timestamp));
         $type 					= 	$request['type'];
 
+        if($this->vendor_token){
+
+        	$currentDateTime = time() - 7200; 
+        }
+
         $service = Service::find((int)$request['service_id'],array('workoutsessionschedules','trialschedules'));
 
         switch ($type) {
@@ -1148,6 +1174,12 @@ class ServiceController extends \BaseController {
     	$diff = 0;
 
     	$current_datetime = time();
+
+    	if($this->vendor_token){
+
+        	$current_datetime = time() - 7200; 
+        }
+
     	$requested_datetime = strtotime($requested_date);
 
     	$diff = ceil(($requested_datetime - $current_datetime) / (60 * 60 * 24));
