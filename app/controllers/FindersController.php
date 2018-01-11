@@ -1745,6 +1745,40 @@ class FindersController extends \BaseController {
 		$this->cacheapi->flushTagKey('finder_detail_ios',$finder->slug);
 		$this->cacheapi->flushTagKey('finder_detail_ios_3_2',$finder->slug);
 
+		if($this->vendor_token){
+
+			$response['message'] = "Thanks for your review!";
+			$response['message_title'] = "Done!";
+			$response['fitcash'] = [
+				'image'=>'https://b.fitn.in/gamification/reward/cashback.jpg',
+				'amount'=>'250',
+				'title1'=>'250 FITCASH',
+				'title2'=>'Has been added',
+				'description'=>'You have earned ₹250 FitCash+ in your fitternity wallet',
+			];
+			$response['rewards'] = [
+				'description'=>'use fitcash+ to buy membership & win below rewards',
+				'items'=>[
+					[
+						'title'=>'Instant Cashback',
+						'image'=>'https://b.fitn.in/gamification/reward/cashback.jpg'
+					],
+					[
+						'title'=>'Merchandise Kit',
+						'image'=>'https://b.fitn.in/gamification/reward/fitness_kit.jpg'
+					],
+					[
+						'title'=>'Diet Consultation',
+						'image'=>'https://b.fitn.in/gamification/reward/diet_plan.jpg'
+					],
+					[
+						'title'=>'Workout Sesseion',
+						'image'=>'https://b.fitn.in/gamification/reward/sessions.jpg'
+					],
+				]
+			]; 
+		}
+		
 		return Response::json($response, 200);
 	}
 
