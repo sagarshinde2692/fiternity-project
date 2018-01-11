@@ -98,10 +98,7 @@ Class CustomerReward {
 
                 if($order && isset($order['amount_finder'])){
 
-                    $ratecard_id    =   (int)$order['ratecard_id'];
-                    $ratecard       =   \Ratecard::find($ratecard_id);
-
-                    $service = \Service::find((int)$ratecard->service_id);
+                    $service = \Service::find((int)$order->service_id);
                     $service_category_id = null;
 
                     if($service){
@@ -145,6 +142,7 @@ Class CustomerReward {
                                     if(in_array($service_category_id,$content_value['category_id'])){
 
                                         $reward['content'] = $content_value['product'];
+                                        $reward['image'] = $content_value['image'];
 
                                         $reward_data_flag = true;
 
@@ -164,6 +162,7 @@ Class CustomerReward {
                                 if($amount >= $data_value['min'] ){
 
                                     $reward['content'] = $data_value['content'][0]['product'];
+                                    $reward['image'] = $data_value['content'][0]['image'];
 
                                     break;
                                 }

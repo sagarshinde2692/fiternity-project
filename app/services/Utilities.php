@@ -834,7 +834,7 @@ Class Utilities {
 
         $allOrders = \Order::where('status','!=','1')
                         ->whereIn('type',['memberships','healthytiffinmembership','diet_plan','workout-session','booktrials'])
-                        ->where('service_id',(int)$order->service_id)
+                        // ->where('service_id',(int)$order->service_id)
                         ->where('finder_id',(int)$order->finder_id)
                         ->where('customer_email',$order->customer_email)
                         ->where('_id','<',(int)$order->_id)
@@ -872,7 +872,7 @@ Class Utilities {
 
             $allOrdersLinkSent = \Order::where('status','!=','1')
                         ->whereIn('type',['memberships','healthytiffinmembership','diet_plan','workout-session','booktrials'])
-                        ->where('service_id',(int)$order->service_id)
+                        // ->where('service_id',(int)$order->service_id)
                         ->where('finder_id',(int)$order->finder_id)
                         ->where('customer_email',$order->customer_email)
                         ->where('_id','<',(int)$order->_id)

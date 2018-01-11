@@ -512,6 +512,12 @@ class FindersController extends \BaseController {
 						$finder['info']['timing'] = $info_timing;
 				}
 
+				$payment_options_data = [
+	               	'emi'=>false,
+	               	'cash_pickup'=>false,
+	               	'part_payment'=>false
+               	];
+
 				// return $info_timing;
 				if(count($finder['services']) > 0 ){
 
@@ -575,15 +581,23 @@ class FindersController extends \BaseController {
 									}
 									
 									$customerDiscount = $this->utilities->getCustomerDiscount();
+
+									$final_price = 0;
 							
 									$discount = $customerDiscount;
 									if($rateval['special_price'] > 0){
 										$discount_amount = intval($rateval['special_price'] * ($discount/100));
-										$service['serviceratecard'][$ratekey]['special_price'] = $rateval['special_price'] - $discount_amount;
+										$final_price = $service['serviceratecard'][$ratekey]['special_price'] = $rateval['special_price'] - $discount_amount;
 									}else{
 										$discount_amount = intval($rateval['price'] * ($discount/100));
-										$service['serviceratecard'][$ratekey]['price'] = $rateval['price'] - $discount_amount;
+										$final_price = $service['serviceratecard'][$ratekey]['price'] = $rateval['price'] - $discount_amount;
 									}
+
+
+									if($final_price >= 3000){
+										$payment_options_data['emi'] = true;
+										$payment_options_data['cash_pickup'] = true;
+ 									}
 
 									// Removing womens offer ratecards if present
 									// if(isset($rateval['flags'])){
@@ -875,7 +889,15 @@ class FindersController extends \BaseController {
 				$response['nearby_same_category']           =       $nearby_same_category;
 				$response['nearby_other_category']          =       $nearby_other_category;
 				$response['show_reward_banner'] = true;
-				$response['finder_footer'] 					= 		$finder_footer;
+				$response['finder_footer']				= 		$finder_footer;
+				$response['finder']['payment_options']				=		$this->getPaymentModes($payment_options_data);
+
+				if(isset($finder['flags']) && isset($finder['flags']['state']) && in_array($finder['flags']['state'],['closed','temporarily_shut'])){
+
+					$response['finder']['membership'] = "disable";
+					$response['finder']['trial'] = "disable";
+					$response['finder']['payment_options'] = [];
+				}
 
 				Cache::tags('finder_detail')->put($cache_key,$response,Config::get('cache.cache_time'));
 
@@ -923,6 +945,45 @@ class FindersController extends \BaseController {
 		return Response::json($response);
 
 	}
+
+
+	public function getPaymentModes($data){
+
+        $payment_modes = [];
+
+        $payment_modes[] = array(
+            'title' => 'Online Payment',
+            'subtitle' => 'Transact online with netbanking, card and wallet',
+            'value' => 'paymentgateway',
+        );
+
+        if(isset($data['emi']) && $data['emi']){
+ 
+            $payment_modes[] = array(
+                'title' => 'EMI',
+                'subtitle' => 'Transact online with credit installments',
+                'value' => 'emi',
+            );
+        }
+
+        if(!empty($data['cash_pickup']) && $data['cash_pickup']){
+            $payment_modes[] = array(
+                'title' => 'Cash Pickup',
+                'subtitle' => 'Schedule cash payment pick up',
+                'value' => 'cod',
+            );
+        }
+
+        if(!empty($data['part_payment']) && $data['part_payment']){
+            $payment_modes[] = array(
+                'title' => 'Reserve Payment',
+                'subtitle' => 'Pay 20% to reserve membership and pay rest on joining',
+                'value' => 'part_payment',
+            );
+        }
+
+        return $payment_modes;
+    }
 
 
 
@@ -3898,6 +3959,7 @@ class FindersController extends \BaseController {
 			$data['finder_name'] = ucwords($finder['title']);
 			$data['finder_location'] = ucwords($finder['location']['name']);
 			$data['finder_city'] = ucwords($finder['city']['name']);
+			$data['city_id'] = (int)$finder['city']['_id'];
 
 			$this->findermailer->reportReview($data);
 

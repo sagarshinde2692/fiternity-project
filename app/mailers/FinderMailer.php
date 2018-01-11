@@ -192,6 +192,56 @@ Class FinderMailer extends Mailer {
 
 		$user_name = ucwords($data['finder_name']);
 
+		$fitternity_email = [];
+
+		if(isset($data['city_id']) && $data['city_id'] != ""){
+			
+			switch ($data['city_id']) {
+				case 1 : 
+					$fitternity_email = [
+						'rahulsachdev@fitternity.com',
+					 	'kevalshah@fitternity.com',
+					 	'mitmehta@fitternity.com',
+						'dharatanna@fitternity.com',
+						'pranjalisalvi@fitternity.com'
+					];
+					break;
+				case 2 : 
+					$fitternity_email = [
+						'mitmehta@fitternity.com',
+						'vishankkapoor@fitternity.com',
+						'dharatanna@fitternity.com',
+						'pranjalisalvi@fitternity.com' 
+					];
+					break;
+				case 3 : 
+					$fitternity_email = [
+						'virenmehta@fitternity.com',
+						'silkeshakadam@fitternity.com',
+						'priyankamohnish@fitternity.com',
+						'dharatanna@fitternity.com',
+						'pranjalisalvi@fitternity.com' 
+					];
+					break;
+				case 4 : 
+				case 8 : 
+					$fitternity_email = [
+						'vikramkhanna@fitternity.com',
+						'niveditasomani@fitternity.com',
+						'arvindraj@fitternity.com',
+						'bhavinjani@fitternity.com',
+						'priyankapatel@fitternity.com',
+						'dharatanna@fitternity.com',
+						'pranjalisalvi@fitternity.com' 
+					];
+					break;
+				default:
+					break;
+			}
+		}
+
+		$user_email = array_merge($user_email,$fitternity_email);
+
 		$message_data 	= array(
 			'user_email' => $user_email,
 			'user_name' =>  $user_name,
@@ -591,11 +641,61 @@ Class FinderMailer extends Mailer {
 
 		$label = 'ClaimListing-Fitternity';
 
-		$user_email 	=  	['silkeshakadam@fitternity.com','rahulsachdev@fitternity.com','niveditasomani@fitternity.com','dharatanna@fitternity.com'];
+		$data['fitternity_email'] = [
+			'dharatanna@fitternity.com',
+			'pranjalisalvi@fitternity.com'
+		];
+
+		if(isset($data['city_id']) && $data['city_id'] != ""){
+			
+			switch ($data['city_id']) {
+				case 1 : 
+					$data['fitternity_email'] = [
+						'rahulsachdev@fitternity.com',
+					 	'kevalshah@fitternity.com',
+					 	'mitmehta@fitternity.com',
+						'dharatanna@fitternity.com',
+						'pranjalisalvi@fitternity.com'
+					];
+					break;
+				case 2 : 
+					$data['fitternity_email'] = [
+						'mitmehta@fitternity.com',
+						'vishankkapoor@fitternity.com',
+						'dharatanna@fitternity.com',
+						'pranjalisalvi@fitternity.com' 
+					];
+					break;
+				case 3 : 
+					$data['fitternity_email'] = [
+						'silkeshakadam@fitternity.com',
+						'ismailbaig@fitternity.com',
+						'prashanthreddy@fitternity.com',
+						'dharatanna@fitternity.com',
+						'pranjalisalvi@fitternity.com' 
+					];
+					break;
+				case 4 : 
+				case 8 : 
+					$data['fitternity_email'] = [
+						'vikramkhanna@fitternity.com',
+						'niveditasomani@fitternity.com',
+						'arvindraj@fitternity.com',
+						'dharatanna@fitternity.com',
+						'pranjalisalvi@fitternity.com' 
+					];
+					break;
+				default:
+					break;
+			}
+		}
+
+		$user_email = $data['fitternity_email'];
+		$user_name = 'Fitternity Team';
 
 		$message_data 	= array(
 			'user_email' => $user_email,
-			'user_name' =>  'Fitterntiy Team',
+			'user_name' =>  $user_name,
 		);
 
 		return $this->common($label,$data,$message_data);
@@ -605,11 +705,61 @@ Class FinderMailer extends Mailer {
 
 		$label = 'AddBusiness-Fitternity';
 
-		$user_email 	=  	['silkeshakadam@fitternity.com','rahulsachdev@fitternity.com','niveditasomani@fitternity.com','dharatanna@fitternity.com','pranjalisalvi@fitternity.com','sailismart@fitternity.com'];
+		$data['fitternity_email'] = [
+			'silkeshakadam@fitternity.com',
+			'rahulsachdev@fitternity.com',
+			'niveditasomani@fitternity.com',
+			'dharatanna@fitternity.com',
+			'pranjalisalvi@fitternity.com',
+			'sailismart@fitternity.com'
+		];
+
+		if(isset($data['city_id']) && $data['city_id'] != ""){
+			
+			switch ($data['city_id']) {
+				case 1 : 
+					$data['fitternity_email'] = [
+						'kevalshah@fitternity.com',
+						'mitmehta@fitternity.com',
+						'dharatanna@fitternity.com',
+						'pranjalisalvi@fitternity.com' 
+					];
+					break;
+				case 2 : 
+					$data['fitternity_email'] = [
+						'mitmehta@fitternity.com',
+						'vishankkapoor@fitternity.com',
+						'dharatanna@fitternity.com',
+						'pranjalisalvi@fitternity.com' 
+					];
+					break;
+				case 3 : 
+					$data['fitternity_email'] = [
+						'silkeshakadam@fitternity.com',
+						'dharatanna@fitternity.com',
+						'pranjalisalvi@fitternity.com' 
+					];
+					break;
+				case 4 : 
+				case 8 : 
+					$data['fitternity_email'] = [
+						'vikramkhanna@fitternity.com',
+						'niveditasomani@fitternity.com',
+						'dharatanna@fitternity.com',
+						'pranjalisalvi@fitternity.com' 
+					];
+					break;
+				default:
+					break;
+			}
+		}
+
+		$user_email = $data['fitternity_email'];
+		$user_name = 'Fitternity Team';
 
 		$message_data 	= array(
 			'user_email' => $user_email,
-			'user_name' =>  'Fitterntiy Team',
+			'user_name' =>  $user_name,
 		);
 
 		return $this->common($label,$data,$message_data);
@@ -618,6 +768,51 @@ Class FinderMailer extends Mailer {
 	public function reportReview ($data){
 
 		$label = 'ReportReview-Fitternity';
+		
+		$data['fitternity_email'] = [
+			'pranjalisalvi@fitternity.com',
+			'dharatanna@fitternity.com'
+		];
+
+		if(isset($data['city_id']) && $data['city_id'] != ""){
+
+			switch ($data['city_id']) {
+				case 1 : 
+					$data['fitternity_email'] = [
+						'kevalshah@fitternity.com',
+						'mitmehta@fitternity.com',
+						'dharatanna@fitternity.com',
+						'pranjalisalvi@fitternity.com' 
+					];
+					break;
+				case 2 : 
+					$data['fitternity_email'] = [
+						'mitmehta@fitternity.com',
+						'vishankkapoor@fitternity.com',
+						'dharatanna@fitternity.com',
+						'pranjalisalvi@fitternity.com' 
+					];
+					break;
+				case 3 : 
+					$data['fitternity_email'] = [
+						'silkeshakadam@fitternity.com',
+						'dharatanna@fitternity.com',
+						'pranjalisalvi@fitternity.com' 
+					];
+					break;
+				case 4 : 
+				case 8 : 
+					$data['fitternity_email'] = [
+						'vikramkhanna@fitternity.com',
+						'niveditasomani@fitternity.com',
+						'dharatanna@fitternity.com',
+						'pranjalisalvi@fitternity.com' 
+					];
+					break;
+				default:
+					break;
+			}
+		}
 
 		$user_email = $data['fitternity_email'];
 		$user_name = 'Fitternity Team';
