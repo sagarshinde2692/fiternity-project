@@ -229,6 +229,13 @@ class TempsController extends \BaseController {
                 }
 
                 if($this->vendor_token){
+                    
+                    $decodeKioskVendorToken = decodeKioskVendorToken();
+
+                    $vendor = $decodeKioskVendorToken->vendor;
+
+                    $temp->finder_id = (int)$vendor->_id;
+
                     $temp->source = "kiosk";
                 }
 
