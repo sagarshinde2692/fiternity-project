@@ -4107,7 +4107,7 @@ class FindersController extends \BaseController {
 						"image"=>"http://b.fitn.in/global/tabapp-homescreen/access-trials-small.png",
 						"banner_image"=>"http://b.fitn.in/global/tabapp-homescreen/accesstrial-big-1.png",
 						"id"=>1,
-						'type'=>'booktrial'
+						'type'=>'access_booktrial'
 					],
 					[
 						"title"=>"Explore Membership",
@@ -4115,7 +4115,7 @@ class FindersController extends \BaseController {
 						"image"=>"http://b.fitn.in/global/tabapp-homescreen/explorememberships-small.png",
 						"banner_image"=>"http://b.fitn.in/global/tabapp-homescreen/explorememberships-big-1.png",
 						"id"=>2,
-						"type"=>'membership'
+						"type"=>'memberships'
 					],
 					[
 						"title"=>"Post a Review",
@@ -4133,6 +4133,22 @@ class FindersController extends \BaseController {
 						"id"=>4,
 						"type"=>"diet_plan"
 					]*/
+					[
+						"title"=>"Activate Membership",
+						"description"=>"Quick buy with free rewards & flexible payment options.",
+						"image"=>"http://b.fitn.in/global/tabapp-homescreen/explorememberships-small.png",
+						"banner_image"=>"http://b.fitn.in/global/tabapp-homescreen/explorememberships-big-1.png",
+						"id"=>5,
+						"type"=>'activate_membership'
+					],
+					[
+						"title"=>"Explore Trial",
+						"description"=>"Quick step to activate your workout trial & instant trial booking.",
+						"image"=>"http://b.fitn.in/global/tabapp-homescreen/access-trials-small.png",
+						"banner_image"=>"http://b.fitn.in/global/tabapp-homescreen/accesstrial-big-1.png",
+						"id"=>6,
+						'type'=>'booktrials'
+					],
 				],
 				"title"=>"Welcome to ".ucwords($finder['title']),
 				"powered"=>"Powered by Fitternity"
