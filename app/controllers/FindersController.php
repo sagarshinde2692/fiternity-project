@@ -1666,7 +1666,7 @@ class FindersController extends \BaseController {
 			'customer_id' => intval($data['customer_id']),
 			'rating' => floatval($data['rating']),
 			'detail_rating' => array_map('floatval',$data['detail_rating']),
-			'description' => $data['description'],
+			'description' => (isset($data['description'])) ? $data['description'] : '',
 			'uploads' => (isset($data['uploads'])) ? $data['uploads'] : [],
 			'booktrial_id' => (isset($data['booktrialid'])) ? intval($data['booktrialid']) : '',
 			'source' => (isset($data['source'])) ? $data['source'] : 'customer',
