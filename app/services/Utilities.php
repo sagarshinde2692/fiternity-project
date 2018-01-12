@@ -1533,38 +1533,38 @@ Class Utilities {
 
                     $wallet->update();
 
-                    $data['wallet_id'] = (int)$value['wallet_id'];                 
-                    $data['entry'] = $entry;
-                    $data['type'] = $type;
-                    $data['customer_id'] = $customer_id;
-                    $data['amount'] = intval($value_amount);
-                    $data['description'] = "Refund";
+                    $walletTransactionData['wallet_id'] = (int)$value['wallet_id'];                 
+                    $walletTransactionData['entry'] = $entry;
+                    $walletTransactionData['type'] = $type;
+                    $walletTransactionData['customer_id'] = $customer_id;
+                    $walletTransactionData['amount'] = intval($value_amount);
+                    $walletTransactionData['description'] = "Refund";
 
                     if(isset($request['order_id']) && $request['order_id'] != ""){
 
-                        $data['order_id'] = (int)$request['order_id'];
+                        $walletTransactionData['order_id'] = (int)$request['order_id'];
 
-                        $data['description'] = "Refund for order ".$request['order_id'];
+                        $walletTransactionData['description'] = "Refund for order ".$request['order_id'];
                     }
 
                     if(isset($request['trial_id']) && $request['trial_id'] != ""){
 
-                        $data['trial_id'] = (int)$request['trial_id'];
+                        $walletTransactionData['trial_id'] = (int)$request['trial_id'];
 
-                        $data['description'] = "Refund for trial ".$request['trial_id'];
+                        $walletTransactionData['description'] = "Refund for trial ".$request['trial_id'];
                     }
 
-                    $data['validity'] = 0;
+                    $walletTransactionData['validity'] = 0;
 
                     if(isset($value['coupon']) && $value['coupon'] != ""){
-                        $data['coupon'] = $value['coupon'];
+                        $walletTransactionData['coupon'] = $value['coupon'];
                     }
 
                     if(isset($request['description'])){
-                        $data['description'] = $request['description'];
+                        $walletTransactionData['description'] = $request['description'];
                     }
                     
-                    $walletTransaction = WalletTransaction::create($data);
+                    $walletTransaction = WalletTransaction::create($walletTransactionData);
 
                     if($group == ""){
                         $group = $walletTransaction->_id;
@@ -1671,42 +1671,50 @@ Class Utilities {
                 $wallet->coupon = $request['code'];
             }
 
+            if(isset($request['for']) && $request['for'] != ""){
+                $wallet->coupon = $request['for'];
+            }
+
+            if(isset($request['finder_id']) && $request['finder_id'] != ""){
+                $wallet->coupon = $request['finder_id'];
+            }
+
             $wallet->save();
 
-            $data['wallet_id'] = $wallet->_id;
-            $data['entry'] = $wallet->entry;
-            $data['type'] = $wallet->type;
-            $data['customer_id'] = $customer_id;
-            $data['amount'] = (int)$request['amount'];
+            $walletTransactionData['wallet_id'] = $wallet->_id;
+            $walletTransactionData['entry'] = $wallet->entry;
+            $walletTransactionData['type'] = $wallet->type;
+            $walletTransactionData['customer_id'] = $customer_id;
+            $walletTransactionData['amount'] = (int)$request['amount'];
 
-            if(isset($reqiest['order_id']) && $reqiest['order_id'] != ""){
+            if(isset($request['order_id']) && $request['order_id'] != ""){
 
-                $data['order_id'] = (int)$reqiest['order_id'];
+                $walletTransactionData['order_id'] = (int)$request['order_id'];
 
-                $data['description'] = "Added Amount of Rs ".$request['amount']." for Order ".$request['order_id'];
+                $walletTransactionData['description'] = "Added Amount of Rs ".$request['amount']." for Order ".$request['order_id'];
 
             }
 
-            if(isset($reqiest['trial_id']) && $reqiest['trial_id'] != ""){
+            if(isset($request['trial_id']) && $request['trial_id'] != ""){
 
-                $data['trial_id'] = (int)$reqiest['trial_id'];
+                $walletTransactionData['trial_id'] = (int)$request['trial_id'];
 
-                $data['description'] = "Added Amount of Rs ".$request['amount']." for Trial ".$request['trial_id'];
+                $walletTransactionData['description'] = "Added Amount of Rs ".$request['amount']." for Trial ".$request['trial_id'];
             }
             
-            $data['validity'] = $wallet['validity'];
+            $walletTransactionData['validity'] = $wallet['validity'];
 
             if(isset($wallet['coupon']) && $wallet['coupon'] != ""){
-                $data['coupon'] = $wallet['coupon'];
+                $walletTransactionData['coupon'] = $wallet['coupon'];
             }
 
-            $data['description'] = "Added Amount of Rs ".$request['amount'];
+            $walletTransactionData['description'] = "Added Amount of Rs ".$request['amount'];
 
             if(isset($request['description'])){
-                $data['description'] = $request['description'];
+                $walletTransactionData['description'] = $request['description'];
             }
 
-            $walletTransaction = WalletTransaction::create($data);
+            $walletTransaction = WalletTransaction::create($walletTransactionData);
 
             $walletTransaction->update(['group'=>$walletTransaction->_id]);
 
@@ -1759,41 +1767,41 @@ Class Utilities {
 
                     foreach ($walletData as $key => $value) {
 
-                        $data['amount'] = (int)$value['balance'];
+                        $walletTransactionData['amount'] = (int)$value['balance'];
 
                         if($value['balance'] >= $amount_balance){
-                            $data['amount'] = (int)$amount_balance;
+                            $walletTransactionData['amount'] = (int)$amount_balance;
                         }
 
-                        $amount_used = intval($amount_used + $data['amount']);
-                        $amount_balance = intval($amount_balance - $data['amount']);
+                        $amount_used = intval($amount_used + $walletTransactionData['amount']);
+                        $amount_balance = intval($amount_balance - $walletTransactionData['amount']);
 
-                        $data['wallet_id'] = $value->_id;
-                        $data['entry'] = $entry;
-                        $data['type'] = $request['type'];
-                        $data['customer_id'] = $customer_id;
+                        $walletTransactionData['wallet_id'] = $value->_id;
+                        $walletTransactionData['entry'] = $entry;
+                        $walletTransactionData['type'] = $request['type'];
+                        $walletTransactionData['customer_id'] = $customer_id;
 
                         if(isset($request['order_id']) && $request['order_id'] != ""){
-                            $data['order_id'] = (int)$request['order_id'];
+                            $walletTransactionData['order_id'] = (int)$request['order_id'];
 
-                            $data['description'] = "Paid for Order ID: ".$request['order_id'];
+                            $walletTransactionData['description'] = "Paid for Order ID: ".$request['order_id'];
                         }
 
                         if(isset($request['trial_id']) && $request['trial_id'] != ""){
-                            $data['trial_id'] = (int)$request['trial_id'];
+                            $walletTransactionData['trial_id'] = (int)$request['trial_id'];
 
-                            $data['description'] = "Paid for Trial ID: ".$request['trial_id'];
+                            $walletTransactionData['description'] = "Paid for Trial ID: ".$request['trial_id'];
                         }
 
                         if(isset($value['validity']) && $value['validity'] != ""){
-                            $data['validity'] = $value['validity'];
+                            $walletTransactionData['validity'] = $value['validity'];
                         }
 
                         if(isset($value['coupon']) && $value['coupon'] != ""){
-                            $data['coupon'] = $value['coupon'];
+                            $walletTransactionData['coupon'] = $value['coupon'];
                         }
 
-                        $walletTransaction = WalletTransaction::create($data);
+                        $walletTransaction = WalletTransaction::create($walletTransactionData);
 
                         if($group == ""){
                             $group = $walletTransaction->_id;
@@ -1801,14 +1809,14 @@ Class Utilities {
 
                         $walletTransaction->update(['group'=>$group]);
 
-                        $value->used = intval($value->used + $data['amount']);
-                        $value->balance = intval($value->balance - $data['amount']);
+                        $value->used = intval($value->used + $walletTransactionData['amount']);
+                        $value->balance = intval($value->balance - $walletTransactionData['amount']);
                         $value->update();
 
                         $walletTransactionDebit[] =  [
                             'wallet_id' => $value->_id,
                             'wallet_transaction_id' => $walletTransaction->_id,
-                            'amount' => $data['amount']
+                            'amount' => $walletTransactionData['amount']
                         ];
 
                         if($amount_used == $amount){

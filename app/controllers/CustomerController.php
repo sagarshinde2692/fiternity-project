@@ -5609,7 +5609,7 @@ class CustomerController extends \BaseController {
 					'status' => 400,
 					'message' => "Empty Data",
 					),
-				200
+				400
 			);
 
 		}
