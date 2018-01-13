@@ -1409,7 +1409,13 @@ Class Utilities {
         $wallet_limit = 2500;
 
         if($data && isset($data['type']) && $data['type'] == 'wallet'){
-            Log::info("icreasing wallet");
+            Log::info("increasing wallet limit for pledge");
+            $wallet_limit = 100000;
+        
+        }
+
+        if($request && isset($request['code']) && in_array($request['code'], ["of001","of@2","of03!","o4f","of005","of@6","of07!","o8f","of009","of@10","of011!","o012f","of0013","of@14","of015!","o016f","of0017","of@18","of019!","o020f"])){
+            Log::info("increasing wallet limit for coupon");
             $wallet_limit = 100000;
         
         }
