@@ -229,6 +229,13 @@ class TempsController extends \BaseController {
                 }
 
                 if($this->vendor_token){
+                    
+                    $decodeKioskVendorToken = decodeKioskVendorToken();
+
+                    $vendor = $decodeKioskVendorToken->vendor;
+
+                    $temp->finder_id = (int)$vendor->_id;
+
                     $temp->source = "kiosk";
                 }
 
@@ -573,6 +580,26 @@ class TempsController extends \BaseController {
                                 'booktrial_id'=> (int)$booktrial['_id'],
                                 'kiosk_form_url'=>$kiosk_form_url
                             ];
+                        }
+
+                        if(isset($booktrial->vendor_kiosk) && $booktrial->vendor_kiosk && $booktrial->type == "booktrials" && !isset($booktrial->post_trial_status_updated_by_kiosk)){
+
+                            $req = array(
+                                "customer_id"=>$booktrial['customer_id'],
+                                "trial_id"=>$booktrial['_id'],
+                                "finder_id"=>$booktrial['finder_id'],
+                                "for"=>"locate_trial",
+                                "amount"=> 250,
+                                "amount_fitcash" => 0,
+                                "amount_fitcash_plus" => 250,
+                                "type"=>'CREDIT',
+                                'entry'=>'credit',
+                                'validity'=>time()+(86400*7),
+                                'description'=>"Added FitCash+ on Trial Attendance, Expires On : ".date('d-m-Y',time()+(86400*7))
+                            );
+
+                            $this->utilities->walletTransaction($req);
+
                         }
 
                         $booktrial->post_trial_status = 'attended';
