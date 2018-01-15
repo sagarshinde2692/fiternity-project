@@ -748,7 +748,8 @@ class ServiceController extends \BaseController {
 	    		],
 				'workoutsession_active_weekdays' => $item["workoutsession_active_weekdays"],
 				'trial_active_weekdays' => $item["trial_active_weekdays"],
-				'inoperational_dates_array' => $finder['inoperational_dates_array']
+				'inoperational_dates_array' => $finder['inoperational_dates_array'],
+				'cost'=>'Free Via Fitternity'
             );
 
             $slots = array();
@@ -787,6 +788,11 @@ class ServiceController extends \BaseController {
 		    			"available" => true,
 		    			"amount" => $ratecard_price
 		    		];
+		    	}
+
+		    	if($ratecard_price > 0){
+
+		    		$service['cost'] = "₹ ".$ratecard_price;
 		    	}
 
                 foreach ($weekdayslots['slots'] as $slot) {
@@ -873,7 +879,19 @@ class ServiceController extends \BaseController {
 
             // $service['trials_booked'] = $this->checkTrialAlreadyBooked($item['finder_id'],$item['_id']);
             // $all_trials_booked = $all_trials_booked && $service['trials_booked'];
-            array_push($schedules, $service);
+
+            if($this->vendor_token){
+
+            	if(!empty($slots)){
+
+            		array_push($schedules, $service);
+            	}
+
+            }else{
+
+            	array_push($schedules, $service);
+            }
+            
         }
 
 
