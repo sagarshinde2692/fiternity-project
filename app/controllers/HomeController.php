@@ -25,6 +25,15 @@ class HomeController extends BaseController {
         $this->api_url = Config::get("app.url")."/";
         $this->utilities = $utilities;
         $this->initClient();
+
+        $this->vendor_token = false;
+        
+        $vendor_token = Request::header('Authorization-Vendor');
+
+        if($vendor_token){
+
+            $this->vendor_token = true;
+        }
     }
 
 
@@ -1422,11 +1431,22 @@ class HomeController extends BaseController {
                 'customer_auto_register' => $customer_auto_register
             ];
 
-            $data = [
-                'booked_locate'=>'booked'
-            ];
-                
-            $resp['kiosk'] = $this->utilities->trialBookedLocateScreen($data);
+            if($this->vendor_token){
+
+                if(in_array($item['type'],["workout-session","booktrials"])){
+
+                    $item['booked_locate'] = 'booked';
+
+                    $resp['kiosk'] = $this->utilities->trialBookedLocateScreen($item);
+                }
+
+                if($item['type'] == 'memberships'){
+
+                    $item['membership_locate'] = 'booked';
+
+                    $resp['kiosk'] = $this->utilities->membershipBookedLocateScreen($item);
+                }
+            }
 
             return Response::json($resp);
         }

@@ -84,15 +84,9 @@ class FindersController extends \BaseController {
 			$vendormouData =    $vendormou->toArray();
 
 			return $this->findermailer->cancelVendorMou($vendormouData);
-
 		}
 
-
 	}
-
-	
-
-
 
 	public function finderdetail($slug, $cache = true){
 		

@@ -6165,6 +6165,21 @@ class SchedulebooktrialsController extends \BaseController {
 
         $response = array('status' => 200,'summary' => $booking_details);
 
+        $response['assisted_by'] = [
+            [   
+                'id'=>'Mahesh Jadhav',
+                'name'=>'Mahesh Jadhav'
+            ],
+            [   
+                'id'=>'Mahesh Jadhav',
+                'name'=>'Mahesh Jadhav'
+            ],
+            [   
+                'id'=>'Mahesh Jadhav',
+                'name'=>'Mahesh Jadhav'
+            ]   
+        ];
+
         return Response::json($response, $response['status']);
 
     }

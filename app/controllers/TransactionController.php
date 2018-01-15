@@ -4724,26 +4724,11 @@ class TransactionController extends \BaseController {
                 'order_id'=> (int)$order['_id']
             ];
 
-            $response['profile'] = [
-                'image'=>'https://b.fitn.in/gamification/reward/cashback.jpg',
-                'title1'=>strtoupper('fitternity profile'),
-                'title2'=>strtoupper('on app & website'),   
-                'description'=>"&#9679; <b>Track</b> your FitCash wallet balance\n&#9679; <b>Renew</b> membership with best discount & offers\n&#9679; <b>Upgrade</b> membership by extending the duration at initial price",
-            ];
+            $order_data = $order->toArray();
 
-            $response['diet_plan'] = [
-                'image'=>'https://b.fitn.in/gamification/reward/cashback.jpg',
-                'title1'=>strtoupper('<b>Onlie diet</b>'),
-                'title2'=>strtoupper('<b>consultation</b>'),
-                'description'=>'Make the most of your membership, with <b>Fitternity’s Online Diet Consultation</b> to improve your workout performance'
-            ];
+            $order_data['membership_locate'] = 'booked';
 
-            $response['pay_per_session'] = [
-                'image'=>'https://b.fitn.in/gamification/reward/cashback.jpg',
-                'title1'=>strtoupper('beat monotony'),
-                'title2'=>strtoupper('<b>pay-per-session</b>'),
-                'description'=>'<b>Don’t let your workout be monotonous.</b> Try different workouts around you by only paying per session!'
-            ];
+            $response = array_merge($response,$this->utilities->membershipBookedLocateScreen($order_data));
 
         }
 
