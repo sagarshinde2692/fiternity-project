@@ -158,17 +158,6 @@ class TempsController extends \BaseController {
                 $temp->proceed_without_otp = "N";
                 $temp->source = "website";
 
-                if(in_array($temp->action,['locate_trial','prebook'])){
-
-                    $decodeKioskVendorToken = decodeKioskVendorToken();
-
-                    $vendor = $decodeKioskVendorToken->vendor;
-
-                    $temp->finder_id = (int)$vendor->_id;
-
-                    $temp->source = "kiosk";
-                }
-
                 if(isset($data['finder_id']) && $data['finder_id'] != ""){
                     $temp->finder_id = (int) $data['finder_id'];
                 }
@@ -229,6 +218,13 @@ class TempsController extends \BaseController {
                 }
 
                 if($this->vendor_token){
+
+                    $decodeKioskVendorToken = decodeKioskVendorToken();
+
+                    $vendor = $decodeKioskVendorToken->vendor;
+
+                    $temp->finder_id = (int)$vendor->_id;
+
                     $temp->source = "kiosk";
                 }
 
@@ -421,24 +417,26 @@ class TempsController extends \BaseController {
 
                 $return = array('status' => 200,'verified' => $verified,'token'=>$customerToken,'trial_booked'=>false,'customer_data'=>$customer_data,'fitternity_no'=>$fitternity_no, 'message'=>'Successfully Verified');
 
+
+
                 if(isset($temp->service_id) && $temp->service_id != "" && $temp->action == "booktrials"){
                     
                     $customer_phone = $temp->customer_phone;
-                    $service = Service::active()->find($temp->service_id);
-                    $finder_id = (int)$service->finder_id;
 
-                    $query = Booktrial::where('customer_phone', $customer_phone)
+                    if(isset($temp->service_id) && $temp->service_id != ""){
+                        $service = Service::active()->find($temp->service_id);
+                        $finder_id = (int)$service->finder_id;
+                    }
+
+                    if(isset($temp->finder_id) && $temp->finder_id != ""){
+                        $finder_id = (int)$temp->finder_id;
+                    }
+
+                    $booktrial_count = Booktrial::where('customer_phone', $customer_phone)
                         ->where('finder_id', '=',$finder_id)
                         ->where('type','booktrials')
-                        ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"]);
-
-                    // if(!isset($_GET['device_type'])){
-                    //      $query = $query->where('service_id', '=',$temp->service_id);
-                    // }
-
-                    $booktrial_count = $query->count();
-                    
-                    Log::info("booktrial_count : ".$booktrial_count);
+                        ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
+                        ->count();
 
                     if($booktrial_count > 0){
                         
@@ -446,7 +444,6 @@ class TempsController extends \BaseController {
 
                             $booktrial = Booktrial::where('customer_phone', $customer_phone)
                                 ->where('finder_id', '=',$finder_id)
-                                // ->where('service_id', '=',$temp->service_id)
                                 ->where('type','booktrials')
                                 ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
                                 ->orderBy('_id','desc')
@@ -473,20 +470,31 @@ class TempsController extends \BaseController {
 
                         $return = array('workout_session_available'=>false,'customer_data'=>$customer_data,'trial_booked'=>true,'status' => 200,'message' => 'Already Booked Trial,Please Explore Other Options','verified' => $verified,'token'=>$customerToken,'ratecard_id'=>0,'amount'=>0,'fitternity_no'=>$fitternity_no);
 
-                        $ratecard = Ratecard::where('service_id',$temp->service_id)->where('type','workout session')->first();
+                        $workout_session_available_count = Ratecard::where('finder_id',$finder_id)->where('type','workout session')->count();
 
-                        if($ratecard && count($service->workoutsessionschedules) > 0){
+                        if($workout_session_available_count > 0){
 
-                            $ratecard_id = $ratecard->_id;
-
-                            if(isset($ratecard->special_price) && $ratecard->special_price != 0){
-                                $amount = $ratecard->special_price;
-                            }else{
-                                $amount = $ratecard->price;
-                            }
-
-                            $return = array('workout_session_available'=>true,'customer_data'=>$customer_data,'trial_booked'=>true,'status' => 200,'message' => 'Already Booked Trial. Book a Workout Session starting from Rs '.$amount.'.','verified' => $verified,'token'=>$customerToken,'ratecard_id'=>(int)$ratecard->_id,'amount'=>(int)$amount,'fitternity_no'=>$fitternity_no);
+                            $return = array('workout_session_available'=>true,'customer_data'=>$customer_data,'trial_booked'=>true,'status' => 200,'message' => 'Already Booked Trial. Book a Workout Session','verified' => $verified,'token'=>$customerToken,'ratecard_id'=>0,'amount'=>0,'fitternity_no'=>$fitternity_no);
                         }
+
+                        if(isset($service) && $service){
+
+                            $ratecard = Ratecard::where('service_id',$temp->service_id)->where('type','workout session')->first();
+
+                            if($ratecard && count($service->workoutsessionschedules) > 0){
+
+                                $ratecard_id = $ratecard->_id;
+
+                                if(isset($ratecard->special_price) && $ratecard->special_price != 0){
+                                    $amount = $ratecard->special_price;
+                                }else{
+                                    $amount = $ratecard->price;
+                                }
+
+                                $return = array('workout_session_available'=>true,'customer_data'=>$customer_data,'trial_booked'=>true,'status' => 200,'message' => 'Already Booked Trial. Book a Workout Session starting from Rs '.$amount.'.','verified' => $verified,'token'=>$customerToken,'ratecard_id'=>(int)$ratecard->_id,'amount'=>(int)$amount,'fitternity_no'=>$fitternity_no);
+                            }
+                        }
+
                     }
                 }
 

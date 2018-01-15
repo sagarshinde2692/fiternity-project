@@ -617,7 +617,33 @@ class ServiceController extends \BaseController {
 
         if($this->vendor_token){
 
-        	$currentDateTime = time() - 7200; 
+        	$decodeKioskVendorToken = decodeKioskVendorToken();
+
+            $vendor = $decodeKioskVendorToken->vendor;
+
+            $finder_id = (int)$vendor->_id;
+
+        	$currentDateTime = time() - 7200;
+
+        	$jwt_token = Request::header('Authorization');
+
+			if($jwt_token == true && $jwt_token != 'null' && $jwt_token != null){
+
+	            $decoded = decode_customer_token();
+
+	            $customer_id = intval($decoded->customer->_id);
+
+	            $booktrial_count = Booktrial::where('customer_id', $customer_id)
+                        ->where('finder_id', '=',$finder_id)
+                        ->where('type','booktrials')
+                        ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
+                        ->count();
+
+ 				if($booktrial_count > 0){
+
+ 					$request['type'] = 'workout_session';
+	        	}
+	        }
         }
 
         $date         			=   (isset($request['date']) && $request['date'] != "") ? date('Y-m-d',strtotime($request['date'])) : date("Y-m-d");
