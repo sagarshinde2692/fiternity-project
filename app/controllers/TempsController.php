@@ -417,11 +417,15 @@ class TempsController extends \BaseController {
 
                 $return = array('status' => 200,'verified' => $verified,'token'=>$customerToken,'trial_booked'=>false,'customer_data'=>$customer_data,'fitternity_no'=>$fitternity_no, 'message'=>'Successfully Verified');
 
-
-
-                if(isset($temp->service_id) && $temp->service_id != "" && $temp->action == "booktrials"){
+                if($temp->action == "booktrials"){
                     
                     $customer_phone = $temp->customer_phone;
+
+                    $customer_email = null;
+
+                    if(isset($temp->customer_email) && $temp->customer_email != ""){
+                        $customer_email = $temp->customer_email;
+                    }
 
                     if(isset($temp->service_id) && $temp->service_id != ""){
                         $service = Service::active()->find($temp->service_id);
@@ -432,13 +436,9 @@ class TempsController extends \BaseController {
                         $finder_id = (int)$temp->finder_id;
                     }
 
-                    $booktrial_count = Booktrial::where('customer_phone', $customer_phone)
-                        ->where('finder_id', '=',$finder_id)
-                        ->where('type','booktrials')
-                        ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
-                        ->count();
+                    $alreadyBookedTrials = $this->utilities->checkExistingTrialWithFinder($customer_email,$customer_phone,$finder_id);
 
-                    if($booktrial_count > 0){
+                    if (count($alreadyBookedTrials) > 0){
                         
                         if($customer_data == null){
 
@@ -449,8 +449,20 @@ class TempsController extends \BaseController {
                                 ->orderBy('_id','desc')
                                 ->first();
 
+                            if($customer_email != null){
+
+                                $booktrial = Booktrial::where('customer_email', $customer_email)
+                                ->where('finder_id', '=',$finder_id)
+                                ->where('type','booktrials')
+                                ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
+                                ->orderBy('_id','desc')
+                                ->first();
+                            }
+
                             Customer::$withoutAppends = true;
+                            
                             $customer = Customer::select('name','email','contact_no','dob','gender')->find((int)$booktrial->customer_id);
+
                             if($customer) {
 
                                 if($customerToken == ""){
@@ -464,6 +476,11 @@ class TempsController extends \BaseController {
                                 $customer_data['gender'] = isset($customer_data['gender']) && $customer_data['gender'] != "" ? $customer_data['gender'] : "";
                                 $customer_data['contact_no'] = $customer_phone;
                                 $customer_id = (int)$customer->_id;
+
+                                if($customer_email != null){
+
+                                    $customer_data['email'] = $customer_email;
+                                }
 
                             }
                         }

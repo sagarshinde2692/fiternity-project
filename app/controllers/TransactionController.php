@@ -4744,5 +4744,69 @@ class TransactionController extends \BaseController {
 
     }
 
+    public function rewardScreen(){
+
+        $data = [];
+
+        $data['title'] = 'Complimentry Rewards';
+        $data['banner'] = 'https://b.fitn.in/global/Rewards-page/rewards-web-banner.png';
+
+        $data['fitness_kit'] = [ 
+            'title' => 'Merchandise Kits',
+            'description'=>'We have shaped the perfect fitness kit for you. Strike off these workout essentials from your cheat sheet & get going.',
+            'items'=>[
+                [
+                    'title'=>'Cross Fit & Gym',
+                    'description'=>'Lifts and Squats is all you need to think about as we have your workout gear ready - ',
+                    'products'=>['Gym Bag,Shaker,Arm Band,T-Shirt,Towel,Bottle,Earphone Detangler'],
+                    'image'=>'https://b.fitn.in/global/Rewards-page/crossfit%26gym.png'
+                ],
+                [
+                    'title'=>'Zumba & Dance',
+                    'description'=>'Groove your way to Fitness while we give you a hip workout wear - ',
+                    'products'=>['Tote Bag','Bottle','Towel','Shoe Bag','T-Shirt','Arm-Band','Earphone Detangler'],
+                    'image'=>'https://b.fitn.in/global/Rewards-page/zumba.png'
+                ],
+                [
+                    'title'=>'Yoga & Pilates',
+                    'description'=>'Lifts and Squats is all you need to think about as we have your workout gear ready - ',
+                    'products'=>['Gym Bag,Shaker,Arm Band,T-Shirt,Towel,Bottle,Earphone Detangler'],
+                    'image'=>'https://b.fitn.in/global/Rewards-page/yoga%26pilates.png'
+                ],
+            ]
+        ];
+
+        $data['diet_plan'] = [
+            'title'=>'Online Diet Consultation',
+            'description'=>'Eating right is 70% & workout is 30% of leading a healthy & fit lifestyle! Fitternity’s got you covered 100% cover.',
+            'items'=>[
+                [
+                    'title'=>'',
+                    'description'=>"Get a detailed diet plan from out expert dietitian for better workout performance & faster goal achivement.\n\nYou will get:",
+                    'products'=>['Telephonic consultation with your dietician','Personalised & customised diet plan','Regular follow-ups & progress tracking','Healthy recepies & hacks'],
+                    'image'=>'https://b.fitn.in/gamification/reward/diet_plan.jpg'
+                ]
+            ]
+
+        ];
+
+        $data['cashback'] = [
+            'title'=>'Instant Cashback',
+            'description'=>'Who doesn’t love some money in their wallet? Get 5% back on your purchase!',
+            'items'=>[
+                [
+                    'title'=>'',
+                    'description'=>"Get upto Rs 2500 Fitcash+ in your wallet as cashback which is fully redeemable against any Memberships/Session & Diet Plan purchase on Fitternity. Validity of the cashback varies on the amount and duration of the membership. Cashback chosen as reward can be availed for renewal.",
+                    'products'=>[],
+                    'image'=>'https://b.fitn.in/gamification/reward/cashback1.jpg'
+                ]
+            ]
+
+        ];
+
+        return Response::json($data);
+
+    }
+
 
 }
