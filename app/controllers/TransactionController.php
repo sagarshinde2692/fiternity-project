@@ -854,8 +854,10 @@ class TransactionController extends \BaseController {
             [   
                 'id'=>'Self',
                 'name'=>'Self'
-            ]  
+            ] 
         ];
+
+        $resp['data']['assisted_by_image'] = "https://b.fitn.in/global/tabapp-homescreen/freetrail-summary/trainer.png";
 
         return Response::json($resp);
 
