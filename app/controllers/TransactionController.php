@@ -4698,7 +4698,7 @@ class TransactionController extends \BaseController {
             $locateTransaction->transaction_type = 'Order';
             $locateTransaction->update();
 
-            $message = "Hi ".ucwords($order['customer_name']).", your membership at ".ucwords($order['finder_name'])." for ".ucwords($order['service_name'])." has been successfully located";
+            $message = "You are good to go your ".ucwords($order['service_duration'])." ".ucwords($order['service_name'])." membership has been activated (or confirmed)";
 
             $createCustomerToken = createCustomerToken((int)$order['customer_id']);
 
@@ -4709,7 +4709,27 @@ class TransactionController extends \BaseController {
                 'order_id'=> (int)$order['_id']
             ];
 
-            $response = array_merge($response);
+            $response['profile'] = [
+                'image'=>'https://b.fitn.in/gamification/reward/cashback.jpg',
+                'title1'=>strtoupper('fitternity profile'),
+                'title2'=>strtoupper('on app & website'),   
+                'description'=>"&#9679; <b>Track</b> your FitCash wallet balance\n&#9679; <b>Renew</b> membership with best discount & offers\n&#9679; <b>Upgrade</b> membership by extending the duration at initial price",
+            ];
+
+            $response['diet_plan'] = [
+                'image'=>'https://b.fitn.in/gamification/reward/cashback.jpg',
+                'title1'=>strtoupper('<b>Onlie diet</b>'),
+                'title2'=>strtoupper('<b>consultation</b>'),
+                'description'=>'Make the most of your membership, with <b>Fitternity’s Online Diet Consultation</b> to improve your workout performance'
+            ];
+
+            $response['pay_per_session'] = [
+                'image'=>'https://b.fitn.in/gamification/reward/cashback.jpg',
+                'title1'=>strtoupper('beat monotony'),
+                'title2'=>strtoupper('<b>pay-per-session</b>'),
+                'description'=>'<b>Don’t let your workout be monotonous.</b> Try different workouts around you by only paying per session!'
+            ];
+
         }
 
         return Response::json($response,200);
