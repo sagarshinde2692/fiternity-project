@@ -223,8 +223,8 @@ if(!function_exists('citywise_category')){
                 ["name" => "Dance","slug" => "dance-classes"],
                 ["name" => "Yoga","slug" => "yoga-classes"],
                 ["name" => "MMA And Kick Boxing","slug" => "mma-and-kick-boxing-classes"],
-                ["name" => "Pre-natal Classes","slug" => "pre-natal-classes"],
-                ["name" => "Kids Fitness","slug" => "kids-fitness-classes"]
+                // ["name" => "Pre-natal Classes","slug" => "pre-natal-classes"],
+                // ["name" => "Kids Fitness","slug" => "kids-fitness-classes"]
             ];
 
             $cat['hyderabad'] = [];
