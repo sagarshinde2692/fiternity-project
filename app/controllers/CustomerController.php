@@ -5773,7 +5773,7 @@ class CustomerController extends \BaseController {
 
 		$customer_id = $decoded->customer->_id;
 
-		$orders = Order::where('customer_id', $customer_id)->where('payment_mode', 'cod')->where('cod_otp', 'exists', true)->get();
+		$orders = Order::where('customer_id', $customer_id)->where('payment_mode', 'cod')->where('cod_otp', 'exists', true)->where('status', '0')->get();
 
 		return Response::json(['status' => 200,'data'=> $orders]);
 
