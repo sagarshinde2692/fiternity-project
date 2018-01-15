@@ -894,14 +894,15 @@ class FindersController extends \BaseController {
 
 				if(isset($finder['commercial_type']) && $finder['commercial_type'] == 0){
 
-					$response['finder']['payment_options'] = [];
+					unset($response['finder']['payment_options']);
 				}
 
 				if(isset($finder['flags']) && isset($finder['flags']['state']) && in_array($finder['flags']['state'],['closed','temporarily_shut'])){
 
 					$response['finder']['membership'] = "disable";
 					$response['finder']['trial'] = "disable";
-					$response['finder']['payment_options'] = [];
+
+					unset($response['finder']['payment_options']);
 				}
 
 				Cache::tags('finder_detail')->put($cache_key,$response,Config::get('cache.cache_time'));
@@ -958,7 +959,7 @@ class FindersController extends \BaseController {
 
         $payment_modes[] = array(
             'title' => 'Online Payment',
-            'subtitle' => 'Buy Memberships with net banking, Paytm & other wallets',
+            'subtitle' => 'Buy Memberships with Debit/Credit card , Paytm & other Mobile Wallets',
             'value' => 'paymentgateway',
         );
 
@@ -966,7 +967,7 @@ class FindersController extends \BaseController {
  
             $payment_modes[] = array(
                 'title' => 'EMI',
-                'subtitle' => 'Buy fitness memberships by paying only 2% extra',
+                'subtitle' => 'Buy Memberships via Monthly Instalments with Interest Rate as low as 2%',
                 'value' => 'emi',
             );
         }
@@ -974,7 +975,7 @@ class FindersController extends \BaseController {
         if(!empty($data['cash_pickup']) && $data['cash_pickup']){
             $payment_modes[] = array(
                 'title' => 'Cash Pickup',
-                'subtitle' => 'Schedule cash payment pick up from convenient location',
+                'subtitle' => 'Get Cash Picked up from your Preferd Location',
                 'value' => 'cod',
             );
         }
