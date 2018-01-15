@@ -1189,16 +1189,18 @@ Class CustomerReward {
             $wallet_balance = $calculation["amount_deducted_from_wallet"];
 
         }
-
-        $today_date = date("d-m-Y 00:00:00");
-        $query = Coupon::where('code', strtolower($couponCode))->where('start_date', '<=', new \DateTime($today_date))->where('end_date', '>=', new \DateTime($today_date));
+        Log::info($couponCode);
+        $today_date = date("d-m-Y hh:mm:ss");
+        Log::info( (new \DateTime())->format("d-m-Y H:i:s"));
+        $query = Coupon::where('code', strtolower($couponCode))->where('start_date', '<=', new \DateTime())->where('end_date', '>=', new \DateTime());
 
         if($ticket){
             $query->whereIn('tickets', [$ticket->_id]);
         }
         
         $coupon = $query->first();
-
+        Log::info("coupon");
+        Log::info($coupon);
         
         if(isset($coupon)){
             
