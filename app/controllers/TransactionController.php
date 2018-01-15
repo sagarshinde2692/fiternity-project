@@ -86,6 +86,10 @@ class TransactionController extends \BaseController {
             return Response::json(array('status' => 404,'message' =>'type field is required'), $this->error_status);
         }
 
+        if($this->vendor_token){
+            $data['customer_source'] = 'kiosk';
+        }
+
         $rules = array(
             'customer_name'=>'required',
             'customer_email'=>'required|email',
@@ -840,13 +844,17 @@ class TransactionController extends \BaseController {
                 'name'=>'Mahesh Jadhav'
             ],
             [   
-                'id'=>'Mahesh Jadhav',
-                'name'=>'Mahesh Jadhav'
+                'id'=>'Gaurav',
+                'name'=>'Gaurav'
             ],
             [   
-                'id'=>'Mahesh Jadhav',
-                'name'=>'Mahesh Jadhav'
-            ]   
+                'id'=>'Dhruv',
+                'name'=>'Dhruv'
+            ],
+            [   
+                'id'=>'Self',
+                'name'=>'Self'
+            ]  
         ];
 
         return Response::json($resp);

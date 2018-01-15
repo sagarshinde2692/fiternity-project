@@ -2623,6 +2623,10 @@ class SchedulebooktrialsController extends \BaseController {
             return Response::json("Can't book anything for you.",400);
         }
 
+        if($this->vendor_token){
+            $data['customer_source'] = 'kiosk';
+        }
+
         try {
 
             $service_id	 				       =	(isset($data['service_id']) && $data['service_id'] != '') ? intval($data['service_id']) : "";
@@ -6175,12 +6179,16 @@ class SchedulebooktrialsController extends \BaseController {
                 'name'=>'Mahesh Jadhav'
             ],
             [   
-                'id'=>'Mahesh Jadhav',
-                'name'=>'Mahesh Jadhav'
+                'id'=>'Gaurav',
+                'name'=>'Gaurav'
             ],
             [   
-                'id'=>'Mahesh Jadhav',
-                'name'=>'Mahesh Jadhav'
+                'id'=>'Dhruv',
+                'name'=>'Dhruv'
+            ],
+            [   
+                'id'=>'Self',
+                'name'=>'Self'
             ]   
         ];
 
