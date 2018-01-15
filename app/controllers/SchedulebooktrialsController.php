@@ -6023,17 +6023,17 @@ class SchedulebooktrialsController extends \BaseController {
 
         $booking_details_data["finder_name_location"] = ['field'=>'BOOKING AT','value'=>$finder_name.", ".$finder_location,'position'=>$position++];
 
-        $booking_details_data["service_name"] = ['field'=>'SERVICE NAME','value'=>$service['name'],'position'=>$position++];
+        $booking_details_data["service_name"] = ['field'=>'SERVICE','value'=>$service['name'],'position'=>$position++];
 
         $booking_details_data["service_duration"] = ['field'=>'DURATION','value'=>$service_duration,'position'=>$position++];
 
-        $booking_details_data["start_date"] = ['field'=>'DATE','value'=>'-','position'=>$position++];
+        $booking_details_data["start_date"] = ['field'=>'DAY & DATE','value'=>'-','position'=>$position++];
 
         $booking_details_data["start_time"] = ['field'=>'TIME','value'=>'-','position'=>$position++];
 
         $booking_details_data["address"] = ['field'=>'ADDRESS','value'=>'','position'=>$position++];
 
-        $booking_details_data["price"] = ['field'=>'PRICE','value'=>'Free Via Fitternity','position'=>$position++];
+        $booking_details_data["price"] = ['field'=>'AMOUNT','value'=>'Free Via Fitternity','position'=>$position++];
 
         if($poc != ""){ 
             $booking_details_data["poc"] = ['field'=>'POINT OF CONTACT','value'=>$poc,'position'=>$position++];
@@ -6044,7 +6044,7 @@ class SchedulebooktrialsController extends \BaseController {
         }
 
         if(isset($item['schedule_date']) && $item['schedule_date'] != ""){
-            $booking_details_data['start_date']['value'] = date('d-m-Y (l)',strtotime($item['schedule_date']));
+            $booking_details_data['start_date']['value'] = date('l d-m-Y (l)',strtotime($item['schedule_date']));
         }
 
         if(isset($item['preferred_starting_date']) && $item['preferred_starting_date'] != ""){
@@ -6147,6 +6147,10 @@ class SchedulebooktrialsController extends \BaseController {
         if(in_array($item['type'],["healthytiffintrail","healthytiffintrial","healthytiffinmembership"])){
             $booking_details_data['finder_name_location']['field'] = 'BOUGHT AT';
             $booking_details_data['finder_name_location']['value'] = $finder_name;
+        }
+
+        if($this->vendor_token && in_array($item['type'],["booktrials","workout-session"])){
+            $booking_details_data = array_only($booking_details_data, ['service_name','price','start_date']);
         }
 
         $booking_details_all = [];
