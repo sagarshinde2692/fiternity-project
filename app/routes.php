@@ -1037,6 +1037,7 @@ Route::get('createQrCode', 'DebugController@createQrCode');
 
 Route::get('locatetrial/{code}','SchedulebooktrialsController@locateTrial');
 
+Route::get('locatemembership/{code}','TransactionController@locateMembership');
 
 Route::get('servicemembership/{finder_id}','FindersController@serviceMembership');
 

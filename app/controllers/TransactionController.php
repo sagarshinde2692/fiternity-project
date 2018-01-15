@@ -4671,7 +4671,7 @@ class TransactionController extends \BaseController {
 
         $response = array('status' => 400,'message' =>'Sorry! Cannot locate your membership');
         
-        $order = Order::find('code',$code);
+        $order = Order::where('type','memberships')->find($order_id);
 
         $locate_data = [
             'code'=>$code,
@@ -4683,60 +4683,33 @@ class TransactionController extends \BaseController {
 
         if(isset($order)){
 
+            $data = [];
+
+            $preferred_starting_date = date('Y-m-d 00:00:00',time());
+
+            $data['start_date'] = $preferred_starting_date;
+            $data['preferred_starting_date'] = $preferred_starting_date;
+            $data['end_date'] = date('Y-m-d 00:00:00', strtotime($data['preferred_starting_date']."+ ".($order->duration_day-1)." days"));
+            $data['locate_membership_date'] = time();
+
+            $order->update($data);
+
             $locateTransaction->transaction_id = (int)$order['_id'];
             $locateTransaction->transaction_type = 'Order';
             $locateTransaction->update();
 
-            $customerCapture = CustomerCapture::where('booktrial_id',(int)$booktrial['_id'])->first();
+            $message = "Hi ".ucwords($order['customer_name']).", your membership at ".ucwords($order['finder_name'])." for ".ucwords($order['service_name'])." has been successfully located";
 
-            if($customerCapture){
-
-                $response = array('status' => 400,'message' =>'Already located your booking');
-
-                return Response::json($response,200);
-
-            }
-
-            $url = Config::get('app.url')."/locatetrialcommunication/".$booktrial["_id"];
-
-            if(!isset($booktrial->customerCommunicationAfterOneHour)){
-
-                $booktrial->customerCommunicationAfterOneHour = $this->utilities->hitURLAfterDelay($url,date('Y-m-d H:i:s',strtotime("+1 hours",time())));
-            }
-
-            $booktrial->post_trial_status = 'attended';
-            $booktrial->post_trial_initail_status = 'interested';
-            $booktrial->post_trial_status_updated_by_kiosk = time();
-            $booktrial->update();
-
-            if(isset($booktrial['customer_sms_after24hour']) && $booktrial['customer_sms_after24hour'] != ""){
-                         
-                $booktrial->unset('customer_sms_after24hour');
-             
-                $this->sidekiq->delete($booktrial['customer_sms_after24hour']);
-            
-            }
-
-            $message = "Hi ".ucwords($booktrial['customer_name']).", your booking at ".ucwords($booktrial['finder_name'])." for ".strtoupper($booktrial['schedule_slot_start_time'])." on ".date('D, d M Y',strtotime($booktrial['schedule_date']))." has been successfully located";
-
-            $createCustomerToken = createCustomerToken((int)$booktrial['customer_id']);
-
-            $kiosk_form_url = Config::get('app.website').'/kiosktrialform?booktrial_id='.$booktrial['_id'];
-
+            $createCustomerToken = createCustomerToken((int)$order['customer_id']);
 
             $response = [
                 'status' => 200,
                 'message' => $message,
                 'token'=>$createCustomerToken,
-                'booktrial_id'=> (int)$booktrial['_id'],
-                'kiosk_form_url'=>$kiosk_form_url
+                'order_id'=> (int)$order['_id']
             ];
 
-            $data = [
-                'booked_locate'=>'locate'
-            ];
-
-            $response = array_merge($response,$this->utilities->trialBookedLocateScreen($data));
+            $response = array_merge($response);
         }
 
         return Response::json($response,200);
