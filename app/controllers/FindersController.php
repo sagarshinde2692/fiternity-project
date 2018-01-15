@@ -892,6 +892,11 @@ class FindersController extends \BaseController {
 				$response['finder_footer']				= 		$finder_footer;
 				$response['finder']['payment_options']				=		$this->getPaymentModes($payment_options_data);
 
+				if(isset($finder['commercial_type']) && $finder['commercial_type'] == 0){
+
+					$response['finder']['payment_options'] = [];
+				}
+
 				if(isset($finder['flags']) && isset($finder['flags']['state']) && in_array($finder['flags']['state'],['closed','temporarily_shut'])){
 
 					$response['finder']['membership'] = "disable";
