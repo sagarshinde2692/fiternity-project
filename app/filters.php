@@ -224,14 +224,14 @@ Route::filter('device',function(){
 
         $device = false;
 
-        if(isset($data['reg_id']) && $data['reg_id'] != "" && $data['reg_id'] != null && $data['reg_id'] != 'null'){
-
-            $device = Device::where('reg_id', $data['reg_id'])->orderBy("_id","DESC")->first();
-        }
-
         if(isset($data['device_id']) && $data['device_id'] != "" && $data['device_id'] != null && $data['device_id'] != 'null'){
 
             $device = Device::find((int)$data['device_id']);
+        }
+
+        if(!$device && isset($data['reg_id']) && $data['reg_id'] != '' && $data['reg_id'] != null && $data['reg_id'] != 'null'){
+
+            $device = Device::where('reg_id', $data['reg_id'])->orderBy('updated_at', 'desc')->first();
         }
 
         if ($device) {
