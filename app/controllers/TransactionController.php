@@ -4728,7 +4728,7 @@ class TransactionController extends \BaseController {
             $locateTransaction->transaction_type = 'Order';
             $locateTransaction->update();
 
-            $message = "You are good to go your ".ucwords($order['service_duration'])." ".ucwords($order['service_name'])." membership has been activated (or confirmed)";
+            $message = "You are good to go your ".ucwords($order['service_duration'])." ".ucwords($order['service_name'])." membership has been activated";
 
             $createCustomerToken = createCustomerToken((int)$order['customer_id']);
 
@@ -4741,7 +4741,7 @@ class TransactionController extends \BaseController {
 
             $order_data = $order->toArray();
 
-            $order_data['membership_locate'] = 'booked';
+            $order_data['membership_locate'] = 'locate';
 
             $response = array_merge($response,$this->utilities->membershipBookedLocateScreen($order_data));
 

@@ -606,6 +606,85 @@ class TempsController extends \BaseController {
 
                 }
 
+
+                if(in_array($temp->action,['locate_membership'])){
+
+                    $message = 'Sorry! Cannot locate your membership';
+
+                    $return = array('customer_data'=>$customer_data,'locate_membership'=>false,'status' => 200,'message' => $message,'verified' => $verified,'token'=>$customerToken);
+
+                    $decodeKioskVendorToken = decodeKioskVendorToken();
+
+                    $vendor = $decodeKioskVendorToken->vendor;
+
+                    $finder_id = (int)$vendor->_id;
+
+                    Order::$withoutAppends = true;
+
+                    $order = Order::active()
+                                ->where('customer_phone','LIKE','%'.substr($temp->customer_phone, -10).'%')
+                                ->where('finder_id', '=',$finder_id)
+                                ->where('type','memberships')
+                                ->orderBy('_id','desc')
+                                ->first();
+
+                    if($order){
+
+                        $data = [];
+
+                        $preferred_starting_date = date('Y-m-d 00:00:00',time());
+
+                        $data['start_date'] = $preferred_starting_date;
+                        $data['preferred_starting_date'] = $preferred_starting_date;
+                        $data['end_date'] = date('Y-m-d 00:00:00', strtotime($data['preferred_starting_date']."+ ".($order->duration_day-1)." days"));
+                        $data['locate_membership_date'] = time();
+
+                        $order->update($data);
+
+                        $message = "You are good to go your ".ucwords($order['service_duration'])." ".ucwords($order['service_name'])." membership has been activated";
+  
+                        Customer::$withoutAppends = true;
+
+                        $customer = Customer::select('name','email','contact_no','dob','gender')->find((int)$order->customer_id);
+                        
+                        if($customer) {
+
+                            if($customerToken == ""){
+
+                                $customerToken = createCustomerToken((int)$customer->_id);
+                            }
+
+                            $customer_data = $customer->toArray();
+
+                            $customer_data['dob'] = isset($customer_data['dob']) && $customer_data['dob'] != "" ? $customer_data['dob'] : "";
+                            $customer_data['gender'] = isset($customer_data['gender']) && $customer_data['gender'] != "" ? $customer_data['gender'] : "";
+                            $customer_data['contact_no'] = $temp->customer_phone;
+                            $customer_id = (int)$customer->_id;
+
+                        }
+
+                        $return = [
+                            'customer_data'=>$customer_data,
+                            'locate_membership'=>true,
+                            'status' => 200,
+                            'message' => $message,
+                            'verified' => $verified,
+                            'token'=>$customerToken,
+                            'booktrial_id'=> (int)$order['_id']
+                        ];
+
+                        $order_data = $order->toArray();
+
+                        $order_data['membership_locate'] = 'locate';
+
+                        $response = array_merge($response,$this->utilities->membershipBookedLocateScreen($order_data));
+
+                    }
+                     
+                    return Response::json($return,200);
+
+                }
+
             }
 
 
