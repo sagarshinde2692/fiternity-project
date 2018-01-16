@@ -4187,7 +4187,7 @@ class TransactionController extends \BaseController {
             'otp'       => 'required'
         ];
 
-        $validator = Validate::make($data, $rules);
+        $validator = Validator::make($data, $rules);
 
         if ($validator->fails()) {
             return Response::json(array('status' => 404,'message' => error_message($validator->errors())),404);
