@@ -4757,10 +4757,12 @@ class TransactionController extends \BaseController {
 
         $data['title'] = 'Complimentry Rewards';
         $data['banner'] = 'https://b.fitn.in/global/Rewards-page/rewards-web-banner.png';
+        $data['rewards'] = [];
 
-        $data['fitness_kit'] = [ 
+        $data['rewards'][] = [ 
             'title' => 'Merchandise Kits',
             'description'=>'We have shaped the perfect fitness kit for you. Strike off these workout essentials from your cheat sheet & get going.',
+            'type'=>'fitness_kit',
             'items'=>[
                 [
                     'title'=>'Cross Fit & Gym',
@@ -4783,9 +4785,10 @@ class TransactionController extends \BaseController {
             ]
         ];
 
-        $data['diet_plan'] = [
+        $data['rewards'][] = [
             'title'=>'Online Diet Consultation',
             'description'=>'Eating right is 70% & workout is 30% of leading a healthy & fit lifestyle! Fitternity’s got you covered 100% cover.',
+            'type'=>'diet_plan',
             'items'=>[
                 [
                     'title'=>'',
@@ -4797,9 +4800,10 @@ class TransactionController extends \BaseController {
 
         ];
 
-        $data['cashback'] = [
+        $data['rewards'][] = [
             'title'=>'Instant Cashback',
             'description'=>'Who doesn’t love some money in their wallet? Get 5% back on your purchase!',
+            'type'=>'cashback',
             'items'=>[
                 [
                     'title'=>'',
