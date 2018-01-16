@@ -341,6 +341,20 @@ class RewardofferController extends BaseController {
                         'nutrition_store',
                         'fitternity_voucher'
                     );
+
+
+                    if(in_array($finder_id, Config::get('app.diet_reward_excluded_vendors'))){
+                        $reward_type_order = array(
+                            'fitness_kit',
+                            'sessions',
+                            'healthy_snacks',
+                            'personal_trainer_at_home',
+                            'healthy_tiffin',
+                            'nutrition_store',
+                            'fitternity_voucher'
+                        );
+                    }
+
                     if(isset($ratecard) && ($ratecard["type"] == "trial" || $ratecard["type"] == "workout session")){
                         $rewards = [];
                     }
@@ -639,6 +653,7 @@ class RewardofferController extends BaseController {
 
                             if($rewards_value['reward_type'] == $reward_type_order_value){
 
+                                Log::info( $reward_type_order_value);
                                 $reward_type_array = ["fitness_kit","healthy_snacks"];
 
                                 if(isset($_GET['device_type']) && $_GET['device_type'] == 'ios' && in_array($rewards_value['reward_type'], $reward_type_array)){
