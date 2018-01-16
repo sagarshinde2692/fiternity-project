@@ -4186,7 +4186,7 @@ class TransactionController extends \BaseController {
         
         }        
 
-        $customer_id = (int)($decodes->customer->_id);
+        $customer_id = (int)($decoded->customer->_id);
 
         $data = Input::json()->all();
 
