@@ -224,7 +224,7 @@ Route::filter('device',function(){
 
         $device = false;
 
-        if(isset($data['reg_id']) && $data['reg_id'] != " "&& $data['reg_id'] != null && $data['reg_id'] != 'null'){
+        if(isset($data['reg_id']) && $data['reg_id'] != "" && $data['reg_id'] != null && $data['reg_id'] != 'null'){
 
             $device = Device::where('reg_id', $data['reg_id'])->orderBy("_id","DESC")->first();
         }
