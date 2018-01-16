@@ -3475,6 +3475,11 @@ class TransactionController extends \BaseController {
 
         }
 
+        if(isset($data["assisted_by"]) && isset($data["assisted_by"]["name"]) && $data["assisted_by"] != ""){
+
+            $booking_details_data["assisted_by"] = ['field'=>'ASSISTED BY','value'=>$data["assisted_by"]["name"],'position'=>$position++];
+        }
+
         if(isset($data['start_date']) && $data['start_date'] != ""){
             $booking_details_data['start_date']['value'] = date('d-m-Y (l)',strtotime($data['start_date']));
         }
