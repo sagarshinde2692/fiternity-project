@@ -4204,7 +4204,7 @@ class TransactionController extends \BaseController {
 
         $order_id = (int)$data['order_id'];
 
-        $otp = (int)$data['otp'];
+        $otp = $data['otp'];
 
         $order = Order::where('customer_id', $customer_id)->where('_id', $order_id)->where('cod_otp', $otp)->first();
 
