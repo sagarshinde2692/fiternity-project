@@ -771,7 +771,7 @@ class TransactionController extends \BaseController {
 
         if($data['payment_mode'] == 'at the studio' && isset($data['wallet']) && $data['wallet']){
 
-            $data_otp = array_only($data,['finder_id','order_id','service_id','ratecard_id','payment_mode','finder_vcc_mobile']);
+            $data_otp = array_only($data,['finder_id','order_id','service_id','ratecard_id','payment_mode','finder_vcc_mobile','finder_vcc_email','customer_name','service_name','service_duration','finder_name']);
 
             $data_otp['action'] = "vendor_otp";
 
@@ -810,6 +810,7 @@ class TransactionController extends \BaseController {
 
                 $otp_data = [
                     'finder_vcc_mobile'=>$data_otp['finder_vcc_mobile'],
+                    'finder_vcc_email'=>$data_otp['finder_vcc_email'],
                     'payment_mode'=>$data_otp['payment_mode'],
                     'temp_id'=>$addTemp['_id'],
                     'otp'=>$addTemp['otp'],
@@ -824,8 +825,10 @@ class TransactionController extends \BaseController {
             $otp_data['customer_name'] = $data['customer_name'];
             $otp_data['service_name'] = $data['service_name'];
             $otp_data['service_duration'] = $data['service_duration'];
+            $otp_data['finder_name'] = $data['finder_name'];
 
             $this->findersms->genericOtp($otp_data);
+            $this->findermailer->genericOtp($otp_data);
 
             $resp['vendor_otp'] = $otp_data['otp'];
 

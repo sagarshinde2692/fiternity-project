@@ -248,7 +248,7 @@ Class FinderSms extends VersionNextSms{
 
 	protected function genericOtp ($data){
 
-		$label = 'Generic-Otp-Customer';
+		$label = 'Generic-Otp-Vendor';
 
 		$to = explode(',', $data['finder_vcc_mobile']);
 
