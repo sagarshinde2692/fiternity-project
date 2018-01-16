@@ -2631,7 +2631,7 @@ Class Utilities {
             'image'=>'https://b.fitn.in/gamification/reward/cashback.jpg',
             'title1'=>strtoupper('fitternity profile'),
             'title2'=>strtoupper('on app & website'),   
-            'description'=>"&#9679; <b>Track</b> your FitCash wallet balance\n&#9679; <b>Renew</b> membership with best discount & offers\n&#9679; <b>Upgrade</b> membership by extending the duration at initial price",
+            'description'=>"&#9679; <b>Track</b> your FitCash wallet balance<br/>&#9679; <b>Renew</b> membership with best discount & offers<br/>&#9679; <b>Upgrade</b> membership by extending the duration at initial price",
             'type'=>'profile'
         ];
 
