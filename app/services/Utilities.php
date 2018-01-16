@@ -2625,25 +2625,30 @@ Class Utilities {
             $response['message'] = "You are good to go your ".ucwords($data['service_duration'])." ".ucwords($data['service_name'])." membership has been activated";
         }
 
-        $response['profile'] = [
+        $response['features'] = [];
+
+        $response['features'][] = [
             'image'=>'https://b.fitn.in/gamification/reward/cashback.jpg',
             'title1'=>strtoupper('fitternity profile'),
             'title2'=>strtoupper('on app & website'),   
             'description'=>"&#9679; <b>Track</b> your FitCash wallet balance\n&#9679; <b>Renew</b> membership with best discount & offers\n&#9679; <b>Upgrade</b> membership by extending the duration at initial price",
+            'type'=>'profile'
         ];
 
-        $response['diet_plan'] = [
+        $response['features'][] = [
             'image'=>'https://b.fitn.in/gamification/reward/cashback.jpg',
             'title1'=>strtoupper('<b>Onlie diet</b>'),
             'title2'=>strtoupper('<b>consultation</b>'),
-            'description'=>'Make the most of your membership, with <b>Fitternity’s Online Diet Consultation</b> to improve your workout performance'
+            'description'=>'Make the most of your membership, with <b>Fitternity’s Online Diet Consultation</b> to improve your workout performance',
+            'type'=>'diet_plan'
         ];
 
-        $response['pay_per_session'] = [
+        $response['features'][] = [
             'image'=>'https://b.fitn.in/gamification/reward/cashback.jpg',
             'title1'=>strtoupper('beat monotony'),
             'title2'=>strtoupper('<b>pay-per-session</b>'),
-            'description'=>'<b>Don’t let your workout be monotonous.</b> Try different workouts around you by only paying per session!'
+            'description'=>'<b>Don’t let your workout be monotonous.</b> Try different workouts around you by only paying per session!',
+            'type'=>'pay_per_session'
         ];
 
         return $response;
