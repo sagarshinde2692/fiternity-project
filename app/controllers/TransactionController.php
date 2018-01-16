@@ -4764,20 +4764,20 @@ class TransactionController extends \BaseController {
             'items'=>[
                 [
                     'title'=>'Cross Fit & Gym',
-                    'description'=>'Lifts and Squats is all you need to think about as we have your workout gear ready - ',
-                    'products'=>['Gym Bag,Shaker,Arm Band,T-Shirt,Towel,Bottle,Earphone Detangler'],
+                    'description'=>"Lifts and Squats is all you need to think about as we have your workout gear ready - \n ● Gym Bag\n ● Shaker\n ● Arm Band\n ● T-Shirt\n ● Towel\n ● Bottle\n ● Earphone Detangler",
+                    'products'=>['Gym Bag','Shaker','Arm Band','T-Shirt','Towel','Bottle','Earphone Detangler'],
                     'image'=>'https://b.fitn.in/global/Rewards-page/crossfit%26gym.png'
                 ],
                 [
                     'title'=>'Zumba & Dance',
-                    'description'=>'Groove your way to Fitness while we give you a hip workout wear - ',
+                    'description'=>"Groove your way to Fitness while we give you a hip workout wear - \n ● Tote Bag\n ● Bottle\n ● Towel\n ● Shoe Bag\n ● T-Shirt\n ● Arm-Band\n ● Earphone Detangler",
                     'products'=>['Tote Bag','Bottle','Towel','Shoe Bag','T-Shirt','Arm-Band','Earphone Detangler'],
                     'image'=>'https://b.fitn.in/global/Rewards-page/zumba.png'
                 ],
                 [
                     'title'=>'Yoga & Pilates',
-                    'description'=>'Lifts and Squats is all you need to think about as we have your workout gear ready - ',
-                    'products'=>['Gym Bag,Shaker,Arm Band,T-Shirt,Towel,Bottle,Earphone Detangler'],
+                    'description'=>"Lifts and Squats is all you need to think about as we have your workout gear ready - \n ● Gym Bag \n ● Shaker\n ● Arm Band\n ● T-Shirt\n ● Towel\n ● Bottle\n ● Earphone Detangler",
+                    'products'=>['Gym Bag','Shaker','Arm Band','T-Shirt','Towel','Bottle','Earphone Detangler'],
                     'image'=>'https://b.fitn.in/global/Rewards-page/yoga%26pilates.png'
                 ],
             ]
@@ -4789,7 +4789,7 @@ class TransactionController extends \BaseController {
             'items'=>[
                 [
                     'title'=>'',
-                    'description'=>"Get a detailed diet plan from out expert dietitian for better workout performance & faster goal achivement.\n\nYou will get:",
+                    'description'=>"Get a detailed diet plan from out expert dietitian for better workout performance & faster goal achivement.\n\nYou will get: \n ● Telephonic consultation with your dietician\n ● Personalised & customised diet plan\n ● Regular follow-ups & progress tracking\n ● Healthy recepies & hacks",
                     'products'=>['Telephonic consultation with your dietician','Personalised & customised diet plan','Regular follow-ups & progress tracking','Healthy recepies & hacks'],
                     'image'=>'https://b.fitn.in/gamification/reward/diet_plan.jpg'
                 ]
