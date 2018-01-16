@@ -1083,6 +1083,10 @@ Route::group(array('before' => 'validatetoken'), function() {
 	Route::post('walletordercapture', array('as' => 'transaction.walletOrderCapture','uses' => 'TransactionController@walletOrderCapture'));
 	
 	Route::post('walletordersuccess', array('as' => 'transaction.walletOrderSuccess','uses' => 'TransactionController@walletOrderSuccess'));
+
+	Route::post('codotpsuccess', array('as' => 'transaction.codotpsuccess','uses' => 'TransactionController@codOtpSuccess'));
+	
+	Route::get('getcodorders','CustomerController@getCodOrders');
 	
 });
 

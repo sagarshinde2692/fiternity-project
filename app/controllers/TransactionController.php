@@ -653,6 +653,10 @@ class TransactionController extends \BaseController {
         if(isset($data['payment_mode']) && $data['payment_mode'] == 'cod'){
             $this->customermailer->orderUpdateCOD($order->toArray());
             $this->customersms->orderUpdateCOD($order->toArray());
+
+            $order->cod_otp = $this->utilities->generateRandomString();
+
+            $order->update();
         }
 
         
@@ -4663,5 +4667,51 @@ class TransactionController extends \BaseController {
 
         return $result;
     }
+
+    public function codOtpSuccess(){
+
+        $jwt_token              =   Request::header('Authorization');
+        
+        $data = Input::json()->all();
+
+        $rules = [
+            'order_id'  => 'required',
+            'otp'       => 'required'
+        ];
+
+        $validator = Validator::make($data, $rules);
+
+        if ($validator->fails()) {
+            return Response::json(array('status' => 404,'message' => error_message($validator->errors())),404);
+        }   
+        
+        if($jwt_token != null){
+            
+            $decoded = customerTokenDecode($jwt_token);
+        
+        }        
+
+        $customer_id = (int)($decoded->customer->_id);
+            
+
+        $order_id = (int)$data['order_id'];
+
+        $otp = $data['otp'];
+
+        $order = Order::where('customer_id', $customer_id)->where('_id', $order_id)->where('cod_otp', $otp)->first();
+
+        if(!$order){
+            return Response::json(array('status' => 404,'message' => 'Please enter the valid code'), $this->error_status);
+        }
+
+        $order->status = '1';
+
+        $order->update();
+
+        return Response::json(array('status' => 200,'message' => 'Order activated successfully'));
+
+    }
+
+    
 
 }
