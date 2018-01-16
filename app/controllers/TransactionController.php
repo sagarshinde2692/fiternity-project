@@ -4701,7 +4701,7 @@ class TransactionController extends \BaseController {
         $order = Order::where('customer_id', $customer_id)->where('_id', $order_id)->where('cod_otp', $otp)->first();
 
         if(!$order){
-            return Response::json(array('status' => 404,'message' => 'Invalid otp entered'), $this->error_status);
+            return Response::json(array('status' => 404,'message' => 'Please enter the valid code'), $this->error_status);
         }
 
         $order->status = '1';
