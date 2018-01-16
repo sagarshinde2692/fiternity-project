@@ -4143,6 +4143,14 @@ class FindersController extends \BaseController {
 						"id"=>6,
 						'type'=>'booktrials'
 					],
+					[
+						"title"=>"Complimentary Rewards",
+						"description"=>"Complimentary Rewards",
+						"image"=>"https://b.fitn.in/global/Rewards-page/rewards-web-banner.png",
+						"banner_image"=>"https://b.fitn.in/global/Rewards-page/rewards-web-banner.png",
+						"id"=>7,
+						'type'=>'rewards'
+					],
 				],
 				"title"=>"Welcome to ".ucwords($finder['title']),
 				"powered"=>"Powered by Fitternity"
