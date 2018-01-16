@@ -4206,7 +4206,7 @@ class TransactionController extends \BaseController {
 
         $otp = (int)$data['otp'];
 
-        $order::where('customer_id', $customer_id)->where('payment_mode', 'cod')->where('status', '0')->where('_id', $order_id)->where('cod_otp', $otp)->first();
+        $order = Order::where('customer_id', $customer_id)->where('_id', $order_id)->where('cod_otp', $otp)->first();
 
         if(!$order){
             return Response::json(array('status' => 404,'message' => 'Invalid otp entered'), $this->error_status);
