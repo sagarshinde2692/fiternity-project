@@ -1095,3 +1095,5 @@ Route::get('getcrashlogs/{count}','HomeController@getCrashLog');
 Route::post('transaction/checkoutsummary','TransactionController@checkoutSummary');
 
 Route::get('transaction/rewardscreen','TransactionController@rewardScreen');
+
+Route::get('getcustommembershipdetails','TransactionController@getCustomMembershipDetails');

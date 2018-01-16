@@ -4820,4 +4820,54 @@ class TransactionController extends \BaseController {
     }
 
 
+    public function getCustomMembershipDetails(){
+
+        $decodeKioskVendorToken = decodeKioskVendorToken();
+
+        $vendor = json_decode(json_encode($decodeKioskVendorToken->vendor),true);
+
+        $finder_id = (int)$vendor['_id'];
+
+        $data = [];
+
+        $data['service_categories'] = Servicecategory::active()->where('parent_id',0)->lists('name','_id');
+
+        $data['duration_type'] = [
+            'day'=>'Day',
+            'month'=>'Month',
+            'year'=>'Year',
+        ];
+        
+        $duration = [];
+        for ($i=1; $i <= 12; $i++) { 
+
+            $duration[$i] = $i;
+        }
+
+        $data['duration'] = $duration;
+
+        $data['sale_done_by'] = [
+            [   
+                'id'=>'Mahesh Jadhav',
+                'name'=>'Mahesh Jadhav'
+            ],
+            [   
+                'id'=>'Gaurav',
+                'name'=>'Gaurav'
+            ],
+            [   
+                'id'=>'Dhruv',
+                'name'=>'Dhruv'
+            ],
+            [   
+                'id'=>'Self',
+                'name'=>'Self'
+            ] 
+        ];
+
+        return Response::json($data);
+
+    }
+
+
 }
