@@ -527,7 +527,7 @@ class FindersController extends \BaseController {
 
 					foreach ($finder['services'] as $key => $service){
 
-						if(!isset($service['showOnFront']) || ((isset($service['showOnFront']) && $service['showOnFront']))){
+						if(!isset($service['showOnFront']) || ((isset($service['showOnFront']) && in_array('web', $service['showOnFront'])))){
 
 
 
@@ -2404,7 +2404,9 @@ class FindersController extends \BaseController {
 
 		foreach ($items as $k => $item) {
 
-			if(!isset($item['showOnFront']) || ((isset($item['showOnFront']) && $item['showOnFront']))){
+			$device = $this->vendor_token ? 'kiosk' : 'web';
+			
+			if(!isset($item['showOnFront']) || ((isset($item['showOnFront']) && in_array($device, $item['showOnFront'])))){
 				$extra_info = array();
 
 			/*$extra_info[0] = array(
