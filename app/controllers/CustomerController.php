@@ -1658,7 +1658,7 @@ class CustomerController extends \BaseController {
 		$orders 			=  	[];
 		$membership_types 		= Config::get('app.membership_types');
 
-		$orderData 			= 	Order::active()->where('customer_email','=',$customer_email)->whereIn('type',$membership_types)->where('schedule_date','exists',false)->where(function($query){$query->orWhere('preferred_starting_date','exists',true)->orWhere('start_date','exists',true);})->skip($offset)->take($limit)->orderBy('_id', 'desc')->get();
+		$orderData 			= 	Order::where(function($query){$query->where('status', '1')->orWhere('cod_otp', 'exists', true);})->where('customer_email','=',$customer_email)->whereIn('type',$membership_types)->where('schedule_date','exists',false)->where(function($query){$query->orWhere('preferred_starting_date','exists',true)->orWhere('start_date','exists',true);})->skip($offset)->take($limit)->orderBy('_id', 'desc')->get();
 
 
 		if(count($orderData) > 0){
@@ -5809,6 +5809,20 @@ class CustomerController extends \BaseController {
 		}
 
 		return Response::json(['status' => 400,'message'=> "Vendor Not Found"],400);
+	}
+
+	public function getCodOrders(){
+		
+		$jwt_token = Request::header('Authorization');
+		
+		$decoded = $this->customerTokenDecode($jwt_token);
+
+		$customer_id = $decoded->customer->_id;
+
+		$orders = Order::where('customer_id', $customer_id)->where('payment_mode', 'cod')->where('cod_otp', 'exists', true)->where('status', '0')->get();
+
+		return Response::json(['status' => 200,'data'=> $orders]);
+
 	}
 	
 }
