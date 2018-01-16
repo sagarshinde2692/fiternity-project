@@ -10,6 +10,8 @@ use App\Sms\CustomerSms as CustomerSms;
 use App\Services\Utilities as Utilities;
 use App\Services\CustomerReward as CustomerReward;
 use App\Sms\FinderSms as FinderSms;
+use App\Services\Sidekiq as Sidekiq;
+use App\Mailers\FinderMailer as FinderMailer;
 
 class TempsController extends \BaseController {
 
@@ -17,7 +19,13 @@ class TempsController extends \BaseController {
     protected $utilities;
     protected $findersms;
 
-    public function __construct(CustomerSms $customersms, Utilities $utilities, FinderSms $findersms) {
+    public function __construct(
+        CustomerSms $customersms,
+        Utilities $utilities,
+        FinderSms $findersms,
+        Sidekiq $sidekiq,
+        FinderMailer $findermailer
+    ) {
         //parent::__construct();
         $this->findersms            =   $findersms;
         $this->customersms              =   $customersms;
@@ -25,6 +33,8 @@ class TempsController extends \BaseController {
         $this->appOfferDiscount 				= Config::get('app.app.discount');
         $this->appOfferExcludedVendors 				= Config::get('app.app.discount_excluded_vendors');
         $this->utilities = $utilities;
+        $this->sidekiq              =   $sidekiq;
+        $this->findermailer         =   $findermailer;
 
         $this->vendor_token = false;
 
@@ -258,6 +268,8 @@ class TempsController extends \BaseController {
             );
 
             $response = array('status'=>400,'message'=>$message['type'].' : '.$message['message'].' in '.$message['file'].' on '.$message['line']);
+
+            return Response::json($response,$this->error_status);
 
             Log::error($e);
         }
@@ -775,6 +787,7 @@ class TempsController extends \BaseController {
             if($temp->action == 'vendor_otp'){
 
                 $this->findersms->genericOtp($data);
+                $this->findermailer->genericOtp($data);
 
             }else{
 
