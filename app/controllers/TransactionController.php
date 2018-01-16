@@ -4180,14 +4180,6 @@ class TransactionController extends \BaseController {
 
         $jwt_token              =   Request::header('Authorization');
         
-        if($jwt_token != null){
-
-            $decoded = customerTokenDecode($jwt_token);
-        
-        }        
-
-        $customer_id = (int)($decoded->customer->_id);
-
         $data = Input::json()->all();
 
         $rules = [
@@ -4199,7 +4191,16 @@ class TransactionController extends \BaseController {
 
         if ($validator->fails()) {
             return Response::json(array('status' => 404,'message' => error_message($validator->errors())),404);
+        }   
+        
+        if($jwt_token != null){
+            
+            $decoded = customerTokenDecode($jwt_token);
+        
         }        
+
+        $customer_id = (int)($decoded->customer->_id);
+            
 
         $order_id = (int)$data['order_id'];
 
