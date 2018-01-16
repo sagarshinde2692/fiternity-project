@@ -4701,7 +4701,7 @@ class TransactionController extends \BaseController {
 
         $response = array('status' => 400,'message' =>'Sorry! Cannot locate your membership');
         
-        $order = Order::where('type','memberships')->where('finder_id',(int)$vendor['_id'])->find($order_id);
+        $order = Order::active()->where('type','memberships')->where('finder_id',(int)$vendor['_id'])->find($order_id);
 
         $locate_data = [
             'code'=>$code,
