@@ -1444,7 +1444,7 @@ class HomeController extends BaseController {
 
                     $item['membership_locate'] = 'booked';
 
-                    $resp['kiosk'] = $this->utilities->membershipBookedLocateScreen($item);
+                    $resp['kiosk_membership'] = $this->utilities->membershipBookedLocateScreen($item);
                 }
             }
 
