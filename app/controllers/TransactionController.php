@@ -4990,18 +4990,43 @@ class TransactionController extends \BaseController {
 
         $data = [];
 
-        $data['service_categories'] = Servicecategory::active()->where('parent_id',0)->lists('name','_id');
+        $service_categories_array = Servicecategory::active()->where('parent_id',0)->lists('name','_id');
+
+        $data['service_categories'] = [];
+
+        foreach ($service_categories_array as $key => $value) {
+
+            $array = [
+                'id'=>(int) $key,
+                'name'=>$value
+            ];
+
+            $data['service_categories'][] = $array;
+        }
 
         $data['validity_type'] = [
-            'day'=>'Day',
-            'month'=>'Month',
-            'year'=>'Year',
+            [
+                'id'=>'day',
+                'name'=>'Day'
+            ],
+            [
+                'id'=>'month',
+                'name'=>'Month'
+            ],
+            [
+                'id'=>'year',
+                'name'=>'Year'
+            ]
         ];
         
-        $validity = [];
-        for ($i=1; $i <= 12; $i++) { 
+        for ($i=1; $i <= 30; $i++) {
 
-            $validity[$i] = $i;
+            $array = [
+                'id'=> $i,
+                'name'=> (string) $i
+            ];
+
+            $data['validity'][] = $array;
         }
 
         $data['validity'] = $validity;
