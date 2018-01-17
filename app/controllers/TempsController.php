@@ -449,7 +449,7 @@ class TempsController extends \BaseController {
                                 ->orderBy('_id','desc')
                                 ->first();
 
-                            if($customer_email != null){
+                            if(!$booktrial && $customer_email != null){
 
                                 $booktrial = Booktrial::where('customer_email', $customer_email)
                                 ->where('finder_id', '=',$finder_id)
@@ -477,9 +477,16 @@ class TempsController extends \BaseController {
                                 $customer_data['contact_no'] = $customer_phone;
                                 $customer_id = (int)$customer->_id;
 
-                                if($customer_email != null){
+                                if(isset($temp->customer_email) && $temp->customer_email != ""){
+                                    $customer_data['email'] = $temp->customer_email;
+                                }
 
-                                    $customer_data['email'] = $customer_email;
+                                if(isset($temp->customer_name) && $temp->customer_name != ""){
+                                    $customer_data['name'] = $temp->customer_name;
+                                }
+
+                                if(isset($temp->gender) && $temp->gender != ""){
+                                    $customer_data['gender'] = $temp->gender;
                                 }
 
                             }
@@ -574,6 +581,18 @@ class TempsController extends \BaseController {
                                 $customer_data['gender'] = isset($customer_data['gender']) && $customer_data['gender'] != "" ? $customer_data['gender'] : "";
                                 $customer_data['contact_no'] = $temp->customer_phone;
                                 $customer_id = (int)$customer->_id;
+
+                                if(isset($temp->customer_email) && $temp->customer_email != ""){
+                                    $customer_data['email'] = $temp->customer_email;
+                                }
+
+                                if(isset($temp->customer_name) && $temp->customer_name != ""){
+                                    $customer_data['name'] = $temp->customer_name;
+                                }
+
+                                if(isset($temp->gender) && $temp->gender != ""){
+                                    $customer_data['gender'] = $temp->gender;
+                                }
     
                             }
                         }
@@ -660,6 +679,18 @@ class TempsController extends \BaseController {
                             $customer_data['gender'] = isset($customer_data['gender']) && $customer_data['gender'] != "" ? $customer_data['gender'] : "";
                             $customer_data['contact_no'] = $temp->customer_phone;
                             $customer_id = (int)$customer->_id;
+
+                            if(isset($temp->customer_email) && $temp->customer_email != ""){
+                                $customer_data['email'] = $temp->customer_email;
+                            }
+
+                            if(isset($temp->customer_name) && $temp->customer_name != ""){
+                                $customer_data['name'] = $temp->customer_name;
+                            }
+
+                            if(isset($temp->gender) && $temp->gender != ""){
+                                $customer_data['gender'] = $temp->gender;
+                            }
 
                         }
 
