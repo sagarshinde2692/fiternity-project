@@ -664,7 +664,7 @@ class TempsController extends \BaseController {
                         }
 
                         $return = [
-                            'customer_data'=>$customer_data,
+                            'customer_data'=>[$customer_data],
                             'locate_membership'=>true,
                             'status' => 200,
                             'message' => $message,
