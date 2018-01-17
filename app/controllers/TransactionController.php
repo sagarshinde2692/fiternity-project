@@ -16,8 +16,7 @@ use App\Services\Utilities as Utilities;
 use App\Services\CustomerReward as CustomerReward;
 use App\Services\CustomerInfo as CustomerInfo;
 use App\Notification\CustomerNotification as CustomerNotification;
-
-
+use App\Services\Fitapi as Fitapi;
 
 class TransactionController extends \BaseController {
 
@@ -30,6 +29,7 @@ class TransactionController extends \BaseController {
     protected $customerreward;
     protected $membership_array;
     protected $customernotification;
+    protected $fitapi;
 
     public function __construct(
         CustomerMailer $customermailer,
@@ -39,7 +39,8 @@ class TransactionController extends \BaseController {
         FinderSms $findersms,
         Utilities $utilities,
         CustomerReward $customerreward,
-        CustomerNotification $customernotification
+        CustomerNotification $customernotification,
+        Fitapi $fitapi
     ) {
         parent::__construct();
         $this->customermailer       =   $customermailer;
@@ -50,6 +51,7 @@ class TransactionController extends \BaseController {
         $this->utilities            =   $utilities;
         $this->customerreward       =   $customerreward;
         $this->customernotification =   $customernotification;
+        $this->fitapi               =   $fitapi;
         $this->ordertypes           =   array('memberships','booktrials','workout-session','healthytiffintrail','healthytiffinmembership','3daystrial','vip_booktrials', 'events');
         $this->appOfferDiscount     =   Config::get('app.app.discount');
         $this->appOfferExcludedVendors 				= Config::get('app.app.discount_excluded_vendors');
@@ -981,14 +983,60 @@ class TransactionController extends \BaseController {
             $temp->save();
         }
 
-        $data['status'] = 'success';
-        $data['order_success_flag'] = 'kiosk';
-        $data['order_id'] = (int)$data['order_id'];
-        $data['customer_email'] = $order['customer_email'];
-        $data['send_communication_customer'] = 1;
-        $data['send_communication_vendor'] = 1;
+        if(in_array($order['type'],['booktrials','workout-session'])){
 
-        return $this->successCommon($data);
+            $data = [];
+
+            $data['status'] = 'success';
+            $data['order_success_flag'] = 'admin';
+            $data['order_id'] = (int)$order['_id'];
+            $data['customer_name'] = $order['customer_name'];
+            $data['customer_email'] = $order['customer_email'];
+            $data['customer_phone'] = $order['customer_phone'];
+            $data['finder_id'] = (int)$order['finder_id'];
+            $data['service_name'] = $order['service_name'];
+            $data['type'] = $order['type'];
+            $data['premium_session'] = true;
+
+            if(isset($order['start_date']) && $order['start_date'] != ""){
+                $data['schedule_date'] = date('d-m-Y',strtotime($order['start_date']));
+            }
+
+            if(isset($order['start_time']) && $order['start_time'] != "" && isset($order['end_time']) && $order['end_time'] != ""){
+                $data['schedule_slot'] = $order['start_time']."-".$order['end_time'];
+            }
+
+            if(isset($order['schedule_date']) && $order['schedule_date'] != ""){
+                $data['schedule_date'] = $order['schedule_date'];
+            }
+
+            if(isset($order['schedule_slot']) && $order['schedule_slot'] != ""){
+                $data['schedule_slot'] = $order['schedule_slot'];
+            }
+
+            $storeBooktrial = $this->fitapi->storeBooktrial($data);
+
+            if($storeBooktrial['status'] == 200){
+
+                return Response::json($storeBooktrial['data'],$status);
+
+            }else{
+
+                return Response::json(['status' => 400, "message" => "Internal Error Please Report"],$status);
+            }
+
+        }else{
+
+            $data['status'] = 'success';
+            $data['order_success_flag'] = 'kiosk';
+            $data['order_id'] = (int)$data['order_id'];
+            $data['customer_email'] = $order['customer_email'];
+            $data['send_communication_customer'] = 1;
+            $data['send_communication_vendor'] = 1;
+
+            return $this->successCommon($data);
+
+        } 
 
     }
 
