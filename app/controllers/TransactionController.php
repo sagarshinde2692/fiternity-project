@@ -5018,6 +5018,8 @@ class TransactionController extends \BaseController {
                 'name'=>'Year'
             ]
         ];
+
+        $data['validity'] = [];
         
         for ($i=1; $i <= 30; $i++) {
 
@@ -5028,8 +5030,6 @@ class TransactionController extends \BaseController {
 
             $data['validity'][] = $array;
         }
-
-        $data['validity'] = $validity;
 
         $data['sale_done_by'] = [
             [   
