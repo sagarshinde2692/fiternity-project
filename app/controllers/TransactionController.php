@@ -4704,11 +4704,19 @@ class TransactionController extends \BaseController {
             return Response::json(array('status' => 404,'message' => 'Please enter the valid code'), $this->error_status);
         }
 
-        $order->status = '1';
+        $order->cod_otp_verified = true;
 
         $order->update();
 
-        return Response::json(array('status' => 200,'message' => 'Order activated successfully'));
+        $success_data = ['order_id'=> $order_id, 'status' => 'success'];
+        
+        $data_keys = ['customer_name','customer_email','customer_phone','finder_id','service_name','amount','type'];
+
+        foreach($data_keys as $key){
+            $success_data[$key] = $order[$key];
+        }
+
+        $this->successCommon($success_data);
 
     }
 
