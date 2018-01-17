@@ -5807,5 +5807,28 @@ class CustomerController extends \BaseController {
 
 		return Response::json(['status' => 400,'message'=> "Vendor Not Found"],400);
 	}
+
+	public function verifyVendorKioskPin($pin){
+
+		$decodeKioskVendorToken = decodeKioskVendorToken();
+
+        $vendor = json_decode(json_encode($decodeKioskVendorToken->vendor),true);
+
+        $finder_id = (int)$vendor['_id'];
+
+        $kiosk_user = KioskUser::where('hidden',false)->where('type','kiosk')->where('finder_id',$finder_id)->first();
+
+        if($kiosk_user){
+
+			if($kiosk_user['pin'] != $pin){
+
+				return Response::json(array('status' => 400,'message' => 'Incorrect Pin'));
+			}
+
+			return Response::json(array('status' => 200,'message' => 'Pin Verified'));
+		}
+
+		return Response::json(array('status' => 400,'message' => 'Vendor Not Found'));
+	}
 	
 }
