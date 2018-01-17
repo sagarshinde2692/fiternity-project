@@ -4874,19 +4874,19 @@ class TransactionController extends \BaseController {
 
         $data['service_categories'] = Servicecategory::active()->where('parent_id',0)->lists('name','_id');
 
-        $data['validity_type'] = [
+        $data['duration_type'] = [
             'day'=>'Day',
             'month'=>'Month',
             'year'=>'Year',
         ];
         
-        $validity = [];
+        $duration = [];
         for ($i=1; $i <= 12; $i++) { 
 
-            $validity[$i] = $i;
+            $duration[$i] = $i;
         }
 
-        $data['validity'] = $validity;
+        $data['duration'] = $duration;
 
         $data['sale_done_by'] = [
             [   
