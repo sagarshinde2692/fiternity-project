@@ -5835,7 +5835,7 @@ class CustomerController extends \BaseController {
 					$emiData = array();
 					$emiData['total_amount'] =  "";
 					$emiData['emi'] ="";
-					$emiData['months'] = (string)$emi['bankTitle'];
+					$emiData['months'] = (string)$emi['bankTitle']." months";
 					$emiData['bankName'] = $emi['bankName'];
 					$emiData['bankCode'] = $emi['bankCode'];
 					$emiData['rate'] = (string)$emi['rate'];
@@ -5860,9 +5860,9 @@ class CustomerController extends \BaseController {
 					$x = $data['amount'] * $interest * $t;
 					$y = $t - 1;
 					$emiData['emi'] = round($x / $y,0);
-					$emiData['total_amount'] =  "Total Payable : &#8377; ".(string)($emiData['emi'] * $emi['bankTitle']);
-					$emiData['emi'] = " -EMI @ &#8377; ".(string)$emiData['emi'];
-					$emiData['months'] = (string)$emi['bankTitle'];
+					$emiData['total_amount'] =  "Total Payable : ₹ ".(string)($emiData['emi'] * $emi['bankTitle']);
+					$emiData['emi'] = " - EMI @ ₹ ".(string)$emiData['emi'];
+					$emiData['months'] = (string)$emi['bankTitle']." months";
 					$emiData['bankName'] = $emi['bankName'];
 					$emiData['bankCode'] = $emi['bankCode'];
 					$emiData['rate'] = (string)$emi['rate'];
@@ -5894,9 +5894,9 @@ class CustomerController extends \BaseController {
 					$x = $data['amount'] * $interest * $t;
 					$y = $t - 1;
 					$emiData['emi'] = round($x / $y,0);
-					$emiData['total_amount'] =  "Total Payable : &#8377; ".(string)($emiData['emi'] * $emi['bankTitle']);
-					$emiData['emi'] = " -EMI @ &#8377; ".(string)$emiData['emi'];
-					$emiData['months'] = (string)$emi['bankTitle'];
+					$emiData['total_amount'] =  "Total Payable : ₹ ".(string)($emiData['emi'] * $emi['bankTitle']);
+					$emiData['emi'] = " - EMI @ ₹ ".(string)$emiData['emi'];
+					$emiData['months'] = (string)$emi['bankTitle']." months";
 					$emiData['bankName'] = $emi['bankName'];
 					$emiData['bankCode'] = $emi['bankCode'];
 					$emiData['rate'] = (string)$emi['rate'];
@@ -5927,7 +5927,7 @@ class CustomerController extends \BaseController {
 				$emiData = array();
 						$emiData['total_amount'] =  "";
 						$emiData['emi'] ="";
-						$emiData['months'] = (string)$emi['bankTitle'];
+						$emiData['months'] = (string)$emi['bankTitle']." months";
 						$emiData['bankName'] = $emi['bankName'];
 						$emiData['bankCode'] = $emi['bankCode'];
 						$emiData['rate'] = (string)(string)$emi['rate'];
