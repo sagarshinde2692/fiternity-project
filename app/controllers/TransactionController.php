@@ -712,7 +712,7 @@ class TransactionController extends \BaseController {
 
         $emi_applicable = (isset($data['amount_final']) && $data['amount_final'] >= 2500) ? true : false;
 
-        $part_payment_applicable = (!$updating_part_payment && $part_payment && $data["amount_finder"] >= 3000) ? true : false;
+        $part_payment_applicable = false; //(!$updating_part_payment && $part_payment && $data["amount_finder"] >= 3000) ? true : false;
 
         $pay_at_vendor_applicable = true;
 
