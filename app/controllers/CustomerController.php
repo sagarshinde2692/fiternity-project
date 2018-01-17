@@ -1611,14 +1611,15 @@ class CustomerController extends \BaseController {
 
 	public function customerTokenDecode($token){
 
-		$jwt_token = $token;
-		$jwt_key = Config::get('app.jwt.key');
-		$jwt_alg = Config::get('app.jwt.alg');
-		$decodedToken = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+		// $jwt_token = $token;
+		// $jwt_key = Config::get('app.jwt.key');
+		// $jwt_alg = Config::get('app.jwt.alg');
+		// $decodedToken = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
 
-		Log::info("Decoded token--".json_encode($decodedToken->customer));
+		// Log::info("Decoded token--".json_encode($decodedToken->customer));
 
-		return $decodedToken;
+		// return $decodedToken;
+		return customerTokenDecode($token);
 	}
 
 	public function reviewListingByEmail($customer_email, $from = '', $size = ''){
@@ -1658,16 +1659,7 @@ class CustomerController extends \BaseController {
 		$orders 			=  	[];
 		$membership_types 		= Config::get('app.membership_types');
 
-		if(isset($_GET['device_type']) && (in_array(strtolower($_GET['device_type']), ['android', 'ios']) )){
-			
-			$orderData 			= 	Order::active()->where('customer_email','=',$customer_email)->whereIn('type',$membership_types)->where('schedule_date','exists',false)->where(function($query){$query->orWhere('preferred_starting_date','exists',true)->orWhere('start_date','exists',true);})->skip($offset)->take($limit)->orderBy('_id', 'desc')->get();
-		
-		}else{
-			
-			$orderData 			= 	Order::where(function($query){$query->where('status', '1')->orWhere('cod_otp', 'exists', true);})->where('customer_email','=',$customer_email)->whereIn('type',$membership_types)->where('schedule_date','exists',false)->where(function($query){$query->orWhere('preferred_starting_date','exists',true)->orWhere('start_date','exists',true);})->skip($offset)->take($limit)->orderBy('_id', 'desc')->get();
-		
-		}
-
+		$orderData 			= 	Order::where(function($query){$query->where('status', '1')->orWhere('cod_otp', 'exists', true);})->where('customer_email','=',$customer_email)->whereIn('type',$membership_types)->where('schedule_date','exists',false)->where(function($query){$query->orWhere('preferred_starting_date','exists',true)->orWhere('start_date','exists',true);})->skip($offset)->take($limit)->orderBy('_id', 'desc')->get();
 
 
 		if(count($orderData) > 0){
@@ -2118,7 +2110,7 @@ class CustomerController extends \BaseController {
 
 		$jwt_token = Request::header('Authorization');
 		//Log::info($jwt_token);
-		$decoded = customerTokenDecode($jwt_token);
+		$decoded = $this->customerTokenDecode($jwt_token);
 
 		$customer_id = $decoded->customer->_id;
 		if(isset($_GET['af_instance_id'])){
