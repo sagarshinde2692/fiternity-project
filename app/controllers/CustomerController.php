@@ -1619,6 +1619,7 @@ class CustomerController extends \BaseController {
 		// Log::info("Decoded token--".json_encode($decodedToken->customer));
 
 		// return $decodedToken;
+		Log::info("jwt_token customer".$jwt_token);
 		return customerTokenDecode($token);
 	}
 
@@ -2109,7 +2110,7 @@ class CustomerController extends \BaseController {
 	public function getCustomerDetail(){
 
 		$jwt_token = Request::header('Authorization');
-		//Log::info($jwt_token);
+		Log::info($jwt_token);
 		$decoded = $this->customerTokenDecode($jwt_token);
 
 		$customer_id = $decoded->customer->_id;
