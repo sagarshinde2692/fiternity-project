@@ -4708,7 +4708,15 @@ class TransactionController extends \BaseController {
 
         $order->update();
 
-        $this->successCommon(['order_id'=> $order_id, 'status' => 'success']);
+        $success_data = ['order_id'=> $order_id, 'status' => 'success'];
+        
+        $data_keys = ['customer_name','customer_email','customer_phone','finder_id','service_name','amount','type'];
+
+        foreach($data_keys as $key){
+            $success_data[$key] = $order[$key];
+        }
+
+        $this->successCommon($success_data);
 
     }
 
