@@ -677,7 +677,7 @@ class TempsController extends \BaseController {
 
                         $order_data['membership_locate'] = 'locate';
 
-                        $response = array_merge($response,$this->utilities->membershipBookedLocateScreen($order_data));
+                        $return = array_merge($return,$this->utilities->membershipBookedLocateScreen($order_data));
 
                     }
                      
