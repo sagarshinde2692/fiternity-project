@@ -407,11 +407,23 @@ class TempsController extends \BaseController {
                     $customer_data['gender'] = isset($customer_data['gender']) && $customer_data['gender'] != "" ? $customer_data['gender'] : "";
                     $customer_id = (int)$customer->_id;
 
+                    if(isset($temp->customer_email) && $temp->customer_email != ""){
+                        $customer_data['email'] = $temp->customer_email;
+                    }
+
+                    if(isset($temp->customer_name) && $temp->customer_name != ""){
+                        $customer_data['name'] = $temp->customer_name;
+                    }
+
+                    if(isset($temp->gender) && $temp->gender != ""){
+                        $customer_data['gender'] = $temp->gender;
+                    }
+
                 }
 
                 if($temp['source'] == 'kiosk' && $this->kiosk_app_version && $this->kiosk_app_version >= 1.07){
 
-                    $customer_data = $this->getAllCustomersByPhone($temp);
+                    $customer_data = [$customer_data]; //$this->getAllCustomersByPhone($temp);
 
                 }
 
@@ -487,6 +499,11 @@ class TempsController extends \BaseController {
 
                                 if(isset($temp->gender) && $temp->gender != ""){
                                     $customer_data['gender'] = $temp->gender;
+                                }
+
+                                if($temp['source'] == 'kiosk' && $this->kiosk_app_version && $this->kiosk_app_version >= 1.07){
+
+                                    $customer_data = [$customer_data];
                                 }
 
                             }
@@ -566,47 +583,44 @@ class TempsController extends \BaseController {
                         $message = "Hi ".ucwords($booktrial['customer_name']).", your booking at ".ucwords($booktrial['finder_name'])." for ".strtoupper($booktrial['schedule_slot_start_time'])." on ".date('D, d M Y',strtotime($booktrial['schedule_date']))." has been successfully located";
 
                         $kiosk_form_url = Config::get('app.website').'/kiosktrialform?booktrial_id='.$booktrial['_id'];
+   
+                        Customer::$withoutAppends = true;
+                        $customer = Customer::select('name','email','contact_no','dob','gender')->find((int)$booktrial->customer_id);
+                        
+                        if($customer) {
 
-                        if($this->kiosk_app_version && $this->kiosk_app_version >= 1.07){
-                            
-                            $customer_data = $this->getAllCustomersByPhone($temp);
-    
-                        }else{
-                            
-                            Customer::$withoutAppends = true;
-                            $customer = Customer::select('name','email','contact_no','dob','gender')->find((int)$booktrial->customer_id);
-                            
-                            if($customer) {
-    
-                                if($customerToken == ""){
-    
-                                    $customerToken = createCustomerToken((int)$customer->_id);
-                                }
-    
-                                $customer_data = $customer->toArray();
-    
-                                $customer_data['dob'] = isset($customer_data['dob']) && $customer_data['dob'] != "" ? $customer_data['dob'] : "";
-                                $customer_data['gender'] = isset($customer_data['gender']) && $customer_data['gender'] != "" ? $customer_data['gender'] : "";
-                                $customer_data['contact_no'] = $temp->customer_phone;
-                                $customer_id = (int)$customer->_id;
+                            if($customerToken == ""){
 
-                                if(isset($temp->customer_email) && $temp->customer_email != ""){
-                                    $customer_data['email'] = $temp->customer_email;
-                                }
+                                $customerToken = createCustomerToken((int)$customer->_id);
+                            }
 
-                                if(isset($temp->customer_name) && $temp->customer_name != ""){
-                                    $customer_data['name'] = $temp->customer_name;
-                                }
+                            $customer_data = $customer->toArray();
 
-                                if(isset($temp->gender) && $temp->gender != ""){
-                                    $customer_data['gender'] = $temp->gender;
-                                }
-    
+                            $customer_data['dob'] = isset($customer_data['dob']) && $customer_data['dob'] != "" ? $customer_data['dob'] : "";
+                            $customer_data['gender'] = isset($customer_data['gender']) && $customer_data['gender'] != "" ? $customer_data['gender'] : "";
+                            $customer_data['contact_no'] = $temp->customer_phone;
+                            $customer_id = (int)$customer->_id;
+
+                            if(isset($temp->customer_email) && $temp->customer_email != ""){
+                                $customer_data['email'] = $temp->customer_email;
+                            }
+
+                            if(isset($temp->customer_name) && $temp->customer_name != ""){
+                                $customer_data['name'] = $temp->customer_name;
+                            }
+
+                            if(isset($temp->gender) && $temp->gender != ""){
+                                $customer_data['gender'] = $temp->gender;
+                            }
+
+                            if($temp['source'] == 'kiosk' && $this->kiosk_app_version && $this->kiosk_app_version >= 1.07){
+
+                                $customer_data = [$customer_data];
                             }
                         }
 
                         $return = [
-                            'customer_data'=>$customer_data,
+                            'customer_data'=> $customer_data,
                             'locate_trial'=>true,
                             'status' => 200,
                             'message' => $message,
@@ -714,10 +728,14 @@ class TempsController extends \BaseController {
                                 $customer_data['gender'] = $temp->gender;
                             }
 
+                            if($temp['source'] == 'kiosk' && $this->kiosk_app_version && $this->kiosk_app_version >= 1.07){
+
+                                $customer_data = [$customer_data];
+                            }
                         }
 
                         $return = [
-                            'customer_data'=>[$customer_data],
+                            'customer_data'=>$customer_data,
                             'locate_membership'=>true,
                             'status' => 200,
                             'message' => $message,
