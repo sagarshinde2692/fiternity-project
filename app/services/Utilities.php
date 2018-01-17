@@ -965,7 +965,7 @@ Class Utilities {
                     $hash_verified = false;
                 }
             }
-            if(isset($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin']) || (isset($order['cod_otp_verified']) && $order['cod_otp_verified'])){
+            if((isset($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin'])) || (isset($order['cod_otp_verified']) && $order['cod_otp_verified'])){
                 $hash_verified = true;
             }
         }else{
