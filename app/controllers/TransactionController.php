@@ -2376,6 +2376,7 @@ class TransactionController extends \BaseController {
         $data['amount_finder'] = $data['amount'];
         $data['amount_customer'] = $data['amount'];
         $data['batch_time'] = "";
+        $data['offer_id'] = false;
 
         $set_vertical_type = array(
             'healthytiffintrail'=>'tiffin',
