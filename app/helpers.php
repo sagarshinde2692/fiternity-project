@@ -2712,7 +2712,7 @@ if (!function_exists(('customerTokenDecode'))){
             return Response::json(array('status' => 400,'message' => 'Token incorrect, Please login again'),400);
         }catch(ExpiredException $e){
 
-            JWT::$leeway = (86400*365);
+            JWT::$leeway = (86400*565);
 
             $decodedToken = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
             Log::info("Yes4");
