@@ -2109,7 +2109,7 @@ class CustomerController extends \BaseController {
 
 		$jwt_token = Request::header('Authorization');
 		//Log::info($jwt_token);
-		$decoded = $this->customerTokenDecode($jwt_token);
+		$decoded = customerTokenDecode($jwt_token);
 
 		$customer_id = $decoded->customer->_id;
 		if(isset($_GET['af_instance_id'])){
