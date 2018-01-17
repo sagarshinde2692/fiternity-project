@@ -1619,7 +1619,7 @@ class CustomerController extends \BaseController {
 		// Log::info("Decoded token--".json_encode($decodedToken->customer));
 
 		// return $decodedToken;
-		customerTokenDecode($token);
+		return customerTokenDecode($token);
 	}
 
 	public function reviewListingByEmail($customer_email, $from = '', $size = ''){
