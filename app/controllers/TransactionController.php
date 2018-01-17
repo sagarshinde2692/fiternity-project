@@ -4704,11 +4704,11 @@ class TransactionController extends \BaseController {
             return Response::json(array('status' => 404,'message' => 'Please enter the valid code'), $this->error_status);
         }
 
-        $order->status = '1';
+        $order->cod_otp_verified = true;
 
         $order->update();
 
-        return Response::json(array('status' => 200,'message' => 'Order activated successfully'));
+        $this->successCommon(['order_id'=> $order_id, 'status' => 'success']);
 
     }
 
