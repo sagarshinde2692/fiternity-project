@@ -89,7 +89,14 @@ class TransactionController extends \BaseController {
         }
 
         if($this->vendor_token){
+
             $data['customer_source'] = 'kiosk';
+
+            $decodeKioskVendorToken = decodeKioskVendorToken();
+
+            $vendor = json_decode(json_encode($decodeKioskVendorToken->vendor),true);
+
+            $data['finder_id'] = (int)$vendor['_id'];
         }
 
         $rules = array(
@@ -106,7 +113,7 @@ class TransactionController extends \BaseController {
             return Response::json("Can't book anything for you.", $this->error_status);
         }
 
-        if(!$this->vendor_token){
+        if(!isset($data['manual_order'])){
 
             if(!isset($data['ratecard_id']) && !isset($data['ticket_id'])){
                 return Response::json(array('status'=>400, 'message'=>'Ratecard Id or ticket Id is required'), $this->error_status);
@@ -2346,15 +2353,72 @@ class TransactionController extends \BaseController {
 
     public function getManualOrderDetail($data){
 
-        $manual_order_rules = [
-            'service_category_id'=>'required',
-            'validity'=>'required',
-            'validity_type'=>'required',
-            'amount'=>'required',
-            'service_name'=>'required'
-        ];
+        $data['ratecard_remarks']  = (isset($data['remarks'])) ? $data['remarks'] : "";
+        $data['duration'] = (isset($data['duration'])) ? $data['duration'] : "";
+        $data['duration_type'] = (isset($data['duration_type'])) ? $data['duration_type'] : "";
 
+        $data['service_duration'] = $data['validity']." ".$data['validity_type'].($data['validity'] > 1) ? "s" : "";
 
+        if(isset($data['preferred_starting_date']) && $data['preferred_starting_date']  != '' && $data['preferred_starting_date']  != '-'){
+
+            $preferred_starting_date = date('Y-m-d 00:00:00', strtotime($data['preferred_starting_date']));
+            $data['start_date'] = $preferred_starting_date;
+            $data['preferred_starting_date'] = $preferred_starting_date;
+        }
+
+        if(isset($data['preferred_payment_date']) && $data['preferred_payment_date']  != '' && $data['preferred_payment_date']  != '-'){
+
+            $preferred_payment_date = date('Y-m-d 00:00:00', strtotime($data['preferred_payment_date']));
+            $data['start_date'] = $preferred_payment_date;
+            $data['preferred_payment_date'] = $preferred_payment_date;
+        }
+
+        $data['amount_finder'] = $data['amount'];
+        $data['amount_customer'] = $data['amount'];
+        $data['batch_time'] = "";
+
+        $set_vertical_type = array(
+            'healthytiffintrail'=>'tiffin',
+            'healthytiffinmembership'=>'tiffin',
+            'memberships'=>'workout',
+            'booktrials'=>'workout',
+            'workout-session'=>'workout',
+            '3daystrial'=>'workout',
+            'vip_booktrials'=>'workout',
+            'events'=>'event',
+            'diet_plan'=>'diet_plan'
+        );
+
+        $set_membership_duration_type = array(
+            'healthytiffintrail'=>'trial',
+            'healthytiffinmembership'=>'short_term_membership',
+            'memberships'=>'short_term_membership',
+            'booktrials'=>'trial',
+            'workout-session'=>'workout_session',
+            '3daystrial'=>'trial',
+            'vip_booktrials'=>'vip_trial',
+            'events'=>'event',
+            'diet_plan'=>'short_term_membership'
+        );
+
+        (isset($data['type']) && isset($set_vertical_type[$data['type']])) ? $data['vertical_type'] = $set_vertical_type[$data['type']] : null;
+
+        (isset($data['type']) && isset($set_membership_duration_type[$data['type']])) ? $data['membership_duration_type'] = $set_membership_duration_type[$data['type']] : null;
+
+        (isset($data['duration_day']) && $data['duration_day'] >= 30 && $data['duration_day'] <= 90) ? $data['membership_duration_type'] = 'short_term_membership' : null;
+
+        (isset($data['duration_day']) && $data['duration_day'] > 90 ) ? $data['membership_duration_type'] = 'long_term_membership' : null;
+        $data['secondary_payment_mode'] = 'payment_gateway_tentative';
+        $data['finder_id'] = (int)$data['finder_id'];
+        $data['service_id'] = null;
+        
+        $data['service_name_purchase'] =  $data['service_name'];
+        $data['service_duration_purchase'] =  $data['service_duration'];
+        $data['status'] =  '0';
+        $data['payment_mode'] =  'paymentgateway';
+        $data['source_of_membership'] =  'real time';
+
+        return array('status' => 200,'data' =>$data);
 
     }
 
