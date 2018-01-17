@@ -1619,7 +1619,7 @@ class CustomerController extends \BaseController {
 		// Log::info("Decoded token--".json_encode($decodedToken->customer));
 
 		// return $decodedToken;
-		Log::info("jwt_token customer".$jwt_token);
+		Log::info("jwt_token customer".$token);
 		return customerTokenDecode($token);
 	}
 
