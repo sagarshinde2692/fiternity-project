@@ -2357,7 +2357,12 @@ class TransactionController extends \BaseController {
         $data['duration'] = (isset($data['duration'])) ? $data['duration'] : "";
         $data['duration_type'] = (isset($data['duration_type'])) ? $data['duration_type'] : "";
 
-        $data['service_duration'] = $data['validity']." ".$data['validity_type'].($data['validity'] > 1) ? "s" : "";
+        $data['service_duration'] = $data['validity']." ".ucwords($data['validity_type']);
+
+        if($data['validity'] > 1){
+
+            $data['service_duration'] = $data['validity']." ".ucwords($data['validity_type'])."s";
+        }
 
         if(isset($data['preferred_starting_date']) && $data['preferred_starting_date']  != '' && $data['preferred_starting_date']  != '-'){
 
