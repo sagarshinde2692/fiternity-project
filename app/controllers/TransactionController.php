@@ -103,8 +103,12 @@ class TransactionController extends \BaseController {
         if(in_array(substr($data["customer_phone"], -10), $asshole_numbers)){
             return Response::json("Can't book anything for you.", $this->error_status);
         }
-        if(!isset($data['ratecard_id']) && !isset($data['ticket_id'])){
-            return Response::json(array('status'=>400, 'message'=>'Ratecard Id or ticket Id is required'), $this->error_status);
+
+        if(!$this->vendor_token){
+
+            if(!isset($data['ratecard_id']) && !isset($data['ticket_id'])){
+                return Response::json(array('status'=>400, 'message'=>'Ratecard Id or ticket Id is required'), $this->error_status);
+            }
         }
 
         if(isset($data['finder_id']) && $data['finder_id'] != ""){
@@ -149,6 +153,19 @@ class TransactionController extends \BaseController {
 
         //     $rules = array_merge($rules,$diet_plan_rules);
         // }
+
+        if(isset($data['manual_order']) && $data['manual_order']){
+
+            $manual_order_rules = [
+                'service_category_id'=>'required',
+                'validity'=>'required',
+                'validity_type'=>'required',
+                'amount'=>'required',
+                'service_name'=>'required'
+            ];
+
+            $rules = array_merge($rules,$manual_order_rules);
+        }
 
         $validator = Validator::make($data,$rules);
 
@@ -240,6 +257,17 @@ class TransactionController extends \BaseController {
 
             $data = array_merge($data,$ratecardDetail['data']);
 
+        }
+
+        if(isset($data['manual_order']) && $data['manual_order']){
+
+            $manualOrderDetail = $this->getManualOrderDetail($data);
+
+            if($manualOrderDetail['status'] != 200){
+                return Response::json($manualOrderDetail,$this->error_status);
+            }
+
+            $data = array_merge($data,$manualOrderDetail['data']);
         }
 
         if($payment_mode=='cod'){
@@ -2266,6 +2294,20 @@ class TransactionController extends \BaseController {
         }
 
         return (int) $delay;
+    }
+
+    public function getManualOrderDetail($data){
+
+        $manual_order_rules = [
+            'service_category_id'=>'required',
+            'validity'=>'required',
+            'validity_type'=>'required',
+            'amount'=>'required',
+            'service_name'=>'required'
+        ];
+
+
+
     }
 
     public function getRatecardDetail($data){
@@ -4832,19 +4874,19 @@ class TransactionController extends \BaseController {
 
         $data['service_categories'] = Servicecategory::active()->where('parent_id',0)->lists('name','_id');
 
-        $data['duration_type'] = [
+        $data['validity_type'] = [
             'day'=>'Day',
             'month'=>'Month',
             'year'=>'Year',
         ];
         
-        $duration = [];
+        $validity = [];
         for ($i=1; $i <= 12; $i++) { 
 
-            $duration[$i] = $i;
+            $validity[$i] = $i;
         }
 
-        $data['duration'] = $duration;
+        $data['validity'] = $validity;
 
         $data['sale_done_by'] = [
             [   

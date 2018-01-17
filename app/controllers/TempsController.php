@@ -524,6 +524,14 @@ class TempsController extends \BaseController {
 
                 if(in_array($temp->action,['locate_trial','prebook'])){
 
+                    $customer_phone = $temp->customer_phone;
+
+                    $customer_email = null;
+
+                    if(isset($temp->customer_email) && $temp->customer_email != ""){
+                        $customer_email = $temp->customer_email;
+                    }
+
                     $message = 'Sorry! Cannot locate your booking';
 
                     $return = array('customer_data'=>$customer_data,'locate_trial'=>false,'status' => 200,'message' => $message,'verified' => $verified,'token'=>$customerToken);
@@ -620,7 +628,21 @@ class TempsController extends \BaseController {
                         $return = array_merge($return,$this->utilities->trialBookedLocateScreen($data));
 
                     }
-                     
+
+                    $alreadyBookedTrials = $this->utilities->checkExistingTrialWithFinder($customer_email,$customer_phone,$finder_id);
+
+                    if (count($alreadyBookedTrials) > 0){
+                        
+                        $return = array('workout_session_available'=>false,'customer_data'=>$customer_data,'trial_booked'=>true,'status' => 200,'message' => 'Already Booked Trial,Please Explore Other Options','verified' => $verified,'token'=>$customerToken,'ratecard_id'=>0,'amount'=>0,'fitternity_no'=>$fitternity_no);
+
+                        $workout_session_available_count = Ratecard::where('finder_id',$finder_id)->where('type','workout session')->count();
+
+                        if($workout_session_available_count > 0){
+
+                            $return = array('workout_session_available'=>true,'customer_data'=>$customer_data,'trial_booked'=>true,'status' => 200,'message' => 'Already Booked Trial. Book a Workout Session','verified' => $verified,'token'=>$customerToken,'ratecard_id'=>0,'amount'=>0,'fitternity_no'=>$fitternity_no);
+                        }
+                    }
+
                     return Response::json($return,200);
 
                 }
