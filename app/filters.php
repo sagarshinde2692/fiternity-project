@@ -106,7 +106,12 @@ Route::filter('validatetoken',function(){
         }catch(DomainException $e){
             return Response::json(array('status' => 400,'message' => 'Token incorrect'),400);
         }catch(ExpiredException $e){
-            return Response::json(array('status' => 400,'message' => 'Token expired'),400);
+            JWT::$leeway = (86400*565);
+
+            $decoded = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+            // Log::info("Yes4");
+            // return $decoded;
+            // return Response::json(array('status' => 400,'message' => 'Token expired'),400);
         }catch(SignatureInvalidException $e){
             return Response::json(array('status' => 400,'message' => 'Signature verification failed'),400);
         }catch(Exception $e){
