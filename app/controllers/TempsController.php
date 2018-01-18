@@ -549,9 +549,9 @@ class TempsController extends \BaseController {
                         $customer_email = $temp->customer_email;
                     }
 
-                    $message = 'Sorry! Cannot locate your booking';
+                    $message = 'Sorry! We could not locate your booking, Would you like to book a session now?';
 
-                    $return = array('customer_data'=>$customer_data,'locate_trial'=>false,'status' => 200,'message' => $message,'verified' => $verified,'token'=>$customerToken);
+                    $return = array('customer_data'=>$customer_data,'locate_trial'=>false,'status' => 200,'message' => $message,'verified' => $verified,'token'=>$customerToken,'trial_booked'=>false);
 
                     $decodeKioskVendorToken = decodeKioskVendorToken();
 
@@ -649,13 +649,13 @@ class TempsController extends \BaseController {
 
                     if (count($alreadyBookedTrials) > 0){
                         
-                        $return = array('workout_session_available'=>false,'customer_data'=>$customer_data,'trial_booked'=>true,'status' => 200,'message' => 'Already Booked Trial,Please Explore Other Options','verified' => $verified,'token'=>$customerToken,'ratecard_id'=>0,'amount'=>0,'fitternity_no'=>$fitternity_no);
+                        $return = array('workout_session_available'=>false,'customer_data'=>$customer_data,'trial_booked'=>true,'status' => 200,'message' => 'Sorry! We could not locate your booking, Would you like to book a session now?','verified' => $verified,'token'=>$customerToken,'ratecard_id'=>0,'amount'=>0,'fitternity_no'=>$fitternity_no);
 
                         $workout_session_available_count = Ratecard::where('finder_id',$finder_id)->where('type','workout session')->count();
 
                         if($workout_session_available_count > 0){
 
-                            $return = array('workout_session_available'=>true,'customer_data'=>$customer_data,'trial_booked'=>true,'status' => 200,'message' => 'Already Booked Trial. Book a Workout Session','verified' => $verified,'token'=>$customerToken,'ratecard_id'=>0,'amount'=>0,'fitternity_no'=>$fitternity_no);
+                            $return = array('workout_session_available'=>true,'customer_data'=>$customer_data,'trial_booked'=>true,'status' => 200,'message' => 'Sorry! We could not locate your booking, Would you like to book a session now?','verified' => $verified,'token'=>$customerToken,'ratecard_id'=>0,'amount'=>0,'fitternity_no'=>$fitternity_no);
                         }
                     }
 
