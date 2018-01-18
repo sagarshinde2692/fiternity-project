@@ -949,6 +949,7 @@ class ServiceController extends \BaseController {
 
         }else{
 
+        	$data['status'] = 200;
         	$data['finder_id'] = $item['finder_id'];
 	        $data['schedules'] = $schedules;
 	        $data['weekday'] = $weekday;
