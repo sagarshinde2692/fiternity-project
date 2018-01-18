@@ -2676,7 +2676,9 @@ Class Utilities {
 
         $assisted_by[] = [   
             'id'=>'self',
-            'name'=>'Self'
+            'name'=>'Self',
+            'email'=>'',
+            'mobile'=>''
         ];
 
         return $assisted_by;
