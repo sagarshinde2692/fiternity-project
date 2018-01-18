@@ -2654,5 +2654,11 @@ Class Utilities {
         return $response;
     }
 
+    public function getVendorTrainer($finder_id){
+
+        $finder = Finder::find($finder_id);
+
+    }
+
 
 }
