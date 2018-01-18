@@ -641,6 +641,8 @@ class TempsController extends \BaseController {
 
                         $return = array_merge($return,$this->utilities->trialBookedLocateScreen($data));
 
+                        return Response::json($return,200);
+
                     }
 
                     $alreadyBookedTrials = $this->utilities->checkExistingTrialWithFinder($customer_email,$customer_phone,$finder_id);
