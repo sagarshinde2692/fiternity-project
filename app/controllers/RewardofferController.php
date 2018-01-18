@@ -169,7 +169,7 @@ class RewardofferController extends BaseController {
 
             if(!isset($data['ratecard_id'])){
 
-                $data['ratecard_id'] = false;
+                $data['ratecard_id'] = true;
             }
 
             $decodeKioskVendorToken = decodeKioskVendorToken();
