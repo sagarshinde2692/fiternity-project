@@ -2061,7 +2061,6 @@ class OrderController extends \BaseController {
     public function orderFailureAction($order_id,$customer_id = false){
 
         $order = Order::where('_id',(int) $order_id)->where('status',"0")->first();
-
         if($order == ''){
             return Response::json(
                 array(
@@ -2444,7 +2443,8 @@ class OrderController extends \BaseController {
                             if($walletTransactionResponse['status'] != 200){
                                 return $walletTransactionResponse;
                             }else{
-                                $data['amount_discounted'] = $walletTransactionResponse['wallet_transaction_debit'];
+                                // $data['amount_discounted'] = $walletTransactionResponse['wallet_transaction_debit'];
+                                $data['wallet_transaction_debit'] = $walletTransactionResponse['wallet_transaction_debit'];
                             }
 
                             // Schedule Check orderfailure and refund wallet amount in that case....
