@@ -165,6 +165,21 @@ class RewardofferController extends BaseController {
 
         }
 
+        if($this->vendor_token){
+
+            if(!isset($data['ratecard_id'])){
+
+                $data['ratecard_id'] = false;
+            }
+
+            $decodeKioskVendorToken = decodeKioskVendorToken();
+
+            $vendor = json_decode(json_encode($decodeKioskVendorToken->vendor),true);
+
+            $data['finder_id'] = (int) $vendor['_id'];
+
+        }
+
 
         $rules      =   ['finder_id'=>'required', 'amount'=>'required', 'ratecard_id'=>'required'];
         $device     =   isset($data["device_type"]) ? $data["device_type"] : "";
@@ -207,24 +222,31 @@ class RewardofferController extends BaseController {
         if($service){
 
             $service_category_id = (int)$service->servicecategory_id;
+        }
+
+        if(isset($data['service_category_id']) && $data['service_category_id'] != ""){
+
+            $service_category_id = (int)$data['service_category_id'];
+        }
+
+        if($service_category_id != null){
 
             $service_category = Servicecategory::find($service_category_id);
+        }
 
-            if($service_category){
+        if($service_category){
 
-                $service_category_slug = $service_category['slug'];
+            $service_category_slug = $service_category['slug'];
 
-                $finder_category = Findercategory::active()->where('slug',$service_category_slug)->first();
+            $finder_category = Findercategory::active()->where('slug',$service_category_slug)->first();
 
-                if($service_category_slug == 'martial-arts'){
-                     $finder_category = Findercategory::active()->where('slug','mma-and-kick-boxing')->first();  
-                }
-                
-                if($finder_category){
-                    $finder_category_id = (int)$finder_category['_id'];
-                }
+            if($service_category_slug == 'martial-arts'){
+                 $finder_category = Findercategory::active()->where('slug','mma-and-kick-boxing')->first();  
             }
-
+            
+            if($finder_category){
+                $finder_category_id = (int)$finder_category['_id'];
+            }
         }
 
         if(isset($data['order_id']) && $data['order_id'] != ""){
