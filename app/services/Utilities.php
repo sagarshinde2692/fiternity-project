@@ -2591,5 +2591,21 @@ Class Utilities {
          return $randomString;
      }
 
+     public function isConvinienceFeeApplicable($data){
+
+        Log::info("Data for isConvinienceFeeApplicable");
+        Log::info($data);
+
+        (!isset($data['ratecard_flags']) && isset($data['flags'])) ? $data['ratecard_flags'] = $data['flags'] : null;
+
+        if((isset($data["ratecard_flags"]) && isset($data["ratecard_flags"]["convinience_fee_applicable"]) && $data["ratecard_flags"]["convinience_fee_applicable"]  && isset($data['type']) && in_array($data['type'], ["memberships", "membership"])) || (isset($data['offer_convinience_fee']) && $data['offer_convinience_fee'])){
+            
+            return true;
+        
+        }
+
+        return false;
+    }
+
 
 }

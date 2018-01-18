@@ -795,7 +795,7 @@ class RewardofferController extends BaseController {
 
         }
 
-        if(isset($ratecard['flags']) && isset($ratecard['flags']['convinience_fee_applicable']) && $ratecard['flags']['convinience_fee_applicable']){
+        if($this->utilities->isConvinieceFeeApplicable($ratecard)){
 
             $convinience_fee_percent = Config::get('app.convinience_fee');
 
