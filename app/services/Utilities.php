@@ -2592,18 +2592,19 @@ Class Utilities {
      }
 
      public function isConvinienceFeeApplicable($data){
-
+        Log::info(debug_backtrace()[1]['function']);
         Log::info("Data for isConvinienceFeeApplicable");
         Log::info($data);
 
         (!isset($data['ratecard_flags']) && isset($data['flags'])) ? $data['ratecard_flags'] = $data['flags'] : null;
 
-        if((isset($data["ratecard_flags"]) && isset($data["ratecard_flags"]["convinience_fee_applicable"]) && $data["ratecard_flags"]["convinience_fee_applicable"]  && isset($data['type']) && in_array($data['type'], ["memberships", "membership"])) || (isset($data['offer_convinience_fee']) && $data['offer_convinience_fee'])){
-            
+        if((isset($data["ratecard_flags"]) && isset($data["ratecard_flags"]["convinience_fee_applicable"]) && $data["ratecard_flags"]["convinience_fee_applicable"]  && ( !isset($data['type']) || isset($data['type']) && in_array($data['type'], ["memberships", "membership"]))) || (isset($data['offer_convinience_fee']) && $data['offer_convinience_fee'])){
+            Log::info("returning true");
             return true;
         
         }
-
+        Log::info("returning false");
+        
         return false;
     }
 

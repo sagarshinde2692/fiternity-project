@@ -2314,7 +2314,7 @@ class TransactionController extends \BaseController {
 
         if($offer){
 
-            $data['offer_convinience_fee'] = true;
+            $ratecard['offer_convinience_fee'] = $data['offer_convinience_fee'] = true;
             $data['amount_finder'] = $offer->price;
             $data['offer_id'] = $offer->_id;
 
