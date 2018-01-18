@@ -2667,7 +2667,7 @@ Class Utilities {
                 $array = $value;
 
                 $array['id'] = $value['email'];
-                $array['name'] = ucwords($value['email']);
+                $array['name'] = ucwords($value['name']);
 
                 $assisted_by[] = $array;
             }
