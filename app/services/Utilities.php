@@ -2636,7 +2636,7 @@ Class Utilities {
         ];
 
         $response['features'][] = [
-            'image'=>'https://b.fitn.in/global/Tab-app-success-page/tab-membership-success-1.png',
+            'image'=>'https://b.fitn.in/global/Tab-app-success-page/membership-success-2.png',
             'title1'=>strtoupper('<b>Onlie diet</b>'),
             'title2'=>strtoupper('<b>consultation</b>'),
             'description'=>'Make the most of your membership, with <b>Fitternity’s Online Diet Consultation</b> to improve your workout performance',
@@ -2644,7 +2644,7 @@ Class Utilities {
         ];
 
         $response['features'][] = [
-            'image'=>'https://b.fitn.in/global/Tab-app-success-page/tab-membership-success-1.png',
+            'image'=>'https://b.fitn.in/global/Tab-app-success-page/membership-success-3.png',
             'title1'=>strtoupper('beat monotony'),
             'title2'=>strtoupper('<b>pay-per-session</b>'),
             'description'=>'<b>Don’t let your workout be monotonous.</b> Try different workouts around you by only paying per session!',
