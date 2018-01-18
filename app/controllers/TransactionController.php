@@ -875,24 +875,7 @@ class TransactionController extends \BaseController {
 
         }
 
-        $resp['data']['assisted_by'] = [
-            [   
-                'id'=>'Mahesh Jadhav',
-                'name'=>'Mahesh Jadhav'
-            ],
-            [   
-                'id'=>'Gaurav',
-                'name'=>'Gaurav'
-            ],
-            [   
-                'id'=>'Dhruv',
-                'name'=>'Dhruv'
-            ],
-            [   
-                'id'=>'Self',
-                'name'=>'Self'
-            ] 
-        ];
+        $resp['data']['assisted_by'] = $this->utilities->getVendorTrainer($data['finder_id']);
 
         $resp['data']['assisted_by_image'] = "https://b.fitn.in/global/tabapp-homescreen/freetrail-summary/trainer.png";
 
@@ -5031,24 +5014,7 @@ class TransactionController extends \BaseController {
             $data['validity'][] = $array;
         }
 
-        $data['sale_done_by'] = [
-            [   
-                'id'=>'Mahesh Jadhav',
-                'name'=>'Mahesh Jadhav'
-            ],
-            [   
-                'id'=>'Gaurav',
-                'name'=>'Gaurav'
-            ],
-            [   
-                'id'=>'Dhruv',
-                'name'=>'Dhruv'
-            ],
-            [   
-                'id'=>'Self',
-                'name'=>'Self'
-            ] 
-        ];
+        $data['sale_done_by'] = $this->utilities->getVendorTrainer($finder_id);
 
         return Response::json($data);
 

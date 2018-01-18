@@ -3151,6 +3151,17 @@ class SchedulebooktrialsController extends \BaseController {
         }
 
         $resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'code' => $code, 'message' => "Book a Trial");
+
+        if($this->vendor_token){
+
+            $item = [];
+
+            $item['booked_locate'] = 'booked';
+
+            $resp['kiosk'] = $this->utilities->trialBookedLocateScreen($item);
+
+        }
+
         return Response::json($resp,200);
     }
 
@@ -5981,8 +5992,13 @@ class SchedulebooktrialsController extends \BaseController {
         $finder_name = "";
         $finder_location = "";
         $finder_address = "";
+        $finder_id = "";
 
         $finder = Finder::with(array('city'=>function($query){$query->select('name','slug');}))->with(array('location'=>function($query){$query->select('name','slug');}))->find((int)$ratecard['finder_id'],array('_id','title','location_id','contact','lat','lon','manual_trial_auto','city_id'));
+
+        if(isset($finder['_id']) && $finder['_id'] != ""){
+            $finder_id = $finder['_id'];
+        }
 
         if(isset($finder['title']) && $finder['title'] != ""){
             $finder_name = ucwords($finder['title']);
@@ -6192,24 +6208,7 @@ class SchedulebooktrialsController extends \BaseController {
         $response = array('status' => 200,'summary' => $booking_details);
 
         $response['assisted_by_image'] = "https://b.fitn.in/global/tabapp-homescreen/freetrail-summary/trainer.png";
-        $response['assisted_by'] = [
-            [   
-                'id'=>'Mahesh Jadhav',
-                'name'=>'Mahesh Jadhav'
-            ],
-            [   
-                'id'=>'Gaurav',
-                'name'=>'Gaurav'
-            ],
-            [   
-                'id'=>'Dhruv',
-                'name'=>'Dhruv'
-            ],
-            [   
-                'id'=>'Self',
-                'name'=>'Self'
-            ]   
-        ];
+        $response['assisted_by'] = $this->utilities->getVendorTrainer($finder_id);
 
         return Response::json($response, $response['status']);
 

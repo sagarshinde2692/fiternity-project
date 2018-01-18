@@ -2658,6 +2658,29 @@ Class Utilities {
 
         $finder = Finder::find($finder_id);
 
+        $assisted_by = [];
+
+        if($finder && isset($finder['trainer_contacts']) && !empty($finder['trainer_contacts'])){
+
+            foreach ($finder['trainer_contacts'] as $key => $value) {
+
+                $array = $value;
+
+                $array['id'] = $value['email'];
+                $array['name'] = ucwords($value['email']);
+
+                $assisted_by[] = $array;
+            }
+
+        }
+
+        $assisted_by[] = [   
+            'id'=>'self',
+            'name'=>'Self'
+        ];
+
+        return $assisted_by;
+
     }
 
 
