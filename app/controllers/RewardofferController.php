@@ -256,9 +256,18 @@ class RewardofferController extends BaseController {
                 $amount = (int)$data['amount'];
             }
         }
-        if(!$ratecard && count($order) == 0){
-            $resp   =   array('status' => 401,'message' => "Ratecard Not Present");
-            return  Response::json($resp, $this->error_status);
+
+
+        if($this->vendor_token && isset($data['manual_order']) && $data['manual_order']){
+
+            $amount = (int)$data['amount'];
+
+        }else{
+
+            if(!$ratecard && count($order) == 0){
+                $resp   =   array('status' => 401,'message' => "Ratecard Not Present");
+                return  Response::json($resp, $this->error_status);
+            }
         }
 
         /*if(isset($ratecard->special_price) && $ratecard->special_price > 0 && $ratecard->special_price != ""){
