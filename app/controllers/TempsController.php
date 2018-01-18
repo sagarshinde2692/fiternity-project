@@ -419,7 +419,7 @@ class TempsController extends \BaseController {
                         $customer_data['gender'] = $temp->gender;
                     }
 
-                    $customer_data['token'] = $customerToken;
+                    $customer_data['customerToken'] = $customerToken;
 
                 }
 
@@ -508,7 +508,7 @@ class TempsController extends \BaseController {
                                     $customer_data = [$customer_data];
                                 }
 
-                                $customer_data['token'] = $customerToken;
+                                $customer_data['customerToken'] = $customerToken;
 
                             }
                         }
@@ -622,7 +622,7 @@ class TempsController extends \BaseController {
                                 $customer_data = [$customer_data];
                             }
 
-                            $customer_data['token'] = $customerToken;
+                            $customer_data['customerToken'] = $customerToken;
                         }
 
                         $return = [
@@ -741,7 +741,7 @@ class TempsController extends \BaseController {
                                 $customer_data = [$customer_data];
                             }
 
-                            $customer_data['token'] = $customerToken;
+                            $customer_data['customerToken'] = $customerToken;
                         }
 
                         $return = [
