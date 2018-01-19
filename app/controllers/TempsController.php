@@ -36,7 +36,7 @@ class TempsController extends \BaseController {
 
             $this->vendor_token = true;
 
-            $this->kiosk_app_version = floatval(Request::header('App-Version'));
+            $this->kiosk_app_version = (float)Request::header('App-Version');
         
         }
 
