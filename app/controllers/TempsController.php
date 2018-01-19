@@ -36,7 +36,7 @@ class TempsController extends \BaseController {
 
             $this->vendor_token = true;
 
-            $this->kiosk_app_version = Request::header('App-Version');
+            $this->kiosk_app_version = floatval(Request::header('App-Version'));
         
         }
 
@@ -423,7 +423,7 @@ class TempsController extends \BaseController {
 
                 }
 
-                if($temp['source'] == 'kiosk' && $this->kiosk_app_version && $this->kiosk_app_version >= 1.07){
+                if($temp['source'] == 'kiosk' && $this->kiosk_app_version &&  $this->kiosk_app_version >= 1.07){
 
                     $customer_data = [$customer_data]; //$this->getAllCustomersByPhone($temp);
 
