@@ -4098,56 +4098,56 @@ class FindersController extends \BaseController {
 					[
 						"title"=>"Access Trial Booking",
 						"description"=>"Quick step to activate your workout trial & instant trial booking.",
-						"image"=>"http://b.fitn.in/global/tabapp-homescreen/access-trials-small.png",
-						"banner_image"=>"http://b.fitn.in/global/tabapp-homescreen/accesstrial-big-1.png",
+						"image"=>"https://b.fitn.in/global/tabapp-homescreen/access-trials-small.png",
+						"banner_image"=>"https://b.fitn.in/global/tabapp-homescreen/accesstrial-big-1.png",
 						"id"=>1,
 						'type'=>'access_booktrial'
 					],
 					[
 						"title"=>"Explore Membership",
 						"description"=>"Quick buy with free rewards & flexible payment options.",
-						"image"=>"http://b.fitn.in/global/tabapp-homescreen/explorememberships-small.png",
-						"banner_image"=>"http://b.fitn.in/global/tabapp-homescreen/explorememberships-big-1.png",
+						"image"=>"https://b.fitn.in/global/tabapp-homescreen/explorememberships-small.png",
+						"banner_image"=>"https://b.fitn.in/global/tabapp-homescreen/explorememberships-big-1.png",
 						"id"=>2,
 						"type"=>'memberships'
 					],
 					[
 						"title"=>"Post a Review",
 						"description"=>"Rate your experience & help fellow fitness enthusiasts.",
-						"image"=>"http://b.fitn.in/global/tabapp-homescreen/post-review-small.png",
-						"banner_image"=>"http://b.fitn.in/global/tabapp-homescreen/postreview-big.png",
+						"image"=>"https://b.fitn.in/global/tabapp-homescreen/post-review-small.png",
+						"banner_image"=>"https://b.fitn.in/global/tabapp-homescreen/postreview-big.png",
 						"id"=>3,
 						'type'=>'post_review'
 					],
 					/*[
 						"title"=>"Online Diet Consultation",
 						"description"=>"Coming soon",
-						"image"=>"http://b.fitn.in/global/tabapp-homescreen/coming-soon-small.png",
-						"banner_image"=>"http://b.fitn.in/global/tabapp-homescreen/diet-big-1.png",
+						"image"=>"https://b.fitn.in/global/tabapp-homescreen/coming-soon-small.png",
+						"banner_image"=>"https://b.fitn.in/global/tabapp-homescreen/diet-big-1.png",
 						"id"=>4,
 						"type"=>"diet_plan"
 					]*/
 					[
 						"title"=>"Activate Membership",
-						"description"=>"Quick buy with free rewards & flexible payment options.",
-						"image"=>"http://b.fitn.in/global/tabapp-homescreen/explorememberships-small.png",
-						"banner_image"=>"http://b.fitn.in/global/tabapp-homescreen/explorememberships-big-1.png",
+						"description"=>"Quick step to activate your membership",
+						"image"=>"https://b.fitn.in/global/tabapp-homescreen/membership-small.jpg",
+						"banner_image"=>"https://b.fitn.in/global/tabapp-homescreen/membership1-big.jpg",
 						"id"=>5,
 						"type"=>'activate_membership'
 					],
 					[
-						"title"=>"Explore Trial",
-						"description"=>"Quick step to activate your workout trial & instant trial booking.",
-						"image"=>"http://b.fitn.in/global/tabapp-homescreen/access-trials-small.png",
-						"banner_image"=>"http://b.fitn.in/global/tabapp-homescreen/accesstrial-big-1.png",
+						"title"=>"Book Instant Trial",
+						"description"=>"Quick step for instant trial booking.",
+						"image"=>"https://b.fitn.in/global/tabapp-homescreen/book-instant-trial-small.jpg",
+						"banner_image"=>"https://b.fitn.in/global/tabapp-homescreen/book-instant-trial-big.jpg",
 						"id"=>6,
 						'type'=>'booktrials'
 					],
 					[
 						"title"=>"Complimentary Rewards",
-						"description"=>"Complimentary Rewards",
-						"image"=>"https://b.fitn.in/global/Rewards-page/rewards-web-banner.png",
-						"banner_image"=>"https://b.fitn.in/global/Rewards-page/rewards-web-banner.png",
+						"description"=>"Select rewards on purchase on membership",
+						"image"=>"https://b.fitn.in/global/tabapp-homescreen/reward-small.jpg",
+						"banner_image"=>"https://b.fitn.in/global/tabapp-homescreen/rewards-big-picture.jpg",
 						"id"=>7,
 						'type'=>'rewards'
 					],

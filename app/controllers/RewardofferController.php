@@ -789,6 +789,12 @@ class RewardofferController extends BaseController {
 
         $renewal_cashback  = array('title'=>'Discount on Renewal');
         $selection_limit = 1;
+
+        if($this->vendor_token && isset($cashback['commision']) && !$cashback['commision']){
+
+            $cashback = null;
+        }
+
         $data = array(
             'renewal_cashback'          =>   $renewal_cashback,
             'cashback'                  =>   $cashback,
