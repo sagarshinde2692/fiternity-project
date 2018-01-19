@@ -503,12 +503,12 @@ class TempsController extends \BaseController {
                                     $customer_data['gender'] = $temp->gender;
                                 }
 
+                                $customer_data['customerToken'] = $customerToken;
+
                                 if($temp['source'] == 'kiosk' && $this->kiosk_app_version && $this->kiosk_app_version >= 1.07){
 
                                     $customer_data = [$customer_data];
                                 }
-
-                                $customer_data['customerToken'] = $customerToken;
 
                             }
                         }
@@ -617,12 +617,12 @@ class TempsController extends \BaseController {
                                 $customer_data['gender'] = $temp->gender;
                             }
 
+                            $customer_data['customerToken'] = $customerToken;
+
                             if($temp['source'] == 'kiosk' && $this->kiosk_app_version && $this->kiosk_app_version >= 1.07){
 
                                 $customer_data = [$customer_data];
                             }
-
-                            $customer_data['customerToken'] = $customerToken;
                         }
 
                         $return = [
@@ -736,12 +736,13 @@ class TempsController extends \BaseController {
                                 $customer_data['gender'] = $temp->gender;
                             }
 
+                            $customer_data['customerToken'] = $customerToken;
+
                             if($temp['source'] == 'kiosk' && $this->kiosk_app_version && $this->kiosk_app_version >= 1.07){
 
                                 $customer_data = [$customer_data];
                             }
-
-                            $customer_data['customerToken'] = $customerToken;
+                            
                         }
 
                         $return = [

@@ -182,9 +182,9 @@ class TransactionController extends \BaseController {
             return Response::json(array('status' => 404,'message' => error_message($validator->errors())),$this->error_status);
         }
 
-        if(isset($data['wallet']) && !$data['wallet']){
+        /*if(isset($data['wallet']) && !$data['wallet']){
             $data['paymentmode_selected'] = 'paymentgateway';
-        }
+        }*/
 
         if(isset($data['paymentmode_selected']) && $data['paymentmode_selected'] != ""){
 
