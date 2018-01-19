@@ -415,7 +415,7 @@ class TransactionController extends \BaseController {
 
             if($finderDetail["data"]["finder_flags"]["part_payment"]){
 
-                if(isset($data['ratecard_flags']) && isset($data['ratecard_flags']['convinience_fee_applicable']) && $data['ratecard_flags']['convinience_fee_applicable']){
+                if($this->utilities->isConvinienceFeeApplicable($data)){
                     
                     $convinience_fee_percent = Config::get('app.convinience_fee');
 
@@ -556,7 +556,7 @@ class TransactionController extends \BaseController {
 
         $data['convinience_fee'] = 0;
 
-        if(isset($data['ratecard_flags']) && isset($data['ratecard_flags']['convinience_fee_applicable']) && $data['ratecard_flags']['convinience_fee_applicable'] && $data['type'] == "memberships"){
+        if($this->utilities->isConvinienceFeeApplicable($data)){
             
             $convinience_fee_percent = Config::get('app.convinience_fee');
 
@@ -1650,7 +1650,7 @@ class TransactionController extends \BaseController {
 
         $convinience_fee = 0;
 
-        if(isset($data['ratecard_flags']) && isset($data['ratecard_flags']['convinience_fee_applicable']) && $data['ratecard_flags']['convinience_fee_applicable'] && $data['type'] == "memberships"){
+        if($this->utilities->isConvinienceFeeApplicable($data)){
             
             $convinience_fee_percent = Config::get('app.convinience_fee');
 
@@ -2313,6 +2313,8 @@ class TransactionController extends \BaseController {
                 ->first();
 
         if($offer){
+
+            $ratecard['offer_convinience_fee'] = $data['offer_convinience_fee'] = true;
             $data['amount_finder'] = $offer->price;
             $data['offer_id'] = $offer->_id;
 
@@ -2444,7 +2446,7 @@ class TransactionController extends \BaseController {
         $data['payment_mode'] =  'paymentgateway';
         $data['source_of_membership'] =  'real time';
 
-        if($this->convinienceFeeFlag() && isset($ratecard['flags']) && isset($ratecard['flags']['convinience_fee_applicable'])){
+        if($this->convinienceFeeFlag() && $this->utilities->isConvinienceFeeApplicable($ratecard)){
             $data['ratecard_flags'] = $ratecard['flags'];
         }
 
@@ -3872,7 +3874,7 @@ class TransactionController extends \BaseController {
                 $amount -= $app_discount_amount;
             }
 
-            if($this->convinienceFeeFlag() && isset($ratecard['flags']) && isset($ratecard['flags']['convinience_fee_applicable']) && $ratecard['flags']['convinience_fee_applicable']){
+            if($this->convinienceFeeFlag() && $this->utilities->isConvinienceFeeApplicable($ratecard)){
                 
                 $convinience_fee_percent = Config::get('app.convinience_fee');
 
@@ -4293,7 +4295,7 @@ class TransactionController extends \BaseController {
                 'value' => 'Rs. '.(string)$data['amount']
             ];
 
-            if(isset($ratecardDetail["data"]["ratecard_flags"]) && isset($ratecardDetail["data"]["ratecard_flags"]["convinience_fee_applicable"]) && $ratecardDetail["data"]["ratecard_flags"]["convinience_fee_applicable"]){
+            if($this->utilities->isConvinienceFeeApplicable($data)){
                 
                 $convinience_fee_percent = Config::get('app.convinience_fee');
                 
