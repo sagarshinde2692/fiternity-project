@@ -1719,24 +1719,6 @@ class FindersController extends \BaseController {
 			$review_id = $review->_id = $inserted_id;
 			$review->save();
 
-			if($this->vendor_token){
-
-				$req = array(
-	                "customer_id"=>$data['customer_id'],
-	                "review_id"=>$review_id,
-	                "finder_id"=>$data['finder_id'],
-	                "amount"=>250,
-	                "amount_fitcash" => 0,
-	                "amount_fitcash_plus" => 250,
-	                "type"=>'CREDIT',
-	                'entry'=>'credit',
-	                'description'=>"Fitcash+ Added for reviewing ".ucwords($finder['title']),
-	            );
-
-				$this->utilities->walletTransaction($req);
-
-			}
-
 			$message = 'Review Created Successfully';
 		}
 
@@ -1766,7 +1748,7 @@ class FindersController extends \BaseController {
 
 		$booktrial_count = Booktrial::where('finder_id',(int)$data["finder_id"])->where('customer_id',(int)$data["customer_id"])->count();
 
-		if($this->vendor_token /*&& $fresh_review && $booktrial_count > 0 && $order_count == 0*/){
+		if($this->vendor_token && $fresh_review && $booktrial_count > 0 && $order_count == 0){
 
 			$fitcash_amount = 150;
 
@@ -1802,28 +1784,6 @@ class FindersController extends \BaseController {
 
 			$response['message'] = "Thanks for your valuable feedback!";
 			$response['message_title'] = "Done!";
-
-			/*$response['rewards'] = [
-				'description'=>'use fitcash+ to buy membership & win below rewards',
-				'items'=>[
-					[
-						'title'=>'Instant Cashback',
-						'image'=>'https://b.fitn.in/gamification/reward/cashback.jpg'
-					],
-					[
-						'title'=>'Merchandise Kit',
-						'image'=>'https://b.fitn.in/gamification/reward/fitness_kit.jpg'
-					],
-					[
-						'title'=>'Diet Consultation',
-						'image'=>'https://b.fitn.in/gamification/reward/diet_plan.jpg'
-					],
-					[
-						'title'=>'Workout Session',
-						'image'=>'https://b.fitn.in/gamification/reward/sessions.jpg'
-					],
-				]
-			];*/
 
 			$response['review_detail'] = null;
 		}
