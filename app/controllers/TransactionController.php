@@ -816,6 +816,15 @@ class TransactionController extends \BaseController {
 
             $data_otp['action'] = "vendor_otp";
 
+            if(isset($data['assisted_by']) && isset($data['assisted_by']['mobile']) && $data['assisted_by']['mobile'] != ""){
+
+                $finder_vcc_mobile = explode(",",$data['finder_vcc_mobile']);
+
+                $finder_vcc_mobile[] = $data['assisted_by']['mobile'];
+
+                $data_otp['finder_vcc_mobile'] = implode(",", $finder_vcc_mobile);
+            }
+
             $addTemp_flag  = true;
 
             if(isset($order['otp_data'])){
