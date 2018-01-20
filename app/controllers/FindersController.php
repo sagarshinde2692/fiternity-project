@@ -4274,8 +4274,9 @@ class FindersController extends \BaseController {
 		if($finder_id){
 			$getVendorTrainer = $this->utilities->getVendorTrainer($finder_id);
 		}
-		
+
 		$response['assisted_by'] = $getVendorTrainer;
+		$response['assisted_by_image'] = "https://b.fitn.in/global/tabapp-homescreen/freetrail-summary/trainer.png";
 		$response['status'] = 200;
 
 		return Response::json($response,200);	
