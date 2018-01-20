@@ -2673,13 +2673,13 @@ Class Utilities {
 
         $response['message_title'] = "DONE!";
 
-        $response['message'] = "You are good to go your ".ucwords($data['service_duration'])." ".ucwords($data['service_name'])." membership has been confirmed";
+        $response['message'] = "You are good to go! your <b>".ucwords($data['service_duration'])." ".ucwords($data['service_name'])."</b> membership has been confirmed";
 
         if(isset($data['membership_locate']) && $data['membership_locate'] == 'locate'){
-            $response['message'] = "You are good to go your ".ucwords($data['service_duration'])." ".ucwords($data['service_name'])." membership has been activated";
+            $response['message'] = "You are good to go! your <b>".ucwords($data['service_duration'])." ".ucwords($data['service_name'])."</b> membership has been activated";
         }
 
-        $response['message'] .= "<br/><br/>To claim your reward, access your user profile by downloading Fitternity app/Login on fitternity.com";
+        $response['message'] .= "<br/><br/><b>To claim your reward, access your user profile by downloading Fitternity app/Login on fitternity.com</b>";
 
         $response['features'] = [];
 
