@@ -1433,7 +1433,7 @@ class HomeController extends BaseController {
 
             if($this->vendor_token){
 
-                if(in_array($item['type'],["workout-session","booktrials"])){
+                if(in_array($item['type'],[/*"workout-session",*/"booktrials"])){
 
                     $item['booked_locate'] = 'booked';
 
