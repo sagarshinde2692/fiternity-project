@@ -1192,6 +1192,7 @@ class HomeController extends BaseController {
             if(in_array($type, ['booktrialfree','booktrial','workoutsession'])){
                 $booking_details_data["start_date"]["field"] = "DATE";
                 $booking_details_data["start_time"]["field"] = "TIME";
+                $booking_details_data["service_duration"]["value"] = "1 Session";
             }
 
             if(isset($item['preferred_day']) && $item['preferred_day'] != ""){

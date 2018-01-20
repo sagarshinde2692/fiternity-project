@@ -2625,6 +2625,8 @@ Class Utilities {
             $response['message'] = "You are good to go your ".ucwords($data['service_duration'])." ".ucwords($data['service_name'])." membership has been activated";
         }
 
+        $response['message'] .= "<br/><br/>To claim your reward, access your user profile by downloading Fitternity app/Login on fitternity.com";
+
         $response['features'] = [];
 
         $response['features'][] = [

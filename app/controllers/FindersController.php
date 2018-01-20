@@ -4060,23 +4060,38 @@ class FindersController extends \BaseController {
 						]
 					]
 				],
-
 				"options"=>[
 					[
-						"title"=>"Access Trial Booking",
-						"description"=>"Quick step to activate your workout trial & instant trial booking.",
+						"title"=>"Access Fitternity Booking",
+						"description"=>"Quick step to activate your trial/session",
 						"image"=>"https://b.fitn.in/global/tabapp-homescreen/access-trials-small.png",
 						"banner_image"=>"https://b.fitn.in/global/tabapp-homescreen/accesstrial-big-1.png",
 						"id"=>1,
 						'type'=>'access_booktrial'
 					],
 					[
-						"title"=>"Explore Membership",
+						"title"=>"Buy Membership",
 						"description"=>"Quick buy with free rewards & flexible payment options.",
 						"image"=>"https://b.fitn.in/global/tabapp-homescreen/explorememberships-small.png",
 						"banner_image"=>"https://b.fitn.in/global/tabapp-homescreen/explorememberships-big-1.png",
 						"id"=>2,
 						"type"=>'memberships'
+					],
+					[
+						"title"=>"Schedule New Bookings",
+						"description"=>"Pick a day & slot that works for you and get started",
+						"image"=>"https://b.fitn.in/global/tabapp-homescreen/book-instant-trial-small.jpg",
+						"banner_image"=>"https://b.fitn.in/global/tabapp-homescreen/book-instant-trial-big-1.jpg",
+						"id"=>6,
+						'type'=>'booktrials'
+					],
+					[
+						"title"=>"Activate Fitternity Membership",
+						"description"=>"Quick step to activate your membership",
+						"image"=>"https://b.fitn.in/global/tabapp-homescreen/membership-small.jpg",
+						"banner_image"=>"https://b.fitn.in/global/tabapp-homescreen/membership1-big1.jpg",
+						"id"=>5,
+						"type"=>'activate_membership'
 					],
 					[
 						"title"=>"Post a Review",
@@ -4085,36 +4100,12 @@ class FindersController extends \BaseController {
 						"banner_image"=>"https://b.fitn.in/global/tabapp-homescreen/postreview-big.png",
 						"id"=>3,
 						'type'=>'post_review'
-					],
-					/*[
-						"title"=>"Online Diet Consultation",
-						"description"=>"Coming soon",
-						"image"=>"https://b.fitn.in/global/tabapp-homescreen/coming-soon-small.png",
-						"banner_image"=>"https://b.fitn.in/global/tabapp-homescreen/diet-big-1.png",
-						"id"=>4,
-						"type"=>"diet_plan"
-					]*/
+					],				
 					[
-						"title"=>"Activate Membership",
-						"description"=>"Quick step to activate your membership",
-						"image"=>"https://b.fitn.in/global/tabapp-homescreen/membership-small.jpg",
-						"banner_image"=>"https://b.fitn.in/global/tabapp-homescreen/membership1-big.jpg",
-						"id"=>5,
-						"type"=>'activate_membership'
-					],
-					[
-						"title"=>"Book Instant Trial",
-						"description"=>"Quick step for instant trial booking.",
-						"image"=>"https://b.fitn.in/global/tabapp-homescreen/book-instant-trial-small.jpg",
-						"banner_image"=>"https://b.fitn.in/global/tabapp-homescreen/book-instant-trial-big.jpg",
-						"id"=>6,
-						'type'=>'booktrials'
-					],
-					[
-						"title"=>"Complimentary Rewards",
-						"description"=>"Select rewards on purchase on membership",
+						"title"=>"Fitternity Advantage",
+						"description"=>"Buy through Fitterntiy & get access to these amazing rewards",
 						"image"=>"https://b.fitn.in/global/tabapp-homescreen/reward-small.jpg",
-						"banner_image"=>"https://b.fitn.in/global/tabapp-homescreen/rewards-big-picture.jpg",
+						"banner_image"=>"https://b.fitn.in/global/tabapp-homescreen/rewards-big-picture-1.jpg",
 						"id"=>7,
 						'type'=>'rewards'
 					],
