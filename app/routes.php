@@ -1037,6 +1037,7 @@ Route::get('createQrCode', 'DebugController@createQrCode');
 
 Route::get('locatetrial/{code}','SchedulebooktrialsController@locateTrial');
 
+Route::get('locatemembership/{code}','TransactionController@locateMembership');
 
 Route::get('servicemembership/{finder_id}','FindersController@serviceMembership');
 
@@ -1096,3 +1097,11 @@ Route::get('customerexists/{email}','CustomerController@customerExists');
 Route::get('getcrashlogs/{count}','HomeController@getCrashLog');
 
 Route::post('transaction/checkoutsummary','TransactionController@checkoutSummary');
+
+Route::get('transaction/rewardscreen','TransactionController@rewardScreen');
+
+Route::get('getcustommembershipdetails','TransactionController@getCustomMembershipDetails');
+
+Route::get('verifyvendorkioskpin/{pin}','CustomerController@verifyVendorKioskPin');
+
+Route::get('getvendortrainer/{finder_id?}','FindersController@getVendorTrainer');

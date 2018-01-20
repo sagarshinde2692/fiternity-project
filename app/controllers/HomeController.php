@@ -25,6 +25,15 @@ class HomeController extends BaseController {
         $this->api_url = Config::get("app.url")."/";
         $this->utilities = $utilities;
         $this->initClient();
+
+        $this->vendor_token = false;
+        
+        $vendor_token = Request::header('Authorization-Vendor');
+
+        if($vendor_token){
+
+            $this->vendor_token = true;
+        }
     }
 
 
@@ -1183,6 +1192,7 @@ class HomeController extends BaseController {
             if(in_array($type, ['booktrialfree','booktrial','workoutsession'])){
                 $booking_details_data["start_date"]["field"] = "DATE";
                 $booking_details_data["start_time"]["field"] = "TIME";
+                $booking_details_data["service_duration"]["value"] = "1 Session";
             }
 
             if(isset($item['preferred_day']) && $item['preferred_day'] != ""){
@@ -1421,7 +1431,24 @@ class HomeController extends BaseController {
                 'all_options_url' => $all_options_url,
                 'customer_auto_register' => $customer_auto_register
             ];
-            Log::info("the end");
+
+            if($this->vendor_token){
+
+                if(in_array($item['type'],[/*"workout-session",*/"booktrials"])){
+
+                    $item['booked_locate'] = 'booked';
+
+                    $resp['kiosk'] = $this->utilities->trialBookedLocateScreen($item);
+                }
+
+                if($item['type'] == 'memberships'){
+
+                    $item['membership_locate'] = 'booked';
+
+                    $resp['kiosk_membership'] = $this->utilities->membershipBookedLocateScreen($item);
+                }
+            }
+
             return Response::json($resp);
         }
     }

@@ -12,7 +12,16 @@ class ServiceController extends \BaseController {
 
 	public function __construct() {
 
-		parent::__construct();	
+		parent::__construct();
+
+		$this->vendor_token = false;
+        
+        $vendor_token = Request::header('Authorization-Vendor');
+
+        if($vendor_token){
+
+            $this->vendor_token = true;
+        }
 	}
 
 	public function getServiceCategorys(){
@@ -425,6 +434,11 @@ class ServiceController extends \BaseController {
         $timestamp    =   strtotime($date);
         $weekday      =   strtolower(date( "l", $timestamp));
 
+        if($this->vendor_token){
+
+        	$currentDateTime = time() - 7200;
+        }
+
         $date = date('d-m-Y',strtotime($date));
 
         $item = Service::active()->where('_id', '=', $service_id)->first(array('_id','name','finder_id', 'workoutsessionschedules','servicecategory_id'));
@@ -592,6 +606,7 @@ class ServiceController extends \BaseController {
 
     		$request = $_REQUEST;
     		$request['requested_date'] = (isset($request['date']) && $request['date'] != "") ? date('Y-m-d',strtotime($request['date'])) : date("Y-m-d");
+    		$request['date'] = $request['requested_date'];
     	}
 
     	if(!isset($request['finder_id']) && !isset($request['service_id'])){
@@ -599,6 +614,38 @@ class ServiceController extends \BaseController {
     	}
 
         $currentDateTime        =   time();
+
+        if($this->vendor_token){
+
+        	$decodeKioskVendorToken = decodeKioskVendorToken();
+
+            $vendor = $decodeKioskVendorToken->vendor;
+
+            $finder_id = (int)$vendor->_id;
+
+        	$currentDateTime = time() - 7200;
+
+        	$jwt_token = Request::header('Authorization');
+
+			if($jwt_token == true && $jwt_token != 'null' && $jwt_token != null){
+
+	            $decoded = decode_customer_token();
+
+	            $customer_id = intval($decoded->customer->_id);
+
+	            $booktrial_count = Booktrial::where('customer_id', $customer_id)
+                        ->where('finder_id', '=',$finder_id)
+                        ->where('type','booktrials')
+                        ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
+                        ->count();
+
+ 				if($booktrial_count > 0){
+
+ 					$request['type'] = 'workout_session';
+	        	}
+	        }
+        }
+
         $date         			=   (isset($request['date']) && $request['date'] != "") ? date('Y-m-d',strtotime($request['date'])) : date("Y-m-d");
         $timestamp    			=   strtotime($date);
         $weekday     			=   strtolower(date( "l", $timestamp));
@@ -701,7 +748,8 @@ class ServiceController extends \BaseController {
 	    		],
 				'workoutsession_active_weekdays' => $item["workoutsession_active_weekdays"],
 				'trial_active_weekdays' => $item["trial_active_weekdays"],
-				'inoperational_dates_array' => $finder['inoperational_dates_array']
+				'inoperational_dates_array' => $finder['inoperational_dates_array'],
+				'cost'=>'Free Via Fitternity'
             );
 
             $slots = array();
@@ -742,6 +790,11 @@ class ServiceController extends \BaseController {
 		    		];
 		    	}
 
+		    	if($ratecard_price > 0){
+
+		    		$service['cost'] = "₹ ".$ratecard_price;
+		    	}
+
                 foreach ($weekdayslots['slots'] as $slot) {
 
 					if(!isNotInoperationalDate($date, $city_id, $slot, $findercategory_id)){
@@ -780,7 +833,7 @@ class ServiceController extends \BaseController {
                     try{
 
                     	$scheduleDateTimeUnix               =  strtotime(strtoupper($date." ".$slot['start_time']));
-                        $slot_datetime_pass_status      =   (($scheduleDateTimeUnix - time()) > $time_in_seconds) ? false : true;
+                        $slot_datetime_pass_status      =   (($scheduleDateTimeUnix - $currentDateTime) > $time_in_seconds) ? false : true;
 
                         ($slot_datetime_pass_status == false) ? $slot_passed_flag = false : null;
 
@@ -826,7 +879,19 @@ class ServiceController extends \BaseController {
 
             // $service['trials_booked'] = $this->checkTrialAlreadyBooked($item['finder_id'],$item['_id']);
             // $all_trials_booked = $all_trials_booked && $service['trials_booked'];
-            array_push($schedules, $service);
+
+            if($this->vendor_token){
+
+            	if(!empty($slots)){
+
+            		array_push($schedules, $service);
+            	}
+
+            }else{
+
+            	array_push($schedules, $service);
+            }
+            
         }
 
 
@@ -884,6 +949,7 @@ class ServiceController extends \BaseController {
 
         }else{
 
+        	$data['status'] = 200;
         	$data['finder_id'] = $item['finder_id'];
 	        $data['schedules'] = $schedules;
 	        $data['weekday'] = $weekday;
@@ -1106,6 +1172,11 @@ class ServiceController extends \BaseController {
         $weekday     			=   strtolower(date( "l", $timestamp));
         $type 					= 	$request['type'];
 
+        if($this->vendor_token){
+
+        	$currentDateTime = time() - 7200; 
+        }
+
         $service = Service::find((int)$request['service_id'],array('workoutsessionschedules','trialschedules'));
 
         switch ($type) {
@@ -1148,6 +1219,12 @@ class ServiceController extends \BaseController {
     	$diff = 0;
 
     	$current_datetime = time();
+
+    	if($this->vendor_token){
+
+        	$current_datetime = time() - 7200; 
+        }
+
     	$requested_datetime = strtotime($requested_date);
 
     	$diff = ceil(($requested_datetime - $current_datetime) / (60 * 60 * 24));
