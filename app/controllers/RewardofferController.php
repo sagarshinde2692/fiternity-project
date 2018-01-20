@@ -293,8 +293,8 @@ class RewardofferController extends BaseController {
             }
 
             $rewardoffer           =   Rewardoffer::active()->where('findercategory_id', $findercategory_id)
-                    ->where('amount_min','<', $amount)
-                    ->where('amount_max','>=', $amount)
+                    ->where('amount_min','<=', $amount)
+                    ->where('amount_max','>', $amount)
                     // ->whereNotIn('reward_type',['personal_trainer_at_home'])
                     ->with(array('rewards'=> function($query){$query->select('*')->whereNotIn('reward_type',['healthy_snacks', 'personal_trainer_at_home']);}  ))
                     // ->with('rewards')
