@@ -1747,7 +1747,7 @@ class FindersController extends \BaseController {
 
 		$order_count = Order::active()->where('type','memberships')->where('finder_id',(int)$data["finder_id"])->where('customer_id',(int)$data["customer_id"])->count();
 
-		$booktrial_count = Booktrial::where('finder_id',(int)$data["finder_id"])->where('customer_id',(int)$data["customer_id"])->count();
+		$booktrial_count = Booktrial::where('type','booktrials')->where('finder_id',(int)$data["finder_id"])->where('customer_id',(int)$data["customer_id"])->count();
 
 		if($this->vendor_token && $fresh_review && $booktrial_count > 0 && $order_count == 0){
 

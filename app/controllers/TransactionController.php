@@ -896,6 +896,10 @@ class TransactionController extends \BaseController {
             $resp['data']['vendor_otp_message'] = " Enter the confirmation code provided by your gym/studio to activate your session";
         }
 
+        if(isset($data['punching_order']) && $data['punching_order']){
+            $resp['data']['vendor_otp_message'] = "Enter the verification code to confirm the membership.";
+        }
+
         return Response::json($resp);
 
     }
@@ -5007,7 +5011,7 @@ class TransactionController extends \BaseController {
                     'name'=>$value
                 ];
 
-                $data['service_categories'][] = $array;
+                $data['service_categories'][] = $array;           
             }
         }
 
