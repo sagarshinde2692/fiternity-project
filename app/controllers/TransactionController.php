@@ -2447,7 +2447,12 @@ class TransactionController extends \BaseController {
         $data['source_of_membership'] =  'real time';
 
         if($this->convinienceFeeFlag() && $this->utilities->isConvinienceFeeApplicable($ratecard)){
-            $data['ratecard_flags'] = $ratecard['flags'];
+
+            $data['ratecard_flags'] = [];
+
+            if(isset($ratecard['flags'])){
+                $data['ratecard_flags'] = $ratecard['flags'];
+            }
         }
 
         return array('status' => 200,'data' =>$data);
@@ -3874,7 +3879,7 @@ class TransactionController extends \BaseController {
                 $amount -= $app_discount_amount;
             }
 
-            if($this->convinienceFeeFlag() && $this->utilities->isConvinienceFeeApplicable($ratecard)){
+            if($this->convinienceFeeFlag() && $this->utilities->isConvinienceFeeApplicable($ratecard->toArray())){
                 
                 $convinience_fee_percent = Config::get('app.convinience_fee');
 
