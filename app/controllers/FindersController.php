@@ -2344,7 +2344,7 @@ class FindersController extends \BaseController {
 
 		foreach ($getTrialSchedule as $key => $value) {
 
-			if(isset($getTrialSchedule[$key]['showOnFront']) && !isset($getTrialSchedule[$key]['showOnFront']['kiosk'])){
+			if(isset($getTrialSchedule[$key]['showOnFront']) && !in_array('kiosk',$getTrialSchedule[$key]['showOnFront'])){
 
 				unset($getTrialSchedule[$key]); continue;
 			}
@@ -2538,7 +2538,8 @@ class FindersController extends \BaseController {
 				'traction' => isset($item['traction']) && isset($item['traction']['sales']) && isset($item['traction']['trials']) ? $item['traction'] : array("trials"=>0,"sales"=>0),
 				'location_id' => $item['location_id'],
 				'offer_available' => isset($item['offer_available']) ? $item['offer_available'] : false,
-				'short_description' => isset($item['short_description']) ? $item['short_description'] : ""
+				'short_description' => isset($item['short_description']) ? $item['short_description'] : "",
+				'showOnFront'=>(isset($item['showOnFront'])) ? $item['showOnFront'] : []
 			);
 
 			// if(isset($item['offer_available']) && $item['offer_available'] == true && !in_array($finder_id, Config::get('app.hot_offer_excluded_vendors'))){
