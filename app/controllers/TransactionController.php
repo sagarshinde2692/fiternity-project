@@ -888,6 +888,12 @@ class TransactionController extends \BaseController {
 
         $resp['data']['assisted_by_image'] = "https://b.fitn.in/global/tabapp-homescreen/freetrail-summary/trainer.png";
 
+        $resp['data']['vendor_otp_message'] = "Enter the confirmation code provided by your gym/studio to activate your membership";
+
+        if(in_array($data['type'],['booktrials','workout-session'])){
+            $resp['data']['vendor_otp_message'] = " Enter the confirmation code provided by your gym/studio to activate your session";
+        }
+
         return Response::json($resp);
 
     }
