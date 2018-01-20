@@ -553,7 +553,7 @@ class TempsController extends \BaseController {
                         $customer_email = $temp->customer_email;
                     }
 
-                    $message = 'Sorry! We could not locate your booking, Would you like to book a session now?';
+                    $message = "Sorry! We could not locate your booking. Want to book an instant session instead";
 
                     $return = array('customer_data'=>$customer_data,'locate_trial'=>false,'status' => 200,'message' => $message,'verified' => $verified,'token'=>$customerToken,'trial_booked'=>false);
 
