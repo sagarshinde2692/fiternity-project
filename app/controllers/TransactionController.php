@@ -2447,7 +2447,7 @@ class TransactionController extends \BaseController {
         $data['source_of_membership'] =  'real time';
 
         if($this->convinienceFeeFlag() && $this->utilities->isConvinienceFeeApplicable($ratecard)){
-            $data['ratecard_flags'] = $ratecard['flags'];
+            $data['ratecard_flags'] = isset($ratecard['flags']) ? $ratecard['flags'] : array();
         }
 
         return array('status' => 200,'data' =>$data);
