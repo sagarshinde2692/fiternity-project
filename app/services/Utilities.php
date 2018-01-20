@@ -1685,11 +1685,15 @@ Class Utilities {
             }
 
             if(isset($request['for']) && $request['for'] != ""){
-                $wallet->coupon = $request['for'];
+                $wallet->for = $request['for'];
+            }
+
+            if(isset($request['review_id']) && $request['review_id'] != ""){
+                $wallet->review_id = (int)$request['review_id'];
             }
 
             if(isset($request['finder_id']) && $request['finder_id'] != ""){
-                $wallet->coupon = $request['finder_id'];
+                $wallet->finder_id = (int)$request['finder_id'];
             }
 
             $wallet->save();
@@ -2616,6 +2620,124 @@ Class Utilities {
         Log::info("returning false");
         
         return false;
+    }
+
+    public function trialBookedLocateScreen($data = false){
+
+        $fitcash_amount = 150;
+
+        $response['message_title'] = "DONE!";
+
+        $response['message'] = 'Great! Your session has been booked. Enjoy your workout!';
+
+        if(isset($data['booked_locate']) && $data['booked_locate'] == 'locate'){
+            $response['message'] = 'Great! Your session has been activated. Enjoy your workout!';
+        }
+
+        $response['title'] = 'MAKE MOST OF FITTERNITY!';
+
+        $response['review'] = [
+            'image'=>'https://b.fitn.in/gamification/reward/cashback.jpg',
+            'amount'=>(string)$fitcash_amount,
+            'title1'=>strtoupper('<b>review</b>'),
+            'title2'=>strtoupper('<b>₹'.$fitcash_amount.'</b> FITCASH+'),
+            'description'=>'<b>Post    your    trial</b>    make    sure    you    review    your    experience    on    this    tab    &    get    <b>₹'.$fitcash_amount.'    Fitcash+</b>    in    your    Fitternity    Wallet    that    can    be    used    to    purchase    your    membership',
+        ];
+
+        $response['rewards'] = [
+            'title'=>strtoupper('use    fitcash+    to    buy    membership    &    win    below    rewards'),
+            'description'=>'Buy    Membership    at    <b>lowest    price</b>    &    choose    a    complimentary    rewad    from    the    options    below',
+            'items'=>[
+                [
+                    'title'=>'Instant Cashback',
+                    'image'=>'https://b.fitn.in/gamification/reward/cashback.jpg',
+                    'worth'=>'worth ₹ 2500'
+                ],
+                [
+                    'title'=>'Merchandise Kit',
+                    'image'=>'https://b.fitn.in/gamification/reward/fitness_kit.jpg',
+                    'worth'=>'worth ₹ 2250'
+                ],
+                [
+                    'title'=>'Diet Consultation',
+                    'image'=>'https://b.fitn.in/gamification/reward/diet_plan.jpg',
+                    'worth'=>'worth ₹ 1499'
+                ]
+            ]
+        ];
+
+        return $response;
+    }
+
+    public function membershipBookedLocateScreen($data){
+
+        $response['message_title'] = "DONE!";
+
+        $response['message'] = "You are good to go! your <b>".ucwords($data['service_duration'])." ".ucwords($data['service_name'])."</b> membership has been confirmed";
+
+        if(isset($data['membership_locate']) && $data['membership_locate'] == 'locate'){
+            $response['message'] = "You are good to go! your <b>".ucwords($data['service_duration'])." ".ucwords($data['service_name'])."</b> membership has been activated";
+        }
+
+        $response['message'] .= "<br/><br/><b>To claim your reward, access your user profile by downloading Fitternity app/Login on fitternity.com</b>";
+
+        $response['features'] = [];
+
+        $response['features'][] = [
+            'image'=>'https://b.fitn.in/global/Tab-app-success-page/tab-membership-success-1.png',
+            'title1'=>strtoupper('fitternity    profile'),
+            'title2'=>strtoupper('on    app    &    website'),   
+            'description'=>"&#9679; <b>Track</b>    your    FitCash    wallet    balance<br/>&#9679;    <b>Renew</b>    membership    with    best    discount    &    offers<br/>&#9679;    <b>Upgrade</b>    membership    by    extending    the    duration    at    initial    price",
+            'type'=>'profile'
+        ];
+
+        $response['features'][] = [
+            'image'=>'https://b.fitn.in/global/Tab-app-success-page/membership-success-2.png',
+            'title1'=>strtoupper('<b>Onlie    diet</b>'),
+            'title2'=>strtoupper('<b>consultation</b>'),
+            'description'=>'Make    the    most    of    your    membership,    with    <b>Fitternity’s    Online    Diet    Consultation</b>    to    improve    your    workout    performance',
+            'type'=>'diet_plan'
+        ];
+
+        $response['features'][] = [
+            'image'=>'https://b.fitn.in/global/Tab-app-success-page/membership-success-3.png',
+            'title1'=>strtoupper('beat    monotony'),
+            'title2'=>strtoupper('<b>pay-per-session</b>'),
+            'description'=>'<b>Don’t    let    your    workout    be    monotonous.</b>    Try    different    workouts    around    you    by    only    paying    per    session!',
+            'type'=>'pay_per_session'
+        ];
+
+        return $response;
+    }
+
+    public function getVendorTrainer($finder_id){
+
+        $finder = Finder::find($finder_id);
+
+        $assisted_by = [];
+
+        if($finder && isset($finder['trainer_contacts']) && !empty($finder['trainer_contacts'])){
+
+            foreach ($finder['trainer_contacts'] as $key => $value) {
+
+                $array = $value;
+
+                $array['id'] = $value['email'];
+                $array['name'] = ucwords($value['name']);
+
+                $assisted_by[] = $array;
+            }
+
+        }
+
+        $assisted_by[] = [   
+            'id'=>'others',
+            'name'=>'Others',
+            'email'=>'',
+            'mobile'=>''
+        ];
+
+        return $assisted_by;
     }
 
 

@@ -84,15 +84,9 @@ class FindersController extends \BaseController {
 			$vendormouData =    $vendormou->toArray();
 
 			return $this->findermailer->cancelVendorMou($vendormouData);
-
 		}
 
-
 	}
-
-	
-
-
 
 	public function finderdetail($slug, $cache = true){
 		
@@ -1678,6 +1672,7 @@ class FindersController extends \BaseController {
 			'source' => (isset($data['source'])) ? $data['source'] : 'customer',
 			'status' => '1',
 			'order_id' => (isset($data['order_id']) && $data['order_id'] != "") ? intval($data['order_id']) : '',
+			'assisted_by' => (isset($data['assisted_by'])) ? intval($data['assisted_by']) : null
 		];
 
 		(isset($_GET['device_type']) && $_GET['device_type'] != "") ? $reviewdata['source'] = strtolower($_GET['device_type']) : null ;
@@ -1714,7 +1709,11 @@ class FindersController extends \BaseController {
 			}
 		}
 
+		$fresh_review = true;
+
 		if($review){
+
+			$fresh_review = false;
 
 			$review->update($reviewdata);
 			$message = 'Review Updated Successfully';
@@ -1750,6 +1749,51 @@ class FindersController extends \BaseController {
 		$this->cacheapi->flushTagKey('finder_detail_android_3_2',$finder->slug);
 		$this->cacheapi->flushTagKey('finder_detail_ios',$finder->slug);
 		$this->cacheapi->flushTagKey('finder_detail_ios_3_2',$finder->slug);
+
+
+		$order_count = Order::active()->where('type','memberships')->where('finder_id',(int)$data["finder_id"])->where('customer_id',(int)$data["customer_id"])->count();
+
+		$booktrial_count = Booktrial::where('type','booktrials')->where('finder_id',(int)$data["finder_id"])->where('customer_id',(int)$data["customer_id"])->count();
+
+		if($this->vendor_token && $fresh_review && $booktrial_count > 0 && $order_count == 0){
+
+			$fitcash_amount = 150;
+
+			$req = array(
+                "customer_id"=>$data['customer_id'],
+                "review_id"=>$review_id,
+                "finder_id"=>$data['finder_id'],
+                "amount"=>$fitcash_amount,
+                "amount_fitcash" => 0,
+                "amount_fitcash_plus" => $fitcash_amount,
+                "type"=>'CREDIT',
+                'entry'=>'credit',
+                'description'=>"Fitcash+ Added for reviewing ".ucwords($finder['title']),
+            );
+
+			$this->utilities->walletTransaction($req);
+
+			$response['fitcash'] = [
+				'image'=>'https://b.fitn.in/gamification/reward/cashback.jpg',
+				'amount'=>(string)$fitcash_amount,
+				'title1'=>strtoupper('<b>₹'.$fitcash_amount.'</b> FITCASH+'),
+				'title2'=>strtoupper('Has  been  added'),
+				'description'=>'Find  this  on  <b>Fitternity  Wallet</b>  &  use  it  to  purchase  your  membership',
+			];
+
+			$response['membership'] = [
+				'image'=>'https://b.fitn.in/gamification/reward/cashback.jpg',
+				'amount'=>(string)$fitcash_amount,
+				'title1'=>strtoupper('Membership  On'),
+				'title2'=>strtoupper('Lowest  prices'),
+				'description'=>'Use  this  <b>₹'.$fitcash_amount.'  off</b>  before  it  gets  expired  to  buy  membership  on  this  tab  at  lowest  price  with  complimentary  rewards'
+			];		
+
+			$response['message'] = "Thanks for your valuable feedback!";
+			$response['message_title'] = "Done!";
+
+			$response['review_detail'] = null;
+		}
 
 		return Response::json($response, 200);
 	}
@@ -2306,6 +2350,11 @@ class FindersController extends \BaseController {
 
 		foreach ($getTrialSchedule as $key => $value) {
 
+			if(isset($getTrialSchedule[$key]['showOnFront']) && !in_array('kiosk',$getTrialSchedule[$key]['showOnFront'])){
+
+				unset($getTrialSchedule[$key]); continue;
+			}
+
 			if(empty($value['ratecard'])){
 
 				unset($getTrialSchedule[$key]);
@@ -2495,7 +2544,8 @@ class FindersController extends \BaseController {
 				'traction' => isset($item['traction']) && isset($item['traction']['sales']) && isset($item['traction']['trials']) ? $item['traction'] : array("trials"=>0,"sales"=>0),
 				'location_id' => $item['location_id'],
 				'offer_available' => isset($item['offer_available']) ? $item['offer_available'] : false,
-				'short_description' => isset($item['short_description']) ? $item['short_description'] : ""
+				'short_description' => isset($item['short_description']) ? $item['short_description'] : "",
+				'showOnFront'=>(isset($item['showOnFront'])) ? $item['showOnFront'] : []
 			);
 
 			// if(isset($item['offer_available']) && $item['offer_available'] == true && !in_array($finder_id, Config::get('app.hot_offer_excluded_vendors'))){
@@ -4016,40 +4066,55 @@ class FindersController extends \BaseController {
 						]
 					]
 				],
-
 				"options"=>[
 					[
-						"title"=>"Access Trial Booking",
-						"description"=>"Quick step to activate your workout trial & instant trial booking.",
-						"image"=>"http://b.fitn.in/global/tabapp-homescreen/access-trials-small.png",
-						"banner_image"=>"http://b.fitn.in/global/tabapp-homescreen/accesstrial-big-1.png",
+						"title"=>"Access Fitternity Booking",
+						"description"=>"Quick step to activate your trial/session",
+						"image"=>"https://b.fitn.in/global/tabapp-homescreen/access-trials-small.png",
+						"banner_image"=>"https://b.fitn.in/global/tabapp-homescreen/accesstrial-big-1.png",
 						"id"=>1,
-						'type'=>'booktrial'
+						'type'=>'access_booktrial'
 					],
 					[
-						"title"=>"Explore Membership",
+						"title"=>"Buy Membership",
 						"description"=>"Quick buy with free rewards & flexible payment options.",
-						"image"=>"http://b.fitn.in/global/tabapp-homescreen/explorememberships-small.png",
-						"banner_image"=>"http://b.fitn.in/global/tabapp-homescreen/explorememberships-big-1.png",
+						"image"=>"https://b.fitn.in/global/tabapp-homescreen/explorememberships-small.png",
+						"banner_image"=>"https://b.fitn.in/global/tabapp-homescreen/explorememberships-big-1.png",
 						"id"=>2,
-						"type"=>'membership'
+						"type"=>'memberships'
+					],
+					[
+						"title"=>"Schedule New Bookings",
+						"description"=>"Pick a day & slot that works for you and get started",
+						"image"=>"https://b.fitn.in/global/tabapp-homescreen/book-instant-trial-small.jpg",
+						"banner_image"=>"https://b.fitn.in/global/tabapp-homescreen/book-instant-trial-big-1.jpg",
+						"id"=>6,
+						'type'=>'booktrials'
+					],
+					[
+						"title"=>"Activate Fitternity Membership",
+						"description"=>"Quick step to activate your membership",
+						"image"=>"https://b.fitn.in/global/tabapp-homescreen/membership-small.jpg",
+						"banner_image"=>"https://b.fitn.in/global/tabapp-homescreen/membership1-big1.jpg",
+						"id"=>5,
+						"type"=>'activate_membership'
 					],
 					[
 						"title"=>"Post a Review",
 						"description"=>"Rate your experience & help fellow fitness enthusiasts.",
-						"image"=>"http://b.fitn.in/global/tabapp-homescreen/post-review-small.png",
-						"banner_image"=>"http://b.fitn.in/global/tabapp-homescreen/postreview-big.png",
+						"image"=>"https://b.fitn.in/global/tabapp-homescreen/post-review-small.png",
+						"banner_image"=>"https://b.fitn.in/global/tabapp-homescreen/postreview-big.png",
 						"id"=>3,
 						'type'=>'post_review'
+					],				
+					[
+						"title"=>"Fitternity Advantage",
+						"description"=>"Buy through Fitterntiy & get access to these amazing rewards",
+						"image"=>"https://b.fitn.in/global/tabapp-homescreen/reward-small.jpg",
+						"banner_image"=>"https://b.fitn.in/global/tabapp-homescreen/rewards-big-picture-1.jpg",
+						"id"=>7,
+						'type'=>'rewards'
 					],
-					/*[
-						"title"=>"Online Diet Consultation",
-						"description"=>"Coming soon",
-						"image"=>"http://b.fitn.in/global/tabapp-homescreen/coming-soon-small.png",
-						"banner_image"=>"http://b.fitn.in/global/tabapp-homescreen/diet-big-1.png",
-						"id"=>4,
-						"type"=>"diet_plan"
-					]*/
 				],
 				"title"=>"Welcome to ".ucwords($finder['title']),
 				"powered"=>"Powered by Fitternity"
@@ -4194,6 +4259,31 @@ class FindersController extends \BaseController {
 		$response['ratecards'] = $ratecard_data;
 
 		return Response::json($response,200);
+	}
+
+
+	public function getVendorTrainer($finder_id = false){
+
+		if($this->vendor_token){
+
+			$decodeKioskVendorToken = decodeKioskVendorToken();
+
+	        $vendor = json_decode(json_encode($decodeKioskVendorToken->vendor),true);
+
+	        $finder_id = (int)$vendor['_id'];
+		}
+
+		$getVendorTrainer = [];
+
+		if($finder_id){
+			$getVendorTrainer = $this->utilities->getVendorTrainer($finder_id);
+		}
+
+		$response['assisted_by'] = $getVendorTrainer;
+		$response['assisted_by_image'] = "https://b.fitn.in/global/tabapp-homescreen/freetrail-summary/trainer.png";
+		$response['status'] = 200;
+
+		return Response::json($response,200);	
 	}
 	
 
