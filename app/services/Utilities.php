@@ -21,13 +21,20 @@ Class Utilities {
 
 //    protected $myrewards;
 //    protected $customerReward;
-//
-//
-//    public function __construct(CustomerReward $customerReward) {
-//        
-//        $this->customerReward = $customerReward;
-//        
-//    }
+
+
+   public function __construct() {
+       
+    $this->vendor_token = false;
+        
+    $vendor_token = Request::header('Authorization-Vendor');
+
+    if($vendor_token){
+
+        $this->vendor_token = true;
+    }
+       
+   }
     
     public function checkExistingTrialWithFinder($customer_email = null,$customer_phone = null,$finder_id = null){
         // For test vendor 
@@ -2595,7 +2602,10 @@ Class Utilities {
         Log::info(debug_backtrace()[1]['function']);
         Log::info("Data for isConvinienceFeeApplicable");
         Log::info($data);
-
+        if($this->vendor_token){
+            Log::info("vendor token hai");
+            return false;
+        }
         (!isset($data['ratecard_flags']) && isset($data['flags'])) ? $data['ratecard_flags'] = $data['flags'] : null;
 
         if((isset($data["ratecard_flags"]) && isset($data["ratecard_flags"]["convinience_fee_applicable"]) && $data["ratecard_flags"]["convinience_fee_applicable"]  && ( !isset($data['type']) || isset($data['type']) && in_array($data['type'], ["memberships", "membership"]))) || (isset($data['offer_convinience_fee']) && $data['offer_convinience_fee'])){
