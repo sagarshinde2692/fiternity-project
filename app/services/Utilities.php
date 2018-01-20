@@ -2603,6 +2603,7 @@ Class Utilities {
         Log::info("Data for isConvinienceFeeApplicable");
         Log::info($data);
         if($this->vendor_token){
+            Log::info("vendor token hai");
             return false;
         }
         (!isset($data['ratecard_flags']) && isset($data['flags'])) ? $data['ratecard_flags'] = $data['flags'] : null;
