@@ -4990,11 +4990,11 @@ class TransactionController extends \BaseController {
 
         $data = [];
 
-        $active_service_category_id = Service::active()->where('finder_id',$finder_id)->lists('service_category_id');
+        $active_service_category_id = Service::active()->where('finder_id',$finder_id)->lists('servicecategory_id');
 
         $data['service_categories'] = [];
 
-        if(!empty($active_service_category_id)){
+        if(!empty($active_service_category_id)){    
 
             $active_service_category_id  = array_map('intval',$active_service_category_id);
 
@@ -5039,6 +5039,17 @@ class TransactionController extends \BaseController {
         }
 
         $data['sale_done_by'] = $this->utilities->getVendorTrainer($finder_id);
+
+        $data['vendor_membership_type'] = [
+            [
+                'id'=>'gym_studio',
+                'name'=>'Gym / Fitness Studio'
+            ],
+            [
+                'id'=>'pt',
+                'name'=>'Personal Trainer'
+            ]
+        ];
 
         return Response::json($data);
 
