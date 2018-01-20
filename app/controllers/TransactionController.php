@@ -805,6 +805,8 @@ class TransactionController extends \BaseController {
             
             $resp['data']['payment_details'] = $payment_details;
 
+            $resp['data']['payment_modes'] = [];
+
             if(isset($order->amount_final) && $order->amount_final ){
                 $resp['data']['payment_modes'] = $this->getPaymentModes($resp);
             }
