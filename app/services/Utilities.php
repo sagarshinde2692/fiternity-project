@@ -2587,12 +2587,12 @@ Class Utilities {
             'amount'=>(string)$fitcash_amount,
             'title1'=>strtoupper('<b>review</b>'),
             'title2'=>strtoupper('<b>₹'.$fitcash_amount.'</b> FITCASH+'),
-            'description'=>'<b>Post  your  trial</b>  make  sure  you  review  your  experience  on  this  tab  &  get  <b>₹'.$fitcash_amount.'  Fitcash+</b>  in  your  Fitternity  Wallet  that  can  be  used  to  purchase  your  membership',
+            'description'=>'<b>Post    your    trial</b>    make    sure    you    review    your    experience    on    this    tab    &    get    <b>₹'.$fitcash_amount.'    Fitcash+</b>    in    your    Fitternity    Wallet    that    can    be    used    to    purchase    your    membership',
         ];
 
         $response['rewards'] = [
-            'title'=>strtoupper('use  fitcash+  to  buy  membership  &  win  below  rewards'),
-            'description'=>'Buy  Membership  at  <b>lowest  price</b>  &  choose  a  complimentary  rewad  from  the  options  below',
+            'title'=>strtoupper('use    fitcash+    to    buy    membership    &    win    below    rewards'),
+            'description'=>'Buy    Membership    at    <b>lowest    price</b>    &    choose    a    complimentary    rewad    from    the    options    below',
             'items'=>[
                 [
                     'title'=>'Instant Cashback',
@@ -2602,12 +2602,12 @@ Class Utilities {
                 [
                     'title'=>'Merchandise Kit',
                     'image'=>'https://b.fitn.in/gamification/reward/fitness_kit.jpg',
-                    'worth'=>'worth ₹ 2500'
+                    'worth'=>'worth ₹ 2250'
                 ],
                 [
                     'title'=>'Diet Consultation',
                     'image'=>'https://b.fitn.in/gamification/reward/diet_plan.jpg',
-                    'worth'=>'worth ₹ 2500'
+                    'worth'=>'worth ₹ 1499'
                 ]
             ]
         ];
@@ -2629,25 +2629,25 @@ Class Utilities {
 
         $response['features'][] = [
             'image'=>'https://b.fitn.in/global/Tab-app-success-page/tab-membership-success-1.png',
-            'title1'=>strtoupper('fitternity  profile'),
-            'title2'=>strtoupper('on  app  &  website'),   
-            'description'=>"&#9679; <b>Track</b>  your  FitCash  wallet  balance<br/>&#9679;  <b>Renew</b>  membership  with  best  discount  &  offers<br/>&#9679;  <b>Upgrade</b>  membership  by  extending  the  duration  at  initial  price",
+            'title1'=>strtoupper('fitternity    profile'),
+            'title2'=>strtoupper('on    app    &    website'),   
+            'description'=>"&#9679; <b>Track</b>    your    FitCash    wallet    balance<br/>&#9679;    <b>Renew</b>    membership    with    best    discount    &    offers<br/>&#9679;    <b>Upgrade</b>    membership    by    extending    the    duration    at    initial    price",
             'type'=>'profile'
         ];
 
         $response['features'][] = [
             'image'=>'https://b.fitn.in/global/Tab-app-success-page/membership-success-2.png',
-            'title1'=>strtoupper('<b>Onlie  diet</b>'),
+            'title1'=>strtoupper('<b>Onlie    diet</b>'),
             'title2'=>strtoupper('<b>consultation</b>'),
-            'description'=>'Make  the  most  of  your  membership,  with  <b>Fitternity’s  Online  Diet  Consultation</b>  to  improve  your  workout  performance',
+            'description'=>'Make    the    most    of    your    membership,    with    <b>Fitternity’s    Online    Diet    Consultation</b>    to    improve    your    workout    performance',
             'type'=>'diet_plan'
         ];
 
         $response['features'][] = [
             'image'=>'https://b.fitn.in/global/Tab-app-success-page/membership-success-3.png',
-            'title1'=>strtoupper('beat  monotony'),
+            'title1'=>strtoupper('beat    monotony'),
             'title2'=>strtoupper('<b>pay-per-session</b>'),
-            'description'=>'<b>Don’t  let  your  workout  be  monotonous.</b>  Try  different  workouts  around  you  by  only  paying  per  session!',
+            'description'=>'<b>Don’t    let    your    workout    be    monotonous.</b>    Try    different    workouts    around    you    by    only    paying    per    session!',
             'type'=>'pay_per_session'
         ];
 

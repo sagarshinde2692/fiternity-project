@@ -1771,16 +1771,16 @@ class FindersController extends \BaseController {
 				'image'=>'https://b.fitn.in/gamification/reward/cashback.jpg',
 				'amount'=>(string)$fitcash_amount,
 				'title1'=>strtoupper('<b>₹'.$fitcash_amount.'</b> FITCASH+'),
-				'title2'=>strtoupper('Has been added'),
-				'description'=>'Find this on <b>Fitternity Wallet</b> & use it to purchase your membership',
+				'title2'=>strtoupper('Has  been  added'),
+				'description'=>'Find  this  on  <b>Fitternity  Wallet</b>  &  use  it  to  purchase  your  membership',
 			];
 
 			$response['membership'] = [
 				'image'=>'https://b.fitn.in/gamification/reward/cashback.jpg',
 				'amount'=>(string)$fitcash_amount,
-				'title1'=>strtoupper('Membership On'),
-				'title2'=>strtoupper('Lowest prices'),
-				'description'=>'Use this <b>₹'.$fitcash_amount.' off</b> before it gets expired to buy membership on this tab at lowest price with complimentary rewards'
+				'title1'=>strtoupper('Membership  On'),
+				'title2'=>strtoupper('Lowest  prices'),
+				'description'=>'Use  this  <b>₹'.$fitcash_amount.'  off</b>  before  it  gets  expired  to  buy  membership  on  this  tab  at  lowest  price  with  complimentary  rewards'
 			];		
 
 			$response['message'] = "Thanks for your valuable feedback!";
@@ -2343,6 +2343,11 @@ class FindersController extends \BaseController {
 		}
 
 		foreach ($getTrialSchedule as $key => $value) {
+
+			if(isset($getTrialSchedule[$key]['showOnFront']) && !isset($getTrialSchedule[$key]['showOnFront']['kiosk'])){
+
+				unset($getTrialSchedule[$key]); continue;
+			}
 
 			if(empty($value['ratecard'])){
 
