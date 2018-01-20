@@ -4256,6 +4256,30 @@ class FindersController extends \BaseController {
 
 		return Response::json($response,200);
 	}
+
+
+	public function getVendorTrainer($finder_id = false){
+
+		if($this->vendor_token){
+
+			$decodeKioskVendorToken = decodeKioskVendorToken();
+
+	        $vendor = json_decode(json_encode($decodeKioskVendorToken->vendor),true);
+
+	        $finder_id = (int)$vendor['_id'];
+		}
+
+		$getVendorTrainer = [];
+
+		if($finder_id){
+			$getVendorTrainer = $this->utilities->getVendorTrainer($finder_id);
+		}
+		
+		$response['assisted_by'] = $getVendorTrainer;
+		$response['status'] = 200;
+
+		return Response::json($response,200);	
+	}
 	
 
 }

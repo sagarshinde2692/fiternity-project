@@ -2587,12 +2587,12 @@ Class Utilities {
             'amount'=>(string)$fitcash_amount,
             'title1'=>strtoupper('<b>review</b>'),
             'title2'=>strtoupper('<b>₹'.$fitcash_amount.'</b> FITCASH+'),
-            'description'=>'<b>Post your trial</b> make sure you review your experience on this tab & get <b>₹'.$fitcash_amount.' Fitcash+</b> in your Fitternity Wallet that can be used to purchase your membership',
+            'description'=>'<b>Post  your  trial</b>  make  sure  you  review  your  experience  on  this  tab  &  get  <b>₹'.$fitcash_amount.'  Fitcash+</b>  in  your  Fitternity  Wallet  that  can  be  used  to  purchase  your  membership',
         ];
 
         $response['rewards'] = [
             'title'=>strtoupper('use fitcash+ to buy membership & win below rewards'),
-            'description'=>'Buy Membership at <b>lowest price</b> & choose a complimentary rewad from the options below',
+            'description'=>'Buy  Membership  at  <b>lowest  price</b>  &  choose  a  complimentary  rewad  from  the  options  below',
             'items'=>[
                 [
                     'title'=>'Instant Cashback',

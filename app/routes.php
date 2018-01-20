@@ -1099,3 +1099,5 @@ Route::get('transaction/rewardscreen','TransactionController@rewardScreen');
 Route::get('getcustommembershipdetails','TransactionController@getCustomMembershipDetails');
 
 Route::get('verifyvendorkioskpin/{pin}','CustomerController@verifyVendorKioskPin');
+
+Route::get('getvendortrainer/{finder_id?}','FindersController@getVendorTrainer');
