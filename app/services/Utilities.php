@@ -2606,7 +2606,7 @@ Class Utilities {
         Log::info(debug_backtrace()[1]['function']);
         Log::info("Data for isConvinienceFeeApplicable");
         Log::info($data);
-        if($this->vendor_token){
+        if($this->vendor_token || in_array($data['finder_id'],Config::get('app.vendors_without_convenience_fee')) ){
             Log::info("vendor token hai");
             return false;
         }
