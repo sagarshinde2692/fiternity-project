@@ -2623,6 +2623,10 @@ class SchedulebooktrialsController extends \BaseController {
             return Response::json("Can't book anything for you.",400);
         }
 
+        if($this->vendor_token){
+            $data['customer_source'] = 'kiosk';
+        }
+
         try {
 
             $service_id	 				       =	(isset($data['service_id']) && $data['service_id'] != '') ? intval($data['service_id']) : "";
@@ -3140,13 +3144,24 @@ class SchedulebooktrialsController extends \BaseController {
             $this->attachTrialCampaignToCustomer($customer_id,$campaign,$booktrialid);
         }*/
 
-        Log::info('Customer Book Trial : '.json_encode(array('book_trial_details' => Booktrial::findOrFail($booktrialid))));
+        // Log::info('Customer Book Trial : '.json_encode(array('book_trial_details' => Booktrial::findOrFail($booktrialid))));
 
         if(isset($data['temp_id'])){
             $delete = Tempbooktrial::where('_id', $data['temp_id'])->delete();
         }
 
         $resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'code' => $code, 'message' => "Book a Trial");
+
+        if($this->vendor_token){
+
+            $item = [];
+
+            $item['booked_locate'] = 'booked';
+
+            $resp['kiosk'] = $this->utilities->trialBookedLocateScreen($item);
+
+        }
+
         return Response::json($resp,200);
     }
 
@@ -5977,8 +5992,13 @@ class SchedulebooktrialsController extends \BaseController {
         $finder_name = "";
         $finder_location = "";
         $finder_address = "";
+        $finder_id = "";
 
         $finder = Finder::with(array('city'=>function($query){$query->select('name','slug');}))->with(array('location'=>function($query){$query->select('name','slug');}))->find((int)$ratecard['finder_id'],array('_id','title','location_id','contact','lat','lon','manual_trial_auto','city_id'));
+
+        if(isset($finder['_id']) && $finder['_id'] != ""){
+            $finder_id = $finder['_id'];
+        }
 
         if(isset($finder['title']) && $finder['title'] != ""){
             $finder_name = ucwords($finder['title']);
@@ -6023,17 +6043,17 @@ class SchedulebooktrialsController extends \BaseController {
 
         $booking_details_data["finder_name_location"] = ['field'=>'BOOKING AT','value'=>$finder_name.", ".$finder_location,'position'=>$position++];
 
-        $booking_details_data["service_name"] = ['field'=>'SERVICE NAME','value'=>$service['name'],'position'=>$position++];
+        $booking_details_data["service_name"] = ['field'=>'SERVICE','value'=>$service['name'],'position'=>$position++,'image'=>'https://b.fitn.in/global/tabapp-homescreen/freetrail-summary/service.png'];
 
         $booking_details_data["service_duration"] = ['field'=>'DURATION','value'=>$service_duration,'position'=>$position++];
 
-        $booking_details_data["start_date"] = ['field'=>'DATE','value'=>'-','position'=>$position++];
+        $booking_details_data["start_date"] = ['field'=>'DAY & DATE','value'=>'-','position'=>$position++,'image'=>'https://b.fitn.in/global/tabapp-homescreen/freetrail-summary/dayanddate.png'];
 
         $booking_details_data["start_time"] = ['field'=>'TIME','value'=>'-','position'=>$position++];
 
         $booking_details_data["address"] = ['field'=>'ADDRESS','value'=>'','position'=>$position++];
 
-        $booking_details_data["price"] = ['field'=>'PRICE','value'=>'Free Via Fitternity','position'=>$position++];
+        $booking_details_data["price"] = ['field'=>'AMOUNT','value'=>'Free Via Fitternity','position'=>$position++,'image'=>'https://b.fitn.in/global/tabapp-homescreen/freetrail-summary/amount.png'];
 
         if($poc != ""){ 
             $booking_details_data["poc"] = ['field'=>'POINT OF CONTACT','value'=>$poc,'position'=>$position++];
@@ -6044,7 +6064,7 @@ class SchedulebooktrialsController extends \BaseController {
         }
 
         if(isset($item['schedule_date']) && $item['schedule_date'] != ""){
-            $booking_details_data['start_date']['value'] = date('d-m-Y (l)',strtotime($item['schedule_date']));
+            $booking_details_data['start_date']['value'] = date('l d-m-Y (l)',strtotime($item['schedule_date']));
         }
 
         if(isset($item['preferred_starting_date']) && $item['preferred_starting_date'] != ""){
@@ -6149,10 +6169,32 @@ class SchedulebooktrialsController extends \BaseController {
             $booking_details_data['finder_name_location']['value'] = $finder_name;
         }
 
+        if($this->vendor_token && in_array($item['type'],["booktrials","workout-session"])){
+            $booking_details_data = array_only($booking_details_data, ['service_name','price','start_date']);
+        }
+
+       
         $booking_details_all = [];
+
         foreach ($booking_details_data as $key => $value) {
 
-            $booking_details_all[$value['position']] = ['field'=>$value['field'],'value'=>$value['value']];
+            switch ($key) {
+                case 'service_name':
+                case 'price':
+                case 'start_date':
+                    $booking_details_all[$value['position']] = [
+                        'field'=>$value['field'],
+                        'value'=>$value['value'],
+                        'image'=>$value['image']
+                    ];
+                    break;
+                default: 
+                    $booking_details_all[$value['position']] = [
+                        'field'=>$value['field'],
+                        'value'=>$value['value']
+                    ];
+                    break;
+            }            
         }
 
         foreach ($booking_details_all as $key => $value) {
@@ -6164,6 +6206,9 @@ class SchedulebooktrialsController extends \BaseController {
         }
 
         $response = array('status' => 200,'summary' => $booking_details);
+
+        $response['assisted_by_image'] = "https://b.fitn.in/global/tabapp-homescreen/freetrail-summary/trainer.png";
+        $response['assisted_by'] = $this->utilities->getVendorTrainer($finder_id);
 
         return Response::json($response, $response['status']);
 
@@ -6354,6 +6399,12 @@ class SchedulebooktrialsController extends \BaseController {
                 'booktrial_id'=> (int)$booktrial['_id'],
                 'kiosk_form_url'=>$kiosk_form_url
             ];
+
+            $data = [
+                'booked_locate'=>'locate'
+            ];
+
+            $response = array_merge($response,$this->utilities->trialBookedLocateScreen($data));
         }
 
         return Response::json($response,200);

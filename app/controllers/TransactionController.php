@@ -16,8 +16,7 @@ use App\Services\Utilities as Utilities;
 use App\Services\CustomerReward as CustomerReward;
 use App\Services\CustomerInfo as CustomerInfo;
 use App\Notification\CustomerNotification as CustomerNotification;
-
-
+use App\Services\Fitapi as Fitapi;
 
 class TransactionController extends \BaseController {
 
@@ -30,6 +29,7 @@ class TransactionController extends \BaseController {
     protected $customerreward;
     protected $membership_array;
     protected $customernotification;
+    protected $fitapi;
 
     public function __construct(
         CustomerMailer $customermailer,
@@ -39,7 +39,8 @@ class TransactionController extends \BaseController {
         FinderSms $findersms,
         Utilities $utilities,
         CustomerReward $customerreward,
-        CustomerNotification $customernotification
+        CustomerNotification $customernotification,
+        Fitapi $fitapi
     ) {
         parent::__construct();
         $this->customermailer       =   $customermailer;
@@ -50,6 +51,7 @@ class TransactionController extends \BaseController {
         $this->utilities            =   $utilities;
         $this->customerreward       =   $customerreward;
         $this->customernotification =   $customernotification;
+        $this->fitapi               =   $fitapi;
         $this->ordertypes           =   array('memberships','booktrials','workout-session','healthytiffintrail','healthytiffinmembership','3daystrial','vip_booktrials', 'events');
         $this->appOfferDiscount     =   Config::get('app.app.discount');
         $this->appOfferExcludedVendors 				= Config::get('app.app.discount_excluded_vendors');
@@ -86,6 +88,17 @@ class TransactionController extends \BaseController {
             return Response::json(array('status' => 404,'message' =>'type field is required'), $this->error_status);
         }
 
+        if($this->vendor_token){
+
+            $data['customer_source'] = 'kiosk';
+
+            $decodeKioskVendorToken = decodeKioskVendorToken();
+
+            $vendor = json_decode(json_encode($decodeKioskVendorToken->vendor),true);
+
+            $data['finder_id'] = (int)$vendor['_id'];
+        }
+
         $rules = array(
             'customer_name'=>'required',
             'customer_email'=>'required|email',
@@ -99,8 +112,12 @@ class TransactionController extends \BaseController {
         if(in_array(substr($data["customer_phone"], -10), $asshole_numbers)){
             return Response::json("Can't book anything for you.", $this->error_status);
         }
-        if(!isset($data['ratecard_id']) && !isset($data['ticket_id'])){
-            return Response::json(array('status'=>400, 'message'=>'Ratecard Id or ticket Id is required'), $this->error_status);
+
+        if(!isset($data['manual_order'])){
+
+            if(!isset($data['ratecard_id']) && !isset($data['ticket_id'])){
+                return Response::json(array('status'=>400, 'message'=>'Ratecard Id or ticket Id is required'), $this->error_status);
+            }
         }
 
         if(isset($data['finder_id']) && $data['finder_id'] != ""){
@@ -146,15 +163,28 @@ class TransactionController extends \BaseController {
         //     $rules = array_merge($rules,$diet_plan_rules);
         // }
 
+        if(isset($data['manual_order']) && $data['manual_order']){
+
+            $manual_order_rules = [
+                'service_category_id'=>'required',
+                'validity'=>'required',
+                'validity_type'=>'required',
+                'amount'=>'required',
+                'service_name'=>'required'
+            ];
+
+            $rules = array_merge($rules,$manual_order_rules);
+        }
+
         $validator = Validator::make($data,$rules);
 
         if ($validator->fails()) {
             return Response::json(array('status' => 404,'message' => error_message($validator->errors())),$this->error_status);
         }
 
-        if(isset($data['wallet']) && !$data['wallet']){
+        /*if(isset($data['wallet']) && !$data['wallet']){
             $data['paymentmode_selected'] = 'paymentgateway';
-        }
+        }*/
 
         if(isset($data['paymentmode_selected']) && $data['paymentmode_selected'] != ""){
 
@@ -236,6 +266,17 @@ class TransactionController extends \BaseController {
 
             $data = array_merge($data,$ratecardDetail['data']);
 
+        }
+
+        if(isset($data['manual_order']) && $data['manual_order']){
+
+            $manualOrderDetail = $this->getManualOrderDetail($data);
+
+            if($manualOrderDetail['status'] != 200){
+                return Response::json($manualOrderDetail,$this->error_status);
+            }
+
+            $data = array_merge($data,$manualOrderDetail['data']);
         }
 
         if($payment_mode=='cod'){
@@ -768,6 +809,8 @@ class TransactionController extends \BaseController {
             
             $resp['data']['payment_details'] = $payment_details;
 
+            $resp['data']['payment_modes'] = [];
+
             if(isset($order->amount_final) && $order->amount_final ){
                 $resp['data']['payment_modes'] = $this->getPaymentModes($resp);
             }
@@ -778,6 +821,24 @@ class TransactionController extends \BaseController {
             $data_otp = array_only($data,['finder_id','order_id','service_id','ratecard_id','payment_mode','finder_vcc_mobile','finder_vcc_email','customer_name','service_name','service_duration','finder_name']);
 
             $data_otp['action'] = "vendor_otp";
+
+            if(isset($data['assisted_by']) && isset($data['assisted_by']['mobile']) && $data['assisted_by']['mobile'] != ""){
+
+                $finder_vcc_mobile = explode(",",$data['finder_vcc_mobile']);
+
+                $finder_vcc_mobile[] = $data['assisted_by']['mobile'];
+
+                $data_otp['finder_vcc_mobile'] = implode(",", $finder_vcc_mobile);
+            }
+
+            if(isset($data['assisted_by']) && isset($data['assisted_by']['email']) && $data['assisted_by']['email'] != ""){
+
+                $finder_vcc_email = explode(",",$data['finder_vcc_email']);
+
+                $finder_vcc_email[] = $data['assisted_by']['email'];
+
+                $data_otp['finder_vcc_email'] = implode(",", $finder_vcc_email);
+            }
 
             $addTemp_flag  = true;
 
@@ -839,6 +900,20 @@ class TransactionController extends \BaseController {
             $resp['data']['verify_otp_url'] = Config::get('app.url')."/kiosk/vendor/verifyotp";
             $resp['data']['resend_otp_url'] = Config::get('app.url')."/temp/regenerateotp/".$otp_data['temp_id'];
 
+        }
+
+        $resp['data']['assisted_by'] = $this->utilities->getVendorTrainer($data['finder_id']);
+
+        $resp['data']['assisted_by_image'] = "https://b.fitn.in/global/tabapp-homescreen/freetrail-summary/trainer.png";
+
+        $resp['data']['vendor_otp_message'] = "Enter the confirmation code provided by your gym/studio to activate your membership";
+
+        if(in_array($data['type'],['booktrials','workout-session'])){
+            $resp['data']['vendor_otp_message'] = " Enter the confirmation code provided by your gym/studio to activate your session";
+        }
+
+        if(isset($data['punching_order']) && $data['punching_order']){
+            $resp['data']['vendor_otp_message'] = "Enter the verification code to confirm the membership.";
         }
 
         return Response::json($resp);
@@ -935,14 +1010,60 @@ class TransactionController extends \BaseController {
             $temp->save();
         }
 
-        $data['status'] = 'success';
-        $data['order_success_flag'] = 'kiosk';
-        $data['order_id'] = (int)$data['order_id'];
-        $data['customer_email'] = $order['customer_email'];
-        $data['send_communication_customer'] = 1;
-        $data['send_communication_vendor'] = 1;
+        if(in_array($order['type'],['booktrials','workout-session'])){
 
-        return $this->successCommon($data);
+            $data = [];
+
+            $data['status'] = 'success';
+            $data['order_success_flag'] = 'admin';
+            $data['order_id'] = (int)$order['_id'];
+            $data['customer_name'] = $order['customer_name'];
+            $data['customer_email'] = $order['customer_email'];
+            $data['customer_phone'] = $order['customer_phone'];
+            $data['finder_id'] = (int)$order['finder_id'];
+            $data['service_name'] = $order['service_name'];
+            $data['type'] = $order['type'];
+            $data['premium_session'] = true;
+
+            if(isset($order['start_date']) && $order['start_date'] != ""){
+                $data['schedule_date'] = date('d-m-Y',strtotime($order['start_date']));
+            }
+
+            if(isset($order['start_time']) && $order['start_time'] != "" && isset($order['end_time']) && $order['end_time'] != ""){
+                $data['schedule_slot'] = $order['start_time']."-".$order['end_time'];
+            }
+
+            if(isset($order['schedule_date']) && $order['schedule_date'] != ""){
+                $data['schedule_date'] = $order['schedule_date'];
+            }
+
+            if(isset($order['schedule_slot']) && $order['schedule_slot'] != ""){
+                $data['schedule_slot'] = $order['schedule_slot'];
+            }
+
+            $storeBooktrial = $this->fitapi->storeBooktrial($data);
+
+            if($storeBooktrial['status'] == 200){
+
+                return Response::json($storeBooktrial['data'],$status);
+
+            }else{
+
+                return Response::json(['status' => 400, "message" => "Internal Error Please Report"],$status);
+            }
+
+        }else{
+
+            $data['status'] = 'success';
+            $data['order_success_flag'] = 'kiosk';
+            $data['order_id'] = (int)$data['order_id'];
+            $data['customer_email'] = $order['customer_email'];
+            $data['send_communication_customer'] = 1;
+            $data['send_communication_vendor'] = 1;
+
+            return $this->successCommon($data);
+
+        } 
 
     }
 
@@ -2250,6 +2371,83 @@ class TransactionController extends \BaseController {
         return (int) $delay;
     }
 
+    public function getManualOrderDetail($data){
+
+        $data['ratecard_remarks']  = (isset($data['remarks'])) ? $data['remarks'] : "";
+        $data['duration'] = (isset($data['duration'])) ? $data['duration'] : "";
+        $data['duration_type'] = (isset($data['duration_type'])) ? $data['duration_type'] : "";
+
+        $data['service_duration'] = $data['validity']." ".ucwords($data['validity_type']);
+
+        if($data['validity'] > 1){
+
+            $data['service_duration'] = $data['validity']." ".ucwords($data['validity_type'])."s";
+        }
+
+        if(isset($data['preferred_starting_date']) && $data['preferred_starting_date']  != '' && $data['preferred_starting_date']  != '-'){
+
+            $preferred_starting_date = date('Y-m-d 00:00:00', strtotime($data['preferred_starting_date']));
+            $data['start_date'] = $preferred_starting_date;
+            $data['preferred_starting_date'] = $preferred_starting_date;
+        }
+
+        if(isset($data['preferred_payment_date']) && $data['preferred_payment_date']  != '' && $data['preferred_payment_date']  != '-'){
+
+            $preferred_payment_date = date('Y-m-d 00:00:00', strtotime($data['preferred_payment_date']));
+            $data['start_date'] = $preferred_payment_date;
+            $data['preferred_payment_date'] = $preferred_payment_date;
+        }
+
+        $data['amount_finder'] = $data['amount'];
+        $data['amount_customer'] = $data['amount'];
+        $data['batch_time'] = "";
+        $data['offer_id'] = false;
+
+        $set_vertical_type = array(
+            'healthytiffintrail'=>'tiffin',
+            'healthytiffinmembership'=>'tiffin',
+            'memberships'=>'workout',
+            'booktrials'=>'workout',
+            'workout-session'=>'workout',
+            '3daystrial'=>'workout',
+            'vip_booktrials'=>'workout',
+            'events'=>'event',
+            'diet_plan'=>'diet_plan'
+        );
+
+        $set_membership_duration_type = array(
+            'healthytiffintrail'=>'trial',
+            'healthytiffinmembership'=>'short_term_membership',
+            'memberships'=>'short_term_membership',
+            'booktrials'=>'trial',
+            'workout-session'=>'workout_session',
+            '3daystrial'=>'trial',
+            'vip_booktrials'=>'vip_trial',
+            'events'=>'event',
+            'diet_plan'=>'short_term_membership'
+        );
+
+        (isset($data['type']) && isset($set_vertical_type[$data['type']])) ? $data['vertical_type'] = $set_vertical_type[$data['type']] : null;
+
+        (isset($data['type']) && isset($set_membership_duration_type[$data['type']])) ? $data['membership_duration_type'] = $set_membership_duration_type[$data['type']] : null;
+
+        (isset($data['duration_day']) && $data['duration_day'] >= 30 && $data['duration_day'] <= 90) ? $data['membership_duration_type'] = 'short_term_membership' : null;
+
+        (isset($data['duration_day']) && $data['duration_day'] > 90 ) ? $data['membership_duration_type'] = 'long_term_membership' : null;
+        $data['secondary_payment_mode'] = 'payment_gateway_tentative';
+        $data['finder_id'] = (int)$data['finder_id'];
+        $data['service_id'] = null;
+        
+        $data['service_name_purchase'] =  $data['service_name'];
+        $data['service_duration_purchase'] =  $data['service_duration'];
+        $data['status'] =  '0';
+        $data['payment_mode'] =  'paymentgateway';
+        $data['source_of_membership'] =  'real time';
+
+        return array('status' => 200,'data' =>$data);
+
+    }
+
     public function getRatecardDetail($data){
 
         $ratecard = Ratecard::find((int)$data['ratecard_id']);
@@ -2447,6 +2645,7 @@ class TransactionController extends \BaseController {
         $data['source_of_membership'] =  'real time';
 
         if($this->convinienceFeeFlag() && $this->utilities->isConvinienceFeeApplicable($ratecard)){
+
             $data['ratecard_flags'] = isset($ratecard['flags']) ? $ratecard['flags'] : array();
         }
 
@@ -3459,6 +3658,11 @@ class TransactionController extends \BaseController {
 
         }
 
+        if(isset($data["assisted_by"]) && isset($data["assisted_by"]["name"]) && $data["assisted_by"] != ""){
+
+            $booking_details_data["assisted_by"] = ['field'=>'ASSISTED BY','value'=>$data["assisted_by"]["name"],'position'=>$position++];
+        }
+
         if(isset($data['start_date']) && $data['start_date'] != ""){
             $booking_details_data['start_date']['value'] = date('d-m-Y (l)',strtotime($data['start_date']));
         }
@@ -3841,6 +4045,8 @@ class TransactionController extends \BaseController {
                 return Response::json($resp,400);   
             }
 
+            $ratecard_data = $ratecard->toArray();
+
             $finder_id = (int)$ratecard['finder_id'];
 
             if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
@@ -3874,7 +4080,7 @@ class TransactionController extends \BaseController {
                 $amount -= $app_discount_amount;
             }
 
-            if($this->convinienceFeeFlag() && $this->utilities->isConvinienceFeeApplicable($ratecard)){
+            if($this->convinienceFeeFlag() && $this->utilities->isConvinienceFeeApplicable($ratecard_data)){
                 
                 $convinience_fee_percent = Config::get('app.convinience_fee');
 
@@ -4723,5 +4929,208 @@ class TransactionController extends \BaseController {
     }
 
     
+    public function locateMembership($code){
+
+        $order_id = (int) $code;
+
+        $decodeKioskVendorToken = decodeKioskVendorToken();
+
+        $vendor = json_decode(json_encode($decodeKioskVendorToken->vendor),true);
+
+        $response = array('status' => 400,'message' =>'Sorry! Cannot locate your membership');
+        
+        $order = Order::active()->where('type','memberships')->where('finder_id',(int)$vendor['_id'])->find($order_id);
+
+        $locate_data = [
+            'code'=>$code,
+            'finder_id'=>(int)$vendor['_id'],
+            'transaction_type'=>'Order'
+        ];
+        
+        $locateTransaction = LocateTransaction::create($locate_data); 
+
+        if(isset($order)){
+
+            $data = [];
+
+            $preferred_starting_date = date('Y-m-d 00:00:00',time());
+
+            $data['start_date'] = $preferred_starting_date;
+            $data['preferred_starting_date'] = $preferred_starting_date;
+            $data['end_date'] = date('Y-m-d 00:00:00', strtotime($data['preferred_starting_date']."+ ".($order->duration_day-1)." days"));
+            $data['locate_membership_date'] = time();
+
+            $order->update($data);
+
+            $locateTransaction->transaction_id = (int)$order['_id'];
+            $locateTransaction->transaction_type = 'Order';
+            $locateTransaction->update();
+
+            $message = "You are good to go your ".ucwords($order['service_duration'])." ".ucwords($order['service_name'])." membership has been activated";
+
+            $createCustomerToken = createCustomerToken((int)$order['customer_id']);
+
+            $response = [
+                'status' => 200,
+                'message' => $message,
+                'token'=>$createCustomerToken,
+                'order_id'=> (int)$order['_id']
+            ];
+
+            $order_data = $order->toArray();
+
+            $order_data['membership_locate'] = 'locate';
+
+            $response = array_merge($response,$this->utilities->membershipBookedLocateScreen($order_data));
+
+        }
+
+        return Response::json($response,200);
+
+    }
+
+    public function rewardScreen(){
+
+        $data = [];
+
+        $data['title'] = 'Complimentry Rewards';
+        $data['banner'] = 'https://b.fitn.in/global/Rewards-page/rewards-web-banner.png';
+        $data['rewards'] = [];
+
+        $data['rewards'][] = [ 
+            'title' => 'Merchandise Kits',
+            'description'=>'We have shaped the perfect fitness kit for you. Strike off these workout essentials from your cheat sheet & get going.',
+            'type'=>'fitness_kit',
+            'items'=>[
+                [
+                    'title'=>'Cross Fit & Gym',
+                    'description'=>"Lifts and Squats is all you need to think about as we have your workout gear ready - <br/> ● Gym Bag<br/> ● Shaker<br/> ● Arm Band<br/> ● T-Shirt<br/> ● Towel<br/> ● Bottle<br/> ● Earphone Detangler",
+                    'products'=>['Gym Bag','Shaker','Arm Band','T-Shirt','Towel','Bottle','Earphone Detangler'],
+                    'image'=>'https://b.fitn.in/global/Rewards-page/crossfit%26gym.png'
+                ],
+                [
+                    'title'=>'Zumba & Dance',
+                    'description'=>"Groove your way to Fitness while we give you a hip workout wear - <br/> ● Tote Bag<br/> ● Bottle<br/> ● Towel<br/> ● Shoe Bag<br/> ● T-Shirt<br/> ● Arm-Band<br/> ● Earphone Detangler",
+                    'products'=>['Tote Bag','Bottle','Towel','Shoe Bag','T-Shirt','Arm-Band','Earphone Detangler'],
+                    'image'=>'https://b.fitn.in/global/Rewards-page/zumba.png'
+                ],
+                [
+                    'title'=>'Yoga & Pilates',
+                    'description'=>"Lifts and Squats is all you need to think about as we have your workout gear ready - <br/> ● Gym Bag <br/> ● Shaker<br/> ● Arm Band<br/> ● T-Shirt<br/> ● Towel<br/> ● Bottle<br/> ● Earphone Detangler",
+                    'products'=>['Gym Bag','Shaker','Arm Band','T-Shirt','Towel','Bottle','Earphone Detangler'],
+                    'image'=>'https://b.fitn.in/global/Rewards-page/yoga%26pilates.png'
+                ],
+            ]
+        ];
+
+        $data['rewards'][] = [
+            'title'=>'Online Diet Consultation',
+            'description'=>'Eating right is 70% & workout is 30% of leading a healthy & fit lifestyle! Fitternity’s got you covered 100% cover.',
+            'type'=>'diet_plan',
+            'items'=>[
+                [
+                    'title'=>'',
+                    'description'=>"Get a detailed diet plan from out expert dietitian for better workout performance & faster goal achivement.<br/><br/>You will get: <br/> ● Telephonic consultation with your dietician<br/> ● Personalised & customised diet plan<br/> ● Regular follow-ups & progress tracking<br/> ● Healthy recepies & hacks",
+                    'products'=>['Telephonic consultation with your dietician','Personalised & customised diet plan','Regular follow-ups & progress tracking','Healthy recepies & hacks'],
+                    'image'=>'https://b.fitn.in/gamification/reward/diet_plan.jpg'
+                ]
+            ]
+
+        ];
+
+        $data['rewards'][] = [
+            'title'=>'Instant Cashback',
+            'description'=>'Who doesn’t love some money in their wallet? Get 5% back on your purchase!',
+            'type'=>'cashback',
+            'items'=>[
+                [
+                    'title'=>'',
+                    'description'=>"Get upto Rs 2500 Fitcash+ in your wallet as cashback which is fully redeemable against any Memberships/Session & Diet Plan purchase on Fitternity. Validity of the cashback varies on the amount and duration of the membership. Cashback chosen as reward can be availed for renewal.",
+                    'products'=>[],
+                    'image'=>'https://b.fitn.in/gamification/reward/cashback1.jpg'
+                ]
+            ]
+
+        ];
+
+        return Response::json($data);
+
+    }
+
+
+    public function getCustomMembershipDetails(){
+
+        $decodeKioskVendorToken = decodeKioskVendorToken();
+
+        $vendor = json_decode(json_encode($decodeKioskVendorToken->vendor),true);
+
+        $finder_id = (int)$vendor['_id'];
+
+        $data = [];
+
+        $active_service_category_id = Service::active()->where('finder_id',$finder_id)->lists('servicecategory_id');
+
+        $data['service_categories'] = [];
+
+        if(!empty($active_service_category_id)){    
+
+            $active_service_category_id  = array_map('intval',$active_service_category_id);
+
+            $service_categories_array = Servicecategory::active()->whereIn('_id',$active_service_category_id)->where('parent_id',0)->lists('name','_id');
+
+            foreach ($service_categories_array as $key => $value) {
+
+                $array = [
+                    'id'=>(int) $key,
+                    'name'=>$value
+                ];
+
+                $data['service_categories'][] = $array;           
+            }
+        }
+
+        $data['validity_type'] = [
+            [
+                'id'=>'day',
+                'name'=>'Day'
+            ],
+            [
+                'id'=>'month',
+                'name'=>'Month'
+            ],
+            [
+                'id'=>'year',
+                'name'=>'Year'
+            ]
+        ];
+
+        $data['validity'] = [];
+        
+        for ($i=1; $i <= 30; $i++) {
+
+            $array = [
+                'id'=> $i,
+                'name'=> (string) $i
+            ];
+
+            $data['validity'][] = $array;
+        }
+
+        $data['sale_done_by'] = $this->utilities->getVendorTrainer($finder_id);
+
+        $data['vendor_membership_type'] = [
+            [
+                'id'=>'gym_studio',
+                'name'=>'Gym / Fitness Studio'
+            ],
+            [
+                'id'=>'pt',
+                'name'=>'Personal Trainer'
+            ]
+        ];
+
+        return Response::json($data);
+
+    }
 
 }
