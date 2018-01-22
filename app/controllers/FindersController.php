@@ -2350,7 +2350,12 @@ class FindersController extends \BaseController {
 
 		foreach ($getTrialSchedule as $key => $value) {
 
-			if(isset($getTrialSchedule[$key]['showOnFront']) && !in_array('kiosk',$getTrialSchedule[$key]['showOnFront'])){
+			/*if(isset($getTrialSchedule[$key]['showOnFront']) && !in_array('kiosk',$getTrialSchedule[$key]['showOnFront'])){
+
+				unset($getTrialSchedule[$key]); continue;
+			}*/
+
+			if(isset($getTrialSchedule[$key]['showOnFront']) && !$getTrialSchedule[$key]['showOnFront']){
 
 				unset($getTrialSchedule[$key]); continue;
 			}
