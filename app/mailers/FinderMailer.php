@@ -643,10 +643,12 @@ Class FinderMailer extends Mailer {
 
 		$data['fitternity_email'] = [
 			'dharatanna@fitternity.com',
-			'pranjalisalvi@fitternity.com'
+			'pranjalisalvi@fitternity.com',
+			'rahulsachdev@fitternity.com',
+			'vaidehidesai@fitternity.com'
 		];
 
-		if(isset($data['city_id']) && $data['city_id'] != ""){
+		/*if(isset($data['city_id']) && $data['city_id'] != ""){
 			
 			switch ($data['city_id']) {
 				case 1 : 
@@ -688,7 +690,7 @@ Class FinderMailer extends Mailer {
 				default:
 					break;
 			}
-		}
+		}*/
 
 		$user_email = $data['fitternity_email'];
 		$user_name = 'Fitternity Team';
