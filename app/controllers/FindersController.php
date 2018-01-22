@@ -45,9 +45,13 @@ class FindersController extends \BaseController {
 
         $vendor_token = Request::header('Authorization-Vendor');
 
+        $this->kiosk_app_version = false;
+
         if($vendor_token){
 
             $this->vendor_token = true;
+
+            $this->kiosk_app_version = (float)Request::header('App-Version');
 		}
 
 		$this->error_status = ($this->vendor_token) ? 200 : 400;
@@ -522,6 +526,7 @@ class FindersController extends \BaseController {
 					foreach ($finder['services'] as $key => $service){
 
 						if(!isset($service['showOnFront']) || ((isset($service['showOnFront']) && $service['showOnFront']))){
+						// if(!isset($service['showOnFront']) || ((isset($service['showOnFront']) && in_array('web', $service['showOnFront'])))){ dhruv code
 
 
 
@@ -2458,7 +2463,11 @@ class FindersController extends \BaseController {
 
 		foreach ($items as $k => $item) {
 
+			// $device = $this->vendor_token ? 'kiosk' : 'web';
+			
+			// if(!isset($item['showOnFront']) || ((isset($item['showOnFront']) && in_array($device, $item['showOnFront'])))){ dhruv code
 			if(!isset($item['showOnFront']) || ((isset($item['showOnFront']) && $item['showOnFront']))){
+
 				$extra_info = array();
 
 			/*$extra_info[0] = array(
@@ -4089,42 +4098,74 @@ class FindersController extends \BaseController {
 						"type"=>'memberships'
 					],
 					[
-						"title"=>"Schedule New Bookings",
-						"description"=>"Pick a day & slot that works for you and get started",
-						"image"=>"https://b.fitn.in/global/tabapp-homescreen/book-instant-trial-small.jpg",
-						"banner_image"=>"https://b.fitn.in/global/tabapp-homescreen/book-instant-trial-big-1.jpg",
-						"id"=>6,
-						'type'=>'booktrials'
-					],
-					[
-						"title"=>"Activate Fitternity Membership",
-						"description"=>"Quick step to activate your membership",
-						"image"=>"https://b.fitn.in/global/tabapp-homescreen/membership-small.jpg",
-						"banner_image"=>"https://b.fitn.in/global/tabapp-homescreen/membership1-big1.jpg",
-						"id"=>5,
-						"type"=>'activate_membership'
-					],
-					[
 						"title"=>"Post a Review",
 						"description"=>"Rate your experience & help fellow fitness enthusiasts.",
 						"image"=>"https://b.fitn.in/global/tabapp-homescreen/post-review-small.png",
 						"banner_image"=>"https://b.fitn.in/global/tabapp-homescreen/postreview-big.png",
 						"id"=>3,
 						'type'=>'post_review'
-					],				
-					[
-						"title"=>"Fitternity Advantage",
-						"description"=>"Buy through Fitterntiy & get access to these amazing rewards",
-						"image"=>"https://b.fitn.in/global/tabapp-homescreen/reward-small.jpg",
-						"banner_image"=>"https://b.fitn.in/global/tabapp-homescreen/rewards-big-picture-1.jpg",
-						"id"=>7,
-						'type'=>'rewards'
-					],
+					]
 				],
 				"title"=>"Welcome to ".ucwords($finder['title']),
 				"powered"=>"Powered by Fitternity"
 			]
 		];
+
+
+		if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.08){
+
+			$response["response"]["options"]= [
+				[
+					"title"=>"Access Fitternity Booking",
+					"description"=>"Quick step to activate your trial/session",
+					"image"=>"https://b.fitn.in/global/tabapp-homescreen/access-trials-small.png",
+					"banner_image"=>"https://b.fitn.in/global/tabapp-homescreen/accesstrial-big-1.png",
+					"id"=>1,
+					'type'=>'access_booktrial'
+				],
+				[
+					"title"=>"Buy Membership",
+					"description"=>"Quick buy with free rewards & flexible payment options.",
+					"image"=>"https://b.fitn.in/global/tabapp-homescreen/explorememberships-small.png",
+					"banner_image"=>"https://b.fitn.in/global/tabapp-homescreen/explorememberships-big-1.png",
+					"id"=>2,
+					"type"=>'memberships'
+				],
+				[
+					"title"=>"Schedule New Bookings",
+					"description"=>"Pick a day & slot that works for you and get started",
+					"image"=>"https://b.fitn.in/global/tabapp-homescreen/book-instant-trial-small.jpg",
+					"banner_image"=>"https://b.fitn.in/global/tabapp-homescreen/book-instant-trial-big-1.jpg",
+					"id"=>6,
+					'type'=>'booktrials'
+				],
+				[
+					"title"=>"Activate Fitternity Membership",
+					"description"=>"Quick step to activate your membership",
+					"image"=>"https://b.fitn.in/global/tabapp-homescreen/membership-small.jpg",
+					"banner_image"=>"https://b.fitn.in/global/tabapp-homescreen/membership1-big1.jpg",
+					"id"=>5,
+					"type"=>'activate_membership'
+				],
+				[
+					"title"=>"Post a Review",
+					"description"=>"Rate your experience & help fellow fitness enthusiasts.",
+					"image"=>"https://b.fitn.in/global/tabapp-homescreen/post-review-small.png",
+					"banner_image"=>"https://b.fitn.in/global/tabapp-homescreen/postreview-big.png",
+					"id"=>3,
+					'type'=>'post_review'
+				],				
+				[
+					"title"=>"Fitternity Advantage",
+					"description"=>"Buy through Fitterntiy & get access to these amazing rewards",
+					"image"=>"https://b.fitn.in/global/tabapp-homescreen/reward-small.jpg",
+					"banner_image"=>"https://b.fitn.in/global/tabapp-homescreen/rewards-big-picture-1.jpg",
+					"id"=>7,
+					'type'=>'rewards'
+				],
+			];
+		}
+
 
 		return Response::json($response,$response['status']);
 	}
