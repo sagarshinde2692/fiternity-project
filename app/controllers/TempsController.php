@@ -433,14 +433,19 @@ class TempsController extends \BaseController {
 
                     $customer_data['customerToken'] = $customerToken;
 
+                    if($temp['source'] == 'kiosk' && $this->kiosk_app_version &&  $this->kiosk_app_version >= 1.08){
+
+                        $customer_data = [$customer_data];
+                    }
+
                 }
 
-                if($temp['source'] == 'kiosk' && $this->kiosk_app_version &&  $this->kiosk_app_version >= 1.07){
+                if($temp['source'] == 'kiosk' && $this->kiosk_app_version &&  $this->kiosk_app_version == 1.07){
 
-                    $customer_data = [$customer_data]; //$this->getAllCustomersByPhone($temp);
+                    $customer_data = $this->getAllCustomersByPhone($temp);
 
                 }
-
+                
                 $return = array('status' => 200,'verified' => $verified,'token'=>$customerToken,'trial_booked'=>false,'customer_data'=>$customer_data,'fitternity_no'=>$fitternity_no, 'message'=>'Successfully Verified');
 
                 if($temp->action == "booktrials"){
@@ -517,7 +522,7 @@ class TempsController extends \BaseController {
 
                                 $customer_data['customerToken'] = $customerToken;
 
-                                if($temp['source'] == 'kiosk' && $this->kiosk_app_version && $this->kiosk_app_version >= 1.07){
+                                if($temp['source'] == 'kiosk' && $this->kiosk_app_version && $this->kiosk_app_version >= 1.08){
 
                                     $customer_data = [$customer_data];
                                 }
@@ -631,7 +636,7 @@ class TempsController extends \BaseController {
 
                             $customer_data['customerToken'] = $customerToken;
 
-                            if($temp['source'] == 'kiosk' && $this->kiosk_app_version && $this->kiosk_app_version >= 1.07){
+                            if($temp['source'] == 'kiosk' && $this->kiosk_app_version && $this->kiosk_app_version >= 1.08){
 
                                 $customer_data = [$customer_data];
                             }
@@ -655,6 +660,11 @@ class TempsController extends \BaseController {
 
                             $this->utilities->walletTransaction($req);
 
+                        }
+
+                        if($temp['source'] == 'kiosk' && $this->kiosk_app_version &&  $this->kiosk_app_version == 1.07){
+
+                            $customer_data = $this->getAllCustomersByPhone($temp);
                         }
 
                         $return = [
@@ -770,7 +780,7 @@ class TempsController extends \BaseController {
 
                             $customer_data['customerToken'] = $customerToken;
 
-                            if($temp['source'] == 'kiosk' && $this->kiosk_app_version && $this->kiosk_app_version >= 1.07){
+                            if($temp['source'] == 'kiosk' && $this->kiosk_app_version && $this->kiosk_app_version >= 1.08){
 
                                 $customer_data = [$customer_data];
                             }
