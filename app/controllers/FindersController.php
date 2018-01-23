@@ -525,8 +525,8 @@ class FindersController extends \BaseController {
 
 					foreach ($finder['services'] as $key => $service){
 
-						if(!isset($service['showOnFront']) || ((isset($service['showOnFront']) && $service['showOnFront']))){
-						// if(!isset($service['showOnFront']) || ((isset($service['showOnFront']) && in_array('web', $service['showOnFront'])))){ dhruv code
+						// if(!isset($service['showOnFront']) || ((isset($service['showOnFront']) && $service['showOnFront']))){
+						if(!isset($service['showOnFront']) || ((isset($service['showOnFront']) && in_array('web', $service['showOnFront'])))){ 
 
 
 
@@ -2355,15 +2355,15 @@ class FindersController extends \BaseController {
 
 		foreach ($getTrialSchedule as $key => $value) {
 
-			/*if(isset($getTrialSchedule[$key]['showOnFront']) && !in_array('kiosk',$getTrialSchedule[$key]['showOnFront'])){
-
-				unset($getTrialSchedule[$key]); continue;
-			}*/
-
-			if(isset($getTrialSchedule[$key]['showOnFront']) && !$getTrialSchedule[$key]['showOnFront']){
+			if(isset($getTrialSchedule[$key]['showOnFront']) && !in_array('kiosk',$getTrialSchedule[$key]['showOnFront'])){
 
 				unset($getTrialSchedule[$key]); continue;
 			}
+
+			/*if(isset($getTrialSchedule[$key]['showOnFront']) && !$getTrialSchedule[$key]['showOnFront']){
+
+				unset($getTrialSchedule[$key]); continue;
+			}*/
 
 			if(empty($value['ratecard'])){
 
@@ -2463,10 +2463,10 @@ class FindersController extends \BaseController {
 
 		foreach ($items as $k => $item) {
 
-			// $device = $this->vendor_token ? 'kiosk' : 'web';
+			$device = $this->vendor_token ? 'kiosk' : 'web';
 			
-			// if(!isset($item['showOnFront']) || ((isset($item['showOnFront']) && in_array($device, $item['showOnFront'])))){ dhruv code
-			if(!isset($item['showOnFront']) || ((isset($item['showOnFront']) && $item['showOnFront']))){
+			if(!isset($item['showOnFront']) || ((isset($item['showOnFront']) && in_array($device, $item['showOnFront'])))){
+			// if(!isset($item['showOnFront']) || ((isset($item['showOnFront']) && $item['showOnFront']))){
 
 				$extra_info = array();
 
@@ -2559,7 +2559,7 @@ class FindersController extends \BaseController {
 				'location_id' => $item['location_id'],
 				'offer_available' => isset($item['offer_available']) ? $item['offer_available'] : false,
 				'short_description' => isset($item['short_description']) ? $item['short_description'] : "",
-				'showOnFront'=>(isset($item['showOnFront'])) ? $item['showOnFront'] : []
+				// 'showOnFront'=>(isset($item['showOnFront'])) ? $item['showOnFront'] : []
 			);
 
 			// if(isset($item['offer_available']) && $item['offer_available'] == true && !in_array($finder_id, Config::get('app.hot_offer_excluded_vendors'))){
