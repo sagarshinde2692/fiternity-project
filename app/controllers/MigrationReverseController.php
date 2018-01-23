@@ -656,10 +656,12 @@ class MigrationReverseController extends \BaseController {
             }//offering
 //                 var_dump($new_offering_ids_arr);exit();
 
+            $trainer_contacts = [];
 
             if(isset($Finder->contact['point_of_contact'])){
                 $finder_poc_for_customer_mobile_arr = $finder_poc_for_customer_name_arr = [];
                 $finder_vcc_email_arr = $finder_vcc_mobile_arr = [];
+                
 
                 foreach ($Finder->contact['point_of_contact'] as $key => $value) {
                     if(in_array('customer_display', $value['used_for'])){
@@ -672,6 +674,22 @@ class MigrationReverseController extends \BaseController {
                         if($value['landline'] != ""){
                             array_push($finder_poc_for_customer_mobile_arr, $value['landline']);
                         }
+                    }else if(in_array('trainer_contact', $value['used_for'])){
+                        $trainer = [
+                            'name'  => "",
+                            'mobile'=> "",
+                            'email'=> ""
+                        ];
+                        if($value['name'] != ""){
+                           $trainer['name'] = $value['name'];
+                        }
+                        if($value['mobile'] != ""){
+                           $trainer['mobile'] = $value['mobile'];
+                        }
+                        if($value['email'] != ""){
+                           $trainer['email'] = $value['email'];
+                        }
+                        array_push($trainer_contacts, $trainer);
                     }else{
                         if($value['email'] != ""){
                             array_push($finder_vcc_email_arr, $value['email']);
@@ -780,7 +798,10 @@ class MigrationReverseController extends \BaseController {
                 'offer_texts'                           =>  isset($Finder->offer_texts) ? $Finder->offer_texts : array(),
                 'inoperational_dates'                   =>  isset($Finder->inoperational_dates) ? $Finder->inoperational_dates : array(),
                 'servicesfilter' 			            =>  (isset($Finder->filter) && isset($Finder->filter['servicesfilter'])) ? $Finder->filter['servicesfilter'] : [],
+                'trainer_contacts'                      =>  $trainer_contacts
             ];
+
+    
 
             $insertData['vip_trial']                    = (isset($Finder->vip_trial) &&  $Finder['vip_trial'] == true ) ? '1' : '0';
             $insertData['finder_type']                    = (isset($insertData['commercial_type']) && !empty(($insertData['commercial_type'])) ) ? (( $insertData['commercial_type'] == 1  || $insertData['commercial_type'] == 3 ) ? 1: 0) :0;
