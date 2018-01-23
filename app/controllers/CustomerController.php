@@ -5778,7 +5778,7 @@ class CustomerController extends \BaseController {
 			return Response::json(['status' => 400,'message' =>$this->errorMessage($validator->errors())],400);
 		}
 
-		Booktrial::$withoutAppends=true;
+		Finder::$withoutAppends=true;
 
 		$finder = Finder::find((int)$data['finder_id']);
 
@@ -5804,6 +5804,15 @@ class CustomerController extends \BaseController {
 			}
 
 			$data['customer_phone'] = $data['customer_number'];
+
+			$captureData = [
+                "customer_phone" => $data['customer_phone'],
+                "finder_id" => $data['finder_id'],
+                "city_id" => $finder->city_id,
+                "capture_type" => "sendVendorNumber"
+            ];
+
+            $this->utilities->addCapture($captureData);
 
 			$this->customersms->sendVendorNumber($data);
 
