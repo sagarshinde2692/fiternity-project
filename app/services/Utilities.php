@@ -2742,7 +2742,7 @@ Class Utilities {
 
     public function addAssociateAgent($order){
 
-        if(!isset($order->paymentLinkEmailCustomerTiggerCount)){
+        if(!isset($order->paymentLinkEmailCustomerTiggerCount) && isset($order->type) && $order->type == 'memberships'){
 
             $date = new \DateTime(date('d-m-Y H:i:s',strtotime("-1 month",time())));
 
