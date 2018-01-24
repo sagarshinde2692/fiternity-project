@@ -2740,5 +2740,30 @@ Class Utilities {
         return $assisted_by;
     }
 
+    public function addAssociateAgent($order){
+
+        if(!isset($order->paymentLinkEmailCustomerTiggerCount) && isset($order->type) && $order->type == 'memberships'){
+
+            $date = new \DateTime(date('d-m-Y H:i:s',strtotime("-1 month",time())));
+
+            $agentPresentOrder = \Order::where('status','!=','1')
+                ->whereIn('type',['memberships'])
+                ->where('customer_id',(int) $order['customer_id'])
+                ->where('created_at','>=',$date)
+                ->where('person_followingup','exists',true)
+                ->where('person_followingup','!=','')
+                ->where('paymentLinkEmailCustomerTiggerCount','exists',true)
+                ->orderBy('_id','ASC')->first();
+
+            if($agentPresentOrder){
+                $order->person_followingup = $agentPresentOrder->person_followingup;
+                $order->update();
+            }
+        }
+
+        return 'success';
+
+    }
+
 
 }
