@@ -515,6 +515,10 @@ Class CustomerReward {
 
                 $myreward->success_date = date('Y-m-d H:i:s',time());
 
+                if(isset($data['tshirt_size'])){
+                    $myreward->tshirt_size = $data['tshirt_size'];
+                }
+
                 $myreward->update();
 
                 if(isset($myreward->finder_id) && $myreward->finder_id != ""){

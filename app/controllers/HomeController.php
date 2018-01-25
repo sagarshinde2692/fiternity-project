@@ -607,6 +607,7 @@ class HomeController extends BaseController {
             $end_point = "";
             
             $show_other_vendor = false;
+            $why_buy = false;
 
             switch ($type) {
 
@@ -624,6 +625,7 @@ class HomeController extends BaseController {
                     
                     $header = "Booking Confirmed";
                     $show_other_vendor = true;
+                    $why_buy = true;
                     break;
 
                 case 'booktrial':
@@ -642,6 +644,7 @@ class HomeController extends BaseController {
                     
                     $header = "Booking Confirmed";
                     $show_other_vendor = true;
+                    $why_buy = true;
                     break;
                 case 'workoutsession':
                 case 'workout-session':
@@ -686,6 +689,7 @@ class HomeController extends BaseController {
                     
                     $header = "Request Confirmed";
                     $show_other_vendor = true;
+                    $why_buy = true;
                     break;
                 case 'manualautotrial':
                     $subline = "Thank you for choosing Fitternity as your preferred fitness provider.We’ll get back to you shortly with your appointment details.";
@@ -959,7 +963,7 @@ class HomeController extends BaseController {
             $poc = $poc_name = $poc_number = "";
 
             if(isset($item['finder_poc_for_customer_name']) && $item['finder_poc_for_customer_name'] != ""){
-                $poc_name = $item['finder_poc_for_customer_name'];
+                $poc_name = ucwords($item['finder_poc_for_customer_name']);
             }
 
             if(isset($item['finder_poc_for_customer_no']) && $item['finder_poc_for_customer_no'] != ""){
@@ -990,9 +994,9 @@ class HomeController extends BaseController {
 
             $booking_details_data["start_time"] = ['field'=>'START TIME','value'=>'-','position'=>$position++];
 
-            $booking_details_data["address"] = ['field'=>'ADDRESS','value'=>'','position'=>$position++];
+            $booking_details_data["price"] = ['field'=>'AMOUNT','value'=>'Free Via Fitternity','position'=>$position++];
 
-            $booking_details_data["price"] = ['field'=>'PRICE','value'=>'Free Via Fitternity','position'=>$position++];
+            $booking_details_data["address"] = ['field'=>'ADDRESS','value'=>'','position'=>$position++];
 
             $booking_details_data["amount_paid"] = ['field'=>'AMOUNT PAID','value'=>'','position'=>$position++];
 
@@ -1223,24 +1227,57 @@ class HomeController extends BaseController {
             if(in_array($type,["membershipwithpg","membershipwithoutpg","healthytiffinmembership"])){
 
                 $header = "Membership Confirmed";
-                $subline = "Hi ".$item['customer_name'].", your ".$booking_details_data['service_duration']['value']." at ".$booking_details_data["finder_name_location"]['value']." has been confirmed.We have also sent you a confirmation Email and SMS";
+                $subline = "Hi <b>".$item['customer_name']."</b>, your <b>".$booking_details_data['service_duration']['value']."</b> Membership at <b>".$booking_details_data["finder_name_location"]['value']."</b> has been confirmed.We have also sent you a confirmation Email and SMS";
 
                 if($type == "healthytiffinmembership"){
-                    $subline = "Hi ".$item['customer_name'].", your ".$booking_details_data['service_duration']['value']." meal subscription with ".$booking_details_data["finder_name_location"]['value']." has been confirmed.We have also sent you a confirmation Email and SMS";
+                    $subline = "Hi <b>".$item['customer_name']."</b>, your <b>".$booking_details_data['service_duration']['value']."</b> meal subscription with <b>".$booking_details_data["finder_name_location"]['value']."</b> has been confirmed.We have also sent you a confirmation Email and SMS";
                 }
 
                 if(isset($item['payment_mode']) && $item['payment_mode'] == 'cod'){
-                    $subline= "Hi ".$item['customer_name'].", your ".$booking_details_data['service_duration']['value']." at ".$booking_details_data["finder_name_location"]['value']." has been confirmed. It will be activated once we collect your cash payment. We have also sent you a confirmation Email and SMS";
+                    $subline= "Hi <b>".$item['customer_name']."</b>, your <b>".$booking_details_data['service_duration']['value']."</b> Membership at <b>".$booking_details_data["finder_name_location"]['value']."</b> has been confirmed. It will be activated once we collect your cash payment. We have also sent you a confirmation Email and SMS";
                 }
 
                 $booking_details_data = array_only($booking_details_data, ['booking_id','price','address','poc']);
 
             }
 
+            if( isset($item['type']) &&  in_array($item['type'],["booktrials","workout-session"])){
+
+                switch ($item['type']) {
+                    case 'booktrials':
+                        $header = "TRIAL CONFIRMED";
+                        $subline = "Hi <b>".$item['customer_name']."</b>, your free trial for <b>".$booking_details_data['service_name']['value']."</b> at <b>".$booking_details_data["finder_name_location"]['value']."</b> has been confirmed.We have also sent you a confirmation Email and SMS.";
+                        break;
+                    
+                    default:
+                        $header = "WORKOUT SESSION CONFIRMED";
+                        $subline = "Hi <b>".$item['customer_name']."</b>, your Workout Session for <b>".$booking_details_data['service_name']['value']."</b> at <b>".$booking_details_data["finder_name_location"]['value']."</b> has been confirmed by paying ₹".$item['amount'].". We have also sent you a confirmation Email & SMS.";
+                        # code...
+                        break;
+                }
+
+                $booking_details_data = array_only($booking_details_data, ['booking_id','start_date','address','poc','start_time']);
+
+                $booking_details_data['start_date']['value'] = $booking_details_data['start_date']['value']." ".$booking_details_data['start_time']['value'];
+                $booking_details_data['start_date']['field'] = "DATE & TIME";
+
+                unset($booking_details_data['start_time']);
+
+            }
+
+            if($type == "manualmembership" && isset($booking_details_data['booking_id'])){
+                unset($booking_details_data['booking_id']);
+            }
+
             $booking_details_all = [];
             foreach ($booking_details_data as $key => $value) {
 
-                $booking_details_all[$value['position']] = ['field'=>$value['field'],'value'=>$value['value']];
+                if(isset($item['type']) && in_array($item['type'],["memberships","workout-session","booktrials"]) && $key == "address" && isset($item['finder_lat']) && isset($item['finder_lon']) && !isset($_GET['device_type'])){
+                    $booking_details_all[$value['position']] = ['field'=>$value['field'],'value'=>$value['value'],'lat'=>$item['finder_lat'],'lon'=>$item['finder_lon']];
+                }else{
+                    $booking_details_all[$value['position']] = ['field'=>$value['field'],'value'=>$value['value']];
+                }
+                
             }
 
             foreach ($booking_details_all as $key => $value) {
@@ -1317,7 +1354,7 @@ class HomeController extends BaseController {
                 "title"=>"Any Queries? Contact Us",
                 "description"=>"Any Queries? Contact Us",
                 "email"=>"support@fitternity.com",
-                "phone"=>"022-61094444"
+                "phone"=>"+912261094444"
             ];
 
             $feedback = [
@@ -1359,18 +1396,21 @@ class HomeController extends BaseController {
                     }
 
                     if($reward->reward_type == 'diet_plan'){
-                        $reward_details['description'] = "Select convinient date and time for your first diet consultation with our expert dietitian. \n - Telephonic consultation with your dietician \n - Personalised & customised diet plan \n - Regular follow-ups & progress tracking \n - Healthy recepies & hacks";
+                        $reward_details['description'] = "Select convinient date and time for your first diet consultation with our expert dietitian.<ul><li>Telephonic consultation with your dietician</li><li>Personalised & customised diet plan</li><li>Regular follow-ups & progress tracking</li><li>Healthy recepies & hacks</li></ul>";
                         $reward_details['image'] = 'https://b.fitn.in/gamification/reward/diet_plan.jpg';
                     }
 
                     if($reward->reward_type == 'fitness_kit'){
 
-                        $reward_details['tshirt_size'] = [
-                            'S',
-                            'M',
-                            'L',
-                            'XL'
-                        ];
+                        if(isset($item['reward_content']) && is_array($item['reward_content']) && in_array("Breather T-Shirt",$item['reward_content'])){
+
+                            $reward_details['tshirt_size'] = [
+                                'S',
+                                'M',
+                                'L',
+                                'XL'
+                            ];
+                        }
 
                         if(isset($item['reward_content']) && is_array($item['reward_content']) && !empty($item['reward_content'])){
                             $reward_details['description'] = "We have shaped the perfect fitness kit for you. Strike off these workout essentials from your cheat sheet & get going. <br>- ".implode(" <br>- ",$item['reward_content']);
@@ -1387,9 +1427,9 @@ class HomeController extends BaseController {
                     'reward_type' => 'cashback',
                     'finder_name'=> (isset($item['finder_name']) && $item['finder_name'] != "") ? $item['finder_name'] : "",
                     'title'=>'Instant Cashback',
-                    'description'=>'₹'.$item['cashback_detail']['wallet_amount'].'+ has been added in form of FitCash+ in your wallet. You can find it in your profile and use it to explore different wokrkout forms and healthy tiffins.',
+                    'description'=>'₹'.$item['cashback_detail']['wallet_amount'].'+ has been added in form of FitCash+ in your wallet. You can find it in your profile and use it to explore different workout forms and healthy tiffins.<br><br>Your currernt balance is <b>₹'.$fitcash_plus.'</b>',
                     'validity_in_days'=>null,
-                    'image'=>'https://b.fitn.in/gamification/reward/cashback.jpg'
+                    'image'=>'https://b.fitn.in/gamification/reward/cashback2.jpg'
                 ];
 
             }
@@ -1429,7 +1469,8 @@ class HomeController extends BaseController {
                 'reward_details'=>$reward_details,
                 'show_other_vendor' => $show_other_vendor,
                 'all_options_url' => $all_options_url,
-                'customer_auto_register' => $customer_auto_register
+                'customer_auto_register' => $customer_auto_register,
+                'why_buy'=>$why_buy
             ];
 
             if($this->vendor_token){
