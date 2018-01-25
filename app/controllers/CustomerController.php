@@ -3785,7 +3785,7 @@ class CustomerController extends \BaseController {
 			return $this->setReferralData($code);
 		}
 
-		if(strlen($code)==9 && strrpos($code, 'R') == (strlen($code)-1)){
+		if(strlen($code)==9 && substr($code, -1 ) == 'R'){
 			Log::info("inside referral ");
 			$referral = $this->setReferralData($code);
 			Log::info($referral);
