@@ -1307,7 +1307,7 @@ Class CustomerReward {
             $discount_amount = $discount_amount == 0 ? $coupon["discount_percent"]/100 * $price : $discount_amount;
             $discount_amount = intval($discount_amount);
             if(isset($coupon["discount_min"])){
-                $discount_amount = $discount_amount < $coupon["discount_min"] ? $coupon["discount_max"] : $discount_amount;
+                $discount_amount = $discount_amount < $coupon["discount_min"] ? $coupon["discount_min"] : $discount_amount;
             }
             $discount_amount = $discount_amount > $coupon["discount_max"] ? $coupon["discount_max"] : $discount_amount;
             
