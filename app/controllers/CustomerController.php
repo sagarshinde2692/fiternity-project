@@ -3791,6 +3791,9 @@ class CustomerController extends \BaseController {
 			Log::info($referral);
 			if($referral['status']==200){
 				return $referral;
+			}else{
+				$resp 	= 	array('status' => 401,'message' => "Referral code not valid");
+				return $resp;
 			}
 		}
 
