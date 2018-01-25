@@ -1257,7 +1257,7 @@ class HomeController extends BaseController {
 
                 $booking_details_data = array_only($booking_details_data, ['booking_id','start_date','address','poc','start_time']);
 
-                $booking_details_data['start_date']['value'] = $booking_details_data['start_date']['value']." ".$booking_details_data['start_time']['value'];
+                $booking_details_data['start_date']['value'] = $booking_details_data['start_date']['value'].", ".$booking_details_data['start_time']['value'];
                 $booking_details_data['start_date']['field'] = "DATE & TIME";
 
                 unset($booking_details_data['start_time']);
