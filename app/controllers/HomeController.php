@@ -1252,7 +1252,6 @@ class HomeController extends BaseController {
                     default:
                         $header = "WORKOUT SESSION CONFIRMED";
                         $subline = "Hi <b>".$item['customer_name']."</b>, your Workout Session for <b>".$booking_details_data['service_name']['value']."</b> at <b>".$booking_details_data["finder_name_location"]['value']."</b> has been confirmed by paying ₹".$item['amount'].". We have also sent you a confirmation Email & SMS.";
-                        # code...
                         break;
                 }
 
