@@ -194,6 +194,9 @@ class RewardofferController extends BaseController {
         $ratecard       =   Ratecard::where('_id',$ratecard_id)->where('finder_id',$finder_id)->first();
         $service_id = 99999999;
 
+        if(isset($data['service_id']) && $data['service_id']){
+            $service_id     =  (int) $data['service_id'];
+        }
 
         if($ratecard){
 
@@ -218,6 +221,7 @@ class RewardofferController extends BaseController {
         $service_category_id = null;
         $service_category_slug = "";
         $finder_category_id = null;
+        $service_category = false;
 
         if($service){
 
@@ -264,7 +268,7 @@ class RewardofferController extends BaseController {
 
         }else{
 
-            if(!$ratecard && count($order) == 0){
+            if(!$ratecard && count($order) == 0 && !isset($data['admin_get_rewards'])){
                 $resp   =   array('status' => 401,'message' => "Ratecard Not Present");
                 return  Response::json($resp, $this->error_status);
             }
@@ -708,8 +712,8 @@ class RewardofferController extends BaseController {
 
         if(!empty($rewards)){
 
-            $fitness_kit_1 = null;
-            $fitness_kit_2 = null;
+            $fitness_kit_1 = 0;
+            $fitness_kit_2 = 0;
 
             foreach ($rewards as $rewards_key => $rewards_value) {
 
