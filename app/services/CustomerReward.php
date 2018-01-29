@@ -1206,7 +1206,7 @@ Class CustomerReward {
         $coupon = $query->first();
         if(!isset($coupon) && strtolower($couponCode) == "eojfit"){
             $vendorMOU = Vendormou::where("vendors",$ratecard["finder_id"])->where('contract_start_date', '<=', new \DateTime())->where('contract_end_date', '>=', new \DateTime())->first();
-            $coupon = array("code" => "EOJFIT","discount_max" => 2500,"discount_amount" => 0,"discount_min" => 300);
+            $coupon = array("code" => "eojfit","discount_max" => 2500,"discount_amount" => 0,"discount_min" => 300);
             if(isset($vendorMOU)){
                 if(isset($vendorMOU["cos_percentage_normal"])){
                     $vendorMOU["cos_percentage_normal"] = 15;
