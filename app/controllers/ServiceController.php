@@ -223,7 +223,7 @@ class ServiceController extends \BaseController {
 
 
 
-	public function getServiceHomePageDataV1($city = 'mumbai',$cache = false){   
+	public function getServiceHomePageDataV1($city = 'mumbai',$cache = true){   
 
 		$home_by_city = $cache ? Cache::tags('servicehome_by_city_v1')->has($city) : false;
 
@@ -362,7 +362,7 @@ class ServiceController extends \BaseController {
 	}
 
 
-	public function getFooterByCityV1($city = 'mumbai',$cache = false){   
+	public function getFooterByCityV1($city = 'mumbai',$cache = true){   
 
 		$home_by_city = $cache ? Cache::tags('servicehomefooter_by_city_v1')->has($city) : false;
 
