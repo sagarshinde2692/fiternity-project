@@ -338,13 +338,13 @@ class TransactionController extends \BaseController {
                     $data['repetition'] = $order->repetition + 1;
                 }
 
-                if(isset($order->cashback)){
+                /*if(isset($order->cashback)){
                     $order->unset('cashback');
                 }
 
                 if(isset($order->reward_ids)){
                     $order->unset('reward_ids');
-                }
+                }*/
             }
 
         }else{
