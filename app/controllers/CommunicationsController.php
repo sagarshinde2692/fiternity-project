@@ -70,7 +70,6 @@ class CommunicationsController extends \BaseController {
 				return array('status'=>400, 'message'=>'Transaction not found');
 			}
 
-
 			$dates = array('followup_date','last_called_date','preferred_starting_date', 'called_at','subscription_start','start_date','start_date_starttime','end_date', 'order_confirmation_customer', 'start_date', 'start_date_starttime', 'schedule_date', 'schedule_date_time', 'followup_date', 'followup_date_time','missedcall_date','customofferorder_expiry_date','auto_followup_date');
 
 			foreach ($dates as $key => $value){
@@ -91,6 +90,14 @@ class CommunicationsController extends \BaseController {
 			$communication_keys["$sender_class-$label"] = "";
 			$transaction_data->communication_keys = $communication_keys;
 			$transaction_data->update();
+
+			if($label == "bookTrialReminderAfter2Hour" && $transaction_type == 'trial'){
+
+				$url = Config::get('app.url')."/addwallet?customer_id=".$transaction_data["customer_id"]."&booktrial_id=".$transaction_data['_id'];
+
+				$this->utilities->hitUrlAfterDelay($url."&time=Nplus2");
+
+			}
 
 			return $response;
 			
