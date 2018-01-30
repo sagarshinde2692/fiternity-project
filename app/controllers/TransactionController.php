@@ -323,18 +323,32 @@ class TransactionController extends \BaseController {
 
 
         $order = false;
-        if(isset($data['order_id'])){
 
-            $old_order_id = $order_id = $data['_id'] = (int)$data['order_id'];
+        if(isset($data['order_id']) && $data['order_id'] != ""){
+
+            $old_order_id = $order_id = $data['_id'] = intval($data['order_id']);
 
             $order = Order::find((int)$old_order_id);
 
             $data['repetition'] = 1;
-            if($order && isset($order->repetition)){
-                $data['repetition'] = $order->repetition + 1;
+
+            if($order){
+
+                if(isset($order->repetition)){
+                    $data['repetition'] = $order->repetition + 1;
+                }
+
+                if(isset($order->cashback)){
+                    unset($order->cashback);
+                }
+
+                if(isset($order->reward_ids)){
+                    unset($order->reward_ids);
+                }
             }
 
         }else{
+
             $order_id = $data['_id'] = $data['order_id'] = Order::max('_id') + 1;
         }
 
