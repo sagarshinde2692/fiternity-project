@@ -3267,6 +3267,11 @@ class TransactionController extends \BaseController {
                 $req["validity"] = time()+(86400*60);
                 $req['for'] = $time;
 
+                if($time == "Nplus2"){
+                    $req['description'] = "Added FitCash+ as Fitternity Bonus, Expires On : ".date('d-m-Y',time()+(86400*7));
+                    $req["validity"] = time()+(86400*7);
+                }
+
                 $walletTransactionResponse = $this->utilities->walletTransaction($req);
 
                 if($walletTransactionResponse['status'] == 200){
