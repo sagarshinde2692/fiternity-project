@@ -239,7 +239,7 @@ return array(
 		'QrCode' 			=> 'SimpleSoftwareIO\QrCode\Facades\QrCode'
 	),
 
-	'cachetime' 					=> 	10,
+	'cachetime' 					=> 	1440,
 	'perpage' 						=> 	50,
 
 	's3_finder_url'					=> 'https://d3oorwrq3wx4ad.cloudfront.net/f/',

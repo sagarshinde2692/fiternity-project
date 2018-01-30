@@ -86,6 +86,6 @@ return array(
 
 	'prefix' => 'laravel',
 
-	'cache_time'=>30,
+	'cache_time'=>90,
 
 );
