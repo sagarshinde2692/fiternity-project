@@ -82,6 +82,10 @@ class TransactionController extends \BaseController {
             }
         }
 
+        if(isset($data['order_id']) && $data['order_id'] != ""){
+            $data['order_id'] = intval($data['order_id']);
+        }
+
         Log::info('------------transactionCapture---------------',$data);
 
         if(!isset($data['type'])){
@@ -3189,7 +3193,7 @@ class TransactionController extends \BaseController {
 
         $rules = array(
             'customer_id'=>'required',
-            'time'=>'required|in:LPlus15,LPlus30,F1Plus15,PurchaseFirst,RLMinus7,RLMinus1',
+            'time'=>'required|in:LPlus15,LPlus30,F1Plus15,PurchaseFirst,RLMinus7,RLMinus1,Nplus2',
         );
 
         $validator = Validator::make($data,$rules);
@@ -3207,7 +3211,7 @@ class TransactionController extends \BaseController {
         if($customer){
 
             $orderTime = ['LPlus15','LPlus30','PurchaseFirst','RLMinus7','RLMinus1'];
-            $trialTime = ['F1Plus15'];
+            $trialTime = ['F1Plus15','Nplus2'];
 
             $amountArray = [
                 "LPlus15" => 150,
@@ -3215,7 +3219,8 @@ class TransactionController extends \BaseController {
                 "F1Plus15" => 150,
                 "PurchaseFirst" => 150,
                 "RLMinus7" => 150,
-                "RLMinus1" => 150
+                "RLMinus1" => 150,
+                "Nplus2" => 200,
             ];
 
             if(isset($customer->demonetisation)){
@@ -3261,6 +3266,11 @@ class TransactionController extends \BaseController {
                 $req['description'] = "Added FitCash+ as Fitternity Bonus, Expires On : ".date('d-m-Y',time()+(86400*60));
                 $req["validity"] = time()+(86400*60);
                 $req['for'] = $time;
+
+                if($time == "Nplus2"){
+                    $req['description'] = "Added FitCash+ as Fitternity Bonus, Expires On : ".date('d-m-Y',time()+(86400*7));
+                    $req["validity"] = time()+(86400*7);
+                }
 
                 $walletTransactionResponse = $this->utilities->walletTransaction($req);
 
@@ -3348,6 +3358,7 @@ class TransactionController extends \BaseController {
                             $this->customernotification->postTrialFollowup1After15Days($transaction,0);
                         }
                         break;
+                    default : break;
                 }
 
                 return Response::json(array('status' => 200,'message' => 'Success'),200);
