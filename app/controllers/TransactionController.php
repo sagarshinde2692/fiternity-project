@@ -82,6 +82,10 @@ class TransactionController extends \BaseController {
             }
         }
 
+        if(isset($data['order_id']) && $data['order_id'] != ""){
+            $data['order_id'] = intval($data['order_id']);
+        }
+
         Log::info('------------transactionCapture---------------',$data);
 
         if(!isset($data['type'])){
