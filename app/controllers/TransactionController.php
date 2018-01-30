@@ -339,11 +339,11 @@ class TransactionController extends \BaseController {
                 }
 
                 if(isset($order->cashback)){
-                    unset($order->cashback);
+                    $order->unset('cashback');
                 }
 
                 if(isset($order->reward_ids)){
-                    unset($order->reward_ids);
+                    $order->unset('reward_ids');
                 }
             }
 
