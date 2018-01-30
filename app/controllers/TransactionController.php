@@ -678,6 +678,10 @@ class TransactionController extends \BaseController {
             $data["secondary_payment_mode"] = "at_vendor_post";
         }
 
+        if(isset($data['order_id']) && $data['order_id'] != ""){
+            $data['order_id'] = intval($data['order_id']);
+        }
+
         if(isset($old_order_id)){
 
             if($order){
