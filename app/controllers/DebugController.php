@@ -5512,7 +5512,80 @@ public function yes($msg){
 		return "done";
 	}
 
+	public function finalMfpData(){
+
+		$mfpOrders = Order::raw(function($collection){
+			
+			
+			
+			$total = [
+				[
+					'$match' => [
+						"event_type" => "TOI",
+						"status" => '1'
+					],
+				],
+				[
+					'$group' => [
+						'_id' => null,
+
+						'total_tickets' => [
+							'$sum' => 1
+						],
+						'total_customers' => [
+							'$sum' => '$ticket_quantity'
+						],
+						'total_fitcash_given' => [
+							'$sum' => '$amount'
+						]
+					],
+				],
+			];
 	
+			$people_given_fitcash = [
+				[
+					'$match' => [
+						"event_type" => "TOI",
+						"status" => '1',
+						"amount" => ['$gt' => 0]
+					]
+				],
+				[
+					'$group' => [
+						'_id' => null,
+	
+						'total_fitcash_tickets' => [
+							'$sum' => 1
+						],
+						'total_fitcash_customers' => [
+							'$sum' => '$ticket_quantity'
+						],
+						'total_fitcash_given' => [
+							'$sum' => '$amount'
+						]
+					]
+				]
+				
+				
+			];
+
+			$facet = [
+				"total" => $total,
+				"people_given_fitcash" =>$people_given_fitcash
+			];
+
+			$aggregate = [
+				'$facet' => $facet
+			];
+	
+			return $collection->aggregate($aggregate);
+	
+		});
+
+		return $mfpOrders;
+
+		
+	}
 
     
 }
