@@ -5514,9 +5514,21 @@ public function yes($msg){
 
 	public function finalMfpData(){
 
+		$orders = Order::active()->where("event_type" , "TOI")->lists('_id');
+
+		// return $orders;
+
+		$wallet_ids = Wallet::whereIn('order_id', $orders)->lists('_id');
+
+		
+		$wallets = Wallet::whereIn('order_id', $orders)->sum('amount');
+
+
+		$orders_amount = Order::active()->whereIn('wallet_transaction_debit.wallet_transaction.wallet_id', $wallet_ids)->sum('amount_customer');
+
+		return $orders_amount;
+
 		$mfpOrders = Order::raw(function($collection){
-			
-			
 			
 			$total = [
 				[
