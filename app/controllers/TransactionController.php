@@ -209,11 +209,11 @@ class TransactionController extends \BaseController {
             
             if($this->utilities->checkFitternityCustomer($data['customer_email'], $data['customer_phone'])){
                 
-                $data['order_routed'] = '0';
+                $data['routed_order'] = '0';
             
             }else{
              
-                $data['order_routed'] = '1';
+                $data['routed_order'] = '1';
             
             }
         
