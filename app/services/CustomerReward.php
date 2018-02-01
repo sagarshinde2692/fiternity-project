@@ -319,7 +319,7 @@ Class CustomerReward {
                     "validity"=>time()+(86400*60)
                 );
 
-                if($order['type'] == 'booktrials'){
+                /*if($order['type'] == 'booktrials'){
 
                     $walletData = array(
                         "order_id"=>$order['_id'],
@@ -332,7 +332,7 @@ Class CustomerReward {
                         "description"=> "Cashback for paid trial purchase at ".ucwords($order['finder_name'])." (Order ID. ".$order['_id']."), Expires On : ".date('d-m-Y',time()+(86400*7)),
                         "validity"=>time()+(86400*7)
                     );
-                }
+                }*/
 
                 $utilities->walletTransaction($walletData,$order->toArray());
 

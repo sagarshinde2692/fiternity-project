@@ -91,13 +91,13 @@ class CommunicationsController extends \BaseController {
 			$transaction_data->communication_keys = $communication_keys;
 			$transaction_data->update();
 
-			if($class == "CustomerSms" && $label == "bookTrialReminderAfter2Hour" && $transaction_type == 'trial' && !isset($transaction_data['order_id'])){
+			/*if($class == "CustomerSms" && $label == "bookTrialReminderAfter2Hour" && $transaction_type == 'trial' && !isset($transaction_data['order_id'])){
 
 				$url = Config::get('app.url')."/addwallet?customer_id=".$transaction_data["customer_id"]."&booktrial_id=".$transaction_data['_id'];
 
 				$this->utilities->hitUrlAfterDelay($url."&time=Nplus2");
 
-			}
+			}*/
 
 			return $response;
 			
