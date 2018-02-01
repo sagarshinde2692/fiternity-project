@@ -4347,7 +4347,11 @@ class FindersController extends \BaseController {
             if($kiosk_tab){
 
                 $kiosk_tab->last_logged_in = time();
-                $kiosk_tab->app_version = $app_version;
+
+                if($app_version != "" && $app_version != null && $app_version != 'null'){
+                	$kiosk_tab->app_version = $app_version;
+                }
+                
                 $kiosk_tab->update();
             }
         }
