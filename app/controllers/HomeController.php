@@ -428,15 +428,15 @@ class HomeController extends BaseController {
 
             // $collections 			= 	Findercollection::active()->where('city_id', '=', intval($citydata['_id']))->orderBy('ordering')->get(array('name', 'slug', 'coverimage', 'ordering' ));
             $campaigns=  [];
-            // $campaigns[] = [
-            //     'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Webbanner-Fitnesssale.png',
-            //     'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/mobbanner-fitnesssale.png',
-			// 	'link'=>Config::get('app.website').'/'.$city.'/fitness?trials=1',
-			// 	'title'=>'Sale',
-			// 	'height'=>100,
-			// 	'width'=>375,
-			// 	'ratio'=>(float) number_format(100/375,2)
-            // ];
+            $campaigns[] = [
+                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Webbanner-Fitnesssale.png',
+                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/mobbanner-fitnesssale.png',
+				'link'=>Config::get('app.website').'/'.$city.'/fitness?trials=1',
+				'title'=>'Sale',
+				'height'=>100,
+				'width'=>375,
+				'ratio'=>(float) number_format(100/375,2)
+            ];
             $campaigns[] = [
                 'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Rewards-banner-web-1.png',
                 'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/mobbanner-rewards.png',
@@ -448,15 +448,15 @@ class HomeController extends BaseController {
 				'ratio'=>(float) number_format(100/375,2)
 			];
             
-            // $campaigns[] = [
-            //     'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/webbanner-sale60%25.png',
-            //     'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/mobbanner-sale60%25.png',
-			// 	'link'=>Config::get('app.website').'/'.$city.'/fitness?trials=1',
-			// 	'title'=>'Fitness Sale',
-			// 	'height'=>100,
-			// 	'width'=>375,
-			// 	'ratio'=>(float) number_format(100/375,2)
-			// ];
+            $campaigns[] = [
+                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/webbanner-sale60%25.png',
+                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/mobbanner-sale60%25.png',
+				'link'=>Config::get('app.website').'/'.$city.'/fitness?trials=1',
+				'title'=>'Fitness Sale',
+				'height'=>100,
+				'width'=>375,
+				'ratio'=>(float) number_format(100/375,2)
+			];
 
 			$campaigns[] = [
                 'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Webbanner-Emi.png',
@@ -1781,7 +1781,7 @@ class HomeController extends BaseController {
 
 
 
-    public function getFooterByCityV1($city = 'mumbai', $category = 'all', $location = "", $cache = true){
+    public function getFooterByCityV1($city = 'mumbai', $category = 'all', $location = "", $cache = false){
 
         $footer_by_city = $cache ? Cache::tags('category_wise_footer_finders')->has($city) : false;
 
