@@ -4340,11 +4340,14 @@ class FindersController extends \BaseController {
 
         if($serialNumber != "" && $serialNumber != null && $serialNumber != 'null'){
 
+        	$app_version = Request::header('App-Version');
+
             $kiosk_tab = KioskTab::where('serialNumber',$serialNumber)->first();
 
             if($kiosk_tab){
 
                 $kiosk_tab->last_logged_in = time();
+                $kiosk_tab->app_version = $app_version;
                 $kiosk_tab->update();
             }
         }
