@@ -2766,45 +2766,18 @@ Class Utilities {
 
     }
 
-    public function checkFitternityCustomer($customer_phone){
+    public function checkFitternityCustomer($customer_email, $customer_phone){
         
         $beforeTime 	=	date('d-m-Y H:i:s', strtotime(Carbon::now()->addHours(-4)));
         
-        // $transaction = \Transaction::where('created_at', '<', new \DateTime($beforeTime))->where('customer_phone', 'LIKE', '%'.substr($customer_phone, -10).'%')->first();
-        // // $transaction = \Transaction::where('created_at', '<', new \DateTime($beforeTime))->where('customer_phone',$customer_phone)->get(['_id']);
-        // // $transaction = \Transaction::where('created_at', '<', new \DateTime($beforeTime))->where('customer_phone',$customer_phone)->count();
-        
-        
+        $transaction = \Transaction::where('created_at', '<', new \DateTime($beforeTime))->where(function($query) use ($customer_email, $customer_phone){ return $query->orWhere('customer_phone', 'LIKE', '%'.substr($customer_phone, -10).'%')->orWhere('customer_email', $customer_email);})->first();
 
-        // if($transaction){
+        if($transaction){
             
-        // Log::info("returning true");
+            Log::info("returning true");
         
-        //     return true;
-        // }else{
-        // Log::info("returning false");
+            return true;
         
-        //     return false;
-        // }
-
-        Log::info($beforeTime);
-        Log::info("returning true");
-        $order = \Order::where('created_at', '<', new \DateTime($beforeTime))->where('customer_phone', 'LIKE', '%'.substr($customer_phone, -10).'%')->where('routed_order', '!=', '1')->first();
-        
-        if($order){
-            return true;
-        }
-
-        $booktrial = \Booktrial::where('created_at', '<', new \DateTime($beforeTime))->where('customer_phone', 'LIKE', '%'.substr($customer_phone, -10).'%')->first();
-
-        if($booktrial){
-            return true;
-        }
-
-        $capture = \Capture::where('created_at', '<', new \DateTime($beforeTime))->where('customer_phone', 'LIKE', '%'.substr($customer_phone, -10).'%')->first();
-
-        if($capture){
-            return true;
         }
         
         Log::info("returning false");
