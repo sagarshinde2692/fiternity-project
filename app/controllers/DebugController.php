@@ -5516,87 +5516,22 @@ public function yes($msg){
 
 		$orders = Order::active()->where("event_type" , "TOI")->lists('_id');
 
-		// return $orders;
+		$total_tickets = Order::active()->where("event_type" , "TOI")->sum('ticket_quantity');
 
 		$wallet_ids = Wallet::whereIn('order_id', $orders)->lists('_id');
 
+		$wallet_distinct_customers = array_values(array_unique(Wallet::whereIn('order_id', $orders)->lists('customer_id')));
+
+		$wallet_distinct_customers_used = array_values(array_unique(Wallet::whereIn('order_id', $orders)->where('used', '>', 0)->lists('customer_id')));
 		
-		$wallets = Wallet::whereIn('order_id', $orders)->sum('amount');
+		$total_fitcash_given = Wallet::whereIn('order_id', $orders)->sum('amount');
 
+		$total_memberships_bought = Order::active()->where('type', 'memberships')->whereIn('wallet_transaction_debit.wallet_transaction.wallet_id', $wallet_ids)->count();
 
-		$orders_amount = Order::active()->whereIn('wallet_transaction_debit.wallet_transaction.wallet_id', $wallet_ids)->sum('amount_customer');
+		$total_amount_memberships = Order::active()->where('type', 'memberships')->whereIn('wallet_transaction_debit.wallet_transaction.wallet_id', $wallet_ids)->sum('amount_customer');
 
-		return $orders_amount;
+		return array('total_tickets' => $total_tickets, 'total_people_fitcash' => count($wallet_distinct_customers), 'total_fitcash' => $total_fitcash_given, 'people_userd_fitcash' =>count($wallet_distinct_customers_used), 'total_memberships_bought'=>$total_memberships_bought, '$total_amount_memberships'=>$total_amount_memberships);
 
-		$mfpOrders = Order::raw(function($collection){
-			
-			$total = [
-				[
-					'$match' => [
-						"event_type" => "TOI",
-						"status" => '1'
-					],
-				],
-				[
-					'$group' => [
-						'_id' => null,
-
-						'total_tickets' => [
-							'$sum' => 1
-						],
-						'total_customers' => [
-							'$sum' => '$ticket_quantity'
-						],
-						'total_fitcash_given' => [
-							'$sum' => '$amount'
-						]
-					],
-				],
-			];
-	
-			$people_given_fitcash = [
-				[
-					'$match' => [
-						"event_type" => "TOI",
-						"status" => '1',
-						"amount" => ['$gt' => 0]
-					]
-				],
-				[
-					'$group' => [
-						'_id' => null,
-	
-						'total_fitcash_tickets' => [
-							'$sum' => 1
-						],
-						'total_fitcash_customers' => [
-							'$sum' => '$ticket_quantity'
-						],
-						'total_fitcash_given' => [
-							'$sum' => '$amount'
-						]
-					]
-				]
-				
-				
-			];
-
-			$facet = [
-				"total" => $total,
-				"people_given_fitcash" =>$people_given_fitcash
-			];
-
-			$aggregate = [
-				'$facet' => $facet
-			];
-	
-			return $collection->aggregate($aggregate);
-	
-		});
-
-		return $mfpOrders;
-
-		
 	}
 
     
