@@ -2419,6 +2419,8 @@ class FindersController extends \BaseController {
 			]
 		];
 
+		$this->kioskTabLastLoggedIn();
+
 		return Response::json($response,200);
 	}
 
@@ -4331,6 +4333,32 @@ class FindersController extends \BaseController {
 
 		return Response::json($response,200);	
 	}
+
+	public function kioskTabLastLoggedIn(){
+
+        $serialNumber = Request::header('Device-Serial');
+
+        if($serialNumber != "" && $serialNumber != null && $serialNumber != 'null'){
+
+        	$app_version = Request::header('App-Version');
+
+            $kiosk_tab = KioskTab::where('serialNumber',$serialNumber)->first();
+
+            if($kiosk_tab){
+
+                $kiosk_tab->last_logged_in = time();
+
+                if($app_version != "" && $app_version != null && $app_version != 'null'){
+                	$kiosk_tab->app_version = $app_version;
+                }
+                
+                $kiosk_tab->update();
+            }
+        }
+
+        return "success";
+
+    }
 	
 
 }

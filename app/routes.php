@@ -1105,3 +1105,6 @@ Route::get('getcustommembershipdetails','TransactionController@getCustomMembersh
 Route::get('verifyvendorkioskpin/{pin}','CustomerController@verifyVendorKioskPin');
 
 Route::get('getvendortrainer/{finder_id?}','FindersController@getVendorTrainer');
+
+Route::get('finalMfpData', 'DebugController@finalMfpData');
+

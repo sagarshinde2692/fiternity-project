@@ -5512,7 +5512,27 @@ public function yes($msg){
 		return "done";
 	}
 
-	
+	public function finalMfpData(){
+
+		$orders = Order::active()->where("event_type" , "TOI")->lists('_id');
+
+		$total_tickets = Order::active()->where("event_type" , "TOI")->sum('ticket_quantity');
+
+		$wallet_ids = Wallet::whereIn('order_id', $orders)->lists('_id');
+
+		$wallet_distinct_customers = array_values(array_unique(Wallet::whereIn('order_id', $orders)->lists('customer_id')));
+
+		$wallet_distinct_customers_used = array_values(array_unique(Wallet::whereIn('order_id', $orders)->where('used', '>', 0)->lists('customer_id')));
+		
+		$total_fitcash_given = Wallet::whereIn('order_id', $orders)->sum('amount');
+
+		$total_memberships_bought = Order::active()->where('type', 'memberships')->whereIn('wallet_transaction_debit.wallet_transaction.wallet_id', $wallet_ids)->count();
+
+		$total_amount_memberships = Order::active()->where('type', 'memberships')->whereIn('wallet_transaction_debit.wallet_transaction.wallet_id', $wallet_ids)->sum('amount_customer');
+
+		return array('total_tickets' => $total_tickets, 'total_people_fitcash' => count($wallet_distinct_customers), 'total_fitcash' => $total_fitcash_given, 'people_userd_fitcash' =>count($wallet_distinct_customers_used), 'total_memberships_bought'=>$total_memberships_bought, '$total_amount_memberships'=>$total_amount_memberships);
+
+	}
 
     
 }
