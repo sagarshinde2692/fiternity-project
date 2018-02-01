@@ -4166,9 +4166,9 @@ class TransactionController extends \BaseController {
 
             $resp['status'] = 200;
             $resp['message'] = $resp['success_message'] = "Rs. ".$resp["data"]["discount"]." has been applied Successfully ";
-            if(strtolower($data['coupon']) == "eojfit" || $data['coupon'] == "eojfit"){
-                $resp['message'] = "Coupon code applied successfully. Your surprise discount is Rs ".$resp["data"]["discount"]." basis slot availability.";
-            }
+            // if(strtolower($data['coupon']) == "eojfit" || $data['coupon'] == "eojfit"){
+            //     $resp['message'] = "Coupon code applied successfully. Your surprise discount is Rs ".$resp["data"]["discount"]." basis slot availability.";
+            // }
             if(!$resp["vendor_routed_coupon"]){
                 if($resp["data"]["discount"] <= 0){
     
