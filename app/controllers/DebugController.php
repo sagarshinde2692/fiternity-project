@@ -5534,5 +5534,24 @@ public function yes($msg){
 
 	}
 
+
+	public function rewardReminderJan(){
+
+		$my_rewards = Myreward::select('customer_name,customer_phone,title')->where('status',0)->where('claim',0)->where('created_at', '>',new DateTime(date('2018-01-01 00:00:00')))->where('created_at', '<',new DateTime(date('2018-01-31 23:59:59')))->where('reminder_sent','exists',false)->get();
+
+		if(count($my_rewards) > 0){
+
+			foreach ($my_rewards as $my_reward) {
+
+				$customersms->rewardReminder($my_reward->toArray());
+
+				$my_reward->update(['reminder_sent'=>time()]);
+			}
+		}
+
+		return count($my_rewards);
+
+	}
+
     
 }
