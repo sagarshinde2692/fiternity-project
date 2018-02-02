@@ -5537,13 +5537,28 @@ public function yes($msg){
 
 	public function rewardReminderJan(){
 
-		$my_rewards = Myreward::select('customer_name,customer_phone,title')->where('status',0)->where('claim',0)->where('created_at', '>',new DateTime(date('2018-01-01 00:00:00')))->where('created_at', '<',new DateTime(date('2018-01-31 23:59:59')))->where('reminder_sent','exists',false)->get();
+		$my_rewards = Myreward::where('status','0')
+		   ->where('claimed',0)
+		   ->where('created_at','>=',new MongoDate(strtotime(date('2018-01-01 00:00:00'))))
+		   ->where('created_at','<',new MongoDate(strtotime(date('2018-01-31 23:59:59'))))
+		   ->where('reminder_sent','exists',false)
+		   ->orderBy('_id','desc')
+		   ->get(['customer_name','customer_email','customer_phone','finder_name']);
+
+		$utilities = new Utilities();
+		$customersms = new CustomerSms();
 
 		if(count($my_rewards) > 0){
 
 			foreach ($my_rewards as $my_reward) {
 
-				$customersms->rewardReminder($my_reward->toArray());
+				$my_reward_data = $my_reward->toArray();
+
+				$url = $utilities->getShortenUrl(Config::get('app.website')."/profile/".$my_reward_data['customer_email']."#reward");
+
+				$my_reward_data['message'] = "Hi ".ucwords($my_reward_data['customer_name']).", hope your workout at ".ucwords($my_reward_data['finder_name'])." is in full swing. You've missed claiming your reward which will expire in 7 days. Claim it now through your Fitternity profile. Claim now ".$url." . For quick assistance call us on - 02261094444.";
+
+				$customersms->custom($my_reward_data);
 
 				$my_reward->update(['reminder_sent'=>time()]);
 			}
