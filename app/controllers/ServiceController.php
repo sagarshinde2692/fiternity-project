@@ -1355,9 +1355,9 @@ class ServiceController extends \BaseController {
 
 		// $service = Service::where('finder_id', $finder_id)->where('slug', $service_slug)->get();
 
-		$service = Service::where('_id', 1)->get();
+		$service = Vendorservice::where('_id', 16539)->get();
 
-		return $service;
+		return $schedule;
 
 	}
 
