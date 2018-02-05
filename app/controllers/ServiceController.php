@@ -1345,7 +1345,21 @@ class ServiceController extends \BaseController {
 		}
 
 		return Response::json($data,200);
-    }
+	}
+	
+	public function serviceDetailv1($finder_slug,$service_slug){
+
+		// $finder = Finder::where('slug', $finder_slug)->first(['_id']);
+
+		// $finder_id = $finder->_id;
+
+		// $service = Service::where('finder_id', $finder_id)->where('slug', $service_slug)->get();
+
+		$service = Service::where('_id', 1)->get();
+
+		return $service;
+
+	}
 
 
 }

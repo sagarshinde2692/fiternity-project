@@ -1109,3 +1109,5 @@ Route::get('getvendortrainer/{finder_id?}','FindersController@getVendorTrainer')
 Route::get('finalMfpData', 'DebugController@finalMfpData');
 
 Route::get('rewardReminderJan','DebugController@rewardReminderJan');
+
+Route::get('servicedetailv1/{finder_slug}/{service_slug}', 'ServiceController@serviceDetailv1');
