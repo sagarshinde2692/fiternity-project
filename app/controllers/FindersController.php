@@ -881,6 +881,15 @@ class FindersController extends \BaseController {
 					$finder_footer = Cache::tags('finder_footer')->get($finderdata["location"]["slug"]);
 				}
 
+				$finder['facility_tags'] = ['Others'];
+				$finder['service_tags'] = ['Others'];
+				foreach($finder['photos'] as $photo){
+					$finder['facility_tags'] = array_merge($finder['facility_tags'], $photo['tags']);
+					$finder['service_tags'] = array_merge($finder['service_tags'], $photo['tags']);
+				}
+				$finder['facility_tags'] = array_values(array_unique($finder['facility_tags']));
+				$finder['service_tags'] = array_values(array_unique($finder['service_tags']));
+
 				$finder['title'] = str_replace('crossfit', 'CrossFit', $finder['title']);
 				$response['statusfinder']                   =       200;
 				$response['finder']                         =       $finder;
@@ -903,6 +912,8 @@ class FindersController extends \BaseController {
 
 					unset($response['finder']['payment_options']);
 				}
+
+				
 
 				Cache::tags('finder_detail')->put($cache_key,$response,Config::get('cache.cache_time'));
 
