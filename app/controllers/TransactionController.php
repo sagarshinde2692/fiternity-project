@@ -4528,7 +4528,7 @@ class TransactionController extends \BaseController {
             
             $result['payment_details']['amount_summary'][] = [
                 'field' => 'Total Amount',
-                'value' => 'Rs. '.(string)$data['amount']
+                'value' => 'Rs. '.(string)number_format($data['amount'],2)
             ];
 
             if($this->utilities->isConvinienceFeeApplicable($data)){
@@ -4546,7 +4546,8 @@ class TransactionController extends \BaseController {
                 
                 $result['payment_details']['amount_summary'][] = [
                     'field' => 'Convenience fee',
-                    'value' => '+Rs. '.(string)$data['convinience_fee']
+                    'value' => '+Rs. '.(string)$data['convinience_fee'],
+                    "info" => "Convenience fees is applicable for exclusive offers on online payments & Cash on delivery."
                 ];
             }
 
@@ -4569,7 +4570,7 @@ class TransactionController extends \BaseController {
 
                     $result['payment_details']['amount_summary'][] = [
                         'field' => 'Fitcash Applied',
-                        'value' => '-Rs. '.(string)$data['fitcash_applied']
+                        'value' => '-Rs. '.(string)number_format($data['fitcash_applied'],2)
                     ];
 
                     $data['you_save'] += $data['fitcash_applied'];
@@ -4591,7 +4592,7 @@ class TransactionController extends \BaseController {
                     
                     $result['payment_details']['amount_summary'][] = [
                         'field' => 'Coupon Discount',
-                        'value' => '-Rs. '.(string)$data['coupon_discount']
+                        'value' => '-Rs. '.(string) number_format($data['coupon_discount'],2)
                     ];
                 
                 }
@@ -4600,7 +4601,7 @@ class TransactionController extends \BaseController {
 
             $result['payment_details']['amount_payable'] = [
                 'field' => 'Total Amount Payable',
-                'value' => 'Rs. '.(string)$data['amount_payable']
+                'value' => 'Rs. '.(string)number_format($data['amount_payable'],2)
             ];
 
             if($data['amount_payable'] == 0){
@@ -4640,7 +4641,7 @@ class TransactionController extends \BaseController {
                 ],
                 "duration_amount"=>[
                     "field"=> $data['service_duration'],
-                    "value"=> "Rs. ".$data['amount']
+                    "value"=> "Rs. ".number_format($data['amount'],2)
                 ],
                 "remarks"=>[
                     "field"=> "REMARKS",
@@ -4704,7 +4705,7 @@ class TransactionController extends \BaseController {
             if($data['you_save'] > 0){
                 $result['payment_details']['savings'] = [
                     'field' => 'Your total savings',
-                    'value' => "Rs. ".$data['you_save'],
+                    'value' => "Rs. ".number_format($data['you_save'],2),
                     'amount' => $data['you_save']
                 ];
             }
@@ -4722,7 +4723,7 @@ class TransactionController extends \BaseController {
             $result['order_details'] = [
                 "studio_name"=>[
                     "field"=> "",
-                    "value"=> $order['finder_name']
+                    "value"=> $order['finder_name'], $order['finder_location']
                 ],
                 "service_name"=>[
                     "field"=> "",
