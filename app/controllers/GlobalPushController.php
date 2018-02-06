@@ -348,8 +348,8 @@ class GlobalPushController extends \BaseController
     $this->pushcategorylocations($index_name);
     $this->pushcategorycity($index_name);
     $this->pushallfittnesslocation($index_name);
-    $this->pushservicecategorylocations($index_name);
-    $this->pushservicecategorycity($index_name);
+    // $this->pushservicecategorylocations($index_name);
+    // $this->pushservicecategorycity($index_name);
     foreach ($this->citylist as $key => $city) {
       $this->pushfinders($index_name, $city);
     }

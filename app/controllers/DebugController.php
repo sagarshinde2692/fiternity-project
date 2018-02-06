@@ -5556,7 +5556,7 @@ public function yes($msg){
 
 				$url = $utilities->getShortenUrl(Config::get('app.website')."/profile/".$my_reward_data['customer_email']."#reward");
 
-				$my_reward_data['message'] = "Hi ".ucwords($my_reward_data['customer_name']).", hope your workout at ".ucwords($my_reward_data['finder_name'])." is in full swing. You've missed claiming your reward which will expire in 7 days. Claim it now through your Fitternity profile. Claim now ".$url." . For quick assistance call us on - 02261094444.";
+				$my_reward_data['message'] = "Hi ".ucwords($my_reward_data['customer_name']).", hope your workout at ".ucwords($my_reward_data['finder_name'])." is in full swing. You've missed claiming your reward which will expiring soon. Claim it now through your Fitternity profile. Claim now ".$url." . For quick assistance call us on - 02261094444.";
 
 				$customersms->custom($my_reward_data);
 
