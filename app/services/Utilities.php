@@ -2587,7 +2587,7 @@ Class Utilities {
 
     function generateRandomString($length = 5) {
         
-         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+         $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         
          $charactersLength = strlen($characters);
         
