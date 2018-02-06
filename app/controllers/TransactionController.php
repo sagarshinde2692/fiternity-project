@@ -4528,7 +4528,7 @@ class TransactionController extends \BaseController {
             
             $result['payment_details']['amount_summary'][] = [
                 'field' => 'Total Amount',
-                'value' => 'Rs. '.(string)number_format($data['amount'],2)
+                'value' => 'Rs. '.(string)number_format($data['amount'])
             ];
 
             if($this->utilities->isConvinienceFeeApplicable($data)){
@@ -4570,7 +4570,7 @@ class TransactionController extends \BaseController {
 
                     $result['payment_details']['amount_summary'][] = [
                         'field' => 'Fitcash Applied',
-                        'value' => '-Rs. '.(string)number_format($data['fitcash_applied'],2)
+                        'value' => '-Rs. '.(string)number_format($data['fitcash_applied'])
                     ];
 
                     $data['you_save'] += $data['fitcash_applied'];
@@ -4592,7 +4592,7 @@ class TransactionController extends \BaseController {
                     
                     $result['payment_details']['amount_summary'][] = [
                         'field' => 'Coupon Discount',
-                        'value' => '-Rs. '.(string) number_format($data['coupon_discount'],2)
+                        'value' => '-Rs. '.(string) number_format($data['coupon_discount'])
                     ];
                 
                 }
@@ -4601,7 +4601,7 @@ class TransactionController extends \BaseController {
 
             $result['payment_details']['amount_payable'] = [
                 'field' => 'Total Amount Payable',
-                'value' => 'Rs. '.(string)number_format($data['amount_payable'],2)
+                'value' => 'Rs. '.(string)number_format($data['amount_payable'])
             ];
 
             if($data['amount_payable'] == 0){
@@ -4641,7 +4641,7 @@ class TransactionController extends \BaseController {
                 ],
                 "duration_amount"=>[
                     "field"=> $data['service_duration'],
-                    "value"=> "Rs. ".number_format($data['amount'],2)
+                    "value"=> "Rs. ".number_format($data['amount'])
                 ],
                 "remarks"=>[
                     "field"=> "REMARKS",
@@ -4705,7 +4705,7 @@ class TransactionController extends \BaseController {
             if($data['you_save'] > 0){
                 $result['payment_details']['savings'] = [
                     'field' => 'Your total savings',
-                    'value' => "Rs. ".number_format($data['you_save'],2),
+                    'value' => "Rs. ".number_format($data['you_save']),
                     'amount' => $data['you_save']
                 ];
             }
