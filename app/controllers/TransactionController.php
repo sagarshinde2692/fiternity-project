@@ -4174,7 +4174,7 @@ class TransactionController extends \BaseController {
             $resp['status'] = 200;
             $resp['message'] = $resp['success_message'] = "Rs. ".$resp["data"]["discount"]." has been applied Successfully ";
             if(strtolower($data['coupon']) == "fitlove" || $data['coupon'] == "fitlove"){
-                $resp['message'] = "Coupon code applied successfully. Your surprise discount is Rs ".$resp["data"]["discount"]." basis slot availability.";
+                $resp['success_message'] = $resp['message'] = "Basis slot availability, your surprise discount for this partner outlet is Rs ".$resp["data"]["discount"];
             }
             if(!$resp["vendor_routed_coupon"]){
                 if($resp["data"]["discount"] <= 0){
@@ -4554,7 +4554,7 @@ class TransactionController extends \BaseController {
                 $result['payment_details']['amount_summary'][] = [
                     'field' => 'Convenience fee',
                     'value' => '+Rs. '.(string)$data['convinience_fee'],
-                    "info" => "Convenience fees is applicable for exclusive offers on online payments & Cash on delivery."
+                    /*"info" => "Convenience fees is applicable for exclusive offers on online payments & Cash on delivery."*/
                 ];
             }
 
