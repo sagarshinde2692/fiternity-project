@@ -1219,24 +1219,24 @@ Class CustomerReward {
         }
         
         $coupon = $query->first();
-        // if(!isset($coupon) && strtolower($couponCode) == "eojfit"){
-        //     $vendorMOU = Vendormou::where("vendors",$ratecard["finder_id"])->where('contract_start_date', '<=', new \DateTime())->where('contract_end_date', '>=', new \DateTime())->first();
-        //     $coupon = array("code" => "eojfit","discount_max" => 2500,"discount_amount" => 0,"discount_min" => 300);
-        //     if(isset($vendorMOU)){
-        //         if(isset($vendorMOU["cos_percentage_normal"])){
-        //             $vendorMOU["cos_percentage_normal"] = 15;
-        //         }
-        //         if($vendorMOU["cos_percentage_normal"] >= 15){
-        //             $coupon["discount_percent"] = 5;
-        //         }elseif($vendorMOU["cos_percentage_normal"] >= 10 && $vendorMOU["cos_percentage_normal"] < 15){
-        //             $coupon["discount_percent"] = 3;
-        //         }elseif($vendorMOU["cos_percentage_normal"] < 10){
-        //             $coupon["discount_percent"] = 2;
-        //         }
-        //     }else{
-        //         $coupon["discount_percent"] = 5;
-        //     }
-        // }
+        if(!isset($coupon) && strtolower($couponCode) == "fitlove"){
+            $vendorMOU = Vendormou::where("vendors",$ratecard["finder_id"])->where('contract_start_date', '<=', new \DateTime())->where('contract_end_date', '>=', new \DateTime())->first();
+            $coupon = array("code" => "fitlove","discount_max" => 1000,"discount_amount" => 0,"discount_min" => 200);
+            if(isset($vendorMOU)){
+                if(isset($vendorMOU["cos_percentage_normal"])){
+                    $vendorMOU["cos_percentage_normal"] = 15;
+                }
+                if($vendorMOU["cos_percentage_normal"] >= 15){
+                    $coupon["discount_percent"] = 5;
+                }elseif($vendorMOU["cos_percentage_normal"] >= 10 && $vendorMOU["cos_percentage_normal"] < 15){
+                    $coupon["discount_percent"] = 3;
+                }elseif($vendorMOU["cos_percentage_normal"] < 10){
+                    $coupon["discount_percent"] = 2;
+                }
+            }else{
+                $coupon["discount_percent"] = 5;
+            }
+        }
         Log::info("coupon");
         Log::info($coupon);
         
