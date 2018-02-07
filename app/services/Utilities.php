@@ -2768,11 +2768,11 @@ Class Utilities {
 
     public function addToGroup($data){
 
-
+        \Log::info("inside addToGroup");
         
         if(isset($data['group_id'])){
             
-            $group = Customergroup::where('group_id', $data['group_id'])->first();
+            $group = \Customergroup::where('group_id', $data['group_id'])->first();
 
             $members = $group->members;
 
@@ -2784,15 +2784,15 @@ Class Utilities {
 
             $group->save();
 
-            Log::info("created a new group");
+            \Log::info("created a new group");
 
-            Log::info($group);
+            \Log::info($group);
 
             return $data['group_id'];
 
         }
         
-        $group = new Customergroup();
+        $group = new \Customergroup();
             
         $group->group_id = $this->getUniqueGroupId();
 
@@ -2802,9 +2802,9 @@ Class Utilities {
         
         $group->save();
 
-        Log::info("Added to group");
+        \Log::info("Added to group");
 
-        Log::info($group);
+        \Log::info($group);
         
         return $group->group_id;
 
