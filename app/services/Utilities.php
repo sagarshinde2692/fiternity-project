@@ -2769,8 +2769,16 @@ Class Utilities {
     public function addToGroup($data){
 
         \Log::info("inside addToGroup");
+
+        $validate = $validate = $this->validateGroupId($data);
+
+        if($validate['status']==400 && isset($validate['group_id'])){
+            
+            return $validate['group_id'];
         
-        if(isset($data['group_id'])){
+        }
+        
+        if(isset($data['group_id']) && $data['group_id']){
             
             $group = \Customergroup::where('group_id', $data['group_id'])->first();
 
@@ -2791,6 +2799,8 @@ Class Utilities {
             return $data['group_id'];
 
         }
+
+        
         
         $group = new \Customergroup();
             
@@ -2812,7 +2822,7 @@ Class Utilities {
 
     public function getUniqueGroupId(){
 
-        $id = $this->generateRandomString(4);
+        $id = "grp".$this->generateRandomString(4);
 
         $group = \Customergroup::where('group_id', $id)->count();
 
@@ -2846,6 +2856,10 @@ Class Utilities {
 
             return array('status'=>400, 'message'=>'You are already a member of a group', 'group_id'=>$group['group_id']);
 
+        }
+
+        if(!isset($data['group_id']) || $data['group_id'] == null){
+            return array('status'=>400, 'message'=>'Empty group code');
         }
 
         $group = \Customergroup::where('group_id', $data['group_id'])->first();

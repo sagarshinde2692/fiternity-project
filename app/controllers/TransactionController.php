@@ -1255,27 +1255,31 @@ class TransactionController extends \BaseController {
 
             if($data['status'] == '1'){
 
-                if(isset($order->group_id)){
+                $group_id = isset($order->group_id) ? $order->group_id : null;
+
+                $data['group_id'] = $this->utilities->addToGroup(['customer_id'=>$order->customer_id, 'group_id'=>$group_id, 'order_id'=>$order->_id]);
+
+                // if(isset($order->group_id)){
                     
-                    $group_resp = $this->utilities->validateGroupId(array('customer_id'=>$order->customer_id, 'group_id'=>$order->group_id));
+                //     $group_resp = $this->utilities->validateGroupId(array('customer_id'=>$order->customer_id, 'group_id'=>$order->group_id));
     
-                    if($group_resp['status'] == 400){
+                //     if($group_resp['status'] == 400){
                         
-                        unset($order->group_id);
+                //         unset($order->group_id);
     
-                        $order->update();
+                //         $order->update();
                     
-                    }else{
+                //     }else{
                         
-                        $data['group_id'] = $this->utilities->addToGroup(['customer_id'=>$order->customer_id, 'group_id'=>$order->group_id, 'order_id'=>$order->_id]);
+                //         $data['group_id'] = $this->utilities->addToGroup(['customer_id'=>$order->customer_id, 'group_id'=>$order->group_id, 'order_id'=>$order->_id]);
     
-                    }
+                //     }
                     
-                }else{
+                // }else{
     
-                    $data['group_id'] = $this->utilities->addToGroup(['customer_id'=>$order->customer_id, 'order_id'=>$order->_id]);
+                //     $data['group_id'] = $this->utilities->addToGroup(['customer_id'=>$order->customer_id, 'order_id'=>$order->_id]);
     
-                }
+                // }
 
                 $this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
 
