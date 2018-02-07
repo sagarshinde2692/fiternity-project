@@ -885,7 +885,7 @@ class FindersController extends \BaseController {
 				$finder['service_tags'] = ['Others'];
 				foreach($finder['photos'] as $photo){
 					$finder['facility_tags'] = array_merge($finder['facility_tags'], $photo['tags']);
-					$finder['service_tags'] = array_merge($finder['service_tags'], $photo['tags']);
+					$finder['service_tags'] = array_merge($finder['service_tags'], $photo['servicetags']);
 				}
 				$finder['facility_tags'] = array_values(array_unique($finder['facility_tags']));
 				$finder['service_tags'] = array_values(array_unique($finder['service_tags']));
