@@ -708,6 +708,12 @@ class SchedulebooktrialsController extends \BaseController {
             $data['city_id'] = $vendor['city']['_id'];
         }
 
+        $is_tab_active = isTabActive($data['finder_id']);
+
+        if($is_tab_active){
+            $data['is_tab_active'] = true;
+        }
+
 
         if(!$this->vendor_token){
 
@@ -2154,6 +2160,12 @@ class SchedulebooktrialsController extends \BaseController {
                 'diet_plan_link'                =>      $diet_plan_link,
             );
 
+            $is_tab_active = isTabActive($booktrialdata['finder_id']);
+
+            if($is_tab_active){
+                $booktrialdata['is_tab_active'] = true;
+            }
+
             if(isset($order['recommended_booktrial_id']) && $order['recommended_booktrial_id'] != ""){
                 $booktrialdata['recommended_booktrial_id'] = (int)$order['recommended_booktrial_id'];
             }
@@ -3030,6 +3042,12 @@ class SchedulebooktrialsController extends \BaseController {
                 'download_app_link'             =>      $download_app_link,
                 'diet_plan_link'                =>      $diet_plan_link,
             );
+
+            $is_tab_active = isTabActive($booktrialdata['finder_id']);
+
+            if($is_tab_active){
+                $booktrialdata['is_tab_active'] = true;
+            }
 
             if(isset($data['promotional_notification_id']) && $data['promotional_notification_id'] != ""){
                 $booktrialdata['promotional_notification_id'] = $data['promotional_notification_id'];

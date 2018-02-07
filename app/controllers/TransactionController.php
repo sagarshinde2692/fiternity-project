@@ -692,6 +692,12 @@ class TransactionController extends \BaseController {
             $data["secondary_payment_mode"] = "at_vendor_post";
         }
 
+        $is_tab_active = isTabActive($data['finder_id']);
+
+        if($is_tab_active){
+            $data['is_tab_active'] = true;
+        }
+
         if(isset($old_order_id)){
 
             if($order){

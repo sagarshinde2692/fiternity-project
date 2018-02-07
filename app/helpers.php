@@ -3285,6 +3285,22 @@ if (!function_exists('vendorsByBrand')) {
     }
 }
 
+if (!function_exists('isTabActive')) {
+    
+    function isTabActive($finder_id){
+
+        $is_tab_active = false;
+
+        $count = KioskUser::where('hidden',false)->where('finder_id',(int) $finder_id)->where('type','kiosk')->count();
+
+        if($count){
+            $is_tab_active = true;
+        }
+
+        return $is_tab_active;
+    }
+}
+
 
 
 ?>
