@@ -2846,6 +2846,20 @@ Class Utilities {
 
     public function validateGroupId($data){
 
+        if(!isset($data['customer_id'])){
+            $jwt_token = Request::header('Authorization');
+            
+    
+            if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+    
+                $decoded = $this->customerTokenDecode($jwt_token);
+                $data['customer_id'] = (int)$decoded->customer->_id;
+            
+            }else{
+                return array('status'=>400, 'message'=>'You need to login');
+            }
+        }
+
         $group = \Customergroup::where('members.customer_id', $data['customer_id'])->first();
 
         \Log::info('Invalid group');
