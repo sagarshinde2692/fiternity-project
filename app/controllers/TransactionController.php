@@ -765,7 +765,9 @@ class TransactionController extends \BaseController {
             $order->update(array('redis_id'=>$redisid));
         }
 
-        $cash_pickup_applicable = ($cash_pickup && isset($data['amount_final']) && $data['amount_final'] >= 3000) ? true : false;
+        // $cash_pickup_applicable = ($cash_pickup && isset($data['amount_final']) && $data['amount_final'] >= 3000) ? true : false;
+        $cash_pickup_applicable = (isset($data['amount_final']) && $data['amount_final'] >= 2500) ? true : false;
+        
 
         // $emi_applicable = $this->utilities->displayEmi(array('amount_final'=>$data['amount_final']));
 
@@ -4171,9 +4173,9 @@ class TransactionController extends \BaseController {
 
             $resp['status'] = 200;
             $resp['message'] = $resp['success_message'] = "Rs. ".$resp["data"]["discount"]." has been applied Successfully ";
-            // if(strtolower($data['coupon']) == "eojfit" || $data['coupon'] == "eojfit"){
-            //     $resp['message'] = "Coupon code applied successfully. Your surprise discount is Rs ".$resp["data"]["discount"]." basis slot availability.";
-            // }
+            if(strtolower($data['coupon']) == "fitlove" || $data['coupon'] == "fitlove"){
+                $resp['message'] = "Coupon code applied successfully. Your surprise discount is Rs ".$resp["data"]["discount"]." basis slot availability.";
+            }
             if(!$resp["vendor_routed_coupon"]){
                 if($resp["data"]["discount"] <= 0){
     
@@ -4533,7 +4535,7 @@ class TransactionController extends \BaseController {
             
             $result['payment_details']['amount_summary'][] = [
                 'field' => 'Total Amount',
-                'value' => 'Rs. '.(string)number_format($data['amount'],2)
+                'value' => 'Rs. '.(string)number_format($data['amount'])
             ];
 
             if($this->utilities->isConvinienceFeeApplicable($data)){
@@ -4575,7 +4577,7 @@ class TransactionController extends \BaseController {
 
                     $result['payment_details']['amount_summary'][] = [
                         'field' => 'Fitcash Applied',
-                        'value' => '-Rs. '.(string)number_format($data['fitcash_applied'],2)
+                        'value' => '-Rs. '.(string)number_format($data['fitcash_applied'])
                     ];
 
                     $data['you_save'] += $data['fitcash_applied'];
@@ -4597,7 +4599,7 @@ class TransactionController extends \BaseController {
                     
                     $result['payment_details']['amount_summary'][] = [
                         'field' => 'Coupon Discount',
-                        'value' => '-Rs. '.(string) number_format($data['coupon_discount'],2)
+                        'value' => '-Rs. '.(string) number_format($data['coupon_discount'])
                     ];
                 
                 }
@@ -4606,7 +4608,7 @@ class TransactionController extends \BaseController {
 
             $result['payment_details']['amount_payable'] = [
                 'field' => 'Total Amount Payable',
-                'value' => 'Rs. '.(string)number_format($data['amount_payable'],2)
+                'value' => 'Rs. '.(string)number_format($data['amount_payable'])
             ];
 
             if($data['amount_payable'] == 0){
@@ -4638,7 +4640,7 @@ class TransactionController extends \BaseController {
             $result['order_details'] = [
                 "studio_name"=>[
                     "field"=> "",
-                    "value"=> $data['finder_name']
+                    "value"=> $data['finder_name'] . "," . $data['finder_location']
                 ],
                 "service_name"=>[
                     "field"=> "",
@@ -4646,7 +4648,7 @@ class TransactionController extends \BaseController {
                 ],
                 "duration_amount"=>[
                     "field"=> $data['service_duration'],
-                    "value"=> "Rs. ".number_format($data['amount'],2)
+                    "value"=> "Rs. ".number_format($data['amount'])
                 ],
                 "remarks"=>[
                     "field"=> "REMARKS",
@@ -4710,7 +4712,7 @@ class TransactionController extends \BaseController {
             if($data['you_save'] > 0){
                 $result['payment_details']['savings'] = [
                     'field' => 'Your total savings',
-                    'value' => "Rs. ".number_format($data['you_save'],2),
+                    'value' => "Rs. ".number_format($data['you_save']),
                     'amount' => $data['you_save']
                 ];
             }
@@ -4728,7 +4730,7 @@ class TransactionController extends \BaseController {
             $result['order_details'] = [
                 "studio_name"=>[
                     "field"=> "",
-                    "value"=> $order['finder_name'], $order['finder_location']
+                    "value"=> $order['finder_name'].",".$order['finder_location']
                 ],
                 "service_name"=>[
                     "field"=> "",
