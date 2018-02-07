@@ -2814,7 +2814,7 @@ Class Utilities {
 
         $id = $this->generateRandomString(4);
 
-        $group = Customergroup::where('group_id', $id)->count();
+        $group = \Customergroup::where('group_id', $id)->count();
 
         if($group){
         
@@ -2836,11 +2836,11 @@ Class Utilities {
 
     public function validateGroupId($data){
 
-        $group = Customergroup::where('members.customer_id', $data['customer_id'])->first();
+        $group = \Customergroup::where('members.customer_id', $data['customer_id'])->first();
 
-        Log::info('Invalid group');
+        \Log::info('Invalid group');
 
-        Log::info($group);
+        \Log::info($group);
 
         if($group){
 
@@ -2848,11 +2848,11 @@ Class Utilities {
 
         }
 
-        $group = Customergroup::where('group_id', $data['group_id'])->first();
+        $group = \Customergroup::where('group_id', $data['group_id'])->first();
 
-        Log::info("Valid group");
+        \Log::info("Valid group");
 
-        Log::info($group);
+        \Log::info($group);
 
         if($group){
 
