@@ -205,6 +205,8 @@ class TransactionController extends \BaseController {
 
         }
 
+        
+
         $updating_part_payment = (isset($data['part_payment']) && $data['part_payment']) ? true : false;
 
         $updating_cod = (isset($data['payment_mode']) && $data['payment_mode'] == 'cod') ? true : false;
@@ -255,6 +257,18 @@ class TransactionController extends \BaseController {
         }
 
         $data = array_merge($data,$customerDetail['data']); 
+
+        if(isset($data['coupon_code']) && $this->utilities->isGroupId($data['coupon_code'])){
+            
+            if($this->utilities->validateGroupId($data)){
+
+                $data['group_id'] = $data['coupon_code'];
+
+            } 
+             
+             unset($datap['coupon_code']);
+ 
+         }
           
         $payment_mode = isset($data['payment_mode']) ? $data['payment_mode'] : "";
 
@@ -400,7 +414,7 @@ class TransactionController extends \BaseController {
                 }
             }
 
-            if(isset($data['coupon_code']) && $data['coupon_code'] != ""){
+            if(isset($data['coupon_code']) && $data['coupon_code'] != "")){
                 $data['coupon_code'] = strtolower($data['coupon_code']);
                 $already_applied_coupon = Customer::where('_id',$data['customer_id'])->whereIn('applied_promotion_codes',[$data['coupon_code']])->count();
             
@@ -408,6 +422,8 @@ class TransactionController extends \BaseController {
                     return Response::json(array('status'=>400, 'message'=>'Coupon already applied'), $this->error_status);
                 }
             }
+
+            
         }
 
         $data['amount_final'] = $data["amount_finder"];
@@ -1231,8 +1247,6 @@ class TransactionController extends \BaseController {
 
             $this->utilities->demonetisation($order);
 
-            
-
             array_set($data, 'status', '1');
 
             if(isset($order['part_payment']) && $order['part_payment'] && (!isset($data['order_success_flag']) || $data['order_success_flag'] != 'admin')){
@@ -1240,6 +1254,28 @@ class TransactionController extends \BaseController {
             }
 
             if($data['status'] == '1'){
+
+                if(isset($order->group_id)){
+                    
+                    $group_resp = $this->utilities->validateGroupId(array('customer_id'=>$order->customer_id, 'group_id'=>$order->group_id));
+    
+                    if($group_resp['status'] == 400){
+                        
+                        unset($order->group_id);
+    
+                        $order->update();
+                    
+                    }else{
+                        
+                        $data['group_id'] = $this->utilities->addToGroup(['customer_id'=>$order->customer_id, 'group_id'=>$order->group_id, 'order_id'=>$order->_id]);
+    
+                    }
+                    
+                }else{
+    
+                    $data['group_id'] = $this->utilities->addToGroup(['customer_id'=>$order->customer_id, 'order_id'=>$order->_id]);
+    
+                }
 
                 $this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
 
@@ -4028,6 +4064,12 @@ class TransactionController extends \BaseController {
         if(!isset($data['coupon'])){
             $resp = array("status"=> 400, "message" => "Coupon code missing", "error_message" => "Please enter a valid coupon");
             return Response::json($resp,400);
+        }
+
+        if($this->utilities->isGroupId($data['coupon'])){
+
+            return $this->utilities->validateGroupId($data['coupon']);
+
         }
 
         if(!isset($data['ratecard_id']) && !isset($data['ticket_id'])){

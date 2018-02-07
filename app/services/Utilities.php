@@ -2766,5 +2766,105 @@ Class Utilities {
 
     }
 
+    public function addToGroup($data){
+
+
+        
+        if(isset($data['group_id'])){
+            
+            $group = Customergroup::where('group_id', $data['group_id'])->first();
+
+            $members = $group->members;
+
+            array_push($members, ['customer_id'=>$data['customer_id'], 'order_id'=>$data['order_id']]);
+
+            $group->members = $members;
+
+            $group->status = "1";
+
+            $group->save();
+
+            Log::info("created a new group");
+
+            Log::info($group);
+
+            return $data['group_id'];
+
+        }
+        
+        $group = new Customergroup();
+            
+        $group->group_id = $this->getUniqueGroupId();
+
+        $group->members = [['customer_id'=>$data['customer_id'], 'order_id'=>$data['order_id']]];
+
+        $group->status = "0";
+        
+        $group->save();
+
+        Log::info("Added to group");
+
+        Log::info($group);
+        
+        return $group->group_id;
+
+    }
+
+    public function getUniqueGroupId(){
+
+        $id = $this->generateRandomString(4);
+
+        $group = Customergroup::where('group_id', $id)->count();
+
+        if($group){
+        
+            return $this->getUniqueGroupId();
+       
+        }
+
+        return $id;
+    
+    }
+
+    public function isGroupId($code){
+        
+        // return is_numeric($code);
+
+        return strtolower(substr($code, 0, 3)) == 'grp';
+
+    }
+
+    public function validateGroupId($data){
+
+        $group = Customergroup::where('members.customer_id', $data['customer_id'])->first();
+
+        Log::info('Invalid group');
+
+        Log::info($group);
+
+        if($group){
+
+            return array('status'=>400, 'message'=>'You are already a member of a group', 'group_id'=>$group['group_id']);
+
+        }
+
+        $group = Customergroup::where('group_id', $data['group_id'])->first();
+
+        Log::info("Valid group");
+
+        Log::info($group);
+
+        if($group){
+
+            return array('status'=>200, 'message'=>'Successfully applied the group code');
+            
+        }else{
+            
+            return array('status'=>400, 'message'=>'Invalid group code');
+        
+        }
+
+    }
+
 
 }
