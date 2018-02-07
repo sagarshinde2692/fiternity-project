@@ -3135,10 +3135,10 @@ class HomeController extends BaseController {
 
         switch ($city) {
             case 'mumbai':
-                $data['isEventUpcoming'] = time() <= strtotime(date('2017-12-16 12:00:00')) ? true : false;
+                $data['isEventUpcoming'] = time() <= strtotime(date('2017-02-16 12:00:00')) ? true : false;
                 break;
             default:
-                $data['isEventUpcoming'] = time() <= strtotime(date('2017-12-17 12:00:00')) ? true : false;
+                $data['isEventUpcoming'] = time() <= strtotime(date('2018-02-17 12:00:00')) ? true : false;
                 break;
         }
 
@@ -3160,7 +3160,7 @@ class HomeController extends BaseController {
                 break;
             default:
                 $data["upcoming_party"] = [
-                    "title"=>"17th December, The Park Hotel<br>Connaught Place",
+                    "title"=>"17th Feb, Cyber Hub<br>Gurugram",
                     "image"=>"https://b.fitn.in/global/toi/newmorningfitnesspartylogo.png"
                 ];
                 break;
@@ -3242,51 +3242,59 @@ class HomeController extends BaseController {
 
             $data["line_up"] = [
                 "title"=>"The Line Up",
-                "venue"=>"The Park hotel, Connaught Place",
-                "address"=>"15, Parliament Street, New Delhi, Delhi 110001",
-                "date"=>"17th December Sunday",
+                "venue"=>"Cyber Hub",
+                "address"=>"DLF Cyber City, Phase 2, NH 8, Gurugram, Haryana 122002",
+                "date"=>"17th Feb Saturday",
                 "time"=>"8:00 AM to 11:30 AM",
                 "items"=>[
                     [
-                        "title"=>"Pilates",
-                        "description"=>"A combination of core exercises for toning up.",
-                        "calories_burn"=>"Burn 350 Calories",
+                        "title"=>"Yoga",
+                        "description"=>"A combination of poses and postures to gain body strength, toning and flexibility.",
+                        "calories_burn"=>"Burn 250 Calories",
                         "image"=>"https://b.fitn.in/global/toi/mfp/line_up/pilatesfinal.jpg",
-                        "trainer"=>"With Taru (Team Red Mat)",
+                        "trainer"=>"",
                         "time"=>"8:00 AM - 8:30 AM"
                     ],
                     [
-                        "title"=>"KickBoxing",
-                        "description"=>"A  martial arts form of attack & defence which incorporates kicking and boxing for strength & endurance.",
-                        "calories_burn"=>"Burn 550 Calories",
-                        "image"=>"https://b.fitn.in/global/toi/mfp/december/del/decdel_kickboxing.png",
-                        "trainer"=>"With Team Boxfit",
+                        "title"=>"Zumba",
+                        "description"=>"A high energy workout on latin american and bollywood music. Best for calorie and fat burning.",
+                        "calories_burn"=>"Burn 700 Calories",
+                        "image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/zumbafinal.jpg",
+                        "trainer"=>"",
                         "time"=>"8:45 AM - 9:15 AM"
                     ],
                     [
-                        "title"=>"Crush Club",
-                        "description"=>"A high energetic full body dance cardio workout done on bollywood music to sweat out excessive calories.",
-                        "calories_burn"=>"Burn 450 Calories",
-                        "image"=>"https://b.fitn.in/global/toi/mfp/december/del/decdel_dance.png",
-                        "trainer"=>"With Crush Fitness",
-                        "time"=>"9:30 AM - 10:00 AM"
-                    ], 
-                    [
-                        "title"=>"Crossfit",
+                        "title"=>"Functional training",
                         "description"=>"A functional training circuit using only body weight for for core & strength building.",
-                        "calories_burn"=>"Burn 550 Calories",
+                        "calories_burn"=>"Burn 450 Calories",
                         "image"=>"https://b.fitn.in/global/toi/mfp/december/del/decdel_crossfit.png",
-                        "trainer"=>"With Team 3607",
-                        "time"=>"10:15 AM - 10:45 AM"
+                        "trainer"=>"",
+                        "time"=>"9:30 AM - 10:00 AM"
                     ],
                     [
                         "title"=>"Masala Bhangra",
                         "description"=>"A cardio based dance workout form performed on dhol beats to achieve fat burn.",
                         "calories_burn"=>"Burn 700 Calories",
                         "image"=>"https://cdn.fitn.in/Mfp-delhi/masalab-web.jpg",
-                        "trainer"=>"With Nupur Banerji",
-                        "time"=>"11:00 AM - 11:30 AM"
+                        "trainer"=>"",
+                        "time"=>"10:15 AM - 10:45 AM"
                     ],
+                    [
+                        "title"=>"Crush Club (Adults & Kids)",
+                        "description"=>"A high energetic full body dance cardio workout done on bollywood music to sweat out excessive calories.",
+                        "calories_burn"=>"Burn 450 Calories",
+                        "image"=>"https://b.fitn.in/global/toi/mfp/december/del/decdel_dance.png",
+                        "trainer"=>"",
+                        "time"=>"11:00 AM - 11:30 AM"
+                    ], 
+                    // [
+                    //     "title"=>"KickBoxing",
+                    //     "description"=>"A  martial arts form of attack & defence which incorporates kicking and boxing for strength & endurance.",
+                    //     "calories_burn"=>"Burn 550 Calories",
+                    //     "image"=>"https://b.fitn.in/global/toi/mfp/december/del/decdel_kickboxing.png",
+                    //     "trainer"=>"With Team Boxfit",
+                    //     "time"=>"8:45 AM - 9:15 AM"
+                    // ],
                     // [
                     //     "title"=>"Shivfit Functional Training",
                     //     "description"=>" A functional training circuit using only body weight for for core & strength building.",
