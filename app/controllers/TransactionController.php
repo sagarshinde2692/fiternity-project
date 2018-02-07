@@ -4633,7 +4633,7 @@ class TransactionController extends \BaseController {
             $result['order_details'] = [
                 "studio_name"=>[
                     "field"=> "",
-                    "value"=> $data['finder_name']
+                    "value"=> $data['finder_name'] . "," . $data['finder_location']
                 ],
                 "service_name"=>[
                     "field"=> "",
@@ -4723,7 +4723,7 @@ class TransactionController extends \BaseController {
             $result['order_details'] = [
                 "studio_name"=>[
                     "field"=> "",
-                    "value"=> $order['finder_name'], $order['finder_location']
+                    "value"=> $order['finder_name'].",".$order['finder_location']
                 ],
                 "service_name"=>[
                     "field"=> "",
