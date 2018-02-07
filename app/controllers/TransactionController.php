@@ -4023,6 +4023,11 @@ class TransactionController extends \BaseController {
 
         $data = Input::json()->all();
 
+        if($this->vendor_token){
+            $resp = array("status"=> 400, "message" => "Coupon code is not valid", "error_message" => "Coupon code is not valid");
+            return Response::json($resp,400);
+        }
+
         if(!isset($data['coupon'])){
             $resp = array("status"=> 400, "message" => "Coupon code missing", "error_message" => "Please enter a valid coupon");
             return Response::json($resp,400);
