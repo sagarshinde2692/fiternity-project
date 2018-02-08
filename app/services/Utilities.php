@@ -2780,7 +2780,7 @@ Class Utilities {
         
         if(isset($data['group_id']) && $data['group_id']){
             
-            $group = \Customergroup::where('group_id', $data['group_id'])->first();
+            $group = \Customergroup::where('group_id', strtoupper($data['group_id']))->first();
 
             $members = $group->members;
 
@@ -2867,9 +2867,9 @@ Class Utilities {
 
         $group = \Customergroup::where('members.customer_id', $data['customer_id'])->first();
 
-        \Log::info('Invalid group');
+        Log::info('Invalid group');
 
-        \Log::info($group);
+        Log::info($group);
 
         if($group){
 
@@ -2881,11 +2881,11 @@ Class Utilities {
             return array('status'=>400, 'message'=>'Empty group code');
         }
 
-        $group = \Customergroup::where('group_id', $data['group_id'])->first();
+        $group = \Customergroup::where('group_id', strtoupper($data['group_id']))->first();
 
-        \Log::info("Valid group");
+        Log::info("Valid group");
 
-        \Log::info($group);
+        Log::info($group);
 
         if($group){
 
