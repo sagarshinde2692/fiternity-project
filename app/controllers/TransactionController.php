@@ -266,7 +266,7 @@ class TransactionController extends \BaseController {
 
             } 
              
-             unset($datap['coupon_code']);
+             unset($data['coupon_code']);
  
          }
           
