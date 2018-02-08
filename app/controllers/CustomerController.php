@@ -5900,10 +5900,29 @@ class CustomerController extends \BaseController {
 		}
 
 		$order_id = intval($data['order_id']);
-		
-		$order_id = Order::find($order_id, ['customer_name']);
 
-		return $order_id;
+		$invitees = $data['invitees'];
+		
+		$order = Order::find($order_id, ['customer_name', 'group_id']);
+
+		$order->group_invites = $invitees;
+
+		$order->update();
+
+		foreach($invitees as $invitee){
+
+			$data = [
+				'invitee_name'=>$order['customer_name'],
+				'name'=> $invitee['name'],
+				'phone'=>$invitee['phone'],
+				'group_id'=>$order['group_id']
+			];
+
+			$this->customersms->sendGroupInvite($data);
+
+		}
+
+		return Response::json(['status'=>200, 'message'=>'Invites sent successfully']);
 
 	}
 	

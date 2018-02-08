@@ -1003,7 +1003,20 @@ Class CustomerSms extends VersionNextSms{
 
         return $this->common($label,$to,$data,$delay);
 
-    }
+	}
+	
+	public function sendGroupInvite($data){
+		
+		Log::info("invite sent to");
+		Log::info($data);
+		return;
+		$label = 'GroupInvite-Customer';
+		
+		$to = $data['phone'];
+
+		return $this->common($label,$to,$data);
+	
+	}
 
 	public function common($label,$to,$data,$delay = 0){
 

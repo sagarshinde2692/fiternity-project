@@ -2822,7 +2822,7 @@ Class Utilities {
 
     public function getUniqueGroupId(){
 
-        $id = "grp".$this->generateRandomString(4);
+        $id = "GRP".$this->generateRandomString(4);
 
         $group = \Customergroup::where('group_id', $id)->count();
 
@@ -2840,7 +2840,7 @@ Class Utilities {
         
         // return is_numeric($code);
 
-        return strtolower(substr($code, 0, 3)) == 'grp';
+        return strtolower(substr($code, 0, 3)) == 'GRP';
 
     }
 
