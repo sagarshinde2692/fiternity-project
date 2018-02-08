@@ -1224,8 +1224,8 @@ class HomeController extends BaseController {
             }
 
             if(isset($item['"group_id']) && $item['"group_id'] != ""){
-                $booking_details_data['service_name']['field'] = 'Group Id';
-                $booking_details_data['service_name']['value'] = $item['group_id'];
+                $booking_details_data['group_id']['field'] = 'Group Id';
+                $booking_details_data['group_id']['value'] = $item['group_id'];
             }
 
 
