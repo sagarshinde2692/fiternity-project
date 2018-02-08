@@ -2873,7 +2873,7 @@ Class Utilities {
 
         if($group){
 
-            return array('status'=>400, 'message'=>'You are already a member of a group', 'group_id'=>$group['group_id']);
+            return array('status'=>400, 'message'=>'You are already a member of a group', 'error_message'=>'You are already a member of a group', 'group_id'=>$group['group_id']);
 
         }
 
@@ -2893,7 +2893,7 @@ Class Utilities {
             
         }else{
             
-            return array('status'=>400, 'message'=>'Invalid group code');
+            return array('status'=>400, 'message'=>'Invalid group code', 'error_message'=>'Invalid group code');
         
         }
 
