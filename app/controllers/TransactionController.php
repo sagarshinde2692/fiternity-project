@@ -338,13 +338,15 @@ class TransactionController extends \BaseController {
                     $data['repetition'] = $order->repetition + 1;
                 }
 
-                /*if(isset($order->cashback)){
+                if(isset($order->cashback)){
                     $order->unset('cashback');
                 }
 
                 if(isset($order->reward_ids)){
                     $order->unset('reward_ids');
-                }*/
+                }
+
+                $order->update();
             }
 
         }else{
@@ -572,7 +574,8 @@ class TransactionController extends \BaseController {
                     'type'=>'DEBIT',
                     'entry'=>'debit',
                     'description'=> $this->utilities->getDescription($data),
-                    'finder_id'=>$data['finder_id']
+                    'finder_id'=>$data['finder_id'],
+                    'order_type'=>$data['type']
                 );
 
                 $walletTransactionResponse = $this->utilities->walletTransactionNew($req);

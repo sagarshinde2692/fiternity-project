@@ -84,7 +84,6 @@ class CommunicationsController extends \BaseController {
 			
 			$data = $this->prepareData($data, $label);
 			$class = strtolower($sender_class);
-			$response = $this->$class->$label($data, 0);
 
 			$communication_keys = $transaction_data->communication_keys;
 			$communication_keys["$sender_class-$label"] = "";
@@ -104,6 +103,8 @@ class CommunicationsController extends \BaseController {
 					return "no sms sent";
 				}
 			}
+
+			$response = $this->$class->$label($data, 0);
 
 			return $response;
 			
