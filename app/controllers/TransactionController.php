@@ -260,7 +260,7 @@ class TransactionController extends \BaseController {
 
         if(isset($data['coupon_code']) && $this->utilities->isGroupId($data['coupon_code'])){
             
-            if($this->utilities->validateGroupId($data)){
+            if($this->utilities->validateGroupId(['group_id'=>$data['coupon_code'], 'customer_id'=>$data['logged_in_customer_id']])){
 
                 $data['group_id'] = $data['coupon_code'];
 
