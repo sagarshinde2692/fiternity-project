@@ -5881,5 +5881,30 @@ class CustomerController extends \BaseController {
 
 		return Response::json(array('status' => 400,'message' => 'Vendor Not Found'));
 	}
+
+	public function shareGroupId(){
+
+		$data = Input::json()->all();
+
+		$rules = [
+			'order_id' => 'required',
+			'invitees' => 'required|array'
+		];
+
+		$validator = Validator::make($data,$rules);
+
+		if ($validator->fails()) {
+
+			return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),$this->error_status);
+
+		}
+
+		$order_id = intval($data['order_id']);
+		
+		$order_id = Order::find($order_id, ['customer_name']);
+
+		return $order_id;
+
+	}
 	
 }
