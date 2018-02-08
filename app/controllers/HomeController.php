@@ -1045,7 +1045,7 @@ class HomeController extends BaseController {
 
             }
 
-            $booking_details_data["group_id"] = ['field'=>'Group Id','value'=>'','position'=>$position++];
+            $booking_details_data["group_id"] = ['field'=>'GROUP ID','value'=>'','position'=>$position++];
 
             if(isset($item['start_date']) && $item['start_date'] != ""){
                 $booking_details_data['start_date']['value'] = date('D, d M Y',strtotime($item['start_date']));
