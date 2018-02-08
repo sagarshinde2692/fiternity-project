@@ -2795,12 +2795,12 @@ Class Utilities {
             \Log::info("created a new group");
 
             \Log::info($group);
-
+            
+            $this->sendGroupCommunication(['group'=>$group,'customer_id'=>$data['customer_id']]);
+        
             return $data['group_id'];
 
         }
-
-        
         
         $group = new \Customergroup();
             
@@ -2815,6 +2815,8 @@ Class Utilities {
         \Log::info("Added to group");
 
         \Log::info($group);
+
+        $this->sendGroupCommunication(['group'=>$group,'customer_id'=>$data['customer_id']]);
         
         return $group->group_id;
 
@@ -2899,5 +2901,40 @@ Class Utilities {
 
     }
 
+    public function sendGroupCommunication($data){
+        
+        $customer_id = $data['customer_id'];
+
+        $group = $data['group'];
+
+        $customersms = new \CustomerSms();
+
+        foreach($group->members as $member){
+
+            if($member->customer_id == $customer_id){
+             
+                $order = Order::find($member->order_id, ['customer_phone', 'customer_name']);
+
+                $new_member_name = $order->customer_name;
+
+                $customersms->addGroupNewMember(['customer_phone'=>$order->customer_phone,'customer_name'=>$order->customer_name,'vendor_name'=>$order->finder_name, 'group_id'=>$group->group_id]);
+
+            }
+
+        }
+
+        foreach($group->members as $member){
+            
+            if($member->customer_id != $customer_id){
+                
+                $order = Order::find($member->order_id, ['customer_phone', 'customer_name']);
+                
+                $customersms->addGroupOldMembers([['customer_phone'=>$order->customer_phone,'customer_name'=>$order->customer_name, 'new_member_name'=>$new_member_name]]);
+
+            }
+
+        }
+
+    }
 
 }

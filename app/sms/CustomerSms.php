@@ -1009,13 +1009,39 @@ Class CustomerSms extends VersionNextSms{
 		
 		Log::info("invite sent to");
 		Log::info($data);
-		return;
+		// return;
 		$label = 'GroupInvite-Customer';
 		
 		$to = $data['phone'];
 
 		return $this->common($label,$to,$data);
 	
+	}
+
+	public function addGroupNewMember($data){
+
+		Log::info("invite sent to");
+		Log::info($data);
+		// return;
+		$label = 'AddGroupNewMember-Customer';
+		
+		$to = $data['customer_phone'];
+
+		return $this->common($label,$to,$data);
+
+	}
+
+	public function addGroupOldMembers($data){
+		
+		Log::info("invite sent to");
+		Log::info($data);
+		// return;
+		$label = 'AddGroupOldMembers-Customer';
+		
+		$to = $data['customer_phone'];
+
+		return $this->common($label,$to,$data);
+		
 	}
 
 	public function common($label,$to,$data,$delay = 0){
