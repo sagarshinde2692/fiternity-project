@@ -2853,10 +2853,15 @@ Class Utilities {
             if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
     
                 $decoded = $this->customerTokenDecode($jwt_token);
+
+                Log::info($data);
+                
                 $data['customer_id'] = (int)$decoded->customer->_id;
             
             }else{
-                return array('status'=>400, 'message'=>'You need to login');
+                
+                return array('status'=>400, 'message'=>'You need to log in');
+            
             }
         }
 
