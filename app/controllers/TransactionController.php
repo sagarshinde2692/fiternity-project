@@ -1860,7 +1860,8 @@ class TransactionController extends \BaseController {
                         'type'=>'DEBIT',
                         'entry'=>'debit',
                         'description'=> $this->utilities->getDescription($data),
-                        'finder_id'=>$data['finder_id']
+                        'finder_id'=>$data['finder_id'],
+                        'order_type'=>$data['type']
                     );
 
                     $walletTransactionResponse = $this->utilities->walletTransactionNew($req);
@@ -1899,7 +1900,8 @@ class TransactionController extends \BaseController {
                             'type'=>'DEBIT',
                             'entry'=>'debit',
                             'description'=> $this->utilities->getDescription($data),
-                            'finder_id'=>$data['finder_id']
+                            'finder_id'=>$data['finder_id'],
+                            'order_type'=>$data['type']
                         );
                         $walletTransactionResponse = $this->utilities->walletTransactionNew($req);
                         
@@ -3383,6 +3385,17 @@ class TransactionController extends \BaseController {
                             $this->customernotification->postTrialFollowup1After15Days($transaction,0);
                         }
                         break;
+                    case 'Nplus2':
+
+                        $sms_data = [];
+
+                        $sms_data['customer_phone'] = $order['customer_phone'];
+
+                        $sms_data['message'] = "Hi ".ucwords($transaction['customer_name']).". Hope you liked your trial workout at".ucwords($transaction['finder_name']).". You have Rs. ".$transaction['wallet_balance']." in your Fittenrity wallet. Use it now to buy the membership at lowest price with assured complimentary rewards like cool fitness merchandise and Diet Plan. ".$transaction['vendor_link'].".  Valid for 7 days. For quick assistance call Fitternity on ".Config::get('app.contact_us_customer_number');
+
+                        $this->customersms->custom($sms_data);
+
+                        break;
                     default : break;
                 }
 
@@ -4577,7 +4590,12 @@ class TransactionController extends \BaseController {
                 
                 $customer_id = $decoded->customer->_id;
 
-                $data['wallet_balance'] = $this->utilities->getWalletBalance($customer_id);
+                $getWalletBalanceData = [
+                    'finder_id'=>$ratecard['finder_id'],
+                    'order_type'=>$ratecard['type']
+                ];
+
+                $data['wallet_balance'] = $this->utilities->getWalletBalance($customer_id,$getWalletBalanceData);
 
                 $data['fitcash_applied'] = $data['amount_payable'] > $data['wallet_balance'] ? $data['wallet_balance'] : $data['amount_payable'];
                 
@@ -4775,7 +4793,12 @@ class TransactionController extends \BaseController {
                 
                 $customer_id = $decoded->customer->_id;
 
-                $data['wallet_balance'] = $this->utilities->getWalletBalance($customer_id);
+                $getWalletBalanceData = [
+                    'finder_id'=>$order['finder_id'],
+                    'order_type'=>$order['type']
+                ];
+
+                $data['wallet_balance'] = $this->utilities->getWalletBalance($customer_id,$getWalletBalanceData);
 
                 $data['fitcash_applied'] = $data['amount_payable'] > $data['wallet_balance'] ? $data['wallet_balance'] : $data['amount_payable'];
                 

@@ -1696,6 +1696,21 @@ Class Utilities {
                 $wallet->finder_id = (int)$request['finder_id'];
             }
 
+            if(isset($request['valid_finder_id']) && $request['valid_finder_id'] != ""){
+
+                $wallet->valid_finder_id = $request['valid_finder_id'];
+            }
+
+            if(isset($request['service_id']) && $request['service_id'] != ""){
+
+                $wallet->service_id = $request['service_id'];
+            }
+
+            if(isset($request['valid_service_id']) && $request['valid_service_id'] != ""){
+
+                $wallet->valid_service_id = $request['valid_service_id'];
+            }
+
             $wallet->save();
 
             $walletTransactionData['wallet_id'] = $wallet->_id;
@@ -2030,11 +2045,32 @@ Class Utilities {
     }
 
 
-    public function getWalletBalance($customer_id){
+   public function getWalletBalance($customer_id,$data = false){
 
         $customer_id = (int) $customer_id;
 
-        $wallet_balance = Wallet::active()->where('customer_id',$customer_id)->where('balance','>',0)->sum('balance');
+        $finder_id = ($data && isset($data['finder_id']) && $data['finder_id'] != "") ? (int)$data['finder_id'] : "";
+        $order_type = ($data && isset($data['order_type']) && $data['order_type'] != "") ? (int)$data['order_type'] : "";
+
+        $query = Wallet::active()->where('customer_id',$customer_id)->where('balance','>',0);
+
+        if($finder_id && $finder_id != ""){
+
+            if(in_array($order_type,['membership','memberships'])){
+
+                $query->where(function($query) use($finder_id) {$query->orWhere('valid_finder_id','exists',false)->orWhere('valid_finder_id',(int)$finder_id);});
+
+            }else{
+
+                $query->where('valid_finder_id','exists',false);
+            }
+
+        }else{
+
+            $query->where('valid_finder_id','exists',false);
+        }
+
+        $wallet_balance = $query->sum('balance');
 
         return $wallet_balance;
     }
@@ -2241,13 +2277,16 @@ Class Utilities {
         }
 
     }
+
     public function getWalletQuery($request){
 
         $query = Wallet::active()->where('customer_id',(int)$request['customer_id'])->where('balance','>',0);
 
         if(isset($request['finder_id']) && $request['finder_id'] != ""){
 
-            $finder = \Finder::find((int)$request['finder_id']);
+            $finder_id = (int)$request['finder_id'];
+
+            $finder = \Finder::find($finder_id);
 
             $conditionData = [];
 
@@ -2300,6 +2339,15 @@ Class Utilities {
                     }
 
                 }
+            }
+
+            if(isset($request['order_type']) && $request['order_type'] == 'memberships'){
+
+                $query->where(function($query) use($finder_id) {$query->orWhere('valid_finder_id','exists',false)->orWhere('valid_finder_id',$finder_id);});
+
+            }else{
+
+                $query->where('valid_finder_id','exists',false);
             }
         }
 
