@@ -4062,7 +4062,7 @@ class TransactionController extends \BaseController {
     }
 
     public function checkCouponCode(){
-
+        
         $data = Input::json()->all();
 
         if(!isset($data['coupon'])){
@@ -4074,7 +4074,17 @@ class TransactionController extends \BaseController {
 
             $data['group_id'] = $data['coupon'];
 
-            return $this->utilities->validateGroupId(['group_id'=>$data['coupon']]);
+            $resp = $this->utilities->validateGroupId(['group_id'=>$data['coupon']]);
+            
+            if($resp['status']==200){
+                
+                return Response::json($resp);
+            
+            }else{
+                
+                return Response::json($resp, 400);
+                
+            }
 
         }
 
