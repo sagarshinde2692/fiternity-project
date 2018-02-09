@@ -5914,7 +5914,7 @@ class CustomerController extends \BaseController {
 			$data = [
 				'invitor_name'=>$order['customer_name'],
 				'name'=> $invitee['name'],
-				'phone'=>$invitee['phone'],
+				'phone'=>$invitee['input'],
 				'group_id'=>$order['group_id']
 			];
 

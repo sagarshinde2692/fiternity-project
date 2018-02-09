@@ -1489,7 +1489,7 @@ class HomeController extends BaseController {
                 $resp['group_code'] = [
                     'code'=> $item['group_id'],
                     'order_id'=> $item['_id'],
-                    'end_point'=> Config::get('app.url').'/sharegroupid'
+                    'end_point'=> 'sharegroupid'
                 ];
 
             }

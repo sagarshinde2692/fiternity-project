@@ -260,7 +260,7 @@ class TransactionController extends \BaseController {
 
         if(isset($data['coupon_code']) && $this->utilities->isGroupId($data['coupon_code'])){
             
-            if($this->utilities->validateGroupId(['group_id'=>$data['coupon_code'], 'customer_id'=>$data['logged_in_customer_id']])){
+            if($this->utilities->validateGroupId(['group_id'=>$data['coupon_code'], 'customer_id'=>$data['customer_id']])){
 
                 $data['group_id'] = $data['coupon_code'];
 
@@ -1257,7 +1257,7 @@ class TransactionController extends \BaseController {
 
                 $group_id = isset($order->group_id) ? $order->group_id : null;
 
-                $data['group_id'] = $this->utilities->addToGroup(['customer_id'=>$order->logged_in_customer_id, 'group_id'=>$group_id, 'order_id'=>$order->_id]);
+                $data['group_id'] = $this->utilities->addToGroup(['customer_id'=>$order->customer_id, 'group_id'=>$group_id, 'order_id'=>$order->_id]);
 
                 // if(isset($order->group_id)){
                     
