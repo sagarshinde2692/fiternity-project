@@ -881,15 +881,42 @@ class FindersController extends \BaseController {
 					$finder_footer = Cache::tags('finder_footer')->get($finderdata["location"]["slug"]);
 				}
 
-				$finder['facility_tags'] = ['Others'];
-				$finder['service_tags'] = ['Others'];
+				$finder['photo_facility_tags'] = ['All'];
+				
+				$finder['photo_service_tags'] = ['All'];
+				
 				foreach($finder['photos'] as $photo){
-					$finder['facility_tags'] = array_merge($finder['facility_tags'], $photo['tags']);
-					$finder['service_tags'] = array_merge($finder['service_tags'], $photo['servicetags']);
+				
+					$finder['photo_facility_tags'] = array_merge($finder['photo_facility_tags'], $photo['tags']);
+				
+					$finder['photo_service_tags'] = array_merge($finder['photo_service_tags'], $photo['servicetags']);
+				
 				}
-				$finder['facility_tags'] = array_values(array_unique($finder['facility_tags']));
-				$finder['service_tags'] = array_values(array_unique($finder['service_tags']));
+				
+				$finder['photo_facility_tags'] = array_values(array_unique($finder['photo_facility_tags']));
+				
+				$finder['photo_service_tags'] = array_values(array_unique($finder['photo_service_tags']));
+				
+				array_push($finder['photo_facility_tags'], 'Others');
+				
+				array_push($finder['photo_service_tags'], 'Others');
 
+				$video_service_tags = [];
+				
+				foreach($finder['videos'] as $video){
+					$video_service_tags = array_merge($video_service_tags, $video['servicetags']);
+				}
+				
+				$video_service_tags = array_values(array_unique($video_service_tags));
+				
+				$service_names = Service::whereIn('_id', $video_service_tags)->lists('name');
+
+				$finder['video_service_tags'] = $service_names;
+				
+				array_unshift($finder['video_service_tags'], "All");
+
+				array_push($finder['video_service_tags'], 'Others');
+				
 				$finder['title'] = str_replace('crossfit', 'CrossFit', $finder['title']);
 				$response['statusfinder']                   =       200;
 				$response['finder']                         =       $finder;
