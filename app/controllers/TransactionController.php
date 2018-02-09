@@ -4072,10 +4072,14 @@ class TransactionController extends \BaseController {
             $resp = array("status"=> 400, "message" => "Coupon code missing", "error_message" => "Please enter a valid coupon");
             return Response::json($resp,400);
         }
-
+        if(!isset($data['ratecard_id']) && !isset($data['ticket_id'])){
+            $resp = array("status"=> 400, "message" => "Ratecard Id or ticket Id must be present", "error_message" => "Coupon cannot be applied on this transaction");
+            return Response::json($resp,400);
+        }
         if($this->utilities->isGroupId($data['coupon'])){
-
-            $data['group_id'] = $data['coupon'];
+            $ratecard = Ratecard::find($data['ratecard_id']);
+            if($ratecard['type'] == "membership" || $ratecard['type'] == "memberships"){
+                $data['group_id'] = $data['coupon'];
 
             $resp = $this->utilities->validateGroupId(['group_id'=>$data['coupon']]);
             
@@ -4088,12 +4092,11 @@ class TransactionController extends \BaseController {
                 return Response::json($resp, 400);
                 
             }
+            }else{
+                return Response::json($resp, 400);
+            }
+            
 
-        }
-
-        if(!isset($data['ratecard_id']) && !isset($data['ticket_id'])){
-            $resp = array("status"=> 400, "message" => "Ratecard Id or ticket Id must be present", "error_message" => "Coupon cannot be applied on this transaction");
-            return Response::json($resp,400);
         }
 
         $jwt_token = Request::header('Authorization');

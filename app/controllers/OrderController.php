@@ -2623,7 +2623,7 @@ class OrderController extends \BaseController {
 
             $order = Order::find($order_id);
 
-            $order->update($data);
+            
 
             if(isset($data['payment_mode']) && $data['payment_mode'] == 'cod'){
                 $group_id = isset($data['group_id']) ? $data['group_id'] : null;
@@ -2631,7 +2631,7 @@ class OrderController extends \BaseController {
                 $this->customermailer->orderUpdateCOD($order->toArray());
                 $this->customersms->orderUpdateCOD($order->toArray());
             }
-
+            $order->update($data);
 
             $result['firstname'] = strtolower($data['customer_name']);
             $result['lastname'] = "";
