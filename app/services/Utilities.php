@@ -2914,7 +2914,7 @@ Class Utilities {
 
         if($group){
 
-            return array('status'=>200, 'message'=>'Successfully applied the group code');
+            return array('status'=>200, 'message'=>'Group code applied successfully');
             
         }else{
             

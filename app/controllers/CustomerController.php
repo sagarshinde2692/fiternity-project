@@ -5922,7 +5922,7 @@ class CustomerController extends \BaseController {
 
 		}
 
-		return Response::json(['status'=>200, 'message'=>'Invites sent successfully']);
+		return Response::json(['status'=>200, 'message'=>'Group invitation sent successfully']);
 
 	}
 	
