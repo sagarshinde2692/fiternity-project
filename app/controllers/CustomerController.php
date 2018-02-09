@@ -5912,7 +5912,7 @@ class CustomerController extends \BaseController {
 		foreach($invitees as $invitee){
 
 			$data = [
-				'invitee_name'=>$order['customer_name'],
+				'invitor_name'=>$order['customer_name'],
 				'name'=> $invitee['name'],
 				'phone'=>$invitee['phone'],
 				'group_id'=>$order['group_id']

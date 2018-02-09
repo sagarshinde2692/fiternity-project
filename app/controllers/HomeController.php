@@ -1241,7 +1241,15 @@ class HomeController extends BaseController {
                     $subline= "Hi <b>".$item['customer_name']."</b>, your <b>".$booking_details_data['service_duration']['value']."</b> Membership at <b>".$booking_details_data["finder_name_location"]['value']."</b> has been confirmed. It will be activated once we collect your cash payment. We have also sent you a confirmation Email and SMS";
                 }
 
-                $booking_details_data = array_only($booking_details_data, ['booking_id','price','address','poc', 'group_id']);
+                if(isset($_GET['device_type']) && in_array($_GET['device_type'], ['ios', 'android'])){
+                
+                    $booking_details_data = array_only($booking_details_data, ['booking_id','price','address','poc', 'group_id']);
+                
+                }else{
+                    
+                    $booking_details_data = array_only($booking_details_data, ['booking_id','price','address','poc']);
+                
+                }
 
             }
 
@@ -1475,6 +1483,16 @@ class HomeController extends BaseController {
                 'customer_auto_register' => $customer_auto_register,
                 'why_buy'=>$why_buy
             ];
+
+            if(isset($item['group_id']) && $item['group_id'] != ''){
+
+                $resp['group_code'] = [
+                    'code'=> $item['group_id'],
+                    'order_id'=> $item['_id'],
+                    'end_point'=> Config::get('app.url').'/sharegroupid'
+                ];
+
+            }
 
             if($this->vendor_token){
 
