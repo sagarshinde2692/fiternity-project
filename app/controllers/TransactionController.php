@@ -1262,7 +1262,7 @@ class TransactionController extends \BaseController {
                 array_set($data, 'status', '3');
             }
 
-            if($data['status'] == '1'){
+            if($data['status'] == '1' && $order->type == "memberships"){
 
                 $group_id = isset($order->group_id) ? $order->group_id : null;
 
