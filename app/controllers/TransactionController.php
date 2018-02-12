@@ -4243,19 +4243,19 @@ class TransactionController extends \BaseController {
 
             $resp['status'] = 200;
             $resp['message'] = $resp['success_message'] = "Rs. ".$resp["data"]["discount"]." has been applied Successfully ";
-            if(strtolower($data['coupon']) == "fitlove" || $data['coupon'] == "fitlove"){
-                $resp['success_message'] = $resp['message'] = "Basis slot availability, your surprise discount for this partner outlet is Rs ".$resp["data"]["discount"];
-            }
-            if(!$resp["vendor_routed_coupon"]){
-                if($resp["data"]["discount"] <= 0){
+            // if(strtolower($data['coupon']) == "fitlove" || $data['coupon'] == "fitlove"){
+            //     $resp['success_message'] = $resp['message'] = "Basis slot availability, your surprise discount for this partner outlet is Rs ".$resp["data"]["discount"];
+            // }
+            // if(!$resp["vendor_routed_coupon"]){
+            //     if($resp["data"]["discount"] <= 0){
     
-                    $resp['status'] = 400;
-                    $resp['message'] = $resp['error_message'] = "Cannot apply Coupon";
-                    $resp["coupon_applied"] = false;
+            //         $resp['status'] = 400;
+            //         $resp['message'] = $resp['error_message'] = "Cannot apply Coupon";
+            //         $resp["coupon_applied"] = false;
     
-                    unset($resp['success_message']);
-                }
-            }
+            //         unset($resp['success_message']);
+            //     }
+            // }
 
             return Response::json($resp,$resp['status']);
 
