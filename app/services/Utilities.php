@@ -2799,6 +2799,12 @@ Class Utilities {
         //     return $validate['group_id'];
         
         // }
+
+        $group = \Customergroup::where('members.customer_id', $data['customer_id'])->first();
+        
+        if($group){
+            return $group['group_id'];
+        }
         
         if(isset($data['group_id']) && $data['group_id']){
             
