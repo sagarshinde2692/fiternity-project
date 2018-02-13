@@ -3002,7 +3002,11 @@ class TransactionController extends \BaseController {
             $booktrial = Booktrial::where('customer_id',$order['customer_id'])->where('finder_id',(int)$order['finder_id'])->orderBy('desc','_id')->first();
 
             if($booktrial){
+
                 $order->previous_booktrial_id = (int)$booktrial->_id;
+
+                $booktrial->final_lead_stage = "purchase_stage";
+                $booktrial->update();
             }
 
             $order->update();
