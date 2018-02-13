@@ -5161,7 +5161,8 @@ class CustomerController extends \BaseController {
 
 				$url = $this->utilities->getShortenUrl(Config::get('app.website')."/profile/$customer_email#promotion");
 
-				$share_message = "Register on Fitternity and earn Rs. 250 FitCash+ which can be used for fitness classes, memberships, diet consulting & more! Use my code $referral_code and apply it in your profile after logging-in $url";
+				/*$share_message = "Register on Fitternity and earn Rs. 250 FitCash+ which can be used for fitness classes, memberships, diet consulting & more! Use my code $referral_code and apply it in your profile after logging-in $url";*/
+				$share_message = "Hi, I found this awesome fitness app - Fitternity. Use my code $referral_code to get Rs 250 Fitcash+ on sign-up. Click $url to download it.";
 				$display_message = "Fitter is better together!<br>Refer a friend and both of you get Rs. 250 FitCash + which is fully redeemable on all bookings on Fitternity!<br><br>Valid till 31st December 2018. TCA.";
 
 				if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "ios")){
