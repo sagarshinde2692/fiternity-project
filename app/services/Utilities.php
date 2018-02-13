@@ -2803,6 +2803,7 @@ Class Utilities {
         $group = \Customergroup::where('members.customer_id', $data['customer_id'])->first();
         
         if($group){
+            Log::info("returning old group id");
             return $group['group_id'];
         }
         
