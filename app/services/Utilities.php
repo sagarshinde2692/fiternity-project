@@ -2774,6 +2774,10 @@ Class Utilities {
 
         $validate = $validate = $this->validateGroupId($data);
 
+        Log::info("validate group data in addToGroup");
+
+        Log::info($validate);
+
         if($validate['status']==400 && isset($validate['group_id'])){
             
             Log::info("invalid group id");
@@ -2795,6 +2799,14 @@ Class Utilities {
         //     return $validate['group_id'];
         
         // }
+
+        $group = \Customergroup::where('members.customer_id', $data['customer_id'])->first();
+        
+        if($group){
+            Log::info("returning old group id");
+            $this->sendGroupCommunication(['group'=>$group,'customer_id'=>$data['customer_id']]);
+            return $group['group_id'];
+        }
         
         if(isset($data['group_id']) && $data['group_id']){
             
