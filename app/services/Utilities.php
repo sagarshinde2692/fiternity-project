@@ -2774,6 +2774,10 @@ Class Utilities {
 
         $validate = $validate = $this->validateGroupId($data);
 
+        Log::info("validate group data in addToGroup");
+
+        Log::info($validate);
+
         if($validate['status']==400 && isset($validate['group_id'])){
             
             Log::info("invalid group id");
