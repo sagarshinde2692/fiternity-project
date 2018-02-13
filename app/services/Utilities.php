@@ -2804,6 +2804,7 @@ Class Utilities {
         
         if($group){
             Log::info("returning old group id");
+            $this->sendGroupCommunication(['group'=>$group,'customer_id'=>$data['customer_id']]);
             return $group['group_id'];
         }
         
