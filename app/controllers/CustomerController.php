@@ -5881,5 +5881,49 @@ class CustomerController extends \BaseController {
 
 		return Response::json(array('status' => 400,'message' => 'Vendor Not Found'));
 	}
+
+	public function shareGroupId(){
+
+		$data = Input::json()->all();
+
+		$rules = [
+			'order_id' => 'required',
+			'invitees' => 'required|array'
+		];
+
+		$validator = Validator::make($data,$rules);
+
+		if ($validator->fails()) {
+
+			return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),$this->error_status);
+
+		}
+
+		$order_id = intval($data['order_id']);
+
+		$invitees = $data['invitees'];
+		
+		$order = Order::find($order_id, ['customer_name', 'group_id']);
+
+		$order->group_invites = $invitees;
+
+		$order->update();
+
+		foreach($invitees as $invitee){
+
+			$data = [
+				'invitor_name'=>$order['customer_name'],
+				'name'=> $invitee['name'],
+				'phone'=>$invitee['input'],
+				'group_id'=>$order['group_id']
+			];
+
+			$this->customersms->sendGroupInvite($data);
+
+		}
+
+		return Response::json(['status'=>200, 'message'=>'Group invitation sent successfully']);
+
+	}
 	
 }

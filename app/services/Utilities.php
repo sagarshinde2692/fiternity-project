@@ -2766,5 +2766,200 @@ Class Utilities {
 
     }
 
+    public function addToGroup($data){
+
+        Log::info("inside addToGroup");
+        Log::info($data);
+        
+
+        $validate = $validate = $this->validateGroupId($data);
+
+        if($validate['status']==400 && isset($validate['group_id'])){
+            
+            Log::info("invalid group id");
+            
+            return "";
+        
+        }
+
+        // if($validate['status']==400 && isset($validate['group_id'])){
+
+        //     $group = \Customergroup::where('group_id', strtoupper($data['group_id']))->first();
+
+        //     Log::info("group");
+            
+        //     Log::info($group);
+            
+        //     $this->sendGroupCommunication(['group'=>$group,'customer_id'=>$data['customer_id']]);
+            
+        //     return $validate['group_id'];
+        
+        // }
+        
+        if(isset($data['group_id']) && $data['group_id']){
+            
+            $group = \Customergroup::where('group_id', strtoupper($data['group_id']))->where('members.customer_id', '!=', $data['customer_id'])->first();
+
+            if($group){
+
+                $members = $group->members;
+                
+                array_push($members, ['customer_id'=>$data['customer_id'], 'order_id'=>$data['order_id']]);
+    
+                $group->members = $members;
+    
+                $group->status = "1";
+    
+                $group->save();
+    
+                Log::info("Added to group");
+    
+                Log::info($group);
+                
+                $this->sendGroupCommunication(['group'=>$group,'customer_id'=>$data['customer_id']]);
+
+            }
+        
+            return $data['group_id'];
+
+        }
+
+        
+        $group = new \Customergroup();
+            
+        $group->group_id = $this->getUniqueGroupId();
+
+        $group->members = [['customer_id'=>$data['customer_id'], 'order_id'=>$data['order_id']]];
+
+        $group->status = "0";
+        
+        $group->save();
+
+        Log::info("created a new group");
+
+        Log::info($group);
+
+        $this->sendGroupCommunication(['group'=>$group->toArray(),'customer_id'=>$data['customer_id']]);
+        
+        return $group->group_id;
+
+    }
+
+    public function getUniqueGroupId(){
+
+        $id = "GRP".$this->generateRandomString(4);
+
+        $group = \Customergroup::where('group_id', $id)->count();
+
+        if($group){
+        
+            return $this->getUniqueGroupId();
+       
+        }
+
+        return $id;
+    
+    }
+
+    public function isGroupId($code){
+        
+        // return is_numeric($code);
+
+        return strtoupper(substr($code, 0, 3)) == 'GRP';
+
+    }
+
+    public function validateGroupId($data){
+
+        // if(!isset($data['customer_id'])){
+        //     $jwt_token = Request::header('Authorization');
+            
+    
+        //     if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+    
+        //         $decoded = $this->customerTokenDecode($jwt_token);
+
+        //         Log::info($data);
+                
+        //         $data['customer_id'] = (int)$decoded->customer->_id;
+            
+        //     }else{
+                
+        //         return array('status'=>400, 'message'=>'You need to log in');
+            
+        //     }
+        // }
+
+        // $group = \Customergroup::where('members.customer_id', $data['customer_id'])->first();
+
+        // Log::info('Invalid group');
+
+        // Log::info($group);
+
+        // if($group){
+
+        //     return array('status'=>400, 'message'=>'You are already a member of a group', 'error_message'=>'You are already a member of a group', 'group_id'=>$group['group_id']);
+
+        // }
+
+        if(!isset($data['group_id']) || $data['group_id'] == null){
+            return array('status'=>400, 'message'=>'Empty group code', 'error_message'=>'Code empty');
+        }
+
+        $group = \Customergroup::where('group_id', strtoupper($data['group_id']))->first();
+
+        Log::info("Valid group");
+
+        Log::info($group);
+
+        if($group){
+
+            return array('status'=>200, 'message'=>'Group code applied successfully');
+            
+        }else{
+            
+            return array('status'=>400, 'message'=>'Invalid group code', 'error_message'=>'Invalid group code', 'group_id'=>$data['group_id']);
+        
+        }
+
+    }
+
+    public function sendGroupCommunication($data){
+        
+        $customer_id = $data['customer_id'];
+
+        $group = $data['group'];
+
+        $customersms = new CustomerSms();
+        Log::info("sendGroupCommunication");
+        Log::info($data);
+        
+        foreach($group['members'] as $member){
+
+            if($member['customer_id'] == $customer_id){
+             
+                $order = \Order::find($member['order_id']);
+
+                $new_member_name = $order->customer_name;
+
+                $customersms->addGroupNewMember(['customer_phone'=>$order->customer_phone,'customer_name'=>$order->customer_name,'vendor_name'=>$order->finder_name, 'group_id'=>$group['group_id']]);
+
+            }
+
+        }
+
+        foreach($group['members'] as $member){
+            
+            if($member['customer_id'] != $customer_id){
+                
+                $order = \Order::find($member['order_id'], ['customer_phone', 'customer_name']);
+                
+                $customersms->addGroupOldMembers(['customer_phone'=>$order->customer_phone,'customer_name'=>$order->customer_name, 'new_member_name'=>$new_member_name]);
+
+            }
+
+        }
+
+    }
 
 }

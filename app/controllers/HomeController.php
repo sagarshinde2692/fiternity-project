@@ -1045,6 +1045,7 @@ class HomeController extends BaseController {
 
             }
 
+            $booking_details_data["group_id"] = ['field'=>'GROUP ID','value'=>'','position'=>$position++];
 
             if(isset($item['start_date']) && $item['start_date'] != ""){
                 $booking_details_data['start_date']['value'] = date('D, d M Y',strtotime($item['start_date']));
@@ -1222,8 +1223,11 @@ class HomeController extends BaseController {
                 $booking_details_data['finder_name_location']['field'] = 'BOUGHT AT';
                 $booking_details_data['finder_name_location']['value'] = $finder_name;
             }
+            if(isset($item['group_id']) && $item['group_id'] != ""){
+                $booking_details_data['group_id']['value'] = $item['group_id'];
+            }
 
-
+            
             if(in_array($type,["membershipwithpg","membershipwithoutpg","healthytiffinmembership"])){
 
                 $header = "Membership Confirmed";
@@ -1237,7 +1241,15 @@ class HomeController extends BaseController {
                     $subline= "Hi <b>".$item['customer_name']."</b>, your <b>".$booking_details_data['service_duration']['value']."</b> Membership at <b>".$booking_details_data["finder_name_location"]['value']."</b> has been confirmed. It will be activated once we collect your cash payment. We have also sent you a confirmation Email and SMS";
                 }
 
-                $booking_details_data = array_only($booking_details_data, ['booking_id','price','address','poc']);
+                if(isset($_GET['device_type']) && in_array($_GET['device_type'], ['ios', 'android'])){
+                
+                    $booking_details_data = array_only($booking_details_data, ['booking_id','price','address','poc', 'group_id']);
+                
+                }else{
+                    
+                    $booking_details_data = array_only($booking_details_data, ['booking_id','price','address','poc']);
+                
+                }
 
             }
 
@@ -1471,6 +1483,16 @@ class HomeController extends BaseController {
                 'customer_auto_register' => $customer_auto_register,
                 'why_buy'=>$why_buy
             ];
+
+            if(isset($item['group_id']) && $item['group_id'] != ''){
+
+                $resp['group_code'] = [
+                    'code'=> $item['group_id'],
+                    'order_id'=> $item['_id'],
+                    'end_point'=> 'sharegroupid'
+                ];
+
+            }
 
             if($this->vendor_token){
 
