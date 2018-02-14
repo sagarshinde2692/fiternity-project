@@ -734,7 +734,7 @@ class TransactionController extends \BaseController {
         if(isset($data['payment_mode']) && $data['payment_mode'] == 'cod'){
 
             $group_id = isset($data['group_id']) ? $data['group_id'] : null;
-            $data['group_id'] = $this->utilities->addToGroup(['customer_id'=>$data['customer_id'], 'group_id'=>$group_id, 'order_id'=>$order['_id']]);
+            $order->group_id = $data['group_id'] = $this->utilities->addToGroup(['customer_id'=>$data['customer_id'], 'group_id'=>$group_id, 'order_id'=>$order['_id']]);
             $this->customermailer->orderUpdateCOD($order->toArray());
             $this->customersms->orderUpdateCOD($order->toArray());
 
@@ -3045,7 +3045,11 @@ class TransactionController extends \BaseController {
             $booktrial = Booktrial::where('customer_id',$order['customer_id'])->where('finder_id',(int)$order['finder_id'])->orderBy('desc','_id')->first();
 
             if($booktrial){
+
                 $order->previous_booktrial_id = (int)$booktrial->_id;
+
+                $booktrial->final_lead_stage = "purchase_stage";
+                $booktrial->update();
             }
 
             $order->update();
