@@ -911,37 +911,33 @@ class FindersController extends \BaseController {
 				$finder['photo_facility_tags']['All'] = $finder['photo_service_tags']['All'] = count($finder['photos']);
 				
 				if(count($finder['photo_facility_tags'])>1){
-					array_push($finder['photo_facility_tags'], 'Others');
 					$finder['photo_facility_tags']['Others'] = $photo_facility_tags_others_count;
 				}
 
 				if(count($finder['photo_service_tags'])>1){
-					array_push($finder['photo_service_tags'], 'Others');
-					$finder['photo_service_tags']['Others'] = photo_service_tags_others_count;
-					
-				}					
+					$finder['photo_service_tags']['Others'] = $photo_service_tags_others_count;
+				}
 
 				$video_service_tags = [];
 				$video_service_tags_others_count = 0;
 				
-				foreach($finder['videos'] as $video){
-					$video_service_tags = array_merge($video_service_tags, $video['servicetags']);
+				foreach($finder['videos'] as $key => $video){
+					$service_names = Service::whereIn('_id', $video['servicetags'])->lists('name');
+					$video_service_tags = array_merge($video_service_tags, $service_names);
+					$finder['videos'][$key]['servicetags'] = $service_names;
 
-					if(count($video['servicetags']) == 0){
+					if(count($service_names)){
 						$video_service_tags_others_count += 1;
 					}
 				}
 				
-				$video_service_tags = array_values(array_unique($video_service_tags));
+				array_unshift($video_service_tags, 'All');
 				
-				$service_names = Service::whereIn('_id', $video_service_tags)->lists('name');
-
-				$finder['video_service_tags'] = $service_names;
+				$finder['video_service_tags'] = array_count_values($video_service_tags);
 				
-				array_unshift($finder['video_service_tags'], 'All');
+				$finder['photo_service_tags']['All'] = count($finder['videos']);
 
 				if(count($finder['video_service_tags'])>1){
-					array_push($finder['video_service_tags'], 'Others');
 					$finder['video_service_tags']['Others'] = $video_service_tags_others_count;
 					
 				}
