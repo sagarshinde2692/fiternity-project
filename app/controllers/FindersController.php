@@ -910,11 +910,11 @@ class FindersController extends \BaseController {
 				
 				$finder['photo_facility_tags']['All'] = $finder['photo_service_tags']['All'] = count($finder['photos']);
 				
-				if(count($finder['photo_facility_tags'])>1){
+				if(count($finder['photo_facility_tags'])>1 && $photo_facility_tags_others_count>0){
 					$finder['photo_facility_tags']['Others'] = $photo_facility_tags_others_count;
 				}
 
-				if(count($finder['photo_service_tags'])>1){
+				if(count($finder['photo_service_tags'])>1 && $photo_service_tags_others_count>0){
 					$finder['photo_service_tags']['Others'] = $photo_service_tags_others_count;
 				}
 
@@ -937,7 +937,7 @@ class FindersController extends \BaseController {
 				
 				$finder['photo_service_tags']['All'] = count($finder['videos']);
 
-				if(count($finder['video_service_tags'])>1){
+				if(count($finder['video_service_tags'])>1 && $video_service_tags_others_count>0){
 					$finder['video_service_tags']['Others'] = $video_service_tags_others_count;
 					
 				}
