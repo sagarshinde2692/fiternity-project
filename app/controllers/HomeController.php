@@ -3270,11 +3270,11 @@ class HomeController extends BaseController {
                 "time"=>"7:30 AM to 10:15 AM",
                 "items"=>[
                     [
-                        "title"=>"Pilates",
+                        "title"=>"Yoga",
                         "description"=>"A combination of poses and postures to gain body strength, toning and flexibility",
                         "calories_burn"=>"Burn 250 Calories",
                         "image"=>"https://b.fitn.in/global/toi/mfp/line_up/pilatesfinal.jpg",
-                        "trainer"=>"With Red Mat Pilates",
+                        "trainer"=>"With Viva Fit",
                         "time"=>"7:30 AM - 8:00 AM"
                     ],
                     [
