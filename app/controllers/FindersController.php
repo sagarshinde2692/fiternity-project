@@ -884,27 +884,52 @@ class FindersController extends \BaseController {
 				$finder['photo_facility_tags'] = ['All'];
 				
 				$finder['photo_service_tags'] = ['All'];
+
+				$photo_facility_tags_others_count = 0;
+				$photo_service_tags_others_count = 0;
 				
 				foreach($finder['photos'] as $photo){
 				
 					$finder['photo_facility_tags'] = array_merge($finder['photo_facility_tags'], $photo['tags']);
+
+					if(count($photo['tags']) == 0){
+						$photo_facility_tags_others_count += 1;
+					}
 				
 					$finder['photo_service_tags'] = array_merge($finder['photo_service_tags'], $photo['servicetags']);
+
+					if(count($photo['servicetags']) == 0){
+						$photo_service_tags_others_count += 1;
+					}
 				
 				}
+
+				$finder['photo_facility_tags'] =  array_count_values($finder['photo_facility_tags']);
+
+				$finder['photo_service_tags'] =  array_count_values($finder['photo_service_tags']);
 				
-				$finder['photo_facility_tags'] = array_values(array_unique($finder['photo_facility_tags']));
+				$finder['photo_facility_tags']['All'] = $finder['photo_service_tags']['All'] = count($finder['photos']);
 				
-				$finder['photo_service_tags'] = array_values(array_unique($finder['photo_service_tags']));
-				
-				array_push($finder['photo_facility_tags'], 'Others');
-				
-				array_push($finder['photo_service_tags'], 'Others');
+				if(count($finder['photo_facility_tags'])>1){
+					array_push($finder['photo_facility_tags'], 'Others');
+					$finder['photo_facility_tags']['Others'] = $photo_facility_tags_others_count;
+				}
+
+				if(count($finder['photo_service_tags'])>1){
+					array_push($finder['photo_service_tags'], 'Others');
+					$finder['photo_service_tags']['Others'] = photo_service_tags_others_count;
+					
+				}					
 
 				$video_service_tags = [];
+				$video_service_tags_others_count = 0;
 				
 				foreach($finder['videos'] as $video){
 					$video_service_tags = array_merge($video_service_tags, $video['servicetags']);
+
+					if(count($video['servicetags']) == 0){
+						$video_service_tags_others_count += 1;
+					}
 				}
 				
 				$video_service_tags = array_values(array_unique($video_service_tags));
@@ -913,9 +938,13 @@ class FindersController extends \BaseController {
 
 				$finder['video_service_tags'] = $service_names;
 				
-				array_unshift($finder['video_service_tags'], "All");
+				array_unshift($finder['video_service_tags'], 'All');
 
-				array_push($finder['video_service_tags'], 'Others');
+				if(count($finder['video_service_tags'])>1){
+					array_push($finder['video_service_tags'], 'Others');
+					$finder['video_service_tags']['Others'] = $video_service_tags_others_count;
+					
+				}
 				
 				$finder['title'] = str_replace('crossfit', 'CrossFit', $finder['title']);
 				$response['statusfinder']                   =       200;
