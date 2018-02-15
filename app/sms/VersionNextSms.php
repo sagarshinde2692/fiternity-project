@@ -258,8 +258,15 @@ abstract Class VersionNextSms {
 
     public function sendToWorker($to, $message, $label = 'label', $delay = 0){
 
-
-        $arrayLabel = ['PurchaseAfter10Days-Customer','PurchaseAfter30Days-Customer'];
+        $arrayLabel = [
+            'PurchaseAfter10Days-Customer',
+            'PurchaseAfter30Days-Customer',
+            'SendPaymentLinkAfter3Days-Customer',
+            'SendPaymentLinkAfter7Days-Customer',
+            'SendPaymentLinkAfter45Days-Customer',
+            'PurchaseAfter7Days-Customer',
+            'PurchaseAfter15Days-Customer'
+        ];
         
         $sidekiq = new Sidekiq();
 
