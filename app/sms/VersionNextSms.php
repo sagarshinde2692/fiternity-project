@@ -281,7 +281,7 @@ abstract Class VersionNextSms {
 
             if(in_array($label,$arrayLabel)){
 
-                $delay = $getDelayTime($delay);   
+                $delay = $this->getDelayTime($delay);   
             }
 
             $delay = $this->getSeconds($delay);
