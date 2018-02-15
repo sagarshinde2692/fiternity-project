@@ -753,9 +753,23 @@ class FindersController extends \BaseController {
 					}
 				}
 
+				if(!isset($finder['callout']) || trim($finder['callout']) == ''){
+					Log::info("inside");
+					$callout_offer = Offer::where('vendor_id', $finder['_id'])->where('hidden', false)->orderBy('order', 'asc')
+									->where('offer_type', 'newyears')
+									->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
+									->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()) ))
+									->first();
 
-
-
+					if($callout_offer){
+						$callout_service = Service::active()->where('_id', $callout_offer['vendorservice_id'])->first();
+						$callout_ratecard = Ratecard::find($callout_offer['ratecard_id']);
+						Log::info($callout_ratecard);
+						if($callout_service && $callout_ratecard){
+							$finder['callout'] = $callout_service['name']." - ".$callout_ratecard['validity']." ".$callout_ratecard['validity_type']." @ Rs. ".$callout_offer['price'];
+						}
+					}
+				}
 
 				$finderdata         =   $finder;
 				$finderid           = (int) $finderdata['_id'];
