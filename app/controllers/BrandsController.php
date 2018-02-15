@@ -63,7 +63,7 @@ class BrandsController extends \BaseController {
             }
         }
 
-        return Response::json(array('status' => 200,'brand_detail' => Cache::tags('brand_detail')->get("$slug-$city")));
+        return Response::json(Cache::tags('brand_detail')->get("$slug-$city"));
     }
 
 }
