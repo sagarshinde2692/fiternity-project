@@ -5568,5 +5568,28 @@ public function yes($msg){
 
 	}
 
+	public function workoutSession(){
+
+		
+		// return count($finders);
+		
+		$service_ids = Ratecard::where('type', "workout session")->lists('service_id');
+		
+		$finder_ids = Service::active()->whereNotIn('_id', $service_ids)->lists('finder_id');
+		$finders = Finder::active()->whereIn('_id', $finder_ids)->whereNotIn('flags.state', ['closed', 'temporarily_shut'])->where(function($query){return $query->orWhere('membership', '!=', 'disable')->orWhere('trial', '!=', 'disable');})->with('city')->with('location')->get(['title', 'city_id', 'location_id']);
+
+		foreach($finders as $key => $finder){
+			$finders[$key]['city_name'] = $finder['city']['name'];
+			$finders[$key]['location_name'] = $finder['location']['name'];
+			unset($finders[$key]['city']);
+			unset($finders[$key]['location']);
+		}
+		return $finders;
+		return count(array_values(array_unique($finders)));
+
+
+
+	}
+
     
 }
