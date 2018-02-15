@@ -773,6 +773,16 @@ class FindersController extends \BaseController {
 					}
 				}
 
+				if(isset($finder['services']) && count($finder['services'])>0){
+
+					$cheapest_price = $this->getCheapestWorkoutSession($finder['services']);
+
+					if($cheapest_price > 0){
+						$finder['cheapest_workout_session'] = $cheapest_price;
+					}
+					
+				}
+
 				$finderdata         =   $finder;
 				$finderid           = (int) $finderdata['_id'];
 				$finder_cityid      = (int) $finderdata['city_id'];
@@ -4374,7 +4384,24 @@ class FindersController extends \BaseController {
 
         return "success";
 
-    }
+	}
+	
+	function getCheapestWorkoutSession($services){
+
+		$price = 0;
+
+		foreach($services as $service){
+			if(isset($service['serviceratecard'])){
+				foreach($service['serviceratecard'] as $ratecard){
+					if($ratecard['type'] == 'workout session' && ($price == 0 || $ratecard['price'] < $price)){
+						$price = $ratecard['price'];
+					}
+				}
+			}
+		}
+
+		return $price;
+	}
 	
 
 }
