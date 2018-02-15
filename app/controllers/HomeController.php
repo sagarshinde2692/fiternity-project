@@ -3270,18 +3270,18 @@ class HomeController extends BaseController {
                 "time"=>"7:30 AM to 10:15 AM",
                 "items"=>[
                     [
-                        "title"=>"Pilates",
+                        "title"=>"Yoga",
                         "description"=>"A combination of poses and postures to gain body strength, toning and flexibility",
                         "calories_burn"=>"Burn 250 Calories",
                         "image"=>"https://b.fitn.in/global/toi/mfp/line_up/pilatesfinal.jpg",
-                        "trainer"=>"With Red Mat Pilates",
+                        "trainer"=>"With Viva Fit",
                         "time"=>"7:30 AM - 8:00 AM"
                     ],
                     [
                         "title"=>"Strong Zumba",
                         "description"=>"It combines high intensity interval training with the science of Synced Music Motivation.",
                         "calories_burn"=>"Burn 700 Calories",
-                        "image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/zumbafinal.jpg",
+                        "image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/bollyfit.jpg",
                         "trainer"=>"With Prateek Kundalini",
                         "time"=>"7:30 AM - 8:00 AM"
                     ],
@@ -3313,7 +3313,7 @@ class HomeController extends BaseController {
                         "title"=>"Functional Training",
                         "description"=>"A functional training circuit using only body weight for for core & strength building.",
                         "calories_burn"=>"Burn 450 Calories",
-                        "image"=>"https://b.fitn.in/global/toi/mfp/december/del/decdel_crossfit.png",
+                        "image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/Crossfit.jpg",
                         "trainer"=>"With Cult",
                         "time"=>"9:00 AM - 9:30 AM"
                     ],   
