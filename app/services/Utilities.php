@@ -2786,4 +2786,26 @@ Class Utilities {
     }
 
 
+    public function checkFitternityCustomer1($customer_email, $customer_phone, $date){
+        
+        $beforeTime 	=	date('d-m-Y H:i:s', strtotime(Carbon::createFromFormat('Y-m-d H:i:s', $date)->addHours(-4)));
+
+        Log::info($beforeTime);
+        
+        $transaction = \Transaction::where('created_at', '<', new \DateTime($beforeTime))->where(function($query) use ($customer_email, $customer_phone){ return $query->orWhere('customer_phone', 'LIKE', '%'.substr($customer_phone, -10).'%')->orWhere('customer_email', $customer_email);})->first();
+
+        if($transaction){
+            
+            Log::info("returning true");
+        
+            return true;
+        
+        }
+        
+        Log::info("returning false");
+        return false;
+
+    }
+
 }
+

@@ -1108,3 +1108,6 @@ Route::get('getvendortrainer/{finder_id?}','FindersController@getVendorTrainer')
 
 Route::get('finalMfpData', 'DebugController@finalMfpData');
 
+
+
+Route::get('markRoutedOrders', 'DebugController@markRoutedOrders');

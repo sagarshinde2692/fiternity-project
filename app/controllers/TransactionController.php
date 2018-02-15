@@ -2007,11 +2007,11 @@ class TransactionController extends \BaseController {
                 $order->unset('coupon_discount_amount');
             }
 
-            if($order && isset($order['routed_order'])){
+            // if($order && isset($order['routed_order'])){
                 
-                $order->unset('routed_order');
+            //     $order->unset('routed_order');
             
-            }
+            // }
 
         }
 
