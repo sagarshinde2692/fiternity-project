@@ -2280,6 +2280,8 @@ Class Utilities {
 
     public function getWalletQuery($request){
 
+        Log::info('---------------request-------------------',$request);
+
         $query = Wallet::active()->where('customer_id',(int)$request['customer_id'])->where('balance','>',0);
 
         if(isset($request['finder_id']) && $request['finder_id'] != ""){
@@ -2341,7 +2343,7 @@ Class Utilities {
                 }
             }
 
-            if(isset($request['order_type']) && $request['order_type'] == 'memberships'){
+            if(isset($request['order_type']) && in_array($request['order_type'],['membership','memberships'])){
 
                 $query->where(function($query) use($finder_id) {$query->orWhere('valid_finder_id','exists',false)->orWhere('valid_finder_id',$finder_id);});
 
@@ -2349,6 +2351,10 @@ Class Utilities {
 
                 $query->where('valid_finder_id','exists',false);
             }
+
+        }else{
+
+            $query->where('valid_finder_id','exists',false);
         }
 
         return $query;
