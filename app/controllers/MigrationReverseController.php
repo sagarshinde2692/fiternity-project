@@ -798,7 +798,8 @@ class MigrationReverseController extends \BaseController {
                 'offer_texts'                           =>  isset($Finder->offer_texts) ? $Finder->offer_texts : array(),
                 'inoperational_dates'                   =>  isset($Finder->inoperational_dates) ? $Finder->inoperational_dates : array(),
                 'servicesfilter' 			            =>  (isset($Finder->filter) && isset($Finder->filter['servicesfilter'])) ? $Finder->filter['servicesfilter'] : [],
-                'trainer_contacts'                      =>  $trainer_contacts
+                'trainer_contacts'                      =>  $trainer_contacts,
+                'callout'                               =>  isset($Finder->callout) ? $Finder->callout : "",
             ];
 
     
