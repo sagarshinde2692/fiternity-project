@@ -760,7 +760,7 @@ class FindersController extends \BaseController {
 									->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
 									->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()) ))
 									->first();
-
+					Log::info($callout_offer);
 					if($callout_offer){
 						$callout_service = Service::active()->where('_id', $callout_offer['vendorservice_id'])->first();
 						$callout_ratecard = Ratecard::find($callout_offer['ratecard_id']);
