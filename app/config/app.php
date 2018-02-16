@@ -13,7 +13,7 @@ return array(
 	'vendor_communication' => false,
 	'env' => 'stage',
 	'debug' => TRUE,
-	'metropolis' => 'localhost:3030'
+	'metropolis' => 'http://localhost:3030',
 
 	//stage
 	// 'new_search_url' =>'http://apistage.fitn.in:5000/',

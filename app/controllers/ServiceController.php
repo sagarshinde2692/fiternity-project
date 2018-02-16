@@ -6,7 +6,7 @@
  *
  * @author Sanjay Sahu <sanjay.id7@gmail.com>
  */
-
+use App\Services\Metropolis as Metropolis;
 
 class ServiceController extends \BaseController {
 
@@ -1349,15 +1349,44 @@ class ServiceController extends \BaseController {
 	
 	public function serviceDetailv1($finder_slug,$service_slug){
 
-		// $finder = Finder::where('slug', $finder_slug)->first(['_id']);
+		$metropolis = new Metropolis();
 
-		// $finder_id = $finder->_id;
+		$service_details_response =  $metropolis->vendorserviceDetail(9932, 'hiit');
 
-		// $service = Service::where('finder_id', $finder_id)->where('slug', $service_slug)->get();
+		if($service_details_response['status'] == 200){
+			$service_details = json_decode(json_encode($service_details_response['data']), true);
+		}
+		$service_details['vendor_name'] = $service_details['vendor_id']['name'];
+		$service_details['location_name'] = $service_details['location_id']['name'];
+		$service_details['city_name'] = $service_details['city_id']['name'];
+		$service_details['facilities'] = $service_details['vendor_id']['filter']['facilities'];
+		
+		
+		$service_details['title'] = $service_details['name'].' at '.$service_details['vendor_name'];
+		$service_details['ratecard'] = [
+			'_id'=>$service_details['service'][0]['_id'],
+			'price'=>$service_details['service'][0]['price'],
+		];
 
-		$service = Vendorservice::where('_id', 16539)->get();
+		$finder = Finder::find($service_details['vendor_id']['_id']);
 
-		return $schedule;
+		$reviews = Review::where('finder_id','=',$service_details['vendor_id']['_id'])->orderBy('created_at', 'desc')->orderBy('rating', 'desc')->take(5)->get();
+		
+		$service_details['average_rating'] = isset($finder['average_rating']) ? $finder['average_rating'] : 0;
+
+		$service_details['review_count'] = isset($finder['total_rating_count']) ? $finder['total_rating_count'] : 0;
+
+		$service_details['reviews'] = $reviews;
+
+
+		$service_details['media'] = [
+			'images' => $service_details['gallery'],
+			'videos' => $service_details['videos'],
+		];
+
+		$service_details = array_except($service_details, array('gallery','videos','vendor_id','location_id','city_id','service','schedules','updated_at','created_at','traction','timings','trainers','offer_available','showOnFront','flags','remarks','trial_discount','rockbottom_price','threedays_trial','vip_trial','seo','batches','workout_tags','category'));
+		return $service_details;
+		// $service_details['title'] = 
 
 	}
 

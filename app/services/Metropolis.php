@@ -4,7 +4,7 @@ use \GuzzleHttp\Exception\RequestException;
 use \GuzzleHttp\Client;
 use \Response;
 
-Class Fitapi {
+Class Metropolis {
 
     protected $base_uri;
     protected $debug = false;
@@ -23,18 +23,22 @@ Class Fitapi {
 
     }
 
-    public function storeBooktrial ($data){
+    public function vendorserviceDetail ($vendor_id, $service_slug){
+        \Log::info($vendor_id);
+        \Log::info($service_slug);
+        
 
-        $json = $data;
 
         try {
-            $response = json_decode($this->client->post('storebooktrial',['json'=>$json])->getBody()->getContents());
+            $response = json_decode($this->client->get("/vendorservicedetail/$vendor_id/$service_slug")->getBody()->getContents());
+            // \Log::info($response);
             $return  = ['status'=>200,
                         'data'=>$response
             ];
             return $return;
         }catch (RequestException $e) {
 
+            \Log::info($e);
             $response = $e->getResponse();
 
             $error = [  'status'=>$response->getStatusCode(),
