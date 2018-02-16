@@ -650,7 +650,7 @@ Class CustomerReward {
         }*/
     }
 
-   public function purchaseGameNew($amount,$finder_id,$payment_mode = "paymentgateway",$offer_id = false,$customer_id = false,$part_payment_amount = false,$convinience_fee=false){
+   public function purchaseGameNew($amount,$finder_id,$payment_mode = "paymentgateway",$offer_id = false,$customer_id = false,$part_payment_amount = false,$convinience_fee=false,$order_type = false){
 
         $current_wallet_balance = 0;
         $wallet = 0;
@@ -676,6 +676,10 @@ Class CustomerReward {
                'customer_id'=>$customer_id,
                'finder_id'=>$finder_id, 
             ];
+
+            if($order_type){
+               $request['order_type'] = $order_type;
+            }
 
             $query = $utilities->getWalletQuery($request);
             
@@ -1056,7 +1060,7 @@ Class CustomerReward {
     }
 
 
-    public function purchaseGame($amount,$finder_id,$payment_mode = "paymentgateway",$offer_id = false,$customer_id = false,$part_payment_amount = false,$convinience_fee=false){
+    public function purchaseGame($amount,$finder_id,$payment_mode = "paymentgateway",$offer_id = false,$customer_id = false,$part_payment_amount = false,$convinience_fee=false,$order_type = false){
 
         $jwt_token = Request::header('Authorization');
 
@@ -1066,7 +1070,7 @@ Class CustomerReward {
             $decoded = $this->customerTokenDecode($jwt_token);
             $customer_id = $decoded->customer->_id;
         }
-        return $this->purchaseGameNew($amount,$finder_id,$payment_mode,$offer_id,$customer_id,$part_payment_amount,$convinience_fee);
+        return $this->purchaseGameNew($amount,$finder_id,$payment_mode,$offer_id,$customer_id,$part_payment_amount,$convinience_fee,$order_type);
         // $customer = \Customer::find($customer_id);
         
         // if(isset($customer->demonetisation)){
@@ -1075,7 +1079,7 @@ Class CustomerReward {
 
         // }
 
-        return $this->purchaseGameOld($amount,$finder_id,$payment_mode,$offer_id,$customer_id,$part_payment_amount,$convinience_fee);
+        return $this->purchaseGameOld($amount,$finder_id,$payment_mode,$offer_id,$customer_id,$part_payment_amount,$convinience_fee,$order_type);
 
     }
 
