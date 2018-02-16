@@ -1111,3 +1111,5 @@ Route::get('finalMfpData', 'DebugController@finalMfpData');
 Route::get('rewardReminderJan','DebugController@rewardReminderJan');
 
 Route::post('sharegroupid', 'CustomerController@shareGroupId');
+
+Route::get('markRoutedOrders', 'DebugController@markRoutedOrders');

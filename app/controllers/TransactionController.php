@@ -205,7 +205,19 @@ class TransactionController extends \BaseController {
 
         }
 
+        if($this->vendor_token && !isset($data['order_id'])){
+            
+            if($this->utilities->checkFitternityCustomer($data['customer_email'], $data['customer_phone'])){
+                
+                $data['routed_order'] = '0';
+            
+            }else{
+             
+                $data['routed_order'] = '1';
+            
+            }
         
+        }
 
         $updating_part_payment = (isset($data['part_payment']) && $data['part_payment']) ? true : false;
 
@@ -2031,9 +2043,9 @@ class TransactionController extends \BaseController {
                     $data["secondary_payment_mode"] = "cod_membership";
                 }
 
-                if(strtolower($data["coupon_code"]) == 'fit2018'){
-                    $data['routed_order'] = "1";
-                }
+                // if(strtolower($data["coupon_code"]) == 'fit2018'){
+                //     $data['routed_order'] = "1";
+                // }
             }
             
         }else{
@@ -2044,11 +2056,11 @@ class TransactionController extends \BaseController {
                 $order->unset('coupon_discount_amount');
             }
 
-            if($order && isset($order['routed_order'])){
+            // if($order && isset($order['routed_order'])){
                 
-                $order->unset('routed_order');
+            //     $order->unset('routed_order');
             
-            }
+            // }
 
         }
 

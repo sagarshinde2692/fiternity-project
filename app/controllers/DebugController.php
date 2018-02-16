@@ -5586,8 +5586,32 @@ public function yes($msg){
 		}
 		return $finders;
 		return count(array_values(array_unique($finders)));
+	}
 
 
+	public function markRoutedOrders(){
+
+		$start_date = new DateTime('01-12-2017');
+
+		$orders = Order::active()->where("customer_source", "kiosk")->where('created_at', '>', $start_date)->where('routed_order', 'exists', false)->orderBy('_id', 'ASC')->get(['customer_email', 'customer_phone', 'created_at']);
+		Log::info($orders[0]['created_at']);
+
+		// return ($orders);
+		$utilities = new Utilities();
+
+		foreach($orders as $order){
+
+			if($utilities->checkFitternityCustomer1($order['customer_email'], $order['customer_phone'], $order['created_at'])){
+					$order->routed_order = "0";
+			}else{
+				$order->routed_order = "1";
+				
+			}
+				$order->routed_marked_by_script = "1";
+				$order->update();
+		}
+
+		return $orders;
 
 	}
 

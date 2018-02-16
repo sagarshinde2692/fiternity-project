@@ -762,7 +762,9 @@ class FindersController extends \BaseController {
 									->first();
 					Log::info($callout_offer);
 					if($callout_offer){
-						$callout_service = Service::active()->where('_id', $callout_offer['vendorservice_id'])->first();
+
+						$device = $this->vendor_token ? 'kiosk' : 'web';
+						$callout_service = Service::active()->where('_id', $callout_offer['vendorservice_id'])->where(function($query) use ($device){return $query->orWhere('showOnFront', 'exists', false)->orWhere('showOnFront', $device);})->first();
 						$callout_ratecard = Ratecard::find($callout_offer['ratecard_id']);
 						Log::info($callout_ratecard);
 						if($callout_service && $callout_ratecard){
