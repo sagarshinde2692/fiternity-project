@@ -3278,11 +3278,11 @@ class HomeController extends BaseController {
                         "time"=>"7:30 AM - 8:00 AM"
                     ],
                     [
-                        "title"=>"Strong Zumba",
+                        "title"=>"Strong by Zumba",
                         "description"=>"It combines high intensity interval training with the science of Synced Music Motivation.",
                         "calories_burn"=>"Burn 700 Calories",
                         "image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/bollyfit.jpg",
-                        "trainer"=>"With Prateek Kundalini",
+                        "trainer"=>"With Prateek Kundail",
                         "time"=>"7:30 AM - 8:00 AM"
                     ],
                     [
