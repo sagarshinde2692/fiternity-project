@@ -1274,33 +1274,11 @@ class TransactionController extends \BaseController {
                 array_set($data, 'status', '3');
             }
 
-            if($data['status'] == '1' && $order->type == "memberships"){
-
-                $group_id = isset($order->group_id) ? $order->group_id : null;
-
-                $data['group_id'] = $this->utilities->addToGroup(['customer_id'=>$order->customer_id, 'group_id'=>$group_id, 'order_id'=>$order->_id]);
-
-                // if(isset($order->group_id)){
-                    
-                //     $group_resp = $this->utilities->validateGroupId(array('customer_id'=>$order->customer_id, 'group_id'=>$order->group_id));
-    
-                //     if($group_resp['status'] == 400){
-                        
-                //         unset($order->group_id);
-    
-                //         $order->update();
-                    
-                //     }else{
-                        
-                //         $data['group_id'] = $this->utilities->addToGroup(['customer_id'=>$order->customer_id, 'group_id'=>$order->group_id, 'order_id'=>$order->_id]);
-    
-                //     }
-                    
-                // }else{
-    
-                //     $data['group_id'] = $this->utilities->addToGroup(['customer_id'=>$order->customer_id, 'order_id'=>$order->_id]);
-    
-                // }
+            if($data['status'] == '1'){
+                if($order->type == "memberships"){
+                    $group_id = isset($order->group_id) ? $order->group_id : null;
+                    $data['group_id'] = $this->utilities->addToGroup(['customer_id'=>$order->customer_id, 'group_id'=>$group_id, 'order_id'=>$order->_id]);
+                }
 
                 $this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
 
