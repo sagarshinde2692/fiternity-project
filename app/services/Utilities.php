@@ -963,7 +963,7 @@ Class Utilities {
 
 
     public function verifyOrder($data,$order){
-        if((isset($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin'])) || $order->pg_type == "PAYTM" || (isset($order['cod_otp_verified']) && $order['cod_otp_verified'])){
+        if((isset($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin'])) || $order->pg_type == "PAYTM" || (isset($order['cod_otp_verified']) && $order['cod_otp_verified']) || (isset($order['pay_later']) && $order['pay_later'])){
             if($order->pg_type == "PAYTM" && !(isset($data["order_success_flag"]))){
                 $hashreverse = getpayTMhash($order);
                 if($data["verify_hash"] == $hashreverse['reverse_hash']){
@@ -972,7 +972,7 @@ Class Utilities {
                     $hash_verified = false;
                 }
             }
-            if((isset($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin'])) || (isset($order['cod_otp_verified']) && $order['cod_otp_verified'])){
+            if((isset($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin'])) || (isset($order['cod_otp_verified']) && $order['cod_otp_verified']) || (isset($order['pay_later']) && $order['pay_later'])){
                 $hash_verified = true;
             }
         }else{

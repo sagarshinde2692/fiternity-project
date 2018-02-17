@@ -1778,6 +1778,8 @@ class SchedulebooktrialsController extends \BaseController {
                 //     return  Response::json($resp, 400);
                 // }
                 $hash_verified = $this->utilities->verifyOrder($data,$order);
+                // return $order;
+                // return $hash_verified ? "s":"d";
                 if(!$hash_verified){
                     $resp 	= 	array('status' => 401, 'order' => $order, 'message' => "Trial not booked.");
                     return  Response::json($resp, 400);
@@ -2260,7 +2262,30 @@ class SchedulebooktrialsController extends \BaseController {
                 Log::info('$trialbooked : '.json_encode($trialbooked));
             }
 
-            array_set($orderData, 'status', '1');
+            if((isset($order['pay_later']) && $order['pay_later'])){
+                
+                $previous_pay_later_session = Paylater::where('customer_id', $booktrial->customer_id)->first();
+
+                if($previous_pay_later_session){
+                    
+                    $trial_ids = $previous_pay_later_session->trial_ids;
+                    array_push($trial_ids, $booktrial->_id);
+                
+                }else{
+
+                    $pay_later = new Paylater();
+                    $pay_later->customer_id = $booktrial->customer_id;
+                    $pay_later->trial_ids = [$booktrial->_id];
+                    $pay_later->save();
+
+                }
+
+
+            }
+            
+            if(!(isset($order['pay_later']) && $order['pay_later'])){
+                array_set($orderData, 'status', '1');
+            }
             array_set($orderData, 'order_action', 'bought');
             array_set($orderData, 'booktrial_id', (int)$booktrialid);
             array_set($orderData, 'success_date', date('Y-m-d H:i:s',time()));
