@@ -3218,7 +3218,7 @@ class CustomerController extends \BaseController {
 			// 	'ratio'=>(float) number_format(100/375,2)
 			// ];
 			
-			// if($_REQUEST['device_type'] == 'ios'){
+			if($_REQUEST['device_type'] == 'ios'){
 			// 	$result['campaigns'][] = [
 			// 		'image'=>'https://b.fitn.in/global/Homepage-branding-2018/fitnesssale-appbanner.png',
 			// 		'link'=>'https://www.fitternity.com/sale?mobile_app=true',
@@ -3227,16 +3227,16 @@ class CustomerController extends \BaseController {
 			// 		'width'=>375,
 			// 		'ratio'=>(float) number_format(100/375,2)
 			// 	];
-			// 	$result['campaigns'][] = [
-			// 		'image'=>'https://b.fitn.in/global/ios_homescreen_banner/fitnesssale-appbanner.png',
-			// 		'link'=>'ftrnty://fitternity.com/',
-			// 		'title'=>'Fitness Sale',
-			// 		'height'=>100,
-			// 		'width'=>375,
-			// 		'ratio'=>(float) number_format(100/375,2)
-			// 	];
+				$result['campaigns'][] = [
+					'image'=>'https://b.fitn.in/global/ios_homescreen_banner/complimentary-rewards-appbanner.png',
+					'link'=>'ftrnty://fitternity.com/',
+					'title'=>'Fitness Sale',
+					'height'=>100,
+					'width'=>375,
+					'ratio'=>(float) number_format(100/375,2)
+				];
 
-			// }else{
+			}else{
 
 			// 	$result['campaigns'][] = [
 			// 		'image'=>'https://b.fitn.in/global/Homepage-branding-2018/fitnesssale-appbanner.png',
@@ -3247,16 +3247,16 @@ class CustomerController extends \BaseController {
 			// 		'ratio'=>(float) number_format(100/375,2)
 			// 	];
 
-			// 	$result['campaigns'][] = [
-			// 		'image'=>'https://b.fitn.in/global/ios_homescreen_banner/fitnesssale-appbanner.png',
-			// 		'link'=>'ftrnty://ftrnty.com/search/all',
-			// 		'title'=>'Fitness Sale',
-			// 		'height'=>100,
-			// 		'width'=>375,
-			// 		'ratio'=>(float) number_format(100/375,2)
-			// 	];
+				$result['campaigns'][] = [
+					'image'=>'https://b.fitn.in/global/ios_homescreen_banner/complimentary-rewards-appbanner.png',
+					'link'=>'ftrnty://ftrnty.com/search/all',
+					'title'=>'Fitness Sale',
+					'height'=>100,
+					'width'=>375,
+					'ratio'=>(float) number_format(100/375,2)
+				];
 
-			// }
+			}
 
 			$result['campaigns'][] = [
 				'image'=>'https://b.fitn.in/global/ios_homescreen_banner/complimentary-rewards-appbanner.png',
