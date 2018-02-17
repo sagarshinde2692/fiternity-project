@@ -1,4 +1,4 @@
-<?PHP namespace App\Controllers;
+<?PHP
 /**
  * ControllerName : FindersController.
  * Maintains a list of functions used for FindersController.

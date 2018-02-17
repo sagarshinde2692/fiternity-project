@@ -1312,7 +1312,7 @@ class ServiceController extends \BaseController {
 			if($service){
 
 				$meal_type = $service['meal_type'];
-
+ 
 				$finder = Finder::find((int)$finder_id)->toArray();
 
 		        $all_locations = [];
@@ -1347,46 +1347,71 @@ class ServiceController extends \BaseController {
 		return Response::json($data,200);
 	}
 	
-	public function serviceDetailv1($finder_slug,$service_slug){
+	public function serviceDetailv1($finder_slug, $service_slug, $cache=true){
 
-		$metropolis = new Metropolis();
+		$cache_key = "$finder_slug-$service_slug";
 
-		$service_details_response =  $metropolis->vendorserviceDetail(9932, 'hiit');
+		$service_details = $cache ? Cache::tags('service_detail')->has($cache_key) : false;
 
-		if($service_details_response['status'] == 200){
-			$service_details = json_decode(json_encode($service_details_response['data']), true);
+		if(!$service_details){
+			
+			$finder = Finder::where('slug', $finder_slug)->first();
+	
+			$metropolis = new Metropolis();
+	
+			$service_details_response =  $metropolis->vendorserviceDetail($finder['_id'], $service_slug);
+	
+			if($service_details_response['status'] == 200){
+				$service_details = json_decode(json_encode($service_details_response['data']), true);
+			}
+	
+			$service_details['vendor_name'] = $service_details['vendor_id']['name'];
+	
+			$service_details['location_name'] = $service_details['location_id']['name'];
+	
+			$service_details['city_name'] = $service_details['city_id']['name'];
+	
+			$service_details['facilities'] = $service_details['vendor_id']['filter']['facilities'];
+			
+			$service_details['title'] = $service_details['name'].' at '.$service_details['vendor_name'];
+	
+			$service_details['ratecard'] = [
+				'_id'=>$service_details['service'][0]['_id'],
+				'price'=>$service_details['service'][0]['price'],
+			];
+	
+			$reviews = Review::where('finder_id','=',$service_details['vendor_id']['_id'])->orderBy('created_at', 'desc')->orderBy('rating', 'desc')->take(5)->get();
+			
+			$service_details['average_rating'] = isset($finder['average_rating']) ? $finder['average_rating'] : 0;
+	
+			$service_details['review_count'] = isset($finder['total_rating_count']) ? $finder['total_rating_count'] : 0;
+	
+			$service_details['contact'] = isset($finder['contact']) ? $finder['contact'] : stdClass();
+	
+			$service_details['reviews'] = $reviews;
+	
+			$service_details['media'] = [
+				'images' => $service_details['gallery'],
+				'videos' => $service_details['videos'],
+			];
+			
+			$service_details['address']['geometry'] = $service_details['geometry'];
+			
+			$service_details['multiaddress'] = [$service_details['address']];
+	
+			$service_details = array_except($service_details, array('gallery','videos','vendor_id','location_id','city_id','service','schedules','updated_at','created_at','traction','timings','trainers','offer_available','showOnFront','flags','remarks','trial_discount','rockbottom_price','threedays_trial','vip_trial','seo','batches','workout_tags','category', 'geometry', 'address'));
+			
+			Cache::tags('service_detail')->put($cache_key,$service_details,Config::get('cache.cache_time'));
+			
 		}
-		$service_details['vendor_name'] = $service_details['vendor_id']['name'];
-		$service_details['location_name'] = $service_details['location_id']['name'];
-		$service_details['city_name'] = $service_details['city_id']['name'];
-		$service_details['facilities'] = $service_details['vendor_id']['filter']['facilities'];
 		
+		$service_details = Cache::tags('service_detail')->get($cache_key);
 		
-		$service_details['title'] = $service_details['name'].' at '.$service_details['vendor_name'];
-		$service_details['ratecard'] = [
-			'_id'=>$service_details['service'][0]['_id'],
-			'price'=>$service_details['service'][0]['price'],
-		];
+		$data['service'] = $service_details;
 
-		$finder = Finder::find($service_details['vendor_id']['_id']);
-
-		$reviews = Review::where('finder_id','=',$service_details['vendor_id']['_id'])->orderBy('created_at', 'desc')->orderBy('rating', 'desc')->take(5)->get();
+		$data['bookmark'] = false;
 		
-		$service_details['average_rating'] = isset($finder['average_rating']) ? $finder['average_rating'] : 0;
-
-		$service_details['review_count'] = isset($finder['total_rating_count']) ? $finder['total_rating_count'] : 0;
-
-		$service_details['reviews'] = $reviews;
-
-
-		$service_details['media'] = [
-			'images' => $service_details['gallery'],
-			'videos' => $service_details['videos'],
-		];
-
-		$service_details = array_except($service_details, array('gallery','videos','vendor_id','location_id','city_id','service','schedules','updated_at','created_at','traction','timings','trainers','offer_available','showOnFront','flags','remarks','trial_discount','rockbottom_price','threedays_trial','vip_trial','seo','batches','workout_tags','category'));
-		return $service_details;
-		// $service_details['title'] = 
+		return array('status'=>200, 'data'=> $data);
 
 	}
 
