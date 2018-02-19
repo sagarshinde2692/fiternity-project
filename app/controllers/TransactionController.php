@@ -255,6 +255,12 @@ class TransactionController extends \BaseController {
         }
 
         $data = array_merge($data,$customerDetail['data']); 
+
+        if(isset($data['customers_list'])){
+            foreach($data['customers_list'] as $key => $customer){
+                $data['customers_list'][$key]['customer_id'] = autoRegisterCustomer($customer);
+            }
+        }
           
         $payment_mode = isset($data['payment_mode']) ? $data['payment_mode'] : "";
 
@@ -726,7 +732,9 @@ class TransactionController extends \BaseController {
             $order->update();
         }
 
-        
+        if(isset($data['pay_later']) && $data['pay_later']){
+            $this->utilities->createWorkoutSession($order['_id']);
+        }
         
         if(in_array($data['customer_source'],['android','ios','kiosk'])){
             $mobilehash = $data['payment_related_details_for_mobile_sdk_hash'];

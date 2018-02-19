@@ -16,6 +16,7 @@ use Wallet;
 use WalletTransaction;
 use App\Sms\CustomerSms as CustomerSms;
 use App\Mailers\FinderMailer as FinderMailer;
+use App\Services\Fitapi as Fitapi;
 
 Class Utilities {
 
@@ -2764,6 +2765,61 @@ Class Utilities {
 
         return 'success';
 
+    }
+
+    public function createWorkoutSession($order_id){
+        
+        $order = \Order::find($order_id);
+
+        $data = [];
+        
+        $data['status'] = 'success';
+        $data['order_success_flag'] = 'admin';
+        $data['order_id'] = (int)$order['_id'];
+        $data['customer_name'] = $order['customer_name'];
+        $data['customer_email'] = $order['customer_email'];
+        $data['customer_phone'] = $order['customer_phone'];
+        $data['finder_id'] = (int)$order['finder_id'];
+        $data['service_name'] = $order['service_name'];
+        $data['type'] = $order['type'];
+        $data['premium_session'] = true;
+
+        if(isset($order['start_date']) && $order['start_date'] != ""){
+            $data['schedule_date'] = date('d-m-Y',strtotime($order['start_date']));
+        }
+
+        if(isset($order['start_time']) && $order['start_time'] != "" && isset($order['end_time']) && $order['end_time'] != ""){
+            $data['schedule_slot'] = $order['start_time']."-".$order['end_time'];
+        }
+
+        if(isset($order['schedule_date']) && $order['schedule_date'] != ""){
+            $data['schedule_date'] = $order['schedule_date'];
+        }
+
+        if(isset($order['schedule_slot']) && $order['schedule_slot'] != ""){
+            $data['schedule_slot'] = $order['schedule_slot'];
+        }
+
+        $workout_session_fields = ['customers_list', 'pay_later'];
+        
+        foreach($workout_session_fields as $field){
+            if(isset($order[$field])){
+                $data[$field] = $order[$field];
+            }
+        }
+
+        $fitapi = new Fitapi();
+
+        $storeBooktrial = $fitapi->storeBooktrial($data);
+
+        if($storeBooktrial['status'] == 200){
+
+            return Response::json($storeBooktrial['data'],200);
+
+        }else{
+
+            return Response::json(['status' => 400, "message" => "Internal Error Please Report"],400);
+        }
     }
 
 

@@ -1784,6 +1784,13 @@ class SchedulebooktrialsController extends \BaseController {
                     $resp 	= 	array('status' => 401, 'order' => $order, 'message' => "Trial not booked.");
                     return  Response::json($resp, 400);
                 }
+
+                if(isset($order->pay_later) && $order->status){
+                    
+                    return $this->payLaterSuccess($order['_id']);
+                    
+                }
+    
             }
 
             $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->where('customer_source','exists',true)->orderBy('_id','asc')->where('_id','<',$order->_id)->where('finder_id',$order->finder_id)->count();
@@ -2160,6 +2167,20 @@ class SchedulebooktrialsController extends \BaseController {
                 $booktrialdata['recommended_booktrial_id'] = (int)$order['recommended_booktrial_id'];
             }
 
+            $workout_session_fields = ['customers_list', 'pay_later'];
+
+            foreach($workout_session_fields as $field){
+                if(isset($order[$field])){
+                    $booktrialdata[$field] = $order[$field];
+                }
+            }
+
+            if(isset($data['pay_later']) && $data['pay_later']){
+                
+                $booktrialdata['payment_done'] = false;
+            
+            }
+
             if ($medical_detail != "" && $medication_detail != "") {
 
                 $customer_info = new CustomerInfo();
@@ -2285,15 +2306,16 @@ class SchedulebooktrialsController extends \BaseController {
             
             if(!(isset($order['pay_later']) && $order['pay_later'])){
                 array_set($orderData, 'status', '1');
+                array_set($orderData, 'order_action', 'bought');
+                array_set($orderData, 'success_date', date('Y-m-d H:i:s',time()));
+                
+                if(isset($order->payment_mode) && $order->payment_mode == "paymentgateway"){
+                    array_set($orderData, 'secondary_payment_mode', 'payment_gateway_membership');
+                }
+                
             }
-            array_set($orderData, 'order_action', 'bought');
+           
             array_set($orderData, 'booktrial_id', (int)$booktrialid);
-            array_set($orderData, 'success_date', date('Y-m-d H:i:s',time()));
-
-            if(isset($order->payment_mode) && $order->payment_mode == "paymentgateway"){
-                array_set($orderData, 'secondary_payment_mode', 'payment_gateway_membership');
-            }
-
             $order->update($orderData);
 
 
@@ -2538,6 +2560,189 @@ class SchedulebooktrialsController extends \BaseController {
         }
 
     }
+    public function sendCommunication1($data){
+
+       try{
+
+           $booktrial_id = (int)$data['booktrial_id'];
+
+           $booktrial = Booktrial::findOrFail($booktrial_id);
+
+           $booktrial->qrcode = $this->utilities->createQrCode($booktrial['code']);
+           $booktrial->update();
+
+
+           $dates = array('schedule_date','schedule_date_time','missedcall_date','customofferorder_expiry_date','followup_date','auto_followup_date');
+
+           foreach ($dates as $key => $value) {
+               if(isset($booktrial[$value])){
+                   if($booktrial[$value] == "-" || $booktrial[$value] == ""){
+
+                       $booktrial->unset($value);
+                   }
+               }
+
+           }
+
+           $this->deleteTrialCommunication($booktrial);
+
+           $this->firstTrial($booktrial->toArray()); // first trial communication
+
+           $booktrialdata = $booktrial->toArray();
+
+           $currentDateTime 			       =	\Carbon\Carbon::now();
+           $scheduleDateTime 			       =	\Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)));
+
+           $currentScheduleDateDiffMin = $currentDateTime->diffInMinutes($scheduleDateTime, false);
+
+           $customer_email_messageids 	=  $finder_email_messageids  =	$customer_sms_messageids  =  $finder_sms_messageids  =  $customer_notification_messageids  =  array();
+
+           if($booktrial->going_status_txt == "rescheduled"){
+
+               $send_communication["customer_email_instant"] = $this->customermailer->rescheduledBookTrial($booktrialdata);
+               $send_communication["customer_sms_instant"] = $this->customersms->rescheduledBookTrial($booktrialdata);
+               $send_communication["finder_email_instant"] = $this->findermailer->rescheduledBookTrial($booktrialdata);
+               $send_communication["finder_sms_instant"] = $this->findersms->rescheduledBookTrial($booktrialdata);
+
+           }else{
+
+               $send_communication["customer_email_instant"] = $this->customermailer->bookTrial($booktrialdata);
+               $send_communication["customer_sms_instant"] = $this->customersms->bookTrial($booktrialdata);
+               $send_communication["finder_email_instant"] = $this->findermailer->bookTrial($booktrialdata);
+               $send_communication["finder_sms_instant"] = $this->findersms->bookTrial($booktrialdata);
+           }
+
+           //Send Reminder Notiication (Email, Sms) Before 12 Hour To Customer
+           if($currentScheduleDateDiffMin >= (60 * 12)){
+
+               $delayReminderTimeBefore12Hour      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->subMinutes(60 * 12);
+
+               $hour = (int) date("G", strtotime($delayReminderTimeBefore12Hour));
+
+               if($hour >= 7 && $hour <= 22 ){
+                   $send_communication["customer_email_before12hour"] = $this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);     
+                   $send_communication["customer_notification_before12hour"] = $this->customernotification->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
+               }else{
+
+                   $delayReminderAfter30Min    =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->created_at)))->addMinutes(30);
+
+                   $send_communication["customer_email_before12hour"] = $this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderAfter30Min);
+                   $send_communication["customer_notification_before12hour"] = $this->customernotification->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderAfter30Min);
+               }
+
+           }else{
+
+               $delayReminderAfter30Min    =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->created_at)))->addMinutes(30);
+
+               $send_communication["customer_email_before12hour"] = $this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderAfter30Min);
+               $send_communication["customer_notification_before12hour"] = $this->customernotification->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderAfter30Min);
+           }
+
+           if($currentScheduleDateDiffMin >= (60 * 6)){
+               $delayReminderTimeBefore6Hour      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->subMinutes(60 * 6);
+               $send_communication["finder_sms_before6hour"] = $this->findersms->bookTrialReminderBefore6Hour($booktrialdata, $delayReminderTimeBefore6Hour);
+
+           }
+
+           
+           if($currentScheduleDateDiffMin >= (60 * 3)){
+
+               $booktrialdata['poc'] = "vendor";
+               $booktrialdata['poc_no'] = $booktrialdata['finder_poc_for_customer_no'];
+
+               $delayReminderTimeBefore3Hour      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->subMinutes(60 * 3);
+
+               $hour = (int) date("G", strtotime($delayReminderTimeBefore3Hour));
+
+               if($hour >= 10 && $hour <= 22){
+                   $booktrialdata['poc'] = "fitternity";
+                   $booktrialdata['poc_no'] = Config::get('app.contact_us_customer_number');
+               }
+
+               if($hour >= 7 && $hour <= 22 ){
+
+                   $send_communication["customer_sms_before3hour"] = $this->customersms->bookTrialReminderBefore3Hour($booktrialdata, $delayReminderTimeBefore3Hour);
+                   $send_communication["customer_notification_before3hour"] = $this->customernotification->bookTrialReminderBefore3Hour($booktrialdata, $delayReminderTimeBefore3Hour);
+               }else{
+
+                   $delayReminderAfter45Min    =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->created_at)))->addMinutes(45);
+
+                   $send_communication["customer_sms_before3hour"] = $this->customersms->bookTrialReminderBefore3Hour($booktrialdata, $delayReminderAfter45Min);
+                   $send_communication["customer_notification_before3hour"] = $this->customernotification->bookTrialReminderBefore3Hour($booktrialdata, $delayReminderAfter45Min);
+               }
+
+           }
+
+           if($currentScheduleDateDiffMin >= (20)){
+
+               $current_date = date('Y-m-d 00:00:00');
+
+               $from_date = new \MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($current_date))));
+               $to_date = new \MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($current_date." + 1 days"))));
+               $batch = 1;
+
+               $booktrialMissedcall  = \Booktrial::where('_id','!=',(int) $booktrialdata['_id'])->where('customer_phone','LIKE','%'.substr($booktrialdata['customer_phone'], -8).'%')->where('missedcall_batch','exists',true)->where('created_at','>',$from_date)->where('created_at','<',$to_date)->orderBy('_id','desc')->first();
+
+               if(!empty($booktrialMissedcall) && isset($booktrialMissedcall->missedcall_batch) && $booktrialMissedcall->missedcall_batch != ''){
+                   $batch = $booktrialMissedcall->missedcall_batch + 1;
+               }
+
+               $missedcall_no = \Ozonetelmissedcallno::where('batch',$batch)->where('type','yes')->where('for','N-3Trial')->first();
+
+               if(empty($missedcall_no)){
+
+                   $missedcall_no = \Ozonetelmissedcallno::where('batch',1)->where('type','yes')->where('for','N-3Trial')->first();
+               }
+
+               $booktrialdata['yes'] = $missedcall_no->number;
+
+               $delayReminderTimeBefore20Min      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->subMinutes(20);
+
+               $send_communication["customer_sms_before20Min"] = $this->customersms->bookTrialReminderBefore20Min($booktrialdata, $delayReminderTimeBefore20Min);
+               
+               $send_communication["customer_notification_before20Min"] = $this->customernotification->bookTrialReminderBefore20Min($booktrialdata, $delayReminderTimeBefore20Min);
+
+               $booktrial->missedcall_batch = $batch;
+           }
+
+
+           if(!isKioskVendor($booktrialdata['finder_id'])){
+
+               $delayReminderTimeAfter90Min      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->addMinutes(90);
+
+               $send_communication["customer_sms_after2hour"] = $this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter90Min);
+               $send_communication["customer_email_after2hour"] = $this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter90Min);
+               $send_communication["customer_notification_after2hour"] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter90Min);
+           }else{
+
+               $delayReminderTimeAfter24Hour      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->addMinutes(60*24);
+
+               $send_communication["customer_sms_after24hour"] = $this->customersms->bookTrialReminderAfter24Hour($booktrialdata, $delayReminderTimeAfter24Hour);
+           }
+
+           if($booktrialdata['type'] == "booktrials" && isset($booktrialdata['amount']) && $booktrialdata['amount'] != "" && $booktrialdata['amount'] > 0){
+               $this->customersms->giveCashbackOnTrialOrderSuccessAndInvite($booktrialdata);
+           }
+
+           $booktrial->send_communication = $send_communication;
+           $booktrial->auto_followup_date = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',time()))->addDays(31);
+           $booktrial->update();
+
+           if(isset($booktrial->order_id) && $booktrial->order_id != ""){
+
+               $order = Order::find((int) $booktrial->order_id);
+
+               if($order){
+                   $this->utilities->setRedundant($order);
+               }
+           }
+
+       }catch(\Exception $exception){
+
+           Log::error($exception);
+       }
+
+   }
     
     public function deleteTrialCommunication($booktrial){
 
@@ -5816,124 +6021,124 @@ class SchedulebooktrialsController extends \BaseController {
     }
 
 
-    public function sendCommunication1($data){
-            // $job->delete();
-            try{
-                $booktrial_id = (int)$data['booktrial_id'];
-                $booktrial = Booktrial::findOrFail($booktrial_id);
-                $booktrialdata = $booktrial->toArray();
+    // public function sendCommunication1($data){
+    //         // $job->delete();
+    //         try{
+    //             $booktrial_id = (int)$data['booktrial_id'];
+    //             $booktrial = Booktrial::findOrFail($booktrial_id);
+    //             $booktrialdata = $booktrial->toArray();
                 
-                $send_communication["customer_email_instant"] = $this->customermailer->bookTrial($booktrialdata);
-                $booktrial->send_communication = $send_communication;
-                $booktrial->update();
+    //             $send_communication["customer_email_instant"] = $this->customermailer->bookTrial($booktrialdata);
+    //             $booktrial->send_communication = $send_communication;
+    //             $booktrial->update();
                 
-                // Log::info($booktrial);
-                // return;
-                // $dates = array('schedule_date','schedule_date_time','missedcall_date','customofferorder_expiry_date','followup_date','auto_followup_date');
-                // foreach ($dates as $key => $value) {
-                //     if(isset($booktrial[$value])){
-                //         if($booktrial[$value] == "-" || $booktrial[$value] == ""){
-                //             $booktrial->unset($value);
-                //         }
-                //     }
-                // }
-                // $this->deleteTrialCommunication($booktrial);
-                // $this->firstTrial($booktrial->toArray()); // first trial communication
-                // $booktrialdata = $booktrial->toArray();
-                // $currentDateTime 			       =	\Carbon\Carbon::now();
-                // $scheduleDateTime 			       =	\Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)));
-                // $currentScheduleDateDiffMin = $currentDateTime->diffInMinutes($scheduleDateTime, false);
-                // $customer_email_messageids 	=  $finder_email_messageids  =	$customer_sms_messageids  =  $finder_sms_messageids  =  $customer_notification_messageids  =  array();
-                // if($booktrial->going_status_txt == "rescheduled"){
-                //     $send_communication["customer_email_instant"] = $this->customermailer->rescheduledBookTrial($booktrialdata);
-                //     $send_communication["customer_sms_instant"] = $this->customersms->rescheduledBookTrial($booktrialdata);
-                //     $send_communication["finder_email_instant"] = $this->findermailer->rescheduledBookTrial($booktrialdata);
-                //     $send_communication["finder_sms_instant"] = $this->findersms->rescheduledBookTrial($booktrialdata);
-                // }else{
-                //     $send_communication["customer_email_instant"] = $this->customermailer->bookTrial($booktrialdata);
-                //     $send_communication["customer_sms_instant"] = $this->customersms->bookTrial($booktrialdata);
-                //     $send_communication["finder_email_instant"] = $this->findermailer->bookTrial($booktrialdata);
-                //     $send_communication["finder_sms_instant"] = $this->findersms->bookTrial($booktrialdata);
-                // }
+    //             // Log::info($booktrial);
+    //             // return;
+    //             // $dates = array('schedule_date','schedule_date_time','missedcall_date','customofferorder_expiry_date','followup_date','auto_followup_date');
+    //             // foreach ($dates as $key => $value) {
+    //             //     if(isset($booktrial[$value])){
+    //             //         if($booktrial[$value] == "-" || $booktrial[$value] == ""){
+    //             //             $booktrial->unset($value);
+    //             //         }
+    //             //     }
+    //             // }
+    //             // $this->deleteTrialCommunication($booktrial);
+    //             // $this->firstTrial($booktrial->toArray()); // first trial communication
+    //             // $booktrialdata = $booktrial->toArray();
+    //             // $currentDateTime 			       =	\Carbon\Carbon::now();
+    //             // $scheduleDateTime 			       =	\Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)));
+    //             // $currentScheduleDateDiffMin = $currentDateTime->diffInMinutes($scheduleDateTime, false);
+    //             // $customer_email_messageids 	=  $finder_email_messageids  =	$customer_sms_messageids  =  $finder_sms_messageids  =  $customer_notification_messageids  =  array();
+    //             // if($booktrial->going_status_txt == "rescheduled"){
+    //             //     $send_communication["customer_email_instant"] = $this->customermailer->rescheduledBookTrial($booktrialdata);
+    //             //     $send_communication["customer_sms_instant"] = $this->customersms->rescheduledBookTrial($booktrialdata);
+    //             //     $send_communication["finder_email_instant"] = $this->findermailer->rescheduledBookTrial($booktrialdata);
+    //             //     $send_communication["finder_sms_instant"] = $this->findersms->rescheduledBookTrial($booktrialdata);
+    //             // }else{
+    //             //     $send_communication["customer_email_instant"] = $this->customermailer->bookTrial($booktrialdata);
+    //             //     $send_communication["customer_sms_instant"] = $this->customersms->bookTrial($booktrialdata);
+    //             //     $send_communication["finder_email_instant"] = $this->findermailer->bookTrial($booktrialdata);
+    //             //     $send_communication["finder_sms_instant"] = $this->findersms->bookTrial($booktrialdata);
+    //             // }
                 
-                // //Send Reminder Notiication (Email, Sms) Before 12 Hour To Customer
-                // if($currentScheduleDateDiffMin >= (60 * 12)){
-                //     $delayReminderTimeBefore12Hour      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->subMinutes(60 * 12);
-                //     $send_communication["customer_email_before12hour"] = $this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
-                //     if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
-                //         $send_communication["customer_notification_before12hour"] = $this->customernotification->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
-                //     }
-                // }else{
-                //     $delayReminderAfter30Min    =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->created_at)))->addMinutes(30);
-                //     $send_communication["customer_email_before12hour"] = $this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderAfter30Min);
-                //     if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
-                //         $send_communication["customer_notification_before12hour"] = $this->customernotification->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderAfter30Min);
-                //     }
-                // }
-                // // if($currentScheduleDateDiffMin >= (60 * 6)){
-                //     $delayReminderTimeBefore6Hour      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->subMinutes(60 * 6);
-                //     $send_communication["finder_sms_before6hour"] = $this->findersms->bookTrialReminderBefore6Hour($booktrialdata, $delayReminderTimeBefore6Hour);
-                // // }
-                // // return $booktrial;
+    //             // //Send Reminder Notiication (Email, Sms) Before 12 Hour To Customer
+    //             // if($currentScheduleDateDiffMin >= (60 * 12)){
+    //             //     $delayReminderTimeBefore12Hour      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->subMinutes(60 * 12);
+    //             //     $send_communication["customer_email_before12hour"] = $this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
+    //             //     if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
+    //             //         $send_communication["customer_notification_before12hour"] = $this->customernotification->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
+    //             //     }
+    //             // }else{
+    //             //     $delayReminderAfter30Min    =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->created_at)))->addMinutes(30);
+    //             //     $send_communication["customer_email_before12hour"] = $this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderAfter30Min);
+    //             //     if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
+    //             //         $send_communication["customer_notification_before12hour"] = $this->customernotification->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderAfter30Min);
+    //             //     }
+    //             // }
+    //             // // if($currentScheduleDateDiffMin >= (60 * 6)){
+    //             //     $delayReminderTimeBefore6Hour      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->subMinutes(60 * 6);
+    //             //     $send_communication["finder_sms_before6hour"] = $this->findersms->bookTrialReminderBefore6Hour($booktrialdata, $delayReminderTimeBefore6Hour);
+    //             // // }
+    //             // // return $booktrial;
                 
                 
-                // // if($currentScheduleDateDiffMin >= (60 * 3)){
-                //     $booktrialdata['poc'] = "vendor";
-                //     $booktrialdata['poc_no'] = $booktrialdata['finder_poc_for_customer_no'];
-                //     $delayReminderTimeBefore3Hour      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->subMinutes(60 * 3);
-                //     $hour = (int) date("G", strtotime($delayReminderTimeBefore3Hour));
-                //     if($hour >= 10 && $hour <= 22){
-                //         $booktrialdata['poc'] = "fitternity";
-                //         $booktrialdata['poc_no'] = Config::get('app.contact_us_customer_number');
-                //     }
-                //     $send_communication["customer_sms_before3hour"] = $this->customersms->bookTrialReminderBefore3Hour($booktrialdata, $delayReminderTimeBefore3Hour);
-                //     if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
-                //         $send_communication["customer_notification_before3hour"] = $this->customernotification->bookTrialReminderBefore3Hour($booktrialdata, $delayReminderTimeBefore3Hour);
-                //     }
-                // // }
-                // // if($currentScheduleDateDiffMin >= (20)){
-                //     $current_date = date('Y-m-d 00:00:00');
-                //     $from_date = new \MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($current_date))));
-                //     $to_date = new \MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($current_date." + 1 days"))));
-                //     $batch = 1;
-                //     $booktrialMissedcall  = \Booktrial::where('_id','!=',(int) $booktrialdata['_id'])->where('customer_phone','LIKE','%'.substr($booktrialdata['customer_phone'], -8).'%')->where('missedcall_batch','exists',true)->where('created_at','>',$from_date)->where('created_at','<',$to_date)->orderBy('_id','desc')->first();
-                //     if(!empty($booktrialMissedcall) && isset($booktrialMissedcall->missedcall_batch) && $booktrialMissedcall->missedcall_batch != ''){
-                //         $batch = $booktrialMissedcall->missedcall_batch + 1;
-                //     }
-                //     $missedcall_no = \Ozonetelmissedcallno::where('batch',$batch)->where('type','yes')->where('for','N-3Trial')->first();
-                //     if(empty($missedcall_no)){
-                //         $missedcall_no = \Ozonetelmissedcallno::where('batch',1)->where('type','yes')->where('for','N-3Trial')->first();
-                //     }
-                //     $booktrialdata['yes'] = $missedcall_no->number;
-                //     $delayReminderTimeBefore20Min      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->subMinutes(20);
-                //     $send_communication["customer_sms_before20Min"] = $this->customersms->bookTrialReminderBefore20Min($booktrialdata, $delayReminderTimeBefore20Min);
-                //     if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
-                //         $send_communication["customer_notification_before20Min"] = $this->customernotification->bookTrialReminderBefore20Min($booktrialdata, $delayReminderTimeBefore20Min);
-                //     }
-                //     $booktrial->missedcall_batch = $batch;
-                // // }
-                // $delayReminderTimeAfter90Min      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->addMinutes(90);
-                // $send_communication["customer_sms_after2hour"] = $this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter90Min);
-                // $send_communication["customer_email_after2hour"] = $this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter90Min);
-                // if($booktrialdata['type'] == "booktrials" && isset($booktrialdata['amount']) && $booktrialdata['amount'] != "" && $booktrialdata['amount'] > 0){
-                //     $this->customersms->giveCashbackOnTrialOrderSuccessAndInvite($booktrialdata);
-                // }
-                // if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
-                //     $send_communication["customer_notification_after2hour"] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter90Min);
-                // }
-                // $booktrial->send_communication = $send_communication;
-                // $booktrial->auto_followup_date = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',time()))->addDays(31);
-                // $booktrial->update();
-                // if(isset($booktrial->order_id) && $booktrial->order_id != ""){
-                //     $order = Order::find((int) $booktrial->order_id);
-                //     if($order){
-                //         $this->utilities->setRedundant($order);
-                //     }
-                // }
-            }catch(\Exception $exception){
-                Log::error($exception);
-            }
-        }
+    //             // // if($currentScheduleDateDiffMin >= (60 * 3)){
+    //             //     $booktrialdata['poc'] = "vendor";
+    //             //     $booktrialdata['poc_no'] = $booktrialdata['finder_poc_for_customer_no'];
+    //             //     $delayReminderTimeBefore3Hour      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->subMinutes(60 * 3);
+    //             //     $hour = (int) date("G", strtotime($delayReminderTimeBefore3Hour));
+    //             //     if($hour >= 10 && $hour <= 22){
+    //             //         $booktrialdata['poc'] = "fitternity";
+    //             //         $booktrialdata['poc_no'] = Config::get('app.contact_us_customer_number');
+    //             //     }
+    //             //     $send_communication["customer_sms_before3hour"] = $this->customersms->bookTrialReminderBefore3Hour($booktrialdata, $delayReminderTimeBefore3Hour);
+    //             //     if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
+    //             //         $send_communication["customer_notification_before3hour"] = $this->customernotification->bookTrialReminderBefore3Hour($booktrialdata, $delayReminderTimeBefore3Hour);
+    //             //     }
+    //             // // }
+    //             // // if($currentScheduleDateDiffMin >= (20)){
+    //             //     $current_date = date('Y-m-d 00:00:00');
+    //             //     $from_date = new \MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($current_date))));
+    //             //     $to_date = new \MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($current_date." + 1 days"))));
+    //             //     $batch = 1;
+    //             //     $booktrialMissedcall  = \Booktrial::where('_id','!=',(int) $booktrialdata['_id'])->where('customer_phone','LIKE','%'.substr($booktrialdata['customer_phone'], -8).'%')->where('missedcall_batch','exists',true)->where('created_at','>',$from_date)->where('created_at','<',$to_date)->orderBy('_id','desc')->first();
+    //             //     if(!empty($booktrialMissedcall) && isset($booktrialMissedcall->missedcall_batch) && $booktrialMissedcall->missedcall_batch != ''){
+    //             //         $batch = $booktrialMissedcall->missedcall_batch + 1;
+    //             //     }
+    //             //     $missedcall_no = \Ozonetelmissedcallno::where('batch',$batch)->where('type','yes')->where('for','N-3Trial')->first();
+    //             //     if(empty($missedcall_no)){
+    //             //         $missedcall_no = \Ozonetelmissedcallno::where('batch',1)->where('type','yes')->where('for','N-3Trial')->first();
+    //             //     }
+    //             //     $booktrialdata['yes'] = $missedcall_no->number;
+    //             //     $delayReminderTimeBefore20Min      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->subMinutes(20);
+    //             //     $send_communication["customer_sms_before20Min"] = $this->customersms->bookTrialReminderBefore20Min($booktrialdata, $delayReminderTimeBefore20Min);
+    //             //     if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
+    //             //         $send_communication["customer_notification_before20Min"] = $this->customernotification->bookTrialReminderBefore20Min($booktrialdata, $delayReminderTimeBefore20Min);
+    //             //     }
+    //             //     $booktrial->missedcall_batch = $batch;
+    //             // // }
+    //             // $delayReminderTimeAfter90Min      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->addMinutes(90);
+    //             // $send_communication["customer_sms_after2hour"] = $this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter90Min);
+    //             // $send_communication["customer_email_after2hour"] = $this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter90Min);
+    //             // if($booktrialdata['type'] == "booktrials" && isset($booktrialdata['amount']) && $booktrialdata['amount'] != "" && $booktrialdata['amount'] > 0){
+    //             //     $this->customersms->giveCashbackOnTrialOrderSuccessAndInvite($booktrialdata);
+    //             // }
+    //             // if($booktrialdata['reg_id'] != '' && $booktrialdata['device_type'] != ''){
+    //             //     $send_communication["customer_notification_after2hour"] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter90Min);
+    //             // }
+    //             // $booktrial->send_communication = $send_communication;
+    //             // $booktrial->auto_followup_date = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',time()))->addDays(31);
+    //             // $booktrial->update();
+    //             // if(isset($booktrial->order_id) && $booktrial->order_id != ""){
+    //             //     $order = Order::find((int) $booktrial->order_id);
+    //             //     if($order){
+    //             //         $this->utilities->setRedundant($order);
+    //             //     }
+    //             // }
+    //         }catch(\Exception $exception){
+    //             Log::error($exception);
+    //         }
+    //     }
 
     
     
@@ -6493,6 +6698,27 @@ class SchedulebooktrialsController extends \BaseController {
         $pubnub->publish('fitternity_ozonetel',$array);
 
         return 'success';
+    }
+
+    public function payLaterSuccess($order_id){
+
+        $order = Order::find($order_id);
+
+        array_set($orderData, 'status', '1');
+        array_set($orderData, 'order_action', 'bought');
+        array_set($orderData, 'success_date', date('Y-m-d H:i:s',time()));
+        
+        if(isset($order->payment_mode) && $order->payment_mode == "paymentgateway"){
+            array_set($orderData, 'secondary_payment_mode', 'payment_gateway_membership');
+        }
+
+        $order->update($orderData);
+
+        $booktrial = Booktrial::find($order->booktrial_id);
+
+        $booktrial->update();
+
+
     }
 
 

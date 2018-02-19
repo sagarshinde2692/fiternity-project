@@ -843,8 +843,11 @@ class ServiceController extends \BaseController {
                         array_set($slot, 'finder_id', $item['finder_id']);
                         array_set($slot, 'ratecard_id', $ratecard['_id']);
                         array_set($slot,'epoch_start_time',strtotime(strtoupper($date." ".$slot['start_time'])));
-                        array_set($slot,'epoch_end_time',strtotime(strtoupper($date." ".$slot['end_time'])));
-                        array_push($slots, $slot);
+						array_set($slot,'epoch_end_time',strtotime(strtoupper($date." ".$slot['end_time'])));
+						
+						if(!$slot['passed']){
+							array_push($slots, $slot);
+						}
 
                     }catch(Exception $e){
 
