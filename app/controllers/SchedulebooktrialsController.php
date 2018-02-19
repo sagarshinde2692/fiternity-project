@@ -1787,7 +1787,7 @@ class SchedulebooktrialsController extends \BaseController {
 
                 if(isset($order->pay_later) && $order->status){
                     
-                    return $this->payLaterSuccess($order['_id']);
+                    return $this->payLaterPaymentSuccess($order['_id']);
                     
                 }
     
@@ -6700,7 +6700,7 @@ class SchedulebooktrialsController extends \BaseController {
         return 'success';
     }
 
-    public function payLaterSuccess($order_id){
+    public function payLaterPaymentSuccess($order_id){
 
         $order = Order::find($order_id);
 
@@ -6716,8 +6716,9 @@ class SchedulebooktrialsController extends \BaseController {
 
         $booktrial = Booktrial::find($order->booktrial_id);
 
-        $booktrial->update();
+        $booktrial->payment_done = true;
 
+        $booktrial->update();
 
     }
 
