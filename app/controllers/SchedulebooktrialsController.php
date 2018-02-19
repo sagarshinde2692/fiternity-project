@@ -763,6 +763,13 @@ class SchedulebooktrialsController extends \BaseController {
         $social_referrer			       = 	(isset($data['social_referrer']) && $data['social_referrer'] != '') ? $data['social_referrer'] : "";
         $referrer_object			       = 	(isset($data['referrer_object']) && $data['referrer_object'] != '') ? $data['referrer_object'] : "";
         $transacted_after			       = 	(isset($data['transacted_after']) && $data['transacted_after'] != '') ? $data['transacted_after'] : "";
+
+        $finder = Finder::find($finder_id);
+
+        $finder_name = (isset($finder['title']) && $finder['title'] != '') ? $finder['title'] : "";
+        $finder_slug = (isset($finder['slug']) && $finder['slug'] != '') ? $finder['slug'] : "";
+        $finder_lat = (isset($finder['lat']) && $finder['lat'] != '') ? $finder['lat'] : "";
+        $finder_lon = (isset($finder['lon']) && $finder['lon'] != '') ? $finder['lon'] : "";
         
         setDefaultAccount($data, $customer_id);
         
@@ -822,6 +829,9 @@ class SchedulebooktrialsController extends \BaseController {
             'device_type'		       =>		$device_type,
             'gcm_reg_id'		       =>		$gcm_reg_id,
             'note_to_trainer'                =>      $note_to_trainer,
+            'finder_slug'   =>  $finder_slug,
+            'finder_lat'   =>  $finder_lat,
+            'finder_lon'   =>  $finder_lon,
         );
 
         if($this->vendor_token){
