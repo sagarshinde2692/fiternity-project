@@ -1322,6 +1322,17 @@ class TransactionController extends \BaseController {
                     array_set($data, 'reward_type', 'cashback');
                 }
             }
+
+            if(isset($order['previous_booktrial_id']) && $order['previous_booktrial_id'] != ""){
+
+                $booktrial = Booktrial::find((int) $order['previous_booktrial_id']);
+
+                if($booktrial){
+
+                    $booktrial->final_lead_stage = "purchase_stage";
+                    $booktrial->update();
+                }
+            }
             
             array_set($data, 'order_action', 'bought');
 
@@ -3037,9 +3048,6 @@ class TransactionController extends \BaseController {
             if($booktrial){
 
                 $order->previous_booktrial_id = (int)$booktrial->_id;
-
-                $booktrial->final_lead_stage = "purchase_stage";
-                $booktrial->update();
             }
 
             $order->update();
