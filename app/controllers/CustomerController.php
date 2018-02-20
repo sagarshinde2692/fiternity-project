@@ -3228,7 +3228,7 @@ class CustomerController extends \BaseController {
 			// 		'ratio'=>(float) number_format(100/375,2)
 			// 	];
 				$result['campaigns'][] = [
-					'image'=>'https://b.fitn.in/global/ios_homescreen_banner/complimentary-rewards-appbanner.png',
+					'image'=>'https://b.fitn.in/global/ios_homescreen_banner/fit-sale.png',
 					'link'=>'ftrnty://fitternity.com/',
 					'title'=>'Fitness Sale',
 					'height'=>100,
@@ -3248,7 +3248,7 @@ class CustomerController extends \BaseController {
 			// 	];
 
 				$result['campaigns'][] = [
-					'image'=>'https://b.fitn.in/global/ios_homescreen_banner/complimentary-rewards-appbanner.png',
+					'image'=>'https://b.fitn.in/global/ios_homescreen_banner/fit-sale.png',
 					'link'=>'ftrnty://ftrnty.com/search/all',
 					'title'=>'Fitness Sale',
 					'height'=>100,
