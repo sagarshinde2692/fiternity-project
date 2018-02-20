@@ -1716,10 +1716,10 @@ class SchedulebooktrialsController extends \BaseController {
             return  Response::json($resp, 400);
         }
 
-        if(!isset($data['schedule_slot']) || $data['schedule_slot'] == ''){
-            $resp 	= 	array('status' => 400,'message' => "Data Missing - schedule_slot");
-            return  Response::json($resp, 400);
-        }
+        // if(!isset($data['schedule_slot']) || $data['schedule_slot'] == ''){
+        //     $resp 	= 	array('status' => 400,'message' => "Data Missing - schedule_slot");
+        //     return  Response::json($resp, 400);
+        // }
 
         if(!isset($data['order_id']) || $data['order_id'] == ''){
             return Response::json($data, 200);
@@ -1808,12 +1808,24 @@ class SchedulebooktrialsController extends \BaseController {
 
             $campaign	 				       =	(isset($data['campaign']) && $data['campaign'] != '') ? $data['campaign'] : "";
             $otp	 					       =	(isset($data['otp']) && $data['otp'] != '') ? $data['otp'] : "";
-            $slot_times 				       =	explode('-',$data['schedule_slot']);
-            $schedule_slot_start_time 	       =	trim($slot_times[0]);
-            $schedule_slot_end_time 	       =	trim($slot_times[1]);
-            $schedule_slot 				       =	$schedule_slot_start_time.'-'.$schedule_slot_end_time;
-            $slot_date 					       =	date('d-m-Y', strtotime(Input::json()->get('schedule_date')));
-            $schedule_date_starttime 	       =	strtoupper($slot_date ." ".$schedule_slot_start_time);
+
+            $slot_times = 0;
+            $schedule_slot_start_time = 0;
+            $schedule_slot_end_time = 0;
+            $schedule_slot = 0;
+            $slot_date = 0;
+            $schedule_date_starttime = 0;
+
+            if(isset($data['schedule_slot'])){
+
+                $slot_times 				       =	explode('-',$data['schedule_slot']);
+                $schedule_slot_start_time 	       =	trim($slot_times[0]);
+                $schedule_slot_end_time 	       =	trim($slot_times[1]);
+                $schedule_slot 				       =	$schedule_slot_start_time.'-'.$schedule_slot_end_time;
+                $slot_date 					       =	date('d-m-Y', strtotime(Input::json()->get('schedule_date')));
+                $schedule_date_starttime 	       =	strtoupper($slot_date ." ".$schedule_slot_start_time);
+
+            }
 
             if(isset($order->booktrial_id)){
                 $booktrialid = (int)$order->booktrial_id;
@@ -1985,8 +1997,12 @@ class SchedulebooktrialsController extends \BaseController {
 
 
             $service_name				       =	strtolower(Input::json()->get('service_name'));
-            $schedule_date				       =	date('Y-m-d 00:00:00', strtotime($slot_date));
-            $schedule_date_time			       =	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->toDateTimeString();
+            if(isset($data['schedule_slot'])){
+                $schedule_date				       =	date('Y-m-d 00:00:00', strtotime($slot_date));
+                $schedule_date_time			       =	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->toDateTimeString();
+            }else{
+                $schedule_date				       =	date('Y-m-d 00:00:00', strtotime($data['schedule_date']));
+            }
 
             $code						       =	random_numbers(5);
             $device_id					       = 	(Input::has('device_id') && Input::json()->get('device_id') != '') ? Input::json()->get('device_id') : "";
@@ -6714,13 +6730,35 @@ class SchedulebooktrialsController extends \BaseController {
 
         $order->update($orderData);
 
-        $booktrial = Booktrial::find($order->booktrial_id);
+        $booktrial_id = $order->booktrial_id;
+
+        $booktrial = Booktrial::find($booktrial_id);
 
         $booktrial->payment_done = true;
 
         $booktrial->update();
 
-    }
+        $pay_later = Paylater::where('trial_ids', $booktrial_id)->first();
 
+        $trial_ids = $pay_later->trial_ids;
+
+        if(count($trial_ids) == 1){
+            
+            Paylater::destroy($pay_later->_id);
+        
+        }else{
+
+            $key = array_search($booktrial_id, $pay_later);
+    
+            unset($trial_ids[$key]);
+    
+            $pay_later->trial_ids = $trial_ids;
+    
+            $pay_later->update();
+        }
+
+        $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
+
+    }
 
 }
