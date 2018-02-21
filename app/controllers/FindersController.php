@@ -526,7 +526,7 @@ class FindersController extends \BaseController {
 					foreach ($finder['services'] as $key => $service){
 
 						// if(!isset($service['showOnFront']) || ((isset($service['showOnFront']) && $service['showOnFront']))){
-						if(!isset($service['showOnFront']) || ((isset($service['showOnFront']) && in_array('web', $service['showOnFront'])))){ 
+						if((!isset($service['showOnFront']) || ((isset($service['showOnFront']) && in_array('web', $service['showOnFront'])))) && count($service['serviceratecard'])){ 
 
 
 
@@ -2855,7 +2855,7 @@ class FindersController extends \BaseController {
 				->first(array('_id','slug','title','lat','lon','category_id','category','location_id','location','city_id','city','categorytags','locationtags','offerings','facilities','coverimage','finder_coverimage','contact','average_rating','photos','info','manual_trial_enable','manual_trial_auto','trial','commercial_type','multiaddress','membership','flags'));
 
 			$finder = false;
-
+			
 			if($finderarr){
 				$finderarr = $finderarr->toArray();
 
