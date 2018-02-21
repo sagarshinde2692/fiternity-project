@@ -2756,7 +2756,13 @@ Class Utilities {
                 ->orderBy('_id','ASC')->first();
 
             if($agentPresentOrder){
+
                 $order->person_followingup = $agentPresentOrder->person_followingup;
+
+                if(isset($agentPresentOrder->source_of_membership) && $agentPresentOrder->source_of_membership != ""){
+                    $order->source_of_membership = $agentPresentOrder->source_of_membership;
+                }
+                
                 $order->auto_associate_agent_date = time();
                 $order->update();
             }
