@@ -232,20 +232,21 @@ if(!function_exists('citywise_category')){
             $cat['hyderabad'] = [
                 ["name" => "All Fitness Options","slug" => "fitness"],
                 ["name" => "Gyms","slug" => "gyms"],
-                ["name" => "Cross Functional Training","slug" => "functional-training"],
                 ["name" => "Fitness Studios","slug" => "fitness-studios"],
                 ["name" => "Zumba","slug" => "zumba-classes"],
-                ["name" => "Yoga","slug" => "yoga-classes"],
-                ["name" => "Dance","slug" => "dance-classes"],
-                ["name" => "Pilates","slug" => "pilates-classes"],
                 ["name" => "MMA And Kick Boxing","slug" => "mma-and-kick-boxing-classes"],
-                ["name" => "Spinning And Indoor Cycling","slug" => "spinning-classes"],
-                ["name" => "Healthy Tiffins","slug" => "healthy-tiffins"],
+                ["name" => "Yoga","slug" => "yoga-classes"],
+                ["name" => "Cross Functional Training","slug" => "functional-training"],
+                ["name" => "Aerobics","slug" => "aerobics"],
+                // ["name" => "Dance","slug" => "dance-classes"],
+                // ["name" => "Pilates","slug" => "pilates-classes"],
+                // ["name" => "Spinning And Indoor Cycling","slug" => "spinning-classes"],
+                // ["name" => "Healthy Tiffins","slug" => "healthy-tiffins"],
                 // ["name" => "Personal Trainers","slug" => "personal-trainers"],
                 // ["name" => "Sport Nutrition Supplement Stores","slug" => "sport-nutrition-supplement-stores"],
                 // ["name" => "Aerial Fitness","slug" => "aerial-fitness"],
-                ["name" => "Pre-natal Classes","slug" => "pre-natal-classes"],
-                ["name" => "Kids Fitness","slug" => "kids-fitness-classes"]
+                // ["name" => "Pre-natal Classes","slug" => "pre-natal-classes"],
+                // ["name" => "Kids Fitness","slug" => "kids-fitness-classes"]
             ];
 
             $cat['all'] = [

@@ -226,7 +226,7 @@ class Service extends \Basemodel{
                         $difference     =   $today_date->diff($end_date);
 
                         if($difference->days <= 15){
-                            $ratecardoffer['offer_text']    =  ($difference->d == 1) ? "Expires Today" : "Expires in ".$difference->days." days";
+                            $ratecardoffer['offer_text']    =  ($difference->d == 1) ? "Expires Today" : ($difference->d > 3 ? "Expires soon" : "Expires in ".$difference->days." days");
 
                         }
                         array_push($ratecardoffers,$ratecardoffer);
@@ -236,10 +236,12 @@ class Service extends \Basemodel{
 						if(isset($value['flags']['offerFor'])){
 							// Log::info("in offerFor");
 							switch($value['flags']['offerFor']){
-								case "student": $ratecardoffers[0]['offer_text']    =   "";
+								case "student": 
+												// $ratecardoffers[0]['offer_text']    =   "";
 												$ratecardoffers[0]['offer_icon']    =   "https://b.fitn.in/iconsv1/fitmania/hot_offer_vendor.png";	
 												break;
-								case "women": $ratecardoffers[0]['offer_text']    =   "";
+								case "women": 
+												// $ratecardoffers[0]['offer_text']    =   "";
 												$ratecardoffers[0]['offer_icon']    =   "https://b.fitn.in/iconsv1/fitmania/hot_offer_vendor.png";	
 												break;
 							}
