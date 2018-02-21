@@ -2757,6 +2757,7 @@ Class Utilities {
 
             if($agentPresentOrder){
                 $order->person_followingup = $agentPresentOrder->person_followingup;
+                $order->source_of_membership = (isset($agentPresentOrder->source_of_membership) && $agentPresentOrder->source_of_membership != "") ? $agentPresentOrder->source_of_membership : "";
                 $order->auto_associate_agent_date = time();
                 $order->update();
             }
