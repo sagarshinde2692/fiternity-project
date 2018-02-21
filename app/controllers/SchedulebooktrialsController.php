@@ -1809,12 +1809,13 @@ class SchedulebooktrialsController extends \BaseController {
             $campaign	 				       =	(isset($data['campaign']) && $data['campaign'] != '') ? $data['campaign'] : "";
             $otp	 					       =	(isset($data['otp']) && $data['otp'] != '') ? $data['otp'] : "";
 
-            $slot_times = 0;
-            $schedule_slot_start_time = 0;
-            $schedule_slot_end_time = 0;
-            $schedule_slot = 0;
-            $slot_date = 0;
-            $schedule_date_starttime = 0;
+            $slot_times = "";
+            $schedule_slot_start_time = "";
+            $schedule_slot_end_time = "";
+            $schedule_slot = "";
+            $slot_date = "";
+            $schedule_date_starttime = "";
+            $schedule_date_time = "";
 
             if(isset($data['schedule_slot'])){
 
@@ -2002,6 +2003,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $schedule_date_time			       =	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->toDateTimeString();
             }else{
                 $schedule_date				       =	date('Y-m-d 00:00:00', strtotime($data['schedule_date']));
+                $schedule_date_time				       =	date('Y-m-d 00:00:00', strtotime($data['schedule_date']));
             }
 
             $code						       =	random_numbers(5);

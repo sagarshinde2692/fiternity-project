@@ -135,11 +135,20 @@ class TransactionController extends \BaseController {
 
         $workout = array('vip_booktrials','3daystrial','booktrials','workout-session');
         if(in_array($data['type'],$workout)){
+            $service_category = Service::find($data['service_id'], ['servicecategory_id']);
 
-            $workout_rules = array(
-                'schedule_date'=>'required',
-                'schedule_slot'=>'required'
-            );
+            if($service_category['servicecategory_id'] == 65){
+                $workout_rules = array(
+                    'schedule_date'=>'required',
+                    // 'schedule_slot'=>'required'
+                );
+            }else{
+                $workout_rules = array(
+                    'schedule_date'=>'required',
+                    'schedule_slot'=>'required'
+                );
+            }
+
 
             $rules = array_merge($rules,$workout_rules);
         }
@@ -170,7 +179,7 @@ class TransactionController extends \BaseController {
         if(isset($data['manual_order']) && $data['manual_order']){
 
             $manual_order_rules = [
-                'service_category_id'=>'required',
+                ' = Service::find(_id'=>'required',
                 'validity'=>'required',
                 'validity_type'=>'required',
                 'amount'=>'required',
