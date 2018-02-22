@@ -1996,6 +1996,7 @@ class SchedulebooktrialsController extends \BaseController {
             $schedule_date_time			       =	Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->toDateTimeString();
 
             $code						       =	random_numbers(5);
+            $vendor_code                       =    random_numbers(5);
             $device_id					       = 	(Input::has('device_id') && Input::json()->get('device_id') != '') ? Input::json()->get('device_id') : "";
             $premium_session 			       =	(Input::json()->get('premium_session')) ? (boolean) Input::json()->get('premium_session') : false;
             $reminder_need_status 		       =	(Input::json()->get('reminder_need_status')) ? Input::json()->get('reminder_need_status') : '';
@@ -2115,6 +2116,7 @@ class SchedulebooktrialsController extends \BaseController {
                 'going_status'                  =>      1,
                 'going_status_txt'              =>      'going',
                 'code'                          =>      $code,
+                'vendor_code'                   =>      $vendor_code,
                 'device_id'                     =>      $device_id,
                 'booktrial_type'                =>      'auto',
                 'booktrial_actions'             =>      'call to confirm trial',
@@ -2896,6 +2898,7 @@ class SchedulebooktrialsController extends \BaseController {
             $schedule_date_time = Carbon::createFromFormat('d-m-Y g:i A', $schedule_date_starttime)->toDateTimeString();
 
             $code = random_numbers(5);
+            $vendor_code = random_numbers(5);
             $device_id = (isset($data['device_id']) && $data['device_id'] != '') ? $data['device_id'] : "";
             $premium_session = (isset($data['premium_session']) && $data['premium_session'] != '') ? (bool)$data['premium_session'] : false;
             $reminder_need_status = isset($data['reminder_need_status']) ? $data['reminder_need_status'] : '';
@@ -2995,6 +2998,7 @@ class SchedulebooktrialsController extends \BaseController {
                 'going_status'        =>      1,
                 'going_status_txt'    =>      'going',
                 'code'                =>      $code,
+                'vendor_code'         =>      $vendor_code,
                 'device_id'           =>      $device_id,
                 'booktrial_type'      =>      'auto',
                 'booktrial_actions'   =>      'call to confirm trial',
