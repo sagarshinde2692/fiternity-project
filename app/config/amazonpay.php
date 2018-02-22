@@ -7,6 +7,6 @@ return array(
         'base_url'      => 'amazonpay.amazon.in'
     ),
     'seller_id' => 'AS97SQY1JSHGO',
-    'timeout' => '180'
+    // 'timeout' => '180'
    
 );
