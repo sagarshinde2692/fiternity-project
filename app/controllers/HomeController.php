@@ -428,47 +428,38 @@ class HomeController extends BaseController {
 
             // $collections 			= 	Findercollection::active()->where('city_id', '=', intval($citydata['_id']))->orderBy('ordering')->get(array('name', 'slug', 'coverimage', 'ordering' ));
             $campaigns=  [];
-            $campaigns[] = [
-                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Webbanner-Fitnesssale.png',
-                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/mobbanner-fitnesssale.png',
-				'link'=>Config::get('app.website').'/'.$city.'/fitness?trials=1',
-				'title'=>'Sale',
-				'height'=>100,
-				'width'=>375,
-				'ratio'=>(float) number_format(100/375,2)
-            ];
-            $campaigns[] = [
-                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Rewards-banner-web-1.png',
-                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/mobbanner-rewards.png',
-                'link'=>Config::get('app.website').'/rewards',
-                'target'=>true,
-				'title'=>'Rewards with every purchase',
-				'height'=>100,
-				'width'=>375,
-				'ratio'=>(float) number_format(100/375,2)
-			];
             
             $campaigns[] = [
-                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/webbanner-sale60%25.png',
-                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/mobbanner-sale60%25.png',
-				'link'=>Config::get('app.website').'/'.$city.'/fitness?trials=1',
-				'title'=>'Fitness Sale',
-				'height'=>100,
-				'width'=>375,
-				'ratio'=>(float) number_format(100/375,2)
-			];
-
-			$campaigns[] = [
-                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Webbanner-Emi.png',
-                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Mobbanner-EMI.png',
-                'link'=>Config::get('app.website').'/emi',
-                'target'=>true,
-				'title'=>'Save with Fitness',
-				'height'=>100,
-				'width'=>375,
-				'ratio'=>(float) number_format(100/375,2)
+                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Fitness-Sale.png',
+                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Fitness-sale-MOB.png',
+                'link'=>Config::get('app.website').'/'.$city.'/fitness?trials=1',
+                'title'=>'Fitness Sale',
+                'height'=>100,
+                'width'=>375,
+                'ratio'=>(float) number_format(100/375,2)
             ];
 
+            $campaigns[] = [
+                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Rewards.png',
+                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Rewards-MOB.png',
+                'link'=>Config::get('app.website').'/rewards',
+                'target'=>true,
+                'title'=>'Rewards with every purchase',
+                'height'=>100,
+                'width'=>375,
+                'ratio'=>(float) number_format(100/375,2)
+            ];
+            
+            $campaigns[] = [
+                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Fitness-Sale.png',
+                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Fitness-sale-MOB.png',
+                'link'=>Config::get('app.website').'/groupmemberships',
+                'target'=>true,
+                'title'=>'Share your love for fitness',
+                'height'=>100,
+                'width'=>375,
+                'ratio'=>(float) number_format(100/375,2)
+            ];
 
             $homedata 	= 	array(
                 // 'popular_finders' => $popular_finders,
