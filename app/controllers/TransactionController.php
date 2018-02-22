@@ -16,7 +16,9 @@ use App\Services\Utilities as Utilities;
 use App\Services\CustomerReward as CustomerReward;
 use App\Services\CustomerInfo as CustomerInfo;
 use App\Notification\CustomerNotification as CustomerNotification;
+use App\AmazonPay\PWAINBackendSDK;
 use App\Services\Fitapi as Fitapi;
+use App\Services\Fitweb as Fitweb;
 
 class TransactionController extends \BaseController {
 
@@ -5241,6 +5243,142 @@ class TransactionController extends \BaseController {
 
         return Response::json($data);
 
+    }
+
+    public function generateAmazonUrl(){
+        $config = Config::get('amazonpay.config');
+        $client = new PWAINBackendSDK($config);
+        $post_params = Input::all();
+        Log::info(Input::all());
+        if(isset($post_params["order_id"])){
+            $order = Order::find((int) $post_params["order_id"] );
+            Log::info($order);
+            $val['orderTotalAmount'] = $order->amount;
+            $val['sellerOrderId'] = $order->txnid;
+        }else{
+            $val['orderTotalAmount'] = $post_params['orderTotalAmount'];
+        }
+        $val['orderTotalCurrencyCode'] = "INR";
+        $val['transactionTimeout'] = Config::get('amazonpay.timeout');
+        // For testing in sandbox mode, remove for production
+        $val['isSandbox'] = "true";
+        $returnUrl = Config::get('app.url')."/verifyamazonchecksum/1";
+        $redirectUrl = $client->getProcessPaymentUrl($val, $returnUrl);
+        return $redirectUrl;
+    }
+
+    public function generateAmazonChecksum(){
+        
+        $config = Config::get('amazonpay.config');
+        
+        $client = new PWAINBackendSDK($config);
+        // Request can be either GET or POST
+        $val = ($_POST);
+        // For testing in sandbox mode, remove for production
+        $val['isSandbox'] = "true";
+        $val['isSandbox'] = Config::get('app.amazonpay_isSandbox');
+        
+        unset($val['sellerId']);
+        $response = $client->generateSignatureAndEncrypt($val);
+        return $response;
+    }
+
+    public function verifyAmazonChecksum($website = false){ 
+
+
+        $config = Config::get('amazonpay.config');
+
+        $client = new PWAINBackendSDK($config);
+
+        // Request can be either GET or POST
+        Log::info(Input::all());
+
+        $val = Input::all();
+        Log::info("verifyAmazonChecksum post data ---------------------------------------------------------",$val);
+        unset($val['sellerId']);
+        $response = $client->verifySignature($val);
+        $val['isSignatureValid'] = $response ? 'true' : 'false';
+
+        $val['order_id'] = null;
+        
+        // $val['isSignatureValid'] = 'true';
+        
+        if($val['isSignatureValid'] == 'true'){
+
+            $order = Order::where('txnid',$val['sellerOrderId'])->first();
+
+            if($order){
+
+                $order->pg_type = "AMAZON";
+                $order->amazon_hash = $val["hash"] = getpayTMhash($order->toArray())['reverse_hash'];
+                $order->update();
+
+                $val['order_id'] = $order->_id;
+
+                $success_data = [
+                    'txnid'=>$order['txnid'],
+                    'amount'=>(int)$val["orderTotalAmount"],
+                    'status' => 'success',
+                    'hash'=> $val["hash"]
+                ];
+                if($website == "1"){
+                    $url = Config::get('app.website')."/paymentsuccess?". http_build_query($success_data, '', '&');
+                    Log::info(http_build_query($success_data, '', '&'));
+                    Log::info($url);
+                    return Redirect::to($url);
+                }else{
+                    $paymentSuccess = $this->fitweb->paymentSuccess($success_data);
+                }
+            }
+
+           /* $order->pg_type = "AMAZON";
+            $order->amazon_hash = $val["hash"] = getpayTMhash($order->toArray())['reverse_hash'];
+            $order->update();
+            
+            
+
+            Log::info("success_data--------------------------------------------------------------------",$success_data);
+            
+            $ch = curl_init();
+            
+            curl_setopt($ch, CURLOPT_URL,Config::get('app.website')."/paymentsuccessandroid");
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST"); 
+            curl_setopt($ch, CURLOPT_POSTFIELDS,json_encode($success_data));
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array(                                                                          
+                'Content-Type: application/json',                                                                                
+                'Content-Length: ' . strlen(json_encode($success_data)))                                                                       
+            );
+            $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+
+
+            Log::info("httpcode--------------------------------------------------------------------".$httpcode);
+
+
+
+            if($httpcode == 200){
+                $val['isSignatureValid'] = 'true';
+            }else{
+                $val['isSignatureValid'] = 'false';  
+            }*/
+            
+            //$resp = curl_exec ($ch);
+
+            //Log::info("Success api response--------------------------------------------------------------------");
+            //Log::info($resp);
+
+
+            if(isset($paymentSuccess['status']) && $paymentSuccess['status'] == 200){
+                $val['isSignatureValid'] = "true";
+            }else{
+                $val['isSignatureValid'] = "false";
+                
+            }
+        }
+
+        return Response::json($val);
     }
 
 }

@@ -37,7 +37,8 @@
 			"app/workers",
 			"app/responsemodels",
 			"app/facades",
-			"app/observers"
+			"app/observers",
+			"app/AmazonPay"
 		]
 	},
 	"scripts": {
