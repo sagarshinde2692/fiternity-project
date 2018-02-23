@@ -6511,7 +6511,9 @@ class SchedulebooktrialsController extends \BaseController {
         return 'success';
     }
 
-    public function verifyFitCode($vendor_code){
+    public function verifyFitCode($booktrial_id,$vendor_code){
+
+        $booktrial_id = (int) $booktrial_id;
 
         $response = array('status' => 400,'message' =>'Sorry! Cannot locate your booking');
 
@@ -6522,6 +6524,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         $booktrial = Booktrial::where('vendor_code',$vendor_code)
            ->where('customer_id',$customer_id)
+           ->where('_id',$booktrial_id)
            // ->where('schedule_date_time','>',new MongoDate(strtotime(date('Y-m-d 00:00:00'))))
            // ->where('schedule_date_time','<',new MongoDate(strtotime(date('Y-m-d 23:59:59'))))
            // ->orderBy('_id','desc')

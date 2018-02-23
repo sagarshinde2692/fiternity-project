@@ -1114,5 +1114,5 @@ Route::post('sharegroupid', 'CustomerController@shareGroupId');
 
 Route::get('markRoutedOrders', 'DebugController@markRoutedOrders');
 
-Route::get('verifyfitcode/{code}','SchedulebooktrialsController@verifyFitCode');
+Route::get('verifyfitcode/{booktrial_id}/{code}','SchedulebooktrialsController@verifyFitCode');
 Route::get('lostfitcode/{booktrial_id}','SchedulebooktrialsController@lostFitCode');
