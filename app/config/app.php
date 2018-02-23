@@ -13,6 +13,7 @@ return array(
 	// 'vendor_communication' => false,
 	// 'env' => 'stage',
 	// 'debug' => TRUE,
+	// 'amazonpay_isSandbox' => 'true',
 
 	//stage
 	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
@@ -24,6 +25,7 @@ return array(
 	// 'vendor_communication' => false,
 	// 'env' => 'stage',
 	// 'debug' => TRUE,
+	// 'amazonpay_isSandbox' => 'true',
 
 	//beta
 	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
@@ -35,6 +37,7 @@ return array(
 	// 'vendor_communication' => false,
 	// 'env' => 'stage',
 	// 'debug' => TRUE,
+	// 'amazonpay_isSandbox' => 'true',
 
 	//live
 	'new_search_url' =>'http://c1.fitternity.com/',
@@ -46,6 +49,7 @@ return array(
 	'vendor_communication' => true,
 	'env' => 'production',
 	'debug' => FALSE,
+	'amazonpay_isSandbox' => 'false',
 
 	'download_app_link' => 'https://go.onelink.me/I0CO?pid=techfitsms',//https://www.fitternity.com/downloadapp?source=fittech',
 

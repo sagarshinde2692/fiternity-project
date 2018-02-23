@@ -3898,4 +3898,58 @@ class HomeController extends BaseController {
         return CrashLog::orderBy('_id', 'desc')->take($count)->get();
     }
 
+    public function cityFitnessOptions($cache = true){
+
+        $data = $cache ? Cache::tags('citywise_finders')->has('citywise_finders') : false;
+
+        if(!$data){
+
+            Log::info("No cache citywise_finders");
+
+            $city_id = [1, 2, 3, 4, 5, 6, 8, 9];
+    
+            $cities = Finder::raw(function($collection) use ($city_id){
+    
+                $aggregate = [];
+    
+                $match = ['$match' => ['status' => "1", 'city_id' => ['$in'=> $city_id]]];
+    
+                $aggregate[] = $match;
+    
+                $group = array(
+                            '$group' => array(
+                                '_id' => '$city_id',
+                                'count' => array(
+                                    '$sum' => 1
+                                )
+                            )
+                        );
+    
+                $aggregate[] = $group;
+    
+                return $collection->aggregate($aggregate);
+    
+            });
+    
+            $cities = $cities['result'];
+            $data = [];
+            foreach($cities as $key => $city){
+
+                $city_name = City::find($city['_id'], ['name']);
+
+                if($city_name['name'] == 'gurgaon'){
+                    $city_name['name'] = 'gurugram';
+                }
+
+                $data[$city_name['name']] = ['city_name'=>ucwords($city_name['name']), 'finders_count'=>$city['count']];
+    
+            }
+
+            Cache::tags('citywise_finders')->put('citywise_finders',$data,Config::get('cache.cache_time'));
+        }
+
+        return Cache::tags('citywise_finders')->get('citywise_finders');
+
+    }
+
 }
