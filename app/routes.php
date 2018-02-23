@@ -1113,4 +1113,11 @@ Route::get('rewardReminderJan','DebugController@rewardReminderJan');
 Route::post('sharegroupid', 'CustomerController@shareGroupId');
 
 Route::get('markRoutedOrders', 'DebugController@markRoutedOrders');
+
 Route::get('cityfitnessoptions', 'HomeController@cityFitnessOptions');
+
+// AMAZON PAY 
+// Route::post('verifyamazonchecksum', 'TransactionController@verifyAmazonChecksum');
+Route::post('generateamazonchecksum', 'TransactionController@generateAmazonChecksum');
+Route::match(array('GET', 'POST'),'verifyamazonchecksum/{id?}', 'TransactionController@verifyAmazonChecksum');
+Route::post('generateamazonurl', 'TransactionController@generateAmazonUrl');
