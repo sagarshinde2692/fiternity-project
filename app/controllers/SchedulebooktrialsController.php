@@ -4759,6 +4759,14 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrial['amount'] = $booktrial['amount_finder'];
         }
 
+        $fit_code = false;
+
+        if(isset($booktrial['vendor_code'])){
+            $fit_code = true;
+        }
+        
+        array_set($booktrial,'fit_code', $fit_code);
+
         $responsedata   = ['booktrial' => $booktrial,  'message' => 'Booktrial Detail'];
         return Response::json($responsedata, 200);
 
