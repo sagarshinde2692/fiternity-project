@@ -3020,5 +3020,22 @@ Class Utilities {
 
     }
 
+    public function fitCode($data){
+
+        $fit_code = false;
+
+        if(isset($data['vendor_code'])){
+
+            $fit_code = true;
+
+            if(isset($data['post_trial_status']) && $data['post_trial_status'] != ""){
+                $fit_code = false;
+            }
+        }
+
+        return $fit_code;
+
+    }
+
 }
 
