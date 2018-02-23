@@ -1113,3 +1113,5 @@ Route::get('rewardReminderJan','DebugController@rewardReminderJan');
 Route::post('sharegroupid', 'CustomerController@shareGroupId');
 
 Route::get('markRoutedOrders', 'DebugController@markRoutedOrders');
+
+Route::get('verifyfitcode/{code}','SchedulebooktrialsController@verifyFitCode');

@@ -6502,7 +6502,7 @@ class SchedulebooktrialsController extends \BaseController {
         return 'success';
     }
 
-    public function verifyTrial($vendor_code){
+    public function verifyFitCode($vendor_code){
 
         $response = array('status' => 400,'message' =>'Sorry! Cannot locate your booking');
 
@@ -6526,7 +6526,6 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrial->update();
 
             $message = "Hi ".ucwords($booktrial['customer_name']).", your booking at ".ucwords($booktrial['finder_name'])." for ".strtoupper($booktrial['schedule_slot_start_time'])." on ".date('D, d M Y',strtotime($booktrial['schedule_date']))." has been successfully located";
-
 
             $response = [
                 'status' => 200,
