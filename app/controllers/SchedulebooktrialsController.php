@@ -4759,7 +4759,7 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrial['amount'] = $booktrial['amount_finder'];
         }
 
-        $booktrial['fitcode'] = $this->utilities->fitCode($booktrial);
+        $booktrial['fit_code'] = $this->utilities->fitCode($booktrial);
 
         $booktrial['fitcode_message'] = 'Punch the code and get 200 Fitcash';
         $booktrial['fitcode_button_text'] = 'Mark Attendance';

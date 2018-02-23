@@ -53,7 +53,7 @@ class CustomerController extends \BaseController {
     // Listing Schedule Tirals for Normal Customer
 	public function getAutoBookTrials($customeremail){
 
-		$selectfields 	=	array('finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt','service_id','what_i_should_carry','what_i_should_expect','origin','trial_attended_finder', 'type','amount','created_at', 'amount_finder','vendor_code');
+		$selectfields 	=	array('finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt','service_id','what_i_should_carry','what_i_should_expect','origin','trial_attended_finder', 'type','amount','created_at', 'amount_finder','vendor_code','post_trial_status');
 
 		if(isset($_GET['device_type']) && $_GET['device_type'] == "website"){
 
@@ -116,13 +116,7 @@ class CustomerController extends \BaseController {
 			array_set($trial, 'message', "");
 			array_set($trial, 'passed', $slot_datetime_pass_status);
 
-			$fit_code = false;
-
-			if(isset($trial['vendor_code'])){
-				$fit_code = true;
-			}
-
-			array_set($trial, 'fit_code', $fit_code);
+			$trial['fit_code'] = $this->utilities->fitCode($trial);
 
 			$trial['interaction_date'] = strtotime($trial['created_at']);
 
@@ -1993,13 +1987,7 @@ class CustomerController extends \BaseController {
 				$data['schedule_slot_start_time'] = strtoupper($data['schedule_slot_start_time']);
 			}
 
-			$fit_code = false;
-
-			if(isset($data['vendor_code'])){
-				$fit_code = true;
-			}
-			
-			array_set($data,'fit_code', $fit_code);
+			$data['fit_code'] = $this->utilities->fitCode($data);
 
 			$resp 	= 	array('status' => 200,'data' => $data);
 		}
