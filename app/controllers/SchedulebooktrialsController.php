@@ -4767,7 +4767,13 @@ class SchedulebooktrialsController extends \BaseController {
         
         array_set($booktrial,'fit_code', $fit_code);
 
-        $responsedata   = ['booktrial' => $booktrial,  'message' => 'Booktrial Detail'];
+        $responsedata   = [
+            'booktrial' => $booktrial,
+            'message' => 'Booktrial Detail',
+            'fitcode_message'=>'Punch the code and get 200 Fitcash',
+            'fitcode_button_text'=>'Mark Attendance'
+        ];
+        
         return Response::json($responsedata, 200);
 
     }
