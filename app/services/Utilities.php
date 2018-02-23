@@ -3033,6 +3033,8 @@ Class Utilities {
             }
         }
 
+        $fit_code = true;
+
         return $fit_code;
 
     }
