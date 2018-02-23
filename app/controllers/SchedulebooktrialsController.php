@@ -6514,7 +6514,8 @@ class SchedulebooktrialsController extends \BaseController {
     public function verifyFitCode($booktrial_id,$vendor_code){
 
         $booktrial_id = (int) $booktrial_id;
-
+        $vendor_code = (int) $vendor_code;
+        
         $response = array('status' => 400,'message' =>'Sorry! Cannot locate your booking');
 
         $jwt_token = Request::header('Authorization');
