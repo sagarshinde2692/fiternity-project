@@ -6531,7 +6531,45 @@ class SchedulebooktrialsController extends \BaseController {
 
             $booktrial->post_trial_status = 'attended';
             $booktrial->post_trial_initail_status = 'interested';
-            $booktrial->post_trial_status_updated_by_app = time();
+            $booktrial->post_trial_status_updated_by_fitcode = time();
+            $booktrial->update();
+
+            $message = "Hi ".ucwords($booktrial['customer_name']).", your booking at ".ucwords($booktrial['finder_name'])." for ".strtoupper($booktrial['schedule_slot_start_time'])." on ".date('D, d M Y',strtotime($booktrial['schedule_date']))." has been successfully located";
+
+            $response = [
+                'status' => 200,
+                'message' => $message,
+                'booktrial_id'=> (int)$booktrial['_id'],
+            ];
+        }
+
+        return Response::json($response,200);
+
+    }
+
+    public function lostFitCode($booktrial_id){
+
+        $booktrial_id = (int) $booktrial_id;
+
+        $response = array('status' => 400,'message' =>'Sorry! Cannot locate your booking');
+
+        $jwt_token = Request::header('Authorization');
+        $decoded = customerTokenDecode($jwt_token);
+
+        $customer_id = (int)$decoded->customer->_id;
+
+        $booktrial = Booktrial::where('_id',$booktrial_id)
+           ->where('customer_id',$customer_id)
+           ->where('schedule_date_time','>',new MongoDate(strtotime(date('Y-m-d 00:00:00'))))
+           ->where('schedule_date_time','<',new MongoDate(strtotime(date('Y-m-d 23:59:59'))))
+           ->orderBy('_id','desc')
+           ->first();
+
+        if(isset($booktrial)){
+
+            $booktrial->post_trial_status = 'attended';
+            $booktrial->post_trial_initail_status = 'interested';
+            $booktrial->post_trial_status_updated_by_lostfitcode = time();
             $booktrial->update();
 
             $message = "Hi ".ucwords($booktrial['customer_name']).", your booking at ".ucwords($booktrial['finder_name'])." for ".strtoupper($booktrial['schedule_slot_start_time'])." on ".date('D, d M Y',strtotime($booktrial['schedule_date']))." has been successfully located";
