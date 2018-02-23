@@ -461,7 +461,7 @@ class HomeController extends BaseController {
                 'ratio'=>(float) number_format(100/375,2)
             ];
 
-            $campaigns[] = [
+            /*$campaigns[] = [
                 'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Webbanner-Emi.png',
                 'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Mobbanner-EMI.png',
                 'link'=>Config::get('app.website').'/emi',
@@ -470,7 +470,7 @@ class HomeController extends BaseController {
                 'height'=>100,
                 'width'=>375,
                 'ratio'=>(float) number_format(100/375,2)
-            ];
+            ];*/
 
             $homedata 	= 	array(
                 // 'popular_finders' => $popular_finders,
