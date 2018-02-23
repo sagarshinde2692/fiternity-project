@@ -451,11 +451,22 @@ class HomeController extends BaseController {
             ];
             
             $campaigns[] = [
-                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Fitness-Sale.png',
-                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Fitness-sale-MOB.png',
+                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Fitness-Group.png',
+                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Fitness-Group-MOB.png',
                 'link'=>Config::get('app.website').'/groupmemberships',
                 'target'=>true,
                 'title'=>'Share your love for fitness',
+                'height'=>100,
+                'width'=>375,
+                'ratio'=>(float) number_format(100/375,2)
+            ];
+
+            $campaigns[] = [
+                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Webbanner-Emi.png',
+                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Mobbanner-EMI.png',
+                'link'=>Config::get('app.website').'/emi',
+                'target'=>true,
+                'title'=>'Save with Fitness',
                 'height'=>100,
                 'width'=>375,
                 'ratio'=>(float) number_format(100/375,2)
