@@ -5261,7 +5261,7 @@ class TransactionController extends \BaseController {
         $val['orderTotalCurrencyCode'] = "INR";
         $val['transactionTimeout'] = Config::get('amazonpay.timeout');
         // For testing in sandbox mode, remove for production
-        // $val['isSandbox'] = Config::get('app.amazonpay_isSandbox');
+        $val['isSandbox'] = Config::get('app.amazonpay_isSandbox');
         $returnUrl = Config::get('app.url')."/verifyamazonchecksum/1";
         $redirectUrl = $client->getProcessPaymentUrl($val, $returnUrl);
         return $redirectUrl;
@@ -5276,7 +5276,7 @@ class TransactionController extends \BaseController {
         $val = ($_POST);
         // For testing in sandbox mode, remove for production
         // $val['isSandbox'] = "true";
-        // $val['isSandbox'] = Config::get('app.amazonpay_isSandbox');
+        $val['isSandbox'] = Config::get('app.amazonpay_isSandbox');
         
         unset($val['sellerId']);
         $response = $client->generateSignatureAndEncrypt($val);

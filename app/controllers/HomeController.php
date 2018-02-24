@@ -430,7 +430,7 @@ class HomeController extends BaseController {
             $campaigns=  [];
             
             $campaigns[] = [
-                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Fitness-Sale.png',
+                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/fit-sale-web.png',
                 'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Fitness-sale-MOB.png',
                 'link'=>Config::get('app.website').'/'.$city.'/fitness?trials=1',
                 'title'=>'Fitness Sale',
@@ -440,7 +440,7 @@ class HomeController extends BaseController {
             ];
 
             $campaigns[] = [
-                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Rewards.png',
+                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/new-reward-web.png',
                 'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Rewards-MOB.png',
                 'link'=>Config::get('app.website').'/rewards',
                 'target'=>true,
@@ -451,8 +451,8 @@ class HomeController extends BaseController {
             ];
             
             $campaigns[] = [
-                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Fitness-Group.png',
-                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Fitness-Group-MOB.png',
+                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/vgroup-web.png',
+                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/vgroup-mob.png',
                 'link'=>Config::get('app.website').'/groupmemberships',
                 'target'=>true,
                 'title'=>'Share your love for fitness',
@@ -461,7 +461,7 @@ class HomeController extends BaseController {
                 'ratio'=>(float) number_format(100/375,2)
             ];
 
-            /*$campaigns[] = [
+            $campaigns[] = [
                 'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Webbanner-Emi.png',
                 'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Mobbanner-EMI.png',
                 'link'=>Config::get('app.website').'/emi',
@@ -470,7 +470,7 @@ class HomeController extends BaseController {
                 'height'=>100,
                 'width'=>375,
                 'ratio'=>(float) number_format(100/375,2)
-            ];*/
+            ];
 
             $homedata 	= 	array(
                 // 'popular_finders' => $popular_finders,
