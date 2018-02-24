@@ -4267,7 +4267,7 @@ class TransactionController extends \BaseController {
 
             $errorMessage =  "Coupon is either not valid or expired";
 
-            if((isset($resp['fitternity_only_coupon']) && $resp['fitternity_only_coupon']) || (isset($resp['vendor_exclusive']) && $resp['vendor_exclusive'])){
+            if((isset($resp['fitternity_only_coupon']) && $resp['fitternity_only_coupon']) || (isset($resp['vendor_exclusive']) && $resp['vendor_exclusive']) || (isset($resp['app_only']) && $resp['app_only'])){
                 $errorMessage =  $resp['error_message'];
             }
 
@@ -5261,7 +5261,7 @@ class TransactionController extends \BaseController {
         $val['orderTotalCurrencyCode'] = "INR";
         $val['transactionTimeout'] = Config::get('amazonpay.timeout');
         // For testing in sandbox mode, remove for production
-        // $val['isSandbox'] = Config::get('app.amazonpay_isSandbox');
+        $val['isSandbox'] = Config::get('app.amazonpay_isSandbox');
         $returnUrl = Config::get('app.url')."/verifyamazonchecksum/1";
         $redirectUrl = $client->getProcessPaymentUrl($val, $returnUrl);
         return $redirectUrl;
@@ -5276,7 +5276,7 @@ class TransactionController extends \BaseController {
         $val = ($_POST);
         // For testing in sandbox mode, remove for production
         // $val['isSandbox'] = "true";
-        // $val['isSandbox'] = Config::get('app.amazonpay_isSandbox');
+        $val['isSandbox'] = Config::get('app.amazonpay_isSandbox');
         
         unset($val['sellerId']);
         $response = $client->generateSignatureAndEncrypt($val);
