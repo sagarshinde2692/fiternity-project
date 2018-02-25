@@ -3225,7 +3225,7 @@ class HomeController extends BaseController {
             "title"=>"The Line Up",
             "venue"=>"Sun-N-Sand, Juhu",
             "address"=>"39, Juhu Beach, Mumbai, Maharashtra 400049",
-            "date"=>"16th December Saturday",
+            "date"=>"11th March Sunday",
             "time"=>"8:00 AM to 11:30 AM",
             "items"=>[
                 [
