@@ -471,6 +471,31 @@ class RewardofferController extends BaseController {
                                         }
                                     }
 
+                                    if(in_array($finder_id,[13219,13221]) && $amount <= 1000){
+
+                                        $pos = strpos($rewards_value['title'],'(Kit B)');
+
+                                        if($pos === false){
+
+                                            $reward_type_info = 'fitness_kit';
+
+                                            $reward_data['contents'] = ['Cool-Water Bottle'];
+                                            $reward_data['payload_amount'] = 300;
+                                            $reward_data['image'] = 'https://b.fitn.in/gamification/reward/goodies/productskit/bottle.png';
+                                            $reward_data['gallery'] = [];
+
+                                        }else{
+
+                                            $reward_type_info = 'fitness_kit_2';
+
+                                            $reward_data['contents'] = ['Waterproof Gym Bag'];
+                                            $reward_data['payload_amount'] = 850;
+                                            $reward_data['image'] = 'https://b.fitn.in/gamification/reward/goodies/productskit/gymbag.png';
+                                            $reward_data['gallery'] = [];
+                                        }
+                                        
+                                    }
+
                                 }
 
                                 $array = [];
