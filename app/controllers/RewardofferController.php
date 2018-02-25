@@ -768,6 +768,17 @@ class RewardofferController extends BaseController {
 
         }
 
+        if(!empty($rewards)){
+
+            foreach ($rewards as $reward_key => $reward_value) {
+
+                if($reward_value['reward_type'] == 'fitness_kit' && isset($reward_value['payload']['amount']) && $reward_value['payload']['amount'] == 0){
+                    unset($rewards[$reward_key]);
+                }
+            }
+
+        }
+
         $cashback = null;
         
         $customerReward     =   new CustomerReward();
