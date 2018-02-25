@@ -102,6 +102,8 @@ Class CustomerReward {
                     $service = \Service::find((int)$order->service_id);
                     $service_category_id = null;
 
+                    $finder_id = (int)$order['finder_id'];
+
                     if($service){
 
                         $service_category_id = (int)$service->servicecategory_id;
@@ -168,6 +170,27 @@ Class CustomerReward {
                                     break;
                                 }
                             }
+                        }
+
+                        if(in_array($finder_id,[13219,13221]) && $amount <= 1000){
+
+                            $pos = strpos($reward['title'],'(Kit B)');
+
+                            if($pos === false){
+
+                                $reward_type_info = 'fitness_kit';
+
+                                $reward['contents'] = ['Cool-Water Bottle'];
+                                $reward['image'] = 'https://b.fitn.in/gamification/reward/goodies/productskit/bottle.png';
+
+                            }else{
+
+                                $reward_type_info = 'fitness_kit_2';
+
+                                $reward['contents'] = ['Waterproof Gym Bag'];
+                                $reward['image'] = 'https://b.fitn.in/gamification/reward/goodies/productskit/gymbag.png';
+                            }
+                            
                         }
 
                     }
