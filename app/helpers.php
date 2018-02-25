@@ -238,8 +238,8 @@ if(!function_exists('citywise_category')){
                 ["name" => "Yoga","slug" => "yoga-classes"],
                 ["name" => "Cross Functional Training","slug" => "functional-training"],
                 ["name" => "Aerobics","slug" => "aerobics"],
-                // ["name" => "Dance","slug" => "dance-classes"],
-                // ["name" => "Pilates","slug" => "pilates-classes"],
+                ["name" => "Dance","slug" => "dance-classes"],
+                ["name" => "Pilates","slug" => "pilates-classes"]
                 // ["name" => "Spinning And Indoor Cycling","slug" => "spinning-classes"],
                 // ["name" => "Healthy Tiffins","slug" => "healthy-tiffins"],
                 // ["name" => "Personal Trainers","slug" => "personal-trainers"],
