@@ -455,7 +455,7 @@ class RewardofferController extends BaseController {
                                         }
                                     }
 
-                                    if(!$reward_data_flag){
+                                    if(!$reward_data_flag && $amount >= 2000){
 
                                         foreach ($fitness_kit_array as $data_key => $data_value) {
 
