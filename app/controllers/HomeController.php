@@ -3182,7 +3182,7 @@ class HomeController extends BaseController {
         switch ($city) {
             case 'mumbai':
                 $data["upcoming_party"] = [
-                    "title"=>"16th December, Sun-N-Sand<br>Juhu",
+                    "title"=>"11th March, Sun-N-Sand<br>Juhu",
                     "image"=>"https://b.fitn.in/global/toi/mfp/website_banner/mfpcover.jpg"
                 ];
                 break;
