@@ -1271,7 +1271,8 @@ Class CustomerReward {
                 return $resp;
             }
             if(isset($coupon["app_only"]) && $coupon["app_only"]){
-                if(!isset($_GET['device_type']) || !in_array($_GET['device_type'], ['ios', 'android'])){
+                $device = Request::header('Device-Type');
+                if(!$device || !in_array($device, ['ios', 'android'])){
                     $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"Coupon valid only on app", "app_only"=>true);
                     return $resp;
                 }
