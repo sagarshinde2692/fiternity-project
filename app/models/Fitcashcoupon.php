@@ -11,5 +11,10 @@
 class Fitcashcoupon extends \Basemodel {
 
 	protected $collection = "fitcashcoupons";
+
+	public function setIdAttribute($value){
+		
+		$this->attributes['_id'] = $value;
+	}
 	
 }
