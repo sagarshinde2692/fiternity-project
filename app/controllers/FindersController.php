@@ -2357,6 +2357,54 @@ class FindersController extends \BaseController {
 		}
 	}
 
+	public function getMembershipRatecardByServiceId($service_id){
+
+		$service_id = (int) $service_id;
+
+		$service = Service::find($service_id);
+
+		$response = [
+			'status'=>200,
+			'message'=>'Success',
+			'ratecards'=>[]
+		];
+
+		if($service){
+
+			$finder_id = (int)$service->finder_id;
+
+			$getTrialSchedule = $this->getTrialSchedule($finder_id);
+
+			$ratecards = [];
+
+			foreach ($getTrialSchedule as $key => $value) {
+
+				if($value['_id'] == $service_id){
+
+					$ratecards = $value['ratecard'];
+
+					foreach ($ratecards as $ratecard_key => $ratecard_value) {
+
+						if($ratecard_value['direct_payment_enable'] == '0'){
+
+							unset($ratecards[$ratecard_key]);
+						}
+
+					}
+
+					$ratecards = array_values($ratecards);
+
+					break;
+				}
+
+			}
+		
+			$response['ratecards'] = $ratecards;
+		}
+
+		return Response::json($response,200);
+
+	}
 
 	public function serviceMembership($finder_id){
 

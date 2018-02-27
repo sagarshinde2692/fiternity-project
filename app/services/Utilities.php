@@ -3039,5 +3039,70 @@ Class Utilities {
 
     }
 
+    public function customerHome(){
+
+        $decoded = decode_customer_token();
+
+        $customer_id = $decoded->customer->_id;
+
+        $response = [];
+        $stage = '';
+        $booktrial = false;
+
+        $before_trial = [
+            'from_date_time' => date('Y-m-d H:i:s',strtotime("-1 hours")),
+            'to_date_time'=>date('Y-m-d H:i:s',strtotime("+1 hours")),
+            'stage'=>'before_trial'
+        ];
+
+        $booktrial = \Booktrial::where('customer_id',$customer_id)
+            ->where('going_status_txt','!=','cancel')
+            ->where('booktrial_type','auto')
+            ->where('schedule_date_time','>=',new \MongoDate(strtotime($before_trial['from_date_time'])))
+            ->where('schedule_date_time','<=',new \MongoDate(strtotime($before_trial['to_date_time'])))
+            ->orderBy('schedule_date_time', 'asc')
+            ->first();
+
+        if($booktrial){
+            $stage = 'before_trial';
+        }
+
+
+        if($stage == ''){
+
+            $booktrial = false;
+
+            $after_trial = [
+                'from_date_time' => date('Y-m-d H:i:s',strtotime("+1 hours")),
+                'to_date_time'=>date('Y-m-d H:i:s',strtotime("+5 hours")),
+                'stage'=>'after_trial'
+            ];
+
+            $booktrial = \Booktrial::where('customer_id',$customer_id)
+                ->where('going_status_txt','!=','cancel')
+                ->where('booktrial_type','auto')
+                ->where('schedule_date_time','>=',new \MongoDate(strtotime($after_trial['from_date_time'])))
+                ->where('schedule_date_time','<=',new \MongoDate(strtotime($after_trial['to_date_time'])))
+                ->orderBy('schedule_date_time', 'asc')
+                ->first();
+
+            if($booktrial){
+                $stage = 'after_trial';
+            }
+        }
+
+        if($booktrial && $stage != ""){
+
+            $response['stage'] = $stage;
+            $response['fit_code_status'] = $this->fitCode($booktrial->toArray());
+            $response['booktrial_id'] = (int)$booktrial['_id'];
+            $response['ratecard_url'] = Config::get('app.url').'/getmembershipratecardbyserviceid/'.$booktrial['service_id'];
+
+        }
+
+        return $response;
+
+    }
+
 }
 

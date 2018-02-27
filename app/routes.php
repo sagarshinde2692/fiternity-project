@@ -1116,3 +1116,4 @@ Route::get('markRoutedOrders', 'DebugController@markRoutedOrders');
 
 Route::get('verifyfitcode/{booktrial_id}/{code}','SchedulebooktrialsController@verifyFitCode');
 Route::get('lostfitcode/{booktrial_id}','SchedulebooktrialsController@lostFitCode');
+Route::get('getmembershipratecardbyserviceid/{service_id}','FindersController@getMembershipRatecardByServiceId');

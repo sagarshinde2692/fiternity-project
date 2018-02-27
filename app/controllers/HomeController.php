@@ -475,7 +475,17 @@ class HomeController extends BaseController {
             Cache::tags('home_by_city_v4')->put($city, $homedata, Config::get('cache.cache_time'));
         }
 
-        return Response::json(Cache::tags('home_by_city_v4')->get($city));
+        $homedata = Cache::tags('home_by_city_v4')->get($city);
+
+        $homedata['customer_home'] = null;
+
+        $jwt_token = Request::header('Authorization');
+
+        if($jwt_token){
+            $homedata['customer_home'] = $this->utilities->customerHome();
+        }
+
+        return Response::json($homedata);
     }
 
 
