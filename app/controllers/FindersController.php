@@ -396,10 +396,12 @@ class FindersController extends \BaseController {
 					$finder['associate_finder'] = $associate_finder;
 				}
 				// End Check
-
+				$traction_exists = false;
 				foreach($finderarr['services'] as &$service){
 					if(!isset($service['traction']) || !isset($service['traction']['sales']) || !isset($service['traction']['trials'])){
 						$service['traction'] = array('trials'=>0, 'sales'=>0);
+					}else{
+						$traction_exists = true;
 					}
 				}
 
@@ -407,8 +409,9 @@ class FindersController extends \BaseController {
 				{
 					return $a['traction']['sales']+$a['traction']['trials']*0.8 <= $b['traction']['sales']+$b['traction']['trials']*0.8;
 				}
-
-				usort($finderarr['services'], "cmp");
+				if($traction_exists){
+					usort($finderarr['services'], "cmp");
+				}
 				
 				$category_slug_services = array();
 				$category_slug_services = array_where($finderarr['services'], function($key, $value) use ($category_slug){
@@ -3223,12 +3226,21 @@ class FindersController extends \BaseController {
 					
 					$category_id = Servicecategory::where('slug', $category_slug)->where('parent_id', 0)->first(['_id']);
 					;
+
+					$traction_exists = false;
+					
+					foreach($data['finder']['services'] as $service){
+						if($service['traction']['sales'] > 0 || $service['traction']['trials'] > 0){
+							$traction_exists = true;
+						}
+					}
 					function cmp($a, $b)
 		            {
 		            	return $a['traction']['sales']+$a['traction']['trials']*0.8 <= $b['traction']['sales']+$b['traction']['trials']*0.8;
 		            }
-
-		        	usort($data['finder']['services'], "cmp");
+					if($traction_exists){
+						usort($data['finder']['services'], "cmp");
+					}
 
 					if($location_id){
 						$location_id = intval($location_id);

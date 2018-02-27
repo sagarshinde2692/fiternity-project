@@ -238,8 +238,8 @@ if(!function_exists('citywise_category')){
                 ["name" => "Yoga","slug" => "yoga-classes"],
                 ["name" => "Cross Functional Training","slug" => "functional-training"],
                 ["name" => "Aerobics","slug" => "aerobics"],
-                // ["name" => "Dance","slug" => "dance-classes"],
-                // ["name" => "Pilates","slug" => "pilates-classes"],
+                ["name" => "Dance","slug" => "dance-classes"],
+                ["name" => "Pilates","slug" => "pilates-classes"]
                 // ["name" => "Spinning And Indoor Cycling","slug" => "spinning-classes"],
                 // ["name" => "Healthy Tiffins","slug" => "healthy-tiffins"],
                 // ["name" => "Personal Trainers","slug" => "personal-trainers"],
@@ -2812,7 +2812,7 @@ if (!function_exists(('getRegId'))){
 if (!function_exists(('isNotInoperationalDate'))){
     function isNotInoperationalDate($date, $city_id=null, $slot=null, $findercategory_id=null){
 
-        $inoperational_dates = ['2017-12-25','2018-01-26'];
+        $inoperational_dates = ['2018-03-02'];
         if(in_array($date, $inoperational_dates)){
             return false;
         }

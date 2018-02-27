@@ -455,7 +455,7 @@ class RewardofferController extends BaseController {
                                         }
                                     }
 
-                                    if(!$reward_data_flag){
+                                    if(!$reward_data_flag && $amount >= 2000){
 
                                         foreach ($fitness_kit_array as $data_key => $data_value) {
 
@@ -469,6 +469,31 @@ class RewardofferController extends BaseController {
                                                 break;
                                             }
                                         }
+                                    }
+
+                                    if(in_array($finder_id,[13219,13221]) && $amount <= 1000){
+
+                                        $pos = strpos($rewards_value['title'],'(Kit B)');
+
+                                        if($pos === false){
+
+                                            $reward_type_info = 'fitness_kit';
+
+                                            $reward_data['contents'] = ['Cool-Water Bottle'];
+                                            $reward_data['payload_amount'] = 300;
+                                            $reward_data['image'] = 'https://b.fitn.in/gamification/reward/goodies/productskit/bottle.png';
+                                            $reward_data['gallery'] = [];
+
+                                        }else{
+
+                                            $reward_type_info = 'fitness_kit_2';
+
+                                            $reward_data['contents'] = ['Waterproof Gym Bag'];
+                                            $reward_data['payload_amount'] = 850;
+                                            $reward_data['image'] = 'https://b.fitn.in/gamification/reward/goodies/productskit/gymbag.png';
+                                            $reward_data['gallery'] = [];
+                                        }
+                                        
                                     }
 
                                 }
@@ -739,6 +764,17 @@ class RewardofferController extends BaseController {
 
                 $rewards[$fitness_kit_1] = $data_fitness_kit_2;
                 $rewards[$fitness_kit_2] = $data_fitness_kit_1;
+            }
+
+        }
+
+        if(!empty($rewards)){
+
+            foreach ($rewards as $reward_key => $reward_value) {
+
+                if($reward_value['reward_type'] == 'fitness_kit' && isset($reward_value['payload']['amount']) && $reward_value['payload']['amount'] == 0){
+                    unset($rewards[$reward_key]);
+                }
             }
 
         }

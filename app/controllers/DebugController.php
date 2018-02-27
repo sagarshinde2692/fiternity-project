@@ -5615,5 +5615,28 @@ public function yes($msg){
 
 	}
 
+	public function createFitcashCoupons(){
+		$data = Input::json()->all();
+		$codes = $data['codes'];
+		$valid_till = $data['valid_till'];
+		$expiry = $data['expiry'];
+		$amount = $data['amount'];
+		$type = $data['type'];
+		$quantity = $data['quantity'];
+		foreach($codes as $code){
+			$fitcash_coupon = new Fitcashcoupon();
+			$fitcash_coupon->code = strtolower($code);
+			$fitcash_coupon->valid_till = $valid_till;
+			$fitcash_coupon->expiry = $expiry;
+			$fitcash_coupon->amount = $amount;
+			$fitcash_coupon->type = $type;
+			$fitcash_coupon->quantity = $quantity;
+			$fitcash_coupon->save();
+			Log::info($fitcash_coupon);
+			
+		}
+
+	}
+
     
 }

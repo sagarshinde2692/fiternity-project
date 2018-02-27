@@ -102,6 +102,8 @@ Class CustomerReward {
                     $service = \Service::find((int)$order->service_id);
                     $service_category_id = null;
 
+                    $finder_id = (int)$order['finder_id'];
+
                     if($service){
 
                         $service_category_id = (int)$service->servicecategory_id;
@@ -156,7 +158,7 @@ Class CustomerReward {
                             }
                         }
 
-                        if(!$reward_data_flag){
+                        if(!$reward_data_flag && $amount >= 2000){
 
                             foreach ($fitness_kit_array as $data_key => $data_value) {
 
@@ -168,6 +170,27 @@ Class CustomerReward {
                                     break;
                                 }
                             }
+                        }
+
+                        if(in_array($finder_id,[13219,13221]) && $amount <= 1000){
+
+                            $pos = strpos($reward['title'],'(Kit B)');
+
+                            if($pos === false){
+
+                                $reward_type_info = 'fitness_kit';
+
+                                $reward['contents'] = ['Cool-Water Bottle'];
+                                $reward['image'] = 'https://b.fitn.in/gamification/reward/goodies/productskit/bottle.png';
+
+                            }else{
+
+                                $reward_type_info = 'fitness_kit_2';
+
+                                $reward['contents'] = ['Waterproof Gym Bag'];
+                                $reward['image'] = 'https://b.fitn.in/gamification/reward/goodies/productskit/gymbag.png';
+                            }
+                            
                         }
 
                     }
@@ -1246,6 +1269,13 @@ Class CustomerReward {
             if(isset($coupon["tickets"]) && !$ticket){
                 $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"Coupon not valid for this transaction");
                 return $resp;
+            }
+            if(isset($coupon["app_only"]) && $coupon["app_only"]){
+                $device = Request::header('Device-Type');
+                if(!$device || !in_array($device, ['ios', 'android'])){
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"Coupon valid only on app", "app_only"=>true);
+                    return $resp;
+                }
             }
             if(isset($coupon['vendor_exclusive']) && $coupon['vendor_exclusive']){
                 $vendor_coupon = true;

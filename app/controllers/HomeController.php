@@ -430,7 +430,7 @@ class HomeController extends BaseController {
             $campaigns=  [];
             
             $campaigns[] = [
-                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Fitness-Sale.png',
+                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/fit-sale-web.png',
                 'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Fitness-sale-MOB.png',
                 'link'=>Config::get('app.website').'/'.$city.'/fitness?trials=1',
                 'title'=>'Fitness Sale',
@@ -440,7 +440,7 @@ class HomeController extends BaseController {
             ];
 
             $campaigns[] = [
-                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Rewards.png',
+                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/new-reward-web.png',
                 'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Rewards-MOB.png',
                 'link'=>Config::get('app.website').'/rewards',
                 'target'=>true,
@@ -451,8 +451,8 @@ class HomeController extends BaseController {
             ];
             
             $campaigns[] = [
-                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Fitness-Group.png',
-                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Fitness-Group-MOB.png',
+                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/vgroup-web.png',
+                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/vgroup-mob.png',
                 'link'=>Config::get('app.website').'/groupmemberships',
                 'target'=>true,
                 'title'=>'Share your love for fitness',
@@ -461,7 +461,7 @@ class HomeController extends BaseController {
                 'ratio'=>(float) number_format(100/375,2)
             ];
 
-            /*$campaigns[] = [
+            $campaigns[] = [
                 'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Webbanner-Emi.png',
                 'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Mobbanner-EMI.png',
                 'link'=>Config::get('app.website').'/emi',
@@ -470,7 +470,7 @@ class HomeController extends BaseController {
                 'height'=>100,
                 'width'=>375,
                 'ratio'=>(float) number_format(100/375,2)
-            ];*/
+            ];
 
             $homedata 	= 	array(
                 // 'popular_finders' => $popular_finders,
@@ -3230,7 +3230,7 @@ class HomeController extends BaseController {
             "items"=>[
                 [
                     "title"=>"Pilates",
-                    "description"=>"A combination of core exercises for toning up.",
+                    "description"=>"A combination of poses and postures to gain body strength, toning and flexibility",
                     "calories_burn"=>"Burn 250 Calories",
                     "image"=>"https://b.fitn.in/global/toi/mfp/line_up/pilatesfinal.jpg",
                     "trainer"=>"",
@@ -3238,9 +3238,9 @@ class HomeController extends BaseController {
                 ],
                 [
                     "title"=>"Piloxing",
-                    "description"=>"A sequence of fluid postures where the movements are primal, athletic & imitate the locomotive patterns of animals.",
+                    "description"=>"A creative mix between Pilates and Boxing moves in a high-spirited interval workout",
                     "calories_burn"=>"Burn 700 Calories",
-                    "image"=>"https://b.fitn.in/global/toi/mfp/december/mum/decmum_yog.png",
+                    "image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/zumbafinal.jpg",
                     "trainer"=>"With Mahek Shah",
                     "time"=>"8:15 AM - 8:45 AM"
                 ],
@@ -3253,22 +3253,23 @@ class HomeController extends BaseController {
                     "time"=>"9:00 AM - 9:30 AM"
                 ],
                 [
-                    "title"=>"Zumba",
-                    "description"=>"A high energy workout on latin american and bollywood music. Best for calorie and fat burning.",
-                    "calories_burn"=>"Burn 700 Calories",
-                    "image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/zumbafinal.jpg",
-                    "trainer"=>"",
+
+                    "title"=>"Aqua Zumba",
+                    "description"=>"A low-impact aquatic yoga poses performed in warm water to gain strength & balance.",
+                    "calories_burn"=>"Burn 800 Calories",
+                    "image"=>"https://cdn.fitn.in/Mfp-delhi/aqua-zumba.jpg",
+                    "trainer"=>"With Sucheta Pal",
                     "time"=>"9:45 AM - 10:15 AM"
-                ], 
+                ],
                 [
 
                     "title"=>"Aqua Zumba",
                     "description"=>"A low-impact aquatic yoga poses performed in warm water to gain strength & balance.",
                     "calories_burn"=>"Burn 800 Calories",
                     "image"=>"https://cdn.fitn.in/Mfp-delhi/aqua-zumba.jpg",
-                    "trainer"=>"",
+                    "trainer"=>"With Sucheta Pal",
                     "time"=>"10:30 AM - 11:00 AM"
-                ],
+                ]
             ]
 
         ];

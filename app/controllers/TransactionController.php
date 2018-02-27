@@ -32,6 +32,7 @@ class TransactionController extends \BaseController {
     protected $membership_array;
     protected $customernotification;
     protected $fitapi;
+    protected $fitweb;
 
     public function __construct(
         CustomerMailer $customermailer,
@@ -42,7 +43,8 @@ class TransactionController extends \BaseController {
         Utilities $utilities,
         CustomerReward $customerreward,
         CustomerNotification $customernotification,
-        Fitapi $fitapi
+        Fitapi $fitapi,
+        Fitweb $fitweb
     ) {
         parent::__construct();
         $this->customermailer       =   $customermailer;
@@ -54,6 +56,7 @@ class TransactionController extends \BaseController {
         $this->customerreward       =   $customerreward;
         $this->customernotification =   $customernotification;
         $this->fitapi               =   $fitapi;
+        $this->fitweb               =   $fitweb;
         $this->ordertypes           =   array('memberships','booktrials','workout-session','healthytiffintrail','healthytiffinmembership','3daystrial','vip_booktrials', 'events');
         $this->appOfferDiscount     =   Config::get('app.app.discount');
         $this->appOfferExcludedVendors 				= Config::get('app.app.discount_excluded_vendors');
@@ -4267,7 +4270,7 @@ class TransactionController extends \BaseController {
 
             $errorMessage =  "Coupon is either not valid or expired";
 
-            if((isset($resp['fitternity_only_coupon']) && $resp['fitternity_only_coupon']) || (isset($resp['vendor_exclusive']) && $resp['vendor_exclusive'])){
+            if((isset($resp['fitternity_only_coupon']) && $resp['fitternity_only_coupon']) || (isset($resp['vendor_exclusive']) && $resp['vendor_exclusive']) || (isset($resp['app_only']) && $resp['app_only'])){
                 $errorMessage =  $resp['error_message'];
             }
 
@@ -5259,10 +5262,11 @@ class TransactionController extends \BaseController {
             $val['orderTotalAmount'] = $post_params['orderTotalAmount'];
         }
         $val['orderTotalCurrencyCode'] = "INR";
-        $val['transactionTimeout'] = Config::get('amazonpay.timeout');
+        // $val['transactionTimeout'] = Config::get('amazonpay.timeout');
         // For testing in sandbox mode, remove for production
-        $val['isSandbox'] = "true";
+        // $val['isSandbox'] = Config::get('app.amazonpay_isSandbox');
         $returnUrl = Config::get('app.url')."/verifyamazonchecksum/1";
+        // $returnUrl = "http://ar-deepthi.com/amazonpay/thankyou.php";
         $redirectUrl = $client->getProcessPaymentUrl($val, $returnUrl);
         return $redirectUrl;
     }
@@ -5275,8 +5279,8 @@ class TransactionController extends \BaseController {
         // Request can be either GET or POST
         $val = ($_POST);
         // For testing in sandbox mode, remove for production
-        $val['isSandbox'] = "true";
-        $val['isSandbox'] = Config::get('app.amazonpay_isSandbox');
+        // $val['isSandbox'] = "true";
+        // $val['isSandbox'] = Config::get('app.amazonpay_isSandbox');
         
         unset($val['sellerId']);
         $response = $client->generateSignatureAndEncrypt($val);
