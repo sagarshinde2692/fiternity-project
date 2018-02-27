@@ -862,6 +862,67 @@ Class FinderMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 
+	protected function postTrialStatusUpdate($data, $delay){
+
+		if(isset($data['post_trial_status']) && $data['post_trial_status'] != '') {
+			return "post_trial_status_set";
+		}
+
+		$label = 'PostTrialStatusUpdate-Fitternity';
+
+		$data['fitternity_email'] = [
+			'pranjalisalvi@fitternity.com',
+			'dharatanna@fitternity.com'
+		];
+
+		if(isset($data['city_id']) && $data['city_id'] != ""){
+
+			switch ($data['city_id']) {
+				case 1 : 
+					$data['fitternity_email'] = [
+						'kevalshah@fitternity.com',
+						'mitmehta@fitternity.com',
+						'surajshetty@fitternity.com',
+					];
+					break;
+				case 2 : 
+					$data['fitternity_email'] = [
+						'mitmehta@fitternity.com',
+						'vishankkapoor@fitternity.com',
+					];
+					break;
+				case 3 : 
+					$data['fitternity_email'] = [
+						'silkeshakadam@fitternity.com',
+						'priyankamohnish@fitternity.com',
+						'hardikkhamkar@fitternity.com ' 
+					];
+					break;
+				case 4 : 
+				case 8 : 
+					$data['fitternity_email'] = [
+						'vikramkhanna@fitternity.com',
+						'priyankapatel@fitternity.com',
+						'dharmindersingh@fitternity.com',
+						'pranjalisalvi@fitternity.com' 
+					];
+					break;
+				default:
+					break;
+			}
+		}
+
+		$user_email = $data['fitternity_email'];
+		$user_name = 'Fitternity Team';
+
+		$message_data 	= array(
+			'user_email' => $user_email,
+			'user_name' =>  $user_name,
+		);
+
+		return $this->common($label,$data,$message_data, $delay);
+	}
+
 	public function common($label,$data,$message_data,$delay = 0){
 		// return($message_data['user_email']);
 		if(in_array(Config::get('mail.to_mailus'),$message_data['user_email'])){
