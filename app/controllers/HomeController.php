@@ -3259,7 +3259,16 @@ class HomeController extends BaseController {
                     "calories_burn"=>"Burn 800 Calories",
                     "image"=>"https://cdn.fitn.in/Mfp-delhi/aqua-zumba.jpg",
                     "trainer"=>"With Sucheta Pal",
-                    "time"=>"9:45 AM - 10:15 AM & 10:30 AM - 11:00 AM"
+                    "time"=>"9:45 AM - 10:15 AM"
+                ],
+                [
+
+                    "title"=>"Aqua Zumba",
+                    "description"=>"A low-impact aquatic yoga poses performed in warm water to gain strength & balance.",
+                    "calories_burn"=>"Burn 800 Calories",
+                    "image"=>"https://cdn.fitn.in/Mfp-delhi/aqua-zumba.jpg",
+                    "trainer"=>"With Sucheta Pal",
+                    "time"=>"10:30 AM - 11:00 AM"
                 ]
             ]
 
