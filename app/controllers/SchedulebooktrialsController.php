@@ -2386,9 +2386,9 @@ class SchedulebooktrialsController extends \BaseController {
             $scheduleDateTime 			       =	\Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)));
 
 
-            $threeHoursFromNow      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',time()))->addMinutes(60 *3);
+            $delayReminderAfter3Hours      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->addMinutes(60 *3);
             
-            $send_communication["fitternity_email_postTrialStatusUpdate"] = $this->findermailer->postTrialStatusUpdate($booktrialdata, $threeHoursFromNow);
+            $send_communication["fitternity_email_postTrialStatusUpdate"] = $this->findermailer->postTrialStatusUpdate($booktrialdata, $delayReminderAfter3Hours);
 
             $currentScheduleDateDiffMin = $currentDateTime->diffInMinutes($scheduleDateTime, false);
 
