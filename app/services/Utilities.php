@@ -3050,6 +3050,7 @@ Class Utilities {
         $booktrial = false;
         $state = '';
         $time_left = 0;
+        $card_message = "Congratulations on completing your trial";
         
         $from_date_time =  date('Y-m-d H:i:s',strtotime());
 
@@ -3126,6 +3127,11 @@ Class Utilities {
         }
 
         if($booktrial && $stage != ""){
+
+            if($state == 'fit_code_activated'){
+
+                $card_message = "Congratulations <b>₹250 FitCash</b> has been added in your wallet.Use it within 7 days to get a discount on your Membersihp";
+            }
             
             $response['stage'] = $stage;
             $response['stage'] = $state;
@@ -3138,7 +3144,11 @@ Class Utilities {
             $response['ratecard_url'] = Config::get('app.url').'/getmembershipratecardbyserviceid/'.$booktrial['service_id'];
             $response['verify_fit_code_url'] = Config::get('app.url').'/verifyfitcode/'.$booktrial['_id'].'/';
             $response['lost_fit_code_url'] = Config::get('app.url').'/lostfitcode/'.$booktrial['_id'];
-            $response['fitcash'] = 200;
+            $response['subscription_code'] = $booktrial['code'];
+            $response['fitcash'] = 250;
+            $response['card_message'] = $card_message;
+            $response['what_to_carry'] = $booktrial['what_i_should_carry'];
+            
         }
 
         return $response;
