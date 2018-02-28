@@ -2375,11 +2375,13 @@ class FindersController extends \BaseController {
 
 			$getTrialSchedule = $this->getTrialSchedule($finder_id);
 
-			$ratecards = [];
+			$service = [];
 
 			foreach ($getTrialSchedule as $key => $value) {
 
 				if($value['_id'] == $service_id){
+
+					$service = $value;
 
 					$ratecards = $value['ratecard'];
 
@@ -2394,12 +2396,14 @@ class FindersController extends \BaseController {
 
 					$ratecards = array_values($ratecards);
 
+					$service['ratecard'] = $ratecards;
+
 					break;
 				}
 
 			}
-		
-			$response['ratecards'] = $ratecards;
+
+			$response['service'] = $service;
 		}
 
 		return Response::json($response,200);
