@@ -1047,6 +1047,9 @@ class MigrationReverseController extends \BaseController {
             // $insertData['showOnFront']   =   isset($data['showOnFront']) ? $data['showOnFront'] : true;
             $insertData['custom_location']   =   isset($data['custom_location']) ? $data['custom_location'] : "";
             
+            if(isset($data['flags'])){
+                $insertData['flags'] = $data['flags'];
+            }
 
 //            return $insertData;
 
