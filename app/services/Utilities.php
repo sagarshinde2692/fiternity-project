@@ -3048,23 +3048,24 @@ Class Utilities {
         $response = [];
         $stage = '';
         $booktrial = false;
-
-        $before_trial = [
-            'from_date_time' => date('Y-m-d H:i:s',strtotime("-1 hours")),
-            'to_date_time'=>date('Y-m-d H:i:s',strtotime("+1 hours")),
-            'stage'=>'before_trial'
-        ];
+        $state = '';
+        $time_left = 0;
+        
+        $from_date_time =  date('Y-m-d H:i:s',strtotime());
 
         $booktrial = \Booktrial::where('customer_id',$customer_id)
             ->where('going_status_txt','!=','cancel')
             ->where('booktrial_type','auto')
-            ->where('schedule_date_time','>=',new \MongoDate(strtotime($before_trial['from_date_time'])))
-            ->where('schedule_date_time','<=',new \MongoDate(strtotime($before_trial['to_date_time'])))
-            ->orderBy('schedule_date_time', 'asc')
+            ->where('schedule_date_time','>=',new \MongoDate(strtotime($from_date_time)))
+            ->orderBy('schedule_date_time', 'desc')
             ->first();
 
         if($booktrial){
+
             $stage = 'before_trial';
+            $state = 'booked_trial';
+            
+            $time_left = $booktrial->schedule_date_time - time();
         }
 
 
@@ -3072,32 +3073,72 @@ Class Utilities {
 
             $booktrial = false;
 
-            $after_trial = [
-                'from_date_time' => date('Y-m-d H:i:s',strtotime("+1 hours")),
-                'to_date_time'=>date('Y-m-d H:i:s',strtotime("+5 hours")),
-                'stage'=>'after_trial'
-            ];
+            $from_date_time =  date('Y-m-d H:i:s',strtotime());
 
             $booktrial = \Booktrial::where('customer_id',$customer_id)
                 ->where('going_status_txt','!=','cancel')
                 ->where('booktrial_type','auto')
-                ->where('schedule_date_time','>=',new \MongoDate(strtotime($after_trial['from_date_time'])))
-                ->where('schedule_date_time','<=',new \MongoDate(strtotime($after_trial['to_date_time'])))
-                ->orderBy('schedule_date_time', 'asc')
+                ->where('schedule_date_time','<=',new \MongoDate(strtotime($from_date_time)))
+                ->orderBy('schedule_date_time', 'desc')
                 ->first();
 
             if($booktrial){
+
                 $stage = 'after_trial';
+
+                $state = 'trial_attended';
+
+                if(!$this->fitCode($booktrial->toArray())){
+                    $state = 'fit_code_activated';
+                }
+            }
+        }
+
+        if($stage == ''){
+
+            $booktrial = false;
+
+            $from_date_time =  date('Y-m-d H:i:s',strtotime("+21 days"));
+
+            $booktrial = \Booktrial::where('customer_id',$customer_id)
+                ->where('going_status_txt','!=','cancel')
+                ->where('booktrial_type','auto')
+                ->where('schedule_date_time','>=',new \MongoDate(strtotime($from_date_time)))
+                ->orderBy('schedule_date_time', 'desc')
+                ->first();
+
+            if($booktrial){
+
+                $stage = 'buy_membership';
+
+                $state = 'trial_attended';
+
+                if(!$this->fitCode($booktrial->toArray())){
+                    $state = 'fit_code_activated';
+                }
+
+                $order_count = Order::active()->where('customer_id',$customer_id)->count();
+
+                if($order_count > 0){
+                    $state = 'membership_purchased';
+                }
             }
         }
 
         if($booktrial && $stage != ""){
-
+            
             $response['stage'] = $stage;
+            $response['stage'] = $state;
             $response['fit_code_status'] = $this->fitCode($booktrial->toArray());
             $response['booktrial_id'] = (int)$booktrial['_id'];
+            $response['finder_id'] = (int)$booktrial['finder_id'];
+            $response['service_id'] = (int)$booktrial['service_id'];
+            $response['finder_name'] = ucwords($booktrial['finder_name']);
+            $response['service_name'] = ucwords($booktrial['service_name']);
             $response['ratecard_url'] = Config::get('app.url').'/getmembershipratecardbyserviceid/'.$booktrial['service_id'];
-
+            $response['verify_fit_code_url'] = Config::get('app.url').'/verifyfitcode/'.$booktrial['_id'].'/';
+            $response['lost_fit_code_url'] = Config::get('app.url').'/lostfitcode/'.$booktrial['_id'];
+            $response['fitcash'] = 200;
         }
 
         return $response;
