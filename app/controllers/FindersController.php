@@ -2387,6 +2387,11 @@ class FindersController extends \BaseController {
 
 					foreach ($ratecards as $ratecard_key => $ratecard_value) {
 
+						if($ratecard_value['type'] != 'membership'){
+
+							unset($ratecards[$ratecard_key]);
+						}
+
 						if($ratecard_value['direct_payment_enable'] == '0'){
 
 							unset($ratecards[$ratecard_key]);
@@ -2397,6 +2402,14 @@ class FindersController extends \BaseController {
 					$ratecards = array_values($ratecards);
 
 					$service['ratecard'] = $ratecards;
+
+					$finder = Finder::find((int) $service['finder_id']);
+
+					if($finder){
+
+						$service['finder_name'] = ucwords($finder->title);
+
+					}
 
 					break;
 				}
