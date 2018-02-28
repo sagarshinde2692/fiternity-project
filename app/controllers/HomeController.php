@@ -415,8 +415,21 @@ class HomeController extends BaseController {
             array_set($footer_finders,  'footer_block5_title', (isset($homepage['footer_block5_title']) && $homepage['footer_block5_title'] != '') ? $homepage['footer_block5_title'] : '');
             array_set($footer_finders,  'footer_block6_title', (isset($homepage['footer_block6_title']) && $homepage['footer_block6_title'] != '') ? $homepage['footer_block6_title'] : '');
 
+            $recent_blogs = Blog::where('status', '=', '1')->where('homepage', '1')->where('homepage_city_id', (string)$city_id)
+            ->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+            // ->with('categorytags')
+            ->with(array('author'=>function($query){$query->select('_id','name','username','email','avatar');}))
+            ->with(array('expert'=>function($query){$query->select('_id','name','username','email','avatar');}))
+            ->orderBy('_id', 'desc')
+            ->remember(Config::get('app.cachetime'))
+            ->get(array('_id','author_id','category_id','coverimage','created_at','excerpt','expert_id','slug','title','category','author','expert', 'homepage', 'homepage_city_id'))
+            ->take(4)->toArray();
 
-            $recent_blogs	 		= 		Blog::where('status', '=', '1')
+            if(count($recent_blogs) < 4){
+
+                $recent_blog_ids = array_column($recent_blogs, '_id');
+                
+                $common_blogs = Blog::where('status', '=', '1')->whereNotIn('_id', $recent_blog_ids)
                 ->with(array('category'=>function($query){$query->select('_id','name','slug');}))
                 // ->with('categorytags')
                 ->with(array('author'=>function($query){$query->select('_id','name','username','email','avatar');}))
@@ -424,7 +437,21 @@ class HomeController extends BaseController {
                 ->orderBy('_id', 'desc')
                 ->remember(Config::get('app.cachetime'))
                 ->get(array('_id','author_id','category_id','coverimage','created_at','excerpt','expert_id','slug','title','category','author','expert'))
-                ->take(4)->toArray();
+                ->take(4-count($recent_blog_ids))->toArray();
+
+                $recent_blogs = array_merge($recent_blogs, $common_blogs);
+            }
+
+
+            // $recent_blogs	 		= 		Blog::where('status', '=', '1')
+            //     ->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+            //     // ->with('categorytags')
+            //     ->with(array('author'=>function($query){$query->select('_id','name','username','email','avatar');}))
+            //     ->with(array('expert'=>function($query){$query->select('_id','name','username','email','avatar');}))
+            //     ->orderBy('_id', 'desc')
+            //     ->remember(Config::get('app.cachetime'))
+            //     ->get(array('_id','author_id','category_id','coverimage','created_at','excerpt','expert_id','slug','title','category','author','expert'))
+            //     ->take(4)->toArray();
 
             // $collections 			= 	Findercollection::active()->where('city_id', '=', intval($citydata['_id']))->orderBy('ordering')->get(array('name', 'slug', 'coverimage', 'ordering' ));
             $campaigns=  [];
@@ -3266,7 +3293,7 @@ class HomeController extends BaseController {
                     "title"=>"Aqua Zumba",
                     "description"=>"A low-impact aquatic yoga poses performed in warm water to gain strength & balance.",
                     "calories_burn"=>"Burn 800 Calories",
-                    "image"=>"https://cdn.fitn.in/Mfp-delhi/aqua-zumba.jpg",
+                    "image"=>"https://cdn.fitn.in/Mfp-delhi/zumba2.jpg",
                     "trainer"=>"With Sucheta Pal",
                     "time"=>"10:30 AM - 11:00 AM"
                 ]

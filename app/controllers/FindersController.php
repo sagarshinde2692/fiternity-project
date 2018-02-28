@@ -771,7 +771,7 @@ class FindersController extends \BaseController {
 						$callout_ratecard = Ratecard::find($callout_offer['ratecard_id']);
 						Log::info($callout_ratecard);
 						if($callout_service && $callout_ratecard){
-							$finder['callout'] = $callout_service['name']." - ".$callout_ratecard['validity']." ".$callout_ratecard['validity_type']." @ Rs. ".$callout_offer['price'];
+							$finder['callout'] = $callout_service['name']." - ".$this->getServiceDuration($callout_ratecard)." @ Rs. ".$callout_offer['price'];
 						}
 					}
 				}
