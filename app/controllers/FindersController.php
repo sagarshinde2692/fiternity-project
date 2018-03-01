@@ -2467,7 +2467,7 @@ class FindersController extends \BaseController {
 							}
 						}
 
-						$service['traction'] = $serviceData['traction'];
+						$service['traction'] = $traction;
 						
 					}
 
