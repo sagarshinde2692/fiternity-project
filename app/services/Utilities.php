@@ -3024,7 +3024,7 @@ Class Utilities {
 
         $fit_code = false;
 
-        if(isset($data['vendor_code'])){
+        if(isset($data['vendor_code']) && $data['type'] != 'workout-session'){
 
             $fit_code = true;
 
@@ -3032,9 +3032,7 @@ Class Utilities {
                 $fit_code = false;
             }
         }
-
-        $fit_code = true;
-
+        
         return $fit_code;
 
     }

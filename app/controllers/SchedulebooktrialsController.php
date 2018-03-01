@@ -4762,7 +4762,7 @@ class SchedulebooktrialsController extends \BaseController {
         $booktrial['fit_code'] = $this->utilities->fitCode($booktrial);
 
         $booktrial['fitcode_message'] = 'Punch the code and get 200 Fitcash';
-        $booktrial['fitcode_button_text'] = 'Mark Attendance';
+        $booktrial['fitcode_button_text'] = 'Enter Fitcode';
 
         $responsedata   = [
             'booktrial' => $booktrial,
@@ -6544,11 +6544,13 @@ class SchedulebooktrialsController extends \BaseController {
                     "amount_fitcash_plus" => 250,
                     "type"=>'CREDIT',
                     'entry'=>'credit',
-                    'validity'=>time()+(86400*7),
-                    'description'=>"Added FitCash+ on Trial Attendance By Fitcode, Expires On : ".date('d-m-Y',time()+(86400*7))
+                    'validity'=>time()+(86400*21),
+                    'description'=>"Added FitCash+ on Trial Attendance By Fitcode, Expires On : ".date('d-m-Y',time()+(86400*21))
                 );
 
                 $this->utilities->walletTransaction($req);
+
+                $message = "Hi ".ucwords($booktrial['customer_name']).", Rs.250 Fitcash is added in your wallet as surprise on your attendace . Use it to buy ".ucwords($booktrial['finder_name'])."'s membership at lowest price. Valid for 21 days";
 
             }
 
@@ -6557,7 +6559,7 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrial->post_trial_status_updated_by_fitcode = time();
             $booktrial->update();
 
-            $message = "Hi ".ucwords($booktrial['customer_name']).", your booking at ".ucwords($booktrial['finder_name'])." for ".strtoupper($booktrial['schedule_slot_start_time'])." on ".date('D, d M Y',strtotime($booktrial['schedule_date']))." has been successfully located";
+            $message = "Hi ".ucwords($booktrial['customer_name']).", Rs.250 Fitcash is added in your wallet as surprise on your attendace . Use it to buy ".ucwords($booktrial['finder_name'])."'s membership at lowest price. Valid for 21 days";
 
             $response = [
                 'status' => 200,
@@ -6596,7 +6598,7 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrial->post_trial_status_updated_by_lostfitcode = time();
             $booktrial->update();
 
-            $message = "Hi ".ucwords($booktrial['customer_name']).", your booking at ".ucwords($booktrial['finder_name'])." for ".strtoupper($booktrial['schedule_slot_start_time'])." on ".date('D, d M Y',strtotime($booktrial['schedule_date']))." has been successfully located";
+            $message = "Hi ".ucwords($booktrial['customer_name']).", Thank you for your request. Your surprise discount will be activated post verifying your attendance with ".ucwords($booktrial['finder_name'])." within 48 hours";
 
             $response = [
                 'status' => 200,
