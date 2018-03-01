@@ -4250,6 +4250,10 @@ class TransactionController extends \BaseController {
 
             $resp['status'] = 200;
             $resp['message'] = $resp['success_message'] = "Rs. ".$resp["data"]["discount"]." has been applied Successfully ";
+
+            if(isset($resp['custom_message'])){
+                $resp['message'] = $resp['success_message'] = $resp['custom_message'];
+            }
             // if(strtolower($data['coupon']) == "fitlove" || $data['coupon'] == "fitlove"){
             //     $resp['success_message'] = $resp['message'] = "Basis slot availability, your surprise discount for this partner outlet is Rs ".$resp["data"]["discount"];
             // }
