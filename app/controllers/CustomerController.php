@@ -5965,7 +5965,7 @@ class CustomerController extends \BaseController {
 					array('type'=>'cover','path'=>'customer/'.$customer_id.'/receipt/','width'=>720),
 				];
 
-				$image = array('input' => Input::file('image'),'detail' => $image_detail,'id' => $data['booktrial_id']);
+				$image = array('input' => Input::file('receipt'),'detail' => $image_detail,'id' => $data['booktrial_id']);
 
 				$image_response = upload_magic($image);
 
