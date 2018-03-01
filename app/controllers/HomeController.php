@@ -809,6 +809,12 @@ class HomeController extends BaseController {
             if(($type == "booktrial" || $type == "healthytiffintrial" || $type == "healthytiffintrail") && isset($itemData['amount_customer']) && $itemData['amount_customer'] > 0){
 
                 $amount_20_percent = (int)($itemData['amount_customer']*20/100);
+
+                if($type == "booktrial"){
+
+                    $amount_20_percent = $itemData['amount_customer'];
+                }
+
                 $popup_message = "Rs ".$amount_20_percent." FitCash has been added to your wallet";
             }
 
