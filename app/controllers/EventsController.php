@@ -20,7 +20,7 @@ class EventsController extends \BaseController {
 		$vendors = Finder::whereIn('_id', $vendor_ids)->get();
 		$response = array(
 			'event_info' => $eventInfo[0],
-			'ticket_info' => $tickets,
+			'ticket_info' => [$tickets[0]],
 			'vendor_info' => $vendors
 		);
 		return $response;
