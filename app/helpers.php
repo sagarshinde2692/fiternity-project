@@ -2420,6 +2420,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
             if (!function_exists('upload_magic')) {
                 function upload_magic($params = array())
                 {
+                    $kraken = new \App\Services\Kraken();
 
                     $headersparms = array("Cache-Control" => "max-age=2592000000");
                     $id = $params['id'];
@@ -2456,7 +2457,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         $aws_bucketpath = $value['path'] . $image_name;
                         array_set($upload_params, 's3_store.path', $aws_bucketpath);
                         array_set($upload_params, 'resize', array("width" => $value['width'], "strategy" => "landscape"));
-                        $kraken_data = \Kraken::upload($upload_params);
+                        $kraken_data = $kraken->upload($upload_params);
                         $kraken_data['type'] = $value['type'];
                         $kraken_data['folder_path'] = $value['path'];
 
