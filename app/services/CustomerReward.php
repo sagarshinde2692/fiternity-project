@@ -1361,7 +1361,7 @@ Class CustomerReward {
             $vendor_routed_coupon = isset($coupon["vendor_routed_coupon"]) ? $coupon["vendor_routed_coupon"] : false;
             $resp = array("data"=>array("discount" => $discount_amount, "final_amount" => $final_amount, "wallet_balance" => $wallet_balance, "only_discount" => $discount_price), "coupon_applied" => true, 'otp'=>$fitternity_only_coupon, "vendor_coupon"=>$vendor_coupon, "vendor_routed_coupon" => $vendor_routed_coupon);
             if(isset($coupon['success_message']) && trim($coupon['success_message']) != ""){
-                $resp['custom_message'] = $coupon['success_message'];
+                $resp['custom_message'] = str_replace("<amt>",$discount_amount,$coupon['success_message']);
             }
         }else{
             $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false);
