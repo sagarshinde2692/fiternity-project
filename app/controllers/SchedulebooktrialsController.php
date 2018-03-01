@@ -6526,12 +6526,31 @@ class SchedulebooktrialsController extends \BaseController {
         $booktrial = Booktrial::where('vendor_code',$vendor_code)
            ->where('customer_id',$customer_id)
            ->where('_id',$booktrial_id)
+           ->where('type','booktrials')
            // ->where('schedule_date_time','>',new MongoDate(strtotime(date('Y-m-d 00:00:00'))))
            // ->where('schedule_date_time','<',new MongoDate(strtotime(date('Y-m-d 23:59:59'))))
            // ->orderBy('_id','desc')
            ->first();
 
         if(isset($booktrial)){
+
+            if($booktrial->type == "booktrials" && !isset($booktrial->post_trial_status_updated_by_fitcode)){
+
+                $req = array(
+                    "customer_id"=>$booktrial['customer_id'],
+                    "trial_id"=>$booktrial['_id'],
+                    "amount"=> 250,
+                    "amount_fitcash" => 0,
+                    "amount_fitcash_plus" => 250,
+                    "type"=>'CREDIT',
+                    'entry'=>'credit',
+                    'validity'=>time()+(86400*7),
+                    'description'=>"Added FitCash+ on Trial Attendance By Fitcode, Expires On : ".date('d-m-Y',time()+(86400*7))
+                );
+
+                $this->utilities->walletTransaction($req);
+
+            }
 
             $booktrial->post_trial_status = 'attended';
             $booktrial->post_trial_initail_status = 'interested';
@@ -6564,6 +6583,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         $booktrial = Booktrial::where('_id',$booktrial_id)
            ->where('customer_id',$customer_id)
+           ->where('type','booktrials')
            // ->where('schedule_date_time','>',new MongoDate(strtotime(date('Y-m-d 00:00:00'))))
            // ->where('schedule_date_time','<',new MongoDate(strtotime(date('Y-m-d 23:59:59'))))
            // ->orderBy('_id','desc')

@@ -5994,7 +5994,7 @@ class CustomerController extends \BaseController {
 
 			}else{
 
-				return Response::json(array('status' => 400,'message' => "Error, Receipt Not Uploaded",'data'=>$transformation));
+				return Response::json(array('status' => 400,'message' => "Error, Receipt Not Uploaded"));
 
 			}
 		}
