@@ -1121,6 +1121,10 @@ class MigrationReverseController extends \BaseController {
             if(isset($data['expiry_date'])){
                 $insertData['expiry_date'] = $data['expiry_date'];
             }
+            
+            if(isset($data['start_date'])){
+                $insertData['start_date'] = $data['start_date'];
+            }
 
             if(isset($data['weight']) && $data['weight'] != ""){
                 $insertData['weight'] = (int)$data['weight'];
