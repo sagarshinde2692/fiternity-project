@@ -5930,5 +5930,75 @@ class CustomerController extends \BaseController {
 		return Response::json(['status'=>200, 'message'=>'Group invitation sent successfully']);
 
 	}
+
+	public function uploadReceipt(){
+
+		$jwt_token = Request::header('Authorization');
+		$decoded = $this->customerTokenDecode($jwt_token);
+		$customer_id = $decoded->customer->_id;
+
+		$rules = [
+			'customer_id' => 'required',
+			'booktrial_id'=>'required|integer|numeric',
+			'receipt'=>'image'
+		];
+
+		$data = Input::all();
+
+		$data['customer_id'] = $customer_id;
+
+		unset($data['receipt']);
+
+		$validator = Validator::make($data,$rules);
+
+		if ($validator->fails()) {
+
+			return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())));
+
+		}else{
+
+			$image_success = [];
+
+			if (Input::hasFile('receipt')) {
+
+				$image_detail = [
+					array('type'=>'cover','path'=>'customer/'.$customer_id.'/receipt/','width'=>720),
+				];
+
+				$image = array('input' => Input::file('image'),'detail' => $image_detail,'id' => $data['booktrial_id']);
+
+				$image_response = upload_magic($image);
+
+				foreach ($image_response['response'] as $key => $value){
+
+					if(isset($value['success']) && $value['success']){
+
+						$image_success['width'] = $value['kraked_width'];
+						$image_success['height'] = $value['kraked_height'];
+						$image_success['s3_url'] = $value['kraked_url'];
+						$image_success['s3_folder_path'] = $value['folder_path'];
+						$image_success['s3_file_path'] = $value['folder_path'].$image_response['image_name'];
+						$image_success['name'] = $image_response['image_name'];
+					}
+
+				}
+
+			}
+
+			if(!empty($image_success)){
+
+				$booktrial = Booktrial::find((int) $data['booktrial_id']);
+				$booktrial->update(['receipt'=>$image_success]);
+
+				return Response::json(array('status' => 200,'message' => "Receipt Uploaded Successfully"));
+
+			}else{
+
+				return Response::json(array('status' => 400,'message' => "Error, Receipt Not Uploaded",'data'=>$transformation));
+
+			}
+		}
+		
+	}
 	
 }
