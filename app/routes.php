@@ -1119,3 +1119,5 @@ Route::get('lostfitcode/{booktrial_id}','SchedulebooktrialsController@lostFitCod
 Route::get('getmembershipratecardbyserviceid/{service_id}','FindersController@getMembershipRatecardByServiceId');
 
 Route::post('customer/uploadreceipt','CustomerController@uploadReceipt');
+
+Route::get('ldJson/{booktrial_id}','DebugController@ldJson');

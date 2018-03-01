@@ -2429,6 +2429,46 @@ class FindersController extends \BaseController {
 						$service['city'] = $serviceData['city'];
 						$service['location'] = $serviceData['location'];
 						$service['category'] = $serviceData['category'];
+
+						$traction = [
+							'trials' => 0,
+							'requests' => 0,
+							'sales' => 0,
+							'six_months' => [
+							    'requests' => 0,
+							    'sales' => 0,
+							    'trials' => 0,
+						  	]
+						];
+
+						if(isset($serviceData['traction']) && $serviceData['traction'] != ""){
+
+							$traction = $serviceData['traction'];
+						}
+
+						if(time() - strtotime($serviceData['created_at']) > (30*86400)){
+
+							if($traction['sales'] == 0){
+
+								$traction['sales'] = 70;
+
+							}else{
+
+								$traction['sales'] = 100;
+							}
+
+						}
+
+						if(time() - strtotime($serviceData['created_at']) < (30*86400)){
+
+							if($traction['sales'] > 0){
+
+								$traction['sales'] = 100;
+							}
+						}
+
+						$service['traction'] = $serviceData['traction'];
+						
 					}
 
 					break;
