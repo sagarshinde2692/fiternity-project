@@ -2408,7 +2408,27 @@ class FindersController extends \BaseController {
 					if($finder){
 
 						$service['finder_name'] = ucwords($finder->title);
+						$service['finder_slug'] = $finder->slug;
 
+					}
+
+					$service['city'] = null;
+					$service['location'] = null;
+					$service['category'] = null;
+
+					$serviceData = Service::active()
+						->with(array('category'=>function($query){$query->select('name','slug','_id');}))
+						->with(array('location'=>function($query){$query->select('name','slug','_id');}))
+						->with(array('city'=>function($query){$query->select('name','slug','_id');}))
+						->find((int)$service['_id']);
+
+					if($serviceData){
+
+						$serviceData = $serviceData->toArray();
+
+						$service['city'] = $serviceData['city'];
+						$service['location'] = $serviceData['location'];
+						$service['category'] = $serviceData['category'];
 					}
 
 					break;

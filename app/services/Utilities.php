@@ -3052,12 +3052,12 @@ Class Utilities {
         $time_left = 0;
         $card_message = "Congratulations on completing your trial";
         
-        $from_date_time =  date('Y-m-d H:i:s',strtotime());
+        $from_date_time =  date('Y-m-d H:i:s',time());
 
         $booktrial = \Booktrial::where('customer_id',$customer_id)
             ->where('going_status_txt','!=','cancel')
             ->where('booktrial_type','auto')
-            ->where('schedule_date_time','>=',new \MongoDate(strtotime($from_date_time)))
+            // ->where('schedule_date_time','>=',new \MongoDate(strtotime($from_date_time)))
             ->orderBy('schedule_date_time', 'desc')
             ->first();
 
@@ -3066,7 +3066,7 @@ Class Utilities {
             $stage = 'before_trial';
             $state = 'booked_trial';
             
-            $time_left = $booktrial->schedule_date_time - time();
+            $time_left = strtotime($booktrial->schedule_date_time) - time();
         }
 
 
@@ -3074,7 +3074,7 @@ Class Utilities {
 
             $booktrial = false;
 
-            $from_date_time =  date('Y-m-d H:i:s',strtotime());
+            $from_date_time =  date('Y-m-d H:i:s',time());
 
             $booktrial = \Booktrial::where('customer_id',$customer_id)
                 ->where('going_status_txt','!=','cancel')
@@ -3128,13 +3128,33 @@ Class Utilities {
 
         if($booktrial && $stage != ""){
 
+            $category_calorie_burn = 300;
+
+            $service = \Service::find((int)$booktrial['service_id']);
+
+            if($service){
+
+                $sericecategorysCalorieArr = Config::get('app.calorie_burn_categorywise');
+
+                $service_category_id = (isset($service['servicecategory_id']) && $service['servicecategory_id'] != "") ? $service['servicecategory_id'] : 0;
+
+                if(isset($service['calorie_burn']) && $service['calorie_burn']['avg'] != 0){
+                    $category_calorie_burn = $service['calorie_burn']['avg'];
+                }else{
+                    if(isset($sericecategorysCalorieArr[$service_category_id])){
+                        $category_calorie_burn = $sericecategorysCalorieArr[$service_category_id];
+                    }
+                }
+
+            }
+            
             if($state == 'fit_code_activated'){
 
                 $card_message = "Congratulations <b>₹250 FitCash</b> has been added in your wallet.Use it within 7 days to get a discount on your Membersihp";
             }
             
             $response['stage'] = $stage;
-            $response['stage'] = $state;
+            $response['state'] = $state;
             $response['fit_code_status'] = $this->fitCode($booktrial->toArray());
             $response['booktrial_id'] = (int)$booktrial['_id'];
             $response['finder_id'] = (int)$booktrial['finder_id'];
@@ -3148,6 +3168,11 @@ Class Utilities {
             $response['fitcash'] = 250;
             $response['card_message'] = $card_message;
             $response['what_to_carry'] = $booktrial['what_i_should_carry'];
+            $response['time_left'] = $time_left;
+            $response['lat'] = $booktrial['finder_lat'];
+            $response['lon'] = $booktrial['finder_lon'];
+            $response['calorie_burn'] = $category_calorie_burn;
+            $response['calorie_burn_text'] = "Get ready to burn ".$category_calorie_burn."kcl in your ".$booktrial['service_name']." Session!";
             
         }
 
