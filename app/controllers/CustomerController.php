@@ -3228,7 +3228,7 @@ class CustomerController extends \BaseController {
 			// 		'ratio'=>(float) number_format(100/375,2)
 			// 	];
 				$result['campaigns'][] = [
-					'image'=>'https://b.fitn.in/global/ios_homescreen_banner/feb5.png',
+					'image'=>'https://b.fitn.in/global/holi/holi-app.png',
 					'link'=>'ftrnty://fitternity.com/',
 					'title'=>'5% Discount',
 					'height'=>100,
@@ -3256,7 +3256,7 @@ class CustomerController extends \BaseController {
 			// 	];
 
 			$result['campaigns'][] = [
-					'image'=>'https://b.fitn.in/global/ios_homescreen_banner/feb5.png',
+					'image'=>'https://b.fitn.in/global/holi/holi-app.png',
 					'link'=>'ftrnty://ftrnty.com/search/all',
 					'title'=>'5% Discount',
 					'height'=>100,

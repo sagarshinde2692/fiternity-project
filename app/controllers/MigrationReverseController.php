@@ -1047,6 +1047,9 @@ class MigrationReverseController extends \BaseController {
             // $insertData['showOnFront']   =   isset($data['showOnFront']) ? $data['showOnFront'] : true;
             $insertData['custom_location']   =   isset($data['custom_location']) ? $data['custom_location'] : "";
             
+            if(isset($data['flags'])){
+                $insertData['flags'] = $data['flags'];
+            }
 
 //            return $insertData;
 
@@ -1117,6 +1120,10 @@ class MigrationReverseController extends \BaseController {
             
             if(isset($data['expiry_date'])){
                 $insertData['expiry_date'] = $data['expiry_date'];
+            }
+            
+            if(isset($data['start_date'])){
+                $insertData['start_date'] = $data['start_date'];
             }
 
             if(isset($data['weight']) && $data['weight'] != ""){

@@ -16,6 +16,8 @@ class Ratecard extends \Basemodel {
 		//'short_description' => 'required',
 		);
 
+	protected $dates = array('start_date', 'expiry_date');
+
 	public function setOrderAttribute($value){
 		$this->attributes['order'] = intval($value);
 	}

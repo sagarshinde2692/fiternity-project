@@ -32,6 +32,7 @@ class TransactionController extends \BaseController {
     protected $membership_array;
     protected $customernotification;
     protected $fitapi;
+    protected $fitweb;
 
     public function __construct(
         CustomerMailer $customermailer,
@@ -42,7 +43,8 @@ class TransactionController extends \BaseController {
         Utilities $utilities,
         CustomerReward $customerreward,
         CustomerNotification $customernotification,
-        Fitapi $fitapi
+        Fitapi $fitapi,
+        Fitweb $fitweb
     ) {
         parent::__construct();
         $this->customermailer       =   $customermailer;
@@ -54,6 +56,7 @@ class TransactionController extends \BaseController {
         $this->customerreward       =   $customerreward;
         $this->customernotification =   $customernotification;
         $this->fitapi               =   $fitapi;
+        $this->fitweb               =   $fitweb;
         $this->ordertypes           =   array('memberships','booktrials','workout-session','healthytiffintrail','healthytiffinmembership','3daystrial','vip_booktrials', 'events');
         $this->appOfferDiscount     =   Config::get('app.app.discount');
         $this->appOfferExcludedVendors 				= Config::get('app.app.discount_excluded_vendors');
@@ -4247,6 +4250,10 @@ class TransactionController extends \BaseController {
 
             $resp['status'] = 200;
             $resp['message'] = $resp['success_message'] = "Rs. ".$resp["data"]["discount"]." has been applied Successfully ";
+
+            if(isset($resp['custom_message'])){
+                $resp['message'] = $resp['success_message'] = $resp['custom_message'];
+            }
             // if(strtolower($data['coupon']) == "fitlove" || $data['coupon'] == "fitlove"){
             //     $resp['success_message'] = $resp['message'] = "Basis slot availability, your surprise discount for this partner outlet is Rs ".$resp["data"]["discount"];
             // }

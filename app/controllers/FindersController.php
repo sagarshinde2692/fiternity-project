@@ -578,6 +578,11 @@ class FindersController extends \BaseController {
 
 								foreach ($service['serviceratecard'] as $ratekey => $rateval){
 
+									if((isset($rateval['expiry_date']) && $rateval['expiry_date'] != "" && strtotime($rateval['expiry_date']) < time()) || (isset($rateval['start_date']) && $rateval['start_date'] != "" && strtotime($rateval['start_date']) > time())){
+										unset($service['serviceratecard'][$ratekey]);
+										continue;
+									}
+
 									if(isset($service['membership']) && $service['membership']=='manual'){
 										$service['serviceratecard'][$ratekey]['direct_payment_enable'] = "0";
 									}
@@ -771,7 +776,7 @@ class FindersController extends \BaseController {
 						$callout_ratecard = Ratecard::find($callout_offer['ratecard_id']);
 						Log::info($callout_ratecard);
 						if($callout_service && $callout_ratecard){
-							$finder['callout'] = $callout_service['name']." - ".$callout_ratecard['validity']." ".$callout_ratecard['validity_type']." @ Rs. ".$callout_offer['price'];
+							$finder['callout'] = $callout_service['name']." - ".$this->getServiceDuration($callout_ratecard)." @ Rs. ".$callout_offer['price'];
 						}
 					}
 				}
@@ -2608,6 +2613,9 @@ class FindersController extends \BaseController {
 					//for ratecards offers
 					$ratecardoffers     =   [];
 
+					if((isset($rateval['expiry_date']) && $rateval['expiry_date'] != "" && strtotime($rateval['expiry_date']) < time()) || (isset($rateval['start_date']) && $rateval['start_date'] != "" && strtotime($rateval['start_date']) > time())){
+						continue;
+					}
 
 					if(!isset($rateval['offers']) || (isset($rateval['offers']) && count($rateval['offers'])==0)){
 						if(!empty($rateval['_id']) && isset($rateval['_id'])){
