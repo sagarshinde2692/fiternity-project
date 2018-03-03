@@ -6526,7 +6526,7 @@ class SchedulebooktrialsController extends \BaseController {
         $booktrial = Booktrial::where('vendor_code',$vendor_code)
            ->where('customer_id',$customer_id)
            ->where('_id',$booktrial_id)
-           ->where('type','booktrials')
+           ->whereIn('type',['booktrials','3daystrial'])
            // ->where('schedule_date_time','>',new MongoDate(strtotime(date('Y-m-d 00:00:00'))))
            // ->where('schedule_date_time','<',new MongoDate(strtotime(date('Y-m-d 23:59:59'))))
            // ->orderBy('_id','desc')
@@ -6585,7 +6585,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         $booktrial = Booktrial::where('_id',$booktrial_id)
            ->where('customer_id',$customer_id)
-           ->where('type','booktrials')
+           ->whereIn('type',['booktrials','3daystrial'])
            // ->where('schedule_date_time','>',new MongoDate(strtotime(date('Y-m-d 00:00:00'))))
            // ->where('schedule_date_time','<',new MongoDate(strtotime(date('Y-m-d 23:59:59'))))
            // ->orderBy('_id','desc')
