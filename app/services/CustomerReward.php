@@ -1347,14 +1347,35 @@ Class CustomerReward {
                 }
                 
             }
+            Log::info("ratecard coupon");
+            Log::info($ratecard);
+            Log::info($coupon);
             
+            if($ratecard && isset($ratecard['flags']) && isset($ratecard['flags']['campaign_offer']) && $ratecard['flags']['campaign_offer'] && isset($coupon['campaign_discount_percent']) && isset($coupon['campaign_discount_max']) && isset($coupon['campaign_discount_amount'])){
+                if(isset($coupon['campaign_discount_percent'])){
+                    
+                    $coupon["discount_percent"] = $coupon["campaign_discount_percent"];
+                }
+                if(isset($coupon['campaign_discount_max'])){
+                    $coupon["discount_max"] = $coupon["campaign_discount_max"];
+                    
+                }
+                if(isset($coupon['campaign_discount_amount'])){
+                    
+                    $coupon["discount_amount"] = $coupon["campaign_discount_amount"];
+                }
+                if(isset($coupon['campaign_success_message'])){
+                    
+                    $coupon["success_message"] = $coupon["campaign_success_message"];
+                }
+            
+            }
+                
             $discount_amount = $coupon["discount_amount"];
             $discount_amount = $discount_amount == 0 ? $coupon["discount_percent"]/100 * $price : $discount_amount;
             $discount_amount = intval($discount_amount);
-            if(isset($coupon["discount_min"])){
-                $discount_amount = $discount_amount < $coupon["discount_min"] ? $coupon["discount_min"] : $discount_amount;
-            }
             $discount_amount = $discount_amount > $coupon["discount_max"] ? $coupon["discount_max"] : $discount_amount;
+            
             
             $discount_price = $price - $discount_amount;
             $final_amount = $discount_price > $wallet_balance ? $discount_price - $wallet_balance : 0;
