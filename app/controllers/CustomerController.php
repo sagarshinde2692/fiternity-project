@@ -3228,7 +3228,7 @@ class CustomerController extends \BaseController {
 			// 		'ratio'=>(float) number_format(100/375,2)
 			// 	];
 				$result['campaigns'][] = [
-					'image'=>'b.fitn.in/global/holi/holi-app.png',
+					'image'=>'https://b.fitn.in/global/holi/holi-app.png',
 					'link'=>'ftrnty://fitternity.com/',
 					'title'=>'5% Discount',
 					'height'=>100,
