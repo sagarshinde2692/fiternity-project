@@ -3053,7 +3053,7 @@ Class Utilities {
         $from_date_time =  date('Y-m-d H:i:s',time());
 
         $booktrial = \Booktrial::where('customer_id',$customer_id)
-            ->where('type','booktrials')
+            ->whereIn('type',['booktrials','3daystrial'])
             ->where('going_status_txt','!=','cancel')
             ->where('booktrial_type','auto')
             // ->where('schedule_date_time','>=',new \MongoDate(strtotime($from_date_time)))
@@ -3076,7 +3076,7 @@ Class Utilities {
             $from_date_time =  date('Y-m-d H:i:s',time());
 
             $booktrial = \Booktrial::where('customer_id',$customer_id)
-                ->where('type','booktrials')
+                ->whereIn('type',['booktrials','3daystrial'])
                 ->where('going_status_txt','!=','cancel')
                 ->where('booktrial_type','auto')
                 ->where('schedule_date_time','<=',new \MongoDate(strtotime($from_date_time)))
@@ -3102,7 +3102,7 @@ Class Utilities {
             $from_date_time =  date('Y-m-d H:i:s',strtotime("+21 days"));
 
             $booktrial = \Booktrial::where('customer_id',$customer_id)
-                ->where('type','booktrials')
+                ->whereIn('type',['booktrials','3daystrial'])
                 ->where('going_status_txt','!=','cancel')
                 ->where('booktrial_type','auto')
                 ->where('schedule_date_time','>=',new \MongoDate(strtotime($from_date_time)))

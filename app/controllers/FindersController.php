@@ -2387,7 +2387,7 @@ class FindersController extends \BaseController {
 
 					foreach ($ratecards as $ratecard_key => $ratecard_value) {
 
-						if($ratecard_value['type'] != 'membership'){
+						if($ratecard_value['type'] != 'membership' || $ratecard_value['type'] != 'packages'){
 
 							unset($ratecards[$ratecard_key]);
 						}
