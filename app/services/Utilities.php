@@ -3159,6 +3159,7 @@ Class Utilities {
             $response['fit_code_status'] = $this->fitCode($booktrial->toArray());
             $response['booktrial_id'] = (int)$booktrial['_id'];
             $response['finder_id'] = (int)$booktrial['finder_id'];
+            $response['finder_slug'] = $booktrial['finder_slug'];
             $response['service_id'] = (int)$booktrial['service_id'];
             $response['finder_name'] = ucwords($booktrial['finder_name']);
             $response['service_name'] = ucwords($booktrial['service_name']);
