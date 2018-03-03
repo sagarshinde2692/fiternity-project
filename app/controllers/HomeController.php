@@ -3260,16 +3260,8 @@ class HomeController extends BaseController {
                     "description"=>"A combination of poses and postures to gain body strength, toning and flexibility",
                     "calories_burn"=>"Burn 250 Calories",
                     "image"=>"https://b.fitn.in/global/toi/mfp/line_up/pilatesfinal.jpg",
-                    "trainer"=>"",
+                    "trainer"=>"With Namrata Purohit",
                     "time"=>"7:30 AM - 8:00 AM"
-                ],
-                [
-                    "title"=>"Piloxing",
-                    "description"=>"A creative mix between Pilates and Boxing moves in a high-spirited interval workout",
-                    "calories_burn"=>"Burn 700 Calories",
-                    "image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/zumbafinal.jpg",
-                    "trainer"=>"With Mahek Shah",
-                    "time"=>"8:15 AM - 8:45 AM"
                 ],
                 [
                     "title"=>"Masala Bhangra",
@@ -3277,16 +3269,23 @@ class HomeController extends BaseController {
                     "calories_burn"=>"Burn 700 Calories",
                     "image"=>"https://cdn.fitn.in/Mfp-delhi/masalab-web.jpg",
                     "trainer"=>"With Shalini Bhargava",
+                    "time"=>"8:15 AM - 8:45 AM"
+                ],
+                [
+                    "title"=>"Bollywood",
+                    "description"=>"A high energetic full body dance cardio workout done on bollywood music to sweat out excessive calories.",
+                    "calories_burn"=>"Burn 700 Calories",
+                    "image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/bollyfit.jpg",
+                    "trainer"=>"With Team Terence Lewis",
                     "time"=>"9:00 AM - 9:30 AM"
                 ],
                 [
-
-                    "title"=>"Aqua Zumba",
-                    "description"=>"A low-impact aquatic yoga poses performed in warm water to gain strength & balance.",
-                    "calories_burn"=>"Burn 800 Calories",
-                    "image"=>"https://cdn.fitn.in/Mfp-delhi/aqua-zumba.jpg",
-                    "trainer"=>"With Sucheta Pal",
-                    "time"=>"9:45 AM - 10:15 AM"
+                    "title"=>"Piloxing",
+                    "description"=>"A creative mix between Pilates and Boxing moves in a high-spirited interval workout",
+                    "calories_burn"=>"Burn 700 Calories",
+                    "image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/zumbafinal.jpg",
+                    "trainer"=>"With Mahek Shah",
+                    "time"=>"9:45 AM - 10:15"
                 ],
                 [
 
