@@ -2409,7 +2409,7 @@ class FindersController extends \BaseController {
 
 						$service['finder_name'] = ucwords($finder->title);
 						$service['finder_slug'] = $finder->slug;
-
+						$service['finder_category_id'] = $finder->category_id;
 					}
 
 					$service['city'] = null;
