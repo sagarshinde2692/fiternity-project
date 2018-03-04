@@ -441,7 +441,7 @@ class FindersController extends \BaseController {
 
 
 				
-				array_set($finder, 'services', pluck( $finderarr['services'] , ['_id', 'name', 'lat', 'lon', 'serviceratecard', 'session_type', 'workout_tags', 'calorie_burn', 'workout_results', 'short_description','service_trainer','timing','category','subcategory','batches','vip_trial','meal_type','trial','membership', 'offer_available', 'showOnFront', 'traction', 'timings']  ));
+				array_set($finder, 'services', pluck( $finderarr['services'] , ['_id', 'name', 'lat', 'lon', 'serviceratecard', 'session_type', 'workout_tags', 'calorie_burn', 'workout_results', 'short_description','service_trainer','timing','category','subcategory','batches','vip_trial','meal_type','trial','membership', 'offer_available', 'showOnFront', 'traction', 'timings', 'flags']  ));
 				array_set($finder, 'categorytags', pluck( $finderarr['categorytags'] , array('_id', 'name', 'slug', 'offering_header') ));
 				// array_set($finder, 'findercollections', pluck( $finderarr['findercollections'] , array('_id', 'name', 'slug') ));
 				// array_set($finder, 'blogs', pluck( $finderarr['blogs'] , array('_id', 'title', 'slug', 'coverimage') ));
@@ -519,6 +519,9 @@ class FindersController extends \BaseController {
 	               	'part_payment'=>false
                	];
 
+				if(isset($finder['flags']) && isset($finder['flags']['campaign_offer']) && $finder['flags']['campaign_offer']){
+					$finder['campaign_text'] = "Womens day";
+				}
 				// return $info_timing;
 				if(count($finder['services']) > 0 ){
 
@@ -533,14 +536,19 @@ class FindersController extends \BaseController {
 
 
 
-								$service = $service;
+							$service = $service;
 
 							$service['offer_icon'] = "";
 							
 							// if(isset($service['offer_available']) && $service['offer_available'] == true && !in_array($finder['_id'], Config::get('app.hot_offer_excluded_vendors'))){
 								
 							// 	$service['offer_icon'] = "https://b.fitn.in/iconsv1/fitmania/mob_offer_ratecard.png";
-							// }															
+							// }
+							
+							if(!isset($finder['campign_text']) && isset($service['flags']) && isset($service['flags']['campaign_offer']) && $service['flags']['campaign_offer']){
+								$service['campaign_text'] = "Womens day";
+							}
+							
 
 							if(isset($service['category']) && isset($service['category']['_id'])){
 								$category_id                =   intval($service['category']['_id']);
@@ -583,6 +591,10 @@ class FindersController extends \BaseController {
 										continue;
 									}
 
+									if(!isset($finder['campign_text']) && !isset($service['campaign_text']) && isset($rateval['flags']) && isset($rateval['flags']['campaign_offer']) && $rateval['flags']['campaign_offer']){
+										$service['serviceratecard'][$ratekey]['campaign_text'] = "Womens day";
+									}
+									
 									if(isset($service['membership']) && $service['membership']=='manual'){
 										$service['serviceratecard'][$ratekey]['direct_payment_enable'] = "0";
 									}
@@ -924,7 +936,12 @@ class FindersController extends \BaseController {
 				$response['show_reward_banner'] = true;
 				$response['finder_footer']				= 		$finder_footer;
 				$response['finder']['payment_options']				=		$this->getPaymentModes($payment_options_data);
-
+				// $response['finder']['strip_data']	=	[
+				// 	'text'=>
+				// 	'color'=>
+				// 	'background'=>
+				// 	'background-color'=>
+				// ]
 				if(isset($finder['commercial_type']) && $finder['commercial_type'] == 0){
 
 					unset($response['finder']['payment_options']);
