@@ -595,9 +595,10 @@ class FindersController extends \BaseController {
 										continue;
 									}
 
-									if(in_array($rateval['type'], ['membership', 'packages']) && !isset($finder['campaign_text']) && !isset($service['campaign_text']) && isset($rateval['flags']) && isset($rateval['flags']['campaign_offer']) && $rateval['flags']['campaign_offer']){
+									// if(in_array($rateval['type'], ['membership', 'packages']) && !isset($finder['campaign_text']) && !isset($service['campaign_text']) && isset($rateval['flags']) && isset($rateval['flags']['campaign_offer']) && $rateval['flags']['campaign_offer']){
+									if(in_array($rateval['type'], ['membership', 'packages']) && (isset($finder['campaign_text'])  || isset($service['campaign_text']) || (isset($rateval['flags']) && isset($rateval['flags']['campaign_offer']) && $rateval['flags']['campaign_offer']))){
 										$campaign_offer = true;
-										$service['serviceratecard'][$ratekey]['campaign_text'] = "(Women - Get addnl 30% off)";
+										$service['serviceratecard'][$ratekey]['campaign_text'] = "(Women - Get additional 30% off)";
 									}
 									
 									if(isset($service['membership']) && $service['membership']=='manual'){
