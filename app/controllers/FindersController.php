@@ -550,7 +550,7 @@ class FindersController extends \BaseController {
 							
 							if(!isset($finder['campaign_text']) && isset($service['flags']) && isset($service['flags']['campaign_offer']) && $service['flags']['campaign_offer']){
 								$campaign_offer = true;
-								$service['campaign_text'] = "Womens day";
+								$service['campaign_text'] = "<strong>Additional Flat 30%</strong> for Women";
 							}
 							
 
@@ -597,7 +597,7 @@ class FindersController extends \BaseController {
 
 									if(!isset($finder['campaign_text']) && !isset($service['campaign_text']) && isset($rateval['flags']) && isset($rateval['flags']['campaign_offer']) && $rateval['flags']['campaign_offer']){
 										$campaign_offer = true;
-										$service['serviceratecard'][$ratekey]['campaign_text'] = "Womens day";
+										$service['serviceratecard'][$ratekey]['campaign_text'] = "(Additional Flat 30% for Women)";
 									}
 									
 									if(isset($service['membership']) && $service['membership']=='manual'){
