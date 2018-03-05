@@ -455,7 +455,6 @@ class HomeController extends BaseController {
 
             // $collections 			= 	Findercollection::active()->where('city_id', '=', intval($citydata['_id']))->orderBy('ordering')->get(array('name', 'slug', 'coverimage', 'ordering' ));
             $campaigns=  [];
-            
             $campaigns[] = [
                 'image'=>'https://b.fitn.in/global/Homepage-branding-2018/fit-sale-web.png',
                 'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Fitness-sale-MOB.png',
@@ -498,6 +497,18 @@ class HomeController extends BaseController {
                 'width'=>375,
                 'ratio'=>(float) number_format(100/375,2)
             ];
+            if($city == "mumbai"){
+                $campaigns[] = [
+                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/web-banner-mfp.png',
+                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/mob-banner-mfp.png',
+                    'link'=>Config::get('app.website').'/mfp',
+                    'target'=>true,
+                    'title'=>'Save with Fitness',
+                    'height'=>100,
+                    'width'=>375,
+                    'ratio'=>(float) number_format(100/375,2)
+                ];   
+            }
 
             $homedata 	= 	array(
                 // 'popular_finders' => $popular_finders,
@@ -3256,11 +3267,11 @@ class HomeController extends BaseController {
             "time"=>"7:30 AM to 11:00 AM",
             "items"=>[
                 [
-                    "title"=>"Pilates",
-                    "description"=>"A combination of poses and postures to gain body strength, toning and flexibility",
+                    "title"=>"Animal Flow",
+                    "description"=>"A fun, challenging workout emphasizing multi-planar, fluid movement",
                     "calories_burn"=>"Burn 250 Calories",
                     "image"=>"https://b.fitn.in/global/toi/mfp/line_up/pilatesfinal.jpg",
-                    "trainer"=>"With Namrata Purohit",
+                    "trainer"=>"With Nam",
                     "time"=>"7:30 AM - 8:00 AM"
                 ],
                 [
@@ -3293,7 +3304,7 @@ class HomeController extends BaseController {
                     "description"=>"A low-impact aquatic yoga poses performed in warm water to gain strength & balance.",
                     "calories_burn"=>"Burn 800 Calories",
                     "image"=>"https://cdn.fitn.in/Mfp-delhi/zumba2.jpg",
-                    "trainer"=>"With Sucheta Pal",
+                    "trainer"=>"With Aadil, Roshan and Ritesh",
                     "time"=>"10:30 AM - 11:00 AM"
                 ]
             ]

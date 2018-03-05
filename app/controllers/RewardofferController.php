@@ -109,6 +109,10 @@ class RewardofferController extends BaseController {
     public function getRewardOffers(){
 
         $data       = Input::json()->all();
+
+        Log::info('----------------------getRewardOffers data-------------------',$data);
+
+
         
         $order              =   array();
         if(isset($data) && isset($data['type']) && $data['type'] == 'workout-session'){
@@ -326,6 +330,9 @@ class RewardofferController extends BaseController {
             if($finder_category_id != null){
                 $findercategory_id = $finder_category_id;
             }
+
+
+            Log::info('------------------------------findercategory_id --------------------------'.$findercategory_id);
 
             $rewardoffer           =   Rewardoffer::active()->where('findercategory_id', $findercategory_id)
                     ->where('amount_min','<=', $amount)
