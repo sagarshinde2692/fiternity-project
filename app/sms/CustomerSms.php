@@ -37,6 +37,15 @@ Class CustomerSms extends VersionNextSms{
 		return $this->common($label,$to,$data);
 	}
 
+	protected function bookTrialReminderBefore12Hour ($data, $delay){
+
+		$label = 'AutoTrial-ReminderBefore12Hour-Customer';
+
+		$to = $data['customer_phone'];
+
+		return $this->common($label,$to,$data,$delay);
+	}
+
 	protected function bookTrialReminderBefore1Hour ($data, $delay){
 
 		$label = 'AutoTrial-ReminderBefore1Hour-Customer';

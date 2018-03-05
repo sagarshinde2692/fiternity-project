@@ -2407,6 +2407,9 @@ class SchedulebooktrialsController extends \BaseController {
             }
 
             //Send Reminder Notiication (Email, Sms) Before 12 Hour To Customer
+
+            $before12HourDateTime = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->created_at)))->addMinutes(30);
+
             if($currentScheduleDateDiffMin >= (60 * 12)){
 
                 $delayReminderTimeBefore12Hour      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->subMinutes(60 * 12);
@@ -2414,56 +2417,48 @@ class SchedulebooktrialsController extends \BaseController {
                 $hour = (int) date("G", strtotime($delayReminderTimeBefore12Hour));
 
                 if($hour >= 7 && $hour <= 22 ){
-                    $send_communication["customer_email_before12hour"] = $this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);     
-                    $send_communication["customer_notification_before12hour"] = $this->customernotification->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderTimeBefore12Hour);
-                }else{
 
-                    $delayReminderAfter30Min    =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->created_at)))->addMinutes(30);
+                    $before12HourDateTime = $delayReminderTimeBefore12Hour;
 
-                    $send_communication["customer_email_before12hour"] = $this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderAfter30Min);
-                    $send_communication["customer_notification_before12hour"] = $this->customernotification->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderAfter30Min);
                 }
-
-            }else{
-
-                $delayReminderAfter30Min    =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->created_at)))->addMinutes(30);
-
-                $send_communication["customer_email_before12hour"] = $this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderAfter30Min);
-                $send_communication["customer_notification_before12hour"] = $this->customernotification->bookTrialReminderBefore12Hour($booktrialdata, $delayReminderAfter30Min);
             }
 
+            $send_communication["customer_email_before12hour"] = $this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $before12HourDateTime);     
+            $send_communication["customer_notification_before12hour"] = $this->customernotification->bookTrialReminderBefore12Hour($booktrialdata, $before12HourDateTime);
+            $send_communication["customer_sms_before12hour"] = $this->customersms->bookTrialReminderBefore12Hour($booktrialdata, $before12HourDateTime);
+
+
             if($currentScheduleDateDiffMin >= (60 * 6)){
+
                 $delayReminderTimeBefore6Hour      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->subMinutes(60 * 6);
                 $send_communication["finder_sms_before6hour"] = $this->findersms->bookTrialReminderBefore6Hour($booktrialdata, $delayReminderTimeBefore6Hour);
 
             }
 
             
-            if($currentScheduleDateDiffMin >= (60 * 3)){
+            if($currentScheduleDateDiffMin >= (90)){
 
                 $booktrialdata['poc'] = "vendor";
                 $booktrialdata['poc_no'] = $booktrialdata['finder_poc_for_customer_no'];
 
-                $delayReminderTimeBefore3Hour      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->subMinutes(60 * 3);
+                $delayReminderTimeBefore90Min      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->subMinutes(90);
 
-                $hour = (int) date("G", strtotime($delayReminderTimeBefore3Hour));
+                $hour = (int) date("G", strtotime($delayReminderTimeBefore90Min));
 
                 if($hour >= 10 && $hour <= 22){
                     $booktrialdata['poc'] = "fitternity";
                     $booktrialdata['poc_no'] = Config::get('app.contact_us_customer_number');
                 }
 
+                $before3HourDateTime = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->created_at)))->addMinutes(45);
+
                 if($hour >= 7 && $hour <= 22 ){
 
-                    $send_communication["customer_sms_before3hour"] = $this->customersms->bookTrialReminderBefore3Hour($booktrialdata, $delayReminderTimeBefore3Hour);
-                    $send_communication["customer_notification_before3hour"] = $this->customernotification->bookTrialReminderBefore3Hour($booktrialdata, $delayReminderTimeBefore3Hour);
-                }else{
-
-                    $delayReminderAfter45Min    =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->created_at)))->addMinutes(45);
-
-                    $send_communication["customer_sms_before3hour"] = $this->customersms->bookTrialReminderBefore3Hour($booktrialdata, $delayReminderAfter45Min);
-                    $send_communication["customer_notification_before3hour"] = $this->customernotification->bookTrialReminderBefore3Hour($booktrialdata, $delayReminderAfter45Min);
+                    $before3HourDateTime = $delayReminderTimeBefore90Min;
                 }
+
+                $send_communication["customer_sms_before3hour"] = $this->customersms->bookTrialReminderBefore3Hour($booktrialdata, $before3HourDateTime);
+                $send_communication["customer_notification_before3hour"] = $this->customernotification->bookTrialReminderBefore3Hour($booktrialdata, $before3HourDateTime);
 
             }
 
@@ -2549,6 +2544,7 @@ class SchedulebooktrialsController extends \BaseController {
             "finder_sms_instant",
             "customer_email_before12hour",
             "customer_notification_before12hour",
+            "customer_sms_before12hour",
             "finder_sms_before6hour",
             "customer_sms_before3hour",
             "customer_notification_before3hour",
