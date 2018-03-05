@@ -943,14 +943,14 @@ class FindersController extends \BaseController {
 				$response['finder']['payment_options']				=		$this->getPaymentModes($payment_options_data);
 				if($campaign_offer){
 					$response['vendor_stripe_data']	=	[
-						'text'=> "<strong>Women's Week Celebration | Additional FLAT 30% off | Code: IAMSTRONG</strong>",
+						'text'=> "Women\'s Week Celebration | <strong>ADDITIONAL FLAT 30% OFF FOR WOMEN</strong> | <span class=\"code\">CODE: IAMSTRONG</span>",
 						'text_color'=> '#ffffff',
 						'background'=> '-webkit-linear-gradient(left, #FE7E87 0%, #FA5295 100%)',
 						'background-color'=> ''
 					];
 				}else if($finder['commercial_type']!=0 && !(isset($finder['flags']) && in_array($finder['flags'], ['closed', 'temporarily_shut'])) && !(isset($finder['membership']) && $finder['membership']=='disable' && isset($finder['trial']) && $finder['trial']=='disable') ){
 					$response['vendor_stripe_data']	=	[
-						'text'=> "<strong>Special Discount For The Strong Women | Code: GETSTRONG</strong>",
+						'text'=> "<strong>Special Discount</strong> For The Strong Women | <span class=\"code\">CODE: GETSTRONG</span>",
 						'text_color'=> '#ffffff',
 						'background'=> '-webkit-linear-gradient(left, #FE7E87 0%, #FA5295 100%)',
 						'background-color'=> ''
