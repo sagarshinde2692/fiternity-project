@@ -455,7 +455,6 @@ class HomeController extends BaseController {
 
             // $collections 			= 	Findercollection::active()->where('city_id', '=', intval($citydata['_id']))->orderBy('ordering')->get(array('name', 'slug', 'coverimage', 'ordering' ));
             $campaigns=  [];
-<<<<<<< HEAD
             if($city == "mumbai"){
                 $campaigns[] = [
                     'image'=>'https://b.fitn.in/global/Homepage-branding-2018/fit-sale-web.png',
@@ -467,18 +466,6 @@ class HomeController extends BaseController {
                     'ratio'=>(float) number_format(100/375,2)
                 ];
             }
-=======
-            
-            $campaigns[] = [
-                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/women-day.jpg',
-                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/mob-banner-womens-day.jpg',
-                'link'=>Config::get('app.website').'/'.$city.'/fitness?women-offer=1',
-                'title'=>'Fitness Sale',
-                'height'=>100,
-                'width'=>375,
-                'ratio'=>(float) number_format(100/375,2)
-            ];
->>>>>>> 88f7c48042f971a1be53e06a860df00abd8ebd83
 
             $campaigns[] = [
                 'image'=>'https://b.fitn.in/global/Homepage-branding-2018/new-reward-web.png',
