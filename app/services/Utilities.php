@@ -3031,6 +3031,10 @@ Class Utilities {
             if(isset($data['post_trial_status']) && $data['post_trial_status'] != ""){
                 $fit_code = false;
             }
+
+            if(isset($data['is_tab_active']) && $data['is_tab_active']){
+                $fit_code = false;
+            }
         }
         
         return $fit_code;
