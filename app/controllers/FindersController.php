@@ -2894,7 +2894,7 @@ class FindersController extends \BaseController {
 				->with(array('knowlarityno'=>function($query){$query->select('*')->where('status',true);}))
 				->with(array('services'=>function($query){$query->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}))
 				->with(array('reviews'=>function($query){$query->select('_id','finder_id','customer_id','rating','description','updated_at')->where('status','=','1')->with(array('customer'=>function($query){$query->select('_id','name','picture')->where('status','=','1');}))->orderBy('updated_at', 'DESC')->limit(1);}))
-				->first(array('_id','slug','title','lat','lon','category_id','category','location_id','location','city_id','city','categorytags','locationtags','offerings','facilities','coverimage','finder_coverimage','contact','average_rating','photos','info','manual_trial_enable','manual_trial_auto','trial','commercial_type','multiaddress','membership','flags'));
+				->first(array('_id','slug','title','lat','lon','category_id','category','location_id','location','city_id','city','categorytags','locationtags','offerings','facilities','coverimage','finder_coverimage','contact','average_rating','photos','info','manual_trial_enable','manual_trial_auto','trial','commercial_type','multiaddress','membership','flags', 'custom_link'));
 
 			$finder = false;
 
@@ -3028,6 +3028,11 @@ class FindersController extends \BaseController {
 				}
 				$cult_Ids = array(12140,12141,12142,12143,12144,12145,12146,11110,4307,10514,9882,5986,9412,9881,9589);
 				if((isset($finderarr['category_id']) && $finderarr['category_id'] == 41) || in_array($finderarr['_id'], $cult_Ids)){
+					$finder['trial'] = 'disable';
+					$finder['membership'] = 'disable';
+				}
+
+				if(isset($finderarr['custom_link'])){
 					$finder['trial'] = 'disable';
 					$finder['membership'] = 'disable';
 				}
