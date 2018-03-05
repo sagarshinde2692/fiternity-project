@@ -3043,7 +3043,7 @@ Class Utilities {
 
         $customer_id = $decoded->customer->_id;
 
-        $response = [];
+        $response = null;
         $stage = '';
         $booktrial = false;
         $state = '';
@@ -3153,6 +3153,8 @@ Class Utilities {
 
                 $card_message = "Congratulations <b>₹250 FitCash</b> has been added in your wallet.Use it within 7 days to get a discount on your Membersihp";
             }
+
+            $response = [];
             
             $response['stage'] = $stage;
             $response['state'] = $state;
