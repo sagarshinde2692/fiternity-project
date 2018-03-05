@@ -2897,7 +2897,7 @@ class FindersController extends \BaseController {
 				->first(array('_id','slug','title','lat','lon','category_id','category','location_id','location','city_id','city','categorytags','locationtags','offerings','facilities','coverimage','finder_coverimage','contact','average_rating','photos','info','manual_trial_enable','manual_trial_auto','trial','commercial_type','multiaddress','membership','flags'));
 
 			$finder = false;
-			
+
 			if($finderarr){
 				$finderarr = $finderarr->toArray();
 
@@ -3254,11 +3254,25 @@ class FindersController extends \BaseController {
 					if(isset($data['finder']['multiaddress']	) && count($data['finder']['multiaddress'])>0 && isset($data['finder']['multiaddress'][0]['location'])){
 						$data['finder']['multiaddress']	[0]['location'] = [$finder['location']['name']];
 					}
-
 					
+					$campaign_offer = false;
+					
+					foreach($data['finder']['services'] as $service){
+						foreach($service['ratecard'] as $ratecard){
+							if(isset($ratecard['flags']) && isset($ratecard['flags']['campaign_offer']) && $ratecard['flags']['campaign_offer']){
+								$campaign_offer = true;
+								break;
+							}
+						}
+					}
 
+					if($campaign_offer){
+						$data['finder']['offer_icon'] = "https://b.fitn.in/global/women-day/flat-30tag-app.png";
+					}else if($data['finder']['commercial_type']!=0 && !(isset($data['finder']['flags']) && in_array($data['finder']['flags'], ['closed', 'temporarily_shut'])) && !(isset($data['finder']['membership']) && $data['finder']['membership']=='disable' && isset($data['finder']['trial']) && $data['finder']['trial']=='disable') ){
+						$data['finder']['offer_icon'] = "https://b.fitn.in/global/women-day/surprise-tag.png";
+					}
 					/*if(time() >= strtotime(date('2016-12-24 00:00:00')) && (int)$finder['commercial_type'] != 0){
-
+						
 						$data['finder']['offer_icon'] = "https://b.fitn.in/iconsv1/fitmania/offer_avail_red.png";
 					}*/
 					
