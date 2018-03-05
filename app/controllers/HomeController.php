@@ -455,17 +455,15 @@ class HomeController extends BaseController {
 
             // $collections 			= 	Findercollection::active()->where('city_id', '=', intval($citydata['_id']))->orderBy('ordering')->get(array('name', 'slug', 'coverimage', 'ordering' ));
             $campaigns=  [];
-            if($city == "mumbai"){
-                $campaigns[] = [
-                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/fit-sale-web.png',
-                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Fitness-sale-MOB.png',
-                    'link'=>Config::get('app.website').'/'.$city.'/fitness?trials=1',
-                    'title'=>'Fitness Sale',
-                    'height'=>100,
-                    'width'=>375,
-                    'ratio'=>(float) number_format(100/375,2)
-                ];
-            }
+            $campaigns[] = [
+                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/fit-sale-web.png',
+                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Fitness-sale-MOB.png',
+                'link'=>Config::get('app.website').'/'.$city.'/fitness?trials=1',
+                'title'=>'Fitness Sale',
+                'height'=>100,
+                'width'=>375,
+                'ratio'=>(float) number_format(100/375,2)
+            ];
 
             $campaigns[] = [
                 'image'=>'https://b.fitn.in/global/Homepage-branding-2018/new-reward-web.png',
@@ -499,17 +497,18 @@ class HomeController extends BaseController {
                 'width'=>375,
                 'ratio'=>(float) number_format(100/375,2)
             ];
-
-            $campaigns[] = [
-                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/web-banner-mfp.png',
-                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/mob-banner-mfp.png',
-                'link'=>Config::get('app.website').'/mfp',
-                'target'=>true,
-                'title'=>'Save with Fitness',
-                'height'=>100,
-                'width'=>375,
-                'ratio'=>(float) number_format(100/375,2)
-            ];
+            if($city == "mumbai"){
+                $campaigns[] = [
+                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/web-banner-mfp.png',
+                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/mob-banner-mfp.png',
+                    'link'=>Config::get('app.website').'/mfp',
+                    'target'=>true,
+                    'title'=>'Save with Fitness',
+                    'height'=>100,
+                    'width'=>375,
+                    'ratio'=>(float) number_format(100/375,2)
+                ];   
+            }
 
             $homedata 	= 	array(
                 // 'popular_finders' => $popular_finders,
