@@ -714,7 +714,8 @@ class EmailSmsApiController extends \BaseController {
 
                 $data['finder_id'] = (int)$booktrial['finder_id'];
                 $data['service_id'] = (int)$booktrial['service_id'];
-                $data['service_name'] = $booktrial['service_id'];
+                $data['service_name'] = $booktrial['service_name'];
+                $data['city_id'] = (int)$booktrial['city_id'];
             }
 
         }
