@@ -150,6 +150,7 @@ class FindersController extends \BaseController {
 		$finder_detail = $cache ? Cache::tags('finder_detail')->has($cache_key) : false;
 
 		if(!$finder_detail){
+			$campaign_offer = false;
 			//Log::info("Not cached in detail");
 			Finder::$withoutAppends=true;
 			Service::$withoutAppends=true;
@@ -518,8 +519,9 @@ class FindersController extends \BaseController {
 	               	'cash_pickup'=>false,
 	               	'part_payment'=>false
                	];
-
+				
 				if(isset($finder['flags']) && isset($finder['flags']['campaign_offer']) && $finder['flags']['campaign_offer']){
+					$campaign_offer = true;
 					$finder['campaign_text'] = "Womens day";
 				}
 				// return $info_timing;
@@ -545,7 +547,9 @@ class FindersController extends \BaseController {
 							// 	$service['offer_icon'] = "https://b.fitn.in/iconsv1/fitmania/mob_offer_ratecard.png";
 							// }
 							
-							if(!isset($finder['campign_text']) && isset($service['flags']) && isset($service['flags']['campaign_offer']) && $service['flags']['campaign_offer']){
+							
+							if(!isset($finder['campaign_text']) && isset($service['flags']) && isset($service['flags']['campaign_offer']) && $service['flags']['campaign_offer']){
+								$campaign_offer = true;
 								$service['campaign_text'] = "Womens day";
 							}
 							
@@ -591,7 +595,8 @@ class FindersController extends \BaseController {
 										continue;
 									}
 
-									if(!isset($finder['campign_text']) && !isset($service['campaign_text']) && isset($rateval['flags']) && isset($rateval['flags']['campaign_offer']) && $rateval['flags']['campaign_offer']){
+									if(!isset($finder['campaign_text']) && !isset($service['campaign_text']) && isset($rateval['flags']) && isset($rateval['flags']['campaign_offer']) && $rateval['flags']['campaign_offer']){
+										$campaign_offer = true;
 										$service['serviceratecard'][$ratekey]['campaign_text'] = "Womens day";
 									}
 									
@@ -936,12 +941,21 @@ class FindersController extends \BaseController {
 				$response['show_reward_banner'] = true;
 				$response['finder_footer']				= 		$finder_footer;
 				$response['finder']['payment_options']				=		$this->getPaymentModes($payment_options_data);
-				// $response['finder']['strip_data']	=	[
-				// 	'text'=>
-				// 	'color'=>
-				// 	'background'=>
-				// 	'background-color'=>
-				// ]
+				if($campaign_offer){
+					$response['vendor_stripe_data']	=	[
+						'text'=> "<strong>Women's Week Celebration | Additional FLAT 30% off | Code: IAMSTRONG</strong>",
+						'text-color'=> '#ffffff',
+						'background'=> '-webkit-linear-gradient(left, #FE7E87 0%, #FA5295 100%)',
+						'background-color'=> ''
+					];
+				}else if($finder['commercial_type']!=0 && !(isset($finder['flags']) && in_array($finder['flags'], ['closed', 'temporarily_shut'])) && !(isset($finder['membership']) && $finder['membership']=='disable' && isset($finder['trial']) && $finder['trial']=='disable') ){
+					$response['vendor_stripe_data']	=	[
+						'text'=> "<strong>Special Discount For The Strong Women | Code: GETSTRONG</strong>",
+						'text-color'=> '#ffffff',
+						'background'=> '-webkit-linear-gradient(left, #FE7E87 0%, #FA5295 100%)',
+						'background-color'=> ''
+					];
+				}
 				if(isset($finder['commercial_type']) && $finder['commercial_type'] == 0){
 
 					unset($response['finder']['payment_options']);
