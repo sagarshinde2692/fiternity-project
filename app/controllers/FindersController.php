@@ -950,7 +950,7 @@ class FindersController extends \BaseController {
 					];
 				}else if($finder['commercial_type']!=0 && !(isset($finder['flags']) && in_array($finder['flags'], ['closed', 'temporarily_shut'])) && !(isset($finder['membership']) && $finder['membership']=='disable' && isset($finder['trial']) && $finder['trial']=='disable') ){
 					$response['vendor_stripe_data']	=	[
-						'text'=> "<strong>Special Discount</strong> For The Strong Women | <span class=\"code\">CODE: GETSTRONG</span>",
+						'text'=> "Women's Week Celebration | <strong>Special Surprise Discount</strong> For Women | <span class=\"code\">CODE: GETSTRONG</span>",
 						'text_color'=> '#ffffff',
 						'background'=> '-webkit-linear-gradient(left, #FE7E87 0%, #FA5295 100%)',
 						'background-color'=> ''
