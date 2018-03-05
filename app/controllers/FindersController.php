@@ -943,7 +943,7 @@ class FindersController extends \BaseController {
 				$response['finder']['payment_options']				=		$this->getPaymentModes($payment_options_data);
 				if($campaign_offer){
 					$response['vendor_stripe_data']	=	[
-						'text'=> "Women\'s Week Celebration | <strong>ADDITIONAL FLAT 30% OFF FOR WOMEN</strong> | <span class=\"code\">CODE: IAMSTRONG</span>",
+						'text'=> "Women's Week Celebration | <strong>ADDITIONAL FLAT 30% OFF FOR WOMEN</strong> | <span class=\"code\">CODE: IAMSTRONG</span>",
 						'text_color'=> '#ffffff',
 						'background'=> '-webkit-linear-gradient(left, #FE7E87 0%, #FA5295 100%)',
 						'background-color'=> ''
