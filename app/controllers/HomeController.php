@@ -457,9 +457,9 @@ class HomeController extends BaseController {
             $campaigns=  [];
             
             $campaigns[] = [
-                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/fit-sale-web.png',
-                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Fitness-sale-MOB.png',
-                'link'=>Config::get('app.website').'/'.$city.'/fitness?trials=1',
+                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/women-web-banner.png',
+                'mob_image'=>'b.fitn.in/global/Homepage-branding-2018/Mob-banners/mobile-women.jpg',
+                'link'=>Config::get('app.website').'/'.$city.'/fitness?women-offer=1',
                 'title'=>'Fitness Sale',
                 'height'=>100,
                 'width'=>375,
@@ -492,6 +492,17 @@ class HomeController extends BaseController {
                 'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Webbanner-Emi.png',
                 'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Mobbanner-EMI.png',
                 'link'=>Config::get('app.website').'/emi',
+                'target'=>true,
+                'title'=>'Save with Fitness',
+                'height'=>100,
+                'width'=>375,
+                'ratio'=>(float) number_format(100/375,2)
+            ];
+
+            $campaigns[] = [
+                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/web-banner-mfp.png',
+                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/mob-banner-mfp.png',
+                'link'=>Config::get('app.website').'/mfp',
                 'target'=>true,
                 'title'=>'Save with Fitness',
                 'height'=>100,
