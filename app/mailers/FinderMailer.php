@@ -220,7 +220,8 @@ Class FinderMailer extends Mailer {
 						'silkeshakadam@fitternity.com',
 						'priyankamohnish@fitternity.com',
 						'dharatanna@fitternity.com',
-						'pranjalisalvi@fitternity.com' 
+						'pranjalisalvi@fitternity.com',
+						'hardikkhamkar@fitternity,com'
 					];
 					break;
 				case 4 : 
