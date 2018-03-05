@@ -3256,11 +3256,11 @@ class HomeController extends BaseController {
             "time"=>"7:30 AM to 11:00 AM",
             "items"=>[
                 [
-                    "title"=>"Pilates",
-                    "description"=>"A combination of poses and postures to gain body strength, toning and flexibility",
+                    "title"=>"Animal Flow",
+                    "description"=>"A fun, challenging workout emphasizing multi-planar, fluid movement",
                     "calories_burn"=>"Burn 250 Calories",
                     "image"=>"https://b.fitn.in/global/toi/mfp/line_up/pilatesfinal.jpg",
-                    "trainer"=>"With Namrata Purohit",
+                    "trainer"=>"With Nam",
                     "time"=>"7:30 AM - 8:00 AM"
                 ],
                 [
@@ -3293,7 +3293,7 @@ class HomeController extends BaseController {
                     "description"=>"A low-impact aquatic yoga poses performed in warm water to gain strength & balance.",
                     "calories_burn"=>"Burn 800 Calories",
                     "image"=>"https://cdn.fitn.in/Mfp-delhi/zumba2.jpg",
-                    "trainer"=>"With Sucheta Pal",
+                    "trainer"=>"With Aadil, Roshan and Ritesh",
                     "time"=>"10:30 AM - 11:00 AM"
                 ]
             ]
