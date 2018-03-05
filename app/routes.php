@@ -928,6 +928,8 @@ Route::post('transaction/success',array('as' => 'transaction.success','uses' => 
 Route::get('referral', 'CustomerController@generateReferralCode');
 
 Route::post('displayemi','CustomerController@displayEmi');
+Route::post('displayemiv1','CustomerController@displayEmiV1');
+
 
 Route::post('trainer/getavailableslots',array('as' => 'trainer/getavailableslots','uses' => 'TrainerController@getAvailableSlots'));
 
