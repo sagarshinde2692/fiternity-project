@@ -597,7 +597,7 @@ class FindersController extends \BaseController {
 
 									if(in_array($rateval['type'], ['membership', 'packages']) && !isset($finder['campaign_text']) && !isset($service['campaign_text']) && isset($rateval['flags']) && isset($rateval['flags']['campaign_offer']) && $rateval['flags']['campaign_offer']){
 										$campaign_offer = true;
-										$service['serviceratecard'][$ratekey]['campaign_text'] = "(Additional Flat 30% for Women)";
+										$service['serviceratecard'][$ratekey]['campaign_text'] = "(Women - Get addnl 30% off)";
 									}
 									
 									if(isset($service['membership']) && $service['membership']=='manual'){
@@ -943,14 +943,14 @@ class FindersController extends \BaseController {
 				$response['finder']['payment_options']				=		$this->getPaymentModes($payment_options_data);
 				if($campaign_offer){
 					$response['vendor_stripe_data']	=	[
-						'text'=> "Women's Week Celebration | <strong>ADDITIONAL FLAT 30% OFF FOR WOMEN</strong> | <span class=\"code\">CODE: IAMSTRONG</span>",
+						'text'=> "Women's Week Celebration | <strong>ADDITIONAL FLAT 30% OFF FOR WOMEN</strong> | <span class=\"code\">CODE: FIT30</span>",
 						'text_color'=> '#ffffff',
 						'background'=> '-webkit-linear-gradient(left, #FE7E87 0%, #FA5295 100%)',
 						'background-color'=> ''
 					];
 				}else if($finder['commercial_type']!=0 && !(isset($finder['flags']) && in_array($finder['flags'], ['closed', 'temporarily_shut'])) && !(isset($finder['membership']) && $finder['membership']=='disable' && isset($finder['trial']) && $finder['trial']=='disable') ){
 					$response['vendor_stripe_data']	=	[
-						'text'=> "Women's Week Celebration | <strong>Special Surprise Discount</strong> For Women | <span class=\"code\">CODE: GETSTRONG</span>",
+						'text'=> "Women's Week Celebration | <strong>Special Surprise Discount</strong> For Women | <span class=\"code\">CODE: WFIT</span>",
 						'text_color'=> '#ffffff',
 						'background'=> '-webkit-linear-gradient(left, #FE7E87 0%, #FA5295 100%)',
 						'background-color'=> ''
