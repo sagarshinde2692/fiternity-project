@@ -3114,7 +3114,8 @@ Class Utilities {
             ->whereIn('type',['booktrials','3daystrial'])
             ->where('going_status_txt','!=','cancel')
             ->where('booktrial_type','auto')
-            // ->where('schedule_date_time','>=',new \MongoDate(strtotime($from_date_time)))
+            ->where('schedule_date_time','>=',new \MongoDate(strtotime($from_date_time)))
+            ->where('is_tab_active','exists',false)
             ->orderBy('schedule_date_time', 'desc')
             ->first();
 
@@ -3138,6 +3139,7 @@ Class Utilities {
                 ->where('going_status_txt','!=','cancel')
                 ->where('booktrial_type','auto')
                 ->where('schedule_date_time','<=',new \MongoDate(strtotime($from_date_time)))
+                ->where('is_tab_active','exists',false)
                 ->orderBy('schedule_date_time', 'desc')
                 ->first();
 
@@ -3164,6 +3166,7 @@ Class Utilities {
                 ->where('going_status_txt','!=','cancel')
                 ->where('booktrial_type','auto')
                 ->where('schedule_date_time','>=',new \MongoDate(strtotime($from_date_time)))
+                ->where('is_tab_active','exists',false)
                 ->orderBy('schedule_date_time', 'desc')
                 ->first();
 
