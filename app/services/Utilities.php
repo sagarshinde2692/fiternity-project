@@ -3180,7 +3180,7 @@ Class Utilities {
             $response['lat'] = $booktrial['finder_lat'];
             $response['lon'] = $booktrial['finder_lon'];
             $response['calorie_burn'] = $category_calorie_burn;
-            $response['calorie_burn_text'] = "Get ready to burn ".$category_calorie_burn."kcl in your ".$booktrial['service_name']." Session!";
+            $response['calorie_burn_text'] = "Get ready to burn ".$category_calorie_burn." Calories in your ".$booktrial['service_name']." Session!";
             
         }
 
