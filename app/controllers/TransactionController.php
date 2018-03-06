@@ -760,7 +760,7 @@ class TransactionController extends \BaseController {
             $order->update();
         }
 
-        
+        $this->utilities->financeUpdate($order);
         
         if(in_array($data['customer_source'],['android','ios','kiosk'])){
             $mobilehash = $data['payment_related_details_for_mobile_sdk_hash'];
