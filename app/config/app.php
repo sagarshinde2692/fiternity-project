@@ -713,8 +713,8 @@ return array(
 
 	'trial_auto_confirm_finder_ids' => [],
 
-	'diet_reward_excluded_vendors' => [11230]
+	'diet_reward_excluded_vendors' => [11230],
 
-
+	'gst_on_cos_percentage'=>18
 
 );

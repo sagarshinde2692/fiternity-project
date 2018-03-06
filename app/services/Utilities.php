@@ -3020,5 +3020,80 @@ Class Utilities {
 
     }
 
+    public function getVendorCommision($data){
+
+        $finder_id = (int)$data['finder_id'];
+        $offer_id = (isset($data['offer_id']) && $data['offer_id'] != "") ? (int)$data['offer_id'] : false;
+
+        $vendorCommercial = \VendorCommercial::where('vendor_id',$finder_id)->orderBy('_id','desc')->first();
+
+        $commision = 15;
+
+        if($vendorCommercial){
+
+            if(isset($vendorCommercial['contract_end_date']) && $vendorCommercial['contract_end_date'] != "" && isset($vendorCommercial['commision']) && $vendorCommercial['commision'] != ""){
+
+                $contract_end_date = strtotime(date('Y-m-d 23:59:59',strtotime($vendorCommercial['contract_end_date'])));
+
+                if($contract_end_date > time()){
+                    $commision = (float) preg_replace("/[^0-9.]/","",$vendorCommercial['commision']);
+                }
+            }
+
+            if($offer_id && isset($vendorCommercial['campaign_end_date']) && $vendorCommercial['campaign_end_date'] != "" && isset($vendorCommercial['campaign_cos']) && $vendorCommercial['campaign_cos'] != ""){
+
+                $campaign_end_date = strtotime(date('Y-m-d 23:59:59',strtotime($vendorCommercial['campaign_end_date'])));
+
+                if($campaign_end_date > time()){
+                    $commision = (float) preg_replace("/[^0-9.]/","",$vendorCommercial['campaign_cos']);
+                }
+            }
+
+            if(isset($data['routed_order']) && $data['routed_order'] == "1" && isset($vendorCommercial['routing_cos']) && !empty($vendorCommercial['routing_cos'])){
+
+                if($data['payment_mode'] != "at the studio" && isset($vendorCommercial['routing_cos']['online']) && $vendorCommercial['routing_cos']['online'] != ""){
+                    $commision = $vendorCommercial['routing_cos']['online'];
+                }
+
+                if($data['payment_mode'] == "at the studio" && isset($vendorCommercial['routing_cos']['offline']) && $vendorCommercial['routing_cos']['offline'] != ""){
+                    $commision = $vendorCommercial['routing_cos']['offline'];
+                }
+            }
+            
+        }
+
+        Log::info('commision : '.$commision);
+
+        return $commision;
+
+    }
+
+    public function financeUpdate($order){
+
+        $order->cos_applicable = 'yes';
+
+        $order->gst_applicable = 'yes';
+
+        $order->cos_percentage = $this->getVendorCommision($order->toArray());
+
+        $order->cos_finder_amount = ceil(($order->amount_finder * $order->cos_percentage) / 100);
+
+        $order->gst_percentage = Config::get('app.gst_on_cos_percentage');
+
+        $order->amount_transferred_to_vendor = $order->amount_finder;
+
+        if($order->payment_mode == "at the studio"){
+            $order->amount_transferred_to_vendor = 0;
+        }
+
+        $order->amount_transferred_to_vendor -= $order->cos_finder_amount;
+
+        $order->gst_finder_amount =  floor(($order->gst_percentage * $order->cos_finder_amount) / 100);
+
+        $order->amount_transferred_to_vendor -= $order->gst_finder_amount;
+
+        $order->update();
+    }
+
 }
 
