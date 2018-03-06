@@ -6532,21 +6532,25 @@ class SchedulebooktrialsController extends \BaseController {
 
             if($booktrial->type == "booktrials" && !isset($booktrial->post_trial_status_updated_by_fitcode)){
 
+                $fitcash = $this->utilities->getFitcash($booktrial->toArray());
+
                 $req = array(
                     "customer_id"=>$booktrial['customer_id'],
                     "trial_id"=>$booktrial['_id'],
-                    "amount"=> 250,
+                    "amount"=> $fitcash,
                     "amount_fitcash" => 0,
-                    "amount_fitcash_plus" => 250,
+                    "amount_fitcash_plus" => $fitcash,
                     "type"=>'CREDIT',
                     'entry'=>'credit',
                     'validity'=>time()+(86400*21),
-                    'description'=>"Added FitCash+ on Trial Attendance By Fitcode, Expires On : ".date('d-m-Y',time()+(86400*21))
+                    'description'=>"Added FitCash+ on Trial Attendance By Fitcode, Applicable for buying a membership at ".ucwords($booktrial['finder_name'])." Expires On : ".date('d-m-Y',time()+(86400*21)),
+                    "valid_finder_id"=>intval($booktrial['finder_id']),
+                    "finder_id"=>intval($booktrial['finder_id']),
                 );
 
                 $this->utilities->walletTransaction($req);
 
-                $message = "Hi ".ucwords($booktrial['customer_name']).", Rs.250 Fitcash is added in your wallet as surprise on your attendace . Use it to buy ".ucwords($booktrial['finder_name'])."'s membership at lowest price. Valid for 21 days";
+                $message = "Hi ".ucwords($booktrial['customer_name']).", Rs.".$fitcash." Fitcash is added in your wallet as surprise on your attendace . Use it to buy ".ucwords($booktrial['finder_name'])."'s membership at lowest price. Valid for 21 days";
 
             }
 
@@ -6555,7 +6559,7 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrial->post_trial_status_updated_by_fitcode = time();
             $booktrial->update();
 
-            $message = "Hi ".ucwords($booktrial['customer_name']).", Rs.250 Fitcash is added in your wallet as surprise on your attendace . Use it to buy ".ucwords($booktrial['finder_name'])."'s membership at lowest price. Valid for 21 days";
+            $message = "Hi ".ucwords($booktrial['customer_name']).", Rs.".$fitcash." Fitcash is added in your wallet as surprise on your attendace . Use it to buy ".ucwords($booktrial['finder_name'])."'s membership at lowest price. Valid for 21 days";
 
             $response = [
                 'status' => 200,

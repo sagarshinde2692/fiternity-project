@@ -14,7 +14,17 @@ class Ratecard extends \Basemodel {
 		'interest' => 'required',
 		'area' => 'required',
 		//'short_description' => 'required',
-		);
+	);
+
+	public static $withoutAppends = false;
+
+	protected function getArrayableAppends()
+	{
+		if(self::$withoutAppends){
+			return [];
+		}
+		return parent::getArrayableAppends();
+	}
 
 	public function setOrderAttribute($value){
 		$this->attributes['order'] = intval($value);

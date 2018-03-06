@@ -3187,6 +3187,8 @@ Class Utilities {
 
         if($booktrial && $stage != ""){
 
+            $fitcash = $this->getFitcash($booktrial->toArray());
+
             $category_calorie_burn = 300;
 
             $service = \Service::find((int)$booktrial['service_id']);
@@ -3209,11 +3211,10 @@ Class Utilities {
             
             if($state == 'fit_code_activated'){
 
-                $card_message = "Congratulations <b>₹250 FitCash</b> has been added in your wallet.Use it within 7 days to get a discount on your Membersihp";
+                $card_message = "Congratulations <b>₹".$fitcash." FitCash</b> has been added in your wallet.Use it within 7 days to get a discount on your Membersihp";
             }
 
             $response = [];
-            
             $response['stage'] = $stage;
             $response['state'] = $state;
             $response['fit_code_status'] = $this->fitCode($booktrial->toArray());
@@ -3227,7 +3228,7 @@ Class Utilities {
             $response['verify_fit_code_url'] = Config::get('app.url').'/verifyfitcode/'.$booktrial['_id'].'/';
             $response['lost_fit_code_url'] = Config::get('app.url').'/lostfitcode/'.$booktrial['_id'];
             $response['subscription_code'] = $booktrial['code'];
-            $response['fitcash'] = 250;
+            $response['fitcash'] = $fitcash;
             $response['card_message'] = $card_message;
             $response['what_to_carry'] = $booktrial['what_i_should_carry'];
             $response['time_left'] = $time_left;
@@ -3239,6 +3240,124 @@ Class Utilities {
         }
 
         return $response;
+
+    }
+
+    public function getFitcash($data){
+
+        $finder_id = (int)$data['finder_id'];
+
+        \Ratecard::$withoutAppends = true;
+
+        $ratecards = \Ratecard::where('finder_id',$finder_id)->whereIn('type',['membership','packages'])->get();
+
+        $amount = 0;
+        $days = 0;
+        $fitcash = 100;
+
+        if(!empty($ratecards)){
+
+            foreach ($ratecards as $ratecard) {
+
+                $amount += $this->getRatecardAmount($ratecard);
+
+                $days += $this->getDurationDay($ratecard);
+
+            }
+
+            $vendorCommisionData = [
+                'finder_id'=>$finder_id
+            ];
+
+            $commision = $this->getVendorCommision($vendorCommisionData);
+
+            $percentage = 0.05;
+
+            if($commision > 10 && $commision < 15){
+                $percentage = 0.03;
+            }
+
+            if($commision <= 10){
+                $percentage = 0.02;
+            }
+
+            $fitcash = floor((($amount / $days) * 30)*$percentage);
+        }
+
+        return $fitcash;
+
+    }
+
+    public function getRatecardAmount($ratecard){
+
+        if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
+            $price = $ratecard['special_price'];
+        }else{
+            $price = $ratecard['price'];
+        }
+
+        return $price;
+    }
+
+    public function getDurationDay($ratecard){
+
+        switch ($ratecard['validity_type']){
+            case 'days': 
+                $duration_day = (int)$ratecard['validity'];break;
+            case 'months': 
+                $duration_day = (int)($ratecard['validity'] * 30) ; break;
+            case 'year': 
+                $duration_day = (int)($ratecard['validity'] * 30 * 12); break;
+            default : $duration_day =  $ratecard['validity']; break;
+        }
+
+        return $duration_day;
+
+    }
+
+    public function getVendorCommision($data){
+
+        $finder_id = (int)$data['finder_id'];
+        $offer_id = (isset($data['offer_id']) && $data['offer_id'] != "") ? (int)$data['offer_id'] : false;
+
+        $vendorCommercial = \VendorCommercial::where('vendor_id',$finder_id)->orderBy('_id','desc')->first();
+
+        $commision = 15;
+
+        if($vendorCommercial){
+
+            if(isset($vendorCommercial['contract_end_date']) && $vendorCommercial['contract_end_date'] != "" && isset($vendorCommercial['commision']) && $vendorCommercial['commision'] != ""){
+
+                $contract_end_date = strtotime(date('Y-m-d 23:59:59',strtotime($vendorCommercial['contract_end_date'])));
+
+                if($contract_end_date > time()){
+                    $commision = (float) preg_replace("/[^0-9.]/","",$vendorCommercial['commision']);
+                }
+            }
+
+            if($offer_id && isset($vendorCommercial['campaign_end_date']) && $vendorCommercial['campaign_end_date'] != "" && isset($vendorCommercial['campaign_cos']) && $vendorCommercial['campaign_cos'] != ""){
+
+                $campaign_end_date = strtotime(date('Y-m-d 23:59:59',strtotime($vendorCommercial['campaign_end_date'])));
+
+                if($campaign_end_date > time()){
+                    $commision = (float) preg_replace("/[^0-9.]/","",$vendorCommercial['campaign_cos']);
+                }
+            }
+
+            if(isset($data['routed_order']) && $data['routed_order'] == "1" && isset($vendorCommercial['routing_cos']) && !empty($vendorCommercial['routing_cos'])){
+
+                if($data['payment_mode'] != "at the studio" && isset($vendorCommercial['routing_cos']['online']) && $vendorCommercial['routing_cos']['online'] != ""){
+                    $commision = $vendorCommercial['routing_cos']['online'];
+                }
+
+                if($data['payment_mode'] == "at the studio" && isset($vendorCommercial['routing_cos']['offline']) && $vendorCommercial['routing_cos']['offline'] != ""){
+                    $commision = $vendorCommercial['routing_cos']['offline'];
+                }
+            }
+            
+        }
+
+        return $commision;
 
     }
 
