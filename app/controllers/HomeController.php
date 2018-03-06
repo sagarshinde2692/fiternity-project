@@ -3283,19 +3283,19 @@ class HomeController extends BaseController {
                     "time"=>"8:15 AM - 8:45 AM"
                 ],
                 [
-                    "title"=>"Bollywood",
-                    "description"=>"A high energetic full body dance cardio workout done on bollywood music to sweat out excessive calories.",
-                    "calories_burn"=>"Burn 700 Calories",
-                    "image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/bollyfit.jpg",
-                    "trainer"=>"With Team Terence Lewis",
-                    "time"=>"9:00 AM - 9:30 AM"
-                ],
-                [
                     "title"=>"Piloxing",
                     "description"=>"A creative mix between Pilates and Boxing moves in a high-spirited interval workout",
                     "calories_burn"=>"Burn 700 Calories",
                     "image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/zumbafinal.jpg",
                     "trainer"=>"With Mahek Shah",
+                    "time"=>"9:00 AM - 9:30 AM"
+                ],
+                [
+                    "title"=>"Bollywood",
+                    "description"=>"A high energetic full body dance cardio workout done on bollywood music to sweat out excessive calories.",
+                    "calories_burn"=>"Burn 700 Calories",
+                    "image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/bollyfit.jpg",
+                    "trainer"=>"With Melvin Louis",
                     "time"=>"9:45 AM - 10:15"
                 ],
                 [
