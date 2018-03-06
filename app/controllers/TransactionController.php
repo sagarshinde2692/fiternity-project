@@ -364,13 +364,15 @@ class TransactionController extends \BaseController {
                     $data['repetition'] = $order->repetition + 1;
                 }
 
-                /*if(isset($order->cashback)){
+                if(isset($order->cashback)){
                     $order->unset('cashback');
                 }
 
                 if(isset($order->reward_ids)){
                     $order->unset('reward_ids');
-                }*/
+                }
+
+                $order->update();
             }
 
         }else{
@@ -584,7 +586,7 @@ class TransactionController extends \BaseController {
                 $order->unset('wallet_amount');
             }
 
-            $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($order['amount'],$data['finder_id'],'paymentgateway',$data['offer_id'],false,$order["part_payment_calculation"]["part_payment_and_convinience_fee_amount"],$convinience_fee);
+            $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($order['amount'],$data['finder_id'],'paymentgateway',$data['offer_id'],false,$order["part_payment_calculation"]["part_payment_and_convinience_fee_amount"],$convinience_fee,$data['type']);
 
             if(isset($data['wallet']) && $data['wallet'] == true){
 
@@ -600,7 +602,8 @@ class TransactionController extends \BaseController {
                     'type'=>'DEBIT',
                     'entry'=>'debit',
                     'description'=> $this->utilities->getDescription($data),
-                    'finder_id'=>$data['finder_id']
+                    'finder_id'=>$data['finder_id'],
+                    'order_type'=>$data['type']
                 );
 
                 $walletTransactionResponse = $this->utilities->walletTransactionNew($req);
@@ -1876,7 +1879,7 @@ class TransactionController extends \BaseController {
             $amount -= $data['customer_discount_amount'];
 
             
-            $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($amount,$data['finder_id'],'paymentgateway',$data['offer_id'],false,false,$convinience_fee);
+            $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($amount,$data['finder_id'],'paymentgateway',$data['offer_id'],false,false,$convinience_fee,$data['type']);
 
             if(isset($data['cashback']) && $data['cashback'] == true){
                 $amount -= $data['cashback_detail']['amount_discounted'];
@@ -1901,7 +1904,8 @@ class TransactionController extends \BaseController {
                         'type'=>'DEBIT',
                         'entry'=>'debit',
                         'description'=> $this->utilities->getDescription($data),
-                        'finder_id'=>$data['finder_id']
+                        'finder_id'=>$data['finder_id'],
+                        'order_type'=>$data['type']
                     );
 
                     $walletTransactionResponse = $this->utilities->walletTransactionNew($req);
@@ -1940,7 +1944,8 @@ class TransactionController extends \BaseController {
                             'type'=>'DEBIT',
                             'entry'=>'debit',
                             'description'=> $this->utilities->getDescription($data),
-                            'finder_id'=>$data['finder_id']
+                            'finder_id'=>$data['finder_id'],
+                            'order_type'=>$data['type']
                         );
                         $walletTransactionResponse = $this->utilities->walletTransactionNew($req);
                         
@@ -1985,7 +1990,7 @@ class TransactionController extends \BaseController {
 
                     }
 
-                    $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($amount,$data['finder_id'],'paymentgateway',$data['offer_id'],false,false,$convinience_fee);
+                    $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($amount,$data['finder_id'],'paymentgateway',$data['offer_id'],false,false,$convinience_fee,$data['type']);
 
                     if(isset($data['cashback']) && $data['cashback'] == true){
                         $amount -= $data['cashback_detail']['amount_discounted'];
@@ -2097,9 +2102,9 @@ class TransactionController extends \BaseController {
             $this->appOfferDiscount = in_array($data['finder_id'], $this->appOfferExcludedVendors) ? 0 : $this->appOfferDiscount;
             $data['app_discount_amount'] = intval($data['amount'] * ($this->appOfferDiscount/100));
             $amount = $data['amount'] = $data['amount_customer'] = $data['amount'] - $data['app_discount_amount'];
-            $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount'],$data['finder_id'],'paymentgateway',$data['offer_id'],$data['customer_id']);
+            $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount'],$data['finder_id'],'paymentgateway',$data['offer_id'],$data['customer_id'],false,false,$data['type']);
         }else{
-            $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount_finder'],$data['finder_id'],'paymentgateway',$data['offer_id'],$data['customer_id']);
+            $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount_finder'],$data['finder_id'],'paymentgateway',$data['offer_id'],$data['customer_id'],false,false,$data['type']);
         }
 
         if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios'])){
@@ -3425,6 +3430,17 @@ class TransactionController extends \BaseController {
                             $this->customernotification->postTrialFollowup1After15Days($transaction,0);
                         }
                         break;
+                    case 'Nplus2':
+
+                        $sms_data = [];
+
+                        $sms_data['customer_phone'] = $transaction['customer_phone'];
+
+                        $sms_data['message'] = "Hi ".ucwords($transaction['customer_name']).". Hope you liked your trial workout at".ucwords($transaction['finder_name']).". You have Rs. ".$transaction['wallet_balance']." in your Fittenrity wallet. Use it now to buy the membership at lowest price with assured complimentary rewards like cool fitness merchandise and Diet Plan. ".$transaction['vendor_link'].".  Valid for 7 days. For quick assistance call Fitternity on ".Config::get('app.contact_us_customer_number');
+
+                        $this->customersms->custom($sms_data);
+
+                        break;
                     default : break;
                 }
 
@@ -3931,7 +3947,7 @@ class TransactionController extends \BaseController {
 
             }
 
-            $cashback_detail = $this->customerreward->purchaseGame($data['amount'],$data['finder_id'],'paymentgateway',$data['offer_id'],false,$data["part_payment_calculation"]["part_payment_and_convinience_fee_amount"]);
+            $cashback_detail = $this->customerreward->purchaseGame($data['amount'],$data['finder_id'],'paymentgateway',$data['offer_id'],false,$data["part_payment_calculation"]["part_payment_and_convinience_fee_amount"],$data['type']);
 
             if($cashback_detail['amount_deducted_from_wallet'] > 0){
 
@@ -4205,7 +4221,7 @@ class TransactionController extends \BaseController {
 
             if($amount > 0){
 
-                $cashback_detail = $this->customerreward->purchaseGame($amount,$finder_id,'paymentgateway',$offer_id,false);
+                $cashback_detail = $this->customerreward->purchaseGame($amount,$finder_id,'paymentgateway',$offer_id,false,false,false,$ratecard['type']);
 
                 if(isset($data['cashback']) && $data['cashback'] == true){
                     $amount -= $cashback_detail['amount_discounted'];
@@ -4640,7 +4656,12 @@ class TransactionController extends \BaseController {
                 
                 $customer_id = $decoded->customer->_id;
 
-                $data['wallet_balance'] = $this->utilities->getWalletBalance($customer_id);
+                $getWalletBalanceData = [
+                    'finder_id'=>$ratecard['finder_id'],
+                    'order_type'=>$ratecard['type']
+                ];
+
+                $data['wallet_balance'] = $this->utilities->getWalletBalance($customer_id,$getWalletBalanceData);
 
                 $data['fitcash_applied'] = $data['amount_payable'] > $data['wallet_balance'] ? $data['wallet_balance'] : $data['amount_payable'];
                 
@@ -4838,7 +4859,12 @@ class TransactionController extends \BaseController {
                 
                 $customer_id = $decoded->customer->_id;
 
-                $data['wallet_balance'] = $this->utilities->getWalletBalance($customer_id);
+                $getWalletBalanceData = [
+                    'finder_id'=>$order['finder_id'],
+                    'order_type'=>$order['type']
+                ];
+
+                $data['wallet_balance'] = $this->utilities->getWalletBalance($customer_id,$getWalletBalanceData);
 
                 $data['fitcash_applied'] = $data['amount_payable'] > $data['wallet_balance'] ? $data['wallet_balance'] : $data['amount_payable'];
                 
