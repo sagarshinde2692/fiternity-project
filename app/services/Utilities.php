@@ -3113,7 +3113,6 @@ Class Utilities {
             ->where('going_status_txt','!=','cancel')
             ->where('booktrial_type','auto')
             ->where('schedule_date_time','>=',new \MongoDate(time()))
-            ->where('is_tab_active','exists',false)
             ->orderBy('schedule_date_time', 'desc')
             ->first();
 
@@ -3135,7 +3134,6 @@ Class Utilities {
                 ->where('going_status_txt','!=','cancel')
                 ->where('booktrial_type','auto')
                 ->where('schedule_date_time','<=',new \MongoDate(time()))
-                ->where('is_tab_active','exists',false)
                 ->orderBy('schedule_date_time', 'desc')
                 ->first();
 
@@ -3168,7 +3166,6 @@ Class Utilities {
                 ->where('going_status_txt','!=','cancel')
                 ->where('booktrial_type','auto')
                 ->where('schedule_date_time','>=',new \MongoDate(strtotime("+21 days")))
-                ->where('is_tab_active','exists',false)
                 ->orderBy('schedule_date_time', 'desc')
                 ->first();
 
