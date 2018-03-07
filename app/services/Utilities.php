@@ -3156,13 +3156,10 @@ Class Utilities {
 
                 $state = 'trial_attended';
 
-                if(!$this->fitCode($booktrial->toArray())){
-                    $state = 'fit_code_activated';
-                }
             }
         }
 
-        if($stage == ''){
+        /*if($stage == ''){
 
             $booktrial = false;
 
@@ -3181,10 +3178,6 @@ Class Utilities {
 
                 $state = 'trial_attended';
 
-                if(!$this->fitCode($booktrial->toArray())){
-                    $state = 'fit_code_activated';
-                }
-
                 $order_count = \Order::active()
                     ->where('customer_id',$customer_id)
                     ->where('type','memberships')
@@ -3194,7 +3187,7 @@ Class Utilities {
                     $state = 'membership_purchased';
                 }
             }
-        }
+        }*/
 
         if($booktrial && $stage != ""){
 
@@ -3220,9 +3213,9 @@ Class Utilities {
 
             }
             
-            if($state == 'fit_code_activated'){
+            if(isset($booktrial['post_trial_status_updated_by_fitcode'])){
 
-                $card_message = "Congratulations <b>₹".$fitcash." FitCash</b> has been added in your wallet.Use it within 7 days to get a discount on your Membersihp";
+                $card_message = "Congratulations <b>₹".$fitcash." FitCash</b> has been added in your wallet.Use it to get a discount on your Membersihp";
             }
 
             $response = [];
