@@ -1696,6 +1696,21 @@ Class Utilities {
                 $wallet->finder_id = (int)$request['finder_id'];
             }
 
+            if(isset($request['valid_finder_id']) && $request['valid_finder_id'] != ""){
+
+                $wallet->valid_finder_id = $request['valid_finder_id'];
+            }
+
+            if(isset($request['service_id']) && $request['service_id'] != ""){
+
+                $wallet->service_id = $request['service_id'];
+            }
+
+            if(isset($request['valid_service_id']) && $request['valid_service_id'] != ""){
+
+                $wallet->valid_service_id = $request['valid_service_id'];
+            }
+
             $wallet->save();
 
             $walletTransactionData['wallet_id'] = $wallet->_id;
@@ -2030,11 +2045,32 @@ Class Utilities {
     }
 
 
-    public function getWalletBalance($customer_id){
+   public function getWalletBalance($customer_id,$data = false){
 
         $customer_id = (int) $customer_id;
 
-        $wallet_balance = Wallet::active()->where('customer_id',$customer_id)->where('balance','>',0)->sum('balance');
+        $finder_id = ($data && isset($data['finder_id']) && $data['finder_id'] != "") ? (int)$data['finder_id'] : "";
+        $order_type = ($data && isset($data['order_type']) && $data['order_type'] != "") ? (int)$data['order_type'] : "";
+
+        $query = Wallet::active()->where('customer_id',$customer_id)->where('balance','>',0);
+
+        if($finder_id && $finder_id != ""){
+
+            if(in_array($order_type,['membership','memberships'])){
+
+                $query->where(function($query) use($finder_id) {$query->orWhere('valid_finder_id','exists',false)->orWhere('valid_finder_id',(int)$finder_id);});
+
+            }else{
+
+                $query->where('valid_finder_id','exists',false);
+            }
+
+        }else{
+
+            $query->where('valid_finder_id','exists',false);
+        }
+
+        $wallet_balance = $query->sum('balance');
 
         return $wallet_balance;
     }
@@ -2241,13 +2277,18 @@ Class Utilities {
         }
 
     }
+
     public function getWalletQuery($request){
+
+        Log::info('---------------request-------------------',$request);
 
         $query = Wallet::active()->where('customer_id',(int)$request['customer_id'])->where('balance','>',0);
 
         if(isset($request['finder_id']) && $request['finder_id'] != ""){
 
-            $finder = \Finder::find((int)$request['finder_id']);
+            $finder_id = (int)$request['finder_id'];
+
+            $finder = \Finder::find($finder_id);
 
             $conditionData = [];
 
@@ -2301,6 +2342,19 @@ Class Utilities {
 
                 }
             }
+
+            if(isset($request['order_type']) && in_array($request['order_type'],['membership','memberships'])){
+
+                $query->where(function($query) use($finder_id) {$query->orWhere('valid_finder_id','exists',false)->orWhere('valid_finder_id',$finder_id);});
+
+            }else{
+
+                $query->where('valid_finder_id','exists',false);
+            }
+
+        }else{
+
+            $query->where('valid_finder_id','exists',false);
         }
 
         return $query;
@@ -3020,6 +3074,282 @@ Class Utilities {
 
     }
 
+    public function fitCode($data){
+
+        $fit_code = false;
+
+        if(isset($data['vendor_code']) && $data['type'] != 'workout-session'){
+
+            $fit_code = true;
+
+            if(isset($data['post_trial_status']) && $data['post_trial_status'] != ""){
+                $fit_code = false;
+            }
+
+            if(isset($data['is_tab_active']) && $data['is_tab_active']){
+                $fit_code = false;
+            }
+        }
+        
+        return $fit_code;
+
+    }
+
+    public function customerHome(){
+
+        $decoded = decode_customer_token();
+
+        $customer_id = $decoded->customer->_id;
+
+        $response = null;
+        $stage = '';
+        $booktrial = false;
+        $state = '';
+        $time_left = 0;
+        $card_message = "Congratulations on completing your trial";
+        
+        $booktrial = \Booktrial::where('customer_id',$customer_id)
+            ->whereIn('type',['booktrials','3daystrial'])
+            ->where('going_status_txt','!=','cancel')
+            ->where('booktrial_type','auto')
+            ->where('schedule_date_time','>=',new \MongoDate(time()))
+            ->orderBy('schedule_date_time', 'desc')
+            ->first();
+
+        if($booktrial){
+
+            $stage = 'before_trial';
+            $state = 'booked_trial';
+            
+            $time_left = strtotime($booktrial->schedule_date_time) - time();
+        }
+
+
+        if($stage == ''){
+
+            $booktrial = false;
+
+            $booktrial = \Booktrial::where('customer_id',$customer_id)
+                ->whereIn('type',['booktrials','3daystrial'])
+                ->where('going_status_txt','!=','cancel')
+                ->where('booktrial_type','auto')
+                ->where('schedule_date_time','<=',new \MongoDate(time()))
+                ->orderBy('schedule_date_time', 'desc')
+                ->first();
+
+            if($booktrial){
+
+                $order_count = \Order::active()
+                    ->where('customer_id',$customer_id)
+                    ->where('type','memberships')
+                    ->where('success_date','>=',new \MongoDate(strtotime($booktrial['schedule_date_time'])))
+                    ->count();
+
+                if($order_count > 0){
+
+                    return $response;
+                }
+
+                $stage = 'after_trial';
+
+                $state = 'trial_done';
+
+            }
+        }
+
+        /*if($stage == ''){
+
+            $booktrial = false;
+
+            $booktrial = \Booktrial::where('customer_id',$customer_id)
+                ->whereIn('type',['booktrials','3daystrial'])
+                ->where('going_status_txt','!=','cancel')
+                ->where('booktrial_type','auto')
+                ->where('schedule_date_time','>=',new \MongoDate(strtotime("+21 days")))
+                ->orderBy('schedule_date_time', 'desc')
+                ->first();
+
+            if($booktrial){
+
+                $stage = 'buy_membership';
+
+                $state = 'trial_attended';
+
+                $order_count = \Order::active()
+                    ->where('customer_id',$customer_id)
+                    ->where('type','memberships')
+                    ->count();
+
+                if($order_count > 0){
+                    $state = 'membership_purchased';
+                }
+            }
+        }*/
+
+        if($booktrial && $stage != ""){
+
+            $fitcash = $this->getFitcash($booktrial->toArray());
+
+            $category_calorie_burn = 300;
+
+            $service = \Service::find((int)$booktrial['service_id']);
+
+            if($service){
+
+                $sericecategorysCalorieArr = Config::get('app.calorie_burn_categorywise');
+
+                $service_category_id = (isset($service['servicecategory_id']) && $service['servicecategory_id'] != "") ? $service['servicecategory_id'] : 0;
+
+                if(isset($service['calorie_burn']) && $service['calorie_burn']['avg'] != 0){
+                    $category_calorie_burn = $service['calorie_burn']['avg'];
+                }else{
+                    if(isset($sericecategorysCalorieArr[$service_category_id])){
+                        $category_calorie_burn = $sericecategorysCalorieArr[$service_category_id];
+                    }
+                }
+
+            }
+
+            $is_tab_active = (isset($booktrial['is_tab_active']) && $booktrial['is_tab_active']) ? true : false;
+
+            if($is_tab_active){
+                $fitcash = 250;
+            }
+
+            if($stage == 'before_trial'){
+
+                $card_message = "Provide this & get your <b>FITCODE</b> from Gym/Studio to unlock your surprise discount.<br>Use it to buy your membership at lowest price";
+
+                if($is_tab_active){
+
+                    $card_message = "Punch this code on the tab available at Gym/Studio to unlock your surprise discount.<br>Use it to buy your membership at lowest price";
+                }
+            }
+
+            if($stage == 'after_trial'){
+
+                $card_message = "Yes? Enter your <b>FITCODE</b> to get a <b>Surprise Discount</b><br/>No? You can always reschedule";
+
+                if($is_tab_active){
+
+                    $card_message = "Let us know now & we'll give a suprise discount to buy your membership at lowest price";
+                }
+
+            }
+
+            if(isset($booktrial['post_trial_status']) && $booktrial['post_trial_status'] == 'attended'){
+
+                $card_message = "Congratulations on completing your trial";
+                
+                if(isset($booktrial['post_trial_status_updated_by_fitcode']) || isset($booktrial['post_trial_status_updated_by_kiosk'])){
+
+                    $card_message = "Congratulations <b>₹".$fitcash." FitCash</b> has been added in your wallet.Use it to get a discount on your Membership";
+                }
+                $state = 'trial_attended';
+            }
+
+            $response = [];
+            $response['stage'] = $stage;
+            $response['state'] = $state;
+            $response['fit_code_status'] = $this->fitCode($booktrial->toArray());
+            $response['booktrial_id'] = (int)$booktrial['_id'];
+            $response['finder_id'] = (int)$booktrial['finder_id'];
+            $response['finder_slug'] = $booktrial['finder_slug'];
+            $response['service_id'] = (int)$booktrial['service_id'];
+            $response['finder_name'] = ucwords($booktrial['finder_name']);
+            $response['service_name'] = ucwords($booktrial['service_name']);
+            $response['ratecard_url'] = Config::get('app.url').'/getmembershipratecardbyserviceid/'.$booktrial['service_id'];
+            $response['verify_fit_code_url'] = Config::get('app.url').'/verifyfitcode/'.$booktrial['_id'].'/';
+            $response['lost_fit_code_url'] = Config::get('app.url').'/lostfitcode/'.$booktrial['_id'];
+            $response['subscription_code'] = $booktrial['code'];
+            $response['fitcash'] = $fitcash;
+            $response['card_message'] = $card_message;
+            $response['what_to_carry'] = $booktrial['what_i_should_carry'];
+            $response['time_left'] = $time_left;
+            $response['lat'] = $booktrial['finder_lat'];
+            $response['lon'] = $booktrial['finder_lon'];
+            $response['calorie_burn'] = $category_calorie_burn;
+            $response['calorie_burn_text'] = "Get ready to burn ".$category_calorie_burn." Calories in your ".$booktrial['service_name']." Session!";
+            $response['is_tab_active'] = $is_tab_active;
+            
+        }
+
+        return $response;
+
+    }
+
+    public function getFitcash($data){
+
+        $finder_id = (int)$data['finder_id'];
+
+        \Ratecard::$withoutAppends = true;
+
+        $ratecards = \Ratecard::where('finder_id',$finder_id)->whereIn('type',['membership','packages'])->get();
+
+        $amount = 0;
+        $days = 0;
+        $fitcash = 100;
+
+        if(!empty($ratecards)){
+
+            foreach ($ratecards as $ratecard) {
+
+                $amount += $this->getRatecardAmount($ratecard);
+
+                $days += $this->getDurationDay($ratecard);
+
+            }
+
+            $vendorCommisionData = [
+                'finder_id'=>$finder_id
+            ];
+
+            $commision = $this->getVendorCommision($vendorCommisionData);
+
+            $percentage = 0.05;
+
+            if($commision > 10 && $commision < 15){
+                $percentage = 0.03;
+            }
+
+            if($commision <= 10){
+                $percentage = 0.02;
+            }
+
+            $fitcash = floor((($amount / $days) * 30)*$percentage);
+        }
+
+        return $fitcash;
+
+    }
+
+    public function getRatecardAmount($ratecard){
+
+        if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
+            $price = $ratecard['special_price'];
+        }else{
+            $price = $ratecard['price'];
+        }
+
+        return $price;
+    }
+
+    public function getDurationDay($ratecard){
+
+        switch ($ratecard['validity_type']){
+            case 'days': 
+                $duration_day = (int)$ratecard['validity'];break;
+            case 'months': 
+                $duration_day = (int)($ratecard['validity'] * 30) ; break;
+            case 'year': 
+                $duration_day = (int)($ratecard['validity'] * 30 * 12); break;
+            default : $duration_day =  $ratecard['validity']; break;
+        }
+
+        return $duration_day;
+
+    }
+
     public function getVendorCommision($data){
 
         $finder_id = (int)$data['finder_id'];
@@ -3063,7 +3393,6 @@ Class Utilities {
         }
 
         Log::info('commision : '.$commision);
-
         return $commision;
 
     }
@@ -3094,6 +3423,6 @@ Class Utilities {
 
         $order->update();
     }
-
+    
 }
 

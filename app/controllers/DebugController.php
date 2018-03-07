@@ -5638,5 +5638,18 @@ public function yes($msg){
 
 	}
 
+	public function ldJson($booktrial_id){
+
+		$booktrial_id = (int) $booktrial_id;
+
+		$booktrial = Booktrial::find($booktrial_id);
+
+		$customermailer = new CustomerMailer();
+
+		$customermailer->bookTrial($booktrial->toArray());
+
+		return "Email Sent";
+
+	}
     
 }

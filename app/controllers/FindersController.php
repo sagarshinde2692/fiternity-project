@@ -2397,6 +2397,131 @@ class FindersController extends \BaseController {
 		}
 	}
 
+	public function getMembershipRatecardByServiceId($service_id){
+
+		$service_id = (int) $service_id;
+
+		$service = Service::find($service_id);
+
+		$response = [
+			'status'=>200,
+			'message'=>'Success',
+			'ratecards'=>[]
+		];
+
+		if($service){
+
+			$finder_id = (int)$service->finder_id;
+
+			$getTrialSchedule = $this->getTrialSchedule($finder_id);
+
+			$service = [];
+
+			foreach ($getTrialSchedule as $key => $value) {
+
+				if($value['_id'] == $service_id){
+
+					$service = $value;
+
+					$ratecards = $value['ratecard'];
+
+					foreach ($ratecards as $ratecard_key => $ratecard_value) {
+
+						if($ratecard_value['type'] != 'membership' || $ratecard_value['type'] != 'packages'){
+
+							unset($ratecards[$ratecard_key]);
+						}
+
+						if($ratecard_value['direct_payment_enable'] == '0'){
+
+							unset($ratecards[$ratecard_key]);
+						}
+
+					}
+
+					$ratecards = array_values($ratecards);
+
+					$service['ratecard'] = $ratecards;
+
+					$finder = Finder::find((int) $service['finder_id']);
+
+					if($finder){
+
+						$service['finder_name'] = ucwords($finder->title);
+						$service['finder_slug'] = $finder->slug;
+						$service['finder_category_id'] = $finder->category_id;
+					}
+
+					$service['city'] = null;
+					$service['location'] = null;
+					$service['category'] = null;
+
+					$serviceData = Service::active()
+						->with(array('category'=>function($query){$query->select('name','slug','_id');}))
+						->with(array('location'=>function($query){$query->select('name','slug','_id');}))
+						->with(array('city'=>function($query){$query->select('name','slug','_id');}))
+						->find((int)$service['_id']);
+
+					if($serviceData){
+
+						$serviceData = $serviceData->toArray();
+
+						$service['city'] = $serviceData['city'];
+						$service['location'] = $serviceData['location'];
+						$service['category'] = $serviceData['category'];
+
+						$traction = [
+							'trials' => 0,
+							'requests' => 0,
+							'sales' => 0,
+							'six_months' => [
+							    'requests' => 0,
+							    'sales' => 0,
+							    'trials' => 0,
+						  	]
+						];
+
+						if(isset($serviceData['traction']) && $serviceData['traction'] != ""){
+
+							$traction = $serviceData['traction'];
+						}
+
+						if(time() - strtotime($serviceData['created_at']) > (30*86400)){
+
+							if($traction['sales'] == 0){
+
+								$traction['sales'] = 70;
+
+							}else{
+
+								$traction['sales'] = 100;
+							}
+
+						}
+
+						if(time() - strtotime($serviceData['created_at']) < (30*86400)){
+
+							if($traction['sales'] > 0){
+
+								$traction['sales'] = 100;
+							}
+						}
+
+						$service['traction'] = $traction;
+						
+					}
+
+					break;
+				}
+
+			}
+
+			$response['service'] = $service;
+		}
+
+		return Response::json($response,200);
+
+	}
 
 	public function serviceMembership($finder_id){
 
@@ -3690,7 +3815,7 @@ class FindersController extends \BaseController {
 	                $ratecard['cashback_on_trial'] = "";
 
 					if($ratecard_price > 0 && $type == 'trial'){
-						$ratecard['cashback_on_trial'] = "20% Cashback";
+						$ratecard['cashback_on_trial'] = "100% Cashback";
 					}
 
 					array_push($ratecardArr, $ratecard);

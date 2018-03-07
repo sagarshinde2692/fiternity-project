@@ -342,7 +342,7 @@ Class CustomerReward {
                     "validity"=>time()+(86400*60)
                 );
 
-                /*if($order['type'] == 'booktrials'){
+                if($order['type'] == 'booktrials'){
 
                     $walletData = array(
                         "order_id"=>$order['_id'],
@@ -352,10 +352,25 @@ Class CustomerReward {
                         "amount_fitcash_plus" => intval($order['amount_customer']),
                         "type"=>'CASHBACK',
                         'entry'=>'credit',
-                        "description"=> "Cashback for paid trial purchase at ".ucwords($order['finder_name'])." (Order ID. ".$order['_id']."), Expires On : ".date('d-m-Y',time()+(86400*7)),
-                        "validity"=>time()+(86400*7)
+                        "description"=> "100% Cashback on trial booking at ".ucwords($order['finder_name'])." Applicable for buying a membership at ".ucwords($order['finder_name']).", Expires On : ".date('d-m-Y',time()+(86400*7)),
+                        "validity"=>time()+(86400*7),
+                        "valid_finder_id"=>intval($order['finder_id']),
+                        "finder_id"=>intval($order['finder_id']),
+                        "valid_service_id"=>intval($order['service_id']),
+                        "service_id"=>intval($order['service_id']),
                     );
-                }*/
+
+                    $customersms = new CustomerSms();
+
+                    $sms_data = [];
+
+                    $sms_data['customer_phone'] = $order['customer_phone'];
+
+                    $sms_data['message'] = "Hi ".ucwords($order['customer_name']).", Rs. ".$order['amount_customer']." Fitcash has been added in your Fitternity wallet. Use this Fitcash to buy ".ucwords($order['finder_name'])."'s membership at lowest price and earn complimentary rewards. Valid for 7 days post your trial session. For quick assistance call ".Config::get('app.contact_us_customer_number');
+
+                    $customersms->custom($sms_data);
+
+                }
 
                 $utilities->walletTransaction($walletData,$order->toArray());
 
@@ -658,7 +673,7 @@ Class CustomerReward {
         }*/
     }
 
-   public function purchaseGameNew($amount,$finder_id,$payment_mode = "paymentgateway",$offer_id = false,$customer_id = false,$part_payment_amount = false,$convinience_fee=false){
+   public function purchaseGameNew($amount,$finder_id,$payment_mode = "paymentgateway",$offer_id = false,$customer_id = false,$part_payment_amount = false,$convinience_fee=false,$order_type = false){
 
         $current_wallet_balance = 0;
         $wallet = 0;
@@ -684,6 +699,10 @@ Class CustomerReward {
                'customer_id'=>$customer_id,
                'finder_id'=>$finder_id, 
             ];
+
+            if($order_type){
+               $request['order_type'] = $order_type;
+            }
 
             $query = $utilities->getWalletQuery($request);
             
@@ -1064,7 +1083,7 @@ Class CustomerReward {
     }
 
 
-    public function purchaseGame($amount,$finder_id,$payment_mode = "paymentgateway",$offer_id = false,$customer_id = false,$part_payment_amount = false,$convinience_fee=false){
+    public function purchaseGame($amount,$finder_id,$payment_mode = "paymentgateway",$offer_id = false,$customer_id = false,$part_payment_amount = false,$convinience_fee=false,$order_type = false){
 
         $jwt_token = Request::header('Authorization');
 
@@ -1074,7 +1093,7 @@ Class CustomerReward {
             $decoded = $this->customerTokenDecode($jwt_token);
             $customer_id = $decoded->customer->_id;
         }
-        return $this->purchaseGameNew($amount,$finder_id,$payment_mode,$offer_id,$customer_id,$part_payment_amount,$convinience_fee);
+        return $this->purchaseGameNew($amount,$finder_id,$payment_mode,$offer_id,$customer_id,$part_payment_amount,$convinience_fee,$order_type);
         // $customer = \Customer::find($customer_id);
         
         // if(isset($customer->demonetisation)){
@@ -1083,7 +1102,7 @@ Class CustomerReward {
 
         // }
 
-        return $this->purchaseGameOld($amount,$finder_id,$payment_mode,$offer_id,$customer_id,$part_payment_amount,$convinience_fee);
+        return $this->purchaseGameOld($amount,$finder_id,$payment_mode,$offer_id,$customer_id,$part_payment_amount,$convinience_fee,$order_type);
 
     }
 
