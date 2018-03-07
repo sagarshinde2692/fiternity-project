@@ -3141,7 +3141,7 @@ Class Utilities {
 
             if($booktrial){
 
-                $order_count = Order::active()
+                $order_count = \Order::active()
                     ->where('customer_id',$customer_id)
                     ->where('type','memberships')
                     ->where('success_date','>=',new \MongoDate(strtotime($booktrial['schedule_date_time'])))
@@ -3185,7 +3185,7 @@ Class Utilities {
                     $state = 'fit_code_activated';
                 }
 
-                $order_count = Order::active()
+                $order_count = \Order::active()
                     ->where('customer_id',$customer_id)
                     ->where('type','memberships')
                     ->count();
