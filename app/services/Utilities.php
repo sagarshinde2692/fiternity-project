@@ -3152,7 +3152,7 @@ Class Utilities {
 
                 $stage = 'after_trial';
 
-                $state = 'trial_attended';
+                $state = 'trial_done';
 
             }
         }
@@ -3245,6 +3245,7 @@ Class Utilities {
 
                     $card_message = "Congratulations <b>₹".$fitcash." FitCash</b> has been added in your wallet.Use it to get a discount on your Membership";
                 }
+                $state = 'trial_attended';
             }
 
             $response = [];
