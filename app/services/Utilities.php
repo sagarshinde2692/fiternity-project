@@ -3212,10 +3212,42 @@ Class Utilities {
                 }
 
             }
-            
-            if(isset($booktrial['post_trial_status_updated_by_fitcode'])){
 
-                $card_message = "Congratulations <b>₹".$fitcash." FitCash</b> has been added in your wallet.Use it to get a discount on your Membersihp";
+            $is_tab_active = (isset($booktrial['is_tab_active']) && $booktrial['is_tab_active']) ? true : false;
+
+            if($is_tab_active){
+                $fitcash = 250;
+            }
+
+            if($stage == 'before_trial'){
+
+                $card_message = "Provide this & get your <b>FITCODE</b> from Gym/Studio to unlock your surprise discount.<br>Use it to buy your membership at lowest price";
+
+                if($is_tab_active){
+
+                    $card_message = "Punch this code on the tab available at Gym/Studio to unlock your surprise discount.<br>Use it to buy your membership at lowest price";
+                }
+            }
+
+            if($stage == 'after_trial'){
+
+                $card_message = "Yes? Enter your <b>FITCODE</b> to get a <b>Surprise Discount</b><br/>No? You can always reschedule";
+
+                if($is_tab_active){
+
+                    $card_message = "Let us know now & we'll give a suprise discount to buy your membership at lowest price";
+                }
+
+            }
+
+            if(isset($booktrial['post_trial_status']) && $booktrial['post_trial_status'] == 'attended'){
+
+                $card_message = "Congratulations on completing your trial";
+                
+                if(isset($booktrial['post_trial_status_updated_by_fitcode']) || isset($booktrial['post_trial_status_updated_by_kiosk'])){
+
+                    $card_message = "Congratulations <b>₹".$fitcash." FitCash</b> has been added in your wallet.Use it to get a discount on your Membersihp";
+                }
             }
 
             $response = [];
@@ -3240,6 +3272,7 @@ Class Utilities {
             $response['lon'] = $booktrial['finder_lon'];
             $response['calorie_burn'] = $category_calorie_burn;
             $response['calorie_burn_text'] = "Get ready to burn ".$category_calorie_burn." Calories in your ".$booktrial['service_name']." Session!";
+            $response['is_tab_active'] = $is_tab_active;
             
         }
 
