@@ -1270,7 +1270,7 @@ class HomeController extends BaseController {
                     
                     default:
                         $header = "WORKOUT SESSION CONFIRMED";
-                        $subline = "Hi <b>".$item['customer_name']."</b>, your Workout Session for <b>".$booking_details_data['service_name']['value']."</b> at <b>".$booking_details_data["finder_name_location"]['value']."</b> has been confirmed by paying ₹".$item['amount'].". We have also sent you a confirmation Email & SMS.";
+                        $subline = "Hi <b>".$item['customer_name']."</b>, your Workout Session for <b>".$booking_details_data['service_name']['value']."</b> at <b>".$booking_details_data["finder_name_location"]['value']."</b> has been confirmed by paying Rs ".$item['amount'].". We have also sent you a confirmation Email & SMS.";
                         break;
                 }
 
@@ -1445,7 +1445,7 @@ class HomeController extends BaseController {
                     'reward_type' => 'cashback',
                     'finder_name'=> (isset($item['finder_name']) && $item['finder_name'] != "") ? $item['finder_name'] : "",
                     'title'=>'Instant Cashback',
-                    'description'=>'₹'.$item['cashback_detail']['wallet_amount'].'+ has been added in form of FitCash+ in your wallet. You can find it in your profile and use it to explore different workout forms and healthy tiffins.<br><br>Your currernt balance is <b>₹'.$fitcash_plus.'</b>',
+                    'description'=>'Rs '.$item['cashback_detail']['wallet_amount'].'+ has been added in form of FitCash+ in your wallet. You can find it in your profile and use it to explore different workout forms and healthy tiffins.<br><br>Your currernt balance is <b>Rs '.$fitcash_plus.'</b>',
                     'validity_in_days'=>null,
                     'image'=>'https://b.fitn.in/gamification/reward/cashback2.jpg'
                 ];
