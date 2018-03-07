@@ -3108,13 +3108,11 @@ Class Utilities {
         $time_left = 0;
         $card_message = "Congratulations on completing your trial";
         
-        $from_date_time =  date('Y-m-d H:i:s',time());
-
         $booktrial = \Booktrial::where('customer_id',$customer_id)
             ->whereIn('type',['booktrials','3daystrial'])
             ->where('going_status_txt','!=','cancel')
             ->where('booktrial_type','auto')
-            ->where('schedule_date_time','>=',new \MongoDate(strtotime($from_date_time)))
+            ->where('schedule_date_time','>=',new \MongoDate(time()))
             ->where('is_tab_active','exists',false)
             ->orderBy('schedule_date_time', 'desc')
             ->first();
@@ -3132,18 +3130,27 @@ Class Utilities {
 
             $booktrial = false;
 
-            $from_date_time =  date('Y-m-d H:i:s',time());
-
             $booktrial = \Booktrial::where('customer_id',$customer_id)
                 ->whereIn('type',['booktrials','3daystrial'])
                 ->where('going_status_txt','!=','cancel')
                 ->where('booktrial_type','auto')
-                ->where('schedule_date_time','<=',new \MongoDate(strtotime($from_date_time)))
+                ->where('schedule_date_time','<=',new \MongoDate(time()))
                 ->where('is_tab_active','exists',false)
                 ->orderBy('schedule_date_time', 'desc')
                 ->first();
 
             if($booktrial){
+
+                $order_count = Order::active()
+                    ->where('customer_id',$customer_id)
+                    ->where('type','memberships')
+                    ->where('success_date','>=',new \MongoDate(strtotime($booktrial['schedule_date_time'])))
+                    ->count();
+
+                if($order_count > 0){
+
+                    return $response;
+                }
 
                 $stage = 'after_trial';
 
@@ -3159,13 +3166,11 @@ Class Utilities {
 
             $booktrial = false;
 
-            $from_date_time =  date('Y-m-d H:i:s',strtotime("+21 days"));
-
             $booktrial = \Booktrial::where('customer_id',$customer_id)
                 ->whereIn('type',['booktrials','3daystrial'])
                 ->where('going_status_txt','!=','cancel')
                 ->where('booktrial_type','auto')
-                ->where('schedule_date_time','>=',new \MongoDate(strtotime($from_date_time)))
+                ->where('schedule_date_time','>=',new \MongoDate(strtotime("+21 days")))
                 ->where('is_tab_active','exists',false)
                 ->orderBy('schedule_date_time', 'desc')
                 ->first();
@@ -3180,7 +3185,10 @@ Class Utilities {
                     $state = 'fit_code_activated';
                 }
 
-                $order_count = Order::active()->where('customer_id',$customer_id)->count();
+                $order_count = Order::active()
+                    ->where('customer_id',$customer_id)
+                    ->where('type','memberships')
+                    ->count();
 
                 if($order_count > 0){
                     $state = 'membership_purchased';
