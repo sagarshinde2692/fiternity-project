@@ -3243,7 +3243,7 @@ Class Utilities {
                 
                 if(isset($booktrial['post_trial_status_updated_by_fitcode']) || isset($booktrial['post_trial_status_updated_by_kiosk'])){
 
-                    $card_message = "Congratulations <b>₹".$fitcash." FitCash</b> has been added in your wallet.Use it to get a discount on your Membersihp";
+                    $card_message = "Congratulations <b>₹".$fitcash." FitCash</b> has been added in your wallet.Use it to get a discount on your Membership";
                 }
             }
 
