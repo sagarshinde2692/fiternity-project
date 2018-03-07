@@ -21,6 +21,7 @@ use Config;
 use JWT;
 use Finder;
 use Input;
+use Service;
 
 
 Class CustomerReward {
@@ -1369,34 +1370,45 @@ Class CustomerReward {
             Log::info("ratecard coupon");
             Log::info($ratecard);
             Log::info($coupon);
-            if($ratecard && isset($ratecard['flags']) && isset($ratecard['flags']['campaign_offer']) && $ratecard['flags']['campaign_offer'] && isset($coupon['campaign_discount_percent']) && isset($coupon['campaign_discount_max']) && isset($coupon['campaign_discount_amount'])){
-                if(isset($coupon['campaign_discount_percent'])){
-                    
-                    $coupon["discount_percent"] = $coupon["campaign_discount_percent"];
-                }
-                if(isset($coupon['campaign_discount_max'])){
-                    
-                    $coupon["discount_max"] = $coupon["campaign_discount_max"];
-                    
-                }
-                if(isset($coupon['campaign_discount_amount'])){
-                    
-                    $coupon["discount_amount"] = $coupon["campaign_discount_amount"];
-                }
-                if(isset($coupon['campaign_success_message'])){
-                    
-                    $coupon["success_message"] = $coupon["campaign_success_message"];
-                }
-            
-            }else{
-                if(isset($coupon['campaign_only']) && $coupon['campaign_only'] == "1"){
-                    
-                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "fitternity_only_coupon"=>$fitternity_only_coupon, "error_message"=>"Code is not applicable on this transaction", "custom_message"=>"Code is not applicable on this transaction");
-                    return $resp;
+
+            if($ratecard){
                 
+                $finder = Finder::where('_id', $ratecard['finder_id'])->first(['flags']);
+                $service = Service::where('_id', $ratecard['service_id'])->first(['flags']);
+                
+                if($this->hasCamapignOffer($ratecard) || $this->hasCamapignOffer($service) || $this->hasCamapignOffer($finder)){
+                    
+                    if(isset($coupon['campaign_discount_percent']) && $coupon['campaign_discount_percent'] != ""){
+                        
+                        $coupon["discount_percent"] = intval($coupon["campaign_discount_percent"]);
+                    }
+                    
+                    if(isset($coupon['campaign_discount_max']) && $coupon['campaign_discount_max'] != ""){
+                        
+                        $coupon["discount_max"] = intval($coupon["campaign_discount_max"]);
+                        
+                    }
+                    
+                    if(isset($coupon['campaign_discount_amount']) && $coupon['campaign_discount_amount'] != ""){
+                        
+                        $coupon["discount_amount"] = intval($coupon["campaign_discount_amount"]);
+                    }
+                    
+                    if(isset($coupon['campaign_success_message']) && $coupon['campaign_success_message'] != ""){
+                        
+                        $coupon["success_message"] = $coupon["campaign_success_message"];
+                    }
+                
+                }else{
+                    if(isset($coupon['campaign_only']) && $coupon['campaign_only'] == "1"){
+                        
+                        $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "fitternity_only_coupon"=>$fitternity_only_coupon, "error_message"=>"Code is not applicable on this transaction", "custom_message"=>"Code is not applicable on this transaction");
+                        return $resp;
+                    
+                    }
                 }
             }
-                
+
             $discount_amount = $coupon["discount_amount"];
             $discount_amount = $discount_amount == 0 ? $coupon["discount_percent"]/100 * $price : $discount_amount;
             $discount_amount = intval($discount_amount);
@@ -1418,5 +1430,10 @@ Class CustomerReward {
         return $resp;
     }
 
+    function hasCamapignOffer($data){
+         
+        return isset($data['flags']) && isset($data['flags']['campaign_offer']) && $data['flags']['campaign_offer'];
+    
+    }
 
 }
