@@ -1199,6 +1199,8 @@ class MigrationReverseController extends \BaseController {
 
                 $delete = Ratecard::destroy(intval($id));
 
+                $hideOffers = Offer::where('ratecard_id', intval($id))->update(['hidden'=>true]);                
+
                 $finder = Finder::on($this->fitadmin)->find(intval($ratecard->finder_id));
                 $this->cacheapi->flushTagKey('finder_detail',$finder->slug);
 
