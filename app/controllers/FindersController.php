@@ -2913,6 +2913,14 @@ class FindersController extends \BaseController {
 					}
 				}
 
+				if(isset($finderarr['videos'])){
+					foreach($finderarr['videos'] as $key => $video){
+						if(!isset($video['url']) || trim($video['url']) == ""){
+							unset($finderarr['videos'][$key]);
+						}
+					}
+				}
+
 				$finder         =   array_except($finderarr, array('info','finder_coverimage','location_id','category_id','city_id','coverimage','findercollections','categorytags','locationtags','offerings','facilities','blogs'));
 				$coverimage     =   ($finderarr['finder_coverimage'] != '') ? $finderarr['finder_coverimage'] : 'default/'.$finderarr['category_id'].'-'.rand(1, 19).'.jpg';
 				array_set($finder, 'coverimage', $coverimage);
