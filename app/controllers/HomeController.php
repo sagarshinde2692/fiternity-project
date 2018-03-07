@@ -3914,4 +3914,21 @@ class HomeController extends BaseController {
         return CrashLog::orderBy('_id', 'desc')->take($count)->get();
     }
 
+    public function customerHome(){
+
+        $data = [
+            'status'=>200,
+            'message'=>'success',
+            'customer_home'=>null
+        ];
+
+        $jwt_token = Request::header('Authorization');
+
+        if($jwt_token){
+            $data['customer_home'] = $this->utilities->customerHome();
+        }
+
+        return Response::json($data);
+    }
+
 }

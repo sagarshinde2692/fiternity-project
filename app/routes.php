@@ -1121,3 +1121,6 @@ Route::get('getmembershipratecardbyserviceid/{service_id}','FindersController@ge
 Route::post('customer/uploadreceipt','CustomerController@uploadReceipt');
 
 Route::get('ldJson/{booktrial_id}','DebugController@ldJson');
+
+Route::get('customerhome','HomeController@customerHome');
+
