@@ -600,7 +600,7 @@ class FindersController extends \BaseController {
 									// 	$campaign_offer = true;
 									// 	$service['serviceratecard'][$ratekey]['campaign_text'] = "(Women - Get additional 30% off)";
 									// }
-									if(isset($rateval['flags']) && $rateval['flags']["offerFor"] == "women"){
+									if(isset($rateval['flags']) && isset($rateval['flags']["offerFor"]) && $rateval['flags']["offerFor"] == "women"){
 										$service['serviceratecard'][$ratekey]['campaign_text'] = "Women only offer";
 									}
 									
