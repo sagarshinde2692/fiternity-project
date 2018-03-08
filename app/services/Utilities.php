@@ -3112,6 +3112,7 @@ Class Utilities {
             ->whereIn('type',['booktrials','3daystrial'])
             ->where('going_status_txt','!=','cancel')
             ->where('booktrial_type','auto')
+            ->where(function($query){$query->orWhere('vendor_code','exists',true)->orWhere('is_tab_active','exists',true);})
             ->where('schedule_date_time','>=',new \MongoDate(time()))
             ->orderBy('schedule_date_time', 'desc')
             ->first();
@@ -3133,6 +3134,7 @@ Class Utilities {
                 ->whereIn('type',['booktrials','3daystrial'])
                 ->where('going_status_txt','!=','cancel')
                 ->where('booktrial_type','auto')
+                ->where(function($query){$query->orWhere('vendor_code','exists',true)->orWhere('is_tab_active','exists',true);})
                 ->where('schedule_date_time','<=',new \MongoDate(time()))
                 ->orderBy('schedule_date_time', 'desc')
                 ->first();
