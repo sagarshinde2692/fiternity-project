@@ -455,6 +455,7 @@ class HomeController extends BaseController {
 
             // $collections 			= 	Findercollection::active()->where('city_id', '=', intval($citydata['_id']))->orderBy('ordering')->get(array('name', 'slug', 'coverimage', 'ordering' ));
             $campaigns=  [];
+
             $campaigns[] = [
                 'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/women-day.jpg',
                 'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/mobile-women.jpg',
@@ -497,6 +498,7 @@ class HomeController extends BaseController {
                 'width'=>375,
                 'ratio'=>(float) number_format(100/375,2)
             ];
+
             if($city == "mumbai"){
                 $campaigns[] = [
                     'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/web-banner-mfp.png',
@@ -524,7 +526,17 @@ class HomeController extends BaseController {
             Cache::tags('home_by_city_v4')->put($city, $homedata, Config::get('cache.cache_time'));
         }
 
-        return Response::json(Cache::tags('home_by_city_v4')->get($city));
+        $homedata = Cache::tags('home_by_city_v4')->get($city);
+
+        $homedata['customer_home'] = null;
+
+        $jwt_token = Request::header('Authorization');
+
+        if($jwt_token){
+            $homedata['customer_home'] = $this->utilities->customerHome();
+        }
+
+        return Response::json($homedata);
     }
 
 
@@ -848,6 +860,12 @@ class HomeController extends BaseController {
             if(($type == "booktrial" || $type == "healthytiffintrial" || $type == "healthytiffintrail") && isset($itemData['amount_customer']) && $itemData['amount_customer'] > 0){
 
                 $amount_20_percent = (int)($itemData['amount_customer']*20/100);
+
+                if($type == "booktrial"){
+
+                    $amount_20_percent = $itemData['amount_customer'];
+                }
+
                 $popup_message = "Rs ".$amount_20_percent." FitCash has been added to your wallet";
             }
 
@@ -1298,12 +1316,12 @@ class HomeController extends BaseController {
                 switch ($item['type']) {
                     case 'booktrials':
                         $header = "TRIAL CONFIRMED";
-                        $subline = "Hi <b>".$item['customer_name']."</b>, your free trial for <b>".$booking_details_data['service_name']['value']."</b> at <b>".$booking_details_data["finder_name_location"]['value']."</b> has been confirmed.We have also sent you a confirmation Email and SMS.";
+                        $subline = "Hi <b>".$item['customer_name']."</b>, your Trial for <b>".$booking_details_data['service_name']['value']."</b> at <b>".$booking_details_data["finder_name_location"]['value']."</b> has been confirmed.We have also sent you a confirmation Email and SMS.";
                         break;
                     
                     default:
                         $header = "WORKOUT SESSION CONFIRMED";
-                        $subline = "Hi <b>".$item['customer_name']."</b>, your Workout Session for <b>".$booking_details_data['service_name']['value']."</b> at <b>".$booking_details_data["finder_name_location"]['value']."</b> has been confirmed by paying ₹".$item['amount'].". We have also sent you a confirmation Email & SMS.";
+                        $subline = "Hi <b>".$item['customer_name']."</b>, your Workout Session for <b>".$booking_details_data['service_name']['value']."</b> at <b>".$booking_details_data["finder_name_location"]['value']."</b> has been confirmed by paying Rs ".$item['amount'].". We have also sent you a confirmation Email & SMS.";
                         break;
                 }
 
@@ -1478,7 +1496,7 @@ class HomeController extends BaseController {
                     'reward_type' => 'cashback',
                     'finder_name'=> (isset($item['finder_name']) && $item['finder_name'] != "") ? $item['finder_name'] : "",
                     'title'=>'Instant Cashback',
-                    'description'=>'₹'.$item['cashback_detail']['wallet_amount'].'+ has been added in form of FitCash+ in your wallet. You can find it in your profile and use it to explore different workout forms and healthy tiffins.<br><br>Your currernt balance is <b>₹'.$fitcash_plus.'</b>',
+                    'description'=>'Rs '.$item['cashback_detail']['wallet_amount'].'+ has been added in form of FitCash+ in your wallet. You can find it in your profile and use it to explore different workout forms and healthy tiffins.<br><br>Your currernt balance is <b>Rs '.$fitcash_plus.'</b>',
                     'validity_in_days'=>null,
                     'image'=>'https://b.fitn.in/gamification/reward/cashback2.jpg'
                 ];
@@ -4005,7 +4023,23 @@ class HomeController extends BaseController {
         }
 
         return Cache::tags('citywise_finders')->get('citywise_finders');
+    }
 
+    public function customerHome(){
+
+        $data = [
+            'status'=>200,
+            'message'=>'success',
+            'customer_home'=>null
+        ];
+
+        $jwt_token = Request::header('Authorization');
+
+        if($jwt_token){
+            $data['customer_home'] = $this->utilities->customerHome();
+        }
+
+        return Response::json($data);
     }
 
 }

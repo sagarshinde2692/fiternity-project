@@ -84,20 +84,27 @@ class CommunicationsController extends \BaseController {
 			
 			$data = $this->prepareData($data, $label);
 			$class = strtolower($sender_class);
-			$response = $this->$class->$label($data, 0);
 
 			$communication_keys = $transaction_data->communication_keys;
 			$communication_keys["$sender_class-$label"] = "";
 			$transaction_data->communication_keys = $communication_keys;
 			$transaction_data->update();
 
-			/*if($class == "customersms" && $label == "bookTrialReminderAfter2Hour" && $transaction_type == 'trial' && !isset($transaction_data['order_id'])){
+			if(isset($transaction_data['customer_id'])){
 
-				$url = Config::get('app.url')."/addwallet?customer_id=".$transaction_data["customer_id"]."&booktrial_id=".$transaction_data['_id'];
+				$getWalletBalance = $this->utilities->getWalletBalance($transaction_data['customer_id']);
 
-				$this->utilities->hitUrlAfterDelay($url."&time=Nplus2");
+				if($getWalletBalance < 200 && $class == "customersms" && $label == "bookTrialReminderAfter2Hour" && $transaction_type == 'trial' && !isset($transaction_data['order_id'])){
 
-			}*/
+					$url = Config::get('app.url')."/addwallet?customer_id=".$transaction_data["customer_id"]."&booktrial_id=".$transaction_data['_id'];
+
+					$this->utilities->hitUrlAfterDelay($url."&time=Nplus2");
+
+					return "no sms sent";
+				}
+			}
+
+			$response = $this->$class->$label($data, 0);
 
 			return $response;
 			

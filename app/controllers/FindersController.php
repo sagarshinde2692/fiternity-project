@@ -2397,6 +2397,155 @@ class FindersController extends \BaseController {
 		}
 	}
 
+	public function getMembershipRatecardByServiceId($service_id){
+
+		$service_id = (int) $service_id;
+
+		$service = Service::find($service_id);
+
+		$response = [
+			'status'=>200,
+			'message'=>'Success',
+			'ratecards'=>[]
+		];
+
+		if($service){
+
+			$finder_id = (int)$service->finder_id;
+
+			$getTrialSchedule = $this->getTrialSchedule($finder_id);
+
+			$wallet_balance = 0;
+
+			$jwt_token = Request::header('Authorization');
+
+	        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+
+	            $decoded = customerTokenDecode($jwt_token);
+
+	            $customer_id = (int)$decoded->customer->_id;
+
+	            $getWalletBalanceData = [
+	                'finder_id'=>$finder_id,
+	                'order_type'=>'memberships'
+	            ];
+
+            	$wallet_balance = $this->utilities->getWalletBalance($customer_id,$getWalletBalanceData);
+	        }
+
+			foreach ($getTrialSchedule as $key => $value) {
+
+				if($value['_id'] == $service_id){
+
+					$service = $value;
+
+					$ratecards = $value['ratecard'];
+
+					foreach ($ratecards as $ratecard_key => $ratecard_value) {
+
+						if($ratecard_value['type'] != 'membership' || $ratecard_value['type'] != 'packages'){
+
+							unset($ratecards[$ratecard_key]); continue;
+						}
+
+						if($ratecard_value['direct_payment_enable'] == '0'){
+
+							unset($ratecards[$ratecard_key]); continue;
+						}
+
+						$price = $this->utilities->getRatecardAmount($ratecard_value);
+
+						$ratecards[$ratecard_key]['fitcash_applicable'] = $wallet_balance;
+
+						if($wallet_balance > $price){
+							$ratecards[$ratecard_key]['fitcash_applicable'] = $price;
+						}
+
+					}
+
+					$ratecards = array_values($ratecards);
+
+					$service['ratecard'] = $ratecards;
+
+					$finder = Finder::find((int) $service['finder_id']);
+
+					if($finder){
+
+						$service['finder_name'] = ucwords($finder->title);
+						$service['finder_slug'] = $finder->slug;
+						$service['finder_category_id'] = $finder->category_id;
+					}
+
+					$service['city'] = null;
+					$service['location'] = null;
+					$service['category'] = null;
+
+					$serviceData = Service::active()
+						->with(array('category'=>function($query){$query->select('name','slug','_id');}))
+						->with(array('location'=>function($query){$query->select('name','slug','_id');}))
+						->with(array('city'=>function($query){$query->select('name','slug','_id');}))
+						->find((int)$service['_id']);
+
+					if($serviceData){
+
+						$serviceDataArray = $serviceData->toArray();
+
+						$service['city'] = $serviceDataArray['city'];
+						$service['location'] = $serviceDataArray['location'];
+						$service['category'] = $serviceDataArray['category'];
+
+						$traction = [
+							'trials' => 0,
+							'requests' => 0,
+							'sales' => 0,
+							'six_months' => [
+							    'requests' => 0,
+							    'sales' => 0,
+							    'trials' => 0,
+						  	]
+						];
+
+						if(isset($serviceDataArray['traction']) && $serviceDataArray['traction'] != ""){
+
+							$traction = $serviceDataArray['traction'];
+						}
+
+						if($traction['sales'] > 0){
+
+							$traction['sales'] = $traction['sales'] * 10 + 181;
+
+						}else{
+
+							if(isset($serviceDataArray['fake_sales'])){
+
+								$traction['sales'] = $serviceDataArray['fake_sales'];
+
+							}else{
+
+								$fake_sales = rand(140,200);
+
+								$serviceData->fake_sales = $fake_sales;
+								$serviceData->update();
+
+								$traction['sales'] = $fake_sales;
+							}
+						}
+						
+						$service['traction'] = $traction;
+						
+					}
+
+					break;
+				}
+
+			}
+
+			$response['service'] = $service;
+		}
+
+		return Response::json($response,200);
+
+	}
 
 	public function serviceMembership($finder_id){
 
@@ -2645,7 +2794,7 @@ class FindersController extends \BaseController {
 					//for ratecards offers
 					$ratecardoffers     =   [];
 
-					if((isset($rateval['expiry_date']) && $rateval['expiry_date'] != "" && strtotime($rateval['expiry_date']) < time()) || (isset($rateval['start_date']) && $rateval['start_date'] != "" && strtotime($rateval['start_date']) > time())){
+					if((isset($rateval['expiry_date']) && $rateval['expiry_date'] != "" && strtotime("+ 1 days", strtotime($rateval['expiry_date'])) < time()) || (isset($rateval['start_date']) && $rateval['start_date'] != "" && strtotime("+ 1 days", strtotime($rateval['expiry_date'])) > time())){
 						continue;
 					}
 
@@ -3690,7 +3839,7 @@ class FindersController extends \BaseController {
 	                $ratecard['cashback_on_trial'] = "";
 
 					if($ratecard_price > 0 && $type == 'trial'){
-						$ratecard['cashback_on_trial'] = "20% Cashback";
+						$ratecard['cashback_on_trial'] = "100% Cashback";
 					}
 
 					array_push($ratecardArr, $ratecard);

@@ -1123,3 +1123,13 @@ Route::get('cityfitnessoptions', 'HomeController@cityFitnessOptions');
 Route::post('generateamazonchecksum', 'TransactionController@generateAmazonChecksum');
 Route::match(array('GET', 'POST'),'verifyamazonchecksum/{id?}', 'TransactionController@verifyAmazonChecksum');
 Route::post('generateamazonurl', 'TransactionController@generateAmazonUrl');
+
+Route::get('verifyfitcode/{booktrial_id}/{code}','SchedulebooktrialsController@verifyFitCode');
+Route::get('lostfitcode/{booktrial_id}','SchedulebooktrialsController@lostFitCode');
+Route::get('getmembershipratecardbyserviceid/{service_id}','FindersController@getMembershipRatecardByServiceId');
+
+Route::post('customer/uploadreceipt','CustomerController@uploadReceipt');
+
+Route::get('ldJson/{booktrial_id}','DebugController@ldJson');
+
+Route::get('customerhome','HomeController@customerHome');

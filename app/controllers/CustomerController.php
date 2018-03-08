@@ -53,7 +53,7 @@ class CustomerController extends \BaseController {
     // Listing Schedule Tirals for Normal Customer
 	public function getAutoBookTrials($customeremail){
 
-		$selectfields 	=	array('finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt','service_id','what_i_should_carry','what_i_should_expect','origin','trial_attended_finder', 'type','amount','created_at', 'amount_finder');
+		$selectfields 	=	array('finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt','service_id','what_i_should_carry','what_i_should_expect','origin','trial_attended_finder', 'type','amount','created_at', 'amount_finder','vendor_code','post_trial_status');
 
 		if(isset($_GET['device_type']) && $_GET['device_type'] == "website"){
 
@@ -115,6 +115,8 @@ class CustomerController extends \BaseController {
 
 			array_set($trial, 'message', "");
 			array_set($trial, 'passed', $slot_datetime_pass_status);
+
+			$trial['fit_code'] = $this->utilities->fitCode($trial);
 
 			$trial['interaction_date'] = strtotime($trial['created_at']);
 
@@ -1984,6 +1986,8 @@ class CustomerController extends \BaseController {
 			if(isset($data['schedule_slot_start_time'])){
 				$data['schedule_slot_start_time'] = strtoupper($data['schedule_slot_start_time']);
 			}
+
+			$data['fit_code'] = $this->utilities->fitCode($data);
 
 			$resp 	= 	array('status' => 200,'data' => $data);
 		}
@@ -6079,6 +6083,76 @@ class CustomerController extends \BaseController {
 		}
 		$response['bankList'] = $bankList;
 		return $response;
+	}
+
+	public function uploadReceipt(){
+
+		$jwt_token = Request::header('Authorization');
+		$decoded = $this->customerTokenDecode($jwt_token);
+		$customer_id = $decoded->customer->_id;
+
+		$rules = [
+			'customer_id' => 'required',
+			'booktrial_id'=>'required|integer|numeric',
+			'receipt'=>'image'
+		];
+
+		$data = Input::all();
+
+		$data['customer_id'] = $customer_id;
+
+		unset($data['receipt']);
+
+		$validator = Validator::make($data,$rules);
+
+		if ($validator->fails()) {
+
+			return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())));
+
+		}else{
+
+			$image_success = [];
+
+			if (Input::hasFile('receipt')) {
+
+				$image_detail = [
+					array('type'=>'cover','path'=>'customer/'.$customer_id.'/receipt/','width'=>720),
+				];
+
+				$image = array('input' => Input::file('receipt'),'detail' => $image_detail,'id' => $data['booktrial_id']);
+
+				$image_response = upload_magic($image);
+
+				foreach ($image_response['response'] as $key => $value){
+
+					if(isset($value['success']) && $value['success']){
+
+						$image_success['width'] = $value['kraked_width'];
+						$image_success['height'] = $value['kraked_height'];
+						$image_success['s3_url'] = $value['kraked_url'];
+						$image_success['s3_folder_path'] = $value['folder_path'];
+						$image_success['s3_file_path'] = $value['folder_path'].$image_response['image_name'];
+						$image_success['name'] = $image_response['image_name'];
+					}
+
+				}
+
+			}
+
+			if(!empty($image_success)){
+
+				$booktrial = Booktrial::find((int) $data['booktrial_id']);
+				$booktrial->update(['receipt'=>$image_success]);
+
+				return Response::json(array('status' => 200,'message' => "Receipt Uploaded Successfully"));
+
+			}else{
+
+				return Response::json(array('status' => 400,'message' => "Error, Receipt Not Uploaded"));
+
+			}
+		}
+		
 	}
 	
 }
