@@ -600,6 +600,9 @@ class FindersController extends \BaseController {
 									// 	$campaign_offer = true;
 									// 	$service['serviceratecard'][$ratekey]['campaign_text'] = "(Women - Get additional 30% off)";
 									// }
+									if(isset($rateval['flags']) && $rateval['flags']["offerFor"] == "women"){
+										$service['serviceratecard'][$ratekey]['campaign_text'] = "Women only offer";
+									}
 									
 									if(isset($service['membership']) && $service['membership']=='manual'){
 										$service['serviceratecard'][$ratekey]['direct_payment_enable'] = "0";
