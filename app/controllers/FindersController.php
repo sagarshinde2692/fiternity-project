@@ -944,7 +944,7 @@ class FindersController extends \BaseController {
 				$response['finder']['payment_options']				=		$this->getPaymentModes($payment_options_data);
 				if($campaign_offer){
 					$response['vendor_stripe_data']	=	[
-						'text'=> "#STRONGGETSSTRONGER | <strong>ADDITIONAL FLAT 30% OFF FOR WOMEN</strong>",
+						'text'=> "#STRONGGETSSTRONGER | <strong>FLAT 30% OFF FOR WOMEN</strong>",
 						'text_color'=> '#ffffff',
 						'background'=> '-webkit-linear-gradient(left, #FE7E87 0%, #FA5295 100%)',
 						'background-color'=> ''
