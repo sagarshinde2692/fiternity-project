@@ -1316,7 +1316,7 @@ class HomeController extends BaseController {
                 switch ($item['type']) {
                     case 'booktrials':
                         $header = "TRIAL CONFIRMED";
-                        $subline = "Hi <b>".$item['customer_name']."</b>, your free trial for <b>".$booking_details_data['service_name']['value']."</b> at <b>".$booking_details_data["finder_name_location"]['value']."</b> has been confirmed.We have also sent you a confirmation Email and SMS.";
+                        $subline = "Hi <b>".$item['customer_name']."</b>, your Trial for <b>".$booking_details_data['service_name']['value']."</b> at <b>".$booking_details_data["finder_name_location"]['value']."</b> has been confirmed.We have also sent you a confirmation Email and SMS.";
                         break;
                     
                     default:

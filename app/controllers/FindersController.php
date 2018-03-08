@@ -2464,11 +2464,11 @@ class FindersController extends \BaseController {
 
 					if($serviceData){
 
-						$serviceData = $serviceData->toArray();
+						$serviceDataArray = $serviceData->toArray();
 
-						$service['city'] = $serviceData['city'];
-						$service['location'] = $serviceData['location'];
-						$service['category'] = $serviceData['category'];
+						$service['city'] = $serviceDataArray['city'];
+						$service['location'] = $serviceDataArray['location'];
+						$service['category'] = $serviceDataArray['category'];
 
 						$traction = [
 							'trials' => 0,
@@ -2481,32 +2481,32 @@ class FindersController extends \BaseController {
 						  	]
 						];
 
-						if(isset($serviceData['traction']) && $serviceData['traction'] != ""){
+						if(isset($serviceDataArray['traction']) && $serviceDataArray['traction'] != ""){
 
-							$traction = $serviceData['traction'];
+							$traction = $serviceDataArray['traction'];
 						}
 
-						if(time() - strtotime($serviceData['created_at']) > (30*86400)){
+						if($traction['sales'] > 0){
 
-							if($traction['sales'] == 0){
+							$traction['sales'] = $traction['sales'] * 10 + 181;
 
-								$traction['sales'] = 70;
+						}else{
+
+							if(isset($serviceDataArray['fake_sales'])){
+
+								$traction['sales'] = $serviceDataArray['fake_sales'];
 
 							}else{
 
-								$traction['sales'] = 100;
-							}
+								$fake_sales = rand(140,200);
 
-						}
+								$serviceData->fake_sales = $fake_sales;
+								$serviceData->update();
 
-						if(time() - strtotime($serviceData['created_at']) < (30*86400)){
-
-							if($traction['sales'] > 0){
-
-								$traction['sales'] = 100;
+								$traction['sales'] = $fake_sales;
 							}
 						}
-
+						
 						$service['traction'] = $traction;
 						
 					}
