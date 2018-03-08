@@ -590,7 +590,7 @@ class FindersController extends \BaseController {
 
 								foreach ($service['serviceratecard'] as $ratekey => $rateval){
 
-									if((isset($rateval['expiry_date']) && $rateval['expiry_date'] != "" && strtotime($rateval['expiry_date']) < time()) || (isset($rateval['start_date']) && $rateval['start_date'] != "" && strtotime($rateval['start_date']) > time())){
+									if((isset($rateval['expiry_date']) && $rateval['expiry_date'] != "" && strtotime("+ 1 days", strtotime($rateval['expiry_date'])) < time()) || (isset($rateval['start_date']) && $rateval['start_date'] != "" && strtotime($rateval['start_date']) > time())){
 										unset($service['serviceratecard'][$ratekey]);
 										continue;
 									}
@@ -2794,7 +2794,7 @@ class FindersController extends \BaseController {
 					//for ratecards offers
 					$ratecardoffers     =   [];
 
-					if((isset($rateval['expiry_date']) && $rateval['expiry_date'] != "" && strtotime("+ 1 days", strtotime($rateval['expiry_date'])) < time()) || (isset($rateval['start_date']) && $rateval['start_date'] != "" && strtotime("+ 1 days", strtotime($rateval['expiry_date'])) > time())){
+					if((isset($rateval['expiry_date']) && $rateval['expiry_date'] != "" && strtotime("+ 1 days", strtotime($rateval['expiry_date'])) < time()) || (isset($rateval['start_date']) && $rateval['start_date'] != "" && strtotime($rateval['start_date']) > time())){
 						continue;
 					}
 
