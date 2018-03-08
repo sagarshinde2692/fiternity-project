@@ -3259,6 +3259,7 @@ Class Utilities {
             $response['finder_name'] = ucwords($booktrial['finder_name']);
             $response['service_name'] = ucwords($booktrial['service_name']);
             $response['ratecard_url'] = Config::get('app.url').'/getmembershipratecardbyserviceid/'.$booktrial['service_id'];
+            $response['redirect_url'] = Config::get('app.website').'/servicebuy/'.$booktrial['service_id'];
             $response['verify_fit_code_url'] = Config::get('app.url').'/verifyfitcode/'.$booktrial['_id'].'/';
             $response['lost_fit_code_url'] = Config::get('app.url').'/lostfitcode/'.$booktrial['_id'];
             $response['subscription_code'] = $booktrial['code'];
@@ -3271,6 +3272,18 @@ Class Utilities {
             $response['calorie_burn'] = $category_calorie_burn;
             $response['calorie_burn_text'] = "Get ready to burn ".$category_calorie_burn." Calories in your ".$booktrial['service_name']." Session!";
             $response['is_tab_active'] = $is_tab_active;
+
+            $ratecard_count = \Ratecard::where('service_id',(int)$booktrial['service_id'])
+                ->where('finder_id',(int)$booktrial['finder_id'])
+                ->whereIn('type',['membership','packages'])
+                ->where('direct_payment_enable','!=','0')
+                ->orWhere(function($query){$query->where('expiry_date','exists',true)->where('expiry_date','>=',new \MongoDate(time()));})
+                ->orWhere(function($query){$query->where('start_date','exists',true)->where('start_date','<=',new \MongoDate(time()));})
+                ->count();
+
+            if($ratecard_count == 0){
+                $response['redirect_url'] = Config::get('app.website').'/'.$booktrial['finder_slug'];
+            }
             
         }
 
