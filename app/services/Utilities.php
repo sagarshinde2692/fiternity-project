@@ -3218,11 +3218,11 @@ Class Utilities {
 
             if($stage == 'before_trial'){
 
-                $card_message = "Provide this & get your <b>FITCODE</b> from Gym/Studio to unlock your surprise discount.<br>Use it to buy your membership at lowest price";
+                $card_message = "Provide this & get your <b>FITCODE</b> from Gym/Studio to unlock your surprise discount.<br>Use this discount to buy your membership at lowest price";
 
                 if($is_tab_active){
 
-                    $card_message = "Punch this code on the tab available at Gym/Studio to unlock your surprise discount.<br>Use it to buy your membership at lowest price";
+                    $card_message = "Punch this code on the tab available at Gym/Studio to unlock your surprise discount.<br>Use this discount to buy your membership at lowest price";
                 }
             }
 
