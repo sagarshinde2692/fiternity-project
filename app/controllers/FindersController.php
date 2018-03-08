@@ -548,10 +548,10 @@ class FindersController extends \BaseController {
 							// }
 							
 							
-							if(!isset($finder['campaign_text']) && isset($service['flags']) && isset($service['flags']['campaign_offer']) && $service['flags']['campaign_offer']){
-								$campaign_offer = true;
-								$service['campaign_text'] = "<strong>Additional Flat 30%</strong> for Women";
-							}
+							// if(!isset($finder['campaign_text']) && isset($service['flags']) && isset($service['flags']['campaign_offer']) && $service['flags']['campaign_offer']){
+							// 	$campaign_offer = true;
+							// 	$service['campaign_text'] = "<strong>Additional Flat 30%</strong> for Women";
+							// }
 							
 
 							if(isset($service['category']) && isset($service['category']['_id'])){
@@ -596,10 +596,10 @@ class FindersController extends \BaseController {
 									}
 
 									// if(in_array($rateval['type'], ['membership', 'packages']) && !isset($finder['campaign_text']) && !isset($service['campaign_text']) && isset($rateval['flags']) && isset($rateval['flags']['campaign_offer']) && $rateval['flags']['campaign_offer']){
-									if(in_array($rateval['type'], ['membership', 'packages']) && (isset($finder['campaign_text'])  || isset($service['campaign_text']) || (isset($rateval['flags']) && isset($rateval['flags']['campaign_offer']) && $rateval['flags']['campaign_offer']))){
-										$campaign_offer = true;
-										$service['serviceratecard'][$ratekey]['campaign_text'] = "(Women - Get additional 30% off)";
-									}
+									// if(in_array($rateval['type'], ['membership', 'packages']) && (isset($finder['campaign_text'])  || isset($service['campaign_text']) || (isset($rateval['flags']) && isset($rateval['flags']['campaign_offer']) && $rateval['flags']['campaign_offer']))){
+									// 	$campaign_offer = true;
+									// 	$service['serviceratecard'][$ratekey]['campaign_text'] = "(Women - Get additional 30% off)";
+									// }
 									
 									if(isset($service['membership']) && $service['membership']=='manual'){
 										$service['serviceratecard'][$ratekey]['direct_payment_enable'] = "0";
@@ -951,7 +951,7 @@ class FindersController extends \BaseController {
 					];
 				}else if($finder['commercial_type']!=0 && !(isset($finder['flags']) && in_array($finder['flags'], ['closed', 'temporarily_shut'])) && !(isset($finder['membership']) && $finder['membership']=='disable' && isset($finder['trial']) && $finder['trial']=='disable') ){
 					$response['vendor_stripe_data']	=	[
-						'text'=> "#STRONGGETSSTRONGER | <strong>Special Surprise Discount</strong> For Women",
+						'text'=> "#STRONGGETSSTRONGER | <strong>Special Surprise Discount</strong> For Women | <span class=\"code\">CODE: WFIT</span>",
 						'text_color'=> '#ffffff',
 						'background'=> '-webkit-linear-gradient(left, #FE7E87 0%, #FA5295 100%)',
 						'background-color'=> ''
