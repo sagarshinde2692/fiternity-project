@@ -2415,7 +2415,23 @@ class FindersController extends \BaseController {
 
 			$getTrialSchedule = $this->getTrialSchedule($finder_id);
 
-			$service = [];
+			$wallet_balance = 0;
+
+			$jwt_token = Request::header('Authorization');
+
+	        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+
+	            $decoded = customerTokenDecode($jwt_token);
+
+	            $customer_id = (int)$decoded->customer->_id;
+
+	            $getWalletBalanceData = [
+	                'finder_id'=>$finder_id,
+	                'order_type'=>'memberships'
+	            ];
+
+            	$wallet_balance = $this->utilities->getWalletBalance($customer_id,$getWalletBalanceData);
+	        }
 
 			foreach ($getTrialSchedule as $key => $value) {
 
@@ -2429,12 +2445,20 @@ class FindersController extends \BaseController {
 
 						if($ratecard_value['type'] != 'membership' || $ratecard_value['type'] != 'packages'){
 
-							unset($ratecards[$ratecard_key]);
+							unset($ratecards[$ratecard_key]); continue;
 						}
 
 						if($ratecard_value['direct_payment_enable'] == '0'){
 
-							unset($ratecards[$ratecard_key]);
+							unset($ratecards[$ratecard_key]); continue;
+						}
+
+						$price = $this->utilities->getRatecardAmount($ratecard_value);
+
+						$ratecards[$ratecard_key]['fitcash_applicable'] = $wallet_balance;
+
+						if($wallet_balance > $price){
+							$ratecards[$ratecard_key]['fitcash_applicable'] = $price;
 						}
 
 					}
