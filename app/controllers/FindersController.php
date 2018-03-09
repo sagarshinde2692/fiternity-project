@@ -598,7 +598,10 @@ class FindersController extends \BaseController {
 									// if(in_array($rateval['type'], ['membership', 'packages']) && !isset($finder['campaign_text']) && !isset($service['campaign_text']) && isset($rateval['flags']) && isset($rateval['flags']['campaign_offer']) && $rateval['flags']['campaign_offer']){
 									if(in_array($rateval['type'], ['membership', 'packages']) && (isset($finder['campaign_text'])  || isset($service['campaign_text']) || (isset($rateval['flags']) && isset($rateval['flags']['campaign_offer']) && $rateval['flags']['campaign_offer']))){
 										$campaign_offer = true;
-
+										// $service['serviceratecard'][$ratekey]['campaign_text'] = "(Women - Get additional 30% off)";
+									}
+									if(isset($rateval['flags']) && isset($rateval['flags']["offerFor"]) && $rateval['flags']["offerFor"] == "women"){
+										$service['serviceratecard'][$ratekey]['campaign_text'] = "Women only offer";
 										if(!isset($rateval['offers'])){
 											$service['serviceratecard'][$ratekey]['offers'] = [
 												[
@@ -608,11 +611,6 @@ class FindersController extends \BaseController {
 										}else{
 											$service['serviceratecard'][$ratekey]['offers'][0]['offer_icon'] = "https://b.fitn.in/global/finder/women-offer.png";
 										}
-
-										// $service['serviceratecard'][$ratekey]['campaign_text'] = "(Women - Get additional 30% off)";
-									}
-									if(isset($rateval['flags']) && isset($rateval['flags']["offerFor"]) && $rateval['flags']["offerFor"] == "women"){
-										$service['serviceratecard'][$ratekey]['campaign_text'] = "Women only offer";
 									}
 									
 									if(isset($service['membership']) && $service['membership']=='manual'){
@@ -3441,6 +3439,9 @@ class FindersController extends \BaseController {
 							if(isset($ratecard['flags']) && isset($ratecard['flags']['campaign_offer']) && $ratecard['flags']['campaign_offer']){
 								$campaign_offer = true;
 								// break;
+							}
+
+							if(isset($ratecard['flags']) && isset($ratecard['flags']["offerFor"]) && $ratecard['flags']["offerFor"] == "women"){
 								if(!isset($ratecard['offers']) || count($ratecard['offers']) == 0){
 									$data['finder']['services'][$serviceKey]['ratecard'][$ratekey]['offers'] = [
 										[
@@ -3451,6 +3452,7 @@ class FindersController extends \BaseController {
 									$data['finder']['services'][$serviceKey]['ratecard'][$ratekey]['offers'][0]['offer_icon'] = "https://b.fitn.in/global/finder/women-offer.png";
 								}
 							}
+								
 						}
 					}
 					
