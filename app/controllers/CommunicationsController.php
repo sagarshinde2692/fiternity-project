@@ -180,7 +180,15 @@ class CommunicationsController extends \BaseController {
 
 				case "rescheduleTrial":
 					$data['customer_profile_url'] = Config::get('app.website')."/profile/".$data['customer_email'];
-
+					break;
+					
+				case "bookTrialReminderBefore6Hour":
+					if(!isset($data['vendor_code'])){
+						$booktrial = Booktrial::find($data['_id']);
+						$booktrial->vendor_code = random_numbers(5);
+						$booktrial->update();
+						$data['vendor_code'] = $booktrial->vendor_code;
+					}		
 
 		}
 
