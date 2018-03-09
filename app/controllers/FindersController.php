@@ -2825,12 +2825,12 @@ class FindersController extends \BaseController {
 
 										if(isset($rateval['flags']['discother']) && $rateval['flags']['discother'] == true){
 											$ratecardoffer['offer_text']    =   "";
-											$ratecardoffer['offer_icon']    =   "https://b.fitn.in/iconsv1/womens-day/women-only.png";
+											// $ratecardoffer['offer_icon']    =   "https://b.fitn.in/iconsv1/womens-day/women-only.png";
 										}
 
 										if(isset($rateval['flags']['disc25or50']) && $rateval['flags']['disc25or50'] == true){
 											$ratecardoffer['offer_text']    =   "";
-											$ratecardoffer['offer_icon']    =   "https://b.fitn.in/iconsv1/womens-day/women-only.png";
+											// $ratecardoffer['offer_icon']    =   "https://b.fitn.in/iconsv1/womens-day/women-only.png";
 										}
 									}
 
