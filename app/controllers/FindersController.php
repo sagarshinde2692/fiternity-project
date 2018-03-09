@@ -2801,6 +2801,14 @@ class FindersController extends \BaseController {
 						continue;
 					}
 
+					if(isset($item['trial']) && $item['trial']=='manual'){
+						if(isset($_GET['app_version']) && isset($_GET['device_type']) && (($_GET['device_type'] == 'android' && $_GET['app_version'] > '4.3') || ($_GET['device_type'] == 'ios' && $_GET['app_version'] > '4.3'))){
+							$rateval['manual_trial_enable'] = "1";
+						}else{
+							$rateval['direct_payment_enable'] = "0";
+						}
+					}
+
 					if(!isset($rateval['offers']) || (isset($rateval['offers']) && count($rateval['offers'])==0)){
 						if(!empty($rateval['_id']) && isset($rateval['_id'])){
 							$ratecardoffersRecards  =   Offer::where('ratecard_id', intval($rateval['_id']))->where('hidden', false)
