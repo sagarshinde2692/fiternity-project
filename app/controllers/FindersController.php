@@ -598,6 +598,17 @@ class FindersController extends \BaseController {
 									// if(in_array($rateval['type'], ['membership', 'packages']) && !isset($finder['campaign_text']) && !isset($service['campaign_text']) && isset($rateval['flags']) && isset($rateval['flags']['campaign_offer']) && $rateval['flags']['campaign_offer']){
 									if(in_array($rateval['type'], ['membership', 'packages']) && (isset($finder['campaign_text'])  || isset($service['campaign_text']) || (isset($rateval['flags']) && isset($rateval['flags']['campaign_offer']) && $rateval['flags']['campaign_offer']))){
 										$campaign_offer = true;
+
+										if(!isset($rateval['offers'])){
+											$service['serviceratecard'][$ratekey]['offers'] = [
+												[
+													"offer_icon"=>"https://b.fitn.in/global/finder/women-offer.png",
+												]
+												];
+										}else{
+											$service['serviceratecard'][$ratekey]['offers'][0]['offer_icon'] = "https://b.fitn.in/global/finder/women-offer.png";
+										}
+
 										// $service['serviceratecard'][$ratekey]['campaign_text'] = "(Women - Get additional 30% off)";
 									}
 									if(isset($rateval['flags']) && isset($rateval['flags']["offerFor"]) && $rateval['flags']["offerFor"] == "women"){
@@ -3425,15 +3436,24 @@ class FindersController extends \BaseController {
 					
 					$campaign_offer = false;
 					
-					foreach($data['finder']['services'] as $service){
-						foreach($service['ratecard'] as $ratecard){
+					foreach($data['finder']['services'] as $serviceKey =>$service){
+						foreach($service['ratecard'] as $ratekey => $ratecard){
 							if(isset($ratecard['flags']) && isset($ratecard['flags']['campaign_offer']) && $ratecard['flags']['campaign_offer']){
 								$campaign_offer = true;
-								break;
+								// break;
+								if(!isset($ratecard['offers']) || count($ratecard['offers']) == 0){
+									$data['finder']['services'][$serviceKey]['ratecard'][$ratekey]['offers'] = [
+										[
+											"offer_icon"=>"https://b.fitn.in/global/finder/women-offer.png",
+										]
+										];
+								}else{
+									$data['finder']['services'][$serviceKey]['ratecard'][$ratekey]['offers'][0]['offer_icon'] = "https://b.fitn.in/global/finder/women-offer.png";
+								}
 							}
 						}
 					}
-
+					
 					if($campaign_offer){
 						$data['finder']['offer_icon'] = "https://b.fitn.in/global/women-day/flat-30tag-app.png";
 					}else if($data['finder']['commercial_type']!=0 && !(isset($data['finder']['flags']) && in_array($data['finder']['flags'], ['closed', 'temporarily_shut'])) && !(isset($data['finder']['membership']) && $data['finder']['membership']=='disable' && isset($data['finder']['trial']) && $data['finder']['trial']=='disable') ){
