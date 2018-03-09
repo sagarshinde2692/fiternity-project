@@ -598,7 +598,7 @@ class FindersController extends \BaseController {
 									// if(in_array($rateval['type'], ['membership', 'packages']) && !isset($finder['campaign_text']) && !isset($service['campaign_text']) && isset($rateval['flags']) && isset($rateval['flags']['campaign_offer']) && $rateval['flags']['campaign_offer']){
 									if(in_array($rateval['type'], ['membership', 'packages']) && (isset($finder['campaign_text'])  || isset($service['campaign_text']) || (isset($rateval['flags']) && isset($rateval['flags']['campaign_offer']) && $rateval['flags']['campaign_offer']))){
 										$campaign_offer = true;
-										$service['serviceratecard'][$ratekey]['campaign_text'] = "(Women - Get additional 30% off)";
+										// $service['serviceratecard'][$ratekey]['campaign_text'] = "(Women - Get additional 30% off)";
 									}
 									if(isset($rateval['flags']) && isset($rateval['flags']["offerFor"]) && $rateval['flags']["offerFor"] == "women"){
 										$service['serviceratecard'][$ratekey]['campaign_text'] = "Women only offer";
