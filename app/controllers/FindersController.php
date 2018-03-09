@@ -548,10 +548,10 @@ class FindersController extends \BaseController {
 							// }
 							
 							
-							if(!isset($finder['campaign_text']) && isset($service['flags']) && isset($service['flags']['campaign_offer']) && $service['flags']['campaign_offer']){
-								$campaign_offer = true;
-								// $service['campaign_text'] = "<strong>Additional Flat 30%</strong> for Women";
-							}
+							// if(!isset($finder['campaign_text']) && isset($service['flags']) && isset($service['flags']['campaign_offer']) && $service['flags']['campaign_offer']){
+							// 	$campaign_offer = true;
+							// 	$service['campaign_text'] = "<strong>Additional Flat 30%</strong> for Women";
+							// }
 							
 
 							if(isset($service['category']) && isset($service['category']['_id'])){
@@ -595,11 +595,11 @@ class FindersController extends \BaseController {
 										continue;
 									}
 
-									if(in_array($rateval['type'], ['membership', 'packages']) && !isset($finder['campaign_text']) && !isset($service['campaign_text']) && isset($rateval['flags']) && isset($rateval['flags']['campaign_offer']) && $rateval['flags']['campaign_offer']){
-									if(in_array($rateval['type'], ['membership', 'packages']) && (isset($finder['campaign_text'])  || isset($service['campaign_text']) || (isset($rateval['flags']) && isset($rateval['flags']['campaign_offer']) && $rateval['flags']['campaign_offer']))){
-										$campaign_offer = true;
-										// $service['serviceratecard'][$ratekey]['campaign_text'] = "(Women - Get additional 30% off)";
-									}
+									// if(in_array($rateval['type'], ['membership', 'packages']) && !isset($finder['campaign_text']) && !isset($service['campaign_text']) && isset($rateval['flags']) && isset($rateval['flags']['campaign_offer']) && $rateval['flags']['campaign_offer']){
+									// if(in_array($rateval['type'], ['membership', 'packages']) && (isset($finder['campaign_text'])  || isset($service['campaign_text']) || (isset($rateval['flags']) && isset($rateval['flags']['campaign_offer']) && $rateval['flags']['campaign_offer']))){
+									// 	$campaign_offer = true;
+									// 	$service['serviceratecard'][$ratekey]['campaign_text'] = "(Women - Get additional 30% off)";
+									// }
 									if(isset($rateval['flags']) && isset($rateval['flags']["offerFor"]) && $rateval['flags']["offerFor"] == "women"){
 										$service['serviceratecard'][$ratekey]['campaign_text'] = "Women only offer";
 									}
