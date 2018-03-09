@@ -605,11 +605,11 @@ class FindersController extends \BaseController {
 										if(!isset($rateval['offers'])){
 											$service['serviceratecard'][$ratekey]['offers'] = [
 												[
-													"offer_icon"=>"https://b.fitn.in/global/finder/women-offer.png",
+													"offer_icon"=>"https://b.fitn.in/global/finder/women-offer1.png",
 												]
 												];
 										}else{
-											$service['serviceratecard'][$ratekey]['offers'][0]['offer_icon'] = "https://b.fitn.in/global/finder/women-offer.png";
+											$service['serviceratecard'][$ratekey]['offers'][0]['offer_icon'] = "https://b.fitn.in/global/finder/women-offer1.png";
 										}
 									}
 									
@@ -3445,11 +3445,11 @@ class FindersController extends \BaseController {
 								if(!isset($ratecard['offers']) || count($ratecard['offers']) == 0){
 									$data['finder']['services'][$serviceKey]['ratecard'][$ratekey]['offers'] = [
 										[
-											"offer_icon"=>"https://b.fitn.in/global/finder/women-offer.png",
+											"offer_icon"=>"https://b.fitn.in/global/finder/women-offer1.png",
 										]
 										];
 								}else{
-									$data['finder']['services'][$serviceKey]['ratecard'][$ratekey]['offers'][0]['offer_icon'] = "https://b.fitn.in/global/finder/women-offer.png";
+									$data['finder']['services'][$serviceKey]['ratecard'][$ratekey]['offers'][0]['offer_icon'] = "https://b.fitn.in/global/finder/women-offer1.png";
 								}
 							}
 								
