@@ -499,7 +499,7 @@ class HomeController extends BaseController {
                 'ratio'=>(float) number_format(100/375,2)
             ];
 
-            if($city == "mumbai"){
+            /*if($city == "mumbai"){
                 $campaigns[] = [
                     'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/web-banner-mfp.png',
                     'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/mob-banner-mfp.png',
@@ -510,7 +510,7 @@ class HomeController extends BaseController {
                     'width'=>375,
                     'ratio'=>(float) number_format(100/375,2)
                 ];   
-            }
+            }*/
 
             $homedata 	= 	array(
                 // 'popular_finders' => $popular_finders,
