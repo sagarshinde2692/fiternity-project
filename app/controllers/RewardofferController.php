@@ -478,7 +478,7 @@ class RewardofferController extends BaseController {
                                         }
                                     }
 
-                                    if(in_array($finder_id,[13219,13221]) && $amount <= 1000){
+                                    if(in_array($finder_id,[13219,13221,13420]) && $amount <= 1000){
 
                                         $pos = strpos($rewards_value['title'],'(Kit B)');
 
