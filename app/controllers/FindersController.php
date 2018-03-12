@@ -2800,16 +2800,7 @@ class FindersController extends \BaseController {
 					if((isset($rateval['expiry_date']) && $rateval['expiry_date'] != "" && strtotime("+ 1 days", strtotime($rateval['expiry_date'])) < time()) || (isset($rateval['start_date']) && $rateval['start_date'] != "" && strtotime($rateval['start_date']) > time())){
 						continue;
 					}
-
-					if(isset($item['trial']) && $item['trial']=='manual'){
-						if(isset($_GET['app_version']) && isset($_GET['device_type']) && (($_GET['device_type'] == 'android' && $_GET['app_version'] > 4.42) || ($_GET['device_type'] == 'ios' && $_GET['app_version'] > '4.3'))){
-							$rateval['manual_trial_enable'] = "1";
-							unset($rateval['direct_payment_enable']);
-							
-						}else{
-							$rateval['direct_payment_enable'] = "0";
-						}
-					}
+					
 
 					if(!isset($rateval['offers']) || (isset($rateval['offers']) && count($rateval['offers'])==0)){
 						if(!empty($rateval['_id']) && isset($rateval['_id'])){
@@ -2992,7 +2983,7 @@ class FindersController extends \BaseController {
 		}
 
 		// Log::info($cache_key);
-		$cache_key = $this->updateCacheKey($cache_key);
+		// $cache_key = $this->updateCacheKey($cache_key);
 
 		Log::info("cache key");
 		Log::info($cache_key);
@@ -3038,7 +3029,14 @@ class FindersController extends \BaseController {
 			$cache_name = "finder_detail_4_4";
 		}
 
+		if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios']) && isset($_GET['app_version']) && $_GET['app_version'] > '4.4.2'){
+			$cache_name = "finder_detail_ios_4_4_3";
+		}
 
+		if(isset($_GET['device_type']) && in_array($_GET['device_type'],['android']) && isset($_GET['app_version']) && $_GET['app_version'] > '4.42'){
+			$cache_name = "finder_detail_android_4_4_3";
+		}
+		Log::info($cache_name);
 		$finder_detail = $cache ? Cache::tags($cache_name)->has($cache_key) : false;
 
 		if(!$finder_detail){
@@ -3857,6 +3855,19 @@ class FindersController extends \BaseController {
 						$ratecard['cashback_on_trial'] = "100% Cashback";
 					}
 
+					if(isset($finderservice['trial']) && $finderservice['trial']=='manual' && $ratecard['type'] == 'trial'){
+						if(isset($_GET['app_version']) && isset($_GET['device_type']) && (($_GET['device_type'] == 'android' && $_GET['app_version'] > 4.42) || ($_GET['device_type'] == 'ios' && version_compare($_GET['app_version'], '4.4.2') > 0))){
+							Log::info($ratecard['_id']);
+							$ratecard['manual_trial_enable'] = "1";
+							unset($ratecard['direct_payment_enable']);
+							Log::info("manual_trial_enable");
+							
+						}else{
+							$ratecard['direct_payment_enable'] = "0";
+							Log::info("direct_payment_enable");
+							
+						}
+					}
 					array_push($ratecardArr, $ratecard);
 				}
 				// return $finderservice['ratecard'];
