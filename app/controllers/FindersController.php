@@ -2802,7 +2802,7 @@ class FindersController extends \BaseController {
 					}
 
 					if(isset($item['trial']) && $item['trial']=='manual'){
-						if(isset($_GET['app_version']) && isset($_GET['device_type']) && (($_GET['device_type'] == 'android' && $_GET['app_version'] > '4.3') || ($_GET['device_type'] == 'ios' && $_GET['app_version'] > '4.3'))){
+						if(isset($_GET['app_version']) && isset($_GET['device_type']) && (($_GET['device_type'] == 'android' && $_GET['app_version'] > '4.42') || ($_GET['device_type'] == 'ios' && $_GET['app_version'] > '4.3'))){
 							$rateval['manual_trial_enable'] = "1";
 						}else{
 							$rateval['direct_payment_enable'] = "0";
