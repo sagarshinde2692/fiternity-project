@@ -4356,6 +4356,10 @@ class SchedulebooktrialsController extends \BaseController {
                 }
             }
 
+            $service_id = (int)$booktrialdata['service_id'];
+
+            $booktrial_link = $this->utilities->getShortenUrl(Config::get('app.website')."/buy/".$finder_slug."/".$service_id);
+
             $emaildata = array(
                 '_id'                           =>      $booktrialdata->_id,
                 'customer_name'                 =>      $booktrialdata->customer_name,
@@ -4399,7 +4403,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'google_pin'                    =>      $google_pin,
                 'cancel_by'                     =>      (isset($booktrialdata->cancel_by) && $booktrialdata->cancel_by != '') ? $booktrialdata->cancel_by : '',
                 'image'                         =>      $image,
-                'source'                        =>      $booktrialdata->source
+                'source'                        =>      $booktrialdata->source,
+                'booktrial_link'                =>      $booktrial_link
             );
 
             if($booktrialdata->source_flag == 'vendor'){
