@@ -1134,3 +1134,4 @@ Route::get('ldJson/{booktrial_id}','DebugController@ldJson');
 
 Route::get('customerhome','HomeController@customerHome');
 Route::get('groupsData','DebugController@groupsData');
+Route::get('rewardClaimData','DebugController@rewardClaimData');
