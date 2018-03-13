@@ -3239,14 +3239,14 @@ class CustomerController extends \BaseController {
 				// 	'width'=>375,
 				// 	'ratio'=>(float) number_format(100/375,2)
 				// ];
-				$result['campaigns'][] = [
-					'image'=>'https://b.fitn.in/global/ios_homescreen_banner/women-banner.jpg',
-					'link'=>'ftrnty://fitternity.com/',
-					'title'=>'Women campaign',
-					'height'=>100,
-					'width'=>375,
-					'ratio'=>(float) number_format(100/375,2)
-				];
+				// $result['campaigns'][] = [
+				// 	'image'=>'https://b.fitn.in/global/ios_homescreen_banner/women-banner.jpg',
+				// 	'link'=>'ftrnty://fitternity.com/',
+				// 	'title'=>'Women campaign',
+				// 	'height'=>100,
+				// 	'width'=>375,
+				// 	'ratio'=>(float) number_format(100/375,2)
+				// ];
 
 			}else{
 
@@ -3267,14 +3267,14 @@ class CustomerController extends \BaseController {
 			// 		'width'=>375,
 			// 		'ratio'=>(float) number_format(100/375,2)
 			// 	];
-				$result['campaigns'][] = [
-					'image'=>'https://b.fitn.in/global/ios_homescreen_banner/women-banner.jpg',
-					'link'=>'ftrnty://ftrnty.com/search/all',
-					'title'=>'Women campaign',
-					'height'=>100,
-					'width'=>375,
-					'ratio'=>(float) number_format(100/375,2)
-				];
+				// $result['campaigns'][] = [
+				// 	'image'=>'https://b.fitn.in/global/ios_homescreen_banner/women-banner.jpg',
+				// 	'link'=>'ftrnty://ftrnty.com/search/all',
+				// 	'title'=>'Women campaign',
+				// 	'height'=>100,
+				// 	'width'=>375,
+				// 	'ratio'=>(float) number_format(100/375,2)
+				// ];
 
 			}
 			$result['campaigns'][] = [
