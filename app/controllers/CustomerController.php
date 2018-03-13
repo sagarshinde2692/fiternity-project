@@ -4192,8 +4192,11 @@ class CustomerController extends \BaseController {
 
 			}
 		}
-
-		if(isset($_GET['device_type']) && in_array($_GET['device_type'], ['android', 'ios']) && isset($_GET['app_version']) && $_GET['app_version'] >= 4.43){
+		$device_type = Request::header('Device-Type');
+		$app_version = Request::header('App-Version');
+		Log::info($device_type);
+		Log::info($app_version);
+		if($device_type && $app_version && in_array($device_type, ['android', 'ios']) && version_compare($app_version, '4.4.2')>0){
 			$response = [];
 			foreach($bankData as $key => $value){
 				$response['bankData'][] = [
