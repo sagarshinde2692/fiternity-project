@@ -5651,5 +5651,36 @@ public function yes($msg){
 		return "Email Sent";
 
 	}
+
+	public function groupsData(){
+
+		$groups = Customergroup::active()->get()->toArray();
+		$data = [];
+		foreach($groups as $group){
+			$order_ids = array_pluck($group['members'], 'order_id');
+			if(count(array_values(array_unique($order_ids))) > 1){
+				// $orders = Order::active()->where('group_id', $group['group_id'])->count();
+				// if($orders>1){
+				// 	array_push($data, $group);
+
+				// }
+				foreach($group['members'] as &$member){
+					$order = Order::find($member['order_id']);
+					$member['amount_finder'] = $order->amount_finder;
+					$member['customer_name'] = $order->customer_name;
+					$member['finder_name'] = $order->finder_name;
+					$member['payment_mode'] = $order->payment_mode;
+					$member['status'] = $order->status;
+					$member['repeat_customer'] = $order->repeat_customer;
+				}
+				array_push($data, $group);
+				
+			}
+		}
+
+		return $data;
+
+	}
     
 }
+
