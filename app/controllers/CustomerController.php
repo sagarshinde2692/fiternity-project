@@ -4069,6 +4069,7 @@ class CustomerController extends \BaseController {
 			"emiData"=>array(),
 			"higerMinVal" => array()
 			);
+		$bankData = array();
 		foreach ($emiStruct as $emi) {
 			if(isset($data['bankName']) && !isset($data['amount'])){
 				if($emi['bankName'] == $data['bankName']){
@@ -4085,6 +4086,14 @@ class CustomerController extends \BaseController {
 						$emiData['rate'] = (string)$emi['rate'];
 						$emiData['minval'] = (string)$emi['minval'];
 					array_push($response['emiData'], $emiData);
+					
+					if(isset($bankData[$emi['bankName']])){
+							array_push($bankData[$emi['bankName']], $emiData);
+						}else{
+							$bankData[$emi['bankName']] = [$emiData];
+						}
+
+					
 				}
 			
 			}elseif(isset($data['bankName'])&&isset($data['amount'])){
@@ -4107,6 +4116,13 @@ class CustomerController extends \BaseController {
 						$emiData['rate'] = (string)$emi['rate'];
 						$emiData['minval'] = (string)$emi['minval'];
 						array_push($response['emiData'], $emiData);
+						
+						if(isset($bankData[$emi['bankName']])){
+							array_push($bankData[$emi['bankName']], $emiData);
+						}else{
+							$bankData[$emi['bankName']] = [$emiData];
+						}
+
 					}elseif($emi['bankName'] == $data['bankName']){
 						$emiData = array();
 						$emiData['bankName'] = $emi['bankName'];
@@ -4135,6 +4151,13 @@ class CustomerController extends \BaseController {
 					$emiData['rate'] = (string)$emi['rate'];
 					$emiData['minval'] = (string)$emi['minval'];
 					array_push($response['emiData'], $emiData);
+					
+					if(isset($bankData[$emi['bankName']])){
+							array_push($bankData[$emi['bankName']], $emiData);
+					}else{
+						$bankData[$emi['bankName']] = [$emiData];
+					}
+
 				}else{
 					$key = array_search($emi['bankName'], $bankNames);
 					if(!is_int($key)){
@@ -4160,6 +4183,23 @@ class CustomerController extends \BaseController {
 						$emiData['rate'] = (string)(string)$emi['rate'];
 						$emiData['minval'] = (string)$emi['minval'];
 				array_push($response['emiData'], $emiData);
+				
+				if(isset($bankData[$emi['bankName']])){
+							array_push($bankData[$emi['bankName']], $emiData);
+				}else{
+					$bankData[$emi['bankName']] = [$emiData];
+				}
+
+			}
+		}
+
+		if(isset($_GET['device_type']) && in_array($_GET['device_type'], ['android']) && isset($_GET['app_version']) && $_GET['app_version'] >= 4.43){
+			$response = [];
+			foreach($bankData as $key => $value){
+				$response['bankData'][] = [
+					'bankName' => $key,
+					'emiData' => $value
+				];
 			}
 		}
 		$response['bankList'] = $bankList;
@@ -6003,7 +6043,7 @@ class CustomerController extends \BaseController {
 					$emiData['minval'] = (string)$emi['minval'];
 					// array_push($bankData, $emiData);
 					if(isset($bankData[$emi['bankName']])){
-						
+
 						array_push($bankData[$emi['bankName']], $emiData);
 					}else{
 						$bankData[$emi['bankName']] = [$emiData];
