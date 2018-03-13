@@ -4193,7 +4193,7 @@ class CustomerController extends \BaseController {
 			}
 		}
 
-		if(isset($_GET['device_type']) && in_array($_GET['device_type'], ['android']) && isset($_GET['app_version']) && $_GET['app_version'] >= 4.43){
+		if(isset($_GET['device_type']) && in_array($_GET['device_type'], ['android', 'ios']) && isset($_GET['app_version']) && $_GET['app_version'] >= 4.43){
 			$response = [];
 			foreach($bankData as $key => $value){
 				$response['bankData'][] = [
