@@ -1133,3 +1133,4 @@ Route::post('customer/uploadreceipt','CustomerController@uploadReceipt');
 Route::get('ldJson/{booktrial_id}','DebugController@ldJson');
 
 Route::get('customerhome','HomeController@customerHome');
+Route::get('groupsData','DebugController@groupsData');
