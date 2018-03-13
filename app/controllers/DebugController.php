@@ -5815,17 +5815,35 @@ public function yes($msg){
 
 		foreach($orders as &$order){
 			$order['post_count'] = 0;
+			// $order['transactions'] = [];
 			if(isset($orders_data[strval($order['customer_id'])])){
 				foreach($orders_data[strval($order['customer_id'])] as $date){
 					// Log::info($date->sec);
 					Log::info($order['_id']);
-					if((isset($order['success_date']) && $order['success_date'] < new DateTime(date("Y-m-d H:i:s",$date->sec))) || (isset($order['updated_at']) && $order['updated_at'] < new DateTime(date("Y-m-d H:i:s",$date->sec)))){
+					if((isset($order['success_date']) && strtotime($order['success_date']) < $date->sec) || (!isset($order['success_date']) && isset($order['updated_at']) && strtotime($order['updated_at']) < $date->sec)){
 						$order['post_count']++;
+						// array_push($order['transactions'], ['type'=>'order', 'date'=>date("Y-m-d H:i:s",$date->sec)]);
 						// Log::info($order);
 						// return $date;
 					}else{
 						Log::info($order);
-						return $date;
+						// return "asdasdasdsa";
+						break;
+					}
+				}
+			}
+			if(isset($trials_data[strval($order['customer_id'])])){
+				foreach($trials_data[strval($order['customer_id'])] as $date){
+					// Log::info($date->sec);
+					Log::info($order['_id']);
+					if((isset($order['success_date']) && strtotime($order['success_date']) < $date->sec) || (!isset($order['success_date']) && isset($order['updated_at']) && strtotime($order['updated_at']) < $date->sec)){
+						$order['post_count']++;
+						// array_push($order['transactions'], ['type'=>'trial', 'date'=>date("Y-m-d H:i:s",$date->sec)]);
+						// Log::info($order);
+						// return $date;
+					}else{
+						Log::info($order);
+						// return "asdasdasdsa";
 						break;
 					}
 				}
