@@ -3226,7 +3226,7 @@ class CustomerController extends \BaseController {
 
 				$result['campaigns'][] = [
 					'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/app-summer.jpg',
-					'link'=>'ftrnty://ftrnty.com/',
+					'link'=>'ftrnty://fitternity.com/',
 					'title'=>'Fitness Sale',
 					'height'=>100,
 					'width'=>375,
