@@ -16,6 +16,7 @@ use App\Services\Bulksms as Bulksms;
 use App\Services\Utilities as Utilities;
 use App\Sms\CustomerSms as CustomerSms;
 use App\Services\Cacheapi as Cacheapi;
+use App\Sms\FinderSms as FinderSms;
 
 
 use \Pubnub\Pubnub as Pubnub;
@@ -5867,6 +5868,40 @@ public function yes($msg){
 
 		// return $data;
 
+
+	}
+
+
+	public function sendVendorEmail(){
+
+		$findersms = new FinderSms();
+		$findermailer = new FinderMailer();
+
+		$order_ids = [17860,24339,46841,47078,50455,62038,62336,63232,64805,67687,79321,79804,83880,84204,83829,95803,97817,99711,102700,102948,102907,103868,101887,101886,101837,104004,104019,101828,104029,104058,104087,104088,104106,104112,104229,104395,104427,99362,104499,104749,104805,104809,98620,104887,102871,104898,104284];
+
+		$customer_emails = ["Kiran","Supriti","Dia","Harshavardhan","Akshar","Meghana Jangi","Masako","Meghana Jangi","Bijit Sarkar","Hitesh Nayak","Shilpa Vashist","Himanshu Mehta","Anay","Durga Sai","Paulson","Rashmi Singh","Preeti Goyal","Yadu Gowda","Vardhan","Anindita","Yadu Gowda","Pawan Kumar","Gautam Bhat","Supriya","Gautam Bhat","JENESH CHOWHAN","Ruhina","Siddharth Mishra","Sandeep Mukherjee","Devika Premlal","Surya Prakash Gupta","SHAAN","TANVIR","Komal","Sudharshan","Charan","Shabnam","Harsh Gupta","Vartika","Nausheen","Anjali","Venkata","Ranjan Mittal","Tenzin","Prajval","M.preethi","Milan Mohan","Megha Navasapur","Anish","Krishnendu Bikash","Tubharath Kumar","Rakshit Kejriwal"];
+
+		$orders = Order::active()
+			->whereIn('customer_email',$customer_emails)
+			->where('sendVendorEmail','exists',false)
+			/*->where('success_date','>=',new MongoDate(strtotime(date('2018-03-05 00:00:00'))))
+		    ->where('success_date','<',new MongoDate(strtotime(date('2018-03-38 23:59:59'))))*/
+			->where('type','memberships')
+			->where('city_id',3)
+			->get();
+
+		if(count($orders) > 0){
+
+			foreach ($orders as $order) {
+
+				$findermailer->sendPgOrderMail($order->toArray());
+				$findersms->sendPgOrderSms($order->toArray());
+
+				$order->update(['sendVendorEmail'=>time()]);
+			}
+		}
+
+		return count($orders);
 
 	}
     
