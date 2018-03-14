@@ -5951,6 +5951,8 @@ public function yes($msg){
 				$findersms->sendPgOrderSms($order->toArray());
 
 				$order->update(['sendVendorEmail'=>time()]);
+
+				$flag = true;
 			}
 
 		}
