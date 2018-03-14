@@ -20,7 +20,7 @@ class BrandsController extends \BaseController {
 
         if(!$brand_detail){
 
-            $brand = Brand::where('slug',$slug)->firstOrFail();
+            $brand = Brand::where('slug',$slug)->where("status","1")->firstOrFail();
 
             $finder_ids = isset($brand->finder_id) ? $brand->finder_id : [];
                     
