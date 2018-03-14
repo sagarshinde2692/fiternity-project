@@ -5877,31 +5877,91 @@ public function yes($msg){
 		$findersms = new FinderSms();
 		$findermailer = new FinderMailer();
 
-		$order_ids = [17860,24339,46841,47078,50455,62038,62336,63232,64805,67687,79321,79804,83880,84204,83829,95803,97817,99711,102700,102948,102907,103868,101887,101886,101837,104004,104019,101828,104029,104058,104087,104088,104106,104112,104229,104395,104427,99362,104499,104749,104805,104809,98620,104887,102871,104898,104284];
+		$array = [
+			["finder_name"=>"Body Vignyan","customer_name"=>"Kiran"],
+			["finder_name"=>"Zorba - Yoga Fitness And Beyond Jayanagar","customer_name"=>"Supriti"],
+			["finder_name"=>"Total Yoga Kasturba Road","customer_name"=>"Dia"],
+			["finder_name"=>"Body Vignyan","customer_name"=>"Harshavardhan"],
+			["finder_name"=>"Club One Fitness And Health Studio","customer_name"=>"Akshar"],
+			["finder_name"=>"Rhythmic Feet","customer_name"=>"Meghana Jangi"],
+			["finder_name"=>"Zorba - Yoga Fitness  Beyond Ulsoor","customer_name"=>"Masako"],
+			["finder_name"=>"Rhythmic Feet","customer_name"=>"Meghana Jangi"],
+			["finder_name"=>"You Against You Fitness","customer_name"=>"Bijit Sarkar"],
+			["finder_name"=>"F2 Fusion Fitness","customer_name"=>"Hitesh Nayak"],
+			["finder_name"=>"Stepperz","customer_name"=>"Shilpa Vashist"],
+			["finder_name"=>"Reforma Fitness Center","customer_name"=>"Himanshu Mehta"],
+			["finder_name"=>"Reforma Fitness Center","customer_name"=>"Anay"],
+			["finder_name"=>"Reforma Fitness Center","customer_name"=>"Durga Sai"],
+			["finder_name"=>"Reforma Fitness Center","customer_name"=>"Paulson"],
+			["finder_name"=>"Leap Yoga And Pilates","customer_name"=>"Rashmi Singh"],
+			["finder_name"=>"Dhurii","customer_name"=>"Preeti Goyal"],
+			["finder_name"=>"HSR Fitness World","customer_name"=>"Yadu Gowda"],
+			["finder_name"=>"Gold's Gym","customer_name"=>"Vardhan"],
+			["finder_name"=>"M S Gurukkal's Kadathanadan Kalari Academy","customer_name"=>"Anindita Chakraborty"],
+			["finder_name"=>"HSR Fitness World","customer_name"=>"Yadu Gowda"],
+			["finder_name"=>"Power World Gym","customer_name"=>"Pawan Kumar"],
+			["finder_name"=>"Power World Gym","customer_name"=>"Gautam Bhat"],
+			["finder_name"=>"Amrutha Bindu Yoga","customer_name"=>"Supriya"],
+			["finder_name"=>"Power World Gym","customer_name"=>"Gautam Bhat"],
+			["finder_name"=>"High Fitness Club","customer_name"=>"JENESH CHOWHAN"],
+			["finder_name"=>"God Gift Yoga Center","customer_name"=>"Ruhina"],
+			["finder_name"=>"Klub Fit","customer_name"=>"Siddharth Mishra"],
+			["finder_name"=>"F45 Training HSR Layout","customer_name"=>"Sandeep Mukherjee"],
+			["finder_name"=>"Pluto Fitness","customer_name"=>"Devika Premlal"],
+			["finder_name"=>"Klub Fit","customer_name"=>"Surya Prakash Gupta"],
+			["finder_name"=>"Fifth Gear Fitness","customer_name"=>"SHAAN"],
+			["finder_name"=>"Fifth Gear Fitness","customer_name"=>"TANVIR"],
+			["finder_name"=>"Zorba - Yoga Fitness  Beyond Ulsoor","customer_name"=>"Komal"],
+			["finder_name"=>"Gold's Gym","customer_name"=>"Sudharshan"],
+			["finder_name"=>"Fitness Cafe","customer_name"=>"Charan"],
+			["finder_name"=>"Fitness Cafe","customer_name"=>"Shabnam"],
+			["finder_name"=>"Fitness Cafe","customer_name"=>"Harsh Gupta"],
+			["finder_name"=>"Fitness Cafe","customer_name"=>"Vartika"],
+			["finder_name"=>"Fitness Cafe","customer_name"=>"Nausheen"],
+			["finder_name"=>"Fitness Cafe","customer_name"=>"Anjali"],
+			["finder_name"=>"Fitness Cafe","customer_name"=>"Venkata"],
+			["finder_name"=>"Fitness Cafe","customer_name"=>"Ranjan Mittal"],
+			["finder_name"=>"Fitness Cafe","customer_name"=>"Tenzin"],
+			["finder_name"=>"Fitness Cafe","customer_name"=>"Prajval"],
+			["finder_name"=>"Fitness Cafe","customer_name"=>"M.preethi"],
+			["finder_name"=>"Fitness Cafe","customer_name"=>"Milan Mohan"],
+			["finder_name"=>"Fitness Cafe","customer_name"=>"Megha Navasapur"],
+			["finder_name"=>"Fitness Cafe","customer_name"=>"Anish"],
+			["finder_name"=>"Fitness Cafe","customer_name"=>"Krishnendu Bikash"],
+			["finder_name"=>"Fitness Cafe","customer_name"=>"Tubharath Kumar"],
+			["finder_name"=>"Fitness Cafe","customer_name"=>"Rakshit Kejriwal"]
+		];
 
-		$customer_emails = ["Kiran","Supriti","Dia","Harshavardhan","Akshar","Meghana Jangi","Masako","Meghana Jangi","Bijit Sarkar","Hitesh Nayak","Shilpa Vashist","Himanshu Mehta","Anay","Durga Sai","Paulson","Rashmi Singh","Preeti Goyal","Yadu Gowda","Vardhan","Anindita","Yadu Gowda","Pawan Kumar","Gautam Bhat","Supriya","Gautam Bhat","JENESH CHOWHAN","Ruhina","Siddharth Mishra","Sandeep Mukherjee","Devika Premlal","Surya Prakash Gupta","SHAAN","TANVIR","Komal","Sudharshan","Charan","Shabnam","Harsh Gupta","Vartika","Nausheen","Anjali","Venkata","Ranjan Mittal","Tenzin","Prajval","M.preethi","Milan Mohan","Megha Navasapur","Anish","Krishnendu Bikash","Tubharath Kumar","Rakshit Kejriwal"];
+		$flag = false;
 
-		$orders = Order::active()
-			->whereIn('customer_email',$customer_emails)
-			->where('sendVendorEmail','exists',false)
-			/*->where('success_date','>=',new MongoDate(strtotime(date('2018-03-05 00:00:00'))))
-		    ->where('success_date','<',new MongoDate(strtotime(date('2018-03-38 23:59:59'))))*/
-			->where('type','memberships')
-			->where('city_id',3)
-			->get();
+		foreach ($array as $value) {
 
-		if(count($orders) > 0){
+			$order = Order::active()
+				->where('finder_name','like','%'.$value['finder_name'].'%')
+				->where('customer_name','like','%'.$value['customer_name'].'%')
+				->where('sendVendorEmail','exists',false)
+				->where('type','memberships')
+				->where('city_id',3)
+				->orderBy('_id','desc')
+				->first();
 
-			foreach ($orders as $order) {
+			if($order){
 
 				$findermailer->sendPgOrderMail($order->toArray());
 				$findersms->sendPgOrderSms($order->toArray());
 
 				$order->update(['sendVendorEmail'=>time()]);
+
+				$flag = true;
 			}
+
 		}
 
-		return count($orders);
+		if(!$flag){
+			return "Done";
+		}else{
+			return "Not Done";
+		}
 
 	}
     
