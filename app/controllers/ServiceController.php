@@ -750,10 +750,17 @@ class ServiceController extends \BaseController {
 				'trial_active_weekdays' => $item["trial_active_weekdays"],
 				'inoperational_dates_array' => $finder['inoperational_dates_array'],
 				'cost'=>'Free Via Fitternity'
-            );
+			);
+			
+			$slots = array();
 
-            $slots = array();
-
+            $slots_timewise = array(
+				'morning'=>[],
+				'afternoon'=>[],
+				'evening'=>[],
+			);
+			
+			$total_slots_count = 0;
             // switch ($type) {
 	        // 	case 'workoutsessionschedules': $ratecard = Ratecard::where('service_id',(int)$item['_id'])->where('type','workout session')->first(); break;
 	        // 	case 'trialschedules': $ratecard = Ratecard::where('service_id',(int)$item['_id'])->where('type','trial')->first(); break;
@@ -846,7 +853,16 @@ class ServiceController extends \BaseController {
 						array_set($slot,'epoch_end_time',strtotime(strtoupper($date." ".$slot['end_time'])));
 						
 						if(!$slot['passed']){
+							$total_slots_count +=1;
 							array_push($slots, $slot);
+							
+							if(intval($slot['start_time_24_hour_format']) < 12){
+								array_push($slots_timewise['morning'], $slot);
+							}elseif(intval($slot['start_time_24_hour_format']) < 16){
+								array_push($slots_timewise['afternoon'], $slot);
+							}else{
+								array_push($slots_timewise['evening'], $slot);
+							}
 						}
 
                     }catch(Exception $e){
@@ -861,7 +877,9 @@ class ServiceController extends \BaseController {
 			
             $service['slot_passed_flag'] = $slot_passed_flag;
 
-            $service['slots'] = $slots;
+			$service['slots'] = $slots;
+			$service['slots_timewise'] = $slots_timewise;
+			$service['total_slots_count'] = $total_slots_count;
 
             if(count($slots) <= 0){
 
