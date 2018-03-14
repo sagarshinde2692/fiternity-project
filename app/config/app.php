@@ -48,7 +48,7 @@ return array(
 	'queue' => 'booktrial',
 	'vendor_communication' => true,
 	'env' => 'production',
-	'debug' => FALSE,
+	'debug' => true,
 	'amazonpay_isSandbox' => 'false',
 
 	'download_app_link' => 'https://go.onelink.me/I0CO?pid=techfitsms',//https://www.fitternity.com/downloadapp?source=fittech',
