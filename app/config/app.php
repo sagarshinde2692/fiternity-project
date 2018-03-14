@@ -25,7 +25,7 @@ return array(
 	// 'vendor_communication' => false,
 	// 'env' => 'stage',
 	// 'debug' => TRUE,
-	// 'metropolis' => 'apisatge.fitn.in:8989'
+	// 'metropolis' => 'http://apisatge.fitn.in:8989'
 	
 
 	//beta

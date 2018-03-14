@@ -21,7 +21,9 @@ class ServiceController extends \BaseController {
         if($vendor_token){
 
             $this->vendor_token = true;
-        }
+		}
+		
+		$this->error_status = ($this->vendor_token) ? 200 : 400;
 	}
 
 	public function getServiceCategorys(){
@@ -1368,15 +1370,19 @@ class ServiceController extends \BaseController {
 		return Response::json($data,200);
 	}
 	
-	public function serviceDetailv1($finder_slug, $service_slug, $cache=true){
+	public function serviceDetailv1($finder_slug, $service_slug, $cache=false){
 
 		$cache_key = "$finder_slug-$service_slug";
 
 		$service_details = $cache ? Cache::tags('service_detail')->has($cache_key) : false;
 
 		if(!$service_details){
-			
-			$finder = Finder::where('slug', $finder_slug)->first();
+			Log::info("NOt cached");
+			$finder = Finder::active()->whereNotIn('flags.state', ['closed', 'temporarily_shut'])->where('slug', $finder_slug)->first();
+
+			if(!$finder){
+				return Response::json(array('status'=>400, 'error_message'=>'Vendor not active'), $this->error_status);
+			}
 	
 			$metropolis = new Metropolis();
 	
@@ -1385,6 +1391,7 @@ class ServiceController extends \BaseController {
 			if($service_details_response['status'] == 200){
 				$service_details = json_decode(json_encode($service_details_response['data']), true);
 			}
+
 	
 			$service_details['vendor_name'] = $service_details['vendor_id']['name'];
 	
@@ -1392,10 +1399,10 @@ class ServiceController extends \BaseController {
 	
 			$service_details['city_name'] = $service_details['city_id']['name'];
 	
-			$service_details['facilities'] = $service_details['vendor_id']['filter']['facilities'];
+			$service_details['facilities'] = $this->getFacilityImages(array_pluck($service_details['vendor_id']['filter']['facilities'], 'name'));
 			
 			$service_details['title'] = $service_details['name'].' at '.$service_details['vendor_name'];
-	
+
 			$service_details['ratecard'] = [
 				'_id'=>$service_details['service'][0]['_id'],
 				'price'=>$service_details['service'][0]['price'],
@@ -1432,8 +1439,25 @@ class ServiceController extends \BaseController {
 
 		$data['bookmark'] = false;
 		
-		return array('status'=>200, 'data'=> $data);
+		return Response::json(array('status'=>200, 'data'=> $data));
 
+	}
+
+	function getFacilityImages($available_facilities){
+		
+		$facility_images = [];
+
+		$all_facilities = Facility::active()->get();
+		
+		foreach($all_facilities as $facility){
+			if(in_array($facility->name, $available_facilities)){
+				array_push($facility_images, $facility->images['yes']);
+			}else{
+				array_push($facility_images, $facility->images['no']);
+			}
+		}
+
+		return $facility_images;
 	}
 
 
