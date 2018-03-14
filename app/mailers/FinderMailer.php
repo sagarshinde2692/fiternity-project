@@ -865,7 +865,7 @@ Class FinderMailer extends Mailer {
 
 	protected function postTrialStatusUpdate($data, $delay){
 
-		if(isset($data['post_trial_status']) && $data['post_trial_status'] != '') {
+		if(isset($data['post_trial_status']) && $data['post_trial_status'] != '' && $data['post_trial_status'] != 'unavailable') {
 			return "post_trial_status_set";
 		}
 
@@ -884,19 +884,26 @@ Class FinderMailer extends Mailer {
 						'kevalshah@fitternity.com',
 						'mitmehta@fitternity.com',
 						'surajshetty@fitternity.com',
+						'rajivharichandani@fitternity.com',
+						'allendpenha@fitternity.com',
+						'vinichellani@fitternity.com'
 					];
 					break;
 				case 2 : 
 					$data['fitternity_email'] = [
 						'mitmehta@fitternity.com',
 						'vishankkapoor@fitternity.com',
+						'vinichellani@fitternity.com'
 					];
 					break;
 				case 3 : 
 					$data['fitternity_email'] = [
 						'silkeshakadam@fitternity.com',
 						'priyankamohnish@fitternity.com',
-						'hardikkhamkar@fitternity.com' 
+						'hardikkhamkar@fitternity.com',
+						'virenmehta@fitternity.com',
+						'nishantullal@fitternity.com',
+						'vinichellani@fitternity.com'
 					];
 					break;
 				case 4 : 
@@ -905,7 +912,9 @@ Class FinderMailer extends Mailer {
 						'vikramkhanna@fitternity.com',
 						'priyankapatel@fitternity.com',
 						'dharmindersingh@fitternity.com',
-						'pranjalisalvi@fitternity.com' 
+						'pranjalisalvi@fitternity.com',
+						'bhavinjani@fitternity.com',
+						'vinichellani@fitternity.com'
 					];
 					break;
 				default:
