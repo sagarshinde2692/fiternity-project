@@ -716,7 +716,9 @@ return array(
 
 	'trial_auto_confirm_finder_ids' => [],
 
-	'diet_reward_excluded_vendors' => [11230]
+	'diet_reward_excluded_vendors' => [11230],
+
+	'service_gallery_path' => 'http://b.fitn.in/s/g/full/',
 
 
 

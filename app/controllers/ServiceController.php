@@ -1377,31 +1377,35 @@ class ServiceController extends \BaseController {
 		$service_details = $cache ? Cache::tags('service_detail')->has($cache_key) : false;
 
 		if(!$service_details){
-			Log::info("NOt cached");
-			$finder = Finder::active()->whereNotIn('flags.state', ['closed', 'temporarily_shut'])->where('slug', $finder_slug)->first();
+			Log::info("Not cached");
+			Finder::$withoutAppends = true;
+			Service::$withoutAppends = true;
+			$finder = Finder::active()->where('slug','=',$finder_slug)->whereNotIn('flags.state', ['closed', 'temporarily_shut'])
+			->with(array('facilities'=>function($query){$query->select( 'name', 'finders');}))
+			// ->with(array('reviews'=>function($query){$query->select('finder_id', 'customer', 'customer_id', 'rating', 'updated_at')->where('status','=','1')->orderBy('updated_at', 'DESC')->limit(4);}))
+			->first(['title', 'contact']);
 
+			// return $finder;
 			if(!$finder){
 				return Response::json(array('status'=>400, 'error_message'=>'Vendor not active'), $this->error_status);
 			}
 	
-			$metropolis = new Metropolis();
+			// $metropolis = new Metropolis();
 	
-			$service_details_response =  $metropolis->vendorserviceDetail($finder['_id'], $service_slug);
+			// $service_details_response =  $metropolis->vendorserviceDetail($finder['_id'], $service_slug);
 	
-			if($service_details_response['status'] == 200){
-				$service_details = json_decode(json_encode($service_details_response['data']), true);
-			}
-
+			// if($service_details_response['status'] == 200){
+			// 	$service_details = json_decode(json_encode($service_details_response['data']), true);
+			// }
+			
+			$service_details = Service::where('slug', $service_slug)->first(['name', 'contact', 'photos']);
+			// return $service_details;
 	
-			$service_details['vendor_name'] = $service_details['vendor_id']['name'];
-	
-			$service_details['location_name'] = $service_details['location_id']['name'];
+			$service_details['title'] = $service_details['name'].' at '.$finder['title'];
 	
 			$service_details['city_name'] = $service_details['city_id']['name'];
 	
-			$service_details['facilities'] = $this->getFacilityImages(array_pluck($service_details['vendor_id']['filter']['facilities'], 'name'));
-			
-			$service_details['title'] = $service_details['name'].' at '.$service_details['vendor_name'];
+			$service_details['facilities'] = $this->getFacilityImages(array_pluck($finder['facilities'], 'name'));
 
 			$service_details['ratecard'] = [
 				'_id'=>$service_details['service'][0]['_id'],
@@ -1414,20 +1418,19 @@ class ServiceController extends \BaseController {
 	
 			$service_details['review_count'] = isset($finder['total_rating_count']) ? $finder['total_rating_count'] : 0;
 	
-			$service_details['contact'] = isset($finder['contact']) ? $finder['contact'] : stdClass();
-	
 			$service_details['reviews'] = $reviews;
 	
-			$service_details['media'] = [
-				'images' => $service_details['gallery'],
-				'videos' => $service_details['videos'],
-			];
+
+			function appendServiceImageDomain($url){
+				return Config::get('app.service_gallery_path').$url;
+			}
+
+			$service_details['photos'] = array_map("appendServiceImageDomain",array_pluck($service_details['photos'], 'url'));
+			// $service_details['photos'] = array_pluck($service_details, 'url');
 			
-			$service_details['address']['geometry'] = $service_details['geometry'];
-			
-			$service_details['multiaddress'] = [$service_details['address']];
-	
-			$service_details = array_except($service_details, array('gallery','videos','vendor_id','location_id','city_id','service','schedules','updated_at','created_at','traction','timings','trainers','offer_available','showOnFront','flags','remarks','trial_discount','rockbottom_price','threedays_trial','vip_trial','seo','batches','workout_tags','category', 'geometry', 'address'));
+			$service_details['coordinates'] = [$service_details['lat'], $service_details['lon']];
+			return $service_details;			
+			// $service_details = array_except($service_details, array('gallery','videos','vendor_id','location_id','city_id','service','schedules','updated_at','created_at','traction','timings','trainers','offer_available','showOnFront','flags','remarks','trial_discount','rockbottom_price','threedays_trial','vip_trial','seo','batches','workout_tags','category', 'geometry', 'info', 'what_i_should_expect', 'what_i_should_carry', 'custom_location', 'name', 'workout_intensity', 'session_type', 'latlon_change', 'membership_end_date', 'membership_start_date', 'workout_results', 'vendor_name', 'location_name'));
 			
 			Cache::tags('service_detail')->put($cache_key,$service_details,Config::get('cache.cache_time'));
 			
