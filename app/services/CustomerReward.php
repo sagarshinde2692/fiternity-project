@@ -455,7 +455,9 @@ Class CustomerReward {
                                     "description"=>'Cashback On Event Tickets - Morning Fitness Party' 
                                 );
 
-                                $utilities->walletTransaction($walletData,$order->toArray());
+                                $walletTransactionresponse = $utilities->walletTransaction($walletData,$order->toArray());
+
+                                Log::info('------------------------walletTransactionresponse-----------------------',$walletTransactionresponse);
 
                                 $customer_data['type'] = "events";
                                 $customer_data['amount_20_percent'] = $fitcash_plus;
@@ -499,7 +501,9 @@ Class CustomerReward {
                     $walletData["description"] = 'Cashback On Event Tickets - Morning Fitness Party';
                 }
 
-                $utilities->walletTransaction($walletData,$order->toArray());
+                $walletTransactionresponse = $utilities->walletTransaction($walletData,$order->toArray());
+
+                Log::info('------------------------walletTransactionresponse 1-----------------------',$walletTransactionresponse);
                 
                 if($fitcash_plus > 0){
                     $customersms = new CustomerSms();
