@@ -1,9 +1,9 @@
 <?php
 
 //local
-// $host = "localhost";
-// $username = "";
-// $password = "";
+$host = "localhost";
+$username = "";
+$password = "";
 
 //stage
 // $host = "apistage.fitn.in";

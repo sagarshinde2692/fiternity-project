@@ -5965,6 +5965,173 @@ public function yes($msg){
 		}
 
 	}
+
+	function paypersession(){
+
+		$sessions = Booktrial::raw(function($collection){
+			$aggregate = [];
+			
+			// $match['$match']['customer_id'] = 77798;
+			$match['$match']['type'] = 'workout-session';
+			$match['$match']['created_at'] = ['$gte'=>new MongoDate(strtotime('2017-10-01'))];
+			$match['$match']['_id'] = ['$nin'=>[88275,88313,88754,90424,91294,91296,95959,95961,98707,98824,99546,100981,101938,102759]];
+
+			$aggregate[] = $match;
+			
+			$project['$project']['month'] = ['$month'=> '$created_at'];
+			$project['$project']['created_at1'] = ['$dateToString'=>['format'=> "%Y-%m-%dT%H:%M:%S", 'date'=> '$created_at' ]];
+			$project['$project']['schedule_date_time1'] = ['$dateToString'=>['format'=> "%Y-%m-%dT%H:%M:%S", 'date'=> '$schedule_date_time' ]];
+			$project['$project']['created_at'] = 1;
+			$project['$project']['time_diff_hours'] = ['$divide'=>[['$subtract'=>['$schedule_date_time', '$created_at']], 3600000]];
+			$project['$project']['amount_finder'] = 1;
+			$project['$project']['customer_id'] = 1;
+			$project['$project']['finder_id'] = 1;
+			
+	
+			$aggregate[] = $project;
+			
+			$group = [
+				'$group' => [
+					'_id' => '$month',
+					'count' => [
+						'$sum' => 1
+					],
+					'sessions'=>['$push'=>'$$ROOT'],
+					'avg_time_diff'=>[
+						'$avg'=>'$time_diff_hours'
+					],
+					'avg_amount'=>[
+						'$avg'=>'$amount_finder'
+					]
+					],
+				];
+	
+			$aggregate[] = $group;
+			$aggregate[] = ['$sort'=>['_id'=>1]];
+
+			
+			// $aggregate[] = ['$match'=>['time_diff_hours'=>['$lt'=>0]]];
+	
+			return $collection->aggregate($aggregate);
+		});
+
+
+		// $source = Booktrial::raw(function($collection){
+		// 	$aggregate = [];
+			
+		// 	// $match['$match']['customer_id'] = 77798;
+		// 	$match['$match']['type'] = 'workout-session';
+		// 	$match['$match']['created_at'] = ['$gte'=>new MongoDate(strtotime('2017-10-01'))];
+		// 	$match['$match']['_id'] = ['$nin'=>[88275,88313,88754,90424,91294,91296,95959,95961,98707,98824,99546,100981,101938,102759]];
+
+		// 	$aggregate[] = $match;
+
+		// 	$project['$project']['month'] = ['$month'=> '$created_at'];
+		// 	$project['$project']['source'] = 1;
+	
+		// 	$aggregate[] = $project;
+			
+		// 	$group = [
+		// 		'$group' => [
+		// 			'_id' => ['month'=>'$month', 'source'=>'$source'],
+		// 			'count' => [
+		// 				'$sum' => 1
+		// 			],
+		// 		]
+		// 	];
+	
+		// 	$aggregate[] = $group;
+		// 	$aggregate[] = ['$sort'=>['_id'=>1]];
+			
+			
+		// 	// $aggregate[] = ['$match'=>['time_diff_hours'=>['$lt'=>0]]];
+	
+		// 	return $collection->aggregate($aggregate);
+		// });
+
+		foreach($sessions['result'] as &$month){
+			
+			$month['repeats'] = 0;
+			$month['trial_booked'] = 0;
+
+			$customers = array_values(array_unique(array_pluck($month['sessions'], 'customer_id')));
+			$month['customers'] = count(array_values(array_unique(array_pluck($month['sessions'], 'customer_id'))));
+			$month['frequency'] = array_count_values(array_values(array_count_values(array_pluck($month['sessions'], 'customer_id'))));
+			
+			
+			$customer_prev_sessions = Booktrial::raw(function($collection) use ($customers){
+				
+				// $match['$match']['type'] = 'workout-session';
+				$match['$match']['customer_id'] = ['$in'=>$customers];
+				
+				$aggregate[] = $match;
+
+				$project['$project']['customer_id'] = 1;
+				$project['$project']['finder_id'] = 1;
+				$project['$project']['_id'] = 1;
+				$project['$project']['type'] = 1;
+		
+				$aggregate[] = $project;
+			
+				$group = [
+					'$group' => [
+						'_id' => '$customer_id',
+						'trials' => [
+							'$push'=>'$$ROOT'
+						],
+					]
+				];
+		
+				$aggregate[] = $group;
+
+				return $collection->aggregate($aggregate);
+			
+
+			});
+			
+			$data = [];
+
+			foreach($customer_prev_sessions['result'] as $customer){
+
+				$data[$customer['_id']] = $customer['trials'];
+
+			}
+
+			foreach($month['sessions'] as $session){
+
+				$customer_sessions = $data[strval($session['customer_id'])];
+
+				foreach($customer_sessions as $x){
+
+					if($x['type'] == 'workout-session' && $x['_id'] < $session['_id']){
+						$month['repeats']++;
+						break;
+					}
+
+
+				}
+
+				foreach($customer_sessions as $x){
+					
+					if(in_array($x['type'],['booktrial', 'booktrials']) && $x['_id'] < $session['_id']){
+						$month['trial_booked']++;
+						break;
+					}
+
+				}
+
+			}
+			unset($month['sessions']);
+			
+			return $data;
+		}
+
+
+
+		return ['sessions'=>$sessions, 'source'=>$source];
+		// return array_pluck($sessions['result'], '_id');
+
+	}
     
 }
 
