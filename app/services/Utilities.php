@@ -1456,6 +1456,7 @@ Class Utilities {
             // Check Duplicacy of transaction request........
             $duplicateRequest = WalletTransaction::where('order_id', (int) $request['order_id'])
                 ->where('type', $request['type'])
+                ->where('customer_id',$customer_id)
                 ->orderBy('_id','desc')
                 ->first();
 
