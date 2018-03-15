@@ -5939,6 +5939,7 @@ public function yes($msg){
 			$order = Order::active()
 				->where('finder_name','like','%'.$value['finder_name'].'%')
 				->where('customer_name','like','%'.$value['customer_name'].'%')
+				->where('instantPurchaseFinderTiggerCount','exists',false)
 				->where('sendVendorEmail','exists',false)
 				->where('type','memberships')
 				->where('city_id',3)
