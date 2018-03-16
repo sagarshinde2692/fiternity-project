@@ -198,7 +198,7 @@ class ServiceController extends \BaseController {
 							->where('_id', (int) $service['finder_id'])
 							->first();
 			// return $finderarr;
-			$data['finder'] = array_only($item['finder'], array('_id', 'title', 'slug', 'coverimage', 'city_id', 'photos', 'contact', 'commercial_type', 'finder_type', 'what_i_should_carry', 'what_i_should_expect', 'total_rating_count', 'average_rating', 'detail_rating_summary_count', 'detail_rating_summary_average', 'locationtags', 'lunchlocationtags', 'dinnerlocationtags'));
+			$data['finder'] = array_only($item['finder'], array('_id', 'title', 'slug', 'coverimage', 'city_id', 'photos', 'contact', 'commercial_type', 'finder_type', 'what_i_should_carry', 'what_i_should_expect', 'total_rating_count', 'cal', 'detail_rating_summary_count', 'detail_rating_summary_average', 'locationtags', 'lunchlocationtags', 'dinnerlocationtags'));
 		}else{
 			$data['finder'] = NULL;
 		}
@@ -761,8 +761,8 @@ class ServiceController extends \BaseController {
 				'afternoon'=>[],
 				'evening'=>[],
 			);
-			
 			$total_slots_count = 0;
+			$total_slots_available_count = 0;
             // switch ($type) {
 	        // 	case 'workoutsessionschedules': $ratecard = Ratecard::where('service_id',(int)$item['_id'])->where('type','workout session')->first(); break;
 	        // 	case 'trialschedules': $ratecard = Ratecard::where('service_id',(int)$item['_id'])->where('type','trial')->first(); break;
@@ -853,9 +853,9 @@ class ServiceController extends \BaseController {
                         array_set($slot, 'ratecard_id', $ratecard['_id']);
                         array_set($slot,'epoch_start_time',strtotime(strtoupper($date." ".$slot['start_time'])));
 						array_set($slot,'epoch_end_time',strtotime(strtoupper($date." ".$slot['end_time'])));
-						
+						$total_slots_count +=1;
 						if(!$slot['passed']){
-							$total_slots_count +=1;
+							$total_slots_available_count +=1;
 							array_push($slots, $slot);
 							
 							if(intval($slot['start_time_24_hour_format']) < 12){
@@ -882,6 +882,7 @@ class ServiceController extends \BaseController {
 			$service['slots'] = $slots;
 			$service['slots_timewise'] = $slots_timewise;
 			$service['total_slots_count'] = $total_slots_count;
+			$service['total_slots_available_count'] = $total_slots_available_count;
 
             if(count($slots) <= 0){
 
@@ -1380,12 +1381,12 @@ class ServiceController extends \BaseController {
 			Log::info("Not cached");
 			Finder::$withoutAppends = true;
 			Service::$withoutAppends = true;
+			
 			$finder = Finder::active()->where('slug','=',$finder_slug)->whereNotIn('flags.state', ['closed', 'temporarily_shut'])
-			->with(array('facilities'=>function($query){$query->select( 'name', 'finders');}))
-			// ->with(array('reviews'=>function($query){$query->select('finder_id', 'customer', 'customer_id', 'rating', 'updated_at')->where('status','=','1')->orderBy('updated_at', 'DESC')->limit(4);}))
-			->first(['title', 'contact']);
+				->with(array('facilities'=>function($query){$query->select( 'name', 'finders');}))
+				->with(array('reviews'=>function($query){$query->select('finder_id', 'customer', 'customer_id', 'rating', 'updated_at', 'description')->where('status','=','1')->orderBy('updated_at', 'DESC')->limit(4);}))
+				->first(['title', 'contact', 'average_rating', 'total_rating_count']);
 
-			// return $finder;
 			if(!$finder){
 				return Response::json(array('status'=>400, 'error_message'=>'Vendor not active'), $this->error_status);
 			}
@@ -1398,38 +1399,83 @@ class ServiceController extends \BaseController {
 			// 	$service_details = json_decode(json_encode($service_details_response['data']), true);
 			// }
 			
-			$service_details = Service::where('slug', $service_slug)->first(['name', 'contact', 'photos']);
+			$service_details = Service::where('slug', $service_slug)->with(array('ratecards'))->first(['name', 'contact', 'photos', 'lat', 'lon', 'calorie_burn']);
 			// return $service_details;
+			
+			$workout_session_ratecard = head(array_where($service_details['ratecards'], function($key, $value){
+				if($value['type'] == 'workout session'){
+					return $value;
+				}
+			}));
+			unset($service_details['ratecards']);
+			
+			if(!$workout_session_ratecard){
+				
+				return Response::json(array('status'=>400, 'error_message'=>'Workout session ratecard not active'), $this->error_status);
+			
+			};
 	
+			$service_details['price'] = $workout_session_ratecard['price']." PER SESSION";
+
 			$service_details['title'] = $service_details['name'].' at '.$finder['title'];
 	
 			$service_details['city_name'] = $service_details['city_id']['name'];
 	
 			$service_details['facilities'] = $this->getFacilityImages(array_pluck($finder['facilities'], 'name'));
-
-			$service_details['ratecard'] = [
-				'_id'=>$service_details['service'][0]['_id'],
-				'price'=>$service_details['service'][0]['price'],
-			];
-	
-			$reviews = Review::where('finder_id','=',$service_details['vendor_id']['_id'])->orderBy('created_at', 'desc')->orderBy('rating', 'desc')->take(5)->get();
 			
 			$service_details['average_rating'] = isset($finder['average_rating']) ? $finder['average_rating'] : 0;
+
+			$service_details['calorie_burn'] = "BURN ".$service_details['calorie_burn']['avg']." ".strtoupper($service_details['calorie_burn']['type']);
+
+			$reviews = [];
+
+			foreach($finder['reviews'] as $review){
+
+				$review['posted_on'] = "Posted on ".date("jS M Y", strtotime($review['updated_at']));
+
+				$review_data = array_only($review->toArray(), ['rating', 'description', 'posted_on']);
+
+				array_push($reviews, $review_data);
+
+			}
 	
-			$service_details['review_count'] = isset($finder['total_rating_count']) ? $finder['total_rating_count'] : 0;
-	
-			$service_details['reviews'] = $reviews;
-	
+			$service_details['reviews'] = [
+				'count'=>isset($finder['total_rating_count']) ? $finder['total_rating_count'] : 0,
+				'reviews'=>$reviews
+			];
 
 			function appendServiceImageDomain($url){
 				return Config::get('app.service_gallery_path').$url;
 			}
-
+			
+			$service_details['photos'] = isset($service_details['photos']) ? $service_details['photos'] : [];
+			
 			$service_details['photos'] = array_map("appendServiceImageDomain",array_pluck($service_details['photos'], 'url'));
+			
+			$photos = $service_details['photos'];
+
+			$service_details['photos'] = [
+				'count'=>count($service_details['photos']),
+				'urls'=>array_splice($photos, 0, 4)
+			];
 			// $service_details['photos'] = array_pluck($service_details, 'url');
 			
 			$service_details['coordinates'] = [$service_details['lat'], $service_details['lon']];
-			return $service_details;			
+
+			$schedule_data = [
+				'service_id'=>$service_details['_id'],
+				'requested_date'=>date('YYYY-mm-dd', time())
+			];
+			$schedule = $this->getScheduleByFinderService($schedule_data);
+			$schedule = json_decode(json_encode($schedule), true);
+
+			$service_details['total_sessions'] = "Total ".$schedule['schedules'][0]['total_slots_count']." Sessions";
+			$service_details['next_session'] = "Next session at ".$schedule['schedules'][0]['slots'][0]['start_time'];
+			
+			// return $schedule;
+
+
+			return $service_details;
 			// $service_details = array_except($service_details, array('gallery','videos','vendor_id','location_id','city_id','service','schedules','updated_at','created_at','traction','timings','trainers','offer_available','showOnFront','flags','remarks','trial_discount','rockbottom_price','threedays_trial','vip_trial','seo','batches','workout_tags','category', 'geometry', 'info', 'what_i_should_expect', 'what_i_should_carry', 'custom_location', 'name', 'workout_intensity', 'session_type', 'latlon_change', 'membership_end_date', 'membership_start_date', 'workout_results', 'vendor_name', 'location_name'));
 			
 			Cache::tags('service_detail')->put($cache_key,$service_details,Config::get('cache.cache_time'));
