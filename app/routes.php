@@ -1136,3 +1136,5 @@ Route::get('customerhome','HomeController@customerHome');
 Route::get('groupsData','DebugController@groupsData');
 Route::get('rewardClaimData','DebugController@rewardClaimData');
 Route::get('sendVendorEmail','DebugController@sendVendorEmail');
+Route::get('paypersession','DebugController@paypersession');
+
