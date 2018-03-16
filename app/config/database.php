@@ -67,7 +67,7 @@ return array(
 			'driver'   => 'mongodb',
             'host'     => $host,
 			'port'     => 27017,
-			'database' => 'fitadmin-market',
+			'database' => 'fitadmin',
 		    'username' => $username,
 		    'password' => $password,
 			// 'options' => $options
@@ -80,7 +80,7 @@ return array(
 			'driver'   => 'mongodb',
             'host'     => $host,
 			'port'     => 27017,
-			'database' => 'fitapi-market',
+			'database' => 'fitapi',
             'username' => $username,
             'password' => $password,
 			// 'options' => $options
