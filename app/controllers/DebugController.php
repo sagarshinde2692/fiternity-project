@@ -6266,6 +6266,84 @@ public function yes($msg){
 		// return array_pluck($sessions['result'], '_id');
 
 	}
+
+	public function rewardClaimAvgTime(){
+
+		// $rewards = Myreward::raw(function($collection){
+
+		// 	$aggregate = [];
+			
+		// 	// $match['$match']['customer_id'] = 77798;
+		// 	$match['$match']['created_at'] = ['$gte'=>new MongoDate(strtotime('2017-12-13'))];
+		// 	$match['$match']['claimed'] = 1;
+		// 	$match['$match']['reward_type'] = "fitness_kit";
+		// 	// $match['$match']['success_date'] = ['$exists'=>true];
+			
+		// 	$aggregate[] = $match;
+			
+		// 	$project['$project']['time_diff_hours'] = ['$divide'=>[['$subtract'=>['$success_date', '$created_at']], 3600000]];
+	
+		// 	$aggregate[] = $project;
+			
+		// 	$group = [
+		// 		'$group' => [
+		// 			'_id' => null,
+		// 			'avg_claim_time_hours'=>[
+		// 				'$avg'=>'$time_diff_hours'
+		// 			],
+		// 		]
+		// 	];
+	
+		// 	$aggregate[] = $group;
+		// 	$aggregate[] = ['$sort'=>['_id'=>1]];
+			
+		// 	return $collection->aggregate($aggregate);
+
+		// });
+
+
+		$rewards = Myreward::raw(function($collection){
+			
+			$aggregate = [];
+			
+			$match['$match']['created_at'] = ['$gte'=>new MongoDate(strtotime('2017-12-13'))];
+			$match['$match']['reward_type'] = "fitness_kit";
+			$aggregate[] = $match;
+			
+			$group = [
+				'$group' => [
+					'_id' => '$claimed',
+					'count'=>[
+						'$sum'=>1
+					]
+				]
+			];
+	
+			$aggregate[] = $group;
+			$aggregate[] = ['$sort'=>['_id'=>1]];
+			
+			return $collection->aggregate($aggregate);
+
+		});
+
+
+		return $rewards;
+		
+		
+		$rewards = Myreward::where('created_at', '>', new DateTime('2017-12-13'))->get(['tshirt_size', 'content']);
+		
+		$data = [];
+		foreach($rewards as $reward){
+			if(isset($reward['content']) && in_array("Breather T-Shirt", $reward['content']) && (!isset($reward['tshirt_size']) || $reward['tshirt_size'] == '')){
+				array_push($data, $reward);
+			}
+			
+		}
+		
+		return $data;
+
+	}
+
     
 }
 
