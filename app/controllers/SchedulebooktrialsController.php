@@ -6424,6 +6424,7 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrial->post_trial_status = 'attended';
             $booktrial->post_trial_initail_status = 'interested';
             $booktrial->post_trial_status_updated_by_kiosk = time();
+            $booktrial->post_trial_status_date = time();
             $booktrial->update();
 
             if(isset($booktrial['customer_sms_after24hour']) && $booktrial['customer_sms_after24hour'] != ""){
@@ -6569,6 +6570,7 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrial->post_trial_status = 'attended';
             $booktrial->post_trial_initail_status = 'interested';
             $booktrial->post_trial_status_updated_by_fitcode = time();
+            $booktrial->post_trial_status_date = time();
             $booktrial->update();
 
             $message = "Hi ".ucwords($booktrial['customer_name']).", Rs.".$fitcash." Fitcash is added in your wallet as surprise on your attendace . Use it to buy ".ucwords($booktrial['finder_name'])."'s membership at lowest price. Valid for 21 days";
@@ -6608,6 +6610,7 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrial->post_trial_status = 'attended';
             $booktrial->post_trial_initail_status = 'interested';
             $booktrial->post_trial_status_updated_by_lostfitcode = time();
+            $booktrial->post_trial_status_date = time();
             $booktrial->update();
 
             $message = "Hi ".ucwords($booktrial['customer_name']).", Thank you for your request. Your surprise discount will be activated post verifying your attendance with ".ucwords($booktrial['finder_name'])." within 48 hours";
