@@ -5965,6 +5965,385 @@ public function yes($msg){
 		}
 
 	}
+
+	function paypersession(){
+
+		// $sessions = Booktrial::raw(function($collection){
+		// 	$aggregate = [];
+			
+		// 	// $match['$match']['customer_id'] = 77798;
+		// 	$match['$match']['type'] = 'workout-session';
+		// 	$match['$match']['created_at'] = ['$gte'=>new MongoDate(strtotime('2017-10-01'))];
+		// 	$match['$match']['_id'] = ['$nin'=>[88275,88313,88754,90424,91294,91296,95959,95961,98707,98824,99546,100981,101938,102759]];
+
+		// 	$aggregate[] = $match;
+			
+		// 	$project['$project']['month'] = ['$month'=> '$created_at'];
+		// 	$project['$project']['created_at1'] = ['$dateToString'=>['format'=> "%Y-%m-%dT%H:%M:%S", 'date'=> '$created_at' ]];
+		// 	$project['$project']['schedule_date_time1'] = ['$dateToString'=>['format'=> "%Y-%m-%dT%H:%M:%S", 'date'=> '$schedule_date_time' ]];
+		// 	$project['$project']['created_at'] = 1;
+		// 	$project['$project']['time_diff_hours'] = ['$divide'=>[['$subtract'=>['$schedule_date_time', '$created_at']], 3600000]];
+		// 	$project['$project']['amount_finder'] = 1;
+		// 	$project['$project']['customer_id'] = 1;
+		// 	$project['$project']['finder_id'] = 1;
+		// 	$project['$project']['schedule_date_time'] = 1;
+		// 	$project['$project']['going_status_txt'] = 1;
+			
+	
+		// 	$aggregate[] = $project;
+			
+		// 	$group = [
+		// 		'$group' => [
+		// 			'_id' => '$month',
+		// 			'count' => [
+		// 				'$sum' => 1
+		// 			],
+		// 			'sessions'=>['$push'=>'$$ROOT'],
+		// 			// 'avg_time_diff'=>[
+		// 			// 	'$avg'=>'$time_diff_hours'
+		// 			// ],
+		// 			'avg_amount'=>[
+		// 				'$avg'=>'$amount_finder'
+		// 			]
+		// 			],
+		// 		];
+	
+		// 	$aggregate[] = $group;
+		// 	$aggregate[] = ['$sort'=>['_id'=>1]];
+
+		// 	return $collection->aggregate($aggregate);
+		// });
+
+		// foreach($sessions['result'] as &$x){
+			
+		// 	$time_diffs = [];
+
+		// 	foreach($x['sessions'] as $session){
+
+		// 		if(!(isset($session['going_status_txt']) && $session['going_status_txt'] == 'rescheduled')){
+		// 			array_push($time_diffs, $session['time_diff_hours']);
+		// 		}
+				
+		// 	}
+
+		// 	$x['avg_time_diff1'] = array_sum($time_diffs) / count($time_diffs);
+
+		// 	// if($x['_id'] == 11){
+
+		// 	// 	return array_pluck($x['sessions'], '_id');
+		// 	// }
+		// }
+		// return $sessions;
+
+
+
+		// $source = Booktrial::raw(function($collection){
+		// 	$aggregate = [];
+			
+		// 	// $match['$match']['customer_id'] = 77798;
+		// 	$match['$match']['type'] = 'workout-session';
+		// 	$match['$match']['created_at'] = ['$gte'=>new MongoDate(strtotime('2017-10-01'))];
+		// 	$match['$match']['_id'] = ['$nin'=>[88275,88313,88754,90424,91294,91296,95959,95961,98707,98824,99546,100981,101938,102759]];
+
+		// 	$aggregate[] = $match;
+
+		// 	$project['$project']['month'] = ['$month'=> '$created_at'];
+		// 	$project['$project']['source'] = 1;
+	
+		// 	$aggregate[] = $project;
+			
+		// 	$group = [
+		// 		'$group' => [
+		// 			'_id' => ['month'=>'$month', 'source'=>'$source'],
+		// 			'count' => [
+		// 				'$sum' => 1
+		// 			],
+		// 		]
+		// 	];
+	
+		// 	$aggregate[] = $group;
+		// 	$aggregate[] = ['$sort'=>['_id'=>1]];
+			
+			
+		// 	// $aggregate[] = ['$match'=>['time_diff_hours'=>['$lt'=>0]]];
+	
+		// 	return $collection->aggregate($aggregate);
+		// });
+
+		// return $source;
+
+
+		
+
+
+		$payment = Order::raw(function($collection){
+			$aggregate = [];
+			
+			// $match['$match']['customer_id'] = 77798;
+			$match['$match']['type'] = 'workout-session';
+			$match['$match']['created_at'] = ['$gte'=>new MongoDate(strtotime('2017-10-01'))];
+			// $match['$match']['_id'] = ['$nin'=>[88275,88313,88754,90424,91294,91296,95959,95961,98707,98824,99546,100981,101938,102759]];
+			$match['$match']['status'] = "1";
+			$match['$match']['amount'] = ['$gt'=>0];
+			
+			$aggregate[] = $match;
+
+			$project['$project']['month'] = ['$month'=> '$created_at'];
+			$project['$project']['pg_type'] = 1;
+	
+			$aggregate[] = $project;
+			
+			$group = [
+				'$group' => [
+					'_id' => ['month'=>'$month', 'pg_type'=>'$pg_type'],
+					// 'ids'=>[
+					// 	'$push'=>'$_id'
+					// ],
+					'count' => [
+						'$sum' => 1
+					],
+				]
+			];
+	
+			$aggregate[] = $group;
+			$aggregate[] = ['$sort'=>['_id'=>1]];
+			
+			
+			// $aggregate[] = ['$match'=>['time_diff_hours'=>['$lt'=>0]]];
+	
+			return $collection->aggregate($aggregate);
+		});
+
+		return $payment;
+		
+		// foreach($sessions['result'] as &$month){
+			
+		// 	$month['repeats'] = 0;
+		// 	$month['trial_booked'] = 0;
+		// 	$month['existing_membership'] = 0;
+		// 	if(!isset($month['sessions'])){
+		// 		return $month;
+		// 	}
+		// 	$customers = array_values(array_unique(array_pluck($month['sessions'], 'customer_id')));
+		// 	$month['customers'] = count(array_values(array_unique(array_pluck($month['sessions'], 'customer_id'))));
+		// 	$month['frequency'] = array_count_values(array_values(array_count_values(array_pluck($month['sessions'], 'customer_id'))));
+			
+			
+		// 	$customer_prev_sessions = Booktrial::raw(function($collection) use ($customers){
+				
+		// 		// $match['$match']['type'] = 'workout-session';
+		// 		$match['$match']['customer_id'] = ['$in'=>$customers];
+		// 		$match['$match']['type'] = ['$in'=>['booktrial', 'workout-session', 'booktrials']];
+				
+				
+		// 		$aggregate[] = $match;
+
+		// 		$project['$project']['customer_id'] = 1;
+		// 		$project['$project']['finder_id'] = 1;
+		// 		$project['$project']['_id'] = 1;
+		// 		$project['$project']['type'] = 1;
+		
+		// 		$aggregate[] = $project;
+			
+		// 		$group = [
+		// 			'$group' => [
+		// 				'_id' => '$customer_id',
+		// 				'trials' => [
+		// 					'$push'=>'$$ROOT'
+		// 				],
+		// 			]
+		// 		];
+		
+		// 		$aggregate[] = $group;
+
+		// 		return $collection->aggregate($aggregate);
+			
+
+		// 	});
+
+		// 	$customer_memberships = Order::raw(function($collection) use ($customers){
+				
+		// 		// $match['$match']['type'] = 'workout-session';
+		// 		$match['$match']['customer_id'] = ['$in'=>$customers];
+		// 		$match['$match']['type'] = ['$in'=>['memberships']];
+		// 		$match['$match']['status'] = "1";
+				
+				
+		// 		$aggregate[] = $match;
+
+		// 		$project['$project']['customer_id'] = 1;
+		// 		$project['$project']['start_date'] = 1;
+		// 		$project['$project']['end_date'] = 1;
+		// 		// $project['$project']['type'] = 1;
+		
+		// 		$aggregate[] = $project;
+			
+		// 		$group = [
+		// 			'$group' => [
+		// 				'_id' => '$customer_id',
+		// 				'orders' => [
+		// 					'$push'=>'$$ROOT'
+		// 				],
+		// 			]
+		// 		];
+		
+		// 		$aggregate[] = $group;
+
+		// 		return $collection->aggregate($aggregate);
+			
+
+		// 	});
+			
+		// 	$trials_data = [];
+
+		// 	foreach($customer_prev_sessions['result'] as $customer){
+
+		// 		$trials_data[$customer['_id']] = $customer['trials'];
+
+		// 	}
+
+		// 	$orders_data = [];
+			
+		// 	foreach($customer_memberships['result'] as $customer){
+
+		// 		$orders_data[$customer['_id']] = $customer['orders'];
+
+		// 	}
+
+			
+
+		// 	foreach($month['sessions'] as $session){
+
+		// 		$customer_sessions = $trials_data[strval($session['customer_id'])];
+
+
+				
+		// 		Log::info($session);
+				
+		// 		foreach($customer_sessions as $x){
+		// 			if($x['type'] == 'workout-session' && $x['_id'] < $session['_id']){
+		// 				$month['repeats']++;
+		// 				break;
+		// 			}
+
+
+		// 		}
+
+		// 		foreach($customer_sessions as $x){
+					
+		// 			if(in_array($x['type'],['booktrial', 'booktrials']) && $x['_id'] < $session['_id']){
+		// 				$month['trial_booked']++;
+		// 				break;
+		// 			}
+
+		// 		}
+
+		// 		if(isset($orders_data[strval($session['customer_id'])])){
+
+		// 			$customer_orders = $orders_data[strval($session['customer_id'])];
+	
+		// 			foreach($customer_orders as $x){
+		// 				Log::info($x);
+		// 				if(isset($x['start_date']) && isset($x['end_date']) && $x['start_date'] < $session['schedule_date_time'] && $x['end_date'] > $session['schedule_date_time']){
+		// 					// return $x;
+		// 					$month['existing_membership']++;
+		// 					break;
+		// 				}
+	
+		// 			}
+		// 		}
+
+
+		// 	}
+		// 	unset($month['sessions']);
+			
+		// 	// return $data;
+		// }
+
+
+
+		// return ['sessions'=>$sessions];
+		// return array_pluck($sessions['result'], '_id');
+
+	}
+
+	public function rewardClaimAvgTime(){
+
+		// $rewards = Myreward::raw(function($collection){
+
+		// 	$aggregate = [];
+			
+		// 	// $match['$match']['customer_id'] = 77798;
+		// 	$match['$match']['created_at'] = ['$gte'=>new MongoDate(strtotime('2017-12-13'))];
+		// 	$match['$match']['claimed'] = 1;
+		// 	$match['$match']['reward_type'] = "fitness_kit";
+		// 	// $match['$match']['success_date'] = ['$exists'=>true];
+			
+		// 	$aggregate[] = $match;
+			
+		// 	$project['$project']['time_diff_hours'] = ['$divide'=>[['$subtract'=>['$success_date', '$created_at']], 3600000]];
+	
+		// 	$aggregate[] = $project;
+			
+		// 	$group = [
+		// 		'$group' => [
+		// 			'_id' => null,
+		// 			'avg_claim_time_hours'=>[
+		// 				'$avg'=>'$time_diff_hours'
+		// 			],
+		// 		]
+		// 	];
+	
+		// 	$aggregate[] = $group;
+		// 	$aggregate[] = ['$sort'=>['_id'=>1]];
+			
+		// 	return $collection->aggregate($aggregate);
+
+		// });
+
+
+		$rewards = Myreward::raw(function($collection){
+			
+			$aggregate = [];
+			
+			$match['$match']['created_at'] = ['$gte'=>new MongoDate(strtotime('2017-12-13'))];
+			$match['$match']['reward_type'] = "fitness_kit";
+			$aggregate[] = $match;
+			
+			$group = [
+				'$group' => [
+					'_id' => '$claimed',
+					'count'=>[
+						'$sum'=>1
+					]
+				]
+			];
+	
+			$aggregate[] = $group;
+			$aggregate[] = ['$sort'=>['_id'=>1]];
+			
+			return $collection->aggregate($aggregate);
+
+		});
+
+
+		return $rewards;
+		
+		
+		$rewards = Myreward::where('created_at', '>', new DateTime('2017-12-13'))->get(['tshirt_size', 'content']);
+		
+		$data = [];
+		foreach($rewards as $reward){
+			if(isset($reward['content']) && in_array("Breather T-Shirt", $reward['content']) && (!isset($reward['tshirt_size']) || $reward['tshirt_size'] == '')){
+				array_push($data, $reward);
+			}
+			
+		}
+		
+		return $data;
+
+	}
+
     
 }
 
