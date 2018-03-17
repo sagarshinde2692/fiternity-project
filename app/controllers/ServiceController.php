@@ -1466,16 +1466,18 @@ class ServiceController extends \BaseController {
 				'service_id'=>$service_details['_id'],
 				'requested_date'=>date('YYYY-mm-dd', time())
 			];
-			$schedule = $this->getScheduleByFinderService($schedule_data);
-			$schedule = json_decode(json_encode($schedule), true);
+			$schedule = json_decode(json_encode($this->getScheduleByFinderService($schedule_data)->getData()));
 
-			$service_details['total_sessions'] = "Total ".$schedule['schedules'][0]['total_slots_count']." Sessions";
-			$service_details['next_session'] = "Next session at ".$schedule['schedules'][0]['slots'][0]['start_time'];
+			$service_details['total_sessions'] = head($schedule->schedules)->total_slots_count;
+			$service_details['next_session'] = "Next session at ".strtoupper(head($schedule->schedules)->slots[0]->start_time);
+			$service_details['slots'] = (head($schedule->schedules)->slots);
+
 			
-			// return $schedule;
-
-
-			return $service_details;
+			$service_details['trial_active_weekdays']= null;
+			$service_details['workoutsession_active_weekdays']= null;
+			unset($service_details['trial_active_weekdays']);
+			unset($service_details['workoutsession_active_weekdays']);
+			// return $service_details;
 			// $service_details = array_except($service_details, array('gallery','videos','vendor_id','location_id','city_id','service','schedules','updated_at','created_at','traction','timings','trainers','offer_available','showOnFront','flags','remarks','trial_discount','rockbottom_price','threedays_trial','vip_trial','seo','batches','workout_tags','category', 'geometry', 'info', 'what_i_should_expect', 'what_i_should_carry', 'custom_location', 'name', 'workout_intensity', 'session_type', 'latlon_change', 'membership_end_date', 'membership_start_date', 'workout_results', 'vendor_name', 'location_name'));
 			
 			Cache::tags('service_detail')->put($cache_key,$service_details,Config::get('cache.cache_time'));
