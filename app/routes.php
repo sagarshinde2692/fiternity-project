@@ -221,6 +221,7 @@ Route::get('reviews/{customerid}/{from?}/{size?}',  array('as' => 'customer.revi
 Route::get('orderhistory/{customeremail}/{from?}/{size?}',  array('as' => 'customer.orderhistory','uses' => 'CustomerController@orderHistory'));
 Route::get('bookmarks/{customerid}',  array('as' => 'customer.bookmarks','uses' => 'CustomerController@getBookmarks'));
 Route::get('updatebookmarks/{customerid}/{finderid}/{remove?}',  array('as' => 'customer.updatebookmarks','uses' => 'CustomerController@updateBookmarks'));
+Route::get('updateservicebookmarks/{customerid}/{serviceid}/{remove?}',  array('as' => 'customer.updateservicebookmarks','uses' => 'CustomerController@updateServiceBookmarks'));
 Route::get('customerdetail/{customerid}',  array('as' => 'customer.customerdetail','uses' => 'CustomerController@customerDetail'));
 Route::get('foryou/{customeremail}/{city_id}/{lat?}/{lon?}',  array('as' => 'customer.foryou','uses' => 'CustomerController@foryou'));
 

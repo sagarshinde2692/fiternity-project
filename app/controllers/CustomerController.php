@@ -1870,6 +1870,32 @@ class CustomerController extends \BaseController {
 		return Response::json($responseData, 200);
 	}
 
+	public function updateServiceBookmarks($customer_id, $serviceid, $remove = ''){
+		
+		$customer 			= 	Customer::where('_id', intval($customer_id))->first();
+		$serviceids 			= 	(isset($customer->service_bookmarks) && !empty($customer->service_bookmarks)) ? array_map('intval',$customer->service_bookmarks) : [];
+
+		if($remove == ""){
+			array_push($serviceids, intval($serviceid));
+			$message = 'bookmark added successfully';
+		}else{
+			if (in_array(intval($serviceid), $serviceids)){
+				unset($serviceids[array_search(intval($serviceid),$serviceids)]);
+			}
+			$message = 'bookmark removed successfully';
+		}
+
+		$customer = Customer::find((int) $customer_id);
+		$bookmarksdata = ['service_bookmarks' => array_unique($serviceids)];
+		$customer->update($bookmarksdata);
+
+		$bookmarks = Service::whereIn('_id', array_unique($serviceids))
+		->get(array('_id','finder','category_id','coverimage','slug','name','category','location_id','location','city_id','city','total_rating_count'));
+		$responseData 		= 	['bookmarks' => $bookmarks,  'message' => $message];
+
+		return Response::json($responseData, 200);
+	}
+
 	public function getAllOrders($offset = 0, $limit = 10){
 
 		$jwt_token = Request::header('Authorization');
@@ -1884,12 +1910,31 @@ class CustomerController extends \BaseController {
 		$decoded = $this->customerTokenDecode($jwt_token);
 
 		$customer 			= 	Customer::where('_id', intval($decoded->customer->_id))->first();
+		Log::info($customer);
 		$finderids 			= 	(isset($customer->bookmarks) && !empty($customer->bookmarks)) ? $customer->bookmarks : [];
+		$serviceids 			= 	(isset($customer->service_bookmarks) && !empty($customer->service_bookmarks)) ? $customer->service_bookmarks : [];
+		Log::info($serviceids);
+		$device_type = Request::header('Device-Type');
+		$app_version = Request::header('App-Version');
+		Log::info($device_type);
+		Log::info($app_version);
+		if($device_type && $app_version && in_array($device_type, ['android', 'ios']) && version_compare($app_version, '4.4.2')>0){
 
-		if(empty($finderids)){
-			$response 		= 	['status' => 200, 'bookmarks' => [],  'message' => 'No bookmarks yet :)'];
-			return Response::json($response, 200);
+			if(empty($finderids) && empty($serviceids)){
+				$response 		= 	['status' => 200, 'bookmarks' => [],  'message' => 'No bookmarks yet :)'];
+				return Response::json($response, 200);
+			}
+
+		}else{
+			if(empty($finderids)){
+				$response 		= 	['status' => 200, 'bookmarks' => [],  'message' => 'No bookmarks yet :)'];
+				return Response::json($response, 200);
+			}
 		}
+
+
+		$servicebookmarks = Service::whereIn('_id', array_unique($serviceids))
+		->get(array('_id','finder','category_id','coverimage','slug','name','category','location_id','location','city_id','city','total_rating_count'));
 
 		$bookmarksfinders = Finder::with(array('category'=>function($query){$query->select('_id','name','slug');}))
 		->with(array('location'=>function($query){$query->select('_id','name','slug');}))
@@ -1897,7 +1942,7 @@ class CustomerController extends \BaseController {
 		->whereIn('_id', $finderids)
 		->get(array('_id','average_rating','category_id','coverimage','slug','title','category','location_id','location','city_id','city','total_rating_count','offerings'));
 
-		$response 		= 	['status' => 200, 'bookmarksfinders' => $bookmarksfinders,  'message' => 'List for bookmarks'];
+		$response 		= 	['status' => 200, 'bookmarksfinders' => $bookmarksfinders, 'servicebookmarks'=>$servicebookmarks, 'message' => 'List for bookmarks'];
 		return Response::json($response, 200);
 	}
 

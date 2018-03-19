@@ -1523,7 +1523,9 @@ class ServiceController extends \BaseController {
 		$data['service'] = $service_details;
 
 		$data['bookmark'] = false;
-		
+		$data['share_message_text'] = "share ".$service_details['title'];
+		$data['share_message_email'] = "share ".$service_details['title'];
+
 		return Response::json(array('status'=>200, 'data'=> $data));
 
 	}
