@@ -315,10 +315,10 @@ class Service extends \Basemodel{
 					}
 				}
 				
-				if(isset($value['type']) && in_array($value['type'], ['membership', 'packages']) && isset($value['flags']) && isset($value['flags']['campaign_offer']) && $value['flags']['campaign_offer']){
-					$value['campaign_offer'] = "(Women - Get additional 30% off)";
-					$value['campaign_color'] = "#FA5295";
-				}				
+				// if(isset($value['type']) && in_array($value['type'], ['membership', 'packages']) && isset($value['flags']) && isset($value['flags']['campaign_offer']) && $value['flags']['campaign_offer']){
+				// 	$value['campaign_offer'] = "(Women - Get additional 30% off)";
+				// 	$value['campaign_color'] = "#FA5295";
+				// }				
 				
 				array_push($ratecards, $value);
 			}
