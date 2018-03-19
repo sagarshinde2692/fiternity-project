@@ -2170,6 +2170,7 @@ class SchedulebooktrialsController extends \BaseController {
                 'workout_article_link'          =>      $workout_article_link,
                 'download_app_link'             =>      $download_app_link,
                 'diet_plan_link'                =>      $diet_plan_link,
+                'pre_trial_status'              =>      'yet_to_connect'
             );
 
             $is_tab_active = isTabActive($booktrialdata['finder_id']);
@@ -3058,6 +3059,7 @@ class SchedulebooktrialsController extends \BaseController {
                 'workout_article_link'          =>      $workout_article_link,
                 'download_app_link'             =>      $download_app_link,
                 'diet_plan_link'                =>      $diet_plan_link,
+                'pre_trial_status'              =>      'yet_to_connect'
             );
 
             $is_tab_active = isTabActive($booktrialdata['finder_id']);
@@ -3708,6 +3710,14 @@ class SchedulebooktrialsController extends \BaseController {
                 'note_to_trainer'               =>      $note_to_trainer,
                 'service_category'              =>      $service_category
             );
+
+            if(!isset($booktrial['code'])){
+                array_set($booktrialdata, 'code',random_numbers(5));
+            }
+
+            if(!isset($booktrial['vendor_code'])){
+                array_set($booktrialdata,'vendor_code',random_numbers(5));
+            }
             
             if(isset($schedule_date) && isset($old_schedule_date)){
                 if($schedule_date != $old_schedule_date){
