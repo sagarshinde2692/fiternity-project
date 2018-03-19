@@ -1448,8 +1448,12 @@ class ServiceController extends \BaseController {
 
 				if(isset($review['customer']) && isset($review['customer']['name']) && isset($review['customer']['name'])!= ""){
 
-					$review['reviewer'] = $review['customer']['name'];
+					$review['reviewer'] = ucwords($review['customer']['name']);
 
+				}else{
+					
+					$review['reviewer'] = "Fitternity User";
+					
 				}
 
 				$review['rating'] = round($review['rating'], 1);		
@@ -1476,7 +1480,7 @@ class ServiceController extends \BaseController {
 			$photos = $service_details['photos'];
 
 			$service_details['photos'] = [
-				'count'=>count($service_details['photos']),
+				'count'=>(count($service_details['photos']) > 4) ? (count($service_details['photos']) - 4) : 0,
 				'urls'=>array_splice($photos, 0, 4)
 			];
 			// $service_details['photos'] = array_pluck($service_details, 'url');
