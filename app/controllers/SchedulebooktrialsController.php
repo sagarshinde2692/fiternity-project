@@ -2183,6 +2183,10 @@ class SchedulebooktrialsController extends \BaseController {
                 $booktrialdata['recommended_booktrial_id'] = (int)$order['recommended_booktrial_id'];
             }
 
+            if(isset($order['booking_for_others']) && $order['booking_for_others'] != ""){
+              $booktrialdata['booking_for_others'] = $order['booking_for_others'];
+            }
+
             if ($medical_detail != "" && $medication_detail != "") {
 
                 $customer_info = new CustomerInfo();
@@ -3074,6 +3078,10 @@ class SchedulebooktrialsController extends \BaseController {
 
             if(isset($data['promotional_notification_label']) && $data['promotional_notification_label'] != ""){
                 $booktrialdata['promotional_notification_label'] = $data['promotional_notification_label'];
+            }
+
+            if(isset($data['booking_for_others']) && $data['booking_for_others'] != ""){
+              $booktrialdata['booking_for_others'] = $data['booking_for_others'];
             }
 
             $addUpdateDevice = $this->utilities->addUpdateDevice($customer_id);
@@ -4779,7 +4787,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         $booktrial['fit_code'] = $this->utilities->fitCode($booktrial);
 
-        $booktrial['fitcode_message'] = 'Punch the code and get 200 Fitcash';
+        $booktrial['fitcode_message'] = 'Punch the code & get surprise discount';
         $booktrial['fitcode_button_text'] = 'Enter Fitcode';
 
         $responsedata   = [

@@ -2898,6 +2898,19 @@ class FindersController extends \BaseController {
 								$discount_amount = intval($rateval['price'] * ($discount/100));
 								$rateval['price'] = $rateval['price'] - $discount_amount;
 							}
+
+							if(isset($rateval['special_price']) && $rateval['special_price'] != 0){
+					            $rateval_price = $rateval['special_price'];
+					        }else{
+					            $rateval_price = $rateval['price'];
+					        }
+
+					        if($rateval_price >= 20000){
+
+					        	$rateval['campaign_offer'] = "(EMI option available)";
+					        	$rateval['campaign_color'] = "#43a047";
+					        }
+					        
 							array_push($ratecardArr, $rateval);
 						}
 						// else{
@@ -4656,6 +4669,83 @@ class FindersController extends \BaseController {
 		}
 
 		return $price;
+	}
+
+	function getTermsAndCondition(){
+
+		$tnc = [
+			"title"=>"Terms and conditions",
+			"description"=>""
+		];
+
+		$tnc['description'] .= "<br/> ● Discount varies across different outlets depending on slot availability.";
+		$tnc['description'] .= "<br/> ● For memberships reserved by part payment and not fully paid for on date of joining, 5% of total membership value will be deducted as convenience fees & the remaining will be transferred in the wallet as Fitcash+ . The membership will also be terminated.";
+		$tnc['description'] .= "<br/> ● Memberships once purchased are not transferrable or resalable.";
+		$tnc['description'] .= "<br/> ● For any Refund/ cancellation queries refer to https://www.fitternity.com/refund-cancellation.";
+		$tnc['description'] .= "<br/> ● For any Offer related queries refer to https://www.fitternity.com/offer-usage.";
+
+		$finder_id = "";
+
+		if(isset($_REQUEST['ratecard_id']) && $_REQUEST['ratecard_id'] != ""){
+
+			$ratecard = Ratecard::find((int)$_REQUEST['ratecard_id']);
+
+			if($ratecard){
+
+				$finder_id = (int) $ratecard['finder_id'];
+			}
+
+		}
+
+		if(isset($_REQUEST['service_id']) && $_REQUEST['service_id'] != ""){
+
+			$service = Service::find((int)$_REQUEST['service_id']);
+
+			if($service){
+
+				$finder_id = (int) $service['finder_id'];
+			}
+
+		}
+
+		if(isset($_REQUEST['finder_id']) && $_REQUEST['finder_id'] != ""){
+
+			$finder_id = (int)$_REQUEST['finder_id'];
+		}
+
+		if($finder_id != ""){
+
+			$finder = Finder::find($finder_id);
+
+			if($finder){
+
+				$finder = $finder->toArray();
+
+				if(isset($finder['info']['terms_and_conditions']) && $finder['info']['terms_and_conditions'] != ""){
+
+					$terms_and_conditions = $finder['info']['terms_and_conditions'];
+
+					$terms_and_conditions = str_replace('<ol>','',$terms_and_conditions);
+					$terms_and_conditions = str_replace('</ol>','',$terms_and_conditions);
+					$terms_and_conditions = str_replace('</ul>','',$terms_and_conditions);
+					$terms_and_conditions = str_replace('</ul>','',$terms_and_conditions);
+					$terms_and_conditions = str_replace('</li>','',$terms_and_conditions);
+					$terms_and_conditions = str_replace('<li>','<br/> ● ',$terms_and_conditions);
+
+					$tnc['description'] = $terms_and_conditions;
+				}
+			}
+
+		}
+
+		$response = [
+			"tnc"=>$tnc,
+			"status"=>200,
+			"message"=>"Success"
+		];
+
+		return $response;
+
 	}
 	
 

@@ -19,7 +19,7 @@ class Service extends \Basemodel{
 
 		);
 
-    protected $dates = array('start_date','end_date');
+    protected $dates = array('start_date','end_date','membership_start_date','membership_end_date');
 
 
     public static $withoutAppends = false;

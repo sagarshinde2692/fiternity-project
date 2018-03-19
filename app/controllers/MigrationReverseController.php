@@ -1051,6 +1051,16 @@ class MigrationReverseController extends \BaseController {
                 $insertData['flags'] = $data['flags'];
             }
 
+            $insertData['membership_start_date'] = null;
+            if(isset($data['membership_start_date'])){
+                $insertData['membership_start_date'] = $data['membership_start_date'];
+            }
+
+            $insertData['membership_end_date'] = null;
+            if(isset($data['membership_end_date'])){
+                $insertData['membership_end_date'] = $data['membership_end_date'];
+            }
+
 //            return $insertData;
 
             $service_exists = Service::on($this->fitadmin)->find(intval($id));
