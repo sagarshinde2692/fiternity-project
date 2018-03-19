@@ -1446,7 +1446,13 @@ class ServiceController extends \BaseController {
 
 				$review['posted_on'] = "Posted on ".date("jS M Y", strtotime($review['updated_at']));
 
-				$review_data = array_only($review->toArray(), ['rating', 'description', 'posted_on']);
+				if(isset($review['customer']) && isset($review['customer']['name']) && isset($review['customer']['name'])!= ""){
+
+					$review['reviewer'] = $review['customer']['name'];
+
+				}
+
+				$review_data = array_only($review->toArray(), ['rating', 'description', 'posted_on', 'reviewer']);
 
 				array_push($reviews, $review_data);
 
