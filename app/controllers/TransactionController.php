@@ -209,6 +209,7 @@ class TransactionController extends \BaseController {
                 case 'emi': $data['payment_mode'] = 'paymentgateway';break;
                 case 'paymentgateway': $data['payment_mode'] = 'paymentgateway';break;
                 case 'pay_at_vendor': $data['payment_mode'] = 'at the studio';break;
+                case 'pay_later': $data['payment_mode'] = 'pay_later';break;
                 default:break;
             }
 
@@ -741,7 +742,7 @@ class TransactionController extends \BaseController {
             $order->update();
         }
 
-        if(isset($data['pay_later']) && $data['pay_later']){
+        if(isset($data['payment_mode']) && $data['payment_mode'] == 'pay_later' && isset($data['wallet']) && $data['wallet']){
             $this->utilities->createWorkoutSession($order['_id']);
         }
         
@@ -800,6 +801,12 @@ class TransactionController extends \BaseController {
 
         $pay_at_vendor_applicable = true;
 
+        $pay_later = false;
+        
+        if($data['type'] == 'workout-session'){
+            $pay_later = true;
+        }
+
         $resp   =   array(
             'status' => 200,
             'data' => $result,
@@ -807,7 +814,8 @@ class TransactionController extends \BaseController {
             'part_payment' => $part_payment_applicable,
             'cash_pickup' => $cash_pickup_applicable,
             'emi'=>$emi_applicable,
-            'pay_at_vendor'=>$pay_at_vendor_applicable
+            'pay_at_vendor'=>$pay_at_vendor_applicable,
+            'pay_later'=>$pay_later
         );
 
         // if(isset($_GET['device_type']) && in_array($_GET['device_type'], ['android', 'ios'])){
@@ -4037,6 +4045,16 @@ class TransactionController extends \BaseController {
                 'title' => 'Pay at Studio',
                 'subtitle' => 'Transact via paying cash at the Center',
                 'value' => 'pay_at_vendor',
+            );
+        
+        }
+
+        if(isset($data['pay_later']) && $data['pay_later']){
+            
+            $payment_modes[] = array(
+                'title' => 'Pay Later',
+                'subtitle' => 'Pay after the workout session',
+                'value' => 'pay_later',
             );
         
         }
