@@ -743,6 +743,11 @@ class TransactionController extends \BaseController {
         }
 
         if(isset($data['payment_mode']) && $data['payment_mode'] == 'pay_later' && isset($data['wallet']) && $data['wallet']){
+
+            $order->pay_later = true;
+            
+            $order->update();
+            
             $this->utilities->createWorkoutSession($order['_id']);
         }
         
