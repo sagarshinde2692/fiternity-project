@@ -729,7 +729,11 @@ class ServiceController extends \BaseController {
 				}));
 			}
 			
-            $time_in_seconds = time_passed_check($item['servicecategory_id']);
+			$time_in_seconds = time_passed_check($item['servicecategory_id']);
+			
+			if(isset($request['time_interval']) && $request['time_interval']){
+				$time_in_seconds = $request['time_interval']*60*60;
+			}
 
             $service = array(
             	'service_id' => $item['_id'],
@@ -1464,7 +1468,8 @@ class ServiceController extends \BaseController {
 
 			$schedule_data = [
 				'service_id'=>$service_details['_id'],
-				'requested_date'=>date('YYYY-mm-dd', time())
+				'requested_date'=>date('YYYY-mm-dd', time()),
+				'time_interval'=>isset($_GET['time_interval']) ? intval($_GET['time_interval']) : null
 			];
 			$schedule = json_decode(json_encode($this->getScheduleByFinderService($schedule_data)->getData()));
 
