@@ -1841,6 +1841,16 @@ class TransactionController extends \BaseController {
             $data['convinience_fee'] = $convinience_fee;
         }
 
+        if($data['type'] == 'workout-session' && isset($data['payment_mode']) && $data['payment_mode'] != 'pay_later'){
+
+            $instant_payment_discount = 100;
+
+            $data['instant_payment_discount'] = $instant_payment_discount;
+            
+            $data['amount'] = $data['amount_customer'] = $data['amount_customer'] - $data['instant_payment_discount'];
+
+        }
+
         if($data['type'] != 'events'){
 
             if($data['type'] == "memberships" && isset($data['customer_source']) && (in_array($data['customer_source'],['android','ios','kiosk']))){
