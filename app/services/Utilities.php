@@ -3087,6 +3087,14 @@ Class Utilities {
                 $fit_code = false;
             }
 
+            if(!isset($data['post_trial_status_updated_by_fitcode']) && !isset($data['post_trial_status_updated_by_lostfitcode'])){
+
+                if(isset($data['schedule_date_time']) && $data['schedule_date_time'] != "" && time() <= strtotime('+48 hours', strtotime($data['schedule_date_time']))){
+
+                    $fit_code = true;
+                }
+            }
+
             if(isset($data['is_tab_active']) && $data['is_tab_active']){
                 $fit_code = false;
             }
