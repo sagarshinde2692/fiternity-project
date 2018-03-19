@@ -1490,11 +1490,14 @@ class ServiceController extends \BaseController {
 			$schedule_data = [
 				'service_id'=>$service_details['_id'],
 				'requested_date'=>date('YYYY-mm-dd', time()),
-				'time_interval'=>isset($_GET['time_interval']) ? intval($_GET['time_interval']) : null
+				'time_interval'=>isset($_GET['time_interval']) ? intval($_GET['time_interval']) : null,
+				'date'=>date('YYYY-mm-dd', time()),
+				
 			];
+
 			$schedule = json_decode(json_encode($this->getScheduleByFinderService($schedule_data)->getData()));
 
-			if(count($schedule->schedules) > 0){
+			if(count($schedule->schedules) > 0 && count(head($schedule->schedules)->slots)>0){
 				$service_details['total_sessions'] = head($schedule->schedules)->total_slots_count." sessions";
 				$service_details['next_session'] = "Next session at ".strtoupper(head($schedule->schedules)->slots[0]->start_time);
 				$service_details['slots'] = (head($schedule->schedules)->slots);
