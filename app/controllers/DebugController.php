@@ -5574,18 +5574,51 @@ public function yes($msg){
 		
 		// return count($finders);
 		
-		$service_ids = Ratecard::where('type', "workout session")->lists('service_id');
+		// $service_ids = Ratecard::where('type', "workout session")->lists('service_id');
+		Finder::$withoutAppends = true;
+		Service::$withoutAppends = true;
+		// $finder_ids = Service::active()->whereNotIn('_id', $service_ids)->lists('finder_id');
+		// $finders = Finder::active()->whereIn('_id', $finder_ids)->whereNotIn('flags.state', ['closed', 'temporarily_shut'])->where(function($query){return $query->orWhere('membership', '!=', 'disable')->orWhere('trial', '!=', 'disable');})->with('city')->with('location')->get(['title', 'city_id', 'location_id']);
 		
-		$finder_ids = Service::active()->whereNotIn('_id', $service_ids)->lists('finder_id');
-		$finders = Finder::active()->whereIn('_id', $finder_ids)->whereNotIn('flags.state', ['closed', 'temporarily_shut'])->where(function($query){return $query->orWhere('membership', '!=', 'disable')->orWhere('trial', '!=', 'disable');})->with('city')->with('location')->get(['title', 'city_id', 'location_id']);
-
+		$finders = Finder::active()->whereNotIn('flags.state', ['closed', 'temporarily_shut'])->where(function($query){return $query->orWhere('membership', '!=', 'disable')->orWhere('trial', '!=', 'disable');})->with('city')->with('location')->with(array('services'=>function($query){$query->select('finder_id', 'name')->where('status','1')->with('ratecards');}))->take(1)->get(['title', 'city_id', 'location_id']);
+		return $finders;
+		$data = [];
 		foreach($finders as $key => $finder){
+
+			$finder_data = ['services'=>[]];
+			$workout_session = false;
+			foreach($finder['services'] as $service){
+				$service_data = ['name'=>$service['name']];
+
+				foreach($service['ratecards'] as $ratecard){
+
+					if($ratecard['type'] == 'workout session'){
+	
+						$workout_session = false;
+						
+
+
+					}elseif($ratecard['type'] == 'membership' && $ratecard['']){
+						
+					}
+
+
+				}
+
+			}
 			$finders[$key]['city_name'] = $finder['city']['name'];
 			$finders[$key]['location_name'] = $finder['location']['name'];
 			unset($finders[$key]['city']);
 			unset($finders[$key]['location']);
 		}
-		return $finders;
+
+
+		foreach($have_finders as $key => $finder){
+			$have_finders[$key]['city_name'] = $finder['city']['name'];
+			$have_finders[$key]['location_name'] = $finder['location']['name'];
+			unset($have_finders[$key]['city']);
+			unset($have_finders[$key]['location']);
+		}
 		return count(array_values(array_unique($finders)));
 	}
 
