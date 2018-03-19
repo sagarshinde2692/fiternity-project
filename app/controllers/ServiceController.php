@@ -1388,7 +1388,7 @@ class ServiceController extends \BaseController {
 			
 			$finder = Finder::active()->where('slug','=',$finder_slug)->whereNotIn('flags.state', ['closed', 'temporarily_shut'])
 				->with(array('facilities'=>function($query){$query->select( 'name', 'finders');}))
-				->with(array('reviews'=>function($query){$query->select('finder_id', 'customer', 'customer_id', 'rating', 'updated_at', 'description')->where('status','=','1')->orderBy('updated_at', 'DESC')->limit(4);}))
+				->with(array('reviews'=>function($query){$query->select('finder_id', 'customer', 'customer_id', 'rating', 'updated_at', 'description')->where('status','=','1')->orderBy('updated_at', 'DESC')->limit(3);}))
 				->first(['title', 'contact', 'average_rating', 'total_rating_count']);
 
 			if(!$finder){
