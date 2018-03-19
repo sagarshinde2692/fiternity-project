@@ -2170,6 +2170,7 @@ class SchedulebooktrialsController extends \BaseController {
                 'workout_article_link'          =>      $workout_article_link,
                 'download_app_link'             =>      $download_app_link,
                 'diet_plan_link'                =>      $diet_plan_link,
+                'pre_trial_status'              =>      'yet_to_connect'
             );
 
             $is_tab_active = isTabActive($booktrialdata['finder_id']);
@@ -2180,6 +2181,10 @@ class SchedulebooktrialsController extends \BaseController {
 
             if(isset($order['recommended_booktrial_id']) && $order['recommended_booktrial_id'] != ""){
                 $booktrialdata['recommended_booktrial_id'] = (int)$order['recommended_booktrial_id'];
+            }
+
+            if(isset($order['booking_for_others']) && $order['booking_for_others'] != ""){
+              $booktrialdata['booking_for_others'] = $order['booking_for_others'];
             }
 
             if ($medical_detail != "" && $medication_detail != "") {
@@ -3058,6 +3063,7 @@ class SchedulebooktrialsController extends \BaseController {
                 'workout_article_link'          =>      $workout_article_link,
                 'download_app_link'             =>      $download_app_link,
                 'diet_plan_link'                =>      $diet_plan_link,
+                'pre_trial_status'              =>      'yet_to_connect'
             );
 
             $is_tab_active = isTabActive($booktrialdata['finder_id']);
@@ -3072,6 +3078,10 @@ class SchedulebooktrialsController extends \BaseController {
 
             if(isset($data['promotional_notification_label']) && $data['promotional_notification_label'] != ""){
                 $booktrialdata['promotional_notification_label'] = $data['promotional_notification_label'];
+            }
+
+            if(isset($data['booking_for_others']) && $data['booking_for_others'] != ""){
+              $booktrialdata['booking_for_others'] = $data['booking_for_others'];
             }
 
             $addUpdateDevice = $this->utilities->addUpdateDevice($customer_id);
@@ -3708,6 +3718,14 @@ class SchedulebooktrialsController extends \BaseController {
                 'note_to_trainer'               =>      $note_to_trainer,
                 'service_category'              =>      $service_category
             );
+
+            if(!isset($booktrial['code'])){
+                array_set($booktrialdata, 'code',random_numbers(5));
+            }
+
+            if(!isset($booktrial['vendor_code'])){
+                array_set($booktrialdata,'vendor_code',random_numbers(5));
+            }
             
             if(isset($schedule_date) && isset($old_schedule_date)){
                 if($schedule_date != $old_schedule_date){
@@ -4769,7 +4787,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         $booktrial['fit_code'] = $this->utilities->fitCode($booktrial);
 
-        $booktrial['fitcode_message'] = 'Punch the code and get 200 Fitcash';
+        $booktrial['fitcode_message'] = 'Punch the code & get surprise discount';
         $booktrial['fitcode_button_text'] = 'Enter Fitcode';
 
         $responsedata   = [
@@ -6424,6 +6442,7 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrial->post_trial_status = 'attended';
             $booktrial->post_trial_initail_status = 'interested';
             $booktrial->post_trial_status_updated_by_kiosk = time();
+            $booktrial->post_trial_status_date = time();
             $booktrial->update();
 
             if(isset($booktrial['customer_sms_after24hour']) && $booktrial['customer_sms_after24hour'] != ""){
@@ -6569,6 +6588,7 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrial->post_trial_status = 'attended';
             $booktrial->post_trial_initail_status = 'interested';
             $booktrial->post_trial_status_updated_by_fitcode = time();
+            $booktrial->post_trial_status_date = time();
             $booktrial->update();
 
             $message = "Hi ".ucwords($booktrial['customer_name']).", Rs.".$fitcash." Fitcash is added in your wallet as surprise on your attendace . Use it to buy ".ucwords($booktrial['finder_name'])."'s membership at lowest price. Valid for 21 days";
@@ -6608,6 +6628,7 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrial->post_trial_status = 'attended';
             $booktrial->post_trial_initail_status = 'interested';
             $booktrial->post_trial_status_updated_by_lostfitcode = time();
+            $booktrial->post_trial_status_date = time();
             $booktrial->update();
 
             $message = "Hi ".ucwords($booktrial['customer_name']).", Thank you for your request. Your surprise discount will be activated post verifying your attendance with ".ucwords($booktrial['finder_name'])." within 48 hours";

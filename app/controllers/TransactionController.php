@@ -816,7 +816,7 @@ class TransactionController extends \BaseController {
 
         // $emi_applicable = $this->utilities->displayEmi(array('amount_final'=>$data['amount_final']));
 
-        $emi_applicable = (isset($data['amount_final']) && $data['amount_final'] >= 2500) ? true : false;
+        $emi_applicable = (isset($data['amount_final']) && $data['amount_final'] >= 5000) ? true : false;
 
         $part_payment_applicable = false; //(!$updating_part_payment && $part_payment && $data["amount_finder"] >= 3000) ? true : false;
 

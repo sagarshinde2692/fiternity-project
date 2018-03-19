@@ -1144,7 +1144,7 @@ class HomeController extends BaseController {
             if(in_array($type,["booktrialfree"])){
 
                 if(isset($item['code']) && $item['code'] != ""){
-                    $booking_details_data['booking_id']['value'] = $item['code'];
+                    $booking_details_data['booking_id']['value'] = $item['code'].' (Share it at Gym/Studio to get Fitcode)';
                 }
 
             }
@@ -1158,6 +1158,11 @@ class HomeController extends BaseController {
                     if(isset($order_booktrial['code'])){
                         
                         $booking_details_data['booking_id']['value'] = $order_booktrial['code'];
+
+                        if(in_array($type, ["booktrial","booktrials"])){
+
+                            $booking_details_data['booking_id']['value'] = $order_booktrial['code'].' (Share it at Gym/Studio to get Fitcode)';
+                        }
                     
                     }
 

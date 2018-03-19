@@ -113,8 +113,11 @@ class RewardofferController extends BaseController {
         Log::info('----------------------getRewardOffers data-------------------',$data);
 
 
-        
+        $min_date = null;
+        $max_date = null;
+
         $order              =   array();
+
         if(isset($data) && isset($data['type']) && $data['type'] == 'workout-session'){
             $rules      =   ['finder_id'=>'required', 'amount'=>'required', 'type'=>'required'];
             $validator  =   Validator::make($data,$rules);
@@ -230,6 +233,14 @@ class RewardofferController extends BaseController {
         if($service){
 
             $service_category_id = (int)$service->servicecategory_id;
+
+            if(isset($service['membership_start_date'])){
+                $min_date = strtotime($service['membership_start_date']);
+            }
+
+            if(isset($service['membership_end_date'])){
+                $max_date = strtotime($service['membership_end_date']);
+            }
         }
 
         if(isset($data['service_category_id']) && $data['service_category_id'] != ""){
@@ -894,6 +905,9 @@ class RewardofferController extends BaseController {
             $data['corporate_login'] = true;
             unset($data['cashback']);
         }
+
+        $data['min_date'] = $min_date;
+        $data['max_date'] = $max_date;
 
         return  Response::json($data, 200);
 

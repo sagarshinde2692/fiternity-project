@@ -3273,7 +3273,7 @@ Class Utilities {
             $response['lat'] = $booktrial['finder_lat'];
             $response['lon'] = $booktrial['finder_lon'];
             $response['calorie_burn'] = $category_calorie_burn;
-            $response['calorie_burn_text'] = "Get ready to burn ".$category_calorie_burn." Calories in your ".$booktrial['service_name']." Session!";
+            $response['calorie_burn_text'] = "Get ready to burn ".$category_calorie_burn." Calories at ".ucwords($booktrial['finder_name']);
             $response['is_tab_active'] = $is_tab_active;
 
             $ratecard_count = \Ratecard::where('service_id',(int)$booktrial['service_id'])
