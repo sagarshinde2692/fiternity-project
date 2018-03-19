@@ -1403,8 +1403,16 @@ class ServiceController extends \BaseController {
 			// 	$service_details = json_decode(json_encode($service_details_response['data']), true);
 			// }
 			
-			$service_details = Service::where('slug', $service_slug)->with(array('ratecards'))->first(['name', 'contact', 'photos', 'lat', 'lon', 'calorie_burn']);
+			$service_details = Service::where('slug', $service_slug)->with(array('ratecards'))->first(['name', 'contact', 'photos', 'lat', 'lon', 'calorie_burn', 'address']);
 			// return $service_details;
+			if(!$service_details){
+				
+				return Response::json(array('status'=>400, 'error_message'=>'Service not active'), $this->error_status);
+			
+			};
+			$service_details = $service_details->toArray();
+
+			$service_details['title'] = $service_details['name'].' at '.$finder['title'];
 			
 			$workout_session_ratecard = head(array_where($service_details['ratecards'], function($key, $value){
 				if($value['type'] == 'workout session'){
@@ -1421,9 +1429,10 @@ class ServiceController extends \BaseController {
 	
 			$service_details['price'] = $workout_session_ratecard['price']." PER SESSION";
 
-			$service_details['title'] = $service_details['name'].' at '.$finder['title'];
-	
-			$service_details['city_name'] = $service_details['city_id']['name'];
+			$service_details['contact'] = [
+				'address'=>''
+			];
+			$service_details['contact']['address'] = $service_details['address'];
 	
 			$service_details['facilities'] = $this->getFacilityImages(array_pluck($finder['facilities'], 'name'));
 			
