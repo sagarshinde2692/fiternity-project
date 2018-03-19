@@ -1482,10 +1482,15 @@ class ServiceController extends \BaseController {
 			];
 			$schedule = json_decode(json_encode($this->getScheduleByFinderService($schedule_data)->getData()));
 
-			$service_details['total_sessions'] = head($schedule->schedules)->total_slots_count;
-			$service_details['next_session'] = "Next session at ".strtoupper(head($schedule->schedules)->slots[0]->start_time);
-			$service_details['slots'] = (head($schedule->schedules)->slots);
-
+			if(count($schedule->schedules) > 0){
+				$service_details['total_sessions'] = head($schedule->schedules)->total_slots_count;
+				$service_details['next_session'] = "Next session at ".strtoupper(head($schedule->schedules)->slots[0]->start_time);
+				$service_details['slots'] = (head($schedule->schedules)->slots);
+			}else{
+				$service_details['total_sessions'] = 0;
+				$service_details['next_session'] = "No session available";
+				$service_details['slots'] = [];
+			}
 			
 			$service_details['trial_active_weekdays']= null;
 			$service_details['workoutsession_active_weekdays']= null;
