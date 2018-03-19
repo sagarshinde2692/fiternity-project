@@ -1427,7 +1427,7 @@ class ServiceController extends \BaseController {
 			
 			};
 	
-			$service_details['price'] = $workout_session_ratecard['price']." PER SESSION";
+			$service_details['price'] = "₹".$workout_session_ratecard['price']." PER SESSION";
 
 			$service_details['contact'] = [
 				'address'=>''
@@ -1436,9 +1436,9 @@ class ServiceController extends \BaseController {
 	
 			$service_details['facilities'] = $this->getFacilityImages(array_pluck($finder['facilities'], 'name'));
 			
-			$service_details['average_rating'] = isset($finder['average_rating']) ? $finder['average_rating'] : 0;
+			$service_details['average_rating'] = isset($finder['average_rating']) ? round($finder['average_rating'], 1) : 0;
 
-			$service_details['calorie_burn'] = "BURN ".$service_details['calorie_burn']['avg']." ".strtoupper($service_details['calorie_burn']['type']);
+			$service_details['calorie_burn'] = "BURN ".$service_details['calorie_burn']['avg']." ".((isset($service_details['calorie_burn']['type']) && $service_details['calorie_burn']['type'] != "") ? strtoupper($service_details['calorie_burn']['type']) : "KCAL");
 
 			$reviews = [];
 
@@ -1451,6 +1451,8 @@ class ServiceController extends \BaseController {
 					$review['reviewer'] = $review['customer']['name'];
 
 				}
+
+				$review['rating'] = round($review['rating'], 1);		
 
 				$review_data = array_only($review->toArray(), ['rating', 'description', 'posted_on', 'reviewer']);
 
@@ -1489,11 +1491,11 @@ class ServiceController extends \BaseController {
 			$schedule = json_decode(json_encode($this->getScheduleByFinderService($schedule_data)->getData()));
 
 			if(count($schedule->schedules) > 0){
-				$service_details['total_sessions'] = head($schedule->schedules)->total_slots_count;
+				$service_details['total_sessions'] = head($schedule->schedules)->total_slots_count." sessions";
 				$service_details['next_session'] = "Next session at ".strtoupper(head($schedule->schedules)->slots[0]->start_time);
 				$service_details['slots'] = (head($schedule->schedules)->slots);
 			}else{
-				$service_details['total_sessions'] = 0;
+				$service_details['total_sessions'] = "0 Session";
 				$service_details['next_session'] = "No session available";
 				$service_details['slots'] = [];
 			}
