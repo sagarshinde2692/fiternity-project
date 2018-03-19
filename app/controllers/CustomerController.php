@@ -4199,9 +4199,19 @@ class CustomerController extends \BaseController {
 		if($device_type && $app_version && in_array($device_type, ['android', 'ios']) && version_compare($app_version, '4.4.2')>0){
 			$response = [];
 			foreach($bankData as $key => $value){
+
+				//echo"<pre>";print_r($value);exit;
+
+				foreach ($value as $key_emiData => &$value_emiData) {
+
+					$message = "Rs. ".$value_emiData['emi']." will be charged on your credit card every month for the next ".$value_emiData['months']." months";
+
+					$value_emiData['message'] = $message;
+				}
+
 				$response['bankData'][] = [
 					'bankName' => $key,
-					'emiData' => $value
+					'emiData' => $value,
 				];
 			}
 		}
