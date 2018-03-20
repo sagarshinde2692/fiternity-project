@@ -3338,7 +3338,7 @@ class CustomerController extends \BaseController {
 			];
 			$result['campaigns'][] = [
 				'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/amazon-pay.png',
-				'link'=>'ftrnty://ftrnty.com',
+				'link'=>'',
 				'title'=>'Amazon Pay',
 				'height'=>100,
 				'width'=>375,
