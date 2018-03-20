@@ -3336,6 +3336,14 @@ class CustomerController extends \BaseController {
 				'width'=>375,
 				'ratio'=>(float) number_format(100/375,2)
 			];
+			$result['campaigns'][] = [
+				'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/amazon-pay.png',
+				'link'=>'ftrnty://ftrnty.com',
+				'title'=>'Amazon Pay',
+				'height'=>100,
+				'width'=>375,
+				'ratio'=>(float) number_format(100/375,2)
+			];
 
 			$lat = isset($_REQUEST['lat']) && $_REQUEST['lat'] != "" ? $_REQUEST['lat'] : "";
 	        $lon = isset($_REQUEST['lon']) && $_REQUEST['lon'] != "" ? $_REQUEST['lon'] : "";
