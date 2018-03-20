@@ -500,7 +500,7 @@ class HomeController extends BaseController {
             ];
             $campaigns[] = [
                 'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Cover-web%26mob/AmazonPay_WebCard_Banner.png',
-                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Cover-web%26mob/AmazonAppBanner.png',
+                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Cover-web%26mob/temp-amazonpay.png',
                 'link'=>Config::get('app.website'),
                 // 'target'=>true,
                 'title'=>'Amazon Pay',
