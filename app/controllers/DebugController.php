@@ -5724,25 +5724,179 @@ public function yes($msg){
 
 	public function cityWise(){
 
-		$city_wise_session = Booktrial::raw(function($collection){
+		// $city_wise_session_gyms = Booktrial::raw(function($collection){
 
-			$match['$match']['type'] = ['$in'=>['workout-session']];
+		// 	$match['$match']['type'] = ['$in'=>['workout-session']];
+		// 	$match['$match']['service_category'] = ['$in'=>['Gyms', 'Gym']];
+		// 	$match['$match']['active'] = ['$ne'=>'0'];
+		// 	$match['$match']['$or'] = [['created_at'=>['$lt'=>new MongoDate(strtotime('2017-11-01'))]], ['created_at'=>['$gt'=>new MongoDate(strtotime('2017-11-30'))]]];
 			
-			$aggregate = [];
+		// 	$aggregate = [];
 
-			$aggregate[] = $match;
+		// 	$aggregate[] = $match;
 
-			$group['$group'] = [
-				'_id'=>['city_id'=>'$city_id', 'service_category'],
-				'count'=>['$sum'=>1]				
-			];
-			$aggregate[] = $group;
+		// 	$group['$group'] = [
+		// 		'_id'=>['city_id'=>'$city_id'],
+		// 		'count'=>['$sum'=>1]				
+		// 	];
+		// 	$aggregate[] = $group;
 			
-			return $collection->aggregate($aggregate);
+		// 	return $collection->aggregate($aggregate);
+		// });
+		
+		// $city_wise_session_others = Booktrial::raw(function($collection){
+			
+		// 	$match['$match']['type'] = ['$in'=>['workout-session']];
+		// 	$match['$match']['service_category'] = ['$nin'=>['Gyms', 'Gym']];
+		// 	$match['$match']['active'] = ['$ne'=>'0'];
+		// 	$match['$match']['$or'] = [['created_at'=>['$lt'=>new MongoDate(strtotime('2017-11-01'))]], ['created_at'=>['$gt'=>new MongoDate(strtotime('2017-11-30'))]]];
+			
+		// 	$aggregate = [];
+
+		// 	$aggregate[] = $match;
+
+		// 	$group['$group'] = [
+		// 		'_id'=>['city_id'=>'$city_id'],
+		// 		'count'=>['$sum'=>1]				
+		// 	];
+		// 	$aggregate[] = $group;
+			
+		// 	return $collection->aggregate($aggregate);
+		// });
+
+		// return array("city_wise_session_gyms"=>$city_wise_session_gyms,
+		// "city_wise_session_others"=>$city_wise_session_others);
+
+		// $city_wise_session_top = Booktrial::raw(function($collection){
+			
+		// 	$match['$match']['type'] = ['$in'=>['workout-session']];
+		// 	$match['$match']['active'] = ['$ne'=>'0'];
+		// 	$match['$match']['$or'] = [['created_at'=>['$lt'=>new MongoDate(strtotime('2017-11-01'))]], ['created_at'=>['$gt'=>new MongoDate(strtotime('2017-11-30'))]]];
+		// 	// $match['$match']['$city_id'] = ['$in'=>[1, 2, 3]];
+			
+		// 	$aggregate = [];
+
+		// 	$aggregate[] = $match;
+
+		// 	$group['$group'] = [
+		// 		'_id'=>['city_id'=>'$city_id', 'finder_id'=>'$finder_id'],
+		// 		'count'=>['$sum'=>1]				
+		// 	];
+		// 	$aggregate[] = $group;
+
+		// 	$aggregate[] = ['$sort'=>['count'=>-1]];
+			
+		// 	return $collection->aggregate($aggregate);
+		// });
+		// function return_finder($o){
+		// 	return $o['_id']['finder_id'];
+		// }
+		// // return $city_wise_session_top;
+		// $finder_ids = array_map('return_finder', $city_wise_session_top['result']);
+		// Finder::$withoutAppends = true;
+		// $finders = Finder::whereIn('_id',$finder_ids)->with('location')->get(['title', 'location_id']);
+		
+
+		// $data = [];
+
+		// foreach($finders as $finder){
+		// 	$data[$finder['_id']] = $finder;
+		// }
+
+		// foreach($city_wise_session_top['result'] as &$x){
+		// 	$x['finder_name'] = $data[strval($x['_id']['finder_id'])]['title'];
+		// 	$x['location'] = $data[strval($x['_id']['finder_id'])]['location']['name'];
+		// 	$x['city'] = $x['_id']['city_id'];
+		// 	$x['finder_id'] = $x['_id']['finder_id'];
+		// 	unset($x['_id']);
+
+		// }
+		// return $city_wise_session_top;
+
+		// $city_wise_session_top_services = Booktrial::raw(function($collection){
+			
+		// 	$match['$match']['type'] = ['$in'=>['workout-session']];
+		// 	$match['$match']['active'] = ['$ne'=>'0'];
+		// 	$match['$match']['$or'] = [['created_at'=>['$lt'=>new MongoDate(strtotime('2017-11-01'))]], ['created_at'=>['$gt'=>new MongoDate(strtotime('2017-11-30'))]]];
+		// 	// $match['$match']['$city_id'] = ['$in'=>[1, 2, 3]];
+			
+		// 	$aggregate = [];
+
+		// 	$aggregate[] = $match;
+
+		// 	$group['$group'] = [
+		// 		'_id'=>['city_id'=>'$city_id', 'service_category'=>'$service_category'],
+		// 		'count'=>['$sum'=>1]				
+		// 	];
+		// 	$aggregate[] = $group;
+
+		// 	$aggregate[] = ['$sort'=>['count'=>-1]];
+			
+		// 	return $collection->aggregate($aggregate);
+		// });
+		
+		// return $city_wise_session_top_services;
+		Log::info("inside");
+		$service_ids = Ratecard::where('type', "workout session")->lists('service_id');
+		$finder_ids = Service::active()->whereIn('_id', $service_ids)->lists('finder_id');
+		$active_finder_ids = Finder::active()->whereIn('_id', $finder_ids)->whereNotIn('flags.state', ['closed', 'temporarily_shut'])->where(function($query){return $query->orWhere('membership', '!=', 'disable')->orWhere('trial', '!=', 'disable');})->lists('_id');
+		// return $active_finder_ids;
+
+		$location_sessoins = Service::raw(function($collection) use ($service_ids, $active_finder_ids){
+
+				$match['$match']['_id'] = ['$in'=>$service_ids];
+				$match['$match']['finder_id'] = ['$in'=>$active_finder_ids];
+				
+				$aggregate = [];
+	
+				$aggregate[] = $match;
+	
+				$group['$group'] = [
+					'_id'=>['location_id'=>'$location_id', 'servicecategory_id'=>'$servicecategory_id', 'city_id'=>'$city_id'],
+					'count'=>['$sum'=>1]				
+				];
+				$aggregate[] = $group;
+	
+				$aggregate[] = ['$sort'=>['count'=>-1]];
+				
+				return $collection->aggregate($aggregate);
 		});
+
+		$locations = Location::get(['name']);
+
+		$location_names = [];
+
+		foreach($locations as $location){
+			$location_names[$location['_id']] = $location['name'];
+		}
+
+		$serivce_category = Servicecategory::get(['name']);
+
+		$servicecategory_names = [];
+		
+		foreach($serivce_category as $category){
+			$servicecategory_names[$category['_id']] = $category['name'];
+		}
+
+		foreach($location_sessoins as &$session){
+			$session['city'] = $session['_id']['city_id'];
+			$session['location'] = $location_names[strval($session['_id']['location_id'])];
+			$session['city'] = $session['_id']['city_id'];
+
+
+
+
+
+		}
+
+		return $location_sessoins;
+
+
 
 
 	}
+
+
 
 
 	public function markRoutedOrders(){
