@@ -384,6 +384,14 @@ if(!function_exists('ifCityPresent')){
                 $send_city = "gurgaon";
                 $ifcity = true;
                 break;
+            case "hyderabad":
+                $send_city = "hyderabad";
+                $ifcity = true;
+                break;
+            case "ahmedabad":
+                $send_city = "ahmedabad";
+                $ifcity = true;
+                break;
         };
         $response = array("city"=>$send_city,"found"=>$ifcity);
         return $response;
