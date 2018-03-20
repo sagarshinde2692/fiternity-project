@@ -5669,9 +5669,13 @@ public function yes($msg){
 		$data_session = [];
 		$data_no_session = [];
 		foreach($finders as $key => $finder){
-
+			
 			$finder_data = ['services'=>[]];
+			$finder_data['_id'] = $finder['_id'];
+			$finder_data['city_name'] = $finder['city']['name'];
+			$finder_data['name'] = $finder['title'];
 			$workout_session = false;
+			$have_ratecard = false;
 			foreach($finder['services'] as $service){
 				$service_data = ['name'=>$service['name']];
 
@@ -5682,8 +5686,11 @@ public function yes($msg){
 						$workout_session = true;
 
 						$service_data['cost'] = $ratecard['price'];
+						$have_ratecard = true;
+			
 
 					}elseif($ratecard['type'] == 'membership' && (($ratecard['validity'] == '1' && in_array($ratecard['validity_type'], ['month', 'months'])) || ($ratecard['validity'] == '30' && in_array($ratecard['validity_type'], ['day', 'days'])))){
+						$have_ratecard = true;
 						$service_data['price'] = $price = $ratecard['price'];
 						if($price <= 2000){
 							$service_data['type'] = "Basic";
@@ -5698,22 +5705,43 @@ public function yes($msg){
 				}
 				array_push($finder_data['services'], $service_data);
 			}
-			$finder_data['_id'] = $finder['_id'];
-			$finder_data['name'] = $finder['title'];
-			$finder_data['city_name'] = $finder['city']['name'];
-			$finder_data['traction'] = isset($data[strval($finder['_id'])]) ? $data[strval($finder['_id'])] : [];
-			// $finder_data['location_name'] = $finder['location']['name'];
-			// unset($finders[$key]['city']);
-			// unset($finders[$key]['location']);
 
-			if($workout_session){
-				array_push($data_session, $finder_data);
-			}else{
-				array_push($data_no_session, $finder_data);
+			
+			$finder_data['traction'] = isset($traction[strval($finder['_id'])]) ? $traction[strval($finder['_id'])] : [];
+
+			if($have_ratecard){
+				
+				if($workout_session){
+					array_push($data_session, $finder_data);
+				}else{
+					array_push($data_no_session, $finder_data);
+				}
 			}
 		}
 
 		return ['$data_session'=>$data_session, '$data_no_session'=>$data_no_session];
+	}
+
+	public function cityWise(){
+
+		$city_wise_session = Booktrial::raw(function($collection){
+
+			$match['$match']['type'] = ['$in'=>['workout-session']];
+			
+			$aggregate = [];
+
+			$aggregate[] = $match;
+
+			$group['$group'] = [
+				'_id'=>['city_id'=>'$city_id', 'service_category'],
+				'count'=>['$sum'=>1]				
+			];
+			$aggregate[] = $group;
+			
+			return $collection->aggregate($aggregate);
+		});
+
+
 	}
 
 
