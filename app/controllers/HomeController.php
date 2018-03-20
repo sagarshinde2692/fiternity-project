@@ -499,7 +499,7 @@ class HomeController extends BaseController {
                 'ratio'=>(float) number_format(100/375,2)
             ];
             $campaigns[] = [
-                'image'=>'b.fitn.in/global/Homepage-branding-2018/Cover-web%26mob/AmazonPay_WebCard_Banner.png',
+                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Cover-web%26mob/AmazonPay_WebCard_Banner.png',
                 'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Cover-web%26mob/AmazonAppBanner.png',
                 'link'=>Config::get('app.website'),
                 // 'target'=>true,
