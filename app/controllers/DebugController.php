@@ -5842,7 +5842,7 @@ public function yes($msg){
 		$active_finder_ids = Finder::active()->whereIn('_id', $finder_ids)->whereNotIn('flags.state', ['closed', 'temporarily_shut'])->where(function($query){return $query->orWhere('membership', '!=', 'disable')->orWhere('trial', '!=', 'disable');})->lists('_id');
 		// return $active_finder_ids;
 
-		$location_sessoins = Service::raw(function($collection) use ($service_ids, $active_finder_ids){
+		$location_sessions = Service::raw(function($collection) use ($service_ids, $active_finder_ids){
 
 				$match['$match']['_id'] = ['$in'=>$service_ids];
 				$match['$match']['finder_id'] = ['$in'=>$active_finder_ids];
@@ -5862,6 +5862,8 @@ public function yes($msg){
 				return $collection->aggregate($aggregate);
 		});
 
+		// return $location_sessions;
+
 		$locations = Location::get(['name']);
 
 		$location_names = [];
@@ -5878,21 +5880,30 @@ public function yes($msg){
 			$servicecategory_names[$category['_id']] = $category['name'];
 		}
 
-		foreach($location_sessoins as &$session){
+		foreach($location_sessions['result'] as &$session){
 			$session['city'] = $session['_id']['city_id'];
-			$session['location'] = $location_names[strval($session['_id']['location_id'])];
-			$session['city'] = $session['_id']['city_id'];
-
-
-
-
+			if(isset($location_names[strval($session['_id']['location_id'])])){
+				$session['location'] = $location_names[strval($session['_id']['location_id'])];
+			}
+			if(isset($servicecategory_names[strval($session['_id']['servicecategory_id'])])){
+				$session['service_category'] = $servicecategory_names[strval($session['_id']['servicecategory_id'])];
+			}
 
 		}
 
-		return $location_sessoins;
+		$data = [];
 
+		foreach($location_sessions['result'] as $o){
 
+			if(isset($o['location'])){
+				$data[$o['location']][$o['service_category']] = $o['count'];
+				$data[$o['location']]['location'] = $o['location'];
+				$data[$o['location']]['city'] = $o['city'];
+			}
 
+		}
+
+		return array_values($data);
 
 	}
 
