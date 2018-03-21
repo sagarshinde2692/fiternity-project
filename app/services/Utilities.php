@@ -1598,7 +1598,7 @@ Class Utilities {
 
                 $finder_id = (int)$request['finder_id'];
 
-                $power_world_gym_vendor_ids = Config::get('app.power_world_gym_vendor_ids_vendor_ids');
+                $power_world_gym_vendor_ids = Config::get('app.power_world_gym_vendor_ids');
 
                 if(in_array($finder_id,$power_world_gym_vendor_ids)){
 

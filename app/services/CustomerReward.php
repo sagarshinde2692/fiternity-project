@@ -302,7 +302,7 @@ Class CustomerReward {
 
                 $finder_id = (int)$order['finder_id'];
 
-                $power_world_gym_vendor_ids = Config::get('app.power_world_gym_vendor_ids_vendor_ids');
+                $power_world_gym_vendor_ids = Config::get('app.power_world_gym_vendor_ids');
 
                 if(in_array($finder_id,$power_world_gym_vendor_ids)){
 
@@ -824,9 +824,9 @@ Class CustomerReward {
             $setAlgo = array('cashback'=>0,'fitcash'=>0,'discount'=>0);
         }
 
-        $power_world_gym_vendor_ids = Config::get('app.power_world_gym_vendor_ids_vendor_ids');
+        $power_world_gym_vendor_ids = Config::get('app.power_world_gym_vendor_ids');
 
-        if($finder_id && $finder_id != "" && in_array($finder_id,$power_world_gym_vendor_ids)){
+        if($finder_id && $finder_id != "" && $finder_id != null && in_array($finder_id,$power_world_gym_vendor_ids)){
             $commision = 25;
             $setAlgo = array('cashback'=>0,'fitcash'=>25,'discount'=>0);
         }
