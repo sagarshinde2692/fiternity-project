@@ -996,7 +996,39 @@ class ServiceController extends \BaseController {
 
         	if($type == "trialschedules" &&  !empty($schedules)){
         		$data['schedules'] = $this->checkWorkoutSessionAvailable($schedules);
-        	}
+			}
+			
+			if(isset($_GET['source']) && $_GET['source'] == 'pps'){
+				
+				$slots = [];
+				
+				if(isset($data['schedules']) && count($data['schedules']) > 0){
+
+					$schedule = $data['schedules'][0];
+
+					if(isset($schedule['slots']) && count($schedule['slots']) > 0){
+
+						$slots = pluck($schedule['slots'], ['slot_time', 'price', 'service_id', 'finder_id', 'ratecard_id', 'epoch_start_time', 'epoch_end_time']);
+
+					}
+
+
+				}
+
+				$message = "";
+
+				if(count($slots) == 0){
+					$message = "No slots available";
+				}
+
+				$data = [
+					'status'=>200,
+					'slots'=>$slots,
+					'message'=>$message
+				];
+
+
+			} 
 
 
 	        return Response::json($data,200);
