@@ -5570,24 +5570,344 @@ public function yes($msg){
 	}
 
 	public function workoutSession(){
-
-		
+		ini_set('memory_limit','2048M');
 		// return count($finders);
 		
-		$service_ids = Ratecard::where('type', "workout session")->lists('service_id');
-		
-		$finder_ids = Service::active()->whereNotIn('_id', $service_ids)->lists('finder_id');
-		$finders = Finder::active()->whereIn('_id', $finder_ids)->whereNotIn('flags.state', ['closed', 'temporarily_shut'])->where(function($query){return $query->orWhere('membership', '!=', 'disable')->orWhere('trial', '!=', 'disable');})->with('city')->with('location')->get(['title', 'city_id', 'location_id']);
+		// $service_ids = Ratecard::where('type', "workout session")->lists('service_id');
+		Finder::$withoutAppends = true;
+		Service::$withoutAppends = true;
+		// $finder_ids = Service::active()->whereNotIn('_id', $service_ids)->lists('finder_id');
+		// $finders = Finder::active()->whereIn('_id', $finder_ids)->whereNotIn('flags.state', ['closed', 'temporarily_shut'])->where(function($query){return $query->orWhere('membership', '!=', 'disable')->orWhere('trial', '!=', 'disable');})->with('city')->with('location')->get(['title', 'city_id', 'location_id']);
 
-		foreach($finders as $key => $finder){
-			$finders[$key]['city_name'] = $finder['city']['name'];
-			$finders[$key]['location_name'] = $finder['location']['name'];
-			unset($finders[$key]['city']);
-			unset($finders[$key]['location']);
+		$service_ids = Service::active()->lists('_id');
+		
+		
+		$finders = Finder::active()->where('commercial_type', '!=', 0)->whereNotIn('flags.state', ['closed', 'temporarily_shut'])->where(function($query){return $query->orWhere('membership', '!=', 'disable')->orWhere('trial', '!=', 'disable');})->with('city')->with('location')->with(array('services'=>function($query){$query->select('finder_id', 'name')->where('status','1')->with('ratecards');}))->get(['title', 'city_id', 'location_id']);
+
+		// return count($finders);
+
+		$traction = [];
+
+		$trials = Booktrial::raw(function($collection) use ($service_ids){
+			$aggregate = [];
+
+			$project['$project']['service_id'] = 1;
+			$project['$project']['type'] = 1;
+
+			$aggregate[] = $project;
+
+			$match['$match']['type'] = ['$in'=>['booktrials', 'booktrial']];
+			$match['$match']['service_id'] = ['$in'=>$service_ids];
+			
+
+			$aggregate[] = $match;
+
+			$group['$group'] = [
+				'_id'=>'$service_id',
+				'count'=>['$sum'=>1]				
+			];
+
+			$aggregate[] = $group;
+
+
+			return $collection->aggregate($aggregate);
+
+		});
+
+
+		Log::info("asdasd");
+
+		$sessions = Booktrial::raw(function($collection){
+			
+			$match['$match']['type'] = ['$in'=>['workout-session']];
+			
+			$aggregate = [];
+
+			$aggregate[] = $match;
+
+			$group['$group'] = [
+				'_id'=>'$service_id',
+				'count'=>['$sum'=>1]				
+			];
+			$aggregate[] = $group;
+			
+			return $collection->aggregate($aggregate);
+
+		});
+
+		$sales = Order::raw(function($collection){
+			
+			$match['$match']['type'] = ['$in'=>['memberships', 'memberships']];
+			$match['$match']['status'] = '1';
+			
+			$aggregate = [];
+
+			$aggregate[] = $match;
+
+			$group['$group'] = [
+				'_id'=>'$service_id',
+				'count'=>['$sum'=>1]				
+			];
+			$aggregate[] = $group;
+			return $collection->aggregate($aggregate);
+
+		});
+
+		foreach($trials['result'] as $trial){
+			$traction[$trial['_id']]['trials'] = $trial['count'];
 		}
-		return $finders;
-		return count(array_values(array_unique($finders)));
+
+		foreach($sessions['result'] as $trial){
+			$traction[$trial['_id']]['sessions'] = $trial['count'];
+		}
+
+		foreach($sales['result'] as $trial){
+			$traction[$trial['_id']]['sales'] = $trial['count'];
+		}
+
+		// return $traction;
+		$data_session = [];
+		$data_no_session = [];
+		foreach($finders as $key => $finder){
+			
+			$finder_data = ['services'=>[]];
+			$finder_data['_id'] = $finder['_id'];
+			$finder_data['city_name'] = $finder['city']['name'];
+			$finder_data['name'] = $finder['title'];
+			$workout_session = false;
+			$have_ratecard = false;
+			foreach($finder['services'] as $service){
+				$service_data = ['name'=>$service['name']];
+
+				foreach($service['ratecards'] as $ratecard){
+
+					if($ratecard['type'] == 'workout session'){
+	
+						$workout_session = true;
+
+						$service_data['cost'] = $ratecard['price'];
+						$have_ratecard = true;
+			
+
+					}elseif($ratecard['type'] == 'membership' && (($ratecard['validity'] == '1' && in_array($ratecard['validity_type'], ['month', 'months'])) || ($ratecard['validity'] == '30' && in_array($ratecard['validity_type'], ['day', 'days'])))){
+						$have_ratecard = true;
+						$service_data['price'] = $price = $ratecard['price'];
+						if($price <= 2000){
+							$service_data['type'] = "Basic";
+						}elseif($price > 2000 && $price <= 4500){
+							$service_data['type'] = "Average";
+						}else{
+							$service_data['type'] = "Premium";
+						}
+					}
+
+
+				}
+				array_push($finder_data['services'], $service_data);
+			}
+
+			
+			$finder_data['traction'] = isset($traction[strval($finder['_id'])]) ? $traction[strval($finder['_id'])] : [];
+
+			if($have_ratecard){
+				
+				if($workout_session){
+					array_push($data_session, $finder_data);
+				}else{
+					array_push($data_no_session, $finder_data);
+				}
+			}
+		}
+
+		return ['$data_session'=>$data_session, '$data_no_session'=>$data_no_session];
 	}
+
+	public function cityWise(){
+
+		// $city_wise_session_gyms = Booktrial::raw(function($collection){
+
+		// 	$match['$match']['type'] = ['$in'=>['workout-session']];
+		// 	$match['$match']['service_category'] = ['$in'=>['Gyms', 'Gym']];
+		// 	$match['$match']['active'] = ['$ne'=>'0'];
+		// 	$match['$match']['$or'] = [['created_at'=>['$lt'=>new MongoDate(strtotime('2017-11-01'))]], ['created_at'=>['$gt'=>new MongoDate(strtotime('2017-11-30'))]]];
+			
+		// 	$aggregate = [];
+
+		// 	$aggregate[] = $match;
+
+		// 	$group['$group'] = [
+		// 		'_id'=>['city_id'=>'$city_id'],
+		// 		'count'=>['$sum'=>1]				
+		// 	];
+		// 	$aggregate[] = $group;
+			
+		// 	return $collection->aggregate($aggregate);
+		// });
+		
+		// $city_wise_session_others = Booktrial::raw(function($collection){
+			
+		// 	$match['$match']['type'] = ['$in'=>['workout-session']];
+		// 	$match['$match']['service_category'] = ['$nin'=>['Gyms', 'Gym']];
+		// 	$match['$match']['active'] = ['$ne'=>'0'];
+		// 	$match['$match']['$or'] = [['created_at'=>['$lt'=>new MongoDate(strtotime('2017-11-01'))]], ['created_at'=>['$gt'=>new MongoDate(strtotime('2017-11-30'))]]];
+			
+		// 	$aggregate = [];
+
+		// 	$aggregate[] = $match;
+
+		// 	$group['$group'] = [
+		// 		'_id'=>['city_id'=>'$city_id'],
+		// 		'count'=>['$sum'=>1]				
+		// 	];
+		// 	$aggregate[] = $group;
+			
+		// 	return $collection->aggregate($aggregate);
+		// });
+
+		// return array("city_wise_session_gyms"=>$city_wise_session_gyms,
+		// "city_wise_session_others"=>$city_wise_session_others);
+
+		// $city_wise_session_top = Booktrial::raw(function($collection){
+			
+		// 	$match['$match']['type'] = ['$in'=>['workout-session']];
+		// 	$match['$match']['active'] = ['$ne'=>'0'];
+		// 	$match['$match']['$or'] = [['created_at'=>['$lt'=>new MongoDate(strtotime('2017-11-01'))]], ['created_at'=>['$gt'=>new MongoDate(strtotime('2017-11-30'))]]];
+		// 	// $match['$match']['$city_id'] = ['$in'=>[1, 2, 3]];
+			
+		// 	$aggregate = [];
+
+		// 	$aggregate[] = $match;
+
+		// 	$group['$group'] = [
+		// 		'_id'=>['city_id'=>'$city_id', 'finder_id'=>'$finder_id'],
+		// 		'count'=>['$sum'=>1]				
+		// 	];
+		// 	$aggregate[] = $group;
+
+		// 	$aggregate[] = ['$sort'=>['count'=>-1]];
+			
+		// 	return $collection->aggregate($aggregate);
+		// });
+		// function return_finder($o){
+		// 	return $o['_id']['finder_id'];
+		// }
+		// // return $city_wise_session_top;
+		// $finder_ids = array_map('return_finder', $city_wise_session_top['result']);
+		// Finder::$withoutAppends = true;
+		// $finders = Finder::whereIn('_id',$finder_ids)->with('location')->get(['title', 'location_id']);
+		
+
+		// $data = [];
+
+		// foreach($finders as $finder){
+		// 	$data[$finder['_id']] = $finder;
+		// }
+
+		// foreach($city_wise_session_top['result'] as &$x){
+		// 	$x['finder_name'] = $data[strval($x['_id']['finder_id'])]['title'];
+		// 	$x['location'] = $data[strval($x['_id']['finder_id'])]['location']['name'];
+		// 	$x['city'] = $x['_id']['city_id'];
+		// 	$x['finder_id'] = $x['_id']['finder_id'];
+		// 	unset($x['_id']);
+
+		// }
+		// return $city_wise_session_top;
+
+		// $city_wise_session_top_services = Booktrial::raw(function($collection){
+			
+		// 	$match['$match']['type'] = ['$in'=>['workout-session']];
+		// 	$match['$match']['active'] = ['$ne'=>'0'];
+		// 	$match['$match']['$or'] = [['created_at'=>['$lt'=>new MongoDate(strtotime('2017-11-01'))]], ['created_at'=>['$gt'=>new MongoDate(strtotime('2017-11-30'))]]];
+		// 	// $match['$match']['$city_id'] = ['$in'=>[1, 2, 3]];
+			
+		// 	$aggregate = [];
+
+		// 	$aggregate[] = $match;
+
+		// 	$group['$group'] = [
+		// 		'_id'=>['city_id'=>'$city_id', 'service_category'=>'$service_category'],
+		// 		'count'=>['$sum'=>1]				
+		// 	];
+		// 	$aggregate[] = $group;
+
+		// 	$aggregate[] = ['$sort'=>['count'=>-1]];
+			
+		// 	return $collection->aggregate($aggregate);
+		// });
+		
+		// return $city_wise_session_top_services;
+		Log::info("inside");
+		$service_ids = Ratecard::where('type', "workout session")->lists('service_id');
+		$finder_ids = Service::active()->whereIn('_id', $service_ids)->lists('finder_id');
+		$active_finder_ids = Finder::active()->whereIn('_id', $finder_ids)->whereNotIn('flags.state', ['closed', 'temporarily_shut'])->where(function($query){return $query->orWhere('membership', '!=', 'disable')->orWhere('trial', '!=', 'disable');})->lists('_id');
+		// return $active_finder_ids;
+
+		$location_sessions = Service::raw(function($collection) use ($service_ids, $active_finder_ids){
+
+				$match['$match']['_id'] = ['$in'=>$service_ids];
+				$match['$match']['finder_id'] = ['$in'=>$active_finder_ids];
+				
+				$aggregate = [];
+	
+				$aggregate[] = $match;
+	
+				$group['$group'] = [
+					'_id'=>['location_id'=>'$location_id', 'servicecategory_id'=>'$servicecategory_id', 'city_id'=>'$city_id'],
+					'count'=>['$sum'=>1]				
+				];
+				$aggregate[] = $group;
+	
+				$aggregate[] = ['$sort'=>['count'=>-1]];
+				
+				return $collection->aggregate($aggregate);
+		});
+
+		// return $location_sessions;
+
+		$locations = Location::get(['name']);
+
+		$location_names = [];
+
+		foreach($locations as $location){
+			$location_names[$location['_id']] = $location['name'];
+		}
+
+		$serivce_category = Servicecategory::get(['name']);
+
+		$servicecategory_names = [];
+		
+		foreach($serivce_category as $category){
+			$servicecategory_names[$category['_id']] = $category['name'];
+		}
+
+		foreach($location_sessions['result'] as &$session){
+			$session['city'] = $session['_id']['city_id'];
+			if(isset($location_names[strval($session['_id']['location_id'])])){
+				$session['location'] = $location_names[strval($session['_id']['location_id'])];
+			}
+			if(isset($servicecategory_names[strval($session['_id']['servicecategory_id'])])){
+				$session['service_category'] = $servicecategory_names[strval($session['_id']['servicecategory_id'])];
+			}
+
+		}
+
+		$data = [];
+
+		foreach($location_sessions['result'] as $o){
+
+			if(isset($o['location'])){
+				$data[$o['location']][$o['service_category']] = $o['count'];
+				$data[$o['location']]['location'] = $o['location'];
+				$data[$o['location']]['city'] = $o['city'];
+			}
+
+		}
+
+		return array_values($data);
+
+	}
+
+
 
 
 	public function markRoutedOrders(){
