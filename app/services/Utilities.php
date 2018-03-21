@@ -1594,6 +1594,19 @@ Class Utilities {
 
             }
 
+            if(isset($request['finder_id']) && $request['finder_id'] != ""){
+
+                $finder_id = (int)$request['finder_id'];
+
+                $power_world_gym_vendor_ids = Config::get('app.power_world_gym_vendor_ids_vendor_ids');
+
+                if(in_array($finder_id,$power_world_gym_vendor_ids)){
+
+                    $wallet_limit = 100000;
+                }
+                
+            }
+
             /*if(!isset($customer->current_wallet_balance) && $current_wallet_balance >= $wallet_limit){
                 return ['status' => 400,'message' => 'Wallet is overflowing Rs '.$wallet_limit];
             }*/
