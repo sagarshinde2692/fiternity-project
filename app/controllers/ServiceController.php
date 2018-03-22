@@ -1435,7 +1435,7 @@ class ServiceController extends \BaseController {
 			// 	$service_details = json_decode(json_encode($service_details_response['data']), true);
 			// }
 			
-			$service_details = Service::where('finder_id', $finder['_id'])->where('slug', $service_slug)->with(array('ratecards'))->first(['name', 'contact', 'photos', 'lat', 'lon', 'calorie_burn', 'address']);
+			$service_details = Service::where('finder_id', $finder['_id'])->where('slug', $service_slug)->with(array('ratecards'))->first(['name', 'contact', 'photos', 'lat', 'lon', 'calorie_burn', 'address', 'servicecategory_id']);
 			// return $service_details;
 			if(!$service_details){
 				
@@ -1445,6 +1445,20 @@ class ServiceController extends \BaseController {
 			$service_details = $service_details->toArray();
 
 			$service_details['title'] = $service_details['name'].' at '.$finder['title'];
+
+			if($service_details['servicecategory_id'] == 65){
+
+				$service_details['type'] = 'gym';
+				$service_details['pass_title'] = 'All Day Pass';
+				$service_details['pass_description'] = 'All Day Pass description';
+
+
+			}else{
+
+				$service_details['type'] = 'studio';
+				$service_details['pass_title'] = 'Quick Book';
+
+			}
 			
 			$workout_session_ratecard = head(array_where($service_details['ratecards'], function($key, $value){
 				if($value['type'] == 'workout session'){
@@ -1529,11 +1543,19 @@ class ServiceController extends \BaseController {
 			];
 
 			$schedule = json_decode(json_encode($this->getScheduleByFinderService($schedule_data)->getData()));
-
+			
+			$service_details['single_slot'] = false;
+			
 			if(count($schedule->schedules) > 0 && count(head($schedule->schedules)->slots)>0){
-				$service_details['total_sessions'] = head($schedule->schedules)->total_slots_count." sessions";
 				$service_details['next_session'] = "Next session at ".strtoupper(head($schedule->schedules)->slots[0]->start_time);
 				$service_details['slots'] = (head($schedule->schedules)->slots);
+				$service_details['total_sessions'] = count($service_details['slots'])." sessions";
+				if(count($service_details['slots']) == 1){
+
+					$service_details['single_slot'] = true;
+					$service_details['slot_text'] = "Session Time ".strtoupper(head($schedule->schedules)->slots[0]->start_time);
+
+				}
 			}else{
 				$service_details['total_sessions'] = "0 Session";
 				$service_details['next_session'] = "No session available";
