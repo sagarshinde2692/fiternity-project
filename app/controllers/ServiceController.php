@@ -1573,10 +1573,29 @@ class ServiceController extends \BaseController {
 				array_push($facility_images, $facility->images['yes']);
 			}else{
 				array_push($facility_images, $facility->images['no']);
-			}
+			}	
 		}
 
 		return $facility_images;
+	}
+
+	public function workoutServiceCategorys(){
+		
+		$servicecategories	 = 	Servicecategory::active()->where('parent_id', 0)->orderBy('name')->get(array('name','slug'));	
+		
+		$servicecategories = pluck($servicecategories, ['name', 'slug']);
+
+		array_unshift($servicecategories, ['name'=>'Select All', 'slug'=>""]);
+
+		$data  = [
+			'status'=>200,
+			'category'=>$servicecategories,
+			'message'=>"",
+			'base_url'=>"http://b.fitn.in/iconsv1/"
+		];
+
+		return $data;
+
 	}
 
 
