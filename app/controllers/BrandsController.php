@@ -66,4 +66,13 @@ class BrandsController extends \BaseController {
         return Response::json(Cache::tags('brand_detail')->get("$slug-$city"));
     }
 
+    public function brandlist(){
+        
+        $brands = Brand::active()->lists('slug');
+        $cities = City::active()->lists('slug');
+
+        return array('brands'=>$brands, 'cities'=>$cities);
+
+    }
+
 }
