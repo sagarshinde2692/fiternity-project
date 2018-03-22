@@ -5582,132 +5582,173 @@ public function yes($msg){
 		$service_ids = Service::active()->lists('_id');
 		
 		
-		$finders = Finder::active()->where('commercial_type', '!=', 0)->whereNotIn('flags.state', ['closed', 'temporarily_shut'])->where(function($query){return $query->orWhere('membership', '!=', 'disable')->orWhere('trial', '!=', 'disable');})->with('city')->with('location')->with(array('services'=>function($query){$query->select('finder_id', 'name')->where('status','1')->with('ratecards');}))->get(['title', 'city_id', 'location_id']);
+		$finders = Finder::active()->where('city_id', 6)->where('commercial_type', '!=', 0)->whereNotIn('flags.state', ['closed', 'temporarily_shut'])->where(function($query){return $query->orWhere('membership', '!=', 'disable')->orWhere('trial', '!=', 'disable');})->with('city')->with('location')->with(array('services'=>function($query){$query->select('finder_id', 'name', 'servicecategory_id')->where('status','1')->with('ratecards');}))->get(['title', 'city_id', 'location_id']);
 
 		// return count($finders);
 
-		$traction = [];
+		// $traction = [];
 
-		$trials = Booktrial::raw(function($collection) use ($service_ids){
-			$aggregate = [];
+		// $trials = Booktrial::raw(function($collection) use ($service_ids){
+		// 	$aggregate = [];
 
-			$project['$project']['service_id'] = 1;
-			$project['$project']['type'] = 1;
+		// 	$project['$project']['service_id'] = 1;
+		// 	$project['$project']['type'] = 1;
 
-			$aggregate[] = $project;
+		// 	$aggregate[] = $project;
 
-			$match['$match']['type'] = ['$in'=>['booktrials', 'booktrial']];
-			$match['$match']['service_id'] = ['$in'=>$service_ids];
+		// 	$match['$match']['type'] = ['$in'=>['booktrials', 'booktrial']];
+		// 	$match['$match']['service_id'] = ['$in'=>$service_ids];
 			
 
-			$aggregate[] = $match;
+		// 	$aggregate[] = $match;
 
-			$group['$group'] = [
-				'_id'=>'$service_id',
-				'count'=>['$sum'=>1]				
-			];
+		// 	$group['$group'] = [
+		// 		'_id'=>'$service_id',
+		// 		'count'=>['$sum'=>1]				
+		// 	];
 
-			$aggregate[] = $group;
-
-
-			return $collection->aggregate($aggregate);
-
-		});
+		// 	$aggregate[] = $group;
 
 
-		Log::info("asdasd");
+		// 	return $collection->aggregate($aggregate);
 
-		$sessions = Booktrial::raw(function($collection){
+		// });
+
+
+		// Log::info("asdasd");
+
+		// $sessions = Booktrial::raw(function($collection){
 			
-			$match['$match']['type'] = ['$in'=>['workout-session']];
+		// 	$match['$match']['type'] = ['$in'=>['workout-session']];
 			
-			$aggregate = [];
+		// 	$aggregate = [];
 
-			$aggregate[] = $match;
+		// 	$aggregate[] = $match;
 
-			$group['$group'] = [
-				'_id'=>'$service_id',
-				'count'=>['$sum'=>1]				
-			];
-			$aggregate[] = $group;
+		// 	$group['$group'] = [
+		// 		'_id'=>'$service_id',
+		// 		'count'=>['$sum'=>1]				
+		// 	];
+		// 	$aggregate[] = $group;
 			
-			return $collection->aggregate($aggregate);
+		// 	return $collection->aggregate($aggregate);
 
-		});
+		// });
 
-		$sales = Order::raw(function($collection){
+		// $sales = Order::raw(function($collection){
 			
-			$match['$match']['type'] = ['$in'=>['memberships', 'memberships']];
-			$match['$match']['status'] = '1';
+		// 	$match['$match']['type'] = ['$in'=>['memberships', 'memberships']];
+		// 	$match['$match']['status'] = '1';
 			
-			$aggregate = [];
+		// 	$aggregate = [];
 
-			$aggregate[] = $match;
+		// 	$aggregate[] = $match;
 
-			$group['$group'] = [
-				'_id'=>'$service_id',
-				'count'=>['$sum'=>1]				
-			];
-			$aggregate[] = $group;
-			return $collection->aggregate($aggregate);
+		// 	$group['$group'] = [
+		// 		'_id'=>'$service_id',
+		// 		'count'=>['$sum'=>1]				
+		// 	];
+		// 	$aggregate[] = $group;
+		// 	return $collection->aggregate($aggregate);
 
-		});
+		// });
 
-		foreach($trials['result'] as $trial){
-			$traction[$trial['_id']]['trials'] = $trial['count'];
-		}
+		// foreach($trials['result'] as $trial){
+		// 	$traction[$trial['_id']]['trials'] = $trial['count'];
+		// }
 
-		foreach($sessions['result'] as $trial){
-			$traction[$trial['_id']]['sessions'] = $trial['count'];
-		}
+		// foreach($sessions['result'] as $trial){
+		// 	$traction[$trial['_id']]['sessions'] = $trial['count'];
+		// }
 
-		foreach($sales['result'] as $trial){
-			$traction[$trial['_id']]['sales'] = $trial['count'];
-		}
+		// foreach($sales['result'] as $trial){
+		// 	$traction[$trial['_id']]['sales'] = $trial['count'];
+		// }
 
 		// return $traction;
 		$data_session = [];
 		$data_no_session = [];
+
+		function price_for_avg($o){
+			return isset($o['price_for_avg']) ? $o['price_for_avg']:null;
+		}
 		foreach($finders as $key => $finder){
-			
-			$finder_data = ['services'=>[]];
-			$finder_data['_id'] = $finder['_id'];
 			$finder_data['city_name'] = $finder['city']['name'];
+			$finder_data['_id'] = $finder['_id'];
 			$finder_data['name'] = $finder['title'];
+			$finder_data['type'] = "";
+			$finder_data['avg_price'] = "";
+			$finder_data['skew_price'] = "";
+			$finder_data['services']=[];
+			$finder_data['prices'] = [];
 			$workout_session = false;
 			$have_ratecard = false;
 			foreach($finder['services'] as $service){
 				$service_data = ['name'=>$service['name']];
+				$service_data['servicecategory_id'] = $service['servicecategory_id'];
+				$service_data['price'] = [];
 
 				foreach($service['ratecards'] as $ratecard){
 
 					if($ratecard['type'] == 'workout session'){
 	
-						$workout_session = true;
+						// $workout_session = true;
 
-						$service_data['cost'] = $ratecard['price'];
-						$have_ratecard = true;
+						// $service_data['cost'] = $ratecard['price'];
+						// $have_ratecard = true;
 			
 
 					}elseif($ratecard['type'] == 'membership' && (($ratecard['validity'] == '1' && in_array($ratecard['validity_type'], ['month', 'months'])) || ($ratecard['validity'] == '30' && in_array($ratecard['validity_type'], ['day', 'days'])))){
 						$have_ratecard = true;
-						$service_data['price'] = $price = $ratecard['price'];
-						if($price <= 2000){
-							$service_data['type'] = "Basic";
-						}elseif($price > 2000 && $price <= 4500){
-							$service_data['type'] = "Average";
+
+						if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
+							$price = $ratecard['special_price'];
 						}else{
-							$service_data['type'] = "Premium";
+							$price = $ratecard['price'];
 						}
+						
+						if(!in_array($service['servicecategory_id'], [184, 185, 186])){
+							array_push($finder_data['prices'], $price);
+							
+						}
+						// if($price <= 2000){
+						// 	$service_data['type'] = "Basic";
+						// }elseif($price > 2000 && $price <= 4500){
+						// 	$service_data['type'] = "Average";
+						// }else{
+						// 	$service_data['type'] = "Premium";
+						// }
+						array_push($service_data['price'],$price);
 					}
 
 
 				}
+				$service_data['price'] = implode(',', $service_data['price']);
 				array_push($finder_data['services'], $service_data);
 			}
 
 			
-			$finder_data['traction'] = isset($traction[strval($finder['_id'])]) ? $traction[strval($finder['_id'])] : [];
+			// $finder_data['traction'] = isset($traction[strval($finder['_id'])]) ? $traction[strval($finder['_id'])] : [];
+			if(count($finder_data['prices']) > 0){
+				$finder_data['avg_price'] = round(array_sum($finder_data['prices'])/count($finder_data['prices']));
+				if($finder_data['avg_price'] <= 2000){
+						$finder_data['type'] = "Basic";
+					}elseif($finder_data['avg_price'] > 2000 && $finder_data['avg_price'] <= 4500){
+						$finder_data['type'] = "Average";
+					}else{
+						$finder_data['type'] = "Premium";
+					}
+				foreach($finder_data['prices'] as $p){
+					if($p - $finder_data['avg_price'] > 5000){
+						$finder_data['skew_price'] = "yes";
+					}
+				}
+
+
+			}
+			unset($finder_data['prices']);
+
+			
 
 			if($have_ratecard){
 				
@@ -5719,7 +5760,8 @@ public function yes($msg){
 			}
 		}
 
-		return ['$data_session'=>$data_session, '$data_no_session'=>$data_no_session];
+		return $data_no_session;
+		// return ['$data_session'=>$data_session, '$data_no_session'=>$data_no_session];
 	}
 
 	public function cityWise(){
