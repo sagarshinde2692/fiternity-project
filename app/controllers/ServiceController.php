@@ -1521,9 +1521,10 @@ class ServiceController extends \BaseController {
 
 			$schedule_data = [
 				'service_id'=>$service_details['_id'],
-				'requested_date'=>date('YYYY-mm-dd', time()),
+				'requested_date'=>date('Y-m-d', time()),
 				'time_interval'=>isset($_GET['time_interval']) ? intval($_GET['time_interval']) : null,
-				'date'=>date('YYYY-mm-dd', time()),
+				'date'=>date('Y-m-d', time()),
+				'type'=>'workout_session'
 				
 			];
 
