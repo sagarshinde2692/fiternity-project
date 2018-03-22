@@ -828,7 +828,7 @@ Class CustomerReward {
 
         if($finder_id && $finder_id != "" && $finder_id != null && in_array($finder_id,$power_world_gym_vendor_ids)){
             $commision = 25;
-            $setAlgo = array('cashback'=>0,'fitcash'=>25,'discount'=>0);
+            $setAlgo = array('cashback'=>25,'fitcash'=>25,'discount'=>0);
         }
 
         $cashback_amount = $amount; 
