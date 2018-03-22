@@ -514,7 +514,7 @@ class GlobalPushController extends \BaseController
             'brand_id'    =>$brand['_id']['brand_id'],
             'brand_name'  =>$brandsData[$brand['_id']['brand_id']],
             'city_id'     =>$brand['_id']['city_id'],
-            'slug'     =>$brand['_id']['slug'],
+            'slug'        =>$brandsData[$brand['_id']['slug']],
             'city_name'   =>$cityData[$brand['_id']['city_id']],
             'outlets'     =>$brand['count']
         ];
