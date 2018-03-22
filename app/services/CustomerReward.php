@@ -306,7 +306,7 @@ Class CustomerReward {
 
                 if(in_array($finder_id,$power_world_gym_vendor_ids)){
 
-                    $req['description'] = "Cashback for purchase of membership at ".ucwords($order['finder_name'])." (Order ID. ".$order['_id']."), Expires On : ".date('d-m-Y',time()+(86400*$duration_day));
+                    $req['description'] = "25% Cashback for purchase of membership at ".ucwords($order['finder_name'])." (Order ID. ".$order['_id']."), Expires On : ".date('d-m-Y',time()+(86400*$duration_day));
                 }
 
                 $utilities->walletTransaction($req,$order->toArray());
