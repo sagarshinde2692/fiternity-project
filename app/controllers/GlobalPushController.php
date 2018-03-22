@@ -504,9 +504,10 @@ class GlobalPushController extends \BaseController
 
     $brands = $brands['result'];
     $brandsD = Brand::select(["name","_id","slug"])->get();
-    $brandsData = $brandsD->mapWithKeys(function ($item) {
+    $brandsData = $brandsD->map(function ($item) {
         return [$item['id'] => array("name" => $item['name'], "slug"=>$item['slug']) ];
     });
+    $brandsData = $brandsData[0];
     $cityData = City::lists('name','_id');
 
     // Get similar outlets in city.........
