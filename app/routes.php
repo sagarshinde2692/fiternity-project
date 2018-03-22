@@ -1113,4 +1113,4 @@ Route::get('rewardReminderJan','DebugController@rewardReminderJan');
 
 Route::get('servicedetailv1/{finder_slug}/{service_slug}', 'ServiceController@serviceDetailv1');
 
-Route::get('workoutservicecategorys', array('as' => 'service.workoutservicecategorys','uses' => 'ServiceController@workoutServiceCategorys'));
+Route::get('workoutservicecategorys/{city?}', array('as' => 'service.workoutservicecategorys','uses' => 'ServiceController@workoutServiceCategorys'));
