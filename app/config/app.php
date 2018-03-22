@@ -715,6 +715,8 @@ return array(
 
 	'diet_reward_excluded_vendors' => [11230],
 
-	'gst_on_cos_percentage'=>18
+	'gst_on_cos_percentage'=>18,
+
+	'power_world_gym_vendor_ids' => [10315,10875,10876,10883,10892,10894,10897,10872,10886,10888,10891,10890,10868,10870,10877,10861,10863,10880,10887,10895],
 
 );
