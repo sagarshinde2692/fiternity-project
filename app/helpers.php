@@ -1823,7 +1823,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         'city' => $data['city_name'],
                         'location' => "",
                         'type' => 'brand',
-                        'slug' => "",
+                        'slug' => $data['slug'],
                         'geolocation' => array('lat' => 0.0, 'lon' => 0.0),
                         'brand_id' => $data['brand_id'],
                         'brand' => $data['brand_name'],
