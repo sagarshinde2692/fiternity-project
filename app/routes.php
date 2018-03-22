@@ -1142,5 +1142,6 @@ Route::get('rewardClaimAvgTime','DebugController@rewardClaimAvgTime');
 Route::get('gettermsandcondition','FindersController@getTermsAndCondition');
 Route::get('workoutSession','DebugController@workoutSession');
 Route::get('cityWise','DebugController@cityWise');
+Route::get('brandlist','BrandsController@brandlist');
 
 
