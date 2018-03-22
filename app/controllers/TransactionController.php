@@ -209,7 +209,7 @@ class TransactionController extends \BaseController {
                 case 'emi': $data['payment_mode'] = 'paymentgateway';break;
                 case 'paymentgateway': $data['payment_mode'] = 'paymentgateway';break;
                 case 'pay_at_vendor': $data['payment_mode'] = 'at the studio';break;
-                case 'pay_later': $data['payment_mode'] = 'pay_later';break;
+                case 'pay_later': $data['pay_later'] = true;break;
                 default:break;
             }
 
@@ -742,13 +742,15 @@ class TransactionController extends \BaseController {
             $order->update();
         }
 
-        if(isset($data['payment_mode']) && $data['payment_mode'] == 'pay_later' && isset($data['wallet']) && $data['wallet']){
+        if(isset($data['pay_later']) && $data['pay_later'] && isset($data['wallet']) && $data['wallet']){
 
             $order->pay_later = true;
             
             $order->update();
             
             $this->utilities->createWorkoutSession($order['_id']);
+
+            $data['full_payment_wallet'] = true;
         }
         
         if(in_array($data['customer_source'],['android','ios','kiosk'])){
@@ -853,6 +855,10 @@ class TransactionController extends \BaseController {
 
                     $payment_mode_type_array[] = 'pay_at_vendor';
                 }
+            }
+
+            if($data['type'] == 'workout-session'){
+                $payment_mode_type_array[] = 'pay_later';
             }
 
             $payment_details = [];
@@ -1845,14 +1851,16 @@ class TransactionController extends \BaseController {
 
             $data['convinience_fee'] = $convinience_fee;
         }
+        $data['instant_payment_discount'] = 100;
+        if($data['type'] == 'workout-session' && !(isset($data['pay_later']) && $data['pay_later'])){
 
-        if($data['type'] == 'workout-session' && isset($data['payment_mode']) && $data['payment_mode'] != 'pay_later'){
+            // $instant_payment_discount = 100;
 
-            $instant_payment_discount = 100;
-
-            $data['instant_payment_discount'] = $instant_payment_discount;
+            // $data['instant_payment_discount'] = $instant_payment_discount;
             
             $data['amount'] = $data['amount_customer'] = $data['amount_customer'] - $data['instant_payment_discount'];
+
+            $amount  =  $data['amount'];
 
         }
 
@@ -3992,6 +4000,17 @@ class TransactionController extends \BaseController {
 
                 $you_save += $data['app_discount_amount'];
                 
+            }
+
+            if(isset($data['type']) && $data['type'] == 'workout-session' && $payment_mode_type != 'pay_later'){
+                
+                $amount_summary[] = array(
+                    'field' => 'Instant Pay discount',
+                    'value' => '-Rs. '.$data['instant_payment_discount']
+                );
+
+                $you_save += $data['instant_payment_discount'];
+
             }
         }
 
