@@ -504,7 +504,7 @@ class GlobalPushController extends \BaseController
 
     $brands = $brands['result'];
     $brandsData = Brand::lists(function($item){
-      return array("name"=> $item->name, "slug", $item->slug,);
+      return array("name"=> $item->name, "slug", $item->slug);
     },'_id');
     $cityData = City::lists('name','_id');
 
