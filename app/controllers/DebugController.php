@@ -5937,25 +5937,49 @@ public function yes($msg){
 	}
 
 	public function createFitcashCoupons(){
+		ini_set('max_execution_time', 300000);
 		$data = Input::json()->all();
-		$codes = $data['codes'];
+		
 		$valid_till = $data['valid_till'];
 		$expiry = $data['expiry'];
 		$amount = $data['amount'];
 		$type = $data['type'];
 		$quantity = $data['quantity'];
-		foreach($codes as $code){
-			$fitcash_coupon = new Fitcashcoupon();
-			$fitcash_coupon->code = strtolower($code);
-			$fitcash_coupon->valid_till = $valid_till;
-			$fitcash_coupon->expiry = $expiry;
-			$fitcash_coupon->amount = $amount;
-			$fitcash_coupon->type = $type;
-			$fitcash_coupon->quantity = $quantity;
-			$fitcash_coupon->save();
-			Log::info($fitcash_coupon);
-			
+		$count = $data['count'];
+
+		$insert_codes = [];
+		$insert_code_names = [];
+		$i=1;
+		while(count($insert_codes) < $count){
+			Log::info($i);
+			$i++;
+			$fitcash_coupon = [];
+			$fitcash_coupon['code'] = "mar".strval(rand(1111111, 99999999));
+
+			// if(!in_array($fitcash_coupon['code'], $insert_code_names)){
+				// $fitcash_coupon['valid_till'] = $valid_till;
+				// $fitcash_coupon['expiry'] = $expiry;
+				// $fitcash_coupon['amount'] = $amount;
+				// $fitcash_coupon['type'] = $type;
+				// $fitcash_coupon['quantity'] = $quantity;
+				$fitcash_coupon['forty_thousand_coupons'] = true;
+				// array_push($insert_code_names, $fitcash_coupon['code']);
+				array_push($insert_codes, $fitcash_coupon);
+				// Log::info(count($insert_code_names));
+				// Log::info($fitcash_coupon);
+			// }
 		}
+
+		$result = Fitcashcoupon::insert($insert_codes);
+
+		// $update = Fitcashcoupon::where('forty_thousand_coupons', true)->update(['valid_till'=>$data['valid_till'],
+		// 																		'expiry'=>$data['expiry'],
+		// 																		'amount'=>$data['amount'],
+		// 																		'type'=>$data['type'],
+		// 																		'quantity'=>$data['quantity']]);
+
+		Log::info($result);
+		// return $result;
 
 	}
 
