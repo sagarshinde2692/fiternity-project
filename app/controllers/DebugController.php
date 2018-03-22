@@ -5582,92 +5582,96 @@ public function yes($msg){
 		$service_ids = Service::active()->lists('_id');
 		
 		
-		$finders = Finder::active()->where('commercial_type', '!=', 0)->whereNotIn('flags.state', ['closed', 'temporarily_shut'])->where(function($query){return $query->orWhere('membership', '!=', 'disable')->orWhere('trial', '!=', 'disable');})->with('city')->with('location')->with(array('services'=>function($query){$query->select('finder_id', 'name')->where('status','1')->with('ratecards');}))->get(['title', 'city_id', 'location_id']);
+		$finders = Finder::active()->where('commercial_type', '!=', 0)->whereNotIn('flags.state', ['closed', 'temporarily_shut'])->where(function($query){return $query->orWhere('membership', '!=', 'disable')->orWhere('trial', '!=', 'disable');})->with('city')->with('location')->with(array('services'=>function($query){$query->select('finder_id', 'name', 'servicecategory_id')->where('status','1')->with('ratecards');}))->get(['title', 'city_id', 'location_id']);
 
 		// return count($finders);
 
-		$traction = [];
+		// $traction = [];
 
-		$trials = Booktrial::raw(function($collection) use ($service_ids){
-			$aggregate = [];
+		// $trials = Booktrial::raw(function($collection) use ($service_ids){
+		// 	$aggregate = [];
 
-			$project['$project']['service_id'] = 1;
-			$project['$project']['type'] = 1;
+		// 	$project['$project']['service_id'] = 1;
+		// 	$project['$project']['type'] = 1;
 
-			$aggregate[] = $project;
+		// 	$aggregate[] = $project;
 
-			$match['$match']['type'] = ['$in'=>['booktrials', 'booktrial']];
-			$match['$match']['service_id'] = ['$in'=>$service_ids];
+		// 	$match['$match']['type'] = ['$in'=>['booktrials', 'booktrial']];
+		// 	$match['$match']['service_id'] = ['$in'=>$service_ids];
 			
 
-			$aggregate[] = $match;
+		// 	$aggregate[] = $match;
 
-			$group['$group'] = [
-				'_id'=>'$service_id',
-				'count'=>['$sum'=>1]				
-			];
+		// 	$group['$group'] = [
+		// 		'_id'=>'$service_id',
+		// 		'count'=>['$sum'=>1]				
+		// 	];
 
-			$aggregate[] = $group;
-
-
-			return $collection->aggregate($aggregate);
-
-		});
+		// 	$aggregate[] = $group;
 
 
-		Log::info("asdasd");
+		// 	return $collection->aggregate($aggregate);
 
-		$sessions = Booktrial::raw(function($collection){
+		// });
+
+
+		// Log::info("asdasd");
+
+		// $sessions = Booktrial::raw(function($collection){
 			
-			$match['$match']['type'] = ['$in'=>['workout-session']];
+		// 	$match['$match']['type'] = ['$in'=>['workout-session']];
 			
-			$aggregate = [];
+		// 	$aggregate = [];
 
-			$aggregate[] = $match;
+		// 	$aggregate[] = $match;
 
-			$group['$group'] = [
-				'_id'=>'$service_id',
-				'count'=>['$sum'=>1]				
-			];
-			$aggregate[] = $group;
+		// 	$group['$group'] = [
+		// 		'_id'=>'$service_id',
+		// 		'count'=>['$sum'=>1]				
+		// 	];
+		// 	$aggregate[] = $group;
 			
-			return $collection->aggregate($aggregate);
+		// 	return $collection->aggregate($aggregate);
 
-		});
+		// });
 
-		$sales = Order::raw(function($collection){
+		// $sales = Order::raw(function($collection){
 			
-			$match['$match']['type'] = ['$in'=>['memberships', 'memberships']];
-			$match['$match']['status'] = '1';
+		// 	$match['$match']['type'] = ['$in'=>['memberships', 'memberships']];
+		// 	$match['$match']['status'] = '1';
 			
-			$aggregate = [];
+		// 	$aggregate = [];
 
-			$aggregate[] = $match;
+		// 	$aggregate[] = $match;
 
-			$group['$group'] = [
-				'_id'=>'$service_id',
-				'count'=>['$sum'=>1]				
-			];
-			$aggregate[] = $group;
-			return $collection->aggregate($aggregate);
+		// 	$group['$group'] = [
+		// 		'_id'=>'$service_id',
+		// 		'count'=>['$sum'=>1]				
+		// 	];
+		// 	$aggregate[] = $group;
+		// 	return $collection->aggregate($aggregate);
 
-		});
+		// });
 
-		foreach($trials['result'] as $trial){
-			$traction[$trial['_id']]['trials'] = $trial['count'];
-		}
+		// foreach($trials['result'] as $trial){
+		// 	$traction[$trial['_id']]['trials'] = $trial['count'];
+		// }
 
-		foreach($sessions['result'] as $trial){
-			$traction[$trial['_id']]['sessions'] = $trial['count'];
-		}
+		// foreach($sessions['result'] as $trial){
+		// 	$traction[$trial['_id']]['sessions'] = $trial['count'];
+		// }
 
-		foreach($sales['result'] as $trial){
-			$traction[$trial['_id']]['sales'] = $trial['count'];
-		}
+		// foreach($sales['result'] as $trial){
+		// 	$traction[$trial['_id']]['sales'] = $trial['count'];
+		// }
 
 		// return $traction;
 		$data_session = [];
 		$data_no_session = [];
+
+		function price_for_avg($o){
+			return isset($o['price_for_avg']) ? $o['price_for_avg']:null;
+		}
 		foreach($finders as $key => $finder){
 			
 			$finder_data = ['services'=>[]];
@@ -5692,6 +5696,10 @@ public function yes($msg){
 					}elseif($ratecard['type'] == 'membership' && (($ratecard['validity'] == '1' && in_array($ratecard['validity_type'], ['month', 'months'])) || ($ratecard['validity'] == '30' && in_array($ratecard['validity_type'], ['day', 'days'])))){
 						$have_ratecard = true;
 						$service_data['price'] = $price = $ratecard['price'];
+
+						if(!in_array($service['servicecategory_id'], [184, 185, 186])){
+							$service_data['price_for_avg'] = $price = $ratecard['price'];
+						}
 						if($price <= 2000){
 							$service_data['type'] = "Basic";
 						}elseif($price > 2000 && $price <= 4500){
@@ -5707,7 +5715,17 @@ public function yes($msg){
 			}
 
 			
-			$finder_data['traction'] = isset($traction[strval($finder['_id'])]) ? $traction[strval($finder['_id'])] : [];
+			// $finder_data['traction'] = isset($traction[strval($finder['_id'])]) ? $traction[strval($finder['_id'])] : [];
+
+			
+
+			if(isset($finder_data['services']) && count($finder_data['services']) > 0){
+
+				$prices = array_map( 'price_for_avg', $finder_data['services']);
+				// return $prices;
+				// $finder_data['avg_price'] = array_sum($prices )
+
+			}
 
 			if($have_ratecard){
 				
