@@ -382,7 +382,7 @@ Route::get('getfinderreview/{slug}', array('as' => 'finders.getfinderreview','us
 Route::get('findertopreview/{slug}/{limit?}', array('as' => 'finders.findertopreview','uses' => 'FindersController@finderTopReview'));
 
 Route::get('finderdetail/app/{slug}', array('as' => 'finders.finderdetailapp','uses' => 'FindersController@finderDetailApp'));
-
+// Route::get("/pushBrandOutlets/{index_name}", "GlobalPushController@pushBrandOutlets");
 /******************** FINDERS SECTION END HERE ********************/
 ##############################################################################
 
@@ -1142,5 +1142,6 @@ Route::get('rewardClaimAvgTime','DebugController@rewardClaimAvgTime');
 Route::get('gettermsandcondition','FindersController@getTermsAndCondition');
 Route::get('workoutSession','DebugController@workoutSession');
 Route::get('cityWise','DebugController@cityWise');
+Route::get('brandlist','BrandsController@brandlist');
 
 
