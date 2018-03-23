@@ -139,13 +139,16 @@ Class Utilities {
 
         $customer_id = (int)$request['customer_id'];
 
-        $jwt_token = Request::header('Authorization');
+        if($customer_id == ""){
 
-        Log::info('jwt_token : '.$jwt_token);
-            
-        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
-            $decoded = $this->customerTokenDecode($jwt_token);
-            $customer_id = $decoded->customer->_id;
+            $jwt_token = Request::header('Authorization');
+
+            Log::info('jwt_token : '.$jwt_token);
+                
+            if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+                $decoded = $this->customerTokenDecode($jwt_token);
+                $customer_id = $decoded->customer->_id;
+            }
         }
 
         $customer = \Customer::find($customer_id);
@@ -1432,14 +1435,16 @@ Class Utilities {
 
         $customer_id = (int)$request['customer_id'];
 
-        $jwt_token = Request::header('Authorization');
+        if($customer_id == ""){
 
-        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+            $jwt_token = Request::header('Authorization');
 
-            $decoded = $this->customerTokenDecode($jwt_token);
-            $customer_id = (int)$decoded->customer->_id;
+            if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+
+                $decoded = $this->customerTokenDecode($jwt_token);
+                $customer_id = (int)$decoded->customer->_id;
+            }
         }
-
 
         $request['customer_id'] = $customer_id;
 
