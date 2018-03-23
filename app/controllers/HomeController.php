@@ -1306,8 +1306,18 @@ class HomeController extends BaseController {
                 $header = "Membership Confirmed";
                 $subline = "Hi <b>".$item['customer_name']."</b>, your <b>".$booking_details_data['service_duration']['value']."</b> Membership at <b>".$booking_details_data["finder_name_location"]['value']."</b> has been confirmed.We have also sent you a confirmation Email and SMS";
 
+                if(isset($item['booking_for_others']) && $item['booking_for_others']){
+
+                    $subline = "You have booked a Membership for ".ucwords($item['customer_name'])." for ".$booking_details_data['service_name']['value']." at ".$booking_details_data["finder_name_location"]['value'].". We have also sent a confirmation Email and SMS.";
+                }
+
                 if($type == "healthytiffinmembership"){
                     $subline = "Hi <b>".$item['customer_name']."</b>, your <b>".$booking_details_data['service_duration']['value']."</b> meal subscription with <b>".$booking_details_data["finder_name_location"]['value']."</b> has been confirmed.We have also sent you a confirmation Email and SMS";
+
+                     if(isset($item['booking_for_others']) && $item['booking_for_others']){
+
+                        $subline = "You have booked a Meal Subscription for ".ucwords($item['customer_name'])." for ".$booking_details_data['service_name']['value']." with ".$booking_details_data["finder_name_location"]['value'].". We have also sent a confirmation Email and SMS.";
+                    }
                 }
 
                 if(isset($item['payment_mode']) && $item['payment_mode'] == 'cod'){
@@ -1340,6 +1350,11 @@ class HomeController extends BaseController {
                         break;
                 }
 
+                if(isset($item['booking_for_others']) && $item['booking_for_others']){
+
+                    $subline = "You have booked a session for ".ucwords($item['customer_name'])." for ".$booking_details_data['service_name']['value']." at ".$booking_details_data["finder_name_location"]['value'].". We have also sent a confirmation Email and SMS.";
+                }
+
                 $booking_details_data = array_only($booking_details_data, ['booking_id','start_date','address','poc','start_time']);
 
                 $booking_details_data['start_date']['value'] = $booking_details_data['start_date']['value'].", ".$booking_details_data['start_time']['value'];
@@ -1347,6 +1362,14 @@ class HomeController extends BaseController {
 
                 unset($booking_details_data['start_time']);
 
+            }
+
+            if(in_array($type,["healthytiffintrail","healthytiffintrial"])){
+
+                if(isset($item['booking_for_others']) && $item['booking_for_others']){
+
+                    $subline = "You have booked a Trial Meal for ".ucwords($item['customer_name'])." for ".$booking_details_data['service_name']['value']." with ".$booking_details_data["finder_name_location"]['value'].". We have also sent a confirmation Email and SMS.";
+                }
             }
 
             if($type == "manualmembership" && isset($booking_details_data['booking_id'])){

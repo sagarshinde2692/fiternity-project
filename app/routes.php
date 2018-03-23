@@ -1144,4 +1144,4 @@ Route::get('workoutSession','DebugController@workoutSession');
 Route::get('cityWise','DebugController@cityWise');
 Route::get('brandlist','BrandsController@brandlist');
 
-
+Route::get('getServiceData', 'TransactionController@getServiceData');

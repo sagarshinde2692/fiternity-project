@@ -2908,7 +2908,7 @@ class FindersController extends \BaseController {
 
 					        if($rateval_price >= 20000){
 
-					        	$rateval['campaign_offer'] = "(EMI option available)";
+					        	$rateval['campaign_offer'] = "(EMI options available)";
 					        	$rateval['campaign_color'] = "#43a047";
 					        }
 					        
@@ -3085,6 +3085,10 @@ class FindersController extends \BaseController {
 
 			if($finderarr){
 				$finderarr = $finderarr->toArray();
+
+				if(isset($finderarr['trial']) && $finderarr['trial']=='manual'){
+					$finderarr['manual_trial_enable'] = '1';
+				}
 
 				if(!empty($finderarr['reviews'])){
 
@@ -3620,7 +3624,7 @@ class FindersController extends \BaseController {
 
 					if(isset($_GET['device_type']) && in_array($_GET['device_type'], $device_type) && isset($_GET['app_version']) && (float)$_GET['app_version'] >= 3.2 && isset($data['finder']['services']) && count($data['finder']['services']) > 0){
 
-						$data['finder']['services_trial'] = $this->getTrialWorkoutRatecard($data['finder']['services'],$finder['type'],'trial');
+						$data['finder']['services_trial'] = $this->getTrialWorkoutRatecard($data['finder']['services'],$finder['type'],'trial', $data['finder']['trial']);
 						$data['finder']['services_workout'] = $this->getTrialWorkoutRatecard($data['finder']['services'],$finder['type'],'workout session');
 						
 					}
@@ -3861,7 +3865,7 @@ class FindersController extends \BaseController {
 
 
 
-	public function getTrialWorkoutRatecard($finderservices,$findertype,$type){
+	public function getTrialWorkoutRatecard($finderservices,$findertype,$type, $finder_trial = null){
 
 		$finderservicesArr  =   [];
 
@@ -3890,7 +3894,7 @@ class FindersController extends \BaseController {
 						$ratecard['cashback_on_trial'] = "100% Cashback";
 					}
 
-					if(isset($finderservice['trial']) && $finderservice['trial']=='manual' && $ratecard['type'] == 'trial'){
+					if((isset($finderservice['trial']) && $finderservice['trial']=='manual' || $finder_trial=='manual') && $ratecard['type'] == 'trial'){
 						if(isset($_GET['app_version']) && isset($_GET['device_type']) && (($_GET['device_type'] == 'android' && $_GET['app_version'] > 4.42) || ($_GET['device_type'] == 'ios' && version_compare($_GET['app_version'], '4.4.2') > 0))){
 							Log::info($ratecard['_id']);
 							$ratecard['manual_trial_enable'] = "1";
@@ -4695,15 +4699,9 @@ class FindersController extends \BaseController {
 	function getTermsAndCondition(){
 
 		$tnc = [
-			"title"=>"Terms and conditions",
+			"title"=>"Terms & Conditions",
 			"description"=>""
 		];
-
-		$tnc['description'] .= "<br/> ● Discount varies across different outlets depending on slot availability.";
-		$tnc['description'] .= "<br/> ● For memberships reserved by part payment and not fully paid for on date of joining, 5% of total membership value will be deducted as convenience fees & the remaining will be transferred in the wallet as Fitcash+ . The membership will also be terminated.";
-		$tnc['description'] .= "<br/> ● Memberships once purchased are not transferrable or resalable.";
-		$tnc['description'] .= "<br/> ● For any Refund/ cancellation queries refer to https://www.fitternity.com/refund-cancellation.";
-		$tnc['description'] .= "<br/> ● For any Offer related queries refer to https://www.fitternity.com/offer-usage.";
 
 		$finder_id = "";
 
@@ -4742,6 +4740,33 @@ class FindersController extends \BaseController {
 
 				$finder = $finder->toArray();
 
+				$location = Location::find((int) $finder['location_id']);
+
+				$location_name = "";
+				if($location && isset($location['name'])){
+					$location_name = ", ".ucwords($location['name']);
+				}
+
+				if(isset($ratecard) && isset($ratecard['type']) && in_array($ratecard['type'],['membership','packages'])){
+
+					$tnc['description'] .= "<b> - </b>  Discount varies across different outlets depending on slot availability.";
+					$tnc['description'] .= "<br/><br/><b> - </b>  For memberships reserved by part payment and not fully paid for on date of joining, 5% of total membership value will be deducted as convenience fees & the remaining will be transferred in the wallet as Fitcash+ . The membership will also be terminated.";
+					$tnc['description'] .= "<br/><br/><b> - </b>  Memberships once purchased are not transferrable or resalable.";
+					$tnc['description'] .= "<br/><br/><b> - </b>  For any Refund/cancellation queries refer to <a href='https://www.fitternity.com/refund-cancellation'> https://www.fitternity.com/refund-cancellation</a>";
+					$tnc['description'] .= "<br/><br/><b> - </b>  For any Offer related queries refer to <a href='https://www.fitternity.com/offer-usage'>https://www.fitternity.com/offer-usage</a>";
+
+				}else{
+
+					$tnc['description'] .= "<b> - </b>  I recognise that staff at ".ucwords($finder['title']).$location_name.", their associates and staff at Fitternity Health E Solutions are not able to provide medical advice or assess whether it is suitable for me to participate in programs.";
+					$tnc['description'] .= "<br/><br/><b> - </b>  I participate at my own risk. I acknowledge that as with any exercise program, there are risks, including increased heart stress and the chance of musculoskeletal injuries.";
+					$tnc['description'] .= "<br/><br/><b> - </b>  I warrant that I am physically and mentally well enough to proceed with the classes and have furnished true details in the form above.";
+					$tnc['description'] .= "<br/><br/><b> - </b>  I hereby waive, release and forever discharge ".ucwords($finder['title']).", Fitternity Health E Solutions and all their associates from all liabilities for injures or damages resulting from my participation in fitness activities and classes.";
+					$tnc['description'] .= "<br/><br/><b> - </b>  I understand no refunds or transfer / extension of services will be issued for unused classes, sessions and services.";
+					$tnc['description'] .= "<br/><br/><b> - </b>  I have read and understand the advice given above.";
+					$tnc['description'] .= "<br/><br/><b> - </b>  I assume the risk of and responsibility of personal property loss or damage.";
+
+				}
+
 				if(isset($finder['info']['terms_and_conditions']) && $finder['info']['terms_and_conditions'] != ""){
 
 					$terms_and_conditions = $finder['info']['terms_and_conditions'];
@@ -4751,9 +4776,9 @@ class FindersController extends \BaseController {
 					$terms_and_conditions = str_replace('</ul>','',$terms_and_conditions);
 					$terms_and_conditions = str_replace('</ul>','',$terms_and_conditions);
 					$terms_and_conditions = str_replace('</li>','',$terms_and_conditions);
-					$terms_and_conditions = str_replace('<li>','<br/> ● ',$terms_and_conditions);
+					$terms_and_conditions = str_replace('<li>','<br/><br/><b> - </b>  ',$terms_and_conditions);
 
-					$tnc['description'] = $terms_and_conditions;
+					$tnc['description'] .= $terms_and_conditions;
 				}
 			}
 
