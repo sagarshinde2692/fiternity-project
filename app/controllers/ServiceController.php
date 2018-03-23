@@ -1544,7 +1544,6 @@ class ServiceController extends \BaseController {
 				
 			];
 
-			return $this->getScheduleByFinderService($schedule_data);
 
 			$schedule = json_decode(json_encode($this->getScheduleByFinderService($schedule_data)->getData()));
 			
