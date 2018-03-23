@@ -1853,7 +1853,7 @@ class TransactionController extends \BaseController {
         }
         $data['instant_payment_discount'] = 100;
         if($data['type'] == 'workout-session' && !(isset($data['pay_later']) && $data['pay_later'])){
-
+            Log::info("inside instant discount");
             // $instant_payment_discount = 100;
 
             // $data['instant_payment_discount'] = $instant_payment_discount;
@@ -4010,6 +4010,18 @@ class TransactionController extends \BaseController {
                 );
 
                 $you_save += $data['instant_payment_discount'];
+                
+                if(isset($data['pay_later']) && $data['pay_later']){
+                    
+                    $amount_payable['value'] = "Rs. ".($data['amount_final'] - $data['instant_payment_discount']);
+
+                }
+
+            }
+
+            if(isset($data['type']) && $data['type'] == 'workout-session' && $payment_mode_type == 'pay_later' && !(isset($data['pay_later']) && $data['pay_later'])){
+                
+                $amount_payable['value'] = "Rs. ".($data['amount_final'] + $data['instant_payment_discount']);
 
             }
         }
