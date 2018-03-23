@@ -5415,4 +5415,32 @@ class TransactionController extends \BaseController {
         return Response::json($val);
     }
 
+    public function getServiceData(){
+
+        $ratecard_count = 1;
+
+        $service_id = 9096;
+
+        $getRatecardCount = $this->fitapi->getServiceData($service_id);
+
+        if($getRatecardCount['status'] != 200){
+
+            $ratecard_count = 0;
+
+        }else{
+
+            if(!isset($getRatecardCount['ratecards'])){
+                $ratecard_count = 0;
+            }
+
+            if(isset($getRatecardCount['ratecards']) && empty($getRatecardCount['ratecards'])){
+                $ratecard_count = 0;
+            }
+        }
+
+        return $ratecard_count;
+
+    }
+    
+
 }
