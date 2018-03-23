@@ -1435,7 +1435,7 @@ class ServiceController extends \BaseController {
 			// 	$service_details = json_decode(json_encode($service_details_response['data']), true);
 			// }
 			
-			$service_details = Service::where('finder_id', $finder['_id'])->where('slug', $service_slug)->with(array('ratecards'))->first(['name', 'contact', 'photos', 'lat', 'lon', 'calorie_burn', 'address', 'servicecategory_id']);
+			$service_details = Service::where('finder_id', $finder['_id'])->where('slug', $service_slug)->with(array('ratecards'))->first(['name', 'contact', 'photos', 'lat', 'lon', 'calorie_burn', 'address', 'servicecategory_id', 'finder_id']);
 			// return $service_details;
 			if(!$service_details){
 				
@@ -1445,6 +1445,8 @@ class ServiceController extends \BaseController {
 			$service_details = $service_details->toArray();
 
 			$service_details['title'] = $service_details['name'].' at '.$finder['title'];
+			$service_details['finder_name'] = $finder['title'];
+			
 
 			if($service_details['servicecategory_id'] == 65){
 
@@ -1542,6 +1544,8 @@ class ServiceController extends \BaseController {
 				
 			];
 
+			return $this->getScheduleByFinderService($schedule_data);
+
 			$schedule = json_decode(json_encode($this->getScheduleByFinderService($schedule_data)->getData()));
 			
 			$service_details['single_slot'] = false;
@@ -1556,6 +1560,8 @@ class ServiceController extends \BaseController {
 					$service_details['slot_text'] = "Session Time ".strtoupper(head($schedule->schedules)->slots[0]->start_time);
 
 				}
+
+				$service_details['ratecard_id'] = head($schedule->schedules)->slots[0]->ratecard_id;
 			}else{
 				$service_details['total_sessions'] = "0 Session";
 				$service_details['next_session'] = "No session available";
