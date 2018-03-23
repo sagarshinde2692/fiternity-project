@@ -968,7 +968,25 @@ class FindersController extends \BaseController {
 				// 		'background'=> '-webkit-linear-gradient(left, #FE7E87 0%, #FA5295 100%)',
 				// 		'background-color'=> ''
 				// 	];
-				// }
+                // }
+                
+                if(in_array($response['finder']['_id'], [14,10315,10861,10863,10868,10870,10872,10875,10876,10877,10880,10883,10886,10887,10888,10890,10891,10892,10894,10895,10897,10900,12246,12247,12250,12252,12254])){
+                    $response['vendor_stripe_data']	=	[
+                        'text'=> "Get additional 25% cashback on 1 year memberships",
+                        'text_color'=> '#ffffff',
+                        'background'=> '-webkit-linear-gradient(left, #FE7E87 0%, #FA5295 100%)',
+                        'background-color'=> ''
+                    ];
+                }
+
+                if(in_array($response['finder']['_id'], [4492,5596,5682,5729,9507,9508,9989,12480])){
+                    $response['vendor_stripe_data']	=	[
+                        'text'=> "1 month membership free (only for women) valid till 31st March",
+                        'text_color'=> '#ffffff',
+                        'background'=> '-webkit-linear-gradient(left, #FE7E87 0%, #FA5295 100%)',
+                        'background-color'=> ''
+                    ];
+                }
 				if(isset($finder['commercial_type']) && $finder['commercial_type'] == 0){
 
 					unset($response['finder']['payment_options']);

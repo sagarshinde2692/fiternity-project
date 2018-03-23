@@ -868,6 +868,11 @@ class RewardofferController extends BaseController {
             $cashback = null;
         }
 
+        if(isset($data['ratecard_id']) && in_array($data['ratecard_id'], [])){
+            $rewards = [];
+            $cashback = null;
+        }
+
         $data = array(
             'renewal_cashback'          =>   $renewal_cashback,
             'cashback'                  =>   $cashback,
