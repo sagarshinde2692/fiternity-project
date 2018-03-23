@@ -3086,6 +3086,10 @@ class FindersController extends \BaseController {
 			if($finderarr){
 				$finderarr = $finderarr->toArray();
 
+				if(isset($finderarr['trial']) && $finderarr['trial']=='manual'){
+					$finderarr['manual_trial_enable'] = '1';
+				}
+
 				if(!empty($finderarr['reviews'])){
 
 					foreach ($finderarr['reviews'] as $rev_key => $rev_value) {
@@ -3620,7 +3624,7 @@ class FindersController extends \BaseController {
 
 					if(isset($_GET['device_type']) && in_array($_GET['device_type'], $device_type) && isset($_GET['app_version']) && (float)$_GET['app_version'] >= 3.2 && isset($data['finder']['services']) && count($data['finder']['services']) > 0){
 
-						$data['finder']['services_trial'] = $this->getTrialWorkoutRatecard($data['finder']['services'],$finder['type'],'trial');
+						$data['finder']['services_trial'] = $this->getTrialWorkoutRatecard($data['finder']['services'],$finder['type'],'trial', $data['finder']['trial']);
 						$data['finder']['services_workout'] = $this->getTrialWorkoutRatecard($data['finder']['services'],$finder['type'],'workout session');
 						
 					}
@@ -3861,7 +3865,7 @@ class FindersController extends \BaseController {
 
 
 
-	public function getTrialWorkoutRatecard($finderservices,$findertype,$type){
+	public function getTrialWorkoutRatecard($finderservices,$findertype,$type, $finder_trial = null){
 
 		$finderservicesArr  =   [];
 
@@ -3890,7 +3894,7 @@ class FindersController extends \BaseController {
 						$ratecard['cashback_on_trial'] = "100% Cashback";
 					}
 
-					if(isset($finderservice['trial']) && $finderservice['trial']=='manual' && $ratecard['type'] == 'trial'){
+					if((isset($finderservice['trial']) && $finderservice['trial']=='manual' || $finder_trial=='manual') && $ratecard['type'] == 'trial'){
 						if(isset($_GET['app_version']) && isset($_GET['device_type']) && (($_GET['device_type'] == 'android' && $_GET['app_version'] > 4.42) || ($_GET['device_type'] == 'ios' && version_compare($_GET['app_version'], '4.4.2') > 0))){
 							Log::info($ratecard['_id']);
 							$ratecard['manual_trial_enable'] = "1";
