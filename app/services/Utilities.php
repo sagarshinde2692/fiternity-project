@@ -855,15 +855,18 @@ Class Utilities {
 
             foreach ($allOrders as $orderData) {
 
-                $orderData->redundant_order = "1";
-                $orderData->update();
+                if($orderData['_id'] != $order['_id']){
 
-                $array = array('auto_followup_date','followup_status_count','followup_date');
+                    $orderData->redundant_order = "1";
+                    $orderData->update();
 
-                foreach ($array as $value){
+                    $array = array('auto_followup_date','followup_status_count','followup_date');
 
-                    if(isset($orderData[$value])){
-                        $orderData->unset($value);
+                    foreach ($array as $value){
+
+                        if(isset($orderData[$value])){
+                            $orderData->unset($value);
+                        }
                     }
                 }
 
