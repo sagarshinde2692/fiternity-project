@@ -1589,13 +1589,21 @@ class ServiceController extends \BaseController {
 		
 		$facility_images = [];
 
-		$all_facilities = Facility::active()->get();
-		
+		$pay_per_session_facilities = ["parking","group-classes","sunday-open","locker-and-shower-facility"];
+
+		$all_facilities = Facility::active()->whereIn('slug', $pay_per_session_facilities)->get(['name', 'images']);
+		Log::info($all_facilities);
+		// return $all_facilities;
+
+		function append_base_url($x){
+			return Config::get('app.facility_image_base_url').$x;
+
+		}
 		foreach($all_facilities as $facility){
 			if(in_array($facility->name, $available_facilities)){
-				array_push($facility_images, Config::get('app.facility_image_base_url').($facility->images['yes']));
+				$facility_images = array_merge($facility_images, array_map('append_base_url', $facility->images['yes']));
 			}else{
-				array_push($facility_images, Config::get('app.facility_image_base_url').($facility->images['no']));
+				$facility_images = array_merge($facility_images, array_map('append_base_url', $facility->images['yes']));
 			}	
 		}
 

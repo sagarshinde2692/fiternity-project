@@ -5572,28 +5572,28 @@ public function yes($msg){
 
 		$map = [
 			"parking"=>['images'=>[
-				'yes'=>"ParkingIcon.png",
-				'no'=>"ParkingIconDisabled.png"
+				'yes'=>["ParkingIcon.png"],
+				'no'=>["ParkingIconDisabled.png"],
 			]],
 			"free-trial"=>['images'=>[
-				'yes'=>"",
-				'no'=>"",
+				'yes'=>[""],
+				'no'=>[""],
 			]],
 			"personal-training"=>['images'=>[
-				'yes'=>"",
-				'no'=>"",
+				'yes'=>[""],
+				'no'=>[""],
 			]],
 			"group-classes"=>['images'=>[
-				'yes'=>"GroupClassIcon.png",
-				'no'=>"GroupClassIconDisabled.png"
+				'yes'=>["GroupClassIcon.png"],
+				'no'=>["GroupClassIconDisabled.png"],
 			]],
 			"sunday-open"=>['images'=>[
-				'yes'=>"SundayOpenIcon.png",
-				'no'=>"SundayOpenIconDisabled.png"
+				'yes'=>["SundayOpenIcon.png"],
+				'no'=>["SundayOpenIconDisabled.png"],
 			]],
 			"locker-and-shower-facility"=>['images'=>[
-				'yes'=>"LockerIcon.png",
-				'no'=>"LockerIconDisabled.png"
+				'yes'=>["LockerIcon.png", "ShowerIcon.png"],
+				'no'=>["LockerIconDisabled.png", "ShowerIconDisabled.png" ],
 			]],
 			
 			];
