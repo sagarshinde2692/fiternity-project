@@ -16,6 +16,7 @@ use Wallet;
 use WalletTransaction;
 use App\Sms\CustomerSms as CustomerSms;
 use App\Mailers\FinderMailer as FinderMailer;
+use App\Services\Fitapi as Fitapi;
 
 Class Utilities {
 
@@ -3305,13 +3306,35 @@ Class Utilities {
             $response['calorie_burn_text'] = "Get ready to burn ".$category_calorie_burn." Calories at ".ucwords($booktrial['finder_name']);
             $response['is_tab_active'] = $is_tab_active;
 
-            $ratecard_count = \Ratecard::where('service_id',(int)$booktrial['service_id'])
+
+            $ratecard_count = 1;
+
+            $fitapi = New Fitapi();
+
+            $getRatecardCount = $fitapi->getServiceData($booktrial['service_id']);
+
+            if($getRatecardCount['status'] != 200){
+
+                $ratecard_count = 0;
+
+            }else{
+
+                if(!isset($getRatecardCount['ratecards'])){
+                    $ratecard_count = 0;
+                }
+
+                if(isset($getRatecardCount['ratecards']) && empty($getRatecardCount['ratecards'])){
+                    $ratecard_count = 0;
+                }
+            }
+
+           /* $ratecard_count = \Ratecard::where('service_id',(int)$booktrial['service_id'])
                 ->where('finder_id',(int)$booktrial['finder_id'])
                 ->whereIn('type',['membership','packages'])
                 ->where('direct_payment_enable','!=','0')
                 ->orWhere(function($query){$query->where('expiry_date','exists',true)->where('expiry_date','>=',new \MongoDate(time()));})
                 ->orWhere(function($query){$query->where('start_date','exists',true)->where('start_date','<=',new \MongoDate(time()));})
-                ->count();
+                ->count();*/
 
             if($ratecard_count == 0){
                 $response['redirect_url'] = Config::get('app.website').'/'.$booktrial['finder_slug'];
