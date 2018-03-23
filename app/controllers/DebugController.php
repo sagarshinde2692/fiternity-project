@@ -5568,5 +5568,47 @@ public function yes($msg){
 
 	}
 
+	public function addFacilityImages(){
+
+		$map = [
+			"parking"=>['images'=>[
+				'yes'=>"ParkingIcon.png",
+				'no'=>"ParkingIconDisabled.png"
+			]],
+			"free-trial"=>['images'=>[
+				'yes'=>"",
+				'no'=>"",
+			]],
+			"personal-training"=>['images'=>[
+				'yes'=>"",
+				'no'=>"",
+			]],
+			"group-classes"=>['images'=>[
+				'yes'=>"GroupClassIcon.png",
+				'no'=>"GroupClassIconDisabled.png"
+			]],
+			"sunday-open"=>['images'=>[
+				'yes'=>"SundayOpenIcon.png",
+				'no'=>"SundayOpenIconDisabled.png"
+			]],
+			"locker-and-shower-facility"=>['images'=>[
+				'yes'=>"LockerIcon.png",
+				'no'=>"LockerIconDisabled.png"
+			]],
+			
+			];
+
+
+			foreach($map as $key => $value){
+
+				$result = Facility::where('slug', $key)->update($value);
+
+				Log::info($result);
+
+			}
+
+
+	}
+
     
 }
