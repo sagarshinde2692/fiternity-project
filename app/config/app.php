@@ -720,6 +720,6 @@ return array(
 
 	'service_gallery_path' => 'http://b.fitn.in/s/g/full/',
 
-
+	'facility_image_base_url'=> 'http://b.fitn.in/facility/'
 
 );

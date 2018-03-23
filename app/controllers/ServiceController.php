@@ -1593,9 +1593,9 @@ class ServiceController extends \BaseController {
 		
 		foreach($all_facilities as $facility){
 			if(in_array($facility->name, $available_facilities)){
-				array_push($facility_images, $facility->images['yes']);
+				array_push($facility_images, Config::get('app.facility_image_base_url').($facility->images['yes']));
 			}else{
-				array_push($facility_images, $facility->images['no']);
+				array_push($facility_images, Config::get('app.facility_image_base_url').($facility->images['no']));
 			}	
 		}
 
