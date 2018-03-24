@@ -7,12 +7,15 @@
  * @author Sanjay Sahu <sanjay.id7@gmail.com>
  */
 use App\Services\Metropolis as Metropolis;
+use App\Services\Utilities as Utilities;
 
 class ServiceController extends \BaseController {
 
-	public function __construct() {
+	public function __construct(Utilities $utilities) {
 
 		parent::__construct();
+
+		$this->utilities = $utilities;
 
 		$this->vendor_token = false;
         
@@ -1585,6 +1588,7 @@ class ServiceController extends \BaseController {
 		$data['bookmark'] = false;
 		$data['share_message_text'] = "share ".$service_details['title'];
 		$data['share_message_email'] = "share ".$service_details['title'];
+		$data['pending_payment'] = $this->utilities->hasPendingPayments();
 
 		return Response::json(array('status'=>200, 'data'=> $data));
 

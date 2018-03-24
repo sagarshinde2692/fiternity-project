@@ -2822,5 +2822,25 @@ Class Utilities {
         }
     }
 
+    public function hasPendingPayments(){
+
+        if(Request::header('Authorization')){
+			$decoded                            =       decode_customer_token();
+			$customer_email                     =       $decoded->customer->email;
+			$customer_phone                     =       $decoded->customer->contact_no;
+
+            $pending_payment = \Order::where('type', 'workout-session')->where(function ($query) use($customer_email, $customer_phone) { $query->orWhere('customer_email', $customer_email)->orWhere('customer_phone', $customer_phone);})->where('status', '0')->where('booktrial_id', 'exists', true)->count();
+
+			if($pending_payment > 0){
+				return true;
+			}else{
+				return false;
+			}
+		}else{
+			return false;
+		}
+
+    }
+
 
 }

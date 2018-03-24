@@ -933,6 +933,8 @@ class FindersController extends \BaseController {
 			$response['trials_detials']              =      [];
 			$response['trials_booked_status']        =      false;
 		}
+
+		$response['pending_payment'] = $this->utilities->hasPendingPayments();
 		// if($response['finder']['offer_icon'] == ""){
 		// 	$response['finder']['offer_icon']        =        "https://b.fitn.in/iconsv1/womens-day/womens-day-mobile-banner.svg";
 		// }
