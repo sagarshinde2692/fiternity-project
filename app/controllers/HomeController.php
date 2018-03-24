@@ -653,7 +653,7 @@ class HomeController extends BaseController {
                     'subline'=>$subline,
                     'streak'=>$streak,
                     'conclusion'=>$this->getConclusionData(),
-                    'feedback'=>$this->getConclusionData(),
+                    'feedback'=>$this->getFeedbackData(),
                     'order_type'=>$order_type,
                     'id'=>$id
                 ];
