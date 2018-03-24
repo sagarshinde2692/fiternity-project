@@ -616,10 +616,10 @@ class HomeController extends BaseController {
 
                 $header = "BOOKING SUCCESSFUL!";
 
-                $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.' <br>Activate your session through FitCode';
+                $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.' <br><br>Activate your session through FitCode';
 
                 if(isset($item['pay_later']) && $item['pay_later']){
-                    $subline = '<p style="text-align:center;">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.' <br><span style="color:#f7a81e">Activate</span> your session through <span style="color:#f7a81e">FitCode</span><br><br>Attend and pay later to earn Cashback!</p>';
+                    $subline = $subline.'<br><br>Attend and pay later to earn Cashback!</p>';
                 }
 
                 $streak = [
