@@ -492,6 +492,8 @@ class HomeController extends BaseController {
 
         $customer_id = "";
         $jwt_token = Request::header('Authorization');
+        $device_type = Request::header('Device-Type');
+        $app_version = Request::header('App-Version');
 
         if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
 
@@ -605,9 +607,59 @@ class HomeController extends BaseController {
             $show_invite = false;
             $id_for_invite = (int) $id;
             $end_point = "";
+            $start_time = (isset($itemData['start_time']) && $itemData['start_time'] != "") ? $itemData['start_time'] : "";
             
             $show_other_vendor = false;
             $why_buy = false;
+
+            if($item['type']=='workout-session' && $device_type && $app_version && in_array($device_type, ['android', 'ios']) && $app_version > '4.4.3'){
+
+                $header = "BOOKING SUCCESSFUL!";
+
+                $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on $schedule_date at '.$start_time.' <br>Activate your session through FitCode';
+
+                if(isset($item['pay_later']) && $item['pay_later']){
+                    $subline = '<p style="text-align:center;">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.' <br><span style="color:#f7a81e">Activate</span> your session through <span style="color:#f7a81e">FitCode</span><br><br>Attend and pay later to earn Cashback!</p>';
+                }
+
+                $streak = [
+                    'header'=>'Attend More Earn More',
+                    'items'=>[
+                        [
+                            'title'=>'10%',
+                            'value'=>'3 Sessions'
+                        ],
+                        [
+                            'title'=>'15%',
+                            'value'=>'5 Sessions'
+                        ],
+                        [
+                            'title'=>'20%',
+                            'value'=>'10 Sessions'
+                        ],
+                        [
+                            'title'=>'25%',
+                            'value'=>'15 Sessions'
+                        ],
+                        
+                    ]
+                    ];
+
+
+                $response = [
+                    'status'=>200,
+                    'image'=>'https://b.fitn.in/iconsv1/success-pages/BookingSuccessfulpps.png',
+                    'header'=>$header,
+                    'subline'=>$subline,
+                    'streak'=>$streak,
+                    'conclusion'=>$this->getConclusionData(),
+                    'feedback'=>$this->getConclusionData(),
+                    'order_type'=>$order_type,
+                    'id'=>$id
+                ];
+
+                return $response;
+            }
 
             switch ($type) {
 
@@ -1349,23 +1401,9 @@ class HomeController extends BaseController {
                 'type' => $type
             ];
 
-            $conclusion = [
-                "title"=>"Any Queries? Contact Us",
-                "description"=>"Any Queries? Contact Us",
-                "email"=>"support@fitternity.com",
-                "phone"=>"+912261094444"
-            ];
+            $conclusion = $this->getConclusionData();
 
-            $feedback = [
-                'reason'=>[
-                    'Choice of fitness options available',
-                    'Information provided about the gym/studio',
-                    'Transaction & Booking process',
-                    'Payment/Cashback/Offer related',
-                    'Any other issue'
-                ],
-                'threshold_value'=>6
-            ];
+            $feedback = $this->getFeedbackData();
 
             $reward_details = null;
 
@@ -3855,6 +3893,28 @@ class HomeController extends BaseController {
 
     public function getCrashLog($count = 1){
         return CrashLog::orderBy('_id', 'desc')->take($count)->get();
+    }
+
+    public function getConclusionData(){
+        return [
+            "title"=>"Any Queries? Contact Us",
+            "description"=>"Any Queries? Contact Us",
+            "email"=>"support@fitternity.com",
+            "phone"=>"+912261094444"
+        ];;
+    }
+
+    public function getFeedbackData(){
+        return [
+            'reason'=>[
+                'Choice of fitness options available',
+                'Information provided about the gym/studio',
+                'Transaction & Booking process',
+                'Payment/Cashback/Offer related',
+                'Any other issue'
+            ],
+            'threshold_value'=>6
+        ];
     }
 
 }
