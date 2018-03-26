@@ -735,7 +735,7 @@ class ServiceController extends \BaseController {
 			$time_in_seconds = time_passed_check($item['servicecategory_id']);
 			
 			if(isset($request['time_interval']) && $request['time_interval']){
-				$time_in_seconds = $request['time_interval']*60*60;
+				$time_in_seconds = $request['time_interval'];
 			}
 
             $service = array(
@@ -849,7 +849,11 @@ class ServiceController extends \BaseController {
                     try{
 
                     	$scheduleDateTimeUnix               =  strtotime(strtoupper($date." ".$slot['start_time']));
-                        $slot_datetime_pass_status      =   (($scheduleDateTimeUnix - $currentDateTime) > $time_in_seconds) ? false : true;
+						$slot_datetime_pass_status      =   (($scheduleDateTimeUnix - $currentDateTime) > $time_in_seconds) ? false : true;
+						
+						if(isset($request['within_time']) && $request['within_time'] && $slot_datetime_pass_status){
+							$slot_datetime_pass_status = (($scheduleDateTimeUnix - $currentDateTime) < $time_in_seconds) ? false : true;
+						}
 
                         ($slot_datetime_pass_status == false) ? $slot_passed_flag = false : null;
 
@@ -1412,6 +1416,8 @@ class ServiceController extends \BaseController {
 	
 	public function serviceDetailv1($finder_slug, $service_slug, $cache=false){
 
+		// return date('Y-m-d', strtotime('day after tomorrow'));
+
 		$cache_key = "$finder_slug-$service_slug";
 
 		$service_details = $cache ? Cache::tags('service_detail')->has($cache_key) : false;
@@ -1544,15 +1550,34 @@ class ServiceController extends \BaseController {
 			
 			$service_details['coordinates'] = [$service_details['lat'], $service_details['lon']];
 
+			$time = isset($_GET['time']) ? $_GET['time'] : null;
+			$time_interval = null;
+			$within_time = null;
+			$requested_date = date('Y-m-d', time());
+
+			switch($time){
+				case "within-4-hours":
+					$within_time = 4*60*60;
+					break;
+				case "later-today":
+					$time_interval = 4*60*60;
+					break;
+				case "tomorrow":
+					$requested_date = date('Y-m-d', strtotime('+1 day', time()));
+					break;
+				case "day-after":
+					$requested_date = date('Y-m-d', strtotime('+2 days', time()));
+					break;
+			}
+
 			$schedule_data = [
 				'service_id'=>$service_details['_id'],
-				'requested_date'=>date('Y-m-d', time()),
-				'time_interval'=>isset($_GET['time_interval']) ? intval($_GET['time_interval']) : null,
-				'date'=>date('Y-m-d', time()),
-				'type'=>'workout_session'
-				
+				'requested_date'=>$requested_date,
+				'time_interval'=>$time_interval,
+				'date'=>$requested_date,
+				'type'=>'workout_session',
+				'within_time'=>$within_time
 			];
-
 
 			$schedule = json_decode(json_encode($this->getScheduleByFinderService($schedule_data)->getData()));
 			
@@ -1592,8 +1617,8 @@ class ServiceController extends \BaseController {
 		$data['service'] = $service_details;
 
 		$data['bookmark'] = false;
-		$data['share_message_text'] = "share ".$service_details['title'];
-		$data['share_message_email'] = "share ".$service_details['title'];
+		$data['share_message_text'] = "Check out ".$service_details['title']." on Fitternity. https://www.fitternity.com/service/".$service_details['_id'];
+		$data['share_message_email'] = "Check out ".$service_details['title']." on Fitternity. https://www.fitternity.com/service/".$service_details['_id'];
 		$data['pending_payment'] = $this->utilities->hasPendingPayments();
 
 		return Response::json(array('status'=>200, 'data'=> $data));
@@ -1631,10 +1656,11 @@ class ServiceController extends \BaseController {
 		
 		$servicecategories = pluck($servicecategories, ['name', 'slug']);
 
-		array_unshift($servicecategories, ['name'=>'Select All', 'slug'=>""]);
 
 		$data  = [
 			'status'=>200,
+			'header'=>'Which activity do you want to try?',
+			'all_message'=> "I want to explore all options",
 			'category'=>$servicecategories,
 			'message'=>"",
 			'base_url'=>"http://b.fitn.in/iconsv1/"
