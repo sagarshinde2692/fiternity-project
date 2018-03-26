@@ -859,8 +859,11 @@ class TransactionController extends \BaseController {
 
         $pay_later = false;
         
-        if($data['type'] == 'workout-session' && $_GET['device_type']){
-            $pay_later = true;
+        if(isset($_GET['device_type']) && isset($_GET['app_version']) && in_array($_GET['device_type'], ['android', 'ios']) && $_GET['app_version'] > '4.4.3'){
+            
+            if($data['type'] == 'workout-session' && $_GET['device_type']){
+                $pay_later = true;
+            }
         }
 
         $resp   =   array(
@@ -905,11 +908,12 @@ class TransactionController extends \BaseController {
                     $payment_mode_type_array[] = 'pay_at_vendor';
                 }
             }
-
-            if($data['type'] == 'workout-session'){
-                $payment_mode_type_array[] = 'pay_later';
+            if(isset($_GET['device_type']) && isset($_GET['app_version']) && in_array($_GET['device_type'], ['android', 'ios']) && $_GET['app_version'] > '4.4.3'){
+                
+                if($data['type'] == 'workout-session'){
+                    $payment_mode_type_array[] = 'pay_later';
+                }
             }
-
             $payment_details = [];
 
             foreach ($payment_mode_type_array as $payment_mode_type) {
