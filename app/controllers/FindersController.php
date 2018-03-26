@@ -972,9 +972,9 @@ class FindersController extends \BaseController {
                 
                 if(in_array($response['finder']['_id'], [14,10315,10861,10863,10868,10870,10872,10875,10876,10877,10880,10883,10886,10887,10888,10890,10891,10892,10894,10895,10897,10900,12246,12247,12250,12252,12254])){
                     $response['vendor_stripe_data']	=	[
-                        'text'=> "Get additional 25% cashback on 1 year memberships",
+                        'text'=> "Get additional 25% cashback as Fitcash on 1 year membership",
                         'text_color'=> '#ffffff',
-                        'background'=> '-webkit-linear-gradient(left, #FE7E87 0%, #FA5295 100%)',
+                        'background'=> '-webkit-linear-gradient(left, #71b2c7 0%, #71b2c7 100%)',
                         'background-color'=> ''
                     ];
                 }
