@@ -859,7 +859,7 @@ class TransactionController extends \BaseController {
 
         $pay_later = false;
         
-        if($data['type'] == 'workout-session'){
+        if($data['type'] == 'workout-session' && $_GET['device_type']){
             $pay_later = true;
         }
 
@@ -1914,17 +1914,20 @@ class TransactionController extends \BaseController {
             $data['convinience_fee'] = $convinience_fee;
         }
         $data['instant_payment_discount'] = 100;
-        if($data['type'] == 'workout-session' && !(isset($data['pay_later']) && $data['pay_later'])){
-            Log::info("inside instant discount");
-            // $instant_payment_discount = 100;
 
-            // $data['instant_payment_discount'] = $instant_payment_discount;
-            
-            $data['amount'] = $data['amount_customer'] = $data['amount_customer'] - $data['instant_payment_discount'];
-
-            $amount  =  $data['amount'];
-
-        }
+        if(isset($_GET['device_type']) && isset($_GET['app_version']) && in_array($_GET['device_type'], ['android', 'ios']) && $_GET['app_version'] > '4.4.3'){
+            if($data['type'] == 'workout-session' && !(isset($data['pay_later']) && $data['pay_later'])){
+                Log::info("inside instant discount");
+                // $instant_payment_discount = 100;
+    
+                // $data['instant_payment_discount'] = $instant_payment_discount;
+                
+                $data['amount'] = $data['amount_customer'] = $data['amount_customer'] - $data['instant_payment_discount'];
+    
+                $amount  =  $data['amount'];
+    
+            }
+        }            
 
         if($data['type'] != 'events'){
 
@@ -4082,22 +4085,24 @@ class TransactionController extends \BaseController {
                 $you_save += $data['app_discount_amount'];
                 
             }
+            if(isset($_GET['device_type']) && isset($_GET['app_version']) && in_array($_GET['device_type'], ['android', 'ios']) && $_GET['app_version'] > '4.4.3'){
 
-            if(isset($data['type']) && $data['type'] == 'workout-session' && $payment_mode_type != 'pay_later'){
-                
-                $amount_summary[] = array(
-                    'field' => 'Instant Pay discount',
-                    'value' => '-Rs. '.$data['instant_payment_discount']
-                );
-
-                $you_save += $data['instant_payment_discount'];
-                
-                if(isset($data['pay_later']) && $data['pay_later']){
+                if(isset($data['type']) && $data['type'] == 'workout-session' && $payment_mode_type != 'pay_later'){
                     
-                    $amount_payable['value'] = "Rs. ".($data['amount_final'] - $data['instant_payment_discount']);
-
+                    $amount_summary[] = array(
+                        'field' => 'Instant Pay discount',
+                        'value' => '-Rs. '.$data['instant_payment_discount']
+                    );
+    
+                    $you_save += $data['instant_payment_discount'];
+                    
+                    if(isset($data['pay_later']) && $data['pay_later']){
+                        
+                        $amount_payable['value'] = "Rs. ".($data['amount_final'] - $data['instant_payment_discount']);
+    
+                    }
+    
                 }
-
             }
 
             if(isset($data['type']) && $data['type'] == 'workout-session' && $payment_mode_type == 'pay_later' && !(isset($data['pay_later']) && $data['pay_later'])){
