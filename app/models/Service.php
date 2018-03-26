@@ -19,7 +19,7 @@ class Service extends \Basemodel{
 
 		);
 
-    protected $dates = array('start_date','end_date');
+    protected $dates = array('start_date','end_date','membership_start_date','membership_end_date');
 
 
     public static $withoutAppends = false;
@@ -36,7 +36,7 @@ class Service extends \Basemodel{
 	}
 
 //    protected $appends = array('active_weekdays', 'workoutsession_active_weekdays', 'service_coverimage', 'service_coverimage_thumb', 'service_ratecards', 'service_trainer','serviceratecard','servicebatches');
-    protected $appends = array('active_weekdays', 'workoutsession_active_weekdays', 'service_coverimage', 'service_coverimage_thumb', 'service_trainer','servicebatches', 'trial_active_weekdays');
+    protected $appends = array('active_weekdays', 'workoutsession_active_weekdays', 'service_coverimage', 'service_coverimage_thumb', 'service_trainer','servicebatches', 'trial_active_weekdays','serviceratecard');
 	// protected $appends = array('active_weekdays', 'workoutsession_active_weekdays', 'service_coverimage', 'service_coverimage_thumb', 'service_ratecards');
 
 	public function setIdAttribute($value){
@@ -207,12 +207,14 @@ class Service extends \Basemodel{
 
 							if(isset($value['flags']['discother']) && $value['flags']['discother'] == true){
 								$ratecardoffer['offer_text']    =   "";
-								$ratecardoffer['offer_icon']    =   "https://b.fitn.in/iconsv1/womens-day/women-only.png";
+								// $ratecardoffer['offer_icon']    =   "https://b.fitn.in/iconsv1/womens-day/women-only.png";
+								$ratecardoffer['offer_icon']    =   "";
 							}
 
 							if(isset($value['flags']['disc25or50']) && $value['flags']['disc25or50'] == true){
 								$ratecardoffer['offer_text']    =   "";
-								$ratecardoffer['offer_icon']    =   "https://b.fitn.in/iconsv1/womens-day/women-only.png";
+								// $ratecardoffer['offer_icon']    =   "https://b.fitn.in/iconsv1/womens-day/women-only.png";
+								$ratecardoffer['offer_icon']    =   "";
 							}
 						}
 
@@ -226,7 +228,7 @@ class Service extends \Basemodel{
                         $difference     =   $today_date->diff($end_date);
 
                         if($difference->days <= 15){
-                            $ratecardoffer['offer_text']    =  ($difference->d == 1) ? "Expires Today" : "Expires in ".$difference->days." days";
+                            $ratecardoffer['offer_text']    =  ($difference->d == 1) ? "Expires Today" : ($difference->d > 3 ? "Expires soon" : "Expires in ".$difference->days." days");
 
                         }
                         array_push($ratecardoffers,$ratecardoffer);
@@ -236,10 +238,12 @@ class Service extends \Basemodel{
 						if(isset($value['flags']['offerFor'])){
 							// Log::info("in offerFor");
 							switch($value['flags']['offerFor']){
-								case "student": $ratecardoffers[0]['offer_text']    =   "";
+								case "student": 
+												// $ratecardoffers[0]['offer_text']    =   "";
 												$ratecardoffers[0]['offer_icon']    =   "https://b.fitn.in/iconsv1/fitmania/hot_offer_vendor.png";	
 												break;
-								case "women": $ratecardoffers[0]['offer_text']    =   "";
+								case "women": 
+												// $ratecardoffers[0]['offer_text']    =   "";
 												$ratecardoffers[0]['offer_icon']    =   "https://b.fitn.in/iconsv1/fitmania/hot_offer_vendor.png";	
 												break;
 							}
@@ -310,6 +314,11 @@ class Service extends \Basemodel{
 						$value['validity_type'] = "month";
 					}
 				}
+				
+				// if(isset($value['type']) && in_array($value['type'], ['membership', 'packages']) && isset($value['flags']) && isset($value['flags']['campaign_offer']) && $value['flags']['campaign_offer']){
+				// 	$value['campaign_offer'] = "(Women - Get additional 30% off)";
+				// 	$value['campaign_color'] = "#FA5295";
+				// }				
 				
 				array_push($ratecards, $value);
 			}

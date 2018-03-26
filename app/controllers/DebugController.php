@@ -16,6 +16,7 @@ use App\Services\Bulksms as Bulksms;
 use App\Services\Utilities as Utilities;
 use App\Sms\CustomerSms as CustomerSms;
 use App\Services\Cacheapi as Cacheapi;
+use App\Sms\FinderSms as FinderSms;
 
 
 use \Pubnub\Pubnub as Pubnub;
@@ -5571,44 +5572,1303 @@ public function yes($msg){
 	public function addFacilityImages(){
 
 		$map = [
-			"parking"=>['images'=>[
-				'yes'=>["ParkingIcon.png"],
-				'no'=>["ParkingIconDisabled.png"],
-			]],
-			"free-trial"=>['images'=>[
-				'yes'=>[""],
-				'no'=>[""],
-			]],
-			"personal-training"=>['images'=>[
-				'yes'=>[""],
-				'no'=>[""],
-			]],
-			"group-classes"=>['images'=>[
-				'yes'=>["GroupClassIcon.png"],
-				'no'=>["GroupClassIconDisabled.png"],
-			]],
-			"sunday-open"=>['images'=>[
-				'yes'=>["SundayOpenIcon.png"],
-				'no'=>["SundayOpenIconDisabled.png"],
-			]],
-			"locker-and-shower-facility"=>['images'=>[
-				'yes'=>["LockerIcon.png", "ShowerIcon.png"],
-				'no'=>["LockerIconDisabled.png", "ShowerIconDisabled.png" ],
-			]],
-			
+		"parking"=>['images'=>[
+			'yes'=>["ParkingIcon.png"],
+			'no'=>["ParkingIconDisabled.png"],
+		]],
+		"free-trial"=>['images'=>[
+			'yes'=>[""],
+			'no'=>[""],
+		]],
+		"personal-training"=>['images'=>[
+			'yes'=>[""],
+			'no'=>[""],
+		]],
+		"group-classes"=>['images'=>[
+			'yes'=>["GroupClassIcon.png"],
+			'no'=>["GroupClassIconDisabled.png"],
+		]],
+		"sunday-open"=>['images'=>[
+			'yes'=>["SundayOpenIcon.png"],
+			'no'=>["SundayOpenIconDisabled.png"],
+		]],
+		"locker-and-shower-facility"=>['images'=>[
+			'yes'=>["LockerIcon.png", "ShowerIcon.png"],
+			'no'=>["LockerIconDisabled.png", "ShowerIconDisabled.png" ],
+		]],
+		
+		];
+
+
+		foreach($map as $key => $value){
+
+			$result = Facility::where('slug', $key)->update($value);
+
+			Log::info($result);
+
+		}
+	}
+
+	public function workoutSession(){
+		ini_set('memory_limit','2048M');
+		
+		// $service_ids = Ratecard::where('type', "workout session")->lists('service_id');
+		Finder::$withoutAppends = true;
+		Service::$withoutAppends = true;
+		// $finder_ids = Service::active()->whereNotIn('_id', $service_ids)->lists('finder_id');
+		// $finders = Finder::active()->whereIn('_id', $finder_ids)->whereNotIn('flags.state', ['closed', 'temporarily_shut'])->where(function($query){return $query->orWhere('membership', '!=', 'disable')->orWhere('trial', '!=', 'disable');})->with('city')->with('location')->get(['title', 'city_id', 'location_id']);
+
+		// $service_ids = Service::active()->lists('_id');
+
+		$active_finder_categories = Findercategory::active()->whereNotIn('_id', [47, 42, 41])->lists('_id');
+		$active_service_categories = Servicecategory::active()->whereNotIn('_id', [184, 184, 186, 187])->lists('_id');
+		
+		
+		$finders = Finder::active()->whereIn('category_id', $active_finder_categories)->where('commercial_type', '!=', 0)->whereNotIn('flags.state', ['closed', 'temporarily_shut'])->where(function($query){return $query->orWhere('membership', '!=', 'disable')->orWhere('trial', '!=', 'disable');})->with('city')->with('location')->with(array('services'=>function($query) use ($active_service_categories){$query->select('finder_id', 'name', 'servicecategory_id', 'location_id')->whereIn('servicecategory_id', $active_service_categories)->where('status','1')->with('ratecards')->with('location');}))->get(['title', 'city_id', 'location_id']);
+
+		// return count($finders);
+
+		$traction = [];
+
+		$trials = Booktrial::raw(function($collection) {
+			$aggregate = [];
+
+			$match['$match']['type'] = ['$in'=>['booktrials', 'booktrial']];
+
+			$aggregate[] = $match;
+
+			$group['$group'] = [
+				'_id'=>'$service_id',
+				'count'=>['$sum'=>1]				
 			];
 
+			$aggregate[] = $group;
 
-			foreach($map as $key => $value){
 
-				$result = Facility::where('slug', $key)->update($value);
+			return $collection->aggregate($aggregate);
 
-				Log::info($result);
+		});
 
+
+		Log::info("asdasd");
+
+		$sessions = Booktrial::raw(function($collection){
+			
+			$match['$match']['type'] = ['$in'=>['workout-session']];
+			
+			$aggregate = [];
+
+			$aggregate[] = $match;
+
+			$group['$group'] = [
+				'_id'=>'$service_id',
+				'count'=>['$sum'=>1]				
+			];
+			$aggregate[] = $group;
+			
+			return $collection->aggregate($aggregate);
+
+		});
+
+		$sales = Order::raw(function($collection){
+			
+			$match['$match']['type'] = ['$in'=>['memberships', 'memberships']];
+			$match['$match']['status'] = '1';
+			
+			$aggregate = [];
+
+			$aggregate[] = $match;
+
+			$group['$group'] = [
+				'_id'=>'$service_id',
+				'count'=>['$sum'=>1]				
+			];
+			$aggregate[] = $group;
+			return $collection->aggregate($aggregate);
+
+		});
+
+		foreach($trials['result'] as $trial){
+			$traction[$trial['_id']]['trials'] = $trial['count'];
+		}
+
+		foreach($sessions['result'] as $session){
+			$traction[$session['_id']]['sessions'] = $session['count'];
+		}
+
+		foreach($sales['result'] as $sale){
+			$traction[$sale['_id']]['sales'] = $sale['count'];
+		}
+
+		// return $traction;
+		$data_session = [];
+		$data_no_session = [];
+
+		// function price_for_avg($o){
+		// 	return isset($o['price_for_avg']) ? $o['price_for_avg']:null;
+		// }
+		foreach($finders as $key => $finder){
+			$finder_data['city_name'] = $finder['city']['name'];
+			$finder_data['_id'] = $finder['_id'];
+			$finder_data['name'] = $finder['title'];
+			$finder_data['location'] = $finder['location']['name'];
+			$finder_data['type'] = "";
+			$finder_data['avg_price'] = "";
+			$finder_data['skew_price'] = "";
+			$finder_data['services']=[];
+			$finder_data['prices'] = [];
+			$workout_session = false;
+			$have_ratecard = false;
+			foreach($finder['services'] as $service){
+				$service_data = ['name'=>$service['name']];
+				$service_data['servicecategory_id'] = $service['servicecategory_id'];
+				$service_data['location'] = $service['location']['name'];
+				$service_data['price'] = [];
+
+				foreach($service['ratecards'] as $ratecard){
+
+					if($ratecard['type'] == 'workout session'){
+	
+						$workout_session = true;
+
+						$service_data['cost'] = $ratecard['price'];
+						$have_ratecard = true;
+			
+
+					}elseif($ratecard['type'] == 'membership' && (($ratecard['validity'] == '1' && in_array($ratecard['validity_type'], ['month', 'months'])) || ($ratecard['validity'] == '30' && in_array($ratecard['validity_type'], ['day', 'days'])))){
+						$have_ratecard = true;
+
+						if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
+							$price = $ratecard['special_price'];
+						}else{
+							$price = $ratecard['price'];
+						}
+						
+						// if(!in_array($service['servicecategory_id'], [184, 185, 186])){
+							array_push($finder_data['prices'], $price);
+							
+						// }
+						// if($price <= 2000){
+						// 	$service_data['type'] = "Basic";
+						// }elseif($price > 2000 && $price <= 4500){
+						// 	$service_data['type'] = "Average";
+						// }else{
+						// 	$service_data['type'] = "Premium";
+						// }
+						array_push($service_data['price'],$price);
+					}
+
+
+				}
+				
+				$service_data['traction'] = isset($traction[strval($service['_id'])]) ? $traction[strval($service['_id'])] : [];
+				
+				$service_data['price'] = implode('-', $service_data['price']);
+				array_push($finder_data['services'], $service_data);
 			}
 
+			
+			// $finder_data['traction'] = isset($traction[strval($finder['_id'])]) ? $traction[strval($finder['_id'])] : [];
+			if(count($finder_data['prices']) > 0){
+				$finder_data['avg_price'] = round(array_sum($finder_data['prices'])/count($finder_data['prices']));
+				if($finder_data['avg_price'] <= 2000){
+						$finder_data['type'] = "Basic";
+					}elseif($finder_data['avg_price'] > 2000 && $finder_data['avg_price'] <= 4500){
+						$finder_data['type'] = "Average";
+					}else{
+						$finder_data['type'] = "Premium";
+					}
+				foreach($finder_data['prices'] as $p){
+					if($p - $finder_data['avg_price'] > 5000){
+						$finder_data['skew_price'] = "yes";
+					}
+				}
+
+
+			}
+			unset($finder_data['prices']);
+
+			
+
+			if($have_ratecard){
+				
+				if($workout_session){
+					array_push($data_session, $finder_data);
+				}else{
+					array_push($data_no_session, $finder_data);
+				}
+			}
+		}
+
+		// return $data_no_session;
+		return ['$data_session'=>$data_session, '$data_no_session'=>$data_no_session];
+	}
+
+	public function cityWise(){
+
+		// $city_wise_session_gyms = Booktrial::raw(function($collection){
+
+		// 	$match['$match']['type'] = ['$in'=>['workout-session']];
+		// 	$match['$match']['service_category'] = ['$in'=>['Gyms', 'Gym']];
+		// 	$match['$match']['active'] = ['$ne'=>'0'];
+		// 	$match['$match']['$or'] = [['created_at'=>['$lt'=>new MongoDate(strtotime('2017-11-01'))]], ['created_at'=>['$gt'=>new MongoDate(strtotime('2017-11-30'))]]];
+			
+		// 	$aggregate = [];
+
+		// 	$aggregate[] = $match;
+
+		// 	$group['$group'] = [
+		// 		'_id'=>['city_id'=>'$city_id'],
+		// 		'count'=>['$sum'=>1]				
+		// 	];
+		// 	$aggregate[] = $group;
+			
+		// 	return $collection->aggregate($aggregate);
+		// });
+		
+		// $city_wise_session_others = Booktrial::raw(function($collection){
+			
+		// 	$match['$match']['type'] = ['$in'=>['workout-session']];
+		// 	$match['$match']['service_category'] = ['$nin'=>['Gyms', 'Gym']];
+		// 	$match['$match']['active'] = ['$ne'=>'0'];
+		// 	$match['$match']['$or'] = [['created_at'=>['$lt'=>new MongoDate(strtotime('2017-11-01'))]], ['created_at'=>['$gt'=>new MongoDate(strtotime('2017-11-30'))]]];
+			
+		// 	$aggregate = [];
+
+		// 	$aggregate[] = $match;
+
+		// 	$group['$group'] = [
+		// 		'_id'=>['city_id'=>'$city_id'],
+		// 		'count'=>['$sum'=>1]				
+		// 	];
+		// 	$aggregate[] = $group;
+			
+		// 	return $collection->aggregate($aggregate);
+		// });
+
+		// return array("city_wise_session_gyms"=>$city_wise_session_gyms,
+		// "city_wise_session_others"=>$city_wise_session_others);
+
+		// $city_wise_session_top = Booktrial::raw(function($collection){
+			
+		// 	$match['$match']['type'] = ['$in'=>['workout-session']];
+		// 	$match['$match']['active'] = ['$ne'=>'0'];
+		// 	$match['$match']['$or'] = [['created_at'=>['$lt'=>new MongoDate(strtotime('2017-11-01'))]], ['created_at'=>['$gt'=>new MongoDate(strtotime('2017-11-30'))]]];
+		// 	// $match['$match']['$city_id'] = ['$in'=>[1, 2, 3]];
+			
+		// 	$aggregate = [];
+
+		// 	$aggregate[] = $match;
+
+		// 	$group['$group'] = [
+		// 		'_id'=>['city_id'=>'$city_id', 'finder_id'=>'$finder_id'],
+		// 		'count'=>['$sum'=>1]				
+		// 	];
+		// 	$aggregate[] = $group;
+
+		// 	$aggregate[] = ['$sort'=>['count'=>-1]];
+			
+		// 	return $collection->aggregate($aggregate);
+		// });
+		// function return_finder($o){
+		// 	return $o['_id']['finder_id'];
+		// }
+		// // return $city_wise_session_top;
+		// $finder_ids = array_map('return_finder', $city_wise_session_top['result']);
+		// Finder::$withoutAppends = true;
+		// $finders = Finder::whereIn('_id',$finder_ids)->with('location')->get(['title', 'location_id']);
+		
+
+		// $data = [];
+
+		// foreach($finders as $finder){
+		// 	$data[$finder['_id']] = $finder;
+		// }
+
+		// foreach($city_wise_session_top['result'] as &$x){
+		// 	$x['finder_name'] = $data[strval($x['_id']['finder_id'])]['title'];
+		// 	$x['location'] = $data[strval($x['_id']['finder_id'])]['location']['name'];
+		// 	$x['city'] = $x['_id']['city_id'];
+		// 	$x['finder_id'] = $x['_id']['finder_id'];
+		// 	unset($x['_id']);
+
+		// }
+		// return $city_wise_session_top;
+
+		// $city_wise_session_top_services = Booktrial::raw(function($collection){
+			
+		// 	$match['$match']['type'] = ['$in'=>['workout-session']];
+		// 	$match['$match']['active'] = ['$ne'=>'0'];
+		// 	$match['$match']['$or'] = [['created_at'=>['$lt'=>new MongoDate(strtotime('2017-11-01'))]], ['created_at'=>['$gt'=>new MongoDate(strtotime('2017-11-30'))]]];
+		// 	// $match['$match']['$city_id'] = ['$in'=>[1, 2, 3]];
+			
+		// 	$aggregate = [];
+
+		// 	$aggregate[] = $match;
+
+		// 	$group['$group'] = [
+		// 		'_id'=>['city_id'=>'$city_id', 'service_category'=>'$service_category'],
+		// 		'count'=>['$sum'=>1]				
+		// 	];
+		// 	$aggregate[] = $group;
+
+		// 	$aggregate[] = ['$sort'=>['count'=>-1]];
+			
+		// 	return $collection->aggregate($aggregate);
+		// });
+		
+		// return $city_wise_session_top_services;
+		Log::info("inside");
+		$service_ids = Ratecard::where('type', "workout session")->lists('service_id');
+		$finder_ids = Service::active()->whereIn('_id', $service_ids)->lists('finder_id');
+		$active_finder_ids = Finder::active()->whereIn('_id', $finder_ids)->whereNotIn('flags.state', ['closed', 'temporarily_shut'])->where(function($query){return $query->orWhere('membership', '!=', 'disable')->orWhere('trial', '!=', 'disable');})->lists('_id');
+		// return $active_finder_ids;
+
+		$location_sessions = Service::raw(function($collection) use ($service_ids, $active_finder_ids){
+
+				$match['$match']['_id'] = ['$in'=>$service_ids];
+				$match['$match']['finder_id'] = ['$in'=>$active_finder_ids];
+				
+				$aggregate = [];
+	
+				$aggregate[] = $match;
+	
+				$group['$group'] = [
+					'_id'=>['location_id'=>'$location_id', 'servicecategory_id'=>'$servicecategory_id', 'city_id'=>'$city_id'],
+					'count'=>['$sum'=>1]				
+				];
+				$aggregate[] = $group;
+	
+				$aggregate[] = ['$sort'=>['count'=>-1]];
+				
+				return $collection->aggregate($aggregate);
+		});
+
+		// return $location_sessions;
+
+		$locations = Location::get(['name']);
+
+		$location_names = [];
+
+		foreach($locations as $location){
+			$location_names[$location['_id']] = $location['name'];
+		}
+
+		$serivce_category = Servicecategory::get(['name']);
+
+		$servicecategory_names = [];
+		
+		foreach($serivce_category as $category){
+			$servicecategory_names[$category['_id']] = $category['name'];
+		}
+
+		foreach($location_sessions['result'] as &$session){
+			$session['city'] = $session['_id']['city_id'];
+			if(isset($location_names[strval($session['_id']['location_id'])])){
+				$session['location'] = $location_names[strval($session['_id']['location_id'])];
+			}
+			if(isset($servicecategory_names[strval($session['_id']['servicecategory_id'])])){
+				$session['service_category'] = $servicecategory_names[strval($session['_id']['servicecategory_id'])];
+			}
+
+		}
+
+		$data = [];
+
+		foreach($location_sessions['result'] as $o){
+
+			if(isset($o['location'])){
+				$data[$o['location']][$o['service_category']] = $o['count'];
+				$data[$o['location']]['location'] = $o['location'];
+				$data[$o['location']]['city'] = $o['city'];
+			}
+
+		}
+
+		return array_values($data);
+
+	}
+
+
+
+
+	public function markRoutedOrders(){
+
+		$start_date = new DateTime('01-12-2017');
+
+		$orders = Order::active()->where("customer_source", "kiosk")->where('created_at', '>', $start_date)->where('routed_order', 'exists', false)->orderBy('_id', 'ASC')->get(['customer_email', 'customer_phone', 'created_at']);
+		Log::info($orders[0]['created_at']);
+
+		// return ($orders);
+		$utilities = new Utilities();
+
+		foreach($orders as $order){
+
+			if($utilities->checkFitternityCustomer1($order['customer_email'], $order['customer_phone'], $order['created_at'])){
+					$order->routed_order = "0";
+			}else{
+				$order->routed_order = "1";
+				
+			}
+				$order->routed_marked_by_script = "1";
+				$order->update();
+		}
+
+		return $orders;
+
+	}
+
+	public function createFitcashCoupons(){
+		ini_set('max_execution_time', 300000);
+		$data = Input::json()->all();
+		
+		$valid_till = $data['valid_till'];
+		$expiry = $data['expiry'];
+		$amount = $data['amount'];
+		$type = $data['type'];
+		$quantity = $data['quantity'];
+		$count = $data['count'];
+
+		$insert_codes = [];
+		$insert_code_names = [];
+		$i=1;
+		while(count($insert_codes) < $count){
+			Log::info($i);
+			$i++;
+			$fitcash_coupon = [];
+			$fitcash_coupon['code'] = "mar".strval(rand(1111111, 99999999));
+
+			// if(!in_array($fitcash_coupon['code'], $insert_code_names)){
+				// $fitcash_coupon['valid_till'] = $valid_till;
+				// $fitcash_coupon['expiry'] = $expiry;
+				// $fitcash_coupon['amount'] = $amount;
+				// $fitcash_coupon['type'] = $type;
+				// $fitcash_coupon['quantity'] = $quantity;
+				$fitcash_coupon['forty_thousand_coupons'] = true;
+				// array_push($insert_code_names, $fitcash_coupon['code']);
+				array_push($insert_codes, $fitcash_coupon);
+				// Log::info(count($insert_code_names));
+				// Log::info($fitcash_coupon);
+			// }
+		}
+
+		$result = Fitcashcoupon::insert($insert_codes);
+
+		// $update = Fitcashcoupon::where('forty_thousand_coupons', true)->update(['valid_till'=>$data['valid_till'],
+		// 																		'expiry'=>$data['expiry'],
+		// 																		'amount'=>$data['amount'],
+		// 																		'type'=>$data['type'],
+		// 																		'quantity'=>$data['quantity']]);
+
+		Log::info($result);
+		// return $result;
+
+	}
+
+	public function ldJson($booktrial_id){
+
+		$booktrial_id = (int) $booktrial_id;
+
+		$booktrial = Booktrial::find($booktrial_id);
+
+		$customermailer = new CustomerMailer();
+
+		$customermailer->bookTrial($booktrial->toArray());
+
+		return "Email Sent";
+
+	}
+
+	public function groupsData(){
+
+		$groups = Customergroup::active()->get()->toArray();
+		$data = [];
+		foreach($groups as $group){
+			$order_ids = array_pluck($group['members'], 'order_id');
+			if(count(array_values(array_unique($order_ids))) > 1){
+				// $orders = Order::active()->where('group_id', $group['group_id'])->count();
+				// if($orders>1){
+				// 	array_push($data, $group);
+
+				// }
+				foreach($group['members'] as &$member){
+					$order = Order::find($member['order_id']);
+					$member['amount_finder'] = $order->amount_finder;
+					$member['customer_name'] = $order->customer_name;
+					$member['finder_name'] = $order->finder_name;
+					$member['payment_mode'] = $order->payment_mode;
+					$member['status'] = $order->status;
+					$member['repeat_customer'] = $order->repeat_customer;
+				}
+				array_push($data, $group);
+				
+			}
+		}
+
+		return $data;
+
+	}
+
+	public function rewardClaimData(){
+		
+		$order_ids = [97309,97279,97248,97228,97220,97219,97215,97208,97206,97203,97201,97195,97192,97190,97188,97187,97185,97181,97169,97165,97163,97162,97160,97148,97141,97133,97132,97123,97096,97093,97091,97086,97077,97076,97069,97065,97062,97059,97044,97039,97038,97027,97021,97016,97014,96996,96986,96980,96978,96969,96965,96961,96955,96952,96951,96948,96941,96939,96937,96927,96924,96923,96918,96917,96915,96909,96907,96904,96902,96901,96900,96875,96868,96866,96864,96857,96856,96851,96850,96848,96846,96845,96842,96839,96831,96821,96816,96781,96748,96742,96737,96734,96703,96701,96696,96676,96672,96670,96669,96665,96649,96643,96642,96641,96637,96633,96629,96625,96586,96582,96580,96573,96567,96558,96551,96550,96546,96543,96537,96534,96520,96517,96487,96466,96439,96430,96424,96421,96419,96418,96415,96412,96408,96405,96347,96335,96227,96213,96208,96204,96186,96180,96177,96168,96161,96156,96150,96142,96138,96132,96131,96129,96124,96123,96117,96116,96110,96107,96105,96095,96093,96079,96071,96052,96045,96043,96042,96006,95985,95982,95978,95977,95969,95963,95957,95954,95936,95930,95927,95925,95924,95921,95913,95908,95875,95863,95862,95861,95859,95857,95856,95853,95851,95849,95848,95847,95826,95825,95822,95815,95814,95813,95811,95809,95806,95803,95801,95800,95797,95796,95795,95793,95792,95791,95789,95781,95779,95776,95775,95772,95769,95766,95765,95763,95760,95757,95756,95755,95750,95645,95598,95586,95581,95556,95555,95553,95546,95542,95541,95534,95530,95524,95520,95508,95499,95492,95489,95465,95442,95437,95425,95413,95408,95403,95372,95368,95362,95360,95359,95352,95346,95342,95337,95335,95334,95333,95331,95326,95266,95258,95245,95226,95223,95195,95191,95190,95187,95186,95184,95177,95175,95174,95165,95164,95162,95158,95146,95140,95124,95045,95041,95032,94978,94975,94960,94954,94951,94950,94921,94919,94910,94909,94908,94900,94899,94898,94896,94895,94892,94890,94888,94883,94880,94876,94875,94873,94872,94867,94866,94858,94857,94855,94853,94849,94848,94847,94846,94845,94844,94843,94842,94841,94840,94839,94837,94836,94834,94832,94831,94830,94829,94828,94827,94826,94823,94819,94817,94816,94814,94813,94812,94811,94810,94806,94804,94803,94801,94800,94798,94797,94793,94792,94791,94790,94789,94788,94787,94784,94783,94778,94777,94775,94774,94773,94772,94770,94768,94764,94763,94762,94761,94760,94759,94757,94755,94754,94753,94751,94750,94748,94743,94738,94735,94734,94733,94732,94731,94728,94727,94726,94724,94723,94722,94711,94707,94637,94632,94615,94614,94506,94505,94504,94499,94494,94486,94483,94482,94480,94478,94476,94475,94474,94473,94472,94471,94470,94467,94466,94464,94459,94458,94456,94455,94444,94440,94439,94434,94430,94426,94420,94419,94414,94413,94411,94410,94408,94407,94405,94404,94403,94402,94401,94400,94398,94396,94394,94392,94390,94387,94379,94377,94375,94374,94370,94365,94363,94362,94361,94360,94359,94358,94357,94356,94354,94353,94352,94351,94349,94348,94347,94342,94341,94339,94335,94334,94329,94325,94322,94315,94314,94311,94310,94293,94285,94283,94281,94279,94277,94276,94274,94272,94269,94268,94262,94233,94232,94224,94222,94209,94202,94198,94194,94189,94186,94185,94182,94178,94176,94175,94173,94172,94169,94167,94165,94163,94162,94161,94155,94153,94152,94149,94148,94146,94143,94139,94137,94136,94134,94131,94130,94126,94125,94108,94107,94106,94103,94102,94101,94100,94099,94098,94097,94096,94095,94092,94090,94089,94088,94087,94086,94084,94079,94077,94075,94070,94066,94065,94064,94063,94062,94060,94059,94056,94050,94047,94044,94043,94038,94037,94010,94005,93965,93964,93961,93956,93949,93939,93938,93936,93919,93907,93904,93901,93898,93896,93895,93892,93890,93889,93888,93887,93885,93884,93883,93882,93880,93879,93878,93877,93876,93875,93873,93871,93867,93865,93864,93863,93860,93859,93857,93856,93855,93854,93853,93848,93847,93845,93844,93843,93842,93840,93839,93838,93837,93836,93835,93833,93832,93831,93830,93827,93823,93822,93821,93819,93818,93817,93815,93813,93812,93809,93808,93806,93802,93800,93799,93797,93796,93794,93792,93791,93788,93783,93778,93770,93767,93758,93734,93733,93732,93716,93655,93653,93650,93649,93644,93643,93634,93626,93617,93605,93602,93601,93597,93556,93551,93549,93545,93544,93541,93539,93536,93523,93511,93509,93508,93502,93494,93436,93434,93384,93383,93361,93264,93248,93245,93224,93213,93166,93164,93163,93162,93161,93160,93159,93157,93156,93155,93154,93153,93152,93151,93150,93143,93142,93140,93139,93137,93136,93135,93133,93132,93126,93125,93123,93122,93120,93118,93116,93115,93114,93113,93112,93111,93107,93106,93080,93078,93077,93075,93074,93073,93071,93070,93069,93066,93064,93063,93062,93061,93060,93059,93058,93057,93056,93055,93054,93053,93052,93050,93049,93048,93046,93045,93044,93042,93041,93040,93039,93038,93037,93036,93034,93033,93032,93029,93028,93027,93026,93023,93022,93021,93020,93017,93015,93011,93010,93007,93005,93004,93001,93000,92998,92995,92994,92993,92988,92987,92984,92982,92981,92978,92977,92976,92974,92973,92964,92948,92924,92905,92892,92883,92882,92881,92880,92878,92877,92875,92872,92819,92815,92813,92799,92796,92795,92794,92788,92785,92783,92773,92769,92767,92766,92764,92740,92732,92714,92704,92691,92646,92627,92625,92613,92587,92574,92571,92567,92564,92562,92561,92558,92555,92554,92553,92541,92533,92531,92525,92523,92510,92463,92462,92445,92403,92400,92389,92362,92355,92301,92257,92251,92152,92140,92132,92131,92124,92120,92116,92105,92094,92085,92052,92051,92033,91994,91947,91887,91878,91866,91862,91840,91835,91800,91783,91782,91780,91772,91771,91765,91750,91734,91732,91726,91721,91687,91680,91673,91666,91577,91575,91542,91440,91419,91417,91373,91356,91352,91351,91350,91343,91341,91339,91325,91314,91311,91298,91291,91230,91219,91214,91202,91201,91175,91171,91170,91159,91145,91141,91140,91101,91071,91066,91061,91030,90989,90977,90971,90939,90932,90931,90924,90918,90911,90907,90906,90904,90896,90892,90887,90858,90842,90828,90807,90790,90782,90779,90761,90756,90750,90748,90746,90744,90734,90733,90729,90725,90724,90722,90712,90710,90702,90701,90686,90672,90670,90660,90627,90613,90607,90605,90603,90590,90586,90583,90582,90581,90580,90579,90577,90574,90570,90562,90519,90512,90469,90456,90451,90449,90446,90444,90442,90435,90426,90425,90421,90417,90411,90397,90390,90378,90363,90361,90346,90341,90340,90330,90328,90307,90246,90245,90244,90241,90183,90180,90177,90176,90175,90172,90171,90166,90160,90159,90158,90149,90143,90130,90128,90125,90114,90111,90093,90088,90056,90036,90028,90024,90013,90012,90000,89972,89968,89949,89947,89892,89883,89882,89881,89871,89856,89853,89848,89813,89792,89785,89737,89731,89727,89725,89721,89715,89708,89707,89700,89697,89695,89694,89690,89688,89687,89676,89673,89672,89667,89666,89663,89658,89650,89646,89645,89644,89643,89589,89579,89568,89555,89542,89521,89511,89502,89495,89490,89486,89479,89475,89471,89466,89461,89458,89455,89453,89450,89449,89448,89446,89439,89435,89432,89428,89427,89425,89423,89419,89398,89369,89310,89296,89290,89226,89218,89214,89202,89185,89184,89183,89181,89180,89177,89176,89175,89174,89173,89172,89171,89169,89166,89149,89139,89135,89070,89067,89063,88970,88963,88928,88924,88910,88885,88860,88854,88670,88638,88619,88606,88593,88576,88572,88565,88556,88422,88377,88328,88310,88306,88304,88293,88273,88267,88262,88252,88240,88123,88057,88023,88017,88009,87892,87888,87878,87866,87859,87756,87745,87740,87735,87730,87711,87687,87665,87627,87621,87573,87558,87518,87505,87502,87490,87486,87483,87478,87467,87438,87436,87433,87427,87400,87397,87393,87390,87389,87365,87358,87333,87332,87315,87309,87284,87239,87219,87209,87208,87179,87137,87125,87120,87112,87064,87038,87028,87017,87000,86956,86882,86873,86760,86629,86533,86488,86475,86472,86468,86466,86457,86453,86449,86442,86438,86431,86426,86416,86414,86413,86410,86346,86323,86318,86317,86316,86315,86314,86311,86310,86303,86302,86301,86295,86293,86292,86291,86289,86286,86270,86267,86266,86261,86247,86210,86173,86171,86169,86159,86155,86152,86141,86139,86137,86136,86117,86109,86050,86042,86024,86023,86018,86017,86016,86012,86011,86010,86004,85992,85984,85979,85973,85971,85874,85846,85843,85836,85824,85823,85819,85815,85814,85786,85784,85782,85714,85708,85701,85697,85696,85690,85689,85683,85682,85680,85679,85676,85668,85663,85661,85660,85657,85655,85653,85650,85648,85646,85640,85636,85633,85630,85627,85621,85618,85611,85610,85607,85603,85599,85492,85424,85374,85332,85191,85170,85158,85141,85130,85107,85105,85101,85096,85092,85071,85069,85066,85063,84903,84897,84887,84880,84878,84872,84848,84845,84840,84838,84823,84820,84815,84675,84617,84596,84595,84399,84392,84366,84362,84357,84215,84212,84209,84207,84204,84203,84185,84183,84178,84175,84174,84172,84170,84168,84062,83998,83997,83934,83865,83835,83833,83832,83829,83827,83826,83819,83816,83774,83761,83736,83676,83675,83674,83673,83670,83667,83666,83663,83662,83661,83660,83658,83653,83652,83641,83640,83638,83636,83635,83634,83633,83632,83631,83630,83623,83622,83619,83618,83617,83616,83479,83445,83438,83434,83432,83428,83427,83426,83403,83313,83304,83282,83280,83279,83278,83277,83274,83273,83272,83267,83265,83263,83262,83260,83258,83257,83256,83255,83222,83221,83218,83214,83206,83203,83202,83200,83178,83176,83173,83172,83167,83162,83159,83156,83155,83151,83149,83148,83147,83145];
+
+		// $orders = Order::whereIn('_id', $order_ids)->get(['customer_reward_id']);
+
+		// $claimed_rewards = Myreward::whereIn('order_id', $order_ids)->where('claimed', 1)->lists('order_id');
+
+		// return $claimed_rewards;
+		
+		$orders = Order::whereIn('_id', $order_ids)->get(['customer_id', 'success_date', 'updated_at'])->toArray();
+		
+		$customer_ids = Order::whereIn('_id', $order_ids)->lists('customer_id');
+
+
+		$post_orders = Order::raw(function($collection) use ($customer_ids){
+
+			$aggregate = [];
+			
+			$match = [
+				'$match'=>[
+					'type'=>['$in'=>["memberships","events","event","membership","diet_plan","wallet"]], 
+					'status'=>"1",
+					'customer_id'=>['$in'=>$customer_ids]
+				]
+			];
+
+			$aggregate[] = $match;
+
+			$sort = [
+				'$sort'=>[
+					'success_date'=>-1
+				]
+			];
+
+			$aggregate[] = $sort;
+			
+			$group = [
+				'$group'=>[
+					'_id'=>'$customer_id',
+					'count'=>[
+						'$sum'=>1
+					],
+					'success_dates'=>[
+						'$push'=>'$success_date'
+					]
+					]
+				];
+			$aggregate[] = $group;
+			
+			$sort = [
+				'$sort'=>[
+					'count'=>-1
+				]
+			];
+
+			$aggregate[] = $sort;
+			
+
+			$match1 = [
+				'$match'=>[
+					'count'=>['$gt'=>1],
+				]
+			];
+					
+			$aggregate[] = $match1;
+			
+
+			return $collection->aggregate($aggregate);
+
+		});
+
+		foreach($post_orders['result'] as $customer){
+			$orders_data[$customer['_id']] = $customer['success_dates'];
+		}
+
+
+		// return $orders_data;
+
+
+		$post_trials = Booktrial::raw(function($collection) use ($customer_ids){
+			
+			$aggregate = [];
+			
+			$match = [
+				'$match'=>[
+					'customer_id'=>['$in'=>$customer_ids]
+				]
+			];
+
+			$aggregate[] = $match;
+
+			$sort = [
+				'$sort'=>[
+					'_id'=>-1
+				]
+			];
+
+			$aggregate[] = $sort;
+			
+			$group = [
+				'$group'=>[
+					'_id'=>'$customer_id',
+					'count'=>[
+						'$sum'=>1
+					],
+					'created_at'=>[
+						'$push'=>'$created_at'
+					]
+					]
+				];
+			$aggregate[] = $group;
+			
+			$sort = [
+				'$sort'=>[
+					'count'=>-1
+				]
+			];
+
+			$aggregate[] = $sort;
+			
+			return $collection->aggregate($aggregate);
+
+		});
+
+		foreach($post_trials['result'] as $customer){
+			$trials_data[$customer['_id']] = $customer['created_at'];
+		}
+
+		// return $trials_data;
+
+		foreach($orders as &$order){
+			$order['post_count'] = 0;
+			// $order['transactions'] = [];
+			if(isset($orders_data[strval($order['customer_id'])])){
+				foreach($orders_data[strval($order['customer_id'])] as $date){
+					// Log::info($date->sec);
+					Log::info($order['_id']);
+					if((isset($order['success_date']) && strtotime($order['success_date']) < $date->sec) || (!isset($order['success_date']) && isset($order['updated_at']) && strtotime($order['updated_at']) < $date->sec)){
+						$order['post_count']++;
+						// array_push($order['transactions'], ['type'=>'order', 'date'=>date("Y-m-d H:i:s",$date->sec)]);
+						// Log::info($order);
+						// return $date;
+					}else{
+						Log::info($order);
+						// return "asdasdasdsa";
+						break;
+					}
+				}
+			}
+			if(isset($trials_data[strval($order['customer_id'])])){
+				foreach($trials_data[strval($order['customer_id'])] as $date){
+					// Log::info($date->sec);
+					Log::info($order['_id']);
+					if((isset($order['success_date']) && strtotime($order['success_date']) < $date->sec) || (!isset($order['success_date']) && isset($order['updated_at']) && strtotime($order['updated_at']) < $date->sec)){
+						$order['post_count']++;
+						// array_push($order['transactions'], ['type'=>'trial', 'date'=>date("Y-m-d H:i:s",$date->sec)]);
+						// Log::info($order);
+						// return $date;
+					}else{
+						Log::info($order);
+						// return "asdasdasdsa";
+						break;
+					}
+				}
+			}
+		}
+
+		return $orders;
+
+
+		// $data = [];
+
+		// Log::info("total orders".count($orders));
+		// $i=1;
+		// foreach($orders as $order){
+		// 	Log::info($order->_id);
+		// 	Log::info($i++);
+		// 	$post_orders = Order::active()->where('customer_id', $order->customer_id)->where('success_date', '>', $order->success_date)->whereIn('type', ["memberships","events","event","membership","diet_plan","wallet"])->count();
+		// 	$post_trials = Booktrial::where('customer_id', $order->customer_id)->where('created_at', '>', $order->success_date)->count();
+		// 	array_push($data, ['order_id'=>$order->_id, 'count'=>$post_orders+$post_trials]);
+		// }
+
+		// return $data;
+
+
+	}
+
+
+	public function sendVendorEmail(){
+
+		$findersms = new FinderSms();
+		$findermailer = new FinderMailer();
+
+		$array = [
+			["finder_name"=>"Body Vignyan","customer_name"=>"Kiran"],
+			["finder_name"=>"Zorba - Yoga Fitness And Beyond Jayanagar","customer_name"=>"Supriti"],
+			["finder_name"=>"Total Yoga Kasturba Road","customer_name"=>"Dia"],
+			["finder_name"=>"Body Vignyan","customer_name"=>"Harshavardhan"],
+			["finder_name"=>"Club One Fitness And Health Studio","customer_name"=>"Akshar"],
+			["finder_name"=>"Rhythmic Feet","customer_name"=>"Meghana Jangi"],
+			["finder_name"=>"Zorba - Yoga Fitness  Beyond Ulsoor","customer_name"=>"Masako"],
+			["finder_name"=>"Rhythmic Feet","customer_name"=>"Meghana Jangi"],
+			["finder_name"=>"You Against You Fitness","customer_name"=>"Bijit Sarkar"],
+			["finder_name"=>"F2 Fusion Fitness","customer_name"=>"Hitesh Nayak"],
+			["finder_name"=>"Stepperz","customer_name"=>"Shilpa Vashist"],
+			["finder_name"=>"Reforma Fitness Center","customer_name"=>"Himanshu Mehta"],
+			["finder_name"=>"Reforma Fitness Center","customer_name"=>"Anay"],
+			["finder_name"=>"Reforma Fitness Center","customer_name"=>"Durga Sai"],
+			["finder_name"=>"Reforma Fitness Center","customer_name"=>"Paulson"],
+			["finder_name"=>"Leap Yoga And Pilates","customer_name"=>"Rashmi Singh"],
+			["finder_name"=>"Dhurii","customer_name"=>"Preeti Goyal"],
+			["finder_name"=>"HSR Fitness World","customer_name"=>"Yadu Gowda"],
+			["finder_name"=>"Gold's Gym","customer_name"=>"Vardhan"],
+			["finder_name"=>"M S Gurukkal's Kadathanadan Kalari Academy","customer_name"=>"Anindita Chakraborty"],
+			["finder_name"=>"HSR Fitness World","customer_name"=>"Yadu Gowda"],
+			["finder_name"=>"Power World Gym","customer_name"=>"Pawan Kumar"],
+			["finder_name"=>"Power World Gym","customer_name"=>"Gautam Bhat"],
+			["finder_name"=>"Amrutha Bindu Yoga","customer_name"=>"Supriya"],
+			["finder_name"=>"Power World Gym","customer_name"=>"Gautam Bhat"],
+			["finder_name"=>"High Fitness Club","customer_name"=>"JENESH CHOWHAN"],
+			["finder_name"=>"God Gift Yoga Center","customer_name"=>"Ruhina"],
+			["finder_name"=>"Klub Fit","customer_name"=>"Siddharth Mishra"],
+			["finder_name"=>"F45 Training HSR Layout","customer_name"=>"Sandeep Mukherjee"],
+			["finder_name"=>"Pluto Fitness","customer_name"=>"Devika Premlal"],
+			["finder_name"=>"Klub Fit","customer_name"=>"Surya Prakash Gupta"],
+			["finder_name"=>"Fifth Gear Fitness","customer_name"=>"SHAAN"],
+			["finder_name"=>"Fifth Gear Fitness","customer_name"=>"TANVIR"],
+			["finder_name"=>"Zorba - Yoga Fitness  Beyond Ulsoor","customer_name"=>"Komal"],
+			["finder_name"=>"Gold's Gym","customer_name"=>"Sudharshan"],
+			["finder_name"=>"Fitness Cafe","customer_name"=>"Charan"],
+			["finder_name"=>"Fitness Cafe","customer_name"=>"Shabnam"],
+			["finder_name"=>"Fitness Cafe","customer_name"=>"Harsh Gupta"],
+			["finder_name"=>"Fitness Cafe","customer_name"=>"Vartika"],
+			["finder_name"=>"Fitness Cafe","customer_name"=>"Nausheen"],
+			["finder_name"=>"Fitness Cafe","customer_name"=>"Anjali"],
+			["finder_name"=>"Fitness Cafe","customer_name"=>"Venkata"],
+			["finder_name"=>"Fitness Cafe","customer_name"=>"Ranjan Mittal"],
+			["finder_name"=>"Fitness Cafe","customer_name"=>"Tenzin"],
+			["finder_name"=>"Fitness Cafe","customer_name"=>"Prajval"],
+			["finder_name"=>"Fitness Cafe","customer_name"=>"M.preethi"],
+			["finder_name"=>"Fitness Cafe","customer_name"=>"Milan Mohan"],
+			["finder_name"=>"Fitness Cafe","customer_name"=>"Megha Navasapur"],
+			["finder_name"=>"Fitness Cafe","customer_name"=>"Anish"],
+			["finder_name"=>"Fitness Cafe","customer_name"=>"Krishnendu Bikash"],
+			["finder_name"=>"Fitness Cafe","customer_name"=>"Tubharath Kumar"],
+			["finder_name"=>"Fitness Cafe","customer_name"=>"Rakshit Kejriwal"]
+		];
+
+		$flag = false;
+
+		foreach ($array as $value) {
+
+			$order = Order::active()
+				->where('finder_name','like','%'.$value['finder_name'].'%')
+				->where('customer_name','like','%'.$value['customer_name'].'%')
+				->where('instantPurchaseFinderTiggerCount','exists',false)
+				->where('sendVendorEmail','exists',false)
+				->where('type','memberships')
+				->where('city_id',3)
+				->orderBy('_id','desc')
+				->first();
+
+			if($order){
+
+				$findermailer->sendPgOrderMail($order->toArray());
+				$findersms->sendPgOrderSms($order->toArray());
+
+				$order->update(['sendVendorEmail'=>time()]);
+
+				$flag = true;
+			}
+
+		}
+
+		if(!$flag){
+			return "Done";
+		}else{
+			return "Not Done";
+		}
+
+	}
+
+	function paypersession(){
+
+		// $sessions = Booktrial::raw(function($collection){
+		// 	$aggregate = [];
+			
+		// 	// $match['$match']['customer_id'] = 77798;
+		// 	$match['$match']['type'] = 'workout-session';
+		// 	$match['$match']['created_at'] = ['$gte'=>new MongoDate(strtotime('2017-10-01'))];
+		// 	$match['$match']['_id'] = ['$nin'=>[88275,88313,88754,90424,91294,91296,95959,95961,98707,98824,99546,100981,101938,102759]];
+
+		// 	$aggregate[] = $match;
+			
+		// 	$project['$project']['month'] = ['$month'=> '$created_at'];
+		// 	$project['$project']['created_at1'] = ['$dateToString'=>['format'=> "%Y-%m-%dT%H:%M:%S", 'date'=> '$created_at' ]];
+		// 	$project['$project']['schedule_date_time1'] = ['$dateToString'=>['format'=> "%Y-%m-%dT%H:%M:%S", 'date'=> '$schedule_date_time' ]];
+		// 	$project['$project']['created_at'] = 1;
+		// 	$project['$project']['time_diff_hours'] = ['$divide'=>[['$subtract'=>['$schedule_date_time', '$created_at']], 3600000]];
+		// 	$project['$project']['amount_finder'] = 1;
+		// 	$project['$project']['customer_id'] = 1;
+		// 	$project['$project']['finder_id'] = 1;
+		// 	$project['$project']['schedule_date_time'] = 1;
+		// 	$project['$project']['going_status_txt'] = 1;
+			
+	
+		// 	$aggregate[] = $project;
+			
+		// 	$group = [
+		// 		'$group' => [
+		// 			'_id' => '$month',
+		// 			'count' => [
+		// 				'$sum' => 1
+		// 			],
+		// 			'sessions'=>['$push'=>'$$ROOT'],
+		// 			// 'avg_time_diff'=>[
+		// 			// 	'$avg'=>'$time_diff_hours'
+		// 			// ],
+		// 			'avg_amount'=>[
+		// 				'$avg'=>'$amount_finder'
+		// 			]
+		// 			],
+		// 		];
+	
+		// 	$aggregate[] = $group;
+		// 	$aggregate[] = ['$sort'=>['_id'=>1]];
+
+		// 	return $collection->aggregate($aggregate);
+		// });
+
+		// foreach($sessions['result'] as &$x){
+			
+		// 	$time_diffs = [];
+
+		// 	foreach($x['sessions'] as $session){
+
+		// 		if(!(isset($session['going_status_txt']) && $session['going_status_txt'] == 'rescheduled')){
+		// 			array_push($time_diffs, $session['time_diff_hours']);
+		// 		}
+				
+		// 	}
+
+		// 	$x['avg_time_diff1'] = array_sum($time_diffs) / count($time_diffs);
+
+		// 	// if($x['_id'] == 11){
+
+		// 	// 	return array_pluck($x['sessions'], '_id');
+		// 	// }
+		// }
+		// return $sessions;
+
+
+
+		// $source = Booktrial::raw(function($collection){
+		// 	$aggregate = [];
+			
+		// 	// $match['$match']['customer_id'] = 77798;
+		// 	$match['$match']['type'] = 'workout-session';
+		// 	$match['$match']['created_at'] = ['$gte'=>new MongoDate(strtotime('2017-10-01'))];
+		// 	$match['$match']['_id'] = ['$nin'=>[88275,88313,88754,90424,91294,91296,95959,95961,98707,98824,99546,100981,101938,102759]];
+
+		// 	$aggregate[] = $match;
+
+		// 	$project['$project']['month'] = ['$month'=> '$created_at'];
+		// 	$project['$project']['source'] = 1;
+	
+		// 	$aggregate[] = $project;
+			
+		// 	$group = [
+		// 		'$group' => [
+		// 			'_id' => ['month'=>'$month', 'source'=>'$source'],
+		// 			'count' => [
+		// 				'$sum' => 1
+		// 			],
+		// 		]
+		// 	];
+	
+		// 	$aggregate[] = $group;
+		// 	$aggregate[] = ['$sort'=>['_id'=>1]];
+			
+			
+		// 	// $aggregate[] = ['$match'=>['time_diff_hours'=>['$lt'=>0]]];
+	
+		// 	return $collection->aggregate($aggregate);
+		// });
+
+		// return $source;
+
+
+		
+
+
+		// $payment = Order::raw(function($collection){
+		// 	$aggregate = [];
+			
+		// 	// $match['$match']['customer_id'] = 77798;
+		// 	$match['$match']['type'] = 'workout-session';
+		// 	$match['$match']['created_at'] = ['$gte'=>new MongoDate(strtotime('2017-10-01'))];
+		// 	// $match['$match']['_id'] = ['$nin'=>[88275,88313,88754,90424,91294,91296,95959,95961,98707,98824,99546,100981,101938,102759]];
+		// 	$match['$match']['status'] = "1";
+		// 	$match['$match']['amount'] = ['$gt'=>0];
+			
+		// 	$aggregate[] = $match;
+
+		// 	$project['$project']['month'] = ['$month'=> '$created_at'];
+		// 	$project['$project']['pg_type'] = 1;
+	
+		// 	$aggregate[] = $project;
+			
+		// 	$group = [
+		// 		'$group' => [
+		// 			'_id' => ['month'=>'$month', 'pg_type'=>'$pg_type'],
+		// 			// 'ids'=>[
+		// 			// 	'$push'=>'$_id'
+		// 			// ],
+		// 			'count' => [
+		// 				'$sum' => 1
+		// 			],
+		// 		]
+		// 	];
+	
+		// 	$aggregate[] = $group;
+		// 	$aggregate[] = ['$sort'=>['_id'=>1]];
+			
+			
+		// 	// $aggregate[] = ['$match'=>['time_diff_hours'=>['$lt'=>0]]];
+	
+		// 	return $collection->aggregate($aggregate);
+		// });
+
+		// return $payment;
+		
+		// foreach($sessions['result'] as &$month){
+			
+		// 	$month['repeats'] = 0;
+		// 	$month['trial_booked'] = 0;
+		// 	$month['existing_membership'] = 0;
+		// 	if(!isset($month['sessions'])){
+		// 		return $month;
+		// 	}
+		// 	$customers = array_values(array_unique(array_pluck($month['sessions'], 'customer_id')));
+		// 	$month['customers'] = count(array_values(array_unique(array_pluck($month['sessions'], 'customer_id'))));
+		// 	$month['frequency'] = array_count_values(array_values(array_count_values(array_pluck($month['sessions'], 'customer_id'))));
+			
+			
+		// 	$customer_prev_sessions = Booktrial::raw(function($collection) use ($customers){
+				
+		// 		// $match['$match']['type'] = 'workout-session';
+		// 		$match['$match']['customer_id'] = ['$in'=>$customers];
+		// 		$match['$match']['type'] = ['$in'=>['booktrial', 'workout-session', 'booktrials']];
+				
+				
+		// 		$aggregate[] = $match;
+
+		// 		$project['$project']['customer_id'] = 1;
+		// 		$project['$project']['finder_id'] = 1;
+		// 		$project['$project']['_id'] = 1;
+		// 		$project['$project']['type'] = 1;
+		
+		// 		$aggregate[] = $project;
+			
+		// 		$group = [
+		// 			'$group' => [
+		// 				'_id' => '$customer_id',
+		// 				'trials' => [
+		// 					'$push'=>'$$ROOT'
+		// 				],
+		// 			]
+		// 		];
+		
+		// 		$aggregate[] = $group;
+
+		// 		return $collection->aggregate($aggregate);
+			
+
+		// 	});
+
+		// 	$customer_memberships = Order::raw(function($collection) use ($customers){
+				
+		// 		// $match['$match']['type'] = 'workout-session';
+		// 		$match['$match']['customer_id'] = ['$in'=>$customers];
+		// 		$match['$match']['type'] = ['$in'=>['memberships']];
+		// 		$match['$match']['status'] = "1";
+				
+				
+		// 		$aggregate[] = $match;
+
+		// 		$project['$project']['customer_id'] = 1;
+		// 		$project['$project']['start_date'] = 1;
+		// 		$project['$project']['end_date'] = 1;
+		// 		// $project['$project']['type'] = 1;
+		
+		// 		$aggregate[] = $project;
+			
+		// 		$group = [
+		// 			'$group' => [
+		// 				'_id' => '$customer_id',
+		// 				'orders' => [
+		// 					'$push'=>'$$ROOT'
+		// 				],
+		// 			]
+		// 		];
+		
+		// 		$aggregate[] = $group;
+
+		// 		return $collection->aggregate($aggregate);
+			
+
+		// 	});
+			
+		// 	$trials_data = [];
+
+		// 	foreach($customer_prev_sessions['result'] as $customer){
+
+		// 		$trials_data[$customer['_id']] = $customer['trials'];
+
+		// 	}
+
+		// 	$orders_data = [];
+			
+		// 	foreach($customer_memberships['result'] as $customer){
+
+		// 		$orders_data[$customer['_id']] = $customer['orders'];
+
+		// 	}
+
+			
+
+		// 	foreach($month['sessions'] as $session){
+
+		// 		$customer_sessions = $trials_data[strval($session['customer_id'])];
+
+
+				
+		// 		Log::info($session);
+				
+		// 		foreach($customer_sessions as $x){
+		// 			if($x['type'] == 'workout-session' && $x['_id'] < $session['_id']){
+		// 				$month['repeats']++;
+		// 				break;
+		// 			}
+
+
+		// 		}
+
+		// 		foreach($customer_sessions as $x){
+					
+		// 			if(in_array($x['type'],['booktrial', 'booktrials']) && $x['_id'] < $session['_id']){
+		// 				$month['trial_booked']++;
+		// 				break;
+		// 			}
+
+		// 		}
+
+		// 		if(isset($orders_data[strval($session['customer_id'])])){
+
+		// 			$customer_orders = $orders_data[strval($session['customer_id'])];
+	
+		// 			foreach($customer_orders as $x){
+		// 				Log::info($x);
+		// 				if(isset($x['start_date']) && isset($x['end_date']) && $x['start_date'] < $session['schedule_date_time'] && $x['end_date'] > $session['schedule_date_time']){
+		// 					// return $x;
+		// 					$month['existing_membership']++;
+		// 					break;
+		// 				}
+	
+		// 			}
+		// 		}
+
+
+		// 	}
+		// 	unset($month['sessions']);
+			
+		// 	// return $data;
+		// }
+
+
+
+		// return ['sessions'=>$sessions];
+		// return array_pluck($sessions['result'], '_id');
+
+		$all_prev = Booktrial::raw(function($collection){
+			$aggregate = [];
+			
+			// $match['$match']['customer_id'] = 77798;
+			$match['$match']['type'] = 'workout-session';
+			$match['$match']['created_at'] = ['$lt'=>new MongoDate(strtotime('2017-10-01'))];
+
+			$aggregate[] = $match;
+
+			$project['$project']['month'] = ['$month'=> '$created_at'];
+			$project['$project']['customer_id'] = 1;
+	
+			$aggregate[] = $project;
+			
+			$group = [
+				'$group' => [
+					'_id' => '$null',
+					'customer_ids'=>[
+						'$push'=>'$customer_id'
+					],
+				]
+			];
+	
+			$aggregate[] = $group;
+	
+			return $collection->aggregate($aggregate);
+		});
+
+		$repeats = Booktrial::raw(function($collection){
+			$aggregate = [];
+			
+			// $match['$match']['customer_id'] = 77798;
+			$match['$match']['type'] = 'workout-session';
+			$match['$match']['created_at'] = ['$gte'=>new MongoDate(strtotime('2017-10-01'))];
+
+			$aggregate[] = $match;
+
+			$project['$project']['month'] = ['$month'=> '$created_at'];
+			$project['$project']['customer_id'] = 1;
+	
+			$aggregate[] = $project;
+			
+			$group = [
+				'$group' => [
+					'_id' => '$month',
+					'customer_ids'=>[
+						'$push'=>'$customer_id'
+					],
+				]
+			];
+	
+			$aggregate[] = $group;
+	
+			return $collection->aggregate($aggregate);
+		});
+
+		// return $repeats;
+		// $month_map = [
+			
+		// 	'10' => [11, 12, 1, 2, 3],
+		// 	'11' =>	[12, 1, 2, 3],
+		// 	'12' => [1,2 ,3],
+		// 	'1' => [2, 3],
+		// 	'2' => [3]
+		// ];	
+
+		// $data = [];
+		// foreach($all_prev['result'] as $result){
+
+		// 	if(isset($month_map[strval($result['_id'])])){
+		// 		$months  = $month_map[strval($result['_id'])];
+				
+		// 		foreach($repeats['result'] as $result1){
+
+		// 			if(in_array($result1['_id'], $months)){
+
+		// 				$data[strval($result['_id'])]['month'] = $result['_id'];
+		// 				$data[strval($result['_id'])]['customers'] = count(array_values(array_unique($result['customer_ids'])));
+		// 				$data[strval($result['_id'])][$result1['_id']] = count(array_intersect(array_values(array_unique($result['customer_ids'])), array_values(array_unique($result1['customer_ids']))));
+		// 			}	
+
+
+
+		// 		}
+
+		// 	}
+		// }
+
+		$data = [];
+		foreach($all_prev['result'] as $result){
+			foreach($repeats['result'] as $result1){
+				$data[strval($result['_id'])]['month'] = $result['_id'];
+				$data[strval($result['_id'])]['customers'] = count(array_values(array_unique($result['customer_ids'])));
+				$data[strval($result['_id'])][$result1['_id']] = count(array_intersect(array_values(array_unique($result['customer_ids'])), array_values(array_unique($result1['customer_ids']))));
+			}
+		}
+
+		return array_values($data);
+
+	}
+
+	public function rewardClaimAvgTime(){
+
+		// $rewards = Myreward::raw(function($collection){
+
+		// 	$aggregate = [];
+			
+		// 	// $match['$match']['customer_id'] = 77798;
+		// 	$match['$match']['created_at'] = ['$gte'=>new MongoDate(strtotime('2017-12-13'))];
+		// 	$match['$match']['claimed'] = 1;
+		// 	$match['$match']['reward_type'] = "fitness_kit";
+		// 	// $match['$match']['success_date'] = ['$exists'=>true];
+			
+		// 	$aggregate[] = $match;
+			
+		// 	$project['$project']['time_diff_hours'] = ['$divide'=>[['$subtract'=>['$success_date', '$created_at']], 3600000]];
+	
+		// 	$aggregate[] = $project;
+			
+		// 	$group = [
+		// 		'$group' => [
+		// 			'_id' => null,
+		// 			'avg_claim_time_hours'=>[
+		// 				'$avg'=>'$time_diff_hours'
+		// 			],
+		// 		]
+		// 	];
+	
+		// 	$aggregate[] = $group;
+		// 	$aggregate[] = ['$sort'=>['_id'=>1]];
+			
+		// 	return $collection->aggregate($aggregate);
+
+		// });
+
+
+		$rewards = Myreward::raw(function($collection){
+			
+			$aggregate = [];
+			
+			$match['$match']['created_at'] = ['$gte'=>new MongoDate(strtotime('2017-12-13'))];
+			$match['$match']['reward_type'] = "fitness_kit";
+			$aggregate[] = $match;
+			
+			$group = [
+				'$group' => [
+					'_id' => '$claimed',
+					'count'=>[
+						'$sum'=>1
+					]
+				]
+			];
+	
+			$aggregate[] = $group;
+			$aggregate[] = ['$sort'=>['_id'=>1]];
+			
+			return $collection->aggregate($aggregate);
+
+		});
+
+
+		return $rewards;
+		
+		
+		$rewards = Myreward::where('created_at', '>', new DateTime('2017-12-13'))->get(['tshirt_size', 'content']);
+		
+		$data = [];
+		foreach($rewards as $reward){
+			if(isset($reward['content']) && in_array("Breather T-Shirt", $reward['content']) && (!isset($reward['tshirt_size']) || $reward['tshirt_size'] == '')){
+				array_push($data, $reward);
+			}
+			
+		}
+		
+		return $data;
 
 	}
 
     
 }
+

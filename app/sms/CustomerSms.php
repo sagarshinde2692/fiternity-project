@@ -37,6 +37,15 @@ Class CustomerSms extends VersionNextSms{
 		return $this->common($label,$to,$data);
 	}
 
+	protected function bookTrialReminderBefore12Hour ($data, $delay){
+
+		$label = 'AutoTrial-ReminderBefore12Hour-Customer';
+
+		$to = $data['customer_phone'];
+
+		return $this->common($label,$to,$data,$delay);
+	}
+
 	protected function bookTrialReminderBefore1Hour ($data, $delay){
 
 		$label = 'AutoTrial-ReminderBefore1Hour-Customer';
@@ -1003,7 +1012,46 @@ Class CustomerSms extends VersionNextSms{
 
         return $this->common($label,$to,$data,$delay);
 
-    }
+	}
+	
+	public function sendGroupInvite($data){
+		
+		Log::info("invite sent to");
+		Log::info($data);
+		// return;
+		$label = 'GroupInvite-Customer';
+		
+		$to = $data['phone'];
+
+		return $this->common($label,$to,$data);
+	
+	}
+
+	public function addGroupNewMember($data){
+
+		Log::info("invite sent to");
+		Log::info($data);
+		// return;
+		$label = 'AddGroupNewMember-Customer';
+		
+		$to = $data['customer_phone'];
+
+		return $this->common($label,$to,$data);
+
+	}
+
+	public function addGroupOldMembers($data){
+		
+		Log::info("invite sent to");
+		Log::info($data);
+		// return;
+		$label = 'AddGroupOldMembers-Customer';
+		
+		$to = $data['customer_phone'];
+
+		return $this->common($label,$to,$data);
+		
+	}
 
 	public function common($label,$to,$data,$delay = 0){
 

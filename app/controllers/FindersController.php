@@ -149,6 +149,7 @@ class FindersController extends \BaseController {
 		$finder_detail = $cache ? Cache::tags('finder_detail')->has($cache_key) : false;
 
 		if(!$finder_detail){
+			$campaign_offer = false;
 			//Log::info("Not cached in detail");
 			Finder::$withoutAppends=true;
 			Service::$withoutAppends=true;
@@ -395,10 +396,12 @@ class FindersController extends \BaseController {
 					$finder['associate_finder'] = $associate_finder;
 				}
 				// End Check
-
+				$traction_exists = false;
 				foreach($finderarr['services'] as &$service){
 					if(!isset($service['traction']) || !isset($service['traction']['sales']) || !isset($service['traction']['trials'])){
 						$service['traction'] = array('trials'=>0, 'sales'=>0);
+					}else{
+						$traction_exists = true;
 					}
 				}
 
@@ -406,8 +409,9 @@ class FindersController extends \BaseController {
 				{
 					return $a['traction']['sales']+$a['traction']['trials']*0.8 <= $b['traction']['sales']+$b['traction']['trials']*0.8;
 				}
-
-				usort($finderarr['services'], "cmp");
+				if($traction_exists){
+					usort($finderarr['services'], "cmp");
+				}
 				
 				$category_slug_services = array();
 				$category_slug_services = array_where($finderarr['services'], function($key, $value) use ($category_slug){
@@ -437,7 +441,7 @@ class FindersController extends \BaseController {
 
 
 				
-				array_set($finder, 'services', pluck( $finderarr['services'] , ['_id', 'name', 'lat', 'lon', 'serviceratecard', 'session_type', 'workout_tags', 'calorie_burn', 'workout_results', 'short_description','service_trainer','timing','category','subcategory','batches','vip_trial','meal_type','trial','membership', 'offer_available', 'showOnFront', 'traction', 'timings']  ));
+				array_set($finder, 'services', pluck( $finderarr['services'] , ['_id', 'name', 'lat', 'lon', 'serviceratecard', 'session_type', 'workout_tags', 'calorie_burn', 'workout_results', 'short_description','service_trainer','timing','category','subcategory','batches','vip_trial','meal_type','trial','membership', 'offer_available', 'showOnFront', 'traction', 'timings', 'flags']  ));
 				array_set($finder, 'categorytags', pluck( $finderarr['categorytags'] , array('_id', 'name', 'slug', 'offering_header') ));
 				// array_set($finder, 'findercollections', pluck( $finderarr['findercollections'] , array('_id', 'name', 'slug') ));
 				// array_set($finder, 'blogs', pluck( $finderarr['blogs'] , array('_id', 'title', 'slug', 'coverimage') ));
@@ -514,7 +518,11 @@ class FindersController extends \BaseController {
 	               	'cash_pickup'=>false,
 	               	'part_payment'=>false
                	];
-
+				
+				if(isset($finder['flags']) && isset($finder['flags']['campaign_offer']) && $finder['flags']['campaign_offer']){
+					$campaign_offer = true;
+					$finder['campaign_text'] = "Womens day";
+				}
 				// return $info_timing;
 				if(count($finder['services']) > 0 ){
 
@@ -525,18 +533,25 @@ class FindersController extends \BaseController {
 					foreach ($finder['services'] as $key => $service){
 
 						// if(!isset($service['showOnFront']) || ((isset($service['showOnFront']) && $service['showOnFront']))){
-						if(!isset($service['showOnFront']) || ((isset($service['showOnFront']) && in_array('web', $service['showOnFront'])))){ 
+						if((!isset($service['showOnFront']) || ((isset($service['showOnFront']) && in_array('web', $service['showOnFront'])))) && count($service['serviceratecard'])){ 
 
 
 
-								$service = $service;
+							$service = $service;
 
 							$service['offer_icon'] = "";
 							
 							// if(isset($service['offer_available']) && $service['offer_available'] == true && !in_array($finder['_id'], Config::get('app.hot_offer_excluded_vendors'))){
 								
 							// 	$service['offer_icon'] = "https://b.fitn.in/iconsv1/fitmania/mob_offer_ratecard.png";
-							// }															
+							// }
+							
+							
+							if(!isset($finder['campaign_text']) && isset($service['flags']) && isset($service['flags']['campaign_offer']) && $service['flags']['campaign_offer']){
+								$campaign_offer = true;
+								$service['campaign_text'] = "<strong>Additional Flat 30%</strong> for Women";
+							}
+							
 
 							if(isset($service['category']) && isset($service['category']['_id'])){
 								$category_id                =   intval($service['category']['_id']);
@@ -574,6 +589,29 @@ class FindersController extends \BaseController {
 
 								foreach ($service['serviceratecard'] as $ratekey => $rateval){
 
+									if((isset($rateval['expiry_date']) && $rateval['expiry_date'] != "" && strtotime("+ 1 days", strtotime($rateval['expiry_date'])) < time()) || (isset($rateval['start_date']) && $rateval['start_date'] != "" && strtotime($rateval['start_date']) > time())){
+										unset($service['serviceratecard'][$ratekey]);
+										continue;
+									}
+
+									// if(in_array($rateval['type'], ['membership', 'packages']) && !isset($finder['campaign_text']) && !isset($service['campaign_text']) && isset($rateval['flags']) && isset($rateval['flags']['campaign_offer']) && $rateval['flags']['campaign_offer']){
+									if(in_array($rateval['type'], ['membership', 'packages']) && (isset($finder['campaign_text'])  || isset($service['campaign_text']) || (isset($rateval['flags']) && isset($rateval['flags']['campaign_offer']) && $rateval['flags']['campaign_offer']))){
+										$campaign_offer = true;
+										// $service['serviceratecard'][$ratekey]['campaign_text'] = "(Women - Get additional 30% off)";
+									}
+									// if(isset($rateval['flags']) && isset($rateval['flags']["offerFor"]) && $rateval['flags']["offerFor"] == "women"){
+									// 	$service['serviceratecard'][$ratekey]['campaign_text'] = "Women only offer";
+									// 	if(!isset($rateval['offers'])){
+									// 		$service['serviceratecard'][$ratekey]['offers'] = [
+									// 			[
+									// 				"offer_icon"=>"https://b.fitn.in/global/finder/women-offer2.png",
+									// 			]
+									// 			];
+									// 	}else{
+									// 		$service['serviceratecard'][$ratekey]['offers'][0]['offer_icon'] = "https://b.fitn.in/global/finder/women-offer2.png";
+									// 	}
+									// }
+									
 									if(isset($service['membership']) && $service['membership']=='manual'){
 										$service['serviceratecard'][$ratekey]['direct_payment_enable'] = "0";
 									}
@@ -752,9 +790,35 @@ class FindersController extends \BaseController {
 					}
 				}
 
+				if(!isset($finder['callout']) || trim($finder['callout']) == ''){
+					Log::info("inside");
+					$callout_offer = Offer::where('vendor_id', $finder['_id'])->where('hidden', false)->orderBy('order', 'asc')
+									->where('offer_type', 'newyears')
+									->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
+									->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()) ))
+									->first();
+					Log::info($callout_offer);
+					if($callout_offer){
 
+						$device = $this->vendor_token ? 'kiosk' : 'web';
+						$callout_service = Service::active()->where('_id', $callout_offer['vendorservice_id'])->where(function($query) use ($device){return $query->orWhere('showOnFront', 'exists', false)->orWhere('showOnFront', $device);})->first();
+						$callout_ratecard = Ratecard::find($callout_offer['ratecard_id']);
+						Log::info($callout_ratecard);
+						if($callout_service && $callout_ratecard){
+							$finder['callout'] = $callout_service['name']." - ".$this->getServiceDuration($callout_ratecard)." @ Rs. ".$callout_offer['price'];
+						}
+					}
+				}
 
+				if(isset($finder['services']) && count($finder['services'])>0){
 
+					$cheapest_price = $this->getCheapestWorkoutSession($finder['services']);
+
+					if($cheapest_price > 0){
+						$finder['cheapest_workout_session'] = $cheapest_price;
+					}
+					
+				}
 
 				$finderdata         =   $finder;
 				$finderid           = (int) $finderdata['_id'];
@@ -889,7 +953,39 @@ class FindersController extends \BaseController {
 				$response['show_reward_banner'] = true;
 				$response['finder_footer']				= 		$finder_footer;
 				$response['finder']['payment_options']				=		$this->getPaymentModes($payment_options_data);
+				// if($campaign_offer){
+				// 	$response['vendor_stripe_data']	=	[
+				// 		'text'=> "#STRONGGETSSTRONGER | <strong>FLAT 30% OFF FOR WOMEN</strong>",
+				// 		'text_color'=> '#ffffff',
+				// 		'background'=> '-webkit-linear-gradient(left, #FE7E87 0%, #FA5295 100%)',
+				// 		'background-color'=> ''
+				// 	];
+				// }else if($finder['commercial_type']!=0 && !(isset($finder['flags']) && in_array($finder['flags'], ['closed', 'temporarily_shut'])) && !(isset($finder['membership']) && $finder['membership']=='disable' && isset($finder['trial']) && $finder['trial']=='disable') ){
+				// 	$response['vendor_stripe_data']	=	[
+				// 		'text'=> "#STRONGGETSSTRONGER | <strong>Special Surprise Discount</strong> For Women | <span class=\"code\">CODE: WFIT</span>",
+				// 		'text_color'=> '#ffffff',
+				// 		'background'=> '-webkit-linear-gradient(left, #FE7E87 0%, #FA5295 100%)',
+				// 		'background-color'=> ''
+				// 	];
+                // }
+                
+                if(in_array($response['finder']['_id'], [14,10315,10861,10863,10868,10870,10872,10875,10876,10877,10880,10883,10886,10887,10888,10890,10891,10892,10894,10895,10897,10900,12246,12247,12250,12252,12254])){
+                    $response['vendor_stripe_data']	=	[
+                        'text'=> "Get additional 25% cashback on 1 year memberships",
+                        'text_color'=> '#ffffff',
+                        'background'=> '-webkit-linear-gradient(left, #FE7E87 0%, #FA5295 100%)',
+                        'background-color'=> ''
+                    ];
+                }
 
+                if(in_array($response['finder']['_id'], [4492,5596,5682,5729,9507,9508,9989,12480])){
+                    $response['vendor_stripe_data']	=	[
+                        'text'=> "1 month membership free (only for women) valid till 31st March",
+                        'text_color'=> '#ffffff',
+                        'background'=> '-webkit-linear-gradient(left, #FE7E87 0%, #FA5295 100%)',
+                        'background-color'=> ''
+                    ];
+                }
 				if(isset($finder['commercial_type']) && $finder['commercial_type'] == 0){
 
 					unset($response['finder']['payment_options']);
@@ -2332,6 +2428,155 @@ class FindersController extends \BaseController {
 		}
 	}
 
+	public function getMembershipRatecardByServiceId($service_id){
+
+		$service_id = (int) $service_id;
+
+		$service = Service::find($service_id);
+
+		$response = [
+			'status'=>200,
+			'message'=>'Success',
+			'ratecards'=>[]
+		];
+
+		if($service){
+
+			$finder_id = (int)$service->finder_id;
+
+			$getTrialSchedule = $this->getTrialSchedule($finder_id);
+
+			$wallet_balance = 0;
+
+			$jwt_token = Request::header('Authorization');
+
+	        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+
+	            $decoded = customerTokenDecode($jwt_token);
+
+	            $customer_id = (int)$decoded->customer->_id;
+
+	            $getWalletBalanceData = [
+	                'finder_id'=>$finder_id,
+	                'order_type'=>'memberships'
+	            ];
+
+            	$wallet_balance = $this->utilities->getWalletBalance($customer_id,$getWalletBalanceData);
+	        }
+
+			foreach ($getTrialSchedule as $key => $value) {
+
+				if($value['_id'] == $service_id){
+
+					$service = $value;
+
+					$ratecards = $value['ratecard'];
+
+					foreach ($ratecards as $ratecard_key => $ratecard_value) {
+
+						if($ratecard_value['type'] != 'membership' || $ratecard_value['type'] != 'packages'){
+
+							unset($ratecards[$ratecard_key]); continue;
+						}
+
+						if($ratecard_value['direct_payment_enable'] == '0'){
+
+							unset($ratecards[$ratecard_key]); continue;
+						}
+
+						$price = $this->utilities->getRatecardAmount($ratecard_value);
+
+						$ratecards[$ratecard_key]['fitcash_applicable'] = $wallet_balance;
+
+						if($wallet_balance > $price){
+							$ratecards[$ratecard_key]['fitcash_applicable'] = $price;
+						}
+
+					}
+
+					$ratecards = array_values($ratecards);
+
+					$service['ratecard'] = $ratecards;
+
+					$finder = Finder::find((int) $service['finder_id']);
+
+					if($finder){
+
+						$service['finder_name'] = ucwords($finder->title);
+						$service['finder_slug'] = $finder->slug;
+						$service['finder_category_id'] = $finder->category_id;
+					}
+
+					$service['city'] = null;
+					$service['location'] = null;
+					$service['category'] = null;
+
+					$serviceData = Service::active()
+						->with(array('category'=>function($query){$query->select('name','slug','_id');}))
+						->with(array('location'=>function($query){$query->select('name','slug','_id');}))
+						->with(array('city'=>function($query){$query->select('name','slug','_id');}))
+						->find((int)$service['_id']);
+
+					if($serviceData){
+
+						$serviceDataArray = $serviceData->toArray();
+
+						$service['city'] = $serviceDataArray['city'];
+						$service['location'] = $serviceDataArray['location'];
+						$service['category'] = $serviceDataArray['category'];
+
+						$traction = [
+							'trials' => 0,
+							'requests' => 0,
+							'sales' => 0,
+							'six_months' => [
+							    'requests' => 0,
+							    'sales' => 0,
+							    'trials' => 0,
+						  	]
+						];
+
+						if(isset($serviceDataArray['traction']) && $serviceDataArray['traction'] != ""){
+
+							$traction = $serviceDataArray['traction'];
+						}
+
+						if($traction['sales'] > 0){
+
+							$traction['sales'] = $traction['sales'] * 10 + 181;
+
+						}else{
+
+							if(isset($serviceDataArray['fake_sales'])){
+
+								$traction['sales'] = $serviceDataArray['fake_sales'];
+
+							}else{
+
+								$fake_sales = rand(140,200);
+
+								$serviceData->fake_sales = $fake_sales;
+								$serviceData->update();
+
+								$traction['sales'] = $fake_sales;
+							}
+						}
+						
+						$service['traction'] = $traction;
+						
+					}
+
+					break;
+				}
+
+			}
+
+			$response['service'] = $service;
+		}
+
+		return Response::json($response,200);
+
+	}
 
 	public function serviceMembership($finder_id){
 
@@ -2580,6 +2825,10 @@ class FindersController extends \BaseController {
 					//for ratecards offers
 					$ratecardoffers     =   [];
 
+					if((isset($rateval['expiry_date']) && $rateval['expiry_date'] != "" && strtotime("+ 1 days", strtotime($rateval['expiry_date'])) < time()) || (isset($rateval['start_date']) && $rateval['start_date'] != "" && strtotime($rateval['start_date']) > time())){
+						continue;
+					}
+					
 
 					if(!isset($rateval['offers']) || (isset($rateval['offers']) && count($rateval['offers'])==0)){
 						if(!empty($rateval['_id']) && isset($rateval['_id'])){
@@ -2605,12 +2854,14 @@ class FindersController extends \BaseController {
 
 										if(isset($rateval['flags']['discother']) && $rateval['flags']['discother'] == true){
 											$ratecardoffer['offer_text']    =   "";
-											$ratecardoffer['offer_icon']    =   "https://b.fitn.in/iconsv1/womens-day/women-only.png";
+											// $ratecardoffer['offer_icon']    =   "https://b.fitn.in/iconsv1/womens-day/women-only.png";
+											$ratecardoffer['offer_icon']    =   "";
 										}
 
 										if(isset($rateval['flags']['disc25or50']) && $rateval['flags']['disc25or50'] == true){
 											$ratecardoffer['offer_text']    =   "";
-											$ratecardoffer['offer_icon']    =   "https://b.fitn.in/iconsv1/womens-day/women-only.png";
+											// $ratecardoffer['offer_icon']    =   "https://b.fitn.in/iconsv1/womens-day/women-only.png";
+											$ratecardoffer['offer_icon']    =   "";
 										}
 									}
 
@@ -2667,6 +2918,19 @@ class FindersController extends \BaseController {
 								$discount_amount = intval($rateval['price'] * ($discount/100));
 								$rateval['price'] = $rateval['price'] - $discount_amount;
 							}
+
+							if(isset($rateval['special_price']) && $rateval['special_price'] != 0){
+					            $rateval_price = $rateval['special_price'];
+					        }else{
+					            $rateval_price = $rateval['price'];
+					        }
+
+					        if($rateval_price >= 20000){
+
+					        	$rateval['campaign_offer'] = "(EMI options available)";
+					        	$rateval['campaign_color'] = "#43a047";
+					        }
+					        
 							array_push($ratecardArr, $rateval);
 						}
 						// else{
@@ -2760,7 +3024,7 @@ class FindersController extends \BaseController {
 		}
 
 		// Log::info($cache_key);
-		$cache_key = $this->updateCacheKey($cache_key);
+		// $cache_key = $this->updateCacheKey($cache_key);
 
 		Log::info("cache key");
 		Log::info($cache_key);
@@ -2806,7 +3070,14 @@ class FindersController extends \BaseController {
 			$cache_name = "finder_detail_4_4";
 		}
 
+		if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios']) && isset($_GET['app_version']) && $_GET['app_version'] > '4.4.2'){
+			$cache_name = "finder_detail_ios_4_4_3";
+		}
 
+		if(isset($_GET['device_type']) && in_array($_GET['device_type'],['android']) && isset($_GET['app_version']) && $_GET['app_version'] > '4.42'){
+			$cache_name = "finder_detail_android_4_4_3";
+		}
+		Log::info($cache_name);
 		$finder_detail = $cache ? Cache::tags($cache_name)->has($cache_key) : false;
 
 		if(!$finder_detail){
@@ -2827,12 +3098,16 @@ class FindersController extends \BaseController {
 				->with(array('knowlarityno'=>function($query){$query->select('*')->where('status',true);}))
 				->with(array('services'=>function($query){$query->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))->whereIn('show_on', array('1','3'))->where('status','=','1')->orderBy('ordering', 'ASC');}))
 				->with(array('reviews'=>function($query){$query->select('_id','finder_id','customer_id','rating','description','updated_at')->where('status','=','1')->with(array('customer'=>function($query){$query->select('_id','name','picture')->where('status','=','1');}))->orderBy('updated_at', 'DESC')->limit(1);}))
-				->first(array('_id','slug','title','lat','lon','category_id','category','location_id','location','city_id','city','categorytags','locationtags','offerings','facilities','coverimage','finder_coverimage','contact','average_rating','photos','info','manual_trial_enable','manual_trial_auto','trial','commercial_type','multiaddress','membership','flags'));
+				->first(array('_id','slug','title','lat','lon','category_id','category','location_id','location','city_id','city','categorytags','locationtags','offerings','facilities','coverimage','finder_coverimage','contact','average_rating','photos','info','manual_trial_enable','manual_trial_auto','trial','commercial_type','multiaddress','membership','flags','custom_link','videos'));
 
 			$finder = false;
 
 			if($finderarr){
 				$finderarr = $finderarr->toArray();
+
+				if(isset($finderarr['trial']) && $finderarr['trial']=='manual'){
+					$finderarr['manual_trial_enable'] = '1';
+				}
 
 				if(!empty($finderarr['reviews'])){
 
@@ -2841,6 +3116,14 @@ class FindersController extends \BaseController {
 						if($rev_value['customer'] == null){
 							
 							$finderarr['reviews'][$rev_key]['customer'] = array("id"=>0,"name"=>"A Fitternity User","picture"=>"https://www.gravatar.com/avatar/0573c7399ef3cf8e1c215cdd730f02ec?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png");
+						}
+					}
+				}
+
+				if(isset($finderarr['videos'])){
+					foreach($finderarr['videos'] as $key => $video){
+						if(!isset($video['url']) || trim($video['url']) == ""){
+							unset($finderarr['videos'][$key]);
 						}
 					}
 				}
@@ -2961,6 +3244,11 @@ class FindersController extends \BaseController {
 				}
 				$cult_Ids = array(12140,12141,12142,12143,12144,12145,12146,11110,4307,10514,9882,5986,9412,9881,9589);
 				if((isset($finderarr['category_id']) && $finderarr['category_id'] == 41) || in_array($finderarr['_id'], $cult_Ids)){
+					$finder['trial'] = 'disable';
+					$finder['membership'] = 'disable';
+				}
+
+				if(isset($finderarr['custom_link'])){
 					$finder['trial'] = 'disable';
 					$finder['membership'] = 'disable';
 				}
@@ -3187,23 +3475,59 @@ class FindersController extends \BaseController {
 					if(isset($data['finder']['multiaddress']	) && count($data['finder']['multiaddress'])>0 && isset($data['finder']['multiaddress'][0]['location'])){
 						$data['finder']['multiaddress']	[0]['location'] = [$finder['location']['name']];
 					}
-
 					
+					$campaign_offer = false;
+					
+					// foreach($data['finder']['services'] as $serviceKey =>$service){
+					// 	foreach($service['ratecard'] as $ratekey => $ratecard){
+					// 		if(isset($ratecard['flags']) && isset($ratecard['flags']['campaign_offer']) && $ratecard['flags']['campaign_offer']){
+					// 			$campaign_offer = true;
+					// 			// break;
+					// 		}
 
+					// 		if(isset($ratecard['flags']) && isset($ratecard['flags']["offerFor"]) && $ratecard['flags']["offerFor"] == "women"){
+					// 			if(!isset($ratecard['offers']) || count($ratecard['offers']) == 0){
+					// 				$data['finder']['services'][$serviceKey]['ratecard'][$ratekey]['offers'] = [
+					// 					[
+					// 						"offer_icon"=>"https://b.fitn.in/global/finder/women-offer2.png",
+					// 					]
+					// 					];
+					// 			}else{
+					// 				$data['finder']['services'][$serviceKey]['ratecard'][$ratekey]['offers'][0]['offer_icon'] = "https://b.fitn.in/global/finder/women-offer2.png";
+					// 			}
+					// 		}
+								
+					// 	}
+					// }
+					
+					// if($campaign_offer){
+					// 	$data['finder']['offer_icon'] = "https://b.fitn.in/global/women-day/flat-30tag-app.png";
+					// }else if($data['finder']['commercial_type']!=0 && !(isset($data['finder']['flags']) && in_array($data['finder']['flags'], ['closed', 'temporarily_shut'])) && !(isset($data['finder']['membership']) && $data['finder']['membership']=='disable' && isset($data['finder']['trial']) && $data['finder']['trial']=='disable') ){
+					// 	$data['finder']['offer_icon'] = "https://b.fitn.in/global/women-day/surprise-tag.png";
+					// }
 					/*if(time() >= strtotime(date('2016-12-24 00:00:00')) && (int)$finder['commercial_type'] != 0){
-
+						
 						$data['finder']['offer_icon'] = "https://b.fitn.in/iconsv1/fitmania/offer_avail_red.png";
 					}*/
 					
 					
 					$category_id = Servicecategory::where('slug', $category_slug)->where('parent_id', 0)->first(['_id']);
 					;
+
+					$traction_exists = false;
+					
+					foreach($data['finder']['services'] as $service){
+						if($service['traction']['sales'] > 0 || $service['traction']['trials'] > 0){
+							$traction_exists = true;
+						}
+					}
 					function cmp($a, $b)
 		            {
 		            	return $a['traction']['sales']+$a['traction']['trials']*0.8 <= $b['traction']['sales']+$b['traction']['trials']*0.8;
 		            }
-
-		        	usort($data['finder']['services'], "cmp");
+					if($traction_exists){
+						usort($data['finder']['services'], "cmp");
+					}
 
 					if($location_id){
 						$location_id = intval($location_id);
@@ -3319,7 +3643,7 @@ class FindersController extends \BaseController {
 
 					if(isset($_GET['device_type']) && in_array($_GET['device_type'], $device_type) && isset($_GET['app_version']) && (float)$_GET['app_version'] >= 3.2 && isset($data['finder']['services']) && count($data['finder']['services']) > 0){
 
-						$data['finder']['services_trial'] = $this->getTrialWorkoutRatecard($data['finder']['services'],$finder['type'],'trial');
+						$data['finder']['services_trial'] = $this->getTrialWorkoutRatecard($data['finder']['services'],$finder['type'],'trial', $data['finder']['trial']);
 						$data['finder']['services_workout'] = $this->getTrialWorkoutRatecard($data['finder']['services'],$finder['type'],'workout session');
 						
 					}
@@ -3560,7 +3884,7 @@ class FindersController extends \BaseController {
 
 
 
-	public function getTrialWorkoutRatecard($finderservices,$findertype,$type){
+	public function getTrialWorkoutRatecard($finderservices,$findertype,$type, $finder_trial = null){
 
 		$finderservicesArr  =   [];
 
@@ -3586,9 +3910,22 @@ class FindersController extends \BaseController {
 	                $ratecard['cashback_on_trial'] = "";
 
 					if($ratecard_price > 0 && $type == 'trial'){
-						$ratecard['cashback_on_trial'] = "20% Cashback";
+						$ratecard['cashback_on_trial'] = "100% Cashback";
 					}
 
+					if((isset($finderservice['trial']) && $finderservice['trial']=='manual' || $finder_trial=='manual') && $ratecard['type'] == 'trial'){
+						if(isset($_GET['app_version']) && isset($_GET['device_type']) && (($_GET['device_type'] == 'android' && $_GET['app_version'] > 4.42) || ($_GET['device_type'] == 'ios' && version_compare($_GET['app_version'], '4.4.2') > 0))){
+							Log::info($ratecard['_id']);
+							$ratecard['manual_trial_enable'] = "1";
+							unset($ratecard['direct_payment_enable']);
+							Log::info("manual_trial_enable");
+							
+						}else{
+							$ratecard['direct_payment_enable'] = "0";
+							Log::info("direct_payment_enable");
+							
+						}
+					}
 					array_push($ratecardArr, $ratecard);
 				}
 				// return $finderservice['ratecard'];
@@ -4359,7 +4696,122 @@ class FindersController extends \BaseController {
 
         return "success";
 
-    }
+	}
+	
+	function getCheapestWorkoutSession($services){
+
+		$price = 0;
+
+		foreach($services as $service){
+			if(isset($service['serviceratecard'])){
+				foreach($service['serviceratecard'] as $ratecard){
+					if($ratecard['type'] == 'workout session' && ($price == 0 || $ratecard['price'] < $price)){
+						$price = $ratecard['price'];
+					}
+				}
+			}
+		}
+
+		return $price;
+	}
+
+	function getTermsAndCondition(){
+
+		$tnc = [
+			"title"=>"Terms & Conditions",
+			"description"=>""
+		];
+
+		$finder_id = "";
+
+		if(isset($_REQUEST['ratecard_id']) && $_REQUEST['ratecard_id'] != ""){
+
+			$ratecard = Ratecard::find((int)$_REQUEST['ratecard_id']);
+
+			if($ratecard){
+
+				$finder_id = (int) $ratecard['finder_id'];
+			}
+
+		}
+
+		if(isset($_REQUEST['service_id']) && $_REQUEST['service_id'] != ""){
+
+			$service = Service::find((int)$_REQUEST['service_id']);
+
+			if($service){
+
+				$finder_id = (int) $service['finder_id'];
+			}
+
+		}
+
+		if(isset($_REQUEST['finder_id']) && $_REQUEST['finder_id'] != ""){
+
+			$finder_id = (int)$_REQUEST['finder_id'];
+		}
+
+		if($finder_id != ""){
+
+			$finder = Finder::find($finder_id);
+
+			if($finder){
+
+				$finder = $finder->toArray();
+
+				$location = Location::find((int) $finder['location_id']);
+
+				$location_name = "";
+				if($location && isset($location['name'])){
+					$location_name = ", ".ucwords($location['name']);
+				}
+
+				if(isset($ratecard) && isset($ratecard['type']) && in_array($ratecard['type'],['membership','packages'])){
+
+					$tnc['description'] .= "<b> - </b>  Discount varies across different outlets depending on slot availability.";
+					$tnc['description'] .= "<br/><br/><b> - </b>  For memberships reserved by part payment and not fully paid for on date of joining, 5% of total membership value will be deducted as convenience fees & the remaining will be transferred in the wallet as Fitcash+ . The membership will also be terminated.";
+					$tnc['description'] .= "<br/><br/><b> - </b>  Memberships once purchased are not transferrable or resalable.";
+					$tnc['description'] .= "<br/><br/><b> - </b>  For any Refund/cancellation queries refer to <a href='https://www.fitternity.com/refund-cancellation'> https://www.fitternity.com/refund-cancellation</a>";
+					$tnc['description'] .= "<br/><br/><b> - </b>  For any Offer related queries refer to <a href='https://www.fitternity.com/offer-usage'>https://www.fitternity.com/offer-usage</a>";
+
+				}else{
+
+					$tnc['description'] .= "<b> - </b>  I recognise that staff at ".ucwords($finder['title']).$location_name.", their associates and staff at Fitternity Health E Solutions are not able to provide medical advice or assess whether it is suitable for me to participate in programs.";
+					$tnc['description'] .= "<br/><br/><b> - </b>  I participate at my own risk. I acknowledge that as with any exercise program, there are risks, including increased heart stress and the chance of musculoskeletal injuries.";
+					$tnc['description'] .= "<br/><br/><b> - </b>  I warrant that I am physically and mentally well enough to proceed with the classes and have furnished true details in the form above.";
+					$tnc['description'] .= "<br/><br/><b> - </b>  I hereby waive, release and forever discharge ".ucwords($finder['title']).", Fitternity Health E Solutions and all their associates from all liabilities for injures or damages resulting from my participation in fitness activities and classes.";
+					$tnc['description'] .= "<br/><br/><b> - </b>  I understand no refunds or transfer / extension of services will be issued for unused classes, sessions and services.";
+					$tnc['description'] .= "<br/><br/><b> - </b>  I have read and understand the advice given above.";
+					$tnc['description'] .= "<br/><br/><b> - </b>  I assume the risk of and responsibility of personal property loss or damage.";
+
+				}
+
+				if(isset($finder['info']['terms_and_conditions']) && $finder['info']['terms_and_conditions'] != ""){
+
+					$terms_and_conditions = $finder['info']['terms_and_conditions'];
+
+					$terms_and_conditions = str_replace('<ol>','',$terms_and_conditions);
+					$terms_and_conditions = str_replace('</ol>','',$terms_and_conditions);
+					$terms_and_conditions = str_replace('</ul>','',$terms_and_conditions);
+					$terms_and_conditions = str_replace('</ul>','',$terms_and_conditions);
+					$terms_and_conditions = str_replace('</li>','',$terms_and_conditions);
+					$terms_and_conditions = str_replace('<li>','<br/><br/><b> - </b>  ',$terms_and_conditions);
+
+					$tnc['description'] .= $terms_and_conditions;
+				}
+			}
+
+		}
+
+		$response = [
+			"tnc"=>$tnc,
+			"status"=>200,
+			"message"=>"Success"
+		];
+
+		return $response;
+
+	}
 	
 
 }

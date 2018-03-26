@@ -220,7 +220,8 @@ Class FinderMailer extends Mailer {
 						'silkeshakadam@fitternity.com',
 						'priyankamohnish@fitternity.com',
 						'dharatanna@fitternity.com',
-						'pranjalisalvi@fitternity.com' 
+						'pranjalisalvi@fitternity.com',
+						'hardikkhamkar@fitternity.com'
 					];
 					break;
 				case 4 : 
@@ -232,7 +233,8 @@ Class FinderMailer extends Mailer {
 						'bhavinjani@fitternity.com',
 						'priyankapatel@fitternity.com',
 						'dharatanna@fitternity.com',
-						'pranjalisalvi@fitternity.com' 
+						'pranjalisalvi@fitternity.com',
+						'dharmindersingh@fitternity.com'
 					];
 					break;
 				default:
@@ -859,6 +861,75 @@ Class FinderMailer extends Mailer {
 		);
 
 		return $this->common($label,$data,$message_data);
+	}
+
+	protected function postTrialStatusUpdate($data, $delay){
+
+		if(isset($data['post_trial_status']) && $data['post_trial_status'] != '' && $data['post_trial_status'] != 'unavailable') {
+			return "post_trial_status_set";
+		}
+
+		$label = 'PostTrialStatusUpdate-Fitternity';
+
+		$data['fitternity_email'] = [
+			'pranjalisalvi@fitternity.com',
+			'dharatanna@fitternity.com'
+		];
+
+		if(isset($data['city_id']) && $data['city_id'] != ""){
+
+			switch ($data['city_id']) {
+				case 1 : 
+					$data['fitternity_email'] = [
+						'kevalshah@fitternity.com',
+						'mitmehta@fitternity.com',
+						'surajshetty@fitternity.com',
+						'rajivharichandani@fitternity.com',
+						'allendpenha@fitternity.com',
+					];
+					break;
+				case 2 : 
+					$data['fitternity_email'] = [
+						'mitmehta@fitternity.com',
+						'vishankkapoor@fitternity.com',
+					];
+					break;
+				case 3 : 
+					$data['fitternity_email'] = [
+						'silkeshakadam@fitternity.com',
+						'priyankamohnish@fitternity.com',
+						'hardikkhamkar@fitternity.com',
+						'virenmehta@fitternity.com',
+						'nishantullal@fitternity.com',
+					];
+					break;
+				case 4 : 
+				case 8 : 
+					$data['fitternity_email'] = [
+						'vikramkhanna@fitternity.com',
+						'priyankapatel@fitternity.com',
+						'dharmindersingh@fitternity.com',
+						'bhavinjani@fitternity.com',
+					];
+					break;
+				default:
+					break;
+			}
+		}
+		
+		$all_city_ids = ['vinichellani@fitternity.com', 'pranjalisalvi@fitternity.com', 'siddharthshah@fitternity.com'];
+		
+		$data['fitternity_email'] = array_merge($data['fitternity_email'], $all_city_ids);
+
+		$user_email = $data['fitternity_email'];
+		$user_name = 'Fitternity Team';
+
+		$message_data 	= array(
+			'user_email' => $user_email,
+			'user_name' =>  $user_name,
+		);
+
+		return $this->common($label,$data,$message_data, $delay);
 	}
 
 	public function common($label,$data,$message_data,$delay = 0){

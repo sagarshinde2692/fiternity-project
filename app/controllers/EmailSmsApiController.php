@@ -702,6 +702,24 @@ class EmailSmsApiController extends \BaseController {
         array_set($data, 'date',date("h:i:sa"));
         array_set($data, 'ticket_number',random_numbers(5));
 
+        if(isset($data['booktrial_id']) && $data['booktrial_id'] != ""){
+
+            $data['booktrial_id'] = (int) $data['booktrial_id'];
+
+            Booktrial::$withoutAppends=true;
+
+            $booktrial = Booktrial::find((int)$data['booktrial_id']);
+
+            if($booktrial){
+
+                $data['finder_id'] = (int)$booktrial['finder_id'];
+                $data['service_id'] = (int)$booktrial['service_id'];
+                $data['service_name'] = $booktrial['service_name'];
+                $data['city_id'] = (int)$booktrial['city_id'];
+            }
+
+        }
+
         if(isset($data['finder_id']) && $data['finder_id'] != ""){
 
             $data['finder_id'] = (int)$data['finder_id'];

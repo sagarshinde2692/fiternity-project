@@ -773,7 +773,7 @@ public function RollingBuildServiceIndex(){
     echo es_curl_request($request_sale_ratecards);
     sleep(5);
 
-    $city_list = array(1,2,3,4,8);
+    $city_list = array(1,2,3,4,5,6,8,9);
 
     foreach ($city_list as $city) {
        

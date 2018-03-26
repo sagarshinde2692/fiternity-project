@@ -16,7 +16,9 @@ use App\Services\Utilities as Utilities;
 use App\Services\CustomerReward as CustomerReward;
 use App\Services\CustomerInfo as CustomerInfo;
 use App\Notification\CustomerNotification as CustomerNotification;
+use App\AmazonPay\PWAINBackendSDK;
 use App\Services\Fitapi as Fitapi;
+use App\Services\Fitweb as Fitweb;
 
 class TransactionController extends \BaseController {
 
@@ -30,6 +32,7 @@ class TransactionController extends \BaseController {
     protected $membership_array;
     protected $customernotification;
     protected $fitapi;
+    protected $fitweb;
 
     public function __construct(
         CustomerMailer $customermailer,
@@ -40,7 +43,8 @@ class TransactionController extends \BaseController {
         Utilities $utilities,
         CustomerReward $customerreward,
         CustomerNotification $customernotification,
-        Fitapi $fitapi
+        Fitapi $fitapi,
+        Fitweb $fitweb
     ) {
         parent::__construct();
         $this->customermailer       =   $customermailer;
@@ -52,6 +56,7 @@ class TransactionController extends \BaseController {
         $this->customerreward       =   $customerreward;
         $this->customernotification =   $customernotification;
         $this->fitapi               =   $fitapi;
+        $this->fitweb               =   $fitweb;
         $this->ordertypes           =   array('memberships','booktrials','workout-session','healthytiffintrail','healthytiffinmembership','3daystrial','vip_booktrials', 'events');
         $this->appOfferDiscount     =   Config::get('app.app.discount');
         $this->appOfferExcludedVendors 				= Config::get('app.app.discount_excluded_vendors');
@@ -215,6 +220,20 @@ class TransactionController extends \BaseController {
 
         }
 
+        if($this->vendor_token && !isset($data['order_id'])){
+            
+            if($this->utilities->checkFitternityCustomer($data['customer_email'], $data['customer_phone'])){
+                
+                $data['routed_order'] = '0';
+            
+            }else{
+             
+                $data['routed_order'] = '1';
+            
+            }
+        
+        }
+
         $updating_part_payment = (isset($data['part_payment']) && $data['part_payment']) ? true : false;
 
         $updating_cod = (isset($data['payment_mode']) && $data['payment_mode'] == 'cod') ? true : false;
@@ -271,6 +290,18 @@ class TransactionController extends \BaseController {
                 $data['customers_list'][$key]['customer_id'] = autoRegisterCustomer($customer);
             }
         }
+        
+        if(isset($data['coupon_code']) && $this->utilities->isGroupId($data['coupon_code'])){
+            
+            if($this->utilities->validateGroupId(['group_id'=>$data['coupon_code'], 'customer_id'=>$data['customer_id']])){
+
+                $data['group_id'] = $data['coupon_code'];
+
+            } 
+             
+             unset($data['coupon_code']);
+ 
+         }
           
         $payment_mode = isset($data['payment_mode']) ? $data['payment_mode'] : "";
 
@@ -362,13 +393,15 @@ class TransactionController extends \BaseController {
                     $data['repetition'] = $order->repetition + 1;
                 }
 
-                /*if(isset($order->cashback)){
+                if(isset($order->cashback)){
                     $order->unset('cashback');
                 }
 
                 if(isset($order->reward_ids)){
                     $order->unset('reward_ids');
-                }*/
+                }
+
+                $order->update();
             }
 
         }else{
@@ -432,6 +465,8 @@ class TransactionController extends \BaseController {
                     return Response::json(array('status'=>400, 'message'=>'Coupon already applied'), $this->error_status);
                 }
             }
+
+            
         }
 
         $data['amount_final'] = $data["amount_finder"];
@@ -580,7 +615,7 @@ class TransactionController extends \BaseController {
                 $order->unset('wallet_amount');
             }
 
-            $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($order['amount'],$data['finder_id'],'paymentgateway',$data['offer_id'],false,$order["part_payment_calculation"]["part_payment_and_convinience_fee_amount"],$convinience_fee);
+            $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($order['amount'],$data['finder_id'],'paymentgateway',$data['offer_id'],false,$order["part_payment_calculation"]["part_payment_and_convinience_fee_amount"],$convinience_fee,$data['type']);
 
             if(isset($data['wallet']) && $data['wallet'] == true){
 
@@ -596,7 +631,8 @@ class TransactionController extends \BaseController {
                     'type'=>'DEBIT',
                     'entry'=>'debit',
                     'description'=> $this->utilities->getDescription($data),
-                    'finder_id'=>$data['finder_id']
+                    'finder_id'=>$data['finder_id'],
+                    'order_type'=>$data['type']
                 );
 
                 $walletTransactionResponse = $this->utilities->walletTransactionNew($req);
@@ -716,6 +752,12 @@ class TransactionController extends \BaseController {
             $data["secondary_payment_mode"] = "at_vendor_post";
         }
 
+        $is_tab_active = isTabActive($data['finder_id']);
+
+        if($is_tab_active){
+            $data['is_tab_active'] = true;
+        }
+
         if(isset($old_order_id)){
 
             if($order){
@@ -734,6 +776,9 @@ class TransactionController extends \BaseController {
         }
 
         if(isset($data['payment_mode']) && $data['payment_mode'] == 'cod'){
+
+            $group_id = isset($data['group_id']) ? $data['group_id'] : null;
+            $order->group_id = $data['group_id'] = $this->utilities->addToGroup(['customer_id'=>$data['customer_id'], 'group_id'=>$group_id, 'order_id'=>$order['_id']]);
             $this->customermailer->orderUpdateCOD($order->toArray());
             $this->customersms->orderUpdateCOD($order->toArray());
 
@@ -752,6 +797,8 @@ class TransactionController extends \BaseController {
 
             $data['full_payment_wallet'] = true;
         }
+        
+        $this->utilities->financeUpdate($order);
         
         if(in_array($data['customer_source'],['android','ios','kiosk'])){
             $mobilehash = $data['payment_related_details_for_mobile_sdk_hash'];
@@ -798,11 +845,13 @@ class TransactionController extends \BaseController {
             $order->update(array('redis_id'=>$redisid));
         }
 
-        $cash_pickup_applicable = ($cash_pickup && isset($data['amount_final']) && $data['amount_final'] >= 3000) ? true : false;
+        // $cash_pickup_applicable = ($cash_pickup && isset($data['amount_final']) && $data['amount_final'] >= 3000) ? true : false;
+        $cash_pickup_applicable = (isset($data['amount_final']) && $data['amount_final'] >= 2500) ? true : false;
+        
 
         // $emi_applicable = $this->utilities->displayEmi(array('amount_final'=>$data['amount_final']));
 
-        $emi_applicable = (isset($data['amount_final']) && $data['amount_final'] >= 2500) ? true : false;
+        $emi_applicable = (isset($data['amount_final']) && $data['amount_final'] >= 5000) ? true : false;
 
         $part_payment_applicable = false; //(!$updating_part_payment && $part_payment && $data["amount_finder"] >= 3000) ? true : false;
 
@@ -1273,8 +1322,6 @@ class TransactionController extends \BaseController {
 
             $this->utilities->demonetisation($order);
 
-            
-
             array_set($data, 'status', '1');
 
             if(isset($order['part_payment']) && $order['part_payment'] && (!isset($data['order_success_flag']) || $data['order_success_flag'] != 'admin')){
@@ -1282,6 +1329,10 @@ class TransactionController extends \BaseController {
             }
 
             if($data['status'] == '1'){
+                if($order->type == "memberships"){
+                    $group_id = isset($order->group_id) ? $order->group_id : null;
+                    $data['group_id'] = $this->utilities->addToGroup(['customer_id'=>$order->customer_id, 'group_id'=>$group_id, 'order_id'=>$order->_id]);
+                }
 
                 $this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
 
@@ -1323,6 +1374,17 @@ class TransactionController extends \BaseController {
                     
                     array_set($data, 'reward_info', $reward_info);
                     array_set($data, 'reward_type', 'cashback');
+                }
+            }
+
+            if(isset($order['previous_booktrial_id']) && $order['previous_booktrial_id'] != ""){
+
+                $booktrial = Booktrial::find((int) $order['previous_booktrial_id']);
+
+                if($booktrial){
+
+                    $booktrial->final_lead_stage = "purchase_stage";
+                    $booktrial->update();
                 }
             }
             
@@ -1880,7 +1942,7 @@ class TransactionController extends \BaseController {
             $amount -= $data['customer_discount_amount'];
 
             
-            $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($amount,$data['finder_id'],'paymentgateway',$data['offer_id'],false,false,$convinience_fee);
+            $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($amount,$data['finder_id'],'paymentgateway',$data['offer_id'],false,false,$convinience_fee,$data['type']);
 
             if(isset($data['cashback']) && $data['cashback'] == true){
                 $amount -= $data['cashback_detail']['amount_discounted'];
@@ -1905,7 +1967,8 @@ class TransactionController extends \BaseController {
                         'type'=>'DEBIT',
                         'entry'=>'debit',
                         'description'=> $this->utilities->getDescription($data),
-                        'finder_id'=>$data['finder_id']
+                        'finder_id'=>$data['finder_id'],
+                        'order_type'=>$data['type']
                     );
 
                     $walletTransactionResponse = $this->utilities->walletTransactionNew($req);
@@ -1944,7 +2007,8 @@ class TransactionController extends \BaseController {
                             'type'=>'DEBIT',
                             'entry'=>'debit',
                             'description'=> $this->utilities->getDescription($data),
-                            'finder_id'=>$data['finder_id']
+                            'finder_id'=>$data['finder_id'],
+                            'order_type'=>$data['type']
                         );
                         $walletTransactionResponse = $this->utilities->walletTransactionNew($req);
                         
@@ -1989,7 +2053,7 @@ class TransactionController extends \BaseController {
 
                     }
 
-                    $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($amount,$data['finder_id'],'paymentgateway',$data['offer_id'],false,false,$convinience_fee);
+                    $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($amount,$data['finder_id'],'paymentgateway',$data['offer_id'],false,false,$convinience_fee,$data['type']);
 
                     if(isset($data['cashback']) && $data['cashback'] == true){
                         $amount -= $data['cashback_detail']['amount_discounted'];
@@ -2036,9 +2100,9 @@ class TransactionController extends \BaseController {
                     $data["secondary_payment_mode"] = "cod_membership";
                 }
 
-                if(strtolower($data["coupon_code"]) == 'fit2018'){
-                    $data['routed_order'] = "1";
-                }
+                // if(strtolower($data["coupon_code"]) == 'fit2018'){
+                //     $data['routed_order'] = "1";
+                // }
             }
             
         }else{
@@ -2049,11 +2113,11 @@ class TransactionController extends \BaseController {
                 $order->unset('coupon_discount_amount');
             }
 
-            if($order && isset($order['routed_order'])){
+            // if($order && isset($order['routed_order'])){
                 
-                $order->unset('routed_order');
+            //     $order->unset('routed_order');
             
-            }
+            // }
 
         }
 
@@ -2101,9 +2165,9 @@ class TransactionController extends \BaseController {
             $this->appOfferDiscount = in_array($data['finder_id'], $this->appOfferExcludedVendors) ? 0 : $this->appOfferDiscount;
             $data['app_discount_amount'] = intval($data['amount'] * ($this->appOfferDiscount/100));
             $amount = $data['amount'] = $data['amount_customer'] = $data['amount'] - $data['app_discount_amount'];
-            $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount'],$data['finder_id'],'paymentgateway',$data['offer_id'],$data['customer_id']);
+            $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount'],$data['finder_id'],'paymentgateway',$data['offer_id'],$data['customer_id'],false,false,$data['type']);
         }else{
-            $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount_finder'],$data['finder_id'],'paymentgateway',$data['offer_id'],$data['customer_id']);
+            $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($data['amount_finder'],$data['finder_id'],'paymentgateway',$data['offer_id'],$data['customer_id'],false,false,$data['type']);
         }
 
         if(isset($_GET['device_type']) && in_array($_GET['device_type'],['ios'])){
@@ -3050,6 +3114,7 @@ class TransactionController extends \BaseController {
             $booktrial = Booktrial::where('customer_id',$order['customer_id'])->where('finder_id',(int)$order['finder_id'])->orderBy('desc','_id')->first();
 
             if($booktrial){
+
                 $order->previous_booktrial_id = (int)$booktrial->_id;
             }
 
@@ -3427,6 +3492,17 @@ class TransactionController extends \BaseController {
                         if(isset($transaction['reg_id']) && $transaction['reg_id'] != "" && isset($transaction['device_type']) && $transaction['device_type'] != ""){
                             $this->customernotification->postTrialFollowup1After15Days($transaction,0);
                         }
+                        break;
+                    case 'Nplus2':
+
+                        $sms_data = [];
+
+                        $sms_data['customer_phone'] = $transaction['customer_phone'];
+
+                        $sms_data['message'] = "Hi ".ucwords($transaction['customer_name']).". Hope you liked your trial workout at".ucwords($transaction['finder_name']).". You have Rs. ".$transaction['wallet_balance']." in your Fittenrity wallet. Use it now to buy the membership at lowest price with assured complimentary rewards like cool fitness merchandise and Diet Plan. ".$transaction['vendor_link'].".  Valid for 7 days. For quick assistance call Fitternity on ".Config::get('app.contact_us_customer_number');
+
+                        $this->customersms->custom($sms_data);
+
                         break;
                     default : break;
                 }
@@ -3934,7 +4010,7 @@ class TransactionController extends \BaseController {
 
             }
 
-            $cashback_detail = $this->customerreward->purchaseGame($data['amount'],$data['finder_id'],'paymentgateway',$data['offer_id'],false,$data["part_payment_calculation"]["part_payment_and_convinience_fee_amount"]);
+            $cashback_detail = $this->customerreward->purchaseGame($data['amount'],$data['finder_id'],'paymentgateway',$data['offer_id'],false,$data["part_payment_calculation"]["part_payment_and_convinience_fee_amount"],$data['type']);
 
             if($cashback_detail['amount_deducted_from_wallet'] > 0){
 
@@ -4109,17 +4185,43 @@ class TransactionController extends \BaseController {
     }
 
     public function checkCouponCode(){
-
+        
         $data = Input::json()->all();
+
+        if($this->vendor_token){
+            $resp = array("status"=> 400, "message" => "Coupon code is not valid", "error_message" => "Coupon code is not valid");
+            return Response::json($resp,400);
+        }
 
         if(!isset($data['coupon'])){
             $resp = array("status"=> 400, "message" => "Coupon code missing", "error_message" => "Please enter a valid coupon");
             return Response::json($resp,400);
         }
-
         if(!isset($data['ratecard_id']) && !isset($data['ticket_id'])){
             $resp = array("status"=> 400, "message" => "Ratecard Id or ticket Id must be present", "error_message" => "Coupon cannot be applied on this transaction");
             return Response::json($resp,400);
+        }
+        if($this->utilities->isGroupId($data['coupon'])){
+            $ratecard = Ratecard::find($data['ratecard_id']);
+            if($ratecard['type'] == "membership" || $ratecard['type'] == "memberships"){
+                $data['group_id'] = $data['coupon'];
+
+            $resp = $this->utilities->validateGroupId(['group_id'=>$data['coupon']]);
+            
+            if($resp['status']==200){
+                
+                return Response::json($resp);
+            
+            }else{
+                
+                return Response::json($resp, 400);
+                
+            }
+            }else{
+                return Response::json($resp, 400);
+            }
+            
+
         }
 
         $jwt_token = Request::header('Authorization');
@@ -4215,7 +4317,7 @@ class TransactionController extends \BaseController {
 
             if($amount > 0){
 
-                $cashback_detail = $this->customerreward->purchaseGame($amount,$finder_id,'paymentgateway',$offer_id,false);
+                $cashback_detail = $this->customerreward->purchaseGame($amount,$finder_id,'paymentgateway',$offer_id,false,false,false,$ratecard['type']);
 
                 if(isset($data['cashback']) && $data['cashback'] == true){
                     $amount -= $cashback_detail['amount_discounted'];
@@ -4255,19 +4357,23 @@ class TransactionController extends \BaseController {
 
             $resp['status'] = 200;
             $resp['message'] = $resp['success_message'] = "Rs. ".$resp["data"]["discount"]." has been applied Successfully ";
-            // if(strtolower($data['coupon']) == "eojfit" || $data['coupon'] == "eojfit"){
-            //     $resp['message'] = "Coupon code applied successfully. Your surprise discount is Rs ".$resp["data"]["discount"]." basis slot availability.";
-            // }
-            if(!$resp["vendor_routed_coupon"]){
-                if($resp["data"]["discount"] <= 0){
-    
-                    $resp['status'] = 400;
-                    $resp['message'] = $resp['error_message'] = "Cannot apply Coupon";
-                    $resp["coupon_applied"] = false;
-    
-                    unset($resp['success_message']);
-                }
+
+            if(isset($resp['custom_message'])){
+                $resp['message'] = $resp['success_message'] = $resp['custom_message'];
             }
+            // if(strtolower($data['coupon']) == "fitlove" || $data['coupon'] == "fitlove"){
+            //     $resp['success_message'] = $resp['message'] = "Basis slot availability, your surprise discount for this partner outlet is Rs ".$resp["data"]["discount"];
+            // }
+            // if(!$resp["vendor_routed_coupon"]){
+            //     if($resp["data"]["discount"] <= 0){
+    
+            //         $resp['status'] = 400;
+            //         $resp['message'] = $resp['error_message'] = "Cannot apply Coupon";
+            //         $resp["coupon_applied"] = false;
+    
+            //         unset($resp['success_message']);
+            //     }
+            // }
 
             return Response::json($resp,$resp['status']);
 
@@ -4275,7 +4381,7 @@ class TransactionController extends \BaseController {
 
             $errorMessage =  "Coupon is either not valid or expired";
 
-            if((isset($resp['fitternity_only_coupon']) && $resp['fitternity_only_coupon']) || (isset($resp['vendor_exclusive']) && $resp['vendor_exclusive'])){
+            if((isset($resp['fitternity_only_coupon']) && $resp['fitternity_only_coupon']) || (isset($resp['vendor_exclusive']) && $resp['vendor_exclusive']) || (isset($resp['app_only']) && $resp['app_only'])){
                 $errorMessage =  $resp['error_message'];
             }
 
@@ -4617,7 +4723,7 @@ class TransactionController extends \BaseController {
             
             $result['payment_details']['amount_summary'][] = [
                 'field' => 'Total Amount',
-                'value' => 'Rs. '.(string)$data['amount']
+                'value' => 'Rs. '.(string)number_format($data['amount'])
             ];
 
             if($this->utilities->isConvinienceFeeApplicable($data)){
@@ -4635,7 +4741,8 @@ class TransactionController extends \BaseController {
                 
                 $result['payment_details']['amount_summary'][] = [
                     'field' => 'Convenience fee',
-                    'value' => '+Rs. '.(string)$data['convinience_fee']
+                    'value' => '+Rs. '.(string)$data['convinience_fee'],
+                    /*"info" => "Convenience fees is applicable for exclusive offers on online payments & Cash on delivery."*/
                 ];
             }
 
@@ -4649,7 +4756,12 @@ class TransactionController extends \BaseController {
                 
                 $customer_id = $decoded->customer->_id;
 
-                $data['wallet_balance'] = $this->utilities->getWalletBalance($customer_id);
+                $getWalletBalanceData = [
+                    'finder_id'=>$ratecard['finder_id'],
+                    'order_type'=>$ratecard['type']
+                ];
+
+                $data['wallet_balance'] = $this->utilities->getWalletBalance($customer_id,$getWalletBalanceData);
 
                 $data['fitcash_applied'] = $data['amount_payable'] > $data['wallet_balance'] ? $data['wallet_balance'] : $data['amount_payable'];
                 
@@ -4658,7 +4770,7 @@ class TransactionController extends \BaseController {
 
                     $result['payment_details']['amount_summary'][] = [
                         'field' => 'Fitcash Applied',
-                        'value' => '-Rs. '.(string)$data['fitcash_applied']
+                        'value' => '-Rs. '.(string)number_format($data['fitcash_applied'])
                     ];
 
                     $data['you_save'] += $data['fitcash_applied'];
@@ -4680,7 +4792,7 @@ class TransactionController extends \BaseController {
                     
                     $result['payment_details']['amount_summary'][] = [
                         'field' => 'Coupon Discount',
-                        'value' => '-Rs. '.(string)$data['coupon_discount']
+                        'value' => '-Rs. '.(string) number_format($data['coupon_discount'])
                     ];
                 
                 }
@@ -4689,7 +4801,7 @@ class TransactionController extends \BaseController {
 
             $result['payment_details']['amount_payable'] = [
                 'field' => 'Total Amount Payable',
-                'value' => 'Rs. '.(string)$data['amount_payable']
+                'value' => 'Rs. '.(string)number_format($data['amount_payable'])
             ];
 
             if($data['amount_payable'] == 0){
@@ -4721,7 +4833,7 @@ class TransactionController extends \BaseController {
             $result['order_details'] = [
                 "studio_name"=>[
                     "field"=> "",
-                    "value"=> $data['finder_name']
+                    "value"=> $data['finder_name'] . "," . $data['finder_location']
                 ],
                 "service_name"=>[
                     "field"=> "",
@@ -4729,7 +4841,7 @@ class TransactionController extends \BaseController {
                 ],
                 "duration_amount"=>[
                     "field"=> $data['service_duration'],
-                    "value"=> "Rs. ".$data['amount']
+                    "value"=> "Rs. ".number_format($data['amount'])
                 ],
                 "remarks"=>[
                     "field"=> "REMARKS",
@@ -4793,7 +4905,7 @@ class TransactionController extends \BaseController {
             if($data['you_save'] > 0){
                 $result['payment_details']['savings'] = [
                     'field' => 'Your total savings',
-                    'value' => "Rs. ".$data['you_save'],
+                    'value' => "Rs. ".number_format($data['you_save']),
                     'amount' => $data['you_save']
                 ];
             }
@@ -4811,7 +4923,7 @@ class TransactionController extends \BaseController {
             $result['order_details'] = [
                 "studio_name"=>[
                     "field"=> "",
-                    "value"=> $order['finder_name']
+                    "value"=> $order['finder_name'].",".$order['finder_location']
                 ],
                 "service_name"=>[
                     "field"=> "",
@@ -4847,7 +4959,12 @@ class TransactionController extends \BaseController {
                 
                 $customer_id = $decoded->customer->_id;
 
-                $data['wallet_balance'] = $this->utilities->getWalletBalance($customer_id);
+                $getWalletBalanceData = [
+                    'finder_id'=>$order['finder_id'],
+                    'order_type'=>$order['type']
+                ];
+
+                $data['wallet_balance'] = $this->utilities->getWalletBalance($customer_id,$getWalletBalanceData);
 
                 $data['fitcash_applied'] = $data['amount_payable'] > $data['wallet_balance'] ? $data['wallet_balance'] : $data['amount_payable'];
                 
@@ -5251,5 +5368,170 @@ class TransactionController extends \BaseController {
         return Response::json($data);
 
     }
+
+    public function generateAmazonUrl(){
+        $config = Config::get('amazonpay.config');
+        $client = new PWAINBackendSDK($config);
+        $post_params = Input::all();
+        Log::info(Input::all());
+        if(isset($post_params["order_id"])){
+            $order = Order::find((int) $post_params["order_id"] );
+            Log::info($order);
+            $val['orderTotalAmount'] = $order->amount;
+            $val['sellerOrderId'] = $order->txnid;
+        }else{
+            $val['orderTotalAmount'] = $post_params['orderTotalAmount'];
+        }
+        $val['orderTotalCurrencyCode'] = "INR";
+        // $val['transactionTimeout'] = Config::get('amazonpay.timeout');
+        // For testing in sandbox mode, remove for production
+        // $val['isSandbox'] = Config::get('app.amazonpay_isSandbox');
+        $returnUrl = Config::get('app.url')."/verifyamazonchecksum/1";
+        // $returnUrl = "http://ar-deepthi.com/amazonpay/thankyou.php";
+        $redirectUrl = $client->getProcessPaymentUrl($val, $returnUrl);
+        return $redirectUrl;
+    }
+
+    public function generateAmazonChecksum(){
+        
+        $config = Config::get('amazonpay.config');
+        
+        $client = new PWAINBackendSDK($config);
+        // Request can be either GET or POST
+        $val = ($_POST);
+        // For testing in sandbox mode, remove for production
+        // $val['isSandbox'] = "true";
+        // $val['isSandbox'] = Config::get('app.amazonpay_isSandbox');
+        
+        unset($val['sellerId']);
+        $response = $client->generateSignatureAndEncrypt($val);
+        return $response;
+    }
+
+    public function verifyAmazonChecksum($website = false){ 
+
+
+        $config = Config::get('amazonpay.config');
+
+        $client = new PWAINBackendSDK($config);
+
+        // Request can be either GET or POST
+        Log::info(Input::all());
+
+        $val = Input::all();
+        Log::info("verifyAmazonChecksum post data ---------------------------------------------------------",$val);
+        unset($val['sellerId']);
+        $response = $client->verifySignature($val);
+        $val['isSignatureValid'] = $response ? 'true' : 'false';
+
+        $val['order_id'] = null;
+        
+        // $val['isSignatureValid'] = 'true';
+        
+        if($val['isSignatureValid'] == 'true'){
+
+            $order = Order::where('txnid',$val['sellerOrderId'])->first();
+
+            if($order){
+
+                $order->pg_type = "AMAZON";
+                $order->amazon_hash = $val["hash"] = getpayTMhash($order->toArray())['reverse_hash'];
+                $order->update();
+
+                $val['order_id'] = $order->_id;
+
+                $success_data = [
+                    'txnid'=>$order['txnid'],
+                    'amount'=>(int)$val["orderTotalAmount"],
+                    'status' => 'success',
+                    'hash'=> $val["hash"]
+                ];
+                if($website == "1"){
+                    $url = Config::get('app.website')."/paymentsuccess?". http_build_query($success_data, '', '&');
+                    Log::info(http_build_query($success_data, '', '&'));
+                    Log::info($url);
+                    return Redirect::to($url);
+                }else{
+                    $paymentSuccess = $this->fitweb->paymentSuccess($success_data);
+                }
+            }
+
+           /* $order->pg_type = "AMAZON";
+            $order->amazon_hash = $val["hash"] = getpayTMhash($order->toArray())['reverse_hash'];
+            $order->update();
+            
+            
+
+            Log::info("success_data--------------------------------------------------------------------",$success_data);
+            
+            $ch = curl_init();
+            
+            curl_setopt($ch, CURLOPT_URL,Config::get('app.website')."/paymentsuccessandroid");
+            curl_setopt($ch, CURLOPT_POST, 1);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST"); 
+            curl_setopt($ch, CURLOPT_POSTFIELDS,json_encode($success_data));
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, array(                                                                          
+                'Content-Type: application/json',                                                                                
+                'Content-Length: ' . strlen(json_encode($success_data)))                                                                       
+            );
+            $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+
+
+            Log::info("httpcode--------------------------------------------------------------------".$httpcode);
+
+
+
+            if($httpcode == 200){
+                $val['isSignatureValid'] = 'true';
+            }else{
+                $val['isSignatureValid'] = 'false';  
+            }*/
+            
+            //$resp = curl_exec ($ch);
+
+            //Log::info("Success api response--------------------------------------------------------------------");
+            //Log::info($resp);
+
+
+            if(isset($paymentSuccess['status']) && $paymentSuccess['status'] == 200){
+                $val['isSignatureValid'] = "true";
+            }else{
+                $val['isSignatureValid'] = "false";
+                
+            }
+        }
+
+        return Response::json($val);
+    }
+
+    public function getServiceData(){
+
+        $ratecard_count = 1;
+
+        $service_id = 9096;
+
+        $getRatecardCount = $this->fitapi->getServiceData($service_id);
+
+        if($getRatecardCount['status'] != 200){
+
+            $ratecard_count = 0;
+
+        }else{
+
+            if(!isset($getRatecardCount['ratecards'])){
+                $ratecard_count = 0;
+            }
+
+            if(isset($getRatecardCount['ratecards']) && empty($getRatecardCount['ratecards'])){
+                $ratecard_count = 0;
+            }
+        }
+
+        return $ratecard_count;
+
+    }
+    
 
 }

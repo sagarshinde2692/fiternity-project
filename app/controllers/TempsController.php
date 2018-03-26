@@ -681,6 +681,7 @@ class TempsController extends \BaseController {
                         $booktrial->post_trial_status = 'attended';
                         $booktrial->post_trial_initail_status = 'interested';
                         $booktrial->post_trial_status_updated_by_kiosk = time();
+                        $booktrial->post_trial_status_date = time();
                         $booktrial->update();
 
                         $data = [

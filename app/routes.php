@@ -383,7 +383,7 @@ Route::get('getfinderreview/{slug}', array('as' => 'finders.getfinderreview','us
 Route::get('findertopreview/{slug}/{limit?}', array('as' => 'finders.findertopreview','uses' => 'FindersController@finderTopReview'));
 
 Route::get('finderdetail/app/{slug}', array('as' => 'finders.finderdetailapp','uses' => 'FindersController@finderDetailApp'));
-
+// Route::get("/pushBrandOutlets/{index_name}", "GlobalPushController@pushBrandOutlets");
 /******************** FINDERS SECTION END HERE ********************/
 ##############################################################################
 
@@ -929,6 +929,8 @@ Route::post('transaction/success',array('as' => 'transaction.success','uses' => 
 Route::get('referral', 'CustomerController@generateReferralCode');
 
 Route::post('displayemi','CustomerController@displayEmi');
+Route::post('displayemiv1','CustomerController@displayEmiV1');
+
 
 Route::post('trainer/getavailableslots',array('as' => 'trainer/getavailableslots','uses' => 'TrainerController@getAvailableSlots'));
 
@@ -1114,3 +1116,36 @@ Route::get('rewardReminderJan','DebugController@rewardReminderJan');
 Route::get('servicedetailv1/{finder_slug}/{service_slug}', 'ServiceController@serviceDetailv1');
 
 Route::get('workoutservicecategorys/{city?}', array('as' => 'service.workoutservicecategorys','uses' => 'ServiceController@workoutServiceCategorys'));
+Route::post('sharegroupid', 'CustomerController@shareGroupId');
+
+Route::get('markRoutedOrders', 'DebugController@markRoutedOrders');
+
+Route::get('cityfitnessoptions', 'HomeController@cityFitnessOptions');
+
+// AMAZON PAY 
+// Route::post('verifyamazonchecksum', 'TransactionController@verifyAmazonChecksum');
+Route::post('generateamazonchecksum', 'TransactionController@generateAmazonChecksum');
+Route::match(array('GET', 'POST'),'verifyamazonchecksum/{id?}', 'TransactionController@verifyAmazonChecksum');
+Route::post('generateamazonurl', 'TransactionController@generateAmazonUrl');
+
+Route::get('verifyfitcode/{booktrial_id}/{code}','SchedulebooktrialsController@verifyFitCode');
+Route::get('lostfitcode/{booktrial_id}','SchedulebooktrialsController@lostFitCode');
+Route::get('getmembershipratecardbyserviceid/{service_id}','FindersController@getMembershipRatecardByServiceId');
+
+Route::post('customer/uploadreceipt','CustomerController@uploadReceipt');
+
+Route::get('ldJson/{booktrial_id}','DebugController@ldJson');
+
+Route::get('customerhome','HomeController@customerHome');
+Route::get('groupsData','DebugController@groupsData');
+Route::get('rewardClaimData','DebugController@rewardClaimData');
+Route::get('sendVendorEmail','DebugController@sendVendorEmail');
+Route::get('paypersession','DebugController@paypersession');
+Route::get('rewardClaimAvgTime','DebugController@rewardClaimAvgTime');
+
+Route::get('gettermsandcondition','FindersController@getTermsAndCondition');
+Route::get('workoutSession','DebugController@workoutSession');
+Route::get('cityWise','DebugController@cityWise');
+Route::get('brandlist','BrandsController@brandlist');
+
+Route::get('getServiceData', 'TransactionController@getServiceData');

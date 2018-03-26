@@ -227,7 +227,48 @@ if(!function_exists('citywise_category')){
                 // ["name" => "Kids Fitness","slug" => "kids-fitness-classes"]
             ];
 
-            $cat['hyderabad'] = [];
+
+
+            $cat['hyderabad'] = [
+                ["name" => "All Fitness Options","slug" => "fitness"],
+                ["name" => "Gyms","slug" => "gyms"],
+                ["name" => "Fitness Studios","slug" => "fitness-studios"],
+                ["name" => "Zumba","slug" => "zumba-classes"],
+                ["name" => "MMA And Kick Boxing","slug" => "mma-and-kick-boxing-classes"],
+                ["name" => "Yoga","slug" => "yoga-classes"],
+                ["name" => "Cross Functional Training","slug" => "functional-training"],
+                ["name" => "Aerobics","slug" => "aerobics"],
+                ["name" => "Dance","slug" => "dance-classes"],
+                ["name" => "Pilates","slug" => "pilates-classes"]
+                // ["name" => "Spinning And Indoor Cycling","slug" => "spinning-classes"],
+                // ["name" => "Healthy Tiffins","slug" => "healthy-tiffins"],
+                // ["name" => "Personal Trainers","slug" => "personal-trainers"],
+                // ["name" => "Sport Nutrition Supplement Stores","slug" => "sport-nutrition-supplement-stores"],
+                // ["name" => "Aerial Fitness","slug" => "aerial-fitness"],
+                // ["name" => "Pre-natal Classes","slug" => "pre-natal-classes"],
+                // ["name" => "Kids Fitness","slug" => "kids-fitness-classes"]
+            ];
+
+
+            $cat['ahmedabad'] = [
+                ["name" => "All Fitness Options","slug" => "fitness"],
+                ["name" => "Gyms","slug" => "gyms"],
+                ["name" => "Fitness Studios","slug" => "fitness-studios"],
+                ["name" => "Zumba","slug" => "zumba-classes"],
+                ["name" => "Yoga","slug" => "yoga-classes"],
+                ["name" => "Aerobics","slug" => "aerobics"],
+                ["name" => "MMA And Kick Boxing","slug" => "mma-and-kick-boxing-classes"],
+                ["name" => "Cross Functional Training","slug" => "functional-training"]
+                // ["name" => "Dance","slug" => "dance-classes"],
+                // ["name" => "Pilates","slug" => "pilates-classes"]
+                // ["name" => "Spinning And Indoor Cycling","slug" => "spinning-classes"],
+                // ["name" => "Healthy Tiffins","slug" => "healthy-tiffins"],
+                // ["name" => "Personal Trainers","slug" => "personal-trainers"],
+                // ["name" => "Sport Nutrition Supplement Stores","slug" => "sport-nutrition-supplement-stores"],
+                // ["name" => "Aerial Fitness","slug" => "aerial-fitness"],
+                // ["name" => "Pre-natal Classes","slug" => "pre-natal-classes"],
+                // ["name" => "Kids Fitness","slug" => "kids-fitness-classes"]
+            ];
 
             $cat['all'] = [
                 ["name" => "All Fitness Options","slug" => "fitness"],
@@ -277,6 +318,9 @@ if(!function_exists('getmy_city')){
             case "delhi":
             case "new delhi":
                 return "delhi";
+                break;
+            case "hyderabad":
+                return "hyderabad";
                 break;
             case "bangalore":
             case "bengaluru":
@@ -338,6 +382,14 @@ if(!function_exists('ifCityPresent')){
             case "noida":
             case "greater noida":
                 $send_city = "gurgaon";
+                $ifcity = true;
+                break;
+            case "hyderabad":
+                $send_city = "hyderabad";
+                $ifcity = true;
+                break;
+            case "ahmedabad":
+                $send_city = "ahmedabad";
                 $ifcity = true;
                 break;
         };
@@ -1771,7 +1823,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         'city' => $data['city_name'],
                         'location' => "",
                         'type' => 'brand',
-                        'slug' => "",
+                        'slug' => $data['slug'],
                         'geolocation' => array('lat' => 0.0, 'lon' => 0.0),
                         'brand_id' => $data['brand_id'],
                         'brand' => $data['brand_name'],
@@ -2397,6 +2449,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
             if (!function_exists('upload_magic')) {
                 function upload_magic($params = array())
                 {
+                    $kraken = new \App\Services\Kraken();
 
                     $headersparms = array("Cache-Control" => "max-age=2592000000");
                     $id = $params['id'];
@@ -2433,7 +2486,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         $aws_bucketpath = $value['path'] . $image_name;
                         array_set($upload_params, 's3_store.path', $aws_bucketpath);
                         array_set($upload_params, 'resize', array("width" => $value['width'], "strategy" => "landscape"));
-                        $kraken_data = \Kraken::upload($upload_params);
+                        $kraken_data = $kraken->upload($upload_params);
                         $kraken_data['type'] = $value['type'];
                         $kraken_data['folder_path'] = $value['path'];
 
@@ -2789,7 +2842,7 @@ if (!function_exists(('getRegId'))){
 if (!function_exists(('isNotInoperationalDate'))){
     function isNotInoperationalDate($date, $city_id=null, $slot=null, $findercategory_id=null){
 
-        $inoperational_dates = ['2017-12-25','2018-01-26'];
+        $inoperational_dates = ['2018-03-02'];
         if(in_array($date, $inoperational_dates)){
             return false;
         }
@@ -3282,6 +3335,22 @@ if (!function_exists('vendorsByBrand')) {
             return [];
         }
             
+    }
+}
+
+if (!function_exists('isTabActive')) {
+    
+    function isTabActive($finder_id){
+
+        $is_tab_active = false;
+
+        $count = KioskUser::where('hidden',false)->where('finder_id',(int) $finder_id)->where('type','kiosk')->count();
+
+        if($count){
+            $is_tab_active = true;
+        }
+
+        return $is_tab_active;
     }
 }
 

@@ -20,7 +20,7 @@ class BrandsController extends \BaseController {
 
         if(!$brand_detail){
 
-            $brand = Brand::where('slug',$slug)->firstOrFail();
+            $brand = Brand::where('slug',$slug)->where("status","1")->firstOrFail();
 
             $finder_ids = isset($brand->finder_id) ? $brand->finder_id : [];
                     
@@ -63,7 +63,16 @@ class BrandsController extends \BaseController {
             }
         }
 
-        return Response::json(array('status' => 200,'brand_detail' => Cache::tags('brand_detail')->get($slug)));
+        return Response::json(Cache::tags('brand_detail')->get("$slug-$city"));
+    }
+
+    public function brandlist(){
+        
+        $brands = Brand::active()->lists('slug');
+        $cities = City::active()->lists('slug');
+
+        return array('brands'=>$brands, 'cities'=>$cities);
+
     }
 
 }

@@ -14,6 +14,8 @@ return array(
 	'env' => 'stage',
 	'debug' => TRUE,
 	'metropolis' => 'http://localhost:3030',
+	'amazonpay_isSandbox' => 'true',
+	
 
 	//stage
 	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
@@ -26,7 +28,7 @@ return array(
 	// 'env' => 'stage',
 	// 'debug' => TRUE,
 	// 'metropolis' => 'http://apistage.fitn.in:8989',
-	
+	// 'amazonpay_isSandbox' => 'true',
 
 	//beta
 	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
@@ -52,7 +54,8 @@ return array(
 	// 'env' => 'production',
 	// 'debug' => FALSE,
 	// 'metropolis' => 'https://b1.fitternity.com',
-	
+	// 'amazonpay_isSandbox' => 'false',
+
 
 	'download_app_link' => 'https://go.onelink.me/I0CO?pid=techfitsms',//https://www.fitternity.com/downloadapp?source=fittech',
 
@@ -698,7 +701,7 @@ return array(
 
 	'fitternity_personal_trainers' => 'Personal Training at Home by Fitternity',
 
-	'delay_methods' =>["bookTrialReminderAfter2Hour","bookTrialReminderAfter2HourRegular","bookTrialReminderBefore12Hour","bookTrialReminderBefore1Hour","bookTrialReminderBefore20Min","bookTrialReminderBefore3Hour","bookTrialReminderBefore6Hour", "manualBookTrial", "reminderToConfirmManualTrial", "manual2ndBookTrial", "orderRenewalMissedcall", "sendPaymentLinkAfter3Days", "sendPaymentLinkAfter7Days", "sendPaymentLinkAfter45Days", "purchaseAfter10Days", "purchaseAfter30Days"],
+	'delay_methods' =>["bookTrialReminderAfter2Hour","bookTrialReminderAfter2HourRegular","bookTrialReminderBefore12Hour","bookTrialReminderBefore1Hour","bookTrialReminderBefore20Min","bookTrialReminderBefore3Hour","bookTrialReminderBefore6Hour", "manualBookTrial", "reminderToConfirmManualTrial", "manual2ndBookTrial", "orderRenewalMissedcall", "sendPaymentLinkAfter3Days", "sendPaymentLinkAfter7Days", "sendPaymentLinkAfter45Days", "purchaseAfter10Days", "purchaseAfter30Days", "postTrialStatusUpdate"],
 
 
 	'my_fitness_party_slug' => ['mfp','mfp-mumbai','mfp-delhi'],
@@ -720,6 +723,10 @@ return array(
 
 	'service_gallery_path' => 'http://b.fitn.in/s/g/full/',
 
-	'facility_image_base_url'=> 'http://b.fitn.in/facility/'
+	'facility_image_base_url'=> 'http://b.fitn.in/facility/',
+	
+	'gst_on_cos_percentage'=>18,
+
+	'power_world_gym_vendor_ids' => [10315,10861,10863,10868,10870,10872,10875,10876,10877,10880,10883,10886,10887,10888,10890,10891,10892,10894,10895,10897,10900,12246,12247,12250,12252,12254],
 
 );

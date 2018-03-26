@@ -415,8 +415,21 @@ class HomeController extends BaseController {
             array_set($footer_finders,  'footer_block5_title', (isset($homepage['footer_block5_title']) && $homepage['footer_block5_title'] != '') ? $homepage['footer_block5_title'] : '');
             array_set($footer_finders,  'footer_block6_title', (isset($homepage['footer_block6_title']) && $homepage['footer_block6_title'] != '') ? $homepage['footer_block6_title'] : '');
 
+            $recent_blogs = Blog::where('status', '=', '1')->where('homepage', '1')->where('homepage_city_id', (string)$city_id)
+            ->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+            // ->with('categorytags')
+            ->with(array('author'=>function($query){$query->select('_id','name','username','email','avatar');}))
+            ->with(array('expert'=>function($query){$query->select('_id','name','username','email','avatar');}))
+            ->orderBy('_id', 'desc')
+            ->remember(Config::get('app.cachetime'))
+            ->get(array('_id','author_id','category_id','coverimage','created_at','excerpt','expert_id','slug','title','category','author','expert', 'homepage', 'homepage_city_id'))
+            ->take(4)->toArray();
 
-            $recent_blogs	 		= 		Blog::where('status', '=', '1')
+            if(count($recent_blogs) < 4){
+
+                $recent_blog_ids = array_column($recent_blogs, '_id');
+                
+                $common_blogs = Blog::where('status', '=', '1')->whereNotIn('_id', $recent_blog_ids)
                 ->with(array('category'=>function($query){$query->select('_id','name','slug');}))
                 // ->with('categorytags')
                 ->with(array('author'=>function($query){$query->select('_id','name','username','email','avatar');}))
@@ -424,51 +437,90 @@ class HomeController extends BaseController {
                 ->orderBy('_id', 'desc')
                 ->remember(Config::get('app.cachetime'))
                 ->get(array('_id','author_id','category_id','coverimage','created_at','excerpt','expert_id','slug','title','category','author','expert'))
-                ->take(4)->toArray();
+                ->take(4-count($recent_blog_ids))->toArray();
+
+                $recent_blogs = array_merge($recent_blogs, $common_blogs);
+            }
+
+
+            // $recent_blogs	 		= 		Blog::where('status', '=', '1')
+            //     ->with(array('category'=>function($query){$query->select('_id','name','slug');}))
+            //     // ->with('categorytags')
+            //     ->with(array('author'=>function($query){$query->select('_id','name','username','email','avatar');}))
+            //     ->with(array('expert'=>function($query){$query->select('_id','name','username','email','avatar');}))
+            //     ->orderBy('_id', 'desc')
+            //     ->remember(Config::get('app.cachetime'))
+            //     ->get(array('_id','author_id','category_id','coverimage','created_at','excerpt','expert_id','slug','title','category','author','expert'))
+            //     ->take(4)->toArray();
 
             // $collections 			= 	Findercollection::active()->where('city_id', '=', intval($citydata['_id']))->orderBy('ordering')->get(array('name', 'slug', 'coverimage', 'ordering' ));
             $campaigns=  [];
+
             $campaigns[] = [
-                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Webbanner-Fitnesssale.png',
-                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/mobbanner-fitnesssale.png',
-				'link'=>Config::get('app.website').'/'.$city.'/fitness?trials=1',
-				'title'=>'Sale',
-				'height'=>100,
-				'width'=>375,
-				'ratio'=>(float) number_format(100/375,2)
+                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/summer.jpg',
+                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/summer-m.jpg',
+                'link'=>Config::get('app.website').'/'.$city.'/fitness',
+                'title'=>'Fitness Sale',
+                'height'=>100,
+                'width'=>375,
+                'ratio'=>(float) number_format(100/375,2)
             ];
+
             $campaigns[] = [
-                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Rewards-banner-web-1.png',
-                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/mobbanner-rewards.png',
+                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/new-reward-web.png',
+                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Rewards-MOB.png',
                 'link'=>Config::get('app.website').'/rewards',
                 'target'=>true,
-				'title'=>'Rewards with every purchase',
-				'height'=>100,
-				'width'=>375,
-				'ratio'=>(float) number_format(100/375,2)
-			];
+                'title'=>'Rewards with every purchase',
+                'height'=>100,
+                'width'=>375,
+                'ratio'=>(float) number_format(100/375,2)
+            ];
             
             $campaigns[] = [
-                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/webbanner-sale60%25.png',
-                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/mobbanner-sale60%25.png',
-				'link'=>Config::get('app.website').'/'.$city.'/fitness?trials=1',
-				'title'=>'Fitness Sale',
-				'height'=>100,
-				'width'=>375,
-				'ratio'=>(float) number_format(100/375,2)
-			];
+                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/vgroup-web.png',
+                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/vgroup-mob.png',
+                'link'=>Config::get('app.website').'/groupmemberships',
+                'target'=>true,
+                'title'=>'Share your love for fitness',
+                'height'=>100,
+                'width'=>375,
+                'ratio'=>(float) number_format(100/375,2)
+            ];
 
-			$campaigns[] = [
+            $campaigns[] = [
                 'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Webbanner-Emi.png',
                 'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Mobbanner-EMI.png',
                 'link'=>Config::get('app.website').'/emi',
                 'target'=>true,
-				'title'=>'Save with Fitness',
-				'height'=>100,
-				'width'=>375,
-				'ratio'=>(float) number_format(100/375,2)
+                'title'=>'Save with Fitness',
+                'height'=>100,
+                'width'=>375,
+                'ratio'=>(float) number_format(100/375,2)
+            ];
+            $campaigns[] = [
+                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Cover-web%26mob/AmazonPay_WebCard_Banner.png',
+                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/amazon-pay.png',
+                'link'=>"",
+                // 'target'=>true,
+                'title'=>'Amazon Pay',
+                'height'=>100,
+                'width'=>375,
+                'ratio'=>(float) number_format(100/375,2)
             ];
 
+            /*if($city == "mumbai"){
+                $campaigns[] = [
+                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/web-banner-mfp.png',
+                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/mob-banner-mfp.png',
+                    'link'=>Config::get('app.website').'/mfp',
+                    'target'=>true,
+                    'title'=>'Save with Fitness',
+                    'height'=>100,
+                    'width'=>375,
+                    'ratio'=>(float) number_format(100/375,2)
+                ];   
+            }*/
 
             $homedata 	= 	array(
                 // 'popular_finders' => $popular_finders,
@@ -484,7 +536,17 @@ class HomeController extends BaseController {
             Cache::tags('home_by_city_v4')->put($city, $homedata, Config::get('cache.cache_time'));
         }
 
-        return Response::json(Cache::tags('home_by_city_v4')->get($city));
+        $homedata = Cache::tags('home_by_city_v4')->get($city);
+
+        $homedata['customer_home'] = null;
+
+        $jwt_token = Request::header('Authorization');
+
+        if($jwt_token){
+            $homedata['customer_home'] = $this->utilities->customerHome();
+        }
+
+        return Response::json($homedata);
     }
 
 
@@ -860,6 +922,12 @@ class HomeController extends BaseController {
             if(($type == "booktrial" || $type == "healthytiffintrial" || $type == "healthytiffintrail") && isset($itemData['amount_customer']) && $itemData['amount_customer'] > 0){
 
                 $amount_20_percent = (int)($itemData['amount_customer']*20/100);
+
+                if($type == "booktrial"){
+
+                    $amount_20_percent = $itemData['amount_customer'];
+                }
+
                 $popup_message = "Rs ".$amount_20_percent." FitCash has been added to your wallet";
             }
 
@@ -1097,6 +1165,7 @@ class HomeController extends BaseController {
 
             }
 
+            $booking_details_data["group_id"] = ['field'=>'GROUP ID','value'=>'','position'=>$position++];
 
             if(isset($item['start_date']) && $item['start_date'] != ""){
                 $booking_details_data['start_date']['value'] = date('D, d M Y',strtotime($item['start_date']));
@@ -1137,7 +1206,7 @@ class HomeController extends BaseController {
             if(in_array($type,["booktrialfree"])){
 
                 if(isset($item['code']) && $item['code'] != ""){
-                    $booking_details_data['booking_id']['value'] = $item['code'];
+                    $booking_details_data['booking_id']['value'] = $item['code'].' (Share it at Gym/Studio to get Fitcode)';
                 }
 
             }
@@ -1151,6 +1220,11 @@ class HomeController extends BaseController {
                     if(isset($order_booktrial['code'])){
                         
                         $booking_details_data['booking_id']['value'] = $order_booktrial['code'];
+
+                        if(in_array($type, ["booktrial","booktrials"])){
+
+                            $booking_details_data['booking_id']['value'] = $order_booktrial['code'].' (Share it at Gym/Studio to get Fitcode)';
+                        }
                     
                     }
 
@@ -1274,22 +1348,43 @@ class HomeController extends BaseController {
                 $booking_details_data['finder_name_location']['field'] = 'BOUGHT AT';
                 $booking_details_data['finder_name_location']['value'] = $finder_name;
             }
+            if(isset($item['group_id']) && $item['group_id'] != ""){
+                $booking_details_data['group_id']['value'] = $item['group_id'];
+            }
 
-
+            
             if(in_array($type,["membershipwithpg","membershipwithoutpg","healthytiffinmembership"])){
 
                 $header = "Membership Confirmed";
                 $subline = "Hi <b>".$item['customer_name']."</b>, your <b>".$booking_details_data['service_duration']['value']."</b> Membership at <b>".$booking_details_data["finder_name_location"]['value']."</b> has been confirmed.We have also sent you a confirmation Email and SMS";
 
+                if(isset($item['booking_for_others']) && $item['booking_for_others']){
+
+                    $subline = "You have booked a Membership for ".ucwords($item['customer_name'])." for ".$booking_details_data['service_name']['value']." at ".$booking_details_data["finder_name_location"]['value'].". We have also sent a confirmation Email and SMS.";
+                }
+
                 if($type == "healthytiffinmembership"){
                     $subline = "Hi <b>".$item['customer_name']."</b>, your <b>".$booking_details_data['service_duration']['value']."</b> meal subscription with <b>".$booking_details_data["finder_name_location"]['value']."</b> has been confirmed.We have also sent you a confirmation Email and SMS";
+
+                     if(isset($item['booking_for_others']) && $item['booking_for_others']){
+
+                        $subline = "You have booked a Meal Subscription for ".ucwords($item['customer_name'])." for ".$booking_details_data['service_name']['value']." with ".$booking_details_data["finder_name_location"]['value'].". We have also sent a confirmation Email and SMS.";
+                    }
                 }
 
                 if(isset($item['payment_mode']) && $item['payment_mode'] == 'cod'){
                     $subline= "Hi <b>".$item['customer_name']."</b>, your <b>".$booking_details_data['service_duration']['value']."</b> Membership at <b>".$booking_details_data["finder_name_location"]['value']."</b> has been confirmed. It will be activated once we collect your cash payment. We have also sent you a confirmation Email and SMS";
                 }
 
-                $booking_details_data = array_only($booking_details_data, ['booking_id','price','address','poc']);
+                if(isset($_GET['device_type']) && in_array($_GET['device_type'], ['ios', 'android'])){
+                
+                    $booking_details_data = array_only($booking_details_data, ['booking_id','price','address','poc', 'group_id']);
+                
+                }else{
+                    
+                    $booking_details_data = array_only($booking_details_data, ['booking_id','price','address','poc']);
+                
+                }
 
             }
 
@@ -1298,13 +1393,18 @@ class HomeController extends BaseController {
                 switch ($item['type']) {
                     case 'booktrials':
                         $header = "TRIAL CONFIRMED";
-                        $subline = "Hi <b>".$item['customer_name']."</b>, your free trial for <b>".$booking_details_data['service_name']['value']."</b> at <b>".$booking_details_data["finder_name_location"]['value']."</b> has been confirmed.We have also sent you a confirmation Email and SMS.";
+                        $subline = "Hi <b>".$item['customer_name']."</b>, your Trial for <b>".$booking_details_data['service_name']['value']."</b> at <b>".$booking_details_data["finder_name_location"]['value']."</b> has been confirmed.We have also sent you a confirmation Email and SMS.";
                         break;
                     
                     default:
                         $header = "WORKOUT SESSION CONFIRMED";
-                        $subline = "Hi <b>".$item['customer_name']."</b>, your Workout Session for <b>".$booking_details_data['service_name']['value']."</b> at <b>".$booking_details_data["finder_name_location"]['value']."</b> has been confirmed by paying ₹".$item['amount'].". We have also sent you a confirmation Email & SMS.";
+                        $subline = "Hi <b>".$item['customer_name']."</b>, your Workout Session for <b>".$booking_details_data['service_name']['value']."</b> at <b>".$booking_details_data["finder_name_location"]['value']."</b> has been confirmed by paying Rs ".$item['amount'].". We have also sent you a confirmation Email & SMS.";
                         break;
+                }
+
+                if(isset($item['booking_for_others']) && $item['booking_for_others']){
+
+                    $subline = "You have booked a session for ".ucwords($item['customer_name'])." for ".$booking_details_data['service_name']['value']." at ".$booking_details_data["finder_name_location"]['value'].". We have also sent a confirmation Email and SMS.";
                 }
 
                 $booking_details_data = array_only($booking_details_data, ['booking_id','start_date','address','poc','start_time']);
@@ -1314,6 +1414,14 @@ class HomeController extends BaseController {
 
                 unset($booking_details_data['start_time']);
 
+            }
+
+            if(in_array($type,["healthytiffintrail","healthytiffintrial"])){
+
+                if(isset($item['booking_for_others']) && $item['booking_for_others']){
+
+                    $subline = "You have booked a Trial Meal for ".ucwords($item['customer_name'])." for ".$booking_details_data['service_name']['value']." with ".$booking_details_data["finder_name_location"]['value'].". We have also sent a confirmation Email and SMS.";
+                }
             }
 
             if($type == "manualmembership" && isset($booking_details_data['booking_id'])){
@@ -1464,7 +1572,7 @@ class HomeController extends BaseController {
                     'reward_type' => 'cashback',
                     'finder_name'=> (isset($item['finder_name']) && $item['finder_name'] != "") ? $item['finder_name'] : "",
                     'title'=>'Instant Cashback',
-                    'description'=>'₹'.$item['cashback_detail']['wallet_amount'].'+ has been added in form of FitCash+ in your wallet. You can find it in your profile and use it to explore different workout forms and healthy tiffins.<br><br>Your currernt balance is <b>₹'.$fitcash_plus.'</b>',
+                    'description'=>'Rs '.$item['cashback_detail']['wallet_amount'].'+ has been added in form of FitCash+ in your wallet. You can find it in your profile and use it to explore different workout forms and healthy tiffins.<br><br>Your currernt balance is <b>Rs '.$fitcash_plus.'</b>',
                     'validity_in_days'=>null,
                     'image'=>'https://b.fitn.in/gamification/reward/cashback2.jpg'
                 ];
@@ -1509,6 +1617,16 @@ class HomeController extends BaseController {
                 'customer_auto_register' => $customer_auto_register,
                 'why_buy'=>$why_buy
             ];
+
+            if(isset($item['group_id']) && $item['group_id'] != ''){
+
+                $resp['group_code'] = [
+                    'code'=> $item['group_id'],
+                    'order_id'=> $item['_id'],
+                    'end_point'=> 'sharegroupid'
+                ];
+
+            }
 
             if($this->vendor_token){
 
@@ -1904,8 +2022,12 @@ class HomeController extends BaseController {
     public function getCities(){
 
         $array = array();
-
-        $cites		= 	City::active()->orderBy('name')->whereNotIn('_id',$array)->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
+        $app_device = Request::header('Device-Type');
+        if(isset($app_device) && in_array($app_device, ['ios', 'android'])){
+            $cites		= 	City::active()->orderBy('name')->whereNotIn('_id',$array)->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
+        }else{
+            $cites		= 	City::orderBy('name')->whereNotIn('_id',$array)->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
+        }
 
         return Response::json($cites,200);
     }
@@ -3173,10 +3295,10 @@ class HomeController extends BaseController {
 
         switch ($city) {
             case 'mumbai':
-                $data['isEventUpcoming'] = time() <= strtotime(date('2017-12-16 12:00:00')) ? true : false;
+                $data['isEventUpcoming'] = time() <= strtotime(date('2017-03-11 12:00:00')) ? true : false;
                 break;
             default:
-                $data['isEventUpcoming'] = time() <= strtotime(date('2017-12-17 12:00:00')) ? true : false;
+                $data['isEventUpcoming'] = time() <= strtotime(date('2018-02-17 12:00:00')) ? true : false;
                 break;
         }
 
@@ -3192,13 +3314,13 @@ class HomeController extends BaseController {
         switch ($city) {
             case 'mumbai':
                 $data["upcoming_party"] = [
-                    "title"=>"16th December, Sun-N-Sand<br>Juhu",
+                    "title"=>"11th March, Sun-N-Sand<br>Juhu",
                     "image"=>"https://b.fitn.in/global/toi/mfp/website_banner/mfpcover.jpg"
                 ];
                 break;
             default:
                 $data["upcoming_party"] = [
-                    "title"=>"17th December, The Park Hotel<br>Connaught Place",
+                    "title"=>"17th Feb, Cyber Hub<br>Gurugram",
                     "image"=>"https://b.fitn.in/global/toi/newmorningfitnesspartylogo.png"
                 ];
                 break;
@@ -3235,43 +3357,50 @@ class HomeController extends BaseController {
             "title"=>"The Line Up",
             "venue"=>"Sun-N-Sand, Juhu",
             "address"=>"39, Juhu Beach, Mumbai, Maharashtra 400049",
-            "date"=>"16th December Saturday",
-            "time"=>"8:00 AM to 11:30 AM",
+            "date"=>"11th March Sunday",
+            "time"=>"7:30 AM to 11:00 AM",
             "items"=>[
                 [
-                    "title"=>"Animal Flow Yoga",
-                    "description"=>"A sequence of fluid postures where the movements are primal, athletic & imitate the locomotive patterns of animals.",
-                    "calories_burn"=>"Burn 594 Calories",
-                    "image"=>"https://b.fitn.in/global/toi/mfp/december/mum/decmum_yog.png",
+                    "title"=>"Animal Flow",
+                    "description"=>"A fun, challenging workout emphasizing multi-planar, fluid movement",
+                    "calories_burn"=>"Burn 250 Calories",
+                    "image"=>"https://b.fitn.in/global/toi/mfp/line_up/pilatesfinal.jpg",
                     "trainer"=>"With Nam",
-                    "time"=>"8:00 AM - 8:30 AM"
+                    "time"=>"7:30 AM - 8:00 AM"
                 ],
                 [
-
-                    "title"=>"Cross Functional Bootcamp",
-                    "description"=>"A functional training circuit using only body weight for core & strength building.",
-                    "calories_burn"=>"Burn 450 Calories",
-                    "image"=>"https://b.fitn.in/global/toi/mfp/december/mum/decmum_crsofit.png",
-                    "trainer"=>"With Abbas Ali",
-                    "time"=>"8:45 AM - 9:15 AM"
+                    "title"=>"Masala Bhangra",
+                    "description"=>"A cardio based dance workout form performed on dhol beats to achieve fat burn.",
+                    "calories_burn"=>"Burn 700 Calories",
+                    "image"=>"https://cdn.fitn.in/Mfp-delhi/masalab-web.jpg",
+                    "trainer"=>"With Shalini Bhargava",
+                    "time"=>"8:15 AM - 8:45 AM"
                 ],
                 [
-                    "title"=>"Bollywood Fitness",
+                    "title"=>"Piloxing",
+                    "description"=>"A creative mix between Pilates and Boxing moves in a high-spirited interval workout",
+                    "calories_burn"=>"Burn 700 Calories",
+                    "image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/zumbafinal.jpg",
+                    "trainer"=>"With Mahek Shah",
+                    "time"=>"9:00 AM - 9:30 AM"
+                ],
+                [
+                    "title"=>"Bollywood",
                     "description"=>"A high energetic full body dance cardio workout done on bollywood music to sweat out excessive calories.",
-                    "calories_burn"=>"Burn 450 Calories",
+                    "calories_burn"=>"Burn 700 Calories",
                     "image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/bollyfit.jpg",
-                    "trainer"=>" with Team Change",
-                    "time"=>"9:30 AM - 10:00 AM"
+                    "trainer"=>"With Melvin Louis",
+                    "time"=>"9:45 AM - 10:15"
                 ],
                 [
 
                     "title"=>"Aqua Zumba",
                     "description"=>"A low-impact aquatic yoga poses performed in warm water to gain strength & balance.",
-                    "calories_burn"=>"Burn 220 Calories",
-                    "image"=>"https://cdn.fitn.in/Mfp-delhi/aqua-zumba.jpg",
-                    "trainer"=>"With Sucheta Pal",
-                    "time"=>"10:15 AM - 10:45 AM & 11:00 AM - 11:30 AM"
-                ],
+                    "calories_burn"=>"Burn 800 Calories",
+                    "image"=>"https://cdn.fitn.in/Mfp-delhi/zumba2.jpg",
+                    "trainer"=>"With Aadil, Roshan and Ritesh",
+                    "time"=>"10:30 AM - 11:00 AM"
+                ]
             ]
 
         ];
@@ -3280,42 +3409,34 @@ class HomeController extends BaseController {
 
             $data["line_up"] = [
                 "title"=>"The Line Up",
-                "venue"=>"The Park hotel, Connaught Place",
-                "address"=>"15, Parliament Street, New Delhi, Delhi 110001",
-                "date"=>"17th December Sunday",
-                "time"=>"8:00 AM to 11:30 AM",
+                "venue"=>"Cyber Hub",
+                "address"=>"DLF Cyber City, Phase 2, NH 8, Gurugram, Haryana 122002",
+                "date"=>"17th Feb Saturday",
+                "time"=>"7:30 AM to 10:15 AM",
                 "items"=>[
                     [
-                        "title"=>"Pilates",
-                        "description"=>"A combination of core exercises for toning up.",
-                        "calories_burn"=>"Burn 350 Calories",
+                        "title"=>"Yoga",
+                        "description"=>"A combination of poses and postures to gain body strength, toning and flexibility",
+                        "calories_burn"=>"Burn 250 Calories",
                         "image"=>"https://b.fitn.in/global/toi/mfp/line_up/pilatesfinal.jpg",
-                        "trainer"=>"With Taru (Team Red Mat)",
-                        "time"=>"8:00 AM - 8:30 AM"
+                        "trainer"=>"With Viva Fit",
+                        "time"=>"7:30 AM - 8:00 AM"
                     ],
                     [
-                        "title"=>"KickBoxing",
-                        "description"=>"A  martial arts form of attack & defence which incorporates kicking and boxing for strength & endurance.",
-                        "calories_burn"=>"Burn 550 Calories",
-                        "image"=>"https://b.fitn.in/global/toi/mfp/december/del/decdel_kickboxing.png",
-                        "trainer"=>"With Team Boxfit",
-                        "time"=>"8:45 AM - 9:15 AM"
+                        "title"=>"Strong by Zumba",
+                        "description"=>"It combines high intensity interval training with the science of Synced Music Motivation.",
+                        "calories_burn"=>"Burn 700 Calories",
+                        "image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/bollyfit.jpg",
+                        "trainer"=>"With Prateek Kundail",
+                        "time"=>"7:30 AM - 8:00 AM"
                     ],
                     [
-                        "title"=>"Crush Club",
-                        "description"=>"A high energetic full body dance cardio workout done on bollywood music to sweat out excessive calories.",
-                        "calories_burn"=>"Burn 450 Calories",
-                        "image"=>"https://b.fitn.in/global/toi/mfp/december/del/decdel_dance.png",
-                        "trainer"=>"With Crush Fitness",
-                        "time"=>"9:30 AM - 10:00 AM"
-                    ], 
-                    [
-                        "title"=>"Crossfit",
+                        "title"=>"Functional Training",
                         "description"=>"A functional training circuit using only body weight for for core & strength building.",
-                        "calories_burn"=>"Burn 550 Calories",
+                        "calories_burn"=>"Burn 450 Calories",
                         "image"=>"https://b.fitn.in/global/toi/mfp/december/del/decdel_crossfit.png",
-                        "trainer"=>"With Team 3607",
-                        "time"=>"10:15 AM - 10:45 AM"
+                        "trainer"=>"With Fitness First",
+                        "time"=>"8:15 AM - 8:45 AM"
                     ],
                     [
                         "title"=>"Masala Bhangra",
@@ -3323,8 +3444,40 @@ class HomeController extends BaseController {
                         "calories_burn"=>"Burn 700 Calories",
                         "image"=>"https://cdn.fitn.in/Mfp-delhi/masalab-web.jpg",
                         "trainer"=>"With Nupur Banerji",
-                        "time"=>"11:00 AM - 11:30 AM"
+                        "time"=>"8:15 AM - 8:45 AM"
                     ],
+                    [
+                        "title"=>"Zumba",
+                        "description"=>"A high energy workout on latin american and bollywood music. Best for calorie and fat burning.",
+                        "calories_burn"=>"Burn 700 Calories",
+                        "image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/zumbafinal.jpg",
+                        "trainer"=>"With Sucheta Pal",
+                        "time"=>"9:00 AM - 9:30 AM"
+                    ], 
+                    [
+                        "title"=>"Functional Training",
+                        "description"=>"A functional training circuit using only body weight for for core & strength building.",
+                        "calories_burn"=>"Burn 450 Calories",
+                        "image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/Crossfit.jpg",
+                        "trainer"=>"With Cult",
+                        "time"=>"9:00 AM - 9:30 AM"
+                    ],   
+                    [
+                        "title"=>"Crush Club (Adults & Kids)",
+                        "description"=>"A high energetic full body dance cardio workout done on bollywood music to sweat out excessive calories.",
+                        "calories_burn"=>"Burn 450 Calories",
+                        "image"=>"https://b.fitn.in/global/toi/mfp/december/del/decdel_dance.png",
+                        "trainer"=>"With Crush Fitness",
+                        "time"=>"9:45 AM - 10:15 AM"
+                    ], 
+                    // [
+                    //     "title"=>"KickBoxing",
+                    //     "description"=>"A  martial arts form of attack & defence which incorporates kicking and boxing for strength & endurance.",
+                    //     "calories_burn"=>"Burn 550 Calories",
+                    //     "image"=>"https://b.fitn.in/global/toi/mfp/december/del/decdel_kickboxing.png",
+                    //     "trainer"=>"With Team Boxfit",
+                    //     "time"=>"8:45 AM - 9:15 AM"
+                    // ],
                     // [
                     //     "title"=>"Shivfit Functional Training",
                     //     "description"=>" A functional training circuit using only body weight for for core & strength building.",
@@ -3915,6 +4068,76 @@ class HomeController extends BaseController {
             ],
             'threshold_value'=>6
         ];
+    }
+    
+    public function cityFitnessOptions($cache = true){
+
+        $data = $cache ? Cache::tags('citywise_finders')->has('citywise_finders') : false;
+
+        if(!$data){
+
+            Log::info("No cache citywise_finders");
+
+            $city_id = [1, 2, 3, 4, 5, 6, 8, 9];
+    
+            $cities = Finder::raw(function($collection) use ($city_id){
+    
+                $aggregate = [];
+    
+                $match = ['$match' => ['status' => "1", 'city_id' => ['$in'=> $city_id]]];
+    
+                $aggregate[] = $match;
+    
+                $group = array(
+                            '$group' => array(
+                                '_id' => '$city_id',
+                                'count' => array(
+                                    '$sum' => 1
+                                )
+                            )
+                        );
+    
+                $aggregate[] = $group;
+    
+                return $collection->aggregate($aggregate);
+    
+            });
+    
+            $cities = $cities['result'];
+            $data = [];
+            foreach($cities as $key => $city){
+
+                $city_name = City::find($city['_id'], ['name']);
+
+                if($city_name['name'] == 'gurgaon'){
+                    $city_name['name'] = 'gurugram';
+                }
+
+                $data[$city_name['name']] = ['city_name'=>ucwords($city_name['name']), 'finders_count'=>$city['count']];
+    
+            }
+
+            Cache::tags('citywise_finders')->put('citywise_finders',$data,Config::get('cache.cache_time'));
+        }
+
+        return Cache::tags('citywise_finders')->get('citywise_finders');
+    }
+
+    public function customerHome(){
+
+        $data = [
+            'status'=>200,
+            'message'=>'success',
+            'customer_home'=>null
+        ];
+
+        $jwt_token = Request::header('Authorization');
+
+        if($jwt_token){
+            $data['customer_home'] = $this->utilities->customerHome();
+        }
+
+        return Response::json($data);
     }
 
 }
