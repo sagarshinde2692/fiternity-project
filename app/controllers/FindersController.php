@@ -986,7 +986,17 @@ class FindersController extends \BaseController {
                         'background'=> '-webkit-linear-gradient(left, #FE7E87 0%, #FA5295 100%)',
                         'background-color'=> ''
                     ];
-                }
+				}
+				
+				if(in_array($response['finder']['_id'], [4823,4819,4817,4824,4826])){
+                    $response['vendor_stripe_data']	=	[
+                        'text'=> "5% Discount + 5% Cashback as FitCash on 1-year Membership",
+                        'text_color'=> '#ffffff',
+                        'background'=> '-webkit-linear-gradient(left, #FE7E87 0%, #FA5295 100%)',
+                        'background-color'=> ''
+                    ];
+				}
+				
 				if(isset($finder['commercial_type']) && $finder['commercial_type'] == 0){
 
 					unset($response['finder']['payment_options']);

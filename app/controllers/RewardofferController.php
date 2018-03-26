@@ -243,6 +243,12 @@ class RewardofferController extends BaseController {
             }
         }
 
+        if(in_array($ratecard_id,[103151,103152,103153,103154,103155,103156,103157,103158])){
+
+            $min_date = null;
+            $max_date = strtotime(date('2018-03-30 23:59:59'));
+        }
+
         if(isset($data['service_category_id']) && $data['service_category_id'] != ""){
 
             $service_category_id = (int)$data['service_category_id'];
@@ -868,7 +874,7 @@ class RewardofferController extends BaseController {
             $cashback = null;
         }
 
-        if(isset($data['ratecard_id']) && in_array($data['ratecard_id'], [])){
+        if(isset($data['ratecard_id']) && in_array($data['ratecard_id'], [103151,103152,103153,103154,103155,103156,103157,103158])){
             $rewards = [];
             $cashback = null;
         }

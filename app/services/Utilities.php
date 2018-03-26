@@ -3356,7 +3356,9 @@ Class Utilities {
 
         $amount = 0;
         $days = 0;
-        $fitcash = 100;
+        $fitcash = 200;
+        $min_fitcash = 200;
+        $max_fitcash = 750;
 
         if(!empty($ratecards)){
 
@@ -3385,6 +3387,14 @@ Class Utilities {
             }
 
             $fitcash = floor((($amount / $days) * 30)*$percentage);
+        }
+
+        if($fitcash < $min_fitcash){
+            $fitcash = $min_fitcash;
+        }
+
+        if($fitcash > $max_fitcash){
+            $fitcash = $max_fitcash;
         }
 
         return $fitcash;
