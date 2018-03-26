@@ -1489,6 +1489,12 @@ class ServiceController extends \BaseController {
 			
 			$service_details['average_rating'] = isset($finder['average_rating']) ? round($finder['average_rating'], 1) : 0;
 
+			if(!isset($service_details['calorie_burn']) || !isset($service_details['calorie_burn']['avg'])){
+				$service_details['calorie_burn'] = [
+					'avg'=>500
+				];
+
+			}
 			$service_details['calorie_burn'] = "BURN ".$service_details['calorie_burn']['avg']." ".((isset($service_details['calorie_burn']['type']) && $service_details['calorie_burn']['type'] != "") ? strtoupper($service_details['calorie_burn']['type']) : "KCAL");
 
 			$reviews = [];
