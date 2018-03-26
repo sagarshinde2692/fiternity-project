@@ -6876,7 +6876,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             }else if($booktrial->type == "workout-session" && !isset($booktrial->post_trial_status_updated_by_fitcode)){
 
-                
+                // $fitcash = $this->utilities->
 
 
             }
