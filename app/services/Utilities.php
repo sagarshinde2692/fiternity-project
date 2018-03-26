@@ -3389,11 +3389,11 @@ Class Utilities {
             $fitcash = floor((($amount / $days) * 30)*$percentage);
         }
 
-        if($fitcash < 200){
+        if($fitcash < $min_fitcash){
             $fitcash = $min_fitcash;
         }
 
-        if($fitcash > 750){
+        if($fitcash > $max_fitcash){
             $fitcash = $max_fitcash;
         }
 

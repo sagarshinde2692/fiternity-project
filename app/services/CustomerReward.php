@@ -370,6 +370,8 @@ Class CustomerReward {
                     $sms_data['message'] = "Hi ".ucwords($order['customer_name']).", Rs. ".$order['amount_customer']." Fitcash has been added in your Fitternity wallet. Use this Fitcash to buy ".ucwords($order['finder_name'])."'s membership at lowest price and earn complimentary rewards. Valid for 7 days post your trial session. For quick assistance call ".Config::get('app.contact_us_customer_number');
 
                     $customersms->custom($sms_data);
+
+                    $order->update(['cashback_amount'=>intval($order['amount_customer'])]);
                 }
 
             }elseif(isset($order['type']) && $order['type'] == 'events' && isset($order['customer_id']) && isset($order['amount']) && isset($order['ticket_id']) ){
