@@ -3566,6 +3566,34 @@ Class Utilities {
 
         $order->update();
     }
+
+    public function getWorkoutSessionsAttended(){
+        
+        return Booktrial::where('customer_id', $booktrialData['customer_id'])->where('post_trial_status', 'attended')->count();
+    
+    }
+
+    public function getWorkoutSessionFitcash($booktrialData){
+
+        $trials_attended = $this->getWorkoutSessionsAttended($booktrialData['customer_id']);
+        
+        $fitcash = 0;
+        
+        if($trials_attended < 3){
+            $fitcash = 10;
+        }elseif($trials_attended < 4){
+            $fitcash = 15;
+        }elseif($trials_attended < 9){
+            $fitcash = 20;
+        }else{
+            $fitcash = 25;
+        }
+
+        $fitcash = floor(($booktrialData['amount_finder'] * $fitcash) / 100);        
+
+        return $fitcash;
+
+    }
     
 }
 

@@ -6876,8 +6876,23 @@ class SchedulebooktrialsController extends \BaseController {
 
             }else if($booktrial->type == "workout-session" && !isset($booktrial->post_trial_status_updated_by_fitcode)){
 
-                // $fitcash = $this->utilities->
+                $fitcash = $this->utilities->getWorkoutSessionFitcash($booktrial->toArray());
+                
+                $req = array(
+                    "customer_id"=>$booktrial['customer_id'],
+                    "trial_id"=>$booktrial['_id'],
+                    "amount"=> $fitcash,
+                    "amount_fitcash" => 0,
+                    "amount_fitcash_plus" => $fitcash,
+                    "type"=>'CREDIT',
+                    'entry'=>'credit',
+                    'validity'=>time()+(86400*21),
+                    'description'=>"Added FitCash+ on Workout Session Attendance By Fitcode",
+                );
 
+                $this->utilities->walletTransaction($req);
+
+                $message = "Hi ".ucwords($booktrial['customer_name']).", Rs.".$fitcash." Fitcash is added in your wallet as surprise on your attendace . Use it to buy ".ucwords($booktrial['finder_name'])."'s membership at lowest price. Valid for 21 days";
 
             }
 
