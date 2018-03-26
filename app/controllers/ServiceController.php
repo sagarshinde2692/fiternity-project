@@ -1638,5 +1638,33 @@ class ServiceController extends \BaseController {
 
 	}
 
+	public function timepreference(){
+		$data = Input::json()->all();
+		$pay_persession_request = [
+			"category"=>$data["category"],
+			"lat"=>isset($data["lat"]) ? $data["lat"] : "",
+			"lon"=>isset($data["lon"]) ? $data["lon"] : "",
+			"city"=>strtolower($data["city"]),
+			"keys"=>[
+			  "name",
+			  "id"
+			]
+		];
+		 $pay_per_session = payPerSession($pay_persession_request);
+		$timings = $pay_per_session["aggregations"]["time_range"];
+		$tomorrow = date('l', strtotime(' +1 day'));
+		$day_after = date('l', strtotime(' +2 day'));
+		$days = array_fetch($pay_per_session["aggregations"]["days"],"name");
+		$indexofTomorrow = array_search($tomorrow,$days);
+		$pay_per_session["aggregations"]["days"][$indexofTomorrow]["name"] = "Tomorrow";
+		$pay_per_session["aggregations"]["days"][$indexofTomorrow]["slug"] = "tomorrow";
+		$indexofday_after = array_search($day_after,$days);
+		$pay_per_session["aggregations"]["days"][$indexofday_after]["name"] = "Day after";
+		$pay_per_session["aggregations"]["days"][$indexofday_after]["slug"] = "day-after";
+		array_push($timings, $pay_per_session["aggregations"]["days"][$indexofTomorrow]);
+		array_push($timings, $pay_per_session["aggregations"]["days"][$indexofday_after]);
+		return $data = array("header"=> "When do you want to workout?", "categories" => $timings);
+	}
+
 
 }

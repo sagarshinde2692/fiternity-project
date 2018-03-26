@@ -498,6 +498,7 @@ Route::get('service/getservicewithworkoutsession/{finder_id}', array('as' => 'se
 Route::get('service/getworkoutsessionschedulebyservice/{service_id}/{date?}', array('as' => 'service.getworkoutsessionschedulebyservice','uses' => 'ServiceController@getWorkoutSessionScheduleByService'));
 Route::get('getservicesbytype/{finder_id}/{type}', array('as' => 'service.getservicesbytype','uses' => 'ServiceController@getServicesByType'));
 Route::get('getschedulebyfinderservice', array('as' => 'service.getschedulebyfinderservice','uses' => 'ServiceController@getScheduleByFinderService'));
+Route::post('timepreference', array('as' => 'service.timepreference','uses' => 'ServiceController@timepreference'));
 
 
 

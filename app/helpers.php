@@ -2859,6 +2859,24 @@ if (!function_exists(('isNotInoperationalDate'))){
     }
 }
 
+if(!function_exists('payPerSession')){
+    function payPerSession($request){
+        $client = new Client( ['debug' => false, 'base_uri' => Config::get("app.url")."/"] );
+        $payload = [
+            "category"=>isset($request["category"]) ? $request["category"] : "",
+            "location"=>["city"=>$request["city"]],
+            "keys" => $request["keys"]
+        ];
+        if(isset($request["lat"])){
+            $payload["location"]["geo"] = array($request["lat"], $request["lon"]);
+        }
+        $url = Config::get('app.new_search_url')."/search/paypersession";
+        $response  =   json_decode($client->post($url,['json'=>$payload])->getBody()->getContents(),true);
+        return $response;
+    }
+}
+
+
 if (!function_exists(('geoLocationFinder'))){
 
     function geoLocationFinder($request){
