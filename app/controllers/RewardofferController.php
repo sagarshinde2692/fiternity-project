@@ -868,7 +868,7 @@ class RewardofferController extends BaseController {
             $cashback = null;
         }
 
-        if(isset($data['ratecard_id']) && in_array($data['ratecard_id'], [])){
+        if(isset($data['ratecard_id']) && in_array($data['ratecard_id'], [103151,103152,103153,103154,103155,103156,103157,103158])){
             $rewards = [];
             $cashback = null;
         }
