@@ -851,8 +851,8 @@ class ServiceController extends \BaseController {
                     	$scheduleDateTimeUnix               =  strtotime(strtoupper($date." ".$slot['start_time']));
 						$slot_datetime_pass_status      =   (($scheduleDateTimeUnix - $currentDateTime) > $time_in_seconds) ? false : true;
 						
-						if(isset($request['within_time']) && $request['within_time'] && $slot_datetime_pass_status){
-							$slot_datetime_pass_status = (($scheduleDateTimeUnix - $currentDateTime) < $time_in_seconds) ? false : true;
+						if(isset($request['within_time']) && $request['within_time'] && !$slot_datetime_pass_status){
+							$slot_datetime_pass_status = (($scheduleDateTimeUnix - $currentDateTime) < $request['within_time']) ? false : true;
 						}
 
                         ($slot_datetime_pass_status == false) ? $slot_passed_flag = false : null;
