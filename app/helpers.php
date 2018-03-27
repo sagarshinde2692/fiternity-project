@@ -2863,7 +2863,7 @@ if(!function_exists('payPerSession')){
     function payPerSession($request){
         $client = new Client( ['debug' => false, 'base_uri' => Config::get("app.url")."/"] );
         $payload = [
-            "category"=>isset($request["category"]) &&  $request["category"] != "" ? array("name" => $request["category"]) : [],
+            "category"=>isset($request["category"]) &&  $request["category"] != "" ? [array("name" => $request["category"])] : [],
             "location"=>["city"=>$request["city"]],
             "keys" => $request["keys"]
         ];
