@@ -945,6 +945,68 @@ class FindersController extends \BaseController {
 					$finder_footer = Cache::tags('finder_footer')->get($finderdata["location"]["slug"]);
 				}
 
+				$finder['photo_facility_tags'] = ['All'];
+				
+				$finder['photo_service_tags'] = ['All'];
+
+				$photo_facility_tags_others_count = 0;
+				$photo_service_tags_others_count = 0;
+				
+				foreach($finder['photos'] as $photo){
+				
+					$finder['photo_facility_tags'] = array_merge($finder['photo_facility_tags'], $photo['tags']);
+
+					// if(count($photo['tags']) == 0){
+					// 	$photo_facility_tags_others_count += 1;
+					// }
+				
+					$finder['photo_service_tags'] = array_merge($finder['photo_service_tags'], $photo['servicetags']);
+
+					// if(count($photo['servicetags']) == 0){
+					// 	$photo_service_tags_others_count += 1;
+					// }
+				
+				}
+
+				$finder['photo_facility_tags'] =  array_count_values($finder['photo_facility_tags']);
+
+				$finder['photo_service_tags'] =  array_count_values($finder['photo_service_tags']);
+
+
+				
+				$finder['photo_facility_tags']['All'] = count($finder['photos']);
+				$finder['photo_service_tags']['All'] = count($finder['photos']);
+				
+				// if(count($finder['photo_facility_tags'])>1 && $photo_facility_tags_others_count>0){
+				// 	$finder['photo_facility_tags']['Others'] = $photo_facility_tags_others_count;
+				// }
+
+				// if(count($finder['photo_service_tags'])>1 && $photo_service_tags_others_count>0){
+				// 	$finder['photo_service_tags']['Others'] = $photo_service_tags_others_count;
+				// }
+
+				$video_service_tags = ['All'];
+				$video_service_tags_others_count = 0;
+				
+				foreach($finder['videos'] as $key => $video){
+					$service_names = Service::whereIn('_id', $video['servicetags'])->lists('name');
+					$video_service_tags = array_merge($video_service_tags, $service_names);
+					$finder['videos'][$key]['servicetags'] = $service_names;
+
+					if(count($service_names)){
+						$video_service_tags_others_count += 1;
+					}
+				}
+				
+				$finder['video_service_tags'] = array_count_values($video_service_tags);
+				
+				$finder['video_service_tags']['All'] = count($finder['videos']);
+
+				// if(count($finder['video_service_tags'])>1 && $video_service_tags_others_count>0){
+				// 	$finder['video_service_tags']['Others'] = $video_service_tags_others_count;
+					
+				// }
+				
 				$finder['title'] = str_replace('crossfit', 'CrossFit', $finder['title']);
 				$response['statusfinder']                   =       200;
 				$response['finder']                         =       $finder;
@@ -1009,6 +1071,8 @@ class FindersController extends \BaseController {
 
 					unset($response['finder']['payment_options']);
 				}
+
+				
 
 				Cache::tags('finder_detail')->put($cache_key,$response,Config::get('cache.cache_time'));
 
