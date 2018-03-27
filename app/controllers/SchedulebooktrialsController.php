@@ -1801,7 +1801,7 @@ class SchedulebooktrialsController extends \BaseController {
                     return  Response::json($resp, 400);
                 }
 
-                if(isset($order->pay_later) && $order->status){
+                if(isset($data['session_payment']) && $data['session_payment']){
                     
                     return $this->payLaterPaymentSuccess($order['_id']);
                     

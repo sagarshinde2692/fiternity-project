@@ -818,6 +818,9 @@ class TransactionController extends \BaseController {
         $result['hash'] = $data['payment_hash'];
         $result['payment_related_details_for_mobile_sdk_hash'] = $mobilehash;
         $result['finder_name'] = strtolower($data['finder_name']);
+        if(isset($data['type']) && ($data['type'] == 'workout-session')){
+            $result['session_payment'] = true;
+        }
         if(isset($data['convinience_fee'])){
             $result['convinience_fee_charged'] = true;
             $result['convinience_fee'] = $data['convinience_fee'];
