@@ -1557,12 +1557,31 @@ class ServiceController extends \BaseController {
 			$within_time = null;
 			$requested_date = date('Y-m-d', time());
 
+			$gym_start_time = [
+				'hour'=>8,
+				'min'=>0
+			];
+
+			$gym_end_time = [
+				'hour'=>22,
+				'min'=>0
+			];
+
 			switch($time){
 				case "within-4-hours":
 					$within_time = 4*60*60;
+					$gym_start_time = [
+						'hour'=>intval(date('G', time())),
+						'min'=>intval(date('i', time()))
+					];
+					
 					break;
 				case "later-today":
 					$time_interval = 4*60*60;
+					$gym_start_time = [
+						'hour'=>intval(date('G', time())),
+						'min'=>intval(date('i', time()))
+					];
 					break;
 				case "tomorrow":
 					$requested_date = date('Y-m-d', strtotime('+1 day', time()));
@@ -1607,8 +1626,8 @@ class ServiceController extends \BaseController {
 			$service_details['workoutsession_active_weekdays']= null;
 			unset($service_details['trial_active_weekdays']);
 			unset($service_details['workoutsession_active_weekdays']);
-			$service_details['gym_start_time'] = 6;
-			$service_details['gym_end_time'] = 22;
+			$service_details['gym_start_time'] = $gym_start_time;
+			$service_details['gym_end_time'] = $gym_end_time;
 			// return $service_details;
 			// $service_details = array_except($service_details, array('gallery','videos','vendor_id','location_id','city_id','service','schedules','updated_at','created_at','traction','timings','trainers','offer_available','showOnFront','flags','remarks','trial_discount','rockbottom_price','threedays_trial','vip_trial','seo','batches','workout_tags','category', 'geometry', 'info', 'what_i_should_expect', 'what_i_should_carry', 'custom_location', 'name', 'workout_intensity', 'session_type', 'latlon_change', 'membership_end_date', 'membership_start_date', 'workout_results', 'vendor_name', 'location_name'));
 			
