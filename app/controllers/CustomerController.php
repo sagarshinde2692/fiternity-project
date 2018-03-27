@@ -4916,6 +4916,19 @@ class CustomerController extends \BaseController {
 						unset($response["text"]);
 					}
 					break;
+				case 'wn':
+					$response = array_only($response, ['notification_id', 'transaction_type']);
+					$response['header'] = ucwords($data['service_name'])." at ".ucwords($data['finder_name']);
+					$response['sub_header'] = "ACTIVATE SESSION";
+					$response['footer'] = "FitCode will be provided by ".$data['finder_name']."  to activate your session";
+					$response['schedule_date_time'] = strtotime($data['schedule_date_time']);
+					$response['subscription_code'] = $data['code'];
+					$response['button_text'] = [
+						'activate'=>'ACTIVATE SESSION',
+						'didnt_get'=>'Didn’t get FitCode',
+						'cant_make'=>'CAN’T MAKE IT'
+					];
+					break;
 				default:
 
 					if($hour>10 && $hour<20){
@@ -5044,8 +5057,9 @@ class CustomerController extends \BaseController {
 				$response['remarks'] = "";
 
 			}
-
-			$response["finder_type"] = getFinderType($response["category_id"]);
+			if(isset($response["category_id"])){
+				$response["finder_type"] = getFinderType($response["category_id"]);
+			}
 
 			
 			

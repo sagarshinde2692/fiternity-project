@@ -310,7 +310,7 @@ Class CustomerNotification extends Notification{
 
 		$notif_type = 'open_trial';
 		
-		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"n");
+		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"wn");
 		
 		return $this->common($label,$data,$notif_type,$notif_object,$delay);
 
