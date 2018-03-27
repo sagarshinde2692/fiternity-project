@@ -1150,3 +1150,5 @@ Route::get('cityWise','DebugController@cityWise');
 Route::get('brandlist','BrandsController@brandlist');
 
 Route::get('getServiceData', 'TransactionController@getServiceData');
+
+Route::get('sessionstatuscapture/{booktrial_id}/{status}/{vendor_code?}', 'SchedulebooktrialsController@sessionStatusCapture');

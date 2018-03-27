@@ -6962,5 +6962,13 @@ class SchedulebooktrialsController extends \BaseController {
 
     }
 
+    public function sessionStatusCapture(){
+
+        
+
+
+
+    }
+
 
 }
