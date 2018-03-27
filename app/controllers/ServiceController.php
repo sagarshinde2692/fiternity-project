@@ -1486,6 +1486,8 @@ class ServiceController extends \BaseController {
 	
 			$service_details['price'] = "₹".$workout_session_ratecard['price']." PER SESSION";
 
+			$service_details['amount'] = $workout_session_ratecard['price'];
+
 			$service_details['contact'] = [
 				'address'=>''
 			];
