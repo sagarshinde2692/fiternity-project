@@ -2865,6 +2865,7 @@ Class Utilities {
         $data['service_name'] = $order['service_name'];
         $data['type'] = $order['type'];
         $data['premium_session'] = true;
+        $data['payment_done'] = false;
 
         if(isset($order['start_date']) && $order['start_date'] != ""){
             $data['schedule_date'] = date('d-m-Y',strtotime($order['start_date']));
