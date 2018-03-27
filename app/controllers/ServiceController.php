@@ -1607,6 +1607,8 @@ class ServiceController extends \BaseController {
 			$service_details['workoutsession_active_weekdays']= null;
 			unset($service_details['trial_active_weekdays']);
 			unset($service_details['workoutsession_active_weekdays']);
+			$service_details['gym_start_time'] = 6;
+			$service_details['gym_end_time'] = 22;
 			// return $service_details;
 			// $service_details = array_except($service_details, array('gallery','videos','vendor_id','location_id','city_id','service','schedules','updated_at','created_at','traction','timings','trainers','offer_available','showOnFront','flags','remarks','trial_discount','rockbottom_price','threedays_trial','vip_trial','seo','batches','workout_tags','category', 'geometry', 'info', 'what_i_should_expect', 'what_i_should_carry', 'custom_location', 'name', 'workout_intensity', 'session_type', 'latlon_change', 'membership_end_date', 'membership_start_date', 'workout_results', 'vendor_name', 'location_name'));
 			
