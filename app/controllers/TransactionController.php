@@ -862,11 +862,8 @@ class TransactionController extends \BaseController {
 
         $pay_later = false;
         
-        if(isset($_GET['device_type']) && isset($_GET['app_version']) && in_array($_GET['device_type'], ['android', 'ios']) && $_GET['app_version'] > '4.4.3'){
-            
-            if($data['type'] == 'workout-session' && $_GET['device_type']){
-                $pay_later = true;
-            }
+        if($data['type'] == 'workout-session' && isset($_GET['device_type']) && isset($_GET['app_version']) && in_array($_GET['device_type'], ['android', 'ios']) && $_GET['app_version'] > '4.4.3'){
+            $pay_later = true;
         }
 
         $resp   =   array(
@@ -4143,11 +4140,23 @@ class TransactionController extends \BaseController {
     function getPaymentModes($data){
 
         $payment_modes = [];
-        $payment_modes[] = array(
-            'title' => 'Online Payment',
-            'subtitle' => 'Transact online with netbanking, card and wallet',
-            'value' => 'paymentgateway',
-        );
+
+        if($data['pay_later']){
+            
+            $payment_modes[] = array(
+                'title' => 'Pay now',
+                'subtitle' => 'Pay Rs 100 less',
+                'value' => 'paymentgateway',
+            );
+
+        }else{
+            $payment_modes[] = array(
+                'title' => 'Online Payment',
+                'subtitle' => 'Transact online with netbanking, card and wallet',
+                'value' => 'paymentgateway',
+            );
+        }
+
 
 
         $emi = $this->utilities->displayEmi(array('amount'=>$data['data']['amount']));
@@ -4192,7 +4201,7 @@ class TransactionController extends \BaseController {
             
             $payment_modes[] = array(
                 'title' => 'Pay Later',
-                'subtitle' => 'Pay after the workout session',
+                'subtitle' => 'Pay full amount online, post session date',
                 'value' => 'pay_later',
             );
         
