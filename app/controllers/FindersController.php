@@ -3775,6 +3775,11 @@ class FindersController extends \BaseController {
 							$value["membership"] == "disable";
 						}
 
+						if($finderData['finder']['commercial_type'] == 0){
+							$finderData['finder']['services'][$key]['membership'] = "disable";
+							$finderData['finder']['services'][$key]['trial'] = "disable";
+						}
+
 						//remove book and buy button frompersonal trainer
 						if(isset($finderData['finder']['category_id']) && $finderData['finder']['category_id'] == 41){
 
