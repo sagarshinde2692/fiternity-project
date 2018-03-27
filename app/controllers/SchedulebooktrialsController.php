@@ -2480,6 +2480,13 @@ class SchedulebooktrialsController extends \BaseController {
                 $send_communication["finder_sms_instant"] = $this->findersms->bookTrial($booktrialdata);
             }
 
+            if($booktrialdata['type'] == 'workout-session'){
+
+                $session_time = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)));
+                $send_communication["customer_notification_instant"] = $this->customernotification->workoutSessionInstant($booktrialdata, $session_time);
+
+            }
+
             //Send Reminder Notiication (Email, Sms) Before 12 Hour To Customer
 
             $before12HourDateTime = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->created_at)))->addMinutes(30);
