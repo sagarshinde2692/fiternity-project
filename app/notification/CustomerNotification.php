@@ -302,7 +302,7 @@ Class CustomerNotification extends Notification{
 
 	public function workoutSessionInstant($data,$delay){
 
-		Log::info("workout sessoin instant notification");
+		\Log::info("workout sessoin instant notification");
 
 		return "sent";
 		
