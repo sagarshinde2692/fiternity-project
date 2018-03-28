@@ -6962,8 +6962,9 @@ class SchedulebooktrialsController extends \BaseController {
 
     }
 
-    public function sessionStatusCapture(){
+    public function sessionStatusCapture($booktrial_id,$status){
 
+        
         
 
 

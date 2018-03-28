@@ -4924,9 +4924,9 @@ class CustomerController extends \BaseController {
 					$response['schedule_date_time'] = strtotime($data['schedule_date_time']);
 					$response['subscription_code'] = $data['code'];
 					$response['button_text'] = [
-						'activate'=>['text'=>'ACTIVATE SESSION','url'=>Config::get('app.url')."/sessionstatuscapture/".$data['_id']."/activate"],
-						'didnt_get'=>['text'=>'Didn’t get FitCode','url'=>Config::get('app.url')."/sessionstatuscapture/".$data['_id']."/lost"],
-						'cant_make'=>['text'=>'CAN’T MAKE IT','url'=>Config::get('app.url')."/sessionstatuscapture/".$data['_id']."/cantmake"],
+						'activate'=>['text'=>'ACTIVATE SESSION','url'=>Config::get('app.url')."/sessionstatuscapture/activate".$data['_id']],
+						'didnt_get'=>['text'=>'Didn’t get FitCode','url'=>Config::get('app.url')."/sessionstatuscapture/lost".$data['_id']],
+						'cant_make'=>['text'=>'CAN’T MAKE IT','url'=>Config::get('app.url')."/sessionstatuscapture/cantmake".$data['_id'],
 					];
 					break;
 				default:

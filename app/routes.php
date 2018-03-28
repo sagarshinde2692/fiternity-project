@@ -1151,4 +1151,4 @@ Route::get('brandlist','BrandsController@brandlist');
 
 Route::get('getServiceData', 'TransactionController@getServiceData');
 
-Route::get('sessionstatuscapture/{booktrial_id}/{status}/{vendor_code?}', 'SchedulebooktrialsController@sessionStatusCapture');
+Route::get('sessionstatuscapture{status}//{booktrial_id}', 'SchedulebooktrialsController@sessionStatusCapture');
