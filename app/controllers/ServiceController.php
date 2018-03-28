@@ -1674,12 +1674,11 @@ class ServiceController extends \BaseController {
 	}
 
 	public function workoutServiceCategorys(){
-		
-		$servicecategories	 = 	Servicecategory::active()->where('parent_id', 0)->orderBy('name')->get(array('name','slug'));	
-		
-		$servicecategories = pluck($servicecategories, ['name', 'slug']);
 
-
+		$not_included_ids = [161, 120, 170, 163, 168, 180, 184];
+		
+		$servicecategories	 = 	Servicecategory::active()->where('parent_id', 0)->whereNotIn('_id', $not_included_ids)->orderBy('name')->get(array('_id','name','slug'));	
+		
 		$data  = [
 			'status'=>200,
 			'header'=>'Which activity do you want to try?',

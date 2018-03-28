@@ -3568,32 +3568,47 @@ Class Utilities {
         $order->update();
     }
 
-    public function getWorkoutSessionsAttended(){
+    public function getWorkoutSessionLevel($customer_id){
+
+        $trials_attended = \Booktrial::where('customer_id', $customer_id)->where('post_trial_status', 'attended')->count();
         
-        return Booktrial::where('customer_id', $booktrialData['customer_id'])->where('post_trial_status', 'attended')->count();
-    
+        $streak_data = Config::get('app.streak_data');
+        $current_level = [];
+        
+        foreach($streak_data as $key => $value){
+            if($trials_attended < $value['number']){
+                $current_level = $value;
+                break;
+            }
+        }
+        $maxed_out = false;
+        
+        if(empty($current_level) || $current_level['level']  == count($streak_data)){
+        
+            $current_level = $streak_data[count($streak_data) - 1];
+            $next_level = [];
+            $maxed_out = true;
+        
+        }else{
+        
+            $next_level =  $streak_data[$current_level['level']];
+        
+        }
+        
+        return [
+            'current_level'=>$current_level,
+            'next_level'=>$next_level,
+            'trials_attended'=>$trials_attended,
+            'maxed_out'=>$maxed_out
+        ];
+
     }
 
     public function getWorkoutSessionFitcash($booktrialData){
-
-        $trials_attended = $this->getWorkoutSessionsAttended($booktrialData['customer_id']);
-        
-        $fitcash = 0;
-        
-        if($trials_attended < 3){
-            $fitcash = 10;
-        }elseif($trials_attended < 4){
-            $fitcash = 15;
-        }elseif($trials_attended < 9){
-            $fitcash = 20;
-        }else{
-            $fitcash = 25;
-        }
-
-        $fitcash = floor(($booktrialData['amount_finder'] * $fitcash) / 100);        
-
+        Log::info($this->getWorkoutSessionLevel($booktrialData['customer_id']));
+        $fitcash =  $this->getWorkoutSessionLevel($booktrialData['customer_id'])['current_level']['cashback'];
         return $fitcash;
-
+        
     }
     
 }

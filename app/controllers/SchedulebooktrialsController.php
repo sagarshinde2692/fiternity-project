@@ -6851,12 +6851,13 @@ class SchedulebooktrialsController extends \BaseController {
         $booktrial = Booktrial::where('vendor_code',$vendor_code)
            ->where('customer_id',$customer_id)
            ->where('_id',$booktrial_id)
-           ->whereIn('type',['booktrials','3daystrial'])
+           ->whereIn('type',['booktrials','3daystrial', 'workout-session'])
            // ->where('schedule_date_time','>',new MongoDate(strtotime(date('Y-m-d 00:00:00'))))
            // ->where('schedule_date_time','<',new MongoDate(strtotime(date('Y-m-d 23:59:59'))))
            // ->orderBy('_id','desc')
            ->first();
 
+        $fitcash = 0;
         if(isset($booktrial)){
 
             if($booktrial->type == "booktrials" && !isset($booktrial->post_trial_status_updated_by_fitcode)){
@@ -6881,7 +6882,7 @@ class SchedulebooktrialsController extends \BaseController {
 
                 $message = "Hi ".ucwords($booktrial['customer_name']).", Rs.".$fitcash." Fitcash is added in your wallet as surprise on your attendace . Use it to buy ".ucwords($booktrial['finder_name'])."'s membership at lowest price. Valid for 21 days";
 
-            }else if($booktrial->type == "workout-session" && !isset($booktrial->post_trial_status_updated_by_fitcode)){
+            }else if($booktrial->type == "workout-session" && !isset($booktrial->post_trial_status_updated_by_fitcode) && !(isset($booktrial->payment_done) && !$booktrial->payment_done)){
 
                 $fitcash = $this->utilities->getWorkoutSessionFitcash($booktrial->toArray());
                 
@@ -6935,7 +6936,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         $booktrial = Booktrial::where('_id',$booktrial_id)
            ->where('customer_id',$customer_id)
-           ->whereIn('type',['booktrials','3daystrial'])
+           ->whereIn('type',['booktrials','3daystrial','workout-session'])
            // ->where('schedule_date_time','>',new MongoDate(strtotime(date('Y-m-d 00:00:00'))))
            // ->where('schedule_date_time','<',new MongoDate(strtotime(date('Y-m-d 23:59:59'))))
            // ->orderBy('_id','desc')
@@ -6962,12 +6963,111 @@ class SchedulebooktrialsController extends \BaseController {
 
     }
 
-    public function sessionStatusCapture($booktrial_id,$status){
+    public function sessionStatusCapture($status, $booktrial_id){
 
-        
-        
+        $booktrial = Booktrial::find(intval($booktrial_id));
+
+        if(!$booktrial){
+            return Response::json(array('status'=>400, 'message'=>'Workout Session not found'), 200);
+        }
+
+        $payment_done = !(isset($booktrial->payment_done) && !$booktrial->payment_done);
+
+        $pending_amount_text = "Pending Amount ₹".$booktrial['amount_finder'].". Make sure you pay up, to earn Cashback & continue booking more sessions";
+
+        $streak = array_column(Config::get('app.streak_data'), 'number');
+
+        switch($status){
+
+            case 'activate':
+
+                if(!isset($_GET['vendor_code'])){
+                    return Response::json(array('status'=>400, 'message'=>'Fitcode not attached'), 200);
+                }
+                $vendor_code = $_GET['vendor_code'];
+                $result = json_decode(json_encode($this->verifyFitCode($booktrial_id, $vendor_code)->getData()));
+                
+                if($result->status==400){
+                    return Response::json($result, 200);
+                }
+
+                $customer_level_data = $this->utilities->getWorkoutSessionLevel($booktrial['customer_id']);                
+
+                Log::info('customer_level_data');
+                Log::info($customer_level_data);
+
+                $response = [
+                    'header'=>'ENJOY YOUR WORKOUT!',
+                    'sub_header'=>'',
+                    'footer'=>'You have unlocked level '.$customer_level_data['current_level']['level'].' which gets you '.$customer_level_data['current_level']['cashback'].'% cashback',
+                    'streak'=>[
+                        'header'=>'STREAK IT OUT',
+                        'data'=>$streak
+                    ]
+                ];
+
+                if(!$customer_level_data['maxed_out']){
+                    $response['footer'] = 'You have unlocked level '.$customer_level_data['current_level']['level'].' which gets you '.$customer_level_data['current_level']['cashback'].'% cashback upto '.$customer_level_data['current_level']['number'].' sessions!';
+                }
+
+                if(isset($customer_level_data['next_level']) && isset($customer_level_data['next_level']['cashback'])){
+                    $response['footer'] = 'You have unlocked level '.$customer_level_data['current_level']['level'].' which gets you '.$customer_level_data['current_level']['cashback'].'% cashback upto '.$customer_level_data['current_level']['number'].' sessions! Make sure to continue as next level gets you '.$customer_level_data['next_level']['cashback'].'%.Higher the Level, Higher the Cashback';
+                }
+
+                if($payment_done){
+                    $response['sub_header'] = $customer_level_data['current_level']['cashback']."% Cashback has been added in your Fitternity Wallet. Use it to book more workouts and keep on earning!";
+                }else{
+                    $response['sub_header'] = $pending_amount_text;
+                }
 
 
+            break;
+            case 'lost':
+                $result = json_decode(json_encode($this->lostFitCode($booktrial_id)->getData()));
+
+                if($result->status==400){
+                    return Response::json($result, 200);
+                }
+
+                $customer_level_data = $this->utilities->getWorkoutSessionLevel($booktrial['customer_id']);                
+                
+                $response = [
+                    'header'=>'DON’T WORRY',
+                    'sub_header'=>'10% Cashback will be added in your wallet once we verify your attendance with '.ucwords($booktrial['finder_name']),
+                    'footer'=>'',
+                ];
+                
+                if(!$payment_done){
+                    $response['footer'] = $pending_amount_text;
+                }
+
+            break;
+            case 'cantmake':
+                $booktrial->post_trial_status = 'no show';
+                $booktrial->update();
+                $customer_level_data = $this->utilities->getWorkoutSessionLevel($booktrial['customer_id']);                
+
+                $response = [
+                    'header'=>'OOPS!',
+                    'sub_header'=>'Make sure you attend next time to earn Cashback and continue working out!',
+                    'footer'=>'Unlock level '.$customer_level_data['current_level']['level'].' which gets you '.$customer_level_data['current_level']['cashback'].'% cashback upto '.$customer_level_data['current_level']['number'].' sessions! Higher the Level, Higher the Cashback',
+                    'streak'=>[
+                        'header'=>'STREAK IT OUT',
+                        'data'=>$streak
+                    ]
+                ];
+
+                if($customer_level_data['trials_attended'] > 0){
+                    $response['footer'] = 'Unlock level '.$customer_level_data['next_level']['number'].' which gets you '.$customer_level_data['next_level']['cashback'].'% cashback upto '.$customer_level_data['next_level']['number'].' sessions! Higher the Level, Higher the Cashback';
+                }
+                
+
+            break;
+
+
+        }
+
+        return Response::json($response);
 
     }
 

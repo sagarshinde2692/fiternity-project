@@ -684,29 +684,18 @@ class HomeController extends BaseController {
                     $subline = '<p style="text-align:center;">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.' <br><span style="color:#f7a81e">Activate</span> your session through <span style="color:#f7a81e">FitCode</span><br><br>Attend and pay later to earn Cashback!</p>';
                 }
 
+                $streak_items = [];
+
+                foreach(Config::get('app.streak_data') as $value){
+
+                    array_push($streak_items, ['title'=>$value['cashback'].'%', 'value'=>$value['number'].' Sessions']);
+
+                }
+
                 $streak = [
                     'header'=>'Attend More Earn More',
-                    'items'=>[
-                        [
-                            'title'=>'10%',
-                            'value'=>'3 Sessions'
-                        ],
-                        [
-                            'title'=>'15%',
-                            'value'=>'5 Sessions'
-                        ],
-                        [
-                            'title'=>'20%',
-                            'value'=>'10 Sessions'
-                        ],
-                        [
-                            'title'=>'25%',
-                            'value'=>'15 Sessions'
-                        ],
-                        
-                    ]
-                    ];
-
+                    'items'=>$streak_items
+                ];
 
                 $response = [
                     'status'=>200,
