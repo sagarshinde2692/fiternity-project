@@ -3573,19 +3573,11 @@ Class Utilities {
         $trials_attended = \Booktrial::where('customer_id', $customer_id)->where('post_trial_status', 'attended')->count();
         
         $streak_data = Config::get('app.streak_data');
-        $current_level = [];
-        
-        foreach($streak_data as $key => $value){
-            if($trials_attended < $value['number']){
-                $current_level = $value;
-                break;
-            }
-        }
         $maxed_out = false;
+        $current_level = $this->getLevelByTrials($trials_attended);
         
-        if(empty($current_level) || $current_level['level']  == count($streak_data)){
+        if($current_level['level']  == count($streak_data)){
         
-            $current_level = $streak_data[count($streak_data) - 1];
             $next_level = [];
             $maxed_out = true;
         
@@ -3599,8 +3591,28 @@ Class Utilities {
             'current_level'=>$current_level,
             'next_level'=>$next_level,
             'trials_attended'=>$trials_attended,
-            'maxed_out'=>$maxed_out
+            'maxed_out'=>$maxed_out,
+            'next_session'=>$this->getLevelByTrials($trials_attended+1)
         ];
+
+    }
+
+    public function getLevelByTrials($trials_attended){
+
+        $streak_data = Config::get('app.streak_data');
+        $current_level = [];
+        
+        foreach($streak_data as $key => $value){
+            if($trials_attended < $value['number']){
+                $current_level = $value;
+                break;
+            }
+        }
+
+        if(empty($current_level)){
+            $current_level  = $streak_data[count($streak_data) - 1];
+        }
+        return $current_level;
 
     }
 

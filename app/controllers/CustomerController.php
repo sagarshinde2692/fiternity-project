@@ -3087,10 +3087,12 @@ class CustomerController extends \BaseController {
 
 				$decoded = $this->customerTokenDecode($jwt_token);
 				$customeremail = $decoded->customer->email;
+				$customer_id = $decoded->customer->_id;
+				$workout_session_level_data = $this->utilities->getWorkoutSessionLevel($customer_id);
 
 				Log::info("------------home------------$customeremail");
 
-				$trials = Booktrial::where('customer_email', '=', $customeremail)->where('going_status_txt','!=','cancel')->where('booktrial_type','auto')->where('schedule_date_time','>=',new DateTime())->orderBy('schedule_date_time', 'asc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code')->get();
+				$trials = Booktrial::where('customer_email', '=', $customeremail)->where('going_status_txt','!=','cancel')->where('booktrial_type','auto')->where('schedule_date_time','>=',new DateTime())->orderBy('schedule_date_time', 'asc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code', 'payment_done', 'type')->get();
 
 				if(count($trials) > 0){
 
@@ -3099,6 +3101,8 @@ class CustomerController extends \BaseController {
 						$data = array();
 
 						$data = $trial->toArray();
+
+						$data['subscription_code']  = $data['code'];
 
 						$data['finder_average_rating'] = 0;
 
@@ -3115,10 +3119,20 @@ class CustomerController extends \BaseController {
 						}
 
 						foreach ($data as $key => $value) {
-
-							$data[$key] = ucwords(strip_tags($value));
+							if(gettype($value) != 'boolean'){
+								$data[$key] = ucwords(strip_tags($value));
+							}
 						}
 
+						if($data['type']=='workout-session'){
+
+							$data['body1'] = [
+								'line1'=>'ATTEND & EARN!',
+								'line2'=>'Attend this session, and get '.$workout_session_level_data['next_session']['cashback'].'% CashBack'
+							];
+
+							
+						}
 						if(isset($data['schedule_slot_start_time'])){
 							$data['schedule_slot_start_time'] = strtoupper($data['schedule_slot_start_time']);
 						}
