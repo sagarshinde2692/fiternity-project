@@ -2245,14 +2245,21 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
 
                 function autoRegisterCustomer($data)
                 {
-
-                    $customer = Customer::active()->where('email', $data['customer_email'])->first();
-
+					Log::info(print_r($data,true));
+                	$customer= Customer::active()->where('email', $data['customer_email'])->first();
+                    
                     if (!$customer) {
 
                         $inserted_id = Customer::max('_id') + 1;
                         $customer = new Customer();
                         $customer->_id = $inserted_id;
+//                         $customer->rx_user = (isset($data['rx_user'])&& $data['rx_user'] !="")? true : false;
+//                         if(isset($data['rx_user'])&& $data['rx_user'] !="")
+//                         {
+// 	                        $customer->rx_latest_date = new DateTime();
+// 	                        /* if(isset($data['rx_success_url'])&& $data['rx_success_url'] !="")
+// 	                        	$customer->rx_success_url = $data['rx_success_url']; */                        	
+//                         }
                         $customer->name = ucwords($data['customer_name']);
                         $customer->email = $data['customer_email'];
                         $customer->dob = isset($data['dob']) ? $data['dob'] : "";
@@ -2287,9 +2294,6 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         $customer->demonetisation = time();
                         $customer->save();
                         registerMail($customer->_id);
-                       
-
-                        
 
                         // invalidateDuplicatePhones($data, $customer->toArray());
 
@@ -2311,10 +2315,20 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
 
                             }
 
+//                             if (isset($data['rx_user']) ) {
+//                             	if(isset($data['rx_user'])&& $data['rx_user'] !="")
+//                             	{                            		
+//                             		$customerData['rx_user'] = true;
+//                             		$customerData['rx_latest_date']  =  new DateTime();
+// //                             		$customerData['rx_success_url']= isset($data['rx_success_url']) ? $data['rx_success_url'] : "";
+//                             	/* 	if(isset($data['rx_success_url'])&& $data['rx_success_url'] !="")
+//                             			$customer->rx_success_url = $data['rx_success_url'];  */
+//                             	}
+//                                 	else $customerData['rx_user'] = false;
+//                             }
                             if (isset($data['otp']) && $data['otp'] != "") {
-                                $customerData['contact_no_verify_status'] = "yes";
+                            	$customerData['contact_no_verify_status'] = "yes";
                             }
-
                             if (isset($data['gender']) && $data['gender'] != "") {
                                 $customerData['gender'] = $data['gender'];
                             }
@@ -2368,6 +2382,8 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                     $customer['extra']['mob'] = (isset($customer['contact_no'])) ? $customer['contact_no'] : "";
                     $customer['extra']['location'] = (isset($customer['location'])) ? $customer['location'] : "";
                     $customer['gender'] = (isset($customer['gender'])) ? $customer['gender'] : "";
+//                     $customer['rx_user'] = (isset($customer['rx_user'])) ? $customer['rx_user'] : "";
+//                     $customer['rx_success_url'] = (isset($customer['rx_success_url'])) ? $customer['rx_success_url'] : "";
 
                     $data = array(
                                 '_id'=>$customer['_id'],
@@ -2380,6 +2396,8 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                                 "contact_no"=>$customer['contact_no'],
                                 "location"=>$customer['location'],
                                 'gender'=>$customer['gender'],
+//                     			'rx_user'=>$customer['rx_user'],
+//                     			'rx_success_url'=>$customer['rx_success_url'],	
                                 'extra'=>array(
                                     'mob'=>$customer['extra']['mob'],
                                     'location'=>$customer['extra']['location']
@@ -2514,6 +2532,106 @@ if (!function_exists(('error_message_array'))){
         return $message;
     }
 }
+
+function checkExistence($x,$type='string')
+{
+	switch ($type)
+	{
+		
+		case 'string': {
+			if(isset($x)&&$x!=="")
+				return true;
+				else return false;
+		}
+		case 'number': {
+			if(isset($x))
+				return true;
+				else return false;
+		}
+		case 'object': {
+			if(isset($x))
+				return true;
+				else return false;
+			
+		}
+		default :{
+			
+			if(isset($x))
+				return true;
+				else return false;
+			
+		}
+	}
+}
+/* 
+if (!function_exists(('updateRelianceCommunication'))){
+	
+	
+	function updateRelianceCommunication($data){
+		
+		try {
+			
+		if($data&&checkExistence($data["id"],'number')
+				&&checkExistence($data["date"],'object')
+				&&checkExistence($data["amount"],'number')
+				&&checkExistence($data["phone"])
+				&&checkExistence($data["description"])
+				&&checkExistence($data["email"])
+				&&checkExistence($data["type"])
+				&&checkExistence($data["count"],"number")
+				&&checkExistence($data["value"])
+				)
+		{
+					$relianceJson=[
+							"order_id" => (int)$data["id"],
+							"order_date" => $data["date"],
+							"order_amount" => (int)$data["amount"],
+							"description" => $data["description"]."",
+							"mobile" =>(int)(substr($data["phone"]."",-10)),
+							"email" => $data["email"],
+							"service_type" => $data["type"]."",
+							"value" => $data["value"]."",
+							"unit" => (int)$data["count"],
+							];
+					
+					Log::info(print_r($relianceJson,true));
+					Log::info("",$relianceJson);
+					$ch = curl_init('http://rhc-portal.agileloyalty.net/fitternity/callback');
+					curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+					curl_setopt($ch, CURLOPT_POSTFIELDS, $relianceJson);
+					
+					// execute!
+					$response = curl_exec($ch);
+					$response = json_decode($response,true);
+					Log::info(print_r($response,true));
+			
+					// close the connection, release resources used
+					curl_close($ch);
+					// do anything you want with your response
+					if(isset($response)&&isset($response['success'])&&$response['success']==true)
+// 						return true;
+						return $response;
+// 						else return false;
+					else return null;
+		}
+		else
+		{
+			Log::info(" Data Not improper or not in proper format.");
+			Log::info(print_r($data,true));
+			return null;
+// 			return " Data Not improper or not in proper format.";
+		}
+		
+		} catch (Exception $e) {
+			Log::info(print_r($e->getMessage(),true));
+// 			return false;
+// 			return $e->getMessage();
+			return null;
+			}
+		}
+}
+	 */	
+
 
 if (!function_exists(('random_number_string'))){
 
@@ -3336,6 +3454,67 @@ if (!function_exists('vendorsByBrand')) {
         }
             
     }
+}
+
+if(!function_exists("vendorCatsSlugMapper")){
+	function vendorCatsSlugMapper($category){
+		
+		if(isset($category)&&$category!=="")
+		{
+			$category= str_replace("-"," ",$category);
+			$newcatres= $category;
+			switch (true) {
+				case $category== "kids fitness" || $category == "kids fitness classes":
+					$newcatres= "kids fitness";
+					break;
+				case $category== "zumba" || $category == "zumba classes":
+					$newcatres= "zumba";
+					break;
+				case $category== "yoga" || $category == "yoga classes":
+					$newcatres= "yoga";
+					break;
+				case $category == "cross functional training" || $category == "functional training":
+					$newcatres= "cross functional training";
+					break;
+				case $category == "dance" || $category == "dance classes":
+					$newcatres= "dance";
+					break;
+				case $category == "crossfit" || $category == "crossfit gym":
+					$newcatres= "crossfit";
+					break;
+				case $category == "pilates" || $category == "pilates classes":
+					$newcatres= "pilates";
+					break;
+				case $category == "mma and kick boxing" || $category == "mma and kick boxing classes":
+					$newcatres= "mma and kick boxing";
+					break;
+				case $category == "spinning and indoor cycling" || $category == "spinning classes":
+					$newcatres= "spinning and indoor cycling";
+					break;
+				case $category == "swimming" || $category == "swimming pools":
+					$newcatres= "swimming";
+					break;
+				case $category == "dietitians and nutritionists" || $category == "dietitians":
+					$newcatres= "dietitians and nutritionists";
+					break;
+				case $category == "sport nutrition and supliment stores" || $category == "sport supliment stores":
+					$newcatres= "sport nutrition and supliment stores";
+					break;
+				case $category == "pre-natal classes":
+					$newcatres= "pre-natal classes";
+					break;
+				case $category == "":
+					$newcatres= $category= "fitness";
+					break;
+				default:
+					$newcatres= $category;
+					
+			}
+			return str_replace("-"," ",$newcatres);
+		}
+		else throw New Exception("Not a valid category in put for mapper");
+		
+	}
 }
 
 if (!function_exists('isTabActive')) {

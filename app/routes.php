@@ -916,6 +916,8 @@ Route::get('transaction/dcos',array('as' => 'transaction.dcos','uses' => 'Transa
 
 Route::get('getfindercategories/{city?}', 'DebugController@cacheFinderCategoryTags');
 
+Route::get('getofferingscategories/{categorySlug?}', 'DebugController@getOfferingsCategoriesSlug');
+
 Route::get('getfinderlocations', 'DebugController@cacheLocations');
 
 Route::get('getsubcategories', 'DebugController@cacheOfferings');
