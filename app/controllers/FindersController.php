@@ -4783,8 +4783,9 @@ class FindersController extends \BaseController {
 		foreach($services as $service){
 			if(isset($service['serviceratecard'])){
 				foreach($service['serviceratecard'] as $ratecard){
-					if($ratecard['type'] == 'workout session' && ($price == 0 || $ratecard['price'] < $price)){
-						$price = $ratecard['price'];
+					$ratecard_price = isset($ratecard['special_price']) &&  $ratecard['special_price'] != 0 ? $ratecard['special_price'] : $ratecard['price'];
+					if($ratecard['type'] == 'workout session' && ($price == 0 || $ratecard_price < $price)){
+						$price = $ratecard_price;
 					}
 				}
 			}
