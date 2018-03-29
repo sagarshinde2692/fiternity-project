@@ -1483,8 +1483,8 @@ class ServiceController extends \BaseController {
 				return Response::json(array('status'=>400, 'error_message'=>'Workout session ratecard not active'), $this->error_status);
 			
 			};
-	
-			$service_details['price'] = "₹".$workout_session_ratecard['price']." PER SESSION";
+			
+			$service_details['price'] = "₹".(($workout_session_ratecard['special_price']!=0) ? $workout_session_ratecard['special_price'] : $workout_session_ratecard['price'])." PER SESSION";
 
 			$service_details['amount'] = $workout_session_ratecard['price'];
 
