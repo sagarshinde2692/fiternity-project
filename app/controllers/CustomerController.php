@@ -30,6 +30,7 @@ class CustomerController extends \BaseController {
 		CustomerReward $customerreward,
 		FinderMailer $findermailer
 	) {
+		parent::__construct();
 
 		$this->customermailer	=	$customermailer;
 		$this->customersms	=	$customersms;
@@ -3091,8 +3092,20 @@ class CustomerController extends \BaseController {
 				$workout_session_level_data = $this->utilities->getWorkoutSessionLevel($customer_id);
 
 				Log::info("------------home------------$customeremail");
+				
+				Log::info('device_type'.$this->device_type);
+				Log::info('app_version'.$this->app_version);
 
-				$trials = Booktrial::where('customer_email', '=', $customeremail)->where('going_status_txt','!=','cancel')->where('booktrial_type','auto')->where('schedule_date_time','>=',new DateTime())->orderBy('schedule_date_time', 'asc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code', 'payment_done', 'type')->get();
+				if($this->app_version > '4.4.3'){
+
+					$trials = Booktrial::where('customer_email', '=', $customeremail)->where('going_status_txt','!=','cancel')->where('booktrial_type','auto')->where(function($query){return $query->where('schedule_date_time','>=',new DateTime())->orWhere('payment_done', false);})->orderBy('schedule_date_time', 'asc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code', 'payment_done', 'type', 'order_id')->get();
+				
+				}else{
+					
+					$trials = Booktrial::where('customer_email', '=', $customeremail)->where('going_status_txt','!=','cancel')->where('booktrial_type','auto')->where('schedule_date_time','>=',new DateTime())->orderBy('schedule_date_time', 'asc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code')->get();
+				}
+
+
 
 				if(count($trials) > 0){
 
@@ -3102,7 +3115,6 @@ class CustomerController extends \BaseController {
 
 						$data = $trial->toArray();
 
-						$data['subscription_code']  = $data['code'];
 
 						$data['finder_average_rating'] = 0;
 
@@ -3119,24 +3131,40 @@ class CustomerController extends \BaseController {
 						}
 
 						foreach ($data as $key => $value) {
-							if(gettype($value) != 'boolean'){
+							if(!in_array(gettype($value), ['boolean'])){
 								$data[$key] = ucwords(strip_tags($value));
 							}
 						}
 
-						if($data['type']=='workout-session'){
-
-							$data['body1'] = [
-								'line1'=>'ATTEND & EARN!',
-								'line2'=>'Attend this session, and get '.$workout_session_level_data['next_session']['cashback'].'% CashBack'
-							];
-
-							
-						}
+						
 						if(isset($data['schedule_slot_start_time'])){
 							$data['schedule_slot_start_time'] = strtoupper($data['schedule_slot_start_time']);
 						}
+						
+						if(in_array($this->device_type, ['android', 'ios']) && $this->app_version > '4.4.3'){
 
+							if(strtotime($data['schedule_date_time']) > time()){
+
+								$data['body1'] = [
+									'line1'=>'ATTEND & EARN!',
+									'line2'=>'Attend this session, and get '.$workout_session_level_data['next_session']['cashback'].'% CashBack'
+								];
+							}
+
+							$data['current_level'] = $workout_session_level_data['current_level']['level'];
+
+							$data['streak'] = array_column(Config::get('app.streak_data'), 'number');
+
+							$data['subscription_code']  = $data['code'];
+
+							$data['subscription_text']  = "Show this subscription code at ".ucwords($data['finder_name'])." & get FitCode to activate your session<br><br>Person of contact<br>".ucwords($data['finder_poc_for_customer_name'])." ".$data['finder_poc_for_customer_no'];
+							
+							$data['title']  = ucwords($data['service_name'])." at ".ucwords($data['finder_name']);
+
+							$data = array_only($data, ['title', 'schedule_date_time', 'subscription_code', 'subscription_text', 'body1', 'streak', 'payment_done']);
+							
+						}
+						
 						$upcoming[] = $data;
 
 					}
