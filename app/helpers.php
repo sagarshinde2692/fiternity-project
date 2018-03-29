@@ -2253,13 +2253,13 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         $inserted_id = Customer::max('_id') + 1;
                         $customer = new Customer();
                         $customer->_id = $inserted_id;
-                        $customer->rx_user = (isset($data['rx_user'])&& $data['rx_user'] !="")? true : false;
-                        if(isset($data['rx_user'])&& $data['rx_user'] !="")
-                        {
-	                        $customer->rx_latest_date = new DateTime();
-	                        /* if(isset($data['rx_success_url'])&& $data['rx_success_url'] !="")
-	                        	$customer->rx_success_url = $data['rx_success_url']; */                        	
-                        }
+//                         $customer->rx_user = (isset($data['rx_user'])&& $data['rx_user'] !="")? true : false;
+//                         if(isset($data['rx_user'])&& $data['rx_user'] !="")
+//                         {
+// 	                        $customer->rx_latest_date = new DateTime();
+// 	                        /* if(isset($data['rx_success_url'])&& $data['rx_success_url'] !="")
+// 	                        	$customer->rx_success_url = $data['rx_success_url']; */                        	
+//                         }
                         $customer->name = ucwords($data['customer_name']);
                         $customer->email = $data['customer_email'];
                         $customer->dob = isset($data['dob']) ? $data['dob'] : "";
@@ -2315,17 +2315,17 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
 
                             }
 
-                            if (isset($data['rx_user']) ) {
-                            	if(isset($data['rx_user'])&& $data['rx_user'] !="")
-                            	{                            		
-                            		$customerData['rx_user'] = true;
-                            		$customerData['rx_latest_date']  =  new DateTime();
-//                             		$customerData['rx_success_url']= isset($data['rx_success_url']) ? $data['rx_success_url'] : "";
-                            	/* 	if(isset($data['rx_success_url'])&& $data['rx_success_url'] !="")
-                            			$customer->rx_success_url = $data['rx_success_url'];  */
-                            	}
-                                	else $customerData['rx_user'] = false;
-                            }
+//                             if (isset($data['rx_user']) ) {
+//                             	if(isset($data['rx_user'])&& $data['rx_user'] !="")
+//                             	{                            		
+//                             		$customerData['rx_user'] = true;
+//                             		$customerData['rx_latest_date']  =  new DateTime();
+// //                             		$customerData['rx_success_url']= isset($data['rx_success_url']) ? $data['rx_success_url'] : "";
+//                             	/* 	if(isset($data['rx_success_url'])&& $data['rx_success_url'] !="")
+//                             			$customer->rx_success_url = $data['rx_success_url'];  */
+//                             	}
+//                                 	else $customerData['rx_user'] = false;
+//                             }
                             if (isset($data['otp']) && $data['otp'] != "") {
                             	$customerData['contact_no_verify_status'] = "yes";
                             }
@@ -2382,7 +2382,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                     $customer['extra']['mob'] = (isset($customer['contact_no'])) ? $customer['contact_no'] : "";
                     $customer['extra']['location'] = (isset($customer['location'])) ? $customer['location'] : "";
                     $customer['gender'] = (isset($customer['gender'])) ? $customer['gender'] : "";
-                    $customer['rx_user'] = (isset($customer['rx_user'])) ? $customer['rx_user'] : "";
+//                     $customer['rx_user'] = (isset($customer['rx_user'])) ? $customer['rx_user'] : "";
 //                     $customer['rx_success_url'] = (isset($customer['rx_success_url'])) ? $customer['rx_success_url'] : "";
 
                     $data = array(
@@ -2396,7 +2396,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                                 "contact_no"=>$customer['contact_no'],
                                 "location"=>$customer['location'],
                                 'gender'=>$customer['gender'],
-                    			'rx_user'=>$customer['rx_user'],
+//                     			'rx_user'=>$customer['rx_user'],
 //                     			'rx_success_url'=>$customer['rx_success_url'],	
                                 'extra'=>array(
                                     'mob'=>$customer['extra']['mob'],
@@ -2563,7 +2563,7 @@ function checkExistence($x,$type='string')
 		}
 	}
 }
-
+/* 
 if (!function_exists(('updateRelianceCommunication'))){
 	
 	
@@ -2630,7 +2630,7 @@ if (!function_exists(('updateRelianceCommunication'))){
 			}
 		}
 }
-		
+	 */	
 
 
 if (!function_exists(('random_number_string'))){
