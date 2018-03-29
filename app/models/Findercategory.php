@@ -29,7 +29,10 @@ class Findercategory extends \Basemodel{
 		return $this->belongsToMany('City', null, 'findercategorys', 'cities');
 	}
 
-
+	public function scopeActive ($query){
+		
+		return $query->where('status','=','1');
+	}
 
 }
 

@@ -3490,6 +3490,32 @@ public function yes($msg){
 		return $finderCategoryTags;
 
 	}
+	
+	public function getOfferingsCategoriesSlug($categorySlug="",$city="")
+	{
+		
+		
+		try {
+		Log::info("  categorySlug ".print_r($categorySlug,true));
+		$categorySlug=vendorCatsSlugMapper($categorySlug);
+		Log::info("  categorySlug -a ".print_r($categorySlug,true));
+		$categoryId=Findercategory::active()->where('slug',$categorySlug)->first(array('_id','slug'));
+		Log::info("  categoryId ".print_r($categoryId,true));
+		$offerings= VendorOffering::active()->whereIn('vendorcategories',array((int)$categoryId["_id"]))->get(['name', 'slug']);
+		Log::info("  offerings ".print_r($offerings,true));
+		$tots=[];
+		foreach( $offerings as $value ) {
+			$temp=["name"=>$value['name'],"slug"=>$value['slug']];
+			array_push($tots,$temp);
+		}
+		return $tots;
+		}
+		catch (Exception $exception)
+		{
+			Log::info("  exception ".print_r($exception,true));
+			return $exception-getMessage();
+		} 
+	}
 
 	public function cacheOfferings(){
 		$offerings = Offering::where('status', "1")->get(['_id', 'name', 'slug']);
