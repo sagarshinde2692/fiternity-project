@@ -1544,10 +1544,16 @@ class ServiceController extends \BaseController {
 			
 			$photos = $service_details['photos'];
 
+			
 			$service_details['photos'] = [
 				'count'=>(count($service_details['photos']) > 4) ? (count($service_details['photos']) - 4) : 0,
 				'urls'=>array_splice($photos, 0, 4)
 			];
+
+			if(count($service_details['photos']['urls']) == 0){
+				$service_details['photos']['urls'] = ['https://www.w3schools.com/howto/img_fjords.jpg'];
+			}
+
 			// $service_details['photos'] = array_pluck($service_details, 'url');
 			
 			$service_details['coordinates'] = [$service_details['lat'], $service_details['lon']];
@@ -1558,7 +1564,7 @@ class ServiceController extends \BaseController {
 			$requested_date = date('Y-m-d', time());
 
 			$gym_start_time = [
-				'hour'=>8,
+				'hour'=>5,
 				'min'=>0
 			];
 
@@ -1566,29 +1572,42 @@ class ServiceController extends \BaseController {
 				'hour'=>22,
 				'min'=>0
 			];
+			if(isset($_GET['date']) && $_GET['date'] != ''){
 
-			switch($time){
-				case "within-4-hours":
-					$within_time = 4*60*60;
+				$requested_date = $_GET['date'];
+
+				if(strtotime($requested_date) < time()){
 					$gym_start_time = [
 						'hour'=>intval(date('G', time())),
 						'min'=>intval(date('i', time()))
 					];
-					
-					break;
-				case "later-today":
-					$time_interval = 4*60*60;
-					$gym_start_time = [
-						'hour'=>intval(date('G', time())),
-						'min'=>intval(date('i', time()))
-					];
-					break;
-				case "tomorrow":
-					$requested_date = date('Y-m-d', strtotime('+1 day', time()));
-					break;
-				case "day-after":
-					$requested_date = date('Y-m-d', strtotime('+2 days', time()));
-					break;
+				}
+
+			}else{
+
+				switch($time){
+					case "within-4-hours":
+						$within_time = 4*60*60;
+						$gym_start_time = [
+							'hour'=>intval(date('G', time())),
+							'min'=>intval(date('i', time()))
+						];
+						
+						break;
+					case "later-today":
+						$time_interval = 4*60*60;
+						$gym_start_time = [
+							'hour'=>intval(date('G', time())),
+							'min'=>intval(date('i', time()))
+						];
+						break;
+					case "tomorrow":
+						$requested_date = date('Y-m-d', strtotime('+1 day', time()));
+						break;
+					case "day-after":
+						$requested_date = date('Y-m-d', strtotime('+2 days', time()));
+						break;
+				}
 			}
 
 			$schedule_data = [

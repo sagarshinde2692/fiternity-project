@@ -2480,12 +2480,13 @@ class SchedulebooktrialsController extends \BaseController {
                 $send_communication["finder_sms_instant"] = $this->findersms->bookTrial($booktrialdata);
             }
 
-            if($booktrialdata['type'] == 'workout-session'){
+            // if($booktrialdata['type'] == 'workout-session'){
 
-                $session_time = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)));
-                $send_communication["customer_notification_instant"] = $this->customernotification->workoutSessionInstant($booktrialdata, $session_time);
+            $session_time = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)));
+            $send_communication["customer_notification_instant"] = $this->customernotification->workoutSessionInstant($booktrialdata, $session_time);
+            // $send_communication["customer_notification_instant"] = $this->customernotification->workoutSessionInstant($booktrialdata, $session_time);
 
-            }
+            // }
 
             //Send Reminder Notiication (Email, Sms) Before 12 Hour To Customer
 
@@ -6856,7 +6857,7 @@ class SchedulebooktrialsController extends \BaseController {
            // ->where('schedule_date_time','<',new MongoDate(strtotime(date('Y-m-d 23:59:59'))))
            // ->orderBy('_id','desc')
            ->first();
-
+        $message = '';
         $fitcash = 0;
         if(isset($booktrial)){
 
@@ -7042,7 +7043,7 @@ class SchedulebooktrialsController extends \BaseController {
                 }
 
             break;
-            case 'cantmake':
+            case 'didnotattend':
                 $booktrial->post_trial_status = 'no show';
                 $booktrial->update();
                 $customer_level_data = $this->utilities->getWorkoutSessionLevel($booktrial['customer_id']);                

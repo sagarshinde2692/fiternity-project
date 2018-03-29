@@ -4968,7 +4968,17 @@ class CustomerController extends \BaseController {
 					$response['button_text'] = [
 						'activate'=>['text'=>'ACTIVATE SESSION','url'=>Config::get('app.url')."/sessionstatuscapture/activate/".$data['_id']],
 						'didnt_get'=>['text'=>'Didn’t get FitCode','url'=>Config::get('app.url')."/sessionstatuscapture/lost/".$data['_id']],
-						'cant_make'=>['text'=>'CAN’T MAKE IT','url'=>Config::get('app.url')."/sessionstatuscapture/cantmake/".$data['_id']]
+						'cant_make'=>['text'=>'CAN’T MAKE IT','url'=>Config::get('app.url')."/sessionstatuscapture/didnotattend/".$data['_id']]
+					];
+					break;
+				case 'wn+2':
+					$response = array_only($response, ['notification_id', 'transaction_type']);
+					$response['header'] = "LET US KNOW";
+					$response['sub_header'] = "Did you attend your ".$data['service_name']." at ".$data['finder_name']." on ".date('jS M \a\t g:i a', strtotime($data['schedule_date_time']))."? <br><br>Let us know and earn Cashback!";
+					$response['subscription_code'] = $data['code'];
+					$response['button_text'] = [
+						'attended'=>['text'=>'ATTENDED','url'=>Config::get('app.url')."/sessionstatuscapture/attended/".$data['_id']],
+						'did_not_attend'=>['text'=>'DID NOT ATTEND','url'=>Config::get('app.url')."/sessionstatuscapture/didnotattend/".$data['_id']]
 					];
 					break;
 				default:
