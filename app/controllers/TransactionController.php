@@ -1598,14 +1598,14 @@ class TransactionController extends \BaseController {
 
                 $order_data['category_array'] = $this->getCategoryImage($category_slug);
 
-                $after1days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 1);
-                $after7days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 7);
-                $after15days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 15);
+                // $after1days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 1);
+                // $after7days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 7);
+                // $after15days = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', $preferred_starting_date)->addMinutes(60 * 24 * 15);
 
                 $this->customersms->purchaseInstant($order->toArray());
-                $order->cutomerSmsPurchaseAfter1Days = $this->customersms->purchaseAfter1Days($order_data,$after1days);
-                $order->cutomerSmsPurchaseAfter7Days = $this->customersms->purchaseAfter7Days($order_data,$after7days);
-                $order->cutomerSmsPurchaseAfter15Days = $this->customersms->purchaseAfter15Days($order_data,$after15days);
+                // $order->cutomerSmsPurchaseAfter1Days = $this->customersms->purchaseAfter1Days($order_data,$after1days);
+                // $order->cutomerSmsPurchaseAfter7Days = $this->customersms->purchaseAfter7Days($order_data,$after7days);
+                // $order->cutomerSmsPurchaseAfter15Days = $this->customersms->purchaseAfter15Days($order_data,$after15days);
 
                 $order->update();
 
@@ -3048,8 +3048,8 @@ class TransactionController extends \BaseController {
 
             $url = Config::get('app.url')."/addwallet?customer_id=".$order["customer_id"]."&order_id=".$order_id;
 
-            $order->customerWalletSendPaymentLinkAfter15Days = $this->hitURLAfterDelay($url."&time=LPlus15", date('Y-m-d H:i:s', strtotime("+15 days",$now)));
-            $order->customerWalletSendPaymentLinkAfter30Days = $this->hitURLAfterDelay($url."&time=LPlus30", date('Y-m-d H:i:s', strtotime("+30 days",$now)));
+            // $order->customerWalletSendPaymentLinkAfter15Days = $this->hitURLAfterDelay($url."&time=LPlus15", date('Y-m-d H:i:s', strtotime("+15 days",$now)));
+            // $order->customerWalletSendPaymentLinkAfter30Days = $this->hitURLAfterDelay($url."&time=LPlus30", date('Y-m-d H:i:s', strtotime("+30 days",$now)));
 
             $order->notification_status = 'abandon_cart_yes';
 
