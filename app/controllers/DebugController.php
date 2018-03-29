@@ -3761,6 +3761,15 @@ public function yes($msg){
 		$finders = Finder::where('status', "1")->get(['_id', 'slug']);
 		return $finders;
 	}
+	public function cacheFindersFromCity($city_slug="mumbai"){
+		Finder::$withoutAppends = true;
+		$city = City::where("slug",$city_slug)->first();
+		$finders = array();
+		if(isset($city)){
+			$finders = Finder::where('city_id',$city->_id)->where('status', "1")->get(['_id', 'slug']);
+		}
+		return $finders;
+	}
 	public function customer_data()
 	{       
 		$start_date = new DateTime('01-02-2017');
