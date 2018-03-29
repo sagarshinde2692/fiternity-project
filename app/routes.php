@@ -923,6 +923,7 @@ Route::get('getfinderlocations', 'DebugController@cacheLocations');
 Route::get('getsubcategories', 'DebugController@cacheOfferings');
 
 Route::get('getfinders', 'DebugController@cacheFinders');
+Route::get('getfinders/{$city_slug?}', 'DebugController@cacheFindersFromCity');
 
 Route::post('transaction/pg',array('as' => 'transaction.pg','uses' => 'TransactionController@pg'));
 Route::post('transaction/success',array('as' => 'transaction.success','uses' => 'TransactionController@success'));
