@@ -1040,15 +1040,6 @@ class FindersController extends \BaseController {
                         'background-color'=> ''
                     ];
                 }
-
-                if(in_array($response['finder']['_id'], [4492,5596,5682,5729,9507,9508,9989,12480])){
-                    $response['vendor_stripe_data']	=	[
-                        'text'=> "1 month membership free (only for women) valid till 31st March",
-                        'text_color'=> '#ffffff',
-                        'background'=> '-webkit-linear-gradient(left, #FE7E87 0%, #FA5295 100%)',
-                        'background-color'=> ''
-                    ];
-				}
 				
 				if(in_array($response['finder']['_id'], [4823,4819,4817,4824,4826])){
                     $response['vendor_stripe_data']	=	[
