@@ -3160,7 +3160,7 @@ class CustomerController extends \BaseController {
 							
 							foreach($streak_data as $level){
 								if($data['current_level'] >= $level['level']){
-									array_push($data['streak'], ['url'=>$unlock_url.$level['level'], 'text'=>$level['cashback'].'% Cashback upto '.$level['number'].' sessions']);
+									array_push($data['streak'], ['url'=>$unlock_url.$level['level'].'.png', 'text'=>$level['cashback'].'% Cashback upto '.$level['number'].' sessions']);
 								}else{
 									array_push($data['streak'], ['url'=>$lock_url, 'text'=>$level['cashback'].'% Cashback upto '.$level['number'].' sessions']);
 								}
