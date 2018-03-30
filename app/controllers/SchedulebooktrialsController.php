@@ -6976,7 +6976,8 @@ class SchedulebooktrialsController extends \BaseController {
 
         $pending_payment = [
             'header'=>"Pending Amount ₹".$booktrial['amount_finder'],
-            'sub_header'=>"Make sure you pay up, to earn Cashback & continue booking more sessions"
+            'sub_header'=>"Make sure you pay up, to earn Cashback & continue booking more sessions",
+            'order_id'=>$booktrial['order_id']
         ];
 
         $streak = array_column(Config::get('app.streak_data'), 'number');
