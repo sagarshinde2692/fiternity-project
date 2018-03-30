@@ -6351,5 +6351,10 @@ class CustomerController extends \BaseController {
 		}
 		
 	}
+
+	public function notificationDataByTrialId($booktrial_id, $label){
+		$notificationTracking = NotificationTracking::where('booktrial_id', intval($booktrial_id))->where('label', $label)->first();
+		return $this->notificationTracking($notificationTracking->_id);
+	}
 	
 }

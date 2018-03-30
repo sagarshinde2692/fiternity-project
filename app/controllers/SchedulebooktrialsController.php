@@ -7002,7 +7002,7 @@ class SchedulebooktrialsController extends \BaseController {
 
                 $response = [
                     'header'=>'ENJOY YOUR WORKOUT!',
-                    'sub_header'=>'',
+                    'image'=>'https://b.fitn.in/paypersession/happy-face-icon.png',
                     'footer'=>'You have unlocked level '.$customer_level_data['current_level']['level'].' which gets you '.$customer_level_data['current_level']['cashback'].'% cashback',
                     'streak'=>[
                         'header'=>'STREAK IT OUT',
@@ -7038,6 +7038,7 @@ class SchedulebooktrialsController extends \BaseController {
                 
                 $response = [
                     'header'=>'DON’T WORRY',
+                    'image'=>'https://b.fitn.in/paypersession/happy-face-icon.png',
                     'sub_header_1'=>$customer_level_data['next_session']['cashback'].' Cashback',
                     'sub_header_2'=>' will be added in your wallet once we verify your attendance with '.ucwords($booktrial['finder_name']),
                 ];
@@ -7054,6 +7055,7 @@ class SchedulebooktrialsController extends \BaseController {
 
                 $response = [
                     'header'=>'OOPS!',
+                    'image'=>'https://b.fitn.in/paypersession/sad-face-icon.png',
                     'sub_header'=>'Make sure you attend next time to earn Cashback and continue working out!',
                     'footer'=>'Unlock level '.$customer_level_data['current_level']['level'].' which gets you '.$customer_level_data['current_level']['cashback'].'% cashback upto '.$customer_level_data['current_level']['number'].' sessions! Higher the Level, Higher the Cashback',
                     'streak'=>[
