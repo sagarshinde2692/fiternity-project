@@ -3631,9 +3631,9 @@ Class Utilities {
         
         foreach($streak_data as $level){
             if($current_level >= $level['level']){
-                array_push($streak, ['url'=>$unlock_url.$level['level'].'.png', 'text'=>$level['cashback'].'% Cashback upto '.$level['number'].' sessions']);
+                array_push($streak, ['header'=> 'Level '.$level['level'], 'url'=>$unlock_url.$level['level'].'.png', 'text'=>$level['cashback'].'%']);
             }else{
-                array_push($streak, ['url'=>$lock_url, 'text'=>$level['cashback'].'% Cashback upto '.$level['number'].' sessions']);
+                array_push($streak, ['header'=> 'Level '.$level['level'], 'url'=>$lock_url, 'text'=>$level['cashback'].'%']);
             }
         }
         return $streak;
