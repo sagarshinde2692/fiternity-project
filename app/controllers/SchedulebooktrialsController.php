@@ -6993,7 +6993,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $result = json_decode(json_encode($this->verifyFitCode($booktrial_id, $vendor_code)->getData()));
                 
                 if($result->status==400){
-                    return Response::json($result, 200);
+                    return Response::json(array('status'=>400, 'message'=>'Invalid Fitcode entered'), 200);
                 }
 
                 $customer_level_data = $this->utilities->getWorkoutSessionLevel($booktrial['customer_id']);                
@@ -7032,7 +7032,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $result = json_decode(json_encode($this->lostFitCode($booktrial_id)->getData()));
 
                 if($result->status==400){
-                    return Response::json($result, 200);
+                    return Response::json(array('status'=>500, 'message'=>'Something went weong'), 200);
                 }
 
                 $customer_level_data = $this->utilities->getWorkoutSessionLevel($booktrial['customer_id']);                
