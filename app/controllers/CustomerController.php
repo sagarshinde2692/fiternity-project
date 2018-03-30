@@ -3153,7 +3153,10 @@ class CustomerController extends \BaseController {
 
 							$data['current_level'] = $workout_session_level_data['current_level']['level'];
 
-							$data['streak'] = $this->utilities->getStreakImages($data['current_level']);
+							$data['streak'] = [
+								'header'=>'ATTEND AND EARN',
+								'data'=>$this->utilities->getStreakImages($data['current_level'])
+							];
 							
 
 							$data['subscription_code']  = $data['code'];
