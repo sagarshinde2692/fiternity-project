@@ -4965,7 +4965,7 @@ class CustomerController extends \BaseController {
 					$response['sub_header'] = "ACTIVATE SESSION";
 					$response['footer'] = "FitCode will be provided by ".$data['finder_name']."  to activate your session";
 					$response['schedule_date_time'] = strtotime($data['schedule_date_time']);
-					$response['subscription_code'] = $data['code'];
+					$response['subscription_code'] = implode('  ',str_split($data['code']));
 					$response['button_text'] = [
 						'activate'=>['text'=>'ACTIVATE SESSION','url'=>Config::get('app.url')."/sessionstatuscapture/activate/".$data['_id']],
 						'didnt_get'=>['text'=>'Didn’t get FitCode','url'=>Config::get('app.url')."/sessionstatuscapture/lost/".$data['_id']],
