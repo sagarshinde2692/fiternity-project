@@ -1152,6 +1152,10 @@ class MigrationReverseController extends \BaseController {
                 $insertData['diet_ratecard'] = $data['diet_ratecard'];
             }
 
+            if(isset($data['vendor_price'])){
+                $insertData['vendor_price'] = $data['vendor_price'];
+            }
+
 
             $ratecart_exists = Ratecard::on($this->fitadmin)->find(intval($id));
 
