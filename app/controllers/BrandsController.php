@@ -59,13 +59,6 @@ class BrandsController extends \BaseController {
                         'background'=> '-webkit-linear-gradient(left, #71b2c7 0%, #71b2c7 100%)',
                         'background-color'=> ''
                     ];
-                }elseif($slug == "fitness-first"){
-                    $data["stripe_data"] = [
-                        'text'=> "1 month membership free (only for women) valid till 31st March",
-                        'text_color'=> '#ffffff',
-                        'background'=> '-webkit-linear-gradient(left, #FE7E87 0%, #FA5295 100%)',
-                        'background-color'=> ''
-                    ];
                 }
                 Cache::tags('brand_detail')->put("$slug-$city" ,$data,Config::get('cache.cache_time'));
                 
