@@ -2546,6 +2546,10 @@ class TransactionController extends \BaseController {
         $data['duration'] = (isset($ratecard['duration'])) ? $ratecard['duration'] : "";
         $data['duration_type'] = (isset($ratecard['duration_type'])) ? $ratecard['duration_type'] : "";
 
+        if($ratecard['type'] == 'workout session' && isset($ratecard['vendor_price']) && $ratecard['vendor_price'] != ''){
+            $data['vendor_price'] = $ratecard['vendor_price'];
+        }
+
         if(isset($data['preferred_starting_date']) && $data['preferred_starting_date']  != '' && $data['preferred_starting_date']  != '-'){
 
             $preferred_starting_date = date('Y-m-d 00:00:00', strtotime($data['preferred_starting_date']));
