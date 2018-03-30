@@ -733,23 +733,29 @@ return array(
 		[
 			'number'=>3,
 			'cashback'=>10,
-			'level'=>1
+			'level'=>1,
+			'unlock_icon'=>'https://b.fitn.in/paypersession/level-1.png'
 		],
 		[
 			'number'=>5,
 			'cashback'=>15,
-			'level'=>2			
+			'level'=>2,
+			'unlock_icon'=>'https://b.fitn.in/paypersession/level-2.png'
 		],
 		[
 			'number'=>10,
 			'cashback'=>20,
-			'level'=>3			
+			'level'=>3,
+			'unlock_icon'=>'https://b.fitn.in/paypersession/level-3.png'
 		],
 		[
 			'number'=>20,
 			'cashback'=>30,
-			'level'=>4
+			'level'=>4,
+			'unlock_icon'=>'https://b.fitn.in/paypersession/level-4.png'
 		],
-	]
+	],
+	'paypersession_level_icon_base_url'=>'https://b.fitn.in/paypersession/level-',
+	'paypersession_lock_icon'=>'https://b.fitn.in/paypersession/lock-icon.png'
 
 );

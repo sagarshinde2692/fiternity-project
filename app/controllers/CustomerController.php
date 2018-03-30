@@ -3153,7 +3153,18 @@ class CustomerController extends \BaseController {
 
 							$data['current_level'] = $workout_session_level_data['current_level']['level'];
 
-							$data['streak'] = array_column(Config::get('app.streak_data'), 'number');
+							$streak_data = Config::get('app.streak_data');
+							$data['streak'] = [];
+							$unlock_url = Config::get('app.paypersession_level_icon_base_url');
+							$lock_url = Config::get('app.paypersession_lock_icon');
+							
+							foreach($streak_data as $level){
+								if($data['current_level'] >= $level['level']){
+									array_push($data['streak'], ['url'=>$unlock_url.$level['level'], 'text'=>$level['cashback'].'% Cashback upto '.$level['number'].' sessions']);
+								}else{
+									array_push($data['streak'], ['url'=>$lock_url, 'text'=>$level['cashback'].'% Cashback upto '.$level['number'].' sessions']);
+								}
+							}
 
 							$data['subscription_code']  = $data['code'];
 
@@ -3161,7 +3172,7 @@ class CustomerController extends \BaseController {
 							
 							$data['title']  = ucwords($data['service_name'])." at ".ucwords($data['finder_name']);
 
-							$data = array_only($data, ['title', 'schedule_date_time', 'subscription_code', 'subscription_text', 'body1', 'streak', 'payment_done']);
+							$data = array_only($data, ['title', 'schedule_date_time', 'subscription_code', 'subscription_text', 'body1', 'streak', 'payment_done', 'order_id']);
 							
 						}
 						
