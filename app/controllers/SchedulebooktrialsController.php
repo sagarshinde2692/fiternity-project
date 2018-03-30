@@ -7006,7 +7006,7 @@ class SchedulebooktrialsController extends \BaseController {
                     'footer'=>'You have unlocked level '.$customer_level_data['current_level']['level'].' which gets you '.$customer_level_data['current_level']['cashback'].'% cashback',
                     'streak'=>[
                         'header'=>'STREAK IT OUT',
-                        'data'=>$this->utilities->getStreakImages($data['current_level'])
+                        'data'=>$this->utilities->getStreakImages($customer_level_data['current_level']['level'])
                     ]
                 ];
 
