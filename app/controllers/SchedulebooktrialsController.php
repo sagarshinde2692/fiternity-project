@@ -7057,7 +7057,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $response = [
                     'header'=>'OOPS!',
                     'image'=>'https://b.fitn.in/paypersession/sad-face-icon.png',
-                    'sub_header'=>'Make sure you attend next time to earn Cashback and continue working out!',
+                    'sub_header_2'=>'Make sure you attend next time to earn Cashback and continue working out!',
                     'footer'=>'Unlock level '.$customer_level_data['current_level']['level'].' which gets you '.$customer_level_data['current_level']['cashback'].'% cashback upto '.$customer_level_data['current_level']['number'].' sessions! Higher the Level, Higher the Cashback',
                     'streak'=>[
                         'header'=>'STREAK IT OUT',
