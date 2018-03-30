@@ -6974,7 +6974,10 @@ class SchedulebooktrialsController extends \BaseController {
 
         $payment_done = !(isset($booktrial->payment_done) && !$booktrial->payment_done);
 
-        $pending_amount_text = "Pending Amount ₹".$booktrial['amount_finder'].". Make sure you pay up, to earn Cashback & continue booking more sessions";
+        $pending_payment = [
+            'header'=>"Pending Amount ₹".$booktrial['amount_finder'],
+            'sub_header'=>"Make sure you pay up, to earn Cashback & continue booking more sessions"
+        ];
 
         $streak = array_column(Config::get('app.streak_data'), 'number');
 
@@ -7003,22 +7006,23 @@ class SchedulebooktrialsController extends \BaseController {
                     'footer'=>'You have unlocked level '.$customer_level_data['current_level']['level'].' which gets you '.$customer_level_data['current_level']['cashback'].'% cashback',
                     'streak'=>[
                         'header'=>'STREAK IT OUT',
-                        'data'=>$streak
+                        'data'=>$this->utilities->getStreakImages($data['current_level'])
                     ]
                 ];
 
                 if(!$customer_level_data['maxed_out']){
-                    $response['footer'] = 'You have unlocked level '.$customer_level_data['current_level']['level'].' which gets you '.$customer_level_data['current_level']['cashback'].'% cashback upto '.$customer_level_data['current_level']['number'].' sessions!';
+                    $response['streak']['footer'] = 'You have unlocked level '.$customer_level_data['current_level']['level'].' which gets you '.$customer_level_data['current_level']['cashback'].'% cashback upto '.$customer_level_data['current_level']['number'].' sessions!';
                 }
 
                 if(isset($customer_level_data['next_level']) && isset($customer_level_data['next_level']['cashback'])){
-                    $response['footer'] = 'You have unlocked level '.$customer_level_data['current_level']['level'].' which gets you '.$customer_level_data['current_level']['cashback'].'% cashback upto '.$customer_level_data['current_level']['number'].' sessions! Make sure to continue as next level gets you '.$customer_level_data['next_level']['cashback'].'%.Higher the Level, Higher the Cashback';
+                    $response['streak']['footer'] = 'You have unlocked level '.$customer_level_data['current_level']['level'].' which gets you '.$customer_level_data['current_level']['cashback'].'% cashback upto '.$customer_level_data['current_level']['number'].' sessions! Make sure to continue as next level gets you '.$customer_level_data['next_level']['cashback'].'%.Higher the Level, Higher the Cashback';
                 }
 
                 if($payment_done){
-                    $response['sub_header'] = $customer_level_data['current_level']['cashback']."% Cashback has been added in your Fitternity Wallet. Use it to book more workouts and keep on earning!";
+                    $response['sub_header_1'] = $customer_level_data['current_level']['cashback']."% Cashback";
+                    $response['sub_header_1'] = " has been added in your Fitternity Wallet. Use it to book more workouts and keep on earning!";
                 }else{
-                    $response['sub_header'] = $pending_amount_text;
+                    $response['payment'] = $pending_payment;
                 }
 
 
@@ -7034,12 +7038,12 @@ class SchedulebooktrialsController extends \BaseController {
                 
                 $response = [
                     'header'=>'DON’T WORRY',
-                    'sub_header'=>'10% Cashback will be added in your wallet once we verify your attendance with '.ucwords($booktrial['finder_name']),
-                    'footer'=>'',
+                    'sub_header_1'=>$customer_level_data['next_session']['cashback'].' Cashback',
+                    'sub_header_2'=>' will be added in your wallet once we verify your attendance with '.ucwords($booktrial['finder_name']),
                 ];
                 
                 if(!$payment_done){
-                    $response['footer'] = $pending_amount_text;
+                    $response['payment'] = $pending_payment;
                 }
 
             break;
@@ -7054,13 +7058,13 @@ class SchedulebooktrialsController extends \BaseController {
                     'footer'=>'Unlock level '.$customer_level_data['current_level']['level'].' which gets you '.$customer_level_data['current_level']['cashback'].'% cashback upto '.$customer_level_data['current_level']['number'].' sessions! Higher the Level, Higher the Cashback',
                     'streak'=>[
                         'header'=>'STREAK IT OUT',
-                        'data'=>$streak
+                        'data'=>$this->utilities->getStreakImages($customer_level_data['current_level']['level'])
                     ]
                 ];
 
-                if($customer_level_data['trials_attended'] > 0){
-                    $response['footer'] = 'Unlock level '.$customer_level_data['next_level']['number'].' which gets you '.$customer_level_data['next_level']['cashback'].'% cashback upto '.$customer_level_data['next_level']['number'].' sessions! Higher the Level, Higher the Cashback';
-                }
+                // if($customer_level_data['trials_attended'] > 0){
+                    $response['streak']['footer'] = 'Unlock level '.$customer_level_data['next_level']['number'].' which gets you '.$customer_level_data['next_level']['cashback'].'% cashback upto '.$customer_level_data['next_level']['number'].' sessions! Higher the Level, Higher the Cashback';
+                // }
                 
 
             break;

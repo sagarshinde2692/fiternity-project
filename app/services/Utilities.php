@@ -3622,6 +3622,22 @@ Class Utilities {
         return $fitcash;
         
     }
+
+    public function getStreakImages($current_level){
+        $streak = [];
+        $streak_data = Config::get('app.streak_data');
+        $unlock_url = Config::get('app.paypersession_level_icon_base_url');
+        $lock_url = Config::get('app.paypersession_lock_icon');
+        
+        foreach($streak_data as $level){
+            if($current_level >= $level['level']){
+                array_push($streak, ['url'=>$unlock_url.$level['level'].'.png', 'text'=>$level['cashback'].'% Cashback upto '.$level['number'].' sessions']);
+            }else{
+                array_push($streak, ['url'=>$lock_url, 'text'=>$level['cashback'].'% Cashback upto '.$level['number'].' sessions']);
+            }
+        }
+        return $streak;
+    }
     
 }
 

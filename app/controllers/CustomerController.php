@@ -3092,12 +3092,12 @@ class CustomerController extends \BaseController {
 				$workout_session_level_data = $this->utilities->getWorkoutSessionLevel($customer_id);
 
 				Log::info("------------home------------$customeremail");
-				
+
 				Log::info('device_type'.$this->device_type);
 				Log::info('app_version'.$this->app_version);
 
 				if($this->app_version > '4.4.3'){
-
+					Log::info("4.4.3");
 					$trials = Booktrial::where('customer_email', '=', $customeremail)->where('going_status_txt','!=','cancel')->where('booktrial_type','auto')->where(function($query){return $query->where('schedule_date_time','>=',new DateTime())->orWhere('payment_done', false);})->orderBy('schedule_date_time', 'asc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code', 'payment_done', 'type', 'order_id')->get();
 				
 				}else{
@@ -3153,18 +3153,8 @@ class CustomerController extends \BaseController {
 
 							$data['current_level'] = $workout_session_level_data['current_level']['level'];
 
-							$streak_data = Config::get('app.streak_data');
-							$data['streak'] = [];
-							$unlock_url = Config::get('app.paypersession_level_icon_base_url');
-							$lock_url = Config::get('app.paypersession_lock_icon');
+							$data['streak'] = $this->utilities->getStreakImages($data['current_level']);
 							
-							foreach($streak_data as $level){
-								if($data['current_level'] >= $level['level']){
-									array_push($data['streak'], ['url'=>$unlock_url.$level['level'].'.png', 'text'=>$level['cashback'].'% Cashback upto '.$level['number'].' sessions']);
-								}else{
-									array_push($data['streak'], ['url'=>$lock_url, 'text'=>$level['cashback'].'% Cashback upto '.$level['number'].' sessions']);
-								}
-							}
 
 							$data['subscription_code']  = $data['code'];
 
