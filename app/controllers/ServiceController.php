@@ -1548,8 +1548,8 @@ class ServiceController extends \BaseController {
 
 			
 			$service_details['photos'] = [
-				'count'=>(count($service_details['photos']) > 4) ? (count($service_details['photos']) - 4) : 0,
-				'urls'=>array_splice($photos, 0, 4)
+				'count'=>(count($service_details['photos']) > 1) ? (count($service_details['photos']) - 1) : 0,
+				'urls'=>$photos
 			];
 
 			if(count($service_details['photos']['urls']) == 0){
