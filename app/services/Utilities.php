@@ -2914,7 +2914,7 @@ Class Utilities {
 
             $pending_payment = \Booktrial::where('type', 'workout-session')->where(function ($query) use($customer_email) { $query->orWhere('customer_email', $customer_email);})->where('payment_done', false)->first(['order_id', 'amount']);
 
-			if($pending_payment > 0){
+			if(count($pending_payment) > 0){
 				return [
                     'header'=>'Pending Payment',
                     'text'=>'Please complete your pending payment',

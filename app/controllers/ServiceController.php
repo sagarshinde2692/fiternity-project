@@ -1666,7 +1666,10 @@ class ServiceController extends \BaseController {
 		$data['bookmark'] = false;
 		$data['share_message_text'] = "Check out ".$service_details['title']." on Fitternity. https://www.fitternity.com/service/".$service_details['_id'];
 		$data['share_message_email'] = "Check out ".$service_details['title']." on Fitternity. https://www.fitternity.com/service/".$service_details['_id'];
-		$data['pending_payment'] = $this->utilities->hasPendingPayments();
+		
+		if($this->utilities->hasPendingPayments()){
+			$data['pending_payment'] = $this->utilities->hasPendingPayments();
+		}
 
 		return Response::json(array('status'=>200, 'data'=> $data));
 
