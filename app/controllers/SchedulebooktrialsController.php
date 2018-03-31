@@ -7021,7 +7021,7 @@ class SchedulebooktrialsController extends \BaseController {
 
                 if($payment_done){
                     $response['sub_header_1'] = $customer_level_data['current_level']['cashback']."% Cashback";
-                    $response['sub_header_1'] = " has been added in your Fitternity Wallet. Use it to book more workouts and keep on earning!";
+                    $response['sub_header_2'] = " has been added in your Fitternity Wallet. Use it to book more workouts and keep on earning!";
                 }else{
                     $response['payment'] = $pending_payment;
                 }
@@ -7040,7 +7040,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $response = [
                     'header'=>'DON’T WORRY',
                     'image'=>'https://b.fitn.in/paypersession/happy-face-icon.png',
-                    'sub_header_1'=>$customer_level_data['next_session']['cashback'].' Cashback',
+                    'sub_header_1'=>$customer_level_data['next_session']['cashback'].'% Cashback',
                     'sub_header_2'=>' will be added in your wallet once we verify your attendance with '.ucwords($booktrial['finder_name']),
                 ];
                 
