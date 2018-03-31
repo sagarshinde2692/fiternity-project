@@ -2912,13 +2912,13 @@ Class Utilities {
 			$customer_email                     =       $decoded->customer->email;
 			$customer_phone                     =       $decoded->customer->contact_no;
 
-            $pending_payment = \Booktrial::where('type', 'workout-session')->where(function ($query) use($customer_email) { $query->orWhere('customer_email', $customer_email);})->where('payment_done', false)->first(['order_id', 'amount']);
+            $pending_payment = \Booktrial::where('type', 'workout-session')->where(function ($query) use($customer_email) { $query->orWhere('customer_email', $customer_email);})->where('payment_done', false)->first(['_id', 'amount']);
 
 			if(count($pending_payment) > 0){
 				return [
                     'header'=>'Pending Payment',
                     'text'=>'Please complete your pending payment',
-                    'order'=>$pending_payment['order_id'],
+                    'trial_id'=>$pending_payment['_id'],
                     'amount'=>$pending_payment['amount']
                 ];
 			}else{

@@ -5567,9 +5567,11 @@ class TransactionController extends \BaseController {
 
     }
 
-    public function getCaptureData($order_id){
+    public function getCaptureData($trial_id){
 
-        $order = Order::find(intval($order_id));
+        $booktrial = Booktrial::find(intval($trial_id));
+
+        $order = Order::find($booktrial->order_id);
 
         $data = [];
         
