@@ -682,7 +682,7 @@ class ServiceController extends \BaseController {
 		//  $items = $query->get()->toArray();
 
 
-
+		
 
         if(count($items) == 0){
         	return Response::json(array('status'=>401,'message'=>'data is empty'),401);
@@ -1444,13 +1444,15 @@ class ServiceController extends \BaseController {
 			// 	$service_details = json_decode(json_encode($service_details_response['data']), true);
 			// }
 			
-			$service_details = Service::where('finder_id', $finder['_id'])->where('slug', $service_slug)->with(array('ratecards'))->first(['name', 'contact', 'photos', 'lat', 'lon', 'calorie_burn', 'address', 'servicecategory_id', 'finder_id']);
+			$service_details = Service::active()->where('finder_id', $finder['_id'])->where('slug', $service_slug)->with(array('ratecards'))->first(['name', 'contact', 'photos', 'lat', 'lon', 'calorie_burn', 'address', 'servicecategory_id', 'finder_id']);
 			// return $service_details;
 			if(!$service_details){
 				
 				return Response::json(array('status'=>400, 'error_message'=>'Service not active'), $this->error_status);
 			
 			};
+
+			// return $service_details;
 			$service_details = $service_details->toArray();
 
 			$service_details['title'] = $service_details['name'].' at '.$finder['title'];
@@ -1618,12 +1620,15 @@ class ServiceController extends \BaseController {
 				'type'=>'workout_session',
 				'within_time'=>$within_time
 			];
-
 			$schedule = json_decode(json_encode($this->getScheduleByFinderService($schedule_data)->getData()));
+
+			if($schedule->status != 200){
+				return Response::json(array('status'=>400, 'error_message'=>'Booking not available'), $this->error_status);
+			}
 			
 			$service_details['single_slot'] = false;
 			
-			if(count($schedule->schedules) > 0 && count(head($schedule->schedules)->slots)>0){
+			if(isset($schedule->schedules) && count($schedule->schedules) > 0 && count(head($schedule->schedules)->slots)>0){
 				$service_details['next_session'] = "Next session at ".strtoupper(head($schedule->schedules)->slots[0]->start_time);
 				$service_details['slots'] = (head($schedule->schedules)->slots);
 				$service_details['total_sessions'] = count($service_details['slots'])." sessions";
