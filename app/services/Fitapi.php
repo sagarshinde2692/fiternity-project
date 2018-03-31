@@ -86,7 +86,7 @@ Class Fitapi {
             $return  = ['status'=>200,
                         'data'=>$response
             ];
-            return $return;
+            return $response;
         }catch (RequestException $e) {
 
             $response = $e->getResponse();
