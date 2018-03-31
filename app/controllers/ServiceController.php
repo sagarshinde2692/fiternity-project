@@ -1723,9 +1723,7 @@ class ServiceController extends \BaseController {
 		$data = Input::json()->all();
 		$pay_persession_request = [
 			"category"=>$data["category"],
-			"lat"=>isset($data["lat"]) ? $data["lat"] : "",
-			"lon"=>isset($data["lon"]) ? $data["lon"] : "",
-			"city"=>strtolower($data["city"]),
+			"location"=>isset($data["location"]) ? $data["location"] : array(),
 			"keys"=>[
 			  "name",
 			  "id"
@@ -1738,14 +1736,19 @@ class ServiceController extends \BaseController {
 		$day_after = date('l', strtotime(' +2 day'));
 		$day_after_date = date('d-m-Y', strtotime(' +1 day'));
 		$days = array_fetch($pay_per_session["aggregations"]["days"],"name");
+		foreach($timings as $key =>$timing){
+			$timings[$key]["index"] = 0;
+		}
 		$indexofTomorrow = array_search($tomorrow,$days);
 		$pay_per_session["aggregations"]["days"][$indexofTomorrow]["name"] = "Tomorrow";
 		$pay_per_session["aggregations"]["days"][$indexofTomorrow]["slug"] = "tomorrow";
 		$pay_per_session["aggregations"]["days"][$indexofTomorrow]["date"] = $tomorrow_date;
+		$pay_per_session["aggregations"]["days"][$indexofTomorrow]["index"] = 1;
 		$indexofday_after = array_search($day_after,$days);
 		$pay_per_session["aggregations"]["days"][$indexofday_after]["name"] = "Day after";
 		$pay_per_session["aggregations"]["days"][$indexofday_after]["slug"] = "day-after";
 		$pay_per_session["aggregations"]["days"][$indexofday_after]["date"] = $day_after_date;
+		$pay_per_session["aggregations"]["days"][$indexofday_after]["index"] = 2;
 		array_push($timings, $pay_per_session["aggregations"]["days"][$indexofTomorrow]);
 		array_push($timings, $pay_per_session["aggregations"]["days"][$indexofday_after]);
 		return $data = array("header"=> "When do you want to workout?", "categories" => $timings);
