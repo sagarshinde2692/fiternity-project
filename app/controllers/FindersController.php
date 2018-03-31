@@ -3870,7 +3870,8 @@ class FindersController extends \BaseController {
 				unset($finderData['finder']['lon']);
 			}
 
-					
+			$finderData['pending_payment'] = $this->utilities->hasPendingPayments();
+		
 
 		}else{
 
