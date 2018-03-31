@@ -5428,10 +5428,22 @@ class CustomerController extends \BaseController {
 		
 		$referrer = Customer::where('referral_code', $code)->where('status', '1')->first();
 
-	
-		
+		$device_type = "";
 
-		if(isset($_GET['device_type']) && in_array($_GET['device_type'], ['ios', 'android']) && $referrer && isset($customer->old_customer) && $customer->old_customer == false && !isset($customer->referrer_id) && $customer_id != $referrer->_id){
+		if(isset($_GET['device_type'])){
+			$device_type = strtolower($_GET['device_type']);
+		}
+
+		$header_device_type = Request::header('Device-Type');
+
+		if($header_device_type != "" && $header_device_type != null && $header_device_type != 'null'){
+
+			$device_type = $header_device_type;
+        }
+
+        Log::info('device_type-------------------------------'.$device_type);
+	
+		if(in_array($device_type, ['ios', 'android']) && $referrer && isset($customer->old_customer) && $customer->old_customer == false && !isset($customer->referrer_id) && $customer_id != $referrer->_id){
 
 			$customer->referrer_id = $referrer->_id;
 			$customer->save();
