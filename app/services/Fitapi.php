@@ -79,5 +79,31 @@ Class Fitapi {
 
     }
   
+    public function getCaptureData ($json, $headers=[], $query_params=[]){
 
+        try {
+            $response = json_decode($this->client->post('transaction/capture?'.http_build_query($query_params),['json'=>$json, 'headers'=>$headers])->getBody()->getContents());
+            $return  = ['status'=>200,
+                        'data'=>$response
+            ];
+            return $return;
+        }catch (RequestException $e) {
+
+            $response = $e->getResponse();
+
+            $error = [  'status'=>$response->getStatusCode(),
+                        'reason'=>$response->getReasonPhrase()
+            ];
+
+            return $error;
+        }catch (Exception $e) {
+            $error = [  'status'=>400,
+                        'reason'=>'Error'
+            ];
+
+            return $error;
+        }
+
+    }
+        
 }                                       

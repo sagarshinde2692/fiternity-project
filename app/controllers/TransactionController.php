@@ -79,6 +79,14 @@ class TransactionController extends \BaseController {
     public function capture(){
 
         $data = Input::json()->all();
+
+        // Log::info($_GET['app_version']);
+        // return [
+        //     'app_version'=>$_GET['app_version'],
+        //     'device_type'=>$_GET['device_type'],
+        //     'App-Version'=>$this->app_version,
+        //     'Device-type'=>$this->device_type,
+        // ];
         
         foreach ($data as $key => $value) {
 
@@ -5558,6 +5566,41 @@ class TransactionController extends \BaseController {
         return $ratecard_count;
 
     }
+
+    public function getCaptureData($order_id){
+
+        $order = Order::find(intval($order_id));
+
+        $data = [];
+        
+        $fields = ["customer_name","customer_email","customer_phone","gender","finder_id","finder_name","premium_session","service_name","service_id","service_duration","schedule_date","schedule_slot","amount","city_id","type","note_to_trainer","going_together","ratecard_id","customer_identity","customer_source","customer_location","env"];
+
+        foreach($fields as $field){
+            if(isset($order[$field])){
+
+                $data[$field] = $order[$field];
+            }
+        }
+
+        $data['session_payment'] = true;
+
+        Log::info($_GET);
+
+        $query_params = [
+            'app_version'=>$this->app_version,
+            'device_type'=>$this->device_type
+        ];
+
+        $headers = [
+            'Device-Type'=>$this->device_type,
+            'App-Version'=>$this->app_version
+        ];
+
+        // return http_build_query($query_params);
+
+        return $this->fitapi->getCaptureData($data, $headers, $query_params);
+
+    } 
     
 
 }

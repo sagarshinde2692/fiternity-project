@@ -1154,3 +1154,4 @@ Route::get('getServiceData', 'TransactionController@getServiceData');
 Route::get('sessionstatuscapture/{status}/{booktrial_id}', 'SchedulebooktrialsController@sessionStatusCapture');
 
 Route::get('notificationdatabytrialid/{booktrial_id}/{label}', 'CustomerController@notificationDataByTrialId');
+Route::get('getcapturedata/{order_id}', 'TransactionController@getCaptureData');
