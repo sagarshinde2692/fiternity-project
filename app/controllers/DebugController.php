@@ -6822,45 +6822,57 @@ public function yes($msg){
 		// });
 
 
-		$rewards = Myreward::raw(function($collection){
+		// $rewards = Myreward::raw(function($collection){
 			
-			$aggregate = [];
+		// 	$aggregate = [];
 			
-			$match['$match']['created_at'] = ['$gte'=>new MongoDate(strtotime('2017-12-13'))];
-			$match['$match']['reward_type'] = "fitness_kit";
-			$aggregate[] = $match;
+		// 	$match['$match']['created_at'] = ['$gte'=>new MongoDate(strtotime('2018-01-13'))];
+		// 	$match['$match']['reward_type'] = "fitness_kit";
+		// 	$aggregate[] = $match;
 			
-			$group = [
-				'$group' => [
-					'_id' => '$claimed',
-					'count'=>[
-						'$sum'=>1
-					]
-				]
-			];
+		// 	$group = [
+		// 		'$group' => [
+		// 			'_id' => '$claimed',
+		// 			'count'=>[
+		// 				'$sum'=>1
+		// 			]
+		// 		]
+		// 	];
 	
-			$aggregate[] = $group;
-			$aggregate[] = ['$sort'=>['_id'=>1]];
+		// 	$aggregate[] = $group;
+		// 	$aggregate[] = ['$sort'=>['_id'=>1]];
 			
-			return $collection->aggregate($aggregate);
+		// 	return $collection->aggregate($aggregate);
 
-		});
+		// });
 
 
-		return $rewards;
+		// return $rewards;
 		
 		
-		$rewards = Myreward::where('created_at', '>', new DateTime('2017-12-13'))->get(['tshirt_size', 'content']);
+		$rewards = Myreward::where('created_at', '>', new DateTime('2018-01-13'))->get(['tshirt_size', 'content', 'claimed']);
 		
-		$data = [];
+		$data_not_available = [];
+		$data_available = [];
+		$claimed = 0;
+		$claimed_tshirt = 0;
 		foreach($rewards as $reward){
-			if(isset($reward['content']) && in_array("Breather T-Shirt", $reward['content']) && (!isset($reward['tshirt_size']) || $reward['tshirt_size'] == '')){
-				array_push($data, $reward);
+			if(isset($reward['content']) && in_array("Breather T-Shirt", $reward['content'])){
+				if((!isset($reward['tshirt_size']) || $reward['tshirt_size'] == '')){
+					array_push($data_not_available, $reward);
+					if($reward["claimed"] == 1){
+						$claimed++;
+					}
+				}else{
+					array_push($data_available, $reward);
+					if($reward["claimed"] == 1){
+						$claimed_tshirt++;
+					}
+				}
 			}
-			
 		}
 		
-		return $data;
+		return array("data_not_available" => $data_not_available, "data_available"=> $data_available, "claimed" => $claimed, "claimed_tshirt" => $claimed_tshirt);
 
 	}
 
