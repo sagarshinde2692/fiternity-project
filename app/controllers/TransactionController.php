@@ -5593,7 +5593,8 @@ class TransactionController extends \BaseController {
 
         $headers = [
             'Device-Type'=>$this->device_type,
-            'App-Version'=>$this->app_version
+            'App-Version'=>$this->app_version,
+            'Authorization'=>Request::header('Authorization')
         ];
 
         // return http_build_query($query_params);
