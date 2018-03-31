@@ -5438,7 +5438,7 @@ class CustomerController extends \BaseController {
 
 		if($header_device_type != "" && $header_device_type != null && $header_device_type != 'null'){
 
-			$device_type = $header_device_type;
+			$device_type = strtolower($header_device_type);
         }
 
         Log::info('device_type-------------------------------'.$device_type);
