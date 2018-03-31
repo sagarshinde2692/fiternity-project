@@ -109,8 +109,15 @@ class RewardofferController extends BaseController {
     public function getRewardOffers(){
 
         $data       = Input::json()->all();
-        
+
+        Log::info('----------------------getRewardOffers data-------------------',$data);
+
+
+        $min_date = null;
+        $max_date = null;
+
         $order              =   array();
+
         if(isset($data) && isset($data['type']) && $data['type'] == 'workout-session'){
             $rules      =   ['finder_id'=>'required', 'amount'=>'required', 'type'=>'required'];
             $validator  =   Validator::make($data,$rules);
@@ -194,6 +201,9 @@ class RewardofferController extends BaseController {
         $ratecard       =   Ratecard::where('_id',$ratecard_id)->where('finder_id',$finder_id)->first();
         $service_id = 99999999;
 
+        if(isset($data['service_id']) && $data['service_id']){
+            $service_id     =  (int) $data['service_id'];
+        }
 
         if($ratecard){
 
@@ -218,10 +228,19 @@ class RewardofferController extends BaseController {
         $service_category_id = null;
         $service_category_slug = "";
         $finder_category_id = null;
+        $service_category = false;
 
         if($service){
 
             $service_category_id = (int)$service->servicecategory_id;
+
+            if(isset($service['membership_start_date'])){
+                $min_date = strtotime($service['membership_start_date']);
+            }
+
+            if(isset($service['membership_end_date'])){
+                $max_date = strtotime($service['membership_end_date']);
+            }
         }
 
         if(isset($data['service_category_id']) && $data['service_category_id'] != ""){
@@ -264,7 +283,7 @@ class RewardofferController extends BaseController {
 
         }else{
 
-            if(!$ratecard && count($order) == 0){
+            if(!$ratecard && count($order) == 0 && !isset($data['admin_get_rewards'])){
                 $resp   =   array('status' => 401,'message' => "Ratecard Not Present");
                 return  Response::json($resp, $this->error_status);
             }
@@ -322,6 +341,9 @@ class RewardofferController extends BaseController {
             if($finder_category_id != null){
                 $findercategory_id = $finder_category_id;
             }
+
+
+            Log::info('------------------------------findercategory_id --------------------------'.$findercategory_id);
 
             $rewardoffer           =   Rewardoffer::active()->where('findercategory_id', $findercategory_id)
                     ->where('amount_min','<=', $amount)
@@ -451,7 +473,7 @@ class RewardofferController extends BaseController {
                                         }
                                     }
 
-                                    if(!$reward_data_flag){
+                                    if(!$reward_data_flag && $amount >= 2000){
 
                                         foreach ($fitness_kit_array as $data_key => $data_value) {
 
@@ -465,6 +487,31 @@ class RewardofferController extends BaseController {
                                                 break;
                                             }
                                         }
+                                    }
+
+                                    if(in_array($finder_id,[13219,13221,13420]) && $amount <= 1000){
+
+                                        $pos = strpos($rewards_value['title'],'(Kit B)');
+
+                                        if($pos === false){
+
+                                            $reward_type_info = 'fitness_kit';
+
+                                            $reward_data['contents'] = ['Cool-Water Bottle'];
+                                            $reward_data['payload_amount'] = 300;
+                                            $reward_data['image'] = 'https://b.fitn.in/gamification/reward/goodies/productskit/bottle.png';
+                                            $reward_data['gallery'] = [];
+
+                                        }else{
+
+                                            $reward_type_info = 'fitness_kit_2';
+
+                                            $reward_data['contents'] = ['Waterproof Gym Bag'];
+                                            $reward_data['payload_amount'] = 850;
+                                            $reward_data['image'] = 'https://b.fitn.in/gamification/reward/goodies/productskit/gymbag.png';
+                                            $reward_data['gallery'] = [];
+                                        }
+                                        
                                     }
 
                                 }
@@ -708,8 +755,8 @@ class RewardofferController extends BaseController {
 
         if(!empty($rewards)){
 
-            $fitness_kit_1 = null;
-            $fitness_kit_2 = null;
+            $fitness_kit_1 = 0;
+            $fitness_kit_2 = 0;
 
             foreach ($rewards as $rewards_key => $rewards_value) {
 
@@ -735,6 +782,17 @@ class RewardofferController extends BaseController {
 
                 $rewards[$fitness_kit_1] = $data_fitness_kit_2;
                 $rewards[$fitness_kit_2] = $data_fitness_kit_1;
+            }
+
+        }
+
+        if(!empty($rewards)){
+
+            foreach ($rewards as $reward_key => $reward_value) {
+
+                if($reward_value['reward_type'] == 'fitness_kit' && isset($reward_value['payload']['amount']) && $reward_value['payload']['amount'] == 0){
+                    unset($rewards[$reward_key]);
+                }
             }
 
         }
@@ -810,6 +868,11 @@ class RewardofferController extends BaseController {
             $cashback = null;
         }
 
+        if(isset($data['ratecard_id']) && in_array($data['ratecard_id'], [])){
+            $rewards = [];
+            $cashback = null;
+        }
+
         $data = array(
             'renewal_cashback'          =>   $renewal_cashback,
             'cashback'                  =>   $cashback,
@@ -847,6 +910,9 @@ class RewardofferController extends BaseController {
             $data['corporate_login'] = true;
             unset($data['cashback']);
         }
+
+        $data['min_date'] = $min_date;
+        $data['max_date'] = $max_date;
 
         return  Response::json($data, 200);
 

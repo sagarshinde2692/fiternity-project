@@ -114,6 +114,8 @@ class BlogsController extends \BaseController {
 			}
 		}
 
+		Blog::where('slug','=',$tslug)->increment('views');
+
 		return Response::json(Cache::tags('blog_detail')->get($tslug));
 	}
 

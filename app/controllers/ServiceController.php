@@ -682,7 +682,7 @@ class ServiceController extends \BaseController {
 		//  $items = $query->get()->toArray();
 
 
-
+		
 
         if(count($items) == 0){
         	return Response::json(array('status'=>401,'message'=>'data is empty'),401);
@@ -735,7 +735,7 @@ class ServiceController extends \BaseController {
 			$time_in_seconds = time_passed_check($item['servicecategory_id']);
 			
 			if(isset($request['time_interval']) && $request['time_interval']){
-				$time_in_seconds = $request['time_interval']*60*60;
+				$time_in_seconds = $request['time_interval'];
 			}
 
             $service = array(
@@ -849,7 +849,11 @@ class ServiceController extends \BaseController {
                     try{
 
                     	$scheduleDateTimeUnix               =  strtotime(strtoupper($date." ".$slot['start_time']));
-                        $slot_datetime_pass_status      =   (($scheduleDateTimeUnix - $currentDateTime) > $time_in_seconds) ? false : true;
+						$slot_datetime_pass_status      =   (($scheduleDateTimeUnix - $currentDateTime) > $time_in_seconds) ? false : true;
+						
+						if(isset($request['within_time']) && $request['within_time'] && !$slot_datetime_pass_status){
+							$slot_datetime_pass_status = (($scheduleDateTimeUnix - $currentDateTime) < $request['within_time']) ? false : true;
+						}
 
                         ($slot_datetime_pass_status == false) ? $slot_passed_flag = false : null;
 
@@ -1412,6 +1416,8 @@ class ServiceController extends \BaseController {
 	
 	public function serviceDetailv1($finder_slug, $service_slug, $cache=false){
 
+		// return date('Y-m-d', strtotime('day after tomorrow'));
+
 		$cache_key = "$finder_slug-$service_slug";
 
 		$service_details = $cache ? Cache::tags('service_detail')->has($cache_key) : false;
@@ -1438,13 +1444,15 @@ class ServiceController extends \BaseController {
 			// 	$service_details = json_decode(json_encode($service_details_response['data']), true);
 			// }
 			
-			$service_details = Service::where('finder_id', $finder['_id'])->where('slug', $service_slug)->with(array('ratecards'))->first(['name', 'contact', 'photos', 'lat', 'lon', 'calorie_burn', 'address', 'servicecategory_id', 'finder_id']);
+			$service_details = Service::active()->where('finder_id', $finder['_id'])->where('slug', $service_slug)->with(array('ratecards'))->first(['name', 'contact', 'photos', 'lat', 'lon', 'calorie_burn', 'address', 'servicecategory_id', 'finder_id']);
 			// return $service_details;
 			if(!$service_details){
 				
 				return Response::json(array('status'=>400, 'error_message'=>'Service not active'), $this->error_status);
 			
 			};
+
+			// return $service_details;
 			$service_details = $service_details->toArray();
 
 			$service_details['title'] = $service_details['name'].' at '.$finder['title'];
@@ -1477,8 +1485,10 @@ class ServiceController extends \BaseController {
 				return Response::json(array('status'=>400, 'error_message'=>'Workout session ratecard not active'), $this->error_status);
 			
 			};
-	
-			$service_details['price'] = "₹".$workout_session_ratecard['price']." PER SESSION";
+			
+			$service_details['price'] = "₹".(($workout_session_ratecard['special_price']!=0) ? $workout_session_ratecard['special_price'] : $workout_session_ratecard['price'])." PER SESSION";
+
+			$service_details['amount'] = $workout_session_ratecard['price'];
 
 			$service_details['contact'] = [
 				'address'=>''
@@ -1489,6 +1499,12 @@ class ServiceController extends \BaseController {
 			
 			$service_details['average_rating'] = isset($finder['average_rating']) ? round($finder['average_rating'], 1) : 0;
 
+			if(!isset($service_details['calorie_burn']) || !isset($service_details['calorie_burn']['avg'])){
+				$service_details['calorie_burn'] = [
+					'avg'=>500
+				];
+
+			}
 			$service_details['calorie_burn'] = "BURN ".$service_details['calorie_burn']['avg']." ".((isset($service_details['calorie_burn']['type']) && $service_details['calorie_burn']['type'] != "") ? strtoupper($service_details['calorie_burn']['type']) : "KCAL");
 
 			$reviews = [];
@@ -1530,29 +1546,89 @@ class ServiceController extends \BaseController {
 			
 			$photos = $service_details['photos'];
 
+			
 			$service_details['photos'] = [
-				'count'=>(count($service_details['photos']) > 4) ? (count($service_details['photos']) - 4) : 0,
-				'urls'=>array_splice($photos, 0, 4)
+				'count'=>(count($service_details['photos']) > 1) ? (count($service_details['photos']) - 1) : 0,
+				'urls'=>$photos
 			];
+
+			if(count($service_details['photos']['urls']) == 0){
+				$service_details['photos']['urls'] = ['https://www.w3schools.com/howto/img_fjords.jpg'];
+			}
+
 			// $service_details['photos'] = array_pluck($service_details, 'url');
 			
 			$service_details['coordinates'] = [$service_details['lat'], $service_details['lon']];
 
-			$schedule_data = [
-				'service_id'=>$service_details['_id'],
-				'requested_date'=>date('Y-m-d', time()),
-				'time_interval'=>isset($_GET['time_interval']) ? intval($_GET['time_interval']) : null,
-				'date'=>date('Y-m-d', time()),
-				'type'=>'workout_session'
-				
+			$time = isset($_GET['time']) ? $_GET['time'] : null;
+			$time_interval = null;
+			$within_time = null;
+			$requested_date = date('Y-m-d', time());
+
+			$gym_start_time = [
+				'hour'=>5,
+				'min'=>0
 			];
 
+			$gym_end_time = [
+				'hour'=>22,
+				'min'=>0
+			];
+			if(isset($_GET['date']) && $_GET['date'] != ''){
 
+				$requested_date = $_GET['date'];
+
+				if(strtotime($requested_date) < time()){
+					$gym_start_time = [
+						'hour'=>intval(date('G', time())),
+						'min'=>intval(date('i', time()))
+					];
+				}
+
+			}else{
+
+				switch($time){
+					case "within-4-hours":
+						$within_time = 4*60*60;
+						$gym_start_time = [
+							'hour'=>intval(date('G', time())),
+							'min'=>intval(date('i', time()))
+						];
+						
+						break;
+					case "later-today":
+						$time_interval = 4*60*60;
+						$gym_start_time = [
+							'hour'=>intval(date('G', time())),
+							'min'=>intval(date('i', time()))
+						];
+						break;
+					case "tomorrow":
+						$requested_date = date('Y-m-d', strtotime('+1 day', time()));
+						break;
+					case "day-after":
+						$requested_date = date('Y-m-d', strtotime('+2 days', time()));
+						break;
+				}
+			}
+
+			$schedule_data = [
+				'service_id'=>$service_details['_id'],
+				'requested_date'=>$requested_date,
+				'time_interval'=>$time_interval,
+				'date'=>$requested_date,
+				'type'=>'workout_session',
+				'within_time'=>$within_time
+			];
 			$schedule = json_decode(json_encode($this->getScheduleByFinderService($schedule_data)->getData()));
+
+			if($schedule->status != 200){
+				return Response::json(array('status'=>400, 'error_message'=>'Booking not available'), $this->error_status);
+			}
 			
 			$service_details['single_slot'] = false;
 			
-			if(count($schedule->schedules) > 0 && count(head($schedule->schedules)->slots)>0){
+			if(isset($schedule->schedules) && count($schedule->schedules) > 0 && count(head($schedule->schedules)->slots)>0){
 				$service_details['next_session'] = "Next session at ".strtoupper(head($schedule->schedules)->slots[0]->start_time);
 				$service_details['slots'] = (head($schedule->schedules)->slots);
 				$service_details['total_sessions'] = count($service_details['slots'])." sessions";
@@ -1574,6 +1650,8 @@ class ServiceController extends \BaseController {
 			$service_details['workoutsession_active_weekdays']= null;
 			unset($service_details['trial_active_weekdays']);
 			unset($service_details['workoutsession_active_weekdays']);
+			$service_details['gym_start_time'] = $gym_start_time;
+			$service_details['gym_end_time'] = $gym_end_time;
 			// return $service_details;
 			// $service_details = array_except($service_details, array('gallery','videos','vendor_id','location_id','city_id','service','schedules','updated_at','created_at','traction','timings','trainers','offer_available','showOnFront','flags','remarks','trial_discount','rockbottom_price','threedays_trial','vip_trial','seo','batches','workout_tags','category', 'geometry', 'info', 'what_i_should_expect', 'what_i_should_carry', 'custom_location', 'name', 'workout_intensity', 'session_type', 'latlon_change', 'membership_end_date', 'membership_start_date', 'workout_results', 'vendor_name', 'location_name'));
 			
@@ -1586,9 +1664,12 @@ class ServiceController extends \BaseController {
 		$data['service'] = $service_details;
 
 		$data['bookmark'] = false;
-		$data['share_message_text'] = "share ".$service_details['title'];
-		$data['share_message_email'] = "share ".$service_details['title'];
-		$data['pending_payment'] = $this->utilities->hasPendingPayments();
+		$data['share_message_text'] = "Check out ".$service_details['title']." on Fitternity. https://www.fitternity.com/service/".$service_details['_id'];
+		$data['share_message_email'] = "Check out ".$service_details['title']." on Fitternity. https://www.fitternity.com/service/".$service_details['_id'];
+		
+		if($this->utilities->hasPendingPayments()){
+			$data['pending_payment'] = $this->utilities->hasPendingPayments();
+		}
 
 		return Response::json(array('status'=>200, 'data'=> $data));
 
@@ -1620,15 +1701,15 @@ class ServiceController extends \BaseController {
 	}
 
 	public function workoutServiceCategorys(){
-		
-		$servicecategories	 = 	Servicecategory::active()->where('parent_id', 0)->orderBy('name')->get(array('name','slug'));	
-		
-		$servicecategories = pluck($servicecategories, ['name', 'slug']);
 
-		array_unshift($servicecategories, ['name'=>'Select All', 'slug'=>""]);
-
+		$not_included_ids = [161, 120, 170, 163, 168, 180, 184];
+		
+		$servicecategories	 = 	Servicecategory::active()->where('parent_id', 0)->whereNotIn('_id', $not_included_ids)->orderBy('name')->get(array('_id','name','slug'));	
+		
 		$data  = [
 			'status'=>200,
+			'header'=>'Which activity do you want to try?',
+			'all_message'=> "I want to explore all options",
 			'category'=>$servicecategories,
 			'message'=>"",
 			'base_url'=>"http://b.fitn.in/iconsv1/"
@@ -1636,6 +1717,41 @@ class ServiceController extends \BaseController {
 
 		return $data;
 
+	}
+
+	public function timepreference(){
+		$data = Input::json()->all();
+		$pay_persession_request = [
+			"category"=>$data["category"],
+			"location"=>isset($data["location"]) ? $data["location"] : array(),
+			"keys"=>[
+			  "name",
+			  "id"
+			]
+		];
+		 $pay_per_session = payPerSession($pay_persession_request);
+		$timings = $pay_per_session["aggregations"]["time_range"];
+		$tomorrow = date('l', strtotime(' +1 day'));
+		$tomorrow_date = date('d-m-Y', strtotime(' +1 day'));
+		$day_after = date('l', strtotime(' +2 day'));
+		$day_after_date = date('d-m-Y', strtotime(' +1 day'));
+		$days = array_fetch($pay_per_session["aggregations"]["days"],"name");
+		foreach($timings as $key =>$timing){
+			$timings[$key]["index"] = 0;
+		}
+		$indexofTomorrow = array_search($tomorrow,$days);
+		$pay_per_session["aggregations"]["days"][$indexofTomorrow]["name"] = "Tomorrow";
+		$pay_per_session["aggregations"]["days"][$indexofTomorrow]["slug"] = "tomorrow";
+		$pay_per_session["aggregations"]["days"][$indexofTomorrow]["date"] = $tomorrow_date;
+		$pay_per_session["aggregations"]["days"][$indexofTomorrow]["index"] = 1;
+		$indexofday_after = array_search($day_after,$days);
+		$pay_per_session["aggregations"]["days"][$indexofday_after]["name"] = "Day after";
+		$pay_per_session["aggregations"]["days"][$indexofday_after]["slug"] = "day-after";
+		$pay_per_session["aggregations"]["days"][$indexofday_after]["date"] = $day_after_date;
+		$pay_per_session["aggregations"]["days"][$indexofday_after]["index"] = 2;
+		array_push($timings, $pay_per_session["aggregations"]["days"][$indexofTomorrow]);
+		array_push($timings, $pay_per_session["aggregations"]["days"][$indexofday_after]);
+		return $data = array("header"=> "When do you want to workout?", "categories" => $timings);
 	}
 
 

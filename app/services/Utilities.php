@@ -140,13 +140,16 @@ Class Utilities {
 
         $customer_id = (int)$request['customer_id'];
 
-        $jwt_token = Request::header('Authorization');
+        if($customer_id == ""){
 
-        Log::info('jwt_token : '.$jwt_token);
-            
-        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
-            $decoded = $this->customerTokenDecode($jwt_token);
-            $customer_id = $decoded->customer->_id;
+            $jwt_token = Request::header('Authorization');
+
+            Log::info('jwt_token : '.$jwt_token);
+                
+            if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+                $decoded = $this->customerTokenDecode($jwt_token);
+                $customer_id = $decoded->customer->_id;
+            }
         }
 
         $customer = \Customer::find($customer_id);
@@ -845,7 +848,7 @@ Class Utilities {
                         // ->where('service_id',(int)$order->service_id)
                         ->where('finder_id',(int)$order->finder_id)
                         ->where('customer_email',$order->customer_email)
-                        ->where('_id','<',(int)$order->_id)
+                        ->where('_id','<=',(int)$order->_id)
                         ->where('payment_mode','paymentgateway')
                         ->where('paymentLinkEmailCustomerTiggerCount','exists',false)
                         ->where('created_at', '>=', new \DateTime( date("d-m-Y 00:00:00", strtotime("-44 days"))))
@@ -856,15 +859,18 @@ Class Utilities {
 
             foreach ($allOrders as $orderData) {
 
-                $orderData->redundant_order = "1";
-                $orderData->update();
+                if($orderData['_id'] != $order['_id']){
 
-                $array = array('auto_followup_date','followup_status_count','followup_date');
+                    $orderData->redundant_order = "1";
+                    $orderData->update();
 
-                foreach ($array as $value){
+                    $array = array('auto_followup_date','followup_status_count','followup_date');
 
-                    if(isset($orderData[$value])){
-                        $orderData->unset($value);
+                    foreach ($array as $value){
+
+                        if(isset($orderData[$value])){
+                            $orderData->unset($value);
+                        }
                     }
                 }
 
@@ -964,8 +970,8 @@ Class Utilities {
 
 
     public function verifyOrder($data,$order){
-        if((isset($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin'])) || $order->pg_type == "PAYTM" || (isset($order['cod_otp_verified']) && $order['cod_otp_verified']) || (isset($order['pay_later']) && $order['pay_later'] && !(isset($order['session_payment']) && $order['session_payment']))){
-            if($order->pg_type == "PAYTM" && !(isset($data["order_success_flag"]))){
+        if((isset($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin'])) || $order->pg_type == "PAYTM" || $order->pg_type == "AMAZON" || (isset($order['cod_otp_verified']) && $order['cod_otp_verified']) || (isset($order['pay_later']) && $order['pay_later'] && !(isset($order['session_payment']) && $order['session_payment']))){
+            if(($order->pg_type == "PAYTM"|| $order->pg_type == "AMAZON") && !(isset($data["order_success_flag"]))){
                 $hashreverse = getpayTMhash($order);
                 if($data["verify_hash"] == $hashreverse['reverse_hash']){
                     $hash_verified = true;
@@ -1422,7 +1428,7 @@ Class Utilities {
         
         }
 
-        if($request && isset($request['code']) && in_array($request['code'], ["of001","of@2","of03!","o4f","of005","of@6","of07!","o8f","of009","of@10","of011!","o012f","of0013","of@14","of015!","o016f","of0017","of@18","of019!","o020f"])){
+        if($request && isset($request['code']) && in_array($request['code'], ["of001","of@2","of03!","o4f","of005","of@6","of07!","o8f","of009","of@10","of011!","o012f","of0013","of@14","of015!","o016f","of0017","of@18","of019!","o020f","opf001","ofp@2","ofp03!","o4fp","ofp005","ofp@6","ofp07!","o8fp","ofp009","ofp@10","ofp011!","o012fp","ofp0013","ofp@14","ofp015!","o016fp","ofp0017","ofp@18","ofp019!","o020fp"])){
             Log::info("increasing wallet limit for coupon");
             $wallet_limit = 100000;
         
@@ -1430,14 +1436,16 @@ Class Utilities {
 
         $customer_id = (int)$request['customer_id'];
 
-        $jwt_token = Request::header('Authorization');
+        if($customer_id == ""){
 
-        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+            $jwt_token = Request::header('Authorization');
 
-            $decoded = $this->customerTokenDecode($jwt_token);
-            $customer_id = (int)$decoded->customer->_id;
+            if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+
+                $decoded = $this->customerTokenDecode($jwt_token);
+                $customer_id = (int)$decoded->customer->_id;
+            }
         }
-
 
         $request['customer_id'] = $customer_id;
 
@@ -1457,6 +1465,7 @@ Class Utilities {
             // Check Duplicacy of transaction request........
             $duplicateRequest = WalletTransaction::where('order_id', (int) $request['order_id'])
                 ->where('type', $request['type'])
+                ->where('customer_id',$customer_id)
                 ->orderBy('_id','desc')
                 ->first();
 
@@ -1594,6 +1603,19 @@ Class Utilities {
 
             }
 
+            if(isset($request['finder_id']) && $request['finder_id'] != ""){
+
+                $finder_id = (int)$request['finder_id'];
+
+                $power_world_gym_vendor_ids = Config::get('app.power_world_gym_vendor_ids');
+
+                if(in_array($finder_id,$power_world_gym_vendor_ids)){
+
+                    $wallet_limit = 100000;
+                }
+                
+            }
+
             /*if(!isset($customer->current_wallet_balance) && $current_wallet_balance >= $wallet_limit){
                 return ['status' => 400,'message' => 'Wallet is overflowing Rs '.$wallet_limit];
             }*/
@@ -1695,6 +1717,21 @@ Class Utilities {
 
             if(isset($request['finder_id']) && $request['finder_id'] != ""){
                 $wallet->finder_id = (int)$request['finder_id'];
+            }
+
+            if(isset($request['valid_finder_id']) && $request['valid_finder_id'] != ""){
+
+                $wallet->valid_finder_id = $request['valid_finder_id'];
+            }
+
+            if(isset($request['service_id']) && $request['service_id'] != ""){
+
+                $wallet->service_id = $request['service_id'];
+            }
+
+            if(isset($request['valid_service_id']) && $request['valid_service_id'] != ""){
+
+                $wallet->valid_service_id = $request['valid_service_id'];
             }
 
             $wallet->save();
@@ -2031,11 +2068,32 @@ Class Utilities {
     }
 
 
-    public function getWalletBalance($customer_id){
+   public function getWalletBalance($customer_id,$data = false){
 
         $customer_id = (int) $customer_id;
 
-        $wallet_balance = Wallet::active()->where('customer_id',$customer_id)->where('balance','>',0)->sum('balance');
+        $finder_id = ($data && isset($data['finder_id']) && $data['finder_id'] != "") ? (int)$data['finder_id'] : "";
+        $order_type = ($data && isset($data['order_type']) && $data['order_type'] != "") ? (int)$data['order_type'] : "";
+
+        $query = Wallet::active()->where('customer_id',$customer_id)->where('balance','>',0);
+
+        if($finder_id && $finder_id != ""){
+
+            if(in_array($order_type,['membership','memberships'])){
+
+                $query->where(function($query) use($finder_id) {$query->orWhere('valid_finder_id','exists',false)->orWhere('valid_finder_id',(int)$finder_id);});
+
+            }else{
+
+                $query->where('valid_finder_id','exists',false);
+            }
+
+        }else{
+
+            $query->where('valid_finder_id','exists',false);
+        }
+
+        $wallet_balance = $query->sum('balance');
 
         return $wallet_balance;
     }
@@ -2242,13 +2300,18 @@ Class Utilities {
         }
 
     }
+
     public function getWalletQuery($request){
+
+        Log::info('---------------request-------------------',$request);
 
         $query = Wallet::active()->where('customer_id',(int)$request['customer_id'])->where('balance','>',0);
 
         if(isset($request['finder_id']) && $request['finder_id'] != ""){
 
-            $finder = \Finder::find((int)$request['finder_id']);
+            $finder_id = (int)$request['finder_id'];
+
+            $finder = \Finder::find($finder_id);
 
             $conditionData = [];
 
@@ -2302,6 +2365,19 @@ Class Utilities {
 
                 }
             }
+
+            if(isset($request['order_type']) && in_array($request['order_type'],['membership','memberships'])){
+
+                $query->where(function($query) use($finder_id) {$query->orWhere('valid_finder_id','exists',false)->orWhere('valid_finder_id',$finder_id);});
+
+            }else{
+
+                $query->where('valid_finder_id','exists',false);
+            }
+
+        }else{
+
+            $query->where('valid_finder_id','exists',false);
         }
 
         return $query;
@@ -2588,7 +2664,7 @@ Class Utilities {
 
     function generateRandomString($length = 5) {
         
-         $characters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
+         $characters = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
         
          $charactersLength = strlen($characters);
         
@@ -2757,7 +2833,13 @@ Class Utilities {
                 ->orderBy('_id','ASC')->first();
 
             if($agentPresentOrder){
+
                 $order->person_followingup = $agentPresentOrder->person_followingup;
+
+                if(isset($agentPresentOrder->source_of_membership) && $agentPresentOrder->source_of_membership != ""){
+                    $order->source_of_membership = $agentPresentOrder->source_of_membership;
+                }
+                
                 $order->auto_associate_agent_date = time();
                 $order->update();
             }
@@ -2783,6 +2865,7 @@ Class Utilities {
         $data['service_name'] = $order['service_name'];
         $data['type'] = $order['type'];
         $data['premium_session'] = true;
+        $data['payment_done'] = false;
 
         if(isset($order['start_date']) && $order['start_date'] != ""){
             $data['schedule_date'] = date('d-m-Y',strtotime($order['start_date']));
@@ -2829,10 +2912,15 @@ Class Utilities {
 			$customer_email                     =       $decoded->customer->email;
 			$customer_phone                     =       $decoded->customer->contact_no;
 
-            $pending_payment = \Order::where('type', 'workout-session')->where(function ($query) use($customer_email, $customer_phone) { $query->orWhere('customer_email', $customer_email)->orWhere('customer_phone', $customer_phone);})->where('status', '0')->where('booktrial_id', 'exists', true)->count();
+            $pending_payment = \Booktrial::where('type', 'workout-session')->where(function ($query) use($customer_email) { $query->orWhere('customer_email', $customer_email);})->where('payment_done', false)->first(['_id', 'amount']);
 
-			if($pending_payment > 0){
-				return true;
+			if(count($pending_payment) > 0){
+				return [
+                    'header'=>'Pending Payment',
+                    'text'=>'Please complete your pending payment',
+                    'trial_id'=>$pending_payment['_id'],
+                    'amount'=>$pending_payment['amount']
+                ];
 			}else{
 				return false;
 			}
@@ -2842,5 +2930,719 @@ Class Utilities {
 
     }
 
+    public function addToGroup($data){
 
+        Log::info("inside addToGroup");
+        Log::info($data);
+        
+
+        $validate = $validate = $this->validateGroupId($data);
+
+        Log::info("validate group data in addToGroup");
+
+        Log::info($validate);
+
+        if($validate['status']==400 && isset($validate['group_id'])){
+            
+            Log::info("invalid group id");
+            
+            return "";
+        
+        }
+
+        // if($validate['status']==400 && isset($validate['group_id'])){
+
+        //     $group = \Customergroup::where('group_id', strtoupper($data['group_id']))->first();
+
+        //     Log::info("group");
+            
+        //     Log::info($group);
+            
+        //     $this->sendGroupCommunication(['group'=>$group,'customer_id'=>$data['customer_id']]);
+            
+        //     return $validate['group_id'];
+        
+        // }
+
+        $group = \Customergroup::where('members.customer_id', $data['customer_id'])->first();
+        
+        if($group){
+            Log::info("returning old group id");
+            $this->sendGroupCommunication(['group'=>$group,'customer_id'=>$data['customer_id']]);
+            return $group['group_id'];
+        }
+        
+        if(isset($data['group_id']) && $data['group_id']){
+            
+            $group = \Customergroup::where('group_id', strtoupper($data['group_id']))->where('members.customer_id', '!=', $data['customer_id'])->first();
+
+            if($group){
+
+                $members = $group->members;
+                
+                array_push($members, ['customer_id'=>$data['customer_id'], 'order_id'=>$data['order_id']]);
+    
+                $group->members = $members;
+    
+                $group->status = "1";
+    
+                $group->save();
+    
+                Log::info("Added to group");
+    
+                Log::info($group);
+                
+                $this->sendGroupCommunication(['group'=>$group,'customer_id'=>$data['customer_id']]);
+
+            }
+        
+            return $data['group_id'];
+
+        }
+
+        
+        $group = new \Customergroup();
+            
+        $group->group_id = $this->getUniqueGroupId();
+
+        $group->members = [['customer_id'=>$data['customer_id'], 'order_id'=>$data['order_id']]];
+
+        $group->status = "0";
+        
+        $group->save();
+
+        Log::info("created a new group");
+
+        Log::info($group);
+
+        $this->sendGroupCommunication(['group'=>$group->toArray(),'customer_id'=>$data['customer_id']]);
+        
+        return $group->group_id;
+
+    }
+
+    public function getUniqueGroupId(){
+
+        $id = "GRP".$this->generateRandomString(4);
+
+        $group = \Customergroup::where('group_id', $id)->count();
+
+        if($group){
+        
+            return $this->getUniqueGroupId();
+       
+        }
+
+        return $id;
+    
+    }
+
+    public function isGroupId($code){
+        
+        // return is_numeric($code);
+
+        return strtoupper(substr($code, 0, 3)) == 'GRP';
+
+    }
+
+    public function validateGroupId($data){
+
+        // if(!isset($data['customer_id'])){
+        //     $jwt_token = Request::header('Authorization');
+            
+    
+        //     if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+    
+        //         $decoded = $this->customerTokenDecode($jwt_token);
+
+        //         Log::info($data);
+                
+        //         $data['customer_id'] = (int)$decoded->customer->_id;
+            
+        //     }else{
+                
+        //         return array('status'=>400, 'message'=>'You need to log in');
+            
+        //     }
+        // }
+
+        // $group = \Customergroup::where('members.customer_id', $data['customer_id'])->first();
+
+        // Log::info('Invalid group');
+
+        // Log::info($group);
+
+        // if($group){
+
+        //     return array('status'=>400, 'message'=>'You are already a member of a group', 'error_message'=>'You are already a member of a group', 'group_id'=>$group['group_id']);
+
+        // }
+
+        if(!isset($data['group_id']) || $data['group_id'] == null){
+            return array('status'=>400, 'message'=>'Empty group code', 'error_message'=>'Code empty');
+        }
+
+        $group = \Customergroup::where('group_id', strtoupper($data['group_id']))->first();
+
+        Log::info("Valid group");
+
+        Log::info($group);
+
+        if($group){
+
+            return array('status'=>200, 'message'=>'Group code applied successfully');
+            
+        }else{
+            
+            return array('status'=>400, 'message'=>'Invalid group code', 'error_message'=>'Invalid group code', 'group_id'=>$data['group_id']);
+        
+        }
+
+    }
+
+    public function sendGroupCommunication($data){
+        
+        $customer_id = $data['customer_id'];
+
+        $group = $data['group'];
+
+        $customersms = new CustomerSms();
+        Log::info("sendGroupCommunication");
+        Log::info($data);
+        
+        foreach($group['members'] as $member){
+
+            if($member['customer_id'] == $customer_id){
+             
+                $order = \Order::find($member['order_id']);
+
+                $new_member_name = $order->customer_name;
+
+                $customersms->addGroupNewMember(['customer_phone'=>$order->customer_phone,'customer_name'=>$order->customer_name,'vendor_name'=>$order->finder_name, 'group_id'=>$group['group_id']]);
+
+            }
+
+        }
+
+        foreach($group['members'] as $member){
+            
+            if($member['customer_id'] != $customer_id){
+                
+                $order = \Order::find($member['order_id'], ['customer_phone', 'customer_name']);
+                
+                $customersms->addGroupOldMembers(['customer_phone'=>$order->customer_phone,'customer_name'=>$order->customer_name, 'new_member_name'=>$new_member_name]);
+
+            }
+
+        }
+
+    }
+    public function checkFitternityCustomer($customer_email, $customer_phone){
+        
+        $beforeTime 	=	date('d-m-Y H:i:s', strtotime(Carbon::now()->addHours(-4)));
+        
+        $transaction = \Transaction::where('created_at', '<', new \DateTime($beforeTime))->where(function($query) use ($customer_email, $customer_phone){ return $query->orWhere('customer_phone', 'LIKE', '%'.substr($customer_phone, -10).'%')->orWhere('customer_email', $customer_email);})->first();
+
+        if($transaction){
+            
+            Log::info("returning true");
+        
+            return true;
+        
+        }
+        
+        Log::info("returning false");
+        return false;
+
+    }
+
+
+    public function checkFitternityCustomer1($customer_email, $customer_phone, $date){
+        
+        $beforeTime 	=	date('d-m-Y H:i:s', strtotime(Carbon::createFromFormat('Y-m-d H:i:s', $date)->addHours(-4)));
+
+        Log::info($beforeTime);
+        
+        $transaction = \Transaction::where('created_at', '<', new \DateTime($beforeTime))->where(function($query) use ($customer_email, $customer_phone){ return $query->orWhere('customer_phone', 'LIKE', '%'.substr($customer_phone, -10).'%')->orWhere('customer_email', $customer_email);})->first();
+
+        if($transaction){
+            
+            Log::info("returning true");
+        
+            return true;
+        
+        }
+        
+        Log::info("returning false");
+        return false;
+
+    }
+
+    public function fitCode($data){
+
+        $fit_code = false;
+
+        if(isset($data['vendor_code']) && $data['type'] != 'workout-session'){
+
+            $fit_code = true;
+
+            if(isset($data['post_trial_status']) && $data['post_trial_status'] != ""){
+                $fit_code = false;
+            }
+
+            if(!isset($data['post_trial_status_updated_by_fitcode']) && !isset($data['post_trial_status_updated_by_lostfitcode'])){
+
+                if(isset($data['schedule_date_time']) && $data['schedule_date_time'] != "" && time() <= strtotime('+48 hours', strtotime($data['schedule_date_time']))){
+
+                    $fit_code = true;
+                }
+            }
+
+            if(isset($data['is_tab_active']) && $data['is_tab_active']){
+                $fit_code = false;
+            }
+        }
+        
+        return $fit_code;
+
+    }
+
+    public function customerHome(){
+
+        $decoded = decode_customer_token();
+
+        $customer_id = $decoded->customer->_id;
+
+        $response = null;
+        $stage = '';
+        $booktrial = false;
+        $state = '';
+        $time_left = 0;
+        $card_message = "Congratulations on completing your trial";
+        
+        $booktrial = \Booktrial::where('customer_id',$customer_id)
+            ->whereIn('type',['booktrials','3daystrial'])
+            ->where('going_status_txt','!=','cancel')
+            ->where('booktrial_type','auto')
+            ->where(function($query){$query->orWhere('vendor_code','exists',true)->orWhere('is_tab_active','exists',true);})
+            ->where('schedule_date_time','>=',new \MongoDate(time()))
+            ->orderBy('schedule_date_time', 'desc')
+            ->first();
+
+        if($booktrial){
+
+            $stage = 'before_trial';
+            $state = 'booked_trial';
+            
+            $time_left = strtotime($booktrial->schedule_date_time) - time();
+        }
+
+
+        if($stage == ''){
+
+            $booktrial = false;
+
+            $booktrial = \Booktrial::where('customer_id',$customer_id)
+                ->whereIn('type',['booktrials','3daystrial'])
+                ->where('going_status_txt','!=','cancel')
+                ->where('booktrial_type','auto')
+                ->where(function($query){$query->orWhere('vendor_code','exists',true)->orWhere('is_tab_active','exists',true);})
+                ->where('schedule_date_time','<=',new \MongoDate(time()))
+                ->orderBy('schedule_date_time', 'desc')
+                ->first();
+
+            if($booktrial){
+
+                $order_count = \Order::active()
+                    ->where('customer_id',$customer_id)
+                    ->where('type','memberships')
+                    ->where('success_date','>=',new \MongoDate(strtotime($booktrial['schedule_date_time'])))
+                    ->count();
+
+                if($order_count > 0){
+
+                    return $response;
+                }
+
+                $stage = 'after_trial';
+
+                $state = 'trial_done';
+
+            }
+        }
+
+        /*if($stage == ''){
+
+            $booktrial = false;
+
+            $booktrial = \Booktrial::where('customer_id',$customer_id)
+                ->whereIn('type',['booktrials','3daystrial'])
+                ->where('going_status_txt','!=','cancel')
+                ->where('booktrial_type','auto')
+                ->where('schedule_date_time','>=',new \MongoDate(strtotime("+21 days")))
+                ->orderBy('schedule_date_time', 'desc')
+                ->first();
+
+            if($booktrial){
+
+                $stage = 'buy_membership';
+
+                $state = 'trial_attended';
+
+                $order_count = \Order::active()
+                    ->where('customer_id',$customer_id)
+                    ->where('type','memberships')
+                    ->count();
+
+                if($order_count > 0){
+                    $state = 'membership_purchased';
+                }
+            }
+        }*/
+
+        if($booktrial && $stage != ""){
+
+            $fitcash = $this->getFitcash($booktrial->toArray());
+
+            $category_calorie_burn = 300;
+
+            $service = \Service::find((int)$booktrial['service_id']);
+
+            if($service){
+
+                $sericecategorysCalorieArr = Config::get('app.calorie_burn_categorywise');
+
+                $service_category_id = (isset($service['servicecategory_id']) && $service['servicecategory_id'] != "") ? $service['servicecategory_id'] : 0;
+
+                if(isset($service['calorie_burn']) && $service['calorie_burn']['avg'] != 0){
+                    $category_calorie_burn = $service['calorie_burn']['avg'];
+                }else{
+                    if(isset($sericecategorysCalorieArr[$service_category_id])){
+                        $category_calorie_burn = $sericecategorysCalorieArr[$service_category_id];
+                    }
+                }
+
+            }
+
+            $is_tab_active = (isset($booktrial['is_tab_active']) && $booktrial['is_tab_active']) ? true : false;
+
+            if($is_tab_active){
+                $fitcash = 250;
+            }
+
+            if($stage == 'before_trial'){
+
+                $card_message = "Provide this & get your <b>FITCODE</b> from Gym/Studio to unlock your surprise discount.<br>Use this discount to buy your membership at lowest price";
+
+                if($is_tab_active){
+
+                    $card_message = "Punch this code on the tab available at Gym/Studio to unlock your surprise discount.<br>Use this discount to buy your membership at lowest price";
+                }
+            }
+
+            if($stage == 'after_trial'){
+
+                $card_message = "Yes? Enter your <b>FITCODE</b> to get a <b>Surprise Discount</b><br/>No? You can always reschedule";
+
+                if($is_tab_active){
+
+                    $card_message = "Let us know now & we'll give a suprise discount to buy your membership at lowest price";
+                }
+
+            }
+
+            if(isset($booktrial['post_trial_status']) && $booktrial['post_trial_status'] == 'attended'){
+
+                $card_message = "Congratulations on completing your trial";
+                
+                if(isset($booktrial['post_trial_status_updated_by_fitcode']) || isset($booktrial['post_trial_status_updated_by_kiosk'])){
+
+                    $card_message = "Congratulations <b>₹".$fitcash." FitCash</b> has been added in your wallet.Use it to get a discount on your Membership";
+                }
+                $state = 'trial_attended';
+            }
+
+            $response = [];
+            $response['stage'] = $stage;
+            $response['state'] = $state;
+            $response['fit_code_status'] = $this->fitCode($booktrial->toArray());
+            $response['booktrial_id'] = (int)$booktrial['_id'];
+            $response['finder_id'] = (int)$booktrial['finder_id'];
+            $response['finder_slug'] = $booktrial['finder_slug'];
+            $response['service_id'] = (int)$booktrial['service_id'];
+            $response['finder_name'] = ucwords($booktrial['finder_name']);
+            $response['service_name'] = ucwords($booktrial['service_name']);
+            $response['ratecard_url'] = Config::get('app.url').'/getmembershipratecardbyserviceid/'.$booktrial['service_id'];
+            $response['redirect_url'] = Config::get('app.website').'/servicebuy/'.$booktrial['service_id'];
+            $response['verify_fit_code_url'] = Config::get('app.url').'/verifyfitcode/'.$booktrial['_id'].'/';
+            $response['lost_fit_code_url'] = Config::get('app.url').'/lostfitcode/'.$booktrial['_id'];
+            $response['subscription_code'] = $booktrial['code'];
+            $response['fitcash'] = $fitcash;
+            $response['card_message'] = $card_message;
+            $response['what_to_carry'] = $booktrial['what_i_should_carry'];
+            $response['time_left'] = $time_left;
+            $response['lat'] = $booktrial['finder_lat'];
+            $response['lon'] = $booktrial['finder_lon'];
+            $response['calorie_burn'] = $category_calorie_burn;
+            $response['calorie_burn_text'] = "Get ready to burn ".$category_calorie_burn." Calories at ".ucwords($booktrial['finder_name']);
+            $response['is_tab_active'] = $is_tab_active;
+
+
+            $ratecard_count = 1;
+
+            $fitapi = New Fitapi();
+
+            $getRatecardCount = $fitapi->getServiceData($booktrial['service_id']);
+
+            if($getRatecardCount['status'] != 200){
+
+                $ratecard_count = 0;
+
+            }else{
+
+                if(!isset($getRatecardCount['ratecards'])){
+                    $ratecard_count = 0;
+                }
+
+                if(isset($getRatecardCount['ratecards']) && empty($getRatecardCount['ratecards'])){
+                    $ratecard_count = 0;
+                }
+            }
+
+           /* $ratecard_count = \Ratecard::where('service_id',(int)$booktrial['service_id'])
+                ->where('finder_id',(int)$booktrial['finder_id'])
+                ->whereIn('type',['membership','packages'])
+                ->where('direct_payment_enable','!=','0')
+                ->orWhere(function($query){$query->where('expiry_date','exists',true)->where('expiry_date','>=',new \MongoDate(time()));})
+                ->orWhere(function($query){$query->where('start_date','exists',true)->where('start_date','<=',new \MongoDate(time()));})
+                ->count();*/
+
+            if($ratecard_count == 0){
+                $response['redirect_url'] = Config::get('app.website').'/'.$booktrial['finder_slug'];
+            }
+            
+        }
+
+        return $response;
+
+    }
+
+    public function getFitcash($data){
+
+        $finder_id = (int)$data['finder_id'];
+
+        \Ratecard::$withoutAppends = true;
+
+        $ratecards = \Ratecard::where('finder_id',$finder_id)->whereIn('type',['membership','packages'])->get();
+
+        $amount = 0;
+        $days = 0;
+        $fitcash = 100;
+
+        if(!empty($ratecards)){
+
+            foreach ($ratecards as $ratecard) {
+
+                $amount += $this->getRatecardAmount($ratecard);
+
+                $days += $this->getDurationDay($ratecard);
+
+            }
+
+            $vendorCommisionData = [
+                'finder_id'=>$finder_id
+            ];
+
+            $commision = $this->getVendorCommision($vendorCommisionData);
+
+            $percentage = 0.05;
+
+            if($commision > 10 && $commision < 15){
+                $percentage = 0.03;
+            }
+
+            if($commision <= 10){
+                $percentage = 0.02;
+            }
+
+            $fitcash = floor((($amount / $days) * 30)*$percentage);
+        }
+
+        return $fitcash;
+
+    }
+
+    public function getRatecardAmount($ratecard){
+
+        if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
+            $price = $ratecard['special_price'];
+        }else{
+            $price = $ratecard['price'];
+        }
+
+        return $price;
+    }
+
+    public function getDurationDay($ratecard){
+
+        switch ($ratecard['validity_type']){
+            case 'days': 
+                $duration_day = (int)$ratecard['validity'];break;
+            case 'months': 
+                $duration_day = (int)($ratecard['validity'] * 30) ; break;
+            case 'year': 
+                $duration_day = (int)($ratecard['validity'] * 30 * 12); break;
+            default : $duration_day =  $ratecard['validity']; break;
+        }
+
+        return $duration_day;
+
+    }
+
+    public function getVendorCommision($data){
+
+        $finder_id = (int)$data['finder_id'];
+        $offer_id = (isset($data['offer_id']) && $data['offer_id'] != "") ? (int)$data['offer_id'] : false;
+
+        $vendorCommercial = \VendorCommercial::where('vendor_id',$finder_id)->orderBy('_id','desc')->first();
+
+        $commision = 15;
+
+        if($vendorCommercial){
+
+            if(isset($vendorCommercial['contract_end_date']) && $vendorCommercial['contract_end_date'] != "" && isset($vendorCommercial['commision']) && $vendorCommercial['commision'] != ""){
+
+                $contract_end_date = strtotime(date('Y-m-d 23:59:59',strtotime($vendorCommercial['contract_end_date'])));
+
+                if($contract_end_date > time()){
+                    $commision = (float) preg_replace("/[^0-9.]/","",$vendorCommercial['commision']);
+                }
+            }
+
+            if($offer_id && isset($vendorCommercial['campaign_end_date']) && $vendorCommercial['campaign_end_date'] != "" && isset($vendorCommercial['campaign_cos']) && $vendorCommercial['campaign_cos'] != ""){
+
+                $campaign_end_date = strtotime(date('Y-m-d 23:59:59',strtotime($vendorCommercial['campaign_end_date'])));
+
+                if($campaign_end_date > time()){
+                    $commision = (float) preg_replace("/[^0-9.]/","",$vendorCommercial['campaign_cos']);
+                }
+            }
+
+            if(isset($data['routed_order']) && $data['routed_order'] == "1" && isset($vendorCommercial['routing_cos']) && !empty($vendorCommercial['routing_cos'])){
+
+                if($data['payment_mode'] != "at the studio" && isset($vendorCommercial['routing_cos']['online']) && $vendorCommercial['routing_cos']['online'] != ""){
+                    $commision = $vendorCommercial['routing_cos']['online'];
+                }
+
+                if($data['payment_mode'] == "at the studio" && isset($vendorCommercial['routing_cos']['offline']) && $vendorCommercial['routing_cos']['offline'] != ""){
+                    $commision = $vendorCommercial['routing_cos']['offline'];
+                }
+            }
+            
+        }
+
+        Log::info('commision : '.$commision);
+        return $commision;
+
+    }
+
+    public function financeUpdate($order){
+
+        $order->cos_applicable = 'yes';
+
+        $order->gst_applicable = 'yes';
+
+        $order->cos_percentage = $this->getVendorCommision($order->toArray());
+
+        $order->cos_finder_amount = ceil(($order->amount_finder * $order->cos_percentage) / 100);
+
+        $order->gst_percentage = Config::get('app.gst_on_cos_percentage');
+
+        $order->amount_transferred_to_vendor = $order->amount_finder;
+
+        if($order->payment_mode == "at the studio"){
+            $order->amount_transferred_to_vendor = 0;
+        }
+
+        $order->amount_transferred_to_vendor -= $order->cos_finder_amount;
+
+        $order->gst_finder_amount =  floor(($order->gst_percentage * $order->cos_finder_amount) / 100);
+
+        $order->amount_transferred_to_vendor -= $order->gst_finder_amount;
+
+        $order->update();
+    }
+
+    public function getWorkoutSessionLevel($customer_id){
+
+        $trials_attended = \Booktrial::where('customer_id', $customer_id)->where('post_trial_status', 'attended')->count();
+        
+        $streak_data = Config::get('app.streak_data');
+        $maxed_out = false;
+        $current_level = $this->getLevelByTrials($trials_attended);
+        
+        if($current_level['level']  == count($streak_data)){
+        
+            $next_level = [];
+            $maxed_out = true;
+        
+        }else{
+        
+            $next_level =  $streak_data[$current_level['level']];
+        
+        }
+        
+        return [
+            'current_level'=>$current_level,
+            'next_level'=>$next_level,
+            'trials_attended'=>$trials_attended,
+            'maxed_out'=>$maxed_out,
+            'next_session'=>$this->getLevelByTrials($trials_attended+1)
+        ];
+
+    }
+
+    public function getLevelByTrials($trials_attended){
+
+        $streak_data = Config::get('app.streak_data');
+        $current_level = [];
+        
+        foreach($streak_data as $key => $value){
+            if($trials_attended < $value['number']){
+                $current_level = $value;
+                break;
+            }
+        }
+
+        if(empty($current_level)){
+            $current_level  = $streak_data[count($streak_data) - 1];
+        }
+        return $current_level;
+
+    }
+
+    public function getWorkoutSessionFitcash($booktrialData){
+        Log::info($this->getWorkoutSessionLevel($booktrialData['customer_id']));
+        $fitcash =  $this->getWorkoutSessionLevel($booktrialData['customer_id'])['current_level']['cashback'];
+        return $fitcash;
+        
+    }
+
+    public function getStreakImages($current_level){
+        $streak = [];
+        $streak_data = Config::get('app.streak_data');
+        $unlock_url = Config::get('app.paypersession_level_icon_base_url');
+        $lock_url = Config::get('app.paypersession_lock_icon');
+        
+        foreach($streak_data as $level){
+            if($current_level >= $level['level']){
+                array_push($streak, ['header'=> 'Level '.$level['level'], 'url'=>$unlock_url.$level['level'].'.png', 'text'=>$level['cashback'].'%', 'unlocked'=>true]);
+            }else{
+                array_push($streak, ['header'=> 'Level '.$level['level'], 'url'=>$lock_url, 'text'=>$level['cashback'].'%', 'unlocked'=>false]);
+            }
+        }
+        return $streak;
+    }
+    
 }
+

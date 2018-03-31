@@ -84,20 +84,27 @@ class CommunicationsController extends \BaseController {
 			
 			$data = $this->prepareData($data, $label);
 			$class = strtolower($sender_class);
-			$response = $this->$class->$label($data, 0);
 
 			$communication_keys = $transaction_data->communication_keys;
 			$communication_keys["$sender_class-$label"] = "";
 			$transaction_data->communication_keys = $communication_keys;
 			$transaction_data->update();
 
-			/*if($class == "CustomerSms" && $label == "bookTrialReminderAfter2Hour" && $transaction_type == 'trial' && !isset($transaction_data['order_id'])){
+			if(isset($transaction_data['customer_id'])){
 
-				$url = Config::get('app.url')."/addwallet?customer_id=".$transaction_data["customer_id"]."&booktrial_id=".$transaction_data['_id'];
+				$getWalletBalance = $this->utilities->getWalletBalance($transaction_data['customer_id']);
 
-				$this->utilities->hitUrlAfterDelay($url."&time=Nplus2");
+				if($getWalletBalance < 200 && $class == "customersms" && $label == "bookTrialReminderAfter2Hour" && $transaction_type == 'trial' && !isset($transaction_data['order_id'])){
 
-			}*/
+					$url = Config::get('app.url')."/addwallet?customer_id=".$transaction_data["customer_id"]."&booktrial_id=".$transaction_data['_id'];
+
+					$this->utilities->hitUrlAfterDelay($url."&time=Nplus2");
+
+					return "no sms sent";
+				}
+			}
+
+			$response = $this->$class->$label($data, 0);
 
 			return $response;
 			
@@ -173,7 +180,15 @@ class CommunicationsController extends \BaseController {
 
 				case "rescheduleTrial":
 					$data['customer_profile_url'] = Config::get('app.website')."/profile/".$data['customer_email'];
-
+					break;
+					
+				case "bookTrialReminderBefore6Hour":
+					if(!isset($data['vendor_code'])){
+						$booktrial = Booktrial::find($data['_id']);
+						$booktrial->vendor_code = random_numbers(5);
+						$booktrial->update();
+						$data['vendor_code'] = $booktrial->vendor_code;
+					}		
 
 		}
 

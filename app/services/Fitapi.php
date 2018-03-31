@@ -51,6 +51,59 @@ Class Fitapi {
         }
 
     }
-  
 
+    public function getServiceData ($service_id){
+
+        $url = 'getmembershipratecardbyserviceid/'.$service_id;
+
+        try {
+            $response = $this->client->get($url)->getBody()->getContents();
+            $return  = ['status'=>200,
+                        'data'=>$response
+            ];
+            return $return;
+        }catch (RequestException $e) {
+            $response = $e->getResponse();
+            $error = [  'status'=>$response->getStatusCode(),
+                        'message'=>$response->getReasonPhrase()
+            ];
+
+            return $error;
+        }catch (Exception $e) {
+            $error = [  'status'=>400,
+                        'message'=>'Error'
+            ];
+
+            return $error;
+        }
+
+    }
+  
+    public function getCaptureData ($json, $headers=[], $query_params=[]){
+
+        try {
+            $response = json_decode($this->client->post('transaction/capture?'.http_build_query($query_params),['json'=>$json, 'headers'=>$headers])->getBody()->getContents());
+            $return  = ['status'=>200,
+                        'data'=>$response
+            ];
+            return $response;
+        }catch (RequestException $e) {
+
+            $response = $e->getResponse();
+
+            $error = [  'status'=>$response->getStatusCode(),
+                        'reason'=>$response->getReasonPhrase()
+            ];
+
+            return $error;
+        }catch (Exception $e) {
+            $error = [  'status'=>400,
+                        'reason'=>'Error'
+            ];
+
+            return $error;
+        }
+
+    }
+        
 }                                       

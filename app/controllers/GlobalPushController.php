@@ -10,8 +10,8 @@ class GlobalPushController extends \BaseController
   protected $elasticsearch_url = "";
   protected $elasticsearch_default_url = "";
   protected $elasticsearch_host = "";
-  protected $citylist = array(1,2,3,4,8,9);
-  protected $citynames = array('1' => 'mumbai','2' => 'pune', '3' => 'bangalore', '4' => 'delhi', '8' => 'gurgaon', '9' => 'noida');
+  protected $citylist = array(1,2,3,4,5,6,8,9);
+  protected $citynames = array('1' => 'mumbai','2' => 'pune', '3' => 'bangalore', '4' => 'delhi','5' => 'hyderabad','6' => 'ahmedabad', '8' => 'gurgaon', '9' => 'noida');
   protected $primaryfiltersrank = array('free trial' => '10', 'group classes' => '8', 'parking' => '6', 'sunday open' => '4', 'locker and shower facility' => '2');
 
   protected $amenitiesrank = array('gyms' => array('24 hour facility' => '6', 'free wifi' => '5', 'juice bar' => '4', 'steam and sauna' => '3', 'stretching area' => '2', 'swimming pool' => '1'), 'yoga' => array('power yoga' => '9', 'iyengar yoga' => '8', 'ashtanga yoga' => '7', 'hatha yoga' => '6', 'aerial yoga' => '5', 'vinyassa yoga' => '4','hot yoga' => '3', 'post natal yoga' => '2', 'prenatal yoga' => '1'), 'zumba' => array('zumba classes' => '2', 'aqua zumba classes' => '1'), 'cross functional training' => array('les mills' => '7', 'calisthenics' => '6', 'cross training' => '5', 'trx training' => '4', 'combine training' => '3', 'group x training' => '2', 'trampoline workout' => '1'), 'crossfit' => array('open box' => '7', 'tires & ropes' => '6', 'olympic lifting' => '5', 'group training' => '4', 'personal training' => '3', 'gymnastic routines' => '2', 'kettle bell training' => '1'), 'pilates' => array('mat pilates' => '2', 'reformer pilates or stott pilates' => '1'), 'mma & kickboxing' => array('mixed martial arts' => '12', 'karate' => '11', 'kick boxing' => '10', 'judo' => '9', 'jujitsu' => '8', 'karv maga' => '7', 'kung fu' => '6', 'muay thai' => '5', 'taekwondo' => '4', 'tai chi' => '3', 'capoeira' => '2', 'kalaripayattu' => '1'), 'dance' => array('bollywood' =>'16', 'hip hop' => '15', 'salsa' => '14', 'free style' => '13', 'contemporary' => '12', 'jazz' => '11', 'jive' => '10', 'belly dancing' => '9', 'cha cha cha' => '8', 'kathak' => '7', 'b boying' => '6', 'bharatanatyam' => '5', 'ballroom' => '4', 'locking and popping' => '3', 'ballet' => '2', 'waltz' => '1'));
@@ -503,7 +503,14 @@ class GlobalPushController extends \BaseController
     });
 
     $brands = $brands['result'];
-    $brandsData = Brand::lists('name','_id');
+    // return $cityData = Brand::lists('name','_id');
+    $brandsD = Brand::select(["name","_id","slug"])->get();
+    // $brandsData = new stdClass();
+    foreach($brandsD as $item){
+      $brandsData[$item["id"]] =  array("name" => $item['name'], "slug"=>$item['slug']);
+    }
+    // return $brandsData;
+
     $cityData = City::lists('name','_id');
 
     // Get similar outlets in city.........
@@ -511,8 +518,9 @@ class GlobalPushController extends \BaseController
       if(isset($brand['_id']['brand_id']) && $brand['_id']['brand_id'] != '' && $brand['count'] > 1){
         $data = [
             'brand_id'    =>$brand['_id']['brand_id'],
-            'brand_name'  =>$brandsData[$brand['_id']['brand_id']],
+            'brand_name'  =>$brandsData[$brand['_id']['brand_id']]["name"],
             'city_id'     =>$brand['_id']['city_id'],
+            'slug'        =>$brandsData[$brand['_id']['brand_id']]["slug"],
             'city_name'   =>$cityData[$brand['_id']['city_id']],
             'outlets'     =>$brand['count']
         ];
@@ -1415,7 +1423,7 @@ class GlobalPushController extends \BaseController
 
   public function pushofferingcity($index_name){
 
-    $citylist = array(1,2,3,4,8,9);
+    $citylist = array(1,2,3,4,5,8,9);
 
     foreach ($citylist as $city) {
       $cityname = $this->citynames[strval($city)];

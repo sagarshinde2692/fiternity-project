@@ -798,7 +798,8 @@ class MigrationReverseController extends \BaseController {
                 'offer_texts'                           =>  isset($Finder->offer_texts) ? $Finder->offer_texts : array(),
                 'inoperational_dates'                   =>  isset($Finder->inoperational_dates) ? $Finder->inoperational_dates : array(),
                 'servicesfilter' 			            =>  (isset($Finder->filter) && isset($Finder->filter['servicesfilter'])) ? $Finder->filter['servicesfilter'] : [],
-                'trainer_contacts'                      =>  $trainer_contacts
+                'trainer_contacts'                      =>  $trainer_contacts,
+                'callout'                               =>  isset($Finder->callout) ? $Finder->callout : "",
             ];
 
     
@@ -1046,6 +1047,19 @@ class MigrationReverseController extends \BaseController {
             // $insertData['showOnFront']   =   isset($data['showOnFront']) ? $data['showOnFront'] : true;
             $insertData['custom_location']   =   isset($data['custom_location']) ? $data['custom_location'] : "";
             
+            if(isset($data['flags'])){
+                $insertData['flags'] = $data['flags'];
+            }
+
+            $insertData['membership_start_date'] = null;
+            if(isset($data['membership_start_date'])){
+                $insertData['membership_start_date'] = $data['membership_start_date'];
+            }
+
+            $insertData['membership_end_date'] = null;
+            if(isset($data['membership_end_date'])){
+                $insertData['membership_end_date'] = $data['membership_end_date'];
+            }
 
 //            return $insertData;
 
@@ -1116,6 +1130,10 @@ class MigrationReverseController extends \BaseController {
             
             if(isset($data['expiry_date'])){
                 $insertData['expiry_date'] = $data['expiry_date'];
+            }
+            
+            if(isset($data['start_date'])){
+                $insertData['start_date'] = $data['start_date'];
             }
 
             if(isset($data['weight']) && $data['weight'] != ""){
@@ -1190,6 +1208,8 @@ class MigrationReverseController extends \BaseController {
             if($ratecard){
 
                 $delete = Ratecard::destroy(intval($id));
+
+                $hideOffers = Offer::where('ratecard_id', intval($id))->update(['hidden'=>true]);                
 
                 $finder = Finder::on($this->fitadmin)->find(intval($ratecard->finder_id));
                 $this->cacheapi->flushTagKey('finder_detail',$finder->slug);
