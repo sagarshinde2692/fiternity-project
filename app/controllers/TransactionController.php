@@ -87,7 +87,7 @@ class TransactionController extends \BaseController {
         //     'App-Version'=>$this->app_version,
         //     'Device-type'=>$this->device_type,
         // ];
-        
+
         foreach ($data as $key => $value) {
 
             if(is_string($value)){
@@ -192,7 +192,7 @@ class TransactionController extends \BaseController {
         if(isset($data['manual_order']) && $data['manual_order']){
 
             $manual_order_rules = [
-                ' = Service::find(_id'=>'required',
+                'service_category_id'=>'required',
                 'validity'=>'required',
                 'validity_type'=>'required',
                 'amount'=>'required',
@@ -477,9 +477,15 @@ class TransactionController extends \BaseController {
             
         }
 
+        if ($data['type'] == 'workout-session'){
+            
+            $data['instant_payment_discount'] = 100;
+
+        }
+
         $data['amount_final'] = $data["amount_finder"];
 
-        if(!$updating_part_payment && !isset($data['myreward_id'])) {
+        if(!$updating_part_payment && !isset($data['myreward_id']) && (!(isset($data['pay_later']) && $data['pay_later']) || !(isset($data['wallet']) && $data['wallet']))) {
 
             $cashbackRewardWallet =$this->getCashbackRewardWallet($data,$order);
             Log::info("cashbackRewardWallet",$cashbackRewardWallet);
@@ -1925,14 +1931,12 @@ class TransactionController extends \BaseController {
 
             $data['convinience_fee'] = $convinience_fee;
         }
-        $data['instant_payment_discount'] = 100;
+
+        
 
         if(isset($_GET['device_type']) && isset($_GET['app_version']) && in_array($_GET['device_type'], ['android', 'ios']) && $_GET['app_version'] > '4.4.3'){
-            if($data['type'] == 'workout-session' && !(isset($data['pay_later']) && $data['pay_later'])){
+            if($data['type'] == 'workout-session' && !(isset($data['pay_later']) && $data['pay_later']) && !(isset($data['session_payment']) && $data['session_payment'])){
                 Log::info("inside instant discount");
-                // $instant_payment_discount = 100;
-    
-                // $data['instant_payment_discount'] = $instant_payment_discount;
                 
                 $data['amount'] = $data['amount_customer'] = $data['amount_customer'] - $data['instant_payment_discount'];
     
@@ -4097,9 +4101,10 @@ class TransactionController extends \BaseController {
                 $you_save += $data['app_discount_amount'];
                 
             }
+            
             if(isset($_GET['device_type']) && isset($_GET['app_version']) && in_array($_GET['device_type'], ['android', 'ios']) && $_GET['app_version'] > '4.4.3'){
 
-                if(isset($data['type']) && $data['type'] == 'workout-session' && $payment_mode_type != 'pay_later'){
+                if(isset($data['type']) && $data['type'] == 'workout-session' && $payment_mode_type != 'pay_later' && !(isset($data['session_payment']) && $data['session_payment'])){
                     
                     $amount_summary[] = array(
                         'field' => 'Instant Pay discount',
@@ -4108,7 +4113,7 @@ class TransactionController extends \BaseController {
     
                     $you_save += $data['instant_payment_discount'];
                     
-                    if(isset($data['pay_later']) && $data['pay_later']){
+                    if(isset($data['pay_later']) && $data['pay_later'] && !(isset($data['session_payment']) && $data['session_payment'])){
                         
                         $amount_payable['value'] = "Rs. ".($data['amount_final'] - $data['instant_payment_discount']);
     
@@ -5575,7 +5580,7 @@ class TransactionController extends \BaseController {
 
         $data = [];
         
-        $fields = ["customer_name","customer_email","customer_phone","gender","finder_id","finder_name","premium_session","service_name","service_id","service_duration","schedule_date","schedule_slot","amount","city_id","type","note_to_trainer","going_together","ratecard_id","customer_identity","customer_source","customer_location","env"];
+        $fields = ["customer_name","customer_email","customer_phone","gender","finder_id","finder_name","premium_session","service_name","service_id","service_duration","schedule_date","schedule_slot","amount","city_id","type","note_to_trainer","going_together","customer_identity","customer_source","customer_location","env"];
 
         foreach($fields as $field){
             if(isset($order[$field])){
@@ -5585,8 +5590,8 @@ class TransactionController extends \BaseController {
         }
 
         $data['session_payment'] = true;
+        $data['manual_order'] = true;
 
-        Log::info($_GET);
 
         $query_params = [
             'app_version'=>$this->app_version,
@@ -5599,9 +5604,12 @@ class TransactionController extends \BaseController {
             'Authorization'=>Request::header('Authorization')
         ];
 
-        // return http_build_query($query_params);
+        $reponse = $this->fitapi->getCaptureData($data, $headers, $query_params);
 
-        return $this->fitapi->getCaptureData($data, $headers, $query_params);
+        if($reponse['status']!=200){
+            return Response::json(['status'=>500, 'message'=>'Please try again later'],200);
+        }
+        return Response::json($reponse['data'],200);
 
     } 
     

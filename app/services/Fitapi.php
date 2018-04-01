@@ -84,9 +84,10 @@ Class Fitapi {
         try {
             $response = json_decode($this->client->post('transaction/capture?'.http_build_query($query_params),['json'=>$json, 'headers'=>$headers])->getBody()->getContents());
             $return  = ['status'=>200,
-                        'data'=>$response
-            ];
-            return $response;
+            'data'=>$response
+        ];
+            \Log::info($return);
+            return $return;
         }catch (RequestException $e) {
 
             $response = $e->getResponse();
@@ -94,9 +95,11 @@ Class Fitapi {
             $error = [  'status'=>$response->getStatusCode(),
                         'reason'=>$response->getReasonPhrase()
             ];
-
+            \Log::info($e);
             return $error;
         }catch (Exception $e) {
+            \Log::info($e);
+            
             $error = [  'status'=>400,
                         'reason'=>'Error'
             ];
