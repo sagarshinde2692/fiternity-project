@@ -3142,30 +3142,33 @@ class CustomerController extends \BaseController {
 						}
 						
 						if(in_array($this->device_type, ['android', 'ios']) && $this->app_version > '4.4.3'){
-
-							if(strtotime($data['schedule_date_time']) > time()){
-
-								$data['body1'] = [
-									'line1'=>'ATTEND & EARN!',
-									'line2'=>'Attend this session, and get '.$workout_session_level_data['next_session']['cashback'].'% CashBack'
+							
+							if(strtotime($data['schedule_date_time']) > time() && $data['type'] == 'Workout-session'){
+								Log::info("inside unlock");
+								$data['unlock'] = [
+									'header'=>'Unlock Level '.$workout_session_level_data['next_session']['level'].'!',
+									'sub_header_2'=>'Attend this session, and get '.$workout_session_level_data['next_session']['cashback'].'% CashBack upto '.$workout_session_level_data['next_session']['number'].' sessions'
 								];
 							}
 
 							$data['current_level'] = $workout_session_level_data['current_level']['level'];
 
 							$data['streak'] = [
-								'header'=>'ATTEND AND EARN',
+								'header'=>'ATTEND MORE & UNLOCK',
 								'data'=>$this->utilities->getStreakImages($data['current_level'])
 							];
-							
 
 							$data['subscription_code']  = $data['code'];
 
 							$data['subscription_text']  = "Show this subscription code at ".ucwords($data['finder_name'])." & get FitCode to activate your session<br><br>Person of contact<br>".ucwords($data['finder_poc_for_customer_name'])." ".$data['finder_poc_for_customer_no'];
 							
 							$data['title']  = ucwords($data['service_name'])." at ".ucwords($data['finder_name']);
+							
+							$data['trial_id'] = $data['_id'];
+							
+							$data = array_only($data, ['title', 'schedule_date_time', 'subscription_code', 'subscription_text', 'body1', 'streak', 'payment_done', 'order_id', 'trial_id', 'unlock']);
 
-							$data = array_only($data, ['title', 'schedule_date_time', 'subscription_code', 'subscription_text', 'body1', 'streak', 'payment_done', 'order_id']);
+						
 							
 						}
 						
