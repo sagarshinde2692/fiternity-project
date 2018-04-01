@@ -5580,7 +5580,7 @@ class TransactionController extends \BaseController {
 
         $data = [];
         
-        $fields = ["customer_name","customer_email","customer_phone","gender","finder_id","finder_name","premium_session","service_name","service_id","service_duration","schedule_date","schedule_slot","amount","city_id","type","note_to_trainer","going_together","customer_identity","customer_source","customer_location","env"];
+        $fields = ["customer_name","customer_email","customer_phone","gender","finder_id","finder_name","premium_session","service_name","service_id","service_duration","schedule_date","schedule_slot","amount","city_id","type","note_to_trainer","going_together","customer_identity","customer_source","customer_location","env", "ratecard_id"];
 
         foreach($fields as $field){
             if(isset($order[$field])){
@@ -5590,7 +5590,7 @@ class TransactionController extends \BaseController {
         }
 
         $data['session_payment'] = true;
-        $data['manual_order'] = true;
+        // $data['manual_order'] = true;
 
 
         $query_params = [
