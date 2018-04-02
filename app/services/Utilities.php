@@ -3221,6 +3221,8 @@ Class Utilities {
 
         if($booktrial && $stage != ""){
 
+            $fit_code_status = $this->fitCode($booktrial->toArray());
+
             $fitcash = $this->getFitcash($booktrial->toArray());
 
             $category_calorie_burn = 300;
@@ -3272,19 +3274,23 @@ Class Utilities {
 
             if(isset($booktrial['post_trial_status']) && $booktrial['post_trial_status'] == 'attended'){
 
-                $card_message = "Congratulations on completing your trial";
-                
-                if(isset($booktrial['post_trial_status_updated_by_fitcode']) || isset($booktrial['post_trial_status_updated_by_kiosk'])){
+                if(!$fit_code_status){
 
-                    $card_message = "Congratulations <b>₹".$fitcash." FitCash</b> has been added in your wallet.Use it to get a discount on your Membership";
+                    $card_message = "Congratulations on completing your trial";
+                    
+                    if(isset($booktrial['post_trial_status_updated_by_fitcode']) || isset($booktrial['post_trial_status_updated_by_kiosk'])){
+
+                        $card_message = "Congratulations <b>₹".$fitcash." FitCash</b> has been added in your wallet.Use it to get a discount on your Membership";
+                    }
+
+                    $state = 'trial_attended';
                 }
-                $state = 'trial_attended';
             }
 
             $response = [];
             $response['stage'] = $stage;
             $response['state'] = $state;
-            $response['fit_code_status'] = $this->fitCode($booktrial->toArray());
+            $response['fit_code_status'] = $fit_code_status;
             $response['booktrial_id'] = (int)$booktrial['_id'];
             $response['finder_id'] = (int)$booktrial['finder_id'];
             $response['finder_slug'] = $booktrial['finder_slug'];
