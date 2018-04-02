@@ -3208,8 +3208,10 @@ class CustomerController extends \BaseController {
 
 								
 							}
+
+							$data['current_time'] = date('Y-m-d H:i:s', time());
 							
-							$data = array_only($data, ['title', 'schedule_date_time', 'subscription_code', 'subscription_text', 'body1', 'streak', 'payment_done', 'order_id', 'trial_id', 'unlock', 'image', 'block_screen','activation_url']);
+							$data = array_only($data, ['title', 'schedule_date_time', 'subscription_code', 'subscription_text', 'body1', 'streak', 'payment_done', 'order_id', 'trial_id', 'unlock', 'image', 'block_screen','activation_url', 'current_time']);
 
 						
 							
@@ -3224,7 +3226,7 @@ class CustomerController extends \BaseController {
 
 							if(isset($x['block_screen'])){
 
-								if( $x['block_screen']['type'] == 'activate_session'){
+								if( (isset($x['block_screen']) && $x['block_screen']['type'] == 'activate_session')){
 									array_push($activate, $x);
 								}else{
 									array_push($let_us_know, $x);
@@ -3234,6 +3236,7 @@ class CustomerController extends \BaseController {
 								
 							}
 						}
+
 						$upcoming = array_merge($activate, $let_us_know, $no_block);
 					}
 
