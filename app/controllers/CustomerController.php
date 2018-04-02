@@ -3221,7 +3221,7 @@ class CustomerController extends \BaseController {
 									array_push($let_us_know, $x);
 								}
 							}else{
-								array_push($no_, $x);
+								array_push($no_block, $x);
 								
 							}
 						}
