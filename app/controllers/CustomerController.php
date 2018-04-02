@@ -6458,7 +6458,7 @@ class CustomerController extends \BaseController {
 			case 'wn+3':
 				$response = array_only($response, ['transaction_type']);
 				$response['header'] = "LET US KNOW";
-				$response['sub_header'] = "Did you attend your ".$data['service_name']." at ".$data['finder_name']." on ".date('jS M \a\t g:i a', strtotime($data['schedule_date_time']))."? <br><br>Let us know and earn Cashback!";
+				$response['sub_header_2'] = "Did you attend your ".$data['service_name']." at ".$data['finder_name']." on ".date('jS M \a\t g:i a', strtotime($data['schedule_date_time']))."? \n\nLet us know and earn Cashback!";
 				$response['subscription_code'] = $data['code'];
 				$response['button_text'] = [
 					'attended'=>['text'=>'ATTENDED','url'=>Config::get('app.url')."/sessionstatuscapture/lost/".$data['_id']],
