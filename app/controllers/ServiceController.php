@@ -1751,7 +1751,11 @@ class ServiceController extends \BaseController {
 		$pay_per_session["aggregations"]["days"][$indexofday_after]["index"] = 2;
 		array_push($timings, $pay_per_session["aggregations"]["days"][$indexofTomorrow]);
 		array_push($timings, $pay_per_session["aggregations"]["days"][$indexofday_after]);
-		return $data = array("header"=> "When do you want to workout?", "categories" => $timings);
+		$session_count = 0;
+		foreach($timings as $timing){
+			$session_count += $timing["count"];
+		}
+		return $data = array("header"=> "When do you want to workout?", "categories" => $timings, "session_count"=> $session_count);
 	}
 
 
