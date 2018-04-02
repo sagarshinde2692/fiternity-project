@@ -3147,7 +3147,8 @@ class CustomerController extends \BaseController {
 								Log::info("inside unlock");
 								$data['unlock'] = [
 									'header'=>'Unlock Level '.$workout_session_level_data['next_session']['level'].'!',
-									'sub_header_2'=>'Attend this session, and get '.$workout_session_level_data['next_session']['cashback'].'% CashBack upto '.$workout_session_level_data['next_session']['number'].' sessions'
+									'sub_header_2'=>'Attend this session, and get '.$workout_session_level_data['next_session']['cashback'].'% CashBack upto '.$workout_session_level_data['next_session']['number'].' sessions',
+									'image'=>'https://b.fitn.in/paypersession/unlock-icon.png'
 								];
 							}
 
@@ -3160,13 +3161,15 @@ class CustomerController extends \BaseController {
 
 							$data['subscription_code']  = $data['code'];
 
-							$data['subscription_text']  = "Show this subscription code at ".ucwords($data['finder_name'])." & get FitCode to activate your session<br><br>Person of contact<br>".ucwords($data['finder_poc_for_customer_name'])." ".$data['finder_poc_for_customer_no'];
+							$data['subscription_text']  = "Show this subscription code at ".ucwords($data['finder_name'])." & get FitCode to activate your session\nPerson of contact\n".ucwords($data['finder_poc_for_customer_name'])." ".$data['finder_poc_for_customer_no'];
+
+							$data['image'] = 'https://b.fitn.in/paypersession/subscription-code.png';
 							
 							$data['title']  = ucwords($data['service_name'])." at ".ucwords($data['finder_name']);
 							
 							$data['trial_id'] = $data['_id'];
 							
-							$data = array_only($data, ['title', 'schedule_date_time', 'subscription_code', 'subscription_text', 'body1', 'streak', 'payment_done', 'order_id', 'trial_id', 'unlock']);
+							$data = array_only($data, ['title', 'schedule_date_time', 'subscription_code', 'subscription_text', 'body1', 'streak', 'payment_done', 'order_id', 'trial_id', 'unlock', 'image']);
 
 						
 							
