@@ -1654,6 +1654,8 @@ class SchedulebooktrialsController extends \BaseController {
 
             $this->utilities->addAmountToReferrer($order);  
 
+            $this->utilities->saavn($order);
+
             $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
             return Response::json($resp);
         }

@@ -1148,3 +1148,5 @@ Route::get('cityWise','DebugController@cityWise');
 Route::get('brandlist','BrandsController@brandlist');
 
 Route::get('getServiceData', 'TransactionController@getServiceData');
+
+Route::get('bulkInsertSaavn','DebugController@bulkInsertSaavn');
