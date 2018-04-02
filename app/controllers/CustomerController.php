@@ -3098,7 +3098,7 @@ class CustomerController extends \BaseController {
 
 				if($this->app_version > '4.4.3'){
 					Log::info("4.4.3");
-					$trials = Booktrial::where('customer_email', '=', $customeremail)->where('going_status_txt','!=','cancel')->where('booktrial_type','auto')->where(function($query){return $query->where('schedule_date_time','>=',new DateTime())->orWhere('payment_done', false)->orWhere(function($query){	return 	$query->where('schedule_date_time', '>', new DateTime(date('Y-m-d H:i:s', strtotime('-3 days', time()))))->whereIn('post_trial_status', [null, '', 'unavailable']);	});})->orderBy('schedule_date_time', 'asc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code', 'payment_done', 'type', 'order_id')->get();
+					$trials = Booktrial::where('customer_email', '=', $customeremail)->where('going_status_txt','!=','cancel')->where('booktrial_type','auto')->where(function($query){return $query->where('schedule_date_time','>=',new DateTime())->orWhere('payment_done', false)->orWhere(function($query){	return 	$query->where('schedule_date_time', '>', new DateTime(date('Y-m-d H:i:s', strtotime('-3 days', time()))))->whereIn('post_trial_status', [null, '', 'unavailable']);	});})->orderBy('schedule_date_time', 'asc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code', 'payment_done', 'type', 'order_id', 'post_trial_status')->get();
 
 
 				}else{
@@ -3182,25 +3182,34 @@ class CustomerController extends \BaseController {
 							$data['title']  = ucwords($data['service_name'])." at ".ucwords($data['finder_name']);
 							
 							$data['trial_id'] = $data['_id'];
-
+							Log::info(strtotime($data['schedule_date_time']));
+							Log::info(time());
 							if(!isset($data['post_trial_status']) || in_array($data['post_trial_status'], ['unavailable', ""])){
 								Log::info("inside block");
-								if(time() >= strtotime($data['schedule_date_time']) && time() < (strtotime($data['schedule_date_time'])+3*60*60) ){
-									$data['block_screen'] = [
-										'type'=>'activate_session',
-										'url'=>Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/activate'
-									];
-								}else if(time() < (strtotime($data['schedule_date_time'])+3*24*60*60)){
-									$data['block_screen'] = [
-										'type'=>'let_us_know',
-										'url'=>Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/let_us_know'
-									];
+
+								if(time() >= strtotime($data['schedule_date_time'])){
+
+									if(time() < (strtotime($data['schedule_date_time'])+3*60*60) ){
+										$data['block_screen'] = [
+											'type'=>'activate_session',
+											'url'=>Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/activate'
+										];
+									}else if(time() < (strtotime($data['schedule_date_time'])+3*24*60*60)){
+										$data['block_screen'] = [
+											'type'=>'let_us_know',
+											'url'=>Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/let_us_know'
+										];
+									}
+								
+								}else{
+									$data['activation_url'] = Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/activate';
 								}
+								
 
 								
 							}
 							
-							$data = array_only($data, ['title', 'schedule_date_time', 'subscription_code', 'subscription_text', 'body1', 'streak', 'payment_done', 'order_id', 'trial_id', 'unlock', 'image', 'block_screen']);
+							$data = array_only($data, ['title', 'schedule_date_time', 'subscription_code', 'subscription_text', 'body1', 'streak', 'payment_done', 'order_id', 'trial_id', 'unlock', 'image', 'block_screen','activation_url']);
 
 						
 							
