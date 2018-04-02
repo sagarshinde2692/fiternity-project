@@ -1272,7 +1272,7 @@ Class CustomerReward {
         }
         
         $coupon = $query->first();
-        if(!isset($coupon) && (strtolower($couponCode) == "srfit" || strtolower($couponCode) == "goals")){
+        if(!isset($coupon) && (strtolower($couponCode) == "srfit")){
             $vendorMOU = Vendormou::where("vendors",$ratecard["finder_id"])->where('contract_start_date', '<=', new \DateTime())->where('contract_end_date', '>=', new \DateTime())->first();
             $coupon = array("code" => strtolower($couponCode),"discount_max" => 1000,"discount_amount" => 0,"discount_min" => 200);
             if(isset($vendorMOU)){
