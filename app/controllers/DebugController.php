@@ -6876,6 +6876,44 @@ public function yes($msg){
 
 	}
 
+	public function bulkInsertSaavn(){
+
+        $destinationPath = public_path();
+        $fileName = "saavn_code.csv";
+        $filePath = $destinationPath.'/'.$fileName;
+
+        $csv_to_array = $this->csv_to_array($filePath);
+
+        if($csv_to_array){
+
+            foreach ($csv_to_array as $value) {
+
+                if($value['code'] != ''){
+
+                    $code = $value['code'];
+
+                    $saavn = Saavn::where('code',$code)->first();
+
+                    if(!$saavn){
+
+                        $data = [
+                            'code'=>$code,
+                            'status'=>"1"
+                        ];
+
+                        Saavn::create($data);
+
+                    }
+
+                }
+
+            }
+        }
+
+        return "Success";
+
+    }
+
     
 }
 

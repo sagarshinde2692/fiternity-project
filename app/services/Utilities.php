@@ -17,6 +17,7 @@ use WalletTransaction;
 use App\Sms\CustomerSms as CustomerSms;
 use App\Mailers\FinderMailer as FinderMailer;
 use App\Services\Fitapi as Fitapi;
+use App\Mailers\CustomerMailer as CustomerMailer;
 
 Class Utilities {
 
@@ -3506,6 +3507,29 @@ Class Utilities {
         $order->amount_transferred_to_vendor -= $order->gst_finder_amount;
 
         $order->update();
+    }
+
+    public function saavn($order){
+
+        $saavn = \Saavn::active()->where('used_date','exists',false)->orderBy('_id','asc')->first();
+
+        if($saavn){
+
+            $customermailer = new CustomerMailer();
+
+            $saavn->order_id = (int)$order['_id'];
+            $saavn->used_date = time();
+            $saavn->update();
+
+            $order->saavn_code = $saavn['code'];
+            $order->update();
+
+            $customermailer->saavn($order->toArray());
+
+            return "success";
+        }
+
+        return "error, no code";
     }
     
 }
