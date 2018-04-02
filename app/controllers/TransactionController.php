@@ -97,6 +97,11 @@ class TransactionController extends \BaseController {
 
         if(isset($data['order_id']) && $data['order_id'] != ""){
             $data['order_id'] = intval($data['order_id']);
+            $pay_later_order = Order::where('_id', $data['order_id'])->where('pay_later', true)->first();
+            if($pay_later_order){
+                $pay_later_data = $this->getPayLaterData($pay_later_order);
+                $data = array_merge($data, $pay_later_data);
+            }
         }
 
         Log::info('------------transactionCapture---------------',$data);
@@ -137,14 +142,7 @@ class TransactionController extends \BaseController {
             }
         }
 
-        if(isset($data['finder_id']) && $data['finder_id'] != ""){
-
-            $checkFinderState = $this->utilities->checkFinderState($data['finder_id']);
-
-            if($checkFinderState['status'] != 200){
-                return Response::json($checkFinderState, $this->error_status);
-            }
-        }
+        
 
         $workout = array('vip_booktrials','3daystrial','booktrials','workout-session');
         if(in_array($data['type'],$workout)){
@@ -228,76 +226,166 @@ class TransactionController extends \BaseController {
 
         }
 
-        if($this->vendor_token && !isset($data['order_id'])){
-            
-            if($this->utilities->checkFitternityCustomer($data['customer_email'], $data['customer_phone'])){
-                
-                $data['routed_order'] = '0';
-            
-            }else{
-             
-                $data['routed_order'] = '1';
-            
-            }
-        
-        }
-
         $updating_part_payment = (isset($data['part_payment']) && $data['part_payment']) ? true : false;
-
+        
         $updating_cod = (isset($data['payment_mode']) && $data['payment_mode'] == 'cod') ? true : false;
 
-        if($data['type'] == "events" && isset($data['event_customers']) && count($data['event_customers']) > 0 ){
-
-            $event_customers = $data['event_customers'];
-
-            $event_customer_email = [];
-            $event_customer_phone = [];
-
-            foreach ($event_customers as $customer_data) {
-
-                if(in_array($customer_data["customer_email"],$event_customer_email)){
-
-                    return Response::json(array('status' => 404,'message' => 'cannot enter same email id'),$this->error_status);
-
-                }else{
-
-                    $event_customer_email[] = strtolower($customer_data["customer_email"]);
+        if(!(isset($data['session_payment']) && $data['session_payment'])){
+            if(isset($data['finder_id']) && $data['finder_id'] != ""){
+                
+                $checkFinderState = $this->utilities->checkFinderState($data['finder_id']);
+    
+                if($checkFinderState['status'] != 200){
+                    return Response::json($checkFinderState, $this->error_status);
                 }
-
-                if(in_array($customer_data["customer_phone"],$event_customer_phone)){
-
-                    return Response::json(array('status' => 404,'message' => 'cannot enter same contact number'),$this->error_status);
-
+            }
+    
+            if($this->vendor_token && !isset($data['order_id'])){
+                
+                if($this->utilities->checkFitternityCustomer($data['customer_email'], $data['customer_phone'])){
+                    
+                    $data['routed_order'] = '0';
+                
                 }else{
-
-                    $event_customer_phone[] = $customer_data["customer_phone"];
+                 
+                    $data['routed_order'] = '1';
+                
+                }
+            
+            }
+    
+            if($data['type'] == "events" && isset($data['event_customers']) && count($data['event_customers']) > 0 ){
+    
+                $event_customers = $data['event_customers'];
+    
+                $event_customer_email = [];
+                $event_customer_phone = [];
+    
+                foreach ($event_customers as $customer_data) {
+    
+                    if(in_array($customer_data["customer_email"],$event_customer_email)){
+    
+                        return Response::json(array('status' => 404,'message' => 'cannot enter same email id'),$this->error_status);
+    
+                    }else{
+    
+                        $event_customer_email[] = strtolower($customer_data["customer_email"]);
+                    }
+    
+                    if(in_array($customer_data["customer_phone"],$event_customer_phone)){
+    
+                        return Response::json(array('status' => 404,'message' => 'cannot enter same contact number'),$this->error_status);
+    
+                    }else{
+    
+                        $event_customer_phone[] = $customer_data["customer_phone"];
+                    }
+                }
+                
+            }
+    
+            if(isset($data['myreward_id']) && $data['type'] == "workout-session"){
+    
+                $validateMyReward = $this->validateMyReward($data['myreward_id']);
+    
+                if($validateMyReward['status'] != 200){
+                    return Response::json($validateMyReward,$this->error_status);
+                }
+            }
+    
+            $customerDetail = $this->getCustomerDetail($data);
+    
+            if($customerDetail['status'] != 200){
+                return Response::json($customerDetail,$this->error_status);
+            }
+    
+            $data = array_merge($data,$customerDetail['data']); 
+    
+            if(isset($data['customers_list'])){
+                foreach($data['customers_list'] as $key => $customer){
+                    $data['customers_list'][$key]['customer_id'] = autoRegisterCustomer($customer);
                 }
             }
             
-        }
-
-        if(isset($data['myreward_id']) && $data['type'] == "workout-session"){
-
-            $validateMyReward = $this->validateMyReward($data['myreward_id']);
-
-            if($validateMyReward['status'] != 200){
-                return Response::json($validateMyReward,$this->error_status);
+            
+              
+            $payment_mode = isset($data['payment_mode']) ? $data['payment_mode'] : "";
+    
+            if(isset($data['ratecard_id'])){
+                
+                $ratecard_id = (int) $data['ratecard_id'];
+    
+                $ratecardDetail = $this->getRatecardDetail($data);
+    
+                if($ratecardDetail['status'] != 200){
+                    return Response::json($ratecardDetail,$this->error_status);
+                }
+    
+                $data = array_merge($data,$ratecardDetail['data']);
+    
+                if(isset($data['customer_quantity'])){
+                    
+                    $data['ratecard_amount'] = $data['amount'];
+                    $data['amount'] = $data['customer_quantity'] * $data['amount'];
+                    $data['amount_finder'] = $data['customer_quantity'] * $data['amount_finder'];
+                    
+                }
+    
             }
-        }
-
-        $customerDetail = $this->getCustomerDetail($data);
-
-        if($customerDetail['status'] != 200){
-            return Response::json($customerDetail,$this->error_status);
-        }
-
-        $data = array_merge($data,$customerDetail['data']); 
-
-        if(isset($data['customers_list'])){
-            foreach($data['customers_list'] as $key => $customer){
-                $data['customers_list'][$key]['customer_id'] = autoRegisterCustomer($customer);
+    
+            if(isset($data['manual_order']) && $data['manual_order']){
+    
+                $manualOrderDetail = $this->getManualOrderDetail($data);
+    
+                if($manualOrderDetail['status'] != 200){
+                    return Response::json($manualOrderDetail,$this->error_status);
+                }
+    
+                $data = array_merge($data,$manualOrderDetail['data']);
             }
+    
+            if($payment_mode=='cod'){
+    
+                $data['payment_mode'] = 'cod';
+    
+                $data["secondary_payment_mode"] = "cod_membership";
+                
+            }        
+    
+            
+    
+            $finder_id = (int) $data['finder_id'];
+    
+            $finderDetail = $this->getFinderDetail($finder_id);
+    
+            if($finderDetail['status'] != 200){
+                return Response::json($finderDetail,$this->error_status);
+            }
+    
+            
+    
+            // $cash_pickup = (isset($finderDetail['data']['finder_flags']) && isset($finderDetail['data']['finder_flags']['cash_pickup'])) ? $finderDetail['data']['finder_flags']['cash_pickup'] : false;
+    
+            $orderfinderdetail = $finderDetail;
+            $data = array_merge($data,$orderfinderdetail['data']);
+            unset($orderfinderdetail["data"]["finder_flags"]);
+    
+            if(isset($data['service_id'])){
+                $service_id = (int) $data['service_id'];
+    
+                $serviceDetail = $this->getServiceDetail($service_id);
+    
+                if($serviceDetail['status'] != 200){
+                    return Response::json($serviceDetail,$this->error_status);
+                }
+    
+                $data = array_merge($data,$serviceDetail['data']);
+            }
+
+        }else{
+            $finderDetail['data']['finder_flags'] = [];
         }
+
         
         if(isset($data['coupon_code']) && $this->utilities->isGroupId($data['coupon_code'])){
             
@@ -309,81 +397,7 @@ class TransactionController extends \BaseController {
              
              unset($data['coupon_code']);
  
-         }
-          
-        $payment_mode = isset($data['payment_mode']) ? $data['payment_mode'] : "";
-
-        if(isset($data['ratecard_id'])){
-            
-            $ratecard_id = (int) $data['ratecard_id'];
-
-            $ratecardDetail = $this->getRatecardDetail($data);
-
-            if($ratecardDetail['status'] != 200){
-                return Response::json($ratecardDetail,$this->error_status);
-            }
-
-            $data = array_merge($data,$ratecardDetail['data']);
-
-            if(isset($data['customer_quantity'])){
-                
-                $data['ratecard_amount'] = $data['amount'];
-                $data['amount'] = $data['customer_quantity'] * $data['amount'];
-                $data['amount_finder'] = $data['customer_quantity'] * $data['amount_finder'];
-                
-            }
-
         }
-
-        if(isset($data['manual_order']) && $data['manual_order']){
-
-            $manualOrderDetail = $this->getManualOrderDetail($data);
-
-            if($manualOrderDetail['status'] != 200){
-                return Response::json($manualOrderDetail,$this->error_status);
-            }
-
-            $data = array_merge($data,$manualOrderDetail['data']);
-        }
-
-        if($payment_mode=='cod'){
-
-            $data['payment_mode'] = 'cod';
-
-            $data["secondary_payment_mode"] = "cod_membership";
-            
-        }        
-
-        
-
-        $finder_id = (int) $data['finder_id'];
-
-        $finderDetail = $this->getFinderDetail($finder_id);
-
-        if($finderDetail['status'] != 200){
-            return Response::json($finderDetail,$this->error_status);
-        }
-
-        
-
-        // $cash_pickup = (isset($finderDetail['data']['finder_flags']) && isset($finderDetail['data']['finder_flags']['cash_pickup'])) ? $finderDetail['data']['finder_flags']['cash_pickup'] : false;
-
-        $orderfinderdetail = $finderDetail;
-        $data = array_merge($data,$orderfinderdetail['data']);
-        unset($orderfinderdetail["data"]["finder_flags"]);
-
-        if(isset($data['service_id'])){
-            $service_id = (int) $data['service_id'];
-
-            $serviceDetail = $this->getServiceDetail($service_id);
-
-            if($serviceDetail['status'] != 200){
-                return Response::json($serviceDetail,$this->error_status);
-            }
-
-            $data = array_merge($data,$serviceDetail['data']);
-        }
-
 
         $order = false;
 
@@ -5580,7 +5594,7 @@ class TransactionController extends \BaseController {
 
         $data = [];
         
-        $fields = ["customer_name","customer_email","customer_phone","gender","finder_id","finder_name","premium_session","service_name","service_id","service_duration","schedule_date","schedule_slot","amount","city_id","type","note_to_trainer","going_together","customer_identity","customer_source","customer_location","env", "ratecard_id"];
+        $fields = ['customer_name','customer_email','customer_phone','gender','finder_id','finder_name','finder_address','premium_session','service_name','service_id','service_duration','schedule_date','schedule_slot','amount','city_id','type','note_to_trainer','going_together','ratecard_id','customer_identity','customer_source','customer_location','env','customer_id','logged_in_customer_id','device_type','reg_id','gcm_reg_id','ratecard_remarks','duration','duration_type','duration_day','amount_finder','offer_id','start_date','end_date','membership_duration_type','start_time','end_time','batch_time','vertical_type','secondary_payment_mode','service_name_purchase','service_duration_purchase','status','source_of_membership','finder_city','finder_location','finder_vcc_email','finder_vcc_mobile','finder_poc_for_customer_name','finder_poc_for_customer_no','show_location_flag','share_customer_no','finder_lon','finder_lat','finder_branch','finder_category_id','finder_slug','finder_location_id','city_name','city_slug','category_name','category_slug','finder_flags','meal_contents'];
 
         foreach($fields as $field){
             if(isset($order[$field])){
@@ -5590,6 +5604,7 @@ class TransactionController extends \BaseController {
         }
 
         $data['session_payment'] = true;
+        $data['order_id'] = $order->_id;
         // $data['manual_order'] = true;
 
 
@@ -5613,5 +5628,27 @@ class TransactionController extends \BaseController {
 
     } 
     
+    public function getPayLaterData($order){
+        
+        $data = [];
+        
+        $fields = ['customer_name','customer_email','customer_phone','gender','finder_id','finder_name','finder_address','premium_session','service_name','service_id','service_duration','schedule_date','schedule_slot','amount','city_id','type','note_to_trainer','going_together','ratecard_id','customer_identity','customer_source','customer_location','env','customer_id','logged_in_customer_id','device_type','reg_id','gcm_reg_id','ratecard_remarks','duration','duration_type','duration_day','amount_finder','offer_id','start_date','end_date','membership_duration_type','start_time','end_time','batch_time','vertical_type','secondary_payment_mode','service_name_purchase','service_duration_purchase','status','source_of_membership','finder_city','finder_location','finder_vcc_email','finder_vcc_mobile','finder_poc_for_customer_name','finder_poc_for_customer_no','show_location_flag','share_customer_no','finder_lon','finder_lat','finder_branch','finder_category_id','finder_slug','finder_location_id','city_name','city_slug','category_name','category_slug','finder_flags','meal_contents'];
+
+        foreach($fields as $field){
+            if(isset($order[$field])){
+
+                $data[$field] = $order[$field];
+            }
+        }
+
+        $data['session_payment'] = true;
+        $data['paymentmode_selected'] = 'paymentgateway';
+        $data['payment_mode'] =  'paymentgateway';
+        $data['wallet'] =  false;
+        
+
+        return $data;
+
+    }
 
 }

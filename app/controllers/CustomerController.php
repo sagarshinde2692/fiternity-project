@@ -3143,6 +3143,17 @@ class CustomerController extends \BaseController {
 						
 						if(in_array($this->device_type, ['android', 'ios']) && $this->app_version > '4.4.3'){
 							
+
+							if($data['type'] == 'Workout-session'){
+								$data['unlock'] = [
+									'header'=>'Unlock Level '.$workout_session_level_data['next_session']['level'].'!',
+									'sub_header_2'=>'Attend this session, and get '.$workout_session_level_data['next_session']['cashback'].'% CashBack upto '.$workout_session_level_data['next_session']['number'].' sessions',
+									'image'=>'https://b.fitn.in/paypersession/unlock-icon.png'
+								];
+								if(strtotime($data['schedule_date_time']) < time()){
+									$data['unlock']['sub_header_2'] = 'Let us know if you attended this session, and get '.$workout_session_level_data['next_session']['cashback'].'% CashBack upto '.$workout_session_level_data['next_session']['number'].' sessions';
+								}	
+							}
 							if(strtotime($data['schedule_date_time']) > time() && $data['type'] == 'Workout-session'){
 								Log::info("inside unlock");
 								$data['unlock'] = [
@@ -3161,7 +3172,7 @@ class CustomerController extends \BaseController {
 
 							$data['subscription_code']  = $data['code'];
 
-							$data['subscription_text']  = "Show this subscription code at ".ucwords($data['finder_name'])." & get FitCode to activate your session\nPerson of contact\n".ucwords($data['finder_poc_for_customer_name'])." ".$data['finder_poc_for_customer_no'];
+							$data['subscription_text']  = "Show this subscription code at ".ucwords($data['finder_name'])." & get FitCode to activate your session\n\nPerson of contact\n".ucwords($data['finder_poc_for_customer_name'])." ".$data['finder_poc_for_customer_no'];
 
 							$data['image'] = 'https://b.fitn.in/paypersession/subscription-code.png';
 							
