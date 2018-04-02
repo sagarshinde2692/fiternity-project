@@ -3175,12 +3175,29 @@ class CustomerController extends \BaseController {
 							$data['subscription_text']  = "Show this subscription code at ".ucwords($data['finder_name'])." & get FitCode to activate your session\n\nPerson of contact\n".ucwords($data['finder_poc_for_customer_name'])." ".$data['finder_poc_for_customer_no'];
 
 							$data['image'] = 'https://b.fitn.in/paypersession/subscription-code.png';
-							
+
 							$data['title']  = ucwords($data['service_name'])." at ".ucwords($data['finder_name']);
 							
 							$data['trial_id'] = $data['_id'];
+
+							if(!isset($data['post_trial_status']) || in_array($data['post_trial_status'], ['unavailable', ""])){
+								Log::info("inside block");
+								if(strtotime($data['schedule_date_time']) >= time() && strtotime($data['schedule_date_time']) < (time()+3*60*60) ){
+									$data['block_screen'] = [
+										'type'=>'activate_session',
+										'url'=>Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/activate'
+									];
+								}else if(strtotime($data['schedule_date_time']) >= time() && strtotime($data['schedule_date_time']) < (time()+3*24*60*60)){
+									$data['block_screen'] = [
+										'type'=>'let_us_know',
+										'url'=>Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/let_us_know'
+									];
+								}
+
+								
+							}
 							
-							$data = array_only($data, ['title', 'schedule_date_time', 'subscription_code', 'subscription_text', 'body1', 'streak', 'payment_done', 'order_id', 'trial_id', 'unlock', 'image']);
+							$data = array_only($data, ['title', 'schedule_date_time', 'subscription_code', 'subscription_text', 'body1', 'streak', 'payment_done', 'order_id', 'trial_id', 'unlock', 'image', 'block_screen']);
 
 						
 							
@@ -4980,27 +4997,15 @@ class CustomerController extends \BaseController {
 					}
 					break;
 				case 'wn':
+				case 'wn+2':
+				
 					$response = array_only($response, ['notification_id', 'transaction_type']);
-					$response['header'] = ucwords($data['service_name'])." at ".ucwords($data['finder_name']);
-					$response['sub_header'] = "ACTIVATE SESSION";
-					$response['footer'] = "FitCode will be provided by ".$data['finder_name']."  to activate your session";
-					$response['schedule_date_time'] = strtotime($data['schedule_date_time']);
-					$response['subscription_code'] = implode('  ',str_split($data['code']));
-					$response['button_text'] = [
-						'activate'=>['text'=>'ACTIVATE SESSION','url'=>Config::get('app.url')."/sessionstatuscapture/activate/".$data['_id']],
-						'didnt_get'=>['text'=>'Didn’t get FitCode','url'=>Config::get('app.url')."/sessionstatuscapture/lost/".$data['_id']],
-						'cant_make'=>['text'=>'CAN’T MAKE IT','url'=>Config::get('app.url')."/sessionstatuscapture/didnotattend/".$data['_id']]
-					];
+					$response = $this->getBlockScreenData($time, $data);
+		
 					break;
 				case 'wn+2':
 					$response = array_only($response, ['notification_id', 'transaction_type']);
-					$response['header'] = "LET US KNOW";
-					$response['sub_header'] = "Did you attend your ".$data['service_name']." at ".$data['finder_name']." on ".date('jS M \a\t g:i a', strtotime($data['schedule_date_time']))."? <br><br>Let us know and earn Cashback!";
-					$response['subscription_code'] = $data['code'];
-					$response['button_text'] = [
-						'attended'=>['text'=>'ATTENDED','url'=>Config::get('app.url')."/sessionstatuscapture/attended/".$data['_id']],
-						'did_not_attend'=>['text'=>'DID NOT ATTEND','url'=>Config::get('app.url')."/sessionstatuscapture/didnotattend/".$data['_id']]
-					];
+					$response = $this->getBlockScreenData('wn+2', $data);
 					break;
 				default:
 
@@ -6373,8 +6378,63 @@ class CustomerController extends \BaseController {
 	}
 
 	public function notificationDataByTrialId($booktrial_id, $label){
-		$notificationTracking = NotificationTracking::where('booktrial_id', intval($booktrial_id))->where('label', $label)->first();
-		return $this->notificationTracking($notificationTracking->_id);
+
+		$transaction = Booktrial::find(intval($booktrial_id));
+
+		$dates = array('start_date', 'start_date_starttime', 'schedule_date', 'schedule_date_time', 'followup_date', 'followup_date_time','missedcall_date','customofferorder_expiry_date','auto_followup_date');
+		$unset_keys = [];
+		foreach ($dates as $key => $value){
+			if(isset($transaction[$value]) && $transaction[$value]==''){
+				array_push($unset_keys, $value);
+			}
+		}
+
+		if(count($unset_keys) > 0){
+			$transaction->unset($unset_keys);
+		}
+
+		if($transaction){
+
+			$data = $transaction->toArray();
+		}
+
+		return $this->getBlockScreenData($label, $data);
+	}
+
+	public function getBlockScreenData($label, $data){
+		
+		$response = [];
+
+		switch ($label) {
+			case 'activate_session':
+			case 'wn':
+				$response = array_only($response, ['transaction_type']);
+				$response['header'] = ucwords($data['service_name'])." at ".ucwords($data['finder_name']);
+				$response['sub_header'] = "ACTIVATE SESSION";
+				$response['footer'] = "FitCode will be provided by ".$data['finder_name']."  to activate your session";
+				$response['schedule_date_time'] = strtotime($data['schedule_date_time']);
+				$response['subscription_code'] = implode('  ',str_split($data['code']));
+				$response['button_text'] = [
+					'activate'=>['text'=>'ACTIVATE SESSION','url'=>Config::get('app.url')."/sessionstatuscapture/activate/".$data['_id']],
+					'didnt_get'=>['text'=>'Didn’t get FitCode','url'=>Config::get('app.url')."/sessionstatuscapture/lost/".$data['_id']],
+					'cant_make'=>['text'=>'CAN’T MAKE IT','url'=>Config::get('app.url')."/sessionstatuscapture/didnotattend/".$data['_id']]
+				];
+				break;
+			case 'let_us_know':
+			case 'wn+3':
+				$response = array_only($response, ['transaction_type']);
+				$response['header'] = "LET US KNOW";
+				$response['sub_header'] = "Did you attend your ".$data['service_name']." at ".$data['finder_name']." on ".date('jS M \a\t g:i a', strtotime($data['schedule_date_time']))."? <br><br>Let us know and earn Cashback!";
+				$response['subscription_code'] = $data['code'];
+				$response['button_text'] = [
+					'attended'=>['text'=>'ATTENDED','url'=>Config::get('app.url')."/sessionstatuscapture/lost/".$data['_id']],
+					'did_not_attend'=>['text'=>'DID NOT ATTEND','url'=>Config::get('app.url')."/sessionstatuscapture/didnotattend/".$data['_id']]
+				];
+				break;
+		}
+
+		return $response;
+
 	}
 	
 }
