@@ -76,9 +76,9 @@ class TransactionController extends \BaseController {
 
     }
 
-    public function capture(){
+    public function capture($data = null){
 
-        $data = Input::json()->all();
+        $data = $data ? $data : Input::json()->all();   
 
         // Log::info($_GET['app_version']);
         // return [
@@ -98,6 +98,7 @@ class TransactionController extends \BaseController {
         if(isset($data['order_id']) && $data['order_id'] != ""){
             $data['order_id'] = intval($data['order_id']);
             $pay_later_order = Order::where('_id', $data['order_id'])->where('pay_later', true)->first();
+            // return $pay_later_order;
             if($pay_later_order){
                 $pay_later_data = $this->getPayLaterData($pay_later_order);
                 $data = array_merge($data, $pay_later_data);
@@ -5590,7 +5591,10 @@ class TransactionController extends \BaseController {
 
         $booktrial = Booktrial::find(intval($trial_id));
 
-        $order = Order::find($booktrial->order_id);
+        
+        // $order = Order::find($booktrial->order_id);
+        // return $booktrial->order_id;
+        return $this->capture(['order_id'=>$booktrial->order_id, 'wallet'=>false]);
 
         $data = [];
         
@@ -5644,7 +5648,7 @@ class TransactionController extends \BaseController {
         $data['session_payment'] = true;
         $data['paymentmode_selected'] = 'paymentgateway';
         $data['payment_mode'] =  'paymentgateway';
-        $data['wallet'] =  false;
+        // $data['wallet'] =  false;
         
 
         return $data;
