@@ -1800,8 +1800,8 @@ class SchedulebooktrialsController extends \BaseController {
                     $resp 	= 	array('status' => 401, 'order' => $order, 'message' => "Trial not booked.");
                     return  Response::json($resp, 400);
                 }
-
-                if(isset($data['session_payment']) && $data['session_payment']){
+                
+                if(isset($order['session_payment']) && $order['session_payment']){
                     
                     return $this->payLaterPaymentSuccess($order['_id']);
                     
@@ -6817,24 +6817,31 @@ class SchedulebooktrialsController extends \BaseController {
 
         $pay_later = Paylater::where('trial_ids', $booktrial_id)->first();
 
-        $trial_ids = $pay_later->trial_ids;
-
-        if(count($trial_ids) == 1){
+        if($pay_later){
+            Log::info("Updating pay later entry");
+            $trial_ids = $pay_later->trial_ids;
+    
+            if(count($trial_ids) == 1){
+                
+                Paylater::destroy($pay_later->_id);
             
-            Paylater::destroy($pay_later->_id);
+            }else{
+    
+                $key = array_search($booktrial_id, $pay_later);
         
-        }else{
-
-            $key = array_search($booktrial_id, $pay_later);
-    
-            unset($trial_ids[$key]);
-    
-            $pay_later->trial_ids = $trial_ids;
-    
-            $pay_later->update();
+                unset($trial_ids[$key]);
+        
+                $pay_later->trial_ids = $trial_ids;
+        
+                $pay_later->update();
+            }
         }
 
-        $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
+        // $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
+
+        $resp 	= 	array('status' => 200, 'booktrialid' => $booktrial_id, 'message' => "Book a Trial", 'code' => $booktrial->code, 'pay_later_payment'=>true);
+
+        return $resp;
 
     }
     public function verifyFitCode($booktrial_id,$vendor_code){
