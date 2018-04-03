@@ -3211,7 +3211,9 @@ class CustomerController extends \BaseController {
 
 							$data['current_time'] = date('Y-m-d H:i:s', time());
 							
-							$data = array_only($data, ['title', 'schedule_date_time', 'subscription_code', 'subscription_text', 'body1', 'streak', 'payment_done', 'order_id', 'trial_id', 'unlock', 'image', 'block_screen','activation_url', 'current_time']);
+							$data['time_diff'] = strtotime($data['schedule_date_time']) - time();
+							
+							$data = array_only($data, ['title', 'schedule_date_time', 'subscription_code', 'subscription_text', 'body1', 'streak', 'payment_done', 'order_id', 'trial_id', 'unlock', 'image', 'block_screen','activation_url', 'current_time' ,'time_diff']);
 
 						
 							
