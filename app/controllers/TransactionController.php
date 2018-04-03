@@ -107,6 +107,8 @@ class TransactionController extends \BaseController {
 
         Log::info('------------transactionCapture---------------',$data);
 
+        // return;
+
         if(!isset($data['type'])){
             return Response::json(array('status' => 404,'message' =>'type field is required'), $this->error_status);
         }
@@ -5644,7 +5646,7 @@ class TransactionController extends \BaseController {
                 $data[$field] = $order[$field];
             }
         }
-
+        $data['amount'] = $data['amount_finder'];
         $data['session_payment'] = true;
         $data['paymentmode_selected'] = 'paymentgateway';
         $data['payment_mode'] =  'paymentgateway';
