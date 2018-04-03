@@ -1750,7 +1750,8 @@ class ServiceController extends \BaseController {
 			  "id"
 			]
 		];
-		 $pay_per_session = payPerSession($pay_persession_request);
+		$pay_per_session = payPerSession($pay_persession_request);
+		$subheader = $pay_per_session["request"]["category_name"] . " sessions in " . $pay_per_session["request"]["location_name"];
 		$timings = $pay_per_session["aggregations"]["time_range"];
 		$tomorrow = date('l', strtotime(' +1 day'));
 		$tomorrow_date = date('d-m-Y', strtotime(' +1 day'));
@@ -1765,18 +1766,20 @@ class ServiceController extends \BaseController {
 		$pay_per_session["aggregations"]["days"][$indexofTomorrow]["slug"] = "tomorrow";
 		$pay_per_session["aggregations"]["days"][$indexofTomorrow]["date"] = $tomorrow_date;
 		$pay_per_session["aggregations"]["days"][$indexofTomorrow]["index"] = 1;
+		$pay_per_session["aggregations"]["days"][$indexofTomorrow]["count"] = isset($pay_per_session["aggregations"]["days"][$indexofTomorrow]["count"]) ? $pay_per_session["aggregations"]["days"][$indexofTomorrow]["count"] : 0;
 		$indexofday_after = array_search($day_after,$days);
 		$pay_per_session["aggregations"]["days"][$indexofday_after]["name"] = "Day after";
 		$pay_per_session["aggregations"]["days"][$indexofday_after]["slug"] = "day-after";
 		$pay_per_session["aggregations"]["days"][$indexofday_after]["date"] = $day_after_date;
 		$pay_per_session["aggregations"]["days"][$indexofday_after]["index"] = 2;
+		$pay_per_session["aggregations"]["days"][$indexofday_after]["count"] = isset($pay_per_session["aggregations"]["days"][$indexofday_after]["count"]) ? $pay_per_session["aggregations"]["days"][$indexofday_after]["count"] : 0;
 		array_push($timings, $pay_per_session["aggregations"]["days"][$indexofTomorrow]);
 		array_push($timings, $pay_per_session["aggregations"]["days"][$indexofday_after]);
 		$session_count = 0;
 		foreach($timings as $timing){
 			$session_count += $timing["count"];
 		}
-		return $data = array("header"=> "When do you want to workout?", "categories" => $timings, "session_count"=> $session_count);
+		return $data = array("header"=> "When would you like to workout?","subheader"=>$subheader, "categories" => $timings, "session_count"=> $session_count);
 	}
 
 
