@@ -1704,12 +1704,16 @@ class ServiceController extends \BaseController {
 
 		$not_included_ids = [161, 120, 170, 163, 168, 180, 184];
 		
-		$servicecategories	 = 	Servicecategory::active()->where('parent_id', 0)->whereNotIn('_id', $not_included_ids)->orderBy('name')->get(array('_id','name','slug'));	
-		
+		$servicecategories	 = 	Servicecategory::active()->where('parent_id', 0)->whereNotIn('slug', [null, ''])->whereNotIn('_id', $not_included_ids)->orderBy('name')->get(array('_id','name','slug'));
+		if(count($servicecategories) > 0){
+
+			$servicecategories = $servicecategories->toArray();
+			array_unshift($servicecategories, ['_id'=>0, 'name'=>'I want to explore all options', 'slug'=>'']);
+		}	
 		$data  = [
 			'status'=>200,
 			'header'=>'Which activity do you want to try?',
-			'all_message'=> "I want to explore all options",
+			// 'all_message'=> "I want to explore all options",
 			'category'=>$servicecategories,
 			'message'=>"",
 			'base_url'=>"http://b.fitn.in/iconsv1/"
