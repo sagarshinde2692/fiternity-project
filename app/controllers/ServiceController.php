@@ -1749,11 +1749,13 @@ class ServiceController extends \BaseController {
 		$pay_per_session["aggregations"]["days"][$indexofTomorrow]["slug"] = "tomorrow";
 		$pay_per_session["aggregations"]["days"][$indexofTomorrow]["date"] = $tomorrow_date;
 		$pay_per_session["aggregations"]["days"][$indexofTomorrow]["index"] = 1;
+		$pay_per_session["aggregations"]["days"][$indexofTomorrow]["count"] = isset($pay_per_session["aggregations"]["days"][$indexofTomorrow]["count"]) ? $pay_per_session["aggregations"]["days"][$indexofTomorrow]["count"] : 0;
 		$indexofday_after = array_search($day_after,$days);
 		$pay_per_session["aggregations"]["days"][$indexofday_after]["name"] = "Day after";
 		$pay_per_session["aggregations"]["days"][$indexofday_after]["slug"] = "day-after";
 		$pay_per_session["aggregations"]["days"][$indexofday_after]["date"] = $day_after_date;
 		$pay_per_session["aggregations"]["days"][$indexofday_after]["index"] = 2;
+		$pay_per_session["aggregations"]["days"][$indexofday_after]["count"] = isset($pay_per_session["aggregations"]["days"][$indexofday_after]["count"]) ? $pay_per_session["aggregations"]["days"][$indexofday_after]["count"] : 0;
 		array_push($timings, $pay_per_session["aggregations"]["days"][$indexofTomorrow]);
 		array_push($timings, $pay_per_session["aggregations"]["days"][$indexofday_after]);
 		$session_count = 0;
