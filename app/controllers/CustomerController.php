@@ -3109,6 +3109,7 @@ class CustomerController extends \BaseController {
 				$activate = [];
 				$let_us_know = [];
 				$no_block = [];
+				$future = [];
 
 				if(count($trials) > 0){
 
@@ -3237,13 +3238,14 @@ class CustomerController extends \BaseController {
 								}else{
 									array_push($let_us_know, $x);
 								}
+							}else if(isset($x['activation_url'])){
+								array_push($future, $x);
 							}else{
 								array_push($no_block, $x);
-								
 							}
 						}
 
-						$upcoming = array_merge($activate, $let_us_know, $no_block);
+						$upcoming = array_merge($activate, $let_us_know, $future, $no_block);
 					}
 
 				}
