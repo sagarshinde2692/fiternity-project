@@ -1291,6 +1291,7 @@ Class CustomerReward {
             }
         }
         if(!isset($coupon) && (strtolower($couponCode) == "whfit")){
+            $coupon["discount_amount"] = 0;
             if($ratecard["validity_type"] == "days"){
                 if($ratecard["validity"] >= 30 && $ratecard["validity"] < 181){
                     $coupon["discount_percent"] = 3;
