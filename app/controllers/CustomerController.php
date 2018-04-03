@@ -3109,6 +3109,7 @@ class CustomerController extends \BaseController {
 				$activate = [];
 				$let_us_know = [];
 				$no_block = [];
+				$future = [];
 
 				if(count($trials) > 0){
 
@@ -3212,8 +3213,12 @@ class CustomerController extends \BaseController {
 							$data['current_time'] = date('Y-m-d H:i:s', time());
 							
 							$data['time_diff'] = strtotime($data['schedule_date_time']) - time();
+
+							if($data['time_diff'] < 0){
+								$data['schedule_date_time_text'] = "Happened on ".date('jS M, h:i a');
+							}
 							
-							$data = array_only($data, ['title', 'schedule_date_time', 'subscription_code', 'subscription_text', 'body1', 'streak', 'payment_done', 'order_id', 'trial_id', 'unlock', 'image', 'block_screen','activation_url', 'current_time' ,'time_diff']);
+							$data = array_only($data, ['title', 'schedule_date_time', 'subscription_code', 'subscription_text', 'body1', 'streak', 'payment_done', 'order_id', 'trial_id', 'unlock', 'image', 'block_screen','activation_url', 'current_time' ,'time_diff', 'schedule_date_time_text']);
 
 						
 							
@@ -3233,13 +3238,14 @@ class CustomerController extends \BaseController {
 								}else{
 									array_push($let_us_know, $x);
 								}
+							}else if(isset($x['activation_url'])){
+								array_push($future, $x);
 							}else{
 								array_push($no_block, $x);
-								
 							}
 						}
 
-						$upcoming = array_merge($activate, $let_us_know, $no_block);
+						$upcoming = array_merge($activate, $let_us_know, $future, $no_block);
 					}
 
 				}
