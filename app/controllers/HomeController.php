@@ -577,11 +577,18 @@ class HomeController extends BaseController {
                 $itemData       =   Booktrial::find(intval($id));
 
                 $dates = array('start_date', 'start_date_starttime', 'schedule_date', 'schedule_date_time', 'followup_date', 'followup_date_time','missedcall_date','customofferorder_expiry_date','auto_followup_date');
-
+                $unset_keys = [];
+                
                 foreach ($dates as $key => $value){
                     if(isset($itemData[$value]) && $itemData[$value]==''){
-                        $itemData->unset($value);
+                        // $itemData->unset($value);
+                        array_push($unset_keys, $value);
+                        
                     }
+                }
+
+                if(count($unset_keys)>0){
+                    $itemData->unset($unset_keys);
                 }
 
                 $itemData       =   $itemData->toArray();
@@ -594,11 +601,17 @@ class HomeController extends BaseController {
                 $itemData = Order::find(intval($id));
 
                 $dates = array('followup_date','last_called_date','preferred_starting_date', 'called_at','subscription_start','start_date','start_date_starttime','end_date', 'order_confirmation_customer');
-
+                $unset_keys = [];
+                
                 foreach ($dates as $key => $value){
                     if(isset($itemData[$value]) && $itemData[$value]==''){
-                        $itemData->unset($value);
+                        // $itemData->unset($value);
+                        array_push($unset_keys, $value);
                     }
+                }
+
+                if(count($unset_keys)>0){
+                    $itemData->unset($unset_keys);
                 }
 
                 $itemData       =   $itemData->toArray();

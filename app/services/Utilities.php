@@ -866,12 +866,16 @@ Class Utilities {
                     $orderData->update();
 
                     $array = array('auto_followup_date','followup_status_count','followup_date');
-
+                    $unset_keys = [];
                     foreach ($array as $value){
 
                         if(isset($orderData[$value])){
-                            $orderData->unset($value);
+                            // $orderData->unset($value);
+                            array_push($unset_keys, $value);
                         }
+                    }
+                    if(count($unset_keys)>0){
+                        $orderData->unset($unset_keys);
                     }
                 }
 
@@ -907,14 +911,18 @@ Class Utilities {
                     $orderData->update();
                     
                     $array = array('auto_followup_date','followup_status_count','followup_date');
-
+                    $unset_keys = [];
                     foreach ($array as $value){
-
+                        
                         if(isset($orderData[$value])){
-                            $orderData->unset($value);
+                            // $orderData->unset($value);
+                            array_push($unset_keys, $value);
                         }
                     }
-
+                    
+                    if(count($unset_keys)>0){
+                        $orderData->unset($unset_keys);
+                    }
                     $this->deleteCommunication($orderData);
                 }
             }
@@ -1049,17 +1057,25 @@ Class Utilities {
                 'customerWalletSendPaymentLinkAfter15Days',
                 'customerWalletSendPaymentLinkAfter30Days'
             ];
+            $unset_keys = [];
+    
 
             foreach ($array as $value) {
 
                 if((isset($order[$value]))){
                     try {
                         $queue_id[] = $order[$value];
-                        $order->unset($value);
+                        // $order->unset($value);
+                        array_push($unset_keys, $value);
+            
                     }catch(\Exception $exception){
                         Log::error($exception);
                     }
                 }
+            }
+
+            if(count($unset_keys)>0){
+                $order->unset($unset_keys);
             }
 
             if($order->status == "1"){
@@ -1117,16 +1133,23 @@ Class Utilities {
             'customerNotificationNotInterestedAfter75Days',
             'customerWalletPostTrialFollowup1After15Days'
         ];
+        $unset_keys = [];
 
         foreach ($array as $value) {
             if((isset($booktrial[$value]))){
                 try {
                     $queue_id[] = $booktrial[$value];
-                    $booktrial->unset($value);
+                    // $booktrial->unset($value);
+                    array_push($unset_keys, $value);
+        
                 }catch(\Exception $exception){
                     Log::error($exception);
                 }
             }
+        }
+
+        if(count($unset_keys)>0){
+            $booktrial->unset($unset_keys);
         }
 
         if(!empty($queue_id)){
@@ -1151,16 +1174,23 @@ Class Utilities {
             'customerNotificationPostCaptureFollowup2After15Days',
             'customerNotificationPostCaptureFollowup2After30Days',
         ];
+        $unset_keys = [];
 
         foreach ($array as $value) {
             if((isset($capture[$value]))){
                 try {
                     $queue_id[] = $capture[$value];
-                    $capture->unset($value);
+                    // $capture->unset($value);
+                    array_push($unset_keys, $value);
+        
                 }catch(\Exception $exception){
                     Log::error($exception);
                 }
             }
+        }
+
+        if(count($unset_keys)>0){
+            $capture->unset($unset_keys);
         }
 
         if(!empty($queue_id)){
