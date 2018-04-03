@@ -1733,7 +1733,8 @@ class ServiceController extends \BaseController {
 			  "id"
 			]
 		];
-		 return $pay_per_session = payPerSession($pay_persession_request);
+		$pay_per_session = payPerSession($pay_persession_request);
+		$subheader = $pay_per_session["request"]["category_name"] . " sessions in " . $pay_per_session["request"]["location_name"];
 		$timings = $pay_per_session["aggregations"]["time_range"];
 		$tomorrow = date('l', strtotime(' +1 day'));
 		$tomorrow_date = date('d-m-Y', strtotime(' +1 day'));
@@ -1759,7 +1760,7 @@ class ServiceController extends \BaseController {
 		foreach($timings as $timing){
 			$session_count += $timing["count"];
 		}
-		return $data = array("header"=> "When would you like to workout?","subheader"=>"", "categories" => $timings, "session_count"=> $session_count);
+		return $data = array("header"=> "When would you like to workout?","subheader"=>$subheader, "categories" => $timings, "session_count"=> $session_count);
 	}
 
 
