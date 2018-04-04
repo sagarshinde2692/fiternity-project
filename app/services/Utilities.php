@@ -3636,9 +3636,9 @@ Class Utilities {
         
         foreach($streak_data as $level){
             if($current_level >= $level['level']){
-                array_push($streak, ['header'=> 'Level '.$level['level'], 'url'=>$unlock_url.$level['level'].'.png', 'text'=>$level['cashback'].'%', 'unlocked'=>true]);
+                array_push($streak, ['header'=> 'Level '.$level['level'], 'url'=>$unlock_url.$level['level'].'.png', 'text'=>$level['cashback'].'%', 'unlocked'=>true, 'unlock_color'=>$level['unlock_color']]);
             }else{
-                array_push($streak, ['header'=> 'Level '.$level['level'], 'url'=>$lock_url, 'text'=>$level['cashback'].'%', 'unlocked'=>false]);
+                array_push($streak, ['header'=> 'Level '.$level['level'], 'url'=>$lock_url, 'text'=>$level['cashback'].'%', 'unlocked'=>false, 'unlock_color'=>'#b6b6b6']);
             }
         }
         return $streak;

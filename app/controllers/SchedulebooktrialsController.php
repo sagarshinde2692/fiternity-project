@@ -5230,6 +5230,9 @@ class SchedulebooktrialsController extends \BaseController {
 
     public function preTrialAction($source = 'customer'){
 
+        $device_type = Request::header('Device-Type');
+        $app_version = Request::header('App-Version');
+
         $rules = [
             'status' => 'required'
         ];
@@ -5262,7 +5265,15 @@ class SchedulebooktrialsController extends \BaseController {
                     case 'confirm':
                     $booktrial->pre_trial_status = 'confirm';
                     $message = "Thanks for confirming, the trainer will be ready to attend you!";
-                    break;  
+                    if($device_type && $app_version && $app_version > '4.4.3'){
+                        return $this->sessionStatusCapture('confirm', $booktrial_id);
+                    }
+                    break;
+                    case 'cancel':
+                    if($device_type && $app_version && $app_version > '4.4.3'){
+                        return $this->sessionStatusCapture('didnotattend', $booktrial_id);
+                    }
+                    break; 
                 }
 
                 if((isset($data['reason']) && $data['reason'] != "")){
@@ -7075,9 +7086,39 @@ class SchedulebooktrialsController extends \BaseController {
                 // if($customer_level_data['trials_attended'] > 0){
                     $response['streak']['footer'] = 'Unlock level '.$customer_level_data['next_level']['number'].' which gets you '.$customer_level_data['next_level']['cashback'].'% cashback upto '.$customer_level_data['next_level']['number'].' sessions! Higher the Level, Higher the Cashback';
                 // }
+
+                if($payment_done){
+                    $response['sub_header_2'] = 'Make sure you attend next time to earn Cashback and continue working out!\n\nYour paid amount will be transferred in your Fitternity Wallet';
+                }
                 
 
             break;
+
+            case 'confirm':
+                $booktrial->pre_trial_status = 'confirm';
+                $booktrial->update();
+                $customer_level_data = $this->utilities->getWorkoutSessionLevel($booktrial['customer_id']);                
+                
+                $respose = [
+                    'header'=>'We’ve got you covered!',
+                    'image1'=>'http://b.fitn.in/paypersession/Location-icon-mdpi.png',
+                    'image2'=>'http://b.fitn.in/paypersession/bag-icon-mdpi.png',
+                    'image3'=>'http://b.fitn.in/paypersession/money-icon.png',
+                    'activate'=>[
+                        'sub_header_1'=>'ACTIVATE YOUR SESSION',
+                        'sub_header_2'=>'Show your subscription code once you reach and get your FitCode to activate your session',
+                    ],
+                    'attend'=>[
+                        'sub_header_1'=>'ATTEND & EARN',
+                        'sub_header_2'=>'Attend this session and earn '.$customer_level_data['next_session']['cashback'].'% Cashback',
+                    ],
+                    'checklist'=>[
+                        'sub_header_1'=>'YOUR WORKOUT CHECKLIST IS READY!',
+                        'sub_header_2'=>'What to carry, what to expect, directions, booking details and all that you need to know about your session can be found here.',
+                    ],
+                ];
+            break;
+                
 
 
         }
