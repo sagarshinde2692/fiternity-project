@@ -6983,7 +6983,7 @@ class SchedulebooktrialsController extends \BaseController {
     }
 
     public function sessionStatusCapture($status, $booktrial_id){
-
+        
         $booktrial = Booktrial::find(intval($booktrial_id));
 
         if(!$booktrial){
@@ -7099,7 +7099,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $booktrial->update();
                 $customer_level_data = $this->utilities->getWorkoutSessionLevel($booktrial['customer_id']);                
                 
-                $respose = [
+                $response = [
                     'header'=>'We’ve got you covered!',
                     'image1'=>'http://b.fitn.in/paypersession/Location-icon-mdpi.png',
                     'image2'=>'http://b.fitn.in/paypersession/bag-icon-mdpi.png',
