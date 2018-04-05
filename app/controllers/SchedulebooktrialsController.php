@@ -2482,8 +2482,8 @@ class SchedulebooktrialsController extends \BaseController {
 
             // if($booktrialdata['type'] == 'workout-session'){
 
-            $session_time = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)));
-            $send_communication["customer_notification_instant"] = $this->customernotification->workoutSessionInstant($booktrialdata, $session_time);
+            $trailBefore10mins = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->subMinutes(10);
+            $send_communication["customer_notification_instant"] = $this->customernotification->workoutSessionInstant($booktrialdata, $trailBefore10mins);
             // $send_communication["customer_notification_instant"] = $this->customernotification->workoutSessionInstant($booktrialdata, $session_time);
 
             // }

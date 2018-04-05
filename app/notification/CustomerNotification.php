@@ -65,7 +65,7 @@ Class CustomerNotification extends Notification{
 		$label = 'AutoTrial-ReminderBefore3Hour-Customer';
 
 		$notif_type = 'open_trial';
-		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"n-3","max_time"=>strtotime($data["schedule_date_time"]));
+		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"n-3","max_time"=>strtotime($data["schedule_date_time"]), "url"=>Config::get('app.url').'/notificationdatabytrialid/'.$dat['_id'].'/session_reminder');
 		
 		return $this->common($label,$data,$notif_type,$notif_object,$delay);
 	}
@@ -303,14 +303,12 @@ Class CustomerNotification extends Notification{
 	public function workoutSessionInstant($data,$delay){
 
 		\Log::info("workout sessoin instant notification");
-
 		return "sent";
-		
 		$label = 'WorkoutSessionInstant-Customer';
 
 		$notif_type = 'open_trial';
 		
-		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"wn");
+		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"n-10", "url"=>Config::get('app.url').'/notificationdatabytrialid/'.$dat['_id'].'/activate_session');
 		
 		return $this->common($label,$data,$notif_type,$notif_object,$delay);
 
@@ -368,6 +366,10 @@ Class CustomerNotification extends Notification{
 
 		if(isset($notif_object["max_time"])){
 			$notificationData["max_time"] = $notif_object["max_time"];
+		}
+
+		if(isset($notif_object["url"])){
+			$notificationData["url"] = $notif_object["url"];
 		}
 
 		$notificationData["text"]  = $text;
