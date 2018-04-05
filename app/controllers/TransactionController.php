@@ -5359,6 +5359,9 @@ class TransactionController extends \BaseController {
                 ];
                 if($website == "1"){
                     $url = Config::get('app.website')."/paymentsuccess?". http_build_query($success_data, '', '&');
+                    if($order['type'] == "booktrials" || $order['type'] == "workout-session"){
+                        $url = Config::get('app.website')."/paymentsuccesstrial?". http_build_query($success_data, '', '&');
+                    }
                     Log::info(http_build_query($success_data, '', '&'));
                     Log::info($url);
                     return Redirect::to($url);
