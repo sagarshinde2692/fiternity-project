@@ -1290,22 +1290,25 @@ Class CustomerReward {
                 $coupon["discount_percent"] = 5;
             }
         }
-        if(!isset($coupon) && (strtolower($couponCode) == "whfit")){
-            $coupon = array("code" => strtolower($couponCode),"discount_max" => 3000,"discount_amount" => 0,"discount_min" => 100);
+if(!isset($coupon) && (strtolower($couponCode) == "whfit")){
+            $coupon = array("code" => strtolower($couponCode),"discount_max" => 600,"discount_amount" => 0,"discount_min" => 100);
             if($ratecard["validity_type"] == "days"){
                 if($ratecard["validity"] >= 30 && $ratecard["validity"] < 179){
                     $coupon["discount_percent"] = 2.5;
                 }else if($ratecard["validity"] >= 179){
                     $coupon["discount_percent"] = 5;
+                    $coupon["discount_max"] = 1200;
                 }
             }else if($ratecard["validity_type"] == "months"){
                 if($ratecard["validity"] >= 1 && $ratecard["validity"] <= 5){
                     $coupon["discount_percent"] = 2.3;
                 }else if($ratecard["validity"] >= 6){
+                    $coupon["discount_max"] = 1200;
                     $coupon["discount_percent"] = 5;
                 }
             }else if($ratecard["validity_type"] == "year"){
-                $coupon["discount_percent"] = 5;
+                    $coupon["discount_max"] = 1200;
+                    $coupon["discount_percent"] = 5;
             }
         }
         Log::info("coupon");
