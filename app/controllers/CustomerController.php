@@ -5013,8 +5013,17 @@ class CustomerController extends \BaseController {
 					$response["start_date"] = date("d-m-Y",strtotime($data["schedule_date"]));
 					break;
 				case 'n-3': 
-					$response["start_time"] = strtoupper($data["schedule_slot_start_time"]);
-					$response["start_date"] = date("d-m-Y",strtotime($data["schedule_date"]));
+					if($this->app_version > '4.4.3'){
+						
+						$response = array_only($response, ['notification_id', 'transaction_type']);
+						$response['block_screen_data'] = $this->getBlockScreenData($time, $data);
+					
+					}else{
+						
+						$response["start_time"] = strtoupper($data["schedule_slot_start_time"]);
+						$response["start_date"] = date("d-m-Y",strtotime($data["schedule_date"]));
+
+					}
 					break;
 				case 'n+2': 
 					if($this->app_version > '4.4.3'){
@@ -6444,7 +6453,6 @@ class CustomerController extends \BaseController {
 		switch ($label) {
 			case 'activate_session':
 			case 'n-10m':
-				$response = array_only($response, ['transaction_type']);
 				$response['header'] = ucwords($data['service_name'])." at ".ucwords($data['finder_name']);
 				$response['sub_header'] = "ACTIVATE SESSION";
 				$response['footer'] = "FitCode will be provided by ".$data['finder_name']."  to activate your session";
@@ -6458,7 +6466,6 @@ class CustomerController extends \BaseController {
 				break;
 			case 'let_us_know':
 			case 'n+2':
-				$response = array_only($response, ['transaction_type']);
 				$response['header'] = "LET US KNOW";
 				$response['sub_header_2'] = "Did you attend your ".$data['service_name']." at ".$data['finder_name']." on ".date('jS M \a\t g:i a', strtotime($data['schedule_date_time']))."? \n\nLet us know and earn Cashback!";
 				$response['subscription_code'] = $data['code'];
@@ -6467,6 +6474,14 @@ class CustomerController extends \BaseController {
 					'did_not_attend'=>['text'=>'DID NOT ATTEND','url'=>Config::get('app.url')."/sessionstatuscapture/didnotattend/".$data['_id']]
 				];
 				break;
+			case 'n-3':
+				$response['header'] = "SESSION REMINDER";
+				$response['sub_header_2'] = "Your Zumba session at Gold’s Gym is scheduled for today at ".date('g:i a', strtotime($data['schedule_date_time']))."\n\nAre you ready to kill your workout?" ;
+				$response['button_text'] = [
+					'attended'=>['text'=>'YES I’LL BE THERE','url'=>Config::get('app.url')."/sessionstatuscapture/confirm/".$data['_id']],
+					'did_not_attend'=>['text'=>'NO, I’M NOT GOING','url'=>Config::get('app.url')."/sessionstatuscapture/didnotattend/".$data['_id']]
+				];
+			break;
 		}
 
 		return $response;

@@ -7070,8 +7070,11 @@ class SchedulebooktrialsController extends \BaseController {
             case 'didnotattend':
                 $booktrial->post_trial_status = 'no show';
                 $booktrial->update();
-                $customer_level_data = $this->utilities->getWorkoutSessionLevel($booktrial['customer_id']);                
 
+                $this->deleteTrialCommunication($booktrial);
+                
+                $customer_level_data = $this->utilities->getWorkoutSessionLevel($booktrial['customer_id']);     
+                
                 $response = [
                     'header'=>'OOPS!',
                     'image'=>'https://b.fitn.in/paypersession/sad-face-icon.png',
@@ -7084,13 +7087,12 @@ class SchedulebooktrialsController extends \BaseController {
                 ];
 
                 // if($customer_level_data['trials_attended'] > 0){
-                    $response['streak']['footer'] = 'Unlock level '.$customer_level_data['next_level']['number'].' which gets you '.$customer_level_data['next_level']['cashback'].'% cashback upto '.$customer_level_data['next_level']['number'].' sessions! Higher the Level, Higher the Cashback';
+                    $response['streak']['footer'] = 'Unlock level '.$customer_level_data['next_level']['level'].' which gets you '.$customer_level_data['next_level']['cashback'].'% cashback upto '.$customer_level_data['next_level']['number'].' sessions! Higher the Level, Higher the Cashback';
                 // }
 
                 if($payment_done){
                     $response['sub_header_2'] = 'Make sure you attend next time to earn Cashback and continue working out!\n\nYour paid amount will be transferred in your Fitternity Wallet';
                 }
-                
 
             break;
 
