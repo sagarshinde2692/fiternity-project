@@ -3156,27 +3156,20 @@ class CustomerController extends \BaseController {
 								];
 								if(strtotime($data['schedule_date_time']) < time()){
 									$data['unlock']['sub_header_2'] = 'Let us know if you attended this session, and get '.$workout_session_level_data['next_session']['cashback'].'% CashBack upto '.$workout_session_level_data['next_session']['number'].' sessions';
-								}	
-							}
-							if(strtotime($data['schedule_date_time']) > time() && $data['type'] == 'Workout-session'){
-								Log::info("inside unlock");
-								$data['unlock'] = [
-									'header'=>'Unlock Level '.$workout_session_level_data['next_session']['level'].'!',
-									'sub_header_2'=>'Attend this session, and get '.$workout_session_level_data['next_session']['cashback'].'% CashBack upto '.$workout_session_level_data['next_session']['number'].' sessions',
-									'image'=>'https://b.fitn.in/paypersession/unlock-icon.png'
-								];
-							}
+								}
+								$data['current_level'] = $workout_session_level_data['current_level']['level'];
 
-							$data['current_level'] = $workout_session_level_data['current_level']['level'];
-
-							$data['streak'] = [
-								'header'=>'ATTEND MORE & UNLOCK',
-								'data'=>$this->utilities->getStreakImages($data['current_level'])
-							];
+								$data['streak'] = [
+									'header'=>'ATTEND MORE & UNLOCK',
+									'data'=>$this->utilities->getStreakImages($data['current_level'])
+								];	
+							}
 
 							$data['subscription_code']  = $data['code'];
 
-							$data['subscription_text']  = "Show this subscription code at ".ucwords($data['finder_name'])." & get FitCode to activate your session\n\nPerson of contact\n".ucwords($data['finder_poc_for_customer_name'])." ".$data['finder_poc_for_customer_no'];
+							$data['subscription_text']  = "Show this subscription code at ".ucwords($data['finder_name'])." & get FitCode to activate your session\n\nPerson of contact\n".ucwords($data['finder_poc_for_customer_name']);
+
+							$data['subscription_text_number'] = " ".$data['finder_poc_for_customer_no'];
 
 							$data['image'] = 'https://b.fitn.in/paypersession/subscription-code.png';
 
@@ -3188,7 +3181,7 @@ class CustomerController extends \BaseController {
 							if(!isset($data['post_trial_status']) || in_array($data['post_trial_status'], ['unavailable', ""])){
 								Log::info("inside block");
 
-								if(time() >= strtotime($data['schedule_date_time'])){
+								if(time() >= strtotime('-10 minutes ', strtotime($data['schedule_date_time']))){
 
 									if(time() < (strtotime($data['schedule_date_time'])+3*60*60) ){
 										$data['block_screen'] = [
@@ -3218,7 +3211,7 @@ class CustomerController extends \BaseController {
 								$data['schedule_date_time_text'] = "Happened on ".date('jS M, h:i a', strtotime($data['schedule_date_time']));
 							}
 							
-							$data = array_only($data, ['title', 'schedule_date_time', 'subscription_code', 'subscription_text', 'body1', 'streak', 'payment_done', 'order_id', 'trial_id', 'unlock', 'image', 'block_screen','activation_url', 'current_time' ,'time_diff', 'schedule_date_time_text']);
+							$data = array_only($data, ['title', 'schedule_date_time', 'subscription_code', 'subscription_text', 'body1', 'streak', 'payment_done', 'order_id', 'trial_id', 'unlock', 'image', 'block_screen','activation_url', 'current_time' ,'time_diff', 'schedule_date_time_text', 'subscription_text_number']);
 
 						
 							
@@ -5024,11 +5017,16 @@ class CustomerController extends \BaseController {
 					$response["start_date"] = date("d-m-Y",strtotime($data["schedule_date"]));
 					break;
 				case 'n+2': 
-					$response["start_time"] = strtoupper($data["schedule_slot_start_time"]);
-					$response["start_date"] = date("d-m-Y",strtotime($data["schedule_date"]));
-					Booktrial::where('_id', $response["transaction_id"])->update(['final_lead_stage'=> 'post_trial_stage']);
-					if(isset($_GET['device_type']) && $_GET['device_type'] == "ios"){
-						unset($response["text"]);
+					if($this->app_version > '4.4.3'){
+						$response = array_only($response, ['notification_id', 'transaction_type']);
+						$response['block_screen_data'] = $this->getBlockScreenData($time, $data);
+					}else{
+						$response["start_time"] = strtoupper($data["schedule_slot_start_time"]);
+						$response["start_date"] = date("d-m-Y",strtotime($data["schedule_date"]));
+						Booktrial::where('_id', $response["transaction_id"])->update(['final_lead_stage'=> 'post_trial_stage']);
+						if(isset($_GET['device_type']) && $_GET['device_type'] == "ios"){
+							unset($response["text"]);
+						}
 					}
 					break;
 				case 'n-20m':
@@ -5038,16 +5036,12 @@ class CustomerController extends \BaseController {
 						unset($response["text"]);
 					}
 					break;
-				case 'wn':
-				case 'wn+2':
+				
+				case 'n-10m':
 				
 					$response = array_only($response, ['notification_id', 'transaction_type']);
-					$response = $this->getBlockScreenData($time, $data);
+					$response ['block_screen_data']= $this->getBlockScreenData($time, $data);
 		
-					break;
-				case 'wn+2':
-					$response = array_only($response, ['notification_id', 'transaction_type']);
-					$response = $this->getBlockScreenData('wn+2', $data);
 					break;
 				default:
 
@@ -6449,7 +6443,7 @@ class CustomerController extends \BaseController {
 
 		switch ($label) {
 			case 'activate_session':
-			case 'wn':
+			case 'n-10m':
 				$response = array_only($response, ['transaction_type']);
 				$response['header'] = ucwords($data['service_name'])." at ".ucwords($data['finder_name']);
 				$response['sub_header'] = "ACTIVATE SESSION";
@@ -6463,7 +6457,7 @@ class CustomerController extends \BaseController {
 				];
 				break;
 			case 'let_us_know':
-			case 'wn+3':
+			case 'n+2':
 				$response = array_only($response, ['transaction_type']);
 				$response['header'] = "LET US KNOW";
 				$response['sub_header_2'] = "Did you attend your ".$data['service_name']." at ".$data['finder_name']." on ".date('jS M \a\t g:i a', strtotime($data['schedule_date_time']))."? \n\nLet us know and earn Cashback!";
