@@ -1293,13 +1293,13 @@ Class CustomerReward {
         if(!isset($coupon) && (strtolower($couponCode) == "whfit")){
             $coupon = array("code" => strtolower($couponCode),"discount_max" => 3000,"discount_amount" => 0,"discount_min" => 100);
             if($ratecard["validity_type"] == "days"){
-                if($ratecard["validity"] >= 30 && $ratecard["validity"] < 181){
+                if($ratecard["validity"] >= 30 && $ratecard["validity"] < 179){
                     $coupon["discount_percent"] = 3;
-                }else if($ratecard["validity"] >= 180){
+                }else if($ratecard["validity"] >= 179){
                     $coupon["discount_percent"] = 6;
                 }
             }else if($ratecard["validity_type"] == "months"){
-                if($ratecard["validity"] >= 1 && $ratecard["validity"] < 6){
+                if($ratecard["validity"] >= 1 && $ratecard["validity"] <= 5){
                     $coupon["discount_percent"] = 3;
                 }else if($ratecard["validity"] >= 6){
                     $coupon["discount_percent"] = 6;
