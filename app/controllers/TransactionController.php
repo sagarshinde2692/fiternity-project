@@ -4079,7 +4079,7 @@ class TransactionController extends \BaseController {
                 );
             }
 
-            if(isset($data['cashback_detail']) && isset($data['cashback_detail']['amount_deducted_from_wallet']) && $data['cashback_detail']['amount_deducted_from_wallet'] > 0){
+            if(isset($data['cashback_detail']) && isset($data['cashback_detail']['amount_deducted_from_wallet']) && $data['cashback_detail']['amount_deducted_from_wallet'] > 0 &&  $payment_mode_type != 'pay_later'){
 
                 $amount_summary[] = array(
                     'field' => 'Fitcash Applied',
@@ -4141,9 +4141,9 @@ class TransactionController extends \BaseController {
                 }
             }
 
-            if(isset($data['type']) && $data['type'] == 'workout-session' && $payment_mode_type == 'pay_later' && !(isset($data['pay_later']) && $data['pay_later'])){
+            if(isset($data['type']) && $data['type'] == 'workout-session' && $payment_mode_type == 'pay_later'){
                 
-                $amount_payable['value'] = "Rs. ".($data['amount_final'] + $data['instant_payment_discount']);
+                $amount_payable['value'] = "Rs. ".($data['amount_finder']);
 
             }
         }
