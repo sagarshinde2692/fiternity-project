@@ -1290,7 +1290,7 @@ Class CustomerReward {
                 $coupon["discount_percent"] = 5;
             }
         }
-if(!isset($coupon) && (strtolower($couponCode) == "whfit")){
+        if(!isset($coupon) && (strtolower($couponCode) == "whfit")){
             $coupon = array("code" => strtolower($couponCode),"discount_max" => 600,"discount_amount" => 0,"discount_min" => 100);
             if($ratecard["validity_type"] == "days"){
                 if($ratecard["validity"] >= 30 && $ratecard["validity"] < 179){
@@ -1309,6 +1309,10 @@ if(!isset($coupon) && (strtolower($couponCode) == "whfit")){
             }else if($ratecard["validity_type"] == "year"){
                     $coupon["discount_max"] = 1200;
                     $coupon["discount_percent"] = 5;
+            }
+            if(!isset($coupon["discount_percent"])){
+                $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "error_message"=>"Coupon cannot be applied for this purchase");
+                return $resp;
             }
         }
         Log::info("coupon");
