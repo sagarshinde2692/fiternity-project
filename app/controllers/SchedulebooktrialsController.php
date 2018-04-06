@@ -2483,8 +2483,7 @@ class SchedulebooktrialsController extends \BaseController {
             // if($booktrialdata['type'] == 'workout-session'){
 
             $trailBefore10mins = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->subMinutes(10);
-            $send_communication["customer_notification_instant"] = $this->customernotification->workoutSessionInstant($booktrialdata, $trailBefore10mins);
-            // $send_communication["customer_notification_instant"] = $this->customernotification->workoutSessionInstant($booktrialdata, $session_time);
+            $send_communication["customer_notification_before10min"] = $this->customernotification->bookTrialReminderBefore10Min($booktrialdata, $session_time);
 
             // }
 
@@ -2820,7 +2819,7 @@ class SchedulebooktrialsController extends \BaseController {
             "customer_notification_after2hour",
             "trialInstantCallReminder",
             "fitternity_email_postTrialStatusUpdate",
-            'customer_notification_instant'
+            "customer_notification_before10min"
         ];
 
         foreach ($array as $value) {

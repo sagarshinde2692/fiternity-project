@@ -300,11 +300,11 @@ Class CustomerNotification extends Notification{
 
 	}
 
-	public function workoutSessionInstant($data,$delay){
+	public function bookTrialReminderBefore10Min($data,$delay){
 
 		\Log::info("workout sessoin instant notification");
 		// return "sent";
-		$label = 'WorkoutSessionInstant-Customer';
+		$label = 'BookTrialReminderBefore10Min-Customer';
 
 		$notif_type = 'open_trial';
 		
