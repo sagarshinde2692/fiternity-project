@@ -76,7 +76,7 @@ Class CustomerNotification extends Notification{
 		$label = 'AutoTrial-ReminderAfter2Hour-Customer';
 
 		$notif_type = 'open_trial';
-		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"n+2");
+		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"n+2", "url"=>Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/let_us_know');
 		
 		return $this->common($label,$data,$notif_type,$notif_object,$delay);
 	}
