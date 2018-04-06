@@ -65,7 +65,7 @@ Class CustomerNotification extends Notification{
 		$label = 'AutoTrial-ReminderBefore3Hour-Customer';
 
 		$notif_type = 'open_trial';
-		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"n-3","max_time"=>strtotime($data["schedule_date_time"]), "url"=>Config::get('app.url').'/notificationdatabytrialid/'.$dat['_id'].'/session_reminder');
+		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"n-3","max_time"=>strtotime($data["schedule_date_time"]), "url"=>Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/session_reminder');
 		
 		return $this->common($label,$data,$notif_type,$notif_object,$delay);
 	}
@@ -308,7 +308,7 @@ Class CustomerNotification extends Notification{
 
 		$notif_type = 'open_trial';
 		
-		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"n-10", "url"=>Config::get('app.url').'/notificationdatabytrialid/'.$dat['_id'].'/activate_session');
+		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"n-10", "url"=>Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/activate_session');
 		
 		return $this->common($label,$data,$notif_type,$notif_object,$delay);
 
