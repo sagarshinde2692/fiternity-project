@@ -303,7 +303,7 @@ Class CustomerNotification extends Notification{
 	public function workoutSessionInstant($data,$delay){
 
 		\Log::info("workout sessoin instant notification");
-		return "sent";
+		// return "sent";
 		$label = 'WorkoutSessionInstant-Customer';
 
 		$notif_type = 'open_trial';
