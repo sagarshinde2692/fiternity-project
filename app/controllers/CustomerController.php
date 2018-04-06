@@ -3225,8 +3225,7 @@ class CustomerController extends \BaseController {
 			if($_REQUEST['device_type'] == 'ios'){
 
 				$result['campaigns'][] = [
-					'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/who-mobile-app.jpg
-',
+					'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/who-mobile-app.jpg',
 					'link'=>'ftrnty://fitternity.com/',
 					'title'=>'Fitness Sale',
 					'height'=>100,
@@ -3287,8 +3286,7 @@ class CustomerController extends \BaseController {
 				// ];
 
 				$result['campaigns'][] = [
-					'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/who-mobile-app.jpg
-',
+					'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/who-mobile-app.jpg',
 					'link'=>'ftrnty://ftrnty.com/search/all',
 					'title'=>'Fitness Sale',
 					'height'=>100,
