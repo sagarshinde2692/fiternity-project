@@ -6426,6 +6426,16 @@ class CustomerController extends \BaseController {
 
 	public function notificationDataByTrialId($booktrial_id, $label){
 
+		if(isset($_GET['notif_id']) && $_GET['notif_id'] != ''){
+			
+			$notificationTracking = NotificationTracking::find(intval($_GET['notif_id']));
+			
+			if($notificationTracking){
+				$notificationTracking->update(['clicked'=>time()]);
+			}
+			
+		}
+
 		$transaction = Booktrial::find(intval($booktrial_id));
 
 		$dates = array('start_date', 'start_date_starttime', 'schedule_date', 'schedule_date_time', 'followup_date', 'followup_date_time','missedcall_date','customofferorder_expiry_date','auto_followup_date');

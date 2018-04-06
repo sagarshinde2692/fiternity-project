@@ -65,7 +65,7 @@ Class CustomerNotification extends Notification{
 		$label = 'AutoTrial-ReminderBefore3Hour-Customer';
 
 		$notif_type = 'open_trial';
-		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"n-3","max_time"=>strtotime($data["schedule_date_time"]), "url"=>Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/session_reminder');
+		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"n-3","max_time"=>strtotime($data["schedule_date_time"]), "url"=>Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/session_reminder?notif_id=');
 		
 		return $this->common($label,$data,$notif_type,$notif_object,$delay);
 	}
@@ -76,7 +76,7 @@ Class CustomerNotification extends Notification{
 		$label = 'AutoTrial-ReminderAfter2Hour-Customer';
 
 		$notif_type = 'open_trial';
-		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"n+2", "url"=>Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/let_us_know');
+		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"n+2", "url"=>Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/let_us_know?notif_id=');
 		
 		return $this->common($label,$data,$notif_type,$notif_object,$delay);
 	}
@@ -308,7 +308,7 @@ Class CustomerNotification extends Notification{
 
 		$notif_type = 'open_trial';
 		
-		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"n-10", "url"=>Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/activate_session');
+		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"n-10", "url"=>Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/activate_session?notif_id=');
 		
 		return $this->common($label,$data,$notif_type,$notif_object,$delay);
 
@@ -368,14 +368,16 @@ Class CustomerNotification extends Notification{
 			$notificationData["max_time"] = $notif_object["max_time"];
 		}
 
-		if(isset($notif_object["url"])){
-			$notificationData["url"] = $notif_object["url"];
-		}
-
+		
 		$notificationData["text"]  = $text;
 		$notificationData["title"]  = $title;
-
+		
 		$unique_id = $this->getUniqueId($notificationData);
+		
+		if(isset($notif_object["url"])){
+			$notificationData["url"] = $notif_object["url"].$unique_id;
+		}
+
 
 		$notif_object["customer_id"] = (int)$data["customer_id"];
 		$notif_object["unique_id"] = $unique_id;
