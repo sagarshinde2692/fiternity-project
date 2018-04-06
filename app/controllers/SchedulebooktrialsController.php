@@ -4989,7 +4989,8 @@ class SchedulebooktrialsController extends \BaseController {
             $time_diff = 60*60*60*2;
         }
 
-		$hour2 = 60*60*2;
+        $hour2 = 60*60*2;
+        $hour1 = 60*60;
 		$going_status_txt = ['rescheduled','cancel'];
 
 		if(!isset($booktrial['going_status_txt'])){
@@ -5003,20 +5004,29 @@ class SchedulebooktrialsController extends \BaseController {
 		if(isset($booktrial['amount']) && $booktrial['amount'] == "-"){
 			$booktrial['amount'] = 0;
 		}
-
+        $cancel_enable = false;
+        
 		if($time_diff <= $hour2){
-			$reschedule_enable = false;
+            $reschedule_enable = false;
+			$cancel_enable = false;
         }elseif(in_array($booktrial['going_status_txt'], $going_status_txt) || $booktrial['amount'] > 0 || !isset($booktrial['type']) || $booktrial['type'] == 'workout-session' ){
-			$reschedule_enable = false;
+            $reschedule_enable = false;
+			$cancel_enable = false;
 		}else{
-			$reschedule_enable = true;
+            $reschedule_enable = true;
+			$cancel_enable = true;
 		}
+
+        if($booktrial['type'] == 'workout-session' && $time_diff <= $hour1){
+			$cancel_enable = true;
+        }
 
 		if(!isset($booktrial['going_status_txt'])){
 			$reschedule_enable = false;
 		}
 	
 		array_set($booktrial, 'reschedule_enable', $reschedule_enable);
+		array_set($booktrial, 'cancel_enable', $cancel_enable);
 
         if(isset($booktrial['preferred_starting_date'])){
 
@@ -6935,6 +6945,7 @@ class SchedulebooktrialsController extends \BaseController {
                 'status' => 200,
                 'message' => $message,
                 'booktrial_id'=> (int)$booktrial['_id'],
+                'fitcash'=>$fitcash
             ];
         }
 
@@ -7008,9 +7019,9 @@ class SchedulebooktrialsController extends \BaseController {
                     return Response::json(array('status'=>400, 'message'=>'Fitcode not attached'), 200);
                 }
                 $vendor_code = $_GET['vendor_code'];
-                $result = json_decode(json_encode($this->verifyFitCode($booktrial_id, $vendor_code)->getData()));
+                $verify_fitcode_result = json_decode(json_encode($this->verifyFitCode($booktrial_id, $vendor_code)->getData()));
                 
-                if($result->status==400){
+                if($verify_fitcode_result->status==400){
                     return Response::json(array('status'=>400, 'message'=>'Invalid Fitcode entered'), 200);
                 }
 
@@ -7022,26 +7033,31 @@ class SchedulebooktrialsController extends \BaseController {
                 $response = [
                     'header'=>'ENJOY YOUR WORKOUT!',
                     'image'=>'https://b.fitn.in/paypersession/happy-face-icon.png',
-                    'footer'=>'You have unlocked level '.$customer_level_data['current_level']['level'].' which gets you '.$customer_level_data['current_level']['cashback'].'% cashback',
+                    // 'footer'=>$customer_level_data['current_level']['cashback'].'% Cashback has been added in your Fitternity Wallet. Use it to book more workouts and keep on earning!',
                     'streak'=>[
                         'header'=>'STREAK IT OUT',
                         'data'=>$this->utilities->getStreakImages($customer_level_data['current_level']['level'])
                     ]
                 ];
 
-                if(!$customer_level_data['maxed_out']){
-                    $response['streak']['footer'] = 'You have unlocked level '.$customer_level_data['current_level']['level'].' which gets you '.$customer_level_data['current_level']['cashback'].'% cashback upto '.$customer_level_data['current_level']['number'].' sessions!';
-                }
+                // if(!$customer_level_data['maxed_out']){
+                //     $response['streak']['footer'] = 'You have unlocked level '.$customer_level_data['current_level']['level'].' which gets you '.$customer_level_data['current_level']['cashback'].'% cashback upto '.$customer_level_data['current_level']['number'].' sessions!';
+                // }
 
-                if(isset($customer_level_data['next_level']) && isset($customer_level_data['next_level']['cashback'])){
-                    $response['streak']['footer'] = 'You have unlocked level '.$customer_level_data['current_level']['level'].' which gets you '.$customer_level_data['current_level']['cashback'].'% cashback upto '.$customer_level_data['current_level']['number'].' sessions! Make sure to continue as next level gets you '.$customer_level_data['next_level']['cashback'].'%.Higher the Level, Higher the Cashback';
-                }
-
+                // if(isset($customer_level_data['next_level']) && isset($customer_level_data['next_level']['cashback'])){
+                //     $response['streak']['footer'] = 'You have unlocked level '.$customer_level_data['current_level']['level'].' which gets you '.$customer_level_data['current_level']['cashback'].'% cashback upto '.$customer_level_data['current_level']['number'].' sessions! Make sure to continue as next level gets you '.$customer_level_data['next_level']['cashback'].'%.Higher the Level, Higher the Cashback';
+                // }
+                
                 if($payment_done){
                     $response['sub_header_1'] = $customer_level_data['current_level']['cashback']."% Cashback";
                     $response['sub_header_2'] = " has been added in your Fitternity Wallet. Use it to book more workouts and keep on earning!";
                 }else{
                     $response['payment'] = $pending_payment;
+                }
+
+                if($booktrial['type'] == 'booktrials'){
+                    $response['sub_header_1'] = $verify_fitcode_result->fitcash." Fitcash";
+                    $response['sub_header_2'] = " has been added in your Fitternity Wallet. Use it to buy membership with lowest price";
                 }
 
 
@@ -7064,6 +7080,10 @@ class SchedulebooktrialsController extends \BaseController {
                 
                 if(!$payment_done){
                     $response['payment'] = $pending_payment;
+                }
+
+                if($booktrial['type'] == 'booktrials'){
+                    $response['sub_header_2'] = "Surprise discount will be given to you in form of fitcash post we verify your attendace with ".ucwords($booktrial['finder_name']);
                 }
 
             break;
@@ -7121,12 +7141,19 @@ class SchedulebooktrialsController extends \BaseController {
                         'sub_header_2'=>'What to carry, what to expect, directions, booking details and all that you need to know about your session can be found here.',
                     ],
                 ];
+
+                if($booktrial->type == 'booktrials'){
+                    $response['attend']['sub_header_2'] = 'Attend this session and earn Surprise Cashback';
+                }
             break;
                 
 
 
         }
 
+        if($booktrial->type == 'booktrials' && isset($response['streak'])){
+            unset($response['streak']);
+        }
         return Response::json($response);
 
     }

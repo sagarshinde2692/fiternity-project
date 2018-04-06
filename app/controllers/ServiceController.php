@@ -1486,9 +1486,9 @@ class ServiceController extends \BaseController {
 			
 			};
 			
-			$service_details['price'] = "₹".(($workout_session_ratecard['special_price']!=0) ? $workout_session_ratecard['special_price'] : $workout_session_ratecard['price'])." PER SESSION";
-
-			$service_details['amount'] = $workout_session_ratecard['price'];
+			$service_details['amount'] = (($workout_session_ratecard['special_price']!=0) ? $workout_session_ratecard['special_price'] : $workout_session_ratecard['price']);
+			
+			$service_details['price'] = "₹".$service_details['amount']." PER SESSION";
 
 			$service_details['contact'] = [
 				'address'=>''
