@@ -6500,7 +6500,18 @@ class CustomerController extends \BaseController {
 
 			break;
 		}
+		$time_diff = strtotime($data['schedule_date_time']) - time();
+		
+		if(isset($data['schedule_date_time'])){
 
+			if($time_diff < 0){
+				$response['schedule_date_time_text'] = "Happened on ".date('jS M, h:i a', strtotime($data['schedule_date_time']));
+			}else{
+				$response['schedule_date_time_text'] = "Scheduled on ".date('jS M, h:i a', strtotime($data['schedule_date_time']));
+			}
+		
+		}
+									
 		return $response;
 
 	}
