@@ -2820,6 +2820,7 @@ class SchedulebooktrialsController extends \BaseController {
             "customer_notification_after2hour",
             "trialInstantCallReminder",
             "fitternity_email_postTrialStatusUpdate",
+            'customer_notification_instant'
         ];
 
         foreach ($array as $value) {
