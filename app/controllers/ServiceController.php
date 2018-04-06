@@ -1433,7 +1433,7 @@ class ServiceController extends \BaseController {
 				->first(['title', 'contact', 'average_rating', 'total_rating_count']);
 
 			if(!$finder){
-				return Response::json(array('status'=>400, 'error_message'=>'Vendor not active'), $this->error_status);
+				return Response::json(array('status'=>400, 'error_message'=>'Facility not active'), $this->error_status);
 			}
 	
 			// $metropolis = new Metropolis();
@@ -1463,7 +1463,7 @@ class ServiceController extends \BaseController {
 
 				$service_details['type'] = 'gym';
 				$service_details['pass_title'] = 'All Day Pass';
-				$service_details['pass_description'] = 'Be flexible with timings! Select your preffered time of workout anytime between 6am - 11pm';
+				$service_details['pass_description'] = 'Choose to workout at a suitable time between 6 am to 11 pm';
 
 
 			}else{
@@ -1487,7 +1487,7 @@ class ServiceController extends \BaseController {
 			};
 			
 			$service_details['amount'] = (($workout_session_ratecard['special_price']!=0) ? $workout_session_ratecard['special_price'] : $workout_session_ratecard['price']);
-			
+
 			$service_details['price'] = "₹".$service_details['amount']." PER SESSION";
 
 			$service_details['contact'] = [
@@ -1662,6 +1662,8 @@ class ServiceController extends \BaseController {
 
 			$service_details['ratecard_id'] = head($schedule->schedules)->slots[0]->ratecard_id;
 		}else{
+			return Response::json(array('status'=>400, 'error_message'=>'Sessions are not available'), $this->error_status);
+			
 			$service_details['total_sessions'] = "0 Session";
 			$service_details['next_session'] = "No session available";
 			$service_details['slots'] = [];
