@@ -3196,7 +3196,7 @@ class CustomerController extends \BaseController {
 									}
 								
 								}else{
-									$data['activation_url'] = Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/activate';
+									$data['activation_url'] = Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/activate_session';
 								}
 								
 

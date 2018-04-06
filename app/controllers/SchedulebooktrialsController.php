@@ -7032,6 +7032,7 @@ class SchedulebooktrialsController extends \BaseController {
                 Log::info($customer_level_data);
 
                 $response = [
+                    'status'=>200,
                     'header'=>'ENJOY YOUR WORKOUT!',
                     'image'=>'https://b.fitn.in/paypersession/happy-face-icon.png',
                     // 'footer'=>$customer_level_data['current_level']['cashback'].'% Cashback has been added in your Fitternity Wallet. Use it to book more workouts and keep on earning!',
@@ -7073,6 +7074,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $customer_level_data = $this->utilities->getWorkoutSessionLevel($booktrial['customer_id']);                
                 
                 $response = [
+                    'status'=>200,
                     'header'=>'DON’T WORRY',
                     'image'=>'https://b.fitn.in/paypersession/happy-face-icon.png',
                     'sub_header_1'=>$customer_level_data['next_session']['cashback'].'% Cashback',
@@ -7097,6 +7099,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $customer_level_data = $this->utilities->getWorkoutSessionLevel($booktrial['customer_id']);     
                 
                 $response = [
+                    'status'=>200,
                     'header'=>'OOPS!',
                     'image'=>'https://b.fitn.in/paypersession/sad-face-icon.png',
                     'sub_header_2'=>'Make sure you attend next time to earn Cashback and continue working out!',
@@ -7125,6 +7128,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $customer_level_data = $this->utilities->getWorkoutSessionLevel($booktrial['customer_id']);                
                 
                 $response = [
+                    'status'=>200,
                     'header'=>'We’ve got you covered!',
                     'image1'=>'http://b.fitn.in/paypersession/Location-icon-mdpi.png',
                     'image2'=>'http://b.fitn.in/paypersession/bag-icon-mdpi.png',
