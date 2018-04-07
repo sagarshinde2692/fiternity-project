@@ -2154,6 +2154,14 @@ class CustomerController extends \BaseController {
 
 			$response 	= 	array('status' => 200,'customer' => $customer[0],'message' => 'Customer Details');
 
+			$customer_level_data = $this->utilities->getWorkoutSessionLevel($customer_id);                
+			
+			$response['level'] = [
+				'header'=>'You’re on a workout streak!',
+				'sub_header'=>'Level '.$customer_level_data['current_level']['level'],
+				'image'=>Config::get('app.streak_data')[$customer_level_data['current_level']['level'] - 1]['unlock_icon']
+			];
+
 		}else{
 
 			$response 	= 	array('status' => 400,'message' => 'Customer not found');
@@ -2177,6 +2185,8 @@ class CustomerController extends \BaseController {
 			$customer->update($af_instance_idData);
 		}
 		$customer_detail = $this->customerDetail($customer_id);
+
+		
 
 		return $customer_detail;
 
@@ -6513,9 +6523,64 @@ class CustomerController extends \BaseController {
 			}
 		
 		}
-									
+
+		$description = "";
+		
+		if(isset($response['sub_header_1'])){
+			$description = "<font color='#f7a81e'>".$response['sub_header_1']."</font>";
+		}
+
+		if(isset($response['sub_header_2'])){
+			$description = $description.$response['sub_header_2'];
+		}
+		$response['description'] = $description;
+							
 		return $response;
 
+	}
+
+	public function streakScreenData(){
+		
+		$jwt_token = Request::header('Authorization');
+
+		Log::info($jwt_token);
+
+		$decoded = $this->customerTokenDecode($jwt_token);
+
+		$customer_id = $decoded->customer->_id;
+		
+		$customer_level_data = $this->utilities->getWorkoutSessionLevel($customer_id); 
+		
+		$streak_items = [];
+		
+		foreach(Config::get('app.streak_data') as $key => $value){
+
+			array_push($streak_items, ['title'=>$value['cashback'].'%', 'value'=>$value['number'].' Sessions', 'level'=>$key+1]);
+
+		}
+
+		$streak = [
+			'header'=>'Attend More Earn More',
+			'items'=>$streak_items
+		];
+		
+		$response = [
+			'streak'=>[
+				'header'=>'You’re on a workout streak!',
+				'data'=>$this->utilities->getStreakImages($customer_level_data['current_level']['level'])
+			],
+			'body_2'=>[
+				'header'=>'How It Works',
+				'data'=>['Lorem ipsum lorem ipsum', 'Lorem ipsum lorem ipsum', 'Lorem ipsum lorem ipsum']
+			],
+			'body_3'=>[
+				'header'=>'LOREM IPSUM',
+				'items'=>$streak_items
+			]
+
+		];
+
+		return $response;
 	}
 	
 }

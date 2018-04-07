@@ -1156,3 +1156,4 @@ Route::get('sessionstatuscapture/{status}/{booktrial_id}', 'SchedulebooktrialsCo
 Route::get('notificationdatabytrialid/{booktrial_id}/{label}', 'CustomerController@notificationDataByTrialId');
 Route::get('getcapturedata/{trial_id}', 'TransactionController@getCaptureData');
 Route::get('scheduleManualCommunication/{booktrial_id}', 'SchedulebooktrialsController@scheduleManualCommunication');
+Route::get('streakscreendata', 'CustomerController@streakScreenData');
