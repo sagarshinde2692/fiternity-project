@@ -3326,11 +3326,11 @@ Class Utilities {
 
             }else{
 
-                if(!isset($getRatecardCount['service']) && !isset($getRatecardCount['service']['ratecard'])){
+                if(!isset($getRatecardCount['data']) && !isset($getRatecardCount['data']['service']) && !isset($getRatecardCount['data']['service']['ratecard'])){
                     $ratecard_count = 0;
                 }
 
-                if(isset($getRatecardCount['service']) && isset($getRatecardCount['service']['ratecard']) && empty($getRatecardCount['service']['ratecard'])){
+                if(isset($getRatecardCount['data']['service']) && isset($getRatecardCount['data']['service']['ratecard']) && empty($getRatecardCount['data']['service']['ratecard'])){
                     $ratecard_count = 0;
                 }
             }
