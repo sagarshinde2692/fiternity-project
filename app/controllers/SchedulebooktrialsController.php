@@ -7199,12 +7199,11 @@ class SchedulebooktrialsController extends \BaseController {
         
         $booktrialdata = $booktrial->toArray();
         
-        
-        $this->customernotification->bookTrialReminderBefore3Hour($booktrialdata, 0);
+        $this->customernotification->bookTrialReminderBefore3Hour($booktrialdata, '2018-05-10');
 
-        $this->customernotification->bookTrialReminderBefore10Min($booktrialdata, 0);
+        $this->customernotification->bookTrialReminderBefore10Min($booktrialdata, '2018-05-10');
         
-        $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, 0);
+        $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, '2018-05-10');
 
         return "done";
         
