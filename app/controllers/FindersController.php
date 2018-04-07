@@ -2500,8 +2500,7 @@ class FindersController extends \BaseController {
 
 		$response = [
 			'status'=>200,
-			'message'=>'Success',
-			'ratecards'=>[]
+			'message'=>'Success'
 		];
 
 		if($service){
@@ -2538,7 +2537,7 @@ class FindersController extends \BaseController {
 
 					foreach ($ratecards as $ratecard_key => $ratecard_value) {
 
-						if($ratecard_value['type'] != 'membership' || $ratecard_value['type'] != 'packages'){
+						if(!in_array($ratecard_value['type'],['membership','packages'])){
 
 							unset($ratecards[$ratecard_key]); continue;
 						}

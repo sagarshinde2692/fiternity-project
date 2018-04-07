@@ -3326,11 +3326,11 @@ Class Utilities {
 
             }else{
 
-                if(!isset($getRatecardCount['ratecards'])){
+                if(!isset($getRatecardCount['service']) && !isset($getRatecardCount['service']['ratecard'])){
                     $ratecard_count = 0;
                 }
 
-                if(isset($getRatecardCount['ratecards']) && empty($getRatecardCount['ratecards'])){
+                if(isset($getRatecardCount['service']) && isset($getRatecardCount['service']['ratecard']) && empty($getRatecardCount['service']['ratecard'])){
                     $ratecard_count = 0;
                 }
             }
