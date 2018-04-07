@@ -7158,15 +7158,13 @@ class SchedulebooktrialsController extends \BaseController {
 
 
         }
-
+        
         if($booktrial->type == 'booktrials' && isset($response['streak'])){
             unset($response['streak']);
         }
+        $response['trial_id'] = $booktrial->_id;
         return Response::json($response);
 
     }
-
-
-
 
 }
