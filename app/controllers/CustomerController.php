@@ -6475,6 +6475,7 @@ class CustomerController extends \BaseController {
 					'didnt_get'=>['text'=>'Didn’t get FitCode','url'=>Config::get('app.url')."/sessionstatuscapture/lost/".$data['_id']],
 					'cant_make'=>['text'=>'CAN’T MAKE IT','url'=>Config::get('app.url')."/sessionstatuscapture/didnotattend/".$data['_id']]
 				];
+				$response['block'] = true;
 				break;
 			case 'let_us_know':
 			case 'n+2':
@@ -6485,6 +6486,7 @@ class CustomerController extends \BaseController {
 					'attended'=>['text'=>'ATTENDED','url'=>Config::get('app.url')."/sessionstatuscapture/lost/".$data['_id']],
 					'did_not_attend'=>['text'=>'DID NOT ATTEND','url'=>Config::get('app.url')."/sessionstatuscapture/didnotattend/".$data['_id']]
 				];
+				$response['block'] = true;
 				break;
 			case 'n-3':
 			case 'session_reminder':
@@ -6497,7 +6499,7 @@ class CustomerController extends \BaseController {
 					'attended'=>['text'=>'YES I’LL BE THERE','url'=>Config::get('app.url')."/sessionstatuscapture/confirm/".$data['_id']],
 					'did_not_attend'=>['text'=>'NO, I’M NOT GOING','url'=>Config::get('app.url')."/sessionstatuscapture/didnotattend/".$data['_id']]
 				];
-
+				$response['block'] = false;
 			break;
 		}
 		$time_diff = strtotime($data['schedule_date_time']) - time();

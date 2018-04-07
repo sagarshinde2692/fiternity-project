@@ -2421,9 +2421,11 @@ class SchedulebooktrialsController extends \BaseController {
         return Response::json($resp,200);
     }
 
-     public function sendCommunication($job,$data){
-         
-        $job->delete();
+     public function sendCommunication($job=null,$data){
+        
+        if($job){
+            $job->delete();
+        }
 
         try{
 
@@ -7132,6 +7134,7 @@ class SchedulebooktrialsController extends \BaseController {
                     'header'=>'We’ve got you covered!',
                     'image1'=>'http://b.fitn.in/paypersession/Location-icon-mdpi.png',
                     'image2'=>'http://b.fitn.in/paypersession/bag-icon-mdpi.png',
+                    'image'=>'http://b.fitn.in/paypersession/bag-icon-mdpi.png',
                     'image3'=>'http://b.fitn.in/paypersession/money-icon.png',
                     'activate'=>[
                         'sub_header_1'=>'ACTIVATE YOUR SESSION',
@@ -7162,6 +7165,8 @@ class SchedulebooktrialsController extends \BaseController {
         return Response::json($response);
 
     }
+
+
 
 
 }
