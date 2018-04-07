@@ -2421,7 +2421,7 @@ class SchedulebooktrialsController extends \BaseController {
         return Response::json($resp,200);
     }
 
-     public function sendCommunication($job=null,$data){
+     public function sendCommunication($job,$data){
         
         if($job){
             $job->delete();
@@ -7165,6 +7165,12 @@ class SchedulebooktrialsController extends \BaseController {
         $response['trial_id'] = $booktrial->_id;
         return Response::json($response);
 
+    }
+
+    public function scheduleManualCommunication($booktrial_id){
+        
+        $this->sendCommunication(null, ['booktrial_id'=>intval($booktrial_id)]);
+        
     }
 
 }
