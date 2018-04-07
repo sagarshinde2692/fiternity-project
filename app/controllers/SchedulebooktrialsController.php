@@ -7081,6 +7081,10 @@ class SchedulebooktrialsController extends \BaseController {
                     'image'=>'https://b.fitn.in/paypersession/happy-face-icon.png',
                     'sub_header_1'=>$customer_level_data['next_session']['cashback'].'% Cashback',
                     'sub_header_2'=>' will be added in your wallet once we verify your attendance with '.ucwords($booktrial['finder_name']),
+                    'streak'=>[
+                        'header'=>'STREAK IT OUT',
+                        'data'=>$this->utilities->getStreakImages($customer_level_data['current_level']['level'])
+                    ]
                 ];
                 
                 if(!$payment_done){
