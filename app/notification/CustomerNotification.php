@@ -300,7 +300,7 @@ Class CustomerNotification extends Notification{
 
 	}
 
-	public function bookTrialReminderBefore10Min($data,$delay){
+	protected function bookTrialReminderBefore10Min($data,$delay){
 
 		\Log::info("workout sessoin instant notification");
 		// return "sent";
@@ -375,7 +375,7 @@ Class CustomerNotification extends Notification{
 		$unique_id = $this->getUniqueId($notificationData);
 		
 		if(isset($notif_object["url"])){
-			$notificationData["url"] = $notif_object["url"].$unique_id;
+			$notif_object["url"] = $notif_object["url"].$unique_id;
 		}
 
 

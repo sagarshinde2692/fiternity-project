@@ -7183,8 +7183,30 @@ class SchedulebooktrialsController extends \BaseController {
     }
 
     public function scheduleManualCommunication($booktrial_id){
+
+        $dates = array('schedule_date','schedule_date_time','missedcall_date','customofferorder_expiry_date','followup_date','auto_followup_date');
         
-        $this->sendCommunication(null, ['booktrial_id'=>intval($booktrial_id)]);
+        $booktrial = Booktrial::find(intval($booktrial_id));
+        
+        foreach ($dates as $key => $value) {
+            if(isset($booktrial[$value])){
+                if($booktrial[$value] == "-" || $booktrial[$value] == ""){
+
+                    $booktrial->unset($value);
+                }
+            }
+        }
+        
+        $booktrialdata = $booktrial->toArray();
+        
+        
+        $this->customernotification->bookTrialReminderBefore3Hour($booktrialdata, 0);
+
+        $this->customernotification->bookTrialReminderBefore10Min($booktrialdata, 0);
+        
+        $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, 0);
+
+        return "done";
         
     }
 
