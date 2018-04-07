@@ -7070,7 +7070,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $result = json_decode(json_encode($this->lostFitCode($booktrial_id)->getData()));
 
                 if($result->status==400){
-                    return Response::json(array('status'=>500, 'message'=>'Something went weong'), 200);
+                    return Response::json(array('status'=>500, 'message'=>'Something went wrong'), 200);
                 }
 
                 $customer_level_data = $this->utilities->getWorkoutSessionLevel($booktrial['customer_id']);                
@@ -7162,6 +7162,17 @@ class SchedulebooktrialsController extends \BaseController {
         if($booktrial->type == 'booktrials' && isset($response['streak'])){
             unset($response['streak']);
         }
+
+        $description = "";
+
+        if(isset($response['sub_header_1'])){
+            $description = "<font color='#f7a81e'>".$response['sub_header_1']."</font>";
+        }
+
+        if(isset($response['sub_header_2'])){
+            $description = $description.$response['sub_header_2'];
+        }
+        $response['description'] = $description;
         $response['trial_id'] = $booktrial->_id;
         return Response::json($response);
 
