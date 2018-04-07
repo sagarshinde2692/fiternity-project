@@ -1797,12 +1797,12 @@ class HomeController extends BaseController {
             $footer_block5_ids 			= 		array_map('intval', explode(",", $homepage['footer_block5_ids'] ));
             $footer_block6_ids 			= 		array_map('intval', explode(",", $homepage['footer_block6_ids'] ));
 
-            $footer_block1_finders 		=		Finder::active()->with(array('location'=>function($query){$query->select('name');}))->whereIn('_id', $footer_block1_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title','location_id'))->toArray();
-            $footer_block2_finders 		=		Finder::active()->with(array('location'=>function($query){$query->select('name');}))->whereIn('_id', $footer_block2_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title','location_id'))->toArray();
-            $footer_block3_finders 		=		Finder::active()->with(array('location'=>function($query){$query->select('name');}))->whereIn('_id', $footer_block3_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title','location_id'))->toArray();
-            $footer_block4_finders 		=		Finder::active()->with(array('location'=>function($query){$query->select('name');}))->whereIn('_id', $footer_block4_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title','location_id'))->toArray();
-            $footer_block5_finders 		=		Finder::active()->with(array('location'=>function($query){$query->select('name');}))->whereIn('_id', $footer_block5_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title','location_id'))->toArray();
-            $footer_block6_finders 		=		Finder::active()->with(array('location'=>function($query){$query->select('name');}))->whereIn('_id', $footer_block6_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title','location_id'))->toArray();
+            $footer_block1_finders 		=		Finder::active()->with(array('location'=>function($query){$query->select('name');}))->whereIn('_id', $footer_block1_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title','location_id','backend_flags'))->toArray();
+            $footer_block2_finders 		=		Finder::active()->with(array('location'=>function($query){$query->select('name');}))->whereIn('_id', $footer_block2_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title','location_id','backend_flags'))->toArray();
+            $footer_block3_finders 		=		Finder::active()->with(array('location'=>function($query){$query->select('name');}))->whereIn('_id', $footer_block3_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title','location_id','backend_flags'))->toArray();
+            $footer_block4_finders 		=		Finder::active()->with(array('location'=>function($query){$query->select('name');}))->whereIn('_id', $footer_block4_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title','location_id','backend_flags'))->toArray();
+            $footer_block5_finders 		=		Finder::active()->with(array('location'=>function($query){$query->select('name');}))->whereIn('_id', $footer_block5_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title','location_id','backend_flags'))->toArray();
+            $footer_block6_finders 		=		Finder::active()->with(array('location'=>function($query){$query->select('name');}))->whereIn('_id', $footer_block6_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title','location_id','backend_flags'))->toArray();
 
             array_set($footer_finders,  'footer_block1_finders', $footer_block1_finders);
             array_set($footer_finders,  'footer_block2_finders', $footer_block2_finders);
@@ -1825,16 +1825,22 @@ class HomeController extends BaseController {
                     foreach ($finders as $finder_key => $finder_value) {
 
                         // if(strpos($finder_value['slug'],'gold') !== false){
-                            $footer_finders[$block][$finder_key]['title'] = $finder_value['title'].' '.$finder_value['location']['name'];
+                            // $footer_finders[$block][$finder_key]['title'] = $finder_value['title'].' '.$finder_value['location']['name'];
                         // }
 
+                        if(!(isset($finder_value['backend_flags']) &&  isset($finder_value['backend_flags']['name_includes_location']) && $finder_value['backend_flags']['name_includes_location'] == true)){
+                            $footer_finders[$block][$finder_key]['title'] = $finder_value['title'].' '.$finder_value['location']['name'];
+                        }
+
+                        
                         $array = [
                             "_id",
                             "location_id",
                             "finder_coverimage",
                             "commercial_type_status",
                             "business_type_status",
-                            "location"
+                            "location",
+                            "backend_flags"
                         ];
 
                         foreach ($array as $value) {
