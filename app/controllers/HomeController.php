@@ -708,6 +708,12 @@ class HomeController extends BaseController {
                     'order_type'=>$order_type,
                     'id'=>$id
                 ];
+                if(isset($item['pay_later']) && $item['pay_later'] && $item['status'] == '1'){
+                    unset($response['conclusion']);
+                    unset($response['feedback']);
+                    $response['header'] = 'Payment Successful';
+                    $response['subline'] = 'Your payment for'.$service_name.' session at '.$finder_name.' is successful';
+                }
 
                 return $response;
             }

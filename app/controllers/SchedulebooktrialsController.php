@@ -7036,7 +7036,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $response = [
                     'status'=>200,
                     'header'=>'ENJOY YOUR WORKOUT!',
-                    'image'=>'https://b.fitn.in/paypersession/happy-face-icon.png',
+                    'image'=>'https://b.fitn.in/paypersession/happy_face_icon-2.png',
                     // 'footer'=>$customer_level_data['current_level']['cashback'].'% Cashback has been added in your Fitternity Wallet. Use it to book more workouts and keep on earning!',
                     'streak'=>[
                         'header'=>'STREAK IT OUT',

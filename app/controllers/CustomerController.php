@@ -6583,7 +6583,7 @@ class CustomerController extends \BaseController {
 			],
 			'body_2'=>[
 				'header'=>'How It Works',
-				'data'=>['Lorem ipsum lorem ipsum', 'Lorem ipsum lorem ipsum', 'Lorem ipsum lorem ipsum']
+				'data'=>['Book a workout session', 'Attend the session', 'Collet your Fitcodee from the center', 'Punch the fitCode in your profile to track your streak', 'Attend more to earn more']
 			],
 			'body_3'=>[
 				'header'=>'Attend more & Earn More',
