@@ -1452,6 +1452,9 @@ class ServiceController extends \BaseController {
 			
 			};
 
+			$service_details['lat'] = (string)$service_details['lat'];
+			$service_details['lon'] = (string)$service_details['lon'];
+
 			// return $service_details;
 			$service_details = $service_details->toArray();
 
