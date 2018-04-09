@@ -2572,7 +2572,7 @@ class SchedulebooktrialsController extends \BaseController {
 
                 $send_communication["customer_sms_before20Min"] = $this->customersms->bookTrialReminderBefore20Min($booktrialdata, $delayReminderTimeBefore20Min);
                 
-                $send_communication["customer_notification_before20Min"] = $this->customernotification->bookTrialReminderBefore20Min($booktrialdata, $delayReminderTimeBefore20Min);
+                // $send_communication["customer_notification_before20Min"] = $this->customernotification->bookTrialReminderBefore20Min($booktrialdata, $delayReminderTimeBefore20Min);
 
                 $booktrial->missedcall_batch = $batch;
             }
@@ -4880,7 +4880,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         if($booktrial['reg_id'] != '' && $booktrial['device_type'] != ''){
 
-            $booktrial->customerNotificationReminderBefore3Hour = $this->customernotification->bookTrialReminderBefore20Min($data,$ozonetel_date);
+            // $booktrial->customerNotificationReminderBefore3Hour = $this->customernotification->bookTrialReminderBefore20Min($data,$ozonetel_date);
         }
 
         $booktrial->update();
