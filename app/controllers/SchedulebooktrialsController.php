@@ -7177,7 +7177,7 @@ class SchedulebooktrialsController extends \BaseController {
             $description = $description.$response['sub_header_2'];
         }
         $response['description'] = $description;
-        $response['trial_id'] = $booktrial->_id;
+        $response['trial_id'] = (string)$booktrial->_id;
         return Response::json($response);
 
     }
