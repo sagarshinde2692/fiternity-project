@@ -6915,7 +6915,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             }else if($booktrial->type == "workout-session" && !isset($booktrial->post_trial_status_updated_by_fitcode) && !(isset($booktrial->payment_done) && !$booktrial->payment_done)){
 
-                $fitcash = $this->utilities->getWorkoutSessionFitcash($booktrial->toArray());
+                $fitcash = round($this->utilities->getWorkoutSessionFitcash($booktrial->toArray()) * $booktrial->amount_finder / 100);
                 
                 $req = array(
                     "customer_id"=>$booktrial['customer_id'],
