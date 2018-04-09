@@ -6553,8 +6553,10 @@ class CustomerController extends \BaseController {
 		$customer_level_data = $this->utilities->getWorkoutSessionLevel($customer_id); 
 		
 		$streak_items = [];
+
+		$streak_constants = Config::get('app.streak_data');
 		
-		foreach(Config::get('app.streak_data') as $key => $value){
+		foreach($streak_constants as $key => $value){
 
 			array_push($streak_items, ['title'=>$value['cashback'].'%', 'value'=>$value['number'].' Sessions', 'level'=>$key+1]);
 
@@ -6568,14 +6570,14 @@ class CustomerController extends \BaseController {
 		$response = [
 			'streak'=>[
 				'header'=>'You’re on a workout streak!',
-				'data'=>$this->utilities->getStreakImages($customer_level_data['current_level']['level'])
+				'data'=>$this->utilities->getStreakImages(count($streak_constants))
 			],
 			'body_2'=>[
 				'header'=>'How It Works',
 				'data'=>['Lorem ipsum lorem ipsum', 'Lorem ipsum lorem ipsum', 'Lorem ipsum lorem ipsum']
 			],
 			'body_3'=>[
-				'header'=>'LOREM IPSUM',
+				'header'=>'Attend more & Earn More',
 				'items'=>$streak_items
 			]
 
