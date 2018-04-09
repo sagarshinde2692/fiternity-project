@@ -1587,7 +1587,6 @@ class ServiceController extends \BaseController {
 		$time_interval = null;
 		$within_time = null;
 		$requested_date = date('Y-m-d', time());
-
 		$gym_start_time = [
 			'hour'=>6,
 			'min'=>0
@@ -1597,34 +1596,19 @@ class ServiceController extends \BaseController {
 			'hour'=>23,
 			'min'=>0
 		];
+		
 		if(isset($_GET['date']) && $_GET['date'] != ''){
 
 			$requested_date = $_GET['date'];
-
-			if(strtotime($requested_date) < time()){
-				$gym_start_time = [
-					'hour'=>intval(date('G', time()))>6?intval(date('G', time())):6,
-					'min'=>intval(date('i', time()))
-				];
-			}
 
 		}else{
 
 			switch($time){
 				case "within-4-hours":
 					$within_time = 4*60*60;
-					$gym_start_time = [
-						'hour'=>intval(date('G', time()))>6?intval(date('G', time())):6,
-						'min'=>intval(date('i', time()))
-					];
-					
 					break;
 				case "later-today":
 					$time_interval = 4*60*60;
-					$gym_start_time = [
-						'hour'=>intval(date('G', time()))>6?intval(date('G', time())):6,
-						'min'=>intval(date('i', time()))
-					];
 					break;
 				case "tomorrow":
 					$requested_date = date('Y-m-d', strtotime('+1 day', time()));
@@ -1663,6 +1647,16 @@ class ServiceController extends \BaseController {
 			}
 
 			$service_details['ratecard_id'] = head($schedule->schedules)->slots[0]->ratecard_id;
+
+			$gym_start_time = [
+				'hour'=>intval(date('G', strtotime(head($schedule->schedules)->slots[0]->start_time))),
+				'min'=>intval(date('i', strtotime(head($schedule->schedules)->slots[0]->start_time))),
+			];
+	
+			$gym_end_time = [
+				'hour'=>intval(date('G', strtotime(end($schedule->schedules)->slots[0]->start_time))),
+				'min'=>intval(date('i', strtotime(end($schedule->schedules)->slots[0]->start_time))),
+			];
 		}else{
 			return Response::json(array('status'=>400, 'error_message'=>'Sessions are not available'), $this->error_status);
 			
