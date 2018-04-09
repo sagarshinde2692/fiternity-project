@@ -1654,8 +1654,8 @@ class ServiceController extends \BaseController {
 			];
 	
 			$gym_end_time = [
-				'hour'=>intval(date('G', strtotime(end($schedule->schedules)->slots[0]->start_time))),
-				'min'=>intval(date('i', strtotime(end($schedule->schedules)->slots[0]->start_time))),
+				'hour'=>intval(date('G', strtotime(head($schedule->schedules)->slots[count(head($schedule->schedules)->slots)-1]->start_time))),
+				'min'=>intval(date('i', strtotime(head($schedule->schedules)->slots[count(head($schedule->schedules)->slots)-1]->start_time))),
 			];
 		}else{
 			return Response::json(array('status'=>400, 'error_message'=>'Sessions are not available'), $this->error_status);

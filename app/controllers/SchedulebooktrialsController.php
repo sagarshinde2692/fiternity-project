@@ -7078,7 +7078,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $response = [
                     'status'=>200,
                     'header'=>'DON’T WORRY',
-                    'image'=>'https://b.fitn.in/paypersession/happy-face-icon.png',
+                    'image'=>'https://b.fitn.in/paypersession/happy_face_icon-2.png',
                     'sub_header_1'=>$customer_level_data['next_session']['cashback'].'% Cashback',
                     'sub_header_2'=>' will be added in your wallet once we verify your attendance with '.ucwords($booktrial['finder_name']),
                     'streak'=>[

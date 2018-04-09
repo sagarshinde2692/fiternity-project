@@ -3188,7 +3188,7 @@ class CustomerController extends \BaseController {
 
 							$data['subscription_text_number'] = " ".$data['finder_poc_for_customer_no'];
 
-							$data['image'] = 'http://b.fitn.in/paypersession/Subscribtion_code_icon.png';
+							$data['image'] = 'http://b.fitn.in/paypersession/Subscribtion_code_icon_new.png';
 
 							$data['title']  = ucwords($data['service_name'])." at ".ucwords($data['finder_name']);
 							
@@ -6504,6 +6504,8 @@ class CustomerController extends \BaseController {
 					'attended'=>['text'=>'ATTENDED','url'=>Config::get('app.url')."/sessionstatuscapture/lost/".$data['_id']],
 					'did_not_attend'=>['text'=>'DID NOT ATTEND','url'=>Config::get('app.url')."/sessionstatuscapture/didnotattend/".$data['_id']]
 				];
+				$response['image'] = 'https://b.fitn.in/paypersession/happy_face_icon-2.png';
+				
 				$response['block'] = true;
 				break;
 			case 'n-3':
