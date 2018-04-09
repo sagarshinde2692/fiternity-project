@@ -792,13 +792,12 @@ class ServiceController extends \BaseController {
 	        $slot_passed_flag = true;
 			
             if(count($weekdayslots['slots']) > 0 && isset($ratecard['_id'])){
-
-            	if(isset($ratecard->special_price) && $ratecard->special_price != 0){
-                    $ratecard_price = $ratecard['special_price'];
+				if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
+					$ratecard_price = $ratecard['special_price'];
                 }else{
-                    $ratecard_price = $ratecard['price'];
+					$ratecard_price = $ratecard['price'];
                 }
-
+				
                 if($type == "workoutsessionschedules"){
 	            	$service["workout_session"] = [
 		    			"available" => true,
@@ -811,7 +810,7 @@ class ServiceController extends \BaseController {
 		    		$service['cost'] = "₹ ".$ratecard_price;
 		    	}
 
-                foreach ($weekdayslots['slots'] as $slot) {
+				foreach ($weekdayslots['slots'] as $slot) {
 
 					if(!isNotInoperationalDate($date, $city_id, $slot, $findercategory_id)){
 						continue;
