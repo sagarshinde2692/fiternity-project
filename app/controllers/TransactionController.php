@@ -496,7 +496,7 @@ class TransactionController extends \BaseController {
 
         if ($data['type'] == 'workout-session'){
             
-            $data['instant_payment_discount'] = 100;
+            $data['instant_payment_discount'] = round($data['amount_finder'] / 5) ;
 
         }
 

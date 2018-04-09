@@ -3181,7 +3181,7 @@ class CustomerController extends \BaseController {
 
 							$data['subscription_text_number'] = " ".$data['finder_poc_for_customer_no'];
 
-							$data['image'] = 'https://b.fitn.in/paypersession/subscription-code.png';
+							$data['image'] = 'http://b.fitn.in/paypersession/Subscribtion_code_icon.png';
 
 							$data['title']  = ucwords($data['service_name'])." at ".ucwords($data['finder_name']);
 							
@@ -3223,7 +3223,7 @@ class CustomerController extends \BaseController {
 								$data['schedule_date_time_text'] = "Scheduled on ".date('jS M, h:i a', strtotime($data['schedule_date_time']));
 							}
 							
-							$data = array_only($data, ['title', 'schedule_date_time', 'subscription_code', 'subscription_text', 'body1', 'streak', 'payment_done', 'order_id', 'trial_id', 'unlock', 'image', 'block_screen','activation_url', 'current_time' ,'time_diff', 'schedule_date_time_text', 'subscription_text_number']);
+							$data = array_only($data, ['title', 'schedule_date_time', 'subscription_code', 'subscription_text', 'body1', 'streak', 'order_id', 'trial_id', 'unlock', 'image', 'block_screen','activation_url', 'current_time' ,'time_diff', 'schedule_date_time_text', 'subscription_text_number']);
 
 						
 							

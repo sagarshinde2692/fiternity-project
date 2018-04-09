@@ -1734,7 +1734,7 @@ class ServiceController extends \BaseController {
 		}	
 		$data  = [
 			'status'=>200,
-			'header'=>'Which activity do you want to try?',
+			'header'=>'Which fitness form do you want to try?',
 			// 'all_message'=> "I want to explore all options",
 			'category'=>$servicecategories,
 			'message'=>"",
