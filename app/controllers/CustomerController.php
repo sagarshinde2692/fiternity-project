@@ -3173,7 +3173,14 @@ class CustomerController extends \BaseController {
 									'header'=>'ATTEND MORE & UNLOCK',
 									'data'=>$this->utilities->getStreakImages($data['current_level'])
 								];	
-							}
+							}else{
+                                $data['unlock'] = [
+									'header'=>'Your workout checklist',
+									'sub_header_2'=>'Wondering what to carry?\nWe’ve got you covered!',
+									'image'=>'https://b.fitn.in/paypersession/checklist_icon.png'
+                                ];
+                                $data['checklist'] = true;
+                            }
 
 							$data['subscription_code']  = $data['code'];
 
