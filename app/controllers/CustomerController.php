@@ -3173,18 +3173,21 @@ class CustomerController extends \BaseController {
 									'header'=>'ATTEND MORE & UNLOCK',
 									'data'=>$this->utilities->getStreakImages($data['current_level'])
 								];	
+								$data['subscription_text']  = "Show this subscription code at ".ucwords($data['finder_name'])." & get FitCode to activate your session\n\nPerson of contact\n".ucwords($data['finder_poc_for_customer_name']);
+								
 							}else{
                                 $data['unlock'] = [
 									'header'=>'Your workout checklist',
 									'sub_header_2'=>'Wondering what to carry?\nWe’ve got you covered!',
 									'image'=>'https://b.fitn.in/paypersession/checklist_icon.png'
                                 ];
-                                $data['checklist'] = true;
+								$data['checklist'] = true;
+								
+								$data['subscription_text']  = "Show this subscription code at ".ucwords($data['finder_name'])." & get FitCode to unlock you surprise discount\n\nPerson of contact\n".ucwords($data['finder_poc_for_customer_name']);
+							
                             }
 
 							$data['subscription_code']  = $data['code'];
-
-							$data['subscription_text']  = "Show this subscription code at ".ucwords($data['finder_name'])." & get FitCode to activate your session\n\nPerson of contact\n".ucwords($data['finder_poc_for_customer_name']);
 
 							$data['subscription_text_number'] = " ".$data['finder_poc_for_customer_no'];
 
@@ -6514,7 +6517,7 @@ class CustomerController extends \BaseController {
 				
 				$response['image'] = "https://b.fitn.in/paypersession/timer.png";
 				
-				$response['sub_header_2'] = "Your Zumba session at Gold’s Gym is scheduled for today at ".date('g:i a', strtotime($data['schedule_date_time']))."\n\nAre you ready to kill your workout?" ;
+				$response['sub_header_2'] = "Your ".$data['service_name']." at ".$data['finder_name']." is scheduled for today at ".date('g:i a', strtotime($data['schedule_date_time']))."\n\nAre you ready to kill your workout?" ;
 				$response['button_text'] = [
 					'attended'=>['text'=>'YES I’LL BE THERE','url'=>Config::get('app.url')."/sessionstatuscapture/confirm/".$data['_id']],
 					'did_not_attend'=>['text'=>'NO, I’M NOT GOING','url'=>Config::get('app.url')."/sessionstatuscapture/didnotattend/".$data['_id']]

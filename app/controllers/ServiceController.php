@@ -613,7 +613,7 @@ class ServiceController extends \BaseController {
     		$request['requested_date'] = (isset($request['date']) && $request['date'] != "") ? date('Y-m-d',strtotime($request['date'])) : date("Y-m-d");
     		$request['date'] = $request['requested_date'];
     	}
-
+		Log::info($request);
     	if(!isset($request['finder_id']) && !isset($request['service_id'])){
     		return Response::json(array('status'=>401,'message'=>'finder or service is required'),401);
     	}
@@ -853,8 +853,12 @@ class ServiceController extends \BaseController {
 						if(isset($request['within_time']) && $request['within_time'] && !$slot_datetime_pass_status){
 							$slot_datetime_pass_status = (($scheduleDateTimeUnix - $currentDateTime) < $request['within_time']) ? false : true;
 						}
+						
+						if(isset($request['show_all']) && $request['show_all']){
+							$slot_datetime_pass_status = false;
+						}
 
-                        ($slot_datetime_pass_status == false) ? $slot_passed_flag = false : null;
+						($slot_datetime_pass_status == false) ? $slot_passed_flag = false : null;
 
                         array_set($slot, 'price', $ratecard_price);
                         array_set($slot, 'passed', $slot_datetime_pass_status);
@@ -1628,7 +1632,11 @@ class ServiceController extends \BaseController {
 			'type'=>'workout_session',
 			'within_time'=>$within_time
 		];
-
+		
+		if($service_details['servicecategory_id'] == 65){
+			$schedule_data['show_all'] = true;
+		}
+		
 		if(isset($_GET['keyword']) && $_GET['keyword']){
 			$schedule_data['recursive'] = true;
 		}

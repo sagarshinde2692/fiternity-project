@@ -5018,8 +5018,8 @@ class SchedulebooktrialsController extends \BaseController {
             $reschedule_enable = true;
 			$cancel_enable = true;
 		}
-
-        if($booktrial['type'] == 'workout-session' && $time_diff <= $hour1){
+        
+        if($booktrial['type'] == 'workout-session' && $time_diff > $hour1){
 			$cancel_enable = true;
         }
 
@@ -6837,6 +6837,24 @@ class SchedulebooktrialsController extends \BaseController {
         $booktrial->payment_done = true;
 
         $booktrial->update();
+        
+        $this->unsetEmptyDates($booktrial);
+        
+        $fitcash = round($this->utilities->getWorkoutSessionFitcash($booktrial->toArray()) * $booktrial->amount_finder / 100);
+        
+        $req = array(
+            "customer_id"=>$booktrial['customer_id'],
+            "trial_id"=>$booktrial['_id'],
+            "amount"=> $fitcash,
+            "amount_fitcash" => 0,
+            "amount_fitcash_plus" => $fitcash,
+            "type"=>'CREDIT',
+            'entry'=>'credit',
+            'validity'=>time()+(86400*21),
+            'description'=>"Added FitCash+ on Workout Session Attendance By Fitcode",
+        );
+
+        $this->utilities->walletTransaction($req);
 
         $pay_later = Paylater::where('trial_ids', $booktrial_id)->first();
 
@@ -7102,8 +7120,6 @@ class SchedulebooktrialsController extends \BaseController {
             case 'didnotattend':
                 $booktrial->post_trial_status = 'no show';
                 $booktrial->update();
-
-                $this->deleteTrialCommunication($booktrial);
                 
                 $customer_level_data = $this->utilities->getWorkoutSessionLevel($booktrial['customer_id']);     
                 
@@ -7129,6 +7145,7 @@ class SchedulebooktrialsController extends \BaseController {
                     $response['sub_header_2'] = 'Make sure you attend next time to earn Cashback and continue working out!\n\nYour paid amount will be transferred in your Fitternity Wallet';
                 }
 
+                $this->cancel($booktrial->_id);
             break;
 
             case 'confirm':
@@ -7212,6 +7229,20 @@ class SchedulebooktrialsController extends \BaseController {
 
         return "done";
         
+    }
+
+    public function unsetEmptyDates($booktrial){
+        $unset_keys = [];
+        
+        foreach ($dates as $key => $value) {
+            if(isset($booktrial[$value])){
+                if($booktrial[$value] == "-" || $booktrial[$value] == ""){
+                    $unset_keys[] = $value;
+                }
+            }
+        }
+        
+        $booktrial->unset($unset_keys);
     }
 
 }

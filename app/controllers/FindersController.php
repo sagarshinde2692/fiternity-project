@@ -3628,7 +3628,7 @@ class FindersController extends \BaseController {
 						$data['call_for_action_button']       =      "";
 					}
 
-					$data['finder']['pay_per_session']        =   false;
+					$data['finder']['pay_per_session']        =   true;
 					$pay_per_session_abandunt_catyegory             =   [41,42,45,25,46,10,26,40];
 					$service_count                                  =   Service::active()->where('finder_id',$finder['_id'])->count();
 

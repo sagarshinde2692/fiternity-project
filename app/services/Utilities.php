@@ -2912,7 +2912,7 @@ Class Utilities {
 			$customer_email                     =       $decoded->customer->email;
 			$customer_phone                     =       $decoded->customer->contact_no;
 
-            $pending_payment = \Booktrial::where('type', 'workout-session')->where(function ($query) use($customer_email) { $query->orWhere('customer_email', $customer_email);})->where('payment_done', false)->first(['_id', 'amount']);
+            $pending_payment = \Booktrial::where('type', 'workout-session')->where(function ($query) use($customer_email) { $query->orWhere('customer_email', $customer_email);})->where('going_status_txt','!=','cancel')->where('payment_done', false)->first(['_id', 'amount']);
 
 			if(count($pending_payment) > 0){
 				return [
@@ -3182,7 +3182,7 @@ Class Utilities {
 
         $fit_code = false;
 
-        if(isset($data['vendor_code']) && $data['type'] != 'workout-session'){
+        if(isset($data['vendor_code'])){
 
             $fit_code = true;
 
