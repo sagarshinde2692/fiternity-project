@@ -7210,7 +7210,8 @@ class SchedulebooktrialsController extends \BaseController {
                 }
 
                 if($booktrial['type'] == 'booktrials'){
-                    $response['sub_header_2'] = "Surprise discount will be given to you in form of fitcash post we verify your attendace with ".ucwords($booktrial['finder_name']);
+                    unset($response['sub_header_1']);
+                    $response['sub_header_2'] = "Surprise discount will be given to you in form of fitcash post we verify your attendance with ".ucwords($booktrial['finder_name']);
                 }
 
                 $this->utilities->deleteSelectCommunication(['transaction'=>$booktrial, 'labels'=>["customer_sms_after2hour","customer_email_after2hour","customer_notification_after2hour"]]);
@@ -7264,13 +7265,14 @@ class SchedulebooktrialsController extends \BaseController {
                 // if($customer_level_data['trials_attended'] > 0){
                     $response['streak']['footer'] = 'Unlock level '.$customer_level_data['next_level']['level'].' which gets you '.$customer_level_data['next_level']['cashback'].'% cashback upto '.$customer_level_data['next_level']['number'].' sessions! Higher the Level, Higher the Cashback';
                 // }
-                if($booktrial->type=='booktrials'){
-                    $response['reschedule_button'] = true;
-                }
                 if($payment_done){
                     $response['sub_header_2'] = 'Make sure you attend next time to earn Cashback and continue working out!\n\nWe will transfer your paid amount within 24 hours.';
                 }
-
+                
+                if($booktrial->type=='booktrials'){
+                    $response['reschedule_button'] = true;
+                    $response['sub_header_2'] = "We'll cancel you from this batch. Do you want to reschedule instead?";
+                }
                 $this->cancel($booktrial->_id);
             break;
             case 'confirm':
