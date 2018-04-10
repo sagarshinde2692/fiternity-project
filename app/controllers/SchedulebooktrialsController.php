@@ -1793,8 +1793,7 @@ class SchedulebooktrialsController extends \BaseController {
                 //     Log::info($hashreverse['reverse_hash']);
                 //     return  Response::json($resp, 400);
                 // }
-//                 $hash_verified = $this->utilities->verifyOrder($data,$order);
-                $hash_verified = true;
+                $hash_verified = $this->utilities->verifyOrder($data,$order);
                 // return $order;
                 // return $hash_verified ? "s":"d";
                 if(!$hash_verified){
@@ -2605,7 +2604,7 @@ class SchedulebooktrialsController extends \BaseController {
             	$send_communication["customer_sms_after2hour"] = $this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter90Min);
             	
             	Log::info(" info  $send_communication[customer_sms_after2hour] ".print_r($send_communication["customer_sms_after2hour"],true));
-            	if(!isTabActive($booktrialdata['finder_id'])&&$booktrial->type!='workout-session')
+            	if(!isTabActive($booktrialdata['finder_id']))
             	{
             		$send_communication["customer_email_after2hour"] = $this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter90Min);
             		$send_communication["customer_notification_after2hour"] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter90Min);
