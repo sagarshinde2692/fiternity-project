@@ -7246,7 +7246,34 @@ class SchedulebooktrialsController extends \BaseController {
 
                 $this->cancel($booktrial->_id);
             break;
+            case 'cantmake':
 
+                $customer_level_data = $this->utilities->getWorkoutSessionLevel($booktrial['customer_id']);     
+                
+                $response = [
+                    'status'=>200,
+                    'header'=>'OOPS!',
+                    'image'=>'https://b.fitn.in/paypersession/sad-face-icon.png',
+                    'sub_header_2'=>'Make sure you attend next time to earn Cashback and continue working out!',
+                    'footer'=>'Unlock level '.$customer_level_data['current_level']['level'].' which gets you '.$customer_level_data['current_level']['cashback'].'% cashback upto '.$customer_level_data['current_level']['number'].' sessions! Higher the Level, Higher the Cashback',
+                    'streak'=>[
+                        'header'=>'STREAK IT OUT',
+                        'data'=>$this->utilities->getStreakImages($customer_level_data['current_level']['level'])
+                    ]
+                ];
+
+                // if($customer_level_data['trials_attended'] > 0){
+                    $response['streak']['footer'] = 'Unlock level '.$customer_level_data['next_level']['level'].' which gets you '.$customer_level_data['next_level']['cashback'].'% cashback upto '.$customer_level_data['next_level']['number'].' sessions! Higher the Level, Higher the Cashback';
+                // }
+                if($booktrial->type=='booktrials'){
+                    $response['reschedule_button'] = true;
+                }
+                if($payment_done){
+                    $response['sub_header_2'] = 'Make sure you attend next time to earn Cashback and continue working out!\n\nYour paid amount will be transferred in your Fitternity Wallet';
+                }
+
+                $this->cancel($booktrial->_id);
+            break;
             case 'confirm':
                 $booktrial->pre_trial_status = 'confirm';
                 $booktrial->update();
