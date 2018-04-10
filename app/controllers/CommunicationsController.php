@@ -170,9 +170,19 @@ class CommunicationsController extends \BaseController {
 					if(empty($missedcall_no)){
 						$missedcall_no = Ozonetelmissedcallno::where('batch',1)->where('type','yes')->where('for','N-3Trial')->first();
 					}
-
-					$data['yes'] = $missedcall_no->number;
-					break;
+					if(isSet($missedcall_no->number)&&$missedcall_no->number!="")
+						$data['yes'] = $missedcall_no->number;
+						else $data['yes'] = "";
+						
+						$data['pps_cashback'] =$this->utilities->getWorkoutSessionLevel($data['customer_id'])['current_level']['cashback'];
+						$booktrial = Booktrial::find($data['_id']);
+						if(iseSet($booktrial&&$booktrial!="")&&isset($data['pps_cashback'])&&$data['pps_cashback']!="")
+						{
+							$booktrial->pps_cashback=$data['pps_cashback'];
+							$booktrial->update();
+						}
+						
+						break;
 
 				case "reminderToConfirmManualTrial":
 					$data['id'] = $data['_id'];
@@ -189,6 +199,17 @@ class CommunicationsController extends \BaseController {
 						$booktrial->update();
 						$data['vendor_code'] = $booktrial->vendor_code;
 					}		
+				case "customer_sms_before20Min":
+					{
+						$data['pps_cashback'] =$this->utilities->getWorkoutSessionLevel($data['customer_id'])['current_level']['cashback'];
+						$booktrial = Booktrial::find($data['_id']);
+						if(iseSet($booktrial&&$booktrial!="")&&isset($data['pps_cashback'])&&$data['pps_cashback']!="")
+						{
+							$booktrial->pps_cashback=$data['pps_cashback'];
+							$booktrial->update();
+						}
+						break;
+					}
 
 		}
 
