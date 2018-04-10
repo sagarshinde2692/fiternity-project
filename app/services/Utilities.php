@@ -3643,6 +3643,35 @@ Class Utilities {
         }
         return $streak;
     }
+
+    public function deleteSelectCommunication($data){
+        
+        $transaction = $data['transaction'];
+        $array = $data['labels'];
+        
+        $unset_keys = [];
+        $queue_id = [];
+        
+        foreach ($array as $value) {
+            
+            if((isset($order[$value]))){
+                try {
+                    $unset_keys[] = $value;
+                    $queue_id[] = $order[$value];
+                }catch(\Exception $exception){
+                    Log::error($exception);
+                }
+            }
+        }
+        
+        if(!empty($queue_id)){
+
+            $transaction->unset($unset_keys);
+            $sidekiq = new Sidekiq();
+            $sidekiq->delete($queue_id);
+
+        }
+    }
     
 }
 

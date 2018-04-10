@@ -7064,6 +7064,7 @@ class SchedulebooktrialsController extends \BaseController {
                     $response['sub_header_2'] = " has been added in your Fitternity Wallet. Use it to buy membership with lowest price";
                 }
 
+                $this->utilities->deleteSelectCommunication(['transaction'=>$booktrial, 'labels'=>["customer_sms_after2hour","customer_email_after2hour","customer_notification_after2hour"]]);
 
             break;
             case 'lost':
@@ -7094,6 +7095,8 @@ class SchedulebooktrialsController extends \BaseController {
                 if($booktrial['type'] == 'booktrials'){
                     $response['sub_header_2'] = "Surprise discount will be given to you in form of fitcash post we verify your attendace with ".ucwords($booktrial['finder_name']);
                 }
+
+                $this->utilities->deleteSelectCommunication(['transaction'=>$booktrial, 'labels'=>["customer_sms_after2hour","customer_email_after2hour","customer_notification_after2hour"]]);
 
             break;
             case 'didnotattend':

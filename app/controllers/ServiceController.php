@@ -1596,6 +1596,7 @@ class ServiceController extends \BaseController {
 			'hour'=>23,
 			'min'=>0
 		];
+		$requested_date = date('Y-m-d', time());
 		
 		if(isset($_GET['date']) && $_GET['date'] != ''){
 
@@ -1627,6 +1628,10 @@ class ServiceController extends \BaseController {
 			'type'=>'workout_session',
 			'within_time'=>$within_time
 		];
+
+		if(isset($_GET['keyword']) && $_GET['keyword']){
+			$schedule_data['recursive'] = true;
+		}
 		$schedule = json_decode(json_encode($this->getScheduleByFinderService($schedule_data)->getData()));
 
 		if($schedule->status != 200){
@@ -1636,6 +1641,17 @@ class ServiceController extends \BaseController {
 		$service_details['single_slot'] = false;
 		
 		if(isset($schedule->schedules) && count($schedule->schedules) > 0 && count(head($schedule->schedules)->slots)>0){
+
+			if($schedule->count > 1){
+				$service_details['page_index'] = $schedule->count - 1;
+				$service_details['schedule_date'] = date('d-m-Y', strtotime($schedule->available_date));
+
+				if($schedule->count > 2){
+					$service_details['session_unavailable'] = true;
+					$service_details['next_session'] = "Booking opens on".date('d-m-Y', strtotime($schedule->available_date));
+				}
+			}
+
 			$service_details['next_session'] = "Next session at ".strtoupper(head($schedule->schedules)->slots[0]->start_time);
 			$service_details['slots'] = (head($schedule->schedules)->slots);
 			$service_details['total_sessions'] = count($service_details['slots'])." sessions";
