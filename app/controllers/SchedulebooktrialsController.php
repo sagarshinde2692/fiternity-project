@@ -7241,10 +7241,9 @@ class SchedulebooktrialsController extends \BaseController {
                     $response['reschedule_button'] = true;
                 }
                 if($payment_done){
-                    $response['sub_header_2'] = 'Make sure you attend next time to earn Cashback and continue working out!\n\nYour paid amount will be transferred in your Fitternity Wallet';
+                    $response['sub_header_2'] = 'Make sure you attend next time to earn Cashback and continue working out!\n\nWe will transfer your paid amount within 24 hours.';
                 }
 
-                $this->cancel($booktrial->_id);
             break;
             case 'cantmake':
 
@@ -7269,7 +7268,7 @@ class SchedulebooktrialsController extends \BaseController {
                     $response['reschedule_button'] = true;
                 }
                 if($payment_done){
-                    $response['sub_header_2'] = 'Make sure you attend next time to earn Cashback and continue working out!\n\nYour paid amount will be transferred in your Fitternity Wallet';
+                    $response['sub_header_2'] = 'Make sure you attend next time to earn Cashback and continue working out!\n\nWe will transfer your paid amount within 24 hours.';
                 }
 
                 $this->cancel($booktrial->_id);
