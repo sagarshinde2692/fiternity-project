@@ -6916,7 +6916,7 @@ public function yes($msg){
 
     public function deleteCommunicationSidekiq(){
 
-    	echo"<pre>";print_r('stop');exit;
+    	// echo"<pre>";print_r('stop');exit;
 
     	$array = [
     		'customerSmsSendPaymentLinkAfter15Days',
@@ -6939,8 +6939,12 @@ public function yes($msg){
 
     	foreach ($orders as $order) {
 
-    		/*$order->removed_communication = time();
-    		$order->update();*/
+    		Log::info(time());
+
+    		$order->removed_communication = time();
+    		$order->update();
+
+    		Log::info(time());
 
 	    	$unset_keys = [];
 	    	$queue_id = [];
@@ -6959,16 +6963,24 @@ public function yes($msg){
 	            }
 	        }
 
-	        /*if(count($unset_keys)>0){
+	        Log::info(time());
+
+	        if(count($unset_keys)>0){
 	            $order->unset($unset_keys);
 
-	        }*/
+	        }
+
+	        Log::info(time());
 
 			if(!empty($queue_id)){
 
 	            $sidekiq = new Sidekiq();
-	            $sidekiq->delete($queue_id);
+	            $response = $sidekiq->delete($queue_id);
+
+	            // echo"<pre>";print_r($response);exit;
 	        }
+
+	        Log::info(time());
 
 	        // echo"<pre>";print_r('done');exit;
 
