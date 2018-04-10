@@ -1447,14 +1447,13 @@ class ServiceController extends \BaseController {
 			// 	$service_details = json_decode(json_encode($service_details_response['data']), true);
 			// }
 			
-			$service_details = Service::active()->where('finder_id', $finder['_id'])->where('slug', $service_slug)->with(array('ratecards'))->first(['name', 'contact', 'photos', 'lat', 'lon', 'calorie_burn', 'address', 'servicecategory_id', 'finder_id']);
+			$service_details = Service::active()->where('finder_id', $finder['_id'])->where('slug', $service_slug)->with('location')->with(array('ratecards'))->first(['name', 'contact', 'photos', 'lat', 'lon', 'calorie_burn', 'address', 'servicecategory_id', 'finder_id', 'location_id']);
 			// return $service_details;
 			if(!$service_details){
 				
 				return Response::json(array('status'=>400, 'error_message'=>'Service not active'), $this->error_status);
 			
 			};
-
 			$service_details['lat'] = (string)$service_details['lat'];
 			$service_details['lon'] = (string)$service_details['lon'];
 
@@ -1699,8 +1698,11 @@ class ServiceController extends \BaseController {
 		$data['service'] = $service_details;
 
 		$data['bookmark'] = false;
-		$data['share_message_text'] = "Check out ".$service_details['title']." on Fitternity. https://www.fitternity.com/service/".$service_details['_id'];
-		$data['share_message_email'] = "Check out ".$service_details['title']." on Fitternity. https://www.fitternity.com/service/".$service_details['_id'];
+		if($service_details['servicecategory_id'] != 65){
+			$data['share_message_email'] = $data['share_message_text'] = "Check out ".$service_details['title']." in ".$service_details['location']['name']." on Fitternity, India's biggest fitness discovery and booking platform. Pay-per-session available here: https://www.fitternity.com/service/".$service_details['_id'];
+		}else{
+			$data['share_message_email'] = $data['share_message_text'] = "Check-out ".$service_details['finder_name']." in ".$service_details['location']['name']." on Fitternity, India's biggest fitness discovery and booking platform. Pay-per-session available here: https://www.fitternity.com/service/".$service_details['_id'];
+		}
 		
 		if($this->utilities->hasPendingPayments()){
 			$data['pending_payment'] = $this->utilities->hasPendingPayments();
@@ -1738,6 +1740,8 @@ class ServiceController extends \BaseController {
 	public function workoutServiceCategorys(){
 
 		$not_included_ids = [161, 120, 170, 163, 168, 180, 184];
+
+		$order = [65, 5, 19, 1, 123, 3, 4, 114, 86];
 		
 		$servicecategories	 = 	Servicecategory::active()->where('parent_id', 0)->whereNotIn('slug', [null, ''])->whereNotIn('_id', $not_included_ids)->orderBy('name')->get(array('_id','name','slug'));
 		if(count($servicecategories) > 0){

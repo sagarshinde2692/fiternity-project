@@ -3108,7 +3108,7 @@ class CustomerController extends \BaseController {
 
 				if($this->app_version > '4.4.3'){
 					Log::info("4.4.3");
-					$trials = Booktrial::where('customer_email', '=', $customeremail)->where('going_status_txt','!=','cancel')->where('booktrial_type','auto')->where(function($query){return $query->where('schedule_date_time','>=',new DateTime())->orWhere('payment_done', false)->orWhere(function($query){	return 	$query->where('schedule_date_time', '>', new DateTime(date('Y-m-d H:i:s', strtotime('-3 days', time()))))->whereIn('post_trial_status', [null, '', 'unavailable']);	});})->orderBy('schedule_date_time', 'asc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code', 'payment_done', 'type', 'order_id', 'post_trial_status')->get();
+					$trials = Booktrial::where('customer_email', '=', $customeremail)->where('going_status_txt','!=','cancel')->where('booktrial_type','auto')->where(function($query){return $query->where('schedule_date_time','>=',new DateTime())->orWhere('payment_done', false)->orWhere(function($query){	return 	$query->where('schedule_date_time', '>', new DateTime(date('Y-m-d H:i:s', strtotime('-3 days', time()))))->whereIn('post_trial_status', [null, '', 'unavailable']);	});})->orderBy('schedule_date_time', 'asc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code', 'payment_done', 'type', 'order_id', 'post_trial_status', 'amount_finder')->get();
 
 
 				}else{
@@ -3156,7 +3156,7 @@ class CustomerController extends \BaseController {
 						}
 						
 						if(in_array($this->device_type, ['android', 'ios']) && $this->app_version > '4.4.3'){
-							
+
 
 							if($data['type'] == 'Workout-session'){
 								$data['unlock'] = [
@@ -3232,6 +3232,9 @@ class CustomerController extends \BaseController {
 							}else{
 								unset($data['payment_done']);
 								$data['schedule_date_time_text'] = "Scheduled on ".date('jS M, h:i a', strtotime($data['schedule_date_time']));
+							}
+							if(isset($data['payment_done']) && !$data['payment_done']){
+								$data['schedule_date_time_text'] = "Pending Amount: Rs.".$data['amount_finder'];
 							}
 							
 							$data = array_only($data, ['title', 'schedule_date_time', 'subscription_code', 'subscription_text', 'body1', 'streak', 'payment_done', 'order_id', 'trial_id', 'unlock', 'image', 'block_screen','activation_url', 'current_time' ,'time_diff', 'schedule_date_time_text', 'subscription_text_number']);

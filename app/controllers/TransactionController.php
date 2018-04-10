@@ -4178,7 +4178,7 @@ class TransactionController extends \BaseController {
             
             $payment_modes[] = array(
                 'title' => 'Pay now',
-                'subtitle' => 'Pay Rs 100 less',
+                'subtitle' => 'Pay 20% less',
                 'value' => 'paymentgateway',
             );
 
