@@ -4362,15 +4362,15 @@ class FindersController extends \BaseController {
 			'row'=>[
 				[
 					'name'=>'Gyms for Ladies',
-					'link'=> Config::get('app.website').'/ladies-gym-'.$city_name
+					'link'=> Config::get('app.website').'/ladies-gym-'.strtolower($city_name)
 				],
 				[
 					'name'=>'Yoga Classes for Ladies',
-					'link'=> Config::get('app.website').'/ladies-yoga-'.$city_name
+					'link'=> Config::get('app.website').'/ladies-yoga-'.strtolower($city_name)
 				],
 				[
 					'name'=>'Fitness Studios for Ladies',
-					'link'=> Config::get('app.website').'/ladies-fitness-studios-'.$city_name
+					'link'=> Config::get('app.website').'/ladies-fitness-studios-'.strtolower($city_name)
 				]
 
 			]
