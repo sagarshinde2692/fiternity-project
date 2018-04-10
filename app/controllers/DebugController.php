@@ -6916,6 +6916,8 @@ public function yes($msg){
 
     public function deleteCommunicationSidekiq(){
 
+    	echo"<pre>";print_r('stop');exit;
+
     	$array = [
     		'customerSmsSendPaymentLinkAfter15Days',
     		'customerSmsSendPaymentLinkAfter30Days',
@@ -6937,10 +6939,11 @@ public function yes($msg){
 
     	foreach ($orders as $order) {
 
-    		$order->removed_communication = time();
-    		$order->update();
+    		/*$order->removed_communication = time();
+    		$order->update();*/
 
 	    	$unset_keys = [];
+	    	$queue_id = [];
 	    
 	        foreach ($array as $value) {
 
@@ -6956,10 +6959,10 @@ public function yes($msg){
 	            }
 	        }
 
-	        if(count($unset_keys)>0){
+	        /*if(count($unset_keys)>0){
 	            $order->unset($unset_keys);
 
-	        }
+	        }*/
 
 			if(!empty($queue_id)){
 
