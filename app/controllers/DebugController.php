@@ -6914,6 +6914,67 @@ public function yes($msg){
 
     }
 
+    public function deleteCommunicationSidekiq(){
+
+    	$array = [
+    		'customerSmsSendPaymentLinkAfter15Days',
+    		'customerSmsSendPaymentLinkAfter30Days',
+    		'customerNotificationSendPaymentLinkAfter15Days',
+    		'customerNotificationSendPaymentLinkAfter30Days',
+    		'customerWalletSendPaymentLinkAfter15Days',
+    		'customerWalletSendPaymentLinkAfter30Days',
+			// 'cutomerSmsPurchaseAfter1Days',
+			// 'cutomerSmsPurchaseAfter7Days',
+			// 'cutomerSmsPurchaseAfter15Days'
+    	];
+
+    	$orders = Order::where('status','!=','1')
+    	    ->where('created_at','>=',new \MongoDate(strtotime(date('2018-03-01 00:00:00'))))
+    	    ->where('redundant_order','exists',false)
+    	    ->where('removed_communication','exists',false)
+    	    ->orderBy('_id','asc')
+    	    ->get($array);
+
+    	foreach ($orders as $order) {
+
+    		$order->removed_communication = time();
+    		$order->update();
+
+	    	$unset_keys = [];
+	    
+	        foreach ($array as $value) {
+
+	            if((isset($order[$value]))){
+	                try {
+	                    $queue_id[] = $order[$value];
+	                    // $order->unset($value);
+	                    array_push($unset_keys, $value);
+	        
+	                }catch(\Exception $exception){
+	                    Log::error($exception);
+	                }
+	            }
+	        }
+
+	        if(count($unset_keys)>0){
+	            $order->unset($unset_keys);
+
+	        }
+
+			if(!empty($queue_id)){
+
+	            $sidekiq = new Sidekiq();
+	            $sidekiq->delete($queue_id);
+	        }
+
+	        // echo"<pre>";print_r('done');exit;
+
+	    }
+
+	    return "Done";
+
+    }
+
     
 }
 
