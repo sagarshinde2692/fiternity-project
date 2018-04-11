@@ -3108,7 +3108,7 @@ class CustomerController extends \BaseController {
 
 				if($this->app_version > '4.4.3'){
 					Log::info("4.4.3");
-					$trials = Booktrial::where('customer_email', '=', $customeremail)->where('going_status_txt','!=','cancel')->where('post_trial_status', '!=', 'no show')->where('booktrial_type','auto')->where(function($query){return $query->where('schedule_date_time','>=',new DateTime())->orWhere('payment_done', false)->orWhere(function($query){	return 	$query->where('schedule_date_time', '>', new DateTime(date('Y-m-d H:i:s', strtotime('-3 days', time()))))->whereIn('post_trial_status', [null, '', 'unavailable']);	});})->orderBy('schedule_date_time', 'asc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code', 'payment_done', 'type', 'order_id', 'post_trial_status', 'amount_finder')->get();
+					$trials = Booktrial::where('customer_email', '=', $customeremail)->where('going_status_txt','!=','cancel')->where('post_trial_status', '!=', 'no show')->where('booktrial_type','auto')->where(function($query){return $query->where('schedule_date_time','>=',new DateTime())->orWhere('payment_done', false)->orWhere(function($query){	return 	$query->where('schedule_date_time', '>', new DateTime(date('Y-m-d H:i:s', strtotime('-3 days', time()))))->whereIn('post_trial_status', [null, '', 'unavailable']);	});})->orderBy('schedule_date_time', 'asc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code', 'payment_done', 'type', 'order_id', 'post_trial_status', 'amount_finder', 'kiosk_block_shown')->get();
 
 
 				}else{
@@ -3200,12 +3200,13 @@ class CustomerController extends \BaseController {
 							$data['trial_id'] = $data['_id'];
 							Log::info(strtotime($data['schedule_date_time']));
 							Log::info(time());
-							if(!isset($data['post_trial_status']) || in_array($data['post_trial_status'], ['unavailable', ""])){
+
+							if((!isset($data['post_trial_status']) || in_array($data['post_trial_status'], ['unavailable', ""])) && !(isset($data['kiosk_block_shown']) && $data['kiosk_block_shown']) ){
 								Log::info("inside block");
 
 								if(time() >= strtotime('-10 minutes ', strtotime($data['schedule_date_time']))){
 
-									if(time() < (strtotime($data['schedule_date_time'])+3*60*60) ){
+									if(time() < (strtotime($data['schedule_date_time'])+3*60*60)){
 										$data['block_screen'] = [
 											'type'=>'activate_session',
 											'url'=>Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/activate_session'
@@ -6508,11 +6509,13 @@ class CustomerController extends \BaseController {
 				$response['block'] = true;
 
 				if(isTabActive($data['finder_id'])){
+					$response['block'] = false;
 					$response['activation_success'] = [
 						'header'=>	'Activate at Kiosk',
 						'image'=> 'https://b.fitn.in/paypersession/happy_face_icon-2.png',
 						'sub_header_2'=>'Activate your session through kiosk placed at studio'
 					];
+					Booktrial::where('_id', $data['_id'])->update(['kiosk_block_shown'=>true]);
 				}
 
 				break;
