@@ -3022,6 +3022,15 @@ class HomeController extends BaseController {
 
     public function ifcity($city){
         $response = ifCityPresent($city);
+        $jwt_token = Request::header('Authorization');
+        if(!$response['found']){
+            if($jwt_token){
+                $decoded = customerTokenDecode($jwt_token);
+                $customer_id = (int)$decoded->customer->_id;
+                $response["customer_id"] = $customer_id;
+            }
+            Log::info($response);
+        }
         return $response;
     }
 
