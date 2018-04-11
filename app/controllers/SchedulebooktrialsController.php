@@ -7363,7 +7363,7 @@ class SchedulebooktrialsController extends \BaseController {
 
     public function unsetEmptyDates($booktrial){
         $unset_keys = [];
-        
+        $dates = array('schedule_date','schedule_date_time','missedcall_date','customofferorder_expiry_date','followup_date','auto_followup_date');
         foreach ($dates as $key => $value) {
             if(isset($booktrial[$value])){
                 if($booktrial[$value] == "-" || $booktrial[$value] == ""){
