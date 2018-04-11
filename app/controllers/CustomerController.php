@@ -6504,6 +6504,15 @@ class CustomerController extends \BaseController {
 					'cant_make'=>['text'=>'CAN’T MAKE IT','url'=>Config::get('app.url')."/sessionstatuscapture/didnotattend/".$data['_id']]
 				];
 				$response['block'] = true;
+
+				if(isTabActive($data['finder_id'])){
+					$response['activation_success'] = [
+						'header'=>	'Activate at Kiosk',
+						'image'=> 'https://b.fitn.in/paypersession/happy_face_icon-2.png',
+						'sub_header_2'=>'Activate your session through kiosk placed at studio'
+					];
+				}
+
 				break;
 			case 'let_us_know':
 			case 'n+2':
