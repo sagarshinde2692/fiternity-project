@@ -203,7 +203,7 @@ class CommunicationsController extends \BaseController {
 					{
 						$data['pps_cashback'] =$this->utilities->getWorkoutSessionLevel($data['customer_id'])['current_level']['cashback'];
 						$booktrial = Booktrial::find($data['_id']);
-						if(iseSet($booktrial&&$booktrial!="")&&isset($data['pps_cashback'])&&$data['pps_cashback']!="")
+						if(isset($booktrial)&&$booktrial!=""&&isset($data['pps_cashback'])&&$data['pps_cashback']!="")
 						{
 							$booktrial->pps_cashback=$data['pps_cashback'];
 							$booktrial->update();
