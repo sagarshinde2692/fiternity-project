@@ -3173,7 +3173,7 @@ class CustomerController extends \BaseController {
 									'header'=>'ATTEND MORE & UNLOCK',
 									'data'=>$this->utilities->getStreakImages($data['current_level'])
 								];	
-								$data['subscription_text']  = "Show this subscription code at ".ucwords($data['finder_name'])." & get FitCode to activate your session\n\nPerson of contact\n".ucwords($data['finder_poc_for_customer_name']);
+								$data['subscription_text']  = "Show this subscription code at ".ucwords($data['finder_name'])." & get FitCode to activate your session";
 								
 							}else{
                                 $data['unlock'] = [
@@ -3183,13 +3183,15 @@ class CustomerController extends \BaseController {
                                 ];
 								$data['checklist'] = true;
 								
-								$data['subscription_text']  = "Show this subscription code at ".ucwords($data['finder_name'])." & get FitCode to unlock you surprise discount\n\nPerson of contact\n".ucwords($data['finder_poc_for_customer_name']);
+								$data['subscription_text']  = "Show this subscription code at ".ucwords($data['finder_name'])." & get FitCode to unlock your surprise discount";
 							
-                            }
-
+							}
+							
 							$data['subscription_code']  = $data['code'];
-
-							$data['subscription_text_number'] = " ".$data['finder_poc_for_customer_no'];
+							if(isset($data['finder_poc_for_customer_no']) && $data['finder_poc_for_customer_no']!=""){
+								$data['subscription_text'] = $data['subscription_text']."\n\nPerson of contact\n".ucwords($data['finder_poc_for_customer_name'])." ";
+								$data['subscription_text_number'] = $data['finder_poc_for_customer_no'];
+							}
 
 							$data['image'] = 'http://b.fitn.in/paypersession/Subscribtion_code_icon_new.png';
 
@@ -3241,7 +3243,7 @@ class CustomerController extends \BaseController {
 								$data['amount'] = "₹".$data['amount_finder'];
 							}
 							
-							$data = array_only($data, ['title', 'schedule_date_time', 'subscription_code', 'subscription_text', 'body1', 'streak', 'payment_done', 'order_id', 'trial_id', 'unlock', 'image', 'block_screen','activation_url', 'current_time' ,'time_diff', 'schedule_date_time_text', 'subscription_text_number', 'amount']);
+							$data = array_only($data, ['title', 'schedule_date_time', 'subscription_code', 'subscription_text', 'body1', 'streak', 'payment_done', 'order_id', 'trial_id', 'unlock', 'image', 'block_screen','activation_url', 'current_time' ,'time_diff', 'schedule_date_time_text', 'subscription_text_number', 'amount', 'checklist']);
 
 						
 							
