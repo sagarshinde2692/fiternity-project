@@ -3178,7 +3178,7 @@ class CustomerController extends \BaseController {
 							}else{
                                 $data['unlock'] = [
 									'header'=>'Your workout checklist',
-									'sub_header_2'=>'Wondering what to carry?\nWe’ve got you covered!',
+									'sub_header_2'=>"Wondering what to carry?\nWe’ve got you covered!",
 									'image'=>'https://b.fitn.in/paypersession/checklist_icon.png'
                                 ];
 								$data['checklist'] = true;

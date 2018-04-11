@@ -7242,7 +7242,7 @@ class SchedulebooktrialsController extends \BaseController {
                     $response['reschedule_button'] = true;
                 }
                 if($payment_done){
-                    $response['sub_header_2'] = 'Make sure you attend next time to earn Cashback and continue working out!\n\nWe will transfer your paid amount within 24 hours.';
+                    $response['sub_header_2'] = "Make sure you attend next time to earn Cashback and continue working out!\n\nWe will transfer your paid amount within 24 hours.";
                 }
 
             break;
@@ -7266,7 +7266,7 @@ class SchedulebooktrialsController extends \BaseController {
                     $response['streak']['footer'] = 'Unlock level '.$customer_level_data['next_level']['level'].' which gets you '.$customer_level_data['next_level']['cashback'].'% cashback upto '.$customer_level_data['next_level']['number'].' sessions! Higher the Level, Higher the Cashback';
                 // }
                 if($payment_done){
-                    $response['sub_header_2'] = 'Make sure you attend next time to earn Cashback and continue working out!\n\nWe will transfer your paid amount within 24 hours.';
+                    $response['sub_header_2'] = "Make sure you attend next time to earn Cashback and continue working out!\n\nWe will transfer your paid amount within 24 hours.";
                 }
                 
                 if($booktrial->type=='booktrials'){
