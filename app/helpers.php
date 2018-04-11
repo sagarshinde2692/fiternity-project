@@ -348,6 +348,8 @@ if(!function_exists('ifCityPresent')){
         $send_city = $city;
         $ifcity = false;
         switch($city){
+            case "dombivli":
+            case "kalyan":
             case "mumbai":
             case "bombay":
             case "thane":
