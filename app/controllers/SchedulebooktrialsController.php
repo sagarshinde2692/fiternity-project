@@ -7225,7 +7225,6 @@ class SchedulebooktrialsController extends \BaseController {
             break;
             case 'didnotattend':
                 $booktrial->post_trial_status = 'no show';
-                $booktrial->going_status_txt = 'cancel';
                 $booktrial->update();
                 
                 $customer_level_data = $this->utilities->getWorkoutSessionLevel($booktrial['customer_id']);     
