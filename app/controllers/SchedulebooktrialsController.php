@@ -2597,20 +2597,19 @@ class SchedulebooktrialsController extends \BaseController {
 
 
             
-            if(!isTabActive($booktrialdata['finder_id'])||$booktrial->type=='workout-session'){
+            if(in_array($booktrial->source, ['ios', 'android'])){
             	Log::info(" info  AAYA ".print_r($booktrial,true));
             	$delayReminderTimeAfter90Min      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->addMinutes(90);
             	Log::info(" info  AAYA 11  ".print_r($delayReminderTimeAfter90Min,true));
             	$send_communication["customer_sms_after2hour"] = $this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter90Min);
             	
             	Log::info(" info  $send_communication[customer_sms_after2hour] ".print_r($send_communication["customer_sms_after2hour"],true));
-            	if(!isTabActive($booktrialdata['finder_id']))
-            	{
+            	// if(!isTabActive($booktrialdata['finder_id'])){
             		$send_communication["customer_email_after2hour"] = $this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter90Min);
             		$send_communication["customer_notification_after2hour"] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter90Min);
-            	}
+            	// }
             }
-            else
+            else 
             {
             	
             	$delayReminderTimeAfter24Hour      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->addMinutes(60*24);
@@ -7242,7 +7241,7 @@ class SchedulebooktrialsController extends \BaseController {
                     $response['reschedule_button'] = true;
                 }
                 if($payment_done){
-                    $response['sub_header_2'] = "Make sure you attend next time to earn Cashback and continue working out!\n\nWe will transfer your paid amount within 24 hours.";
+                    $response['sub_header_2'] = "Make sure you attend next time to earn Cashback and continue working out!\n\nWe will transfer your paid amount in form of Fitcash within 24 hours.";
                 }
 
             break;
@@ -7266,7 +7265,7 @@ class SchedulebooktrialsController extends \BaseController {
                     $response['streak']['footer'] = 'Unlock level '.$customer_level_data['next_level']['level'].' which gets you '.$customer_level_data['next_level']['cashback'].'% cashback upto '.$customer_level_data['next_level']['number'].' sessions! Higher the Level, Higher the Cashback';
                 // }
                 if($payment_done){
-                    $response['sub_header_2'] = "Make sure you attend next time to earn Cashback and continue working out!\n\nWe will transfer your paid amount within 24 hours.";
+                    $response['sub_header_2'] = "Make sure you attend next time to earn Cashback and continue working out!\n\nWe will transfer your paid amount in form of Fitcash within 24 hours.";
                 }
                 
                 if($booktrial->type=='booktrials'){
