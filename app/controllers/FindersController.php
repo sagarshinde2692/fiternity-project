@@ -3797,8 +3797,22 @@ class FindersController extends \BaseController {
 						}
 					}
 
-					if(!$pay_per_session){
-						$finderData['finder']['pay_per_session'] = false;
+					// if($pay_per_session){
+					// 	$finderData['finder']['pay_per_session'] = true;
+					// }
+
+					if(isset($finderData['finder']['pay_per_session']) && $finderData['finder']['pay_per_session']){
+
+						$cheapest_price = $this->getCheapestWorkoutSessionApp($finderData['finder']['services_workout']);
+						if($cheapest_price>0){
+
+							$finderData['finder']['pps_content'] = [
+								'header1'=>	'PAY - PER - SESSION',
+								'header2'=>	'Available here',
+								'header3'=>	"Hate commiting to a long term membership? We have something for you. We are proud to offer Pay per session. Experience Gold's Gym Bandra West membership by just paying Rs.".$cheapest_price,
+								'image'=>''
+							];
+						}
 					}
 
 					if(!in_array("false", $disable_button)){
@@ -4711,6 +4725,23 @@ class FindersController extends \BaseController {
 		foreach($services as $service){
 			if(isset($service['serviceratecard'])){
 				foreach($service['serviceratecard'] as $ratecard){
+					if($ratecard['type'] == 'workout session' && ($price == 0 || $ratecard['price'] < $price)){
+						$price = $ratecard['price'];
+					}
+				}
+			}
+		}
+
+		return $price;
+	}
+
+	function getCheapestWorkoutSessionApp($services){
+
+		$price = 0;
+
+		foreach($services as $service){
+			if(isset($service['ratecard'])){
+				foreach($service['ratecard'] as $ratecard){
 					if($ratecard['type'] == 'workout session' && ($price == 0 || $ratecard['price'] < $price)){
 						$price = $ratecard['price'];
 					}
