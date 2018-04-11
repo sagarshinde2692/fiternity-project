@@ -4998,7 +4998,14 @@ class SchedulebooktrialsController extends \BaseController {
 
             $unset[] = 'what_i_should_carry';
             $unset[] = 'what_i_should_expect';
+        }else{
+            if(isset($booktrial['what_i_should_carry']) && !(isset($booktrial['finder']['what_i_should_carry']) && $booktrial['finder']['what_i_should_carry']=='')){
+                
+                $booktrial['finder']['what_i_should_carry']  = $booktrial['what_i_should_carry'];
+            }
         }
+
+        unset($booktrial['finder']['what_i_should_expect']);
 
         foreach($unset as $value){
 
