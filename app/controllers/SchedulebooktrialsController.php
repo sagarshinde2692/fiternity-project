@@ -7218,6 +7218,7 @@ class SchedulebooktrialsController extends \BaseController {
             break;
             case 'didnotattend':
                 $booktrial->post_trial_status = 'no show';
+                $booktrial->going_status_txt = 'cancel';
                 $booktrial->update();
                 
                 $customer_level_data = $this->utilities->getWorkoutSessionLevel($booktrial['customer_id']);     
@@ -7371,8 +7372,9 @@ class SchedulebooktrialsController extends \BaseController {
                 }
             }
         }
-        
-        $booktrial->unset($unset_keys);
+        if(!empty($unset_keys)){
+            $booktrial->unset($unset_keys);
+        }
     }
 
 }
