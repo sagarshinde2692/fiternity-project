@@ -1433,7 +1433,7 @@ class ServiceController extends \BaseController {
 			$finder = Finder::active()->where('slug','=',$finder_slug)->whereNotIn('flags.state', ['closed', 'temporarily_shut'])
 				->with(array('facilities'=>function($query){$query->select( 'name', 'finders');}))
 				->with(array('reviews'=>function($query){$query->select('finder_id', 'customer', 'customer_id', 'rating', 'updated_at', 'description')->where('status','=','1')->orderBy('updated_at', 'DESC')->limit(3);}))
-				->first(['title', 'contact', 'average_rating', 'total_rating_count']);
+				->first(['title', 'contact', 'average_rating', 'total_rating_count', 'photos', 'coverimage']);
 
 			if(!$finder){
 				return Response::json(array('status'=>400, 'error_message'=>'Facility not active'), $this->error_status);
@@ -1555,14 +1555,25 @@ class ServiceController extends \BaseController {
 			function appendServiceImageDomain($url){
 				return Config::get('app.service_gallery_path').$url;
 			}
+
+			$service_details['photos'] = [];
 			
-			$service_details['photos'] = isset($service_details['photos']) ? $service_details['photos'] : [];
+			foreach($finder['photos'] as $photo){
+				if(isset($photo['servicetags']) && in_array($service_details['_id'], $photo['servicetags'])){
+					array_unshift($service_details['photos'], 'https://b.fitn.in/f/g/full/'.$photo['url']);
+				}else{
+					array_push($service_details['photos'], 'https://b.fitn.in/f/g/full/'.$photo['url']);
+				}
+			}
 			
-			$service_details['photos'] = array_map("appendServiceImageDomain",array_pluck($service_details['photos'], 'url'));
+			array_push($service_details['photos'], 'https://b.fitn.in/f/c/'.$finder['coverimage']);
+			
+			// $service_details['photos'] = isset($service_details['photos']) ? $service_details['photos'] : [];
+			
+			// $service_details['photos'] = array_map("appendServiceImageDomain",$service_details['photos']);
 			
 			$photos = $service_details['photos'];
 
-			
 			$service_details['photos'] = [
 				'count'=>(count($service_details['photos']) > 1) ? (count($service_details['photos']) - 1) : 0,
 				'urls'=>$photos
