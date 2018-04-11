@@ -3605,7 +3605,7 @@ Class Utilities {
     public function getLevelByTrials($trials_attended){
 
         $streak_data = Config::get('app.streak_data');
-        $current_level = [];
+        $current_level = $streak_data[count($streak_data) - 1];
         
         foreach($streak_data as $key => $value){
             if($trials_attended < $value['number']){
@@ -3614,9 +3614,6 @@ Class Utilities {
             }
         }
 
-        if(empty($current_level)){
-            $current_level  = $streak_data[count($streak_data) - 1];
-        }
         return $current_level;
 
     }
