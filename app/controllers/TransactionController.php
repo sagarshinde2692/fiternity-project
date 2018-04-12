@@ -388,7 +388,10 @@ class TransactionController extends \BaseController {
         }else{
             $finderDetail['data']['finder_flags'] = [];
         }
-
+        
+        if($data['type'] == 'workout-session'){
+			$data['service_name'] = preg_replace('/membership/i', 'Workout', $data['service_name']);
+        }
         
         if(isset($data['coupon_code']) && $this->utilities->isGroupId($data['coupon_code'])){
             
@@ -500,10 +503,7 @@ class TransactionController extends \BaseController {
 
         }
 
-        if($data['type'] == 'workout-session' && isset($_GET['device_type']) && isset($_GET['app_version']) && in_array($_GET['device_type'], ['android', 'ios']) && $_GET['app_version'] > '4.4.3' && !(isset($data['session_payment']) && $data['session_payment'])){
-            $pay_later = true;
-            $data['pps_new'] = true;
-        }
+        
 
         $data['amount_final'] = $data["amount_finder"];
 
@@ -899,7 +899,10 @@ class TransactionController extends \BaseController {
 
         $pay_later = false;
         
-        
+        if($data['type'] == 'workout-session' && isset($_GET['device_type']) && isset($_GET['app_version']) && in_array($_GET['device_type'], ['android', 'ios']) && $_GET['app_version'] > '4.4.3' && !(isset($data['session_payment']) && $data['session_payment'])){
+            $pay_later = true;
+            $data['pps_new'] = true;
+        }
 
         $resp   =   array(
             'status' => 200,
@@ -2856,6 +2859,7 @@ class TransactionController extends \BaseController {
         (isset($service['diet_inclusive'])) ? $data['diet_inclusive'] = $service['diet_inclusive'] : null;
         $data['finder_address'] = (isset($service['address']) && $service['address'] != "") ? $service['address'] : "-";
         
+        
         return array('status' => 200,'data' =>$data);
 
     }
@@ -4091,7 +4095,7 @@ class TransactionController extends \BaseController {
                 
             }
 
-            if(isset($data['coupon_discount_amount']) && $data['coupon_discount_amount'] > 0){
+            if(isset($data['coupon_discount_amount']) && $data['coupon_discount_amount'] > 0 && $payment_mode_type != 'pay_later'){
 
                 $amount_summary[] = array(
                     'field' => 'Coupon Discount',

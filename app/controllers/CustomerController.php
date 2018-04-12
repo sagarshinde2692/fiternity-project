@@ -3201,12 +3201,12 @@ class CustomerController extends \BaseController {
 							Log::info(strtotime($data['schedule_date_time']));
 							Log::info(time());
 
-							if((!isset($data['post_trial_status']) || in_array($data['post_trial_status'], ['unavailable', ""])) && !(isset($data['kiosk_block_shown']) && $data['kiosk_block_shown']) ){
+							if((!isset($data['post_trial_status']) || in_array($data['post_trial_status'], ['unavailable', ""]))  ){
 								Log::info("inside block");
 
 								if(time() >= strtotime('-10 minutes ', strtotime($data['schedule_date_time']))){
 
-									if(time() < (strtotime($data['schedule_date_time'])+3*60*60)){
+									if(time() < (strtotime($data['schedule_date_time'])+3*60*60) && !(isset($data['kiosk_block_shown']) && $data['kiosk_block_shown'])){
 										$data['block_screen'] = [
 											'type'=>'activate_session',
 											'url'=>Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/activate_session'
@@ -6511,9 +6511,9 @@ class CustomerController extends \BaseController {
 				if(isTabActive($data['finder_id'])){
 					$response['block'] = false;
 					$response['activation_success'] = [
-						'header'=>	'Activate at Kiosk',
+						'header'=>	ucwords($data['service_name'])." at ".ucwords($data['finder_name'])."\n\n 00hrs : 00min: 00sec",
 						'image'=> 'https://b.fitn.in/paypersession/happy_face_icon-2.png',
-						'sub_header_2'=>'Activate your session through kiosk placed at studio'
+						'sub_header_2'=>"ACTIVATE SESSION\n\n\nSubscription Code  ".$response['subscription_code']."\n\n\n\nPunch this code at on the kiosk/tab available at ".ucwords($data['finder_name'])." to activate your session"
 					];
 					Booktrial::where('_id', $data['_id'])->update(['kiosk_block_shown'=>true]);
 				}

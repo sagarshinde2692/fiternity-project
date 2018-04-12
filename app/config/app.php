@@ -18,30 +18,30 @@ return array(
 	
 
 	//stage
-	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
-	// 'url' => 'http://apistage.fitn.in',
-	// 'admin_url' => 'http://adminstage.fitn.in',
-	// 'website' => 'http://apistage.fitn.in:1122',
-	// 'sidekiq_url' => 'http://kick.fitn.in/',
-	// 'queue' => 'booktrial',
-	// 'vendor_communication' => false,
-	// 'env' => 'stage',
-	// 'debug' => TRUE,
-	// 'metropolis' => 'http://apistage.fitn.in:8989',
-	// 'amazonpay_isSandbox' => 'true',
-
-	//beta
 	'new_search_url' =>'http://apistage.fitn.in:5000/',
-	'url' => 'http://beta.fitn.in', 
-	'admin_url' => 'http://adminstage.fitn.in', 
-	'website' => 'http://apistage.fitn.in:1122', 
-	'sidekiq_url' => 'http://kick.fitn.in/', 
-	'queue' => 'beta',
+	'url' => 'http://apistage.fitn.in',
+	'admin_url' => 'http://adminstage.fitn.in',
+	'website' => 'http://apistage.fitn.in:1122',
+	'sidekiq_url' => 'http://kick.fitn.in/',
+	'queue' => 'booktrial',
 	'vendor_communication' => false,
 	'env' => 'stage',
 	'debug' => TRUE,
-	'metropolis' => 'http://apisatge.fitn.in:8989',
+	'metropolis' => 'http://apistage.fitn.in:8989',
 	'amazonpay_isSandbox' => 'true',
+
+	//beta
+	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
+	// 'url' => 'http://beta.fitn.in', 
+	// 'admin_url' => 'http://adminstage.fitn.in', 
+	// 'website' => 'http://apistage.fitn.in:1122', 
+	// 'sidekiq_url' => 'http://kick.fitn.in/', 
+	// 'queue' => 'beta',
+	// 'vendor_communication' => false,
+	// 'env' => 'stage',
+	// 'debug' => TRUE,
+	// 'metropolis' => 'http://apisatge.fitn.in:8989',
+	// 'amazonpay_isSandbox' => 'true',
 	
 
 	//live

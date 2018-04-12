@@ -3809,7 +3809,7 @@ class FindersController extends \BaseController {
 							$finderData['finder']['pps_content'] = [
 								'header1'=>	'PAY - PER - SESSION',
 								'header2'=>	'Available here',
-								'header3'=>	"Hate commiting to a long term membership? We have something for you. We are proud to offer Pay per session. Experience Gold's Gym Bandra West membership by just paying Rs.".$cheapest_price,
+								'header3'=>	"Why pay for 30 days when you use for 6 days?\nPay Per Session at ".$finderData['finder']['title']." by just paying Rs. ".$cheapest_price,
 								'image'=>''
 							];
 						}
