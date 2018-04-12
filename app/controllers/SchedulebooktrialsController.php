@@ -5088,7 +5088,17 @@ class SchedulebooktrialsController extends \BaseController {
 
         $booktrial['fit_code'] = $this->utilities->fitCode($booktrial);
 
-        $booktrial['fitcode_message'] = 'Punch the code & get surprise discount';
+        if($booktrial['type'] == 'workout-session'){
+
+            $customer_level_data = $this->utilities->getWorkoutSessionLevel($booktrial['customer_id']);                
+
+            $booktrial['fitcode_message'] = 'Punch the code & get '.$customer_level_data['current_level']['cashback'].'% cashback';
+
+        }else{
+
+            $booktrial['fitcode_message'] = 'Punch the code & get surprise discount';
+        }
+
         $booktrial['fitcode_button_text'] = 'Enter Fitcode';
 
         $responsedata   = [
