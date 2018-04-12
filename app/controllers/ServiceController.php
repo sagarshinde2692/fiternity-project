@@ -1752,23 +1752,34 @@ class ServiceController extends \BaseController {
 
 		$not_included_ids = [161, 120, 170, 163, 168, 180, 184];
 
-		$order = [65, 5, 19, 1, 123, 3, 4, 114, 86];
-		
+		$order = [65, 5, 19, 1, 123, 3, 4, 2, 114, 86];
+		$ordered_categories = [];
 		$servicecategories	 = 	Servicecategory::active()->where('parent_id', 0)->whereNotIn('slug', [null, ''])->whereNotIn('_id', $not_included_ids)->orderBy('name')->get(array('_id','name','slug'));
 		if(count($servicecategories) > 0){
 
 			foreach($servicecategories as &$category){
 				$category['image'] = $category['slug'];
+				if($category['slug'] == 'martial-arts'){
+					$category['name'] = 'MMA & Kick-boxing';
+				}
+			}
+
+			foreach($order as $_id){
+				foreach($servicecategories as $x){
+					if($x['_id'] == $_id){
+						array_push($ordered_categories, $x);
+					}
+				}
 			}
 
 			$servicecategories = $servicecategories->toArray();
-			array_unshift($servicecategories, ['_id'=>0, 'name'=>'I want to explore all options', 'slug'=>'', 'image'=>'select-all-icon']);
+			array_unshift($ordered_categories, ['_id'=>0, 'name'=>'I want to explore all options', 'slug'=>'', 'image'=>'select-all-icon']);
 		}	
 		$data  = [
 			'status'=>200,
 			'header'=>'Which fitness form do you want to try?',
 			// 'all_message'=> "I want to explore all options",
-			'category'=>$servicecategories,
+			'category'=>$ordered_categories,
 			'message'=>"",
 			'base_url'=>"http://b.fitn.in/iconsv1/"
 		];
