@@ -1666,6 +1666,7 @@ class ServiceController extends \BaseController {
 			$service_details['schedule_date'] = date('d-m-Y', strtotime($schedule->available_date));
 
 			if(isset($_GET['keyword']) && $_GET['keyword']){
+				$service_details['page_index'] = $schedule->count -1;
 				$service_details['schedule_date'] = date('d-m-Y', strtotime($schedule->available_date));
 				$service_details['pass_title'] = $service_details['pass_title'].' ('.date('jS M', strtotime($schedule->available_date)).')';
 				if($schedule->count > 3){
