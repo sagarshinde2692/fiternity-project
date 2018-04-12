@@ -2855,6 +2855,9 @@ class TransactionController extends \BaseController {
         $data['meal_contents'] = $this->stripTags($service['short_description']);
         (isset($service['diet_inclusive'])) ? $data['diet_inclusive'] = $service['diet_inclusive'] : null;
         $data['finder_address'] = (isset($service['address']) && $service['address'] != "") ? $service['address'] : "-";
+        if($data['type'] == 'workout-session'){
+			$data['service_name'] = preg_replace('/membership/i', 'Workout', $data['service_name']);
+        }
         
         return array('status' => 200,'data' =>$data);
 

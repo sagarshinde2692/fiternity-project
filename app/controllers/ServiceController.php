@@ -1460,7 +1460,9 @@ class ServiceController extends \BaseController {
 			// return $service_details;
 			$service_details = $service_details->toArray();
 
-			$service_details['title'] = $service_details['name'].' at '.$finder['title'];
+			// $service_details['title'] = $service_details['name'].' at '.$finder['title'];
+			$service_details['title'] = preg_replace('/membership/i', 'Workout', $service_details['name']).' at '.$finder['title'];
+			
 			$service_details['finder_name'] = $finder['title'];
 			
 
