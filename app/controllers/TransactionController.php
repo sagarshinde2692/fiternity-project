@@ -503,10 +503,7 @@ class TransactionController extends \BaseController {
 
         }
 
-        if($data['type'] == 'workout-session' && isset($_GET['device_type']) && isset($_GET['app_version']) && in_array($_GET['device_type'], ['android', 'ios']) && $_GET['app_version'] > '4.4.3' && !(isset($data['session_payment']) && $data['session_payment'])){
-            $pay_later = true;
-            $data['pps_new'] = true;
-        }
+        
 
         $data['amount_final'] = $data["amount_finder"];
 
@@ -900,9 +897,12 @@ class TransactionController extends \BaseController {
 
         $pay_at_vendor_applicable = true;
 
-        $pay_later = false;
+        // $pay_later = false;
         
-        
+        if($data['type'] == 'workout-session' && isset($_GET['device_type']) && isset($_GET['app_version']) && in_array($_GET['device_type'], ['android', 'ios']) && $_GET['app_version'] > '4.4.3' && !(isset($data['session_payment']) && $data['session_payment'])){
+            $pay_later = true;
+            $data['pps_new'] = true;
+        }
 
         $resp   =   array(
             'status' => 200,
