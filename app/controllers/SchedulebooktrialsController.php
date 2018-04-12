@@ -1793,8 +1793,7 @@ class SchedulebooktrialsController extends \BaseController {
                 //     Log::info($hashreverse['reverse_hash']);
                 //     return  Response::json($resp, 400);
                 // }
-//                 $hash_verified = $this->utilities->verifyOrder($data,$order);
-                $hash_verified = true;
+                $hash_verified = $this->utilities->verifyOrder($data,$order);
                 // return $order;
                 // return $hash_verified ? "s":"d";
                 if(!$hash_verified){
