@@ -4095,7 +4095,7 @@ class TransactionController extends \BaseController {
                 
             }
 
-            if(isset($data['coupon_discount_amount']) && $data['coupon_discount_amount'] > 0){
+            if(isset($data['coupon_discount_amount']) && $data['coupon_discount_amount'] > 0 && $payment_mode_type != 'pay_later'){
 
                 $amount_summary[] = array(
                     'field' => 'Coupon Discount',
