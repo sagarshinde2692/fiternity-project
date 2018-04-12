@@ -1447,7 +1447,9 @@ Class Utilities {
                 $customer_id = (int)$decoded->customer->_id;
             }
         }
-
+        if(isset($request['logged_in_customer_id'])){
+            $customer_id = $request['logged_in_customer_id'];
+        }
         $request['customer_id'] = $customer_id;
 
         $customer = Customer::find($customer_id);
