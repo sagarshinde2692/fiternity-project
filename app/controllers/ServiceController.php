@@ -1704,7 +1704,7 @@ class ServiceController extends \BaseController {
 
 			if($service_details['servicecategory_id'] == 65){
 		
-				if($schedule->count == 1 && intval(date('G', time())) > $gym_start_time['hour']){
+				if(date('z', time()) == date('z', strtotime($service_details['schedule_date'])) && intval(date('G', time())) > $gym_start_time['hour']){
 					$gym_start_time['hour'] = (date('G', strtotime('+30 minutes', time())));
 					$gym_start_time['min'] = $gym_start_time['hour'] == (date('G', strtotime('+30 minutes', time()))) ? 0 : 30;
 				}
