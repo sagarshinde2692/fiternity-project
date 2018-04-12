@@ -7321,10 +7321,15 @@ class SchedulebooktrialsController extends \BaseController {
                         'sub_header_2'=>'What to carry, what to expect, directions, booking details and all that you need to know about your session can be found here.',
                     ],
                 ];
-
+                
                 if($booktrial->type == 'booktrials'){
                     $response['attend']['sub_header_2'] = 'Attend this session and earn Surprise Cashback';
                 }
+
+				if(isTabActive($booktrial['finder_id'])){
+                    $response['activate']['sub_header_2'] = 'Punch your subscription code on the kiosk/tab available at the center to activate your session';
+                }
+                
             break;
                 
 
