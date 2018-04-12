@@ -2991,6 +2991,7 @@ if(!function_exists('payPerSession')){
         $response  =   json_decode($client->post($url,['json'=>$payload])->getBody()->getContents(),true);
         $response["request"]["category_name"] = isset($response["request"]["category"]) && isset($response["request"]["category"][0]) && isset($response["request"]["category"][0]["name"]) && $response["request"]["category"][0]["name"] != "" ? ucwords(preg_replace('/-+/', ' ', $response["request"]["category"][0]["name"])) : "All fitness options";
         $response["request"]["location_name"] = isset($response["request"]["location"]) && isset($response["request"]["location"]['city']) ? ucwords(preg_replace('/-+/', ' ', $response["request"]["location"]['city'])) : "";
+        $response["request"]["location_name"] = isset($response["request"]["location"]) && isset($response["request"]["location"]['regions']) && count($response["request"]["location"]['regions']) > 0 ? ucwords(preg_replace('/-+/', ' ', $response["request"]["location"]['regions'][0])) : $response["request"]["location_name"];
         $response["request"]["location_name"] = isset($response["request"]["location"]) && isset($response["request"]["location"]['regions']) && isset($response["request"]["location"]["selected_region"]) ? ucwords(preg_replace('/-+/', ' ', $response["request"]["location"]["selected_region"])) : $response["request"]["location_name"];
         return $response;
     }
