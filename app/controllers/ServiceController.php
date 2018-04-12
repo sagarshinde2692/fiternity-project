@@ -1812,6 +1812,7 @@ class ServiceController extends \BaseController {
 
 	public function timepreference(){
 		$data = Input::json()->all();
+		Log::info($data);
 		$pay_persession_request = [
 			"category"=>$data["category"],
 			"location"=>isset($data["location"]) ? $data["location"] : array(),
