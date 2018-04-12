@@ -918,11 +918,14 @@ Route::get('transaction/dcos',array('as' => 'transaction.dcos','uses' => 'Transa
 
 Route::get('getfindercategories/{city?}', 'DebugController@cacheFinderCategoryTags');
 
+Route::get('getofferingscategories/{categorySlug?}', 'DebugController@getOfferingsCategoriesSlug');
+
 Route::get('getfinderlocations', 'DebugController@cacheLocations');
 
 Route::get('getsubcategories', 'DebugController@cacheOfferings');
 
 Route::get('getfinders', 'DebugController@cacheFinders');
+Route::get('getfinders/{city_slug?}', 'DebugController@cacheFindersFromCity');
 
 Route::post('transaction/pg',array('as' => 'transaction.pg','uses' => 'TransactionController@pg'));
 Route::post('transaction/success',array('as' => 'transaction.success','uses' => 'TransactionController@success'));
@@ -1157,3 +1160,6 @@ Route::get('notificationdatabytrialid/{booktrial_id}/{label}', 'CustomerControll
 Route::get('getcapturedata/{trial_id}', 'TransactionController@getCaptureData');
 Route::get('scheduleManualCommunication/{booktrial_id}', 'SchedulebooktrialsController@scheduleManualCommunication');
 Route::get('streakscreendata', 'CustomerController@streakScreenData');
+Route::get('bulkInsertSaavn','DebugController@bulkInsertSaavn');
+
+Route::get('deleteCommunicationSidekiq','DebugController@deleteCommunicationSidekiq');

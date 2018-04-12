@@ -3490,6 +3490,32 @@ public function yes($msg){
 		return $finderCategoryTags;
 
 	}
+	
+	public function getOfferingsCategoriesSlug($categorySlug="",$city="")
+	{
+		
+		
+		try {
+		Log::info("  categorySlug ".print_r($categorySlug,true));
+		$categorySlug=vendorCatsSlugMapper($categorySlug);
+		Log::info("  categorySlug -a ".print_r($categorySlug,true));
+		$categoryId=Findercategory::active()->where('slug',$categorySlug)->first(array('_id','slug'));
+		Log::info("  categoryId ".print_r($categoryId,true));
+		$offerings= VendorOffering::active()->whereIn('vendorcategories',array((int)$categoryId["_id"]))->get(['name', 'slug']);
+		Log::info("  offerings ".print_r($offerings,true));
+		$tots=[];
+		foreach( $offerings as $value ) {
+			$temp=["name"=>$value['name'],"slug"=>$value['slug']];
+			array_push($tots,$temp);
+		}
+		return $tots;
+		}
+		catch (Exception $exception)
+		{
+			Log::info("  exception ".print_r($exception,true));
+			return $exception-getMessage();
+		} 
+	}
 
 	public function cacheOfferings(){
 		$offerings = Offering::where('status', "1")->get(['_id', 'name', 'slug']);
@@ -3733,6 +3759,15 @@ public function yes($msg){
 	public function cacheFinders(){
 		Finder::$withoutAppends = true;
 		$finders = Finder::where('status', "1")->get(['_id', 'slug']);
+		return $finders;
+	}
+	public function cacheFindersFromCity($city_slug="mumbai"){
+		Finder::$withoutAppends = true;
+		$city = City::where("slug",$city_slug)->first();
+		$finders = array();
+		if(isset($city)){
+			$finders = Finder::where('city_id',$city->_id)->where('status', "1")->get(['_id', 'slug']);
+		}
 		return $finders;
 	}
 	public function customer_data()
@@ -6827,47 +6862,173 @@ public function yes($msg){
 		// });
 
 
-		$rewards = Myreward::raw(function($collection){
+		// $rewards = Myreward::raw(function($collection){
 			
-			$aggregate = [];
+		// 	$aggregate = [];
 			
-			$match['$match']['created_at'] = ['$gte'=>new MongoDate(strtotime('2017-12-13'))];
-			$match['$match']['reward_type'] = "fitness_kit";
-			$aggregate[] = $match;
+		// 	$match['$match']['created_at'] = ['$gte'=>new MongoDate(strtotime('2018-01-13'))];
+		// 	$match['$match']['reward_type'] = "fitness_kit";
+		// 	$aggregate[] = $match;
 			
-			$group = [
-				'$group' => [
-					'_id' => '$claimed',
-					'count'=>[
-						'$sum'=>1
-					]
-				]
-			];
+		// 	$group = [
+		// 		'$group' => [
+		// 			'_id' => '$claimed',
+		// 			'count'=>[
+		// 				'$sum'=>1
+		// 			]
+		// 		]
+		// 	];
 	
-			$aggregate[] = $group;
-			$aggregate[] = ['$sort'=>['_id'=>1]];
+		// 	$aggregate[] = $group;
+		// 	$aggregate[] = ['$sort'=>['_id'=>1]];
 			
-			return $collection->aggregate($aggregate);
+		// 	return $collection->aggregate($aggregate);
 
-		});
+		// });
 
 
-		return $rewards;
+		// return $rewards;
 		
 		
-		$rewards = Myreward::where('created_at', '>', new DateTime('2017-12-13'))->get(['tshirt_size', 'content']);
+		$rewards = Myreward::where('created_at', '>', new DateTime('2018-01-13'))->get(['tshirt_size', 'content', 'claimed']);
 		
-		$data = [];
+		$data_not_available = [];
+		$data_available = [];
+		$claimed = 0;
+		$claimed_tshirt = 0;
 		foreach($rewards as $reward){
-			if(isset($reward['content']) && in_array("Breather T-Shirt", $reward['content']) && (!isset($reward['tshirt_size']) || $reward['tshirt_size'] == '')){
-				array_push($data, $reward);
+			if(isset($reward['content']) && in_array("Breather T-Shirt", $reward['content'])){
+				if((!isset($reward['tshirt_size']) || $reward['tshirt_size'] == '')){
+					array_push($data_not_available, $reward);
+					if($reward["claimed"] == 1){
+						$claimed++;
+					}
+				}else{
+					array_push($data_available, $reward);
+					if($reward["claimed"] == 1){
+						$claimed_tshirt++;
+					}
+				}
 			}
-			
 		}
 		
-		return $data;
+		return array("data_not_available" => $data_not_available, "data_available"=> $data_available, "claimed" => $claimed, "claimed_tshirt" => $claimed_tshirt);
 
 	}
+
+	public function bulkInsertSaavn(){
+
+        $destinationPath = public_path();
+        $fileName = "saavn_code.csv";
+        $filePath = $destinationPath.'/'.$fileName;
+
+        $csv_to_array = $this->csv_to_array($filePath);
+
+        if($csv_to_array){
+
+            foreach ($csv_to_array as $value) {
+
+                if($value['code'] != ''){
+
+                    $code = $value['code'];
+
+                    $saavn = Saavn::where('code',$code)->first();
+
+                    if(!$saavn){
+
+                        $data = [
+                            'code'=>$code,
+                            'status'=>"1"
+                        ];
+
+                        Saavn::create($data);
+
+                    }
+
+                }
+
+            }
+        }
+
+        return "Success";
+
+    }
+
+    public function deleteCommunicationSidekiq(){
+
+    	// echo"<pre>";print_r('stop');exit;
+
+    	$array = [
+    		'customerSmsSendPaymentLinkAfter15Days',
+    		'customerSmsSendPaymentLinkAfter30Days',
+    		'customerNotificationSendPaymentLinkAfter15Days',
+    		'customerNotificationSendPaymentLinkAfter30Days',
+    		'customerWalletSendPaymentLinkAfter15Days',
+    		'customerWalletSendPaymentLinkAfter30Days',
+			// 'cutomerSmsPurchaseAfter1Days',
+			// 'cutomerSmsPurchaseAfter7Days',
+			// 'cutomerSmsPurchaseAfter15Days'
+    	];
+
+    	$orders = Order::where('status','!=','1')
+    	    ->where('created_at','>=',new \MongoDate(strtotime(date('2018-03-01 00:00:00'))))
+    	    ->where('redundant_order','exists',false)
+    	    ->where('removed_communication','exists',false)
+    	    ->orderBy('_id','asc')
+    	    ->get($array);
+
+    	foreach ($orders as $order) {
+
+    		Log::info(time());
+
+    		$order->removed_communication = time();
+    		$order->update();
+
+    		Log::info(time());
+
+	    	$unset_keys = [];
+	    	$queue_id = [];
+	    
+	        foreach ($array as $value) {
+
+	            if((isset($order[$value]))){
+	                try {
+	                    $queue_id[] = $order[$value];
+	                    // $order->unset($value);
+	                    array_push($unset_keys, $value);
+	        
+	                }catch(\Exception $exception){
+	                    Log::error($exception);
+	                }
+	            }
+	        }
+
+	        Log::info(time());
+
+	        if(count($unset_keys)>0){
+	            $order->unset($unset_keys);
+
+	        }
+
+	        Log::info(time());
+
+			if(!empty($queue_id)){
+
+	            $sidekiq = new Sidekiq();
+	            $response = $sidekiq->delete($queue_id);
+
+	            // echo"<pre>";print_r($response);exit;
+	        }
+
+	        Log::info(time());
+
+	        // echo"<pre>";print_r('done');exit;
+
+	    }
+
+	    return "Done";
+
+    }
 
     
 }

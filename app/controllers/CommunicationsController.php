@@ -90,7 +90,7 @@ class CommunicationsController extends \BaseController {
 			$transaction_data->communication_keys = $communication_keys;
 			$transaction_data->update();
 
-			if(isset($transaction_data['customer_id'])){
+			/*if(isset($transaction_data['customer_id'])){
 
 				$getWalletBalance = $this->utilities->getWalletBalance($transaction_data['customer_id']);
 
@@ -102,7 +102,7 @@ class CommunicationsController extends \BaseController {
 
 					return "no sms sent";
 				}
-			}
+			}*/
 
 			$response = $this->$class->$label($data, 0);
 

@@ -3535,14 +3535,14 @@ class CustomerController extends \BaseController {
 				'width'=>375,
 				'ratio'=>(float) number_format(100/375,2)
 			];
-			$result['campaigns'][] = [
-				'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/amazon-pay.png',
-				'link'=>'',
-				'title'=>'Amazon Pay',
-				'height'=>100,
-				'width'=>375,
-				'ratio'=>(float) number_format(100/375,2)
-			];
+			// $result['campaigns'][] = [
+			// 	'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/amazon-pay.png',
+			// 	'link'=>'',
+			// 	'title'=>'Amazon Pay',
+			// 	'height'=>100,
+			// 	'width'=>375,
+			// 	'ratio'=>(float) number_format(100/375,2)
+			// ];
 
 			$lat = isset($_REQUEST['lat']) && $_REQUEST['lat'] != "" ? $_REQUEST['lat'] : "";
 	        $lon = isset($_REQUEST['lon']) && $_REQUEST['lon'] != "" ? $_REQUEST['lon'] : "";
@@ -5649,10 +5649,22 @@ class CustomerController extends \BaseController {
 		
 		$referrer = Customer::where('referral_code', $code)->where('status', '1')->first();
 
-	
-		
+		$device_type = "";
 
-		if(isset($_GET['device_type']) && in_array($_GET['device_type'], ['ios', 'android']) && $referrer && isset($customer->old_customer) && $customer->old_customer == false && !isset($customer->referrer_id) && $customer_id != $referrer->_id){
+		if(isset($_GET['device_type'])){
+			$device_type = strtolower($_GET['device_type']);
+		}
+
+		$header_device_type = Request::header('Device-Type');
+
+		if($header_device_type != "" && $header_device_type != null && $header_device_type != 'null'){
+
+			$device_type = strtolower($header_device_type);
+        }
+
+        Log::info('device_type-------------------------------'.$device_type);
+	
+		if(in_array($device_type, ['ios', 'android']) && $referrer && isset($customer->old_customer) && $customer->old_customer == false && !isset($customer->referrer_id) && $customer_id != $referrer->_id){
 
 			$customer->referrer_id = $referrer->_id;
 			$customer->save();

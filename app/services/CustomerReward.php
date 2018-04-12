@@ -344,32 +344,22 @@ Class CustomerReward {
                 $walletData = array(
                     "order_id"=>$order['_id'],
                     "customer_id"=> intval($order['customer_id']),
-                    "amount"=> intval($order['amount_customer'] * 20 / 100),
+                    "amount"=> intval($order['amount_customer']),
                     "amount_fitcash" => 0,
-                    "amount_fitcash_plus" => intval($order['amount_customer'] * 20 / 100),
+                    "amount_fitcash_plus" => intval($order['amount_customer']),
                     "type"=>'CASHBACK',
                     'entry'=>'credit',
-                    "description"=> "20% Cashback for paid trial purchase at ".ucwords($order['finder_name'])." (Order ID. ".$order['_id']."), Expires On : ".date('d-m-Y',time()+(86400*60)),
-                    "validity"=>time()+(86400*60)
+                    "description"=> "100% Cashback on trial booking at ".ucwords($order['finder_name'])." Applicable for buying a membership at ".ucwords($order['finder_name']).", Expires On : ".date('d-m-Y',time()+(86400*7)),
+                    "validity"=>time()+(86400*7),
+                    "valid_finder_id"=>intval($order['finder_id']),
+                    "finder_id"=>intval($order['finder_id']),
+                    "valid_service_id"=>intval($order['service_id']),
+                    "service_id"=>intval($order['service_id']),
                 );
 
-                if($order['type'] == 'booktrials'){
+                $walletTransaction =  $utilities->walletTransaction($walletData,$order->toArray());
 
-                    $walletData = array(
-                        "order_id"=>$order['_id'],
-                        "customer_id"=> intval($order['customer_id']),
-                        "amount"=> intval($order['amount_customer']),
-                        "amount_fitcash" => 0,
-                        "amount_fitcash_plus" => intval($order['amount_customer']),
-                        "type"=>'CASHBACK',
-                        'entry'=>'credit',
-                        "description"=> "100% Cashback on trial booking at ".ucwords($order['finder_name'])." Applicable for buying a membership at ".ucwords($order['finder_name']).", Expires On : ".date('d-m-Y',time()+(86400*7)),
-                        "validity"=>time()+(86400*7),
-                        "valid_finder_id"=>intval($order['finder_id']),
-                        "finder_id"=>intval($order['finder_id']),
-                        "valid_service_id"=>intval($order['service_id']),
-                        "service_id"=>intval($order['service_id']),
-                    );
+                if(isset($walletTransaction['status']) && $walletTransaction['status'] == 200){
 
                     $customersms = new CustomerSms();
 
@@ -381,9 +371,8 @@ Class CustomerReward {
 
                     $customersms->custom($sms_data);
 
+                    $order->update(['cashback_amount'=>intval($order['amount_customer'])]);
                 }
-
-                $utilities->walletTransaction($walletData,$order->toArray());
 
             }elseif(isset($order['type']) && $order['type'] == 'events' && isset($order['customer_id']) && isset($order['amount']) && isset($order['ticket_id']) ){
                 
@@ -1283,24 +1272,49 @@ Class CustomerReward {
         }
         
         $coupon = $query->first();
-        if(!isset($coupon) && (strtolower($couponCode) == "srfit" || strtolower($couponCode) == "goals")){
-            $vendorMOU = Vendormou::where("vendors",$ratecard["finder_id"])->where('contract_start_date', '<=', new \DateTime())->where('contract_end_date', '>=', new \DateTime())->first();
-            $coupon = array("code" => strtolower($couponCode),"discount_max" => 1000,"discount_amount" => 0,"discount_min" => 200);
-            if(isset($vendorMOU)){
-                if(isset($vendorMOU["cos_percentage_normal"])){
-                    $vendorMOU["cos_percentage_normal"] = 15;
-                }
-                if($vendorMOU["cos_percentage_normal"] >= 15){
-                    $coupon["discount_percent"] = 5;
-                }elseif($vendorMOU["cos_percentage_normal"] >= 10 && $vendorMOU["cos_percentage_normal"] < 15){
-                    $coupon["discount_percent"] = 3;
-                }elseif($vendorMOU["cos_percentage_normal"] < 10){
-                    $coupon["discount_percent"] = 2;
-                }
-            }else{
-                $coupon["discount_percent"] = 5;
-            }
-        }
+        // if(!isset($coupon) && (strtolower($couponCode) == "srfit")){
+        //     $vendorMOU = Vendormou::where("vendors",$ratecard["finder_id"])->where('contract_start_date', '<=', new \DateTime())->where('contract_end_date', '>=', new \DateTime())->first();
+        //     $coupon = array("code" => strtolower($couponCode),"discount_max" => 1000,"discount_amount" => 0,"discount_min" => 200);
+        //     if(isset($vendorMOU)){
+        //         if(isset($vendorMOU["cos_percentage_normal"])){
+        //             $vendorMOU["cos_percentage_normal"] = 15;
+        //         }
+        //         if($vendorMOU["cos_percentage_normal"] >= 15){
+        //             $coupon["discount_percent"] = 5;
+        //         }elseif($vendorMOU["cos_percentage_normal"] >= 10 && $vendorMOU["cos_percentage_normal"] < 15){
+        //             $coupon["discount_percent"] = 3;
+        //         }elseif($vendorMOU["cos_percentage_normal"] < 10){
+        //             $coupon["discount_percent"] = 2;
+        //         }
+        //     }else{
+        //         $coupon["discount_percent"] = 5;
+        //     }
+        // }
+        // if(!isset($coupon) && (strtolower($couponCode) == "whfit")){
+        //     $coupon = array("code" => strtolower($couponCode),"discount_max" => 600,"discount_amount" => 0,"discount_min" => 100);
+        //     if($ratecard["validity_type"] == "days"){
+        //         if($ratecard["validity"] >= 30 && $ratecard["validity"] < 179){
+        //             $coupon["discount_percent"] = 2.5;
+        //         }else if($ratecard["validity"] >= 179){
+        //             $coupon["discount_percent"] = 5;
+        //             $coupon["discount_max"] = 1200;
+        //         }
+        //     }else if($ratecard["validity_type"] == "months"){
+        //         if($ratecard["validity"] >= 1 && $ratecard["validity"] <= 5){
+        //             $coupon["discount_percent"] = 2.3;
+        //         }else if($ratecard["validity"] >= 6){
+        //             $coupon["discount_max"] = 1200;
+        //             $coupon["discount_percent"] = 5;
+        //         }
+        //     }else if($ratecard["validity_type"] == "year"){
+        //             $coupon["discount_max"] = 1200;
+        //             $coupon["discount_percent"] = 5;
+        //     }
+        //     if(!isset($coupon["discount_percent"])){
+        //         $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "error_message"=>"Coupon cannot be applied for this purchase");
+        //         return $resp;
+        //     }
+        // }
         Log::info("coupon");
         Log::info($coupon);
         

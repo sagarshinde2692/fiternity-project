@@ -17,6 +17,7 @@ use WalletTransaction;
 use App\Sms\CustomerSms as CustomerSms;
 use App\Mailers\FinderMailer as FinderMailer;
 use App\Services\Fitapi as Fitapi;
+use App\Mailers\CustomerMailer as CustomerMailer;
 
 Class Utilities {
 
@@ -1446,7 +1447,9 @@ Class Utilities {
                 $customer_id = (int)$decoded->customer->_id;
             }
         }
-
+        if(isset($request['logged_in_customer_id'])){
+            $customer_id = $request['logged_in_customer_id'];
+        }
         $request['customer_id'] = $customer_id;
 
         $customer = Customer::find($customer_id);
@@ -3302,6 +3305,8 @@ Class Utilities {
 
         if($booktrial && $stage != ""){
 
+            $fit_code_status = $this->fitCode($booktrial->toArray());
+
             $fitcash = $this->getFitcash($booktrial->toArray());
 
             $category_calorie_burn = 300;
@@ -3353,19 +3358,23 @@ Class Utilities {
 
             if(isset($booktrial['post_trial_status']) && $booktrial['post_trial_status'] == 'attended'){
 
-                $card_message = "Congratulations on completing your trial";
-                
-                if(isset($booktrial['post_trial_status_updated_by_fitcode']) || isset($booktrial['post_trial_status_updated_by_kiosk'])){
+                if(!$fit_code_status){
 
-                    $card_message = "Congratulations <b>₹".$fitcash." FitCash</b> has been added in your wallet.Use it to get a discount on your Membership";
+                    $card_message = "Congratulations on completing your trial";
+                    
+                    if(isset($booktrial['post_trial_status_updated_by_fitcode']) || isset($booktrial['post_trial_status_updated_by_kiosk'])){
+
+                        $card_message = "Congratulations <b>₹".$fitcash." FitCash</b> has been added in your wallet.Use it to get a discount on your Membership";
+                    }
+
+                    $state = 'trial_attended';
                 }
-                $state = 'trial_attended';
             }
 
             $response = [];
             $response['stage'] = $stage;
             $response['state'] = $state;
-            $response['fit_code_status'] = $this->fitCode($booktrial->toArray());
+            $response['fit_code_status'] = $fit_code_status;
             $response['booktrial_id'] = (int)$booktrial['_id'];
             $response['finder_id'] = (int)$booktrial['finder_id'];
             $response['finder_slug'] = $booktrial['finder_slug'];
@@ -3400,11 +3409,11 @@ Class Utilities {
 
             }else{
 
-                if(!isset($getRatecardCount['ratecards'])){
+                if(!isset($getRatecardCount['data']) && !isset($getRatecardCount['data']['service']) && !isset($getRatecardCount['data']['service']['ratecard'])){
                     $ratecard_count = 0;
                 }
 
-                if(isset($getRatecardCount['ratecards']) && empty($getRatecardCount['ratecards'])){
+                if(isset($getRatecardCount['data']['service']) && isset($getRatecardCount['data']['service']['ratecard']) && empty($getRatecardCount['data']['service']['ratecard'])){
                     $ratecard_count = 0;
                 }
             }
@@ -3437,7 +3446,9 @@ Class Utilities {
 
         $amount = 0;
         $days = 0;
-        $fitcash = 100;
+        $fitcash = 200;
+        $min_fitcash = 200;
+        $max_fitcash = 750;
 
         if(!empty($ratecards)){
 
@@ -3466,6 +3477,14 @@ Class Utilities {
             }
 
             $fitcash = floor((($amount / $days) * 30)*$percentage);
+        }
+
+        if($fitcash < $min_fitcash){
+            $fitcash = $min_fitcash;
+        }
+
+        if($fitcash > $max_fitcash){
+            $fitcash = $max_fitcash;
         }
 
         return $fitcash;
@@ -3671,6 +3690,28 @@ Class Utilities {
     
             }
         }
+    }
+    public function saavn($order){
+
+        $saavn = \Saavn::active()->where('used_date','exists',false)->orderBy('_id','asc')->first();
+
+        if($saavn){
+
+            $customermailer = new CustomerMailer();
+
+            $saavn->order_id = (int)$order['_id'];
+            $saavn->used_date = time();
+            $saavn->update();
+
+            $order->saavn_code = $saavn['code'];
+            $order->update();
+
+            $customermailer->saavn($order->toArray());
+
+            return "success";
+        }
+
+        return "error, no code";
     }
     
 }

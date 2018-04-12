@@ -647,7 +647,13 @@ Class FinderMailer extends Mailer {
 			'dharatanna@fitternity.com',
 			'pranjalisalvi@fitternity.com',
 			'rahulsachdev@fitternity.com',
-			'vaidehidesai@fitternity.com'
+			'vikramkhanna@fitternity.com',
+			'mitmehta@fitternity.com',
+			'kevalshah@fitternity.com',
+			'priyankapatel@fitternity.com',
+			'silkeshakadam@fitternity.com',
+			'ismailbaig@fitternity.com',
+			'arvindraj@fitternity.com'
 		];
 
 		/*if(isset($data['city_id']) && $data['city_id'] != ""){

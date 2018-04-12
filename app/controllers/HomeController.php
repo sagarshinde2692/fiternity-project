@@ -498,16 +498,16 @@ class HomeController extends BaseController {
                 'width'=>375,
                 'ratio'=>(float) number_format(100/375,2)
             ];
-            $campaigns[] = [
-                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Cover-web%26mob/AmazonPay_WebCard_Banner.png',
-                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/amazon-pay.png',
-                'link'=>"",
-                // 'target'=>true,
-                'title'=>'Amazon Pay',
-                'height'=>100,
-                'width'=>375,
-                'ratio'=>(float) number_format(100/375,2)
-            ];
+            // $campaigns[] = [
+            //     'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Cover-web%26mob/AmazonPay_WebCard_Banner.png',
+            //     'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/amazon-pay.png',
+            //     'link'=>"",
+            //     // 'target'=>true,
+            //     'title'=>'Amazon Pay',
+            //     'height'=>100,
+            //     'width'=>375,
+            //     'ratio'=>(float) number_format(100/375,2)
+            // ];
 
             /*if($city == "mumbai"){
                 $campaigns[] = [
@@ -914,16 +914,9 @@ class HomeController extends BaseController {
             }
 
             $popup_message = "";
-            if(($type == "booktrial" || $type == "healthytiffintrial" || $type == "healthytiffintrail") && isset($itemData['amount_customer']) && $itemData['amount_customer'] > 0){
+            if(isset($itemData['cashback_amount'])){
 
-                $amount_20_percent = (int)($itemData['amount_customer']*20/100);
-
-                if($type == "booktrial"){
-
-                    $amount_20_percent = $itemData['amount_customer'];
-                }
-
-                $popup_message = "Rs ".$amount_20_percent." FitCash has been added to your wallet";
+                $popup_message = "Rs ".$itemData['cashback_amount']." FitCash has been added to your wallet";
             }
 
             if(isset($item['myreward_id']) && $item['myreward_id'] != "" && $item['myreward_id'] != 0){
@@ -1837,12 +1830,12 @@ class HomeController extends BaseController {
             $footer_block5_ids 			= 		array_map('intval', explode(",", $homepage['footer_block5_ids'] ));
             $footer_block6_ids 			= 		array_map('intval', explode(",", $homepage['footer_block6_ids'] ));
 
-            $footer_block1_finders 		=		Finder::active()->with(array('location'=>function($query){$query->select('name');}))->whereIn('_id', $footer_block1_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title','location_id'))->toArray();
-            $footer_block2_finders 		=		Finder::active()->with(array('location'=>function($query){$query->select('name');}))->whereIn('_id', $footer_block2_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title','location_id'))->toArray();
-            $footer_block3_finders 		=		Finder::active()->with(array('location'=>function($query){$query->select('name');}))->whereIn('_id', $footer_block3_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title','location_id'))->toArray();
-            $footer_block4_finders 		=		Finder::active()->with(array('location'=>function($query){$query->select('name');}))->whereIn('_id', $footer_block4_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title','location_id'))->toArray();
-            $footer_block5_finders 		=		Finder::active()->with(array('location'=>function($query){$query->select('name');}))->whereIn('_id', $footer_block5_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title','location_id'))->toArray();
-            $footer_block6_finders 		=		Finder::active()->with(array('location'=>function($query){$query->select('name');}))->whereIn('_id', $footer_block6_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title','location_id'))->toArray();
+            $footer_block1_finders 		=		Finder::active()->with(array('location'=>function($query){$query->select('name');}))->whereIn('_id', $footer_block1_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title','location_id','backend_flags'))->toArray();
+            $footer_block2_finders 		=		Finder::active()->with(array('location'=>function($query){$query->select('name');}))->whereIn('_id', $footer_block2_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title','location_id','backend_flags'))->toArray();
+            $footer_block3_finders 		=		Finder::active()->with(array('location'=>function($query){$query->select('name');}))->whereIn('_id', $footer_block3_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title','location_id','backend_flags'))->toArray();
+            $footer_block4_finders 		=		Finder::active()->with(array('location'=>function($query){$query->select('name');}))->whereIn('_id', $footer_block4_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title','location_id','backend_flags'))->toArray();
+            $footer_block5_finders 		=		Finder::active()->with(array('location'=>function($query){$query->select('name');}))->whereIn('_id', $footer_block5_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title','location_id','backend_flags'))->toArray();
+            $footer_block6_finders 		=		Finder::active()->with(array('location'=>function($query){$query->select('name');}))->whereIn('_id', $footer_block6_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title','location_id','backend_flags'))->toArray();
 
             array_set($footer_finders,  'footer_block1_finders', $footer_block1_finders);
             array_set($footer_finders,  'footer_block2_finders', $footer_block2_finders);
@@ -1865,16 +1858,22 @@ class HomeController extends BaseController {
                     foreach ($finders as $finder_key => $finder_value) {
 
                         // if(strpos($finder_value['slug'],'gold') !== false){
-                            $footer_finders[$block][$finder_key]['title'] = $finder_value['title'].' '.$finder_value['location']['name'];
+                            // $footer_finders[$block][$finder_key]['title'] = $finder_value['title'].' '.$finder_value['location']['name'];
                         // }
 
+                        if(!(isset($finder_value['backend_flags']) &&  isset($finder_value['backend_flags']['name_includes_location']) && $finder_value['backend_flags']['name_includes_location'] == true)){
+                            $footer_finders[$block][$finder_key]['title'] = $finder_value['title'].' '.$finder_value['location']['name'];
+                        }
+
+                        
                         $array = [
                             "_id",
                             "location_id",
                             "finder_coverimage",
                             "commercial_type_status",
                             "business_type_status",
-                            "location"
+                            "location",
+                            "backend_flags"
                         ];
 
                         foreach ($array as $value) {
@@ -3056,6 +3055,15 @@ class HomeController extends BaseController {
 
     public function ifcity($city){
         $response = ifCityPresent($city);
+        $jwt_token = Request::header('Authorization');
+        if(!$response['found']){
+            if($jwt_token){
+                $decoded = customerTokenDecode($jwt_token);
+                $customer_id = (int)$decoded->customer->_id;
+                $response["customer_id"] = $customer_id;
+            }
+            Log::info($response);
+        }
         return $response;
     }
 
