@@ -7053,6 +7053,7 @@ class SchedulebooktrialsController extends \BaseController {
                 
                 //added check and message
                 $booktrial->pps_fitcash=$fitcash;
+                $booktrial->pps_cashback=$this->utilities->getWorkoutSessionLevel((int)$booktrial->customer_id)['current_level']['cashback'];
                 if(isSet($booktrial->category)&&$booktrial->category!=""&&isSet($booktrial->category->name)&&$booktrial->category->name!="")
                 	$booktrial->pps_srp_link=Config::get('app.website').'/'.$booktrial->city_name.'/'.$booktrial->category->name;
                 	$temp=$booktrial->send_communication;
@@ -7089,6 +7090,8 @@ class SchedulebooktrialsController extends \BaseController {
 
     }
 
+    
+    
     public function lostFitCode($booktrial_id){
 
         $booktrial_id = (int) $booktrial_id;
