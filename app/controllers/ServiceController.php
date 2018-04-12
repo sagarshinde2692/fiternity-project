@@ -1660,19 +1660,26 @@ class ServiceController extends \BaseController {
 		
 		if(isset($schedule->schedules) && count($schedule->schedules) > 0 && count(head($schedule->schedules)->slots)>0){
 
-			if($schedule->count > 1){
-				$service_details['page_index'] = $schedule->count - 1;
-				$service_details['schedule_date'] = date('d-m-Y', strtotime($schedule->available_date));
-
-				if($schedule->count > 2){
-					$service_details['session_unavailable'] = true;
-					$service_details['next_session'] = "Booking opens on".date('d-m-Y', strtotime($schedule->available_date));
-				}
-			}
-
 			$service_details['next_session'] = "Next session at ".strtoupper(head($schedule->schedules)->slots[0]->start_time);
 			$service_details['slots'] = (head($schedule->schedules)->slots);
 			$service_details['total_sessions'] = count($service_details['slots'])." sessions";
+			$service_details['schedule_date'] = date('d-m-Y', strtotime($schedule->available_date));
+
+			if(isset($_GET['keyword']) && $_GET['keyword']){
+				$service_details['schedule_date'] = date('d-m-Y', strtotime($schedule->available_date));
+				$service_details['pass_title'] = $service_details['pass_title'].' ('.date('jS M', strtotime($schedule->available_date)).')';
+				if($schedule->count > 3){
+					$service_details['single_slot'] = false;
+					$service_details['session_unavailable'] = true;
+					$service_details['next_session'] = "Booking opens on".date('d-m-Y', strtotime($schedule->available_date));
+					$service_details['slots'] = [];
+					$service_details['total_sessions'] = "No sessions availabe";
+					unset($service_details['pass_title']);
+					unset($service_details['pass_description']);
+					$service_details['page_index'] = 0;
+				}
+			}
+
 			if(count($service_details['slots']) == 1){
 
 				$service_details['single_slot'] = true;
@@ -1691,11 +1698,21 @@ class ServiceController extends \BaseController {
 				'hour'=>intval(date('G', strtotime(head($schedule->schedules)->slots[count(head($schedule->schedules)->slots)-1]->start_time))),
 				'min'=>intval(date('i', strtotime(head($schedule->schedules)->slots[count(head($schedule->schedules)->slots)-1]->start_time))),
 			];
+
+			if($service_details['servicecategory_id'] == 65){
+		
+				if($schedule->count == 1 && intval(date('G', time())) > $gym_start_time['hour']){
+					$gym_start_time['hour'] = (date('G', strtotime('+30 minutes', time())));
+					$gym_start_time['min'] = $gym_start_time['hour'] == (date('G', strtotime('+30 minutes', time()))) ? 0 : 30;
+				}
+
+				$service_details['gym_display_time'] = date('h:i a', strtotime($gym_start_time['hour'].':'.$gym_start_time['min'])).' - '.date('h:i a', strtotime($gym_end_time['hour'].':'.$gym_end_time['min']));
+			}
 		}else{
 			return Response::json(array('status'=>400, 'error_message'=>'Sessions are not available'), $this->error_status);
 			
 			$service_details['total_sessions'] = "0 Session";
-			$service_details['next_session'] = "No session available";
+			$service_details['next_session'] = "No sessions available";
 			$service_details['slots'] = [];
 		}
 		
