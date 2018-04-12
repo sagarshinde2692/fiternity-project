@@ -3642,31 +3642,34 @@ Class Utilities {
     }
 
     public function deleteSelectCommunication($data){
-        
+
         $transaction = $data['transaction'];
-        $array = $data['labels'];
+        $labels = $data['labels'];
         
         $unset_keys = [];
         $queue_id = [];
-        
-        foreach ($array as $value) {
-            
-            if((isset($order[$value]))){
-                try {
-                    $unset_keys[] = $value;
-                    $queue_id[] = $order[$value];
-                }catch(\Exception $exception){
-                    Log::error($exception);
+        if(isset($transaction['send_communication'])){
+
+            foreach ($labels as $value) {
+                
+                if((isset($transaction['send_communication'][$value]))){
+                    try {
+                        $queue_id[] = $transaction['send_communication'][$value];
+                        $unset_keys[] = 'send_communication.'.$value;
+                    }catch(\Exception $exception){
+                        Log::error($exception);
+                    }
                 }
             }
-        }
-        
-        if(!empty($queue_id)){
-
-            $transaction->unset($unset_keys);
-            $sidekiq = new Sidekiq();
-            $sidekiq->delete($queue_id);
-
+            Log::info("unsetting communication");
+            Log::info($queue_id);
+            if(!empty($queue_id)){
+    
+                $transaction->unset($unset_keys);
+                $sidekiq = new Sidekiq();
+                $sidekiq->delete($queue_id);
+    
+            }
         }
     }
     

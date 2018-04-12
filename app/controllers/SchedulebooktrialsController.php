@@ -7187,6 +7187,7 @@ class SchedulebooktrialsController extends \BaseController {
                     $response['sub_header_2'] = " has been added in your Fitternity Wallet. Use it to buy membership with lowest price";
                 }
 
+                Log::info("removing n+2 communication");
                 $this->utilities->deleteSelectCommunication(['transaction'=>$booktrial, 'labels'=>["customer_sms_after2hour","customer_email_after2hour","customer_notification_after2hour"]]);
 
             break;
@@ -7220,6 +7221,7 @@ class SchedulebooktrialsController extends \BaseController {
                     $response['sub_header_2'] = "Surprise discount will be given to you in form of fitcash post we verify your attendance with ".ucwords($booktrial['finder_name']);
                 }
 
+                Log::info("removing n+2 communication");
                 $this->utilities->deleteSelectCommunication(['transaction'=>$booktrial, 'labels'=>["customer_sms_after2hour","customer_email_after2hour","customer_notification_after2hour"]]);
 
             break;
@@ -7250,6 +7252,8 @@ class SchedulebooktrialsController extends \BaseController {
                 if($payment_done){
                     $response['sub_header_2'] = "Make sure you attend next time to earn Cashback and continue working out!\n\nWe will transfer your paid amount in form of Fitcash within 24 hours.";
                 }
+                Log::info("removing n+2 communication");
+                $this->utilities->deleteSelectCommunication(['transaction'=>$booktrial, 'labels'=>["customer_sms_after2hour","customer_email_after2hour","customer_notification_after2hour"]]);
 
             break;
             case 'cantmake':
