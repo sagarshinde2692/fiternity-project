@@ -1707,7 +1707,9 @@ class ServiceController extends \BaseController {
 					$gym_start_time['min'] = $gym_start_time['hour'] == (date('G', strtotime('+30 minutes', time()))) ? 0 : 30;
 				}
 
-				$service_details['gym_display_time'] = date('h:i a', strtotime($gym_start_time['hour'].':'.$gym_start_time['min'])).' - '.date('h:i a', strtotime($gym_end_time['hour'].':'.$gym_end_time['min']));
+				$service_details['gym_display_time'] = date('h:i a', strtotime($gym_start_time['hour'].':'.$gym_start_time['min'])).' to '.date('h:i a', strtotime($gym_end_time['hour'].':'.$gym_end_time['min']));
+				$service_details['pass_description'] = "Choose to workout at a suitable time between ".$service_details['gym_display_time'];
+				$service_details['next_session'] = "Next session at ".date('h:i a', strtotime($gym_start_time['hour'].':'.$gym_start_time['min']));
 			}
 		}else{
 			return Response::json(array('status'=>400, 'error_message'=>'Sessions are not available'), $this->error_status);
