@@ -3201,12 +3201,12 @@ class CustomerController extends \BaseController {
 							Log::info(strtotime($data['schedule_date_time']));
 							Log::info(time());
 
-							if((!isset($data['post_trial_status']) || in_array($data['post_trial_status'], ['unavailable', ""])) && !(isset($data['kiosk_block_shown']) && $data['kiosk_block_shown']) ){
+							if((!isset($data['post_trial_status']) || in_array($data['post_trial_status'], ['unavailable', ""]))  ){
 								Log::info("inside block");
 
 								if(time() >= strtotime('-10 minutes ', strtotime($data['schedule_date_time']))){
 
-									if(time() < (strtotime($data['schedule_date_time'])+3*60*60)){
+									if(time() < (strtotime($data['schedule_date_time'])+3*60*60) && !(isset($data['kiosk_block_shown']) && $data['kiosk_block_shown'])){
 										$data['block_screen'] = [
 											'type'=>'activate_session',
 											'url'=>Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/activate_session'
