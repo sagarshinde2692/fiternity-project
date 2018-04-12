@@ -5090,6 +5090,12 @@ class SchedulebooktrialsController extends \BaseController {
 
         $booktrial['fit_code'] = $this->utilities->fitCode($booktrial);
 
+        $booktrial['lost_code'] = false;
+        
+        if(time() >= strtotime($booktrial['schedule_date_time'])){
+            $booktrial['lost_code'] = true;
+        }
+
         if($booktrial['type'] == 'workout-session'){
 
             $customer_level_data = $this->utilities->getWorkoutSessionLevel($booktrial['customer_id']);                
