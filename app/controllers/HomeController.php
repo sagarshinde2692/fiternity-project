@@ -457,8 +457,8 @@ class HomeController extends BaseController {
             $campaigns=  [];
 
             $campaigns[] = [
-                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/WHO_web_banner_final_New.png',
-                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/WHO_mob_banner_new.png',
+                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/summer.jpg',
+                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/summer-m.jpg',
                 'link'=>Config::get('app.website').'/'.$city.'/fitness',
                 'title'=>'Fitness Sale',
                 'height'=>100,
