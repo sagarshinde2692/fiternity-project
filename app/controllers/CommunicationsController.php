@@ -198,9 +198,26 @@ class CommunicationsController extends \BaseController {
 						$booktrial->vendor_code = random_numbers(5);
 						$booktrial->update();
 						$data['vendor_code'] = $booktrial->vendor_code;
-					}		
-				case "customer_sms_before20Min":
+					}
+					
+				case "bookTrialReminderBefore10Min":
 					{
+						$current_date = date('Y-m-d 00:00:00');
+						$from_date = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($current_date))));
+						$to_date = new MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($current_date." + 1 days"))));
+						$batch = 1;
+						$booktrialMissedcall  = Booktrial::where('_id','!=',(int) $data['_id'])->where('customer_phone','LIKE','%'.substr($data['customer_phone'], -8).'%')->where('missedcall_batch','exists',true)->where('created_at','>',$from_date)->where('created_at','<',$to_date)->orderBy('_id','desc')->first();
+						if(!empty($booktrialMissedcall) && isset($booktrialMissedcall->missedcall_batch) && $booktrialMissedcall->missedcall_batch != ''){
+							$batch = $booktrialMissedcall->missedcall_batch + 1;
+						}
+						$missedcall_no = Ozonetelmissedcallno::where('batch',$batch)->where('type','yes')->where('for','N-3Trial')->first();
+						if(empty($missedcall_no)){
+							$missedcall_no = Ozonetelmissedcallno::where('batch',1)->where('type','yes')->where('for','N-3Trial')->first();
+						}
+						if(isSet($missedcall_no->number)&&$missedcall_no->number!="")
+							$data['yes'] = $missedcall_no->number;
+							else $data['yes'] = "";
+						
 						$data['pps_cashback'] =$this->utilities->getWorkoutSessionLevel($data['customer_id'])['current_level']['cashback'];
 						$booktrial = Booktrial::find($data['_id']);
 						if(isset($booktrial)&&$booktrial!=""&&isset($data['pps_cashback'])&&$data['pps_cashback']!="")
@@ -210,7 +227,17 @@ class CommunicationsController extends \BaseController {
 						}
 						break;
 					}
-
+				case "bookTrialReminderAfter2Hour":
+					{ 
+						$data['pps_cashback'] =$this->utilities->getWorkoutSessionLevel($data['customer_id'])['current_level']['cashback'];
+						$booktrial = Booktrial::find($data['_id']);
+						if(isset($booktrial)&&$booktrial!=""&&isset($data['pps_cashback'])&&$data['pps_cashback']!="")
+						{
+							$booktrial->pps_cashback=$data['pps_cashback'];
+							$booktrial->update();
+						}
+						break;
+					}
 		}
 
 		if(isset($data['customer_id']) && $data['customer_id'] != ""){

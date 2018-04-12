@@ -2586,9 +2586,9 @@ class SchedulebooktrialsController extends \BaseController {
                 $booktrialdata['yes'] = $missedcall_no->number;
                 else $booktrialdata['yes'] ="";
 
-                $delayReminderTimeBefore20Min      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->subMinutes(10);
+                $delayReminderTimeBefore10Min=    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->subMinutes(10);
 
-                $send_communication["customer_sms_before20Min"] = $this->customersms->bookTrialReminderBefore20Min($booktrialdata, $delayReminderTimeBefore20Min);
+                $send_communication["customer_sms_before10Min"] = $this->customersms->bookTrialReminderBefore10Min($booktrialdata, $delayReminderTimeBefore10Min);
                 
                 // $send_communication["customer_notification_before20Min"] = $this->customernotification->bookTrialReminderBefore20Min($booktrialdata, $delayReminderTimeBefore20Min);
 
@@ -2599,14 +2599,14 @@ class SchedulebooktrialsController extends \BaseController {
             
             if(in_array($booktrial->source, ['ios', 'android'])){
             	Log::info(" info  AAYA ".print_r($booktrial,true));
-            	$delayReminderTimeAfter90Min      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->addMinutes(90);
-            	Log::info(" info  AAYA 11  ".print_r($delayReminderTimeAfter90Min,true));
-            	$send_communication["customer_sms_after2hour"] = $this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter90Min);
+            	$delayReminderTimeAfter2Hrs      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->addMinutes(120);
+            	Log::info(" info  AAYA 11  ".print_r($delayReminderTimeAfter2Hrs,true));
+            	$send_communication["customer_sms_after2hour"] = $this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hrs);
             	
             	Log::info(" info  $send_communication[customer_sms_after2hour] ".print_r($send_communication["customer_sms_after2hour"],true));
             	// if(!isTabActive($booktrialdata['finder_id'])){
-            		$send_communication["customer_email_after2hour"] = $this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter90Min);
-            		$send_communication["customer_notification_after2hour"] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter90Min);
+            		$send_communication["customer_email_after2hour"] = $this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hrs);
+            		$send_communication["customer_notification_after2hour"] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hrs);
             	// }
             }
             else 
@@ -2847,7 +2847,8 @@ class SchedulebooktrialsController extends \BaseController {
             "customer_notification_after2hour",
             "trialInstantCallReminder",
             "fitternity_email_postTrialStatusUpdate",
-            "customer_notification_before10min"
+            "customer_notification_before10min",
+        	"customer_sms_before10Min"
         ];
 
         foreach ($array as $value) {
