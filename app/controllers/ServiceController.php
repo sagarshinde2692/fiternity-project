@@ -1704,14 +1704,14 @@ class ServiceController extends \BaseController {
 			];
 
 			if($service_details['servicecategory_id'] == 65){
+				$service_details['pass_description'] = "Choose to workout at a suitable time between ".date('h:i a', strtotime($gym_start_time['hour'].':'.$gym_start_time['min'])).' to '.date('h:i a', strtotime($gym_end_time['hour'].':'.$gym_end_time['min']));
 		
 				if(date('z', time()) == date('z', strtotime($service_details['schedule_date'])) && intval(date('G', time())) >= $gym_start_time['hour']){
 					$gym_start_time['hour'] = intval(date('G', strtotime('+30 minutes', time())));
-					$gym_start_time['min'] = $gym_start_time['hour'] == (date('G', strtotime('+30 minutes', time()))) ? 30 : 0;
+					$gym_start_time['min'] = $gym_start_time['hour'] == (date('G', time())) ? 30 : 0;
 				}
 
 				$service_details['gym_display_time'] = "Select between ".date('h:i a', strtotime($gym_start_time['hour'].':'.$gym_start_time['min'])).' to '.date('h:i a', strtotime($gym_end_time['hour'].':'.$gym_end_time['min']));
-				$service_details['pass_description'] = "Choose to workout at a suitable time between ".$service_details['gym_display_time'];
 				$service_details['next_session'] = "Next session at ".date('h:i a', strtotime($gym_start_time['hour'].':'.$gym_start_time['min']));
 			}
 		}else{
