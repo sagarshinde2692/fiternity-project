@@ -1421,6 +1421,7 @@ class ServiceController extends \BaseController {
 
 		// return date('Y-m-d', strtotime('day after tomorrow'));
 
+		Log::info($_SERVER['REQUEST_URI']);
 		$cache_key = "$finder_slug-$service_slug";
 
 		$service_details = $cache ? Cache::tags('service_detail')->has($cache_key) : false;
@@ -1714,11 +1715,24 @@ class ServiceController extends \BaseController {
 				$service_details['next_session'] = "Next session at ".date('h:i a', strtotime($gym_start_time['hour'].':'.$gym_start_time['min']));
 			}
 		}else{
-			return Response::json(array('status'=>400, 'error_message'=>'Sessions are not available'), $this->error_status);
-			
-			$service_details['total_sessions'] = "0 Session";
-			$service_details['next_session'] = "No sessions available";
+
+			$service_details['single_slot'] = false;
+			$service_details['session_unavailable'] = true;
+			$service_details['next_session'] = "OOPs sessions are currently unavailable. ";
 			$service_details['slots'] = [];
+			$service_details['total_sessions'] = "No sessions availabe";
+			unset($service_details['pass_title']);
+			unset($service_details['pass_description']);
+			$service_details['page_index'] = 0;
+			$service_details['next_session'] = "No sessions available";
+		}
+
+		if(isset($service_details['session_unavailable']) && $service_details['session_unavailable']){
+			$session_unavailable = new Sessionsunavailable();
+			$session_unavailable->data = $schedule_data;
+			$session_unavailable->url = $_SERVER['REQUEST_URI'];
+
+			$session_unavailable->save();
 		}
 		
 		$service_details['trial_active_weekdays']= null;
