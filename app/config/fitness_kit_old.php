@@ -1,6 +1,6 @@
 <?php
 
-$url = 'https://b.fitn.in/gamification/reward_new/';
+$url = 'https://b.fitn.in/gamification/reward/goodies/';
 
 $products = [
 	'Workout Friendly Armband'=>[
@@ -76,11 +76,11 @@ return [
 						123
 					],
 					'amount'=>450,
-					'image' => $url.'zumbakit/zumbaa.1.jpg',
+					'image' => $url.'zumbakit/zumba1.1.png',
                     'gallery'=>[
-                    	$url.'zumbakit/zumbaa.1.jpg',
-                     	$url.'zumbakit/s1_a_shoebag_1.png',
-						$url.'zumbakit/s1_a_armband_2.png',
+                    	$url.'zumbakit/zumba1.1.png',
+                     	$products["Drawstring Shoe Bag"]["url"],
+						$products["Workout Friendly Armband"]["url"]	   
                     ]
 				],
 				[
@@ -94,7 +94,7 @@ return [
 						3
 					],
 					'amount'=>400,
-					'image' => $url.'gymkit/gyma.1.png',
+					'image' => $url.'crossfitkit/crossfit1.1.png',
                     'gallery'=>[]
 				],
 				[
@@ -107,11 +107,11 @@ return [
 						4
 					],
 					'amount'=>400,
-					'image' => $url.'yogakit/yogaa.1.jpg',
+					'image' => $url.'yogakit/yoga1.1.png',
                     'gallery'=>[
-                    	$url.'yogakit/yogaa.1.jpg',
-                     	$url.'yogakit/s1_a_shoebag_1.png',
-						$url.'yogakit/s1_a_detangler_2.png',
+                    	$url.'yogakit/yoga1.1.png',
+                     	$products["Drawstring Shoe Bag"]["url"],
+						$products["Earphone Detangler"]["url"]
                     ]
 				]
 			]
@@ -132,11 +132,11 @@ return [
 						123
 					],
 					'amount'=>550,
-					'image' => $url.'zumbakit/zumbaa.2.jpg',
+					'image' => $url.'zumbakit/zumba1.2.png',
                     'gallery'=>[
-                    	$url.'zumbakit/zumbaa.2.jpg',
-                     	$url.'zumbakit/s2_a_totebagg_1.png',
-						$url.'zumbakit/s2_a_armband_2.png',
+                    	$url.'zumbakit/zumba1.2.png',
+                     	$products["Casual Tote Bag"]["url"],
+						$products["Workout Friendly Armband"]["url"]
                     ]
 				],
 				[
@@ -151,11 +151,11 @@ return [
 						3
 					],
 					'amount'=>650,
-					'image' => $url.'gymkit/gyma.2.jpg',
+					'image' => $url.'crossfitkit/crossfit1.2.png',
                     'gallery'=>[
-                    	$url.'gymkit/gyma.2.jpg',
-                     	$url.'gymkit/s2_a_bottle_1.png',
-						$url.'gymkit/s2_a_detangler_2.png',
+                    	$url.'crossfitkit/crossfit1.2.png',
+                     	$products["Cool-Water Bottle"]["url"],
+						$products["Earphone Detangler"]["url"] 
                     ]
 				],
 				[
@@ -168,11 +168,11 @@ return [
 						4
 					],
 					'amount'=>650,
-					'image' => $url.'yogakit/yogaa.2.jpg',
+					'image' => $url.'yogakit/yoga1.2.png',
                     'gallery'=>[
-                    	$url.'yogakit/yogaa.2.jpg',
-                     	$url.'yogakit/s2_a_totebag_1.png',
-						$url.'yogakit/s2_a_bottle_2.png',
+                    	$url.'yogakit/yoga1.2.png',
+                     	$products["Casual Tote Bag"]["url"],
+						$products["Cool-Water Bottle"]["url"]   
                     ]
 				]
 			]
@@ -193,11 +193,11 @@ return [
 						123
 					],
 					'amount'=>550,
-					'image' => $url.'zumbakit/zumbaa.3.jpg',
+					'image' => $url.'zumbakit/zumba1.3.png',
                     'gallery'=>[
-                    	$url.'zumbakit/zumbaa.3.jpg',
-                     	$url.'zumbakit/s1_a_shoebag_1.png',
-						$url.'zumbakit/s3_a_bottle_2.png'
+                    	$url.'zumbakit/zumba1.3.png',
+                     	$products["Drawstring Shoe Bag"]["url"],
+						$products["Cool-Water Bottle"]["url"]
                     ]
 				],
 				[
@@ -212,11 +212,11 @@ return [
 						3
 					],
 					'amount'=>950,
-					'image' => $url.'gymkit/gyma.3.jpg',
+					'image' => $url.'crossfitkit/crossfit1.3.png',
                     'gallery'=>[
-                    	$url.'gymkit/gyma.3.jpg',
-						$url.'gymkit/s3_a_shaker_1.png',
-                     	$url.'gymkit/s3_a_gymbag_2.png',
+                    	$url.'crossfitkit/crossfit1.3.png',
+                     	$products["Waterproof Gym Bag"]["url"],
+						$products["Shaker"]["url"] 
                     ]
 				],
 				[
@@ -230,13 +230,12 @@ return [
 						4
 					],
 					'amount'=>900,
-					'image' => $url.'yogakit/yogaa.3.jpg',
+					'image' => $url.'yogakit/yoga1.3.png',
                     'gallery'=>[
-                    	$url.'yogakit/yogaa.3.jpg',
-                     	$url.'yogakit/s3_a_shoebag_1.png',
-						$url.'yogakit/s3_a_towel_2.png',
-						$url.'yogakit/s3_a_bottle_3.png',
-
+                    	$url.'yogakit/yoga1.3.png',
+                     	$products["Drawstring Shoe Bag"]["url"],
+						$products["Compact Hand Towel"]["url"],
+						$products["Cool-Water Bottle"]["url"],
                     ]
 				]
 			]
@@ -258,12 +257,12 @@ return [
 						123
 					],
 					'amount'=>1000,
-					'image' => $url.'zumbakit/zumbaa.4.jpg',
+					'image' => $url.'zumbakit/zumba1.4.png',
                     'gallery'=>[
-                    	$url.'zumbakit/zumbaa.4.jpg',
-                     	$url.'zumbakit/s4_a_totebagr_1.png',
-						$url.'zumbakit/s4_a_bottle_2.png',
-						$url.'zumbakit/s5_a_towel_3.png',
+                    	$url.'zumbakit/zumba1.4.png',
+                     	$products["Casual Tote Bag"]["url"],
+						$products["Cool-Water Bottle"]["url"],
+						$products["Compact Hand Towel"]["url"] 
                     ]
 				],
 				[
@@ -279,12 +278,12 @@ return [
 						3
 					],
 					'amount'=>1300,
-					'image' => $url.'gymkit/gyma.4.jpg',
+					'image' => $url.'crossfitkit/crossfit1.4.png',
                     'gallery'=>[
-                    	$url.'gymkit/gyma.4.jpg',
-                     	$url.'gymkit/s4_a_shaker_1.png',
-						$url.'gymkit/s4_a_gymbag_2.png',
-						$url.'gymkit/s6_b_towel_3.png',
+                    	$url.'crossfitkit/crossfit1.4.png',
+                     	$products["Waterproof Gym Bag"]["url"],
+						$products["Shaker"]["url"],
+						$products["Compact Hand Towel"]["url"]   
                     ]
 				],
 				[
@@ -296,7 +295,7 @@ return [
 						4
 					],
 					'amount'=>800,
-					'image' => $url.'yogakit/yogaa.4.png',
+					'image' => $url.'yogakit/yoga1.4.png',
                     'gallery'=>[]
 				]
 			]
@@ -319,13 +318,13 @@ return [
 						123
 					],
 					'amount'=>1300,
-					'image' => $url.'zumbakit/zumbaa.5.jpg',
+					'image' => $url.'zumbakit/zumba1.5.png',
                     'gallery'=>[
-                    	$url.'zumbakit/zumbaa.5.jpg',
-                     	$url.'zumbakit/s5_a_totebagr_1.png',
-						$url.'zumbakit/s5_a_bottle_2.png',
-						$url.'zumbakit/s5_a_towel_3.png',
-						$url.'zumbakit/s5_a_armband_4.png',
+                    	$url.'zumbakit/zumba1.5.png',
+                     	$products["Casual Tote Bag"]["url"],
+						$products["Cool-Water Bottle"]["url"],
+						$products["Compact Hand Towel"]["url"],
+						$products["Workout Friendly Armband"]["url"] 
                     ]
 				],
 				[
@@ -341,12 +340,12 @@ return [
 						3
 					],
 					'amount'=>1500,
-					'image' => $url.'gymkit/gyma.5.jpg',
+					'image' => $url.'crossfitkit/crossfit1.5.png',
                     'gallery'=>[
-                    	$url.'gymkit/gyma.5.jpg',
-						$url.'gymkit/s5_a_shaker_1.png',
-                     	$url.'gymkit/s5_a_gymbag_2.png',
-						$url.'gymkit/s5_a_tshirt_lll_3.png',
+                    	$url.'crossfitkit/crossfit1.5.png',
+                     	$products["Waterproof Gym Bag"]["url"],
+						$products["Shaker"]["url"],
+						$products["Tshirt Crossfit"]["url"]	   
                     ]
 				],
 				[
@@ -360,12 +359,12 @@ return [
 						4
 					],
 					'amount'=>1200,
-					'image' => $url.'yogakit/yogaa.5.jpg',
+					'image' => $url.'yogakit/yoga1.5.png',
                     'gallery'=>[
-                    	$url.'yogakit/yogaa.5.jpg',
-						$url.'yogakit/s5_a_totebag_g_1.png',
-						$url.'yogakit/s5_a_tshirtf_2.jpg',
-						$url.'yogakit/s5_a_bottle_3.png',
+                    	$url.'yogakit/yoga1.5.png',
+                     	$products["Casual Tote Bag"]["url"],
+						$products["Tshirt Yoga Zumba"]["url"],
+						$products["Cool-Water Bottle"]["url"]  
                     ]
 				]
 			]
@@ -389,20 +388,20 @@ return [
 						123
 					],
 					'amount'=>1550,
-					'image' => $url.'zumbakit/zumbaa.6.jpg',
+					'image' => $url.'zumbakit/zumba1.6.png',
                     'gallery'=>[
-                    	$url.'zumbakit/zumbaa.6.jpg',
-                     	$url.'zumbakit/s6_a_totebag_1.png',
-						$url.'zumbakit/s6_a_bottle_2.png',
-						$url.'zumbakit/s5_a_towel_3.png',
-						$url.'zumbakit/s6_a_armband_4.png',
-						$url.'zumbakit/s6_a_detangler_5.png',
+                    	$url.'zumbakit/zumba1.6.png',
+                     	$products["Casual Tote Bag"]["url"],
+						$products["Cool-Water Bottle"]["url"],
+						$products["Compact Hand Towel"]["url"],
+						$products["Workout Friendly Armband"]["url"],
+						$products["Earphone Detangler"]["url"]   
                     ]
 				],	
 				[
 					"product" => [
-						$products["Shaker"]["title"],
 						$products["Waterproof Gym Bag"]["title"],
+						$products["Shaker"]["title"],
 						$products["Tshirt Crossfit"]["title"],
 						$products["Workout Friendly Armband"]["title"]
 					],
@@ -413,32 +412,32 @@ return [
 						3
 					],
 					'amount'=>1800,
-					'image' => $url.'gymkit/gyma.6.jpg',
+					'image' => $url.'crossfitkit/crossfit1.6.png',
                     'gallery'=>[
-                    	$url.'gymkit/gyma.6.jpg',
-                     	$url.'gymkit/s6_a_shaker_1.png',
-						$url.'gymkit/s6_a_gymbag_2.png',
-						$url.'gymkit/s6_a_tshirtlll_3.png',
-                     	$url.'gymkit/s6_a_armband_4.png',
+                    	$url.'crossfitkit/crossfit1.6.png',
+                     	$products["Waterproof Gym Bag"]["url"],
+						$products["Shaker"]["url"],
+						$products["Tshirt Crossfit"]["url"],
+						$products["Workout Friendly Armband"]["url"] 
                     ]
 				],
 				[
 					"product" => [
 						$products["Yoga Mat"]["title"],
-						$products["Tshirt Yoga Zumba"]["title"],
 						$products["Cool-Water Bottle"]["title"],
+						$products["Tshirt Yoga Zumba"]["title"]
 					],
 					'category_id'=>[
 						1,
 						4
 					],
 					'amount'=>1750,
-					'image' => $url.'yogakit/yogaa.6.jpg',
+					'image' => $url.'yogakit/yoga1.6.png',
                     'gallery'=>[
-                    	$url.'yogakit/yogaa.6.jpg',
-						$url.'yogakit/s6_a_yogamat_1.png',
-						$url.'yogakit/s6_a_tshirtm_2.jpg',
-						$url.'yogakit/s6_a_bottle_3.png',
+                    	$url.'yogakit/yoga1.6.png',
+                     	$products["Yoga Mat"]["url"],
+						$products["Cool-Water Bottle"]["url"],
+						$products["Tshirt Yoga Zumba"]["url"]
                     ]
 				]
 			]
@@ -462,14 +461,14 @@ return [
 						123
 					],
 					'amount'=>1850,
-					'image' => $url.'zumbakit/zumba.7.jpg',
+					'image' => $url.'zumbakit/zumba1.7.png',
                     'gallery'=>[
-                    	$url.'zumbakit/zumba.7.jpg',
-                     	$url.'zumbakit/s7_totebagr_1.png',
-						$url.'zumbakit/s7_bottle_2.png',
-						$url.'zumbakit/s7_towel_3.png',
-						$url.'zumbakit/s7_armband_4.png',
-						$url.'zumbakit/s7_tshirtf_5.jpg',
+                    	$url.'zumbakit/zumba1.7.png',
+                     	$products["Casual Tote Bag"]["url"],
+						$products["Cool-Water Bottle"]["url"],
+						$products["Compact Hand Towel"]["url"],
+						$products["Workout Friendly Armband"]["url"],
+						$products["Tshirt Yoga Zumba"]["url"]   
                     ]
 				],
 				[
@@ -487,14 +486,14 @@ return [
 						3
 					],
 					'amount'=>2100,
-					'image' => $url.'gymkit/gym7.jpg',
+					'image' => $url.'crossfitkit/crossfit1.7.png',
                     'gallery'=>[
-                    	$url.'gymkit/gym7.jpg',
-						$url.'gymkit/s7_tshirtlll_1.png',
-						$url.'gymkit/s7_towel_2.png',
-						$url.'gymkit/s7_shaker_3.png',
-						$url.'gymkit/s7_gymbag_4.png',
-                     	$url.'gymkit/s7_detangler_5.png',
+                    	$url.'crossfitkit/crossfit1.7.png',
+                     	$products["Tshirt Crossfit"]["url"],
+						$products["Compact Hand Towel"]["url"],
+						$products["Waterproof Gym Bag"]["url"],
+						$products["Earphone Detangler"]["url"],
+						$products["Shaker"]["url"],
                     ]
 				],
 				[
@@ -509,13 +508,13 @@ return [
 						4
 					],
 					'amount'=>2250,
-					'image' => $url.'yogakit/yoga7.jpg',
+					'image' => $url.'yogakit/yoga1.7.png',
                     'gallery'=>[
-                    	$url.'yogakit/yoga7.jpg',
-                     	$url.'yogakit/s7_tshirtm_1.jpg',
-						$url.'yogakit/s7_yogamat_2.png',
-						$url.'yogakit/s7_yogamatbag_3.png',
-						$url.'yogakit/s7_bottle_4.png',
+                    	$url.'yogakit/yoga1.7.png',
+                     	$products["Yoga Mat"]["url"],
+						$products["Yoga Mat Bag"]["url"],
+						$products["Cool-Water Bottle"]["url"],
+						$products["Tshirt Yoga Zumba"]["url"]
                     ]
 				]
 			]
@@ -539,7 +538,7 @@ return [
 						123
 					],
 					'amount'=>400,
-					'image' => $url.'zumbakit/zumbab.1.png',
+					'image' => $url.'zumbakit/zumba2.1.png',
                     'gallery'=>[]
 				],
 				[
@@ -553,7 +552,7 @@ return [
 						3
 					],
 					'amount'=>300,
-					'image' => $url.'gymkit/gymb.1.png',
+					'image' => $url.'crossfitkit/crossfit2.1.png',
                     'gallery'=>[]
 				],
 				[
@@ -565,7 +564,7 @@ return [
 						4
 					],
 					'amount'=>400,
-					'image' => $url.'yogakit/yogab.1.png',
+					'image' => $url.'yogakit/yoga2.1.png',
                     'gallery'=>[]
 				]
 			]
@@ -586,11 +585,11 @@ return [
 						123
 					],
 					'amount'=>500,
-					'image' => $url.'zumbakit/zumbab.2.jpg',
+					'image' => $url.'zumbakit/zumba2.2.png',
                     'gallery'=>[
-                    	$url.'zumbakit/zumbab.2.jpg',
-                     	$url.'zumbakit/s2_b_shoebag_1.png',
-						$url.'zumbakit/s2_b_towel_2.png',
+                    	$url.'zumbakit/zumba2.2.png',
+                     	$products["Drawstring Shoe Bag"]["url"],
+						$products["Compact Hand Towel"]["url"]
                     ]
 				],
 				[
@@ -605,11 +604,11 @@ return [
 						3
 					],
 					'amount'=>600,
-					'image' => $url.'gymkit/gymb.2.jpg',
+					'image' => $url.'crossfitkit/crossfit2.2.png',
                     'gallery'=>[
-                    	$url.'gymkit/gymb.2.jpg',
-                     	$url.'gymkit/s2_b_shaker_1.png',
-						$url.'gymkit/s2_b_armband_2.png',
+                    	$url.'crossfitkit/crossfit2.2.png',
+                     	$products["Shaker"]["url"],
+						$products["Workout Friendly Armband"]["url"]
                     ]
 				],
 				[
@@ -621,7 +620,7 @@ return [
 						4
 					],
 					'amount'=>500,
-					'image' => $url.'yogakit/yogab.2.png',
+					'image' => $url.'yogakit/yoga2.2.png',
                     'gallery'=>[]
 				]
 			]
@@ -642,11 +641,11 @@ return [
 						123
 					],
 					'amount'=>550,
-					'image' => $url.'zumbakit/zumbab.3.jpg',
+					'image' => $url.'zumbakit/zumba2.3.png',
                     'gallery'=>[
-                    	$url.'zumbakit/zumbab.3.jpg',
-                     	$url.'zumbakit/s3_b_totebagg_1.png',
-						$url.'zumbakit/s3_b_armband_2.png',
+                    	$url.'zumbakit/zumba2.3.png',
+                     	$products["Casual Tote Bag"]["url"],
+						$products["Workout Friendly Armband"]["url"] 
                     ]
 				],
 				[
@@ -661,11 +660,11 @@ return [
 						3
 					],
 					'amount'=>950,
-					'image' => $url.'gymkit/gymb.3.jpg',
+					'image' => $url.'crossfitkit/crossfit2.3.png',
                     'gallery'=>[
-                    	$url.'gymkit/gymb.3.jpg',
-                     	$url.'gymkit/s3_b_bottle_1.png',
-						$url.'gymkit/s3_b_tshirt_u_2.png',
+                    	$url.'crossfitkit/crossfit2.3.png',
+                     	$products["Cool-Water Bottle"]["url"],
+						$products["Tshirt Crossfit"]["url"]
                     ]
 				],
 				[
@@ -678,11 +677,11 @@ return [
 						4
 					],
 					'amount'=>800,
-					'image' => $url.'yogakit/yogab.3.jpg',
+					'image' => $url.'yogakit/yoga2.3.png',
                     'gallery'=>[
-                    	$url.'yogakit/yogab.3.jpg',
-                     	$url.'yogakit/s3_b_arm%20Band_1.png',
-						$url.'yogakit/s3_b_yogamatbag_2.png',
+                    	$url.'yogakit/yoga2.3.png',
+                     	$products["Yoga Mat Bag"]["url"],
+						$products["Workout Friendly Armband"]["url"]  
                     ]
 				]
 			]
@@ -703,11 +702,11 @@ return [
 						123
 					],
 					'amount'=>700,
-					'image' => $url.'zumbakit/zumbab.4.jpg',
+					'image' => $url.'zumbakit/zumba2.4.png',
                     'gallery'=>[
-                    	$url.'zumbakit/zumbab.4.jpg',
-                     	$url.'zumbakit/s4_b_shoebag_1.png',
-						$url.'zumbakit/s4_b_tshirtf_2.jpg',
+                    	$url.'zumbakit/zumba2.4.png',
+                     	$products["Drawstring Shoe Bag"]["url"],
+						$products["Tshirt Yoga Zumba"]["url"]
                     ]
 				],
 				[
@@ -722,11 +721,11 @@ return [
 						3
 					],
 					'amount'=>1200,
-					'image' => $url.'gymkit/gymb.4.jpg',
+					'image' => $url.'crossfitkit/crossfit2.4.png',
                     'gallery'=>[
-                    	$url.'gymkit/gymb.4.jpg',
-                     	$url.'gymkit/s4_b_gymbag_1.png',
-						$url.'gymkit/s4_b_tshirtlll_2.png',
+                    	$url.'crossfitkit/crossfit2.4.png',
+                     	$products["Waterproof Gym Bag"]["url"],
+						$products["Tshirt Crossfit"]["url"]
                     ]
 				],
 				[
@@ -740,12 +739,12 @@ return [
 						4
 					],
 					'amount'=>1000,
-					'image' => $url.'yogakit/yogab.4.jpg',
+					'image' => $url.'yogakit/yoga2.4.png',
                     'gallery'=>[
-                    	$url.'yogakit/yogab.4.jpg',
-                    	$url.'yogakit/s4_b_totebag_r_1.png',
-						$url.'yogakit/s4_b_bottle_2.png',
-						$url.'yogakit/s4_b_towel_3.png',
+                    	$url.'yogakit/yoga2.4.png',
+                    	$products["Casual Tote Bag"]["url"],
+						$products["Compact Hand Towel"]["url"],
+						$products["Cool-Water Bottle"]["url"]
                      	   
                     ]
 				]
@@ -768,12 +767,12 @@ return [
 						123
 					],
 					'amount'=>950,
-					'image' => $url.'zumbakit/zumbab.5.jpg',
+					'image' => $url.'zumbakit/zumba2.5.png',
                     'gallery'=>[
-                    	$url.'zumbakit/zumbab.5.jpg',
-                     	$url.'zumbakit/s5_b_shoebag_1.png',
-						$url.'zumbakit/s5_b_tshirtf_2.jpg',
-						$url.'zumbakit/s5_b_detangler_3.png',
+                    	$url.'zumbakit/zumba2.5.png',
+                     	$products["Drawstring Shoe Bag"]["url"],
+						$products["Tshirt Yoga Zumba"]["url"],
+						$products["Earphone Detangler"]["url"]
                     ]
 				],
 				[
@@ -790,13 +789,13 @@ return [
 						3
 					],
 					'amount'=>1450,
-					'image' => $url.'gymkit/gymb.5.jpg',
+					'image' => $url.'crossfitkit/crossfit2.5.png',
                     'gallery'=>[
-                    	$url.'gymkit/gymb.5.jpg',
-                     	$url.'gymkit/s4_a_shaker_1.png',
-						$url.'gymkit/s6_b_gymbag_2.png',
-						$url.'gymkit/s6_b_towel_3.png',
-						$url.'gymkit/s6_b_armband_4.png',
+                    	$url.'crossfitkit/crossfit2.5.png',
+                     	$products["Shaker"]["url"],
+						$products["Waterproof Gym Bag"]["url"],
+						$products["Compact Hand Towel"]["url"],
+						$products["Workout Friendly Armband"]["url"] 
                     ]
 				],
 				[
@@ -809,11 +808,11 @@ return [
 						4
 					],
 					'amount'=>1300,
-					'image' => $url.'yogakit/yogab.5.jpg',
+					'image' => $url.'yogakit/yoga2.5.png',
                     'gallery'=>[
-                    	$url.'yogakit/yogab.5.jpg',
-                     	$url.'yogakit/s5_b_yogamat_1.png',
-						$url.'yogakit/s5_b_yogamatbag_2.png',
+                    	$url.'yogakit/yoga2.5.png',
+                     	$products["Yoga Mat"]["url"],
+						$products["Yoga Mat Bag"]["url"]  
                     ]
 				]
 			]
@@ -835,12 +834,12 @@ return [
 						123
 					],
 					'amount'=>1050,
-					'image' => $url.'zumbakit/zumbab.6.jpg',
+					'image' => $url.'zumbakit/zumba2.6.png',
                     'gallery'=>[
-                    	$url.'zumbakit/zumbab.6.jpg',
-                    	$url.'zumbakit/s6_b_shoebag_1.png',
-						$url.'zumbakit/s6_b_tshirtm_2.jpg',
-						$url.'zumbakit/s6_a_towel_3.png',
+                    	$url.'zumbakit/zumba2.6.png',
+                    	$products["Drawstring Shoe Bag"]["url"],
+						$products["Tshirt Yoga Zumba"]["url"],
+						$products["Compact Hand Towel"]["url"]
                     ]
 				],
 				[
@@ -857,13 +856,13 @@ return [
 						3
 					],
 					'amount'=>1700,
-					'image' => $url.'gymkit/gymb.6.jpg',
+					'image' => $url.'crossfitkit/crossfit2.6.png',
                     'gallery'=>[
-                    	$url.'gymkit/gymb.6.jpg',
-                 	   	$url.'gymkit/s6_b_bottle_1.png',
-						$url.'gymkit/s6_b_gymbag_2.png',
-						$url.'gymkit/s6_b_towel_3.png',
-						$url.'gymkit/s6_b_armband_4.png',
+                    	$url.'crossfitkit/crossfit2.6.png',
+                 	   	$products["Cool-Water Bottle"]["url"],
+						$products["Waterproof Gym Bag"]["url"],
+						$products["Compact Hand Towel"]["url"],
+						$products["Workout Friendly Armband"]["url"]
                     ]
 				],
 				[
@@ -877,12 +876,12 @@ return [
 						4
 					],
 					'amount'=>1650,
-					'image' => $url.'yogakit/yogab.6.jpg',
+					'image' => $url.'yogakit/yoga2.6.png',
                     'gallery'=>[
-                    	$url.'yogakit/yogab.6.jpg',
-                     	$url.'yogakit/s6_b_yogamat_1.png',
-						$url.'yogakit/s6_b_yogamatbag_2.png',
-						$url.'yogakit/s6_b_towel_3.png',
+                    	$url.'yogakit/yoga2.6.png',
+                     	$products["Yoga Mat"]["url"],
+						$products["Yoga Mat Bag"]["url"],
+						$products["Compact Hand Towel"]["url"]
                     ]
 				]
 			]
