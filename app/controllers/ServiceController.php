@@ -1421,6 +1421,7 @@ class ServiceController extends \BaseController {
 
 		// return date('Y-m-d', strtotime('day after tomorrow'));
 
+		Log::info($_SERVER['REQUEST_URI']);
 		$cache_key = "$finder_slug-$service_slug";
 
 		$service_details = $cache ? Cache::tags('service_detail')->has($cache_key) : false;
@@ -1703,22 +1704,35 @@ class ServiceController extends \BaseController {
 			];
 
 			if($service_details['servicecategory_id'] == 65){
+				$service_details['pass_description'] = "Choose to workout at a suitable time between ".date('h:i a', strtotime($gym_start_time['hour'].':'.$gym_start_time['min'])).' to '.date('h:i a', strtotime($gym_end_time['hour'].':'.$gym_end_time['min']));
 		
 				if(date('z', time()) == date('z', strtotime($service_details['schedule_date'])) && intval(date('G', time())) >= $gym_start_time['hour']){
 					$gym_start_time['hour'] = intval(date('G', strtotime('+30 minutes', time())));
-					$gym_start_time['min'] = $gym_start_time['hour'] == (date('G', strtotime('+30 minutes', time()))) ? 30 : 0;
+					$gym_start_time['min'] = $gym_start_time['hour'] == (date('G', time())) ? 30 : 0;
 				}
 
 				$service_details['gym_display_time'] = "Select between ".date('h:i a', strtotime($gym_start_time['hour'].':'.$gym_start_time['min'])).' to '.date('h:i a', strtotime($gym_end_time['hour'].':'.$gym_end_time['min']));
-				$service_details['pass_description'] = "Choose to workout at a suitable time between ".$service_details['gym_display_time'];
 				$service_details['next_session'] = "Next session at ".date('h:i a', strtotime($gym_start_time['hour'].':'.$gym_start_time['min']));
 			}
 		}else{
-			return Response::json(array('status'=>400, 'error_message'=>'Sessions are not available'), $this->error_status);
-			
-			$service_details['total_sessions'] = "0 Session";
-			$service_details['next_session'] = "No sessions available";
+
+			$service_details['single_slot'] = false;
+			$service_details['session_unavailable'] = true;
+			$service_details['next_session'] = "OOPs sessions are currently unavailable. ";
 			$service_details['slots'] = [];
+			$service_details['total_sessions'] = "No sessions availabe";
+			unset($service_details['pass_title']);
+			unset($service_details['pass_description']);
+			$service_details['page_index'] = 0;
+			$service_details['next_session'] = "No sessions available";
+		}
+
+		if(isset($service_details['session_unavailable']) && $service_details['session_unavailable']){
+			$session_unavailable = new Sessionsunavailable();
+			$session_unavailable->data = $schedule_data;
+			$session_unavailable->url = $_SERVER['REQUEST_URI'];
+
+			$session_unavailable->save();
 		}
 		
 		$service_details['trial_active_weekdays']= null;
