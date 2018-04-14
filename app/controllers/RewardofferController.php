@@ -301,6 +301,34 @@ class RewardofferController extends BaseController {
             $amount = $ratecard->price;
         }*/
 
+        
+        if($amount <= 1000){
+
+            switch ($finder_id) {
+                case 13761 : 
+                    $min_date = strtotime(date('2018-06-15 00:00:00'));
+                    $max_date = strtotime(date('2018-06-15 23:59:59'));
+                    break;
+                case 13762 : 
+                    $min_date = strtotime(date('2018-05-31 00:00:00'));
+                    $max_date = strtotime(date('2018-05-31 23:59:59'));
+                    break;
+                case 13763 : 
+                    $min_date = strtotime(date('2018-04-23 00:00:00'));
+                    $max_date = strtotime(date('2018-04-23 23:59:59'));
+                    break;
+                case 13764 : 
+                    $min_date = strtotime(date('2018-05-20 00:00:00'));
+                    $max_date = strtotime(date('2018-05-20 23:59:59'));
+                    break;
+                case 13765 : 
+                    $min_date = strtotime(date('2018-05-31 00:00:00'));
+                    $max_date = strtotime(date('2018-05-31 23:59:59'));
+                    break;
+                default: break;
+            }
+        }
+
 
         $finder                 =   Finder::find($finder_id);
         $findercategory_id      =   intval($finder->category_id);
@@ -495,7 +523,7 @@ class RewardofferController extends BaseController {
                                         }
                                     }
 
-                                    if(in_array($finder_id,[13219,13221,13420]) && $amount <= 1000){
+                                    if(in_array($finder_id,[13219,13221,13420,13761,13762,13763,13764,13765]) && $amount <= 1000){
 
                                         $pos = strpos($rewards_value['title'],'(Kit B)');
 
