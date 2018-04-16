@@ -1795,7 +1795,7 @@ class SchedulebooktrialsController extends \BaseController {
                 //     Log::info($hashreverse['reverse_hash']);
                 //     return  Response::json($resp, 400);
                 // }
-                $hash_verified = $this->utilities->verifyOrder($data,$order);
+             	$hash_verified = $this->utilities->verifyOrder($data,$order);
                 // return $order;
                 // return $hash_verified ? "s":"d";
                 if(!$hash_verified){
@@ -2591,6 +2591,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $delayReminderTimeBefore10Min=    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->subMinutes(10);
 
                 $send_communication["customer_sms_before10Min"] = $this->customersms->bookTrialReminderBefore10Min($booktrialdata, $delayReminderTimeBefore10Min);
+                $send_communication["customer_email_before10Min"] = $this->customermailer->bookTrialReminderBefore10Min($booktrialdata, $delayReminderTimeBefore10Min);
                 
                 // $send_communication["customer_notification_before20Min"] = $this->customernotification->bookTrialReminderBefore20Min($booktrialdata, $delayReminderTimeBefore20Min);
 
@@ -2607,6 +2608,7 @@ class SchedulebooktrialsController extends \BaseController {
             	
             	Log::info(" info  $send_communication[customer_sms_after2hour] ".print_r($send_communication["customer_sms_after2hour"],true));
             	// if(!isTabActive($booktrialdata['finder_id'])){
+            	if(isset($booktrial->type)&&$booktrial->type!='workout-session')
             		$send_communication["customer_email_after2hour"] = $this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hrs);
             		$send_communication["customer_notification_after2hour"] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hrs);
             	// }
@@ -2850,7 +2852,8 @@ class SchedulebooktrialsController extends \BaseController {
             "trialInstantCallReminder",
             "fitternity_email_postTrialStatusUpdate",
             "customer_notification_before10min",
-        	"customer_sms_before10Min"
+        	"customer_sms_before10Min",
+        	"customer_email_before10Min"
         ];
 
         foreach ($array as $value) {
