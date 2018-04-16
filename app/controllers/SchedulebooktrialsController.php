@@ -7270,11 +7270,16 @@ class SchedulebooktrialsController extends \BaseController {
                 if(isset($customer_level_data['next_level']['level'])){
                     $response['streak']['footer'] = 'Unlock level '.$customer_level_data['next_level']['level'].' which gets you '.$customer_level_data['next_level']['cashback'].'% cashback upto '.$customer_level_data['next_level']['number'].' sessions! Higher the Level, Higher the Cashback';
                 }
-                if($booktrial->type=='booktrials'){
-                    $response['reschedule_button'] = true;
-                }
                 if($payment_done){
                     $response['sub_header_2'] = "Make sure you attend next time to earn Cashback and continue working out!\n\nWe will transfer your paid amount in form of Fitcash within 24 hours.";
+                }
+                if($booktrial->type=='booktrials'){
+                    
+                    $response['reschedule_button'] = true;
+
+                    if(isset($response['sub_header_2'])){
+                        unset($response['sub_header_2']);
+                    }
                 }
                 Log::info("removing n+2 communication");
                 $this->utilities->deleteSelectCommunication(['transaction'=>$booktrial, 'labels'=>["customer_sms_after2hour","customer_email_after2hour","customer_notification_after2hour"]]);
