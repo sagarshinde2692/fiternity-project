@@ -541,7 +541,9 @@ class HomeController extends BaseController {
         $homedata['customer_home'] = null;
 
         $jwt_token = Request::header('Authorization');
-
+        Log::info("Home Token");
+        Log::info($jwt_token);
+        Log::info("Home Token End");
         if($jwt_token){
             $homedata['customer_home'] = $this->utilities->customerHome();
         }
