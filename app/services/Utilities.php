@@ -3224,6 +3224,20 @@ Class Utilities {
 
         if($booktrial && $stage != ""){
 
+            $unset_dates = \Booktrial::$unset_dates;
+
+            $unset_keys = [];
+
+            foreach ($unset_dates as $date){
+                if(isset($booktrial[$date]) && $booktrial[$date]==''){
+                    $unset_keys[] = $date;
+                }
+            }
+
+            if(count($unset_keys) > 0){
+                $booktrial->unset($unset_keys);
+            }
+
             $fit_code_status = $this->fitCode($booktrial->toArray());
 
             $fitcash = $this->getFitcash($booktrial->toArray());
