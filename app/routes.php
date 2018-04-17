@@ -1152,3 +1152,7 @@ Route::get('getServiceData', 'TransactionController@getServiceData');
 Route::get('bulkInsertSaavn','DebugController@bulkInsertSaavn');
 
 Route::get('deleteCommunicationSidekiq','DebugController@deleteCommunicationSidekiq');
+
+Route::get('updateSubscriptionCode','DebugController@updateSubscriptionCode');
+
+
