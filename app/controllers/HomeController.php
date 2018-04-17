@@ -1146,6 +1146,10 @@ class HomeController extends BaseController {
                 $booking_details_data['price']['value']= "Free Via Fitternity";
             }
 
+            if(isset($item['code']) && $item['code'] != ""){
+                $booking_details_data['booking_id']['value'] = $item['code'];
+            }
+
             if(in_array($type,["booktrialfree"])){
 
                 if(isset($item['code']) && $item['code'] != ""){

@@ -385,7 +385,7 @@ class TransactionController extends \BaseController {
             $order_id = $data['_id'] = $data['order_id'] = Order::max('_id') + 1;
         }
 
-        $data['code'] = (string)$data['order_id'];
+        $data['code'] = (string) random_numbers(5); //(string)$data['order_id'];
 
         if(isset($data['referal_trial_id'])){
 
@@ -5080,13 +5080,22 @@ class TransactionController extends \BaseController {
 
         $order_id = (int) $code;
 
+        $code = (string) $code;
+
         $decodeKioskVendorToken = decodeKioskVendorToken();
 
         $vendor = json_decode(json_encode($decodeKioskVendorToken->vendor),true);
 
         $response = array('status' => 400,'message' =>'Sorry! Cannot locate your membership');
-        
+
+        $order = false;
+
         $order = Order::active()->where('type','memberships')->where('finder_id',(int)$vendor['_id'])->find($order_id);
+
+        if(!$order){
+  
+            $order = Order::active()->where('type','memberships')->where('finder_id',(int)$vendor['_id'])->where('code',$code)->first();
+        }
 
         $locate_data = [
             'code'=>$code,
@@ -5096,7 +5105,9 @@ class TransactionController extends \BaseController {
         
         $locateTransaction = LocateTransaction::create($locate_data); 
 
-        if(isset($order)){
+        if($order){
+
+            $order_id = (int) $order['_id'];
 
             $data = [];
 
