@@ -2340,6 +2340,8 @@ class SchedulebooktrialsController extends \BaseController {
                     
                     $trial_ids = $previous_pay_later_session->trial_ids;
                     array_push($trial_ids, $booktrial->_id);
+                    $previous_pay_later_session->trial_ids = $trial_ids;
+                    $previous_pay_later_session->save();
                 
                 }else{
 
