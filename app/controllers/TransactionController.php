@@ -5090,11 +5090,11 @@ class TransactionController extends \BaseController {
 
         $order = false;
 
-        $order = Order::active()->where('type','memberships')->where('finder_id',(int)$vendor['_id'])->find($order_id);
+        $order = Order::active()->where('type','memberships')->where('finder_id',(int)$vendor['_id'])->where('code',$code)->first();
 
         if(!$order){
   
-            $order = Order::active()->where('type','memberships')->where('finder_id',(int)$vendor['_id'])->where('code',$code)->first();
+            $order = Order::active()->where('type','memberships')->where('finder_id',(int)$vendor['_id'])->find($order_id);
         }
 
         $locate_data = [
