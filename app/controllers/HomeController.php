@@ -748,75 +748,82 @@ class HomeController extends BaseController {
                 				$duration_day=((isset($itemData['duration_day'])&&$itemData['duration_day']!="")?$itemData['duration_day']:"");
                 				$duration=((isset($itemData['duration'])&&$itemData['duration']!="")?$itemData['duration']:"");
                 				
-                				if((preg_match_all('/\byear/i', $servDur, $matches))||(preg_match_all('/\byears/i', $servDur, $matches))||$durr==360||$durr==365)
+                				
+                			 if	(((preg_match_all('/\bday\b/i', $servDur, $matches))||(preg_match_all('/\bmeals\b/i', $servDur, $matches))||(preg_match_all('/\bmeal\b/i', $servDur, $matches))||(preg_match_all('/\bdays\b/i', $servDur, $matches))||(preg_match_all('/\bsessions\b/i', $servDur, $matches))||(preg_match_all('/\bsession\b/i', $servDur, $matches))||(preg_match_all('/\bMonths\b/i', $servDur, $matches))||(preg_match_all('/\bMonth\b/i', $servDur, $matches))||$servDur==''||(preg_match_all('/\byear/i', $servDur, $matches))||(preg_match_all('/\byears/i', $servDur, $matches))))
                 				{
-                					$relianceJson['value']='year';
                 					if(isSet($duration_day)&&$duration_day!='')
                 					{
-                						$relianceJson['count']=(int)($duration_day/360);
+                						$duration_day=(int)$duration_day;
+                						if($duration_day==360||$duration_day==365)
+                						{
+                							$relianceJson['count']=1;
+                							$relianceJson['value']='year';
+                						}
+                						else if(($duration_day%30)==0)
+                						{
+                							$relianceJson['count']=(int)($duration_day/30);
+                							if($relianceJson['count']==1)
+                								$relianceJson['value']='month';
+                								else $relianceJson['value']='months';
+                								
+                						}
+                						else
+                						{
+                							$relianceJson['count']=$duration_day;
+                							if($relianceJson['count']==1)
+                								$relianceJson['value']='day';
+                								else $relianceJson['value']='days';
+                								
+                						}
                 					}
                 					else if(isSet($duration)&&$duration!='')
                 					{
-                						$relianceJson['count']=(int)$duration;
+                						//                 						$relianceJson['count']=(int)$duration;
+                						
+                						$duration=(int)$duration;
+                						if($duration==360||$duration==365)
+                						{
+                							$relianceJson['count']=1;
+                							$relianceJson['value']='year';
+                						}
+                						else if(($duration%30)==0)
+                						{
+                							$relianceJson['count']=(int)($duration/30);
+                							if($relianceJson['count']==1)
+                								$relianceJson['value']='month';
+                								else $relianceJson['value']='months';
+                								
+                						}
+                						else
+                						{
+                							$relianceJson['count']=$duration;
+                							if($relianceJson['count']==1)
+                								$relianceJson['value']='day';
+                								else $relianceJson['value']='days';
+                								
+                						}
+                						
                 					}
-                					if($relianceJson['count']==1)$relianceJson['value']='day';
-                					else $relianceJson['value']='days';
-                				}
-                				else if	(((preg_match_all('/\bday\b/i', $servDur, $matches))||(preg_match_all('/\bmeals\b/i', $servDur, $matches))||(preg_match_all('/\bmeal\b/i', $servDur, $matches))||(preg_match_all('/\bdays\b/i', $servDur, $matches))||(preg_match_all('/\bsessions\b/i', $servDur, $matches))||(preg_match_all('/\bsession\b/i', $servDur, $matches))||(preg_match_all('/\bMonths\b/i', $servDur, $matches))||(preg_match_all('/\bMonth\b/i', $servDur, $matches))||$servDur==''))
-                				{
-                					if(isSet($duration_day)&&$duration_day!='')
+                					else
                 					{
-                						$relianceJson['count']=(int)$duration_day;
+                						if($relianceJson['count']==1)$relianceJson['value']='day';
+                						else $relianceJson['value']='days';
                 					}
-                					else if(isSet($duration)&&$duration!='')
-                					{
-                						$relianceJson['count']=(int)$duration;
-                					}
-                					if($relianceJson['count']==1)$relianceJson['value']='day';
-                					else $relianceJson['value']='days';
                 					
-                				}
-                				else if	((preg_match_all('/\bmonth\b/i', $servDur, $matches)))
-                				{
-                					$relianceJson['value']='month';
-                					if(isSet($duration_day)&&$duration_day!='')
-                					{
-                						$relianceJson['count']=(int)($duration_day/30);
-                					}
-                					if($relianceJson['count']==1)$relianceJson['value']='month';
-                					else $relianceJson['value']='months';
-                					
-                				}
-                				else if	((preg_match_all('/months/i', $servDur, $matches)))
-                				{
-                					$relianceJson['value']='month';
-                					if(isSet($duration_day)&&$duration_day!='')
-                					{
-                						$relianceJson['count']=(int)($duration_day/30);
-                					}
-                					if($relianceJson['count']==1)$relianceJson['value']='month';
-                					else $relianceJson['value']='months';
-                					
-                				}
-                				else if	((preg_match_all('/meal/i', $servDur, $matches)) || (preg_match_all('/meals/i', $servDur, $matches)))
-                				{
-                					$relianceJson['value']='day';
-                					if(isSet($duration_day)&&$duration_day!='')
-                					{
-                						$relianceJson['count']=(int) $duration_day;
-                					}
-                				}
-                				else if($servDur=='')
-                				{
-                					$relianceJson['value']='day';
-                					if(isSet($duration_day)&&$duration_day!='')
-                					{
-                						$relianceJson['count']=(int)$duration_day;
-                					}
-                					if($relianceJson['count']==1)$relianceJson['value']='day';
-                					else $relianceJson['value']='days';
                 				}
                 				
+                				  else
+                				  {
+                				  	$relianceJson['value']='day';
+                				  	if(isSet($duration_day)&&$duration_day!='')
+                				  	{
+                				  		$relianceJson['count']=(int)$duration_day;
+                				  	}
+                				  	if($relianceJson['count']==1)$relianceJson['value']='day';
+                				  	else $relianceJson['value']='days';
+                				  	
+                				  	
+                				  }
                 		}
                 		$relianceOutput=updateRelianceCommunication($relianceJson);
                 		Log::info(" RELIANCE OUTPUT ".print_r($relianceOutput,true));

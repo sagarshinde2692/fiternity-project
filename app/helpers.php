@@ -2536,105 +2536,6 @@ if (!function_exists(('error_message_array'))){
     }
 }
 
-function checkExistence($x,$type='string')
-{
-	switch ($type)
-	{
-		
-		case 'string': {
-			if(isset($x)&&$x!=="")
-				return true;
-				else return false;
-		}
-		case 'number': {
-			if(isset($x))
-				return true;
-				else return false;
-		}
-		case 'object': {
-			if(isset($x))
-				return true;
-				else return false;
-			
-		}
-		default :{
-			
-			if(isset($x))
-				return true;
-				else return false;
-			
-		}
-	}
-}
-/* 
-if (!function_exists(('updateRelianceCommunication'))){
-	
-	
-	function updateRelianceCommunication($data){
-		
-		try {
-			
-		if($data&&checkExistence($data["id"],'number')
-				&&checkExistence($data["date"],'object')
-				&&checkExistence($data["amount"],'number')
-				&&checkExistence($data["phone"])
-				&&checkExistence($data["description"])
-				&&checkExistence($data["email"])
-				&&checkExistence($data["type"])
-				&&checkExistence($data["count"],"number")
-				&&checkExistence($data["value"])
-				)
-		{
-					$relianceJson=[
-							"order_id" => (int)$data["id"],
-							"order_date" => $data["date"],
-							"order_amount" => (int)$data["amount"],
-							"description" => $data["description"]."",
-							"mobile" =>(int)(substr($data["phone"]."",-10)),
-							"email" => $data["email"],
-							"service_type" => $data["type"]."",
-							"value" => $data["value"]."",
-							"unit" => (int)$data["count"],
-							];
-					
-					Log::info(print_r($relianceJson,true));
-					Log::info("",$relianceJson);
-					$ch = curl_init('http://rhc-portal.agileloyalty.net/fitternity/callback');
-					curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-					curl_setopt($ch, CURLOPT_POSTFIELDS, $relianceJson);
-					
-					// execute!
-					$response = curl_exec($ch);
-					$response = json_decode($response,true);
-					Log::info(print_r($response,true));
-			
-					// close the connection, release resources used
-					curl_close($ch);
-					// do anything you want with your response
-					if(isset($response)&&isset($response['success'])&&$response['success']==true)
-// 						return true;
-						return $response;
-// 						else return false;
-					else return null;
-		}
-		else
-		{
-			Log::info(" Data Not improper or not in proper format.");
-			Log::info(print_r($data,true));
-			return null;
-// 			return " Data Not improper or not in proper format.";
-		}
-		
-		} catch (Exception $e) {
-			Log::info(print_r($e->getMessage(),true));
-// 			return false;
-// 			return $e->getMessage();
-			return null;
-			}
-		}
-}
-	 */	
-
 
 if (!function_exists(('random_number_string'))){
 
@@ -3598,7 +3499,10 @@ if (!function_exists(('updateRelianceCommunication'))){
 				];
 				
 				Log::info("  test ".print_r(json_encode($relianceJson),true));
-				$ch = curl_init('http://rhc-portal.agileloyalty.net/fitternity/callback');
+				Log::info("  RELIANCE URL ".print_r(Config::get('app.reliance_url'),true));
+				$ch = curl_init(Config::get('app.reliance_url'));
+				
+				
 				curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
 				curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($relianceJson));
 				
