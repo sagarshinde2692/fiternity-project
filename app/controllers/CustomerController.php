@@ -3236,7 +3236,7 @@ class CustomerController extends \BaseController {
 								$data['schedule_date_time_text'] = "Happened on ".date('jS M, h:i a', strtotime($data['schedule_date_time']));
 							}else{
 								unset($data['payment_done']);
-								$data['schedule_date_time_text'] = "Scheduled on ".date('jS M, h:i a', strtotime($data['schedule_date_time']));
+								$data['schedule_date_time_text'] = "Scheduled For ".date('jS M, h:i a', strtotime($data['schedule_date_time']));
 							}
 							if(isset($data['payment_done']) && !$data['payment_done']){
 								$data['schedule_date_time_text'] = "Pending Amount: Rs.".$data['amount_finder'];
