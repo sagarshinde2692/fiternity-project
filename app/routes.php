@@ -311,6 +311,15 @@ Route::post('getrewardoffers', array('as' => 'rewards.getRewardOffers','uses' =>
 ##############################################################################
 
 
+##############################################################################
+/******************** RELIANCE SECTION START HERE ********************/
+
+Route::post('reliancecustomer',[	'uses' => 'HomeController@updateRelianceCustomer']);
+Route::post('reliancecustomerupdate',['uses' => 'HomeController@reliancecustomerupdate']);
+
+/******************** RELIANCE SECTION END HERE ********************/
+##############################################################################
+
 
 ##############################################################################
 /******************** ORDERS SECTION START HERE ***********************/
