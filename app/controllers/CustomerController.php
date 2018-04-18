@@ -6539,7 +6539,7 @@ class CustomerController extends \BaseController {
 				$response['sub_header_2'] = "Did you attend your ".$data['service_name']." at ".$data['finder_name']." on ".date('jS M \a\t g:i a', strtotime($data['schedule_date_time']))."? \n\nLet us know and earn Cashback!";
 				$response['subscription_code'] = $data['code'];
 				$response['button_text'] = [
-					'attended'=>['text'=>'ATTENDED','url'=>Config::get('app.url')."/sessionstatuscapture/lost/".$data['_id']],
+					'attended'=>['text'=>'ATTENDED','url'=>Config::get('app.url')."/sessionstatuscapture/lost/".$data['_id']."?source=let_us_know"],
 					'did_not_attend'=>['text'=>'DID NOT ATTEND','url'=>Config::get('app.url')."/sessionstatuscapture/didnotattend/".$data['_id']]
 				];
 				$response['image'] = 'https://b.fitn.in/paypersession/happy_face_icon-2.png';

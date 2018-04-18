@@ -6947,26 +6947,34 @@ class SchedulebooktrialsController extends \BaseController {
         $booktrial = Booktrial::find($booktrial_id);
 
         $booktrial->payment_done = true;
+        
+        $booktrial->pay_later = true;
+
+
+        if(time() < strtotime($booktrial->schedule_date_time) && !isset($booktrial->post_trial_status_updated_by_fitcode)){
+
+            $booktrial->post_trial_payment_fitcash = true;
+
+            $this->unsetEmptyDates($booktrial);
+            
+            $fitcash = round($this->utilities->getWorkoutSessionFitcash($booktrial->toArray()) * $booktrial->amount_finder / 100);
+            
+            $req = array(
+                "customer_id"=>$booktrial['customer_id'],
+                "trial_id"=>$booktrial['_id'],
+                "amount"=> $fitcash,
+                "amount_fitcash" => 0,
+                "amount_fitcash_plus" => $fitcash,
+                "type"=>'CREDIT',
+                'entry'=>'credit',
+                'validity'=>time()+(86400*21),
+                'description'=>"Added FitCash+ on Workout Session Attendance",
+            );
+    
+            $this->utilities->walletTransaction($req);
+        }
 
         $booktrial->update();
-        
-        $this->unsetEmptyDates($booktrial);
-        
-        $fitcash = round($this->utilities->getWorkoutSessionFitcash($booktrial->toArray()) * $booktrial->amount_finder / 100);
-        
-        $req = array(
-            "customer_id"=>$booktrial['customer_id'],
-            "trial_id"=>$booktrial['_id'],
-            "amount"=> $fitcash,
-            "amount_fitcash" => 0,
-            "amount_fitcash_plus" => $fitcash,
-            "type"=>'CREDIT',
-            'entry'=>'credit',
-            'validity'=>time()+(86400*21),
-            'description'=>"Added FitCash+ on Workout Session Attendance By Fitcode",
-        );
-
-        $this->utilities->walletTransaction($req);
 
         $pay_later = Paylater::where('trial_ids', $booktrial_id)->first();
 
@@ -7240,6 +7248,10 @@ class SchedulebooktrialsController extends \BaseController {
                         'data'=>$this->utilities->getStreakImages($customer_level_data['current_level']['level'])
                     ]
                 ];
+
+                if(isset($_GET['source']) && $_GET['source'] == 'let_us_know'){
+                    $response['header'] = 'GREAT';
+                }
                 
                 if(!$payment_done){
                     $response['payment'] = $pending_payment;
@@ -7281,10 +7293,8 @@ class SchedulebooktrialsController extends \BaseController {
                 if($booktrial->type=='booktrials'){
                     
                     $response['reschedule_button'] = true;
+                    $response['sub_header_2'] = "We'll cancel you from this batch. Do you want to reschedule instead?";
 
-                    if(isset($response['sub_header_2'])){
-                        unset($response['sub_header_2']);
-                    }
                 }
                 Log::info("removing n+2 communication");
                 $this->utilities->deleteSelectCommunication(['transaction'=>$booktrial, 'labels'=>["customer_sms_after2hour","customer_email_after2hour","customer_notification_after2hour"]]);
