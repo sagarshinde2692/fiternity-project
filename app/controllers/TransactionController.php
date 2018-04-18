@@ -3924,9 +3924,10 @@ class TransactionController extends \BaseController {
             $booking_details_data["start_time"]["field"] = "PREFERRED TIME";
         }
 
-        if(in_array($data['type'], ['booktrial','workoutsession'])){
-            $booking_details_data["start_date"]["field"] = "DATE";
-            $booking_details_data["start_time"]["field"] = "TIME";
+        if(in_array($data['type'], ['booktrial','workout-session'])){
+            $booking_details_data["start_date"]["field"] = "SESSION DATE";
+            $booking_details_data["start_time"]["field"] = "SESSION TIME";
+            $booking_details_data['service_name']['field'] = 'WORKOUT FORM';
         }
 
         if(isset($data['preferred_day']) && $data['preferred_day'] != ""){
