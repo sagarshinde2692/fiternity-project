@@ -4,13 +4,17 @@ class BaseController extends Controller {
 
 	protected $perpage;
 
-	protected $statusCode = 200;
+    protected $statusCode = 200;
+    
+    public $device_type;
+    public $app_version;
 
     /**
      * @constructor
      */
     public function __construct() {
-
+        $this->device_type = Request::header('Device-Type');
+        $this->app_version = Request::header('App-Version');
      	//echo "call in base";
      	//$this->perpage =  Config::get('app.perpage');
     }

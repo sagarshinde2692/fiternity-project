@@ -1,5 +1,4 @@
 <?PHP
-
 /**
  * ControllerName : FindersController.
  * Maintains a list of functions used for FindersController.
@@ -1094,6 +1093,11 @@ class FindersController extends \BaseController {
 		}else{
 			$response['trials_detials']              =      [];
 			$response['trials_booked_status']        =      false;
+		}
+		
+		if($this->utilities->hasPendingPayments()){
+			
+			$response['pending_payment'] = $this->utilities->hasPendingPayments();
 		}
 		// if($response['finder']['offer_icon'] == ""){
 		// 	$response['finder']['offer_icon']        =        "https://b.fitn.in/iconsv1/womens-day/womens-day-mobile-banner.svg";
@@ -3688,7 +3692,7 @@ class FindersController extends \BaseController {
 						$data['call_for_action_button']       =      "";
 					}
 
-					$data['finder']['pay_per_session']        =   false;
+					$data['finder']['pay_per_session']        =   true;
 					$pay_per_session_abandunt_catyegory             =   [41,42,45,25,46,10,26,40];
 					$service_count                                  =   Service::active()->where('finder_id',$finder['_id'])->count();
 
@@ -3862,8 +3866,22 @@ class FindersController extends \BaseController {
 						}
 					}
 
-					if(!$pay_per_session){
-						$finderData['finder']['pay_per_session'] = false;
+					// if($pay_per_session){
+					// 	$finderData['finder']['pay_per_session'] = true;
+					// }
+
+					if(isset($finderData['finder']['pay_per_session']) && $finderData['finder']['pay_per_session']){
+
+						$cheapest_price = $this->getCheapestWorkoutSessionApp($finderData['finder']['services_workout']);
+						if($cheapest_price>0){
+
+							$finderData['finder']['pps_content'] = [
+								'header1'=>	'PAY - PER - SESSION',
+								'header2'=>	'Available here',
+								'header3'=>	"Why pay for 30 days when you use for 6 days?\nPay Per Session at ".$finderData['finder']['title']." by just paying Rs. ".$cheapest_price,
+								'image'=>''
+							];
+						}
 					}
 
 					if(!in_array("false", $disable_button)){
@@ -3937,8 +3955,11 @@ class FindersController extends \BaseController {
 				unset($finderData['finder']['lat']);
 				unset($finderData['finder']['lon']);
 			}
-
-					
+			
+			if($this->utilities->hasPendingPayments()){
+				
+				$finderData['pending_payment'] = $this->utilities->hasPendingPayments();
+			}		
 
 		}else{
 
@@ -4776,6 +4797,23 @@ class FindersController extends \BaseController {
 					$ratecard_price = isset($ratecard['special_price']) &&  $ratecard['special_price'] != 0 ? $ratecard['special_price'] : $ratecard['price'];
 					if($ratecard['type'] == 'workout session' && ($price == 0 || $ratecard_price < $price)){
 						$price = $ratecard_price;
+					}
+				}
+			}
+		}
+
+		return $price;
+	}
+
+	function getCheapestWorkoutSessionApp($services){
+
+		$price = 0;
+
+		foreach($services as $service){
+			if(isset($service['ratecard'])){
+				foreach($service['ratecard'] as $ratecard){
+					if($ratecard['type'] == 'workout session' && ($price == 0 || $ratecard['price'] < $price)){
+						$price = $ratecard['price'];
 					}
 				}
 			}
