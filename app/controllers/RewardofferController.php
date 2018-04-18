@@ -336,6 +336,13 @@ class RewardofferController extends BaseController {
         $finder_name            =   $finder->title;
 
 
+        if(isset($finder['brand_id']) && $finder['brand_id'] == 134 && !in_array($finder_id,[13761,13762,13763,13764,13765]) ){
+
+            $min_date = strtotime(' + 4 days');
+            $max_date = strtotime(' + 34 days');
+        }
+
+
         $service_name           =   "";
         $service_duration       =   "";
 
@@ -523,7 +530,7 @@ class RewardofferController extends BaseController {
                                         }
                                     }
 
-                                    if(in_array($finder_id,[13219,13221,13420,13761,13762,13763,13764,13765]) && $amount <= 1000){
+                                    if(in_array($finder_id,[13761,13762,13763,13764,13765]) && $amount <= 1000){
 
                                         $pos = strpos($rewards_value['title'],'(Kit B)');
 
