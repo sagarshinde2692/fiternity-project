@@ -1741,6 +1741,8 @@ class ServiceController extends \BaseController {
 		unset($service_details['workoutsession_active_weekdays']);
 		$service_details['gym_start_time'] = $gym_start_time;
 		$service_details['gym_end_time'] = $gym_end_time;
+
+		$service_details['time_description'] = "Select between ".date('h:i a', strtotime($gym_start_time['hour'].':'.$gym_start_time['min']))." and ".date('h:i a', strtotime($gym_end_time['hour'].':'.$gym_end_time['min']));
 		
 		$data['service'] = $service_details;
 
