@@ -3925,9 +3925,16 @@ class TransactionController extends \BaseController {
         }
 
         if(in_array($data['type'], ['booktrial','workout-session'])){
+
             $booking_details_data["start_date"]["field"] = "SESSION DATE";
             $booking_details_data["start_time"]["field"] = "SESSION TIME";
             $booking_details_data['service_name']['field'] = 'WORKOUT FORM';
+
+            if($data['type'] == 'workout-session'){
+
+                $booking_details_data['service_duration']['field'] = '1 Session';
+            }
+            
         }
 
         if(isset($data['preferred_day']) && $data['preferred_day'] != ""){
