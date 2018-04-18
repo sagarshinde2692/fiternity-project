@@ -2255,13 +2255,13 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         $inserted_id = Customer::max('_id') + 1;
                         $customer = new Customer();
                         $customer->_id = $inserted_id;
-//                         $customer->rx_user = (isset($data['rx_user'])&& $data['rx_user'] !="")? true : false;
-//                         if(isset($data['rx_user'])&& $data['rx_user'] !="")
-//                         {
-// 	                        $customer->rx_latest_date = new DateTime();
-// 	                        /* if(isset($data['rx_success_url'])&& $data['rx_success_url'] !="")
-// 	                        	$customer->rx_success_url = $data['rx_success_url']; */                        	
-//                         }
+                        $customer->rx_user = (isset($data['rx_user'])&& $data['rx_user'] !="")? true : false;
+                        if(isset($data['rx_user'])&& $data['rx_user'] !="")
+                        {
+                        	$customer->rx_latest_date = new DateTime();
+                        	/* if(isset($data['rx_success_url'])&& $data['rx_success_url'] !="")
+                        	 $customer->rx_success_url = $data['rx_success_url']; */
+                        }
                         $customer->name = ucwords($data['customer_name']);
                         $customer->email = $data['customer_email'];
                         $customer->dob = isset($data['dob']) ? $data['dob'] : "";
@@ -2317,17 +2317,18 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
 
                             }
 
-//                             if (isset($data['rx_user']) ) {
-//                             	if(isset($data['rx_user'])&& $data['rx_user'] !="")
-//                             	{                            		
-//                             		$customerData['rx_user'] = true;
-//                             		$customerData['rx_latest_date']  =  new DateTime();
-// //                             		$customerData['rx_success_url']= isset($data['rx_success_url']) ? $data['rx_success_url'] : "";
-//                             	/* 	if(isset($data['rx_success_url'])&& $data['rx_success_url'] !="")
-//                             			$customer->rx_success_url = $data['rx_success_url'];  */
-//                             	}
-//                                 	else $customerData['rx_user'] = false;
-//                             }
+                            if (isset($data['rx_user']) ) {
+                            	if(isset($data['rx_user'])&& $data['rx_user'] !="")
+                            	{
+                            		$customerData['rx_user'] = true;
+                            		$customerData['rx_latest_date']  =  new DateTime();
+                            		//                             		$customerData['rx_success_url']= isset($data['rx_success_url']) ? $data['rx_success_url'] : "";
+                            		/* 	if(isset($data['rx_success_url'])&& $data['rx_success_url'] !="")
+                            		 $customer->rx_success_url = $data['rx_success_url'];  */
+                            	}
+                            	else $customerData['rx_user'] = false;
+                            }
+
                             if (isset($data['otp']) && $data['otp'] != "") {
                             	$customerData['contact_no_verify_status'] = "yes";
                             }
@@ -2384,7 +2385,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                     $customer['extra']['mob'] = (isset($customer['contact_no'])) ? $customer['contact_no'] : "";
                     $customer['extra']['location'] = (isset($customer['location'])) ? $customer['location'] : "";
                     $customer['gender'] = (isset($customer['gender'])) ? $customer['gender'] : "";
-//                     $customer['rx_user'] = (isset($customer['rx_user'])) ? $customer['rx_user'] : "";
+                    $customer['rx_user'] = (isset($customer['rx_user'])) ? $customer['rx_user'] : "";
 //                     $customer['rx_success_url'] = (isset($customer['rx_success_url'])) ? $customer['rx_success_url'] : "";
 
                     $data = array(
@@ -2398,7 +2399,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                                 "contact_no"=>$customer['contact_no'],
                                 "location"=>$customer['location'],
                                 'gender'=>$customer['gender'],
-//                     			'rx_user'=>$customer['rx_user'],
+                    			'rx_user'=>$customer['rx_user'],
 //                     			'rx_success_url'=>$customer['rx_success_url'],	
                                 'extra'=>array(
                                     'mob'=>$customer['extra']['mob'],
@@ -2534,105 +2535,6 @@ if (!function_exists(('error_message_array'))){
         return $message;
     }
 }
-
-function checkExistence($x,$type='string')
-{
-	switch ($type)
-	{
-		
-		case 'string': {
-			if(isset($x)&&$x!=="")
-				return true;
-				else return false;
-		}
-		case 'number': {
-			if(isset($x))
-				return true;
-				else return false;
-		}
-		case 'object': {
-			if(isset($x))
-				return true;
-				else return false;
-			
-		}
-		default :{
-			
-			if(isset($x))
-				return true;
-				else return false;
-			
-		}
-	}
-}
-/* 
-if (!function_exists(('updateRelianceCommunication'))){
-	
-	
-	function updateRelianceCommunication($data){
-		
-		try {
-			
-		if($data&&checkExistence($data["id"],'number')
-				&&checkExistence($data["date"],'object')
-				&&checkExistence($data["amount"],'number')
-				&&checkExistence($data["phone"])
-				&&checkExistence($data["description"])
-				&&checkExistence($data["email"])
-				&&checkExistence($data["type"])
-				&&checkExistence($data["count"],"number")
-				&&checkExistence($data["value"])
-				)
-		{
-					$relianceJson=[
-							"order_id" => (int)$data["id"],
-							"order_date" => $data["date"],
-							"order_amount" => (int)$data["amount"],
-							"description" => $data["description"]."",
-							"mobile" =>(int)(substr($data["phone"]."",-10)),
-							"email" => $data["email"],
-							"service_type" => $data["type"]."",
-							"value" => $data["value"]."",
-							"unit" => (int)$data["count"],
-							];
-					
-					Log::info(print_r($relianceJson,true));
-					Log::info("",$relianceJson);
-					$ch = curl_init('http://rhc-portal.agileloyalty.net/fitternity/callback');
-					curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-					curl_setopt($ch, CURLOPT_POSTFIELDS, $relianceJson);
-					
-					// execute!
-					$response = curl_exec($ch);
-					$response = json_decode($response,true);
-					Log::info(print_r($response,true));
-			
-					// close the connection, release resources used
-					curl_close($ch);
-					// do anything you want with your response
-					if(isset($response)&&isset($response['success'])&&$response['success']==true)
-// 						return true;
-						return $response;
-// 						else return false;
-					else return null;
-		}
-		else
-		{
-			Log::info(" Data Not improper or not in proper format.");
-			Log::info(print_r($data,true));
-			return null;
-// 			return " Data Not improper or not in proper format.";
-		}
-		
-		} catch (Exception $e) {
-			Log::info(print_r($e->getMessage(),true));
-// 			return false;
-// 			return $e->getMessage();
-			return null;
-			}
-		}
-}
-	 */	
 
 
 if (!function_exists(('random_number_string'))){
@@ -3533,6 +3435,106 @@ if (!function_exists('isTabActive')) {
 
         return $is_tab_active;
     }
+}
+
+function checkExistence($x,$type='string')
+{
+	switch ($type)
+	{
+		
+		case 'string': {
+			if(isset($x)&&$x!=="")
+				return true;
+				else return false;
+		}
+		case 'number': {
+			if(isset($x))
+				return true;
+				else return false;
+		}
+		case 'object': {
+			if(isset($x))
+				return true;
+				else return false;
+				
+		}
+		default :{
+			
+			if(isset($x))
+				return true;
+				else return false;
+				
+		}
+	}
+}
+
+if (!function_exists(('updateRelianceCommunication'))){
+	
+	
+	function updateRelianceCommunication($data){
+		
+		try {
+			
+			if($data&&checkExistence($data["id"],'number')
+					&&checkExistence($data["date"],'object')
+					&&checkExistence($data["amount"],'number')
+					&&checkExistence($data["phone"])
+					&&checkExistence($data["description"])
+					&&checkExistence($data["email"])
+					&&checkExistence($data["type"])
+					&&checkExistence($data["count"],"number")
+					&&checkExistence($data["value"])
+					)
+			{
+				$relianceJson=[
+						"order_id" => (int)$data["id"],
+						"order_date" => date("Y-m-d",strtotime($data["date"])),
+						"order_amount" => (int)$data["amount"],
+						"description" => $data["description"]."",
+						"mobile" =>(substr($data["phone"]."",-10))+0,
+						"email" => $data["email"],
+						"service_type" => $data["type"]."",
+						"value" => $data["value"]."",
+						"unit" => (int)$data["count"],
+				];
+				
+				Log::info("  test ".print_r(json_encode($relianceJson),true));
+				Log::info("  RELIANCE URL ".print_r(Config::get('app.reliance_url'),true));
+				$ch = curl_init(Config::get('app.reliance_url'));
+				
+				
+				curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+				curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($relianceJson));
+				
+				// execute!
+				$response = curl_exec($ch);
+				Log::info("OUTPUT  ".print_r($response,true));
+				$response = json_decode($response,true);
+				
+				// close the connection, release resources used
+				curl_close($ch);
+				// do anything you want with your response
+				if(isset($response)&&isset($response['success'])&&$response['success']==true)
+				// 						return true;
+					return $response;
+					// 						else return false;
+					else return null;
+			}
+			else
+			{
+				Log::info(" Data Not improper or not in proper format.");
+				Log::info(print_r($data,true));
+				return null;
+				// 			return " Data Not improper or not in proper format.";
+			}
+			
+		} catch (Exception $e) {
+			Log::info(print_r($e->getMessage(),true));
+			// 			return false;
+			// 			return $e->getMessage();
+			return null;
+		}
+	}
 }
 
 

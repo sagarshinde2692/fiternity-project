@@ -577,6 +577,97 @@ class HomeController extends BaseController {
             if (in_array($type, $booktrialItemArr)){
 
                 $itemData       =   Booktrial::find(intval($id));
+                
+                
+                //reliance section 
+                
+                
+                
+                if(isset($itemData['source'])&&$itemData['source']=='website'&&isset($itemData['rx_user'])&&$itemData['rx_user']==true)
+                {
+                	$relianceJson=[
+                			"count"=>1,
+                			"id"=>(int)$itemData['_id'],
+                			"date"=>$itemData['created_at'],
+                			"amount"=>(int)$itemData['amount'],
+                			"phone"=>$itemData['customer_phone'],
+                			"description"=>$itemData['service_name'],
+                			"email"=>$itemData['customer_email'],
+                			"type"=>'gym',
+                			"value"=>"day",
+                	];
+                	
+                	$sendResp=true;
+                	if(isSet($itemData['finder_id'])&&$itemData['finder_id']!="")
+                	{
+                		$fdCat=Finder::where('_id',(int)$itemData['finder_id'])->first(['category_id']);
+                		Log::info(" fdcat ".print_r($fdCat,true));
+                		if(isSet($fdCat)&&$fdCat!=""&&isSet($fdCat['category_id'])&&$fdCat['category_id']!="")
+                		{
+                			$fcat=(int)$fdCat['category_id'];
+                			Log::info(" fcat ".print_r($fcat,true));
+                			$notSendCatList =  array('10', '26', '36', '40','45','46','47','52');
+                			$studioCatList =  array('6', '7', '8', '9','11','12', '13', '14', '32','35','41', '43', '44', '48','49','50','51');
+                			if (in_array($fcat, $notSendCatList))
+                				$sendResp=false;
+                				else if (in_array($fcat, $studioCatList))
+                					$relianceJson['type']='studio';
+                					else if($fcat==25)
+                						$relianceJson['type']='dietplan';
+                						else if($fcat==42)
+                							$relianceJson['type']='tiffin';
+                							else $relianceJson['type']='gym';
+                							
+                		}
+                		else $sendResp=false;
+                	}
+                	else $sendResp=false;
+                	
+                	if($sendResp)
+                	{
+                		$relianceOutput=updateRelianceCommunication($relianceJson);
+                		Log::info(" RELIANCE OUTPUT ".print_r($relianceOutput,true));
+                		if($relianceOutput)
+                		{Log::info(" RELIANCE OUTPUT ".print_r($relianceOutput,true));
+                		$itemData->rx_user_communication= true;
+                		$itemData->rx_success_url= (isset($relianceOutput)&&isset($relianceOutput['redirectURL'])&&$relianceOutput['redirectURL']!="")?$relianceOutput['redirectURL']:"";
+                		}
+                		else
+                			$itemData->rx_user_communication= false;
+                			
+                	}
+                	else 	$itemData->rx_user_communication= false;
+                	$itemData->update();
+                }
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
+                
 
                 $dates = array('start_date', 'start_date_starttime', 'schedule_date', 'schedule_date_time', 'followup_date', 'followup_date_time','missedcall_date','customofferorder_expiry_date','auto_followup_date');
 
@@ -594,6 +685,180 @@ class HomeController extends BaseController {
             if (in_array($type, $orderItemArr)) {
 
                 $itemData = Order::find(intval($id));
+                
+                
+                
+                // order section 
+                
+                if(isset($itemData['customer_source'])&&$itemData['customer_source']=='website'&&isset($itemData['rx_user'])&&$itemData['rx_user']==true)
+                {
+                	$relianceJson=[
+                			"count"=>1,
+                			"id"=>(int)$itemData['_id'],
+                			"date"=>$itemData['created_at'],
+                			"amount"=>$itemData['amount_finder'],
+                			"phone"=>$itemData['customer_phone'],
+                			"description"=>$itemData['service_name'],
+                			"email"=>$itemData['customer_email'],
+                			"type"=>'gym',
+                			"value"=>((isset($itemData['service_duration'])&&$itemData['service_duration']!="")?$itemData['service_duration']:"")
+                	];
+                	$sendResp=true;
+                	if(isSet($itemData['finder_id'])&&$itemData['finder_id']!="")
+                	{
+                		$fdCat=Finder::where('_id',(int)$itemData['finder_id'])->first(['category_id']);
+                		Log::info(" fdcat ".print_r($fdCat,true));
+                		if(isSet($fdCat)&&$fdCat!=""&&isSet($fdCat['category_id'])&&$fdCat['category_id']!="")
+                		{
+                			$fcat=(int)$fdCat['category_id'];
+                			Log::info(" fcat ".print_r($fcat,true));
+                			$notSendCatList =  array('10', '26', '36', '40','45','46','47','52');
+                			$studioCatList =  array('6', '7', '8', '9','11','12', '13', '14', '32','35','41', '43', '44', '48','49','50','51');
+                			if (in_array($fcat, $notSendCatList))
+                				$sendResp=false;
+                				else if (in_array($fcat, $studioCatList))
+                					$relianceJson['type']='studio';
+                					else if($fcat==25)
+                						$relianceJson['type']='dietplan';
+                						else if($fcat==42)
+                							$relianceJson['type']='tiffin';
+                							else $relianceJson['type']='gym';
+                							
+                		}
+                		else $sendResp=false;
+                	}
+                	else $sendResp=false;
+                	
+                	if($sendResp)
+                	{
+                		if($type=='healthytiffintrail'||$type=='healthytiffintrial')
+                		{
+                			$relianceJson['type']='tiffin';
+                			$relianceJson['value']='trial';
+                			$relianceJson['count']=1;
+                		}
+                		else
+                		{
+                			if($type=='healthytiffinmembership')
+                				$relianceJson['type']='tiffin';
+                				$servDur=((isset($itemData['service_duration'])&&$itemData['service_duration']!="")?$itemData['service_duration']:"");
+                				$durr=(int)((isset($itemData['duration'])&&$itemData['duration']!="")?$itemData['duration']:"");
+                				$durrType=((isset($itemData['duration_type'])&&$itemData['duration_type']!="")?$itemData['duration_type']:"");
+                				
+                				$duration_day=((isset($itemData['duration_day'])&&$itemData['duration_day']!="")?$itemData['duration_day']:"");
+                				$duration=((isset($itemData['duration'])&&$itemData['duration']!="")?$itemData['duration']:"");
+                				
+                				
+                			 if	(((preg_match_all('/\bday\b/i', $servDur, $matches))||(preg_match_all('/\bmeals\b/i', $servDur, $matches))||(preg_match_all('/\bmeal\b/i', $servDur, $matches))||(preg_match_all('/\bdays\b/i', $servDur, $matches))||(preg_match_all('/\bsessions\b/i', $servDur, $matches))||(preg_match_all('/\bsession\b/i', $servDur, $matches))||(preg_match_all('/\bMonths\b/i', $servDur, $matches))||(preg_match_all('/\bMonth\b/i', $servDur, $matches))||$servDur==''||(preg_match_all('/\byear/i', $servDur, $matches))||(preg_match_all('/\byears/i', $servDur, $matches))))
+                				{
+                					if(isSet($duration_day)&&$duration_day!='')
+                					{
+                						$duration_day=(int)$duration_day;
+                						if($duration_day==360||$duration_day==365)
+                						{
+                							$relianceJson['count']=1;
+                							$relianceJson['value']='year';
+                						}
+                						else if(($duration_day%30)==0)
+                						{
+                							$relianceJson['count']=(int)($duration_day/30);
+                							if($relianceJson['count']==1)
+                								$relianceJson['value']='month';
+                								else $relianceJson['value']='months';
+                								
+                						}
+                						else
+                						{
+                							$relianceJson['count']=$duration_day;
+                							if($relianceJson['count']==1)
+                								$relianceJson['value']='day';
+                								else $relianceJson['value']='days';
+                								
+                						}
+                					}
+                					else if(isSet($duration)&&$duration!='')
+                					{
+                						//                 						$relianceJson['count']=(int)$duration;
+                						
+                						$duration=(int)$duration;
+                						if($duration==360||$duration==365)
+                						{
+                							$relianceJson['count']=1;
+                							$relianceJson['value']='year';
+                						}
+                						else if(($duration%30)==0)
+                						{
+                							$relianceJson['count']=(int)($duration/30);
+                							if($relianceJson['count']==1)
+                								$relianceJson['value']='month';
+                								else $relianceJson['value']='months';
+                								
+                						}
+                						else
+                						{
+                							$relianceJson['count']=$duration;
+                							if($relianceJson['count']==1)
+                								$relianceJson['value']='day';
+                								else $relianceJson['value']='days';
+                								
+                						}
+                						
+                					}
+                					else
+                					{
+                						if($relianceJson['count']==1)$relianceJson['value']='day';
+                						else $relianceJson['value']='days';
+                					}
+                					
+                				}
+                				
+                				  else
+                				  {
+                				  	$relianceJson['value']='day';
+                				  	if(isSet($duration_day)&&$duration_day!='')
+                				  	{
+                				  		$relianceJson['count']=(int)$duration_day;
+                				  	}
+                				  	if($relianceJson['count']==1)$relianceJson['value']='day';
+                				  	else $relianceJson['value']='days';
+                				  	
+                				  	
+                				  }
+                		}
+                		$relianceOutput=updateRelianceCommunication($relianceJson);
+                		Log::info(" RELIANCE OUTPUT ".print_r($relianceOutput,true));
+                		if($relianceOutput)
+                		{
+                			$itemData->rx_user_communication= true;
+                			$itemData->rx_success_url= (isset($relianceOutput)&&isset($relianceOutput['redirectURL'])&&$relianceOutput['redirectURL']!="")?$relianceOutput['redirectURL']:"";
+                		}
+                		else
+                			$itemData->rx_user_communication= false;
+                			
+                			
+                			$relianceOutput=updateRelianceCommunication($relianceJson);
+                			Log::info(" RELIANCE OUTPUT ".print_r($relianceOutput,true));
+                			if($relianceOutput)
+                			{
+                				$itemData->rx_user_communication= true;
+                				$itemData->rx_success_url= (isset($relianceOutput)&&isset($relianceOutput['redirectURL'])&&$relianceOutput['redirectURL']!="")?$relianceOutput['redirectURL']:"";
+                			}
+                			else
+                				$itemData->rx_user_communication= false;
+                				
+                	}
+                	else $itemData->rx_user_communication= false;
+                	
+                	
+                	$itemData->update();
+                }
+                
+                
+                
+                
+                
+                
+                
 
                 $dates = array('followup_date','last_called_date','preferred_starting_date', 'called_at','subscription_start','start_date','start_date_starttime','end_date', 'order_confirmation_customer');
 
@@ -1579,6 +1844,11 @@ class HomeController extends BaseController {
                 'why_buy'=>$why_buy
             ];
 
+            Log::info(" RX USER ".print_r($itemData,true));
+            if(isset($itemData['rx_user'])&&$itemData['rx_user']&&isSet($itemData['rx_success_url'])&&$itemData['rx_success_url']!="")
+            	$resp['rx_success_url'] =	$itemData['rx_success_url'];
+            
+            
             if(isset($item['group_id']) && $item['group_id'] != ''){
 
                 $resp['group_code'] = [
@@ -4093,5 +4363,54 @@ class HomeController extends BaseController {
 
         return Response::json($data);
     }
+    
+    public function updateRelianceCustomer(){
+    	
+    	$data = Input::json()->all();
+    	try {
+    		if(isset($data['email'])/* &&isset($data['rx_success_url']) */&&isset($data['phone'])&&isset($data['name'])&&$data['email']!=""&&$data['phone']!=""&&$data['name']!=""/* &&$data['rx_success_url']!=""&&preg_match('#((https?|ftp)://(\S*?\.\S*?))([\s)\[\]{},;"\':<]|\.\s|$)#i',$data['rx_success_url'] )*/)
+    		{
+    			$customer_id=autoRegisterCustomer(['customer_email'=>$data['email'],/* 'rx_success_url'=>$data['rx_success_url'], */'customer_phone'=>$data['phone'],'customer_name'=>$data['name'],'rx_user'=>true]);
+    			Log::info(" customer_id Data :: ".print_r($customer_id,true));
+    			if(isset($customer_id))
+    			{
+    				$token=createCustomerToken($customer_id);
+    				Log::info(" token Data :: ".print_r($token,true));
+    				ini_set("memory_limit", "256M");
+    				
+    				Log::info(" memory_limit :: ".print_r(ini_get("memory_limit"),true));
+    				$decoded = customerTokenDecode($token);
+    				$customerInfo=Customer::where("_id",$customer_id)->first(array("_id", "name", "email", "picture", "facebook_id", "identity", "address", "contact_no", "location", "gender", "extra", "corporate_login"));
+    				if(isset($token))
+    				{
+    					$customerData=array("_id"=>$customer_id,
+    							"contact_no"=>((isset($customerInfo->contact_no)&&$customerInfo->contact_no!="")?$customerInfo->contact_no:""),
+    							"email"=>((isset($customerInfo->email)&&$customerInfo->email!="")?$customerInfo->email:""),
+    							"gender"=>((isset($customerInfo->gender)&&$customerInfo->gender!="")?$customerInfo->gender:""),
+    							"name"=>((isset($customerInfo->name)&&$customerInfo->name!="")?$customerInfo->name:""),
+    							"dob"=>((isset($customerInfo->dob)&&$customerInfo->dob!="")?$customerInfo->dob:"1970-01-01 00:00:00"));
+    					
+    					Log::info(" customerData Data :: ".print_r($customerData,true));
+    					return  Response::json(array("status"=>200,"message"=>'Successful login.',"customer"=>((isset($customerInfo)&&$customerInfo!="")?$customerInfo:""),"token"=>$token,
+    							"body"=>array("status"=>200,"message"=>'Successful login.',"token"=>$token,"customer_data"=>$customerData)));
+    					
+    				}
+    				else return Response::json(['status'=>400,'message'=>'Failed to generate token.']);
+    			}
+    			else
+    			{
+    				return  Response::json(array("status"=>400,"response"=>array("rx_user"=>false,"customer_id"=>$customer_id,"message"=>"Failed to update Reliance user info.")));
+    			}
+    		}
+    		else return Response::json(['status'=>400,'message'=>'Invalid or missing Input Data .Need [name,email,phone]']);
+    		
+    	} catch (Exception $e) {
+    		Log::error(print_r($e,true));
+    		return  Response::json(['status'=>0,message=>$e->getMessage()]);
+    	}}
+    	public function reliancecustomerupdate(){
+    		$data = Input::json()->all();
+    		return updateRelianceCommunication($data)."";
+    	}
 
 }

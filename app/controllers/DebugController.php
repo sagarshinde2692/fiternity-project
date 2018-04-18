@@ -6990,6 +6990,66 @@ public function yes($msg){
 
     }
 
+    public function updateSubscriptionCode(){
+
+    	$customersms = new CustomerSms();
+
+    	ini_set('memory_limit','512M');
+		ini_set('max_execution_time', 300);
+
+		$offset = 0;
+		$limit = 10;
+
+		$allOrders = $this->updateSubscriptionCodeQuery($offset,$limit);
+
+		while(count($allOrders) != 0){
+
+			echo $offset;
+
+			foreach ($allOrders as $order) {
+
+				$order->updateSubscriptionCode = time();
+
+				if(strlen($order['code']) > 5){
+
+					$code = (string) random_numbers(5);
+
+		    		$order->code = $code;
+
+		    		if($status == "1"){
+
+		    			$sms_data = [];
+
+	                    $sms_data['customer_phone'] = $order['customer_phone'];
+
+	                    $sms_data['message'] = "Hi ".ucwords($order['customer_name']).", Your Subscription code for purchase of membership for ".ucwords($order['finder_name'])." via Fitternity has been changed. Subscription code: ".$code." . For quick assistance call us on ".Config::get('app.contact_us_customer_number');
+
+	                    $customersms->custom($sms_data);
+		    		}
+	    		}
+
+	    		$order->update();
+			}
+
+			$offset = $offset + 10;
+
+			$allOrders = $this->updateSubscriptionCodeQuery($offset,$limit);
+		}
+
+		return array('status'=>'done');
+    }
+
+    public function updateSubscriptionCodeQuery($offset,$limit){
+		
+		$orders  = Order::where('type','memberships')
+    	     ->where('updateSubscriptionCode','exists',false)
+    	     ->where('order_id','>',99999)
+    	     ->get();
+
+		return $orders;
+
+	}
+
     
 }
 
