@@ -1796,6 +1796,7 @@ class SchedulebooktrialsController extends \BaseController {
                 //     return  Response::json($resp, 400);
                 // }
              	$hash_verified = $this->utilities->verifyOrder($data,$order);
+             	
                 // return $order;
                 // return $hash_verified ? "s":"d";
                 if(!$hash_verified){
@@ -2511,24 +2512,44 @@ class SchedulebooktrialsController extends \BaseController {
 
             //Send Reminder Notiication (Email, Sms) Before 12 Hour To Customer
 
-            $before12HourDateTime = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->created_at)))->addMinutes(30);
+//             $before12HourDateTime = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->created_at)))->addMinutes(30);
 
             if($currentScheduleDateDiffMin >= (60 * 12)){
 
                 $delayReminderTimeBefore12Hour      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->subMinutes(60 * 12);
 
-                $hour = (int) date("G", strtotime($delayReminderTimeBefore12Hour));
+                $before12HourDateTime=$delayReminderTimeBefore12Hour ;
+                $hour = (int) date("G", strtotime($booktrial->schedule_date_time));
 
-                if($hour >= 7 && $hour <= 22 ){
+                /* if($hour > 19 &&$hour <= 24  ){
+                	
+		                // 				do nothing let it go as it is .
+                }
+                else */ if($hour > 11 &&$hour <= 19  ){
+                	
+//                 	$delayReminderTimeBefore12Hour      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->subMinutes(60 * 4);
+                	$before12HourDateTime=\Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->subMinutes(60 * 4);
+                	// 				do nothing let it go as it is .
+                	
+                }
+                /* else if($hour > 10 &&$hour <= 11 ){
+                	
+//                 	$delayReminderTimeBefore12Hour      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->subMinutes(60 * 12);
+//                 	$before12HourDateTime=    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->subMinutes(60 * 12);
+                	// 				do nothing let it go as it is .
+                } */
+                /* if($hour >=5 && $hour <= 10){
 
                     $before12HourDateTime = $delayReminderTimeBefore12Hour;
 
-                }
-            }
-
+                } */
+                
+                
             $send_communication["customer_email_before12hour"] = $this->customermailer->bookTrialReminderBefore12Hour($booktrialdata, $before12HourDateTime);     
             $send_communication["customer_notification_before12hour"] = $this->customernotification->bookTrialReminderBefore12Hour($booktrialdata, $before12HourDateTime);
             $send_communication["customer_sms_before12hour"] = $this->customersms->bookTrialReminderBefore12Hour($booktrialdata, $before12HourDateTime);
+            }
+
 
 
             if($currentScheduleDateDiffMin >= (60 * 6)){
@@ -2540,30 +2561,29 @@ class SchedulebooktrialsController extends \BaseController {
             }
 
             
-            if($currentScheduleDateDiffMin >= (180)){
-
+            if($currentScheduleDateDiffMin >= (180))
+            {
                 $booktrialdata['poc'] = "vendor";
                 $booktrialdata['poc_no'] = $booktrialdata['finder_poc_for_customer_no'];
 
-                $delayReminderTimeBefore90Min      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->subMinutes(180);
+                $before3HourDateTime =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->subMinutes(180);
 
-                $hour = (int) date("G", strtotime($delayReminderTimeBefore90Min));
+                $hour = (int) date("G", strtotime($booktrial->schedule_date_time));
 
                 if($hour >= 10 && $hour <= 22){
                     $booktrialdata['poc'] = "fitternity";
                     $booktrialdata['poc_no'] = Config::get('app.contact_us_customer_number');
                 }
 
-                $before3HourDateTime = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->created_at)))->addMinutes(45);
-
-                if($hour >= 7 && $hour <= 22 ){
-
-                    $before3HourDateTime = $delayReminderTimeBefore90Min;
-                }
+                if($hour <10&&$hour>23)
+                {
+                	
+                	$before3HourDateTime = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->subMinutes(60);
+                	// as it is
+               }
 
                 $send_communication["customer_sms_before3hour"] = $this->customersms->bookTrialReminderBefore3Hour($booktrialdata, $before3HourDateTime);
                 $send_communication["customer_notification_before3hour"] = $this->customernotification->bookTrialReminderBefore3Hour($booktrialdata, $before3HourDateTime);
-
             }
 
             if($currentScheduleDateDiffMin >= (10)){
