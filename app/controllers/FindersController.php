@@ -3314,6 +3314,7 @@ class FindersController extends \BaseController {
 				if(isset($finderarr['custom_link'])){
 					$finder['trial'] = 'disable';
 					$finder['membership'] = 'disable';
+					$finder["custom_link"] = "";
 				}
 
 				if($finder['today_opening_hour'] != NULL && $finder['today_closing_hour'] != NULL){
