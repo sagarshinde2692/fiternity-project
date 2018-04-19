@@ -1729,7 +1729,7 @@ class ServiceController extends \BaseController {
 			unset($service_details['pass_title']);
 			unset($service_details['pass_description']);
 			$service_details['page_index'] = 0;
-			$service_details['next_session'] = "No sessions available";
+			// $service_details['next_session'] = "No sessions available";
 		}
 
 		if(isset($service_details['session_unavailable']) && $service_details['session_unavailable']){
