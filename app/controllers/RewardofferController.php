@@ -942,7 +942,7 @@ class RewardofferController extends BaseController {
 
             $convinience_fee = number_format($amount*$convinience_fee_percent/100, 0);
 
-            $convinience_fee = $convinience_fee <= 150 ? $convinience_fee : 150;
+            $convinience_fee = $convinience_fee <= 199 ? $convinience_fee : 199;
 
             $data['convinience_fee'] = $convinience_fee;
         }

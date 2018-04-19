@@ -515,7 +515,7 @@ class TransactionController extends \BaseController {
 
                     $convinience_fee = round($part_payment_data['amount_finder']*$convinience_fee_percent/100);
 
-                    $convinience_fee = $convinience_fee <= 150 ? $convinience_fee : 150;
+                    $convinience_fee = $convinience_fee <= 199 ? $convinience_fee : 199;
                     
                     $part_payment_data['convinience_fee'] = $convinience_fee;
 
@@ -657,7 +657,7 @@ class TransactionController extends \BaseController {
 
             $convinience_fee = round($data['amount_finder']*$convinience_fee_percent/100);
 
-            $convinience_fee = $convinience_fee <= 150 ? $convinience_fee : 150;
+            $convinience_fee = $convinience_fee <= 199 ? $convinience_fee : 199;
 
             $data['convinience_fee'] = $convinience_fee;
 
@@ -1859,7 +1859,7 @@ class TransactionController extends \BaseController {
 
             $convinience_fee = round($data['amount_finder']*$convinience_fee_percent/100);
 
-            $convinience_fee = $convinience_fee <= 150 ? $convinience_fee : 150;
+            $convinience_fee = $convinience_fee <= 199 ? $convinience_fee : 199;
 
             $amount += $convinience_fee;
 
@@ -4215,7 +4215,7 @@ class TransactionController extends \BaseController {
 
                 $convinience_fee = round($amount_finder*$convinience_fee_percent/100);
 
-                $convinience_fee = $convinience_fee <= 150 ? $convinience_fee : 150;
+                $convinience_fee = $convinience_fee <= 199 ? $convinience_fee : 199;
 
                 $amount += $convinience_fee;
             }
@@ -4643,7 +4643,7 @@ class TransactionController extends \BaseController {
                 
                 $convinience_fee = round($data['amount'] * $convinience_fee_percent/100);
                 
-                $convinience_fee = $convinience_fee <= 150 ? $convinience_fee : 150;
+                $convinience_fee = $convinience_fee <= 199 ? $convinience_fee : 199;
 
                 $data['convinience_fee'] = $convinience_fee;
                 
