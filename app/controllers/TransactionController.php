@@ -80,14 +80,6 @@ class TransactionController extends \BaseController {
 
         $data = $data ? $data : Input::json()->all();   
 
-        // Log::info($_GET['app_version']);
-        // return [
-        //     'app_version'=>$_GET['app_version'],
-        //     'device_type'=>$_GET['device_type'],
-        //     'App-Version'=>$this->app_version,
-        //     'Device-type'=>$this->device_type,
-        // ];
-
         foreach ($data as $key => $value) {
 
             if(is_string($value)){
@@ -98,7 +90,6 @@ class TransactionController extends \BaseController {
         if(isset($data['order_id']) && $data['order_id'] != ""){
             $data['order_id'] = intval($data['order_id']);
             $pay_later_order = Order::where('_id', $data['order_id'])->where('pay_later', true)->first();
-            // return $pay_later_order;
             if($pay_later_order){
                 $pay_later_data = $this->getPayLaterData($pay_later_order);
                 $data = array_merge($data, $pay_later_data);
@@ -106,8 +97,6 @@ class TransactionController extends \BaseController {
         }
 
         Log::info('------------transactionCapture---------------',$data);
-
-        // return;
 
         if(!isset($data['type'])){
             return Response::json(array('status' => 404,'message' =>'type field is required'), $this->error_status);
