@@ -4912,6 +4912,10 @@ class FindersController extends \BaseController {
 					$tnc['description'] .= "<br/><br/><b> - </b>  I have read and understand the advice given above.";
 					$tnc['description'] .= "<br/><br/><b> - </b>  I assume the risk of and responsibility of personal property loss or damage.";
 
+					if(isset($ratecard) && isset($ratecard['type']) && in_array($ratecard['type'],['workout session'])){
+						$tnc['description'] .= "<br/><br/><b> - </b>  Maximum discount for First free session is Rs 299.";
+					}
+
 				}
 
 				if(isset($finder['info']['terms_and_conditions']) && $finder['info']['terms_and_conditions'] != ""){
