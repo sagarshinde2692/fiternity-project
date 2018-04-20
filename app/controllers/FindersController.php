@@ -199,9 +199,29 @@ class FindersController extends \BaseController {
 					}
 				}
 
+				$finderarr['reviews_booktrial_index'] = null;
+
 				if(!empty($finderarr['reviews'])){
 
+					$reviews_booktrial_index_flag = false;
+					$reviews_booktrial_index_count = 0;
+
 					foreach ($finderarr['reviews'] as $rev_key => $rev_value) {
+
+						if($rev_value['rating'] >= 4){
+
+							$reviews_booktrial_index_flag = true;
+							$reviews_booktrial_index_count += 1;
+
+						}else{
+
+							$reviews_booktrial_index_flag = false;
+							$reviews_booktrial_index_count = 0;
+						}
+
+						if($reviews_booktrial_index_count == 3 && $finderarr['reviews_booktrial_index'] == null){
+							$finderarr['reviews_booktrial_index'] = $rev_key;
+						}
 
 						if($rev_value['customer'] == null){
 
