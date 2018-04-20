@@ -3480,13 +3480,18 @@ public function yes($msg){
 
 	}
 
-	public function cacheFinderCategoryTags($city="mumbai"){
+	public function cacheFinderCategoryTags($city="mumbai", $cache = true){
 		// $finderCategoryTags = Findercategorytag::where('status', "1")->get(['_id', 'name', 'slug']);
-		if($city != "all"){
-			$finderCategoryTags = citywise_categories($city);
-		}else{
-			$finderCategoryTags = citywise_categories("all");
+		$finderCategoryTags  =   $cache ? Cache::tags('finder_categorytags_citywise')->has($city) : false;
+		if(!$finderCategoryTags){
+			if($city != "all"){
+				$finderCategoryTags = citywise_categories($city);
+			}else{
+				$finderCategoryTags = citywise_categories("all");
+			}
+			Cache::tags('findercount_locationwise_city')->put($city, $finderCategoryTags, Config::get('cache.three_day_cache'));
 		}
+		
 		return $finderCategoryTags;
 
 	}
