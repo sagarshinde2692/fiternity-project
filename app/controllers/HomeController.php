@@ -394,7 +394,7 @@ class HomeController extends BaseController {
             $footer_block4_ids 		= 		array_map('intval', explode(",", $homepage['footer_block4_ids'] ));
             $footer_block5_ids 		= 		array_map('intval', explode(",", $homepage['footer_block5_ids'] ));
             $footer_block6_ids 		= 		array_map('intval', explode(",", $homepage['footer_block6_ids'] ));
-
+            Finder::$withoutAppends=true;
             $footer_block1_finders 		=		Finder::active()->whereIn('_id', $footer_block1_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title'))->toArray();
             $footer_block2_finders 		=		Finder::active()->whereIn('_id', $footer_block2_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title'))->toArray();
             $footer_block3_finders 		=		Finder::active()->whereIn('_id', $footer_block3_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title'))->toArray();
