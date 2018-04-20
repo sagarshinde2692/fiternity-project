@@ -3497,7 +3497,7 @@ class CustomerController extends \BaseController {
 
 				$result['campaigns'][] = [
 					'image'=>'https://b.fitn.in/global/paypersession_branding/app_banners/App-pps.png',
-					'link'=>'https://ftrnty.com/pps',
+					'link'=>'ftrnty://ftrnty.com/pps',
 					'title'=>'Pay Per Session',
 					'height'=>100,
 					'width'=>375,
