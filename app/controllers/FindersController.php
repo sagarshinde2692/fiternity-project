@@ -3894,6 +3894,7 @@ class FindersController extends \BaseController {
 					if(isset($finderData['finder']['pay_per_session']) && $finderData['finder']['pay_per_session']){
 
 						$cheapest_price = $this->getCheapestWorkoutSessionApp($finderData['finder']['services_workout']);
+						
 						if($cheapest_price>0){
 
 							$finderData['finder']['pps_content'] = [
@@ -3902,6 +3903,10 @@ class FindersController extends \BaseController {
 								'header3'=>	"Why pay for 30 days when you use for 6 days?\nPay Per Session at ".$finderData['finder']['title']." by just paying Rs. ".$cheapest_price,
 								'image'=>''
 							];
+
+						}else{
+
+							$finderData['finder']['pay_per_session'] = false;
 						}
 					}
 
