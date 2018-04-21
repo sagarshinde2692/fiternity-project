@@ -1796,7 +1796,6 @@ class SchedulebooktrialsController extends \BaseController {
                 //     return  Response::json($resp, 400);
                 // }
              	$hash_verified = $this->utilities->verifyOrder($data,$order);
-             	
                 // return $order;
                 // return $hash_verified ? "s":"d";
                 if(!$hash_verified){
@@ -2071,7 +2070,8 @@ class SchedulebooktrialsController extends \BaseController {
             $srp_link =  $this->utilities->getShortenUrl(Config::get('app.website')."/".$finder_city_slug."/".$finder_location_slug."/fitness");
             $vendor_notify_link =  $this->utilities->getShortenUrl(Config::get('app.business')."/trial/cancel/".$booktrialid."/".$finderid);
             $pay_as_you_go_link =  $this->utilities->getShortenUrl(Config::get('app.website')."/workout/".$finder_city_slug."?regions=".$finder_location_slug);
-            $profile_link = $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$customer_email);
+//          $profile_link = $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$customer_email);
+            $profile_link = Config::get('app.website_deeplink')."/profile?email=".$customer_email;
             $vendor_link = $this->utilities->getShortenUrl(Config::get('app.website')."/".$finder_slug);
 
 
@@ -2441,7 +2441,8 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrial = Booktrial::findOrFail($booktrial_id);
 
             $booktrial->qrcode = $this->utilities->createQrCode($booktrial['code']);
-            $booktrial->pps_blockscreen='https://www.fitternity.com/';
+//             $booktrial->pps_blockscreen='https://www.fitternity.com/';
+            $booktrial->pps_blockscreen=Config::get('app.website_deeplink');
             $booktrial->update();
 
 
@@ -2606,7 +2607,7 @@ class SchedulebooktrialsController extends \BaseController {
 
                     $missedcall_no = \Ozonetelmissedcallno::where('batch',1)->where('type','yes')->where('for','N-3Trial')->first();
                 }
-                if(isSet($missedcall_no->number)&&$missedcall_no->number!="")
+                if(isset($missedcall_no->number)&&$missedcall_no->number!="")
                 $booktrialdata['yes'] = $missedcall_no->number;
                 else $booktrialdata['yes'] ="";
 
@@ -6523,12 +6524,14 @@ class SchedulebooktrialsController extends \BaseController {
                 		Log::info(" info fitcash  ".print_r($fitcash,true));
                 		$booktrial->pps_pending_amount=$booktrial->amount;
                 		$booktrial->pps_fitcash=$fitcash;
-                		$booktrial->pps_payment_link='https://www.fitternity.com/';
+                		if(isset($booktrial->type)&&$booktrial->type=='workout-session'&&isset($booktrial->order_id))
+                		$booktrial->pps_payment_link=Config::get('app.website').'/paymentlink/'.$booktrial->order_id;
+                		else $booktrial->pps_payment_link=Config::get('app.website');
                 		
-                		if(isSet($booktrial->category)&&$booktrial->category!=""&&isSet($booktrial->category->name)&&$booktrial->category->name!="")
-                			$booktrial->pps_srp_link=Config::get('app.website').'/'.$booktrial->city->name.'/'.$booktrial->category->name;
+                		if(isset($booktrial->category)&&$booktrial->category!=""&&isset($booktrial->category->name)&&$booktrial->category->name!="")
+                			$booktrial->pps_srp_link=Config::get('app.website_deeplink').'/'.$booktrial->city->name.'/'.$booktrial->category->name;
                 			
-                			if(isSet($booktrial->pay_later)&&$booktrial->pay_later!=""&&$booktrial->pay_later==true)
+                			if(isset($booktrial->pay_later)&&$booktrial->pay_later!=""&&$booktrial->pay_later==true)
                 				$booktrial->send_communication['customer_sms_paypersession_FitCodeEnter_PayLater']=$this->customersms->workoutSmsOnFitCodeEnterPayLater($booktrial->toArray());
                 				else $booktrial->send_communication['customer_sms_paypersession_FitCodeEnter']=$this->customersms->workoutSmsOnFitCodeEnter($booktrial->toArray());
                 				
@@ -6792,12 +6795,12 @@ class SchedulebooktrialsController extends \BaseController {
                 //added check and message
                 $booktrial->pps_fitcash=$fitcash;
                 $booktrial->pps_cashback=$this->utilities->getWorkoutSessionLevel((int)$booktrial->customer_id)['current_level']['cashback'];
-                if(isSet($booktrial->category)&&$booktrial->category!=""&&isSet($booktrial->category->name)&&$booktrial->category->name!="")
+                if(isset($booktrial->category)&&$booktrial->category!=""&&isset($booktrial->category->name)&&$booktrial->category->name!="")
                 	$booktrial->pps_srp_link=Config::get('app.website').'/'.$booktrial->city_name.'/'.$booktrial->category->name;
                 	$temp=$booktrial->send_communication;
-                	if(isSet($booktrial->pay_later)&&$booktrial->pay_later!=""&&$booktrial->pay_later==true)
+                	if(isset($booktrial->pay_later)&&$booktrial->pay_later!=""&&$booktrial->pay_later==true)
                 		$temp['customer_sms_paypersession_FitCodeEnter_PayLater']=$this->customersms->workoutSmsOnFitCodeEnterPayLater($booktrial->toArray());
-                		else $temp['customer_sms_paypersession_FitCodeEnter']=$this->customersms->workoutSmsOnFitCodeEnter($booktrial->toArray());
+                	else $temp['customer_sms_paypersession_FitCodeEnter']=$this->customersms->workoutSmsOnFitCodeEnter($booktrial->toArray());
                 		
                 		$this->deleteTrialCommunication($booktrial);
                 		

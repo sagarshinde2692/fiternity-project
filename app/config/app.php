@@ -16,6 +16,7 @@ return array(
 	// 'metropolis' => 'http://localhost:3030',
 	// 'amazonpay_isSandbox' => 'true',
 	// 'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
+	// 'website_deeplink' =>'https://ftrnty.com',
 
 	//stage
 	'new_search_url' =>'http://apistage.fitn.in:5000/',
@@ -30,6 +31,7 @@ return array(
 	'metropolis' => 'http://apisatge.fitn.in:8989',
 	'amazonpay_isSandbox' => 'true',
 	'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
+	'website_deeplink' =>'https://ftrnty.com',
 
 	//beta
 	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
@@ -44,6 +46,7 @@ return array(
 	// 'metropolis' => 'http://apisatge.fitn.in:8989',
 	// 'amazonpay_isSandbox' => 'true',
 	// 'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
+	// 'website_deeplink' =>'https://ftrnty.com',
 
 	//live
 	// 'new_search_url' =>'http://c1.fitternity.com/',
@@ -58,6 +61,7 @@ return array(
 	// 'metropolis' => 'http://c1.fitternity.com',
 	// 'amazonpay_isSandbox' => 'false',
 	// 'reliance_url' =>'https://rhealthcircle.reliancegeneral.co.in/fitternity/callback',
+	// 'website_deeplink' =>'https://ftrnty.com',
 
 
 	'download_app_link' => 'https://go.onelink.me/I0CO?pid=techfitsms',//https://www.fitternity.com/downloadapp?source=fittech',
