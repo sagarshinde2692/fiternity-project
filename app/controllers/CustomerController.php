@@ -3426,7 +3426,7 @@ class CustomerController extends \BaseController {
 			if($_REQUEST['device_type'] == 'ios'){
 
 				$result['campaigns'][] = [
-					'image'=>'https://b.fitn.in/global/paypersession_branding/app_banners/App-pps.png',
+					'image'=>'https://b.fitn.in/global/paypersession_branding/app_banners/App-pps%402x.png',
 					'link'=>'ftrnty://ftrnty.com/pps?fitness=all',
 					'title'=>'Pay Per Session',
 					'height'=>100,
@@ -3496,7 +3496,7 @@ class CustomerController extends \BaseController {
 				// ];
 
 				$result['campaigns'][] = [
-					'image'=>'https://b.fitn.in/global/paypersession_branding/app_banners/App-pps.png',
+					'image'=>'https://b.fitn.in/global/paypersession_branding/app_banners/App-pps%402x.png',
 					'link'=>'ftrnty://ftrnty.com/pps',
 					'title'=>'Pay Per Session',
 					'height'=>100,
