@@ -1053,62 +1053,6 @@ Class CustomerSms extends VersionNextSms{
 		
 	}
 	
-	function instantWorkoutSms($data,$type='nokiosk'){
-		
-		Log::info("instantWorkoutSms ");
-		Log::info($data);
-		// return;
-		if($type=='nokiosk')
-			$label = 'PayPerSession-InstantSms';
-			else $label = 'PayPerSession-InstantSmsKioskVendor';
-			
-			$to = $data['customer_phone'];
-			
-			return $this->common($label,$to,$data);
-			
-	}
-	
-	
-	protected function workoutSms12HrsBefore($data,$delay){
-		
-		Log::info("workoutSms12HrsBefore ");
-		Log::info($data);
-		// return;
-		$label = 'PayPerSession-12HrsBefore';
-		
-		$to = $data['customer_phone'];
-		
-		return $this->common($label,$to,$data,$delay);
-		
-	}
-	
-	protected  function workoutSms3HrsBefore($data,$delay){
-		
-		Log::info("workoutSms3HrsBefore ");
-		Log::info($data);
-		// return;
-		$label = 'PayPerSession-3HrsBefore';
-		
-		$to = $data['customer_phone'];
-		
-		return $this->common($label,$to,$data,$delay);
-		
-	}
-	
-	protected function workoutSms10MinBefore($data,$delay,$type='nokiosk'){
-		
-		Log::info("workoutSms10MinBefore ");
-		Log::info($data);
-		// return;
-		if($type=='nokiosk')
-			$label = 'PayPerSession-10MinBefore';
-			else $label = 'PayPerSession-10MinBeforeKiosk';
-			
-			$to = $data['customer_phone'];
-			
-			return $this->common($label,$to,$data,$delay);
-			
-	}
 	
 	public function workoutSmsOnFitCodeEnter($data){
 		
@@ -1136,30 +1080,6 @@ Class CustomerSms extends VersionNextSms{
 		
 	}
 	
-	protected function workoutSms2HrsAfter($data,$delay){
-		
-		Log::info("workoutSms2HrsAfter ");
-		Log::info($data);
-		// return;
-		$label = 'PayPerSession-2HrsAfter';
-		
-		$to = $data['customer_phone'];
-		
-		return $this->common($label,$to,$data,$delay);
-		
-	}
-	protected function workoutSms2HrsAfterPayLater($data,$delay){
-		
-		Log::info("workoutSms2HrsAfterPayLater");
-		Log::info($data);
-		// return;
-		$label = 'PayPerSession-2HrsAfterPayLater';
-		
-		$to = $data['customer_phone'];
-		
-		return $this->common($label,$to,$data,$delay);
-		
-	}
 	protected function bookTrialReminderBefore10Min($data,$delay){
 		
 		\Log::info("workout sessoin before 10 min sms");
@@ -1171,6 +1091,7 @@ Class CustomerSms extends VersionNextSms{
 		return $this->common($label,$to,$data,$delay);
 		
 	}
+	
 	public function common($label,$to,$data,$delay = 0){
 
 		if(isset($data['source']) && $data['source'] == 'cleartrip'){

@@ -3930,7 +3930,7 @@ class TransactionController extends \BaseController {
 
             if($data['type'] == 'workout-session'){
 
-                $booking_details_data['service_duration']['field'] = '1 Session';
+                $booking_details_data['service_duration']['value'] = '1 Session';
             }
             
         }
