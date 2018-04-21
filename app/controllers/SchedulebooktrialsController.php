@@ -2374,16 +2374,22 @@ class SchedulebooktrialsController extends \BaseController {
 
 
             $dates = array('schedule_date','schedule_date_time','missedcall_date','customofferorder_expiry_date','followup_date','auto_followup_date');
-
+            $unset_keys = [];
+    
 	        foreach ($dates as $key => $value) {
                 if(isset($booktrial[$value])){
                     if($booktrial[$value] == "-" || $booktrial[$value] == ""){
 
-                        $booktrial->unset($value);
+                        // $booktrial->unset($value);
+                        array_push($unset_keys, $value);
                     }
                 }
 
-	        }
+            }
+            
+            if(count($unset_keys)>0){
+                $booktrial->unset($unset_keys);
+            }
 
             $this->deleteTrialCommunication($booktrial);
 
@@ -4701,12 +4707,19 @@ class SchedulebooktrialsController extends \BaseController {
             $dates = array('schedule_date','schedule_date_time','missedcall_date','customofferorder_expiry_date','followup_date','auto_followup_date');
         }
 
+        $unset_keys = [];
+
 
         foreach ($dates as $key => $value) {
 
             if($booktrial[$value] == "" || $booktrial[$value] == "-"){
-                $booktrial->unset($value);
+                // $booktrial->unset($value);
+                array_push($unset_keys, $value);
             }
+        }
+
+        if(count($unset_keys)>0){
+            $booktrial->unset($unset_keys);
         }
 
         $booktrial = $booktrial->toArray();
