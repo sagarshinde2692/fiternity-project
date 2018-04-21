@@ -377,7 +377,7 @@ class TransactionController extends \BaseController {
                     $order->unset('reward_ids');
                 }
 
-                $order->update();
+                // $order->update();
             }
 
         }else{
@@ -587,8 +587,8 @@ class TransactionController extends \BaseController {
                     }
                 }
 
-                $order->unset('wallet');
-                $order->unset('wallet_amount');
+                $order->unset('wallet','wallet_amount');
+                // $order->unset('wallet_amount');
             }
 
             $cashback_detail = $data['cashback_detail'] = $this->customerreward->purchaseGame($order['amount'],$data['finder_id'],'paymentgateway',$data['offer_id'],false,$order["part_payment_calculation"]["part_payment_and_convinience_fee_amount"],$convinience_fee,$data['type']);
@@ -1992,8 +1992,8 @@ class TransactionController extends \BaseController {
                             }
                         }
 
-                        $order->unset('wallet');
-                        $order->unset('wallet_amount');   
+                        $order->unset('wallet', 'wallet_amount');
+                        // $order->unset('wallet_amount');   
 
                     }
 
@@ -2053,8 +2053,8 @@ class TransactionController extends \BaseController {
 
             if($order && isset($order['coupon_code'])){
 
-                $order->unset('coupon_code');
-                $order->unset('coupon_discount_amount');
+                $order->unset('coupon_code', 'coupon_discount_amount');
+                // $order->unset('coupon_discount_amount');
             }
 
             // if($order && isset($order['routed_order'])){
@@ -2206,8 +2206,8 @@ class TransactionController extends \BaseController {
                             }
                         }
 
-                        $order->unset('wallet');
-                        $order->unset('wallet_amount');
+                        $order->unset('wallet', 'wallet_amount');
+                        // $order->unset('wallet_amount');
                     }
 
                 }
@@ -2328,8 +2328,8 @@ class TransactionController extends \BaseController {
                             }
                         }
 
-                        $order->unset('wallet');
-                        $order->unset('wallet_amount');
+                        $order->unset('wallet', 'wallet_amount');
+                        // $order->unset('wallet_amount');
                     }
 
                 }
@@ -3369,11 +3369,15 @@ class TransactionController extends \BaseController {
                 $transaction = Order::find((int)(int)$data['order_id']);
 
                 $dates = array('followup_date','last_called_date','preferred_starting_date', 'called_at','subscription_start','start_date','start_date_starttime','end_date', 'order_confirmation_customer');
-
+                $unset_keys = [];
                 foreach ($dates as $key => $value){
                     if(isset($transaction[$value]) && $transaction[$value]==''){
-                        $transaction->unset($value);
+                        // $transaction->unset($value); 
+                        array_push($unset_keys, $value);
                     }
+                }
+                if(count($unset_keys)>0){
+                    $transaction->unset($unset_keys);
                 }
             }
 
@@ -3384,11 +3388,16 @@ class TransactionController extends \BaseController {
                 $transaction = Booktrial::find((int)(int)$data['booktrial_id']);
 
                 $dates = array('start_date', 'start_date_starttime', 'schedule_date', 'schedule_date_time', 'followup_date', 'followup_date_time','missedcall_date','customofferorder_expiry_date','auto_followup_date');
-
+                $unset_keys = [];
+                
                 foreach ($dates as $key => $value){
                     if(isset($transaction[$value]) && $transaction[$value]==''){
                         $transaction->unset($value);
+                        array_push($unset_keys, $value);
                     }
+                }
+                if(count($unset_keys)>0){
+                    $transaction->unset($unset_keys);
                 }
             }
 
