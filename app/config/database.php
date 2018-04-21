@@ -13,8 +13,8 @@ $options = ['db' => 'admin','authMechanism' => 'MONGODB-CR']; // sets the authen
 
 //production
 // $host = "54.179.134.14";
-$username = "";
-$password = "";
+// $username = "";
+// $password = "";
 
 return array(
 
