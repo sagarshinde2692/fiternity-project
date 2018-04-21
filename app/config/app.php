@@ -58,7 +58,7 @@ return array(
 	'vendor_communication' => true,
 	'env' => 'production',
 	'debug' => FALSE,
-	'metropolis' => 'http://c1.fitternity.com',
+	'metropolis' => 'https://c1.fitternity.com',
 	'amazonpay_isSandbox' => 'false',
 	'reliance_url' =>'https://rhealthcircle.reliancegeneral.co.in/fitternity/callback',
 	'website_deeplink' =>'https://ftrnty.com',
