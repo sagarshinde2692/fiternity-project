@@ -558,14 +558,14 @@ class FindersController extends \BaseController {
 
 				}else if(isset($finderarr['flags'])){
 
-					if(isset($finderarr['flags']['newly_launched']) || $finderarr['flags']['newly_launched'] == null){
-						unset($finder['flags']['newly_launched']);
-					}
+					// if(isset($finderarr['flags']['newly_launched']) || $finderarr['flags']['newly_launched'] == null){
+					// 	unset($finder['flags']['newly_launched']);
+					// }
 
-					if(isset($finderarr['flags']['newly_launched_date']) || $finderarr['flags']['newly_launched_date'] == null){
+					// if(isset($finderarr['flags']['newly_launched_date']) || $finderarr['flags']['newly_launched_date'] == null){
 
-						unset($finder['flags']['newly_launched_date']);
-					}
+					// 	unset($finder['flags']['newly_launched_date']);
+					// }
 				}
 				
 				// end top selling and newly launched logic 
