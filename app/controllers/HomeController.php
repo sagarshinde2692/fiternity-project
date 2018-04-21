@@ -394,7 +394,7 @@ class HomeController extends BaseController {
             $footer_block4_ids 		= 		array_map('intval', explode(",", $homepage['footer_block4_ids'] ));
             $footer_block5_ids 		= 		array_map('intval', explode(",", $homepage['footer_block5_ids'] ));
             $footer_block6_ids 		= 		array_map('intval', explode(",", $homepage['footer_block6_ids'] ));
-
+            Finder::$withoutAppends=true;
             $footer_block1_finders 		=		Finder::active()->whereIn('_id', $footer_block1_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title'))->toArray();
             $footer_block2_finders 		=		Finder::active()->whereIn('_id', $footer_block2_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title'))->toArray();
             $footer_block3_finders 		=		Finder::active()->whereIn('_id', $footer_block3_ids)->remember(Config::get('app.cachetime'))->get(array('_id','slug','title'))->toArray();
@@ -2037,7 +2037,7 @@ class HomeController extends BaseController {
             }
 
             $data               =   ['locations' => $locationsArr, 'message' => 'locations aggregationlist :)'];
-            Cache::tags('findercount_locationwise_city')->put($city, $data, Config::get('cache.cache_time'));
+            Cache::tags('findercount_locationwise_city')->put($city, $data, Config::get('cache.three_day_cache'));
 
         }
 
@@ -4341,7 +4341,7 @@ class HomeController extends BaseController {
     
             }
 
-            Cache::tags('citywise_finders')->put('citywise_finders',$data,Config::get('cache.cache_time'));
+            Cache::tags('citywise_finders')->put('citywise_finders',$data,Config::get('cache.three_day_cache'));
         }
 
         return Cache::tags('citywise_finders')->get('citywise_finders');

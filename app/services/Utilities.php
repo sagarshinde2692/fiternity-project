@@ -140,17 +140,13 @@ Class Utilities {
     public function walletTransaction($request,$data = false){
 
         $customer_id = (int)$request['customer_id'];
-
-        if($customer_id == ""){
-
-            $jwt_token = Request::header('Authorization');
-
-            Log::info('jwt_token : '.$jwt_token);
-                
-            if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
-                $decoded = $this->customerTokenDecode($jwt_token);
-                $customer_id = $decoded->customer->_id;
-            }
+        $jwt_token = Request::header('Authorization');
+        Log::info('jwt_token : '.$jwt_token);
+            
+        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+            $decoded = $this->customerTokenDecode($jwt_token);
+            $customer_id = $decoded->customer->_id;
+            $request['customer_id'] = $customer_id;
         }
 
         $customer = \Customer::find($customer_id);
@@ -1437,20 +1433,14 @@ Class Utilities {
 
         $customer_id = (int)$request['customer_id'];
 
-        if($customer_id == ""){
+        $jwt_token = Request::header('Authorization');
 
-            $jwt_token = Request::header('Authorization');
+        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
 
-            if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
-
-                $decoded = $this->customerTokenDecode($jwt_token);
-                $customer_id = (int)$decoded->customer->_id;
-            }
+            $decoded = $this->customerTokenDecode($jwt_token);
+            $customer_id = (int)$decoded->customer->_id;
+            $request['customer_id'] = $customer_id;
         }
-        if(isset($request['logged_in_customer_id'])){
-            $customer_id = $request['logged_in_customer_id'];
-        }
-        $request['customer_id'] = $customer_id;
 
         $customer = Customer::find($customer_id);
 
