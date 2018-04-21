@@ -6540,8 +6540,11 @@ class SchedulebooktrialsController extends \BaseController {
                 		$booktrial->pps_payment_link=Config::get('app.website').'/paymentlink/'.$booktrial->order_id;
                 		else $booktrial->pps_payment_link=Config::get('app.website');
                 		
-                		if(isset($booktrial->category)&&$booktrial->category!=""&&isset($booktrial->category->name)&&$booktrial->category->name!="")
-                			$booktrial->pps_srp_link=Config::get('app.website_deeplink').'/'.$booktrial->city->name.'/'.$booktrial->category->name;
+                		$booktrial->pps_srp_link=Config::get('app.website');
+
+                        if(!empty($booktrial->category) && !empty($booktrial->category->name) && !empty($booktrial->city) &&!empty($booktrial->city->name)){
+                            $booktrial->pps_srp_link=Config::get('app.website').'/'.$booktrial->city->name.'/'.newcategorymapping($booktrial->category->name);
+                        }
                 			
                 			if(isset($booktrial->pay_later)&&$booktrial->pay_later!=""&&$booktrial->pay_later==true)
                 				$booktrial->send_communication['customer_sms_paypersession_FitCodeEnter_PayLater']=$this->customersms->workoutSmsOnFitCodeEnterPayLater($booktrial->toArray());
@@ -6807,14 +6810,20 @@ class SchedulebooktrialsController extends \BaseController {
                 //added check and message
                 $booktrial->pps_fitcash=$fitcash;
                 $booktrial->pps_cashback=$this->utilities->getWorkoutSessionLevel((int)$booktrial->customer_id)['current_level']['cashback'];
-                if(isset($booktrial->category)&&$booktrial->category!=""&&isset($booktrial->category->name)&&$booktrial->category->name!="")
-                	$booktrial->pps_srp_link=Config::get('app.website').'/'.$booktrial->city_name.'/'.$booktrial->category->name;
-                	$temp=$booktrial->send_communication;
-                	if(isset($booktrial->pay_later)&&$booktrial->pay_later!=""&&$booktrial->pay_later==true)
-                		$temp['customer_sms_paypersession_FitCodeEnter_PayLater']=$this->customersms->workoutSmsOnFitCodeEnterPayLater($booktrial->toArray());
-                	else $temp['customer_sms_paypersession_FitCodeEnter']=$this->customersms->workoutSmsOnFitCodeEnter($booktrial->toArray());
-                		
-                		$this->deleteTrialCommunication($booktrial);
+                
+                $booktrial->pps_srp_link=Config::get('app.website');
+
+                if(!empty($booktrial->category) && !empty($booktrial->category->name) && !empty($booktrial->city) &&!empty($booktrial->city->name)){
+                    $booktrial->pps_srp_link=Config::get('app.website').'/'.$booktrial->city->name.'/'.newcategorymapping($booktrial->category->name);
+                }
+
+                
+            	$temp=$booktrial->send_communication;
+            	if(isset($booktrial->pay_later)&&$booktrial->pay_later!=""&&$booktrial->pay_later==true)
+            		$temp['customer_sms_paypersession_FitCodeEnter_PayLater']=$this->customersms->workoutSmsOnFitCodeEnterPayLater($booktrial->toArray());
+            	else $temp['customer_sms_paypersession_FitCodeEnter']=$this->customersms->workoutSmsOnFitCodeEnter($booktrial->toArray());
+            		
+            	$this->deleteTrialCommunication($booktrial);
                 		
 
                 $this->utilities->walletTransaction($req);
