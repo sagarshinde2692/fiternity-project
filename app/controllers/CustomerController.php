@@ -4437,12 +4437,12 @@ class CustomerController extends \BaseController {
 
 			}
 		}
-		$device_type = Request::header('Device-Type');
+		/*$device_type = Request::header('Device-Type');
 		$app_version = Request::header('App-Version');
 		Log::info($device_type);
 		Log::info($app_version);
 		if($device_type && $app_version && in_array($device_type, ['android', 'ios']) && version_compare($app_version, '4.4.2')>0){
-			$response = [];
+			$response = [];*/
 			foreach($bankData as $key => $value){
 
 				//echo"<pre>";print_r($value);exit;
@@ -4459,7 +4459,7 @@ class CustomerController extends \BaseController {
 					'emiData' => $value,
 				];
 			}
-		}
+		// }
 		$response['bankList'] = $bankList;
 	    return $response;
 	}
