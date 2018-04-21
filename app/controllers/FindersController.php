@@ -547,6 +547,7 @@ class FindersController extends \BaseController {
 							{
 								if($diff->days<=30)
 									$finder['flags']['newly_launched']='newly launched';
+								else unset($finder['flags']['newly_launched']);
 							}
 							else $finder['flags']['newly_launched']='coming soon';	
 							unset($finder['flags']['newly_launched_date']);
