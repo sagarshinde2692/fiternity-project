@@ -534,7 +534,7 @@ class FindersController extends \BaseController {
 					if($finderarr['flags']['top_selling'])		
 						 $finder['flags']['top_selling']=true;
 				    else unset($finder['flags']['top_selling']);
-				
+				    
 				if(isset($finderarr['flags']) && isset($finderarr['flags']['newly_launched']) && $finderarr['flags']['newly_launched'] != null && $finderarr['flags']['newly_launched'] != "" && isset($finderarr['flags']['newly_launched_date']) && $finderarr['flags']['newly_launched_date'] != null && $finderarr['flags']['newly_launched_date'] != ""){
 
 					if($finderarr['flags']['newly_launched']&&$finderarr['flags']['newly_launched_date']){
@@ -552,7 +552,6 @@ class FindersController extends \BaseController {
 						else $finder['flags']['newly_launched']='coming soon';	
 						unset($finder['flags']['newly_launched_date']);
 					}else{
-
 						unset($finder['flags']['newly_launched_date']);
 						unset($finder['flags']['newly_launched']);
 					}
