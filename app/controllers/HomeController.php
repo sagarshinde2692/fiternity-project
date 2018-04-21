@@ -459,7 +459,7 @@ class HomeController extends BaseController {
             $campaigns[] = [
                 'image'=>'https://b.fitn.in/global/paypersession_branding/web_and_mobresponsive_banners/Homepage-pps.png',
                 'mob_image'=>'https://b.fitn.in/global/paypersession_branding/web_and_mobresponsive_banners/Mob-homepage.png',
-                'link'=>Config::get('app.download_app_link'),
+                'link'=>Config::get('app.website').'/pay-per-session',
                 'title'=>'Pay Per Session',
                 'height'=>100,
                 'width'=>375,
