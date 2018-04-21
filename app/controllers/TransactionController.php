@@ -76,10 +76,10 @@ class TransactionController extends \BaseController {
 
     }
 
-    public function capture(){
+    public function capture($data = null){
 
-        $data = Input::json()->all();
-        
+        $data = $data ? $data : Input::json()->all();   
+
         foreach ($data as $key => $value) {
 
             if(is_string($value)){
@@ -89,6 +89,11 @@ class TransactionController extends \BaseController {
 
         if(isset($data['order_id']) && $data['order_id'] != ""){
             $data['order_id'] = intval($data['order_id']);
+            $pay_later_order = Order::where('_id', $data['order_id'])->where('pay_later', true)->first();
+            if($pay_later_order){
+                $pay_later_data = $this->getPayLaterData($pay_later_order);
+                $data = array_merge($data, $pay_later_data);
+            }
         }
 
         Log::info('------------transactionCapture---------------',$data);
@@ -129,22 +134,24 @@ class TransactionController extends \BaseController {
             }
         }
 
-        if(isset($data['finder_id']) && $data['finder_id'] != ""){
-
-            $checkFinderState = $this->utilities->checkFinderState($data['finder_id']);
-
-            if($checkFinderState['status'] != 200){
-                return Response::json($checkFinderState, $this->error_status);
-            }
-        }
+        
 
         $workout = array('vip_booktrials','3daystrial','booktrials','workout-session');
         if(in_array($data['type'],$workout)){
+            $service_category = Service::find($data['service_id'], ['servicecategory_id']);
 
-            $workout_rules = array(
-                'schedule_date'=>'required',
-                'schedule_slot'=>'required'
-            );
+            if($service_category['servicecategory_id'] == 65){
+                $workout_rules = array(
+                    'schedule_date'=>'required',
+                    // 'schedule_slot'=>'required'
+                );
+            }else{
+                $workout_rules = array(
+                    'schedule_date'=>'required',
+                    'schedule_slot'=>'required'
+                );
+            }
+
 
             $rules = array_merge($rules,$workout_rules);
         }
@@ -205,76 +212,176 @@ class TransactionController extends \BaseController {
                 case 'emi': $data['payment_mode'] = 'paymentgateway';break;
                 case 'paymentgateway': $data['payment_mode'] = 'paymentgateway';break;
                 case 'pay_at_vendor': $data['payment_mode'] = 'at the studio';break;
+                case 'pay_later': $data['pay_later'] = true;break;
                 default:break;
             }
 
         }
 
-        if($this->vendor_token && !isset($data['order_id'])){
-            
-            if($this->utilities->checkFitternityCustomer($data['customer_email'], $data['customer_phone'])){
-                
-                $data['routed_order'] = '0';
-            
-            }else{
-             
-                $data['routed_order'] = '1';
-            
-            }
-        
-        }
-
         $updating_part_payment = (isset($data['part_payment']) && $data['part_payment']) ? true : false;
-
+        
         $updating_cod = (isset($data['payment_mode']) && $data['payment_mode'] == 'cod') ? true : false;
 
-        if($data['type'] == "events" && isset($data['event_customers']) && count($data['event_customers']) > 0 ){
-
-            $event_customers = $data['event_customers'];
-
-            $event_customer_email = [];
-            $event_customer_phone = [];
-
-            foreach ($event_customers as $customer_data) {
-
-                if(in_array($customer_data["customer_email"],$event_customer_email)){
-
-                    return Response::json(array('status' => 404,'message' => 'cannot enter same email id'),$this->error_status);
-
-                }else{
-
-                    $event_customer_email[] = strtolower($customer_data["customer_email"]);
+        if(!(isset($data['session_payment']) && $data['session_payment'])){
+            if(isset($data['finder_id']) && $data['finder_id'] != ""){
+                
+                $checkFinderState = $this->utilities->checkFinderState($data['finder_id']);
+    
+                if($checkFinderState['status'] != 200){
+                    return Response::json($checkFinderState, $this->error_status);
                 }
-
-                if(in_array($customer_data["customer_phone"],$event_customer_phone)){
-
-                    return Response::json(array('status' => 404,'message' => 'cannot enter same contact number'),$this->error_status);
-
+            }
+    
+            if($this->vendor_token && !isset($data['order_id'])){
+                
+                if($this->utilities->checkFitternityCustomer($data['customer_email'], $data['customer_phone'])){
+                    
+                    $data['routed_order'] = '0';
+                
                 }else{
-
-                    $event_customer_phone[] = $customer_data["customer_phone"];
+                 
+                    $data['routed_order'] = '1';
+                
+                }
+            
+            }
+    
+            if($data['type'] == "events" && isset($data['event_customers']) && count($data['event_customers']) > 0 ){
+    
+                $event_customers = $data['event_customers'];
+    
+                $event_customer_email = [];
+                $event_customer_phone = [];
+    
+                foreach ($event_customers as $customer_data) {
+    
+                    if(in_array($customer_data["customer_email"],$event_customer_email)){
+    
+                        return Response::json(array('status' => 404,'message' => 'cannot enter same email id'),$this->error_status);
+    
+                    }else{
+    
+                        $event_customer_email[] = strtolower($customer_data["customer_email"]);
+                    }
+    
+                    if(in_array($customer_data["customer_phone"],$event_customer_phone)){
+    
+                        return Response::json(array('status' => 404,'message' => 'cannot enter same contact number'),$this->error_status);
+    
+                    }else{
+    
+                        $event_customer_phone[] = $customer_data["customer_phone"];
+                    }
+                }
+                
+            }
+    
+            if(isset($data['myreward_id']) && $data['type'] == "workout-session"){
+    
+                $validateMyReward = $this->validateMyReward($data['myreward_id']);
+    
+                if($validateMyReward['status'] != 200){
+                    return Response::json($validateMyReward,$this->error_status);
+                }
+            }
+    
+            $customerDetail = $this->getCustomerDetail($data);
+    
+            if($customerDetail['status'] != 200){
+                return Response::json($customerDetail,$this->error_status);
+            }
+    
+            $data = array_merge($data,$customerDetail['data']); 
+    
+            if(isset($data['customers_list'])){
+                foreach($data['customers_list'] as $key => $customer){
+                    $data['customers_list'][$key]['customer_id'] = autoRegisterCustomer($customer);
                 }
             }
             
-        }
-
-        if(isset($data['myreward_id']) && $data['type'] == "workout-session"){
-
-            $validateMyReward = $this->validateMyReward($data['myreward_id']);
-
-            if($validateMyReward['status'] != 200){
-                return Response::json($validateMyReward,$this->error_status);
+            
+              
+            $payment_mode = isset($data['payment_mode']) ? $data['payment_mode'] : "";
+    
+            if(isset($data['ratecard_id'])){
+                
+                $ratecard_id = (int) $data['ratecard_id'];
+    
+                $ratecardDetail = $this->getRatecardDetail($data);
+    
+                if($ratecardDetail['status'] != 200){
+                    return Response::json($ratecardDetail,$this->error_status);
+                }
+    
+                $data = array_merge($data,$ratecardDetail['data']);
+    
+                if(isset($data['customer_quantity'])){
+                    
+                    $data['ratecard_amount'] = $data['amount'];
+                    $data['amount'] = $data['customer_quantity'] * $data['amount'];
+                    $data['amount_finder'] = $data['customer_quantity'] * $data['amount_finder'];
+                    
+                }
+    
             }
+    
+            if(isset($data['manual_order']) && $data['manual_order']){
+    
+                $manualOrderDetail = $this->getManualOrderDetail($data);
+    
+                if($manualOrderDetail['status'] != 200){
+                    return Response::json($manualOrderDetail,$this->error_status);
+                }
+    
+                $data = array_merge($data,$manualOrderDetail['data']);
+            }
+    
+            if($payment_mode=='cod'){
+    
+                $data['payment_mode'] = 'cod';
+    
+                $data["secondary_payment_mode"] = "cod_membership";
+                
+            }        
+    
+            
+    
+            $finder_id = (int) $data['finder_id'];
+    
+            $finderDetail = $this->getFinderDetail($finder_id);
+    
+            if($finderDetail['status'] != 200){
+                return Response::json($finderDetail,$this->error_status);
+            }
+    
+            
+    
+            // $cash_pickup = (isset($finderDetail['data']['finder_flags']) && isset($finderDetail['data']['finder_flags']['cash_pickup'])) ? $finderDetail['data']['finder_flags']['cash_pickup'] : false;
+    
+            $orderfinderdetail = $finderDetail;
+            $data = array_merge($data,$orderfinderdetail['data']);
+            unset($orderfinderdetail["data"]["finder_flags"]);
+    
+            if(isset($data['service_id'])){
+                $service_id = (int) $data['service_id'];
+    
+                $serviceDetail = $this->getServiceDetail($service_id);
+    
+                if($serviceDetail['status'] != 200){
+                    return Response::json($serviceDetail,$this->error_status);
+                }
+    
+                $data = array_merge($data,$serviceDetail['data']);
+            }
+
+        }else{
+            $finderDetail['data']['finder_flags'] = [];
         }
-
-        $customerDetail = $this->getCustomerDetail($data);
-
-        if($customerDetail['status'] != 200){
-            return Response::json($customerDetail,$this->error_status);
+        
+        if($data['type'] == 'workout-session'){
+			$data['service_name'] = preg_replace('/membership/i', 'Workout', $data['service_name']);
         }
-
-        $data = array_merge($data,$customerDetail['data']); 
-
+        
         if(isset($data['coupon_code']) && $this->utilities->isGroupId($data['coupon_code'])){
             
             if($this->utilities->validateGroupId(['group_id'=>$data['coupon_code'], 'customer_id'=>$data['customer_id']])){
@@ -285,73 +392,7 @@ class TransactionController extends \BaseController {
              
              unset($data['coupon_code']);
  
-         }
-          
-        $payment_mode = isset($data['payment_mode']) ? $data['payment_mode'] : "";
-
-        if(isset($data['ratecard_id'])){
-            
-            $ratecard_id = (int) $data['ratecard_id'];
-
-            $ratecardDetail = $this->getRatecardDetail($data);
-
-            if($ratecardDetail['status'] != 200){
-                return Response::json($ratecardDetail,$this->error_status);
-            }
-
-            $data = array_merge($data,$ratecardDetail['data']);
-
         }
-
-        if(isset($data['manual_order']) && $data['manual_order']){
-
-            $manualOrderDetail = $this->getManualOrderDetail($data);
-
-            if($manualOrderDetail['status'] != 200){
-                return Response::json($manualOrderDetail,$this->error_status);
-            }
-
-            $data = array_merge($data,$manualOrderDetail['data']);
-        }
-
-        if($payment_mode=='cod'){
-
-            $data['payment_mode'] = 'cod';
-
-            $data["secondary_payment_mode"] = "cod_membership";
-            
-        }        
-
-        
-
-        $finder_id = (int) $data['finder_id'];
-
-        $finderDetail = $this->getFinderDetail($finder_id);
-
-        if($finderDetail['status'] != 200){
-            return Response::json($finderDetail,$this->error_status);
-        }
-
-        
-
-        // $cash_pickup = (isset($finderDetail['data']['finder_flags']) && isset($finderDetail['data']['finder_flags']['cash_pickup'])) ? $finderDetail['data']['finder_flags']['cash_pickup'] : false;
-
-        $orderfinderdetail = $finderDetail;
-        $data = array_merge($data,$orderfinderdetail['data']);
-        unset($orderfinderdetail["data"]["finder_flags"]);
-
-        if(isset($data['service_id'])){
-            $service_id = (int) $data['service_id'];
-
-            $serviceDetail = $this->getServiceDetail($service_id);
-
-            if($serviceDetail['status'] != 200){
-                return Response::json($serviceDetail,$this->error_status);
-            }
-
-            $data = array_merge($data,$serviceDetail['data']);
-        }
-
 
         $order = false;
 
@@ -445,9 +486,17 @@ class TransactionController extends \BaseController {
             
         }
 
+        if ($data['type'] == 'workout-session'){
+            
+            $data['instant_payment_discount'] = round($data['amount_finder'] / 5) ;
+
+        }
+
+        
+
         $data['amount_final'] = $data["amount_finder"];
 
-        if(!$updating_part_payment && !isset($data['myreward_id'])) {
+        if(!$updating_part_payment && !isset($data['myreward_id']) && (!(isset($data['pay_later']) && $data['pay_later']) || !(isset($data['wallet']) && $data['wallet']))) {
 
             $cashbackRewardWallet =$this->getCashbackRewardWallet($data,$order);
             Log::info("cashbackRewardWallet",$cashbackRewardWallet);
@@ -763,6 +812,17 @@ class TransactionController extends \BaseController {
             $order->update();
         }
 
+        if(isset($data['pay_later']) && $data['pay_later'] && isset($data['wallet']) && $data['wallet']){
+
+            $order->pay_later = true;
+            
+            $order->update();
+            
+            $this->utilities->createWorkoutSession($order['_id']);
+
+            $data['full_payment_wallet'] = true;
+        }
+        
         $this->utilities->financeUpdate($order);
         
         if(in_array($data['customer_source'],['android','ios','kiosk'])){
@@ -783,6 +843,10 @@ class TransactionController extends \BaseController {
         $result['hash'] = $data['payment_hash'];
         $result['payment_related_details_for_mobile_sdk_hash'] = $mobilehash;
         $result['finder_name'] = strtolower($data['finder_name']);
+        $result['type'] = $data['type'];
+        if(isset($data['type']) && ($data['type'] == 'workout-session')){
+            $result['session_payment'] = true;
+        }
         if(isset($data['convinience_fee'])){
             $result['convinience_fee_charged'] = true;
             $result['convinience_fee'] = $data['convinience_fee'];
@@ -822,6 +886,13 @@ class TransactionController extends \BaseController {
 
         $pay_at_vendor_applicable = true;
 
+        $pay_later = false;
+        
+        if($data['type'] == 'workout-session' && isset($_GET['device_type']) && isset($_GET['app_version']) && in_array($_GET['device_type'], ['android', 'ios']) && $_GET['app_version'] > '4.4.3' && !(isset($data['session_payment']) && $data['session_payment'])){
+            $pay_later = true;
+            $data['pps_new'] = true;
+        }
+
         $resp   =   array(
             'status' => 200,
             'data' => $result,
@@ -829,7 +900,8 @@ class TransactionController extends \BaseController {
             'part_payment' => $part_payment_applicable,
             'cash_pickup' => $cash_pickup_applicable,
             'emi'=>$emi_applicable,
-            'pay_at_vendor'=>$pay_at_vendor_applicable
+            'pay_at_vendor'=>$pay_at_vendor_applicable,
+            'pay_later'=>$pay_later
         );
 
         // if(isset($_GET['device_type']) && in_array($_GET['device_type'], ['android', 'ios'])){
@@ -863,7 +935,12 @@ class TransactionController extends \BaseController {
                     $payment_mode_type_array[] = 'pay_at_vendor';
                 }
             }
-
+            if(isset($_GET['device_type']) && isset($_GET['app_version']) && in_array($_GET['device_type'], ['android', 'ios']) && $_GET['app_version'] > '4.4.3'){
+                
+                if($data['type'] == 'workout-session'){
+                    $payment_mode_type_array[] = 'pay_later';
+                }
+            }
             $payment_details = [];
 
             foreach ($payment_mode_type_array as $payment_mode_type) {
@@ -1870,6 +1947,19 @@ class TransactionController extends \BaseController {
             $data['convinience_fee'] = $convinience_fee;
         }
 
+        
+
+        if(isset($_GET['device_type']) && isset($_GET['app_version']) && in_array($_GET['device_type'], ['android', 'ios']) && $_GET['app_version'] > '4.4.3'){
+            if($data['type'] == 'workout-session' && !(isset($data['pay_later']) && $data['pay_later']) && !(isset($data['session_payment']) && $data['session_payment'])){
+                Log::info("inside instant discount");
+                
+                $data['amount'] = $data['amount_customer'] = $data['amount_customer'] - $data['instant_payment_discount'];
+    
+                $amount  =  $data['amount'];
+    
+            }
+        }            
+
         if($data['type'] != 'events'){
 
             if($data['type'] == "memberships" && isset($data['customer_source']) && (in_array($data['customer_source'],['android','ios','kiosk']))){
@@ -2633,11 +2723,16 @@ class TransactionController extends \BaseController {
         }
 
         if(isset($data['schedule_slot']) && $data['schedule_slot'] != ""){
-
+            
             $schedule_slot = explode("-", $data['schedule_slot']);
 
             $data['start_time'] = trim($schedule_slot[0]);
-            $data['end_time']= trim($schedule_slot[1]);
+            if(count($schedule_slot) == 1){
+                $data['end_time'] = date('g:i a', strtotime('+1 hour', strtotime($schedule_slot[0])));
+                $data['schedule_slot'] = $schedule_slot[0].'-'.$data['end_time'];
+            }else{
+                $data['end_time']= trim($schedule_slot[1]);
+            }
         }
 
         $batch = array();
@@ -2754,6 +2849,7 @@ class TransactionController extends \BaseController {
         $data['meal_contents'] = $this->stripTags($service['short_description']);
         (isset($service['diet_inclusive'])) ? $data['diet_inclusive'] = $service['diet_inclusive'] : null;
         $data['finder_address'] = (isset($service['address']) && $service['address'] != "") ? $service['address'] : "-";
+        
         
         return array('status' => 200,'data' =>$data);
 
@@ -3826,9 +3922,17 @@ class TransactionController extends \BaseController {
             $booking_details_data["start_time"]["field"] = "PREFERRED TIME";
         }
 
-        if(in_array($data['type'], ['booktrial','workoutsession'])){
-            $booking_details_data["start_date"]["field"] = "DATE";
-            $booking_details_data["start_time"]["field"] = "TIME";
+        if(in_array($data['type'], ['booktrial','workout-session'])){
+
+            $booking_details_data["start_date"]["field"] = "SESSION DATE";
+            $booking_details_data["start_time"]["field"] = "SESSION TIME";
+            $booking_details_data['service_name']['field'] = 'WORKOUT FORM';
+
+            if($data['type'] == 'workout-session'){
+
+                $booking_details_data['service_duration']['value'] = '1 Session';
+            }
+            
         }
 
         if(isset($data['preferred_day']) && $data['preferred_day'] != ""){
@@ -3989,7 +4093,7 @@ class TransactionController extends \BaseController {
                 );
             }
 
-            if(isset($data['cashback_detail']) && isset($data['cashback_detail']['amount_deducted_from_wallet']) && $data['cashback_detail']['amount_deducted_from_wallet'] > 0){
+            if(isset($data['cashback_detail']) && isset($data['cashback_detail']['amount_deducted_from_wallet']) && $data['cashback_detail']['amount_deducted_from_wallet'] > 0 &&  $payment_mode_type != 'pay_later'){
 
                 $amount_summary[] = array(
                     'field' => 'Fitcash Applied',
@@ -3999,7 +4103,7 @@ class TransactionController extends \BaseController {
                 
             }
 
-            if(isset($data['coupon_discount_amount']) && $data['coupon_discount_amount'] > 0){
+            if(isset($data['coupon_discount_amount']) && $data['coupon_discount_amount'] > 0 && $payment_mode_type != 'pay_later'){
 
                 $amount_summary[] = array(
                     'field' => 'Coupon Discount',
@@ -4030,6 +4134,32 @@ class TransactionController extends \BaseController {
                 $you_save += $data['app_discount_amount'];
                 
             }
+            
+            if(isset($_GET['device_type']) && isset($_GET['app_version']) && in_array($_GET['device_type'], ['android', 'ios']) && $_GET['app_version'] > '4.4.3'){
+
+                if(isset($data['type']) && $data['type'] == 'workout-session' && $payment_mode_type != 'pay_later' && !(isset($data['session_payment']) && $data['session_payment'])){
+                    
+                    $amount_summary[] = array(
+                        'field' => 'Instant Pay discount',
+                        'value' => '-Rs. '.$data['instant_payment_discount']
+                    );
+    
+                    $you_save += $data['instant_payment_discount'];
+                    
+                    if(isset($data['pay_later']) && $data['pay_later'] && !(isset($data['session_payment']) && $data['session_payment'])){
+                        
+                        $amount_payable['value'] = "Rs. ".($data['amount_final'] - $data['instant_payment_discount']);
+    
+                    }
+    
+                }
+            }
+
+            if(isset($data['type']) && $data['type'] == 'workout-session' && $payment_mode_type == 'pay_later'){
+                
+                $amount_payable['value'] = "Rs. ".($data['amount_finder']);
+
+            }
         }
 
         if(!empty($reward)){
@@ -4056,11 +4186,23 @@ class TransactionController extends \BaseController {
     function getPaymentModes($data){
 
         $payment_modes = [];
-        $payment_modes[] = array(
-            'title' => 'Online Payment',
-            'subtitle' => 'Transact online with netbanking, card and wallet',
-            'value' => 'paymentgateway',
-        );
+
+        if($data['pay_later']){
+            
+            $payment_modes[] = array(
+                'title' => 'Pay now',
+                'subtitle' => 'Pay 20% less',
+                'value' => 'paymentgateway',
+            );
+
+        }else{
+            $payment_modes[] = array(
+                'title' => 'Online Payment',
+                'subtitle' => 'Transact online with netbanking, card and wallet',
+                'value' => 'paymentgateway',
+            );
+        }
+
 
 
         $emi = $this->utilities->displayEmi(array('amount'=>$data['data']['amount']));
@@ -4097,6 +4239,16 @@ class TransactionController extends \BaseController {
                 'title' => 'Pay at Studio',
                 'subtitle' => 'Transact via paying cash at the Center',
                 'value' => 'pay_at_vendor',
+            );
+        
+        }
+
+        if(isset($data['pay_later']) && $data['pay_later']){
+            
+            $payment_modes[] = array(
+                'title' => 'Pay Later',
+                'subtitle' => 'Pay full amount online, post session date',
+                'value' => 'pay_later',
             );
         
         }
@@ -5466,6 +5618,73 @@ class TransactionController extends \BaseController {
         return $ratecard_count;
 
     }
+
+    public function getCaptureData($trial_id){
+
+        $booktrial = Booktrial::find(intval($trial_id));
+
+        
+        // $order = Order::find($booktrial->order_id);
+        // return $booktrial->order_id;
+        return $this->capture(['order_id'=>$booktrial->order_id, 'wallet'=>false]);
+
+        // $data = [];
+        
+        // $fields = ['customer_name','customer_email','customer_phone','gender','finder_id','finder_name','finder_address','premium_session','service_name','service_id','service_duration','schedule_date','schedule_slot','amount','city_id','type','note_to_trainer','going_together','ratecard_id','customer_identity','customer_source','customer_location','env','customer_id','logged_in_customer_id','device_type','reg_id','gcm_reg_id','ratecard_remarks','duration','duration_type','duration_day','amount_finder','offer_id','start_date','end_date','membership_duration_type','start_time','end_time','batch_time','vertical_type','secondary_payment_mode','service_name_purchase','service_duration_purchase','status','source_of_membership','finder_city','finder_location','finder_vcc_email','finder_vcc_mobile','finder_poc_for_customer_name','finder_poc_for_customer_no','show_location_flag','share_customer_no','finder_lon','finder_lat','finder_branch','finder_category_id','finder_slug','finder_location_id','city_name','city_slug','category_name','category_slug','finder_flags','meal_contents'];
+
+        // foreach($fields as $field){
+        //     if(isset($order[$field])){
+
+        //         $data[$field] = $order[$field];
+        //     }
+        // }
+
+        // $data['session_payment'] = true;
+        // $data['order_id'] = $order->_id;
+        // // $data['manual_order'] = true;
+
+
+        // $query_params = [
+        //     'app_version'=>$this->app_version,
+        //     'device_type'=>$this->device_type
+        // ];
+
+        // $headers = [
+        //     'Device-Type'=>$this->device_type,
+        //     'App-Version'=>$this->app_version,
+        //     'Authorization'=>Request::header('Authorization')
+        // ];
+
+        // $reponse = $this->fitapi->getCaptureData($data, $headers, $query_params);
+
+        // if($reponse['status']!=200){
+        //     return Response::json(['status'=>500, 'message'=>'Please try again later'],200);
+        // }
+        // return Response::json($reponse['data'],200);
+
+    } 
     
+    public function getPayLaterData($order){
+        
+        $data = [];
+        
+        $fields = ['customer_name','customer_email','customer_phone','gender','finder_id','finder_name','finder_address','premium_session','service_name','service_id','service_duration','schedule_date','schedule_slot','amount','city_id','type','note_to_trainer','going_together','ratecard_id','customer_identity','customer_source','customer_location','env','customer_id','logged_in_customer_id','device_type','reg_id','gcm_reg_id','ratecard_remarks','duration','duration_type','duration_day','amount_finder','offer_id','start_date','end_date','membership_duration_type','start_time','end_time','batch_time','vertical_type','secondary_payment_mode','service_name_purchase','service_duration_purchase','status','source_of_membership','finder_city','finder_location','finder_vcc_email','finder_vcc_mobile','finder_poc_for_customer_name','finder_poc_for_customer_no','show_location_flag','share_customer_no','finder_lon','finder_lat','finder_branch','finder_category_id','finder_slug','finder_location_id','city_name','city_slug','category_name','category_slug','finder_flags','meal_contents'];
+
+        foreach($fields as $field){
+            if(isset($order[$field])){
+
+                $data[$field] = $order[$field];
+            }
+        }
+        $data['amount'] = $data['amount_finder'];
+        $data['session_payment'] = true;
+        $data['paymentmode_selected'] = 'paymentgateway';
+        $data['payment_mode'] =  'paymentgateway';
+        // $data['wallet'] =  false;
+        
+
+        return $data;
+
+    }
 
 }

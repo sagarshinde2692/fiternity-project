@@ -621,6 +621,20 @@ Class CustomerMailer extends Mailer {
 
 		return $this->common($label,$data,$message_data);
 	}
+	protected function bookTrialReminderBefore10Min($data,$delay){
+		
+		\Log::info("workout sessoin before 10 min sms");
+		// return "sent";
+		$label = 'BookTrialReminderBefore10Min-Customer';
+		
+		$message_data 	= array(
+				'user_email' => array($data['customer_email']),
+				'user_name' => $data['customer_name']
+		);
+		
+		return $this->common($label,$data,$message_data);
+		
+	}
 
 	protected function common($label,$data,$message_data,$delay = 0){
 

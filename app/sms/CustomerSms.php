@@ -1052,7 +1052,46 @@ Class CustomerSms extends VersionNextSms{
 		return $this->common($label,$to,$data);
 		
 	}
-
+	
+	
+	public function workoutSmsOnFitCodeEnter($data){
+		
+		Log::info("workoutSmsOnFitCodeEnter ");
+		Log::info($data);
+		// return;
+		$label = 'PayPerSession-OnFitCodeEnter';
+		
+		$to = $data['customer_phone'];
+		
+		return $this->common($label,$to,$data);
+		
+	}
+	
+	public function workoutSmsOnFitCodeEnterPayLater($data){
+		
+		Log::info("workoutSmsOnFitCodeEnterPayLater ");
+		Log::info($data);
+		// return;
+		$label = 'PayPerSession-OnFitCodeEnterPayLater';
+		
+		$to = $data['customer_phone'];
+		
+		return $this->common($label,$to,$data);
+		
+	}
+	
+	protected function bookTrialReminderBefore10Min($data,$delay){
+		
+		\Log::info("workout sessoin before 10 min sms");
+		// return "sent";
+		$label = 'BookTrialReminderBefore10Min-Customer';
+		
+		$to = $data['customer_phone'];
+		
+		return $this->common($label,$to,$data,$delay);
+		
+	}
+	
 	public function common($label,$to,$data,$delay = 0){
 
 		if(isset($data['source']) && $data['source'] == 'cleartrip'){
