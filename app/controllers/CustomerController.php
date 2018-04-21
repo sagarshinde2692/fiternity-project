@@ -3425,14 +3425,17 @@ class CustomerController extends \BaseController {
 			
 			if($_REQUEST['device_type'] == 'ios'){
 
-				$result['campaigns'][] = [
-					'image'=>'https://b.fitn.in/global/paypersession_branding/app_banners/App-pps%402x.png',
-					'link'=>'ftrnty://ftrnty.com/pps?fitness=all',
-					'title'=>'Pay Per Session',
-					'height'=>100,
-					'width'=>375,
-					'ratio'=>(float) number_format(100/375,2)
-				];
+				if($this->app_version > '4.4.3'){
+
+					$result['campaigns'][] = [
+						'image'=>'https://b.fitn.in/global/paypersession_branding/app_banners/App-pps%402x.png',
+						'link'=>'ftrnty://ftrnty.com/pps?fitness=all',
+						'title'=>'Pay Per Session',
+						'height'=>100,
+						'width'=>375,
+						'ratio'=>(float) number_format(100/375,2)
+					];
+				}
 
 				$result['campaigns'][] = [
 					'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/app-summer.jpg',
@@ -3495,14 +3498,16 @@ class CustomerController extends \BaseController {
 				// 	'ratio'=>(float) number_format(100/375,2)
 				// ];
 
-				$result['campaigns'][] = [
-					'image'=>'https://b.fitn.in/global/paypersession_branding/app_banners/App-pps%402x.png',
-					'link'=>'ftrnty://ftrnty.com/pps',
-					'title'=>'Pay Per Session',
-					'height'=>100,
-					'width'=>375,
-					'ratio'=>(float) number_format(100/375,2)
-				];
+				if($this->app_version > '4.4.3'){
+					$result['campaigns'][] = [
+						'image'=>'https://b.fitn.in/global/paypersession_branding/app_banners/App-pps%402x.png',
+						'link'=>'ftrnty://ftrnty.com/pps',
+						'title'=>'Pay Per Session',
+						'height'=>100,
+						'width'=>375,
+						'ratio'=>(float) number_format(100/375,2)
+					];
+				}
 
 				$result['campaigns'][] = [
 					'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/app-summer.jpg',
