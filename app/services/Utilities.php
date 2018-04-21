@@ -2359,7 +2359,7 @@ Class Utilities {
                 }
             }
 
-            if(isset($request['order_type']) && in_array($request['order_type'],['membership','memberships'])){
+            if(isset($request['order_type']) && in_array($request['order_type'],['membership','memberships','healthytiffinmembership'])){
 
                 $query->where(function($query) use($finder_id) {$query->orWhere('valid_finder_id','exists',false)->orWhere('valid_finder_id',$finder_id);});
 
