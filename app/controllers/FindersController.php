@@ -534,35 +534,38 @@ class FindersController extends \BaseController {
 					if($finderarr['flags']['top_selling'])		
 						 $finder['flags']['top_selling']=true;
 				    else unset($finder['flags']['top_selling']);
-				
-				if(isset($finderarr['flags']) && isset($finderarr['flags']['newly_launched'])&&isSet($finderarr['flags']['newly_launched_date'])){
-					if($finderarr['flags']['newly_launched']&&$finderarr['flags']['newly_launched_date'])
-					{
-							$launchedTime=strtotime($finderarr['flags']['newly_launched_date']);	
-							$date1=date_create(date("Y/m/d"));
-							$date2=date_create(date('Y/m/d',$finderarr['flags']['newly_launched_date']->sec));
-							$diff=date_diff($date1,$date2);
-							Log::info(" info diff ".print_r($diff,true));
-							if($diff->invert>0)
-							{
-								if($diff->days<=30)
-									$finder['flags']['newly_launched']='newly launched';
-								else unset($finder['flags']['newly_launched']);
-							}
-							else $finder['flags']['newly_launched']='coming soon';	
-							unset($finder['flags']['newly_launched_date']);
-					}
-					else 
-					{
+				    
+				if(isset($finderarr['flags']) && isset($finderarr['flags']['newly_launched']) && $finderarr['flags']['newly_launched'] != null && $finderarr['flags']['newly_launched'] != "" && isset($finderarr['flags']['newly_launched_date']) && $finderarr['flags']['newly_launched_date'] != null && $finderarr['flags']['newly_launched_date'] != ""){
+
+					if($finderarr['flags']['newly_launched']&&$finderarr['flags']['newly_launched_date']){
+
+						$launchedTime=strtotime($finderarr['flags']['newly_launched_date']);	
+						$date1=date_create(date("Y/m/d"));
+						$date2=date_create(date('Y/m/d',$finderarr['flags']['newly_launched_date']->sec));
+						$diff=date_diff($date1,$date2);
+						Log::info(" info diff ".print_r($diff,true));
+						if($diff->invert>0)
+						{
+							if($diff->days<=30)
+								$finder['flags']['newly_launched']='newly launched';
+						}
+						else $finder['flags']['newly_launched']='coming soon';	
+						unset($finder['flags']['newly_launched_date']);
+					}else{
 						unset($finder['flags']['newly_launched_date']);
 						unset($finder['flags']['newly_launched']);
 					}
-				}
-				else if(isset($finderarr['flags']) && isset($finderarr['flags']['newly_launched']))
-				{
+
+				}else if(isset($finderarr['flags'])){
+
+					if(isset($finderarr['flags']['newly_launched']) || $finderarr['flags']['newly_launched'] == null){
 						unset($finder['flags']['newly_launched']);
-						if(isSet($finderarr['flags']['newly_launched_date']))	
-							unset($finder['flags']['newly_launched_date']);
+					}
+
+					if(isset($finderarr['flags']['newly_launched_date']) || $finderarr['flags']['newly_launched_date'] == null){
+
+						unset($finder['flags']['newly_launched_date']);
+					}
 				}
 				
 				// end top selling and newly launched logic 
