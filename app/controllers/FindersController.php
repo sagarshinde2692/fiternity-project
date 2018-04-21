@@ -92,7 +92,7 @@ class FindersController extends \BaseController {
 
 	}
 
-	public function finderdetail($slug, $cache = true){
+	public function finderdetail($slug, $cache = false){
 
 		
 		$data   =  array();
@@ -530,12 +530,12 @@ class FindersController extends \BaseController {
 				// start top selling and newly launched logic 
 				
 				
-				if(isset($finderarr['flags']) && isset($finderarr['flags']['top_selling']))
+				if(!empty($finderarr['flags']) && !empty($finderarr['flags']['top_selling']))
 					if($finderarr['flags']['top_selling'])		
 						 $finder['flags']['top_selling']=true;
 				    else unset($finder['flags']['top_selling']);
 				    
-				if(isset($finderarr['flags']) && isset($finderarr['flags']['newly_launched']) && $finderarr['flags']['newly_launched'] != null && $finderarr['flags']['newly_launched'] != "" && isset($finderarr['flags']['newly_launched_date']) && $finderarr['flags']['newly_launched_date'] != null && $finderarr['flags']['newly_launched_date'] != ""){
+				if(!empty($finderarr['flags']) && !empty($finderarr['flags']['newly_launched']) && !empty($finderarr['flags']['newly_launched_date'])){
 
 					if($finderarr['flags']['newly_launched']&&$finderarr['flags']['newly_launched_date']){
 
@@ -556,16 +556,10 @@ class FindersController extends \BaseController {
 						unset($finder['flags']['newly_launched']);
 					}
 
-				}else if(isset($finderarr['flags'])){
-
-					// if(isset($finderarr['flags']['newly_launched']) || $finderarr['flags']['newly_launched'] == null){
-					// 	unset($finder['flags']['newly_launched']);
-					// }
-
-					// if(isset($finderarr['flags']['newly_launched_date']) || $finderarr['flags']['newly_launched_date'] == null){
-
-					// 	unset($finder['flags']['newly_launched_date']);
-					// }
+				}else if(!empty($finderarr['flags'])){
+					
+					unset($finder['flags']['newly_launched_date']);
+					unset($finder['flags']['newly_launched']);
 				}
 				
 				// end top selling and newly launched logic 
