@@ -2881,6 +2881,25 @@ if (!function_exists(('isNotInoperationalDate'))){
     }
 }
 
+if(!function_exists('payPerSession')){
+    function payPerSession($request){
+        $client = new Client( ['debug' => false, 'base_uri' => Config::get("app.url")."/"] );
+        $payload = [
+            "category"=>isset($request["category"]) &&  $request["category"] != "" ? [array("name" => $request["category"])] : [],
+            "location"=>$request["location"],
+            "keys" => $request["keys"]
+        ];
+        $url = Config::get('app.new_search_url')."/search/paypersession";
+        $response  =   json_decode($client->post($url,['json'=>$payload])->getBody()->getContents(),true);
+        $response["request"]["category_name"] = isset($response["request"]["category"]) && isset($response["request"]["category"][0]) && isset($response["request"]["category"][0]["name"]) && $response["request"]["category"][0]["name"] != "" ? ucwords(preg_replace('/-+/', ' ', $response["request"]["category"][0]["name"])) : "All fitness options";
+        $response["request"]["location_name"] = isset($response["request"]["location"]) && isset($response["request"]["location"]['city']) ? ucwords(preg_replace('/-+/', ' ', $response["request"]["location"]['city'])) : "";
+        $response["request"]["location_name"] = isset($response["request"]["location"]) && isset($response["request"]["location"]['regions']) && count($response["request"]["location"]['regions']) > 0 ? ucwords(preg_replace('/-+/', ' ', $response["request"]["location"]['regions'][0])) : $response["request"]["location_name"];
+        $response["request"]["location_name"] = isset($response["request"]["location"]) && isset($response["request"]["location"]["selected_region"]) ? ucwords(preg_replace('/-+/', ' ', $response["request"]["location"]["selected_region"])) : $response["request"]["location_name"];
+        return $response;
+    }
+}
+
+
 if (!function_exists(('geoLocationFinder'))){
 
     function geoLocationFinder($request){

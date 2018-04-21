@@ -1,5 +1,4 @@
 <?PHP
-
 /**
  * ControllerName : FindersController.
  * Maintains a list of functions used for FindersController.
@@ -201,9 +200,29 @@ class FindersController extends \BaseController {
 					}
 				}
 
+				$finderarr['reviews_booktrial_index'] = null;
+
 				if(!empty($finderarr['reviews'])){
 
+					$reviews_booktrial_index_flag = false;
+					$reviews_booktrial_index_count = 0;
+
 					foreach ($finderarr['reviews'] as $rev_key => $rev_value) {
+
+						if($rev_value['rating'] >= 4){
+
+							$reviews_booktrial_index_flag = true;
+							$reviews_booktrial_index_count += 1;
+
+						}else{
+
+							$reviews_booktrial_index_flag = false;
+							$reviews_booktrial_index_count = 0;
+						}
+
+						if($reviews_booktrial_index_count == 3 && $finderarr['reviews_booktrial_index'] == null){
+							$finderarr['reviews_booktrial_index'] = $rev_key;
+						}
 
 						if($rev_value['customer'] == null){
 
@@ -1135,6 +1154,11 @@ class FindersController extends \BaseController {
 		}else{
 			$response['trials_detials']              =      [];
 			$response['trials_booked_status']        =      false;
+		}
+		
+		if($this->utilities->hasPendingPayments()){
+			
+			$response['pending_payment'] = $this->utilities->hasPendingPayments();
 		}
 		// if($response['finder']['offer_icon'] == ""){
 		// 	$response['finder']['offer_icon']        =        "https://b.fitn.in/iconsv1/womens-day/womens-day-mobile-banner.svg";
@@ -3730,7 +3754,7 @@ class FindersController extends \BaseController {
 						$data['call_for_action_button']       =      "";
 					}
 
-					$data['finder']['pay_per_session']        =   false;
+					$data['finder']['pay_per_session']        =   true;
 					$pay_per_session_abandunt_catyegory             =   [41,42,45,25,46,10,26,40];
 					$service_count                                  =   Service::active()->where('finder_id',$finder['_id'])->count();
 
@@ -3904,8 +3928,27 @@ class FindersController extends \BaseController {
 						}
 					}
 
-					if(!$pay_per_session){
-						$finderData['finder']['pay_per_session'] = false;
+					// if($pay_per_session){
+					// 	$finderData['finder']['pay_per_session'] = true;
+					// }
+
+					if(isset($finderData['finder']['pay_per_session']) && $finderData['finder']['pay_per_session']){
+
+						$cheapest_price = $this->getCheapestWorkoutSessionApp($finderData['finder']['services_workout']);
+						
+						if($cheapest_price>0){
+
+							$finderData['finder']['pps_content'] = [
+								'header1'=>	'PAY - PER - SESSION',
+								'header2'=>	'Available here',
+								'header3'=>	"Why pay for 30 days when you use for 6 days?\nPay Per Session at ".$finderData['finder']['title']." by just paying Rs. ".$cheapest_price,
+								'image'=>''
+							];
+
+						}else{
+
+							$finderData['finder']['pay_per_session'] = false;
+						}
 					}
 
 					if(!in_array("false", $disable_button)){
@@ -3979,8 +4022,11 @@ class FindersController extends \BaseController {
 				unset($finderData['finder']['lat']);
 				unset($finderData['finder']['lon']);
 			}
-
-					
+			
+			if($this->utilities->hasPendingPayments()){
+				
+				$finderData['pending_payment'] = $this->utilities->hasPendingPayments();
+			}		
 
 		}else{
 
@@ -4826,6 +4872,23 @@ class FindersController extends \BaseController {
 		return $price;
 	}
 
+	function getCheapestWorkoutSessionApp($services){
+
+		$price = 0;
+
+		foreach($services as $service){
+			if(isset($service['ratecard'])){
+				foreach($service['ratecard'] as $ratecard){
+					if($ratecard['type'] == 'workout session' && ($price == 0 || $ratecard['price'] < $price)){
+						$price = $ratecard['price'];
+					}
+				}
+			}
+		}
+
+		return $price;
+	}
+
 	function getTermsAndCondition(){
 
 		$tnc = [
@@ -4894,6 +4957,10 @@ class FindersController extends \BaseController {
 					$tnc['description'] .= "<br/><br/><b> - </b>  I understand no refunds or transfer / extension of services will be issued for unused classes, sessions and services.";
 					$tnc['description'] .= "<br/><br/><b> - </b>  I have read and understand the advice given above.";
 					$tnc['description'] .= "<br/><br/><b> - </b>  I assume the risk of and responsibility of personal property loss or damage.";
+
+					if(isset($ratecard) && isset($ratecard['type']) && in_array($ratecard['type'],['workout session'])){
+						$tnc['description'] .= "<br/><br/><b> - </b>  Maximum discount for First free session is Rs 299.";
+					}
 
 				}
 

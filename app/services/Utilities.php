@@ -975,8 +975,8 @@ Class Utilities {
 
 
     public function verifyOrder($data,$order){
-        if((isset($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin'])) || $order->pg_type == "PAYTM" || $order->pg_type == "AMAZON" || (isset($order['cod_otp_verified']) && $order['cod_otp_verified'])){
-            if(($order->pg_type == "PAYTM" || $order->pg_type == "AMAZON") && !(isset($data["order_success_flag"]))){
+        if((isset($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin'])) || $order->pg_type == "PAYTM" || $order->pg_type == "AMAZON" || (isset($order['cod_otp_verified']) && $order['cod_otp_verified']) || (isset($order['pay_later']) && $order['pay_later'] && !(isset($order['session_payment']) && $order['session_payment']))){
+            if(($order->pg_type == "PAYTM"|| $order->pg_type == "AMAZON") && !(isset($data["order_success_flag"]))){
                 $hashreverse = getpayTMhash($order);
                 if($data["verify_hash"] == $hashreverse['reverse_hash']){
                     $hash_verified = true;
@@ -984,7 +984,7 @@ Class Utilities {
                     $hash_verified = false;
                 }
             }
-            if((isset($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin'])) || (isset($order['cod_otp_verified']) && $order['cod_otp_verified'])){
+            if((isset($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin'])) || (isset($order['cod_otp_verified']) && $order['cod_otp_verified']) || (isset($order['pay_later']) && $order['pay_later'] && !(isset($order['session_payment']) && $order['session_payment']))){
                 $hash_verified = true;
             }
         }else{
@@ -2872,6 +2872,87 @@ Class Utilities {
 
     }
 
+    public function createWorkoutSession($order_id){
+        
+        $order = \Order::find($order_id);
+
+        $data = [];
+        
+        $data['status'] = 'success';
+        $data['order_success_flag'] = 'admin';
+        $data['order_id'] = (int)$order['_id'];
+        $data['customer_name'] = $order['customer_name'];
+        $data['customer_email'] = $order['customer_email'];
+        $data['customer_phone'] = $order['customer_phone'];
+        $data['finder_id'] = (int)$order['finder_id'];
+        $data['service_name'] = $order['service_name'];
+        $data['type'] = $order['type'];
+        $data['premium_session'] = true;
+        $data['payment_done'] = false;
+
+        if(isset($order['start_date']) && $order['start_date'] != ""){
+            $data['schedule_date'] = date('d-m-Y',strtotime($order['start_date']));
+        }
+
+        if(isset($order['start_time']) && $order['start_time'] != "" && isset($order['end_time']) && $order['end_time'] != ""){
+            $data['schedule_slot'] = $order['start_time']."-".$order['end_time'];
+        }
+
+        if(isset($order['schedule_date']) && $order['schedule_date'] != ""){
+            $data['schedule_date'] = $order['schedule_date'];
+        }
+
+        if(isset($order['schedule_slot']) && $order['schedule_slot'] != ""){
+            $data['schedule_slot'] = $order['schedule_slot'];
+        }
+
+        $workout_session_fields = ['customers_list', 'pay_later'];
+        
+        foreach($workout_session_fields as $field){
+            if(isset($order[$field])){
+                $data[$field] = $order[$field];
+            }
+        }
+
+        $fitapi = new Fitapi();
+
+        $storeBooktrial = $fitapi->storeBooktrial($data);
+
+        if($storeBooktrial['status'] == 200){
+
+            return Response::json($storeBooktrial['data'],200);
+
+        }else{
+
+            return Response::json(['status' => 400, "message" => "Internal Error Please Report"],400);
+        }
+    }
+
+    public function hasPendingPayments(){
+
+        if(Request::header('Authorization')){
+			$decoded                            =       decode_customer_token();
+			$customer_email                     =       $decoded->customer->email;
+			$customer_phone                     =       $decoded->customer->contact_no;
+
+            $pending_payment = \Booktrial::where('type', 'workout-session')->where(function ($query) use($customer_email) { $query->orWhere('customer_email', $customer_email);})->where('going_status_txt','!=','cancel')->where('payment_done', false)->where(function($query){return $query->orWhere('post_trial_status', '!=', 'no show')->orWhere('post_trial_verified_status','!=', 'yes');})->first(['_id', 'amount']);
+
+			if(count($pending_payment) > 0){
+				return [
+                    'header'=>'Pending Payment',
+                    'text'=>'Please complete your pending payment',
+                    'trial_id'=>$pending_payment['_id'],
+                    'amount'=>$pending_payment['amount']
+                ];
+			}else{
+				return false;
+			}
+		}else{
+			return false;
+		}
+
+    }
+
     public function addToGroup($data){
 
         Log::info("inside addToGroup");
@@ -3545,6 +3626,105 @@ Class Utilities {
         $order->update();
     }
 
+    public function getWorkoutSessionLevel($customer_id){
+
+        $trials_attended = \Booktrial::where('customer_id', $customer_id)->where('post_trial_status', 'attended')->count();
+        
+        $streak_data = Config::get('app.streak_data');
+        $maxed_out = false;
+        $current_level = $this->getLevelByTrials($trials_attended);
+        
+        if($current_level['level']  == count($streak_data)){
+        
+            $next_level = [];
+            $maxed_out = true;
+        
+        }else{
+        
+            $next_level =  $streak_data[$current_level['level']];
+        
+        }
+        
+        return [
+            'current_level'=>$current_level,
+            'next_level'=>$next_level,
+            'trials_attended'=>$trials_attended,
+            'maxed_out'=>$maxed_out,
+            'next_session'=>$this->getLevelByTrials($trials_attended+1)
+        ];
+
+    }
+
+    public function getLevelByTrials($trials_attended){
+
+        $streak_data = Config::get('app.streak_data');
+        $current_level = $streak_data[count($streak_data) - 1];
+        
+        foreach($streak_data as $key => $value){
+            if($trials_attended < $value['number']){
+                $current_level = $value;
+                break;
+            }
+        }
+
+        return $current_level;
+
+    }
+
+    public function getWorkoutSessionFitcash($booktrialData){
+        Log::info($this->getWorkoutSessionLevel($booktrialData['customer_id']));
+        $fitcash =  $this->getWorkoutSessionLevel($booktrialData['customer_id'])['current_level']['cashback'];
+        return $fitcash;
+        
+    }
+
+    public function getStreakImages($current_level){
+        $streak = [];
+        $streak_data = Config::get('app.streak_data');
+        $unlock_url = Config::get('app.paypersession_level_icon_base_url');
+        $lock_url = Config::get('app.paypersession_lock_icon');
+        
+        foreach($streak_data as $level){
+            if($current_level >= $level['level']){
+                array_push($streak, ['header'=> 'Level '.$level['level'], 'url'=>$unlock_url.$level['level'].'.png', 'text'=>$level['cashback'].'%', 'unlocked'=>true, 'unlock_color'=>$level['unlock_color']]);
+            }else{
+                array_push($streak, ['header'=> 'Level '.$level['level'], 'url'=>$lock_url, 'text'=>$level['cashback'].'%', 'unlocked'=>false, 'unlock_color'=>'#b6b6b6']);
+            }
+        }
+        return $streak;
+    }
+
+    public function deleteSelectCommunication($data){
+
+        $transaction = $data['transaction'];
+        $labels = $data['labels'];
+        
+        $unset_keys = [];
+        $queue_id = [];
+        if(isset($transaction['send_communication'])){
+
+            foreach ($labels as $value) {
+                
+                if((isset($transaction['send_communication'][$value]))){
+                    try {
+                        $queue_id[] = $transaction['send_communication'][$value];
+                        $unset_keys[] = 'send_communication.'.$value;
+                    }catch(\Exception $exception){
+                        Log::error($exception);
+                    }
+                }
+            }
+            Log::info("unsetting communication");
+            Log::info($queue_id);
+            if(!empty($queue_id)){
+    
+                $transaction->unset($unset_keys);
+                $sidekiq = new Sidekiq();
+                $sidekiq->delete($queue_id);
+    
+            }
+        }
+    }
     public function saavn($order){
 
         $saavn = \Saavn::active()->where('used_date','exists',false)->orderBy('_id','asc')->first();

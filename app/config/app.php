@@ -13,47 +13,56 @@ return array(
 	// 'vendor_communication' => false,
 	// 'env' => 'stage',
 	// 'debug' => TRUE,
+	// 'metropolis' => 'http://localhost:3030',
 	// 'amazonpay_isSandbox' => 'true',
 	// 'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
+	// 'website_deeplink' =>'https://ftrnty.com',
 
 	//stage
-// 	'new_search_url' =>'http://apistage.fitn.in:5000/',
-// 	'url' => 'http://apistage.fitn.in',
-// 	'admin_url' => 'http://adminstage.fitn.in',
-// 	'website' => 'http://apistage.fitn.in:1122',
-// 	'sidekiq_url' => 'http://kick.fitn.in/',
-// 	'queue' => 'booktrial',
-// 	'vendor_communication' => false,
-// 	'env' => 'stage',
-// 	'debug' => TRUE,
-// 	'amazonpay_isSandbox' => 'true',
-// 	'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
+	'new_search_url' =>'http://apistage.fitn.in:5000/',
+	'url' => 'http://apistage.fitn.in',
+	'admin_url' => 'http://adminstage.fitn.in',
+	'website' => 'http://apistage.fitn.in:8902',
+	'sidekiq_url' => 'http://kick.fitn.in/',
+	'queue' => 'booktrial',
+	'vendor_communication' => false,
+	'env' => 'stage',
+	'debug' => TRUE,
+	'metropolis' => 'http://apisatge.fitn.in:8989',
+	'amazonpay_isSandbox' => 'true',
+	'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
+	'website_deeplink' =>'https://ftrnty.com',
 
 	//beta
 	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
 	// 'url' => 'http://beta.fitn.in', 
 	// 'admin_url' => 'http://adminstage.fitn.in', 
-	// 'website' => 'http://apistage.fitn.in:2233', 
+	// 'website' => 'http://apistage.fitn.in:1122', 
 	// 'sidekiq_url' => 'http://kick.fitn.in/', 
 	// 'queue' => 'beta',
 	// 'vendor_communication' => false,
 	// 'env' => 'stage',
 	// 'debug' => TRUE,
+	// 'metropolis' => 'http://apisatge.fitn.in:8989',
 	// 'amazonpay_isSandbox' => 'true',
 	// 'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
+	// 'website_deeplink' =>'https://ftrnty.com',
 
 	//live
-	'new_search_url' =>'http://c1.fitternity.com/',
-	'url' => 'https://a1.fitternity.com',
-	'admin_url' => 'https://fitn.in',
-	'website' => 'https://www.fitternity.com',
-	'sidekiq_url' => 'http://nw.fitn.in/',
-	'queue' => 'booktrial',
-	'vendor_communication' => true,
-	'env' => 'production',
-	'debug' => FALSE,
-	'amazonpay_isSandbox' => 'false',
-	'reliance_url' =>'https://rhealthcircle.reliancegeneral.co.in/fitternity/callback',
+	// 'new_search_url' =>'http://c1.fitternity.com/',
+	// 'url' => 'https://a1.fitternity.com',
+	// 'admin_url' => 'https://fitn.in',
+	// 'website' => 'https://www.fitternity.com',
+	// 'sidekiq_url' => 'http://nw.fitn.in/',
+	// 'queue' => 'booktrial',
+	// 'vendor_communication' => true,
+	// 'env' => 'production',
+	// 'debug' => FALSE,
+	// 'metropolis' => 'http://c1.fitternity.com',
+	// 'amazonpay_isSandbox' => 'false',
+	// 'reliance_url' =>'https://rhealthcircle.reliancegeneral.co.in/fitternity/callback',
+	// 'website_deeplink' =>'https://ftrnty.com',
+
 
 	'download_app_link' => 'https://go.onelink.me/I0CO?pid=techfitsms',//https://www.fitternity.com/downloadapp?source=fittech',
 
@@ -272,21 +281,21 @@ return array(
 	//will be implemented everywhere in future when other api will be changed
 	/*************************************************************************/
 	//Production
-	'es' =>array(
-		'url'		=> 			'ESAdmin:fitternity2020@54.169.120.141:8050',
-		'host'		=> 			'ESAdmin:fitternity2020@54.169.120.141',
-		'port'		=>			8050,
-		'default_index' => 	'fitternity',
-		'default_type' 	=> 	'finder',
-	),
-	//stage
 	// 'es' =>array(
-	//  	'url'		=> 			'139.59.16.74:1243',
-	//  	'host'		=> 			'139.59.16.74',
-	//  	'port'		=>			1243,
-	//  	'default_index' => 	'fitternity',
-	//  	'default_type' 	=> 	'finder',
+	// 	'url'		=> 			'ESAdmin:fitternity2020@54.169.120.141:8050',
+	// 	'host'		=> 			'ESAdmin:fitternity2020@54.169.120.141',
+	// 	'port'		=>			8050,
+	// 	'default_index' => 	'fitternity',
+	// 	'default_type' 	=> 	'finder',
 	// ),
+	//stage
+	'es' =>array(
+	 	'url'		=> 			'139.59.16.74:1243',
+	 	'host'		=> 			'139.59.16.74',
+	 	'port'		=>			1243,
+	 	'default_index' => 	'fitternity',
+	 	'default_type' 	=> 	'finder',
+	),
 	//local
 	// 'es' =>array(
 	// 	'url'		=> 			'localhost:9200',
@@ -699,7 +708,7 @@ return array(
 
 	'fitternity_personal_trainers' => 'Personal Training at Home by Fitternity',
 
-	'delay_methods' =>["bookTrialReminderAfter2Hour","bookTrialReminderAfter2HourRegular","bookTrialReminderBefore12Hour","bookTrialReminderBefore1Hour","bookTrialReminderBefore20Min","bookTrialReminderBefore3Hour","bookTrialReminderBefore6Hour", "manualBookTrial", "reminderToConfirmManualTrial", "manual2ndBookTrial", "orderRenewalMissedcall", "sendPaymentLinkAfter3Days", "sendPaymentLinkAfter7Days", "sendPaymentLinkAfter45Days", "purchaseAfter10Days", "purchaseAfter30Days", "postTrialStatusUpdate"],
+	'delay_methods' =>["bookTrialReminderAfter2HourRegular","bookTrialReminderBefore12Hour","bookTrialReminderBefore1Hour","bookTrialReminderBefore20Min","bookTrialReminderBefore6Hour", "manualBookTrial", "reminderToConfirmManualTrial", "manual2ndBookTrial", "orderRenewalMissedcall", "sendPaymentLinkAfter3Days", "sendPaymentLinkAfter7Days", "sendPaymentLinkAfter45Days", "purchaseAfter10Days", "purchaseAfter30Days", "postTrialStatusUpdate", "bookTrialReminderAfter2Hour", "bookTrialReminderBefore10Min", "bookTrialReminderBefore3Hour", 'bookTrialReminderBefore20Min'],
 
 
 	'my_fitness_party_slug' => ['mfp','mfp-mumbai','mfp-delhi'],
@@ -719,8 +728,45 @@ return array(
 
 	'diet_reward_excluded_vendors' => [11230],
 
+	'service_gallery_path' => 'http://b.fitn.in/s/g/full/',
+
+	'facility_image_base_url'=> 'http://b.fitn.in/facility/',
+	
 	'gst_on_cos_percentage'=>18,
 
 	'power_world_gym_vendor_ids' => [],
+
+	'streak_data'=>[		
+		[
+			'number'=>3,
+			'cashback'=>10,
+			'level'=>1,
+			'unlock_icon'=>'https://b.fitn.in/paypersession/level-1.png',
+			'unlock_color'=>'#d34b4b'
+		],
+		[
+			'number'=>5,
+			'cashback'=>15,
+			'level'=>2,
+			'unlock_icon'=>'https://b.fitn.in/paypersession/level-2.png',
+			'unlock_color'=>'#f7a81e'
+		],
+		[
+			'number'=>10,
+			'cashback'=>20,
+			'level'=>3,
+			'unlock_icon'=>'https://b.fitn.in/paypersession/level-3.png',
+			'unlock_color'=>'#4b67d3'
+		],
+		[
+			'number'=>20,
+			'cashback'=>30,
+			'level'=>4,
+			'unlock_icon'=>'https://b.fitn.in/paypersession/level-4.png',
+			'unlock_color'=>'#16b765'
+		],
+	],
+	'paypersession_level_icon_base_url'=>'https://b.fitn.in/paypersession/level-',
+	'paypersession_lock_icon'=>'https://b.fitn.in/paypersession/lock-icon.png'
 
 );

@@ -221,6 +221,7 @@ Route::get('reviews/{customerid}/{from?}/{size?}',  array('as' => 'customer.revi
 Route::get('orderhistory/{customeremail}/{from?}/{size?}',  array('as' => 'customer.orderhistory','uses' => 'CustomerController@orderHistory'));
 Route::get('bookmarks/{customerid}',  array('as' => 'customer.bookmarks','uses' => 'CustomerController@getBookmarks'));
 Route::get('updatebookmarks/{customerid}/{finderid}/{remove?}',  array('as' => 'customer.updatebookmarks','uses' => 'CustomerController@updateBookmarks'));
+Route::get('updateservicebookmarks/{customerid}/{serviceid}/{remove?}',  array('as' => 'customer.updateservicebookmarks','uses' => 'CustomerController@updateServiceBookmarks'));
 Route::get('customerdetail/{customerid}',  array('as' => 'customer.customerdetail','uses' => 'CustomerController@customerDetail'));
 Route::get('foryou/{customeremail}/{city_id}/{lat?}/{lon?}',  array('as' => 'customer.foryou','uses' => 'CustomerController@foryou'));
 
@@ -506,6 +507,7 @@ Route::get('service/getservicewithworkoutsession/{finder_id}', array('as' => 'se
 Route::get('service/getworkoutsessionschedulebyservice/{service_id}/{date?}', array('as' => 'service.getworkoutsessionschedulebyservice','uses' => 'ServiceController@getWorkoutSessionScheduleByService'));
 Route::get('getservicesbytype/{finder_id}/{type}', array('as' => 'service.getservicesbytype','uses' => 'ServiceController@getServicesByType'));
 Route::get('getschedulebyfinderservice', array('as' => 'service.getschedulebyfinderservice','uses' => 'ServiceController@getScheduleByFinderService'));
+Route::post('timepreference', array('as' => 'service.timepreference','uses' => 'ServiceController@timepreference'));
 
 
 
@@ -1124,6 +1126,9 @@ Route::get('finalMfpData', 'DebugController@finalMfpData');
 
 Route::get('rewardReminderJan','DebugController@rewardReminderJan');
 
+Route::get('servicedetailv1/{finder_slug}/{service_slug}', 'ServiceController@serviceDetailv1');
+
+Route::get('workoutservicecategorys/{city?}', array('as' => 'service.workoutservicecategorys','uses' => 'ServiceController@workoutServiceCategorys'));
 Route::post('sharegroupid', 'CustomerController@shareGroupId');
 
 Route::get('markRoutedOrders', 'DebugController@markRoutedOrders');
@@ -1158,6 +1163,12 @@ Route::get('brandlist','BrandsController@brandlist');
 
 Route::get('getServiceData', 'TransactionController@getServiceData');
 
+Route::get('sessionstatuscapture/{status}/{booktrial_id}', 'SchedulebooktrialsController@sessionStatusCapture');
+
+Route::get('notificationdatabytrialid/{booktrial_id}/{label}', 'CustomerController@notificationDataByTrialId');
+Route::get('getcapturedata/{trial_id}', 'TransactionController@getCaptureData');
+Route::get('scheduleManualCommunication/{booktrial_id}', 'SchedulebooktrialsController@scheduleManualCommunication');
+Route::get('streakscreendata', 'CustomerController@streakScreenData');
 Route::get('bulkInsertSaavn','DebugController@bulkInsertSaavn');
 
 Route::get('deleteCommunicationSidekiq','DebugController@deleteCommunicationSidekiq');
