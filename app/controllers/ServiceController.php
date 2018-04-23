@@ -1753,9 +1753,9 @@ class ServiceController extends \BaseController {
 
 		$data['bookmark'] = false;
 		if($service_details['servicecategory_id'] != 65){
-			$data['share_message_email'] = $data['share_message_text'] = "Check-out ".$service_details['title']." in ".$service_details['location']['name']." on Fitternity, India's biggest fitness discovery and booking platform. Pay-per-session available here - https://www.fitternity.com/".$finder['slug'] . " Download app to book -". Config::get('app.download_app_link');
+			$data['share_message_email'] = $data['share_message_text'] = "Check-out ".$service_details['title']." in ".$service_details['location']['name']." on Fitternity, India's biggest fitness discovery and booking platform. Pay-per-session available here - https://www.fitternity.com/".$finder_slug . " Download app to book -". Config::get('app.download_app_link');
 		}else{
-			$data['share_message_email'] = $data['share_message_text'] = "Check-out ".$service_details['finder_name']." in ".$service_details['location']['name']." on Fitternity, India's biggest fitness discovery and booking platform. Pay-per-session available here - https://www.fitternity.com/".$finder['slug'] . " Download app to book -". Config::get('app.download_app_link');
+			$data['share_message_email'] = $data['share_message_text'] = "Check-out ".$service_details['finder_name']." in ".$service_details['location']['name']." on Fitternity, India's biggest fitness discovery and booking platform. Pay-per-session available here - https://www.fitternity.com/".$finder_slug . " Download app to book -". Config::get('app.download_app_link');
 		}
 		
 		if($this->utilities->hasPendingPayments()){
