@@ -6681,10 +6681,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         $booktrial->payment_done = true;
         
-        $booktrial->pay_later = true;
-
-
-        if(time() < strtotime($booktrial->schedule_date_time) && !isset($booktrial->post_trial_status_updated_by_fitcode)){
+        if(time() > strtotime($booktrial->schedule_date_time) ){
 
             $booktrial->post_trial_payment_fitcash = true;
 
@@ -6709,26 +6706,26 @@ class SchedulebooktrialsController extends \BaseController {
 
         $booktrial->update();
 
-        $pay_later = Paylater::where('trial_ids', $booktrial_id)->first();
+        $pay_later = Paylater::where('customer_id', $booktrial->customer_id)->first();
 
         if($pay_later){
             Log::info("Updating pay later entry");
-            $trial_ids = $pay_later->trial_ids;
+            // $trial_ids = $pay_later->trial_ids;
     
-            if(count($trial_ids) == 1){
+            // if(count($trial_ids) == 1){
                 
                 Paylater::destroy($pay_later->_id);
             
-            }else{
+            // }else{
     
-                $key = array_search($booktrial_id, $pay_later);
+            //     $key = array_search($booktrial_id, $pay_later);
         
-                unset($trial_ids[$key]);
+            //     unset($trial_ids[$key]);
         
-                $pay_later->trial_ids = $trial_ids;
+            //     $pay_later->trial_ids = $trial_ids;
         
-                $pay_later->update();
-            }
+            //     $pay_later->update();
+            // }
         }
 
         // $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
