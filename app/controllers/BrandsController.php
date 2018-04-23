@@ -56,7 +56,7 @@ class BrandsController extends \BaseController {
                     $data["stripe_data"] = [
                         'text'=> $brand['stripe_text'],
                         'text_color'=> '#ffffff',
-                        'background'=> '-webkit-linear-gradient(left, #71b2c7 0%, #71b2c7 100%)',
+                        'background'=> '-webkit-linear-gradient(left, #1392b3 0%, #20b690 100%)',
                         'background-color'=> ''
                     ];
                     unset($brand['stripe_text']);

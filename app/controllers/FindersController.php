@@ -1114,7 +1114,7 @@ class FindersController extends \BaseController {
 					$response['vendor_stripe_data']	=	[
 						'text'=> $response['finder']['stripe_text'],
 						'text_color'=> '#ffffff',
-						'background'=> '-webkit-linear-gradient(left, #FE7E87 0%, #FA5295 100%)',
+						'background'=> '-webkit-linear-gradient(left, #1392b3 0%, #20b690 100%)',
 						'background-color'=> ''
 					];
 				}
