@@ -1995,6 +1995,24 @@ class MigrationReverseController extends \BaseController {
         return Response::json($response,$response['status']);
     }
 
+    public function workoutRatecardReverseMigrate(){
+
+        ini_set('memory_limit','2048M');
+	    ini_set('max_execution_time', 30000);
+        $ratecard_ids = Ratecard::where('type', 'workout session')->lists('_id');
+        // return $ratecard_ids;
+        $t1 = time();
+        foreach($ratecard_ids as $key => $id){
+            Log::info($key);
+            if($key % 100 == 0){
+                Log::info("+++++++++++++++++++++++++++++++++++".$key);
+                Log::info(time()-$t1);
+                $t1 = time();
+            }
+            Log::info($this->ratecard($id));
+        }
+		
+	}
 
 
 }

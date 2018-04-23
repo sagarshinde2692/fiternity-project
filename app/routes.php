@@ -1175,5 +1175,6 @@ Route::get('deleteCommunicationSidekiq','DebugController@deleteCommunicationSide
 
 Route::get('updateSubscriptionCode','DebugController@updateSubscriptionCode');
 Route::get('addvendorstripedata','DebugController@addvendorstripedata');
+Route::get('workoutRatecardReverseMigrate','MigrationReverseController@workoutRatecardReverseMigrate');
 
 
