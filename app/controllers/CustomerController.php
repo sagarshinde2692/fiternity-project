@@ -3906,8 +3906,8 @@ class CustomerController extends \BaseController {
 		$force_update_android = false;
 		$force_update_ios = false;
 		
-		$api['city'] = 1476350961;
-		$api['home'] = 1476350961;
+		$api['city'] = 1524465508;
+		$api['home'] = 1524465508;
 
 		if($device_type == "android"){
 
