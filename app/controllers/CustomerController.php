@@ -3902,7 +3902,7 @@ class CustomerController extends \BaseController {
 		$device_type = Request::header('Device-Type');
 
 		$current_version_android = 3.5;
-		$current_version_ios = 2.3;
+		$current_version_ios = 4.5;
 		$force_update_android = false;
 		$force_update_ios = false;
 		
