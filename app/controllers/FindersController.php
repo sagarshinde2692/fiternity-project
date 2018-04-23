@@ -1109,7 +1109,15 @@ class FindersController extends \BaseController {
                 //         'background-color'=> ''
                 //     ];
 				// }
-				
+
+				if(isset($response['finder']['stripe_text'])){
+					$response['vendor_stripe_data']	=	[
+						'text'=> $response['finder']['stripe_text'],
+						'text_color'=> '#ffffff',
+						'background'=> '-webkit-linear-gradient(left, #FE7E87 0%, #FA5295 100%)',
+						'background-color'=> ''
+					];
+				}
 				if(isset($finder['commercial_type']) && $finder['commercial_type'] == 0){
 
 					unset($response['finder']['payment_options']);

@@ -7095,6 +7095,97 @@ public function yes($msg){
 
 	}
 
+	public function addvendorstripedata(){
+		$data = [
+			[
+				"text" => "15 months membership at flat Rs.7,125 + Free Fitness Kit",
+				"finder_id" => 1581
+			],
+			
+			[
+				"text" => "15 months membership at flat Rs.7,999 + Free Fitness Kit",
+				"finder_id" => 2236
+			],
+			
+			[
+				"text" => "15 months membership at flat Rs.9,250 + Free Fitness Kit",
+				"finder_id" => 1607
+			],
+			
+			[
+				"text" => "15 months membership at flat Rs.7,999 + Free Fitness Kit",
+				"finder_id" => 1580
+			],
+			
+			[
+				"text" => "15 months membership at flat Rs.7,999 + Free Fitness Kit",
+				"finder_id" => 2235
+			],
+			
+			[
+				"text" => "15 months membership at flat Rs.10,175 + Free Fitness Kit",
+				"finder_id" => 1602
+			],
+			
+			[
+				"text" => "15 months membership at flat Rs.13,000+ Free Fitness Kit",
+				"finder_id" => 1583
+			],
+			
+			[
+				"text" => "15 months membership at flat Rs.7,999 + Free Fitness Kit",
+				"finder_id" => 1605
+			],
+			
+			[
+				"text" => "15 months membership at flat Rs.11,563 + Free Fitness Kit",
+				"finder_id" => 1584
+			],
+			
+			[
+				"text" => "15 months membership at flat Rs.16,188 + Free Fitness Kit",
+				"finder_id" => 1604
+			],
+			
+			[
+				"text" => "15 months membership at flat Rs.7,999 + Free Fitness Kit",
+				"finder_id" => 6893
+			],
+			
+			[
+				"text" => "1 Year membership at flat Rs.9,999 + Free Fitness Kit",
+				"finder_id" => 1606
+			],
+			
+			[
+				"text" => "15 months membership at flat Rs.12,488 + Free Fitness Kit",
+				"finder_id" => 1582
+			],
+			
+			[
+				"text" => "6 months membership at flat Rs.31,000 + Free Fitness Kit",
+				"finder_id" => 7064
+			],
+			[
+				"text" => "15 months membership starting at Rs.7,999 + Free Fitness Kit",
+				"brand_id" => 96
+			]
+			];
+			$results = [];
+			foreach($data as $value){
+				if(isset($value['finder_id'])){
+					$result = Finder::where('_id', $value['finder_id'])->update(['stripe_text'=>$value['text']]);
+				}else if(isset($value['brand_id'])){
+					$result = Brand::where('_id', $value['brand_id'])->update(['stripe_text'=>$value['text']]);
+				}
+				Log::info($result);
+				array_push($results, $result);
+			}
+
+			return $results;
+
+	}
+
     
 }
 

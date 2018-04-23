@@ -1174,5 +1174,6 @@ Route::get('bulkInsertSaavn','DebugController@bulkInsertSaavn');
 Route::get('deleteCommunicationSidekiq','DebugController@deleteCommunicationSidekiq');
 
 Route::get('updateSubscriptionCode','DebugController@updateSubscriptionCode');
+Route::get('addvendorstripedata','DebugController@addvendorstripedata');
 
 
