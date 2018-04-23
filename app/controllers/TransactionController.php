@@ -816,6 +816,8 @@ class TransactionController extends \BaseController {
 
             $order->pay_later = true;
             
+            // $order->status = "4";
+            
             $order->update();
             
             $this->utilities->createWorkoutSession($order['_id']);
