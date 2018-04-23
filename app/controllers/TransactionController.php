@@ -816,7 +816,7 @@ class TransactionController extends \BaseController {
 
             $order->pay_later = true;
             
-            $order->status = "4";
+            // $order->status = "4";
             
             $order->update();
             

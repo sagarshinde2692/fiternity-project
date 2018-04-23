@@ -6563,6 +6563,9 @@ class SchedulebooktrialsController extends \BaseController {
             }
 
             $booktrial->post_trial_status = 'attended';
+
+            $this->updateOrderStatus($booktrial);
+            
             $booktrial->post_trial_initail_status = 'interested';
             $booktrial->post_trial_status_updated_by_kiosk = time();
             $booktrial->post_trial_status_date = time();
@@ -6682,6 +6685,8 @@ class SchedulebooktrialsController extends \BaseController {
         $booktrial->payment_done = true;
         
         if(time() > strtotime($booktrial->schedule_date_time) ){
+
+            $booktrial->post_trial_status = 'attended';
 
             $booktrial->post_trial_payment_fitcash = true;
 
@@ -6830,6 +6835,9 @@ class SchedulebooktrialsController extends \BaseController {
             }
 
             $booktrial->post_trial_status = 'attended';
+
+            $this->updateOrderStatus($booktrial);
+            
             $booktrial->post_trial_initail_status = 'interested';
             $booktrial->post_trial_status_updated_by_fitcode = time();
             $booktrial->post_trial_status_date = time();
@@ -6873,6 +6881,9 @@ class SchedulebooktrialsController extends \BaseController {
         if(isset($booktrial)){
 
             $booktrial->post_trial_status = 'attended';
+            
+            $this->updateOrderStatus($booktrial);
+            
             $booktrial->post_trial_initail_status = 'interested';
             $booktrial->post_trial_status_updated_by_lostfitcode = time();
             $booktrial->post_trial_status_date = time();
@@ -7169,6 +7180,12 @@ class SchedulebooktrialsController extends \BaseController {
         }
         if(!empty($unset_keys)){
             $booktrial->unset($unset_keys);
+        }
+    }
+
+    public function updateOrderStatus($booktrial){
+        if(isset($booktrial->pay_later) && $booktrial->pay_later && isset($booktrial->payment_done) && !$booktrial->payment_done){
+            Order::where('_id', $booktrial->order_id)->where('status', '0')->update(['status'=>'4']);
         }
     }
 
