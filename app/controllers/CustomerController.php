@@ -3846,7 +3846,7 @@ class CustomerController extends \BaseController {
 	public function forceUpdate(){
 
 		$rules = [
-		'app_version' => 'numeric|required',
+		'app_version' => 'required',
 		'device_type' => 'required'
 		];
 
@@ -3887,7 +3887,7 @@ class CustomerController extends \BaseController {
 			"available_version" => $current_version_ios,
 		);
 
-		if(floatval($data["app_version"]) < $current_version_ios){
+		if($data["app_version"] < $current_version_ios){
 
 			$result_ios['force_update'] = true;
 		}
