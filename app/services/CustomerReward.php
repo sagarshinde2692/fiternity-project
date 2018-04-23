@@ -306,7 +306,7 @@ Class CustomerReward {
 
                 if(in_array($finder_id,$power_world_gym_vendor_ids)){
 
-                    $req['description'] = "25% Cashback for purchase of membership at ".ucwords($order['finder_name'])." (Order ID. ".$order['_id']."), Expires On : ".date('d-m-Y',time()+(86400*$duration_day));
+                    $req['description'] = "15% Cashback for purchase of membership at ".ucwords($order['finder_name'])." (Order ID. ".$order['_id']."), Expires On : ".date('d-m-Y',time()+(86400*$duration_day));
                 }
 
                 $utilities->walletTransaction($req,$order->toArray());
@@ -816,8 +816,8 @@ Class CustomerReward {
         $power_world_gym_vendor_ids = Config::get('app.power_world_gym_vendor_ids');
 
         if($finder_id && $finder_id != "" && $finder_id != null && in_array($finder_id,$power_world_gym_vendor_ids)){
-            $commision = 25;
-            $setAlgo = array('cashback'=>25,'fitcash'=>25,'discount'=>0);
+            $commision = 15;
+            $setAlgo = array('cashback'=>15,'fitcash'=>15,'discount'=>0);
         }
 
         $cashback_amount = $amount; 
