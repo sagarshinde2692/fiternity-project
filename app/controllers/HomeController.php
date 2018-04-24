@@ -597,6 +597,11 @@ class HomeController extends BaseController {
                 
                 if(isset($itemData['source'])&&$itemData['source']=='website'&&isset($itemData['rx_user'])&&$itemData['rx_user']==true)
                 {
+                	if(isset($itemData['rx_user_communication'])&&$itemData['rx_user_communication']==true)
+                	{
+                		Log::info(" Reliance request already processed for this trial.".print_r("",true));
+                	}
+                	else {
                 	$relianceJson=[
                 			"count"=>1,
                 			"id"=>(int)$itemData['_id'],
@@ -650,6 +655,7 @@ class HomeController extends BaseController {
                 	}
                 	else 	$itemData->rx_user_communication= false;
                 	$itemData->update();
+                }
                 }
                 
                 
@@ -711,6 +717,11 @@ class HomeController extends BaseController {
                 
                 if(isset($itemData['customer_source'])&&$itemData['customer_source']=='website'&&isset($itemData['rx_user'])&&$itemData['rx_user']==true)
                 {
+                	if(isset($itemData['rx_user_communication'])&&$itemData['rx_user_communication']==true)
+                	{
+                		Log::info(" Reliance request already processed for this order.".print_r("",true));
+                	}
+                	else {
                 	$relianceJson=[
                 			"count"=>1,
                 			"id"=>(int)$itemData['_id'],
@@ -870,6 +881,7 @@ class HomeController extends BaseController {
                 	
                 	
                 	$itemData->update();
+                }
                 }
                 
                 
