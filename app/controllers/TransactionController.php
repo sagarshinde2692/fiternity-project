@@ -4440,6 +4440,16 @@ class TransactionController extends \BaseController {
             if(isset($resp['custom_message'])){
                 $resp['message'] = $resp['success_message'] = $resp['custom_message'];
             }
+
+            if($resp["data"]["discount"] == 0){
+
+                $resp['message'] = $resp['success_message'] = "Promo code applied Successfully.";
+
+                if($this->device_type == 'android'){
+                    $resp["data"]["discount"] = null;
+                }
+            }
+            
             // if(strtolower($data['coupon']) == "fitlove" || $data['coupon'] == "fitlove"){
             //     $resp['success_message'] = $resp['message'] = "Basis slot availability, your surprise discount for this partner outlet is Rs ".$resp["data"]["discount"];
             // }
