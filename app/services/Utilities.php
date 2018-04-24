@@ -3246,12 +3246,14 @@ Class Utilities {
             ->whereIn('type',['booktrials','3daystrial'])
             ->where('going_status_txt','!=','cancel')
             ->where('booktrial_type','auto')
+            ->where('schedule_date_time','>=',new \MongoDate(strtotime("-21 days")))
             ->where(function($query){$query->orWhere('vendor_code','exists',true)->orWhere('is_tab_active','exists',true);})
-            ->where('schedule_date_time','>=',new \MongoDate(time()))
             ->orderBy('schedule_date_time', 'desc')
             ->first();
-
-        if($booktrial){
+        if(!$booktrial){
+            return $response;
+        }
+        if(strtotime($booktrial["schedule_date_time"]) > time()){
 
             $stage = 'before_trial';
             $state = 'booked_trial';
@@ -3262,18 +3264,18 @@ Class Utilities {
 
         if($stage == ''){
 
-            $booktrial = false;
+            // $booktrial = false;
 
-            $booktrial = \Booktrial::where('customer_id',$customer_id)
-                ->whereIn('type',['booktrials','3daystrial'])
-                ->where('going_status_txt','!=','cancel')
-                ->where('booktrial_type','auto')
-                ->where(function($query){$query->orWhere('vendor_code','exists',true)->orWhere('is_tab_active','exists',true);})
-                ->where('schedule_date_time','<=',new \MongoDate(time()))
-                ->orderBy('schedule_date_time', 'desc')
-                ->first();
+            // $booktrial = \Booktrial::where('customer_id',$customer_id)
+            //     ->whereIn('type',['booktrials','3daystrial'])
+            //     ->where('going_status_txt','!=','cancel')
+            //     ->where('booktrial_type','auto')
+            //     ->where('schedule_date_time','<=',new \MongoDate(time()))
+            //     ->where(function($query){$query->orWhere('vendor_code','exists',true)->orWhere('is_tab_active','exists',true);})
+            //     ->orderBy('schedule_date_time', 'desc')
+            //     ->first();
 
-            if($booktrial){
+            if(strtotime($booktrial["schedule_date_time"]) < time()){
 
                 $order_count = \Order::active()
                     ->where('customer_id',$customer_id)
@@ -3343,7 +3345,7 @@ Class Utilities {
             $fitcash = $this->getFitcash($booktrial->toArray());
 
             $category_calorie_burn = 300;
-
+            \Service::$withoutAppends=true;
             $service = \Service::find((int)$booktrial['service_id']);
 
             if($service){
@@ -3434,30 +3436,30 @@ Class Utilities {
 
             $fitapi = New Fitapi();
 
-            $getRatecardCount = $fitapi->getServiceData($booktrial['service_id']);
+            // $getRatecardCount = $fitapi->getServiceData($booktrial['service_id']);
 
-            if($getRatecardCount['status'] != 200){
+            // if($getRatecardCount['status'] != 200){
 
-                $ratecard_count = 0;
+            //     $ratecard_count = 0;
 
-            }else{
+            // }else{
 
-                if(!isset($getRatecardCount['data']) && !isset($getRatecardCount['data']['service']) && !isset($getRatecardCount['data']['service']['ratecard'])){
-                    $ratecard_count = 0;
-                }
+            //     if(!isset($getRatecardCount['data']) && !isset($getRatecardCount['data']['service']) && !isset($getRatecardCount['data']['service']['ratecard'])){
+            //         $ratecard_count = 0;
+            //     }
 
-                if(isset($getRatecardCount['data']['service']) && isset($getRatecardCount['data']['service']['ratecard']) && empty($getRatecardCount['data']['service']['ratecard'])){
-                    $ratecard_count = 0;
-                }
-            }
+            //     if(isset($getRatecardCount['data']['service']) && isset($getRatecardCount['data']['service']['ratecard']) && empty($getRatecardCount['data']['service']['ratecard'])){
+            //         $ratecard_count = 0;
+            //     }
+            // }
 
-           /* $ratecard_count = \Ratecard::where('service_id',(int)$booktrial['service_id'])
+           $ratecard_count = \Ratecard::where('service_id',(int)$booktrial['service_id'])
                 ->where('finder_id',(int)$booktrial['finder_id'])
                 ->whereIn('type',['membership','packages'])
                 ->where('direct_payment_enable','!=','0')
-                ->orWhere(function($query){$query->where('expiry_date','exists',true)->where('expiry_date','>=',new \MongoDate(time()));})
-                ->orWhere(function($query){$query->where('start_date','exists',true)->where('start_date','<=',new \MongoDate(time()));})
-                ->count();*/
+                ->orWhere(function($query){$query->where('expiry_date','exists',true)->where('expiry_date','<=',new \MongoDate(time()));})
+                ->orWhere(function($query){$query->where('start_date','exists',true)->where('start_date','>=',new \MongoDate(time()));})
+                ->count();
 
             if($ratecard_count == 0){
                 $response['redirect_url'] = Config::get('app.website').'/'.$booktrial['finder_slug'];
