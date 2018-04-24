@@ -719,7 +719,7 @@ class HomeController extends BaseController {
                 {
                 	if(isset($itemData['rx_user_communication'])&&$itemData['rx_user_communication']==true)
                 	{
-                		Log::info(" Reliance request already processed for this trial.".print_r("",true));
+                		Log::info(" Reliance request already processed for this order.".print_r("",true));
                 	}
                 	else {
                 	$relianceJson=[
