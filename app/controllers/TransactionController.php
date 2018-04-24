@@ -820,8 +820,10 @@ class TransactionController extends \BaseController {
             
             $order->update();
             
-            $this->utilities->createWorkoutSession($order['_id']);
+            // $this->utilities->createWorkoutSession($order['_id']);
 
+            $result['payment_done'] = false;
+            
             $data['full_payment_wallet'] = true;
         }
         
