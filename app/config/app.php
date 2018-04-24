@@ -19,19 +19,19 @@ return array(
 	// 'website_deeplink' =>'https://ftrnty.com',
 
 	//stage
-	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
-	// 'url' => 'http://apistage.fitn.in',
-	// 'admin_url' => 'http://adminstage.fitn.in',
-	// 'website' => 'http://apistage.fitn.in:8902',
-	// 'sidekiq_url' => 'http://kick.fitn.in/',
-	// 'queue' => 'booktrial',
-	// 'vendor_communication' => false,
-	// 'env' => 'stage',
-	// 'debug' => TRUE,
-	// 'metropolis' => 'http://apisatge.fitn.in:8989',
-	// 'amazonpay_isSandbox' => 'true',
-	// 'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
-	// 'website_deeplink' =>'https://ftrnty.com',
+// 	'new_search_url' =>'http://apistage.fitn.in:5000/',
+// 	'url' => 'http://apistage.fitn.in',
+// 	'admin_url' => 'http://adminstage.fitn.in',
+// 	'website' => 'http://apistage.fitn.in:8902',
+// 	'sidekiq_url' => 'http://kick.fitn.in/',
+// 	'queue' => 'booktrial',
+// 	'vendor_communication' => false,
+// 	'env' => 'stage',
+// 	'debug' => TRUE,
+// 	'metropolis' => 'http://apisatge.fitn.in:8989',
+// 	'amazonpay_isSandbox' => 'true',
+// 	'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
+// 	'website_deeplink' =>'https://ftrnty.com',
 
 	//beta
 	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
@@ -734,7 +734,7 @@ return array(
 	
 	'gst_on_cos_percentage'=>18,
 
-	'power_world_gym_vendor_ids' => [],
+	'power_world_gym_vendor_ids' => [10315,10861,10863,10868,10870,10872,10875,10876,10877,10880,10883,10886,10887,10888,10890,10891,10892,10894,10895,10897,10900,12246,12247,12250,12252,12254],
 
 	'streak_data'=>[		
 		[
