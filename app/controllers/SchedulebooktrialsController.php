@@ -2227,7 +2227,7 @@ class SchedulebooktrialsController extends \BaseController {
                 }
             }
 
-            if(isset($data['pay_later']) && $data['pay_later']){
+            if(isset($order['pay_later']) && $order['pay_later']){
                 
                 $booktrialdata['payment_done'] = false;
             }
