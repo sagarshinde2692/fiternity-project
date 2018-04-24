@@ -1319,12 +1319,16 @@ Class CustomerReward {
         Log::info($coupon);
         
         if(isset($coupon)){
+
+            $coupon_data = $coupon->toArray();
             
             $vendor_coupon = false;
+
             if(isset($coupon["tickets"]) && !$ticket){
                 $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"Coupon not valid for this transaction");
                 return $resp;
             }
+
             if(isset($coupon["app_only"]) && $coupon["app_only"]){
                 $device = Request::header('Device-Type');
                 if(!$device || !in_array($device, ['ios', 'android'])){
@@ -1332,6 +1336,7 @@ Class CustomerReward {
                     return $resp;
                 }
             }
+
             if(isset($coupon['vendor_exclusive']) && $coupon['vendor_exclusive']){
                 $vendor_coupon = true;
                 $jwt_token = Request::header('Authorization');
@@ -1376,8 +1381,6 @@ Class CustomerReward {
                 }
             }
 
-
-
             $fitternity_only_coupon = false;
             
             if(isset($coupon['fitternity_only']) && $coupon['fitternity_only']){
@@ -1407,6 +1410,18 @@ Class CustomerReward {
             Log::info($coupon);
 
             if($ratecard){
+
+                if(!empty($coupon_data['ratecard_type']) && is_array($coupon_data['ratecard_type'])){
+
+                    if(!empty($ratecard['type']) && !in_array($ratecard['type'],$coupon_data['ratecard_type'])){
+     
+                        $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"Coupon not valid for this transaction");
+
+                        return $resp;
+
+                    }
+                   
+                }
                 
                 $finder = Finder::where('_id', $ratecard['finder_id'])->first(['flags']);
                 $service = Service::where('_id', $ratecard['service_id'])->first(['flags']);

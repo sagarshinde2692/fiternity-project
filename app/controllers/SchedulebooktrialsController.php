@@ -1603,11 +1603,16 @@ class SchedulebooktrialsController extends \BaseController {
 
                     $sndInstantEmailCustomer        =   $this->customermailer->healthyTiffinMembership($order->toArray());
                     $sndInstantSmsCustomer         =    $this->customersms->healthyTiffinMembership($order->toArray());
+
+                    $this->customermailer->payPerSessionFree($emailData);
                 }
 
             }else{
+
                 $sndInstantEmailCustomer        =   $this->customermailer->healthyTiffinMembership($order->toArray());
                 $sndInstantSmsCustomer         =    $this->customersms->healthyTiffinMembership($order->toArray());
+
+                $this->customermailer->payPerSessionFree($emailData);
             }
 
             if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
@@ -1652,9 +1657,9 @@ class SchedulebooktrialsController extends \BaseController {
 
             $this->utilities->sendDemonetisationCustomerSms($order);
 
-            $this->utilities->addAmountToReferrer($order);  
+            $this->utilities->addAmountToReferrer($order);
 
-            $this->utilities->saavn($order);
+            // $this->utilities->saavn($order);
 
             $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
             return Response::json($resp);

@@ -1585,10 +1585,15 @@ class TransactionController extends \BaseController {
                             if(isset($data["send_communication_customer"]) && $data["send_communication_customer"] != ""){
 
                                 $sndPgMail  =   $this->customermailer->sendPgOrderMail($emailData);
+
+                                $this->customermailer->payPerSessionFree($emailData);
                             }
 
                         }else{
+                            
                             $sndPgMail  =   $this->customermailer->sendPgOrderMail($emailData);
+
+                            $this->customermailer->payPerSessionFree($emailData);
                         }
                     }
 
@@ -1746,7 +1751,7 @@ class TransactionController extends \BaseController {
 
             $this->utilities->addAssociateAgent($order);
 
-            $this->utilities->saavn($order);
+            // $this->utilities->saavn($order);
             
             $finder_id = $order['finder_id'];
             $start_date_last_30_days = date("d-m-Y 00:00:00", strtotime('-31 days',strtotime(date('d-m-Y 00:00:00'))));
