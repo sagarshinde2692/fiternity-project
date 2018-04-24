@@ -164,14 +164,14 @@ class FindersController extends \BaseController {
 				->with('locationtags')
 				->with('offerings')
 				->with('facilities')
-				->with(array('ozonetelno'=>function($query){$query->select('*')->where('status','=','1');}))
+				// ->with(array('ozonetelno'=>function($query){$query->select('*')->where('status','=','1');}))
 				->with(array('knowlarityno'=>function($query){$query->select('*')->where('status',true);}))
-				->with(array('services'=>function($query){$query->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->where('status','=','1')->orderBy('ordering', 'ASC');}))
+				->with(array('services'=>function($query){$query->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->where('status','=','1')->whereNotIn('showOnFront', [['kiosk'], []] )->orderBy('ordering', 'ASC');}))
 				->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1')->orderBy('updated_at', 'DESC')->limit(5);}))
 				// ->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1')->orderBy('_id', 'DESC');}))
 				->first();
 
-			unset($finderarr['ratecards']);
+				unset($finderarr['ratecards']);
 
 			$finder = null;	
 			
@@ -381,10 +381,10 @@ class FindersController extends \BaseController {
 
 //                return  $finder;
 
-				if(isset($finderarr['ozonetelno']) && $finderarr['ozonetelno'] != ''){
-					$finderarr['ozonetelno']['phone_number'] = '+'.$finderarr['ozonetelno']['phone_number'];
-					$finder['ozonetelno'] = $finderarr['ozonetelno'];
-				}
+				// if(isset($finderarr['ozonetelno']) && $finderarr['ozonetelno'] != ''){
+				// 	$finderarr['ozonetelno']['phone_number'] = '+'.$finderarr['ozonetelno']['phone_number'];
+				// 	$finder['ozonetelno'] = $finderarr['ozonetelno'];
+				// }
 
 				if(isset($finderarr['knowlarityno']) && $finderarr['knowlarityno'] != ''){
 					$finderarr['knowlarityno']['phone_number'] = '+91'.$finderarr['knowlarityno']['phone_number'];
@@ -852,24 +852,28 @@ class FindersController extends \BaseController {
 				}
 
 				if(!isset($finder['callout']) || trim($finder['callout']) == ''){
-					Log::info("inside");
-					$callout_offer = Offer::where('vendor_id', $finder['_id'])->where('hidden', false)->orderBy('order', 'asc')
-									->where('offer_type', 'newyears')
-									->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
-									->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()) ))
-									->first();
-					Log::info($callout_offer);
-					if($callout_offer){
-
-						$device = $this->vendor_token ? 'kiosk' : 'web';
-						$callout_service = Service::active()->where('_id', $callout_offer['vendorservice_id'])->where(function($query) use ($device){return $query->orWhere('showOnFront', 'exists', false)->orWhere('showOnFront', $device);})->first();
-						$callout_ratecard = Ratecard::find($callout_offer['ratecard_id']);
-						Log::info($callout_ratecard);
-						if($callout_service && $callout_ratecard){
-							$finder['callout'] = $callout_service['name']." - ".$this->getServiceDuration($callout_ratecard)." @ Rs. ".$callout_offer['price'];
-						}
+					$callout = $this->getCalloutOffer($finder['services']);
+					if($callout != ''){
+						$finder['callout'] = $this->getCalloutOffer($finder['services']);
 					}
 				}
+				// 	$callout_offer = Offer::where('vendor_id', $finder['_id'])->where('hidden', false)->orderBy('order', 'asc')
+				// 					->where('offer_type', 'newyears')
+				// 					->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
+				// 					->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()) ))
+				// 					->first();
+				// 	Log::info($callout_offer);
+				// 	if($callout_offer){
+
+				// 		$device = $this->vendor_token ? 'kiosk' : 'web';
+				// 		$callout_service = Service::active()->where('_id', $callout_offer['vendorservice_id'])->where(function($query) use ($device){return $query->orWhere('showOnFront', 'exists', false)->orWhere('showOnFront', $device);})->first();
+				// 		$callout_ratecard = Ratecard::find($callout_offer['ratecard_id']);
+				// 		Log::info($callout_ratecard);
+				// 		if($callout_service && $callout_ratecard){
+				// 			$finder['callout'] = $callout_service['name']." - ".$this->getServiceDuration($callout_ratecard)." @ Rs. ".$callout_offer['price'];
+				// 		}
+				// 	}
+				// }
 
 				if(isset($finder['services']) && count($finder['services'])>0){
 
@@ -4998,6 +5002,19 @@ class FindersController extends \BaseController {
 		return $response;
 
 	}
-	
+
+	public function getCalloutOffer($services){
+		$callout = "";
+		foreach($services as $service){
+			foreach($service['serviceratecard'] as $ratecard){
+				if(isset($ratecard['offers']) && count($ratecard['offers']) > 0 && isset($ratecard['offers'][0]['offer_type']) && $ratecard['offers'][0]['offer_type'] == 'newyears'){
+					$callout = $service['name']." - ".$this->getServiceDuration($ratecard)." @ Rs. ".$ratecard['offers'][0]['price'];
+					break;
+				}
+				
+			}	
+		}
+		return $callout;
+	}
 
 }

@@ -176,6 +176,7 @@ class Service extends \Basemodel{
 		$second_max_validity = 0;
 		$max_validity_ids = [];
 		$second_max_validity_ids = [];
+		$ratecardsarr = null;
 		if(!empty($this->_id) && isset($this->_id)){
 			$ratecardsarr 	= 	Ratecard::where('service_id', intval($this->_id))->orderBy('order', 'asc')->get()->toArray();
 		}
@@ -188,14 +189,14 @@ class Service extends \Basemodel{
             foreach ($ratecardsarr as $key => $value) {
 				
             	$ratecardoffers 	= 	[];
-				
+				 
 
 
                 if(!empty($value['_id']) && isset($value['_id'])){
                     $ratecardoffersRecards 	= 	Offer::where('ratecard_id', intval($value['_id']))->where('hidden', false)->orderBy('order', 'asc')
                                                     ->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
                                                     ->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()) ))
-                                                    ->get(['start_date','end_date','price','type','allowed_qty','remarks'])
+                                                    ->get(['start_date','end_date','price','type','allowed_qty','remarks','offer_type'])
                                                     ->toArray();
                     foreach ($ratecardoffersRecards as $ratecardoffersRecard){
             			$offer_exists = true;
@@ -230,7 +231,7 @@ class Service extends \Basemodel{
                         if($difference->days <= 15){
                             $ratecardoffer['offer_text']    =  ($difference->d == 1) ? "Expires Today" : ($difference->d > 3 ? "Expires soon" : "Expires in ".$difference->days." days");
 
-                        }
+						}
                         array_push($ratecardoffers,$ratecardoffer);
                     }
 					if(isset($value['flags'])){
