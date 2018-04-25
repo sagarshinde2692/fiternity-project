@@ -131,7 +131,7 @@ class FindersController extends \BaseController {
 
 		}
 
-		$cache_key = $this->updateCacheKey($cache_key);
+		// $cache_key = $this->updateCacheKey($cache_key);
 
 		if(in_array($tslug, Config::get('app.test_vendors'))){
 			if($customer_email){
@@ -677,7 +677,8 @@ class FindersController extends \BaseController {
 										$service['serviceratecard'][$ratekey]['direct_payment_enable'] = "0";
 									}
 									
-									$customerDiscount = $this->utilities->getCustomerDiscount();
+									$customerDiscount = 0;
+									// $customerDiscount = $this->utilities->getCustomerDiscount();
 
 									$final_price = 0;
 							
@@ -3046,9 +3047,10 @@ class FindersController extends \BaseController {
 							
 							$appOfferDiscount = in_array($finder_id, $this->appOfferExcludedVendors) ? 0 : $this->appOfferDiscount;
 
-							$customerDiscount = $this->utilities->getCustomerDiscount();
+							$customerDiscount = 0;
+							// $customerDiscount = $this->utilities->getCustomerDiscount();
 							
-							Log::info("getCustomerDiscount");
+							// Log::info("getCustomerDiscount");
 							$discount = $appOfferDiscount + $customerDiscount;
 							// Log::info($discount);
 							if($rateval['special_price'] > 0){
