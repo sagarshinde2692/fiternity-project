@@ -3248,7 +3248,8 @@ Class Utilities {
             ->where('booktrial_type','auto')
             ->where('schedule_date_time','>=',new \MongoDate(strtotime("-21 days")))
             ->where(function($query){$query->orWhere('vendor_code','exists',true)->orWhere('is_tab_active','exists',true);})
-            ->orderBy('schedule_date_time', 'desc')
+            // ->orderBy('schedule_date_time', 'desc')
+            ->orderBy('_id', 'desc')
             ->first();
         if(!$booktrial){
             return $response;

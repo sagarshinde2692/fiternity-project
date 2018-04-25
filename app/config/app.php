@@ -57,7 +57,7 @@ return array(
 	'queue' => 'booktrial',
 	'vendor_communication' => true,
 	'env' => 'production',
-	'debug' => FALSE,
+	'debug' => TRUE,
 	'metropolis' => 'https://c1.fitternity.com',
 	'amazonpay_isSandbox' => 'false',
 	'reliance_url' =>'https://rhealthcircle.reliancegeneral.co.in/fitternity/callback',
