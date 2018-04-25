@@ -5236,13 +5236,17 @@ class TransactionController extends \BaseController {
 
         $otp = $data['otp'];
 
-        $order = Order::where('customer_id', $customer_id)->where('_id', $order_id)->where('cod_otp', $otp)->first();
+        $order = Order::where('customer_id', $customer_id)->where('_id', $order_id)->where(function($query){$query->orWhere('cod_otp', $otp)->orWhere("otp_data.otp", $otp); })->first();
 
         if(!$order){
             return Response::json(array('status' => 404,'message' => 'Please enter the valid code'), $this->error_status);
         }
-
-        $order->cod_otp_verified = true;
+        if(isset($order["cod_otp"]) && $order["cod_otp"] == $otp){
+            $order->cod_otp_verified = true;
+        }
+        if(isset($order["otp_data"]) && isset($order["otp_data"]["otp"]) && $order["otp_data"]["otp"] == $otp){
+            $order->vendor_otp_verified = true;
+        }
 
         $order->update();
 
