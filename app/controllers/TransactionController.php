@@ -1045,6 +1045,9 @@ class TransactionController extends \BaseController {
 
             $resp['data']['verify_otp_url'] = Config::get('app.url')."/kiosk/vendor/verifyotp";
             $resp['data']['resend_otp_url'] = Config::get('app.url')."/temp/regenerateotp/".$otp_data['temp_id'];
+            if($data["customer_source"] == "website"){
+                $resp['data']['show_success'] = true;
+            }
 
         }
 
