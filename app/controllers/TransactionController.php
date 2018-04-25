@@ -1095,7 +1095,6 @@ class TransactionController extends \BaseController {
         }
 
         if(isset($data['manual_order']) && $data['manual_order'] && $data['type'] != 'memberships'){
-            $resp['data']['payment_details'] = null;
             $resp['data']['payment_modes'] = [];
         }
 
