@@ -1051,6 +1051,7 @@ class TransactionController extends \BaseController {
             if(!$this->vendor_token){
 
                 $this->customermailer->atVendorOrderCaputure($otp_data);
+                $this->customersms->atVendorOrderCaputure($otp_data);
             }
 
             $resp['vendor_otp'] = $otp_data['otp'];
