@@ -1099,6 +1099,10 @@ class TransactionController extends \BaseController {
             'otp'=>'required'
         );
 
+        if(!$this->vendor_token){
+            $rules['finder_id'] = 'required'; 
+        }
+
         $validator = Validator::make($data,$rules);
 
         $app_version  = (float)Request::header('App-Version');
@@ -1121,11 +1125,18 @@ class TransactionController extends \BaseController {
             return Response::json(['status' => 400, "message" => "Already Status Successfull"],$status);
         }
 
-        $decodeKioskVendorToken = decodeKioskVendorToken();
+        if($this->vendor_token){
 
-        $vendor = $decodeKioskVendorToken->vendor;
+            $decodeKioskVendorToken = decodeKioskVendorToken();
 
-        $finder_id = (int)$vendor->_id;
+            $vendor = $decodeKioskVendorToken->vendor;
+
+            $finder_id = (int)$vendor->_id;
+
+        }else{
+
+            $finder_id = (int)$data['finder_id'];
+        }
 
         if($finder_id != $order['finder_id']){
 
@@ -1181,6 +1192,10 @@ class TransactionController extends \BaseController {
             $data['type'] = $order['type'];
             $data['premium_session'] = true;
 
+            if($this->vendor_token){
+                $data['order_success_flag'] = 'kiosk';
+            }
+
             if(isset($order['start_date']) && $order['start_date'] != ""){
                 $data['schedule_date'] = date('d-m-Y',strtotime($order['start_date']));
             }
@@ -1211,11 +1226,15 @@ class TransactionController extends \BaseController {
         }else{
 
             $data['status'] = 'success';
-            $data['order_success_flag'] = 'kiosk';
+            $data['order_success_flag'] = 'admin';
             $data['order_id'] = (int)$data['order_id'];
             $data['customer_email'] = $order['customer_email'];
             $data['send_communication_customer'] = 1;
             $data['send_communication_vendor'] = 1;
+
+            if($this->vendor_token){
+                $data['order_success_flag'] = 'kiosk';
+            }
 
             return $this->successCommon($data);
 
