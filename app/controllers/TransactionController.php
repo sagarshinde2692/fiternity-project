@@ -5236,7 +5236,7 @@ class TransactionController extends \BaseController {
 
         $otp = $data['otp'];
 
-        $order = Order::where('customer_id', $customer_id)->where('_id', $order_id)->where(function($query){$query->orWhere('cod_otp', $otp)->orWhere("otp_data.otp", $otp); })->first();
+        $order = Order::where('customer_id', $customer_id)->where('_id', $order_id)->where(function($query) use ($otp){$query->orWhere('cod_otp', $otp)->orWhere("otp_data.otp", $otp); })->first();
 
         if(!$order){
             return Response::json(array('status' => 404,'message' => 'Please enter the valid code'), $this->error_status);
