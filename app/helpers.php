@@ -3106,11 +3106,10 @@ if (!function_exists('addTemp')) {
         if(isset($_GET['app_version']) && $_GET['app_version'] != ""){
             $temp->version = $_GET['app_version'];
         }
-        if($data["customer_source"] == "website"){
-            $temp->finder_id = (int)$data["finder_id"];
-            $temp->source = "website";
-        }
-        if($data['action'] == "vendor_otp" && $data["customer_source"] != "website"){
+
+        $vendor_token = Request::header('Authorization-Vendor');
+        
+        if($vendor_token){
 
             $decodeKioskVendorToken = decodeKioskVendorToken();
 
