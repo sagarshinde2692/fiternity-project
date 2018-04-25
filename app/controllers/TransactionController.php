@@ -181,6 +181,38 @@ class TransactionController extends \BaseController {
 
         if(isset($data['manual_order']) && $data['manual_order']){
 
+            if($data['type'] != 'memberships'){
+
+                $data['validity'] = '1';
+                $data['validity_type'] = 'day';
+                $data['service_name'] = '-';
+                $data['service_category_id'] = null;
+
+                if(!empty($data['ratecard_id'])){
+
+                    $ratecard = Ratecard::find((int)$data['ratecard_id']);
+
+                    if($ratecard){
+
+                        $data['service_id'] = (int)$ratecard['service_id'];
+                    }
+
+                }
+
+                if(!empty($data['service_id'])){
+
+                    $service = Service::find((int)$data['service_id']);
+
+                    if($service){
+
+                        $data['service_name'] = $service['name'];
+                        $data['service_category_id'] = (int)$service['servicecategory_id'];
+                    }
+
+                }
+
+            }
+
             $manual_order_rules = [
                 'service_category_id'=>'required',
                 'validity'=>'required',
@@ -1062,6 +1094,11 @@ class TransactionController extends \BaseController {
             $resp['data']['vendor_otp_message'] = "Enter the verification code to confirm the membership.";
         }
 
+        if(isset($data['manual_order']) && $data['manual_order'] && $data['type'] != 'memberships'){
+            $resp['data']['payment_details'] = null;
+            $resp['data']['payment_modes'] = [];
+        }
+
         return Response::json($resp);
 
     }
@@ -1089,6 +1126,10 @@ class TransactionController extends \BaseController {
             'otp'=>'required'
         );
 
+        if(!$this->vendor_token){
+            $rules['finder_id'] = 'required'; 
+        }
+
         $validator = Validator::make($data,$rules);
 
         $app_version  = (float)Request::header('App-Version');
@@ -1111,11 +1152,19 @@ class TransactionController extends \BaseController {
             return Response::json(['status' => 400, "message" => "Already Status Successfull"],$status);
         }
 
-        $decodeKioskVendorToken = decodeKioskVendorToken();
+        if($this->vendor_token){
 
-        $vendor = $decodeKioskVendorToken->vendor;
+            $decodeKioskVendorToken = decodeKioskVendorToken();
 
-        $finder_id = (int)$vendor->_id;
+            $vendor = $decodeKioskVendorToken->vendor;
+
+            $finder_id = (int)$vendor->_id;
+
+        }else{
+            
+            $finder_id = (int)$data['finder_id'];
+        }
+
 
         if($finder_id != $order['finder_id']){
 
@@ -1171,6 +1220,10 @@ class TransactionController extends \BaseController {
             $data['type'] = $order['type'];
             $data['premium_session'] = true;
 
+            if($this->vendor_token){
+                $data['order_success_flag'] = 'kiosk';
+            }
+
             if(isset($order['start_date']) && $order['start_date'] != ""){
                 $data['schedule_date'] = date('d-m-Y',strtotime($order['start_date']));
             }
@@ -1201,11 +1254,15 @@ class TransactionController extends \BaseController {
         }else{
 
             $data['status'] = 'success';
-            $data['order_success_flag'] = 'kiosk';
+            $data['order_success_flag'] = 'admin';
             $data['order_id'] = (int)$data['order_id'];
             $data['customer_email'] = $order['customer_email'];
             $data['send_communication_customer'] = 1;
             $data['send_communication_vendor'] = 1;
+
+            if($this->vendor_token){
+                $data['order_success_flag'] = 'kiosk';
+            }
 
             return $this->successCommon($data);
 
@@ -2682,6 +2739,10 @@ class TransactionController extends \BaseController {
             $data['amount_finder'] = $ratecard['special_price'];
         }else{
             $data['amount_finder'] = $ratecard['price'];
+        }
+
+        if(isset($data['manual_order']) && $data['manual_order'] && $data['type'] != 'memberships'){
+            $data['amount_finder'] = $data['amount'];
         }
 
         $data['offer_id'] = false;

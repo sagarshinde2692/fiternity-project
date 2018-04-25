@@ -2839,29 +2839,33 @@ class SchedulebooktrialsController extends \BaseController {
             $before_three_month_trial_count    =    $this->getBeforeThreeMonthTrialCount($finderid);
 
             // Throw an error if user has already booked a trial for that vendor...
+
+            if(!isset($data['manual_order'])){
             
-            $alreadyBookedTrials = $this->utilities->checkExistingTrialWithFinder($data['customer_email'], $data['customer_phone'], $data['finder_id']);
-            
-            // return $alreadyBookedTrials;
-            
-            if (count($alreadyBookedTrials) > 0) {
-                $resp = array('status' => 403, 'message' => "You have already booked a trial for this vendor, please choose some other vendor");
-                return Response::json($resp, 403);
-            }
+                $alreadyBookedTrials = $this->utilities->checkExistingTrialWithFinder($data['customer_email'], $data['customer_phone'], $data['finder_id']);
+                
+                // return $alreadyBookedTrials;
+                
+                if (count($alreadyBookedTrials) > 0) {
+                    $resp = array('status' => 403, 'message' => "You have already booked a trial for this vendor, please choose some other vendor");
+                    return Response::json($resp, 403);
+                }
 
-            // Throw an error if user has already booked a trial on same schedule timestamp..
-            $dates = $this->utilities->getDateTimeFromDateAndTimeRange($data['schedule_date'], $data['schedule_slot']);
-            $UpcomingTrialsOnTimestamp = $this->utilities->getUpcomingTrialsOnTimestamp($customer_id, $dates['start_timestamp'], $finderid);
-            if (count($UpcomingTrialsOnTimestamp) > 0) {
-                $resp = array('status' => 403, 'message' => "You have already booked a trial on same datetime");
-                return Response::json($resp, 403);
-            }
+                // Throw an error if user has already booked a trial on same schedule timestamp..
+                $dates = $this->utilities->getDateTimeFromDateAndTimeRange($data['schedule_date'], $data['schedule_slot']);
+                $UpcomingTrialsOnTimestamp = $this->utilities->getUpcomingTrialsOnTimestamp($customer_id, $dates['start_timestamp'], $finderid);
+                if (count($UpcomingTrialsOnTimestamp) > 0) {
+                    $resp = array('status' => 403, 'message' => "You have already booked a trial on same datetime");
+                    return Response::json($resp, 403);
+                }
 
-            $disableTrial = $this->disableTrial($data);
+                $disableTrial = $this->disableTrial($data);
 
-            if($disableTrial['status'] != 200){
+                if($disableTrial['status'] != 200){
 
-                return Response::json($disableTrial,$disableTrial['status']);
+                    return Response::json($disableTrial,$disableTrial['status']);
+                }
+                
             }
 
             $myreward_id = "";
