@@ -196,7 +196,7 @@ class Service extends \Basemodel{
 									->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()) ))
 									->get(['start_date','end_date','price','type','allowed_qty','remarks','offer_type','ratecard_id'])
 									->toArray();
-									Log::info($serviceoffers);
+									// Log::info($serviceoffers);
                 if(!empty($value['_id']) && isset($value['_id'])){
 					
                     $ratecardoffersRecards 	= 	array_where($serviceoffers, function($key, $offer) use ($value){
