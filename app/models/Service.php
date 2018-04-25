@@ -202,7 +202,7 @@ class Service extends \Basemodel{
                     $ratecardoffersRecards 	= 	array_where($serviceoffers, function($key, $offer) use ($value){
 						if($offer['ratecard_id'] == $value['_id'])
 							{
-							 return $value; 
+							 return true; 
 							}
 					});
                     foreach ($ratecardoffersRecards as $ratecardoffersRecard){
