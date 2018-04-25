@@ -1047,20 +1047,24 @@ class FindersController extends \BaseController {
 
 				$video_service_tags = ['All'];
 				$video_service_tags_others_count = 0;
-				
-				foreach($finder['videos'] as $key => $video){
-					$service_names = Service::whereIn('_id', $video['servicetags'])->lists('name');
-					$video_service_tags = array_merge($video_service_tags, $service_names);
-					$finder['videos'][$key]['servicetags'] = $service_names;
 
-					if(count($service_names)){
-						$video_service_tags_others_count += 1;
+				if(isset($finder['videos']) && is_array($finder['videos'])){
+
+					foreach($finder['videos'] as $key => $video){
+						$service_names = Service::whereIn('_id', $video['servicetags'])->lists('name');
+						$video_service_tags = array_merge($video_service_tags, $service_names);
+						$finder['videos'][$key]['servicetags'] = $service_names;
+	
+						if(count($service_names)){
+							$video_service_tags_others_count += 1;
+						}
 					}
+					
+					$finder['video_service_tags'] = array_count_values($video_service_tags);
+					
+					$finder['video_service_tags']['All'] = count($finder['videos']);
 				}
 				
-				$finder['video_service_tags'] = array_count_values($video_service_tags);
-				
-				$finder['video_service_tags']['All'] = count($finder['videos']);
 
 				// if(count($finder['video_service_tags'])>1 && $video_service_tags_others_count>0){
 				// 	$finder['video_service_tags']['Others'] = $video_service_tags_others_count;
