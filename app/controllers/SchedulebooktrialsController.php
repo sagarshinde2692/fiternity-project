@@ -6123,11 +6123,12 @@ class SchedulebooktrialsController extends \BaseController {
             return Response::json(array('status' => 401,'message' =>$this->errorMessage($validator->errors())),401);
         }
 
+        $ratecard_id = (int)$item['ratecard_id'];
+
+        $ratecard = Ratecard::find($ratecard_id);
+        
         if(!(isset($item['manual_order']) && $item['manual_order'] && isset($item['amount']) && $item['amount'] != '')){
             
-            $ratecard_id = (int)$item['ratecard_id'];
-    
-            $ratecard = Ratecard::find($ratecard_id);
             
             if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
                 $item['amount'] = $ratecard['special_price'];
