@@ -832,6 +832,15 @@ class TransactionController extends \BaseController {
             $order->save();
         }
 
+        if(isset($data['manual_order']) && $data['manual_order'] && in_array($data['type'], ['booktrials', 'workout-session'])){
+            
+            $order->manual_order_punched = true;
+            $order->update();
+
+            $this->utilities->createWorkoutSession($order->_id);
+            
+        }
+
         if(isset($data['payment_mode']) && $data['payment_mode'] == 'cod'){
 
             $group_id = isset($data['group_id']) ? $data['group_id'] : null;
