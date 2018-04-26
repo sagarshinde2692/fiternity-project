@@ -123,7 +123,7 @@ class FindersController extends \BaseController {
 
 		if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
 			
-			$decoded = $this->customerTokenDecode($jwt_token);
+			$decoded = decode_customer_token();
 			
 			if($decoded){
 				$customer_email = $decoded->customer->email;
@@ -1159,7 +1159,7 @@ class FindersController extends \BaseController {
 		}
 
 		if(Request::header('Authorization')){
-			$decoded                            =       decode_customer_token();
+			// $decoded                            =       decode_customer_token();
 			$customer_email                     =       $decoded->customer->email;
 			$customer_phone                     =       $decoded->customer->contact_no;
 			$customer_trials_with_vendors       =       Booktrial::where(function ($query) use($customer_email, $customer_phone) { $query->where('customer_email', $customer_email)->orWhere('customer_phone', $customer_phone);})
@@ -1172,10 +1172,9 @@ class FindersController extends \BaseController {
 			$response['trials_detials']              =      [];
 			$response['trials_booked_status']        =      false;
 		}
-		
-		if($this->utilities->hasPendingPayments()){
-			
-			$response['pending_payment'] = $this->utilities->hasPendingPayments();
+		$response['pending_payment'] = $this->utilities->hasPendingPayments();
+		if(!$response['pending_payment']){
+			unset($response['pending_payment']);	
 		}
 		// if($response['finder']['offer_icon'] == ""){
 		// 	$response['finder']['offer_icon']        =        "https://b.fitn.in/iconsv1/womens-day/womens-day-mobile-banner.svg";
@@ -4033,11 +4032,10 @@ class FindersController extends \BaseController {
 				unset($finderData['finder']['lat']);
 				unset($finderData['finder']['lon']);
 			}
-			
-			if($this->utilities->hasPendingPayments()){
-				
-				$finderData['pending_payment'] = $this->utilities->hasPendingPayments();
-			}		
+			$finderData['pending_payment'] = $this->utilities->hasPendingPayments();
+			if(!$finderData['pending_payment']){
+				unset($finderData['pending_payment']);	
+			}
 
 		}else{
 
