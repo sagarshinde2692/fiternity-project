@@ -2375,6 +2375,14 @@ class SchedulebooktrialsController extends \BaseController {
             array_set($orderData, 'booktrial_id', (int)$booktrialid);
             $order->update($orderData);
 
+            if(isset($order->vendor_price) && $order->vendor_price != ''){
+                $order->amount_finder = $order->vendor_price;
+                $booktrial->amount_finder = $order->vendor_price;
+
+                $order->update();
+                $booktrial->update();
+            }
+
 
 
             // Give Rewards / Cashback to customer based on selection, on purchase success......

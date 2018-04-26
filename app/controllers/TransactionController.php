@@ -2647,6 +2647,10 @@ class TransactionController extends \BaseController {
         $data['duration'] = (isset($ratecard['duration'])) ? $ratecard['duration'] : "";
         $data['duration_type'] = (isset($ratecard['duration_type'])) ? $ratecard['duration_type'] : "";
 
+        if($ratecard['type'] == 'workout session' && isset($ratecard['vendor_price']) && $ratecard['vendor_price'] != ''){
+            $data['vendor_price'] = $ratecard['vendor_price'];
+        }
+
         if(isset($data['preferred_starting_date']) && $data['preferred_starting_date']  != '' && $data['preferred_starting_date']  != '-'){
 
             $preferred_starting_date = date('Y-m-d 00:00:00', strtotime($data['preferred_starting_date']));
@@ -5687,7 +5691,7 @@ class TransactionController extends \BaseController {
         
         $data = [];
         
-        $fields = ['customer_name','customer_email','customer_phone','gender','finder_id','finder_name','finder_address','premium_session','service_name','service_id','service_duration','schedule_date','schedule_slot','amount','city_id','type','note_to_trainer','going_together','ratecard_id','customer_identity','customer_source','customer_location','env','customer_id','logged_in_customer_id','device_type','reg_id','gcm_reg_id','ratecard_remarks','duration','duration_type','duration_day','amount_finder','offer_id','start_date','end_date','membership_duration_type','start_time','end_time','batch_time','vertical_type','secondary_payment_mode','service_name_purchase','service_duration_purchase','status','source_of_membership','finder_city','finder_location','finder_vcc_email','finder_vcc_mobile','finder_poc_for_customer_name','finder_poc_for_customer_no','show_location_flag','share_customer_no','finder_lon','finder_lat','finder_branch','finder_category_id','finder_slug','finder_location_id','city_name','city_slug','category_name','category_slug','finder_flags','meal_contents'];
+        $fields = ['customer_name','customer_email','customer_phone','gender','finder_id','finder_name','finder_address','premium_session','service_name','service_id','service_duration','schedule_date','schedule_slot','amount','city_id','type','note_to_trainer','going_together','ratecard_id','customer_identity','customer_source','customer_location','env','customer_id','logged_in_customer_id','device_type','reg_id','gcm_reg_id','ratecard_remarks','duration','duration_type','duration_day','amount_finder','offer_id','start_date','end_date','membership_duration_type','start_time','end_time','batch_time','vertical_type','secondary_payment_mode','service_name_purchase','service_duration_purchase','status','source_of_membership','finder_city','finder_location','finder_vcc_email','finder_vcc_mobile','finder_poc_for_customer_name','finder_poc_for_customer_no','show_location_flag','share_customer_no','finder_lon','finder_lat','finder_branch','finder_category_id','finder_slug','finder_location_id','city_name','city_slug','category_name','category_slug','finder_flags','meal_contents','amount_customer'];
 
         foreach($fields as $field){
             if(isset($order[$field])){
@@ -5695,7 +5699,7 @@ class TransactionController extends \BaseController {
                 $data[$field] = $order[$field];
             }
         }
-        $data['amount'] = $data['amount_finder'];
+        $data['amount'] = $data['amount_customer'];
         $data['session_payment'] = true;
         $data['paymentmode_selected'] = 'paymentgateway';
         $data['payment_mode'] =  'paymentgateway';
