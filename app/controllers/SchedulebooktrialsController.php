@@ -2678,6 +2678,8 @@ class SchedulebooktrialsController extends \BaseController {
                 }
             }
 
+            $this->publishConfirmationAlert($booktrial->toArray());
+
         }catch(\Exception $exception){
 
             Log::error($exception);
@@ -2735,7 +2737,8 @@ class SchedulebooktrialsController extends \BaseController {
 
     public function bookTrialFree($data = null)
     {
-
+        $this->publishConfirmationAlert(['_id'=>1]);
+        return;
         // send error message if any thing is missing
         (!isset($data)) ? $data = Input::json()->all() : null;
         (!is_array($data)) ? $data = $data->toArray() : null;
@@ -7199,6 +7202,14 @@ class SchedulebooktrialsController extends \BaseController {
         if(isset($booktrial->pay_later) && $booktrial->pay_later && isset($booktrial->payment_done) && !$booktrial->payment_done){
             Order::where('_id', $booktrial->order_id)->where('status', '0')->update(['status'=>'4']);
         }
+    }
+
+    public function publishConfirmationAlert($booktrial_data){
+        Log::info("publishing trial alert");
+        $pubnub = new \Pubnub\Pubnub('pub-c-df66f0bb-9e6f-488d-a205-38862765609d', 'sub-c-d9cf3842-cf1f-11e6-90ff-0619f8945a4f');
+ 
+        $pubnub->publish('fitternity_trial_alert',['vendor_name'=>"vendor_name".$booktrial_data['_id']]);   
+    
     }
 
 }
