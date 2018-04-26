@@ -52,7 +52,8 @@ class BrandsController extends \BaseController {
                         'brand'     => $brand,
                         'finders'    => $finders
                 );
-                if(!empty($brand['vendor_stripe'])){
+                $city_id= City::where("name",'like','%'.$city.'%')->first(['_id']);
+                if(!empty($brand['vendor_stripe'])&&!empty($brand['vendor_stripe']['cities'])&&!empty($city_id)&&!empty($city_id->_id)&&in_array((int)$city_id->_id, $brand['vendor_stripe']['cities'])){
                 	$data["stripe_data"] = [
                 			'text'=> (!empty($brand['vendor_stripe'])&&!empty($brand['vendor_stripe']['text']))?$brand['vendor_stripe']['text']:"",
                 			'background-color'=> (!empty($brand['vendor_stripe'])&&!empty($brand['vendor_stripe']['background_color']))?$brand['vendor_stripe']['background_color']:"",
