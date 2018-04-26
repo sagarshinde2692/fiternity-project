@@ -1758,8 +1758,9 @@ class ServiceController extends \BaseController {
 			$data['share_message_email'] = $data['share_message_text'] = "Check-out ".$service_details['finder_name']." in ".$service_details['location']['name']." on Fitternity, India's biggest fitness discovery and booking platform. Pay-per-session available here - https://www.fitternity.com/".$finder_slug . " Download app to book -". Config::get('app.download_app_link');
 		}
 		
-		if($this->utilities->hasPendingPayments()){
-			$data['pending_payment'] = $this->utilities->hasPendingPayments();
+		$data['pending_payment'] = $this->utilities->hasPendingPayments();
+		if(!$data['pending_payment']){
+			unset($data['pending_payment']);	
 		}
 
 		return Response::json(array('status'=>200, 'data'=> $data));
