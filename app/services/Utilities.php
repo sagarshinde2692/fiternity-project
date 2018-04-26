@@ -2717,6 +2717,9 @@ Class Utilities {
             return true;
         
         }
+        if(isset($data['ratecard_flags']) && isset($data['ratecard_flags']["pay_at_vendor"])){
+            return false;
+        }
         Log::info("returning false");
         
         return false;
