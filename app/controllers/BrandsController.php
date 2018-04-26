@@ -52,15 +52,19 @@ class BrandsController extends \BaseController {
                         'brand'     => $brand,
                         'finders'    => $finders
                 );
-                if(isset($brand['stripe_text'])){
-                    $data["stripe_data"] = [
-                        'text'=> $brand['stripe_text'],
-                        'text_color'=> '#ffffff',
-                        'background'=> '-webkit-linear-gradient(left, #1392b3 0%, #20b690 100%)',
-                        'background-color'=> ''
-                    ];
-                    unset($brand['stripe_text']);
-                }
+                if(!empty($brand['vendor_stripe'])){
+                 $data["vendor_stripe"] = [
+                 'text'=> (!empty($brand['vendor_stripe'])&&!empty($brand['vendor_stripe']['text']))?$brand['vendor_stripe']['text']:"",
+                 'background_color'=> (!empty($brand['vendor_stripe'])&&!empty($brand['vendor_stripe']['background_color']))?$brand['vendor_stripe']['background_color']:"",
+                 'text_color'=> (!empty($brand['vendor_stripe'])&&!empty($brand['vendor_stripe']['text_color']))?$brand['vendor_stripe']['text_color']:"",
+                 'background_gradient'=> (!empty($brand['vendor_stripe'])&&!empty($brand['vendor_stripe']['background_gradient']))?$brand['vendor_stripe']['background_gradient']:""
+                 ];
+                 }
+                 if(!(!empty($brand['vendor_stripe'])&&!empty($brand['vendor_stripe']['text'])))
+                 		unset($data["vendor_stripe"]); 
+                 unset($brand['vendor_stripe']);
+                
+                
                 Cache::tags('brand_detail')->put("$slug-$city" ,$data,Config::get('cache.cache_time'));
                 
                 return Response::json(Cache::tags('brand_detail')->get("$slug-$city"));

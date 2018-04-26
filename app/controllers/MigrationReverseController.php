@@ -746,6 +746,7 @@ class MigrationReverseController extends \BaseController {
                     'service' 	=>  (isset($Finder->info['service'])) ? "<ul><li>". implode("</li><li>", $Finder->info['service'])."</li></ul>" : "",
                     'gstin'     => (isset($Finder->info) && isset($Finder->info['gstin'])) ? $Finder->info['gstin'] : "",
                     'terms_and_conditions'     => (isset($Finder->info) && isset($Finder->info['terms_and_conditions'])) ? $Finder->info['terms_and_conditions'] : "",
+                	'stripe'     => (!empty($Finder->info)&&!empty($Finder->info['stripe'])) ? $Finder->info['stripe']:null,
                 ],
                 'meta' 	=>  [
                     'title' 	=>  (isset($Finder->seo['title'])) ? trim($Finder->seo['title']) : "",
@@ -1956,6 +1957,7 @@ class MigrationReverseController extends \BaseController {
                 'slug' => $brand->slug,
                 'description' => isset($brand->description) ? $brand->description : "",
                 'coverImage' => isset($brand->media) && isset($brand->media['images']) && isset($brand->media['images']['cover']) ? $brand->media['images']['cover'] : "",
+            	'vendor_stripe' => isset($brand->vendor_stripe)? $brand->vendor_stripe:null,
                 'logo' => isset($brand->media) && isset($brand->media['images']) && isset($brand->media['images']['logo']) ? $brand->media['images']['logo'] : "",
             ];
 

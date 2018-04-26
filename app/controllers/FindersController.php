@@ -1114,14 +1114,23 @@ class FindersController extends \BaseController {
                 //     ];
 				// }
 
-				if(isset($response['finder']['stripe_text'])){
+				/* if(isset($response['finder']['stripe_text'])){
 					$response['vendor_stripe_data']	=	[
 						'text'=> $response['finder']['stripe_text'],
 						'text_color'=> '#ffffff',
 						'background'=> '-webkit-linear-gradient(left, #1392b3 0%, #20b690 100%)',
 						'background-color'=> ''
 					];
-				}
+				} */
+				if(!empty($response['finder'])&&!empty($response['finder']['info'])&&!empty($response['finder']['info']['stripe'])&&!empty($response['finder']['info']['stripe']['text'])){
+				 /* $response['vendor_stripe_data']	=	[
+				 'text'=> $response['finder']['stripe_text'],
+				 'text_color'=> '#ffffff',
+				 'background'=> '-webkit-linear-gradient(left, #1392b3 0%, #20b690 100%)',
+				 'background-color'=> ''
+				 ]; */
+				 }
+				 else unset($response['finder']['info']['stripe']);
 				if(isset($finder['commercial_type']) && $finder['commercial_type'] == 0){
 
 					unset($response['finder']['payment_options']);
