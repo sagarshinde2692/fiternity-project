@@ -2729,8 +2729,11 @@ class TransactionController extends \BaseController {
                 ->first();
 
         if($offer){
-
-            $ratecard['offer_convinience_fee'] = $data['offer_convinience_fee'] = true;
+            if(isset($ratecard["flags"]) && isset($ratecard["flags"]["pay_at_vendor"]) && $ratecard["flags"]["pay_at_vendor"]){
+                $ratecard['offer_convinience_fee'] = $data['offer_convinience_fee'] = false;    
+            }else{
+                $ratecard['offer_convinience_fee'] = $data['offer_convinience_fee'] = true;
+            }
             $data['amount_finder'] = $offer->price;
             $data['offer_id'] = $offer->_id;
 
