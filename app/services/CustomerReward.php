@@ -1236,8 +1236,7 @@ Class CustomerReward {
 
 
     public function couponCodeDiscountCheck($ratecard,$couponCode,$customer_id = false, $ticket = null, $ticket_quantity = 1, $service_id = null){
-
-
+        Log::info("dfjkhsdfkhskdjfhksdhfkjshdfkjhsdkjfhks",$ratecard["flags"]);
         if($ticket){
 
             $price = $ticket['price'] * $ticket_quantity;
@@ -1317,6 +1316,10 @@ Class CustomerReward {
         // }
         Log::info("coupon");
         Log::info($coupon);
+        if(isset($ratecard["flags"]) && isset($ratecard["flags"]["pay_at_vendor"]) && $ratecard["flags"]["pay_at_vendor"] === True){
+            Log::info($ratecard);
+            return $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false);
+        }
         
         if(isset($coupon)){
 

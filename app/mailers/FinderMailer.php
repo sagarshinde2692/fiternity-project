@@ -853,6 +853,10 @@ Class FinderMailer extends Mailer {
 
 		$label = 'Generic-Otp-Vendor';
 
+		if(!empty($data['customer_source']) && $data['customer_source'] == 'website'){
+			$label = 'Generic-Otp-AtStudio-Vendor';
+		}
+
 		if($data['finder_vcc_email'] != ''){
 			$user_email 	=  	explode(',', $data['finder_vcc_email']);
 		}else{
