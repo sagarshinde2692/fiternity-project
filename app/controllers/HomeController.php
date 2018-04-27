@@ -976,7 +976,7 @@ class HomeController extends BaseController {
             $show_other_vendor = false;
             $why_buy = false;
 
-            if($item['type']=='workout-session' && $device_type && $app_version && in_array($device_type, ['android', 'ios']) && $app_version > '4.4.3'){
+            if(isset($item['type']) && $item['type']=='workout-session' && $device_type && $app_version && in_array($device_type, ['android', 'ios']) && $app_version > '4.4.3'){
 
                 $header = "BOOKING SUCCESSFUL!";
 
