@@ -540,7 +540,7 @@ class RewardofferController extends BaseController {
 
                                             $reward_data['contents'] = ['Cool-Water Bottle'];
                                             $reward_data['payload_amount'] = 300;
-                                            $reward_data['image'] = 'https://b.fitn.in/gamification/reward_new/Bottle_1.png';
+                                            $reward_data['image'] = 'https://b.fitn.in/gamification/reward_new/new/Bottle_1.png';
                                             $reward_data['gallery'] = [];
 
                                         }else{
@@ -549,7 +549,7 @@ class RewardofferController extends BaseController {
 
                                             $reward_data['contents'] = ['Waterproof Gym Bag'];
                                             $reward_data['payload_amount'] = 850;
-                                            $reward_data['image'] = 'https://b.fitn.in/gamification/reward_new/GymBag_1.png';
+                                            $reward_data['image'] = 'https://b.fitn.in/gamification/reward_new/new/GymBag_1.png';
                                             $reward_data['gallery'] = [];
                                         }
                                         
