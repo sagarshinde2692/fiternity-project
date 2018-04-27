@@ -6793,65 +6793,80 @@ class SchedulebooktrialsController extends \BaseController {
 
             if($booktrial->type == "booktrials" && !isset($booktrial->post_trial_status_updated_by_fitcode)){
 
-                $fitcash = $this->utilities->getFitcash($booktrial->toArray());
+                $post_trial_status_updated_by_fitcode = time();
+                $booktrial = Booktrial::where('_id', intval($booktrial_id))->where('post_trial_status_updated_by_fitcode', 'exists', false)->update(['post_trial_status_updated_by_fitcode'=>$post_trial_status_updated_by_fitcode]);
+                if($booktrial){
 
-                $req = array(
-                    "customer_id"=>$booktrial['customer_id'],
-                    "trial_id"=>$booktrial['_id'],
-                    "amount"=> $fitcash,
-                    "amount_fitcash" => 0,
-                    "amount_fitcash_plus" => $fitcash,
-                    "type"=>'CREDIT',
-                    'entry'=>'credit',
-                    'validity'=>time()+(86400*21),
-                    'description'=>"Added FitCash+ on Trial Attendance By Fitcode, Applicable for buying a membership at ".ucwords($booktrial['finder_name'])." Expires On : ".date('d-m-Y',time()+(86400*21)),
-                    "valid_finder_id"=>intval($booktrial['finder_id']),
-                    "finder_id"=>intval($booktrial['finder_id']),
-                );
+                    Log::info("Adding trial fitcash");
 
-                $this->utilities->walletTransaction($req);
+                    $fitcash = $this->utilities->getFitcash($booktrial->toArray());
 
+                    $req = array(
+                        "customer_id"=>$booktrial['customer_id'],
+                        "trial_id"=>$booktrial['_id'],
+                        "amount"=> $fitcash,
+                        "amount_fitcash" => 0,
+                        "amount_fitcash_plus" => $fitcash,
+                        "type"=>'CREDIT',
+                        'entry'=>'credit',
+                        'validity'=>time()+(86400*21),
+                        'description'=>"Added FitCash+ on Trial Attendance By Fitcode, Applicable for buying a membership at ".ucwords($booktrial['finder_name'])." Expires On : ".date('d-m-Y',time()+(86400*21)),
+                        "valid_finder_id"=>intval($booktrial['finder_id']),
+                        "finder_id"=>intval($booktrial['finder_id']),
+                    );
+                    
+                    $this->utilities->walletTransaction($req);
+                }
+                
                 $message = "Hi ".ucwords($booktrial['customer_name']).", Rs.".$fitcash." Fitcash is added in your wallet as surprise on your attendace . Use it to buy ".ucwords($booktrial['finder_name'])."'s membership at lowest price. Valid for 21 days";
 
             }else if($booktrial->type == "workout-session" && !isset($booktrial->post_trial_status_updated_by_fitcode) && !(isset($booktrial->payment_done) && !$booktrial->payment_done)){
 
-                $fitcash = round($this->utilities->getWorkoutSessionFitcash($booktrial->toArray()) * $booktrial->amount_finder / 100);
-                
-                $req = array(
-                    "customer_id"=>$booktrial['customer_id'],
-                    "trial_id"=>$booktrial['_id'],
-                    "amount"=> $fitcash,
-                    "amount_fitcash" => 0,
-                    "amount_fitcash_plus" => $fitcash,
-                    "type"=>'CREDIT',
-                    'entry'=>'credit',
-                    'validity'=>time()+(86400*21),
-                    'description'=>"Added FitCash+ on Workout Session Attendance By Fitcode",
-                );
-                
-                //added check and message
-                $booktrial->pps_fitcash=$fitcash;
-                $booktrial->pps_cashback=$this->utilities->getWorkoutSessionLevel((int)$booktrial->customer_id)['current_level']['cashback'];
-                
-                $booktrial->pps_srp_link=Config::get('app.website');
+                $post_trial_status_updated_by_fitcode = time();
+                $booktrial = Booktrial::where('_id', intval($booktrial_id))->where('post_trial_status_updated_by_fitcode', 'exists', false)->update(['post_trial_status_updated_by_fitcode'=>$post_trial_status_updated_by_fitcode]);
 
-                if(!empty($booktrial->category) && !empty($booktrial->category->name) && !empty($booktrial->city) &&!empty($booktrial->city->name)){
-                    $booktrial->pps_srp_link=Config::get('app.website').'/'.$booktrial->city->name.'/'.newcategorymapping($booktrial->category->name);
+                if($booktrial){
+
+                    Log::info("Adding pps fitcash");
+                    
+                    $fitcash = round($this->utilities->getWorkoutSessionFitcash($booktrial->toArray()) * $booktrial->amount_finder / 100);
+                
+                    $req = array(
+                        "customer_id"=>$booktrial['customer_id'],
+                        "trial_id"=>$booktrial['_id'],
+                        "amount"=> $fitcash,
+                        "amount_fitcash" => 0,
+                        "amount_fitcash_plus" => $fitcash,
+                        "type"=>'CREDIT',
+                        'entry'=>'credit',
+                        'validity'=>time()+(86400*21),
+                        'description'=>"Added FitCash+ on Workout Session Attendance By Fitcode",
+                    );
+                    
+                    //added check and message
+                    $booktrial->pps_fitcash=$fitcash;
+                    $booktrial->pps_cashback=$this->utilities->getWorkoutSessionLevel((int)$booktrial->customer_id)['current_level']['cashback'];
+                    
+                    $booktrial->pps_srp_link=Config::get('app.website');
+
+                    if(!empty($booktrial->category) && !empty($booktrial->category->name) && !empty($booktrial->city) &&!empty($booktrial->city->name)){
+                        $booktrial->pps_srp_link=Config::get('app.website').'/'.$booktrial->city->name.'/'.newcategorymapping($booktrial->category->name);
+                    }
+
+                    
+                    $temp=$booktrial->send_communication;
+                    if(isset($booktrial->pay_later)&&$booktrial->pay_later!=""&&$booktrial->pay_later==true)
+                        $temp['customer_sms_paypersession_FitCodeEnter_PayLater']=$this->customersms->workoutSmsOnFitCodeEnterPayLater($booktrial->toArray());
+                    else $temp['customer_sms_paypersession_FitCodeEnter']=$this->customersms->workoutSmsOnFitCodeEnter($booktrial->toArray());
+                        
+                    $this->deleteTrialCommunication($booktrial);
+                            
+
+                    $this->utilities->walletTransaction($req);
+
                 }
-
-                
-            	$temp=$booktrial->send_communication;
-            	if(isset($booktrial->pay_later)&&$booktrial->pay_later!=""&&$booktrial->pay_later==true)
-            		$temp['customer_sms_paypersession_FitCodeEnter_PayLater']=$this->customersms->workoutSmsOnFitCodeEnterPayLater($booktrial->toArray());
-            	else $temp['customer_sms_paypersession_FitCodeEnter']=$this->customersms->workoutSmsOnFitCodeEnter($booktrial->toArray());
-            		
-            	$this->deleteTrialCommunication($booktrial);
-                		
-
-                $this->utilities->walletTransaction($req);
-
                 $message = "Hi ".ucwords($booktrial['customer_name']).", Rs.".$fitcash." Fitcash is added in your wallet as surprise on your attendace . Use it to buy ".ucwords($booktrial['finder_name'])."'s membership at lowest price. Valid for 21 days";
-
+                
             }
 
             $booktrial->post_trial_status = 'attended';
