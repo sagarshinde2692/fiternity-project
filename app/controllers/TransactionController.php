@@ -646,6 +646,9 @@ class TransactionController extends \BaseController {
 
                 $data['wallet_amount'] = $data['cashback_detail']['amount_deducted_from_wallet'];
             }
+            if(isset($ratecard) && isset($ratecard["ratecard_flags"]) && $ratecard["ratecard_flags"]["pay_at_vendor"]){   //No fitcash to be deducted on Pay at vendor
+                $data['wallet_amount'] = 0;
+            }
 
             if(isset($data['wallet_amount']) && $data['wallet_amount'] > 0){
 
@@ -2869,11 +2872,11 @@ class TransactionController extends \BaseController {
         $data['status'] =  '0';
         $data['payment_mode'] =  'paymentgateway';
         $data['source_of_membership'] =  'real time';
+        $data['ratecard_flags'] = isset($ratecard['flags']) ? $ratecard['flags'] : array();
+        // if($this->convinienceFeeFlag() && $this->utilities->isConvinienceFeeApplicable($ratecard)){
 
-        if($this->convinienceFeeFlag() && $this->utilities->isConvinienceFeeApplicable($ratecard)){
-
-            $data['ratecard_flags'] = isset($ratecard['flags']) ? $ratecard['flags'] : array();
-        }
+            
+        // }
 
         return array('status' => 200,'data' =>$data);
 
@@ -4889,8 +4892,11 @@ class TransactionController extends \BaseController {
                     'finder_id'=>$ratecard['finder_id'],
                     'order_type'=>$ratecard['type']
                 ];
-
-                $data['wallet_balance'] = $this->utilities->getWalletBalance($customer_id,$getWalletBalanceData);
+                if(isset($ratecard) && isset($ratecard["flags"]) && isset($ratecard["flags"]["pay_at_vendor"]) && $ratecard["flags"]["pay_at_vendor"] == True){
+                    $data['wallet_balance'] = 0;    
+                }else{
+                    $data['wallet_balance'] = $this->utilities->getWalletBalance($customer_id,$getWalletBalanceData);
+                }
 
                 $data['fitcash_applied'] = $data['amount_payable'] > $data['wallet_balance'] ? $data['wallet_balance'] : $data['amount_payable'];
                 
