@@ -4700,7 +4700,7 @@ class CustomerController extends \BaseController {
 
 	public function getActionV1($order,$method = false){
 
-		$finder = Finder::where('finder_id',(int)$order['finder_id'])->find();
+		$finder = Finder::find((int)$order['finder_id']);
 
 		$cult_vendor_flag = false;
 
