@@ -185,17 +185,25 @@ class Service extends \Basemodel{
 		if($ratecardsarr){
 	//            var_dump($ratecardsarr);
 
-            $offer_exists = false;
-            foreach ($ratecardsarr as $key => $value) {
-				
-            	$ratecardoffers 	= 	[];
-				 
-				
-				$serviceoffers = Offer::where('vendorservice_id', $this->_id)->where('hidden', false)->orderBy('order', 'asc')
+			$offer_exists = false;
+			
+			$serviceoffers = Offer::where('vendorservice_id', $this->_id)->where('hidden', false)->orderBy('order', 'asc')
 									->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
 									->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()) ))
 									->get(['start_date','end_date','price','type','allowed_qty','remarks','offer_type','ratecard_id'])
 									->toArray();
+			
+			foreach ($ratecardsarr as $key => $value) {
+
+				if((isset($value['expiry_date']) && $value['expiry_date'] != "" && strtotime("+ 1 days", strtotime($value['expiry_date'])) < time()) || (isset($value['start_date']) && $value['start_date'] != "" && strtotime($value['start_date']) > time())){
+
+					Log::info("ratecard expired");
+					Log::info($value['_id']);
+
+					continue;
+				}
+				
+            	$ratecardoffers 	= 	[];
 									// Log::info($serviceoffers);
                 if(!empty($value['_id']) && isset($value['_id'])){
 					
