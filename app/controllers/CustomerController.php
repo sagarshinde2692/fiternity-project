@@ -4700,6 +4700,15 @@ class CustomerController extends \BaseController {
 
 	public function getActionV1($order,$method = false){
 
+		$finder = Finder::where('finder_id',(int)$order['finder_id'])->find();
+
+		$cult_vendor_flag = false;
+
+		if($finder && isset($finder['brand_id']) && $finder['brand_id'] == 134){
+
+			$cult_vendor_flag = true;
+		}
+
 		$action = [
 			'change_start_date'=>null,
 			'change_start_date_request'=>null,
@@ -4734,7 +4743,7 @@ class CustomerController extends \BaseController {
 			];
 		}
 
-		if(!isset($order->preferred_starting_change_date) && isset($order['success_date']) && time() <= strtotime($order['success_date'].'+10 days') && $change_start_date){
+		if(!isset($order->preferred_starting_change_date) && isset($order['success_date']) && time() <= strtotime($order['success_date'].'+10 days') && $change_start_date && !$cult_vendor_flag){
 
 			$min_date = strtotime('+1 days');
 			$max_date = strtotime($order['success_date'].'+29 days');

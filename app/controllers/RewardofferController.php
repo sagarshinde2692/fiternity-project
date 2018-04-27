@@ -338,8 +338,8 @@ class RewardofferController extends BaseController {
 
         if(isset($finder['brand_id']) && $finder['brand_id'] == 134 && !in_array($finder_id,[13761,13762,13763,13764,13765]) ){
 
-            $min_date = strtotime(' + 4 days');
-            $max_date = strtotime(' + 34 days');
+            $min_date = strtotime(' + 2 days');
+            $max_date = strtotime(' + 32 days');
         }
 
 
@@ -540,7 +540,7 @@ class RewardofferController extends BaseController {
 
                                             $reward_data['contents'] = ['Cool-Water Bottle'];
                                             $reward_data['payload_amount'] = 300;
-                                            $reward_data['image'] = 'https://b.fitn.in/gamification/reward/goodies/productskit/bottle.png';
+                                            $reward_data['image'] = 'https://b.fitn.in/gamification/reward_new/Bottle_1.png';
                                             $reward_data['gallery'] = [];
 
                                         }else{
@@ -549,7 +549,7 @@ class RewardofferController extends BaseController {
 
                                             $reward_data['contents'] = ['Waterproof Gym Bag'];
                                             $reward_data['payload_amount'] = 850;
-                                            $reward_data['image'] = 'https://b.fitn.in/gamification/reward/goodies/productskit/gymbag.png';
+                                            $reward_data['image'] = 'https://b.fitn.in/gamification/reward_new/GymBag_1.png';
                                             $reward_data['gallery'] = [];
                                         }
                                         
