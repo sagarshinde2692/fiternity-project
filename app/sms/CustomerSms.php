@@ -1016,9 +1016,7 @@ Class CustomerSms extends VersionNextSms{
 	
 	public function sendGroupInvite($data){
 		
-		Log::info("invite sent to");
-		Log::info($data);
-		// return;
+		
 		$label = 'GroupInvite-Customer';
 		
 		$to = $data['phone'];
@@ -1029,9 +1027,7 @@ Class CustomerSms extends VersionNextSms{
 
 	public function addGroupNewMember($data){
 
-		Log::info("invite sent to");
-		Log::info($data);
-		// return;
+		
 		$label = 'AddGroupNewMember-Customer';
 		
 		$to = $data['customer_phone'];
@@ -1042,9 +1038,7 @@ Class CustomerSms extends VersionNextSms{
 
 	public function addGroupOldMembers($data){
 		
-		Log::info("invite sent to");
-		Log::info($data);
-		// return;
+		
 		$label = 'AddGroupOldMembers-Customer';
 		
 		$to = $data['customer_phone'];
@@ -1056,9 +1050,7 @@ Class CustomerSms extends VersionNextSms{
 	
 	public function workoutSmsOnFitCodeEnter($data){
 		
-		Log::info("workoutSmsOnFitCodeEnter ");
-		Log::info($data);
-		// return;
+		
 		$label = 'PayPerSession-OnFitCodeEnter';
 		
 		$to = $data['customer_phone'];
@@ -1069,9 +1061,7 @@ Class CustomerSms extends VersionNextSms{
 	
 	public function workoutSmsOnFitCodeEnterPayLater($data){
 		
-		Log::info("workoutSmsOnFitCodeEnterPayLater ");
-		Log::info($data);
-		// return;
+		
 		$label = 'PayPerSession-OnFitCodeEnterPayLater';
 		
 		$to = $data['customer_phone'];
@@ -1082,14 +1072,22 @@ Class CustomerSms extends VersionNextSms{
 	
 	protected function bookTrialReminderBefore10Min($data,$delay){
 		
-		\Log::info("workout sessoin before 10 min sms");
-		// return "sent";
+		
 		$label = 'BookTrialReminderBefore10Min-Customer';
 		
 		$to = $data['customer_phone'];
 		
 		return $this->common($label,$to,$data,$delay);
 		
+	}
+
+	public function atVendorOrderCaputure($data){
+		
+		$label = 'AtVendorOrderCaputure-Customer';
+		
+		$to = $data['customer_phone'];
+		
+		return $this->common($label,$to,$data);	
 	}
 	
 	public function common($label,$to,$data,$delay = 0){

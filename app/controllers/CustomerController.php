@@ -1669,7 +1669,7 @@ class CustomerController extends \BaseController {
 		$orders 			=  	[];
 		$membership_types 		= Config::get('app.membership_types');
 
-		$orderData 			= 	Order::where(function($query){$query->where('status', '1')->orWhere('cod_otp', 'exists', true);})->where('customer_email','=',$customer_email)->whereIn('type',$membership_types)->where('schedule_date','exists',false)->where(function($query){$query->orWhere('preferred_starting_date','exists',true)->orWhere('start_date','exists',true);})->skip($offset)->take($limit)->orderBy('_id', 'desc')->get();
+		$orderData 			= 	Order::where(function($query){$query->where('status', '1')->orWhere('cod_otp', 'exists', true)->orWhere(function($q1){$q1->where("payment_mode", "at the studio")->where("customer_source","website");});})->where('customer_email','=',$customer_email)->whereIn('type',$membership_types)->where('schedule_date','exists',false)->where(function($query){$query->orWhere('preferred_starting_date','exists',true)->orWhere('start_date','exists',true);})->skip($offset)->take($limit)->orderBy('_id', 'desc')->get();
 
 
 		if(count($orderData) > 0){
@@ -3438,7 +3438,7 @@ class CustomerController extends \BaseController {
 				}
 
 				$result['campaigns'][] = [
-					'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/app-summer.jpg',
+					'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/mad8-app.png',
 					'link'=>'ftrnty://fitternity.com/',
 					'title'=>'Fitness Sale',
 					'height'=>100,
@@ -3510,7 +3510,7 @@ class CustomerController extends \BaseController {
 				}
 
 				$result['campaigns'][] = [
-					'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/app-summer.jpg',
+					'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/mad8-app.png',
 					'link'=>'ftrnty://ftrnty.com/search/all',
 					'title'=>'Fitness Sale',
 					'height'=>100,

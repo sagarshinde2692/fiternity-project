@@ -447,9 +447,20 @@ class TransactionController extends \BaseController {
                 $ticket = Ticket::where('_id', $data['ticket_id'])->first();
 
                 if($ticket){
+
+                    if($ticket['sold'] >= $ticket['quantity']){
+
+                        $resp   =   array('status' => 400,'message' => "All Ticket Sold Out");
+
+                        return Response::json($resp,$this->error_status);
+                    }
+
                     $data['amount_customer'] = $data['amount'] = $data['amount_finder'] = $data['ticket_quantity'] * $ticket->price;
+
                 }else{
+
                     $resp   =   array('status' => 400,'message' => "Ticket not found");
+
                     return Response::json($resp,$this->error_status);
                 }
                 
@@ -645,6 +656,9 @@ class TransactionController extends \BaseController {
             if(isset($data['wallet']) && $data['wallet'] == true){
 
                 $data['wallet_amount'] = $data['cashback_detail']['amount_deducted_from_wallet'];
+            }
+            if(isset($ratecard) && isset($ratecard["ratecard_flags"]) && $ratecard["ratecard_flags"]["pay_at_vendor"]){   //No fitcash to be deducted on Pay at vendor
+                $data['wallet_amount'] = 0;
             }
 
             if(isset($data['wallet_amount']) && $data['wallet_amount'] > 0){
@@ -964,7 +978,7 @@ class TransactionController extends \BaseController {
 
         if($data['payment_mode'] == 'at the studio' && isset($data['wallet']) && $data['wallet']){
 
-            $data_otp = array_only($data,['finder_id','order_id','service_id','ratecard_id','payment_mode','finder_vcc_mobile','finder_vcc_email','customer_name','service_name','service_duration','finder_name']);
+            $data_otp = array_only($data,['finder_id','order_id','service_id','ratecard_id','payment_mode','finder_vcc_mobile','finder_vcc_email','customer_name','service_name','service_duration','finder_name', 'customer_source','amount_finder','amount','finder_location','customer_email','customer_phone','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon']);
 
             $data_otp['action'] = "vendor_otp";
 
@@ -1033,18 +1047,34 @@ class TransactionController extends \BaseController {
                 $otp_data['otp'] = $addTemp['otp'];
             }
 
-            $otp_data['customer_name'] = $data['customer_name'];
+
+            $otp_data = array_merge($data_otp,$otp_data);
+
+            /*$otp_data['customer_name'] = $data['customer_name'];
             $otp_data['service_name'] = $data['service_name'];
             $otp_data['service_duration'] = $data['service_duration'];
             $otp_data['finder_name'] = $data['finder_name'];
+            $otp_data['customer_source'] = $data['customer_source'];
+            $otp_data['amount'] = $data['amount'];
+            $otp_data['amount_finder'] = $data['amount_finder'];
+            $otp_data['finder_location'] = $data['finder_location'];*/
 
             $this->findersms->genericOtp($otp_data);
             $this->findermailer->genericOtp($otp_data);
+
+            if(!$this->vendor_token){
+
+                $this->customermailer->atVendorOrderCaputure($otp_data);
+                $this->customersms->atVendorOrderCaputure($otp_data);
+            }
 
             $resp['vendor_otp'] = $otp_data['otp'];
 
             $resp['data']['verify_otp_url'] = Config::get('app.url')."/kiosk/vendor/verifyotp";
             $resp['data']['resend_otp_url'] = Config::get('app.url')."/temp/regenerateotp/".$otp_data['temp_id'];
+            if($data["customer_source"] == "website"){
+                $resp['data']['show_success'] = true;
+            }
 
         }
 
@@ -1089,6 +1119,10 @@ class TransactionController extends \BaseController {
             'otp'=>'required'
         );
 
+        if(!$this->vendor_token){
+            $rules['finder_id'] = 'required'; 
+        }
+
         $validator = Validator::make($data,$rules);
 
         $app_version  = (float)Request::header('App-Version');
@@ -1111,11 +1145,18 @@ class TransactionController extends \BaseController {
             return Response::json(['status' => 400, "message" => "Already Status Successfull"],$status);
         }
 
-        $decodeKioskVendorToken = decodeKioskVendorToken();
+        if($this->vendor_token){
 
-        $vendor = $decodeKioskVendorToken->vendor;
+            $decodeKioskVendorToken = decodeKioskVendorToken();
 
-        $finder_id = (int)$vendor->_id;
+            $vendor = $decodeKioskVendorToken->vendor;
+
+            $finder_id = (int)$vendor->_id;
+
+        }else{
+
+            $finder_id = (int)$data['finder_id'];
+        }
 
         if($finder_id != $order['finder_id']){
 
@@ -1171,6 +1212,10 @@ class TransactionController extends \BaseController {
             $data['type'] = $order['type'];
             $data['premium_session'] = true;
 
+            if($this->vendor_token){
+                $data['order_success_flag'] = 'kiosk';
+            }
+
             if(isset($order['start_date']) && $order['start_date'] != ""){
                 $data['schedule_date'] = date('d-m-Y',strtotime($order['start_date']));
             }
@@ -1201,11 +1246,15 @@ class TransactionController extends \BaseController {
         }else{
 
             $data['status'] = 'success';
-            $data['order_success_flag'] = 'kiosk';
+            $data['order_success_flag'] = 'admin';
             $data['order_id'] = (int)$data['order_id'];
             $data['customer_email'] = $order['customer_email'];
             $data['send_communication_customer'] = 1;
             $data['send_communication_vendor'] = 1;
+
+            if($this->vendor_token){
+                $data['order_success_flag'] = 'kiosk';
+            }
 
             return $this->successCommon($data);
 
@@ -1752,6 +1801,18 @@ class TransactionController extends \BaseController {
             $this->utilities->addAmountToReferrer($order);
 
             $this->utilities->addAssociateAgent($order);
+
+            if(!empty($order['ticket_id']) && !empty($order['ticket_quantity'])){
+
+                $ticket = Ticket::find(intval($order['ticket_id']));
+
+                if($ticket){
+
+                    $ticket->sold = (int)($ticket->sold + (int)$order['ticket_quantity']);
+                    $ticket->update();
+                }
+
+            }
 
             // $this->utilities->saavn($order);
             
@@ -2698,8 +2759,11 @@ class TransactionController extends \BaseController {
                 ->first();
 
         if($offer){
-
-            $ratecard['offer_convinience_fee'] = $data['offer_convinience_fee'] = true;
+            if(isset($ratecard["flags"]) && isset($ratecard["flags"]["pay_at_vendor"]) && $ratecard["flags"]["pay_at_vendor"]){
+                $ratecard['offer_convinience_fee'] = $data['offer_convinience_fee'] = false;    
+            }else{
+                $ratecard['offer_convinience_fee'] = $data['offer_convinience_fee'] = true;
+            }
             $data['amount_finder'] = $offer->price;
             $data['offer_id'] = $offer->_id;
 
@@ -2835,11 +2899,11 @@ class TransactionController extends \BaseController {
         $data['status'] =  '0';
         $data['payment_mode'] =  'paymentgateway';
         $data['source_of_membership'] =  'real time';
+        $data['ratecard_flags'] = isset($ratecard['flags']) ? $ratecard['flags'] : array();
+        // if($this->convinienceFeeFlag() && $this->utilities->isConvinienceFeeApplicable($ratecard)){
 
-        if($this->convinienceFeeFlag() && $this->utilities->isConvinienceFeeApplicable($ratecard)){
-
-            $data['ratecard_flags'] = isset($ratecard['flags']) ? $ratecard['flags'] : array();
-        }
+            
+        // }
 
         return array('status' => 200,'data' =>$data);
 
@@ -4855,8 +4919,11 @@ class TransactionController extends \BaseController {
                     'finder_id'=>$ratecard['finder_id'],
                     'order_type'=>$ratecard['type']
                 ];
-
-                $data['wallet_balance'] = $this->utilities->getWalletBalance($customer_id,$getWalletBalanceData);
+                if(isset($ratecard) && isset($ratecard["flags"]) && isset($ratecard["flags"]["pay_at_vendor"]) && $ratecard["flags"]["pay_at_vendor"] == True){
+                    $data['wallet_balance'] = 0;    
+                }else{
+                    $data['wallet_balance'] = $this->utilities->getWalletBalance($customer_id,$getWalletBalanceData);
+                }
 
                 $data['fitcash_applied'] = $data['amount_payable'] > $data['wallet_balance'] ? $data['wallet_balance'] : $data['amount_payable'];
                 
@@ -5237,13 +5304,17 @@ class TransactionController extends \BaseController {
 
         $otp = $data['otp'];
 
-        $order = Order::where('customer_id', $customer_id)->where('_id', $order_id)->where('cod_otp', $otp)->first();
+        $order = Order::where('customer_id', $customer_id)->where('_id', $order_id)->where(function($query) use ($otp){$query->orWhere('cod_otp', $otp)->orWhere("otp_data.otp", $otp); })->first();
 
         if(!$order){
             return Response::json(array('status' => 404,'message' => 'Please enter the valid code'), $this->error_status);
         }
-
-        $order->cod_otp_verified = true;
+        if(isset($order["cod_otp"]) && $order["cod_otp"] == $otp){
+            $order->cod_otp_verified = true;
+        }
+        if(isset($order["otp_data"]) && isset($order["otp_data"]["otp"]) && $order["otp_data"]["otp"] == $otp){
+            $order->vendor_otp_verified = true;
+        }
 
         $order->update();
 

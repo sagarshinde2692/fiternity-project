@@ -467,6 +467,16 @@ class HomeController extends BaseController {
             ];
 
             $campaigns[] = [
+                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/mad8-web.png',
+                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/mad8-resp.png',
+                'link'=>'',
+                'title'=>'Mad 8 banner',
+                'height'=>100,
+                'width'=>375,
+                'ratio'=>(float) number_format(100/375,2)
+            ];
+
+            $campaigns[] = [
                 'image'=>'https://b.fitn.in/global/Homepage-branding-2018/new-reward-web.png',
                 'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Rewards-MOB.png',
                 'link'=>Config::get('app.website').'/rewards',
@@ -477,15 +487,15 @@ class HomeController extends BaseController {
                 'ratio'=>(float) number_format(100/375,2)
             ];
 
-            $campaigns[] = [
-                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/summer.jpg',
-                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/summer-m.jpg',
-                'link'=>Config::get('app.website').'/'.$city.'/fitness',
-                'title'=>'Fitness Sale',
-                'height'=>100,
-                'width'=>375,
-                'ratio'=>(float) number_format(100/375,2)
-            ];
+            // $campaigns[] = [
+            //     'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/summer.jpg',
+            //     'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/summer-m.jpg',
+            //     'link'=>Config::get('app.website').'/'.$city.'/fitness',
+            //     'title'=>'Fitness Sale',
+            //     'height'=>100,
+            //     'width'=>375,
+            //     'ratio'=>(float) number_format(100/375,2)
+            // ];
             
             $campaigns[] = [
                 'image'=>'https://b.fitn.in/global/Homepage-branding-2018/vgroup-web.png',
@@ -1661,13 +1671,16 @@ class HomeController extends BaseController {
                     $subline = "Hi <b>".$item['customer_name']."</b>, your <b>".$booking_details_data['service_duration']['value']."</b> meal subscription with <b>".$booking_details_data["finder_name_location"]['value']."</b> has been confirmed.We have also sent you a confirmation Email and SMS";
 
                      if(isset($item['booking_for_others']) && $item['booking_for_others']){
-
                         $subline = "You have booked a Meal Subscription for ".ucwords($item['customer_name'])." for ".$booking_details_data['service_name']['value']." with ".$booking_details_data["finder_name_location"]['value'].". We have also sent a confirmation Email and SMS.";
                     }
                 }
 
                 if(isset($item['payment_mode']) && $item['payment_mode'] == 'cod'){
                     $subline= "Hi <b>".$item['customer_name']."</b>, your <b>".$booking_details_data['service_duration']['value']."</b> Membership at <b>".$booking_details_data["finder_name_location"]['value']."</b> has been confirmed. It will be activated once we collect your cash payment. We have also sent you a confirmation Email and SMS";
+                }
+                Log::info("item ---" . $item['payment_mode']);
+                if(isset($item['payment_mode']) && $item['payment_mode'] == 'at the studio'){
+                    $subline= "Hi <b>".$item['customer_name']."</b>, your <b>".$booking_details_data['service_duration']['value']."</b> Membership at <b>".$booking_details_data["finder_name_location"]['value']."</b> has been blocked/reserved. Activate your membership with an activation code (given by ".$booking_details_data["finder_name_location"]['value'].") on making the payment at the gym/studio.";
                 }
 
                 if(isset($_GET['device_type']) && in_array($_GET['device_type'], ['ios', 'android'])){

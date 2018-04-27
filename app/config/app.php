@@ -19,19 +19,19 @@ return array(
 	// 'website_deeplink' =>'https://ftrnty.com',
 
 	//stage
-// 	'new_search_url' =>'http://apistage.fitn.in:5000/',
-// 	'url' => 'http://apistage.fitn.in',
-// 	'admin_url' => 'http://adminstage.fitn.in',
-// 	'website' => 'http://apistage.fitn.in:8902',
-// 	'sidekiq_url' => 'http://kick.fitn.in/',
-// 	'queue' => 'booktrial',
-// 	'vendor_communication' => false,
-// 	'env' => 'stage',
-// 	'debug' => TRUE,
-// 	'metropolis' => 'http://apisatge.fitn.in:8989',
-// 	'amazonpay_isSandbox' => 'true',
-// 	'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
-// 	'website_deeplink' =>'https://ftrnty.com',
+	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
+	// 'url' => 'http://apistage.fitn.in',
+	// 'admin_url' => 'http://adminstage.fitn.in',
+	// 'website' => 'http://apistage.fitn.in:8902',
+	// 'sidekiq_url' => 'http://kick.fitn.in/',
+	// 'queue' => 'booktrial',
+	// 'vendor_communication' => false,
+	// 'env' => 'stage',
+	// 'debug' => TRUE,
+	// 'metropolis' => 'http://apisatge.fitn.in:8989',
+	// 'amazonpay_isSandbox' => 'true',
+	// 'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
+	// 'website_deeplink' =>'https://ftrnty.com',
 
 	//beta
 	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
@@ -769,6 +769,7 @@ return array(
 		],
 	],
 	'paypersession_level_icon_base_url'=>'https://b.fitn.in/paypersession/level-',
-	'paypersession_lock_icon'=>'https://b.fitn.in/paypersession/lock-icon.png'
+	'paypersession_lock_icon'=>'https://b.fitn.in/paypersession/lock-icon.png',
+	'remove_patti_from_brands' => [10861,10863,10868,10870,10872,10875,10876,10877,10880,10883,10886,10887,10888,10890,10891,10892,10894,10895,10897,10900,4821,4818,5596,5682,5729,9508,9507,12254,13900,12250,12252,13881,12246,13878,13883,13886,13887,13902,12247,12256,12258,12260,12261,13879,13884,13899,4492,9989,12480,1580,1581,1582,1583,1584,1602,1604,1605,1607,2235,2236,6893,329,417,424,613,1395,1928,2864,4773,6129,6466,6907,7656,9419,9427,9436,9485,10571,10968,11183,11231,12087,12164,13269,13901,1490,6162,9365,13030,8546,1510,11038,7866,8910,4773,1824,1828,1967,1968,2044,2076,2148,2223,4397,7299,8728,10669,12045,12114,12118,12123,12166,13898,12569,13876,1747,1813,4528,4530,9984,10081,561,4534]
 
 );
