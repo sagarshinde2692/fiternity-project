@@ -467,6 +467,16 @@ class HomeController extends BaseController {
             ];
 
             $campaigns[] = [
+                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/mad8-web.png',
+                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/mad8-resp.png',
+                'link'=>'',
+                'title'=>'Mad 8 banner',
+                'height'=>100,
+                'width'=>375,
+                'ratio'=>(float) number_format(100/375,2)
+            ];
+
+            $campaigns[] = [
                 'image'=>'https://b.fitn.in/global/Homepage-branding-2018/new-reward-web.png',
                 'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Rewards-MOB.png',
                 'link'=>Config::get('app.website').'/rewards',
@@ -477,15 +487,15 @@ class HomeController extends BaseController {
                 'ratio'=>(float) number_format(100/375,2)
             ];
 
-            $campaigns[] = [
-                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/summer.jpg',
-                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/summer-m.jpg',
-                'link'=>Config::get('app.website').'/'.$city.'/fitness',
-                'title'=>'Fitness Sale',
-                'height'=>100,
-                'width'=>375,
-                'ratio'=>(float) number_format(100/375,2)
-            ];
+            // $campaigns[] = [
+            //     'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/summer.jpg',
+            //     'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/summer-m.jpg',
+            //     'link'=>Config::get('app.website').'/'.$city.'/fitness',
+            //     'title'=>'Fitness Sale',
+            //     'height'=>100,
+            //     'width'=>375,
+            //     'ratio'=>(float) number_format(100/375,2)
+            // ];
             
             $campaigns[] = [
                 'image'=>'https://b.fitn.in/global/Homepage-branding-2018/vgroup-web.png',
