@@ -447,9 +447,20 @@ class TransactionController extends \BaseController {
                 $ticket = Ticket::where('_id', $data['ticket_id'])->first();
 
                 if($ticket){
+
+                    if($ticket['sold'] >= $ticket['quantity']){
+
+                        $resp   =   array('status' => 400,'message' => "All Ticket Sold Out");
+
+                        return Response::json($resp,$this->error_status);
+                    }
+
                     $data['amount_customer'] = $data['amount'] = $data['amount_finder'] = $data['ticket_quantity'] * $ticket->price;
+
                 }else{
+
                     $resp   =   array('status' => 400,'message' => "Ticket not found");
+
                     return Response::json($resp,$this->error_status);
                 }
                 
@@ -1752,6 +1763,18 @@ class TransactionController extends \BaseController {
             $this->utilities->addAmountToReferrer($order);
 
             $this->utilities->addAssociateAgent($order);
+
+            if(!empty($order['ticket_id']) && !empty($order['ticket_quantity'])){
+
+                $ticket = Ticket::find(intval($order['ticket_id']));
+
+                if($ticket){
+
+                    $ticket->sold = (int)($ticket->sold + (int)$order['ticket_quantity']);
+                    $ticket->update();
+                }
+
+            }
 
             // $this->utilities->saavn($order);
             

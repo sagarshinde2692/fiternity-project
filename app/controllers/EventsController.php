@@ -13,16 +13,56 @@ class EventsController extends \BaseController {
 	}
 
 	public function getEventInfo($slug) {
-		$eventInfo = DbEvent::where('slug', $slug)->get();
-		$event_id = $eventInfo[0]['_id'];
-		$vendor_ids = $eventInfo[0]['vendors'];
-		$tickets = Ticket::where('event_id', $event_id)->get();
-		$vendors = Finder::whereIn('_id', $vendor_ids)->get();
-		$response = array(
-			'event_info' => $eventInfo[0],
-			'ticket_info' => $tickets,
-			'vendor_info' => $vendors
-		);
-		return $response;
+
+		$eventInfo = DbEvent::where('slug', $slug)->first();
+
+		if($eventInfo){
+
+			$eventInfo = $eventInfo->toArray();
+
+			$tickets = Ticket::where('event_id',(int)$eventInfo['_id'])->get();
+
+			if(!empty($tickets)){
+
+				$tickets = $tickets->toArray();
+
+				foreach ($tickets as $key => &$value) {
+
+					$value['sold_out'] = false;
+
+					if($value['sold'] >= $value['quantity']){
+						$value['sold_out'] = true;
+					}
+				}
+
+			}else{
+
+				$tickets = [];
+			}
+
+			Finder::$withoutAppends = true;
+
+			$vendors = Finder::whereIn('_id',$eventInfo['vendors'])->get();
+
+			if(!empty($vendors)){
+
+				$vendors = $vendors->toArray();
+
+			}else{
+
+				$vendors = [];
+			}
+
+			$response = array(
+				'event_info' => $eventInfo,
+				'ticket_info' => $tickets,
+				'vendor_info' => $vendors
+			);
+
+			return Response::json($response,200);
+
+		}
+
+		return Response::json(["message"=>"Data Not Found"],404);
 	}
 }
