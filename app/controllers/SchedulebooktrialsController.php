@@ -6794,8 +6794,8 @@ class SchedulebooktrialsController extends \BaseController {
             if($booktrial->type == "booktrials" && !isset($booktrial->post_trial_status_updated_by_fitcode)){
 
                 $post_trial_status_updated_by_fitcode = time();
-                $booktrial = Booktrial::where('_id', intval($booktrial_id))->where('post_trial_status_updated_by_fitcode', 'exists', false)->update(['post_trial_status_updated_by_fitcode'=>$post_trial_status_updated_by_fitcode]);
-                if($booktrial){
+                $booktrial_update = Booktrial::where('_id', intval($booktrial_id))->where('post_trial_status_updated_by_fitcode', 'exists', false)->update(['post_trial_status_updated_by_fitcode'=>$post_trial_status_updated_by_fitcode]);
+                if($booktrial_update){
 
                     Log::info("Adding trial fitcash");
 
@@ -6823,9 +6823,9 @@ class SchedulebooktrialsController extends \BaseController {
             }else if($booktrial->type == "workout-session" && !isset($booktrial->post_trial_status_updated_by_fitcode) && !(isset($booktrial->payment_done) && !$booktrial->payment_done)){
 
                 $post_trial_status_updated_by_fitcode = time();
-                $booktrial = Booktrial::where('_id', intval($booktrial_id))->where('post_trial_status_updated_by_fitcode', 'exists', false)->update(['post_trial_status_updated_by_fitcode'=>$post_trial_status_updated_by_fitcode]);
+                $booktrial_update = Booktrial::where('_id', intval($booktrial_id))->where('post_trial_status_updated_by_fitcode', 'exists', false)->update(['post_trial_status_updated_by_fitcode'=>$post_trial_status_updated_by_fitcode]);
 
-                if($booktrial){
+                if($booktrial_update){
 
                     Log::info("Adding pps fitcash");
                     
