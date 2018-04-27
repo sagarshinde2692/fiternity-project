@@ -1118,7 +1118,9 @@ class FindersController extends \BaseController {
                 //         'background-color'=> ''
                 //     ];
 				// }
-
+				if(in_array($finder["_id"], Config::get('app.remove_patti_from_brands')) ){
+					$response['vendor_stripe_data'] = "no-patti";
+				}
 				if(isset($response['finder']['stripe_text'])){
 					$response['vendor_stripe_data']	=	[
 						'text'=> $response['finder']['stripe_text'],
