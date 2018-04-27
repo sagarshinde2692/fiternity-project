@@ -3106,8 +3106,10 @@ if (!function_exists('addTemp')) {
         if(isset($_GET['app_version']) && $_GET['app_version'] != ""){
             $temp->version = $_GET['app_version'];
         }
+
+        $vendor_token = Request::header('Authorization-Vendor');
         
-        if($data['action'] == "vendor_otp"){
+        if($vendor_token){
 
             $decodeKioskVendorToken = decodeKioskVendorToken();
 

@@ -975,7 +975,7 @@ Class Utilities {
 
 
     public function verifyOrder($data,$order){
-        if((isset($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin'])) || $order->pg_type == "PAYTM" || $order->pg_type == "AMAZON" || (isset($order['cod_otp_verified']) && $order['cod_otp_verified']) || (isset($order['pay_later']) && $order['pay_later'] && !(isset($order['session_payment']) && $order['session_payment']))){
+        if((isset($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin'])) || $order->pg_type == "PAYTM" || $order->pg_type == "AMAZON" || (isset($order['cod_otp_verified']) && $order['cod_otp_verified']) || (isset($order['vendor_otp_verified']) && $order['vendor_otp_verified']) || (isset($order['pay_later']) && $order['pay_later'] && !(isset($order['session_payment']) && $order['session_payment']))){
             if(($order->pg_type == "PAYTM"|| $order->pg_type == "AMAZON") && !(isset($data["order_success_flag"]))){
                 $hashreverse = getpayTMhash($order);
                 if($data["verify_hash"] == $hashreverse['reverse_hash']){
@@ -984,7 +984,7 @@ Class Utilities {
                     $hash_verified = false;
                 }
             }
-            if((isset($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin'])) || (isset($order['cod_otp_verified']) && $order['cod_otp_verified']) || (isset($order['pay_later']) && $order['pay_later'] && !(isset($order['session_payment']) && $order['session_payment']))){
+            if((isset($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin'])) || (isset($order['cod_otp_verified']) && $order['cod_otp_verified']) || (isset($order['vendor_otp_verified']) && $order['vendor_otp_verified']) || (isset($order['pay_later']) && $order['pay_later'] && !(isset($order['session_payment']) && $order['session_payment']))){
                 $hash_verified = true;
             }
         }else{
@@ -2716,6 +2716,9 @@ Class Utilities {
             Log::info("returning true");
             return true;
         
+        }
+        if(isset($data['ratecard_flags']) && isset($data['ratecard_flags']["pay_at_vendor"]) && $data['ratecard_flags']["pay_at_vendor"] === True){
+            return false;
         }
         Log::info("returning false");
         
