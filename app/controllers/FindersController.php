@@ -3144,7 +3144,7 @@ class FindersController extends \BaseController {
 		return $scheduleservices;
 	}
 
-	public function finderDetailApp($slug, $cache = false){
+	public function finderDetailApp($slug, $cache = true){
 
 		$data   =  array();	
 		$tslug  = (string) strtolower($slug);
@@ -4111,6 +4111,10 @@ class FindersController extends \BaseController {
 							if(isset($ratecard['offers']) && count($ratecard['offers']) == 0){
 								continue;
 							}
+						}
+
+						if(isset($ratecard['flags']['pay_at_vendor']) && $ratecard['flags']['pay_at_vendor']){
+							$ratecard['direct_payment_enable'] = "0";
 						}
 					}
 

@@ -2864,7 +2864,7 @@ if (!function_exists(('getRegId'))){
 if (!function_exists(('isNotInoperationalDate'))){
     function isNotInoperationalDate($date, $city_id=null, $slot=null, $findercategory_id=null){
 
-        $inoperational_dates = ['2018-03-02'];
+        $inoperational_dates = ['2018-05-01'];
         if(in_array($date, $inoperational_dates)){
             return false;
         }
