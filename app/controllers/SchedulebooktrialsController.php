@@ -7203,10 +7203,12 @@ class SchedulebooktrialsController extends \BaseController {
     }
 
     public function publishConfirmationAlert($booktrial_data){
+        
         Log::info("publishing trial alert");
         $pubnub = new \Pubnub\Pubnub('pub-c-df66f0bb-9e6f-488d-a205-38862765609d', 'sub-c-d9cf3842-cf1f-11e6-90ff-0619f8945a4f');
- 
-        $pubnub->publish('fitternity_trial_alert',['vendor_name'=>$booktrial_data['finder_name'].date(' - d-m-Y g:i A',strtotime( $booktrial['schedule_date_time']))]);   
+        $booktrial_data = array_only($booktrial_data, ['_id', 'finder_name', 'schedule_date_time']);
+        $booktrial_data['schedule_date_time'] = date(' - d-m-Y g:i A',strtotime( $booktrial['schedule_date_time']));
+        $pubnub->publish('fitternity_trial_alert',$booktrial_data);   
     
     }
 
