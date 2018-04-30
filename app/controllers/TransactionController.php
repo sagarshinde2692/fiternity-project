@@ -197,7 +197,7 @@ class TransactionController extends \BaseController {
 
                     $data['service_id'] = (int)$ratecard['service_id'];
 
-                    if(isset($data['punch_order']) && $data['punch_order']){
+                    if(isset($data['punching_order']) && $data['punching_order']){
 
                         $data['validity'] = $ratecard['validity'];
                         $data['validity_type'] = $ratecard['validity_type'];
