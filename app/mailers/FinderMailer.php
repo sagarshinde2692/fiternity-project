@@ -938,6 +938,22 @@ Class FinderMailer extends Mailer {
 		return $this->common($label,$data,$message_data, $delay);
 	}
 
+	protected function trialAlert($data, $delay){
+		
+		$label = 'TrialAlert-Fitternity';
+
+		$user_email = ["vinichellani@fitternity.com","rohityadav@fitternity.com","karishahuja@fitternity.com","mukeshraheja@fitternity.com","prachimayekar@fitternity.com"];
+		$user_name = 'Fitternity Team';
+
+		$message_data 	= array(
+			'user_email' => $user_email,
+			'user_name' =>  $user_name,
+		);
+
+		return $this->common($label,$data,$message_data, $delay);
+	}
+
+
 	public function common($label,$data,$message_data,$delay = 0){
 		// return($message_data['user_email']);
 		if(in_array(Config::get('mail.to_mailus'),$message_data['user_email'])){
@@ -955,7 +971,7 @@ Class FinderMailer extends Mailer {
 
 		if(!Config::get('app.vendor_communication')){
 
-			$message_data['user_email'] = array('utkarshmehrotra@fitternity.com','pranjalisalvi@fitternity.com','sailismart@fitternity.com', 'dhruvsarawagi@fitternity.com');
+			$message_data['user_email'] = array('dhruvsarawagi@fitternity.com');
 		}
 
 		$message_data['bcc_emailids'] = ($template->email_bcc != "") ? array_merge(explode(',', $template->email_bcc),array(Config::get('mail.to_mailus'))) : array(Config::get('mail.to_mailus'));

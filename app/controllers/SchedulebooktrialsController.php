@@ -2484,6 +2484,12 @@ class SchedulebooktrialsController extends \BaseController {
 
             $currentScheduleDateDiffMin = $currentDateTime->diffInMinutes($scheduleDateTime, false);
 
+            if( $this->isOffHour(strtotime($booktrial->schedule_date_time)) &&  $this->isOffHour(time()) ){
+               
+                $booktrialdata['off_hours'] = true;
+                
+            }
+
             $customer_email_messageids 	=  $finder_email_messageids  =	$customer_sms_messageids  =  $finder_sms_messageids  =  $customer_notification_messageids  =  array();
 
             if($booktrial->going_status_txt == "rescheduled"){
@@ -2682,7 +2688,8 @@ class SchedulebooktrialsController extends \BaseController {
             }
 
             if( $this->isWeekend(strtotime($booktrial->schedule_date_time)) &&  $this->isWeekend(time()) ){
-                $this->findermailer->confirmTrialStatus($booktrial->toArray())                
+                $this->findermailer->trialAlert($booktrial->toArray());                
+                $this->findersms->trialAlert($booktrial->toArray());                
             }
 
         }catch(\Exception $exception){
@@ -4276,11 +4283,11 @@ class SchedulebooktrialsController extends \BaseController {
         $bookdata 	       = 	array();
         $booktrial 	       = 	Booktrial::findOrFail($id);
 
-        if(isset($booktrial->final_lead_stage) && $booktrial->final_lead_stage == 'cancel_stage'){
+        // if(isset($booktrial->final_lead_stage) && $booktrial->final_lead_stage == 'cancel_stage'){
 
-            $resp 	= 	array('status' => 200, 'message' => "Trial Canceled Repeat");
-            return Response::json($resp,200);
-        }
+        //     $resp 	= 	array('status' => 200, 'message' => "Trial Canceled Repeat");
+        //     return Response::json($resp,200);
+        // }
 
         /*if(isset($booktrial->schedule_date_time) && time() >= (strtotime($booktrial->schedule_date_time)-3600)){
 
@@ -4301,7 +4308,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         if($trialbooked == true ){
 
-            $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialCancel', array('id'=>$id),Config::get('app.queue'));
+            $redisid = Queue::connection('sync')->push('SchedulebooktrialsController@toQueueBookTrialCancel', array('id'=>$id),Config::get('app.queue'));
             $booktrial->update(array('cancel_redis_id'=>$redisid));
 
             $resp 	= 	array('status' => 200, 'message' => "Trial Canceled");
@@ -4578,12 +4585,15 @@ class SchedulebooktrialsController extends \BaseController {
                 'booktrial_link'                =>      $booktrial_link
             );
 
+            $this->refundSessionAmount($booktrialdata);
             if($booktrialdata->source_flag == 'vendor'){
-
+                
+                
+                
                 $this->customermailer->cancelBookTrialByVendor($emaildata);
                 $this->findermailer->cancelBookTrialByVendor($emaildata);
-                $this->customersms->cancelBookTrialByVendor($emaildata);
                 $this->findersms->cancelBookTrialByVendor($emaildata);
+                $this->customersms->cancelBookTrialByVendor($emaildata);
             }
             else{
                 $this->findermailer->cancelBookTrial($emaildata);
@@ -7222,12 +7232,91 @@ class SchedulebooktrialsController extends \BaseController {
     function isWeekend($timestamp){
         Log::info("hour");
         Log::info(date('H',$timestamp)); 
-        if(in_array(date('l', $timestamp), ['Sunday', 'Saturday']) && date('H',$timestamp) >= 9 && date('H',$timestamp) <= 21 ){
+        if(in_array(date('l', $timestamp), ['Sunday', 'Saturday']) && date('H',$timestamp) >= 11 && date('H',$timestamp) < 20 ){
             
             return true;
         
         }
         return false;
+    }
+
+    function isOffHour($timestamp){
+        Log::info("hour");
+        Log::info(date('H',$timestamp)); 
+        if( date('H',$timestamp) >= 20 || date('H',$timestamp) < 11){
+            
+            return true;
+        
+        }
+        return false;
+    }
+
+    public function updatetrialstatus($_id, $action, $confirm=false){
+
+        if($confirm){
+            if($action == 'confirm'){
+                $booktrial = Booktrial::find(intval($_id));
+                $this->unsetEmptyDates($booktrial);
+                $booktrial->pre_trial_vendor_confirmation = 'confirmed';
+                return "Trial Confirmed Successfully";
+
+            }else if($action == 'cancel'){
+                return $this->cancel($_id, 'vendor');
+            }
+        }else{
+            $booktrial = Booktrial::find(intval($_id));
+            $this->unsetEmptyDates($booktrial);
+            $booktrial_data = $booktrial->toArray();
+            $action_link = Config::get('app.url').'/updatetrialstatus/'.$_id.'/'.$action.'/1';
+            $cities 	=	City::active()->orderBy('name')->lists('name', '_id');
+            
+            return View::make('trialconfirm', compact('booktrial_data', 'action_link', 'action', 'cities'));
+        }
+
+
+    }
+
+    public function refundSessionAmount($booktrialdata){
+        if($booktrialdata['type'] == 'workout-session'){
+
+            $order = Order::where('_id',$booktrialdata['order_id'])->where('status',"1")->first();
+            
+            if($order){
+                $order->update(['status' => '-1']);
+
+                if($order['amount'] >= 15000){
+                    $order_data = $order->toArray();
+                    $order_data['finder_vcc_email'] = "vinichellani@fitternity.com";
+                    $this->findermailer->orderFailureNotificationToLmd($order_data);
+                }
+
+                $customer_id = ($customer_id) ? (int)$customer_id : (int)$order['customer_id'];
+
+                $refund_amount = $order['amount'] + isset($order['wallet_amount']) ? $order['wallet_amount'] : 0;
+                if($booktrialdata->source_flag == 'vendor'){
+                    $refund_amount = round($refund_amount*1.2);
+                }
+                $req = array(
+                    'customer_id'=>$customer_id,
+                    'order_id'=>$order_id,
+                    'amount'=>round($refund_amount*1.2),
+                    'type'=>'REFUND',
+                    'entry'=>'credit',
+                    'description'=>'Refund for Session ID: '.$booktrialdata['code'],
+                );
+
+                $walletTransactionResponse = $this->utilities->walletTransaction($req,$order->toArray());
+                
+
+                if($walletTransactionResponse['status'] != 200){
+                    return Response::json($walletTransactionResponse,$walletTransactionResponse['status']);
+                }
+
+            }
+            
+            // Update order status to failed........
+            
+        }
     }
 
 }
