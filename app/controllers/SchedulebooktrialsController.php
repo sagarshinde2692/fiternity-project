@@ -2684,13 +2684,18 @@ class SchedulebooktrialsController extends \BaseController {
                 }
             }
             if($currentScheduleDateDiffMin <= 60){
-                $this->publishConfirmationAlert($booktrial->toArray());
+                $this->publishConfirmationAlert($booktrialdata);
             }
 
-            if( $this->isWeekend(strtotime($booktrial->schedule_date_time)) &&  $this->isWeekend(time()) ){
-                $this->findermailer->trialAlert($booktrial->toArray());                
-                $this->findersms->trialAlert($booktrial->toArray());                
-            }
+            // if( $this->isWeekend(strtotime($booktrial->schedule_date_time)) &&  $this->isWeekend(time()) ){
+                $cities 	=	City::active()->orderBy('name')->lists('name', '_id');
+                $booktrialdata['city_name'] = $cities[$booktrialdata['city_id']];
+                
+                $booktrialdata['confirm_link'] = Config::get('app.url').'/updatetrialstatus/'.$booktrialdata['_id'].'/confirm';
+                $booktrialdata['cancel_link'] = Config::get('app.url').'/updatetrialstatus/'.$booktrialdata['_id'].'/cancel';
+                $this->findermailer->trialAlert($booktrialdata);                
+                $this->findersms->trialAlert($booktrialdata);                
+            // }
 
         }catch(\Exception $exception){
 
@@ -4283,11 +4288,11 @@ class SchedulebooktrialsController extends \BaseController {
         $bookdata 	       = 	array();
         $booktrial 	       = 	Booktrial::findOrFail($id);
 
-        // if(isset($booktrial->final_lead_stage) && $booktrial->final_lead_stage == 'cancel_stage'){
+        if(isset($booktrial->final_lead_stage) && $booktrial->final_lead_stage == 'cancel_stage'){
 
-        //     $resp 	= 	array('status' => 200, 'message' => "Trial Canceled Repeat");
-        //     return Response::json($resp,200);
-        // }
+            $resp 	= 	array('status' => 200, 'message' => "Trial Canceled Repeat");
+            return Response::json($resp,200);
+        }
 
         /*if(isset($booktrial->schedule_date_time) && time() >= (strtotime($booktrial->schedule_date_time)-3600)){
 
@@ -4303,6 +4308,11 @@ class SchedulebooktrialsController extends \BaseController {
         array_set($bookdata, 'source_flag', $source_flag);
         array_set($bookdata, 'cancellation_reason_vendor', $reason);
         array_set($bookdata, 'final_lead_stage', 'cancel_stage');
+        if($booktrial['type']=='workout-session'){
+            array_set($bookdata, 'final_lead_stage', 'trial_stage');
+            array_set($bookdata, 'post_trial_status', 'no show');
+        }
+
         array_set($bookdata, 'cancel_by', $source_flag);
         $trialbooked        = 	$booktrial->update($bookdata);
 
@@ -4584,12 +4594,9 @@ class SchedulebooktrialsController extends \BaseController {
                 'source'                        =>      $booktrialdata->source,
                 'booktrial_link'                =>      $booktrial_link
             );
-
-            $this->refundSessionAmount($booktrialdata);
+            // return $booktrialdata;
+            $emaildata['paid']= $this->refundSessionAmount($booktrialdata);
             if($booktrialdata->source_flag == 'vendor'){
-                
-                
-                
                 $this->customermailer->cancelBookTrialByVendor($emaildata);
                 $this->findermailer->cancelBookTrialByVendor($emaildata);
                 $this->findersms->cancelBookTrialByVendor($emaildata);
@@ -7277,46 +7284,60 @@ class SchedulebooktrialsController extends \BaseController {
     }
 
     public function refundSessionAmount($booktrialdata){
+        $paid = 0;
         if($booktrialdata['type'] == 'workout-session'){
-
-            $order = Order::where('_id',$booktrialdata['order_id'])->where('status',"1")->first();
+            Log::info('workout-session');
+            $order_id = $booktrialdata['order_id'];
+            $order = Order::where('_id',$order_id)->first();
             
             if($order){
-                $order->update(['status' => '-1']);
+                if($order->status=='1'){
 
-                if($order['amount'] >= 15000){
-                    $order_data = $order->toArray();
-                    $order_data['finder_vcc_email'] = "vinichellani@fitternity.com";
-                    $this->findermailer->orderFailureNotificationToLmd($order_data);
+                    Log::info('order');
+                    
+                    $order->update(['status' => '-1']);
+    
+                    if($order['amount'] >= 15000){
+                        $order_data = $order->toArray();
+                        $order_data['finder_vcc_email'] = "vinichellani@fitternity.com";
+                        $this->findermailer->orderFailureNotificationToLmd($order_data);
+                    }
+    
+                    $customer_id =  $order['customer_id'];
+    
+                    $refund = $paid = $order['amount'] + isset($order['wallet_amount']) ? $order['wallet_amount'] : 0;
+                    Log::info($booktrialdata->source_flag);
+                    if($booktrialdata->source_flag == 'vendor'){
+                        Log::info("20");
+                        $refund = round($refund*1.2);
+                    }
+                    log::info($refund);
+                    $req = array(
+                        'customer_id'=>$customer_id,
+                        'order_id'=>$order_id,
+                        'amount'=>$refund,
+                        'type'=>'REFUND',
+                        'entry'=>'credit',
+                        'description'=>'Refund for Session ID: '.$booktrialdata['code'],
+                    );
+    
+                    $walletTransactionResponse = $this->utilities->walletTransaction($req,$order->toArray());
+                    Log::info($walletTransactionResponse);
+    
+                    if($walletTransactionResponse['status'] != 200){
+                        return ['refund'=>0];
+                    }
+                }else{
+                    $order->update(['redundant_order' => '1']);
                 }
 
-                $customer_id = ($customer_id) ? (int)$customer_id : (int)$order['customer_id'];
-
-                $refund_amount = $order['amount'] + isset($order['wallet_amount']) ? $order['wallet_amount'] : 0;
-                if($booktrialdata->source_flag == 'vendor'){
-                    $refund_amount = round($refund_amount*1.2);
-                }
-                $req = array(
-                    'customer_id'=>$customer_id,
-                    'order_id'=>$order_id,
-                    'amount'=>round($refund_amount*1.2),
-                    'type'=>'REFUND',
-                    'entry'=>'credit',
-                    'description'=>'Refund for Session ID: '.$booktrialdata['code'],
-                );
-
-                $walletTransactionResponse = $this->utilities->walletTransaction($req,$order->toArray());
-                
-
-                if($walletTransactionResponse['status'] != 200){
-                    return Response::json($walletTransactionResponse,$walletTransactionResponse['status']);
-                }
 
             }
             
-            // Update order status to failed........
-            
         }
+
+        return $paid;
+
     }
 
 }

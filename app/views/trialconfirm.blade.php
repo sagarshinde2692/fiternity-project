@@ -7,7 +7,7 @@
 </head>
 <body>
     
-    <h3>Are you sure you want to {{$action}} the trial?</h3>
+    <h3>Are you sure you want to {{$action}} the {{$booktrial_data['type']}}?</h3>
     <ul>
     <li>Vendor Name:{{$booktrial_data['finder_name']}}</li>
     <li>Vendor Location:{{$booktrial_data['finder_location']}}</li>

@@ -938,19 +938,21 @@ Class FinderMailer extends Mailer {
 		return $this->common($label,$data,$message_data, $delay);
 	}
 
-	protected function trialAlert($data, $delay){
-		
+	public function trialAlert($data){
+
 		$label = 'TrialAlert-Fitternity';
 
-		$user_email = ["vinichellani@fitternity.com","rohityadav@fitternity.com","karishahuja@fitternity.com","mukeshraheja@fitternity.com","prachimayekar@fitternity.com"];
+		// $user_email = ["vinichellani@fitternity.com","rohityadav@fitternity.com","karishahuja@fitternity.com","mukeshraheja@fitternity.com","prachimayekar@fitternity.com"];
+		
+		$user_email = ["dhruvsarawagi@fitternity.com"];
 		$user_name = 'Fitternity Team';
 
 		$message_data 	= array(
-			'user_email' => $user_email,
-			'user_name' =>  $user_name,
+			'user_email' => array($data['customer_email']),
+			'user_name' => $data['customer_name']
 		);
 
-		return $this->common($label,$data,$message_data, $delay);
+		return $this->common($label,$data,$message_data);
 	}
 
 
@@ -968,10 +970,10 @@ Class FinderMailer extends Mailer {
 
 		$email_template = 	$this->bladeCompile($template->email_text,$data);
 		$email_subject = 	$this->bladeCompile($template->email_subject,$data);
-
+		
 		if(!Config::get('app.vendor_communication')){
 
-			$message_data['user_email'] = array('dhruvsarawagi@fitternity.com');
+			$message_data['user_email'] = array('dhruvsarawagi@fitternity.com', "vinichellani@fitternity.com");
 		}
 
 		$message_data['bcc_emailids'] = ($template->email_bcc != "") ? array_merge(explode(',', $template->email_bcc),array(Config::get('mail.to_mailus'))) : array(Config::get('mail.to_mailus'));
