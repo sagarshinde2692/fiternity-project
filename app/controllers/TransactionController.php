@@ -200,7 +200,7 @@ class TransactionController extends \BaseController {
                     if(isset($data['punch_order']) && $data['punch_order']){
 
                         $data['validity'] = $ratecard['validity'];
-                        $data['validity_type'] = $data['validity_type'];
+                        $data['validity_type'] = $ratecard['validity_type'];
                     }
                 }
 
