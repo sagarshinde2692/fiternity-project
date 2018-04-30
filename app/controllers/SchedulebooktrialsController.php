@@ -2683,7 +2683,7 @@ class SchedulebooktrialsController extends \BaseController {
                     $this->utilities->setRedundant($order);
                 }
             }
-            // if($currentScheduleDateDiffMin <= 60){
+            // if($currentScheduleDateDiffMin <= 60 && $this->isOfficeHour(time())){
                 $this->publishConfirmationAlert($booktrialdata);
             // }
 
@@ -7236,7 +7236,8 @@ class SchedulebooktrialsController extends \BaseController {
         $cities 	=	City::active()->orderBy('name')->lists('name', '_id');
         
         $booktrial_data['city_name'] = $cities[$booktrial_data['city_id']];
-        $pubnub->publish('fitternity_trial_alert',$booktrial_data);   
+        $pubnub->publish('fitternity_trial_alert',$booktrial_data);
+        
     
     }
 
@@ -7342,6 +7343,13 @@ class SchedulebooktrialsController extends \BaseController {
 
         return $paid;
 
+    }
+
+    public function isOfficeHour($timestamp){
+        if(!in_array(date('l', $timestamp), ['Sunday', 'Saturday']) && date('H',$timestamp) >= 11 && date('H',$timestamp) < 20 ){
+            return true;
+        }
+        return false;
     }
 
 }
