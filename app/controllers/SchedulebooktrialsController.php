@@ -2677,7 +2677,13 @@ class SchedulebooktrialsController extends \BaseController {
                     $this->utilities->setRedundant($order);
                 }
             }
-            $this->publishConfirmationAlert($booktrial->toArray());
+            if($currentScheduleDateDiffMin <= 60){
+                $this->publishConfirmationAlert($booktrial->toArray());
+            }
+
+            if( $this->isWeekend(strtotime($booktrial->schedule_date_time)) &&  $this->isWeekend(time()) ){
+                $this->findermailer->confirmTrialStatus($booktrial->toArray())                
+            }
 
         }catch(\Exception $exception){
 
@@ -7207,9 +7213,21 @@ class SchedulebooktrialsController extends \BaseController {
         Log::info("publishing trial alert");
         $pubnub = new \Pubnub\Pubnub('pub-c-df66f0bb-9e6f-488d-a205-38862765609d', 'sub-c-d9cf3842-cf1f-11e6-90ff-0619f8945a4f');
         $booktrial_data = array_only($booktrial_data, ['_id', 'finder_name', 'schedule_date_time']);
-        $booktrial_data['schedule_date_time'] = date(' - d-m-Y g:i A',strtotime( $booktrial['schedule_date_time']));
+        $booktrial_data['schedule_date_time'] = date(' - d-m-Y g:i A',strtotime( $booktrial_data['schedule_date_time']));
+        $booktrial_data['type'] = 1;
         $pubnub->publish('fitternity_trial_alert',$booktrial_data);   
     
+    }
+
+    function isWeekend($timestamp){
+        Log::info("hour");
+        Log::info(date('H',$timestamp)); 
+        if(in_array(date('l', $timestamp), ['Sunday', 'Saturday']) && date('H',$timestamp) >= 9 && date('H',$timestamp) <= 21 ){
+            
+            return true;
+        
+        }
+        return false;
     }
 
 }
