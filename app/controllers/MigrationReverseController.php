@@ -657,11 +657,11 @@ class MigrationReverseController extends \BaseController {
 //                 var_dump($new_offering_ids_arr);exit();
 
             $trainer_contacts = [];
-
+            $finder_poc = [];
             if(isset($Finder->contact['point_of_contact'])){
                 $finder_poc_for_customer_mobile_arr = $finder_poc_for_customer_name_arr = [];
                 $finder_vcc_email_arr = $finder_vcc_mobile_arr = [];
-                
+                $finder_poc = $Finder->contact['point_of_contact'];
 
                 foreach ($Finder->contact['point_of_contact'] as $key => $value) {
                     if(in_array('customer_display', $value['used_for'])){
@@ -800,6 +800,7 @@ class MigrationReverseController extends \BaseController {
                 'servicesfilter' 			            =>  (isset($Finder->filter) && isset($Finder->filter['servicesfilter'])) ? $Finder->filter['servicesfilter'] : [],
                 'trainer_contacts'                      =>  $trainer_contacts,
                 'callout'                               =>  isset($Finder->callout) ? $Finder->callout : "",
+                'poc'                                   => $finder_poc
             ];
 
     
