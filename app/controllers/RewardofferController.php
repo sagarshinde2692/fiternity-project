@@ -313,10 +313,10 @@ class RewardofferController extends BaseController {
                     $min_date = strtotime(date('2018-05-31 00:00:00'));
                     $max_date = strtotime(date('2018-05-31 23:59:59'));
                     break;
-                case 13763 : 
-                    $min_date = strtotime(date('2018-04-23 00:00:00'));
-                    $max_date = strtotime(date('2018-04-23 23:59:59'));
-                    break;
+                // case 13763 : 
+                //     $min_date = strtotime(date('2018-04-23 00:00:00'));
+                //     $max_date = strtotime(date('2018-04-23 23:59:59'));
+                //     break;
                 case 13764 : 
                     $min_date = strtotime(date('2018-05-20 00:00:00'));
                     $max_date = strtotime(date('2018-05-20 23:59:59'));
@@ -336,7 +336,7 @@ class RewardofferController extends BaseController {
         $finder_name            =   $finder->title;
 
 
-        if(isset($finder['brand_id']) && $finder['brand_id'] == 134 && !in_array($finder_id,[13761,13762,13763,13764,13765]) ){
+        if(isset($finder['brand_id']) && $finder['brand_id'] == 134 && !in_array($finder_id,[13761,13762,13764,13765]) ){
 
             $min_date = strtotime(' + 2 days');
             $max_date = strtotime(' + 32 days');
