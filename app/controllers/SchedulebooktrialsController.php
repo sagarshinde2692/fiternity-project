@@ -2428,7 +2428,7 @@ class SchedulebooktrialsController extends \BaseController {
             $delete = Tempbooktrial::where('_id', $data['temp_id'])->delete();
         }
 
-        $resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'message' => "Book a Trial", 'code' => $code);
+        $resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'message' => "Session Booked Sucessfully", 'code' => $code);
         Log::info(" info ".print_r("AAAYA",true));
         return Response::json($resp,200);
     }
@@ -3345,7 +3345,7 @@ class SchedulebooktrialsController extends \BaseController {
             $delete = Tempbooktrial::where('_id', $data['temp_id'])->delete();
         }
 
-        $resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'code' => $code, 'message' => "Book a Trial");
+        $resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'code' => $code, 'message' => "Trial Booked Successfully");
 
         if($this->vendor_token){
 

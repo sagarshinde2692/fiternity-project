@@ -802,6 +802,7 @@ class EmailSmsApiController extends \BaseController {
             case 'claim_listing':$message = "Thank You! Your request has been submitted. We will get in touch with you on ".$data['customer_phone']." or ".$data['customer_email']." as soon as possible!";break;
             case 'add_business' : $message = "Thank You for sharing this information. We will verify it as soon as possible.";break;
             case 'request_callback': $message = "Thanks for requesting a callback. We'll get back to you soon";break;
+            case 'walkthrough': $message = "Walkin Captured Successfully";break;
             default:$message = "Recieved the Request";break;
         }
 
