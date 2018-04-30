@@ -187,28 +187,33 @@ class TransactionController extends \BaseController {
                 $data['validity_type'] = 'day';
                 $data['service_name'] = '-';
                 $data['service_category_id'] = null;
+            }
 
-                if(!empty($data['ratecard_id'])){
+            if(!empty($data['ratecard_id'])){
 
-                    $ratecard = Ratecard::find((int)$data['ratecard_id']);
+                $ratecard = Ratecard::find((int)$data['ratecard_id']);
 
-                    if($ratecard){
+                if($ratecard){
 
-                        $data['service_id'] = (int)$ratecard['service_id'];
+                    $data['service_id'] = (int)$ratecard['service_id'];
+
+                    if(isset($data['punch_order']) && $data['punch_order']){
+
+                        $data['validity'] = $ratecard['validity'];
+                        $data['validity_type'] = $data['validity_type'];
                     }
-
                 }
 
-                if(!empty($data['service_id'])){
+            }
 
-                    $service = Service::find((int)$data['service_id']);
+            if(!empty($data['service_id'])){
 
-                    if($service){
+                $service = Service::find((int)$data['service_id']);
 
-                        $data['service_name'] = $service['name'];
-                        $data['service_category_id'] = (int)$service['servicecategory_id'];
-                    }
+                if($service){
 
+                    $data['service_name'] = $service['name'];
+                    $data['service_category_id'] = (int)$service['servicecategory_id'];
                 }
 
             }
