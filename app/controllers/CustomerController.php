@@ -6679,5 +6679,16 @@ class CustomerController extends \BaseController {
 
 		return $response;
 	}
+
+	public function loginOptions(){
+
+		$response = [
+			'facebook'=>false,
+			'google'=>true,
+			'email'=>true,
+		];
+
+		return Response::json($response,200);
+	}
 	
 }
