@@ -1012,7 +1012,7 @@ class ServiceController extends \BaseController {
 				
 				$slots = [];
 				
-				if(isset($data['schedules']) && count($data['schedules']) > 0){
+				if(isset($data['schedules']) && count($data['schedules']) > 0 && !(isset($finder['trial']) && $finder['trial'] == 'disable')){
 
 					$schedule = $data['schedules'][0];
 
