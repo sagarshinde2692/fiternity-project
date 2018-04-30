@@ -3445,7 +3445,7 @@ class TransactionController extends \BaseController {
 
         $rules = array(
             'customer_id'=>'required',
-            'time'=>'required|in:F1Plus15,PurchaseFirst,RLMinus7,RLMinus1,Nplus2',
+            'time'=>'required|in:Nplus2',
         );
 
         $validator = Validator::make($data,$rules);
