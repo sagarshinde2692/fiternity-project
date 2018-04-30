@@ -2683,9 +2683,9 @@ class SchedulebooktrialsController extends \BaseController {
                     $this->utilities->setRedundant($order);
                 }
             }
-            if($currentScheduleDateDiffMin <= 60){
+            // if($currentScheduleDateDiffMin <= 60){
                 $this->publishConfirmationAlert($booktrialdata);
-            }
+            // }
 
             // if( $this->isWeekend(strtotime($booktrial->schedule_date_time)) &&  $this->isWeekend(time()) ){
                 $cities 	=	City::active()->orderBy('name')->lists('name', '_id');
@@ -7229,9 +7229,13 @@ class SchedulebooktrialsController extends \BaseController {
         
         Log::info("publishing trial alert");
         $pubnub = new \Pubnub\Pubnub('pub-c-df66f0bb-9e6f-488d-a205-38862765609d', 'sub-c-d9cf3842-cf1f-11e6-90ff-0619f8945a4f');
-        $booktrial_data = array_only($booktrial_data, ['_id', 'finder_name', 'schedule_date_time']);
-        $booktrial_data['schedule_date_time'] = date(' - d-m-Y g:i A',strtotime( $booktrial_data['schedule_date_time']));
+        $booktrial_data = array_only($booktrial_data, ['_id', 'finder_name', 'schedule_date_time','finder_location','customer_name', 'city_id']);
+        $booktrial_data['schedule_date_time'] = date('d-m-Y g:i A',strtotime( $booktrial_data['schedule_date_time']));
         $booktrial_data['type'] = 1;
+
+        $cities 	=	City::active()->orderBy('name')->lists('name', '_id');
+        
+        $booktrial_data['city_name'] = $cities[$booktrial_data['city_id']];
         $pubnub->publish('fitternity_trial_alert',$booktrial_data);   
     
     }
