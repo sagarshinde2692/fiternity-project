@@ -7238,7 +7238,6 @@ class SchedulebooktrialsController extends \BaseController {
         $booktrial_data['city_name'] = $cities[$booktrial_data['city_id']];
         $pubnub->publish('fitternity_trial_alert',$booktrial_data);
         
-    
     }
 
     function isWeekend($timestamp){
