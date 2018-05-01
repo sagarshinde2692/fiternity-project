@@ -7309,7 +7309,7 @@ class SchedulebooktrialsController extends \BaseController {
     
                     $customer_id =  $order['customer_id'];
     
-                    $refund = $paid = $order['amount'] + isset($order['wallet_amount']) ? $order['wallet_amount'] : 0;
+                    $refund = $paid = $order['amount'] + (isset($order['wallet_amount']) ? $order['wallet_amount'] : 0);
                     Log::info($booktrialdata->source_flag);
                     if($booktrialdata->source_flag == 'vendor'){
                         Log::info("20");
@@ -7329,7 +7329,7 @@ class SchedulebooktrialsController extends \BaseController {
                     Log::info($walletTransactionResponse);
     
                     if($walletTransactionResponse['status'] != 200){
-                        return ['refund'=>0];
+                        return $paid = 0;
                     }
                 }else{
                     $order->update(['redundant_order' => '1']);
