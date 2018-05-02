@@ -2754,10 +2754,6 @@ class TransactionController extends \BaseController {
             $data['amount_finder'] = $ratecard['price'];
         }
 
-        if(isset($data['manual_order']) && $data['manual_order'] && $data['type'] != 'memberships'){
-            $data['amount_finder'] = $data['amount'];
-        }
-
         $data['offer_id'] = false;
 
         $offer = Offer::where('ratecard_id',$ratecard['_id'])
@@ -2778,9 +2774,11 @@ class TransactionController extends \BaseController {
             }
         }
 
-        $data['amount'] = $data['amount_finder'];
+        if(isset($data['manual_order']) && $data['manual_order']){
+            $data['amount_finder'] = $data['amount'];
+        }
 
-        
+        $data['amount'] = $data['amount_finder'];
 
        /* $corporate_discount_percent = $this->utilities->getCustomerDiscount();
         $data['customer_discount_amount'] = intval($data['amount'] * ($corporate_discount_percent/100));
