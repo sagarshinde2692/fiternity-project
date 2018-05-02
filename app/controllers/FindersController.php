@@ -2899,8 +2899,14 @@ class FindersController extends \BaseController {
 
 			$extra_info[1] = array(
 				'title'=>'Results',
-				'icon'=>'https://b.fitn.in/iconsv1/vendor-page/form.png',
+				'icon'=>'http://b.fitn.in/iconsv1/vendor-page/description.png',
 				'description'=>'Burn Fat | Super Cardio'
+			);
+
+			$extra_info[] = array(
+				'title'=>'Description',
+				'icon'=>'https://b.fitn.in/iconsv1/vendor-page/form.png',
+				'description'=> str_replace("&nbsp;", "", strip_tags($item['short_description'])) 
 			);
 
 			if($category && ($category["_id"] == 42 || $category["_id"] == 45)){
