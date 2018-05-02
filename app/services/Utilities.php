@@ -2793,7 +2793,7 @@ Class Utilities {
 
         $response['features'][] = [
             'image'=>'https://b.fitn.in/global/Tab-app-success-page/membership-success-2.png',
-            'title1'=>strtoupper('<b>Onlie    diet</b>'),
+            'title1'=>strtoupper('<b>Online    diet</b>'),
             'title2'=>strtoupper('<b>consultation</b>'),
             'description'=>'Make    the    most    of    your    membership,    with    <b>Fitternity’s    Online    Diet    Consultation</b>    to    improve    your    workout    performance',
             'type'=>'diet_plan'
