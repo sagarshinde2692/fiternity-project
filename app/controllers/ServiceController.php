@@ -1796,13 +1796,16 @@ class ServiceController extends \BaseController {
 		return $facility_images;
 	}
 
-	public function workoutServiceCategorys(){
+	public function workoutServiceCategorys($city='mumbai'){
 
 		$not_included_ids = [161, 120, 170, 163, 168, 180, 184];
 
 		$order = [65, 5, 19, 1, 123, 3, 4, 2, 114, 86];
+
+		$included_ids = citywiseServiceCategoryIds(strtolower($city));
+
 		$ordered_categories = [];
-		$servicecategories	 = 	Servicecategory::active()->where('parent_id', 0)->whereNotIn('slug', [null, ''])->whereNotIn('_id', $not_included_ids)->orderBy('name')->get(array('_id','name','slug'));
+		$servicecategories	 = 	Servicecategory::active()->whereIn('_id', $included_ids)->where('parent_id', 0)->whereNotIn('slug', [null, ''])->whereNotIn('_id', $not_included_ids)->orderBy('name')->get(array('_id','name','slug'));
 		if(count($servicecategories) > 0){
 
 			foreach($servicecategories as &$category){

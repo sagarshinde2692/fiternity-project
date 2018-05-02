@@ -3558,6 +3558,43 @@ if (!function_exists(('updateRelianceCommunication'))){
 	}
 }
 
+if (!function_exists(('citywiseServiceCategoryIds'))){
+	
+	function citywiseServiceCategoryIds($city){
+        $ids = [];
+        switch($city){
+            case 'mumbai':
+                $ids = [65, 19, 5, 3, 1, 123, 114, 4, 2, 86];
+                break;
+            case 'pune':
+                $ids = [65, 19, 5, 3, 1, 123, 114, 4, 2, 86];
+                break;
+            case 'bangalore':
+                $ids = [65, 19, 5, 3, 1, 4, 2, 86];
+                break;
+            case 'delhi':
+                $ids = [65, 19, 5, 3, 1, 4, 2, 86];
+                break;
+            case 'gurgaon':
+                $ids = [65, 19, 5, 3, 1, 4, 2, 86];
+                break;
+            case 'noida':
+                $ids = [65, 19, 2, 1, 3];
+                break;
+            case 'hyderabad':
+                $ids = [65, 19, 5, 3, 1, 4, 2, 86];
+                break;
+            case 'ahmedabad':
+                $ids = [65, 19, 1, 3, 5];
+                break;
+            default:
+                $ids = [65, 19, 5, 3, 1, 123, 114, 4, 2, 86];
+        }
+
+        return $ids;
+	}
+}
+
 
 
 ?>
