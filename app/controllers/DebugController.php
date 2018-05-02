@@ -7118,6 +7118,20 @@ public function yes($msg){
 
 	}
 
+	public function eventfitex(){
+		
+		$orders = Order::active()->whereIn('event_id', [151, 152, 153, 154, 155])->get(['customer_name', 'customer_email', 'customer_phone', 'event_id', 'ticket_id']);
+
+		foreach($orders as &$order){
+			$order->event_name = DbEvent::where('_id', $order->event_id)->first()->name;
+			$order->ticket_name = Ticket::where('_id', $order->ticket_id)->first()->remarks;
+		}
+		return $orders;
+		
+
+
+	}
+
     
 }
 
