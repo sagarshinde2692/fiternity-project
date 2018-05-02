@@ -4598,10 +4598,10 @@ class SchedulebooktrialsController extends \BaseController {
             // return $booktrialdata;
             $emaildata['paid']= $this->refundSessionAmount($booktrialdata);
             if($booktrialdata->source_flag == 'vendor'){
-                $this->customermailer->cancelBookTrialByVendor($emaildata);
-                $this->findermailer->cancelBookTrialByVendor($emaildata);
-                $this->findersms->cancelBookTrialByVendor($emaildata);
-                $this->customersms->cancelBookTrialByVendor($emaildata);
+                $this->customermailer->cancelBookTrial($emaildata);
+                $this->findermailer->cancelBookTrial($emaildata);
+                $this->findersms->cancelBookTrial($emaildata);
+                $this->customersms->cancelBookTrial($emaildata);
             }
             else{
                 $this->findermailer->cancelBookTrial($emaildata);
