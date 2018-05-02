@@ -1012,7 +1012,7 @@ class ServiceController extends \BaseController {
 				
 				$slots = [];
 				
-				if(isset($data['schedules']) && count($data['schedules']) > 0){
+				if(isset($data['schedules']) && count($data['schedules']) > 0 && !(isset($finder['trial']) && $finder['trial'] == 'disable')){
 
 					$schedule = $data['schedules'][0];
 
@@ -1434,7 +1434,7 @@ class ServiceController extends \BaseController {
 			$finder = Finder::active()->where('slug','=',$finder_slug)->whereNotIn('flags.state', ['closed', 'temporarily_shut'])
 				->with(array('facilities'=>function($query){$query->select( 'name', 'finders');}))
 				->with(array('reviews'=>function($query){$query->select('finder_id', 'customer', 'customer_id', 'rating', 'updated_at', 'description')->where('status','=','1')->orderBy('updated_at', 'DESC')->limit(3);}))
-				->first(['title', 'contact', 'average_rating', 'total_rating_count', 'photos', 'coverimage', 'slug']);
+				->first(['title', 'contact', 'average_rating', 'total_rating_count', 'photos', 'coverimage', 'slug', 'trial']);
 
 			if(!$finder){
 				return Response::json(array('status'=>400, 'error_message'=>'Facility not active'), $this->error_status);
@@ -1448,7 +1448,7 @@ class ServiceController extends \BaseController {
 			// 	$service_details = json_decode(json_encode($service_details_response['data']), true);
 			// }
 			
-			$service_details = Service::active()->where('finder_id', $finder['_id'])->where('slug', $service_slug)->with('location')->with(array('ratecards'))->first(['name', 'contact', 'photos', 'lat', 'lon', 'calorie_burn', 'address', 'servicecategory_id', 'finder_id', 'location_id']);
+			$service_details = Service::active()->where('finder_id', $finder['_id'])->where('slug', $service_slug)->with('location')->with(array('ratecards'))->first(['name', 'contact', 'photos', 'lat', 'lon', 'calorie_burn', 'address', 'servicecategory_id', 'finder_id', 'location_id','trial']);
 			// return $service_details;
 			if(!$service_details){
 				
@@ -1590,6 +1590,9 @@ class ServiceController extends \BaseController {
 			
 			$service_details['coordinates'] = [$service_details['lat'], $service_details['lon']];
 
+			$service_details['finder'] = $finder;
+
+			$service_details['workout_session_ratecard'] = $workout_session_ratecard;
 			
 			// return $service_details;
 			// $service_details = array_except($service_details, array('gallery','videos','vendor_id','location_id','city_id','service','schedules','updated_at','created_at','traction','timings','trainers','offer_available','showOnFront','flags','remarks','trial_discount','rockbottom_price','threedays_trial','vip_trial','seo','batches','workout_tags','category', 'geometry', 'info', 'what_i_should_expect', 'what_i_should_carry', 'custom_location', 'name', 'workout_intensity', 'session_type', 'latlon_change', 'membership_end_date', 'membership_start_date', 'workout_results', 'vendor_name', 'location_name'));
@@ -1661,7 +1664,7 @@ class ServiceController extends \BaseController {
 		
 		$service_details['single_slot'] = false;
 		
-		if(isset($schedule->schedules) && count($schedule->schedules) > 0 && count(head($schedule->schedules)->slots)>0){
+		if(isset($schedule->schedules) && count($schedule->schedules) > 0 && count(head($schedule->schedules)->slots)>0 && !(isset($service_details['finder']['trial']) && $service_details['finder']['trial'] == 'disable') && !(isset($service_details['trial']) && $service_details['trial'] == 'disable') && !(isset($service_details['workout_session_ratecard']['direct_payment_enable']) && $service_details['workout_session_ratecard']['direct_payment_enable'] == '0')){
 
 			$service_details['next_session'] = "Next session at ".strtoupper(head($schedule->schedules)->slots[0]->start_time);
 			$service_details['slots'] = (head($schedule->schedules)->slots);
@@ -1731,7 +1734,8 @@ class ServiceController extends \BaseController {
 			$service_details['page_index'] = 0;
 			// $service_details['next_session'] = "No sessions available";
 		}
-
+		unset($service_details['finder']);
+		unset($service_details['workout_session_ratecard']);
 		if(isset($service_details['session_unavailable']) && $service_details['session_unavailable']){
 			$session_unavailable = new Sessionsunavailable();
 			$session_unavailable->data = $schedule_data;
