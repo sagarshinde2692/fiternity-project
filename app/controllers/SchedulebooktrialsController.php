@@ -4319,7 +4319,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         if($trialbooked == true ){
 
-            $redisid = Queue::connection('sync')->push('SchedulebooktrialsController@toQueueBookTrialCancel', array('id'=>$id),Config::get('app.queue'));
+            $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@toQueueBookTrialCancel', array('id'=>$id),Config::get('app.queue'));
             $booktrial->update(array('cancel_redis_id'=>$redisid));
 
             $resp 	= 	array('status' => 200, 'message' => "Trial Canceled");

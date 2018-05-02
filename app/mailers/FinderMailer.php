@@ -115,9 +115,9 @@ Class FinderMailer extends Mailer {
 
 	protected function cancelBookTrialByVendor ($data){
 
-		return 'no email';
+		// return 'no email';
 
-		$label = 'Vendor-trial-cancellation-email-to-vendor';
+		$label = 'Cancel-Trial-Vendor';
 
 		if($data['finder_vcc_email'] != ''){
 			$user_email 	=  	explode(',', $data['finder_vcc_email']);

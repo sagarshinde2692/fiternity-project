@@ -60,11 +60,11 @@ Class FinderSms extends VersionNextSms{
 
 	protected function cancelBookTrialByVendor ($data){
 
-		return 'no sms';
+		// return 'no sms';
 
 		$to = explode(',', $data['finder_vcc_mobile']);
 
-		$label = 'Vendor-trial-cancellation-email-to-vendor';
+		$label = 'Cancel-Trial-Vendor';
 
 		return $this->common($label,$to,$data);
 	}
