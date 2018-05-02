@@ -166,7 +166,7 @@ class FindersController extends \BaseController {
 				->with('facilities')
 				// ->with(array('ozonetelno'=>function($query){$query->select('*')->where('status','=','1');}))
 				->with(array('knowlarityno'=>function($query){$query->select('*')->where('status',true);}))
-				->with(array('services'=>function($query){$query->where('status','=','1')->whereNotIn('showOnFront', [['kiosk'], []] )->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->orderBy('ordering', 'ASC');}))
+				->with(array('services'=>function($query){$query->where('status','=','1')->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->orderBy('ordering', 'ASC');}))
 				->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1')->orderBy('updated_at', 'DESC')->limit(5);}))
 				// ->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1')->orderBy('_id', 'DESC');}))
 				->first();
@@ -2899,8 +2899,14 @@ class FindersController extends \BaseController {
 
 			$extra_info[1] = array(
 				'title'=>'Results',
-				'icon'=>'https://b.fitn.in/iconsv1/vendor-page/form.png',
+				'icon'=>'http://b.fitn.in/iconsv1/vendor-page/description.png',
 				'description'=>'Burn Fat | Super Cardio'
+			);
+
+			$extra_info[] = array(
+				'title'=>'Description',
+				'icon'=>'https://b.fitn.in/iconsv1/vendor-page/form.png',
+				'description'=> str_replace("&nbsp;", "", strip_tags($item['short_description'])) 
 			);
 
 			if($category && ($category["_id"] == 42 || $category["_id"] == 45)){
@@ -3238,7 +3244,7 @@ class FindersController extends \BaseController {
 				->with('facilities')
 				// ->with(array('ozonetelno'=>function($query){$query->select('*')->where('status','=','1');}))
 				->with(array('knowlarityno'=>function($query){$query->select('*')->where('status',true);}))
-				->with(array('services'=>function($query){$query->select('*')->whereNotIn('showOnFront', [['kiosk'], []] )->where('status','=','1')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))->orderBy('ordering', 'ASC');}))
+				->with(array('services'=>function($query){$query->select('*')->where('status','=','1')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))->orderBy('ordering', 'ASC');}))
 				->with(array('reviews'=>function($query){$query->where('status','=','1')->select('_id','finder_id','customer_id','rating','description','updated_at')->with(array('customer'=>function($query){$query->select('_id','name','picture')->where('status','=','1');}))->orderBy('updated_at', 'DESC')->limit(1);}))
 				->first(array('_id','slug','title','lat','lon','category_id','category','location_id','location','city_id','city','categorytags','locationtags','offerings','facilities','coverimage','finder_coverimage','contact','average_rating','photos','info','manual_trial_enable','manual_trial_auto','trial','commercial_type','multiaddress','membership','flags','custom_link','videos','total_rating_count'));
 
