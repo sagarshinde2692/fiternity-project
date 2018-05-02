@@ -3390,7 +3390,7 @@ class FindersController extends \BaseController {
 
 					}
 				}
-				// $cult_Ids = array(12140,12141,12142,12143,12144,12145,12146,11110,4307,10514,9882,5986,9412,9881,9589);
+				$cult_Ids = array();
 				// || in_array($finderarr['_id'], $cult_Ids)
 				if((isset($finderarr['category_id']) && $finderarr['category_id'] == 41) ){
 					$finder['trial'] = 'disable';
