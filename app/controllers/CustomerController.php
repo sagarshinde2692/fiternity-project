@@ -3437,14 +3437,14 @@ class CustomerController extends \BaseController {
 					];
 				}
 
-				$result['campaigns'][] = [
-					'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/mad8-app.png',
-					'link'=>'ftrnty://fitternity.com/',
-					'title'=>'Fitness Sale',
-					'height'=>100,
-					'width'=>375,
-					'ratio'=>(float) number_format(100/375,2)
-				];
+				// $result['campaigns'][] = [
+				// 	'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/mad8-app.png',
+				// 	'link'=>'ftrnty://fitternity.com/',
+				// 	'title'=>'Fitness Sale',
+				// 	'height'=>100,
+				// 	'width'=>375,
+				// 	'ratio'=>(float) number_format(100/375,2)
+				// ];
 			// 	$result['campaigns'][] = [
 			// 		'image'=>'https://b.fitn.in/global/Homepage-branding-2018/fitnesssale-appbanner.png',
 			// 		'link'=>'https://www.fitternity.com/sale?mobile_app=true',
@@ -3509,14 +3509,14 @@ class CustomerController extends \BaseController {
 					];
 				}
 
-				$result['campaigns'][] = [
-					'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/mad8-app.png',
-					'link'=>'ftrnty://ftrnty.com/search/all',
-					'title'=>'Fitness Sale',
-					'height'=>100,
-					'width'=>375,
-					'ratio'=>(float) number_format(100/375,2)
-				];
+				// $result['campaigns'][] = [
+				// 	'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/mad8-app.png',
+				// 	'link'=>'ftrnty://ftrnty.com/search/all',
+				// 	'title'=>'Fitness Sale',
+				// 	'height'=>100,
+				// 	'width'=>375,
+				// 	'ratio'=>(float) number_format(100/375,2)
+				// ];
 
 			}
 			$result['campaigns'][] = [
