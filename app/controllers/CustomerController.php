@@ -3518,15 +3518,25 @@ class CustomerController extends \BaseController {
 						'ratio'=>(float) number_format(100/375,2)
 					];
 				}
-
-				$result['campaigns'][] = [
-					'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/appsss.png',
-					'link'=>'ftrnty://ftrnty.com/search/all',
-					'title'=>'Fitness Sale',
-					'height'=>100,
-					'width'=>375,
-					'ratio'=>(float) number_format(100/375,2)
-				];
+				if(in_array($city_id,[1,3])){
+					$result['campaigns'][] = [
+						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/app-summer.jpg',
+						'link'=>'ftrnty://ftrnty.com/search/all',
+						'title'=>'Fitness Sale',
+						'height'=>100,
+						'width'=>375,
+						'ratio'=>(float) number_format(100/375,2)
+					];
+				}else{
+					$result['campaigns'][] = [
+						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/appsss.png',
+						'link'=>'ftrnty://ftrnty.com/search/all',
+						'title'=>'Fitness Sale',
+						'height'=>100,
+						'width'=>375,
+						'ratio'=>(float) number_format(100/375,2)
+					];
+				}
 
 			}
 			$result['campaigns'][] = [

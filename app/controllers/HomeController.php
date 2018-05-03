@@ -469,7 +469,7 @@ class HomeController extends BaseController {
                 
                 $campaigns[] = [
                     'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/summer.jpg',
-                    'mob_image'=>'b.fitn.in/global/Homepage-branding-2018/Mob-banners/summer-m.jpg',
+                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/summer-m.jpg',
                     'link'=>Config::get('app.website').'/'.$city.'/fitness',
                     'title'=>'Mad 8 banner',
                     'height'=>100,
