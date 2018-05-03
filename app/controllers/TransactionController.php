@@ -1659,6 +1659,10 @@ class TransactionController extends \BaseController {
                                 $sndPgMail  =   $this->customermailer->sendPgOrderMail($emailData);
 
                                 $this->customermailer->payPerSessionFree($emailData);
+
+                                if(isset($order['routed_order']) && $order['routed_order'] == "1"){
+                                    $this->customermailer->routedOrder($emailData);
+                                }
                             }
 
                         }else{
@@ -1666,6 +1670,10 @@ class TransactionController extends \BaseController {
                             $sndPgMail  =   $this->customermailer->sendPgOrderMail($emailData);
 
                             $this->customermailer->payPerSessionFree($emailData);
+
+                            if(isset($order['routed_order']) && $order['routed_order'] == "1"){
+                                $this->customermailer->routedOrder($emailData);
+                            }
                         }
                     }
 
