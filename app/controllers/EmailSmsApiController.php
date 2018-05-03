@@ -731,6 +731,16 @@ class EmailSmsApiController extends \BaseController {
             $data['finder_name'] = ucwords($finder['title']);
             $data['finder_city'] = ucwords($finder['city']['name']);
             $data['finder_location'] = ucwords($finder['location']['name']);
+
+            if($data['capture_type'] == 'walkthrough'){
+
+                $data['google_pin'] = $this->googlePin($finder['lat'], $finder['lon']);
+                $data['finder_lat'] = $finder['lat'];
+                $data['finder_lon'] = $finder['lon'];
+                $data['finder_poc_for_customer_name'] = $finder['finder_poc_for_customer_name'];
+                $data['finder_poc_for_customer_no'] = $finder['finder_poc_for_customer_no'];
+                $data['finder_address'] = $finder['contact']['address'];
+            }
         }
 
         $storecapture   = Capture::create($data);
@@ -782,6 +792,16 @@ class EmailSmsApiController extends \BaseController {
                     break;
                 case 'sale_pre_register_2018':
                     $this->customersms->salePreregister($data);
+                    break;
+                case 'walkthrough':
+
+                    $sms_data = [];
+
+                    $sms_data['customer_phone'] = $storecapture['customer_phone'];
+
+                    $sms_storecapture['message'] = "Hi ".ucwords($storecapture['customer_name'])." your walkin request at ".ucwords($storecapture['finder_name'])." has been confirmed. Address - ".ucwords($storecapture['finder_address'])." . Google pin - ".$storecapture['google_pin'].". Contact person -". $storecapture['finder_poc_for_customer_name']." If you wish to purchase - make sure you buy through Fitternity with lowest price and assured rewards.";
+
+                    $this->customersms->custom($sms_data);
                     break;
                 default:
                     $this->customermailer->landingPageCallback($data);
@@ -1099,6 +1119,21 @@ class EmailSmsApiController extends \BaseController {
 
         }
 
+    }
+
+    public function googlePin($lat,$lon){
+
+        $google_pin = "https://maps.google.com/maps?q=".$lat.",".$lon."&ll=".$lat.",".$lon;
+
+        $shorten_url = new ShortenUrl();
+
+        $url = $shorten_url->getShortenUrl($google_pin);
+
+        if(isset($url['status']) &&  $url['status'] == 200){
+            $google_pin = $url['url'];
+        }
+
+        return $google_pin;
     }
 
 
