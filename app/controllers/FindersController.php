@@ -2839,19 +2839,19 @@ class FindersController extends \BaseController {
 			Service::$setAppends=['active_weekdays','serviceratecard'];
 			if(isset($_GET['device_type']) && $_GET['device_type'] == 'android'){
 
-				$items = Service::active()->where('finder_id', $finder_id)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos','trial','membership', 'traction', 'location_id', 'offer_available', 'ad', 'showOnFront'))->toArray();
+				$items = Service::active()->where('finder_id', $finder_id)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos','trial','membership', 'traction', 'location_id', 'offer_available', 'ad', 'showOnFront','calorie_burn'))->toArray();
 
 			}else{
 
 				$membership_services = Ratecard::where('finder_id', $finder_id)->orWhere('type','membership')->orWhere('type','packages')->lists('service_id');
 				$membership_services = array_map('intval',$membership_services);
 
-				$items = Service::active()->whereIn('_id',$membership_services)->where('finder_id', $finder_id)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos','trial','membership', 'traction', 'location_id','offer_available', 'showOnFront'))->toArray();
+				$items = Service::active()->whereIn('_id',$membership_services)->where('finder_id', $finder_id)->get(array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos','trial','membership', 'traction', 'location_id','offer_available', 'showOnFront','calorie_burn'))->toArray();
 
 			}
 		}else{
 			$items = $finder["services"];
-			$items = pluck($items, array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos','trial','membership', 'traction', 'location_id','offer_available', 'showOnFront'));
+			$items = pluck($items, array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos','trial','membership', 'traction', 'location_id','offer_available', 'showOnFront','calorie_burn'));
 		}
 
 		if(!$items){
@@ -2883,8 +2883,8 @@ class FindersController extends \BaseController {
 			$service_category_id = (isset($item['servicecategory_id']) && $item['servicecategory_id'] != "") ? $item['servicecategory_id'] : 0;
 
 
-			if(isset($service['calorie_burn']) && $service['calorie_burn']['avg'] != 0){
-				$category_calorie_burn = $service['calorie_burn']['avg'];
+			if(isset($item['calorie_burn']) && $item['calorie_burn']['avg'] != 0){
+				$category_calorie_burn = $item['calorie_burn']['avg'];
 			}else{
 				if(isset($sericecategorysCalorieArr[$service_category_id])){
 					$category_calorie_burn = $sericecategorysCalorieArr[$service_category_id];
@@ -2902,12 +2902,16 @@ class FindersController extends \BaseController {
 				'icon'=>'http://b.fitn.in/iconsv1/vendor-page/description.png',
 				'description'=>'Burn Fat | Super Cardio'
 			);
-
-			$extra_info[] = array(
-				'title'=>'Description',
-				'icon'=>'https://b.fitn.in/iconsv1/vendor-page/form.png',
-				'description'=> $item['short_description']
-			);
+			
+			if(isset($_GET['device_type']) && $_GET['device_type'] == 'ios'){
+			
+				$extra_info[] = array(
+					'title'=>'Description',
+					'icon'=>'https://b.fitn.in/iconsv1/vendor-page/form.png',
+					'description'=> $item['short_description']
+				);
+			
+			}
 
 			if($category && ($category["_id"] == 42 || $category["_id"] == 45)){
 
@@ -3421,7 +3425,7 @@ class FindersController extends \BaseController {
 				}
 
 				// return $finderarr['services'];
-				array_set($finder, 'services', pluck( $finderarr['services'] , ['_id', 'name', 'lat', 'lon', 'ratecards', 'serviceratecard', 'session_type', 'trialschedules', 'workoutsessionschedules', 'workoutsession_active_weekdays', 'active_weekdays', 'workout_tags', 'short_description', 'photos','service_trainer','timing','category', 'subcategory','batches','vip_trial','meal_type','trial','membership', 'timings','finder_id','servicecategory_id','traction','location_id', 'offer_available']  ));
+				array_set($finder, 'services', pluck( $finderarr['services'] , ['_id', 'name', 'lat', 'lon', 'ratecards', 'serviceratecard', 'session_type', 'trialschedules', 'workoutsessionschedules', 'workoutsession_active_weekdays', 'active_weekdays', 'workout_tags', 'short_description', 'photos','service_trainer','timing','category', 'subcategory','batches','vip_trial','meal_type','trial','membership', 'timings','finder_id','servicecategory_id','traction','location_id', 'offer_available','calorie_burn']  ));
 				array_set($finder, 'categorytags', array_map('ucwords',array_values(array_unique(array_flatten(pluck( $finderarr['categorytags'] , array('name') ))))));
 				array_set($finder, 'locationtags', array_map('ucwords',array_values(array_unique(array_flatten(pluck( $finderarr['locationtags'] , array('name') ))))));
 				array_set($finder, 'offerings', array_map('ucwords',array_values(array_unique(array_flatten(pluck( $finderarr['offerings'] , array('name') ))))));
