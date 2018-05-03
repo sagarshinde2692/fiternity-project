@@ -52,15 +52,20 @@ class BrandsController extends \BaseController {
                         'brand'     => $brand,
                         'finders'    => $finders
                 );
-                if(isset($brand['stripe_text'])){
-                    $data["stripe_data"] = [
-                        'text'=> $brand['stripe_text'],
-                        'text_color'=> '#ffffff',
-                        'background'=> '-webkit-linear-gradient(left, #1392b3 0%, #20b690 100%)',
-                        'background-color'=> ''
-                    ];
-                    unset($brand['stripe_text']);
+                $city_id= City::where("name",'like','%'.$city.'%')->first(['_id']);
+                if(!empty($brand['vendor_stripe'])&&!empty($brand['vendor_stripe']['cities'])&&!empty($city_id)&&!empty($city_id->_id)&&in_array((int)$city_id->_id, $brand['vendor_stripe']['cities'])){
+                	$data["stripe_data"] = [
+                			'text'=> (!empty($brand['vendor_stripe'])&&!empty($brand['vendor_stripe']['text']))?$brand['vendor_stripe']['text']:"",
+                			'background-color'=> (!empty($brand['vendor_stripe'])&&!empty($brand['vendor_stripe']['background_color']))?$brand['vendor_stripe']['background_color']:"",
+                			'text_color'=> (!empty($brand['vendor_stripe'])&&!empty($brand['vendor_stripe']['text_color']))?$brand['vendor_stripe']['text_color']:"",
+                			'background'=> (!empty($brand['vendor_stripe'])&&!empty($brand['vendor_stripe']['background_color']))?$brand['vendor_stripe']['background_color']:""
+                	];
                 }
+                if(!(!empty($brand['vendor_stripe'])&&!empty($brand['vendor_stripe']['text'])))
+                	unset($data["stripe_data"]);
+                unset($brand['vendor_stripe']);
+                
+                
                 Cache::tags('brand_detail')->put("$slug-$city" ,$data,Config::get('cache.cache_time'));
                 
                 return Response::json(Cache::tags('brand_detail')->get("$slug-$city"));
