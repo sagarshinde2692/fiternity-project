@@ -1125,18 +1125,14 @@ class FindersController extends \BaseController {
 
 				if(in_array($finder["_id"], Config::get('app.remove_patti_from_brands')) ){
 					$response['vendor_stripe_data'] = "no-patti";
-				}
-
-
-				/* if(isset($response['finder']['stripe_text'])){
+				}else if(isset($response['finder']['stripe_text'])){
 					$response['vendor_stripe_data']	=	[
 						'text'=> $response['finder']['stripe_text'],
 						'text_color'=> '#ffffff',
 						'background'=> '-webkit-linear-gradient(left, #1392b3 0%, #20b690 100%)',
 						'background-color'=> ''
 					];
-				} */
-				if(!empty($response['finder'])&&!empty($response['finder']['info'])&&!empty($response['finder']['info']['stripe'])&&!empty($response['finder']['info']['stripe']['text'])){
+				} else if(!empty($response['finder'])&&!empty($response['finder']['info'])&&!empty($response['finder']['info']['stripe'])&&!empty($response['finder']['info']['stripe']['text'])){
 					$response['vendor_stripe_data']	=	[
 						'text'=> (!empty($response['finder']['info']['stripe']['text']))?$response['finder']['info']['stripe']['text']:"",
 						'background-color'=> (!empty($response['finder']['info']['stripe']['background_color']))?$response['finder']['info']['stripe']['background_color']:"",
