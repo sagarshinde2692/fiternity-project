@@ -758,9 +758,6 @@ class FindersController extends \BaseController {
 								$finder['pay_per_session'] = false;
 							}
 
-							if(isset($service['category']) && $service['category'] && $service['category']['_id'] == 184){
-								$service['remarks'] = "To avail personal training service, make sure you also buy ".$finder['title']." Gym Membership. The lowest prices are mentioned above";
-							}
 
 							array_push($serviceArr, $service);
 						}
@@ -1165,10 +1162,6 @@ class FindersController extends \BaseController {
 
 				Cache::tags('finder_detail')->put($cache_key,$response,Config::get('cache.cache_time'));
 
-				if(in_array($response['finder']['_id'],Config::get('app.only_pay_at_studio_vendor'))){
-
-					$response['finder']['pay_at_studio'] = true;
-				}
 
 
 			}else{
@@ -3184,7 +3177,7 @@ class FindersController extends \BaseController {
 		return $scheduleservices;
 	}
 
-	public function finderDetailApp($slug, $cache = false){
+	public function finderDetailApp($slug, $cache = true){
 
 		$data   =  array();	
 		$tslug  = (string) strtolower($slug);
