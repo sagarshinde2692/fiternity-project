@@ -455,7 +455,7 @@ class TransactionController extends \BaseController {
                     $order->unset('reward_ids');
                 }
 
-                // $order->update();
+                $order->update();
             }
 
         }else{
