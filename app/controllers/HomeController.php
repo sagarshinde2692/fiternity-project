@@ -465,16 +465,28 @@ class HomeController extends BaseController {
                 'width'=>375,
                 'ratio'=>(float) number_format(100/375,2)
             ];
-
-            // $campaigns[] = [
-            //     'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/mad8-web.png',
-            //     'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/mad8-resp.png',
-            //     'link'=>Config::get('app.website').'/'.$city.'/fitness',
-            //     'title'=>'Mad 8 banner',
-            //     'height'=>100,
-            //     'width'=>375,
-            //     'ratio'=>(float) number_format(100/375,2)
-            // ];
+            if($city == "mumbai" || $city == "bangalore"){
+                
+                $campaigns[] = [
+                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/summer.jpg',
+                    'mob_image'=>'b.fitn.in/global/Homepage-branding-2018/Mob-banners/summer-m.jpg',
+                    'link'=>Config::get('app.website').'/'.$city.'/fitness',
+                    'title'=>'Mad 8 banner',
+                    'height'=>100,
+                    'width'=>375,
+                    'ratio'=>(float) number_format(100/375,2)
+                ];
+            }else{
+                $campaigns[] = [
+                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/websss.png',
+                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/mobsss.png',
+                    'link'=>Config::get('app.website').'/'.$city.'/fitness',
+                    'title'=>'Mad 8 banner',
+                    'height'=>100,
+                    'width'=>375,
+                    'ratio'=>(float) number_format(100/375,2)
+                ];
+            }
 
             $campaigns[] = [
                 'image'=>'https://b.fitn.in/global/Homepage-branding-2018/new-reward-web.png',
