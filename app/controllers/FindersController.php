@@ -2906,7 +2906,7 @@ class FindersController extends \BaseController {
 			$extra_info[] = array(
 				'title'=>'Description',
 				'icon'=>'https://b.fitn.in/iconsv1/vendor-page/form.png',
-				'description'=> str_replace("&nbsp;", "", strip_tags($item['short_description'])) 
+				'description'=> $item['short_description']
 			);
 
 			if($category && ($category["_id"] == 42 || $category["_id"] == 45)){
