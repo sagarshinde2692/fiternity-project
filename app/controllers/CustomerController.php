@@ -3436,7 +3436,7 @@ class CustomerController extends \BaseController {
 						'ratio'=>(float) number_format(100/375,2)
 					];
 				}
-				if(in_array($city_id,[1,3])){
+				if(in_array($city_name,["mumbai","bangalore"])){
 					$result['campaigns'][] = [
 						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/app-summer.jpg',
 						'link'=>'ftrnty://fitternity.com/',
@@ -3518,7 +3518,7 @@ class CustomerController extends \BaseController {
 						'ratio'=>(float) number_format(100/375,2)
 					];
 				}
-				if(in_array($city_id,[1,3])){
+				if(in_array($city_name,["mumbai","bangalore"])){
 					$result['campaigns'][] = [
 						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/app-summer.jpg',
 						'link'=>'ftrnty://ftrnty.com/search/all',
