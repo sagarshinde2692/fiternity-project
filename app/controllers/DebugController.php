@@ -7118,6 +7118,87 @@ public function yes($msg){
 
 	}
 
+	public function trialWorkout(){
+		
+		$identifier = 'customer_id';
+		
+		$workout_session_customer_ids = Booktrial::where('type', 'workout-session')->lists('customer_id');
+
+		$result = Booktrial::raw(function($collection) use ($workout_session_customer_ids){
+
+			$aggregate = [];
+	
+			$match['$match']['customer_id']['$in'] = $workout_session_customer_ids;
+			$match['$match']['type']['$exists'] = true;
+	
+			$aggregate[] = $match;
+
+			$project = [
+				'$project'=>[
+					'customer_id'=>1,
+					'finder_id'=>1,
+					'type'=>1,
+					'created_at'=>1,	
+					'customer_email'=>1,	
+					'customer_phone'=>1,	
+				]
+			];
+
+			$aggregate[] = $project;
+	
+			$group = [
+				'$group' => [
+					'_id'=>[
+						'customer_id'=>'$customer_id',
+						// 'finder_id'=>'$finder_id',
+					],
+					'data'=>[
+						'$push'=>'$$ROOT'
+					]
+				]
+			];
+
+			$aggregate[] = $group;
+	
+			return $collection->aggregate($aggregate);
+	
+		});
+		$without_trial = 0;
+		$with_trial = 0;
+		$with_trial1 = [];
+		$multiple_sessions = [];
+		foreach($result['result'] as &$customer_data){
+			$finder_id = [];
+			$trial = false;
+			$same_finder_trial = false;
+			$workout_sessions = 0;
+			
+			foreach($customer_data['data'] as &$session){
+				Log::info($session);
+				if($session['type'] == 'booktrials'){
+					array_push($finder_id, $session['finder_id']);
+				}
+
+				if($session['type'] == 'workout-session'){
+					$workout_sessions++;
+					if(in_array($session['finder_id'], $finder_id)){
+						$session['after'] = true;
+						$with_trial++;
+						// array_push($with_trial1, $customer_data);
+
+					}else if(count($finder_id) == 0){
+						$without_trial++;	
+					}
+				}
+			}
+			if($workout_sessions > 1){
+				$last = count($customer_data['data']) - 1;
+				array_push($multiple_sessions, ['customer_id'=>$customer_data['data'][$last]['customer_id'], 'customer_email'=>$customer_data['data'][$last]['customer_email'] ,'customer_phone'=>$customer_data['data'][$last]['customer_phone'], 'count'=>$workout_sessions]);
+			}
+		}
+
+		return ['without_trial'=>$without_trial, 'with_trial'=>$with_trial, 'multiple_sessions'=>$multiple_sessions];
+	}
     
 }
 

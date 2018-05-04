@@ -49,6 +49,12 @@ class CommunicationsController extends \BaseController {
 	public function sendCommunication($sender_class, $transaction_type, $label, $id, $key){
 
 		try{
+
+			$label_array = ["sendPaymentLinkAfter3Days","sendPaymentLinkAfter7Days","sendPaymentLinkAfter45Days","purchaseAfter10Days","purchaseAfter30Days"];
+
+			if(in_array($label,$label_array)){
+				return array('status'=>400, 'message'=>'Communication not sent');
+			}
 		
 			if($transaction_type == 'order'){
 
