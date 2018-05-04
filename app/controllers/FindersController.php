@@ -4132,7 +4132,9 @@ class FindersController extends \BaseController {
 				// return $finderservice['ratecard'];
 				// exit;
 				foreach ($finderservice['ratecard'] as $ratecard){
-
+					if($ratecard["type"] != $type){
+						continue;
+					}
 					if(isset($ratecard['flags'])){
 
 						if(isset($ratecard['flags']['discother']) && $ratecard['flags']['discother'] == true){
