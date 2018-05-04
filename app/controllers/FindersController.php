@@ -3817,7 +3817,7 @@ class FindersController extends \BaseController {
 					$device_type = ['ios','android'];
 
 					if(isset($_GET['device_type']) && in_array($_GET['device_type'], $device_type) && isset($_GET['app_version']) && (float)$_GET['app_version'] >= 3.2 && isset($data['finder']['services']) && count($data['finder']['services']) > 0){
-
+						
 						$data['finder']['services_trial'] = $this->getTrialWorkoutRatecard($data['finder']['services'],$finder['type'],'trial', $data['finder']['trial']);
 						$data['finder']['services_workout'] = $this->getTrialWorkoutRatecard($data['finder']['services'],$finder['type'],'workout session');
 						
@@ -4132,7 +4132,8 @@ class FindersController extends \BaseController {
 				// return $finderservice['ratecard'];
 				// exit;
 				foreach ($finderservice['ratecard'] as $ratecard){
-					if(in_array($ratecard["type"],["workout session", "trial"]) && $ratecard["type"] != $type){
+
+					if(in_array($ratecard["type"],["workout session", "trial"])){
 						continue;
 					}
 					if(isset($ratecard['flags'])){
