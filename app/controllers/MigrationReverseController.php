@@ -801,6 +801,7 @@ class MigrationReverseController extends \BaseController {
                 'servicesfilter' 			            =>  (isset($Finder->filter) && isset($Finder->filter['servicesfilter'])) ? $Finder->filter['servicesfilter'] : [],
                 'trainer_contacts'                      =>  $trainer_contacts,
                 'callout'                               =>  isset($Finder->callout) ? $Finder->callout : "",
+            	'callout_ratecard_id'               =>  isset($Finder->callout_ratecard_id) ? $Finder->callout_ratecard_id: "",
                 'poc'                                   => $finder_poc
             ];
 
