@@ -7199,6 +7199,25 @@ public function yes($msg){
 
 		return ['without_trial'=>$without_trial, 'with_trial'=>$with_trial, 'multiple_sessions'=>$multiple_sessions];
 	}
-    
+	public function eventfitex(){
+		
+		$orders = Order::active()->whereIn('event_id', [151, 152, 153, 154, 155])->get(['customer_name', 'customer_email', 'customer_phone', 'event_id', 'ticket_id']);
+
+		Log::info('total'.count($orders));
+
+		$event_names = 	DbEvent::whereIn('_id', [151, 152, 153, 154, 155])->lists('name', '_id');
+		$ticekt_remarks = 	Ticket::whereIn('event_id', [151, 152, 153, 154, 155])->lists('remarks', '_id');
+		
+		foreach($orders as $key => &$order){
+			Log::info($key);
+			$order->event_name = $event_names[(string)$order->event_id];
+			$order->ticket_name = $ticekt_remarks[(string)$order->ticket_id];
+		}
+		return $orders;
+		
+
+
+	}
+
 }
 
