@@ -1178,5 +1178,6 @@ Route::get('addvendorstripedata','DebugController@addvendorstripedata');
 Route::get('workoutRatecardReverseMigrate','MigrationReverseController@workoutRatecardReverseMigrate');
 
 Route::get('loginoptions','CustomerController@loginOptions');
+Route::get('trialWorkout','DebugController@trialWorkout');
 
 
