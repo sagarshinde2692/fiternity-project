@@ -35,6 +35,15 @@ class EmailSmsApiController extends \BaseController {
         $this->customersms              =   $customersms;
         $this->utilities            =   $utilities;
         $this->findermailer             =   $findermailer;
+
+        $this->vendor_token = false;
+        
+        $vendor_token = Request::header('Authorization-Vendor');
+
+        if($vendor_token){
+
+            $this->vendor_token = true;
+        }
     }
 
     public function sendSMS($smsdata){
@@ -501,6 +510,16 @@ class EmailSmsApiController extends \BaseController {
     public function landingpagecallback(){
 
         $data = Input::json()->all();
+
+        if($this->vendor_token){
+
+            $decodeKioskVendorToken = decodeKioskVendorToken();
+
+            $vendor = $decodeKioskVendorToken->vendor;
+
+            $data['finder_id'] = (int)$vendor->_id;
+
+        }
 
         if(isset($data['capture_type']) && $data['capture_type'] == 'claim_listing'){
 
