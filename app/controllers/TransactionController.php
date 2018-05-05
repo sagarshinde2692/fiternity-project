@@ -1467,6 +1467,13 @@ class TransactionController extends \BaseController {
                 array_set($data, 'status', '3');
             }
 
+            $reward_type = "";
+
+            if(!empty($order['reward_type'])){
+
+                 $reward_type = $order['reward_type'];
+            }
+
             if($data['status'] == '1'){
                 if($order->type == "memberships"){
                     $group_id = isset($order->group_id) ? $order->group_id : null;
@@ -1497,6 +1504,8 @@ class TransactionController extends \BaseController {
                             $profile_link = $value->reward_type == 'diet_plan' ? $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$data['customer_email']."#diet-plan") : $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$data['customer_email']);
                             array_set($data, 'reward_type', $value->reward_type);
 
+                            $reward_type = $value->reward_type;
+
                         }
 
                         $reward_info = (!empty($reward_detail)) ? implode(" + ",$reward_detail) : "";
@@ -1513,6 +1522,8 @@ class TransactionController extends \BaseController {
                     
                     array_set($data, 'reward_info', $reward_info);
                     array_set($data, 'reward_type', 'cashback');
+
+                    $reward_type = 'cashback';
                 }
             }
 
@@ -1693,10 +1704,6 @@ class TransactionController extends \BaseController {
                                 $sndPgMail  =   $this->customermailer->sendPgOrderMail($emailData);
 
                                 $this->customermailer->payPerSessionFree($emailData);
-
-                                if(isset($order['routed_order']) && $order['routed_order'] == "1"){
-                                    $this->customermailer->routedOrder($emailData);
-                                }
                             }
 
                         }else{
@@ -1705,7 +1712,7 @@ class TransactionController extends \BaseController {
 
                             $this->customermailer->payPerSessionFree($emailData);
 
-                            if(isset($order['routed_order']) && $order['routed_order'] == "1"){
+                            if(isset($order['routed_order']) && $order['routed_order'] == "1" && !in_array($reward_type,['cashback','diet_plan'])){
                                 $this->customermailer->routedOrder($emailData);
                             }
                         }
