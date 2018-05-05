@@ -3247,7 +3247,8 @@ if (!function_exists('setDefaultAccount')) {
             Customer::$withoutAppends = true;
             $defaultCustomer = Customer::find(intval($customer_id));
             $defaultCustomer->default_account = true;
-            $duplicateCustomers = Customer::where('contact_no','LIKE','%'.substr($data['customer_phone'], -10).'%')->whereNot('_id', $customer_id)->lists('_id');
+            $duplicateCustomers = Customer::where('contact_no','LIKE','%'.substr($data['customer_phone'], -10).'%')->where('_id', '!=', $customer_id)->lists('_id');
+            // dd(DB::getQueryLog());
             if(count($duplicateCustomers) > 0){
                 $defaultCustomer->attached_accounts = $duplicateCustomers;
             
