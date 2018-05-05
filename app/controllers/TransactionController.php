@@ -837,7 +837,7 @@ class TransactionController extends \BaseController {
             $order->save();
         }
 
-        if(isset($data['punching_order']) && $data['punching_order'] && isset($data['manual_order']) && $data['manual_order'] && in_array($data['type'], ['booktrials', 'workout-session'])){
+        if(isset($data['manual_order']) && $data['manual_order'] && in_array($data['type'], ['booktrials', 'workout-session'])){
             
             $order->manual_order_punched = true;
             $order->update();
@@ -1011,7 +1011,7 @@ class TransactionController extends \BaseController {
 
         $otp_flag = true;
 
-        if($data['type'] != 'memberships' && !empty($data['punching_order']) && $data['punching_order']){
+        if($data['type'] != 'memberships' && !empty($data['manual_order']) && $data['manual_order']){
 
             $otp_flag = false;
         }
