@@ -3231,6 +3231,10 @@ Class Utilities {
                 }
             }
 
+            if(isset($data['manual_order']) && $data['manual_order']){
+                $fit_code = false;
+            }
+
             if(isset($data['is_tab_active']) && $data['is_tab_active']){
                 $fit_code = false;
             }
