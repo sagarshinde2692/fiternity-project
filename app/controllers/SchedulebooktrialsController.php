@@ -2209,6 +2209,14 @@ class SchedulebooktrialsController extends \BaseController {
                 'pre_trial_status'              =>      'yet_to_connect'
             );
 
+            if(!empty($order['manual_order'])){
+                $booktrialdata['manual_order'] = $order['manual_order'];
+            }
+
+            if(!empty($order['punching_order'])){
+                $booktrialdata['punching_order'] = $order['punching_order'];
+            }
+
             $is_tab_active = isTabActive($booktrialdata['finder_id']);
 
             if($is_tab_active){
@@ -3215,6 +3223,14 @@ class SchedulebooktrialsController extends \BaseController {
                 'diet_plan_link'                =>      $diet_plan_link,
                 'pre_trial_status'              =>      'yet_to_connect'
             );
+
+            if(!empty($data['manual_order'])){
+                $booktrialdata['manual_order'] = $data['manual_order'];
+            }
+
+            if(!empty($data['punching_order'])){
+                $booktrialdata['punching_order'] = $data['punching_order'];
+            }
 
             $is_tab_active = isTabActive($booktrialdata['finder_id']);
 

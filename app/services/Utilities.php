@@ -2909,6 +2909,14 @@ Class Utilities {
             $data['schedule_slot'] = $order['schedule_slot'];
         }
 
+        if(!empty($order['service_id'])){
+            $data['service_id'] = (int)$order['service_id'];
+        }
+
+        if(!empty($order['ratecard_id'])){
+            $data['ratecard_id'] = (int)$order['ratecard_id'];
+        }
+
         $workout_session_fields = ['customers_list', 'pay_later'];
         
         foreach($workout_session_fields as $field){

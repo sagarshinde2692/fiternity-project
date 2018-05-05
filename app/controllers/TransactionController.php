@@ -837,7 +837,7 @@ class TransactionController extends \BaseController {
             $order->save();
         }
 
-        if(isset($data['manual_order']) && $data['manual_order'] && in_array($data['type'], ['booktrials', 'workout-session'])){
+        if(isset($data['punching_order']) && $data['punching_order'] && isset($data['manual_order']) && $data['manual_order'] && in_array($data['type'], ['booktrials', 'workout-session'])){
             
             $order->manual_order_punched = true;
             $order->update();
@@ -1008,7 +1008,15 @@ class TransactionController extends \BaseController {
             }
         // }
 
-        if($data['payment_mode'] == 'at the studio' && isset($data['wallet']) && $data['wallet']){
+
+        $otp_flag = true;
+
+        if($data['type'] != 'memberships' && !empty($data['punching_order']) && $data['punching_order']){
+
+            $otp_flag = false;
+        }
+
+        if($data['payment_mode'] == 'at the studio' && isset($data['wallet']) && $data['wallet'] && $otp_flag){
 
             $data_otp = array_only($data,['finder_id','order_id','service_id','ratecard_id','payment_mode','finder_vcc_mobile','finder_vcc_email','customer_name','service_name','service_duration','finder_name']);
 
