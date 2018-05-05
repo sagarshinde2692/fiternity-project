@@ -753,7 +753,7 @@ class EmailSmsApiController extends \BaseController {
 
             if($data['capture_type'] == 'walkthrough'){
 
-                $data['google_pin'] = $this->googlePin($finder['lat'], $finder['lon']);
+                $data['google_pin'] = $this->utilities->getShortenUrl("https://maps.google.com/maps?q=".$lat.",".$lon."&ll=".$lat.",".$lon);
                 $data['finder_lat'] = $finder['lat'];
                 $data['finder_lon'] = $finder['lon'];
                 $data['finder_poc_for_customer_name'] = $finder['finder_poc_for_customer_name'];
@@ -1139,24 +1139,6 @@ class EmailSmsApiController extends \BaseController {
         }
 
     }
-
-    public function googlePin($lat,$lon){
-
-        $google_pin = "https://maps.google.com/maps?q=".$lat.",".$lon."&ll=".$lat.",".$lon;
-
-        $shorten_url = new ShortenUrl();
-
-        $url = $shorten_url->getShortenUrl($google_pin);
-
-        if(isset($url['status']) &&  $url['status'] == 200){
-            $google_pin = $url['url'];
-        }
-
-        return $google_pin;
-    }
-
-
-
 
 
 }
