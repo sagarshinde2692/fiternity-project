@@ -569,8 +569,8 @@ class CustomerController extends \BaseController {
 		$rules = [
 			'name' => 'required|max:255',
 			'email' => 'required|email|max:255',
-			'password' => 'required|min:6|max:20|confirmed',
-			'password_confirmation' => 'required|min:6|max:20',
+			// 'password' => 'required|min:6|max:20|confirmed',
+			// 'password_confirmation' => 'required|min:6|max:20',
 			'contact_no' => 'max:15',
 			'identity' => 'required'
 		];
@@ -616,7 +616,9 @@ class CustomerController extends \BaseController {
 						isset($data['gender']) ? $customer->gender = $data['gender'] : null;
 						isset($data['fitness_goal']) ? $customer->fitness_goal = $data['fitness_goal'] : null;
 						$customer->picture = "https://www.gravatar.com/avatar/".md5($data['email'])."?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png";
-						$customer->password = md5($data['password']);
+						if(isset($data['password'])){
+							$customer->password = md5($data['password']);
+						}
 						if(isset($data['contact_no'])){
 							$customer->contact_no = $data['contact_no'];
 						}
@@ -627,7 +629,11 @@ class CustomerController extends \BaseController {
 						$customer->referral_code = $this->generateReferralCode($customer->name);
 						$customer->old_customer = false;
 						$customer->save();
-						$customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email'],'password'=>$data['password']);
+						$customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email']);
+
+						if(isset($data['password'])){
+							$customer_data['password'] = $data['password'];
+						}
 						// $this->customermailer->register($customer_data);
 
 						Log::info('Customer Register : '.json_encode(array('customer_details' => $customer)));
@@ -647,12 +653,17 @@ class CustomerController extends \BaseController {
 				}else{
 
 					$ishullcustomer->name = ucwords($data['name']);
-					$ishullcustomer->password = md5($data['password']);
+					if(isset($data['password'])){
+						$ishullcustomer->password = md5($data['password']);
+					}
 					$ishullcustomer->ishulluser = 0;
 					$ishullcustomer->referral_code = $this->generateReferralCode($ishullcustomer->name);
 					$ishullcustomer->old_customer = true;
 					$ishullcustomer->update();
-					$customer_data = array('name'=>ucwords($ishullcustomer['name']),'email'=>$ishullcustomer['email'],'password'=>$ishullcustomer['password']);
+					$customer_data = array('name'=>ucwords($ishullcustomer['name']),'email'=>$ishullcustomer['email']);
+					if(isset($data['password'])){
+						$customer_data['password'] = $ishullcustomer['password'];
+					}
 
 					Log::info('Customer Register : '.json_encode(array('customer_details' => $ishullcustomer)));
 
@@ -678,7 +689,9 @@ class CustomerController extends \BaseController {
 				isset($data['gender']) ? $customer->gender = $data['gender'] : null;
 				isset($data['fitness_goal']) ? $customer->fitness_goal = $data['fitness_goal'] : null;
 				$customer->picture = "https://www.gravatar.com/avatar/".md5($data['email'])."?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png";
-				$customer->password = md5($data['password']);
+				if(isset($data['password'])){
+					$customer->password = md5($data['password']);
+				}
 				if(isset($data['contact_no'])){
 					$customer->contact_no = $data['contact_no'];
 				}
@@ -686,7 +699,11 @@ class CustomerController extends \BaseController {
 				$customer->status = "1";
 				$customer->update();
 
-				$customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email'],'password'=>$data['password']);
+				$customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email']);
+
+				if(isset($data['password'])){
+					$customer_data['password'] = $data['password'];
+				}
 				$this->customermailer->register($customer_data);
 
 				Log::info('Customer Register : '.json_encode(array('customer_details' => $customer)));
@@ -964,8 +981,8 @@ class CustomerController extends \BaseController {
 		
 		$resp = $this->checkIfpopPup($customer);
 		
-        $customer_data = array_only($customer->toArray(), ['_id','name','email','contact_no','dob','gender']);
-        
+		$customer_data = array_only($customer->toArray(), ['_id','name','email','contact_no','dob','gender']);
+		
         $token = $this->createToken($customer);
 		
 		if($this->vendor_token && isset($data['contact_no']) && $data['contact_no'] != ""){
@@ -6709,6 +6726,20 @@ class CustomerController extends \BaseController {
 		];
 
 		return Response::json($response,200);
+	}
+
+	public function setDefaultAccount(){
+		
+		$data = Input::json()->all();
+		
+		$jwt_token = $data['token'];
+		
+		$decodedToken = $this->customerTokenDecode($jwt_token);
+
+		setDefaultAccount(['source'=>'website', 'customer_phone'=>$decodedToken->customer->contact_no], $decodedToken->customer->_id);
+
+		return ['status'=>200, 'token'=>$jwt_token];
+
 	}
 	
 }

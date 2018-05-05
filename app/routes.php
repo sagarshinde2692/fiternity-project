@@ -1181,4 +1181,8 @@ Route::get('loginoptions','CustomerController@loginOptions');
 Route::get('trialWorkout','DebugController@trialWorkout');
 Route::get('eventfitex','DebugController@eventfitex');
 
+Route::get('checkemail/{email}','HomeController@checkemail');
+
+Route::post('setdefaultaccount','CustomerController@setDefaultAccount');
+
 

@@ -3239,7 +3239,9 @@ if (!function_exists('setDefaultAccount')) {
         
         Log::info("Inside setDefaultAccount");
         Log::info($data);
-        if( ((isset($data['source']) && $data['source'] == 'kiosk') || (isset($data['customer_source']) && $data['customer_source'] == 'kiosk')) && isset($data['customer_phone']) && $data['customer_phone'] != ''){
+        Log::info("Customer id");
+        Log::info($customer_id);
+        if( ((isset($data['source']) && in_array($data['source'], ['kiosk', 'website'])) || (isset($data['customer_source']) && $data['customer_source'] == 'kiosk')) && isset($data['customer_phone']) && $data['customer_phone'] != ''){
             
             Log::info("Creating default account");
             Customer::$withoutAppends = true;

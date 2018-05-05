@@ -3752,6 +3752,51 @@ Class Utilities {
 
         return "error, no code";
     }
+
+    public function checkIfpopPup($customer, $customdata=array()){
+        Log::info("checkIfpopPup");
+        Log::info($customer);
+		$resp = array();
+
+		$resp["show_popup"] = false;
+		$resp["popup"] = array();
+
+		if(count($customdata) == 0){
+
+				$current_wallet_balance = \Wallet::active()->where('customer_id',$customer->_id)->where('balance','>',0)->sum('balance');
+                Log::info($current_wallet_balance);
+				if($current_wallet_balance > 0){
+
+					$resp["show_popup"] = true;
+					$resp["popup"]["header_image"] = "https://b.fitn.in/iconsv1/global/fitcash.jpg";
+					$resp["popup"]["header_text"] = "Congratulations";
+					$resp["popup"]["text"] = "Logged in successfully. You have Rs. ".$current_wallet_balance." in your wallet. Go splurge!";
+					$resp["popup"]["button"] = "Ok";
+
+				}
+		}else{
+			if(isset($customdata['signupIncentive']) && $customdata['signupIncentive'] == true){
+
+				$addWalletData = [
+					"customer_id" => $customer["_id"],
+					"amount" => 250,
+					"amount_fitcash_plus"=>250,
+					"description" => "Added FitCash+ Rs 250 on Sign-Up, Expires On : ".date('d-m-Y',time()+(86400*15)),
+					"validity"=>time()+(86400*15),
+					"entry"=>"credit",
+					"type"=>"FITCASHPLUS"
+				];
+				$this->utilities->walletTransaction($addWalletData);
+				$resp["show_popup"] = true;
+				$resp["popup"]["header_image"] = "https://b.fitn.in/iconsv1/global/fitcash.jpg";
+				$resp["popup"]["header_text"] = "Congratulations";
+				$resp["popup"]["text"] = "You have recieved Rs.250 FitCash plus. Validity: 15 days";
+				$resp["popup"]["button"] = "Ok";
+			}
+		}
+
+		return $resp;
+	}
     
 }
 
