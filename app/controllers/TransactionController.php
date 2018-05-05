@@ -2702,7 +2702,7 @@ class TransactionController extends \BaseController {
         (isset($data['duration_day']) && $data['duration_day'] > 90 ) ? $data['membership_duration_type'] = 'long_term_membership' : null;
         $data['secondary_payment_mode'] = 'payment_gateway_tentative';
         $data['finder_id'] = (int)$data['finder_id'];
-        $data['service_id'] = null;
+        $data['service_id'] = (!empty($data['service_id'])) ? $data['service_id'] : null;
         
         $data['service_name_purchase'] =  $data['service_name'];
         $data['service_duration_purchase'] =  $data['service_duration'];
