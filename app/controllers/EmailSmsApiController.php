@@ -753,7 +753,7 @@ class EmailSmsApiController extends \BaseController {
 
             if($data['capture_type'] == 'walkthrough'){
 
-                $data['google_pin'] = $this->utilities->getShortenUrl("https://maps.google.com/maps?q=".$lat.",".$lon."&ll=".$lat.",".$lon);
+                $data['google_pin'] = $this->utilities->getShortenUrl("https://maps.google.com/maps?q=".$finder['lat'].",".$finder['lon']."&ll=".$finder['lat'].",".$finder['lon']);
                 $data['finder_lat'] = $finder['lat'];
                 $data['finder_lon'] = $finder['lon'];
                 $data['finder_poc_for_customer_name'] = $finder['finder_poc_for_customer_name'];
