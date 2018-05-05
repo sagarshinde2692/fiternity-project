@@ -745,7 +745,7 @@ class EmailSmsApiController extends \BaseController {
 
             Finder::$withoutAppends=true;
 
-            $finder = Finder::with(array('location'=>function($query){$query->select('name');}))->with(array('city'=>function($query){$query->select('name');}))->find($data['finder_id'],['_id','city_id','location_id','title']);
+            $finder = Finder::with(array('location'=>function($query){$query->select('name');}))->with(array('city'=>function($query){$query->select('name');}))->find($data['finder_id']);
 
             $data['finder_name'] = ucwords($finder['title']);
             $data['finder_city'] = ucwords($finder['city']['name']);
