@@ -766,6 +766,7 @@ class MigrationReverseController extends \BaseController {
                 'photos' 								=>  (isset($Finder['media']['images']['gallery']) && count($Finder['media']['images']['gallery']) > 0) ? $Finder['media']['images']['gallery'] : [],
                 'total_photos' 							=>  count($Finder['media']['images']['gallery']),
                 'videos' 								=>  (isset($Finder['media']['videos']) && count($Finder['media']['videos']) > 0) ? $Finder['media']['videos'] : [],
+            	'playOverVideo'                         =>  (!empty($Finder['media']['playOverVideo']))?$Finder['media']['playOverVideo']:-1,
                 'multiaddress' 					        =>  (isset($Finder['multiaddress']) && count($Finder['multiaddress']) > 0) ? $Finder['multiaddress'] : [],
                 'peak_hours' 					        =>  (isset($Finder['peak_hours']) && count($Finder['peak_hours']) > 0) ? $Finder['peak_hours'] : [],
                 // 'average_rating' 						=>  (isset($Finder->rating['value'])) ? $Finder->rating['value'] : 0,
