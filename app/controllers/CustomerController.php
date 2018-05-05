@@ -1043,9 +1043,9 @@ class CustomerController extends \BaseController {
 					$resp["popup"]["header_text"] = "Congratulations";
 
 					if($fitcash_plus > 0){
-						$resp["popup"]["text"] = "You have Rs. ".$fitcash_plus." in your wallet as FitCash+. This is 100% redeemable to purchase workout sessions and memberships on Fitternity across Mumbai, Bangalore, Pune & Delhi";
+						$resp["popup"]["text"] = "Logged in successfully. You have Rs. ".$fitcash_plus." in your wallet. Go splurge!";
 					}else{
-						$resp["popup"]["text"] = "You have Rs. ".$fitcash." in your wallet as FitCash. You can use this across session and membership bookings at gyms in studios in Mumbai, Bangalore, Pune & Delhi";
+						$resp["popup"]["text"] = "Logged in successfully. You have Rs. ".$fitcash." in your wallet. Go splurge!";
 					}
 
 					$resp["popup"]["button"] = "Ok";
