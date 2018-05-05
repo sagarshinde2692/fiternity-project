@@ -837,15 +837,6 @@ class TransactionController extends \BaseController {
             $order->save();
         }
 
-        if(isset($data['manual_order']) && $data['manual_order'] && in_array($data['type'], ['booktrials', 'workout-session'])){
-            
-            $order->manual_order_punched = true;
-            $order->update();
-
-            $this->utilities->createWorkoutSession($order->_id);
-            
-        }
-
         if(isset($data['payment_mode']) && $data['payment_mode'] == 'cod'){
 
             $group_id = isset($data['group_id']) ? $data['group_id'] : null;
@@ -1011,9 +1002,15 @@ class TransactionController extends \BaseController {
 
         $otp_flag = true;
 
-        if($data['type'] != 'memberships' && !empty($data['manual_order']) && $data['manual_order']){
+        if($this->vendor_token && !empty($data['manual_order']) && $data['manual_order'] && in_array($data['type'], ['booktrials', 'workout-session'])){
 
             $otp_flag = false;
+            
+            $order->manual_order_punched = true;
+            $order->update();
+
+            $this->utilities->createWorkoutSession($order->_id);
+            
         }
 
         if($data['payment_mode'] == 'at the studio' && isset($data['wallet']) && $data['wallet'] && $otp_flag){
