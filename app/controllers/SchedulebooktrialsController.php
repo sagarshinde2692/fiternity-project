@@ -7321,7 +7321,7 @@ class SchedulebooktrialsController extends \BaseController {
                         'customer_id'=>$customer_id,
                         'order_id'=>$order_id,
                         'amount'=>$refund,
-                        'type'=>'REFUND',
+                        "type"=>'CREDIT',
                         'entry'=>'credit',
                         'description'=>'Refund for Session ID: '.$booktrialdata['code'],
                     );
