@@ -770,6 +770,8 @@ return array(
 	],
 	'paypersession_level_icon_base_url'=>'https://b.fitn.in/paypersession/level-',
 	'paypersession_lock_icon'=>'https://b.fitn.in/paypersession/lock-icon.png',
-	'remove_patti_from_brands' => []
+	'remove_patti_from_brands' => [],
+
+	'routed_order_fitcash'=>300,
 
 );

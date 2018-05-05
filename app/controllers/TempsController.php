@@ -810,6 +810,60 @@ class TempsController extends \BaseController {
 
                 }
 
+                if($temp->action == "routed_verification" && $customer_id != ""){
+
+                    $addCapturedata = [
+                        "customer_name"=>$temp->customer_name,
+                        "customer_email"=>$temp->customer_email,
+                        "customer_phone"=>$temp->customer_phone,
+                        "capture_type"=>"routed_verification",
+                        "gender"=>$temp->gender,
+                        "customer_id"=>(int)$customer_id
+                    ];
+
+                    $this->utilities->addCapture($addCapturedata);
+
+                    $order = Order::active()->where('customer_email',$temp->customer_email)->where('routed_order','1')->first();
+
+                    $wallet = Wallet::where('customer_id',(int)$customer_id)->where('for','routed_verification')->first();
+
+                    if($order && !$wallet){
+
+                        $amount = Config::get('app.routed_order_fitcash');
+
+                        $walletData = array(
+                            "customer_id"=>(int)$customer_id,
+                            "amount"=> $amount,
+                            "amount_fitcash" => 0,
+                            "amount_fitcash_plus" => $amount,
+                            "type"=>'FITCASHPLUS',
+                            "description" => "Added FitCash+ as Fitternity Bonus, Expires On : ".date('d-m-Y',time()+(86400*30)),
+                            "validity" => time()+(86400*30),
+                            'entry'=>'credit',
+                            "order_id"=>$order->_id,
+                            "for"=>"routed_verification"
+                        );
+
+                        $this->utilities->walletTransaction($walletData);
+
+                        $customerReward     =   new CustomerReward();
+
+                        $myRewardData = [
+                            "reward_ids"=>[32],
+                            "customer_id"=>(int)$customer_id,
+                            "customer_name"=>$temp->customer_name,
+                            "customer_email"=>$temp->customer_email,
+                            "customer_phone"=>$temp->customer_phone,
+                            "routed_order_id"=>(int)$order->_id,
+                            "finder_id"=>(int)$order->finder_id
+                        ];
+
+                        $customerReward->createMyReward($myRewardData);
+                    }
+
+                    $return = array('status' => 200,'verified' => $verified,'token'=>$customerToken,'customer_data'=>$customer_data,'fitternity_no'=>$fitternity_no, 'message'=>'Successfully Verified');
+                }
+
             }
 
 

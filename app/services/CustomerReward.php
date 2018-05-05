@@ -38,12 +38,20 @@ Class CustomerReward {
 
         $rules = array(
             'reward_ids'=>'required|array',
-            'booktrial_id'=>'required_without:order_id|integer',
-            'order_id'=>'required_without:booktrial_id|integer',
             'customer_name'=>'required',
             'customer_email'=>'required|email',
             'customer_phone'=>'required'
         );
+
+        if(!isset($data['routed_order_id'])){
+
+            $old_rules = array(
+                'booktrial_id'=>'required_without:order_id|integer',
+                'order_id'=>'required_without:booktrial_id|integer'
+            );
+
+            $rules = array_merge($rules,$old_rules);
+        }
 
         $validator1 = Validator::make($data,$rules);
         if ($validator1->fails()) {
@@ -92,6 +100,7 @@ Class CustomerReward {
 
             isset($data['booktrial_id']) ? $reward['booktrial_id'] = (int) $data['booktrial_id'] : null;
             isset($data['order_id']) ? $reward['order_id'] = (int) $data['order_id'] : null;
+            isset($data['routed_order_id']) ? $reward['routed_order_id'] = (int) $data['routed_order_id'] : null;
 
 
             if(isset($reward['order_id'])){
@@ -202,6 +211,8 @@ Class CustomerReward {
 
             $this->saveToMyRewards($reward);
         }
+
+        return "success";
     }
 
 
@@ -239,7 +250,7 @@ Class CustomerReward {
             }
         }
         
-        return;
+        return "success";
     }
 
     public function giveCashbackOrRewardsOnOrderSuccess($order){
