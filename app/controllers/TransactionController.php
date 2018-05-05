@@ -181,6 +181,43 @@ class TransactionController extends \BaseController {
 
         if(isset($data['manual_order']) && $data['manual_order']){
 
+            if($data['type'] != 'memberships'){
+
+                $data['validity'] = '1';
+                $data['validity_type'] = 'day';
+                $data['service_name'] = '-';
+                $data['service_category_id'] = null;
+            }
+
+            if(!empty($data['ratecard_id'])){
+
+                $ratecard = Ratecard::find((int)$data['ratecard_id']);
+
+                if($ratecard){
+
+                    $data['service_id'] = (int)$ratecard['service_id'];
+
+                    if(isset($data['punching_order']) && $data['punching_order']){
+
+                        $data['validity'] = $ratecard['validity'];
+                        $data['validity_type'] = $ratecard['validity_type'];
+                    }
+                }
+
+            }
+
+            if(!empty($data['service_id'])){
+
+                $service = Service::find((int)$data['service_id']);
+
+                if($service){
+
+                    $data['service_name'] = $service['name'];
+                    $data['service_category_id'] = (int)$service['servicecategory_id'];
+                }
+
+            }
+
             $manual_order_rules = [
                 'service_category_id'=>'required',
                 'validity'=>'required',
@@ -976,7 +1013,21 @@ class TransactionController extends \BaseController {
             }
         // }
 
-        if($data['payment_mode'] == 'at the studio' && isset($data['wallet']) && $data['wallet']){
+
+        $otp_flag = true;
+
+        if($this->vendor_token && !empty($data['manual_order']) && $data['manual_order'] && in_array($data['type'], ['booktrials', 'workout-session'])){
+
+            $otp_flag = false;
+            
+            $order->manual_order_punched = true;
+            $order->update();
+
+            $this->utilities->createWorkoutSession($order->_id);
+            
+        }
+
+        if($data['payment_mode'] == 'at the studio' && isset($data['wallet']) && $data['wallet'] && $otp_flag){
 
             $data_otp = array_only($data,['finder_id','order_id','service_id','ratecard_id','payment_mode','finder_vcc_mobile','finder_vcc_email','customer_name','service_name','service_duration','finder_name', 'customer_source','amount_finder','amount','finder_location','customer_email','customer_phone','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon']);
 
@@ -1090,6 +1141,10 @@ class TransactionController extends \BaseController {
 
         if(isset($data['punching_order']) && $data['punching_order']){
             $resp['data']['vendor_otp_message'] = "Enter the verification code to confirm the membership.";
+        }
+
+        if(isset($data['manual_order']) && $data['manual_order'] && $data['type'] != 'memberships'){
+            $resp['data']['payment_modes'] = [];
         }
 
         return Response::json($resp);
@@ -1638,6 +1693,10 @@ class TransactionController extends \BaseController {
                                 $sndPgMail  =   $this->customermailer->sendPgOrderMail($emailData);
 
                                 $this->customermailer->payPerSessionFree($emailData);
+
+                                if(isset($order['routed_order']) && $order['routed_order'] == "1"){
+                                    $this->customermailer->routedOrder($emailData);
+                                }
                             }
 
                         }else{
@@ -1645,6 +1704,10 @@ class TransactionController extends \BaseController {
                             $sndPgMail  =   $this->customermailer->sendPgOrderMail($emailData);
 
                             $this->customermailer->payPerSessionFree($emailData);
+
+                            if(isset($order['routed_order']) && $order['routed_order'] == "1"){
+                                $this->customermailer->routedOrder($emailData);
+                            }
                         }
                     }
 
@@ -2680,7 +2743,7 @@ class TransactionController extends \BaseController {
         (isset($data['duration_day']) && $data['duration_day'] > 90 ) ? $data['membership_duration_type'] = 'long_term_membership' : null;
         $data['secondary_payment_mode'] = 'payment_gateway_tentative';
         $data['finder_id'] = (int)$data['finder_id'];
-        $data['service_id'] = null;
+        $data['service_id'] = (!empty($data['service_id'])) ? $data['service_id'] : null;
         
         $data['service_name_purchase'] =  $data['service_name'];
         $data['service_duration_purchase'] =  $data['service_duration'];
@@ -2772,9 +2835,11 @@ class TransactionController extends \BaseController {
             }
         }
 
-        $data['amount'] = $data['amount_finder'];
+        if(isset($data['manual_order']) && $data['manual_order']){
+            $data['amount_finder'] = $data['amount'];
+        }
 
-        
+        $data['amount'] = $data['amount_finder'];
 
        /* $corporate_discount_percent = $this->utilities->getCustomerDiscount();
         $data['customer_discount_amount'] = intval($data['amount'] * ($corporate_discount_percent/100));

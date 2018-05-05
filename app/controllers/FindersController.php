@@ -2999,6 +2999,12 @@ class FindersController extends \BaseController {
 				if(count($item['serviceratecard']) > 0){
 
 				$ratecardArr = [];
+				$ratecardoffersRecards  =   Offer::where('finder_id', intval($finder_id))->where('hidden', false)
+								->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
+								->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()) ))
+								->orderBy('order', 'asc')
+								->get(['start_date','end_date','price','type','allowed_qty','remarks'])
+								->toArray();
 
 				foreach ($item['serviceratecard'] as $ratekey => $rateval){
 
@@ -3012,12 +3018,12 @@ class FindersController extends \BaseController {
 
 					if(!isset($rateval['offers']) || (isset($rateval['offers']) && count($rateval['offers'])==0)){
 						if(!empty($rateval['_id']) && isset($rateval['_id'])){
-							$ratecardoffersRecards  =   Offer::where('ratecard_id', intval($rateval['_id']))->where('hidden', false)
-								->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
-								->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()) ))
-								->orderBy('order', 'asc')
-								->get(['start_date','end_date','price','type','allowed_qty','remarks'])
-								->toArray();
+							// $ratecardoffersRecards  =   Offer::where('ratecard_id', intval($rateval['_id']))->where('hidden', false)
+							// 	->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
+							// 	->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()) ))
+							// 	->orderBy('order', 'asc')
+							// 	->get(['start_date','end_date','price','type','allowed_qty','remarks'])
+							// 	->toArray();
 
 
 							if(count($ratecardoffersRecards) > 0){ 
@@ -3026,34 +3032,36 @@ class FindersController extends \BaseController {
 								//$offer_icon_vendor = "https://b.fitn.in/iconsv1/fitmania/offer_available_search.png";
 								
 								foreach ($ratecardoffersRecards as $ratecardoffersRecard){
-									$ratecardoffer                  =   $ratecardoffersRecard;
-									$ratecardoffer['offer_text']    =   "";
-									$ratecardoffer['offer_icon']    =   "https://b.fitn.in/iconsv1/fitmania/hot_offer_vendor.png";
+									if($ratecardoffersRecard["ratecard_id"] ==  $rateval['_id']){
+										$ratecardoffer                  =   $ratecardoffersRecard;
+										$ratecardoffer['offer_text']    =   "";
+										$ratecardoffer['offer_icon']    =   "https://b.fitn.in/iconsv1/fitmania/hot_offer_vendor.png";
 
-									if(isset($rateval['flags'])){
+										if(isset($rateval['flags'])){
 
-										if(isset($rateval['flags']['discother']) && $rateval['flags']['discother'] == true){
-											$ratecardoffer['offer_text']    =   "";
-											// $ratecardoffer['offer_icon']    =   "https://b.fitn.in/iconsv1/womens-day/women-only.png";
-											$ratecardoffer['offer_icon']    =   "";
+											if(isset($rateval['flags']['discother']) && $rateval['flags']['discother'] == true){
+												$ratecardoffer['offer_text']    =   "";
+												// $ratecardoffer['offer_icon']    =   "https://b.fitn.in/iconsv1/womens-day/women-only.png";
+												$ratecardoffer['offer_icon']    =   "";
+											}
+
+											if(isset($rateval['flags']['disc25or50']) && $rateval['flags']['disc25or50'] == true){
+												$ratecardoffer['offer_text']    =   "";
+												// $ratecardoffer['offer_icon']    =   "https://b.fitn.in/iconsv1/womens-day/women-only.png";
+												$ratecardoffer['offer_icon']    =   "";
+											}
 										}
 
-										if(isset($rateval['flags']['disc25or50']) && $rateval['flags']['disc25or50'] == true){
-											$ratecardoffer['offer_text']    =   "";
-											// $ratecardoffer['offer_icon']    =   "https://b.fitn.in/iconsv1/womens-day/women-only.png";
-											$ratecardoffer['offer_icon']    =   "";
-										}
+										$today_date     =   new DateTime( date("d-m-Y 00:00:00", time()) );
+										$end_date       =   new DateTime( date("d-m-Y 00:00:00", strtotime("+ 1 days", strtotime($ratecardoffer['end_date']))));
+										$difference     =   $today_date->diff($end_date);
+
+										// if($difference->days <= 5){
+										// 	$ratecardoffer['offer_text']    =   ($difference->d == 1) ? "Expires Today" : "Expires in ".$difference->days." days";
+
+										// }
+										array_push($ratecardoffers,$ratecardoffer);
 									}
-
-									$today_date     =   new DateTime( date("d-m-Y 00:00:00", time()) );
-									$end_date       =   new DateTime( date("d-m-Y 00:00:00", strtotime("+ 1 days", strtotime($ratecardoffer['end_date']))));
-									$difference     =   $today_date->diff($end_date);
-
-									// if($difference->days <= 5){
-									// 	$ratecardoffer['offer_text']    =   ($difference->d == 1) ? "Expires Today" : "Expires in ".$difference->days." days";
-
-									// }
-									array_push($ratecardoffers,$ratecardoffer);
 								}
 							}
 						}

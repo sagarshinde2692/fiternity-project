@@ -35,6 +35,15 @@ class EmailSmsApiController extends \BaseController {
         $this->customersms              =   $customersms;
         $this->utilities            =   $utilities;
         $this->findermailer             =   $findermailer;
+
+        $this->vendor_token = false;
+        
+        $vendor_token = Request::header('Authorization-Vendor');
+
+        if($vendor_token){
+
+            $this->vendor_token = true;
+        }
     }
 
     public function sendSMS($smsdata){
@@ -502,6 +511,16 @@ class EmailSmsApiController extends \BaseController {
 
         $data = Input::json()->all();
 
+        if($this->vendor_token){
+
+            $decodeKioskVendorToken = decodeKioskVendorToken();
+
+            $vendor = $decodeKioskVendorToken->vendor;
+
+            $data['finder_id'] = (int)$vendor->_id;
+
+        }
+
         if(isset($data['capture_type']) && $data['capture_type'] == 'claim_listing'){
 
             $rules = [
@@ -726,11 +745,21 @@ class EmailSmsApiController extends \BaseController {
 
             Finder::$withoutAppends=true;
 
-            $finder = Finder::with(array('location'=>function($query){$query->select('name');}))->with(array('city'=>function($query){$query->select('name');}))->find($data['finder_id'],['_id','city_id','location_id','title']);
+            $finder = Finder::with(array('location'=>function($query){$query->select('name');}))->with(array('city'=>function($query){$query->select('name');}))->find($data['finder_id']);
 
             $data['finder_name'] = ucwords($finder['title']);
             $data['finder_city'] = ucwords($finder['city']['name']);
             $data['finder_location'] = ucwords($finder['location']['name']);
+
+            if($data['capture_type'] == 'walkthrough'){
+
+                $data['google_pin'] = $this->utilities->getShortenUrl("https://maps.google.com/maps?q=".$finder['lat'].",".$finder['lon']."&ll=".$finder['lat'].",".$finder['lon']);
+                $data['finder_lat'] = $finder['lat'];
+                $data['finder_lon'] = $finder['lon'];
+                $data['finder_poc_for_customer_name'] = $finder['finder_poc_for_customer_name'];
+                $data['finder_poc_for_customer_no'] = $finder['finder_poc_for_customer_no'];
+                $data['finder_address'] = $finder['contact']['address'];
+            }
         }
 
         $storecapture   = Capture::create($data);
@@ -769,7 +798,7 @@ class EmailSmsApiController extends \BaseController {
             'send_bcc_status'   => 1
         );
 
-        $capture_type = array('fitness_canvas','renew-membership','claim_listing','add_business', 'sale_pre_register_2018');
+        $capture_type = array('fitness_canvas','renew-membership','claim_listing','add_business', 'sale_pre_register_2018','walkthrough');
 
         if(in_array($data['capture_type'],$capture_type)){
 
@@ -782,6 +811,16 @@ class EmailSmsApiController extends \BaseController {
                     break;
                 case 'sale_pre_register_2018':
                     $this->customersms->salePreregister($data);
+                    break;
+                case 'walkthrough':
+
+                    $sms_data = [];
+
+                    $sms_data['customer_phone'] = $storecapture['customer_phone'];
+
+                    $sms_data['message'] = "Hi ".ucwords($storecapture['customer_name'])." your walkin request at ".ucwords($storecapture['finder_name'])." has been confirmed. Address - ".ucwords($storecapture['finder_address'])." . Google pin - ".$storecapture['google_pin'].". Contact person - ". $storecapture['finder_poc_for_customer_name']." If you wish to purchase - make sure you buy through Fitternity with lowest price and assured rewards.";
+
+                    $this->customersms->custom($sms_data);
                     break;
                 default:
                     $this->customermailer->landingPageCallback($data);
@@ -802,6 +841,7 @@ class EmailSmsApiController extends \BaseController {
             case 'claim_listing':$message = "Thank You! Your request has been submitted. We will get in touch with you on ".$data['customer_phone']." or ".$data['customer_email']." as soon as possible!";break;
             case 'add_business' : $message = "Thank You for sharing this information. We will verify it as soon as possible.";break;
             case 'request_callback': $message = "Thanks for requesting a callback. We'll get back to you soon";break;
+            case 'walkthrough': $message = "Walkin Captured Successfully";break;
             default:$message = "Recieved the Request";break;
         }
 
@@ -1099,9 +1139,6 @@ class EmailSmsApiController extends \BaseController {
         }
 
     }
-
-
-
 
 
 }
