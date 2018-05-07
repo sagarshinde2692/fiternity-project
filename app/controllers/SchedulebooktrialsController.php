@@ -4309,6 +4309,7 @@ class SchedulebooktrialsController extends \BaseController {
         array_set($bookdata, 'cancellation_reason_vendor', $reason);
         array_set($bookdata, 'final_lead_stage', 'cancel_stage');
         array_set($bookdata, 'final_lead_status', 'cancelled_by_'.$source_flag);
+        array_set($bookdata, 'pre_trial_vendor_confirmation', 'cancel');
         if($booktrial['type']=='workout-session'){
             array_set($bookdata, 'final_lead_stage', 'trial_stage');
             array_set($bookdata, 'post_trial_status', 'no show');
@@ -7270,6 +7271,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $booktrial = Booktrial::find(intval($_id));
                 $this->unsetEmptyDates($booktrial);
                 $booktrial->pre_trial_vendor_confirmation = 'confirmed';
+                $booktrial->update();
                 return "Trial Confirmed Successfully";
 
             }else if($action == 'cancel'){
