@@ -4346,6 +4346,16 @@ class TransactionController extends \BaseController {
             $resp = array("status"=> 400, "message" => "Coupon code missing", "error_message" => "Please enter a valid coupon");
             return Response::json($resp,400);
         }
+
+        if(!empty($data['coupon']) && strtolower($data['coupon']) == 'fitmein'){
+
+            if(empty($data['fitmein']) || $data['fitmein'] !== true){
+
+                $resp = array("status"=> 400, "message" => "Please enter a valid coupon", "error_message" => "Please enter a valid coupon");
+                return Response::json($resp,400);
+            }
+        }
+        
         if(!isset($data['ratecard_id']) && !isset($data['ticket_id'])){
             $resp = array("status"=> 400, "message" => "Ratecard Id or ticket Id must be present", "error_message" => "Coupon cannot be applied on this transaction");
             return Response::json($resp,400);
