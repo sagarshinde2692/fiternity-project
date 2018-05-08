@@ -5057,9 +5057,10 @@ class FindersController extends \BaseController {
 		foreach($services as $service){
 			foreach($service['serviceratecard'] as $ratecard){
 				Log::info(" rc ".print_r($ratecard,true));
-				if(isset($ratecard['offers']) && count($ratecard['offers']) > 0 && isset($ratecard['offers'][0]['offer_type']) && $ratecard['offers'][0]['offer_type'] == 'newyears'&&!empty($ratecard['offers'][0]['callout'])){
-// 					$callout = $service['name']." - ".$this->getServiceDuration($ratecard)." @ Rs. ".$ratecard['offers'][0]['price'];
+				if(isset($ratecard['offers']) && count($ratecard['offers']) > 0 && isset($ratecard['offers'][0]['offer_type']) && $ratecard['offers'][0]['offer_type'] == 'newyears'){
+					if(!empty($ratecard['offers'][0]['callout']))
 					$callout = $ratecard['offers'][0]['callout'];
+					else $callout = $service['name']." - ".$this->getServiceDuration($ratecard)." @ Rs. ".$ratecard['offers'][0]['price'];
 					$callout_ratecard_id=(!empty($ratecard['_id'])?$ratecard['_id']:"");
 					break;
 				}
