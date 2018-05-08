@@ -558,6 +558,21 @@ class CustomerController extends \BaseController {
 
 	}
 
+	
+	function getAddWAlletArray($data=array())
+	{
+		
+		$req = [];
+		$req['customer_id'] = $data['customer_id'];
+		$req['amount'] = $data['amount'];
+		$req['entry'] = "credit";
+		$req['type'] = "FITCASHPLUS";
+		$req['amount_fitcash_plus'] = $data['amount'];
+		$req['description'] = $data['description']; "Added FitCash+ as Sign up Bonus for starter pack, Expires On : ".date('d-m-Y',time()+(86400*60));
+		$req["validity"] = time()+(86400*60);
+		$req['for'] = $data['for'];;
+		$this->utilities->walletTransaction($req);
+	}
 	public function register(){
 
 		$data = Input::json()->all();
@@ -621,6 +636,9 @@ class CustomerController extends \BaseController {
 							$customer->contact_no = $data['contact_no'];
 						}
 						$customer->identity = $data['identity'];
+						if(!empty($data['sign_up_for']))
+							$customer->sign_up_for= $data['sign_up_for'];
+						$customer->identity = $data['identity_type'];
 						$customer->account_link = $account_link;
 						$customer->status = "1";
 						$customer->demonetisation = time();
