@@ -570,8 +570,8 @@ class CustomerController extends \BaseController {
 		$req['amount_fitcash_plus'] = $data['amount'];
 		$req['description'] = $data['description']; "Added FitCash+ as Sign up Bonus for starter pack, Expires On : ".date('d-m-Y',time()+(86400*60));
 		$req["validity"] = time()+(86400*60);
-		$req['for'] = $data['for'];;
-		$this->utilities->walletTransaction($req);
+		$req['for'] = $data['for'];
+		return $this->utilities->walletTransaction($req);
 	}
 	public function register(){
 
@@ -652,14 +652,18 @@ class CustomerController extends \BaseController {
 
 						$response = $this->createToken($customer);
 
-						$resp = $this->checkIfpopPup($customer,$data);
-
-						if($resp["show_popup"] == "true"){
-							$response["extra"] = $resp;
+						if(empty($data['sign_up_for']))
+						{
+							$resp = $this->checkIfpopPup($customer,$data);	
+							if($resp["show_popup"] == "true")
+								$response["extra"] = $resp;
 						}
-
-						$customer_id = $customer->_id;
+						else  
 						
+							Log::info(" getAddWAlletArray:: ".print_r(getAddWAlletArray(["customer_id"=>$customer->_id,"amount"=>500,"description"=>("Added FitCash+ as Sign up Bonus for starter pack, Expires On : ".date('d-m-Y',time()+(86400*60))),"validity"=>(time()+(86400*60)),"for"=>"starter_pack"]),true));
+					
+						
+						$customer_id = $customer->_id;
 					}
 
 				}else{
@@ -675,10 +679,15 @@ class CustomerController extends \BaseController {
 					Log::info('Customer Register : '.json_encode(array('customer_details' => $ishullcustomer)));
 
 					$response = $this->createToken($ishullcustomer);
-					$resp = $this->checkIfpopPup($ishullcustomer, $data);
-					if($resp["show_popup"] == "true"){
-						$response["extra"] = $resp;
+					
+					if(empty($data['sign_up_for']))
+					{
+						$resp = $this->checkIfpopPup($customer,$data);
+						if($resp["show_popup"] == "true")
+							$response["extra"] = $resp;
 					}
+					else
+						Log::info(" getAddWAlletArray:: ".print_r(getAddWAlletArray(["customer_id"=>$customer->_id,"amount"=>500,"description"=>("Added FitCash+ as Sign up Bonus for starter pack, Expires On : ".date('d-m-Y',time()+(86400*60))),"validity"=>(time()+(86400*60)),"for"=>"starter_pack"]),true));
 
 					$customer_id = $ishullcustomer->_id;
 
@@ -709,10 +718,14 @@ class CustomerController extends \BaseController {
 
 				Log::info('Customer Register : '.json_encode(array('customer_details' => $customer)));
 				$response = $this->createToken($customer);
-				$resp = $this->checkIfpopPup($customer);
-				if($resp["show_popup"] == "true"){
-					$response["extra"] = $resp;
+				if(empty($data['sign_up_for']))
+				{
+					$resp = $this->checkIfpopPup($customer,$data);
+					if($resp["show_popup"] == "true")
+						$response["extra"] = $resp;
 				}
+				else
+					Log::info(" getAddWAlletArray:: ".print_r(getAddWAlletArray(["customer_id"=>$customer->_id,"amount"=>500,"description"=>("Added FitCash+ as Sign up Bonus for starter pack, Expires On : ".date('d-m-Y',time()+(86400*60))),"validity"=>(time()+(86400*60)),"for"=>"starter_pack"]),true));
 
 				$customer_id = $customer->_id;
 				
