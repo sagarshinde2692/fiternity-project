@@ -801,8 +801,8 @@ class MigrationReverseController extends \BaseController {
                 'inoperational_dates'                   =>  isset($Finder->inoperational_dates) ? $Finder->inoperational_dates : array(),
                 'servicesfilter' 			            =>  (isset($Finder->filter) && isset($Finder->filter['servicesfilter'])) ? $Finder->filter['servicesfilter'] : [],
                 'trainer_contacts'                      =>  $trainer_contacts,
-                'callout'                               =>  isset($Finder->callout) ? $Finder->callout : "",
-            	'callout_ratecard_id'               =>  isset($Finder->callout_ratecard_id) ? $Finder->callout_ratecard_id: "",
+//                 'callout'                               =>  isset($Finder->callout) ? $Finder->callout : "",
+//             	'callout_ratecard_id'               =>  isset($Finder->callout_ratecard_id) ? $Finder->callout_ratecard_id: "",
                 'poc'                                   => $finder_poc
             ];
 
@@ -1159,7 +1159,7 @@ class MigrationReverseController extends \BaseController {
             if(isset($data['vendor_price'])){
                 $insertData['vendor_price'] = $data['vendor_price'];
             }
-
+            
 
             $ratecart_exists = Ratecard::on($this->fitadmin)->find(intval($id));
 

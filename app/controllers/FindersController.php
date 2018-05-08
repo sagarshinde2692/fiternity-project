@@ -856,9 +856,12 @@ class FindersController extends \BaseController {
 					}
 				}
 
-				if(!isset($finder['callout']) || trim($finder['callout']) == ''){
+// 				if(!isset($finder['callout']) || trim($finder['callout']) == ''){
 					
+							unset($finder['callout']);
+							unset($finder['callout_ratecard_id']);
 						$callOutObj= $this->getCalloutOffer($finder['services']);
+						Log::info(" info_callout_obj:: ".print_r($callOutObj,true));
 						if(!empty($callOutObj))
 						{
 							if(!empty($callOutObj['callout']))
@@ -866,7 +869,7 @@ class FindersController extends \BaseController {
 							if(!empty($callOutObj['callout_ratecard_id']))
 							$finder['callout_ratecard_id']=(!empty($callOutObj['callout_ratecard_id'])?$callOutObj['callout_ratecard_id']:"");							
 						}
-				}
+// 				}
 				// 	$callout_offer = Offer::where('vendor_id', $finder['_id'])->where('hidden', false)->orderBy('order', 'asc')
 				// 					->where('offer_type', 'newyears')
 				// 					->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
@@ -5054,8 +5057,9 @@ class FindersController extends \BaseController {
 		foreach($services as $service){
 			foreach($service['serviceratecard'] as $ratecard){
 				Log::info(" rc ".print_r($ratecard,true));
-				if(isset($ratecard['offers']) && count($ratecard['offers']) > 0 && isset($ratecard['offers'][0]['offer_type']) && $ratecard['offers'][0]['offer_type'] == 'newyears'){
-					$callout = $service['name']." - ".$this->getServiceDuration($ratecard)." @ Rs. ".$ratecard['offers'][0]['price'];
+				if(isset($ratecard['offers']) && count($ratecard['offers']) > 0 && isset($ratecard['offers'][0]['offer_type']) && $ratecard['offers'][0]['offer_type'] == 'newyears'&&!empty($ratecard['offers'][0]['callout'])){
+// 					$callout = $service['name']." - ".$this->getServiceDuration($ratecard)." @ Rs. ".$ratecard['offers'][0]['price'];
+					$callout = $ratecard['offers'][0]['callout'];
 					$callout_ratecard_id=(!empty($ratecard['_id'])?$ratecard['_id']:"");
 					break;
 				}
