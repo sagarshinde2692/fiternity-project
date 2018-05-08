@@ -190,7 +190,7 @@ class Service extends \Basemodel{
 			$serviceoffers = Offer::where('vendorservice_id', $this->_id)->where('hidden', false)->orderBy('order', 'asc')
 									->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
 									->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()) ))
-									->get(['start_date','end_date','price','type','allowed_qty','remarks','offer_type','ratecard_id'])
+									->get(['start_date','end_date','price','type','allowed_qty','remarks','offer_type','ratecard_id','callout'])
 									->toArray();
 			
 			foreach ($ratecardsarr as $key => $value) {
@@ -218,7 +218,7 @@ class Service extends \Basemodel{
                         $ratecardoffer                  =   $ratecardoffersRecard;
                         $ratecardoffer['offer_text']    =   "";
                         $ratecardoffer['offer_icon']    =   "https://b.fitn.in/iconsv1/fitmania/hot_offer_vendor.png";
-
+                        if(!empty($ratecardoffersRecard['callout']))$ratecardoffer['callout']=$ratecardoffersRecard['callout'];
                         // if(isset($value['flags'])){
 
 						// 	if(isset($value['flags']['discother']) && $value['flags']['discother'] == true){

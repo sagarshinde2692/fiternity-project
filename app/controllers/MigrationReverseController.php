@@ -766,6 +766,7 @@ class MigrationReverseController extends \BaseController {
                 'photos' 								=>  (isset($Finder['media']['images']['gallery']) && count($Finder['media']['images']['gallery']) > 0) ? $Finder['media']['images']['gallery'] : [],
                 'total_photos' 							=>  count($Finder['media']['images']['gallery']),
                 'videos' 								=>  (isset($Finder['media']['videos']) && count($Finder['media']['videos']) > 0) ? $Finder['media']['videos'] : [],
+            	'playOverVideo'                         =>  (isset($Finder['media']['playOverVideo']))?$Finder['media']['playOverVideo']:-1,
                 'multiaddress' 					        =>  (isset($Finder['multiaddress']) && count($Finder['multiaddress']) > 0) ? $Finder['multiaddress'] : [],
                 'peak_hours' 					        =>  (isset($Finder['peak_hours']) && count($Finder['peak_hours']) > 0) ? $Finder['peak_hours'] : [],
                 // 'average_rating' 						=>  (isset($Finder->rating['value'])) ? $Finder->rating['value'] : 0,
@@ -800,7 +801,8 @@ class MigrationReverseController extends \BaseController {
                 'inoperational_dates'                   =>  isset($Finder->inoperational_dates) ? $Finder->inoperational_dates : array(),
                 'servicesfilter' 			            =>  (isset($Finder->filter) && isset($Finder->filter['servicesfilter'])) ? $Finder->filter['servicesfilter'] : [],
                 'trainer_contacts'                      =>  $trainer_contacts,
-                'callout'                               =>  isset($Finder->callout) ? $Finder->callout : "",
+//                 'callout'                               =>  isset($Finder->callout) ? $Finder->callout : "",
+//             	'callout_ratecard_id'               =>  isset($Finder->callout_ratecard_id) ? $Finder->callout_ratecard_id: "",
                 'poc'                                   => $finder_poc
             ];
 
@@ -1157,7 +1159,7 @@ class MigrationReverseController extends \BaseController {
             if(isset($data['vendor_price'])){
                 $insertData['vendor_price'] = $data['vendor_price'];
             }
-
+            
 
             $ratecart_exists = Ratecard::on($this->fitadmin)->find(intval($id));
 

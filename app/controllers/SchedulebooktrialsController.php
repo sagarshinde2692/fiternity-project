@@ -832,6 +832,7 @@ class SchedulebooktrialsController extends \BaseController {
             'finder_slug'   =>  $finder_slug,
             'finder_lat'   =>  $finder_lat,
             'finder_lon'   =>  $finder_lon,
+            'type' => 'booktrials'
         );
 
         if($this->vendor_token){
