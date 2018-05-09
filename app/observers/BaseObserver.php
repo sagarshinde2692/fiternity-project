@@ -107,7 +107,8 @@ class BaseObserver {
                 'preferred_starting_date',
                 'finder_category_id',
                 'redundant_order',
-                'pay_later'
+                'pay_later',
+                'success_date'
             );
                 
             foreach($fields as $field){

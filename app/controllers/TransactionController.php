@@ -797,6 +797,10 @@ class TransactionController extends \BaseController {
             $data['is_tab_active'] = true;
         }
 
+        if($data['type'] == 'workout-session' && isset($_GET['device_type']) && isset($_GET['app_version']) && in_array($_GET['device_type'], ['android', 'ios']) && $_GET['app_version'] > '4.4.3' ){
+            $data['pps_new'] = true;
+        }
+
         if(isset($old_order_id)){
 
             if($order){
