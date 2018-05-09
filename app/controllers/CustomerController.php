@@ -559,19 +559,16 @@ class CustomerController extends \BaseController {
 	}
 
 	
-	function getAddWAlletArray($data=array())
-	{
+	
+	public function starterPackDefault($data){
 		
-		$req = [];
-		$req['customer_id'] = $data['customer_id'];
-		$req['amount'] = $data['amount'];
-		$req['entry'] = "credit";
-		$req['type'] = "FITCASHPLUS";
-		$req['amount_fitcash_plus'] = $data['amount'];
-		$req['description'] = $data['description']; "Added FitCash+ as Sign up Bonus for starter pack, Expires On : ".date('d-m-Y',time()+(86400*60));
-		$req["validity"] = time()+(86400*60);
-		$req['for'] = $data['for'];
-		return $this->utilities->walletTransaction($req);
+		/* $customer->sign_up_for= $data['sign_up_for'];
+		$customer->otp= generateOtp();
+		$customer->otp_attempts=0;
+		$customer->otp_verified= false;
+		 */
+		Log::info(" info data ::".print_r($data,true));
+		return array("sign_up_for"=>$data['sign_up_for'],"contact_no"=>($data['contact_no'])?$data['contact_no']:"","name"=>($data['name'])?$data['name']:"","email"=>($data['email'])?$data['email']:"");
 	}
 	public function register(){
 
@@ -636,31 +633,44 @@ class CustomerController extends \BaseController {
 							$customer->contact_no = $data['contact_no'];
 						}
 						$customer->identity = $data['identity'];
-						if(!empty($data['sign_up_for']))
-							$customer->sign_up_for= $data['sign_up_for'];
-						$customer->identity = $data['identity_type'];
+						
+						
 						$customer->account_link = $account_link;
 						$customer->status = "1";
 						$customer->demonetisation = time();
 						$customer->referral_code = $this->generateReferralCode($customer->name);
 						$customer->old_customer = false;
+						if(!empty($data['sign_up_for']))
+						{
+							if(!empty($data['host_id'])&&!empty($data['invite_id']))
+							{
+								
+							}
+							else {
+									$tmp=addTemp($this->starterPackDefault($data));
+									$tmp_id=$tmp['_id'];
+									$otp=$tmp['otp'];
+									$customer->sign_up_for= $data['sign_up_for'];
+									$customer->otp_verified=false;								
+							}
+						
+						}
 						$customer->save();
 						$customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email'],'password'=>$data['password']);
 						// $this->customermailer->register($customer_data);
 
 						Log::info('Customer Register : '.json_encode(array('customer_details' => $customer)));
 
-						$response = $this->createToken($customer);
 
 						if(empty($data['sign_up_for']))
 						{
+						   $response = $this->createToken($customer);
 							$resp = $this->checkIfpopPup($customer,$data);	
 							if($resp["show_popup"] == "true")
 								$response["extra"] = $resp;
 						}
-						else  
 						
-							Log::info(" getAddWAlletArray:: ".print_r(getAddWAlletArray(["customer_id"=>$customer->_id,"amount"=>500,"description"=>("Added FitCash+ as Sign up Bonus for starter pack, Expires On : ".date('d-m-Y',time()+(86400*60))),"validity"=>(time()+(86400*60)),"for"=>"starter_pack"]),true));
+// 							Log::info(" getAddWAlletArray:: ".print_r($this->getAddWAlletArray(["customer_id"=>$customer->_id,"amount"=>500,"description"=>("Added FitCash+ as Sign up Bonus for starter pack, Expires On : ".date('d-m-Y',time()+(86400*60))),"validity"=>(time()+(86400*60)),"for"=>"starter_pack"]),true));
 					
 						
 						$customer_id = $customer->_id;
@@ -673,21 +683,30 @@ class CustomerController extends \BaseController {
 					$ishullcustomer->ishulluser = 0;
 					$ishullcustomer->referral_code = $this->generateReferralCode($ishullcustomer->name);
 					$ishullcustomer->old_customer = true;
+					if(!empty($data['sign_up_for']))
+					{
+						$tmp=addTemp($this->starterPackDefault($data));
+						$tmp_id=$tmp['_id'];
+						$otp=$tmp['otp'];
+						$ishullcustomer->sign_up_for= $data['sign_up_for'];
+						$ishullcustomer->otp_verified=false;
+					}
+// 						$this->starterPackDefault($customer,$data);
 					$ishullcustomer->update();
 					$customer_data = array('name'=>ucwords($ishullcustomer['name']),'email'=>$ishullcustomer['email'],'password'=>$ishullcustomer['password']);
 
 					Log::info('Customer Register : '.json_encode(array('customer_details' => $ishullcustomer)));
 
-					$response = $this->createToken($ishullcustomer);
 					
 					if(empty($data['sign_up_for']))
 					{
+						$response = $this->createToken($ishullcustomer);
 						$resp = $this->checkIfpopPup($customer,$data);
 						if($resp["show_popup"] == "true")
 							$response["extra"] = $resp;
 					}
-					else
-						Log::info(" getAddWAlletArray:: ".print_r(getAddWAlletArray(["customer_id"=>$customer->_id,"amount"=>500,"description"=>("Added FitCash+ as Sign up Bonus for starter pack, Expires On : ".date('d-m-Y',time()+(86400*60))),"validity"=>(time()+(86400*60)),"for"=>"starter_pack"]),true));
+			
+// 						Log::info(" getAddWAlletArray:: ".print_r($this->getAddWAlletArray(["customer_id"=>$customer->_id,"amount"=>500,"description"=>("Added FitCash+ as Sign up Bonus for starter pack, Expires On : ".date('d-m-Y',time()+(86400*60))),"validity"=>(time()+(86400*60)),"for"=>"starter_pack"]),true));
 
 					$customer_id = $ishullcustomer->_id;
 
@@ -711,21 +730,32 @@ class CustomerController extends \BaseController {
 				}
 				$customer->account_link = $account_link;
 				$customer->status = "1";
-				$customer->update();
+				
+				if(!empty($data['sign_up_for']))
+// 					$this->starterPackDefault($customer,$data);
+				{
+					$tmp=addTemp($this->starterPackDefault($data));
+					$tmp_id=$tmp['_id'];
+					$otp=$tmp['otp'];
+					$customer->sign_up_for= $data['sign_up_for'];
+					$customer->otp_verified=false;
+				}
+				
+				
+					$customer->update();
 
 				$customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email'],'password'=>$data['password']);
 				$this->customermailer->register($customer_data);
 
 				Log::info('Customer Register : '.json_encode(array('customer_details' => $customer)));
-				$response = $this->createToken($customer);
 				if(empty($data['sign_up_for']))
 				{
+					$response = $this->createToken($customer);
 					$resp = $this->checkIfpopPup($customer,$data);
 					if($resp["show_popup"] == "true")
 						$response["extra"] = $resp;
 				}
-				else
-					Log::info(" getAddWAlletArray:: ".print_r(getAddWAlletArray(["customer_id"=>$customer->_id,"amount"=>500,"description"=>("Added FitCash+ as Sign up Bonus for starter pack, Expires On : ".date('d-m-Y',time()+(86400*60))),"validity"=>(time()+(86400*60)),"for"=>"starter_pack"]),true));
+// 					Log::info(" getAddWAlletArray:: ".print_r($this->getAddWAlletArray(["customer_id"=>$customer->_id,"amount"=>500,"description"=>("Added FitCash+ as Sign up Bonus for starter pack, Expires On : ".date('d-m-Y',time()+(86400*60))),"validity"=>(time()+(86400*60)),"for"=>"starter_pack"]),true));
 
 				$customer_id = $customer->_id;
 				
@@ -736,11 +766,22 @@ class CustomerController extends \BaseController {
 			$this->addCustomerRegId($data);
 
 			$response['customer_data'] = array_only($customer->toArray(), ['_id','name','email','contact_no','dob','gender']);
-			$response['customer_data']["token"] = $response["token"];
+			if(empty($data['sign_up_for']))
+			{
+				$response['customer_data']["token"] = $response["token"];
+				registerMail($data["customer_id"]);
+			}
+			else {
+// 				$response['customer_data']['otp']=$customer->otp;
+				$response['status']=1;
+				$response['message']="Otp Sent Sucessfully";
+				if(!empty($tmp_id))
+				$response['temp_id']=$tmp_id;
+				if(!empty($customer->contact_no)&&!empty($otp))
+					$this->customersms->genericOtp(array("customer_phone"=>$customer->contact_no,"otp"=>$otp));
+				
+			}
 			Log::info("Customer Register",$response);
-
-            registerMail($data["customer_id"]);
-			
 
 			return Response::json($response,200);
 		}
@@ -6741,5 +6782,224 @@ class CustomerController extends \BaseController {
 
 		return Response::json($response,200);
 	}
+	public function inviteForSignup(){
+		try {
+			
+			$req = Input::json()->all();
+			Log::info('inviteForSignup',$req);
+			$customer_id = "";
+			$jwt_token = Request::header('Authorization');
+			$device_type = Request::header('Device-Type');
+			$app_version = Request::header('App-Version');
+			
+			if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+				
+				$decoded = customerTokenDecode($jwt_token);
+				Log::info(" decoded ".print_r($decoded ,true));
+				Log::info(" sas".print_r($decoded->customer,true));
+				$customer_id = (int)$decoded->customer->_id;
+				Log::info(" customer_id ".print_r($customer_id ,true));
+				$customer= $decoded->customer;
+				Log::info(" customer ".print_r($customer,true));
+			}
+			Log::info(" customer ".print_r($customer,true));
+			if(!empty($customer))
+			{
+				// Request Validations...........
+				$rules = [
+						'invitees' => 'required|array',
+						'source' => 'in:ANDROID,IOS,WEB',
+				];
+				
+				$validator = Validator::make($req, $rules);
+				
+				if ($validator->fails()) {
+					return Response::json(
+							array(
+									'status' => 0,
+									'message' => $this->errorMessage($validator->errors()
+											)),200
+							);
+				}
+				
+				
+				
+				// Invitee info validations...........
+				$inviteesData = [];
+				
+				foreach ($req['invitees'] as $value){
+					
+					$inviteeData = ['name'=>$value['name']];
+					
+					$rules = [
+							'name' => 'required|string',
+							'input' => 'required|string',
+					];
+					$messages = [
+							'name' => 'invitee name is required',
+							'input' => 'invitee email or phone is required'
+					];
+					$validator = Validator::make($value, $rules, $messages);
+					
+					if ($validator->fails()) {	return Response::json(array('status' => 0,'message' => $this->errorMessage($validator->errors())),200);}
+					
+					if(filter_var($value['input'], FILTER_VALIDATE_EMAIL) != '') {
+						// valid address
+						$inviteeData = array_add($inviteeData, 'email', $value['input']);
+					}
+					else if(filter_var($value['input'], FILTER_VALIDATE_REGEXP, array(
+							"options" => array("regexp"=>"/^[2-9]{1}[0-9]{9}$/")
+					)) != ''){
+						// valid phone
+						$inviteeData = array_add($inviteeData, 'phone', $value['input']);
+						
+					}
+					array_push($inviteesData, $inviteeData);
+					
+					foreach ($inviteesData as $value){
+						
+						$rules = [
+								'name' => 'required|string',
+								'email' => 'required_without:phone|email',
+								'phone' => 'required_without:email',
+						];
+						$messages = [
+								'email.required_without' => 'invitee email or phone is required',
+								'phone.required_without' => 'invitee email or phone is required'
+						];
+						$validator = Validator::make($value, $rules, $messages);
+						
+						if ($validator->fails()) {
+							return Response::json(
+									array(
+											'status' => 0,
+											'message' => $this->errorMessage($validator->errors()
+													)),200
+									);
+						}
+					}                                                     
+					
+					
+				}
+				
+				
+				// Validate customer is not inviting himself/herself......
+				$emails = array_fetch($inviteesData, 'email');
+				$phones = array_fetch($inviteesData, 'phone');
+				
+				
+				if(array_where($emails, function ($key, $value) use($customer)   {
+					if($value == $customer->email){
+						return true;
+					}
+				})) {
+					return Response::json(
+							array(
+									'status' => 0,
+									'message' => 'You cannot invite yourself'
+							),200
+							);
+				}
+				
+				if(array_where($phones, function ($key, $value) use($customer){
+					if($value == $customer->contact_no){
+						return true;
+					}
+				})) {
+					return Response::json(
+							array(
+									'status' => 0,
+									'message' => 'You cannot invite yourself'
+							),200
+							);
+				}
+				
+				
+				// Save Invite info..........
+				foreach ($inviteesData as $invitee){
+					$invite = new Invite();
+					$invite->_id = Invite::max('_id') + 1;
+					$invite->status = 'pending';
+					$invite->host_id = $customer->_id;
+					$invite->host_email = $customer->email;
+					$invite->host_name = $customer->name;
+					$invite->host_phone = $customer->contact_no;
+					$invite->source = $req['source'];
+					isset($invitee['name']) ? $invite->invitee_name = trim($invitee['name']): null;
+					isset($invitee['email']) ? $invite->invitee_email = trim($invitee['email']): null;
+					isset($invitee['phone']) ? $invite->invitee_phone = trim($invitee['phone']): null;
+					$invite->save();
+					
+					// Generate bitly for landing page with invite_id and booktrial_id
+					$url = 'www.fitternity.com/starter-pack?sign_up_for=starter_pack&host_id='.$invite['host_id'].'&invite_id='.$invite['_id'];
+					$shorten_url = new ShortenUrl();
+					$url1 = $shorten_url->getShortenUrl($url);
+					Log::info("  url".print_r($url,true));
+					if(!isset($url['status']) ||  $url['status'] != 200){
+					/* 	return Response::json(
+								array(
+										'status' => 0,
+										'message' => 'Unable to Generate Shortren URL'
+								),200
+								); */
+						Log::info(" COULDN'T GENERATE SHORTEN URL");
+						
+					}
+					else $url = $url1['url'];
+					/* if(!isset($url2['status']) ||  $url2['status'] != 200){
+						return Response::json(
+								array(
+										'status' => 0,
+										'message' => 'Unable to Generate Shortren URL'
+								),200);
+					} */
+					
+					
+					// Send email / SMS to invitees...
+					$templateData = array(
+							'invitee_name'=>$invite['invitee_name'],
+							'invitee_email'=>$invite['invitee_email'],
+							'invitee_phone'=>$invite['invitee_phone'],
+							'gender'=>(!empty($customer->gender)?$customer->gender:""),
+							'host_name' => $invite['host_name'],
+							'starter_pack' => true,
+							'amount'=>"500",
+							'city'=>"Hyderabad",
+							// 							'type'=> $BooktrialData['type'],
+					// 							'finder_name'=> $BooktrialData['finder_name'],
+					// 							'finder_location'=> $BooktrialData['finder_location'],
+					// 							'finder_address'=> $BooktrialData['finder_address'],
+					// 							'schedule_date'=> $BooktrialData['schedule_date'],
+					// 							'schedule_date_time'=> $BooktrialData['schedule_date_time'],
+					// 							'service_name'=> $BooktrialData['service_name'],
+					// 							'schedule_slot_start_time'=> $BooktrialData['schedule_slot_start_time'],
+							'url' => $url,
+							// 							'url2' => $url2
+					);
+					
+					//            return $this->customermailer->inviteEmail($BooktrialData['type'], $templateData);
+					
+					// 					isset($templateData['invitee_email']) ? $this->customermailer->inviteEmail($BooktrialData['type'], $templateData) : null;
+					Log::info("  templateData :: ".print_r($templateData,true));
+					isset($templateData['invitee_phone']) ? $this->customersms->inviteSMS("", $templateData) : null;
+				}
+				
+				return Response::json(array('status' => 1,'message' => "Successfully invited friends for signup ."),200);
+			}
+			else
+				return Response::json(array('status' => 0,'message' => "Token Not Present or invalid."),200);
+				
+				
+				
+				
+			
+				
+
+		} catch (Exception $e) {
+			$e->getTrace();
+			return Response::json(array('status' => 0,'message' => $e->getMessage()." on line :: ".$e->getLine()." in file :: ".$e->getFile()),200);
+		}
+		
 	
+}
 }

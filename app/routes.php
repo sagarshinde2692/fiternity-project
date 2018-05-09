@@ -245,6 +245,8 @@ Route::get('app/config', array('as' => 'customer.appconfig','uses' => 'CustomerC
 Route::post('storecustomerattribution',  array('as' => 'customer.storecustomerattribution','uses' => 'CustomerController@storeCustomerAttribution'));
 
 
+Route::post('inviteforsignup', array('as' => 'customer.inviteForSignup','uses' => 'CustomerController@inviteForSignup'));
+
 
 Route::post('admin/customer/capturemyreward', array('as' => 'customer.capturemyreward','uses' => 'CustomerController@captureMyReward'));
 
@@ -349,6 +351,8 @@ Route::get('linkopenfororder/{order_id}',  array('as' => 'orders.linkOpenForOrde
 Route::post('orderupdate', array('as' => 'orders.orderupdate','uses' => 'OrderController@orderUpdate'));
 
 Route::post('inviteformembership', array('as' => 'customer.inviteForMembership','uses' => 'OrderController@inviteForMembership'));
+
+
 
 
 

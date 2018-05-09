@@ -306,7 +306,19 @@ class TempsController extends \BaseController {
                     $data['customer_name'] = $temp['customer_name'];
                     $data['customer_email'] = $temp['customer_email'];
                     $data['customer_phone'] = $temp['customer_phone'];
+                    if(!empty($temp['sign_up_for'])&&$temp['sign_up_for']=='starter_pack')
+                    {
+                    		$cust=Customer::where("customer_id","=",$temp->customer_id)->first();
+                    		if(!empty($cust))
+                    		{
+	                    		$cust->otp_verified=true;
+	                    		$cust->update();                    			
+                    		}
+	                    	Log::info(" getAddWAlletArray:: ".print_r($this->getAddWAlletArray(["customer_id"=>$customer->_id,"amount"=>500,"description"=>("Added FitCash+ as Sign up Bonus for starter pack, Expires On : ".date('d-m-Y',time()+(86400*60))),"validity"=>(time()+(86400*60)),"for"=>"starter_pack"]),true));
+		                    	
+                    }
                     $data['customer_id'] = autoRegisterCustomer($data);
+                    
                     $customerToken = createCustomerToken($data['customer_id']);
                 }
 
@@ -316,7 +328,20 @@ class TempsController extends \BaseController {
             return Response::json(array('status' => 400,'message' => 'Not Found'),400);
         }
     }
-
+    function getAddWalletArray($data=array())
+    {
+    	
+    	$req = [];
+    	$req['customer_id'] = isset($data['customer_id'])&&$data['customer_id']!=""?$data['customer_id']:"";;
+    	$req['amount'] = isset($data['amount'])&&$data['amount']!=""?$data['amount']:"";
+    	$req['entry'] = "credit";
+    	$req['type'] = "FITCASHPLUS";
+    	$req['amount_fitcash_plus'] = isset($data['amount'])&&$data['amount']!=""?$data['amount']:"";
+    	$req['description'] = !empty($data['description'])?$data['description']:""; 
+    	$req["validity"] = time()+(86400*60);
+    	$req['for'] = isset($data['for'])&&$data['for']!=""?$data['for']:"";
+    	return $this->utilities->walletTransaction($req);
+    }
     function verifyOtpV1($temp_id,$otp,$email="",$name=""){
 
         $customerToken = "";
