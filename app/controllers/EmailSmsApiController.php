@@ -17,6 +17,8 @@ class EmailSmsApiController extends \BaseController {
     protected $cloudagent;
     protected $sidekiq;
     protected $customermailer;
+    protected $customerController;
+    protected $transactionController;
     protected $customersms;
     protected $utilities;
     protected $findermailer;
@@ -26,6 +28,8 @@ class EmailSmsApiController extends \BaseController {
         Sidekiq $sidekiq,
         CustomerMailer $customermailer,
         CustomerSms $customersms,
+    	CustomerController $customerController,
+        TransactionController $transactionController,
         Utilities $utilities,
         FinderMailer $findermailer
     ){
@@ -35,6 +39,9 @@ class EmailSmsApiController extends \BaseController {
         $this->customersms              =   $customersms;
         $this->utilities            =   $utilities;
         $this->findermailer             =   $findermailer;
+        $this->customerController=   $customerController;
+        $this->transactionController=   $transactionController;
+        
     }
 
     public function sendSMS($smsdata){
@@ -701,7 +708,30 @@ class EmailSmsApiController extends \BaseController {
 
         array_set($data, 'date',date("h:i:sa"));
         array_set($data, 'ticket_number',random_numbers(5));
-
+        
+        // starter pack
+        if(!empty($data['capture_type'])&&$data['capture_type']=='starter_pack')
+        {
+        	
+        	$start_pack_rules = ['customer_email'=>'required|email|max:255','customer_name'=>'required','customer_phone'=>'required','fitness_goal'=>'required','customer_location'=>'required'];
+        		
+        	$validator = Validator::make($data, $start_pack_rules);
+        		
+        		if ($validator->fails()) {
+        			$response = array('status' => 0,'message' =>error_message($validator->errors()));
+        			return Response::json($response,200);
+        		}
+        	
+        	
+        		$count = Capture::where('capture_type',$data['capture_type'])->/* where('customer_phone','LIKE','%'.substr($data['customer_phone'], -9).'%')-> */where('customer_email',$data['customer_email'])->count();
+        		
+        		if($count >= 1){
+        			$resp = array('status' => 0,'message' => "You have already signed up.");
+        			return Response::json($resp,200);
+        		}   	
+        }
+        // starter pack end
+			
         if(isset($data['booktrial_id']) && $data['booktrial_id'] != ""){
 
             $data['booktrial_id'] = (int) $data['booktrial_id'];
@@ -740,11 +770,27 @@ class EmailSmsApiController extends \BaseController {
             $this->customersms->myHomFitnessWithoutSlotInstant($data);
 
         }
+        
+        if(!empty($data['capture_type'])&&$data['capture_type']=='starter_pack')
+        {
+        	Log::info(" Added fitcash for starter_pack ".print_r($this->utilities->getAddWAlletArray(["customer_id"=>$data['customer_id'],"amount"=>500,"description"=>("Added FitCash+ as Sign up Bonus for starter pack, Expires On : ".date('d-m-Y',time()+(86400*60))),"validity"=>(time()+(86400*60)),"for"=>"starter_pack"]),true));
+        	Log::info(" generateFreeDietPlanOrder for starter_pack ".print_r($this->transactionController->generateFreeDietPlanOrder($data),true));
+        	
+        	if(!empty($data['code']))
+        	{
+        		Log::info(" datacode ".print_r($data['code'],true));
+        		$exists = Customer::where('referral_code', $data['code'])->where('status', '1')->first();
+        		Log::info(" exists ".print_r($exists,true));
+        		Log::info(" exists->_id".print_r($exists->_id,true));
+        		if(!empty($exists))
+        			Log::info("Added fitcash for starter_pack reference".print_r($this->utilities->getAddWAlletArray(["customer_id"=>$exists->_id,"amount"=>350,"description"=>("Added FitCash+ as Sign up Bonus for starter pack reference, Expires On : ".date('d-m-Y',time()+(86400*60))),"validity"=>(time()+(86400*60)),"for"=>"starter_pack_reference"]),true));
+        		else Log::info(" No Customer with this code exists. :: ".$data['code']);
+        	}
+        }
 
-        if(isset($data['capture_type']) && $data['capture_type'] == 'my-home-fitness-membership'){
-
+        if(isset($data['capture_type']) && $data['capture_type'] == 'my-home-fitness-membership')
+        {
 			$this->customersms->myHomeFitnessPurchaseWithoutSlot($data);
-			
 		}
 
         if(isset($data['capture_type']) &&  in_array($data['capture_type'],['renewalCallback'])){
@@ -802,7 +848,8 @@ class EmailSmsApiController extends \BaseController {
             case 'claim_listing':$message = "Thank You! Your request has been submitted. We will get in touch with you on ".$data['customer_phone']." or ".$data['customer_email']." as soon as possible!";break;
             case 'add_business' : $message = "Thank You for sharing this information. We will verify it as soon as possible.";break;
             case 'request_callback': $message = "Thanks for requesting a callback. We'll get back to you soon";break;
-            default:$message = "Recieved the Request";break;
+            case 'starter_pack': $message = "Thank you for signing up. Amount of Rs.500 has been credited to your wallet.";break;
+            default:$message = "Received the Request";break;
         }
 
         $resp  = array('status' => 200,'message'=>$message,'capture'=>$storecapture);

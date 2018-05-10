@@ -306,17 +306,6 @@ class TempsController extends \BaseController {
                     $data['customer_name'] = $temp['customer_name'];
                     $data['customer_email'] = $temp['customer_email'];
                     $data['customer_phone'] = $temp['customer_phone'];
-                    if(!empty($temp['sign_up_for'])&&$temp['sign_up_for']=='starter_pack')
-                    {
-                    		$cust=Customer::where("customer_id","=",$temp->customer_id)->first();
-                    		if(!empty($cust))
-                    		{
-	                    		$cust->otp_verified=true;
-	                    		$cust->update();                    			
-                    		}
-	                    	Log::info(" getAddWAlletArray:: ".print_r($this->getAddWAlletArray(["customer_id"=>$customer->_id,"amount"=>500,"description"=>("Added FitCash+ as Sign up Bonus for starter pack, Expires On : ".date('d-m-Y',time()+(86400*60))),"validity"=>(time()+(86400*60)),"for"=>"starter_pack"]),true));
-		                    	
-                    }
                     $data['customer_id'] = autoRegisterCustomer($data);
                     
                     $customerToken = createCustomerToken($data['customer_id']);

@@ -246,6 +246,7 @@ Route::post('storecustomerattribution',  array('as' => 'customer.storecustomerat
 
 
 Route::post('inviteforsignup', array('as' => 'customer.inviteForSignup','uses' => 'CustomerController@inviteForSignup'));
+Route::post('starterpackcheck', array('as' => 'customer.starterPackCheck','uses' => 'CustomerController@starterPackCheck'));
 
 
 Route::post('admin/customer/capturemyreward', array('as' => 'customer.capturemyreward','uses' => 'CustomerController@captureMyReward'));

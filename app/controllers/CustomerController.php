@@ -634,43 +634,21 @@ class CustomerController extends \BaseController {
 						}
 						$customer->identity = $data['identity'];
 						
-						
 						$customer->account_link = $account_link;
 						$customer->status = "1";
 						$customer->demonetisation = time();
-						$customer->referral_code = $this->generateReferralCode($customer->name);
+						$customer->referral_code = generateReferralCode($customer->name);
 						$customer->old_customer = false;
-						if(!empty($data['sign_up_for']))
-						{
-							if(!empty($data['host_id'])&&!empty($data['invite_id']))
-							{
-								
-							}
-							else {
-									$tmp=addTemp($this->starterPackDefault($data));
-									$tmp_id=$tmp['_id'];
-									$otp=$tmp['otp'];
-									$customer->sign_up_for= $data['sign_up_for'];
-									$customer->otp_verified=false;								
-							}
-						
-						}
 						$customer->save();
 						$customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email'],'password'=>$data['password']);
 						// $this->customermailer->register($customer_data);
 
 						Log::info('Customer Register : '.json_encode(array('customer_details' => $customer)));
 
-
-						if(empty($data['sign_up_for']))
-						{
 						   $response = $this->createToken($customer);
 							$resp = $this->checkIfpopPup($customer,$data);	
 							if($resp["show_popup"] == "true")
 								$response["extra"] = $resp;
-						}
-						
-// 							Log::info(" getAddWAlletArray:: ".print_r($this->getAddWAlletArray(["customer_id"=>$customer->_id,"amount"=>500,"description"=>("Added FitCash+ as Sign up Bonus for starter pack, Expires On : ".date('d-m-Y',time()+(86400*60))),"validity"=>(time()+(86400*60)),"for"=>"starter_pack"]),true));
 					
 						
 						$customer_id = $customer->_id;
@@ -681,31 +659,18 @@ class CustomerController extends \BaseController {
 					$ishullcustomer->name = ucwords($data['name']);
 					$ishullcustomer->password = md5($data['password']);
 					$ishullcustomer->ishulluser = 0;
-					$ishullcustomer->referral_code = $this->generateReferralCode($ishullcustomer->name);
+					$ishullcustomer->referral_code = generateReferralCode($ishullcustomer->name);
 					$ishullcustomer->old_customer = true;
-					if(!empty($data['sign_up_for']))
-					{
-						$tmp=addTemp($this->starterPackDefault($data));
-						$tmp_id=$tmp['_id'];
-						$otp=$tmp['otp'];
-						$ishullcustomer->sign_up_for= $data['sign_up_for'];
-						$ishullcustomer->otp_verified=false;
-					}
-// 						$this->starterPackDefault($customer,$data);
 					$ishullcustomer->update();
 					$customer_data = array('name'=>ucwords($ishullcustomer['name']),'email'=>$ishullcustomer['email'],'password'=>$ishullcustomer['password']);
 
 					Log::info('Customer Register : '.json_encode(array('customer_details' => $ishullcustomer)));
 
-					
-					if(empty($data['sign_up_for']))
-					{
 						$response = $this->createToken($ishullcustomer);
 						$resp = $this->checkIfpopPup($customer,$data);
 						if($resp["show_popup"] == "true")
 							$response["extra"] = $resp;
-					}
-			
+					
 // 						Log::info(" getAddWAlletArray:: ".print_r($this->getAddWAlletArray(["customer_id"=>$customer->_id,"amount"=>500,"description"=>("Added FitCash+ as Sign up Bonus for starter pack, Expires On : ".date('d-m-Y',time()+(86400*60))),"validity"=>(time()+(86400*60)),"for"=>"starter_pack"]),true));
 
 					$customer_id = $ishullcustomer->_id;
@@ -731,30 +696,18 @@ class CustomerController extends \BaseController {
 				$customer->account_link = $account_link;
 				$customer->status = "1";
 				
-				if(!empty($data['sign_up_for']))
-// 					$this->starterPackDefault($customer,$data);
-				{
-					$tmp=addTemp($this->starterPackDefault($data));
-					$tmp_id=$tmp['_id'];
-					$otp=$tmp['otp'];
-					$customer->sign_up_for= $data['sign_up_for'];
-					$customer->otp_verified=false;
-				}
-				
-				
 					$customer->update();
 
 				$customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email'],'password'=>$data['password']);
 				$this->customermailer->register($customer_data);
 
 				Log::info('Customer Register : '.json_encode(array('customer_details' => $customer)));
-				if(empty($data['sign_up_for']))
-				{
+				
 					$response = $this->createToken($customer);
 					$resp = $this->checkIfpopPup($customer,$data);
 					if($resp["show_popup"] == "true")
 						$response["extra"] = $resp;
-				}
+				
 // 					Log::info(" getAddWAlletArray:: ".print_r($this->getAddWAlletArray(["customer_id"=>$customer->_id,"amount"=>500,"description"=>("Added FitCash+ as Sign up Bonus for starter pack, Expires On : ".date('d-m-Y',time()+(86400*60))),"validity"=>(time()+(86400*60)),"for"=>"starter_pack"]),true));
 
 				$customer_id = $customer->_id;
@@ -766,21 +719,10 @@ class CustomerController extends \BaseController {
 			$this->addCustomerRegId($data);
 
 			$response['customer_data'] = array_only($customer->toArray(), ['_id','name','email','contact_no','dob','gender']);
-			if(empty($data['sign_up_for']))
-			{
+		
 				$response['customer_data']["token"] = $response["token"];
 				registerMail($data["customer_id"]);
-			}
-			else {
-// 				$response['customer_data']['otp']=$customer->otp;
-				$response['status']=1;
-				$response['message']="Otp Sent Sucessfully";
-				if(!empty($tmp_id))
-				$response['temp_id']=$tmp_id;
-				if(!empty($customer->contact_no)&&!empty($otp))
-					$this->customersms->genericOtp(array("customer_phone"=>$customer->contact_no,"otp"=>$otp));
-				
-			}
+		
 			Log::info("Customer Register",$response);
 
 			return Response::json($response,200);
@@ -1272,7 +1214,7 @@ class CustomerController extends \BaseController {
 
 			$customer->status = "1";
 			$customer->demonetisation = time();
-			$customer->referral_code = $this->generateReferralCode($customer->name);
+			$customer->referral_code = generateReferralCode($customer->name);
 			$customer->old_customer = false;
 			$customer->save();
             registerMail($customer->_id);
@@ -1323,6 +1265,8 @@ class CustomerController extends \BaseController {
 		$customer['picture'] = (isset($customer['picture'])) ? $customer['picture'] : "";
 		$customer['facebook_id'] = (isset($customer['facebook_id'])) ? $customer['facebook_id'] : "";
 		$customer['address'] = (isset($customer['address'])) ? $customer['address'] : "";
+		if(!empty($customer['referral_code']))
+		$customer['referral_code'] = $customer['referral_code'];
 		$customer['contact_no'] = (isset($customer['contact_no'])) ? $customer['contact_no'] : "";
 		$customer['location'] = (isset($customer['location'])) ? $customer['location'] : "";
 		$customer['extra']['mob'] = (isset($customer['contact_no'])) ? $customer['contact_no'] : "";
@@ -5611,7 +5555,7 @@ class CustomerController extends \BaseController {
 
 				if(!isset($customer->referral_code)){
 
-					$customer->referral_code = $this->generateReferralCode($customer->name);
+					$customer->referral_code = generateReferralCode($customer->name);
 					$customer->update();
 				}
 
@@ -5835,16 +5779,6 @@ class CustomerController extends \BaseController {
 		}else{
 
 			return array('status'=>400, 'message'=>'Incorrect referral code or code already applied');
-		}
-	}
-
-	public function generateReferralCode($name){
-		$referral_code = substr(implode("", (explode(" ", strtoupper($name)))),0,4)."".rand(1000, 9999).'R';
-		$exists = Customer::where('referral_code', $referral_code)->where('status', '1')->first();
-		if($exists){
-			return $this->generateReferralCode($name);
-		}else{
-			return $referral_code;
 		}
 	}
 
@@ -6923,6 +6857,7 @@ class CustomerController extends \BaseController {
 					$invite->host_id = $customer->_id;
 					$invite->host_email = $customer->email;
 					$invite->host_name = $customer->name;
+					$invite->campaign= (!empty($req['campaign'])?$req['campaign']:'starter_pack');
 					$invite->host_phone = $customer->contact_no;
 					$invite->source = $req['source'];
 					isset($invitee['name']) ? $invite->invitee_name = trim($invitee['name']): null;
@@ -6931,7 +6866,8 @@ class CustomerController extends \BaseController {
 					$invite->save();
 					
 					// Generate bitly for landing page with invite_id and booktrial_id
-					$url = 'www.fitternity.com/starter-pack?sign_up_for=starter_pack&host_id='.$invite['host_id'].'&invite_id='.$invite['_id'];
+					if(!empty($customer->referral_code))
+						$url = 'www.fitternity.com/starter-pack?campaign='.$invite->campaign.'&host_id='.$invite['host_id'].'&code='.$customer->referral_code."&invite_id=".$invite['_id'];
 					$shorten_url = new ShortenUrl();
 					$url1 = $shorten_url->getShortenUrl($url);
 					Log::info("  url".print_r($url,true));
@@ -6973,7 +6909,7 @@ class CustomerController extends \BaseController {
 					// 							'schedule_date_time'=> $BooktrialData['schedule_date_time'],
 					// 							'service_name'=> $BooktrialData['service_name'],
 					// 							'schedule_slot_start_time'=> $BooktrialData['schedule_slot_start_time'],
-							'url' => $url,
+							'url' => $url
 							// 							'url2' => $url2
 					);
 					
@@ -7002,4 +6938,56 @@ class CustomerController extends \BaseController {
 		
 	
 }
+
+public function starterPackCheck()
+{
+	try{
+		$respStatus=200;
+		$data = Input::json()->all();
+		
+		$rules = array(
+				'customer_name' => 'required|max:255',
+				'customer_email' => 'required|email|max:255',
+				'customer_phone' => 'required|max:15',
+				'code' => 'max:15',
+				'action'   =>   'required'
+		);
+		
+		$validator = Validator::make($data,$rules);
+		
+		if ($validator->fails()) {
+			
+			return Response::json(array('status' => 0,'message' => $this->errorMessage($validator->errors())),/* $this->error_status */$respStatus);
+		}else
+		{
+			$cust=Customer::where("email","=",$data['customer_email'])/* ->orWhere('contact_no', $data['customer_phone']) */->first();
+			if(empty($cust))
+			{
+					
+				    $temp=(object)addTemp($data);
+					$response =  array('status' => 1,'message'=>'OTP Created Successfully','temp_id'=>$temp->_id);
+			}
+			else $response =  array('status' => 0,'message'=>'User already Present.');
+			
+		}
+		
+	}catch (Exception $e) {
+		
+		$message = array(
+				'type'    => get_class($e),
+				'message' => $e->getMessage(),
+				'file'    => $e->getFile(),
+				'line'    => $e->getLine(),
+		);
+		
+		$response = array('status'=>0,'message'=>$message['type'].' : '.$message['message'].' in '.$message['file'].' on '.$message['line']);
+		
+			Log::error($e);
+			return Response::json($response,$respStatus);	
+	}	
+	return Response::json($response,$respStatus); 
+	
+	
+}
+
 }
