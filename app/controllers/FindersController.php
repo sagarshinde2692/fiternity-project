@@ -546,7 +546,7 @@ class FindersController extends \BaseController {
 					$campaign_offer = true;
 					$finder['campaign_text'] = "Womens day";
 				}
-				
+				unset($finder['flags']['convinience_fee_applicable']);
 				
 				// start top selling and newly launched logic 
 				
@@ -858,9 +858,16 @@ class FindersController extends \BaseController {
 
 // 				if(!isset($finder['callout']) || trim($finder['callout']) == ''){
 					
+				
+				$this->removeConvinienceFee($finder);
+				return $finder;
+				
+				
+				
 							unset($finder['callout']);
 							unset($finder['callout_ratecard_id']);
 						$callOutObj= $this->getCalloutOffer($finder['services']);
+						
 						Log::info(" info_callout_obj:: ".print_r($callOutObj,true));
 						if(!empty($callOutObj))
 						{
@@ -3573,6 +3580,7 @@ class FindersController extends \BaseController {
 						$finder['assured']['icon'] = 'https://a.fitn.in/fitimages/vendor/exclusive-selling.png';
 
 					}
+						
 
 					if(isset($finder['flags']) && isset($finder['flags']['official_partner']) && $finder['flags']['official_partner']){
 						$assured_flag = true;
@@ -5068,5 +5076,12 @@ class FindersController extends \BaseController {
 		}
 		return array("callout"=>$callout,"callout_ratecard_id"=>$callout_ratecard_id);
 	}
-
+	public function removeConvinienceFee(&$finder){
+		foreach ($finder['services'] as &$service){
+		
+// 		for ($i = 0; $i < count($finder['services']); $i++) {
+			unset($service['flags']['convinience_fee_applicable']);
+		}
+		
+	}
 }

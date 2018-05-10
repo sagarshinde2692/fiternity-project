@@ -335,7 +335,7 @@ class Service extends \Basemodel{
 				// 	$value['campaign_offer'] = "(Women - Get additional 30% off)";
 				// 	$value['campaign_color'] = "#FA5295";
 				// }				
-				
+				unset($value['flags']['convinience_fee_applicable']);
 				array_push($ratecards, $value);
 			}
 
