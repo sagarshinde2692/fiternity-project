@@ -917,7 +917,7 @@ class RewardofferController extends BaseController {
         $data = array(
             'renewal_cashback'          =>   $renewal_cashback,
             'cashback'                  =>   $cashback,
-            'rewards'                   =>   $rewards,
+            'rewards'                   =>   array_values($rewards),
             'selection_limit'           =>   $selection_limit,
             'status'                    =>  200,
             'message'                   =>  "Rewards offers",

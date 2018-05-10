@@ -975,7 +975,8 @@ Class Utilities {
 
 
     public function verifyOrder($data,$order){
-        if((isset($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin'])) || $order->pg_type == "PAYTM" || $order->pg_type == "AMAZON" || (isset($order['cod_otp_verified']) && $order['cod_otp_verified']) || (isset($order['vendor_otp_verified']) && $order['vendor_otp_verified']) || (isset($order['pay_later']) && $order['pay_later'] && !(isset($order['session_payment']) && $order['session_payment']))){
+
+        if((isset($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin'])) || $order->pg_type == "PAYTM" || $order->pg_type == "AMAZON" || (isset($order['cod_otp_verified']) && $order['cod_otp_verified']) || (isset($order['vendor_otp_verified']) && $order['vendor_otp_verified']) || (isset($order['pay_later']) && $order['pay_later'] && !(isset($order['session_payment']) && $order['session_payment'])) || (isset($order->manual_order_punched) && $order->manual_order_punched)){
             if(($order->pg_type == "PAYTM"|| $order->pg_type == "AMAZON") && !(isset($data["order_success_flag"]))){
                 $hashreverse = getpayTMhash($order);
                 if($data["verify_hash"] == $hashreverse['reverse_hash']){
@@ -984,9 +985,11 @@ Class Utilities {
                     $hash_verified = false;
                 }
             }
-            if((isset($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin'])) || (isset($order['cod_otp_verified']) && $order['cod_otp_verified']) || (isset($order['vendor_otp_verified']) && $order['vendor_otp_verified']) || (isset($order['pay_later']) && $order['pay_later'] && !(isset($order['session_payment']) && $order['session_payment']))){
+
+            if((isset($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin'])) || (isset($order['cod_otp_verified']) && $order['cod_otp_verified']) || (isset($order['vendor_otp_verified']) && $order['vendor_otp_verified']) || (isset($order['pay_later']) && $order['pay_later'] && !(isset($order['session_payment']) && $order['session_payment'])) || (isset($order->manual_order_punched) && $order->manual_order_punched)){
                 $hash_verified = true;
             }
+            
         }else{
             // If amount is zero check for wallet amount
             if($data['amount'] == 0 || isset($order->full_payment_wallet) && $order->full_payment_wallet == true){
@@ -2796,7 +2799,7 @@ Class Utilities {
 
         $response['features'][] = [
             'image'=>'https://b.fitn.in/global/Tab-app-success-page/membership-success-2.png',
-            'title1'=>strtoupper('<b>Onlie    diet</b>'),
+            'title1'=>strtoupper('<b>Online    diet</b>'),
             'title2'=>strtoupper('<b>consultation</b>'),
             'description'=>'Make    the    most    of    your    membership,    with    <b>Fitternity’s    Online    Diet    Consultation</b>    to    improve    your    workout    performance',
             'type'=>'diet_plan'
@@ -2890,8 +2893,11 @@ Class Utilities {
         $data['finder_id'] = (int)$order['finder_id'];
         $data['service_name'] = $order['service_name'];
         $data['type'] = $order['type'];
-        $data['premium_session'] = true;
-        $data['payment_done'] = false;
+
+        /*if(isset($order->pay_later) && $order->pay_later){
+            $data['premium_session'] = true;
+            $data['payment_done'] = false;
+        }*/
 
         if(isset($order['start_date']) && $order['start_date'] != ""){
             $data['schedule_date'] = date('d-m-Y',strtotime($order['start_date']));
@@ -2907,6 +2913,14 @@ Class Utilities {
 
         if(isset($order['schedule_slot']) && $order['schedule_slot'] != ""){
             $data['schedule_slot'] = $order['schedule_slot'];
+        }
+
+        if(!empty($order['service_id'])){
+            $data['service_id'] = (int)$order['service_id'];
+        }
+
+        if(!empty($order['ratecard_id'])){
+            $data['ratecard_id'] = (int)$order['ratecard_id'];
         }
 
         $workout_session_fields = ['customers_list', 'pay_later'];
@@ -3221,6 +3235,10 @@ Class Utilities {
 
                     $fit_code = true;
                 }
+            }
+
+            if(isset($data['manual_order']) && $data['manual_order']){
+                $fit_code = false;
             }
 
             if(isset($data['is_tab_active']) && $data['is_tab_active']){
