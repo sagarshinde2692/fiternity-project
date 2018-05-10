@@ -2221,6 +2221,61 @@ Class Utilities {
 
     }
 
+    public function sendPromotionalNotification($data){
+
+        if(!empty($data['delay']) && $data['delay'] !== 0){
+            $data['delay'] = $this->getSeconds($data['delay']);
+        }else{
+            $data['delay'] == 0;
+        }
+
+        $device = \Device::where('customer_id', $data['customer_id'])
+            ->where('reg_id','exists',true)
+            ->whereIn('type', ["android", "ios"])
+            ->orderBy('updated_at', 'desc')
+            ->first();
+
+        if($device){
+
+            $to = array($device['reg_id']);
+            $device_type = $device['type'];
+
+        }else{
+            
+            \Log::info("no device id");
+            return "no device id";
+        }
+
+        $data['promo_id'] = !empty($data['promo_id']) ? $data['promo_id'] : 9999;
+        $data['couponcode'] = !empty($data['couponcode']) ? $data['couponcode'] : "";
+        $data['deeplink'] = !empty($data['deeplink']) ? $data['deeplink'] : "";
+        $data['title'] = !empty($data['title']) ? $data['title'] : "";
+        $data['text'] = !empty($data['text']) ? $data['text'] : "";
+        $data['unique_id'] = !empty($data['unique_id']) ? $data['unique_id'] : '593a9380820095bf3e8b4568';
+        $data['label'] = !empty($data['label']) ? $data['label'] : "label";
+        
+        if($device_type == "android"){
+            $notification_object = array("notif_id" => $data['promo_id'],"notif_type" => "promotion", "notif_object" => array("promo_id"=>$data['promo_id'],"promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> $data['unique_id'],"title"=> $data["title"],"text"=> $data["text"]));
+        }else{
+            $notification_object = array("aps"=>array("alert"=> array("body" => $data["title"]), "sound" => "default", "badge" => 1), "notif_object" => array("promo_id"=>$data['promo_id'],"notif_type" => "promotion","promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> $data['unique_id'],"title"=> $data["title"],"text"=> $data["text"]));
+        }
+
+        $notificationData = array("to" =>$to,"delay" =>$data['delay'],"label"=>$data['label'],"app_payload"=>$notification_object);
+
+        $route  = $device_type;
+
+        $sidekiq = new Sidekiq();
+
+        $result  = $sidekiq->sendToQueue($notificationData,$route);
+
+        if($result['status'] == 200){
+            return $result['task_id'];
+        }else{
+            return $result['status'].':'.$result['reason'];
+        }
+
+    }
+
     public function hitURLAfterDelay($url, $delay = 0, $label = 'label', $priority = 0){
 
         Log::info("Scheduling url:$url");
@@ -2229,6 +2284,8 @@ Class Utilities {
         if($delay !== 0){
             $delay = $this->getSeconds($delay);
         }
+
+
 
         $payload = array('url'=>$url,'delay'=>$delay,'priority'=>$priority,'label' => $label);
 

@@ -1182,3 +1182,8 @@ Route::get('trialWorkout','DebugController@trialWorkout');
 Route::get('eventfitex','DebugController@eventfitex');
 
 
+Route::get('promoNotification','DebugController@promoNotification');
+
+
+
+
