@@ -7219,5 +7219,20 @@ public function yes($msg){
 
 	}
 
+	public function promoNotification(){
+
+		$promoData = [
+                    'customer_id'=>1,
+                    'delay'=>date('Y-m-d H:i:s'),
+                    'text'=>'Punch the Fitcode now & get instant Cashback',
+                    'title'=>'Claim Your Fitcash'
+                ];
+
+        $utilities = new Utilities();
+
+       	return $utilities->sendPromotionalNotification($promoData);
+
+	}
+
 }
 

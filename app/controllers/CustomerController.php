@@ -3206,7 +3206,7 @@ class CustomerController extends \BaseController {
 
 								if(time() >= strtotime('-10 minutes ', strtotime($data['schedule_date_time']))){
 
-									if(time() < (strtotime($data['schedule_date_time'])+3*60*60) && !(isset($data['kiosk_block_shown']) && $data['kiosk_block_shown'])){
+									if(time() < (strtotime($data['schedule_date_time'])+6*60*60) && !(isset($data['kiosk_block_shown']) && $data['kiosk_block_shown'])){
 										$data['block_screen'] = [
 											'type'=>'activate_session',
 											'url'=>Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/activate_session',

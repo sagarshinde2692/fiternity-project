@@ -2657,17 +2657,27 @@ class SchedulebooktrialsController extends \BaseController {
 
             
             if(in_array($booktrial->source, ['ios', 'android'])){
-            	Log::info(" info  AAYA ".print_r($booktrial,true));
-            	$delayReminderTimeAfter2Hrs      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->addMinutes(120);
-            	Log::info(" info  AAYA 11  ".print_r($delayReminderTimeAfter2Hrs,true));
+
+                $delayReminderTimeAfter6Hrs      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->addMinutes(60*6);
+
+            	$delayReminderTimeAfter2Hrs      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->addMinutes(60*2);
+
             	$send_communication["customer_sms_after2hour"] = $this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hrs);
-            	
-            	Log::info(" info  $send_communication[customer_sms_after2hour] ".print_r($send_communication["customer_sms_after2hour"],true));
-            	// if(!isTabActive($booktrialdata['finder_id'])){
-            	if(isset($booktrial->type)&&$booktrial->type!='workout-session')
+                
+                $send_communication["customer_notification_after2hour"] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter6Hrs);
+
+                $promoData = [
+                    'customer_id'=>$booktrialdata['customer_id'],
+                    'delay'=>$delayReminderTimeAfter2Hrs,
+                    'text'=>'Punch the Fitcode now & get instant Cashback',
+                    'title'=>'Claim Your Fitcash'
+                ];
+
+                $send_communication["customer_notification_block_screen"] = $this->utilities->sendPromotionalNotification($promoData);
+
+            	if(isset($booktrial->type)&&$booktrial->type!='workout-session'){
             		$send_communication["customer_email_after2hour"] = $this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hrs);
-            		$send_communication["customer_notification_after2hour"] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hrs);
-            	// }
+                }
             }
             else 
             {
@@ -2727,7 +2737,8 @@ class SchedulebooktrialsController extends \BaseController {
             "customer_notification_before10min",
         	"customer_sms_before10Min",
         	"customer_email_before10Min",
-        	"customer_email_instant_workoutlevelstart"
+        	"customer_email_instant_workoutlevelstart",
+            "customer_notification_block_screen"
         ];
 
         foreach ($array as $value) {
