@@ -525,9 +525,13 @@ class FindersController extends \BaseController {
 				}
 				// $finder['offer_icon'] = "https://b.fitn.in/iconsv1/womens-day/womens-day-mobile-banner.svg";
 				$finder['pay_per_session'] = true;
-				if(isset($finder['trial']) && $finder['trial']=='disable' || $finder['commercial_type']== 0){
+
+				$pay_per_session_abandunt_catyegory             =   [41,42,45,25,46,10,26,40];
+
+				if((isset($finder['trial']) && $finder['trial']=='disable') || $finder['manual_trial_enable'] == "1" || count($finder['services']) == 0 || $finder['commercial_type'] == 0 || in_array($finder['category_id'],$pay_per_session_abandunt_catyegory)){
 					$finder['pay_per_session'] = false;
 				}
+				
 				$pay_per_session = false;
 
 				$info_timing = $this->getInfoTiming($finder['services']);
@@ -743,7 +747,7 @@ class FindersController extends \BaseController {
 							}
 							$service['pay_per_session'] = false;
 
-							if(isset($finder['pay_per_session']) && $finder['pay_per_session'] && isset($finder['trial']) && $finder['trial'] != 'disable' && isset($service['trial']) && $service['trial'] != 'disable'){
+							if(isset($finder['pay_per_session']) && $finder['pay_per_session'] && isset($service['trial']) && $service['trial'] != 'disable'){
 								foreach($service['serviceratecard'] as $ratecard){
 									if($ratecard['type']=='workout session'){
 
@@ -774,6 +778,25 @@ class FindersController extends \BaseController {
 					// }
 
 					
+				}
+
+				if(isset($finder['pay_per_session']) && $finder['pay_per_session']){
+
+					$cheapest_price = $this->getCheapestWorkoutSession($finder['services']);
+					
+					if($cheapest_price>0){
+
+						$finder['pps_content'] = [
+							'header1'=>	'PAY - PER - SESSION',
+							'header2'=>	'Available here',
+							'header3'=>	"Why pay for 30 days when you use for 6 days?\nPay Per Session at ".$finder['title']." by just paying Rs. ".$cheapest_price,
+							'image'=>''
+						];
+
+					}else{
+
+						$finder['pay_per_session'] = false;
+					}
 				}
 
 				if(count($finder['offerings']) > 0 ){
@@ -887,16 +910,6 @@ class FindersController extends \BaseController {
 				// 		}
 				// 	}
 				// }
-
-				if(isset($finder['services']) && count($finder['services'])>0){
-
-					$cheapest_price = $this->getCheapestWorkoutSession($finder['services']);
-
-					if($cheapest_price > 0){
-						$finder['cheapest_workout_session'] = $cheapest_price;
-					}
-					
-				}
 
 				$finderdata         =   $finder;
 				$finderid           = (int) $finderdata['_id'];
@@ -3988,7 +4001,7 @@ class FindersController extends \BaseController {
 
 					if(isset($finderData['finder']['pay_per_session']) && $finderData['finder']['pay_per_session']){
 
-						$cheapest_price = $this->getCheapestWorkoutSessionApp($finderData['finder']['services_workout']);
+						$cheapest_price = $this->getCheapestWorkoutSession($finderData['finder']['services_workout'], 'app');
 						
 						if($cheapest_price>0){
 
@@ -4914,33 +4927,22 @@ class FindersController extends \BaseController {
 
 	}
 	
-	function getCheapestWorkoutSession($services){
+	function getCheapestWorkoutSession($services, $source=""){
+
+		$ratecards_key = 'serviceratecard';
+
+		if($source == 'app'){
+			$ratecards_key = 'ratecard';
+		}
 
 		$price = 0;
 
 		foreach($services as $service){
-			if(isset($service['serviceratecard'])){
-				foreach($service['serviceratecard'] as $ratecard){
+			if(isset($service[$ratecards_key])){
+				foreach($service[$ratecards_key] as $ratecard){
 					$ratecard_price = isset($ratecard['special_price']) &&  $ratecard['special_price'] != 0 ? $ratecard['special_price'] : $ratecard['price'];
 					if($ratecard['type'] == 'workout session' && ($price == 0 || $ratecard_price < $price)){
 						$price = $ratecard_price;
-					}
-				}
-			}
-		}
-
-		return $price;
-	}
-
-	function getCheapestWorkoutSessionApp($services){
-
-		$price = 0;
-
-		foreach($services as $service){
-			if(isset($service['ratecard'])){
-				foreach($service['ratecard'] as $ratecard){
-					if($ratecard['type'] == 'workout session' && ($price == 0 || $ratecard['price'] < $price)){
-						$price = $ratecard['price'];
 					}
 				}
 			}
