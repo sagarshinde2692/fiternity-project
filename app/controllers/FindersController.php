@@ -884,7 +884,6 @@ class FindersController extends \BaseController {
 							unset($finder['callout']);
 							unset($finder['callout_ratecard_id']);
 						$callOutObj= $this->getCalloutOffer($finder['services']);
-						Log::info(" info_callout_obj:: ".print_r($callOutObj,true));
 						if(!empty($callOutObj))
 						{
 							if(!empty($callOutObj['callout']))
@@ -5093,7 +5092,6 @@ class FindersController extends \BaseController {
 		$callout_ratecard_id = "";
 		foreach($services as $service){
 			foreach($service['serviceratecard'] as $ratecard){
-				Log::info(" rc ".print_r($ratecard,true));
 				if(isset($ratecard['offers']) && count($ratecard['offers']) > 0 && isset($ratecard['offers'][0]['offer_type']) && $ratecard['offers'][0]['offer_type'] == 'newyears'){
 					if(!empty($ratecard['offers'][0]['callout']))
 					$callout = $ratecard['offers'][0]['callout'];
