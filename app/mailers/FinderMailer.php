@@ -893,6 +893,10 @@ Class FinderMailer extends Mailer {
 
 		if(isset($data['city_id']) && $data['city_id'] != ""){
 
+			$cities = ["", "Mumbai", "Pune", "Bangalore", "Delhi", "Hyderabad", "Ahmedabad", "Chennai", "Gurgaon", "Noida", "Faridabad"];
+
+			$data['finder_city'] = isset($cities[$data['city_id']]) ? $cities[$data['city_id']] : "Default City";
+
 			switch ($data['city_id']) {
 				case 1 : 
 				case 2 : 
