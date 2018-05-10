@@ -722,8 +722,9 @@ class EmailSmsApiController extends \BaseController {
         			return Response::json($response,200);
         		}
         	
-        	
-        		$count = Capture::where('capture_type',$data['capture_type'])->/* where('customer_phone','LIKE','%'.substr($data['customer_phone'], -9).'%')-> */where('customer_email',$data['customer_email'])->count();
+        		$count = Capture::where('capture_type',$data['capture_type'])->where(function($query)
+        		{$query->orWhere('customer_phone','LIKE','%'.substr($data['customer_phone'], -9).'%')->orWhere('customer_email',$data['customer_email']);
+        		})->count();
         		
         		if($count >= 1){
         			$resp = array('status' => 0,'message' => "You have already signed up.");

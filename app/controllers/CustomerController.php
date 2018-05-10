@@ -6960,7 +6960,7 @@ public function starterPackCheck()
 			return Response::json(array('status' => 0,'message' => $this->errorMessage($validator->errors())),/* $this->error_status */$respStatus);
 		}else
 		{
-			$cust=Customer::where("email","=",$data['customer_email'])/* ->orWhere('contact_no', $data['customer_phone']) */->first();
+			$cust=Customer::where("email","=",$data['customer_email'])->orWhere('contact_no', $data['customer_phone'])->first();
 			if(empty($cust))
 			{
 					
