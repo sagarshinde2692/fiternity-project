@@ -2210,6 +2210,14 @@ class SchedulebooktrialsController extends \BaseController {
                 'pre_trial_status'              =>      'yet_to_connect'
             );
 
+            if(!empty($order['manual_order'])){
+                $booktrialdata['manual_order'] = $order['manual_order'];
+            }
+
+            if(!empty($order['punching_order'])){
+                $booktrialdata['punching_order'] = $order['punching_order'];
+            }
+
             $is_tab_active = isTabActive($booktrialdata['finder_id']);
 
             if($is_tab_active){
@@ -2437,7 +2445,7 @@ class SchedulebooktrialsController extends \BaseController {
             $delete = Tempbooktrial::where('_id', $data['temp_id'])->delete();
         }
 
-        $resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'message' => "Book a Trial", 'code' => $code);
+        $resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'message' => "Session Booked Sucessfully", 'code' => $code);
         Log::info(" info ".print_r("AAAYA",true));
         return Response::json($resp,200);
     }
@@ -2649,17 +2657,27 @@ class SchedulebooktrialsController extends \BaseController {
 
             
             if(in_array($booktrial->source, ['ios', 'android'])){
-            	Log::info(" info  AAYA ".print_r($booktrial,true));
-            	$delayReminderTimeAfter2Hrs      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->addMinutes(120);
-            	Log::info(" info  AAYA 11  ".print_r($delayReminderTimeAfter2Hrs,true));
+
+                $delayReminderTimeAfter6Hrs      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->addMinutes(60*6);
+
+            	$delayReminderTimeAfter2Hrs      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->addMinutes(60*2);
+
             	$send_communication["customer_sms_after2hour"] = $this->customersms->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hrs);
-            	
-            	Log::info(" info  $send_communication[customer_sms_after2hour] ".print_r($send_communication["customer_sms_after2hour"],true));
-            	// if(!isTabActive($booktrialdata['finder_id'])){
-            	if(isset($booktrial->type)&&$booktrial->type!='workout-session')
+                
+                $send_communication["customer_notification_after2hour"] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter6Hrs);
+
+                $promoData = [
+                    'customer_id'=>$booktrialdata['customer_id'],
+                    'delay'=>$delayReminderTimeAfter2Hrs,
+                    'text'=>'Punch the Fitcode now & get instant Cashback',
+                    'title'=>'Claim Your Fitcash'
+                ];
+
+                $send_communication["customer_notification_block_screen"] = $this->utilities->sendPromotionalNotification($promoData);
+
+            	if(isset($booktrial->type)&&$booktrial->type!='workout-session'){
             		$send_communication["customer_email_after2hour"] = $this->customermailer->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hrs);
-            		$send_communication["customer_notification_after2hour"] = $this->customernotification->bookTrialReminderAfter2Hour($booktrialdata, $delayReminderTimeAfter2Hrs);
-            	// }
+                }
             }
             else 
             {
@@ -2719,7 +2737,8 @@ class SchedulebooktrialsController extends \BaseController {
             "customer_notification_before10min",
         	"customer_sms_before10Min",
         	"customer_email_before10Min",
-        	"customer_email_instant_workoutlevelstart"
+        	"customer_email_instant_workoutlevelstart",
+            "customer_notification_block_screen"
         ];
 
         foreach ($array as $value) {
@@ -2848,29 +2867,33 @@ class SchedulebooktrialsController extends \BaseController {
             $before_three_month_trial_count    =    $this->getBeforeThreeMonthTrialCount($finderid);
 
             // Throw an error if user has already booked a trial for that vendor...
+
+            if(!isset($data['manual_order'])){
             
-            $alreadyBookedTrials = $this->utilities->checkExistingTrialWithFinder($data['customer_email'], $data['customer_phone'], $data['finder_id']);
-            
-            // return $alreadyBookedTrials;
-            
-            if (count($alreadyBookedTrials) > 0) {
-                $resp = array('status' => 403, 'message' => "You have already booked a trial for this vendor, please choose some other vendor");
-                return Response::json($resp, 403);
-            }
+                $alreadyBookedTrials = $this->utilities->checkExistingTrialWithFinder($data['customer_email'], $data['customer_phone'], $data['finder_id']);
+                
+                // return $alreadyBookedTrials;
+                
+                if (count($alreadyBookedTrials) > 0) {
+                    $resp = array('status' => 403, 'message' => "You have already booked a trial for this vendor, please choose some other vendor");
+                    return Response::json($resp, 403);
+                }
 
-            // Throw an error if user has already booked a trial on same schedule timestamp..
-            $dates = $this->utilities->getDateTimeFromDateAndTimeRange($data['schedule_date'], $data['schedule_slot']);
-            $UpcomingTrialsOnTimestamp = $this->utilities->getUpcomingTrialsOnTimestamp($customer_id, $dates['start_timestamp'], $finderid);
-            if (count($UpcomingTrialsOnTimestamp) > 0) {
-                $resp = array('status' => 403, 'message' => "You have already booked a trial on same datetime");
-                return Response::json($resp, 403);
-            }
+                // Throw an error if user has already booked a trial on same schedule timestamp..
+                $dates = $this->utilities->getDateTimeFromDateAndTimeRange($data['schedule_date'], $data['schedule_slot']);
+                $UpcomingTrialsOnTimestamp = $this->utilities->getUpcomingTrialsOnTimestamp($customer_id, $dates['start_timestamp'], $finderid);
+                if (count($UpcomingTrialsOnTimestamp) > 0) {
+                    $resp = array('status' => 403, 'message' => "You have already booked a trial on same datetime");
+                    return Response::json($resp, 403);
+                }
 
-            $disableTrial = $this->disableTrial($data);
+                $disableTrial = $this->disableTrial($data);
 
-            if($disableTrial['status'] != 200){
+                if($disableTrial['status'] != 200){
 
-                return Response::json($disableTrial,$disableTrial['status']);
+                    return Response::json($disableTrial,$disableTrial['status']);
+                }
+                
             }
 
             $myreward_id = "";
@@ -3221,6 +3244,14 @@ class SchedulebooktrialsController extends \BaseController {
                 'pre_trial_status'              =>      'yet_to_connect'
             );
 
+            if(!empty($data['manual_order'])){
+                $booktrialdata['manual_order'] = $data['manual_order'];
+            }
+
+            if(!empty($data['punching_order'])){
+                $booktrialdata['punching_order'] = $data['punching_order'];
+            }
+
             $is_tab_active = isTabActive($booktrialdata['finder_id']);
 
             if($is_tab_active){
@@ -3350,7 +3381,7 @@ class SchedulebooktrialsController extends \BaseController {
             $delete = Tempbooktrial::where('_id', $data['temp_id'])->delete();
         }
 
-        $resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'code' => $code, 'message' => "Book a Trial");
+        $resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'code' => $code, 'message' => "Trial Booked Successfully");
 
         if($this->vendor_token){
 
@@ -6131,14 +6162,18 @@ class SchedulebooktrialsController extends \BaseController {
         $ratecard_id = (int)$item['ratecard_id'];
 
         $ratecard = Ratecard::find($ratecard_id);
-
-        if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
-            $item['amount'] = $ratecard['special_price'];
-        }else{
-            $item['amount'] = $ratecard['price'];
+        
+        if(!(isset($item['manual_order']) && $item['manual_order'] && isset($item['amount']) && $item['amount'] != '')){
+            
+            
+            if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
+                $item['amount'] = $ratecard['special_price'];
+            }else{
+                $item['amount'] = $ratecard['price'];
+            }
+            
+            $item['ratecard_remarks']  = (isset($ratecard['remarks'])) ? $ratecard['remarks'] : "";
         }
-
-        $item['ratecard_remarks']  = (isset($ratecard['remarks'])) ? $ratecard['remarks'] : "";
 
         $service = Service::find($ratecard['service_id']);
 

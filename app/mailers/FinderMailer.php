@@ -893,6 +893,10 @@ Class FinderMailer extends Mailer {
 
 		if(isset($data['city_id']) && $data['city_id'] != ""){
 
+			$cities = ["", "Mumbai", "Pune", "Bangalore", "Delhi", "Hyderabad", "Ahmedabad", "Chennai", "Gurgaon", "Noida", "Faridabad"];
+
+			$data['finder_city'] = isset($cities[$data['city_id']]) ? $cities[$data['city_id']] : "Default City";
+
 			switch ($data['city_id']) {
 				case 1 : 
 				case 2 : 
@@ -999,7 +1003,7 @@ Class FinderMailer extends Mailer {
 
 		if(!Config::get('app.vendor_communication')){
 
-			$message_data['user_email'] = array('utkarshmehrotra@fitternity.com','pranjalisalvi@fitternity.com','sailismart@fitternity.com', 'dhruvsarawagi@fitternity.com');
+			$message_data['user_email'] = array('sailismart@fitternity.com');
 		}
 
 		$message_data['bcc_emailids'] = ($template->email_bcc != "") ? array_merge(explode(',', $template->email_bcc),array(Config::get('mail.to_mailus'))) : array(Config::get('mail.to_mailus'));

@@ -35,11 +35,11 @@ return array(
 
 	//beta
 	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
-	// 'url' => 'http://beta.fitn.in', 
-	// 'admin_url' => 'http://adminstage.fitn.in', 
-	// 'website' => 'http://apistage.fitn.in:1122', 
-	// 'sidekiq_url' => 'http://kick.fitn.in/', 
-	// 'queue' => 'beta',
+	// 'url' => 'http://apistage.fitn.in',
+	// 'admin_url' => 'http://adminstage.fitn.in',
+	// 'website' => 'http://apistage.fitn.in:1122',
+	// 'sidekiq_url' => 'http://kick.fitn.in/',
+	// 'queue' => 'booktrial',
 	// 'vendor_communication' => false,
 	// 'env' => 'stage',
 	// 'debug' => TRUE,
@@ -770,6 +770,8 @@ return array(
 	],
 	'paypersession_level_icon_base_url'=>'https://b.fitn.in/paypersession/level-',
 	'paypersession_lock_icon'=>'https://b.fitn.in/paypersession/lock-icon.png',
-	'remove_patti_from_brands' => []
+	'remove_patti_from_brands' => [],
+
+	'routed_order_fitcash'=>300,
 
 );
