@@ -203,7 +203,7 @@ class FindersController extends \BaseController {
 				}
 
 				$finderarr['reviews_booktrial_index'] = null;
-
+				$finderarr['reviews_booktrial_index'] = $this->getReviewBooktrialIndex($finderarr['_id']);
 				if(!empty($finderarr['reviews'])){
 
 					$reviews_booktrial_index_flag = false;
@@ -1328,7 +1328,41 @@ class FindersController extends \BaseController {
 		return Response::json($data,200);
 	}
 
+	public function getReviewBooktrialIndex($finder_id){
 
+        $reviews_booktrial_index = null;
+
+        $reviews = Review::active()->where('finder_id',(int)$finder_id)->orderBy('updated_at','desc')->get();
+
+        if(!empty($reviews)){
+
+            $reviews = $reviews->toArray();
+
+            $reviews_booktrial_index_flag = false;
+            $reviews_booktrial_index_count = 0;
+
+            foreach ($reviews as $rev_key => $rev_value) {
+
+                if($rev_value['rating'] >= 4){
+
+                    $reviews_booktrial_index_flag = true;
+                    $reviews_booktrial_index_count += 1;
+
+                }else{
+
+                    $reviews_booktrial_index_flag = false;
+                    $reviews_booktrial_index_count = 0;
+                }
+
+                if($reviews_booktrial_index_count == 3 && $reviews_booktrial_index == null){
+                    $reviews_booktrial_index = $rev_key+1;
+                }
+            }
+        }
+
+        return $reviews_booktrial_index;
+
+    }
 
 	public function pushfinder2elastic ($slug){
 
