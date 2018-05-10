@@ -311,7 +311,9 @@ class Service extends \Basemodel{
                     if(isset($ratecardoffers[0]['remarks']) && $ratecardoffers[0]['remarks'] != ""){
                     	$value['remarks'] = $ratecardoffers[0]['remarks'];
                     }
-                }
+				}
+				
+				(isset($value['special_price']) && $value['price'] >= $value['special_price']) ? $value['special_price'] = 0 : null;
 
 				if(intval($value['validity'])%360 == 0){
 					$value['validity']  = intval(intval($value['validity'])/360);
