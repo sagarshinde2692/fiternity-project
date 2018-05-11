@@ -202,29 +202,11 @@ class FindersController extends \BaseController {
 					}
 				}
 
-				$finderarr['reviews_booktrial_index'] = null;
 				$finderarr['reviews_booktrial_index'] = $this->getReviewBooktrialIndex($finderarr['_id']);
+
 				if(!empty($finderarr['reviews'])){
 
-					$reviews_booktrial_index_flag = false;
-					$reviews_booktrial_index_count = 0;
-
 					foreach ($finderarr['reviews'] as $rev_key => $rev_value) {
-
-						if($rev_value['rating'] >= 4){
-
-							$reviews_booktrial_index_flag = true;
-							$reviews_booktrial_index_count += 1;
-
-						}else{
-
-							$reviews_booktrial_index_flag = false;
-							$reviews_booktrial_index_count = 0;
-						}
-
-						if($reviews_booktrial_index_count == 3 && $finderarr['reviews_booktrial_index'] == null){
-							$finderarr['reviews_booktrial_index'] = $rev_key;
-						}
 
 						if($rev_value['customer'] == null){
 
@@ -528,7 +510,7 @@ class FindersController extends \BaseController {
 
 				$pay_per_session_abandunt_catyegory             =   [41,42,45,25,46,10,26,40];
 
-				if((isset($finder['trial']) && $finder['trial']=='disable') || $finder['manual_trial_enable'] == "1" || count($finder['services']) == 0 || $finder['commercial_type'] == 0 || in_array($finder['category_id'],$pay_per_session_abandunt_catyegory)){
+				if((isset($finder['trial']) && in_array($finder['trial'], ['disable', 'manual'])) || $finder['manual_trial_enable'] == "1" || count($finder['services']) == 0 || $finder['commercial_type'] == 0 || in_array($finder['category_id'],$pay_per_session_abandunt_catyegory)){
 					$finder['pay_per_session'] = false;
 				}
 				
