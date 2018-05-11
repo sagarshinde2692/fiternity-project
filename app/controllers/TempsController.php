@@ -107,19 +107,31 @@ class TempsController extends \BaseController {
                 return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),$this->error_status);
 
             }else{
-
-            $temp = new Temp($data);
-                $temp->otp = $this->generateOtp();
-                $temp->attempt = 1;
-                $temp->verified = "N";
-                $temp->proceed_without_otp = "N";
-            $temp->save();
-
-                $data['otp'] = $temp->otp;
-
-                $this->customersms->genericOtp($data);
-
-                $response =  array('status' => 200,'message'=>'OTP Created Successfull','temp_id'=>$temp->_id);
+				
+            	$temp = new Temp($data);
+            	$temp->otp = $this->generateOtp();
+            	$temp->attempt = 1;
+            	$temp->verified = "N";
+            	$temp->proceed_without_otp = "N";
+            	$data['otp'] = $temp->otp;
+            	$sendOtp=true;
+            	if(!empty($data['action'])&&$data['action']=='starter_pack')
+            	{
+            		$cust=Customer::where("email","=",$data['customer_email'])->orWhere('contact_no', $data['customer_phone'])->first();
+            		if(!empty($cust))
+            		{
+	            			$sendOtp=false;
+		            		$response =  array('status' => 400,'message'=>'User already Present.');
+            		}
+            		
+            	}
+            	if($sendOtp)
+            	{
+            		$temp->save();
+            		$this->customersms->genericOtp($data);
+            		$response =  array('status' => 200,'message'=>'OTP Created Successfull','temp_id'=>$temp->_id);
+            	}
+            	
             }
 
         }catch (Exception $e) {
@@ -167,6 +179,8 @@ class TempsController extends \BaseController {
                 $temp->verified = "N";
                 $temp->proceed_without_otp = "N";
                 $temp->source = "website";
+                $data['otp'] = $temp->otp;
+                $sendOtp=true;
 
                 if(isset($data['finder_id']) && $data['finder_id'] != ""){
                     $temp->finder_id = (int) $data['finder_id'];
@@ -237,14 +251,24 @@ class TempsController extends \BaseController {
 
                     $temp->source = "kiosk";
                 }
-
-                $temp->save();
-
-                $data['otp'] = $temp->otp;
-
-                $this->customersms->genericOtp($data);
-
-                $response =  array('status' => 200,'message'=>'OTP Created Successfull','temp_id'=>$temp->_id,'sender_id'=>'FTRNTY');
+                
+                
+                if(!empty($data['action'])&&$data['action']=='starter_pack')
+                {
+                	$cust=Customer::where("email","=",$data['customer_email'])->orWhere('contact_no', $data['customer_phone'])->first();
+                	if(!empty($cust))
+                	{
+                		$sendOtp=false;
+                		$response =  array('status' => 400,'message'=>'User already Present.');
+                	}
+                	
+                }
+                if($sendOtp)
+                {
+                	$temp->save();
+                	$this->customersms->genericOtp($data);
+                	$response =  array('status' => 200,'message'=>'OTP Created Successfully','temp_id'=>$temp->_id,'sender_id'=>'FTRNTY');
+                }
             }
 
         }catch (Exception $e) {
