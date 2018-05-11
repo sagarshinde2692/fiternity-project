@@ -313,7 +313,7 @@ class Service extends \Basemodel{
                     }
 				}
 				
-				(isset($value['special_price']) && $value['price'] >= $value['special_price']) ? $value['special_price'] = 0 : null;
+				(isset($value['special_price']) && $value['price'] == $value['special_price']) ? $value['special_price'] = 0 : null;
 
 				if(intval($value['validity'])%360 == 0){
 					$value['validity']  = intval(intval($value['validity'])/360);
