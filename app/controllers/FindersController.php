@@ -860,7 +860,6 @@ class FindersController extends \BaseController {
 					
 				
 				$this->removeConvinienceFee($finder);
-				return $finder;
 				
 				
 				
