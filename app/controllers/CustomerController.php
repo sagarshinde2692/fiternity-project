@@ -6736,9 +6736,9 @@ class CustomerController extends \BaseController {
 				$customer= $decoded->customer;
 				Log::info(" customer ".print_r($customer,true));
 			}
-			Log::info(" customer ".print_r($customer,true));
 			if(!empty($customer))
 			{
+				Log::info(" customer ".print_r($customer,true));
 				// Request Validations...........
 				$rules = [
 						'invitees' => 'required|array',
