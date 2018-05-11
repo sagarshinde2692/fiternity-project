@@ -608,6 +608,9 @@ class EmailSmsApiController extends \BaseController {
             $data['customer_id'] = $decoded->customer->_id;
             $data['customer_name'] = $decoded->customer->name;
             $data['customer_email'] = $decoded->customer->email;
+            if(!empty($decoded->customer)&&!empty($decoded->customer->referral_code))
+            	$data['referral_code'] = $decoded->customer->referral_code;
+            $data['customer_email'] = $decoded->customer->email;
             $data['customer_phone'] = $decoded->customer->contact_no;
         }
 
