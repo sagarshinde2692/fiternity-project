@@ -718,8 +718,8 @@ class EmailSmsApiController extends \BaseController {
         	$validator = Validator::make($data, $start_pack_rules);
         		
         		if ($validator->fails()) {
-        			$response = array('status' => 0,'message' =>error_message($validator->errors()));
-        			return Response::json($response,200);
+        			$response = array('status' => 400,'message' =>error_message($validator->errors()));
+        			return Response::json($response,400);
         		}
         	
         		$count = Capture::where('capture_type',$data['capture_type'])->where(function($query)
@@ -727,8 +727,8 @@ class EmailSmsApiController extends \BaseController {
         		})->count();
         		
         		if($count >= 1){
-        			$resp = array('status' => 0,'message' => "You have already signed up.");
-        			return Response::json($resp,200);
+        			$resp = array('status' => 400,'message' => "You have already signed up.");
+        			return Response::json($resp,$resp['status']);
         		}   	
         }
         // starter pack end

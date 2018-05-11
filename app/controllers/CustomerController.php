@@ -6750,9 +6750,9 @@ class CustomerController extends \BaseController {
 				if ($validator->fails()) {
 					return Response::json(
 							array(
-									'status' => 0,
+									'status' => 400,
 									'message' => $this->errorMessage($validator->errors()
-											)),200
+											)),400
 							);
 				}
 				
@@ -6806,12 +6806,12 @@ class CustomerController extends \BaseController {
 						if ($validator->fails()) {
 							return Response::json(
 									array(
-											'status' => 0,
+											'status' => 400,
 											'message' => $this->errorMessage($validator->errors()
-													)),200
+													)),400
 									);
 						}
-					}                                                     
+					}
 					
 					
 				}
@@ -6829,9 +6829,9 @@ class CustomerController extends \BaseController {
 				})) {
 					return Response::json(
 							array(
-									'status' => 0,
+									'status' => 400,
 									'message' => 'You cannot invite yourself'
-							),200
+							),400
 							);
 				}
 				
@@ -6842,9 +6842,9 @@ class CustomerController extends \BaseController {
 				})) {
 					return Response::json(
 							array(
-									'status' => 0,
+									'status' => 400,
 									'message' => 'You cannot invite yourself'
-							),200
+							),400
 							);
 				}
 				
@@ -6868,75 +6868,74 @@ class CustomerController extends \BaseController {
 					// Generate bitly for landing page with invite_id and booktrial_id
 					if(!empty($customer->referral_code))
 						$url = 'www.fitternity.com/starter-pack?campaign='.$invite->campaign.'&host_id='.$invite['host_id'].'&code='.$customer->referral_code."&invite_id=".$invite['_id'];
-					$shorten_url = new ShortenUrl();
-					$url1 = $shorten_url->getShortenUrl($url);
-					Log::info("  url".print_r($url,true));
-					if(!isset($url['status']) ||  $url['status'] != 200){
-					/* 	return Response::json(
-								array(
-										'status' => 0,
-										'message' => 'Unable to Generate Shortren URL'
-								),200
-								); */
-						Log::info(" COULDN'T GENERATE SHORTEN URL");
+						$shorten_url = new ShortenUrl();
+						$url1 = $shorten_url->getShortenUrl($url);
+						Log::info("  url".print_r($url,true));
+						if(!isset($url['status']) ||  $url['status'] != 200){
+							/* 	return Response::json(
+							 array(
+							 'status' => 0,
+							 'message' => 'Unable to Generate Shortren URL'
+							 ),200
+							 ); */
+							Log::info(" COULDN'T GENERATE SHORTEN URL");
+							
+						}
+						else $url = $url1['url'];
+						/* if(!isset($url2['status']) ||  $url2['status'] != 200){
+						 return Response::json(
+						 array(
+						 'status' => 0,
+						 'message' => 'Unable to Generate Shortren URL'
+						 ),200);
+						 } */
 						
-					}
-					else $url = $url1['url'];
-					/* if(!isset($url2['status']) ||  $url2['status'] != 200){
-						return Response::json(
-								array(
-										'status' => 0,
-										'message' => 'Unable to Generate Shortren URL'
-								),200);
-					} */
-					
-					
-					// Send email / SMS to invitees...
-					$templateData = array(
-							'invitee_name'=>$invite['invitee_name'],
-							'invitee_email'=>$invite['invitee_email'],
-							'invitee_phone'=>$invite['invitee_phone'],
-							'gender'=>(!empty($customer->gender)?$customer->gender:""),
-							'host_name' => $invite['host_name'],
-							'starter_pack' => true,
-							'amount'=>"500",
-							'city'=>"Hyderabad",
-							// 							'type'=> $BooktrialData['type'],
-					// 							'finder_name'=> $BooktrialData['finder_name'],
-					// 							'finder_location'=> $BooktrialData['finder_location'],
-					// 							'finder_address'=> $BooktrialData['finder_address'],
-					// 							'schedule_date'=> $BooktrialData['schedule_date'],
-					// 							'schedule_date_time'=> $BooktrialData['schedule_date_time'],
-					// 							'service_name'=> $BooktrialData['service_name'],
-					// 							'schedule_slot_start_time'=> $BooktrialData['schedule_slot_start_time'],
-							'url' => $url
-							// 							'url2' => $url2
-					);
-					
-					//            return $this->customermailer->inviteEmail($BooktrialData['type'], $templateData);
-					
-					// 					isset($templateData['invitee_email']) ? $this->customermailer->inviteEmail($BooktrialData['type'], $templateData) : null;
-					Log::info("  templateData :: ".print_r($templateData,true));
-					isset($templateData['invitee_phone']) ? $this->customersms->inviteSMS("", $templateData) : null;
+						
+						// Send email / SMS to invitees...
+						$templateData = array(
+								'invitee_name'=>$invite['invitee_name'],
+								'invitee_email'=>$invite['invitee_email'],
+								'invitee_phone'=>$invite['invitee_phone'],
+								'gender'=>(!empty($customer->gender)?$customer->gender:""),
+								'host_name' => $invite['host_name'],
+								'starter_pack' => true,
+								'amount'=>"500",
+								'city'=>"Hyderabad",
+								// 							'type'=> $BooktrialData['type'],
+								// 							'finder_name'=> $BooktrialData['finder_name'],
+								// 							'finder_location'=> $BooktrialData['finder_location'],
+								// 							'finder_address'=> $BooktrialData['finder_address'],
+								// 							'schedule_date'=> $BooktrialData['schedule_date'],
+								// 							'schedule_date_time'=> $BooktrialData['schedule_date_time'],
+								// 							'service_name'=> $BooktrialData['service_name'],
+								// 							'schedule_slot_start_time'=> $BooktrialData['schedule_slot_start_time'],
+								'url' => $url
+								// 							'url2' => $url2
+						);
+						
+						//            return $this->customermailer->inviteEmail($BooktrialData['type'], $templateData);
+						
+						// 					isset($templateData['invitee_email']) ? $this->customermailer->inviteEmail($BooktrialData['type'], $templateData) : null;
+						Log::info("  templateData :: ".print_r($templateData,true));
+						isset($templateData['invitee_phone']) ? $this->customersms->inviteSMS("", $templateData) : null;
 				}
 				
-				return Response::json(array('status' => 1,'message' => "Successfully invited friends for signup ."),200);
+				return Response::json(array('status' => 200,'message' => "Successfully invited friends for signup ."),200);
 			}
 			else
-				return Response::json(array('status' => 0,'message' => "Token Not Present or invalid."),200);
+				return Response::json(array('status' => 400,'message' => "Token Not Present or invalid."),400);
 				
 				
 				
 				
-			
 				
-
+				
+				
 		} catch (Exception $e) {
 			$e->getTrace();
-			return Response::json(array('status' => 0,'message' => $e->getMessage()." on line :: ".$e->getLine()." in file :: ".$e->getFile()),200);
+			return Response::json(array('status' => 400,'message' => $e->getMessage()." on line :: ".$e->getLine()." in file :: ".$e->getFile()),400);
 		}
 		
-	
-}
+	}
 
 }
