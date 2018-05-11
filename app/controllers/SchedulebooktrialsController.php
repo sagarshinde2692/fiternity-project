@@ -2859,9 +2859,8 @@ class SchedulebooktrialsController extends \BaseController {
 
             // Throw an error if user has already booked a trial for that vendor...
             
-            $alreadyBookedTrials = $this->utilities->checkExistingTrialWithFinder($data['customer_email'], $data['customer_phone'], $data['finder_id']);
+            $alreadyBookedTrials = Config::get('app.debug') ? [] : $this->utilities->checkExistingTrialWithFinder($data['customer_email'], $data['customer_phone'], $data['finder_id']);
             
-            // return $alreadyBookedTrials;
             
             if (count($alreadyBookedTrials) > 0) {
                 $resp = array('status' => 403, 'message' => "You have already booked a trial for this vendor, please choose some other vendor");
@@ -2870,7 +2869,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             // Throw an error if user has already booked a trial on same schedule timestamp..
             $dates = $this->utilities->getDateTimeFromDateAndTimeRange($data['schedule_date'], $data['schedule_slot']);
-            $UpcomingTrialsOnTimestamp = $this->utilities->getUpcomingTrialsOnTimestamp($customer_id, $dates['start_timestamp'], $finderid);
+            $UpcomingTrialsOnTimestamp = Config::get('app.debug') ? [] : $this->utilities->getUpcomingTrialsOnTimestamp($customer_id, $dates['start_timestamp'], $finderid);
             if (count($UpcomingTrialsOnTimestamp) > 0) {
                 $resp = array('status' => 403, 'message' => "You have already booked a trial on same datetime");
                 return Response::json($resp, 403);
@@ -3340,7 +3339,7 @@ class SchedulebooktrialsController extends \BaseController {
 
            /* Log::info('finder commercial_type  -- '. $finder['commercial_type']);
             if($finder['commercial_type'] != '2'){*/
-                $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@sendCommunication', array('booktrial_id'=>$booktrialid), Config::get('app.queue'));
+                $redisid = Queue::connection('sync')->push('SchedulebooktrialsController@sendCommunication', array('booktrial_id'=>$booktrialid), Config::get('app.queue'));
                 $booktrial->update(array('redis_id'=>$redisid));
             /*}else{
 
@@ -7229,15 +7228,20 @@ class SchedulebooktrialsController extends \BaseController {
 
     public function publishConfirmationAlert($booktrial_data){
         
+
         Log::info("publishing trial alert");
         $pubnub = new \Pubnub\Pubnub('pub-c-df66f0bb-9e6f-488d-a205-38862765609d', 'sub-c-d9cf3842-cf1f-11e6-90ff-0619f8945a4f');
         $booktrial_data = array_only($booktrial_data, ['_id', 'finder_name', 'schedule_date_time','finder_location','customer_name', 'city_id']);
         $booktrial_data['schedule_date_time'] = date('d-m-Y g:i A',strtotime( $booktrial_data['schedule_date_time']));
         $booktrial_data['type'] = 1;
-
+        
         $cities 	=	City::active()->orderBy('name')->lists('name', '_id');
         
         $booktrial_data['city_name'] = $cities[$booktrial_data['city_id']];
+        $booktrial_data['trial_id'] = $booktrial_data['_id'];
+        unset($booktrial_data['_id']);
+        
+        Trialalert::create($booktrial_data);
         $pubnub->publish('fitternity_trial_alert',$booktrial_data);
         
     }
