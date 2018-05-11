@@ -722,7 +722,7 @@ class EmailSmsApiController extends \BaseController {
         			return Response::json($response,400);
         		}
         	
-        		$count = Capture::where('capture_type',$data['capture_type'])->where(function($query)
+        		$count = Capture::where('capture_type',$data['capture_type'])->where(function($query) use ($data)
         		{$query->orWhere('customer_phone','LIKE','%'.substr($data['customer_phone'], -9).'%')->orWhere('customer_email',$data['customer_email']);
         		})->count();
         		
