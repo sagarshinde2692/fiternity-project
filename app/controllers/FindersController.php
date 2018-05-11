@@ -202,29 +202,11 @@ class FindersController extends \BaseController {
 					}
 				}
 
-				$finderarr['reviews_booktrial_index'] = null;
+				$finderarr['reviews_booktrial_index'] = $this->getReviewBooktrialIndex($finderarr['_id']);
 
 				if(!empty($finderarr['reviews'])){
 
-					$reviews_booktrial_index_flag = false;
-					$reviews_booktrial_index_count = 0;
-
 					foreach ($finderarr['reviews'] as $rev_key => $rev_value) {
-
-						if($rev_value['rating'] >= 4){
-
-							$reviews_booktrial_index_flag = true;
-							$reviews_booktrial_index_count += 1;
-
-						}else{
-
-							$reviews_booktrial_index_flag = false;
-							$reviews_booktrial_index_count = 0;
-						}
-
-						if($reviews_booktrial_index_count == 3 && $finderarr['reviews_booktrial_index'] == null){
-							$finderarr['reviews_booktrial_index'] = $rev_key;
-						}
 
 						if($rev_value['customer'] == null){
 
@@ -884,7 +866,6 @@ class FindersController extends \BaseController {
 							unset($finder['callout']);
 							unset($finder['callout_ratecard_id']);
 						$callOutObj= $this->getCalloutOffer($finder['services']);
-						Log::info(" info_callout_obj:: ".print_r($callOutObj,true));
 						if(!empty($callOutObj))
 						{
 							if(!empty($callOutObj['callout']))
@@ -1328,7 +1309,41 @@ class FindersController extends \BaseController {
 		return Response::json($data,200);
 	}
 
+	public function getReviewBooktrialIndex($finder_id){
 
+        $reviews_booktrial_index = null;
+
+        $reviews = Review::active()->where('finder_id',(int)$finder_id)->orderBy('updated_at','desc')->get();
+
+        if(!empty($reviews)){
+
+            $reviews = $reviews->toArray();
+
+            $reviews_booktrial_index_flag = false;
+            $reviews_booktrial_index_count = 0;
+
+            foreach ($reviews as $rev_key => $rev_value) {
+
+                if($rev_value['rating'] >= 4){
+
+                    $reviews_booktrial_index_flag = true;
+                    $reviews_booktrial_index_count += 1;
+
+                }else{
+
+                    $reviews_booktrial_index_flag = false;
+                    $reviews_booktrial_index_count = 0;
+                }
+
+                if($reviews_booktrial_index_count == 3 && $reviews_booktrial_index == null){
+                    $reviews_booktrial_index = $rev_key+1;
+                }
+            }
+        }
+
+        return $reviews_booktrial_index;
+
+    }
 
 	public function pushfinder2elastic ($slug){
 
@@ -4128,7 +4143,7 @@ class FindersController extends \BaseController {
 	                }else{
 	                    $ratecard_price = $ratecard['price'];
 	                }
-					(isset($ratecard['special_price']) && $ratecard['price'] >= $ratecard['special_price']) ? $ratecard['special_price'] = 0 : null;
+					(isset($ratecard['special_price']) && $ratecard['price'] == $ratecard['special_price']) ? $ratecard['special_price'] = 0 : null;
 					
 					$ratecard['cashback_on_trial'] = "";
 
@@ -5059,7 +5074,6 @@ class FindersController extends \BaseController {
 		$callout_ratecard_id = "";
 		foreach($services as $service){
 			foreach($service['serviceratecard'] as $ratecard){
-				Log::info(" rc ".print_r($ratecard,true));
 				if(isset($ratecard['offers']) && count($ratecard['offers']) > 0 && isset($ratecard['offers'][0]['offer_type']) && $ratecard['offers'][0]['offer_type'] == 'newyears'){
 					if(!empty($ratecard['offers'][0]['callout']))
 					$callout = $ratecard['offers'][0]['callout'];
