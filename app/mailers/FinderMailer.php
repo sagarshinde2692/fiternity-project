@@ -237,6 +237,11 @@ Class FinderMailer extends Mailer {
 						'dharmindersingh@fitternity.com'
 					];
 					break;
+				case 6 : 
+					$fitternity_email = [
+						"priyankapatel@fitternity.com",
+					];
+					break;
 				default:
 					break;
 			}
@@ -819,6 +824,11 @@ Class FinderMailer extends Mailer {
 						'pranjalisalvi@fitternity.com' 
 					];
 					break;
+				case 6 : 
+					$data['fitternity_email'] = [
+						"priyankapatel@fitternity.com",
+					];
+					break;	
 				default:
 					break;
 			}
