@@ -216,6 +216,17 @@ class BaseObserver {
                         continue;
                     }
 
+                    if(!(strcmp($field, 'success_date'))){
+
+                        if(isset($model->$field->timestamp)){
+                            $transaction->$field =  new Mongodate($model->$field->timestamp);
+                        }else{
+                            $transaction->$field =  ($model->$field);
+                        }
+                        
+                        continue;
+                    }
+
                     $transaction->$field = $model->$field;
                 }
             }
