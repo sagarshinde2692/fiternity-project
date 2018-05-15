@@ -255,13 +255,28 @@ class TempsController extends \BaseController {
                 
                 if(!empty($data['action'])&&$data['action']=='starter_pack')
                 {
-                	$cust=Customer::where("email","=",$data['customer_email'])->orWhere('contact_no', $data['customer_phone'])->first();
-                	if(!empty($cust))
-                	{
-                		$sendOtp=false;
-                		$response =  array('status' => 400,'message'=>'User already Present.');
-                	}
                 	
+                	$rules = array(
+                			'customer_phone' => 'required|max:15',
+                			'action'   =>   'required',
+                			'gender'   =>   'required'
+                	);
+                	
+                	$validator = Validator::make($data,$rules);
+                	
+                	if ($validator->fails()) {
+                		
+                		return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),$this->error_status);
+                	}
+                	else 
+                	{
+	                	$cust=Customer::where("email","=",$data['customer_email'])->orWhere('contact_no', $data['customer_phone'])->first();
+	                	if(!empty($cust))
+	                	{
+	                		$sendOtp=false;
+	                		$response =  array('status' => 400,'message'=>'User already Present.');
+	                	}                		
+                	}
                 }
                 if($sendOtp)
                 {
@@ -330,6 +345,8 @@ class TempsController extends \BaseController {
                     $data['customer_name'] = $temp['customer_name'];
                     $data['customer_email'] = $temp['customer_email'];
                     $data['customer_phone'] = $temp['customer_phone'];
+                    if(!empty($temp['gender']))
+                    $data['gender'] = $temp['gender'];
                     $data['customer_id'] = autoRegisterCustomer($data);
                     
                     $customerToken = createCustomerToken($data['customer_id']);

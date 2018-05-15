@@ -6742,7 +6742,7 @@ class CustomerController extends \BaseController {
 				// Request Validations...........
 				$rules = [
 						'invitees' => 'required|array',
-						'source' => 'in:ANDROID,IOS,WEB',
+						'city_id' => 'in:6,5',
 				];
 				
 				$validator = Validator::make($req, $rules);
@@ -6859,7 +6859,8 @@ class CustomerController extends \BaseController {
 					$invite->host_name = $customer->name;
 					$invite->campaign= (!empty($req['campaign'])?$req['campaign']:'starter_pack');
 					$invite->host_phone = $customer->contact_no;
-					$invite->source = $req['source'];
+					$invite->source ='web';
+					$invite->city_id =(!empty($req['city_id'])?$req['city_id']:"");
 					isset($invitee['name']) ? $invite->invitee_name = trim($invitee['name']): null;
 					isset($invitee['email']) ? $invite->invitee_email = trim($invitee['email']): null;
 					isset($invitee['phone']) ? $invite->invitee_phone = trim($invitee['phone']): null;
@@ -6867,7 +6868,7 @@ class CustomerController extends \BaseController {
 					
 					// Generate bitly for landing page with invite_id and booktrial_id
 					if(!empty($customer->referral_code))
-						$url = 'www.fitternity.com/starter-pack?campaign='.$invite->campaign.'&host_id='.$invite['host_id'].'&code='.$customer->referral_code."&invite_id=".$invite['_id'];
+						$url = Config::get('app.website').'/starter-pack?campaign='.$invite->campaign.'&host_id='.$invite['host_id'].'&code='.$customer->referral_code.'&invite_id='.$invite['_id'];
 						$shorten_url = new ShortenUrl();
 						$url1 = $shorten_url->getShortenUrl($url);
 						Log::info("  url".print_r($url,true));
@@ -6889,8 +6890,8 @@ class CustomerController extends \BaseController {
 						 'message' => 'Unable to Generate Shortren URL'
 						 ),200);
 						 } */
-						
-						
+						if(!empty($invite->city_id))
+						$cityName=City::where("_id",(int)$invite->city_id)->first(['name']);
 						// Send email / SMS to invitees...
 						$templateData = array(
 								'invitee_name'=>$invite['invitee_name'],
@@ -6900,7 +6901,7 @@ class CustomerController extends \BaseController {
 								'host_name' => $invite['host_name'],
 								'starter_pack' => true,
 								'amount'=>"500",
-								'city'=>"Hyderabad",
+								'city'=>(!empty($cityName)&&!empty($cityName->name))?$cityName->name:"",
 								// 							'type'=> $BooktrialData['type'],
 								// 							'finder_name'=> $BooktrialData['finder_name'],
 								// 							'finder_location'=> $BooktrialData['finder_location'],
