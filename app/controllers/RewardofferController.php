@@ -316,31 +316,31 @@ class RewardofferController extends BaseController {
 
             switch ($finder_id) {
                 case 13761 : 
-                    if(strtotime(date('2018-06-15 23:59:59')) >= time()){
+                    if(time() >= strtotime(date('2018-06-15 00:00:00')) && time() <= strtotime(date('2018-06-15 23:59:59'))){
                         $min_date = strtotime(date('2018-06-15 00:00:00'));
                         $max_date = strtotime(date('2018-06-15 23:59:59'));
                     }
                     break;
                 case 13762 : 
-                    if(strtotime(date('2018-05-18 23:59:59')) >= time()){
+                    if(time() >= strtotime(date('2018-05-18 00:00:00')) && time() <= strtotime(date('2018-05-18 23:59:59'))){
                         $min_date = strtotime(date('2018-05-18 00:00:00'));
                         $max_date = strtotime(date('2018-05-18 23:59:59'));
                     }
                     break;
                 case 13763 : 
-                    if(strtotime(date('2018-04-23 23:59:59')) >= time()){
+                    if(time() >= strtotime(date('2018-04-23 00:00:00')) && time() <= strtotime(date('2018-04-23 23:59:59'))){
                         $min_date = strtotime(date('2018-04-23 00:00:00'));
                         $max_date = strtotime(date('2018-04-23 23:59:59'));
                     }
                     break;
                 case 13764 : 
-                    if(strtotime(date('2018-05-20 23:59:59')) >= time()){
+                    if(time() >= strtotime(date('2018-05-20 00:00:00')) && time() <= strtotime(date('2018-05-20 23:59:59'))){
                         $min_date = strtotime(date('2018-05-20 00:00:00'));
                         $max_date = strtotime(date('2018-05-20 23:59:59'));
                     }
                     break;
                 case 13765 : 
-                    if(strtotime(date('2018-05-31 23:59:59')) >= time()){
+                    if(time() >= strtotime(date('2018-05-31 00:00:00')) && time() <= strtotime(date('2018-05-31 23:59:59'))){
                         $min_date = strtotime(date('2018-05-31 00:00:00'));
                         $max_date = strtotime(date('2018-05-31 23:59:59'));
                     }
