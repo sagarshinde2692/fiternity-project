@@ -3433,7 +3433,7 @@ class TransactionController extends \BaseController {
     	$data['customer_source'] = (!empty($order['customer_source'])?$order['customer_source']:'web');
     	
     	$order['finder_id']=11128;
-    	$rt=Ratecard::where("finder_id",$order['finder_id'])->where('validity_type','days')->where(function($query)
+    	$rt=Ratecard::where("finder_id",$order['finder_id'])->where('validity',1)->where('validity_type','months')->where(function($query)
     	{$query->orWhere('special_price', '!=', 0)->orWhere('price', '!=',0);
     	})->first();
     	Log::info(" free diet plan ratecard ".print_r($rt,true));

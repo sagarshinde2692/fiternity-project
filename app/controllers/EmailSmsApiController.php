@@ -785,7 +785,7 @@ class EmailSmsApiController extends \BaseController {
         		Log::info(" datacode ".print_r($data['code'],true));
         		$exists = Customer::where('referral_code', $data['code'])->where('status', '1')->first();
         		if(!empty($exists))
-        			Log::info("Added fitcash for starter_pack reference".print_r($this->utilities->getAddWAlletArray(["customer_id"=>$exists->_id,"amount"=>350,"description"=>("Added FitCash+ as Sign up Bonus for starter pack reference, Expires On : ".date('d-m-Y',time()+(86400*60))),"validity"=>(time()+(86400*60)),"for"=>"starter_pack_reference"]),true));
+        			Log::info("Added fitcash for starter_pack reference".print_r($this->utilities->getAddWAlletArray(["customer_id"=>$exists->_id,"amount"=>200,"description"=>("Added FitCash+ as Sign up Bonus for starter pack reference, Expires On : ".date('d-m-Y',time()+(86400*60))),"validity"=>(time()+(86400*60)),"for"=>"starter_pack_reference"]),true));
         		else Log::info(" No Customer with this code exists. :: ".$data['code']);
         	}
         }
