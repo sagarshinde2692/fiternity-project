@@ -2484,10 +2484,40 @@ class SchedulebooktrialsController extends \BaseController {
 
             $currentScheduleDateDiffMin = $currentDateTime->diffInMinutes($scheduleDateTime, false);
 
-            if( $this->isOffHour(strtotime($booktrial->schedule_date_time)) &&  $this->isOffHour(time()) ){
-               
-                $booktrialdata['off_hours'] = true;
+            $schedule_date_time_hour = intval(date('H',strtotime($booktrial->schedule_date_time)));
+
+            $current_hour = intval(date('H',time()));
+
+            if( $this->isOffHour($schedule_date_time_hour) &&  $this->isOffHour($current_hour) && (strtotime($booktrial->schedule_date_time) - time()) < 12*60*60){
                 
+                if($current_hour < 22 && strtotime($booktrial->schedule_date_time) > strtotime(date('Y-m-d 22:00:00', time()))){
+                    
+                    if($schedule_date_time_hour >= 8 && $schedule_date_time_hour < 11){
+    
+                        $delayReminderbefore2Hours      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->addMinutes(-60 * 2);
+    
+                        $send_communication['customer_sms_offhours_confirmation'] = $this->customersms->offhoursConfirmation($booktrialdata, $delayReminderbefore2Hours);
+    
+                    }else if($schedule_date_time_hour >= 6 && $schedule_date_time_hour < 8){
+                        
+                        $delayReminderPrevDay      =    \Carbon\Carbon::createFromFormat('Y-m-d 22:00:00', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->addMinutes(-1);
+    
+                        $send_communication['customer_sms_offhours_confirmation'] = $this->customersms->offhoursConfirmation($booktrialdata, $delayReminderPrevDay);
+
+                    }
+                }else{
+                    
+                    $delayReminderAfter5mins      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',time()))->addMinutes(5);
+    
+                    $send_communication['customer_sms_offhours_confirmation'] = $this->customersms->offhoursConfirmation($booktrialdata, $delayReminderAfter5mins);
+                
+                }
+                
+            }else if(in_array(date('l', time()), ['Sunday', 'Saturday']) && !$this->isOffHour($current_hour) && in_array(date('l', strtotime($booktrial->schedule_date_time)), ['Monday']) && $schedule_date_time_hour >= 6 && $schedule_date_time_hour <=11){
+                
+                $delayReminderPrevDay      =    \Carbon\Carbon::createFromFormat('Y-m-d 20:00:00', date('Y-m-d H:i:s',time()))->addDays(-1);
+    
+                $send_communication['customer_sms_offhours_confirmation'] = $this->customersms->offhoursConfirmation($booktrialdata, $delayReminderPrevDay);
             }
 
             $customer_email_messageids 	=  $finder_email_messageids  =	$customer_sms_messageids  =  $finder_sms_messageids  =  $customer_notification_messageids  =  array();
@@ -2729,7 +2759,8 @@ class SchedulebooktrialsController extends \BaseController {
             "customer_notification_before10min",
         	"customer_sms_before10Min",
         	"customer_email_before10Min",
-        	"customer_email_instant_workoutlevelstart"
+            "customer_email_instant_workoutlevelstart",
+            "customer_sms_offhours_confirmation"
         ];
 
         foreach ($array as $value) {
@@ -7257,10 +7288,9 @@ class SchedulebooktrialsController extends \BaseController {
         return false;
     }
 
-    function isOffHour($timestamp){
-        Log::info("hour");
-        Log::info(date('H',$timestamp)); 
-        if( date('H',$timestamp) >= 20 || date('H',$timestamp) < 11){
+    function isOffHour($hour){
+        
+        if( $hour >= 20 || $hour < 11){
             
             return true;
         
