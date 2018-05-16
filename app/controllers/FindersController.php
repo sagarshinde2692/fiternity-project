@@ -744,7 +744,9 @@ class FindersController extends \BaseController {
 								$finder['pay_per_session'] = false;
 							}
 
-
+							if(isset($service['category']) && $service['category'] && $service['category']['_id'] == 184){
+								$service['remarks'] = "Personal Training is not inclusive of the Gym membership. To avail Personal Training, ensure to buy the Gym membership also.";
+							}
 							array_push($serviceArr, $service);
 						}
 					}
