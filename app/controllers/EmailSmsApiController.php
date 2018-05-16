@@ -716,7 +716,7 @@ class EmailSmsApiController extends \BaseController {
         if(!empty($data['capture_type'])&&$data['capture_type']=='starter_pack')
         {
         	
-        	$start_pack_rules = ['customer_email'=>'required|email|max:255','customer_name'=>'required','customer_phone'=>'required','fitness_goal'=>'required','customer_location'=>'required','city_id'=>'required'];
+        	$start_pack_rules = ['customer_email'=>'required|email|max:255','customer_name'=>'required','customer_phone'=>'required',/* 'fitness_goal'=>'required','customer_location'=>'required', */'city_id'=>'required'];
         		
         	$validator = Validator::make($data, $start_pack_rules);
         		
