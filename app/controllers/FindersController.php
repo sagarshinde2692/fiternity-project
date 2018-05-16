@@ -5077,8 +5077,6 @@ class FindersController extends \BaseController {
 	}
 	public function removeConvinienceFee(&$finder){
 		foreach ($finder['services'] as &$service){
-		
-// 		for ($i = 0; $i < count($finder['services']); $i++) {
 			unset($service['flags']['convinience_fee_applicable']);
 		}
 		
