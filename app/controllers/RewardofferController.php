@@ -301,47 +301,54 @@ class RewardofferController extends BaseController {
             $amount = $ratecard->price;
         }*/
 
-        
-        if($amount <= 1000){
-
-            switch ($finder_id) {
-                case 13761 : 
-                    $min_date = strtotime(date('2018-06-15 00:00:00'));
-                    $max_date = strtotime(date('2018-06-15 23:59:59'));
-                    break;
-                case 13762 : 
-                    $min_date = strtotime(date('2018-05-31 00:00:00'));
-                    $max_date = strtotime(date('2018-05-31 23:59:59'));
-                    break;
-                // case 13763 : 
-                //     $min_date = strtotime(date('2018-04-23 00:00:00'));
-                //     $max_date = strtotime(date('2018-04-23 23:59:59'));
-                //     break;
-                case 13764 : 
-                    $min_date = strtotime(date('2018-05-20 00:00:00'));
-                    $max_date = strtotime(date('2018-05-20 23:59:59'));
-                    break;
-                case 13765 : 
-                    $min_date = strtotime(date('2018-05-31 00:00:00'));
-                    $max_date = strtotime(date('2018-05-31 23:59:59'));
-                    break;
-                default: break;
-            }
-        }
-
-
         $finder                 =   Finder::find($finder_id);
         $findercategory_id      =   intval($finder->category_id);
         $rewards                =   [];
         $finder_name            =   $finder->title;
 
-
-        if(isset($finder['brand_id']) && $finder['brand_id'] == 134 && !in_array($finder_id,[13761,13762,13764,13765]) ){
+        if(isset($finder['brand_id']) && $finder['brand_id'] == 134){
 
             $min_date = strtotime(' + 2 days');
             $max_date = strtotime(' + 32 days');
         }
 
+        if($amount <= 1000){
+
+            switch ($finder_id) {
+                case 13761 : 
+                    if(time() >= strtotime(date('2018-06-15 00:00:00')) && time() <= strtotime(date('2018-06-15 23:59:59'))){
+                        $min_date = strtotime(date('2018-06-15 00:00:00'));
+                        $max_date = strtotime(date('2018-06-15 23:59:59'));
+                    }
+                    break;
+                case 13762 : 
+                    if(time() >= strtotime(date('2018-05-18 00:00:00')) && time() <= strtotime(date('2018-05-18 23:59:59'))){
+                        $min_date = strtotime(date('2018-05-18 00:00:00'));
+                        $max_date = strtotime(date('2018-05-18 23:59:59'));
+                    }
+                    break;
+                case 13763 : 
+                    if(time() >= strtotime(date('2018-04-23 00:00:00')) && time() <= strtotime(date('2018-04-23 23:59:59'))){
+                        $min_date = strtotime(date('2018-04-23 00:00:00'));
+                        $max_date = strtotime(date('2018-04-23 23:59:59'));
+                    }
+                    break;
+                case 13764 : 
+                    if(time() >= strtotime(date('2018-05-20 00:00:00')) && time() <= strtotime(date('2018-05-20 23:59:59'))){
+                        $min_date = strtotime(date('2018-05-20 00:00:00'));
+                        $max_date = strtotime(date('2018-05-20 23:59:59'));
+                    }
+                    break;
+                case 13765 : 
+                    if(time() >= strtotime(date('2018-05-31 00:00:00')) && time() <= strtotime(date('2018-05-31 23:59:59'))){
+                        $min_date = strtotime(date('2018-05-31 00:00:00'));
+                        $max_date = strtotime(date('2018-05-31 23:59:59'));
+                    }
+                    break;
+                default: break;
+            }
+            
+        }
 
         $service_name           =   "";
         $service_duration       =   "";
