@@ -713,7 +713,7 @@ return array(
 
 	'my_fitness_party_slug' => ['mfp','mfp-mumbai','mfp-delhi'],
 
-	'convinience_fee'=>0,
+	'convinience_fee'=>2.5,
 
 	'corporate_login' => array(
 		'emails' => ['fitmein@fitternity.com'],
