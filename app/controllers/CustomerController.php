@@ -6742,7 +6742,7 @@ class CustomerController extends \BaseController {
 				// Request Validations...........
 				$rules = [
 						'invitees' => 'required|array',
-						'city_id' => 'in:6,5',
+						'city_id' => 'required|in:6,5',
 				];
 				
 				$validator = Validator::make($req, $rules);
@@ -6898,6 +6898,7 @@ class CustomerController extends \BaseController {
 								'invitee_email'=>$invite['invitee_email'],
 								'invitee_phone'=>$invite['invitee_phone'],
 								'gender'=>(!empty($customer->gender)?$customer->gender:""),
+								'referral_code'=>(!empty($customer->referral_code)?$customer->referral_code:""),
 								'host_name' => $invite['host_name'],
 								'starter_pack' => true,
 								'amount'=>"500",
