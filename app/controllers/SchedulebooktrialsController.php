@@ -2488,7 +2488,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             $current_hour = intval(date('H',time()));
 
-            if( $this->isOffHour($schedule_date_time_hour) &&  $this->isOffHour($current_hour) && (strtotime($booktrial->schedule_date_time) - time()) < 12*60*60){
+            if( $this->isOffHour($schedule_date_time_hour) &&  $this->isOffHour($current_hour) && $currentScheduleDateDiffMin < 12*60){
                 
                 if($current_hour < 22 && strtotime($booktrial->schedule_date_time) > strtotime(date('Y-m-d 22:00:00', time()))){
                     
@@ -4339,7 +4339,9 @@ class SchedulebooktrialsController extends \BaseController {
         array_set($bookdata, 'cancellation_reason_vendor', $reason);
         array_set($bookdata, 'final_lead_stage', 'cancel_stage');
         array_set($bookdata, 'final_lead_status', 'cancelled_by_'.$source_flag);
-        array_set($bookdata, 'pre_trial_vendor_confirmation', 'cancel');
+        if($source_flag == 'vendor'){
+            array_set($bookdata, 'pre_trial_vendor_confirmation', 'cancel');
+        }
         if($booktrial['type']=='workout-session'){
             array_set($bookdata, 'final_lead_stage', 'trial_stage');
             array_set($bookdata, 'post_trial_status', 'no show');

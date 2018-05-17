@@ -1094,7 +1094,7 @@ Class CustomerSms extends VersionNextSms{
 	
 	protected function offhoursConfirmation($data,$delay){
 
-		if(!in_array($data['pre_trial_vendor_confirmation'], ['yet_to_connect', ''])){
+		if(isset($data['pre_trial_vendor_confirmation']) && !in_array($data['pre_trial_vendor_confirmation'], ['yet_to_connect', ''])){
 			return "no_email_sent";
 		}
 		
