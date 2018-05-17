@@ -372,7 +372,15 @@ class FindersController extends \BaseController {
 
 				if(isset($finderarr['knowlarityno']) && $finderarr['knowlarityno'] != ''){
 					$finderarr['knowlarityno']['phone_number'] = '+91'.$finderarr['knowlarityno']['phone_number'];
-					$finderarr['knowlarityno']['extension'] = strlen($finderarr['knowlarityno']['extension']) < 2 && $finderarr['knowlarityno']['extension'] >= 1  ?  "0".$finderarr['knowlarityno']['extension'] : $finderarr['knowlarityno']['extension'];
+					$finderarr['knowlarityno']['extension'] = strlen($finderarr['knowlarityno']['extension']) < 2 && $finderarr['knowlarityno']['extension'] >= 1  ?  str_pad($finderarr['knowlarityno']['extension'], 2, '0', STR_PAD_LEFT) : $finderarr['knowlarityno']['extension'];
+					if($finderarr['knowlarityno']['extension']){
+
+						$finderarr['knowlarityno']['extension1'] = '1'.$finderarr['knowlarityno']['extension']." for existing";
+						$finderarr['knowlarityno']['extension2'] = '2'.$finderarr['knowlarityno']['extension']." for enquiry";
+						$finderarr['knowlarityno']['extension3'] = '3'.$finderarr['knowlarityno']['extension']." for corporate";
+					
+					}
+
 					$finder['knowlarityno'] = $finderarr['knowlarityno'];
 					$finder['ozonetelno'] = $finder['knowlarityno'];
 				}
