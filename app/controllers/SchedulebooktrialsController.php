@@ -2488,24 +2488,31 @@ class SchedulebooktrialsController extends \BaseController {
 
             $current_hour = intval(date('H',time()));
 
-            if( $this->isOffHour($schedule_date_time_hour) &&  $this->isOffHour($current_hour) && $currentScheduleDateDiffMin < 12*60){
+            // $delayReminderbefore2Hours      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->addMinutes(-60 * 2);
+    
+            // $send_communication['customer_sms_offhours_confirmation'] = $this->customersms->offhoursConfirmation($booktrialdata, $delayReminderbefore2Hours);
+
+            if( $this->isOffHour($schedule_date_time_hour) &&  $this->isOffHour($current_hour) && $currentScheduleDateDiffMin < 15*60){
                 
                 if($current_hour < 22 && strtotime($booktrial->schedule_date_time) > strtotime(date('Y-m-d 22:00:00', time()))){
                     
                     if($schedule_date_time_hour >= 8 && $schedule_date_time_hour < 11){
-    
+                        Log::info("Scheduling offhours 2 hours before");
                         $delayReminderbefore2Hours      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->addMinutes(-60 * 2);
     
                         $send_communication['customer_sms_offhours_confirmation'] = $this->customersms->offhoursConfirmation($booktrialdata, $delayReminderbefore2Hours);
     
                     }else if($schedule_date_time_hour >= 6 && $schedule_date_time_hour < 8){
+                        Log::info("Scheduling offhours at 10 prev day");
                         
-                        $delayReminderPrevDay      =    \Carbon\Carbon::createFromFormat('Y-m-d 22:00:00', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->addMinutes(-1);
+                        $delayReminderPrevDay      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d 22:00:00',strtotime($booktrial->schedule_date_time)))->addDays(-1);
     
                         $send_communication['customer_sms_offhours_confirmation'] = $this->customersms->offhoursConfirmation($booktrialdata, $delayReminderPrevDay);
 
                     }
                 }else{
+
+                    Log::info("Scheduling offhours 5 mins after booking");
                     
                     $delayReminderAfter5mins      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',time()))->addMinutes(5);
     
@@ -2514,8 +2521,10 @@ class SchedulebooktrialsController extends \BaseController {
                 }
                 
             }else if(in_array(date('l', time()), ['Sunday', 'Saturday']) && !$this->isOffHour($current_hour) && in_array(date('l', strtotime($booktrial->schedule_date_time)), ['Monday']) && $schedule_date_time_hour >= 6 && $schedule_date_time_hour <=11){
+
+                Log::info("Scheduling offhours 8 prev day");
                 
-                $delayReminderPrevDay      =    \Carbon\Carbon::createFromFormat('Y-m-d 20:00:00', date('Y-m-d H:i:s',time()))->addDays(-1);
+                $delayReminderPrevDay      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d 20:00:00',strtotime($booktrial->schedule_date_time)))->addDays(-1);
     
                 $send_communication['customer_sms_offhours_confirmation'] = $this->customersms->offhoursConfirmation($booktrialdata, $delayReminderPrevDay);
             }
@@ -3370,7 +3379,7 @@ class SchedulebooktrialsController extends \BaseController {
 
            /* Log::info('finder commercial_type  -- '. $finder['commercial_type']);
             if($finder['commercial_type'] != '2'){*/
-                $redisid = Queue::connection('redis')->push('SchedulebooktrialsController@sendCommunication', array('booktrial_id'=>$booktrialid), Config::get('app.queue'));
+                $redisid = Queue::connection('sync')->push('SchedulebooktrialsController@sendCommunication', array('booktrial_id'=>$booktrialid), Config::get('app.queue'));
                 $booktrial->update(array('redis_id'=>$redisid));
             /*}else{
 
