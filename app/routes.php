@@ -1184,6 +1184,4 @@ Route::get('eventfitex','DebugController@eventfitex');
 
 Route::get('promoNotification','DebugController@promoNotification');
 
-
-
-
+Route::get('PayPerSessionWallet','DebugController@PayPerSessionWallet');
