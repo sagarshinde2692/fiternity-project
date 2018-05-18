@@ -7236,5 +7236,58 @@ public function yes($msg){
 
 	}
 
+	public function PayPerSessionWallet(){
+
+		ini_set('memory_limit','512M');
+        ini_set('max_execution_time', 300);
+
+		$utilities = new Utilities();
+
+		$wallet_customers = Wallet::active()->where('for','pps')->lists('customer_id');
+
+		$wallet_customers = array_values(array_unique(array_map('intval',$wallet_customers)));
+
+		$customer_ids = Device::where('reg_id','exists',true)->where('customer_id','exists',true)->whereNotIn('customer_id',$wallet_customers)->lists('customer_id');
+
+		$customer_ids = array_values(array_unique(array_map('intval',$customer_ids)));
+		
+		// $customer_ids = [1];
+
+		sort($customer_ids);
+		
+		// return $customer_ids;exit;
+
+		foreach ($customer_ids as $customer_id) {
+
+			$walletData = array(
+				"customer_id"=> $customer_id,
+				"amount"=> 300,
+				"amount_fitcash" => 0,
+				"amount_fitcash_plus" => 300,
+				"type"=>'FITCASHPLUS',
+				'description'=>"Book a complimentary workout session using Pay-Per-Session, Expires On : ".date('2018-05-20'),
+				'entry'=>'credit',
+				'for'=>'pps',
+				"validity"=>strtotime(date('2018-05-20 23:59:59'))
+			);        			
+
+    		$walletTransaction = $utilities->walletTransactionNew($walletData);
+
+			if($walletTransaction['status'] == 200){
+
+				$promoData = [
+					'customer_id'=>$customer_id,
+					'text'=>'Book a complimentary workout session using Pay-Per-Session. Valid for 48 hours',
+					'title'=>'300 FitCash Credited',
+					'delay'=>0
+				];
+
+            	$sendPromotionalNotification = $utilities->sendPromotionalNotification($promoData);
+			}
+		}
+
+		return "success";
+	}
+
 }
 
