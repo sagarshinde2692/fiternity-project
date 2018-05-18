@@ -7269,7 +7269,7 @@ public function yes($msg){
 				"validity"=>strtotime(date('2018-05-20 23:59:59'))
 			);        			
 
-    		$walletTransaction = $utilities->walletTransaction($walletData);
+    		$walletTransaction = $utilities->walletTransactionNew($walletData);
 
 			if($walletTransaction['status'] == 200){
 
