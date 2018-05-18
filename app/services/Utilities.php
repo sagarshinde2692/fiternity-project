@@ -3561,44 +3561,29 @@ Class Utilities {
         $amount = 0;
         $days = 0;
         $fitcash = 300;
-        $min_fitcash = 300;
-        $max_fitcash = 500;
 
         if(!empty($ratecards)){
 
             foreach ($ratecards as $ratecard) {
 
-                $amount += $this->getRatecardAmount($ratecard);
+                $new_days = $this->getDurationDay($ratecard);
 
-                $days += $this->getDurationDay($ratecard);
+                if($new_days >= $days){
+
+                    $days = $new_days;
+
+                    $new_amount = $this->getRatecardAmount($ratecard);
+
+                    if($new_amount >= $amount){
+                        $amount = $new_amount;
+                    }
+                }
 
             }
 
-            $vendorCommisionData = [
-                'finder_id'=>$finder_id
-            ];
-
-            $commision = $this->getVendorCommision($vendorCommisionData);
-
-            $percentage = 0.05;
-
-            if($commision > 10 && $commision < 15){
-                $percentage = 0.03;
+            if($amount >= 10000){
+                $fitcash = 500;
             }
-
-            if($commision <= 10){
-                $percentage = 0.02;
-            }
-
-            $fitcash = floor((($amount / $days) * 30)*$percentage);
-        }
-
-        if($fitcash < $min_fitcash){
-            $fitcash = $min_fitcash;
-        }
-
-        if($fitcash > $max_fitcash){
-            $fitcash = $max_fitcash;
         }
 
         return $fitcash;
