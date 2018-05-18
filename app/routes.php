@@ -1183,6 +1183,7 @@ Route::get('eventfitex','DebugController@eventfitex');
 
 
 Route::get('promoNotification','DebugController@promoNotification');
+Route::post('getPageViewsForVendors','FindersController@getPageViewsForVendors');
 
 
 
