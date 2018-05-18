@@ -6068,6 +6068,7 @@ public function yes($msg){
 		$type = $data['type'];
 		$quantity = $data['quantity'];
 		$count = $data['count'];
+		$label = $data['label'];
 
 		$insert_codes = [];
 		$insert_code_names = [];
@@ -6076,32 +6077,33 @@ public function yes($msg){
 			Log::info($i);
 			$i++;
 			$fitcash_coupon = [];
-			$fitcash_coupon['code'] = "mar".strval(rand(1111111, 99999999));
+			$fitcash_coupon['code'] = "may".strval(rand(1111111, 99999999));
 
-			// if(!in_array($fitcash_coupon['code'], $insert_code_names)){
+			if(!in_array($fitcash_coupon['code'], $insert_code_names)){
 				// $fitcash_coupon['valid_till'] = $valid_till;
 				// $fitcash_coupon['expiry'] = $expiry;
 				// $fitcash_coupon['amount'] = $amount;
 				// $fitcash_coupon['type'] = $type;
 				// $fitcash_coupon['quantity'] = $quantity;
-				$fitcash_coupon['forty_thousand_coupons'] = true;
-				// array_push($insert_code_names, $fitcash_coupon['code']);
+				$fitcash_coupon['label'] = $label;
+				array_push($insert_code_names, $fitcash_coupon['code']);
 				array_push($insert_codes, $fitcash_coupon);
 				// Log::info(count($insert_code_names));
 				// Log::info($fitcash_coupon);
-			// }
+			}
 		}
 
 		$result = Fitcashcoupon::insert($insert_codes);
 
-		// $update = Fitcashcoupon::where('forty_thousand_coupons', true)->update(['valid_till'=>$data['valid_till'],
-		// 																		'expiry'=>$data['expiry'],
-		// 																		'amount'=>$data['amount'],
-		// 																		'type'=>$data['type'],
-		// 																		'quantity'=>$data['quantity']]);
+		$update = Fitcashcoupon::where('label', $label)->update(['valid_till'=>$data['valid_till'],
+																				'expiry'=>$data['expiry'],
+																				'amount'=>$data['amount'],
+																				'type'=>$data['type'],
+																				'quantity'=>$data['quantity']]);
 
 		Log::info($result);
 		// return $result;
+		return "done";
 
 	}
 
