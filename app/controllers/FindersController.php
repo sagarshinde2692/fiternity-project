@@ -1067,6 +1067,15 @@ class FindersController extends \BaseController {
 				$video_service_tags = ['All'];
 				$video_service_tags_others_count = 0;
 
+				if(isset($finder['playOverVideo'])&&$finder['playOverVideo']!=-1)
+				{
+					
+					
+					array_splice($array, 1, 1);
+				}
+				else unset($finder['playOverVideo']);
+					
+				
 				if(isset($finder['videos']) && is_array($finder['videos'])){
 
 					foreach($finder['videos'] as $key => $video){
