@@ -3560,9 +3560,9 @@ Class Utilities {
 
         $amount = 0;
         $days = 0;
-        $fitcash = 200;
-        $min_fitcash = 200;
-        $max_fitcash = 750;
+        $fitcash = 300;
+        $min_fitcash = 300;
+        $max_fitcash = 500;
 
         if(!empty($ratecards)){
 

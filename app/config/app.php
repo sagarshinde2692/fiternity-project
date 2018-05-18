@@ -773,5 +773,6 @@ return array(
 	'remove_patti_from_brands' => [],
 
 	'routed_order_fitcash'=>300,
+	'fitcode_fitcash'=>300,
 
 );
