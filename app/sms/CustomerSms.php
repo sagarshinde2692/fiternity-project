@@ -442,6 +442,8 @@ Class CustomerSms extends VersionNextSms{
 
 		$to = $data['customer_phone'];
 
+		$data['otp_route'] = true;
+
 		return $this->common($label,$to,$data);
 	}
 
@@ -1076,7 +1078,7 @@ Class CustomerSms extends VersionNextSms{
 		$label = 'BookTrialReminderBefore10Min-Customer';
 		
 		$to = $data['customer_phone'];
-		
+
 		return $this->common($label,$to,$data,$delay);
 		
 	}
@@ -1102,7 +1104,13 @@ Class CustomerSms extends VersionNextSms{
 
 		$message = $this->bladeCompile($template->sms_text,$data);
 
-		return $this->sendToWorker($to, $message, $label, $delay);
+		$otp = false;
+
+		if(isset($data['otp_route']) && $data['otp_route']){
+			$otp = true;
+		}
+
+		return $this->sendToWorker($to, $message, $label, $delay, $otp);
 	}
 
 	public function bladeCompile($value, array $args = array())

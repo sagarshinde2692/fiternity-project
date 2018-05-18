@@ -256,7 +256,7 @@ abstract Class VersionNextSms {
 
     }*/
 
-    public function sendToWorker($to, $message, $label = 'label', $delay = 0){
+    public function sendToWorker($to, $message, $label = 'label', $delay = 0, $otp = false){
 
         $arrayLabel = [
             'PurchaseAfter10Days-Customer',
@@ -290,6 +290,11 @@ abstract Class VersionNextSms {
         $payload = array('to'=>$to,'message'=>$message,'delay'=>$delay,'label' => $label);
         
         $route  = 'sms';
+
+        if($otp){
+            $route = 'otp';
+        }
+
         $result  = $sidekiq->sendToQueue($payload,$route);
 
         if($result['status'] == 200){
