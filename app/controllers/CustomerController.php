@@ -569,8 +569,8 @@ class CustomerController extends \BaseController {
 		$rules = [
 			'name' => 'required|max:255',
 			'email' => 'required|email|max:255',
-			// 'password' => 'required|min:6|max:20|confirmed',
-			// 'password_confirmation' => 'required|min:6|max:20',
+			'password' => 'required|min:6|max:20|confirmed',
+			'password_confirmation' => 'required|min:6|max:20',
 			'contact_no' => 'max:15',
 			'identity' => 'required'
 		];
