@@ -6217,7 +6217,7 @@ class CustomerController extends \BaseController {
 
 			if($knowlarity_no){
 
-				$extension = (isset($knowlarity_no['extension']) && $knowlarity_no['extension'] != "") ? " (extension : ".$knowlarity_no['extension'].")" : "";
+				$extension = (isset($knowlarity_no['extension']) && $knowlarity_no['extension'] != "") ? " (extension : ".str_pad($knowlarity_no['extension'], 2, '0', STR_PAD_LEFT).")" : "";
 
 				$data['finder_number'] = "+91".$knowlarity_no['phone_number'].$extension;
 
@@ -6233,7 +6233,7 @@ class CustomerController extends \BaseController {
             ];
 
             $this->utilities->addCapture($captureData);
-
+			
 			$this->customersms->sendVendorNumber($data);
 
 			return Response::json(['status' => 200,'message'=> "SMS Sent"]);
