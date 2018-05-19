@@ -1336,10 +1336,10 @@ Class CustomerReward {
 
                 if($ratecard->type == 'membership'){
                     Log::info("membership");
-                    $prev_order = \Order::active()->where('type', 'memberships')->first();
+                    $prev_order = \Order::active()->where('type', 'memberships')->where("customer_id", $customer_id)->first();
                 }else{
                     Log::info("workout-session");
-                    $prev_order = \Order::active()->whereIn('type', ['workout-session', 'memberships'])->first();
+                    $prev_order = \Order::active()->whereIn('type', ['workout-session', 'memberships'])->where("customer_id", $customer_id)->first();
                 }
 
             }
