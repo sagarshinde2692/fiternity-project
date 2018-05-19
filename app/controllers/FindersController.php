@@ -4565,129 +4565,129 @@ class FindersController extends \BaseController {
 		$ladies_gym = [
 			'Mumbai'=>[
 				[
-					'name'=>'Mumbai',
+					'name'=>'Gyms for ladies  Mumbai',
 					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug
 				],
 				[
-					'name'=>'Thane West',
+					'name'=>'Gyms for ladies Thane West',
 					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug.'-'.str_replace(" ","-",strtolower('Thane West')) 
 				],
 				[
-					'name'=>'Dadar',
+					'name'=>'Gyms for ladies Dadar',
 					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug.'-'.str_replace(" ","-",strtolower('Dadar'))
 				],
 				[
-					'name'=>'Colaba',
+					'name'=>'Gyms for ladies Colaba',
 					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug.'-'.str_replace(" ","-",strtolower('Colaba'))
 				],
 				[
-					'name'=>'Borivali West',
+					'name'=>'Gyms for ladies Borivali West',
 					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug.'-'.str_replace(" ","-",strtolower('Borivali West'))
 				],
 			],
 			'Pune'=>[
 				[
-					'name'=>'Pune',
+					'name'=>'Gyms for ladies Pune',
 					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug
 				],
 				[
-					'name'=>'Dhankawadi',
+					'name'=>'Gyms for ladies Dhankawadi',
 					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug.'-'.str_replace(" ","-",strtolower('Dhankawadi'))
 				],
 				[
-					'name'=>'Kothrud',
+					'name'=>'Gyms for ladies Kothrud',
 					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug.'-'.str_replace(" ","-",strtolower('Kothrud'))
 				],
 				[
-					'name'=>'Camp',
+					'name'=>'Gyms for ladies Camp',
 					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug.'-'.str_replace(" ","-",strtolower('Camp'))
 				]
 			],
 			'Bangalore'=>[
 				[
-					'name'=>'Bangalore',
+					'name'=>'Gyms for ladies Bangalore',
 					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug
 				],
 				[
-					'name'=>'J P Nagar',
+					'name'=>'Gyms for ladies J P Nagar',
 					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug.'-'.str_replace(" ","-",strtolower('J P Nagar'))
 				],
 				[
-					'name'=>'Jaya Nagar',
+					'name'=>'Gyms for ladies Jaya Nagar',
 					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug.'-'.str_replace(" ","-",strtolower('Jaya Nagar'))
 				],
 				[
-					'name'=>'Bannerghatta Road',
+					'name'=>'Gyms for ladies Bannerghatta Road',
 					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug.'-'.str_replace(" ","-",strtolower('Bannerghatta Road'))
 				],
 				[
-					'name'=>'HSR Layout',
+					'name'=>'Gyms for ladies HSR Layout',
 					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug.'-'.str_replace(" ","-",strtolower('HSR Layout'))
 				]
 			],
 			'Delhi'=>[
 				[
-					'name'=>'Delhi',
+					'name'=>'Gyms for ladies Delhi',
 					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug
 				],
 				[
-					'name'=>'Paschim Vihar',
+					'name'=>'Gyms for ladies Paschim Vihar',
 					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug.'-'.str_replace(" ","-",strtolower('Paschim Vihar'))
 				],
 				[
-					'name'=>'Dwarka',
+					'name'=>'Gyms for ladies Dwarka',
 					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug.'-'.str_replace(" ","-",strtolower('Dwarka'))
 				],
 				[
-					'name'=>'Punjabi Bagh',
+					'name'=>'Gyms for ladies Punjabi Bagh',
 					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug.'-'.str_replace(" ","-",strtolower('Punjabi Bagh'))
 				],
 				[
-					'name'=>'Karol Bagh',
+					'name'=>'Gyms for ladies Karol Bagh',
 					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug.'-'.str_replace(" ","-",strtolower('Karol Bagh'))
 				]
 			],
 			'Gurgaon'=>[
 				[
-					'name'=>'Gurgaon',
+					'name'=>'Gyms for ladies Gurgaon',
 					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug
 				],
 				[
-					'name'=>'DLF Phase 1',
+					'name'=>'Gyms for ladies DLF Phase 1',
 					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug.'-'.str_replace(" ","-",strtolower('DLF Phase 1'))
 				],
 				[
-					'name'=>'DLF Phase 4',
+					'name'=>'Gyms for ladies DLF Phase 4',
 					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug.'-'.str_replace(" ","-",strtolower('DLF Phase 4'))
 				],
 				[
-					'name'=>'Sector 45',
+					'name'=>'Gyms for ladies Sector 45',
 					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug.'-'.str_replace(" ","-",strtolower('Sector 45'))
 				],
 				[
-					'name'=>'Palam Vihar',
+					'name'=>'Gyms for ladies Palam Vihar',
 					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug.'-'.str_replace(" ","-",strtolower('Palam Vihar'))
 				]
 			],
 			'Hyderabad'=>[
 				[
-					'name'=>'Hyderabad',
+					'name'=>'Gyms for ladies Hyderabad',
 					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug
 				],
 				[
-					'name'=>'Himayat Nagar',
+					'name'=>'Gyms for ladies Himayat Nagar',
 					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug.'-'.str_replace(" ","-",strtolower('Himayat Nagar'))
 				],
 				[
-					'name'=>'Miyapur',
+					'name'=>'Gyms for ladies Miyapur',
 					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug.'-'.str_replace(" ","-",strtolower('Miyapur'))
 				],
 				[
-					'name'=>'Ameerpet',
+					'name'=>'Gyms for ladies Ameerpet',
 					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug.'-'.str_replace(" ","-",strtolower('Ameerpet'))
 				],
 				[
-					'name'=>'Ashok Nagar',
+					'name'=>'Gyms for ladies Ashok Nagar',
 					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug.'-'.str_replace(" ","-",strtolower('Ashok Nagar'))
 				]
 			],
