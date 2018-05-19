@@ -1822,7 +1822,8 @@ class ServiceController extends \BaseController {
 
 			$servicecategories = $servicecategories->toArray();
 			array_unshift($ordered_categories, ['_id'=>0, 'name'=>'I want to explore all options', 'slug'=>'', 'image'=>'select-all-icon']);
-		}	
+		}
+		
 		$data  = [
 			'status'=>200,
 			'header'=>'Which fitness form do you want to try?',
@@ -1831,6 +1832,29 @@ class ServiceController extends \BaseController {
 			'message'=>"",
 			'base_url'=>"http://b.fitn.in/iconsv1/"
 		];
+
+		try{
+
+			if($this->authorization){
+				
+				$decoded = decode_customer_token();
+				
+				$customer_email = $decoded->customer->email;
+
+				$trials		=	Booktrial::where('customer_email', '=', $customer_email)
+					->whereIn('booktrial_type', array('auto'))
+					->where('going_status_txt','!=','cancel')
+					->orderBy('_id', 'desc')
+					->get(['finder_id', 'service_id', 'finder_name', 'service_name']);
+
+
+
+			}			
+
+
+		}catch(Exception $e){
+
+		}
 
 		return $data;
 
