@@ -410,7 +410,7 @@ Class CustomerSms extends VersionNextSms{
 				$label = 'Invite-friend-for-trial';
 				break;
 		}
-
+		
 		$to = $data['invitee_phone'];
 
 		return $this->common($label,$to,$data);

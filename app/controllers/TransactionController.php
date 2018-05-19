@@ -3493,6 +3493,61 @@ class TransactionController extends \BaseController {
 
         return array('order_id'=>$order_id,'status'=>200,'message'=>'Diet Plan Order Created Sucessfully');
     }
+    
+    
+    public function generateFreeDietPlanOrder($order){
+    	
+    	$data = [];
+    	$data['type'] = "diet_plan";
+    	$data['customer_name'] = $order['customer_name'];
+    	$data['customer_email'] = $order['customer_email'];
+    	$data['customer_phone'] = $order['customer_phone'];
+    	$data['customer_source'] = (!empty($order['customer_source'])?$order['customer_source']:'web');
+    	
+    	$order['finder_id']=11128;
+    	$rt=Ratecard::where("finder_id",$order['finder_id'])->where('validity',1)->where('validity_type','months')->where(function($query)
+    	{$query->orWhere('special_price', '!=', 0)->orWhere('price', '!=',0);
+    	})->first();
+    	Log::info(" free diet plan ratecard ".print_r($rt,true));
+    	if(!empty($rt))
+    	{
+    		$data['ratecard_id'] = $rt->_id;
+    			
+	    	$customerDetail = $this->getCustomerDetail($data);
+	    	if(!empty($customerDetail)&&$customerDetail['status'] == 200)
+	    	$data = array_merge($data,$customerDetail['data']);
+	    	
+	    	$ratecardDetail = $this->getRatecardDetail($data);
+	    	if(!empty($ratecardDetail)&&$ratecardDetail['status'] == 200)
+	    		$data = array_merge($data,$ratecardDetail['data']);
+	    		
+	    	$diet_inclusive = false;
+    		$ratecard_id = (int) $data['ratecard_id'];
+    		$finder_id = (int) $data['finder_id'];
+    		$service_id = (int) $data['service_id'];
+    		$finderDetail = $this->getFinderDetail($finder_id);
+    		
+    		if(!empty($finderDetail)&&$finderDetail['status'] == 200)
+    			$data = array_merge($data,$finderDetail['data']);
+    		
+    		$serviceDetail = $this->getServiceDetail($service_id);
+    		
+    		if(!empty($serviceDetail)&&$serviceDetail['status'] == 200)
+    		$data = array_merge($data,$serviceDetail['data']);
+    		
+    		$data['status'] = "1";
+    		$data['order_action'] = "bought";
+    		$data['success_date'] = date('Y-m-d H:i:s',time());
+    		
+    		$order = new Order($data); 
+    		$order->_id =Order::max('_id')+1;
+    		$order->save();
+    		Log::info(" free dietplan order ".print_r($order,true));
+    		return array('order_id'=>$order->_id,'status'=>200,'message'=>'Diet Plan Order Created Sucessfully');
+    	}
+    	else return array('status'=>0,'message'=>'Rate Card Not found for giving free diet plan');
+    	
+    }
 
     public function getCategoryImage($category = "no_category"){
 
