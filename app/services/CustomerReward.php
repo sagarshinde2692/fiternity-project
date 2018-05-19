@@ -1325,7 +1325,7 @@ Class CustomerReward {
         //         return $resp;
         //     }
         // }
-        if(!isset($coupon) && (strtolower($couponCode) == "qwer") && $ratecard){
+        if(!isset($coupon) && (strtolower($couponCode) == "mad18") && $ratecard){
             Log::info("New user code");
             
             $discount = 300;
