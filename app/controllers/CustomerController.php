@@ -6742,7 +6742,7 @@ class CustomerController extends \BaseController {
 				// Request Validations...........
 				$rules = [
 						'invitees' => 'required|array',
-						'city_id' => 'required|in:6,5',
+						'city_id' => 'required',
 				];
 				
 				$validator = Validator::make($req, $rules);
@@ -6873,13 +6873,13 @@ class CustomerController extends \BaseController {
 						$url1 = $shorten_url->getShortenUrl($url);
 						Log::info("  url".print_r($url,true));
 						if(!isset($url['status']) ||  $url['status'] != 200){
-							/* 	return Response::json(
+							Log::info(" COULDN'T GENERATE SHORTEN URL");
+								return Response::json(
 							 array(
 							 'status' => 0,
 							 'message' => 'Unable to Generate Shortren URL'
 							 ),200
-							 ); */
-							Log::info(" COULDN'T GENERATE SHORTEN URL");
+							 );
 							
 						}
 						else $url = $url1['url'];
