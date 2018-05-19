@@ -2241,8 +2241,18 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                     return $message;
                 }
             }
-
-
+            if (!function_exists(('generateReferralCode'))) {
+            	
+            function generateReferralCode($name){
+            	$referral_code = substr(implode("", (explode(" ", strtoupper($name)))),0,4)."".rand(1000, 9999).'R';
+            	$exists = Customer::where('referral_code', $referral_code)->where('status', '1')->first();
+            	if($exists){
+            		return generateReferralCode($name);
+            	}else{
+            		return $referral_code;
+            	}
+              }
+            }
             if (!function_exists(('autoRegisterCustomer'))) {
 
                 function autoRegisterCustomer($data)
@@ -2264,11 +2274,13 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         }
                         $customer->name = ucwords($data['customer_name']);
                         $customer->email = $data['customer_email'];
+                        $customer->referral_code= generateReferralCode((!empty($customer->name)?$customer->name:"FIT"));
                         $customer->dob = isset($data['dob']) ? $data['dob'] : "";
                         $customer->gender = isset($data['gender']) ? $data['gender'] : "";
                         $customer->fitness_goal = isset($data['fitness_goal']) ? $data['fitness_goal'] : "";
                         $customer->picture = "https://www.gravatar.com/avatar/" . md5($data['customer_email']) . "?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png";
                         $customer->password = md5(time());
+                        
 
                         if (isset($data['customer_phone']) && $data['customer_phone'] != '') {
                             $customer->contact_no = $data['customer_phone'];
@@ -2384,6 +2396,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                     $customer['location'] = (isset($customer['location'])) ? $customer['location'] : "";
                     $customer['extra']['mob'] = (isset($customer['contact_no'])) ? $customer['contact_no'] : "";
                     $customer['extra']['location'] = (isset($customer['location'])) ? $customer['location'] : "";
+                    
                     $customer['gender'] = (isset($customer['gender'])) ? $customer['gender'] : "";
                     $customer['rx_user'] = (isset($customer['rx_user'])) ? $customer['rx_user'] : "";
 //                     $customer['rx_success_url'] = (isset($customer['rx_success_url'])) ? $customer['rx_success_url'] : "";
@@ -2407,6 +2420,8 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                                 )
                             ); 
 
+                    if(!empty($customer['referral_code']))
+                    	$data['referral_code'] = $customer['referral_code'];
                     $jwt_claim = array(
                         "iat" => Config::get('app.jwt.iat'),
                         "nbf" => Config::get('app.jwt.nbf'),

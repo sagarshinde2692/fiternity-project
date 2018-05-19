@@ -145,10 +145,13 @@ Class Utilities {
             
         if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
             $decoded = $this->customerTokenDecode($jwt_token);
-            $customer_id = $decoded->customer->_id;
+            if(empty($request['starter_pack']))
+            	$customer_id = $decoded->customer->_id;
             $request['customer_id'] = $customer_id;
         }
 
+        Log::info(" request['customer_id']".print_r($request['customer_id'],true));
+        Log::info(" customer_id]".print_r($customer_id,true));
         $customer = \Customer::find($customer_id);
 
         $total_balance = 0;
@@ -207,7 +210,8 @@ Class Utilities {
         if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
 
             $decoded = $this->customerTokenDecode($jwt_token);
-            $customer_id = (int)$decoded->customer->_id;
+            if(empty($request['starter_pack']))
+            	$customer_id = (int)$decoded->customer->_id;
         }
 
         $request['customer_id'] = $customer_id;
@@ -1471,7 +1475,8 @@ Class Utilities {
         if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
 
             $decoded = $this->customerTokenDecode($jwt_token);
-            $customer_id = (int)$decoded->customer->_id;
+            if(empty($request['starter_pack']))
+            	$customer_id = $decoded->customer->_id;
             $request['customer_id'] = $customer_id;
         }
 
@@ -3872,6 +3877,21 @@ Class Utilities {
 
 		return $resp;
 	}
+    function getAddWalletArray($data=array())
+    {
+    	
+    	$req = [];
+    	$req['customer_id'] = isset($data['customer_id'])&&$data['customer_id']!=""?$data['customer_id']:"";;
+    	$req['amount'] = isset($data['amount'])&&$data['amount']!=""?$data['amount']:"";
+    	$req['entry'] = "credit";
+    	$req['type'] = "FITCASHPLUS";
+    	$req['amount_fitcash_plus'] = isset($data['amount'])&&$data['amount']!=""?$data['amount']:"";
+    	$req['description'] = !empty($data['description'])?$data['description']:"";
+    	$req["validity"] = time()+(86400*60);
+    	$req['for'] = isset($data['for'])&&$data['for']!=""?$data['for']:"";
+    	$req['starter_pack']=true;
+    	return $this->walletTransaction($req);
+    }
     
 }
 
