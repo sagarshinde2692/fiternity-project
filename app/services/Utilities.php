@@ -3445,27 +3445,27 @@ Class Utilities {
 
             $is_tab_active = (isset($booktrial['is_tab_active']) && $booktrial['is_tab_active']) ? true : false;
 
-            if($is_tab_active){
+            /*if($is_tab_active){
                 $fitcash = 250;
-            }
+            }*/
 
             if($stage == 'before_trial'){
 
-                $card_message = "Provide this & get your <b>FITCODE</b> from Gym/Studio to unlock your surprise discount.<br>Use this discount to buy your membership at lowest price";
+                $card_message = "Provide this & get your <b>FITCODE</b> from Gym/Studio to unlock Rs ".$fitcash." flat discount.<br>Use this discount to buy your membership at lowest price";
 
                 if($is_tab_active){
 
-                    $card_message = "Punch this code on the tab available at Gym/Studio to unlock your surprise discount.<br>Use this discount to buy your membership at lowest price";
+                    $card_message = "Punch this code on the tab available at Gym/Studio to unlock Rs ".$fitcash." flat discount .<br>Use this discount to buy your membership at lowest price";
                 }
             }
 
             if($stage == 'after_trial'){
 
-                $card_message = "Yes? Enter your <b>FITCODE</b> to get a <b>Surprise Discount</b><br/>No? You can always reschedule";
+                $card_message = "Yes? Enter your <b>FITCODE</b> to get <b>Rs ".$fitcash." flat discount</b><br/>No? You can always reschedule";
 
                 if($is_tab_active){
 
-                    $card_message = "Let us know now & we'll give a suprise discount to buy your membership at lowest price";
+                    $card_message = "Let us know now & we'll give Rs ".$fitcash." flat discount to buy your membership at lowest price";
                 }
 
             }
