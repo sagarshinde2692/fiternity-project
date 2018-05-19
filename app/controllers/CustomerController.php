@@ -3436,9 +3436,9 @@ class CustomerController extends \BaseController {
 						'ratio'=>(float) number_format(100/375,2)
 					];
 				}
-				if(in_array($city,["mumbai","bangalore"])){
+				if(in_array($city,["mumbai","pune"])){
 					$result['campaigns'][] = [
-						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/app-summer.jpg',
+						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/MM_AppBanner_MP.png',
 						'link'=>'ftrnty://fitternity.com/',
 						'title'=>'Fitness Sale',
 						'height'=>100,
@@ -3447,7 +3447,7 @@ class CustomerController extends \BaseController {
 					];
 				}else{
 					$result['campaigns'][] = [
-						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/appsss.png',
+						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/MM_AppBanner_OC.png',
 						'link'=>'ftrnty://fitternity.com/',
 						'title'=>'Fitness Sale',
 						'height'=>100,
@@ -3518,9 +3518,9 @@ class CustomerController extends \BaseController {
 						'ratio'=>(float) number_format(100/375,2)
 					];
 				}
-				if(in_array($city,["mumbai","bangalore"])){
+				if(in_array($city,["mumbai","pune"])){
 					$result['campaigns'][] = [
-						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/app-summer.jpg',
+						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/MM_AppBanner_MP.png',
 						'link'=>'ftrnty://ftrnty.com/search/all',
 						'title'=>'Fitness Sale',
 						'height'=>100,
@@ -3529,7 +3529,7 @@ class CustomerController extends \BaseController {
 					];
 				}else{
 					$result['campaigns'][] = [
-						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/appsss.png',
+						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/MM_AppBanner_OC.png',
 						'link'=>'ftrnty://ftrnty.com/search/all',
 						'title'=>'Fitness Sale',
 						'height'=>100,

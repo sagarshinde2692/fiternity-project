@@ -465,11 +465,11 @@ class HomeController extends BaseController {
                 'width'=>375,
                 'ratio'=>(float) number_format(100/375,2)
             ];
-            if($city == "mumbai" || $city == "bangalore"){
+            if($city == "mumbai" || $city == "pune"){
                 
                 $campaigns[] = [
-                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/summer.jpg',
-                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/summer-m.jpg',
+                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/MM_Web+banner_MP.png',
+                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/MM_mobResponsive_banner_MP.png',
                     'link'=>Config::get('app.website').'/'.$city.'/fitness',
                     'title'=>'Mad 8 banner',
                     'height'=>100,
@@ -478,8 +478,8 @@ class HomeController extends BaseController {
                 ];
             }else{
                 $campaigns[] = [
-                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/websss.png',
-                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/mobsss.png',
+                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/MM_Web+banner_OC.png',
+                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/MM_mobResponsive_banner_OC.png',
                     'link'=>Config::get('app.website').'/'.$city.'/fitness',
                     'title'=>'Mad 8 banner',
                     'height'=>100,
