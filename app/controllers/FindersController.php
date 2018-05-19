@@ -5094,6 +5094,105 @@ class FindersController extends \BaseController {
 		}
 		return array("callout"=>$callout,"callout_ratecard_id"=>$callout_ratecard_id);
 	}
+
+	public function getPageViewsForVendors(){
+				$data = Input::all();
+				$orderDatetime = date("Y-m-d",strtotime("2016-01-01"));
+				$orderEndDatetime = date("Y-m-d");
+		if(isset($data["start_date"])){
+			$orderDatetime = date("Y-m-d",strtotime($data["start_date"]));	
+		}
+		if(isset($data["end_date"])){
+			$orderEndDatetime = date("Y-m-d",strtotime($data["end_date"]));	
+		}
+		$vendors = [];
+		if(isset($data["vendors"]) && count($data["vendors"])){
+
+			$vendors = Finder::whereIn("_id", $data["vendors"])->get(["slug", "_id"]);
+			$vendor_ids = array_pluck($vendors, 'slug');
+		}
+		// return $orderDatetime;
+		$query = '{
+			"aggs": {
+			  "vendor": {
+				"aggs": {
+				  "vendor_slug": {
+					"terms": {
+					  "field": "slug",
+					  "size": 0
+					}
+				  }
+				},
+				"filter": {
+					"bool": {
+						"must": [
+							{
+								"range": {
+								  "timestamp": {
+									"gt": "'.$orderDatetime.'",
+									"lt": "'.$orderEndDatetime.'"
+								  }
+								}
+							},
+							{
+								"terms": {
+									"slug":  ["'.strtolower(implode('","', $vendor_ids)).'"]
+								}
+							}
+						]
+					  }
+				}
+			  }
+			},
+			"query": {
+			  "filtered": {
+				"filter": {
+				  "bool": {
+					"must": [
+						{
+							"range": {
+							  "timestamp": {
+								"gt": "'.$orderDatetime.'",
+								"lt": "'.$orderEndDatetime.'"
+							  }
+							}
+						},
+						{
+							"term": {
+							"event_id": "vendorpageloaded"
+							}
+						}
+					]
+				  }
+				}
+			  }
+			}
+		  }';
+		//   return $query;
+			$request = array(
+				'url' => "http://fitternityelk:admin@52.74.67.151:8060/kyulogs/_search",
+				'port' => 8060,
+				'method' => 'POST',
+				'postfields' => $query
+				);
+				// .strtolower(implode('","', $keylist)).
+			
+			$search_results     =   json_decode(es_curl_request($request),true);
+			$result = [];
+			foreach($search_results["aggregations"]["vendor"]["vendor_slug"]["buckets"] as &$vendor){
+				foreach($vendors as $struct) {
+					if ($vendor["key"] == $struct->slug) {
+						$vendor["_id"] = $struct->_id;
+						break;
+					}
+				}
+				array_push($result, $vendor);
+			}
+			// return $vendors;
+			return $result;
+			
+	}
+
 	public function removeConvinienceFee(&$finder){
 		foreach ($finder['services'] as &$service){
 			unset($service['flags']['convinience_fee_applicable']);
