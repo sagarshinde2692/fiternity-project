@@ -3839,7 +3839,10 @@ Class Utilities {
 		$resp = array();
 
 		$resp["show_popup"] = false;
-		$resp["popup"] = array();
+        $resp["popup"] = array();
+        if(!isset($customer)){
+            return;
+        }
 
 		if(count($customdata) == 0){
 
