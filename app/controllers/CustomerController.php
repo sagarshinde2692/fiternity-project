@@ -6731,7 +6731,7 @@ class CustomerController extends \BaseController {
 				// Request Validations...........
 				$rules = [
 						'invitees' => 'required|array',
-						'city_id' => 'required',
+// 						'city_id' => 'required',
 				];
 				
 				$validator = Validator::make($req, $rules);
@@ -6860,7 +6860,7 @@ class CustomerController extends \BaseController {
 						$url = Config::get('app.website').'/starter-pack?campaign='.$invite->campaign.'&host_id='.$invite['host_id'].'&code='.$customer->referral_code.'&invite_id='.$invite['_id'];
 						$shorten_url = new ShortenUrl();
 						$url1 = $shorten_url->getShortenUrl($url);
-						Log::info("  url".print_r($url,true));
+						Log::info("  url ".print_r($url,true));
 						if(!isset($url['status']) ||  $url['status'] != 200){
 							Log::info(" COULDN'T GENERATE SHORTEN URL");
 								return Response::json(
