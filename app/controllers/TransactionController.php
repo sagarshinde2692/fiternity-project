@@ -5082,8 +5082,8 @@ class TransactionController extends \BaseController {
             }
 
             if(isset($data['coupon'])){
-                
-                $resp = $this->customerreward->couponCodeDiscountCheck($ratecard, $data['coupon']);
+                $customer_id_for_coupon = isset($customer_id) ? $customer_id : false;
+                $resp = $this->customerreward->couponCodeDiscountCheck($ratecard, $data['coupon'],$customer_id);
 
                 if($resp["coupon_applied"]){
                     
