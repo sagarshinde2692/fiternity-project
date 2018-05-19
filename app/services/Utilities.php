@@ -3770,7 +3770,7 @@ Class Utilities {
 					$resp["show_popup"] = true;
 					$resp["popup"]["header_image"] = "https://b.fitn.in/iconsv1/global/fitcash.jpg";
 					$resp["popup"]["header_text"] = "Congratulations";
-					$resp["popup"]["text"] = "Logged in successfully. You have Rs. ".$current_wallet_balance." in your wallet. Go splurge!";
+					$resp["popup"]["text"] = "Login successful. You have Rs ".$current_wallet_balance." in your Fitcash wallet - you can use this to do membership purchase or pay-per-session bookings.";
 					$resp["popup"]["button"] = "Ok";
 
 				}
