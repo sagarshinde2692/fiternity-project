@@ -5013,7 +5013,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         }else{
 
-            $booktrial['fitcode_message'] = 'Punch the code & get surprise discount';
+            $booktrial['fitcode_message'] = 'Punch the code & get '.$booktrial['fit_code'].' Fitcash as surprise discount';
         }
 
         $booktrial['fitcode_button_text'] = 'Enter Fitcode';
