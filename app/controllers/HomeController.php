@@ -4526,6 +4526,26 @@ class HomeController extends BaseController {
     	public function reliancecustomerupdate(){
     		$data = Input::json()->all();
     		return updateRelianceCommunication($data)."";
-    	}
+        }
+        
+        public function checkemail($email, $phone){
+
+            $response = ['status'=>200, 'message'=>'Valid Email'];
+
+            $customer_email = Customer::where('email','Like', $email)->first();
+
+            $customer_phone = Customer::where('contact_no','Like', '%'.substr($phone, -10).'%')->first();
+
+            if($customer_email && $customer_phone){
+                $response = ['status'=>400, 'message'=>'Email and mobile number already registered'];
+            }else if($customer_email){
+                $response = ['status'=>400, 'message'=>'Email already registered'];
+            }else if($customer_phone){
+                $response = ['status'=>400, 'message'=>'Mobile number already registered'];
+            }
+
+            return $response;
+            
+        }
 
 }

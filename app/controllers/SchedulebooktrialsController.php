@@ -771,7 +771,7 @@ class SchedulebooktrialsController extends \BaseController {
         $finder_lat = (isset($finder['lat']) && $finder['lat'] != '') ? $finder['lat'] : "";
         $finder_lon = (isset($finder['lon']) && $finder['lon'] != '') ? $finder['lon'] : "";
         
-        setDefaultAccount($data, $customer_id);
+        // setDefaultAccount($data, $customer_id);
         
         if($device_type != '' && $gcm_reg_id != ''){
 

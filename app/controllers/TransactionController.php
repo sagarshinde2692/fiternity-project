@@ -1915,9 +1915,9 @@ class TransactionController extends \BaseController {
 
             $this->utilities->sendDemonetisationCustomerSms($order);
 
-            if(isset($order->customer_id)){
-                setDefaultAccount($order->toArray(), $order->customer_id);
-            }
+            // if(isset($order->customer_id)){
+            //     setDefaultAccount($order->toArray(), $order->customer_id);
+            // }
 
             $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
 
