@@ -2210,6 +2210,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'pre_trial_status'              =>      'yet_to_connect'
             );
 
+            $booktrialdata['surprise_fit_cash'] = $this->utilities->getFitcash(['finder_id'=>$finderid]);
+
             if(!empty($order['manual_order'])){
                 $booktrialdata['manual_order'] = $order['manual_order'];
             }
@@ -3243,6 +3245,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'diet_plan_link'                =>      $diet_plan_link,
                 'pre_trial_status'              =>      'yet_to_connect'
             );
+
+            $booktrialdata['surprise_fit_cash'] = $this->utilities->getFitcash(['finder_id'=>$finderid]);
 
             if(!empty($data['manual_order'])){
                 $booktrialdata['manual_order'] = $data['manual_order'];
