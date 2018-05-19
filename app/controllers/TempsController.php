@@ -957,8 +957,10 @@ class TempsController extends \BaseController {
             }
 
             $return["cashback"] = $cashback;
-            
-            $resp = $this->utilities->checkIfpopPup($customer);
+            $resp = null;
+            if($customer){
+                $resp = $this->utilities->checkIfpopPup($customer);
+            }
 
             $return["popup"] = $resp;
 
