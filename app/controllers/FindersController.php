@@ -4543,7 +4543,7 @@ class FindersController extends \BaseController {
 		    ];
 		}
 
-		$data[] = [
+		/*$data[] = [
 			'title'=>'Fitness Options for Ladies',
 			'row'=>[
 				[
@@ -4560,7 +4560,147 @@ class FindersController extends \BaseController {
 				]
 
 			]
+		];*/
+
+		$ladies_gym = [
+			'Mumbai'=>[
+				[
+					'name'=>'Mumbai',
+					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug
+				],
+				[
+					'name'=>'Thane West',
+					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug.'-'.str_replace(" ","-",strtolower('Thane West')) 
+				],
+				[
+					'name'=>'Dadar',
+					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug.'-'.str_replace(" ","-",strtolower('Dadar'))
+				],
+				[
+					'name'=>'Colaba',
+					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug.'-'.str_replace(" ","-",strtolower('Colaba'))
+				],
+				[
+					'name'=>'Borivali West',
+					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug.'-'.str_replace(" ","-",strtolower('Borivali West'))
+				],
+			],
+			'Pune'=>[
+				[
+					'name'=>'Pune',
+					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug
+				],
+				[
+					'name'=>'Dhankawadi',
+					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug.'-'.str_replace(" ","-",strtolower('Dhankawadi'))
+				],
+				[
+					'name'=>'Kothrud',
+					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug.'-'.str_replace(" ","-",strtolower('Kothrud'))
+				],
+				[
+					'name'=>'Camp',
+					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug.'-'.str_replace(" ","-",strtolower('Camp'))
+				]
+			],
+			'Bangalore'=>[
+				[
+					'name'=>'Bangalore',
+					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug
+				],
+				[
+					'name'=>'J P Nagar',
+					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug.'-'.str_replace(" ","-",strtolower('J P Nagar'))
+				],
+				[
+					'name'=>'Jaya Nagar',
+					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug.'-'.str_replace(" ","-",strtolower('Jaya Nagar'))
+				],
+				[
+					'name'=>'Bannerghatta Road',
+					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug.'-'.str_replace(" ","-",strtolower('Bannerghatta Road'))
+				],
+				[
+					'name'=>'HSR Layout',
+					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug.'-'.str_replace(" ","-",strtolower('HSR Layout'))
+				]
+			],
+			'Delhi'=>[
+				[
+					'name'=>'Delhi',
+					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug
+				],
+				[
+					'name'=>'Paschim Vihar',
+					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug.'-'.str_replace(" ","-",strtolower('Paschim Vihar'))
+				],
+				[
+					'name'=>'Dwarka',
+					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug.'-'.str_replace(" ","-",strtolower('Dwarka'))
+				],
+				[
+					'name'=>'Punjabi Bagh',
+					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug.'-'.str_replace(" ","-",strtolower('Punjabi Bagh'))
+				],
+				[
+					'name'=>'Karol Bagh',
+					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug.'-'.str_replace(" ","-",strtolower('Karol Bagh'))
+				]
+			],
+			'Gurgaon'=>[
+				[
+					'name'=>'Gurgaon',
+					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug
+				],
+				[
+					'name'=>'DLF Phase 1',
+					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug.'-'.str_replace(" ","-",strtolower('DLF Phase 1'))
+				],
+				[
+					'name'=>'DLF Phase 4',
+					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug.'-'.str_replace(" ","-",strtolower('DLF Phase 4'))
+				],
+				[
+					'name'=>'Sector 45',
+					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug.'-'.str_replace(" ","-",strtolower('Sector 45'))
+				],
+				[
+					'name'=>'Palam Vihar',
+					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug.'-'.str_replace(" ","-",strtolower('Palam Vihar'))
+				]
+			],
+			'Hyderabad'=>[
+				[
+					'name'=>'Hyderabad',
+					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug
+				],
+				[
+					'name'=>'Himayat Nagar',
+					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug.'-'.str_replace(" ","-",strtolower('Himayat Nagar'))
+				],
+				[
+					'name'=>'Miyapur',
+					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug.'-'.str_replace(" ","-",strtolower('Miyapur'))
+				],
+				[
+					'name'=>'Ameerpet',
+					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug.'-'.str_replace(" ","-",strtolower('Ameerpet'))
+				],
+				[
+					'name'=>'Ashok Nagar',
+					'link'=> Config::get('app.website').'/ladies-gym-'.$city_slug.'-'.str_replace(" ","-",strtolower('Ashok Nagar'))
+				]
+			],
 		];
+
+		if(!empty($ladies_gym[$city_name])){
+
+			$data[] = [
+				'title'=>'Gyms Near Me for Ladies',
+				'row'=>$ladies_gym[$city_name]
+			];
+
+		}
 
 		return $data;
 
@@ -5094,6 +5234,105 @@ class FindersController extends \BaseController {
 		}
 		return array("callout"=>$callout,"callout_ratecard_id"=>$callout_ratecard_id);
 	}
+
+	public function getPageViewsForVendors(){
+				$data = Input::all();
+				$orderDatetime = date("Y-m-d",strtotime("2016-01-01"));
+				$orderEndDatetime = date("Y-m-d");
+		if(isset($data["start_date"])){
+			$orderDatetime = date("Y-m-d",strtotime($data["start_date"]));	
+		}
+		if(isset($data["end_date"])){
+			$orderEndDatetime = date("Y-m-d",strtotime($data["end_date"]));	
+		}
+		$vendors = [];
+		if(isset($data["vendors"]) && count($data["vendors"])){
+
+			$vendors = Finder::whereIn("_id", $data["vendors"])->get(["slug", "_id"]);
+			$vendor_ids = array_pluck($vendors, 'slug');
+		}
+		// return $orderDatetime;
+		$query = '{
+			"aggs": {
+			  "vendor": {
+				"aggs": {
+				  "vendor_slug": {
+					"terms": {
+					  "field": "slug",
+					  "size": 0
+					}
+				  }
+				},
+				"filter": {
+					"bool": {
+						"must": [
+							{
+								"range": {
+								  "timestamp": {
+									"gt": "'.$orderDatetime.'",
+									"lt": "'.$orderEndDatetime.'"
+								  }
+								}
+							},
+							{
+								"terms": {
+									"slug":  ["'.strtolower(implode('","', $vendor_ids)).'"]
+								}
+							}
+						]
+					  }
+				}
+			  }
+			},
+			"query": {
+			  "filtered": {
+				"filter": {
+				  "bool": {
+					"must": [
+						{
+							"range": {
+							  "timestamp": {
+								"gt": "'.$orderDatetime.'",
+								"lt": "'.$orderEndDatetime.'"
+							  }
+							}
+						},
+						{
+							"term": {
+							"event_id": "vendorpageloaded"
+							}
+						}
+					]
+				  }
+				}
+			  }
+			}
+		  }';
+		//   return $query;
+			$request = array(
+				'url' => "http://fitternityelk:admin@52.74.67.151:8060/kyulogs/_search",
+				'port' => 8060,
+				'method' => 'POST',
+				'postfields' => $query
+				);
+				// .strtolower(implode('","', $keylist)).
+			
+			$search_results     =   json_decode(es_curl_request($request),true);
+			$result = [];
+			foreach($search_results["aggregations"]["vendor"]["vendor_slug"]["buckets"] as &$vendor){
+				foreach($vendors as $struct) {
+					if ($vendor["key"] == $struct->slug) {
+						$vendor["_id"] = $struct->_id;
+						break;
+					}
+				}
+				array_push($result, $vendor);
+			}
+			// return $vendors;
+			return $result;
+			
+	}
+
 	public function removeConvinienceFee(&$finder){
 		foreach ($finder['services'] as &$service){
 			unset($service['flags']['convinience_fee_applicable']);

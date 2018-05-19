@@ -107,19 +107,31 @@ class TempsController extends \BaseController {
                 return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),$this->error_status);
 
             }else{
-
-            $temp = new Temp($data);
-                $temp->otp = $this->generateOtp();
-                $temp->attempt = 1;
-                $temp->verified = "N";
-                $temp->proceed_without_otp = "N";
-            $temp->save();
-
-                $data['otp'] = $temp->otp;
-
-                $this->customersms->genericOtp($data);
-
-                $response =  array('status' => 200,'message'=>'OTP Created Successfull','temp_id'=>$temp->_id);
+				
+            	$temp = new Temp($data);
+            	$temp->otp = $this->generateOtp();
+            	$temp->attempt = 1;
+            	$temp->verified = "N";
+            	$temp->proceed_without_otp = "N";
+            	$data['otp'] = $temp->otp;
+            	$sendOtp=true;
+            	if(!empty($data['action'])&&$data['action']=='starter_pack')
+            	{
+            		$cust=Customer::where("email","=",$data['customer_email'])->orWhere('contact_no', $data['customer_phone'])->first();
+            		if(!empty($cust))
+            		{
+	            			$sendOtp=false;
+		            		$response =  array('status' => 400,'message'=>'User already Present.');
+            		}
+            		
+            	}
+            	if($sendOtp)
+            	{
+            		$temp->save();
+            		$this->customersms->genericOtp($data);
+            		$response =  array('status' => 200,'message'=>'OTP Created Successfull','temp_id'=>$temp->_id);
+            	}
+            	
             }
 
         }catch (Exception $e) {
@@ -167,6 +179,8 @@ class TempsController extends \BaseController {
                 $temp->verified = "N";
                 $temp->proceed_without_otp = "N";
                 $temp->source = "website";
+                $data['otp'] = $temp->otp;
+                $sendOtp=true;
 
                 if(isset($data['finder_id']) && $data['finder_id'] != ""){
                     $temp->finder_id = (int) $data['finder_id'];
@@ -237,14 +251,40 @@ class TempsController extends \BaseController {
 
                     $temp->source = "kiosk";
                 }
-
-                $temp->save();
-
-                $data['otp'] = $temp->otp;
-
-                $this->customersms->genericOtp($data);
-
-                $response =  array('status' => 200,'message'=>'OTP Created Successfull','temp_id'=>$temp->_id,'sender_id'=>'FTRNTY');
+                
+                
+                if(!empty($data['action'])&&$data['action']=='starter_pack')
+                {
+                	
+                	$rules = array(
+                			'customer_phone' => 'required|max:15',
+                			'action'   =>   'required',
+                			'gender'   =>   'required',
+                			'city_id' => 'required'
+                	);
+                	
+                	$validator = Validator::make($data,$rules);
+                	
+                	if ($validator->fails()) {
+                		
+                		return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),$this->error_status);
+                	}
+                	else 
+                	{
+	                	$cust=Customer::where("email","=",$data['customer_email'])->orWhere('contact_no', $data['customer_phone'])->first();
+	                	if(!empty($cust))
+	                	{
+	                		$sendOtp=false;
+	                		$response =  array('status' => 400,'message'=>'User already Present.');
+	                	}                		
+                	}
+                }
+                if($sendOtp)
+                {
+                	$temp->save();
+                	$this->customersms->genericOtp($data);
+                	$response =  array('status' => 200,'message'=>'OTP Created Successfully','temp_id'=>$temp->_id,'sender_id'=>'FTRNTY');
+                }
             }
 
         }catch (Exception $e) {
@@ -306,7 +346,10 @@ class TempsController extends \BaseController {
                     $data['customer_name'] = $temp['customer_name'];
                     $data['customer_email'] = $temp['customer_email'];
                     $data['customer_phone'] = $temp['customer_phone'];
+                    if(!empty($temp['gender']))
+                    $data['gender'] = $temp['gender'];
                     $data['customer_id'] = autoRegisterCustomer($data);
+                    
                     $customerToken = createCustomerToken($data['customer_id']);
                 }
 
@@ -316,7 +359,20 @@ class TempsController extends \BaseController {
             return Response::json(array('status' => 400,'message' => 'Not Found'),400);
         }
     }
-
+    function getAddWalletArray($data=array())
+    {
+    	
+    	$req = [];
+    	$req['customer_id'] = isset($data['customer_id'])&&$data['customer_id']!=""?$data['customer_id']:"";;
+    	$req['amount'] = isset($data['amount'])&&$data['amount']!=""?$data['amount']:"";
+    	$req['entry'] = "credit";
+    	$req['type'] = "FITCASHPLUS";
+    	$req['amount_fitcash_plus'] = isset($data['amount'])&&$data['amount']!=""?$data['amount']:"";
+    	$req['description'] = !empty($data['description'])?$data['description']:""; 
+    	$req["validity"] = time()+(86400*60);
+    	$req['for'] = isset($data['for'])&&$data['for']!=""?$data['for']:"";
+    	return $this->utilities->walletTransaction($req);
+    }
     function verifyOtpV1($temp_id,$otp,$email="",$name=""){
 
         $customerToken = "";
@@ -444,6 +500,8 @@ class TempsController extends \BaseController {
 
                     $customer_data = $this->getAllCustomersByPhone($temp);
 
+                }else{
+                    $customer_data['all_accounts'] = $this->getAllCustomersByPhone($temp);
                 }
                 
                 $return = array('status' => 200,'verified' => $verified,'token'=>$customerToken,'trial_booked'=>false,'customer_data'=>$customer_data,'fitternity_no'=>$fitternity_no, 'message'=>'Successfully Verified');
@@ -899,6 +957,10 @@ class TempsController extends \BaseController {
             }
 
             $return["cashback"] = $cashback;
+            
+            $resp = $this->utilities->checkIfpopPup($customer);
+
+            $return["popup"] = $resp;
 
             return Response::json($return,200);
 

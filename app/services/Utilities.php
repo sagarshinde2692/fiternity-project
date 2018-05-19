@@ -145,10 +145,13 @@ Class Utilities {
             
         if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
             $decoded = $this->customerTokenDecode($jwt_token);
-            $customer_id = $decoded->customer->_id;
+            if(empty($request['starter_pack']))
+            	$customer_id = $decoded->customer->_id;
             $request['customer_id'] = $customer_id;
         }
 
+        Log::info(" request['customer_id']".print_r($request['customer_id'],true));
+        Log::info(" customer_id]".print_r($customer_id,true));
         $customer = \Customer::find($customer_id);
 
         $total_balance = 0;
@@ -207,7 +210,8 @@ Class Utilities {
         if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
 
             $decoded = $this->customerTokenDecode($jwt_token);
-            $customer_id = (int)$decoded->customer->_id;
+            if(empty($request['starter_pack']))
+            	$customer_id = (int)$decoded->customer->_id;
         }
 
         $request['customer_id'] = $customer_id;
@@ -1471,7 +1475,8 @@ Class Utilities {
         if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
 
             $decoded = $this->customerTokenDecode($jwt_token);
-            $customer_id = (int)$decoded->customer->_id;
+            if(empty($request['starter_pack']))
+            	$customer_id = $decoded->customer->_id;
             $request['customer_id'] = $customer_id;
         }
 
@@ -3826,6 +3831,66 @@ Class Utilities {
         }
 
         return "error, no code";
+    }
+
+    public function checkIfpopPup($customer, $customdata=array()){
+        Log::info("checkIfpopPup");
+        Log::info($customer);
+		$resp = array();
+
+		$resp["show_popup"] = false;
+		$resp["popup"] = array();
+
+		if(count($customdata) == 0){
+
+				$current_wallet_balance = \Wallet::active()->where('customer_id',$customer->_id)->where('balance','>',0)->sum('balance');
+                Log::info($current_wallet_balance);
+				if($current_wallet_balance > 0){
+
+					$resp["show_popup"] = true;
+					$resp["popup"]["header_image"] = "https://b.fitn.in/iconsv1/global/fitcash.jpg";
+					$resp["popup"]["header_text"] = "Congratulations";
+					$resp["popup"]["text"] = "Login successful. You have Rs ".$current_wallet_balance." in your Fitcash wallet - you can use this to do membership purchase or pay-per-session bookings.";
+					$resp["popup"]["button"] = "Ok";
+
+				}
+		}else{
+			if(isset($customdata['signupIncentive']) && $customdata['signupIncentive'] == true){
+
+				$addWalletData = [
+					"customer_id" => $customer["_id"],
+					"amount" => 250,
+					"amount_fitcash_plus"=>250,
+					"description" => "Added FitCash+ Rs 250 on Sign-Up, Expires On : ".date('d-m-Y',time()+(86400*15)),
+					"validity"=>time()+(86400*15),
+					"entry"=>"credit",
+					"type"=>"FITCASHPLUS"
+				];
+				$this->utilities->walletTransaction($addWalletData);
+				$resp["show_popup"] = true;
+				$resp["popup"]["header_image"] = "https://b.fitn.in/iconsv1/global/fitcash.jpg";
+				$resp["popup"]["header_text"] = "Congratulations";
+				$resp["popup"]["text"] = "You have recieved Rs.250 FitCash plus. Validity: 15 days";
+				$resp["popup"]["button"] = "Ok";
+			}
+		}
+
+		return $resp;
+	}
+    function getAddWalletArray($data=array())
+    {
+    	
+    	$req = [];
+    	$req['customer_id'] = isset($data['customer_id'])&&$data['customer_id']!=""?$data['customer_id']:"";;
+    	$req['amount'] = isset($data['amount'])&&$data['amount']!=""?$data['amount']:"";
+    	$req['entry'] = "credit";
+    	$req['type'] = "FITCASHPLUS";
+    	$req['amount_fitcash_plus'] = isset($data['amount'])&&$data['amount']!=""?$data['amount']:"";
+    	$req['description'] = !empty($data['description'])?$data['description']:"";
+    	$req["validity"] = time()+(86400*60);
+    	$req['for'] = isset($data['for'])&&$data['for']!=""?$data['for']:"";
+    	$req['starter_pack']=true;
+    	return $this->walletTransaction($req);
     }
     
 }

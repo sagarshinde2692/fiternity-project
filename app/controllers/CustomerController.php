@@ -616,51 +616,61 @@ class CustomerController extends \BaseController {
 						isset($data['gender']) ? $customer->gender = $data['gender'] : null;
 						isset($data['fitness_goal']) ? $customer->fitness_goal = $data['fitness_goal'] : null;
 						$customer->picture = "https://www.gravatar.com/avatar/".md5($data['email'])."?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png";
-						$customer->password = md5($data['password']);
+						if(isset($data['password'])){
+							$customer->password = md5($data['password']);
+						}
 						if(isset($data['contact_no'])){
 							$customer->contact_no = $data['contact_no'];
 						}
 						$customer->identity = $data['identity'];
+						
 						$customer->account_link = $account_link;
 						$customer->status = "1";
 						$customer->demonetisation = time();
-						$customer->referral_code = $this->generateReferralCode($customer->name);
+						$customer->referral_code = generateReferralCode($customer->name);
 						$customer->old_customer = false;
 						$customer->save();
-						$customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email'],'password'=>$data['password']);
+						$customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email']);
+
+						if(isset($data['password'])){
+							$customer_data['password'] = $data['password'];
+						}
 						// $this->customermailer->register($customer_data);
 
 						Log::info('Customer Register : '.json_encode(array('customer_details' => $customer)));
 
-						$response = $this->createToken($customer);
-
-						$resp = $this->checkIfpopPup($customer,$data);
-
-						if($resp["show_popup"] == "true"){
-							$response["extra"] = $resp;
-						}
-
-						$customer_id = $customer->_id;
+						   $response = $this->createToken($customer);
+							$resp = $this->checkIfpopPup($customer,$data);	
+							if($resp["show_popup"] == "true")
+								$response["extra"] = $resp;
+					
 						
+						$customer_id = $customer->_id;
 					}
 
 				}else{
 
 					$ishullcustomer->name = ucwords($data['name']);
-					$ishullcustomer->password = md5($data['password']);
+					if(isset($data['password'])){
+						$ishullcustomer->password = md5($data['password']);
+					}
 					$ishullcustomer->ishulluser = 0;
-					$ishullcustomer->referral_code = $this->generateReferralCode($ishullcustomer->name);
+					$ishullcustomer->referral_code = generateReferralCode($ishullcustomer->name);
 					$ishullcustomer->old_customer = true;
 					$ishullcustomer->update();
-					$customer_data = array('name'=>ucwords($ishullcustomer['name']),'email'=>$ishullcustomer['email'],'password'=>$ishullcustomer['password']);
+					$customer_data = array('name'=>ucwords($ishullcustomer['name']),'email'=>$ishullcustomer['email']);
+					if(isset($data['password'])){
+						$customer_data['password'] = $ishullcustomer['password'];
+					}
 
 					Log::info('Customer Register : '.json_encode(array('customer_details' => $ishullcustomer)));
 
-					$response = $this->createToken($ishullcustomer);
-					$resp = $this->checkIfpopPup($ishullcustomer, $data);
-					if($resp["show_popup"] == "true"){
-						$response["extra"] = $resp;
-					}
+						$response = $this->createToken($ishullcustomer);
+						$resp = $this->checkIfpopPup($ishullcustomer,$data);
+						if($resp["show_popup"] == "true")
+							$response["extra"] = $resp;
+					
+// 						Log::info(" getAddWAlletArray:: ".print_r($this->getAddWAlletArray(["customer_id"=>$customer->_id,"amount"=>500,"description"=>("Added FitCash+ as Sign up Bonus for starter pack, Expires On : ".date('d-m-Y',time()+(86400*60))),"validity"=>(time()+(86400*60)),"for"=>"starter_pack"]),true));
 
 					$customer_id = $ishullcustomer->_id;
 
@@ -678,23 +688,32 @@ class CustomerController extends \BaseController {
 				isset($data['gender']) ? $customer->gender = $data['gender'] : null;
 				isset($data['fitness_goal']) ? $customer->fitness_goal = $data['fitness_goal'] : null;
 				$customer->picture = "https://www.gravatar.com/avatar/".md5($data['email'])."?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png";
-				$customer->password = md5($data['password']);
+				if(isset($data['password'])){
+					$customer->password = md5($data['password']);
+				}
 				if(isset($data['contact_no'])){
 					$customer->contact_no = $data['contact_no'];
 				}
 				$customer->account_link = $account_link;
 				$customer->status = "1";
-				$customer->update();
+				
+					$customer->update();
 
-				$customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email'],'password'=>$data['password']);
+				$customer_data = array('name'=>ucwords($customer['name']),'email'=>$customer['email']);
+
+				if(isset($data['password'])){
+					$customer_data['password'] = $data['password'];
+				}
 				$this->customermailer->register($customer_data);
 
 				Log::info('Customer Register : '.json_encode(array('customer_details' => $customer)));
-				$response = $this->createToken($customer);
-				$resp = $this->checkIfpopPup($customer);
-				if($resp["show_popup"] == "true"){
-					$response["extra"] = $resp;
-				}
+				
+					$response = $this->createToken($customer);
+					$resp = $this->checkIfpopPup($customer);
+					if($resp["show_popup"] == "true")
+						$response["extra"] = $resp;
+				
+// 					Log::info(" getAddWAlletArray:: ".print_r($this->getAddWAlletArray(["customer_id"=>$customer->_id,"amount"=>500,"description"=>("Added FitCash+ as Sign up Bonus for starter pack, Expires On : ".date('d-m-Y',time()+(86400*60))),"validity"=>(time()+(86400*60)),"for"=>"starter_pack"]),true));
 
 				$customer_id = $customer->_id;
 				
@@ -705,11 +724,11 @@ class CustomerController extends \BaseController {
 			$this->addCustomerRegId($data);
 
 			$response['customer_data'] = array_only($customer->toArray(), ['_id','name','email','contact_no','dob','gender']);
-			$response['customer_data']["token"] = $response["token"];
+		
+				$response['customer_data']["token"] = $response["token"];
+				registerMail($data["customer_id"]);
+		
 			Log::info("Customer Register",$response);
-
-            registerMail($data["customer_id"]);
-			
 
 			return Response::json($response,200);
 		}
@@ -964,8 +983,8 @@ class CustomerController extends \BaseController {
 		
 		$resp = $this->checkIfpopPup($customer);
 		
-        $customer_data = array_only($customer->toArray(), ['_id','name','email','contact_no','dob','gender']);
-        
+		$customer_data = array_only($customer->toArray(), ['_id','name','email','contact_no','dob','gender']);
+		
         $token = $this->createToken($customer);
 		
 		if($this->vendor_token && isset($data['contact_no']) && $data['contact_no'] != ""){
@@ -997,7 +1016,7 @@ class CustomerController extends \BaseController {
 					$resp["show_popup"] = true;
 					$resp["popup"]["header_image"] = "https://b.fitn.in/iconsv1/global/fitcash.jpg";
 					$resp["popup"]["header_text"] = "Congratulations";
-					$resp["popup"]["text"] = "You have Rs. ".$current_wallet_balance." in your wallet as FitCash+. This is 100% redeemable to purchase workout sessions and memberships on Fitternity across Mumbai, Bangalore, Pune & Delhi";
+					$resp["popup"]["text"] = "Login successful. You have Rs ".$current_wallet_balance." in your Fitcash wallet - you can use this to do membership purchase or pay-per-session bookings.";
 					$resp["popup"]["button"] = "Ok";
 
 				}
@@ -1026,9 +1045,9 @@ class CustomerController extends \BaseController {
 					$resp["popup"]["header_text"] = "Congratulations";
 
 					if($fitcash_plus > 0){
-						$resp["popup"]["text"] = "You have Rs. ".$fitcash_plus." in your wallet as FitCash+. This is 100% redeemable to purchase workout sessions and memberships on Fitternity across Mumbai, Bangalore, Pune & Delhi";
+						$resp["popup"]["text"] = "Login successful. You have Rs ".$fitcash_plus." in your Fitcash wallet - you can use this to do membership purchase or pay-per-session bookings.";
 					}else{
-						$resp["popup"]["text"] = "You have Rs. ".$fitcash." in your wallet as FitCash. You can use this across session and membership bookings at gyms in studios in Mumbai, Bangalore, Pune & Delhi";
+						$resp["popup"]["text"] = "Login successful. You have Rs ".$fitcash." in your Fitcash wallet - you can use this to do membership purchase or pay-per-session bookings.";
 					}
 
 					$resp["popup"]["button"] = "Ok";
@@ -1200,7 +1219,7 @@ class CustomerController extends \BaseController {
 
 			$customer->status = "1";
 			$customer->demonetisation = time();
-			$customer->referral_code = $this->generateReferralCode($customer->name);
+			$customer->referral_code = generateReferralCode($customer->name);
 			$customer->old_customer = false;
 			$customer->save();
             registerMail($customer->_id);
@@ -1251,6 +1270,8 @@ class CustomerController extends \BaseController {
 		$customer['picture'] = (isset($customer['picture'])) ? $customer['picture'] : "";
 		$customer['facebook_id'] = (isset($customer['facebook_id'])) ? $customer['facebook_id'] : "";
 		$customer['address'] = (isset($customer['address'])) ? $customer['address'] : "";
+		if(!empty($customer['referral_code']))
+		$customer['referral_code'] = $customer['referral_code'];
 		$customer['contact_no'] = (isset($customer['contact_no'])) ? $customer['contact_no'] : "";
 		$customer['location'] = (isset($customer['location'])) ? $customer['location'] : "";
 		$customer['extra']['mob'] = (isset($customer['contact_no'])) ? $customer['contact_no'] : "";
@@ -1274,7 +1295,8 @@ class CustomerController extends \BaseController {
 					),
 					'corporate_login'=>$this->utilities->checkCorporateEmail($customer['email'])
 				);
-
+		if(!empty($customer['referral_code']))
+			$data['referral_code'] = $customer['referral_code'];
 		$jwt_claim = array(
 			"iat" => Config::get('app.jwt.iat'),
 			"nbf" => Config::get('app.jwt.nbf'),
@@ -3436,9 +3458,9 @@ class CustomerController extends \BaseController {
 						'ratio'=>(float) number_format(100/375,2)
 					];
 				}
-				if(in_array($city,["mumbai","bangalore"])){
+				if(in_array($city,["mumbai","pune"])){
 					$result['campaigns'][] = [
-						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/app-summer.jpg',
+						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/MM_AppBanner_MP.png',
 						'link'=>'ftrnty://fitternity.com/',
 						'title'=>'Fitness Sale',
 						'height'=>100,
@@ -3447,7 +3469,7 @@ class CustomerController extends \BaseController {
 					];
 				}else{
 					$result['campaigns'][] = [
-						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/appsss.png',
+						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/MM_AppBanner_OC.png',
 						'link'=>'ftrnty://fitternity.com/',
 						'title'=>'Fitness Sale',
 						'height'=>100,
@@ -3518,9 +3540,9 @@ class CustomerController extends \BaseController {
 						'ratio'=>(float) number_format(100/375,2)
 					];
 				}
-				if(in_array($city,["mumbai","bangalore"])){
+				if(in_array($city,["mumbai","pune"])){
 					$result['campaigns'][] = [
-						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/app-summer.jpg',
+						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/MM_AppBanner_MP.png',
 						'link'=>'ftrnty://ftrnty.com/search/all',
 						'title'=>'Fitness Sale',
 						'height'=>100,
@@ -3529,7 +3551,7 @@ class CustomerController extends \BaseController {
 					];
 				}else{
 					$result['campaigns'][] = [
-						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/appsss.png',
+						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/MM_AppBanner_OC.png',
 						'link'=>'ftrnty://ftrnty.com/search/all',
 						'title'=>'Fitness Sale',
 						'height'=>100,
@@ -5539,7 +5561,7 @@ class CustomerController extends \BaseController {
 
 				if(!isset($customer->referral_code)){
 
-					$customer->referral_code = $this->generateReferralCode($customer->name);
+					$customer->referral_code = generateReferralCode($customer->name);
 					$customer->update();
 				}
 
@@ -5763,16 +5785,6 @@ class CustomerController extends \BaseController {
 		}else{
 
 			return array('status'=>400, 'message'=>'Incorrect referral code or code already applied');
-		}
-	}
-
-	public function generateReferralCode($name){
-		$referral_code = substr(implode("", (explode(" ", strtoupper($name)))),0,4)."".rand(1000, 9999).'R';
-		$exists = Customer::where('referral_code', $referral_code)->where('status', '1')->first();
-		if($exists){
-			return $this->generateReferralCode($name);
-		}else{
-			return $referral_code;
 		}
 	}
 
@@ -6710,5 +6722,243 @@ class CustomerController extends \BaseController {
 
 		return Response::json($response,200);
 	}
+
+	public function setDefaultAccount(){
+		
+		$data = Input::json()->all();
+		
+		$jwt_token = $data['token'];
+		
+		$decodedToken = $this->customerTokenDecode($jwt_token);
+
+		setDefaultAccount(['source'=>'website', 'customer_phone'=>$decodedToken->customer->contact_no], $decodedToken->customer->_id);
+
+		return ['status'=>200, 'token'=>$jwt_token];
+
+	}
 	
+	public function inviteForSignup(){
+		try {
+			
+			$req = Input::json()->all();
+			Log::info('inviteForSignup',$req);
+			$customer_id = "";
+			$jwt_token = Request::header('Authorization');
+			$device_type = Request::header('Device-Type');
+			$app_version = Request::header('App-Version');
+			
+			if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+				
+				$decoded = customerTokenDecode($jwt_token);
+				Log::info(" decoded ".print_r($decoded ,true));
+				Log::info(" sas".print_r($decoded->customer,true));
+				$customer_id = (int)$decoded->customer->_id;
+				Log::info(" customer_id ".print_r($customer_id ,true));
+				$customer= $decoded->customer;
+				Log::info(" customer ".print_r($customer,true));
+			}
+			if(!empty($customer))
+			{
+				Log::info(" customer ".print_r($customer,true));
+				// Request Validations...........
+				$rules = [
+						'invitees' => 'required|array',
+// 						'city_id' => 'required',
+				];
+				
+				$validator = Validator::make($req, $rules);
+				
+				if ($validator->fails()) {
+					return Response::json(
+							array(
+									'status' => 400,
+									'message' => $this->errorMessage($validator->errors()
+											)),400
+							);
+				}
+				
+				
+				
+				// Invitee info validations...........
+				$inviteesData = [];
+				
+				foreach ($req['invitees'] as $value){
+					
+					$inviteeData = ['name'=>$value['name']];
+					
+					$rules = [
+							'name' => 'required|string',
+							'input' => 'required|string',
+					];
+					$messages = [
+							'name' => 'invitee name is required',
+							'input' => 'invitee email or phone is required'
+					];
+					$validator = Validator::make($value, $rules, $messages);
+					
+					if ($validator->fails()) {	return Response::json(array('status' => 0,'message' => $this->errorMessage($validator->errors())),200);}
+					
+					if(filter_var($value['input'], FILTER_VALIDATE_EMAIL) != '') {
+						// valid address
+						$inviteeData = array_add($inviteeData, 'email', $value['input']);
+					}
+					else if(filter_var($value['input'], FILTER_VALIDATE_REGEXP, array(
+							"options" => array("regexp"=>"/^[2-9]{1}[0-9]{9}$/")
+					)) != ''){
+						// valid phone
+						$inviteeData = array_add($inviteeData, 'phone', $value['input']);
+						
+					}
+					array_push($inviteesData, $inviteeData);
+					
+					foreach ($inviteesData as $value){
+						
+						$rules = [
+								'name' => 'required|string',
+								'email' => 'required_without:phone|email',
+								'phone' => 'required_without:email',
+						];
+						$messages = [
+								'email.required_without' => 'invitee email or phone is required',
+								'phone.required_without' => 'invitee email or phone is required'
+						];
+						$validator = Validator::make($value, $rules, $messages);
+						
+						if ($validator->fails()) {
+							return Response::json(
+									array(
+											'status' => 400,
+											'message' => $this->errorMessage($validator->errors()
+													)),400
+									);
+						}
+					}
+					
+					
+				}
+				
+				
+				// Validate customer is not inviting himself/herself......
+				$emails = array_fetch($inviteesData, 'email');
+				$phones = array_fetch($inviteesData, 'phone');
+				
+				
+				if(array_where($emails, function ($key, $value) use($customer)   {
+					if($value == $customer->email){
+						return true;
+					}
+				})) {
+					return Response::json(
+							array(
+									'status' => 400,
+									'message' => 'You cannot invite yourself'
+							),400
+							);
+				}
+				
+				if(array_where($phones, function ($key, $value) use($customer){
+					if($value == $customer->contact_no){
+						return true;
+					}
+				})) {
+					return Response::json(
+							array(
+									'status' => 400,
+									'message' => 'You cannot invite yourself'
+							),400
+							);
+				}
+				
+				
+				// Save Invite info..........
+				foreach ($inviteesData as $invitee){
+					$invite = new Invite();
+					$invite->_id = Invite::max('_id') + 1;
+					$invite->status = 'pending';
+					$invite->host_id = $customer->_id;
+					$invite->host_email = $customer->email;
+					$invite->host_name = $customer->name;
+					$invite->campaign= (!empty($req['campaign'])?$req['campaign']:'starter_pack');
+					$invite->host_phone = $customer->contact_no;
+					$invite->source ='web';
+					$invite->city_id =(!empty($req['city_id'])?$req['city_id']:"");
+					isset($invitee['name']) ? $invite->invitee_name = trim($invitee['name']): null;
+					isset($invitee['email']) ? $invite->invitee_email = trim($invitee['email']): null;
+					isset($invitee['phone']) ? $invite->invitee_phone = trim($invitee['phone']): null;
+					$invite->save();
+					
+					// Generate bitly for landing page with invite_id and booktrial_id
+					if(!empty($customer->referral_code))
+						$url = Config::get('app.website').'/starter-pack?campaign='.$invite->campaign.'&host_id='.$invite['host_id'].'&code='.$customer->referral_code.'&invite_id='.$invite['_id'];
+						$shorten_url = new ShortenUrl();
+						$url1 = $shorten_url->getShortenUrl($url);
+						Log::info("  url ".print_r($url,true));
+						if(!isset($url['status']) ||  $url['status'] != 200){
+							Log::info(" COULDN'T GENERATE SHORTEN URL");
+								return Response::json(
+							 array(
+							 'status' => 0,
+							 'message' => 'Unable to Generate Shortren URL'
+							 ),200
+							 );
+							
+						}
+						else $url = $url1['url'];
+						/* if(!isset($url2['status']) ||  $url2['status'] != 200){
+						 return Response::json(
+						 array(
+						 'status' => 0,
+						 'message' => 'Unable to Generate Shortren URL'
+						 ),200);
+						 } */
+						if(!empty($invite->city_id))
+						$cityName=City::where("_id",(int)$invite->city_id)->first(['name']);
+						// Send email / SMS to invitees...
+						$templateData = array(
+								'invitee_name'=>$invite['invitee_name'],
+								'invitee_email'=>$invite['invitee_email'],
+								'invitee_phone'=>$invite['invitee_phone'],
+								'gender'=>(!empty($customer->gender)?$customer->gender:""),
+								'referral_code'=>(!empty($customer->referral_code)?$customer->referral_code:""),
+								'host_name' => $invite['host_name'],
+								'starter_pack' => true,
+								'amount'=>"500",
+								'city'=>(!empty($cityName)&&!empty($cityName->name))?$cityName->name:"",
+								// 							'type'=> $BooktrialData['type'],
+								// 							'finder_name'=> $BooktrialData['finder_name'],
+								// 							'finder_location'=> $BooktrialData['finder_location'],
+								// 							'finder_address'=> $BooktrialData['finder_address'],
+								// 							'schedule_date'=> $BooktrialData['schedule_date'],
+								// 							'schedule_date_time'=> $BooktrialData['schedule_date_time'],
+								// 							'service_name'=> $BooktrialData['service_name'],
+								// 							'schedule_slot_start_time'=> $BooktrialData['schedule_slot_start_time'],
+								'url' => $url
+								// 							'url2' => $url2
+						);
+						
+						//            return $this->customermailer->inviteEmail($BooktrialData['type'], $templateData);
+						
+						// 					isset($templateData['invitee_email']) ? $this->customermailer->inviteEmail($BooktrialData['type'], $templateData) : null;
+						Log::info("  templateData :: ".print_r($templateData,true));
+						isset($templateData['invitee_phone']) ? $this->customersms->inviteSMS("", $templateData) : null;
+				}
+				
+				return Response::json(array('status' => 200,'message' => "Successfully invited friends for signup ."),200);
+			}
+			else
+				return Response::json(array('status' => 400,'message' => "Token Not Present or invalid."),400);
+				
+				
+				
+				
+				
+				
+				
+		} catch (Exception $e) {
+			$e->getTrace();
+			return Response::json(array('status' => 400,'message' => $e->getMessage()." on line :: ".$e->getLine()." in file :: ".$e->getFile()),400);
+		}
+		
+	}
+
 }
