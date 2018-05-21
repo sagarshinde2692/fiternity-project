@@ -1830,31 +1830,64 @@ class ServiceController extends \BaseController {
 			// 'all_message'=> "I want to explore all options",
 			'category'=>$ordered_categories,
 			'message'=>"",
-			'base_url'=>"http://b.fitn.in/iconsv1/"
+			'base_url'=>"http://b.fitn.in/iconsv1/",
+			'rebook_trials'=>[]
 		];
 
 		try{
 
 			if($this->authorization){
-				
+				Log::info($this->authorization);
 				$decoded = decode_customer_token();
 				
 				$customer_email = $decoded->customer->email;
+				Service::$withoutAppends = true;
+				Finder::$withoutAppends = true;
+				Booktrial::$withoutAppends = true;
+				Ratecard::$withoutAppends = true;
 
 				$trials		=	Booktrial::where('customer_email', '=', $customer_email)
 					->whereIn('booktrial_type', array('auto'))
-					->where('going_status_txt','!=','cancel')
+					->where('type', 'workout-session')
+					->with(array('service'=>function($query){ $query->where('status','1')->where('trial', '!=', 'disable')->with(array('ratecards'=>function($query){ $query->where('type', 'workout session')->select('service_id', 'price','special_price');}))->select('_id', 'slug');}))
+					->with(array('finder'=>function($query){$query->where('status', '1')->whereNotIn('flags.state', ['closed', 'temporarily_shut'])->where('trial', '!=', 'disable')->select('_id', 'slug');}))
+					// ->where('going_status_txt','!=','cancel')
 					->orderBy('_id', 'desc')
 					->get(['finder_id', 'service_id', 'finder_name', 'service_name']);
+				
+				$rebook_trials = [];
+				
+				foreach($trials as $trial){
 
+					if(count($rebook_trials) < 3){
+							if($trial['finder'] && $trial['service'] && count($trial['service']['ratecards'])){
+								
+								$trial['title'] = ucwords(preg_replace('/membership/i', 'Workout', $trial['service_name'])).' at '.$trial['finder_name'];
 
+								$trial['amount'] = '₹'.($trial['service']['ratecards'][0]['special_price'] != 0 ? $trial['service']['ratecards'][0]['special_price'] : $trial['service']['ratecards'][0]['price']);
+								$trial['service_slug'] = $trial['service']['slug'];
+								$trial['finder_slug'] = $trial['finder']['slug'];
+								
+								array_push($rebook_trials, array_only($trial->toArray(), ['_id', 'title', 'amount', 'service_slug', 'finder_slug']));
+							}
+							
+					}else{
+
+						break;
+
+					}
+
+				}
+
+				$data['rebook_trials'] = $rebook_trials;
 
 			}			
 
 
 		}catch(Exception $e){
-
+			Log::info($e);
 		}
+		// return DB::getQueryLog();
 
 		return $data;
 
