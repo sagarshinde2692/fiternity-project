@@ -557,7 +557,12 @@ class TransactionController extends \BaseController {
             
         }
 
-
+        if(isset($data['pay_later']) && $data['pay_later'] && isset($data['wallet']) && $data['wallet']){
+            
+            $data['amount_customer'] = $data['amount'];
+        
+        }
+        
         $txnid = "";
         $successurl = "";
         $mobilehash = "";
@@ -2264,7 +2269,7 @@ class TransactionController extends \BaseController {
             $ratecard = isset($data['ratecard_id'])?Ratecard::find($data['ratecard_id']):null;
 
             $service_id = isset($data['service_id']) ? $data['service_id'] : null;
-            
+
             $couponCheck = $this->customerreward->couponCodeDiscountCheck($ratecard,$data["coupon_code"],$customer_id, $ticket, $ticket_quantity, $service_id);
 
             if(isset($couponCheck["coupon_applied"]) && $couponCheck["coupon_applied"]){
@@ -4192,7 +4197,7 @@ class TransactionController extends \BaseController {
         
         $amount_summary[0] = array(
             'field' => 'Total Amount',
-            'value' => 'Rs. '.$data['amount_finder']
+            'value' => 'Rs. '.(isset($data['original_amount_finder']) ? $data['original_amount_finder'] : $data['amount_finder'])
         );
 
         $amount_payable = [];
