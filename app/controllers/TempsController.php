@@ -500,8 +500,12 @@ class TempsController extends \BaseController {
 
                     $customer_data = $this->getAllCustomersByPhone($temp);
 
-                }else{
+                }
+                
+                if ($temp['source'] != 'kiosk'){
+                    
                     $customer_data['all_accounts'] = $this->getAllCustomersByPhone($temp);
+                
                 }
                 
                 $return = array('status' => 200,'verified' => $verified,'token'=>$customerToken,'trial_booked'=>false,'customer_data'=>$customer_data,'fitternity_no'=>$fitternity_no, 'message'=>'Successfully Verified');
@@ -958,7 +962,7 @@ class TempsController extends \BaseController {
 
             $return["cashback"] = $cashback;
             $resp = null;
-            if($customer){
+            if(isset($customer)){
                 $resp = $this->utilities->checkIfpopPup($customer);
             }
 
