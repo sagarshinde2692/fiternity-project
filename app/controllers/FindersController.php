@@ -3341,7 +3341,7 @@ class FindersController extends \BaseController {
 				->with('offerings')
 				->with('facilities')
 				// ->with(array('ozonetelno'=>function($query){$query->select('*')->where('status','=','1');}))
-				->with(array('knowlarityno'=>function($query){$query->select('*')->where('status',true);}))
+				->with(array('knowlarityno'=>function($query){$query->select('*')->where('status',true)->orderBy('extension', 'asc');}))
 
 				->with(array('services'=>function($query){$query->select('*')->where('status','=','1')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))->orderBy('ordering', 'ASC');}))
 
@@ -3683,10 +3683,11 @@ class FindersController extends \BaseController {
 				// 	unset($finder['contact']['website']);
 				// }
 				if(isset($finderarr['knowlarityno']) && $finderarr['knowlarityno'] != ''){
+					$finder['knowlarityno'] = $finder['knowlarityno'][0];
 					$extension = (isset($finder['knowlarityno']['extension']) && $finder['knowlarityno']['extension'] != "") ? ",,4".$finder['knowlarityno']['extension'] : "";
 					$finder['knowlarityno']['phone_number'] = '+91'.$finder['knowlarityno']['phone_number'].$extension;
 					$finder['contact']['phone'] = $finder['knowlarityno']['phone_number'];
-					unset($finder['knowlarityno']);
+					// unset($finder['knowlarityno']);
 					unset($finder['contact']['website']);
 				}
 				// if($finderarr['city_id'] == 4 || $finderarr['city_id'] == 8 || $finderarr['city_id'] == 9){
