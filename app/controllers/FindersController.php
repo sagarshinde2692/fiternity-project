@@ -165,7 +165,7 @@ class FindersController extends \BaseController {
 				->with('offerings')
 				->with('facilities')
 				// ->with(array('ozonetelno'=>function($query){$query->select('*')->where('status','=','1');}))
-				->with(array('knowlarityno'=>function($query){$query->select('*')->where('status',true);}))
+				->with(array('knowlarityno'=>function($query){$query->select('*')->where('status',true)->orderBy('extension', 'asc');}))
 
 				->with(array('services'=>function($query){$query->where('status','=','1')->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->orderBy('ordering', 'ASC');}))
 
@@ -379,34 +379,34 @@ class FindersController extends \BaseController {
 						$finderarr['knowlarityno']['extension'] = strlen($finderarr['knowlarityno']['extension']) < 2 && $finderarr['knowlarityno']['extension'] >= 1  ?  str_pad($finderarr['knowlarityno']['extension'], 2, '0', STR_PAD_LEFT) : $finderarr['knowlarityno']['extension'];
 						if($finderarr['knowlarityno']['extension']){
 	
-							$knowlarity_no['knowlarityno']['extension1'] = '+91'.$finderarr['knowlarityno']['phone_number'].' ext-1'.$finderarr['knowlarityno']['extension']." for existing";
-							$knowlarity_no['knowlarityno']['extension2'] = '+91'.$finderarr['knowlarityno']['phone_number'].' ext-2'.$finderarr['knowlarityno']['extension']." for enquiry";
-							$knowlarity_no['knowlarityno']['extension3'] = '+91'.$finderarr['knowlarityno']['phone_number'].' ext-3'.$finderarr['knowlarityno']['extension']." for corporate";
+							$knowlarity_no[] = ['decription'=>'Already a member & have a query', 'phone_number'=>$finderarr['knowlarityno']['phone_number'], 'extension'=>'1'.$finderarr['knowlarityno']['extension']];
+							$knowlarity_no[] = ['decription'=>'Want to join & need assistance', 'phone_number'=>$finderarr['knowlarityno']['phone_number'], 'extension'=>'2'.$finderarr['knowlarityno']['extension']];
+							$knowlarity_no[] = ['decription'=>'For collaborations & other matters', 'phone_number'=>$finderarr['knowlarityno']['phone_number'], 'extension'=>'3'.$finderarr['knowlarityno']['extension']];
 						
 						}
 					
 					}else{
 
 						foreach($finderarr['knowlarityno'] as $number){
-							if(isset($number['extension']) && $number['extension']){
+							return $finderarr['knowlarityno'];
+							if(!(isset($number['extension']) && $number['extension'])){
 								
-								$knowlarity_no['extension'] = str_pad($number['extension'], 2, '0', STR_PAD_LEFT);
+								$knowlarity_no[] = ['decription'=>'Want to join & need assistance', 'phone_number'=>'+91'.$number['phone_number'], 'extension'=>null];
 								
-								$knowlarity_no['knowlarityno']['extension1'] = '+91'.$number['phone_number'].' ext-1'.$number['extension']." for existing";
-								$knowlarity_no['knowlarityno']['extension3'] = '+91'.$number['phone_number'].' ext-3'.$number['extension']." for corporate";
-
 							}else{
-								$knowlarity_no['knowlarityno']['extension2'] = '+91'.$number['phone_number']." for enquiry";
+								$knowlarity_no['extension'] = str_pad($number['extension'], 2, '0', STR_PAD_LEFT);
+							
+								array_unshift($knowlarity_no, ['decription'=>'Already a member & have a query', 'phone_number'=>'+91'.$number['phone_number'], 'extension'=>'1'.$knowlarity_no['extension']]);
+								array_push($knowlarity_no, ['decription'=>'For collaborations & other matters', 'phone_number'=>'+91'.$number['phone_number'], 'extension'=>'3'.$knowlarity_no['extension']]);
+	
 							}
 						}
-
-
 
 					}
 				}
 
+				// $finder['knowlarityno'] = $knowlarity_no;
 				$finder['knowlarityno'] = $knowlarity_no;
-				$finder['ozonetelno'] = array_values($knowlarity_no['knowlarityno']);
 				// if($finderarr['city_id'] == 4 || $finderarr['city_id'] == 8 || $finderarr['city_id'] == 9){
 				// 	$direct_Fitternity_delhi_vendors = [4929,4968,5027,5066,5145,5355,5603,5609,5617,5709,6047,6411,6412,6499,6534,6876,6895,6979,7136,7448,7657,7907,7909,8289,8837,8878,9125,9171,9178,9201,9337,9397,9415,9417,9600,9624,9726,9728,9876,9878,9888,9913,10245,10568,10570,10624,10847,10957,10962,10993,11034,11040,11134,11176,11274,11374,6993,10987,8470,8823,6446,9855,11028,11030,11031,9854];
 				// 	if(in_array($finderarr["_id"],$direct_Fitternity_delhi_vendors)){
