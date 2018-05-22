@@ -1347,7 +1347,6 @@ return Response::json($response);
 public function improvedkeywordSearch(){
 
     try {
-        Log::info(json_encode(Input::all()));
         $city_name_list = array('mumbai','pune', 'bangalore', 'delhi', 'gurgaon','noida');
         $from    =         Input::json()->get('from') ? Input::json()->get('from') : 0;
         $size    =         Input::json()->get('size') ? Input::json()->get('size') : 10;
@@ -1363,7 +1362,9 @@ public function improvedkeywordSearch(){
         $servicecategory =   Input::json()->get('servicecategory') ? Input::json()->get('servicecategory') : array();
         $sort_clause = '';
         $keys   =         (Input::json()->get('keys')) ? Input::json()->get('keys') : array();
-
+        $requested_query   =  Input::all();
+        $from = isset($requested_query["offset"]) && isset($requested_query["offset"]["from"]) ? $requested_query["offset"]["from"] : $from;
+        Log::info(json_encode($requested_query["offset"]));
         $app_device = Request::header('Device-Type');
         $app_version = Request::header('App-Version');
 
