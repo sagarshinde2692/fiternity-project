@@ -388,16 +388,16 @@ class FindersController extends \BaseController {
 					}else{
 
 						foreach($finderarr['knowlarityno'] as $number){
-							return $finderarr['knowlarityno'];
+							// return $finderarr['knowlarityno'];
 							if(!(isset($number['extension']) && $number['extension'])){
 								
 								$knowlarity_no[] = ['decription'=>'Want to join & need assistance', 'phone_number'=>'+91'.$number['phone_number'], 'extension'=>null];
 								
 							}else{
-								$knowlarity_no['extension'] = str_pad($number['extension'], 2, '0', STR_PAD_LEFT);
+								$extension = str_pad($number['extension'], 2, '0', STR_PAD_LEFT);
 							
-								array_unshift($knowlarity_no, ['decription'=>'Already a member & have a query', 'phone_number'=>'+91'.$number['phone_number'], 'extension'=>'1'.$knowlarity_no['extension']]);
-								array_push($knowlarity_no, ['decription'=>'For collaborations & other matters', 'phone_number'=>'+91'.$number['phone_number'], 'extension'=>'3'.$knowlarity_no['extension']]);
+								array_unshift($knowlarity_no, ['decription'=>'Already a member & have a query', 'phone_number'=>'+91'.$number['phone_number'], 'extension'=>'1'.$extension]);
+								array_push($knowlarity_no, ['decription'=>'For collaborations & other matters', 'phone_number'=>'+91'.$number['phone_number'], 'extension'=>'3'.$extension]);
 	
 							}
 						}
