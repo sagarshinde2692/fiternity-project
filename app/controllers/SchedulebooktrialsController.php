@@ -2728,7 +2728,7 @@ class SchedulebooktrialsController extends \BaseController {
                     $this->utilities->setRedundant($order);
                 }
             }
-            if($currentScheduleDateDiffMin <= 60 && !$this->isWeekend(time())){
+            if($currentScheduleDateDiffMin <= 60 && !$this->isWeekend(time()) && !$this->isOffHour(time())){
                 $this->publishConfirmationAlert($booktrialdata);
             }
 
