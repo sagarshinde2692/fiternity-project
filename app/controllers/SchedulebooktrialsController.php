@@ -2728,11 +2728,11 @@ class SchedulebooktrialsController extends \BaseController {
                     $this->utilities->setRedundant($order);
                 }
             }
-            // if($currentScheduleDateDiffMin <= 60 && $this->isOfficeHour(time())){
+            if($currentScheduleDateDiffMin <= 60 && !$this->isWeekend(time())){
                 $this->publishConfirmationAlert($booktrialdata);
-            // }
+            }
 
-            // if( $this->isWeekend(strtotime($booktrial->schedule_date_time)) &&  $this->isWeekend(time()) ){
+            if( $this->isWeekend(strtotime($booktrial->schedule_date_time)) &&  $this->isWeekend(time()) ){
                 $cities 	=	City::active()->orderBy('name')->lists('name', '_id');
                 $booktrialdata['city_name'] = $cities[$booktrialdata['city_id']];
                 
@@ -2740,7 +2740,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $booktrialdata['cancel_link'] = Config::get('app.url').'/updatetrialstatus/'.$booktrialdata['_id'].'/cancel';
                 $this->findermailer->trialAlert($booktrialdata);                
                 $this->findersms->trialAlert($booktrialdata);                
-            // }
+            }
 
         }catch(\Exception $exception){
 
