@@ -3033,6 +3033,10 @@ class FindersController extends \BaseController {
 				'short_description' => isset($item['short_description']) ? $item['short_description'] : "",
 				// 'showOnFront'=>(isset($item['showOnFront'])) ? $item['showOnFront'] : []
 			);
+			
+			if(isset($service['servicecategory_id']) && $service['servicecategory_id'] == 184){
+				$service['remarks'] = "Personal Training is not inclusive of the Gym membership. To avail Personal Training, ensure to buy the Gym membership also.";
+			}
 
 			// if(isset($item['offer_available']) && $item['offer_available'] == true && !in_array($finder_id, Config::get('app.hot_offer_excluded_vendors'))){
 
