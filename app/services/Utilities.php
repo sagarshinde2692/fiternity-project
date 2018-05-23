@@ -140,18 +140,20 @@ Class Utilities {
     public function walletTransaction($request,$data = false){
 
         $customer_id = (int)$request['customer_id'];
+
         $jwt_token = Request::header('Authorization');
-        Log::info('jwt_token : '.$jwt_token);
-            
+
         if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+
             $decoded = $this->customerTokenDecode($jwt_token);
-            if(empty($request['starter_pack']))
-            	$customer_id = $decoded->customer->_id;
+
+            if(empty($request['for'])||(!empty($request['for']) && !in_array( $request['for'],['starter_pack_reference','locate_trial']))){
+                $customer_id = (int)$decoded->customer->_id;
+            }
+
             $request['customer_id'] = $customer_id;
         }
 
-        Log::info(" request['customer_id']".print_r($request['customer_id'],true));
-        Log::info(" customer_id]".print_r($customer_id,true));
         $customer = \Customer::find($customer_id);
 
         $total_balance = 0;
@@ -203,18 +205,19 @@ Class Utilities {
     public function walletTransactionOld($request,$data = false){
 
         $customer_id = (int)$request['customer_id'];
-        Log::info($customer_id);
 
         $jwt_token = Request::header('Authorization');
 
         if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
 
             $decoded = $this->customerTokenDecode($jwt_token);
-            if(empty($request['starter_pack']))
-            	$customer_id = (int)$decoded->customer->_id;
-        }
 
-        $request['customer_id'] = $customer_id;
+            if(empty($request['for'])||(!empty($request['for']) && !in_array( $request['for'],['starter_pack_reference','locate_trial']))){
+                $customer_id = (int)$decoded->customer->_id;
+            }
+
+            $request['customer_id'] = $customer_id;
+        }
 
         if(!isset($request['order_id'])){
             $request['order_id'] = 0;
@@ -1475,8 +1478,11 @@ Class Utilities {
         if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
 
             $decoded = $this->customerTokenDecode($jwt_token);
-            if(empty($request['starter_pack']))
-            	$customer_id = $decoded->customer->_id;
+
+            if(empty($request['for'])||(!empty($request['for']) && !in_array( $request['for'],['starter_pack_reference','locate_trial']))){
+                $customer_id = (int)$decoded->customer->_id;
+            }
+
             $request['customer_id'] = $customer_id;
         }
 
