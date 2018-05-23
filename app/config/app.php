@@ -769,6 +769,18 @@ return array(
 		],
 	],
 	'paypersession_level_icon_base_url'=>'https://b.fitn.in/paypersession/level-',
-	'paypersession_lock_icon'=>'https://b.fitn.in/paypersession/lock-icon.png'
+	'paypersession_lock_icon'=>'https://b.fitn.in/paypersession/lock-icon.png',
+
+	'trial_comm'=>[
+		'off_hours_begin_time'=>14,
+		'off_hours_end_time'=>11,
+		'offhours_scheduled_td_hours'=>2,
+		'offhours_instant_td_mins'=>5,
+		'offhours_fixed_time_1'=>22,
+		'offhours_fixed_time_2'=>20,
+		'full_day_weekend'=>['Sunday', 'Wednesday'],
+		'begin_weekend'=>['Saturday'],
+		'end_weekend'=>['Monday'],
+	]
 
 );
