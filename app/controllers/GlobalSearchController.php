@@ -1364,7 +1364,7 @@ public function improvedkeywordSearch(){
         $keys   =         (Input::json()->get('keys')) ? Input::json()->get('keys') : array();
         $requested_query   =  Input::all();
         $from = isset($requested_query["offset"]) && isset($requested_query["offset"]["from"]) ? $requested_query["offset"]["from"] : $from;
-        Log::info(json_encode($requested_query["offset"]));
+        // Log::info(json_encode($requested_query["offset"]));
         $app_device = Request::header('Device-Type');
         $app_version = Request::header('App-Version');
 
