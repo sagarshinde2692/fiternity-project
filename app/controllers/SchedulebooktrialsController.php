@@ -2463,7 +2463,8 @@ class SchedulebooktrialsController extends \BaseController {
 
             $booktrial = Booktrial::findOrFail($booktrial_id);
 
-            $booktrial->qrcode = $this->utilities->createQrCode($booktrial['code']);
+            // $booktrial->qrcode = $this->utilities->createQrCode($booktrial['code']);
+            $booktrial->qrcode = "";
             $booktrial->pps_blockscreen=Config::get('app.website_deeplink');
             $booktrial->update();
 
