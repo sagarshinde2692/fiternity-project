@@ -2452,7 +2452,7 @@ class SchedulebooktrialsController extends \BaseController {
     }
 
      public function sendCommunication($job,$data){
-        
+        Log::info("sendCommunication===========================");
         if($job){
             $job->delete();
         }
