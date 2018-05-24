@@ -1448,7 +1448,7 @@ class ServiceController extends \BaseController {
 			// 	$service_details = json_decode(json_encode($service_details_response['data']), true);
 			// }
 			
-			$service_details = Service::active()->where('finder_id', $finder['_id'])->where('slug', $service_slug)->with('location')->with(array('ratecards'))->first(['name', 'contact', 'photos', 'lat', 'lon', 'calorie_burn', 'address', 'servicecategory_id', 'finder_id', 'location_id','trial']);
+			$service_details = Service::active()->where('finder_id', $finder['_id'])->where('slug', $service_slug)->with('location')->with(array('ratecards'))->first(['name', 'contact', 'photos', 'lat', 'lon', 'calorie_burn', 'address', 'servicecategory_id', 'finder_id', 'location_id','trial','workoutsessionschedules']);
 			// return $service_details;
 			if(!$service_details){
 				
@@ -1656,6 +1656,7 @@ class ServiceController extends \BaseController {
 		if(isset($_GET['keyword']) && $_GET['keyword']){
 			$schedule_data['recursive'] = true;
 		}
+		unset($service_details['workoutsessionschedules']);
 		$schedule = json_decode(json_encode($this->getScheduleByFinderService($schedule_data)->getData()));
 
 		if($schedule->status != 200){
@@ -1877,6 +1878,10 @@ class ServiceController extends \BaseController {
 			$session_count += $timing["count"];
 		}
 		return $data = array("header"=> "When would you like to workout?","subheader"=>$subheader, "categories" => $timings, "session_count"=> $session_count);
+	}
+
+	public function getPPSAvailableDateTime($data){
+		
 	}
 
 
