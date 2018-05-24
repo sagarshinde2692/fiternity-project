@@ -1055,6 +1055,10 @@ class MigrationReverseController extends \BaseController {
                 $insertData['flags'] = $data['flags'];
             }
 
+            if(isset($data['slug'])){
+                $insertData['slug'] = $data['slug'];
+            }
+
             $insertData['membership_start_date'] = null;
             if(isset($data['membership_start_date'])){
                 $insertData['membership_start_date'] = $data['membership_start_date'];
