@@ -1194,3 +1194,5 @@ Route::get('promoNotification','DebugController@promoNotification');
 Route::post('getPageViewsForVendors','FindersController@getPageViewsForVendors');
 
 Route::get('PayPerSessionWallet','DebugController@PayPerSessionWallet');
+
+Route::get('manualTrialCommunication','SchedulebooktrialsController@manualTrialCommunication');
