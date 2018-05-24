@@ -553,6 +553,30 @@ class EmailSmsApiController extends \BaseController {
             }
             
         }
+        if(isset($data['capture_type']) && $data['capture_type'] == 'exit_intent'){
+        	
+        	$rules = [
+        			'customer_name'=>'required',
+        			'customer_phone'=>'required',
+        			'finder_id'=>'required',
+        			'city_id'=>'required',
+        			'exit_type'=>'required'
+        	];
+        	
+        	$validator = Validator::make($data, $rules);
+        	
+        	if ($validator->fails()) {
+        		
+        		$response = array('status' => 400,'message' =>error_message($validator->errors()));
+        		
+        		return Response::json(
+        				$response,
+        				$response['status']
+        				);
+        		
+        	}
+        	
+        }
 
         if($data['capture_type'] == 'fitness_canvas'){
             $count = Capture::where('capture_type','fitness_canvas')->where('phone','LIKE','%'.substr($data['phone'], -9).'%')->count();
@@ -893,6 +917,7 @@ class EmailSmsApiController extends \BaseController {
             case 'request_callback': $message = "Thanks for requesting a callback. We'll get back to you soon";break;
             case 'walkthrough': $message = "Walkin Captured Successfully";break;
             case 'starter_pack': $message = "Thank you for signing up. Amount of Rs.500 has been credited to your wallet.";break;
+            case 'exit_intent': $message = "Successfully stored exit intent of the user.";break;
             default:$message = "Received the Request";break;
         }
 
