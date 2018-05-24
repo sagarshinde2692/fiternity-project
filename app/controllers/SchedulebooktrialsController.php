@@ -7262,4 +7262,16 @@ class SchedulebooktrialsController extends \BaseController {
         }
     }
 
+    public function manualTrialCommunication(){
+        // $booktrial_ids = [116516,116520,116525,116526,116527,116538,116544,116545,116546];
+        // $booktrial_ids  = [116491];
+
+        foreach($booktrial_ids as $booktrial_id){
+            $this->sendCommunication(null, ['booktrial_id'=>$booktrial_id]);
+        }
+
+        return "done";
+
+    }
+
 }
