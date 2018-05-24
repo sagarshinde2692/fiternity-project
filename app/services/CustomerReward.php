@@ -1407,6 +1407,18 @@ Class CustomerReward {
                 }
             }
 
+            if(isset($coupon["once_per_user"]) && $coupon["once_per_user"]){
+
+                
+                $coupon_already_used = \Order::active()->where("customer_id", $customer_id)->where('coupon_code', 'Like', $coupon['code'])->first();
+                if($coupon_already_used){
+
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"Coupon already used");
+                    return $resp;
+                
+                }
+            }
+
             if(isset($coupon['vendor_exclusive']) && $coupon['vendor_exclusive']){
                 $vendor_coupon = true;
                 $jwt_token = Request::header('Authorization');
