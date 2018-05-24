@@ -2831,6 +2831,10 @@ class FindersController extends \BaseController {
 						unset($ratecards[$ratecard_key]);
 					}
 
+					if(empty($ratecard_value['flags'])){
+						$ratecards[$ratecard_key]['flags'] = null;
+					}
+
 				}
 
 				$ratecards = array_values($ratecards);
