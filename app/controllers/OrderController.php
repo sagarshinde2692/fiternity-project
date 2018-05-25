@@ -2061,11 +2061,23 @@ class OrderController extends \BaseController {
     public function orderFailureAction($order_id,$customer_id = false){
 
         $order = Order::where('_id',(int) $order_id)->where('status',"0")->first();
+
         if($order == ''){
             return Response::json(
                 array(
                     'status' => 200,
                     'message' => 'No Action Required'
+                ),200
+
+            );
+        }
+
+        if(!empty($order['payment_mode']) && $order['payment_mode'] == 'cod'){
+
+            return Response::json(
+                array(
+                    'status' => 200,
+                    'message' => 'No Action Required 2'
                 ),200
 
             );
