@@ -4192,7 +4192,7 @@ class FindersController extends \BaseController {
 						(isset($ratecard['special_price']) && $ratecard['price'] == $ratecard['special_price']) ? $ratecard['special_price'] = 0 : null;
 						$ratecard['cashback_on_trial'] = "";
 
-						if($ratecard_price > 0 && $type == 'trial'){
+						if($ratecard_price > 0 && $ratecard['type'] == 'trial'){
 							$ratecard['cashback_on_trial'] = "100% Cashback";
 						}
 
