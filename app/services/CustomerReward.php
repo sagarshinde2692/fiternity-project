@@ -1352,7 +1352,7 @@ Class CustomerReward {
             if($prev_order){
                 Log::info('$prev_order');
                 Log::info($prev_order);
-                if($finder_city == 1){
+                if($finder_city == 1 || $finder_city == 2){
                     Log::info('MUMABAI');
                     
                     $discount = 300;
@@ -1366,7 +1366,7 @@ Class CustomerReward {
             }else{
                 Log::info('NO prev_order');
                 
-                if($finder_city == 1){
+                if($finder_city == 1 || $finder_city == 2){
                     Log::info('MUMABAI');
                     
                     $discount = 500;
