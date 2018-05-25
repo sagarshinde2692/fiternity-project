@@ -830,18 +830,44 @@ class EmailSmsApiController extends \BaseController {
 
         }
         
-        if(!empty($data['capture_type'])&&$data['capture_type']=='starter_pack')
-        {
-        	Log::info(" Added fitcash for starter_pack ".print_r($this->utilities->getAddWAlletArray(["customer_id"=>$data['customer_id'],"amount"=>500,"description"=>("Added FitCash+ as Sign up Bonus for starter pack, Expires On : ".date('d-m-Y',time()+(86400*60))),"validity"=>(time()+(86400*60)),"for"=>"starter_pack"]),true));
-        	Log::info(" generateFreeDietPlanOrder for starter_pack ".print_r($this->transactionController->generateFreeDietPlanOrder($data),true));
+        if(!empty($data['capture_type'])&&$data['capture_type']=='starter_pack'){
+            
+            $wallet_data = [
+                "customer_id"=>$data['customer_id'],
+                "amount"=>500,
+                'amount_fitcash' => 0,
+                'amount_fitcash_plus' => 500,
+                "entry"=>'credit',
+                'type'=>'FITCASHPLUS'
+                "description"=>"Added FitCash+ as Sign up Bonus for starter pack, Expires On : ".date('d-m-Y',time()+(86400*60)),
+                "validity"=>time()+(86400*60),
+                "for"=>"starter_pack"
+            ];
+
+            $this->utilities->walletTransaction($wallet_data);
+
+            $this->transactionController->generateFreeDietPlanOrder($data,'starter_pack');
         	
-        	if(!empty($data['code']))
-        	{
-        		Log::info(" datacode ".print_r($data['code'],true));
-        		$exists = Customer::where('referral_code', $data['code'])->where('status', '1')->first();
-        		if(!empty($exists))
-        			Log::info("Added fitcash for starter_pack reference".print_r($this->utilities->getAddWAlletArray(["customer_id"=>$exists->_id,"amount"=>200,"description"=>("Added FitCash+ as Sign up Bonus for starter pack reference, Expires On : ".date('d-m-Y',time()+(86400*60))),"validity"=>(time()+(86400*60)),"for"=>"starter_pack_reference"]),true));
-        		else Log::info(" No Customer with this code exists. :: ".$data['code']);
+        	if(!empty($data['code'])){
+        		
+        		$customerExists = Customer::where('referral_code', $data['code'])->where('status', '1')->first();
+
+        		if(!empty($customerExists)){
+
+                    $wallet_data = [
+                        "customer_id"=>$customerExists->_id,
+                        "amount"=>200,
+                        'amount_fitcash' => 0,
+                        'amount_fitcash_plus' => 200,
+                        "entry"=>'credit',
+                        'type'=>'FITCASHPLUS'
+                        "description"=>"Added FitCash+ as Sign up Bonus for starter pack reference, Expires On : ".date('d-m-Y',time()+(86400*60)),
+                        "validity"=>time()+(86400*60),
+                        "for"=>"starter_pack_reference"
+                    ];
+
+                    $this->utilities->walletTransaction($wallet_data);
+                }
         	}
         }
 
