@@ -1856,11 +1856,11 @@ class ServiceController extends \BaseController {
 					->get(['finder_id', 'service_id', 'finder_name', 'service_name']);
 				
 				$rebook_trials = [];
-				
+				$rebook_service_ids = [];
 				foreach($trials as $trial){
 
 					if(count($rebook_trials) < 3){
-							if($trial['finder'] && $trial['service'] && count($trial['service']['ratecards'])){
+							if($trial['finder'] && $trial['service'] && count($trial['service']['ratecards']) && !in_array($trial['service_id'], $rebook_service_ids)){
 								
 								$trial['title'] = ucwords(preg_replace('/membership/i', 'Workout', $trial['service_name'])).' at '.$trial['finder_name'];
 
@@ -1869,6 +1869,7 @@ class ServiceController extends \BaseController {
 								$trial['finder_slug'] = $trial['finder']['slug'];
 								
 								array_push($rebook_trials, array_only($trial->toArray(), ['_id', 'title', 'amount', 'service_slug', 'finder_slug']));
+								array_push($rebook_service_ids, $trial['service_id']);
 							}
 							
 					}else{
