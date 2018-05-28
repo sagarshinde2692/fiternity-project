@@ -2272,6 +2272,9 @@ class TransactionController extends \BaseController {
 
             $couponCheck = $this->customerreward->couponCodeDiscountCheck($ratecard,$data["coupon_code"],$customer_id, $ticket, $ticket_quantity, $service_id);
 
+            Log::info("couponCheck");
+            Log::info($couponCheck);
+
             if(isset($couponCheck["coupon_applied"]) && $couponCheck["coupon_applied"]){
 
                 $data["coupon_discount_amount"] = $amount > $couponCheck["data"]["discount"] ? $couponCheck["data"]["discount"] : $amount;
@@ -4692,6 +4695,10 @@ class TransactionController extends \BaseController {
 
             if((isset($resp['fitternity_only_coupon']) && $resp['fitternity_only_coupon']) || (isset($resp['vendor_exclusive']) && $resp['vendor_exclusive']) || (isset($resp['app_only']) && $resp['app_only'])){
                 $errorMessage =  $resp['error_message'];
+            }
+
+            if(isset($resp['referral_coupon']) && $resp['referral_coupon']){
+                $errorMessage =  $resp['message'];
             }
 
             $resp = array("status"=> 400, "message" => "Coupon not found", "error_message" =>$errorMessage, "data"=>$resp["data"]);

@@ -3901,6 +3901,105 @@ Class Utilities {
     	$req['starter_pack']=true;
     	return $this->walletTransaction($req);
     }
+
+    public function checkPPSReferral($code, $customer_id){
+
+        $customer = Customer::active()->where('pps_referral_code', $code)->first();
+
+        if($customer){
+
+            if($customer['_id'] == $customer_id){
+
+                if(isset($customer['pps_referral_credits']) && $customer['pps_referral_credits'] > 0){
+                    $credits_used = isset($customer['pps_referral_credits_used']) ? $customer['pps_referral_credits_used'] : 0;
+
+                    if($credits_used < 5){
+
+                        if($customer['pps_referral_credits'] - $credits_used){
+                            
+                            return ['status'=>200, 'message'=>'Successfully applied referral discount', 'discount'=> 499, 'type'=>'self', 'customer'=>$customer];
+
+                        }else{
+
+                            return ['status'=>400, 'message'=>'You have used your credits. Share code to earn more'];
+
+                        }
+
+
+                    }else{
+                        
+                        return ['status'=>400, 'message'=>'You have exhausted the limit of this coupon'];
+
+                    }
+                }else{
+                    return ['status'=>400, 'message'=>'Your friends have not booked yet'];
+                }
+
+
+            }else{
+
+                $prev_workout_sessions = \Order::active()->where('customer_id', $customer_id)->where('type', 'workout-session')->count();
+
+                if($prev_workout_sessions){
+                    
+                    return ['status'=>400, 'message'=>'Pay per session referral is only applicable for new users'];
+                
+                }else{
+
+                    return ['status'=>200, 'message'=>'Pay per session referral is successfully applied', 'discount'=>499, 'type'=>'referral', 'customer'=>$customer];
+
+                }
+
+            }
+
+        }else{
+            return ['status'=>400, 'message'=>'Incorrect Referral Code'];
+        }
+        
+
+
+
+    }
+
+    public function isPPSReferralCode($code){
+        $code = strtoupper($code);
+        return (strlen($code)==9 && substr($code, -1 ) == 'R') || (strlen($code)==10 && substr($code, 0, 2) == 'R-');
+    }
+
+    public function setPPSReferralData($order){
+        $customer_id = $order['customer_id'];
+        $referral_resp = $this->checkPPSReferral($order['coupon_code'], $customer_id);
+
+        if($referral_resp['status'] == 200){
+            
+            $customer = $referral_resp['customer'];
+            
+            if($referral_resp['type'] == 'self'){
+            
+                $customer->pps_referral_credits_used = $customer->pps_referral_credits_used + 1;
+                $customer->update();
+
+                $update_order = \Order::where('_id', $order['_id'])->update(['pps_referral'=> 'self']);
+            
+            }else{
+            
+                $customer->pps_referral_credits = $customer->pps_referral_credits + 1;
+                $pps_referral_customer_ids = isset($customer->pps_referral_customer_ids) ? $customer->pps_referral_customer_ids : [];
+                array_push($pps_referral_customer_ids, $customer_id);
+                $customer->pps_referral_customer_ids = $pps_referral_customer_ids;
+                $customer->update();
+
+                $update_referred = Customer::where('_id', $customer_id)->update(['pps_referred_from'=> $customer->_id]);
+
+                $update_order = \Order::where('_id', $order['_id'])->update(['pps_referral'=> 'referred']);
+
+                $customersms = new CustomerSms();
+
+                $customersms->ppsReferral(['customer_name'=>$order['customer_name'], 'pps_referral_code'=>$customer->pps_referral_code, 'customer_phone'=>$customer->contact_no]);
+                
+            }
+        }
+    }
     
 }
 

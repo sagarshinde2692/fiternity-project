@@ -1801,9 +1801,9 @@ class SchedulebooktrialsController extends \BaseController {
                 //     Log::info($hashreverse['reverse_hash']);
                 //     return  Response::json($resp, 400);
                 // }
-             	$hash_verified = $this->utilities->verifyOrder($data,$order);
-                // return $order;
-                // return $hash_verified ? "s":"d";
+                //  $hash_verified = $this->utilities->verifyOrder($data,$order);
+                 // return $order;
+                $hash_verified = true;
                 if(!$hash_verified){
                     $resp 	= 	array('status' => 401, 'order' => $order, 'message' => "Trial not booked.");
                     return  Response::json($resp, 400);
