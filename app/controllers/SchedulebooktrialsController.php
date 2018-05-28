@@ -6563,6 +6563,7 @@ class SchedulebooktrialsController extends \BaseController {
 	                			"amount_fitcash_plus" => 250,
 	                			"type"=>'CREDIT',
 	                			'entry'=>'credit',
+                                'for'=>'locate_trial',
 	                			'validity'=>time()+(86400*7),
 	                			'description'=>"Added FitCash+ on Trial Attendance, Expires On : ".date('d-m-Y',time()+(86400*7))
 	                	);
@@ -6584,6 +6585,7 @@ class SchedulebooktrialsController extends \BaseController {
                 				"amount_fitcash_plus" => $fitcash,
                 				"type"=>'CREDIT',
                 				'entry'=>'credit',
+                                'for'=>'locate_trial',
                 				'validity'=>time()+(86400*7),
                 				'description'=>"Added FitCash+ on Trial Attendance, Expires On : ".date('d-m-Y',time()+(86400*7))
                 		);
