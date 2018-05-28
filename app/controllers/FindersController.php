@@ -2966,15 +2966,15 @@ class FindersController extends \BaseController {
 				'description'=>'Burn Fat | Super Cardio'
 			);
 			
-			if(isset($_GET['device_type']) && $_GET['device_type'] == 'ios'){
+			// if(isset($_GET['device_type']) && $_GET['device_type'] == 'ios'){
 			
-				$extra_info[] = array(
-					'title'=>'Description',
-					'icon'=>'https://b.fitn.in/iconsv1/vendor-page/form.png',
-					'description'=> $item['short_description']
-				);
+			// 	$extra_info[] = array(
+			// 		'title'=>'Description',
+			// 		'icon'=>'https://b.fitn.in/iconsv1/vendor-page/form.png',
+			// 		'description'=> $item['short_description']
+			// 	);
 			
-			}
+			// }
 
 			if($category && ($category["_id"] == 42 || $category["_id"] == 45)){
 
@@ -2988,6 +2988,15 @@ class FindersController extends \BaseController {
 					);
 				}
 			}
+
+			if(isset($item['servicecategory_id']) && $item['servicecategory_id'] == 184){
+				$extra_info[] = array(
+					'title'=>'Note',
+					'icon'=>'https://b.fitn.in/iconsv1/vendor-page/form.png',
+					'description'=> "Personal Training is not inclusive of the Gym membership. To avail Personal Training, ensure to buy the Gym membership also."
+				);
+			}
+
 
 			$batches = array();
 
