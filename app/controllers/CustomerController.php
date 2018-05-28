@@ -5565,6 +5565,11 @@ class CustomerController extends \BaseController {
 					$customer->update();
 				}
 
+				if(!isset($customer->pps_referral_code)){
+					$customer->pps_referral_code = $customer->referral_code;
+					$customer->update();
+				}
+
 				$referral_code = $customer['referral_code'];
 
 				$customer_email = $customer->email;
@@ -6975,14 +6980,16 @@ class CustomerController extends \BaseController {
 		
 		if($customer){
 
-			if(!isset($customer->referral_code)){
+			if(!isset($customer->pps_referral_code)){
 
-				$customer->referral_code = generateReferralCode($customer->name);
+				if(!isset($customer->referral_code)){
+					$customer->referral_code = generateReferralCode($customer->name);
+
+				}
+
 				$customer->pps_referral_code = $customer->referral_code;
 				$customer->update();
-			}else{
-				$customer->pps_referral_code = $customer->referral_code;
-				$customer->update();
+			
 			}
 
 			$pps_referral_code = $customer['pps_referral_code'];
