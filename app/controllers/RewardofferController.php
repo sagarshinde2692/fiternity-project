@@ -340,10 +340,11 @@ class RewardofferController extends BaseController {
                     }
                     break;
                 case 13765 : 
-                    if(time() >= strtotime(date('2018-06-14 00:00:00')) && time() <= strtotime(date('2018-06-14 23:59:59'))){
-                        $min_date = strtotime(date('2018-06-14 00:00:00'));
-                        $max_date = strtotime(date('2018-06-14 23:59:59'));
-                    }
+                    $min_date = strtotime(date('2018-06-14 00:00:00'));
+                    $max_date = strtotime(date('2018-06-14 23:59:59'));
+                    // if(time() >= strtotime(date('2018-06-14 00:00:00')) && time() <= strtotime(date('2018-06-14 23:59:59'))){
+                        
+                    // }
                     break;
                 default: break;
             }
