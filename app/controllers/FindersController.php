@@ -2993,7 +2993,8 @@ class FindersController extends \BaseController {
 				$extra_info[] = array(
 					'title'=>'Note',
 					'icon'=>'https://b.fitn.in/iconsv1/vendor-page/form.png',
-					'description'=> "Personal Training is not inclusive of the Gym membership. To avail Personal Training, ensure to buy the Gym membership also."
+					'description'=> "Personal Training is not inclusive of the Gym membership. To avail Personal Training, ensure to buy the Gym membership also.",
+					'text_color'=>'#f8a81b'
 				);
 			}
 
