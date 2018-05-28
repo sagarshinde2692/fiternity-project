@@ -203,6 +203,16 @@ Class CustomerReward {
                             
                         }
 
+                        $power_world_gym = [10861,10863,10868,10870,10872,10875,10876,10877,10880,10883,10886,10887,10888,10890,10891,10892,10894,10895,10897,10900];
+
+                        if(in_array($finder_id,$power_world_gym) && $amount == 3500){
+
+                            $reward_type_info = 'fitness_kit';
+
+                            $reward['contents'] = ['Waterproof Gym Bag'];
+                            $reward['image'] = 'https://b.fitn.in/gamification/reward/goodies/productskit/gymbag.png';
+                        }
+
                     }
 
                 }

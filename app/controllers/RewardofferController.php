@@ -403,9 +403,10 @@ class RewardofferController extends BaseController {
 
                                         // return $rewardoffer;
             if ($rewardoffer){
+
+                $power_world_gym = [10861,10863,10868,10870,10872,10875,10876,10877,10880,10883,10886,10887,10888,10890,10891,10892,10894,10895,10897,10900];
+
                 $rewardoffer = $rewardoffer->toArray();
-
-
                 
                 $rewards = isset($rewardoffer['rewards']) ? $rewardoffer['rewards'] : array();
 
@@ -830,6 +831,33 @@ class RewardofferController extends BaseController {
 
                 $rewards[$fitness_kit_1] = $data_fitness_kit_2;
                 $rewards[$fitness_kit_2] = $data_fitness_kit_1;
+            }
+
+            $power_world_gym = [10861,10863,10868,10870,10872,10875,10876,10877,10880,10883,10886,10887,10888,10890,10891,10892,10894,10895,10897,10900];
+
+            if(in_array($finder_id,$power_world_gym) && $amount == 3500){
+
+                foreach ($rewards as $rewards_key => &$rewards_value) {
+
+                    if($rewards_value['reward_type'] == 'fitness_kit'){
+
+                        $rewards_value['contents'] = ['Waterproof Gym Bag'];
+                        $rewards_value['image'] = 'https://b.fitn.in/gamification/reward_new/new/GymBag_1.png';
+                        $rewards_value['gallery'] = [];
+                        $rewards_value['description'] = "We have curated the perfect partner to kickstart your membership. Strike off this workout essential from your list & get going. <br>- Gym Bag with separate shoe compartment";
+                        $rewards_value['payload']['amount'] = 850;
+
+                        break;
+                    }
+                }
+
+                foreach ($rewards as $rewards_key => $rewards_value) {
+
+                    if($rewards_value['reward_type'] == 'fitness_kit_2'){
+                        unset($rewards[$reward_key]);
+                        break;
+                    }
+                }
             }
 
         }
