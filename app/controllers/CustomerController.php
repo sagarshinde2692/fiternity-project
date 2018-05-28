@@ -7005,8 +7005,10 @@ class CustomerController extends \BaseController {
 		$data['body']['section_1'] = 'Refer a friend and both you and your friend get a free workout! Available on booking Pay-per-session, Workout Anytime Anywhere!';
 		
 		$data['body']['section_2'] = ['header'=>'Your unique code : '.$pps_referral_code, 'button_text'=>'INVITE & EARN'];
+
+		$free_sessions_remainig = 
 		
-		$data['body']['section_3'] = ['header'=>'Your Stats', 'data'=>['2 friends have used your code', '2 out of 5 Free Workout sessions remaining']];
+		$data['body']['section_3'] = ['header'=>'Your Stats', 'data'=>[(isset($customer->pps_referral_credits) ? $customer->pps_referral_credits : 0).' friends have used your code', ((isset($customer->pps_referral_credits) ? $customer->pps_referral_credits : 0)).' out of 5 Free Workout sessions remaining']];
 		
 		$data['body']['section_4'] = [
 			'header'=>'How it works', 

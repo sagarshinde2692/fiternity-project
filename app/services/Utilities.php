@@ -4000,6 +4000,19 @@ Class Utilities {
             }
         }
     }
+
+    public function getRemainigPPSSessions($customer){
+        if(isset($customer['pps_referral_credits']) && $customer['pps_referral_credits'] > 0){
+            $credits_used = isset($customer['pps_referral_credits_used']) ? $customer['pps_referral_credits_used'] : 0;
+            if($credits_used < 5){
+                return $customer['pps_referral_credits'] - $credits_used;
+            }else{
+                return 0;
+            }
+        }else{
+            return 5;
+        }
+    }
     
 }
 
