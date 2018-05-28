@@ -312,7 +312,7 @@ class RewardofferController extends BaseController {
             $max_date = strtotime(' + 32 days');
         }
 
-        if($amount <= 1000){
+        if($amount <= 1025){
 
             switch ($finder_id) {
                 case 13761 : 
