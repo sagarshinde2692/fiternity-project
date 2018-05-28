@@ -833,9 +833,7 @@ class RewardofferController extends BaseController {
                 $rewards[$fitness_kit_2] = $data_fitness_kit_1;
             }
 
-            $power_world_gym = [10861,10863,10868,10870,10872,10875,10876,10877,10880,10883,10886,10887,10888,10890,10891,10892,10894,10895,10897,10900];
-
-            if(in_array($finder_id,$power_world_gym) && $amount == 3500){
+            /*if(in_array($finder_id,$power_world_gym) && $amount == 3500){
 
                 foreach ($rewards as $rewards_key => &$rewards_value) {
 
@@ -858,7 +856,7 @@ class RewardofferController extends BaseController {
                         break;
                     }
                 }
-            }
+            }*/
 
         }
 
