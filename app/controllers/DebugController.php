@@ -18,7 +18,6 @@ use App\Sms\CustomerSms as CustomerSms;
 use App\Services\Cacheapi as Cacheapi;
 use App\Sms\FinderSms as FinderSms;
 
-
 use \Pubnub\Pubnub as Pubnub;
 
 class DebugController extends \BaseController {
@@ -7287,6 +7286,112 @@ public function yes($msg){
 		}
 
 		return "success";
+	}
+
+
+	public function addWallet(){
+
+		ini_set('memory_limit','512M');
+        ini_set('max_execution_time', 300);
+
+		$match = [];
+
+		$wallet = Wallet::raw(function($collection) use ($match){
+
+            $aggregate = [];
+
+            $match['$match']['status'] = "1";
+
+            $aggregate[] = $match;
+
+            $group = array(
+                        '$group' => array(
+                            '_id' => '$customer_id',
+                            'balance' => array(
+                                '$sum' => '$balance'
+                            )
+                        )
+                    );
+
+            $aggregate[] = $group;
+
+            $match1 = [
+            	'$match'=>[
+            		'balance'=>[
+            			'$gt'=>1800
+            		]
+            	]
+            ];
+
+            $aggregate[] = $match1;
+
+            return $collection->aggregate($aggregate); 
+
+        });
+
+        $not_customer_ids = array_map('intval',array_values(array_pluck($wallet['result'], '_id')));
+
+        $customer_ids = array_map('intval',Customer::active()->where('wallet_campaigns','exists',false)->whereNotIn('_id',$not_customer_ids)->skip(0)->take(5000)->lists('_id'));
+
+        $bulk_wallet = [];
+
+        $max_wallet_id = Wallet::max('_id');
+
+        foreach ($customer_ids as $customer_id) {
+
+        	$bulk_wallet[] = [
+        		'_id'=> ++$max_wallet_id,
+        		'amount'=>700,
+        		'used'=>0,
+        		'balance'=>700,
+        		'status'=>"1",
+        		'entry' => 'credit',
+        		'type' => "FITCASHPLUS",
+				'customer_id' => (int)$customer_id,
+				"validity"=>strtotime(date('2018-05-29 23:59:59')),
+				"for"=>"HumFitTohIndiaFit",
+				'description' => "Added FitCash+ Bonus for #HumFitTohIndiaFit, Expires On : ".date('2018-05-29'),
+				'customer_campaign'=>true,
+				'created_at'=>new MongoDate(),
+				'updated_at'=>new MongoDate()
+        	];
+
+        }
+
+        if(!empty($bulk_wallet)){
+
+        	try {
+
+        		Wallet::insert($bulk_wallet);
+	
+        	} catch (Exception $e) {
+
+        		$this->addWallet();	
+        	}
+
+	        foreach ($bulk_wallet as &$value) {
+
+	        	unset($value['used']);
+	        	unset($value['balance']);
+	        	$value['wallet_id'] = $value['_id'];
+	        	unset($value['_id']);
+	        	$value['_id'] = new MongoId();
+	        	$value['group'] = (string)$value['_id'];
+	        }
+
+	        WalletTransaction::insert($bulk_wallet);
+
+	        Customer::whereIn('_id',$customer_ids)->update(['wallet_campaigns'=>['HumFitTohIndiaFit']]);
+	    }
+
+        if(!empty($customer_ids)){
+
+        	$this->addWallet();
+        }else{
+
+        	return "done";
+        }
+
 	}
 
 }
