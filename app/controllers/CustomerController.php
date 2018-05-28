@@ -6961,4 +6961,33 @@ class CustomerController extends \BaseController {
 		
 	}
 
+	public function getReferralScreenData(){
+		
+		$decoded = $this->customerTokenDecode($jwt);
+		$id = $decoded->customer->_id;
+		Customer::$withoutAppends = true;
+
+		$customer = Customer::where('_id', $id)->first();
+		// return $customer;
+		if($customer){
+
+			if(!isset($customer->referral_code)){
+
+				$customer->referral_code = generateReferralCode($customer->name);
+				$customer->update();
+			}
+
+			$referral_code = $customer['referral_code'];
+		
+		}else{
+			
+			return Response::json(array('status' => 400,'message' => "Customer does not exist"),400);
+		
+		}
+
+		$data  = ['header'=>'Refer and Earn', 'referral_code'=>$referral_code];
+
+
+	}
+
 }
