@@ -6963,21 +6963,29 @@ class CustomerController extends \BaseController {
 
 	public function getReferralScreenData(){
 		
+		$jwt = Request::header('Authorization');
+		
 		$decoded = $this->customerTokenDecode($jwt);
+		
 		$id = $decoded->customer->_id;
+		
 		Customer::$withoutAppends = true;
 
 		$customer = Customer::where('_id', $id)->first();
-		// return $customer;
+		
 		if($customer){
 
 			if(!isset($customer->referral_code)){
 
 				$customer->referral_code = generateReferralCode($customer->name);
+				$customer->pps_referral_code = $customer->referral_code;
+				$customer->update();
+			}else{
+				$customer->pps_referral_code = $customer->referral_code;
 				$customer->update();
 			}
 
-			$referral_code = $customer['referral_code'];
+			$pps_referral_code = $customer['pps_referral_code'];
 		
 		}else{
 			
@@ -6985,8 +6993,46 @@ class CustomerController extends \BaseController {
 		
 		}
 
-		$data  = ['header'=>'Refer and Earn', 'referral_code'=>$referral_code];
+		$data  = ['header'=>'Refer and Earn', 'referral_code'=>$pps_referral_code]; 
+		
+		$data['body']['section_1'] = 'Refer a friend and both you and your friend get a free workout! Available on booking Pay-per-session, Workout Anytime Anywhere!';
+		
+		$data['body']['section_2'] = ['header'=>'Your unique code : '.$pps_referral_code, 'button_text'=>'INVITE & EARN'];
+		
+		$data['body']['section_3'] = ['header'=>'Your Stats', 'data'=>['2 friends have used your code', '2 out of 5 Free Workout sessions remaining']];
+		
+		$data['body']['section_4'] = [
+			'header'=>'How it works', 
+			'data'=>[
+				['text'=>'You share the code with your buddy. He uses it while booking his session…', 'info_text'=>'KNOW MORE', 'type'=>'type1'],
+				['text'=>'You share the code with your buddy. He uses it while booking his session…', 'type'=>'type2', 'section1'=>['line1'=>'₹499', 'line2'=>'OFF']]
+			]
+		];
 
+		$data['body']['info'] = [
+			'header'=>'How it works', 
+			'data'=>[
+				'You share the code with your buddy I He uses it while booking his session & gets Rs. 499 off on his first workout session',
+				'As soon as he books you get can get Rs. 499 off on booking your session with the same code',
+				'This code is only applicable on the Pay-per-session bookings on the Fitternity app',
+				'The validity of the code is 6 months'
+			]
+		];
+
+		$data['info'] = [
+			'header'=>'How it works', 
+			'data'=>[
+				'You share the code with your buddy I He uses it while booking his session & gets Rs. 499 off on his first workout session',
+				'As soon as he books you get can get Rs. 499 off on booking your session with the same code',
+				'This code is only applicable on the Pay-per-session bookings on the Fitternity app',
+				'The validity of the code is 6 months',
+				// 'You can send unlimited referral invitations, however the discount of Rs. 499 is applicable for first 5 friends I Next 10 friends using your code get you Rs. 299 I 15 friends using your code get you Rs. 299'
+			]
+		];
+
+		$data['share_message'] = "Join me to workout with Fitternity's Pay-per-session. Get your first workout free (upto Rs. 499) using my code $pps_referral_code.17+ fitness forms, 7 cities & 75,000 classes every week. Download the app now - ".Config::get('app.download_app_link');
+
+		return $data;
 
 	}
 
