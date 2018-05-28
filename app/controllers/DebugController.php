@@ -7366,7 +7366,11 @@ public function yes($msg){
 	
         	} catch (Exception $e) {
 
-        		$this->addWallet();	
+        		$remove_wallet_ids = array_map('intval',array_values(array_pluck($bulk_wallet,'_id')));
+
+        		Wallet::whereIn('_id',$remove_wallet_ids)->where('for','HumFitTohIndiaFit')->delete();
+
+        		$this->addWallet();
         	}
 
 	        foreach ($bulk_wallet as &$value) {
