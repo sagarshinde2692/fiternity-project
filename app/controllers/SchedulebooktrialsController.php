@@ -5011,7 +5011,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         $booktrial['lost_code'] = false;
         
-        if(time() >= strtotime($booktrial['schedule_date_time'])){
+        if(isset($booktrial['schedule_date_time']) && time() >= strtotime($booktrial['schedule_date_time'])){
             $booktrial['lost_code'] = true;
         }
 
