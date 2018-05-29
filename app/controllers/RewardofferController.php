@@ -475,7 +475,7 @@ class RewardofferController extends BaseController {
                         // if($amount < 2000){
                         //     $rewards = [];        
                         // }
-                        foreach ($rewards as $rewards_value){
+                        foreach ($rewards as &$rewards_value){
 
                             if(in_array($rewards_value['reward_type'],["fitness_kit","healthy_snacks"]) && $service_category_id != null){
 
@@ -825,9 +825,6 @@ class RewardofferController extends BaseController {
                                             $session_content .= " <br>- ".$session_value['slabs']." x ".$session_value['quantity'];
                                         }
 
-                                        $session_content = $data_value['session'];
-
-                                        $rewards_value['contents'] = $data_value['product'];
                                         $rewards_value['payload_amount'] = $data_value['amount'];
                                         $rewards_value['new_amount'] = $data_value['amount'];
                                         $rewards_value['title'] = "Workout Session";
