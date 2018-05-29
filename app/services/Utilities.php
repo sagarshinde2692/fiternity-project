@@ -3915,16 +3915,7 @@ Class Utilities {
 
                     if($credits_used < 5){
 
-                        if($customer['pps_referral_credits'] - $credits_used){
-                            
                             return ['status'=>200, 'message'=>'Successfully applied referral discount', 'discount'=> 499, 'type'=>'self', 'customer'=>$customer];
-
-                        }else{
-
-                            return ['status'=>400, 'message'=>'You have used your credits. Share code to earn more'];
-
-                        }
-
 
                     }else{
                         
@@ -3999,6 +3990,21 @@ Class Utilities {
                 
             }
         }
+    }
+
+    public function getRemainigPPSSessions($customer){
+
+        return 5 - (isset($customer['pps_referral_credits_used']) ? $customer['pps_referral_credits_used'] : 0);
+        // if(isset($customer['pps_referral_credits']) && $customer['pps_referral_credits'] > 0){
+        //     $credits_used = isset($customer['pps_referral_credits_used']) ? $customer['pps_referral_credits_used'] : 0;
+        //     if($credits_used < 5){
+        //         return $customer['pps_referral_credits'] - $credits_used;
+        //     }else{
+        //         return 0;
+        //     }
+        // }else{
+        //     return 5;
+        // }
     }
     
 }
