@@ -313,42 +313,39 @@ class RewardofferController extends BaseController {
         }
 
         if($amount <= 1025){
-
             switch ($finder_id) {
                 case 13761 : 
-                    if(time() >= strtotime(date('2018-06-15 00:00:00')) && time() <= strtotime(date('2018-06-15 23:59:59'))){
+                    if(time() <= strtotime(date('2018-06-15 23:59:59'))){
                         $min_date = strtotime(date('2018-06-15 00:00:00'));
                         $max_date = strtotime(date('2018-06-15 23:59:59'));
                     }
                     break;
                 case 13762 : 
-                    if(time() >= strtotime(date('2018-05-18 00:00:00')) && time() <= strtotime(date('2018-05-18 23:59:59'))){
+                    if(time() <= strtotime(date('2018-05-18 23:59:59'))){
                         $min_date = strtotime(date('2018-05-18 00:00:00'));
                         $max_date = strtotime(date('2018-05-18 23:59:59'));
                     }
                     break;
                 case 13763 : 
-                    if(time() >= strtotime(date('2018-04-23 00:00:00')) && time() <= strtotime(date('2018-04-23 23:59:59'))){
+                    if(time() <= strtotime(date('2018-04-23 23:59:59'))){
                         $min_date = strtotime(date('2018-04-23 00:00:00'));
                         $max_date = strtotime(date('2018-04-23 23:59:59'));
                     }
                     break;
                 case 13764 : 
-                    if(time() >= strtotime(date('2018-05-20 00:00:00')) && time() <= strtotime(date('2018-05-20 23:59:59'))){
+                    if(time() <= strtotime(date('2018-05-20 23:59:59'))){
                         $min_date = strtotime(date('2018-05-20 00:00:00'));
                         $max_date = strtotime(date('2018-05-20 23:59:59'));
                     }
                     break;
-                case 13765 : 
-                    $min_date = strtotime(date('2018-06-14 00:00:00'));
-                    $max_date = strtotime(date('2018-06-14 23:59:59'));
-                    // if(time() >= strtotime(date('2018-06-14 00:00:00')) && time() <= strtotime(date('2018-06-14 23:59:59'))){
-                        
-                    // }
+                case 13765 :
+                    if(time() <= strtotime(date('2018-06-14 23:59:59'))){
+                        $min_date = strtotime(date('2018-06-14 00:00:00'));
+                        $max_date = strtotime(date('2018-06-14 23:59:59'));
+                    }
                     break;
                 default: break;
-            }
-            
+            }     
         }
 
         $service_name           =   "";
