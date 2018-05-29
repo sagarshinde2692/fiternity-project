@@ -576,9 +576,9 @@ class HomeController extends BaseController {
         Log::info("Home Token");
         Log::info($jwt_token);
         Log::info("Home Token End");
-        if($jwt_token){
-            $homedata['customer_home'] = $this->utilities->customerHome();
-        }
+        // if($jwt_token){
+        //     $homedata['customer_home'] = $this->utilities->customerHome();
+        // }
 
         return Response::json($homedata);
     }
