@@ -217,6 +217,38 @@ Class CustomerReward {
 
                     }
 
+                    if($reward['reward_type'] == "sessions"){
+
+                        $reward_type_info = 'sessions';
+
+                        $workout_session_array = Config::get('fitness_kit.workout_session');
+
+                        rsort($workout_session_array);
+
+                        foreach ($workout_session_array as $data_key => $data_value) {
+
+                            if($amount >= $data_value['min'] ){
+
+                                $session_content = $data_value['total']." Workout Sessions";
+
+                                foreach ($data_value['session'] as $session_value){
+                                    $session_content .= " <br>- ".$session_value['slabs']." x ".$session_value['quantity'];
+                                }
+
+                                $reward['payload_amount'] = $data_value['amount'];
+                                $reward['new_amount'] = $data_value['amount'];
+                                $reward['title'] = "Workout Session";
+                                $reward['contents'] = ['Workout Session'];
+                                $reward['gallery'] = [];
+                                $reward['description'] = $session_content;
+                                $reward['quantity'] = $data_value['total'];
+                                $reward['payload']['amount'] = $data_value['amount'];
+
+                                break;
+                            }
+                        }
+                    }
+
                 }
 
             }
@@ -227,7 +259,9 @@ Class CustomerReward {
         return "success";
     }
 
-
+    public function createCoupon(){
+        
+    }
 
     public function saveToMyRewards($reward){
 
