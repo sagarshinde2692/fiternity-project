@@ -887,6 +887,135 @@ return [
 				]
 			]
 		]
-	]
+	],
+
+	'workout_session' => [
+		[
+			'min'=>0,
+			'max'=>2000,
+			'session' => [
+				[
+					'slabs'=>299,
+					'quantity'=>1
+				]
+			],
+			'total'=>1,
+			'amount'=>299
+		],
+		[
+			'min'=>2000,
+			'max'=>5000,
+			'session' => [
+				[
+					'slabs'=>299,
+					'quantity'=>1
+				]
+			],
+			'total'=>1,
+			'amount'=>299
+		],
+		[
+			'min'=>5000,
+			'max'=>7500,
+			'session' => [
+				[
+					'slabs'=>299,
+					'quantity'=>2
+				]
+			],
+			'total'=>2,
+			'amount'=>598
+		],
+		[
+			'min'=>7500,
+			'max'=>10000,
+			'session' => [
+				[
+					'slabs'=>299,
+					'quantity'=>1
+				],
+				[
+					'slabs'=>499,
+					'quantity'=>1
+				]
+			],
+			'total'=>2,
+			'amount'=>789
+		],
+		[
+			'min'=>10000,
+			'max'=>15000,
+			'session' => [
+				[
+					'slabs'=>499,
+					'quantity'=>2
+				]
+			],
+			'total'=>2,
+			'amount'=>998
+		],
+		[
+			'min'=>15000,
+			'max'=>20000,
+			'session' => [
+				[
+					'slabs'=>299,
+					'quantity'=>1
+				],
+				[
+					'slabs'=>499,
+					'quantity'=>2
+				]
+			],
+			'total'=>3,
+			'amount'=>1297
+		],
+		[
+			'min'=>20000,
+			'max'=>25000,
+			'session' => [
+				[
+					'slabs'=>499,
+					'quantity'=>3
+				]
+			],
+			'total'=>3,
+			'amount'=>1497
+		],
+		[
+			'min'=>25000,
+			'max'=>35000,
+			'session' => [
+				[
+					'slabs'=>299,
+					'quantity'=>2
+				],
+				[
+					'slabs'=>499,
+					'quantity'=>3
+				]
+			],
+			'total'=>5,
+			'amount'=>2095
+		],
+		[
+			'min'=>35000,
+			'max'=>0,
+			'session' => [
+				[
+					'slabs'=>299,
+					'quantity'=>4
+				],
+				[
+					'slabs'=>499,
+					'quantity'=>3
+				]
+			],
+			'total'=>7,
+			'amount'=>2693
+		],
+	],
+
+
 
 ];
