@@ -812,7 +812,12 @@ class ServiceController extends \BaseController {
 
 				foreach ($weekdayslots['slots'] as $slot) {
 
-					if(!isNotInoperationalDate($date, $city_id, $slot, $findercategory_id)){
+					if(!empty($finder)&&!empty($finder['flags'])&&!empty($finder['flags']['newly_launched_date']))
+					{
+						if($finder['flags']['newly_launched_date']->sec>$timestamp)
+							$dontShow=true;
+					}
+					if(!isNotInoperationalDate($date, $city_id, $slot, $findercategory_id)||(isset($dontShow)&&$dontShow)){
 						continue;
 					}
 
