@@ -147,7 +147,7 @@ Class Utilities {
 
             $decoded = $this->customerTokenDecode($jwt_token);
 
-            if(empty($request['for'])||(!empty($request['for']) && !in_array( $request['for'],['starter_pack_reference','locate_trial']))){
+            if(empty($request['for']) || (!empty($request['for']) && !in_array( $request['for'],['starter_pack_reference','locate_trial']))){
                 $customer_id = (int)$decoded->customer->_id;
             }
 
@@ -212,7 +212,7 @@ Class Utilities {
 
             $decoded = $this->customerTokenDecode($jwt_token);
 
-            if(empty($request['for'])||(!empty($request['for']) && !in_array( $request['for'],['starter_pack_reference','locate_trial']))){
+            if(empty($request['for']) || (!empty($request['for']) && !in_array( $request['for'],['starter_pack_reference','locate_trial']))){
                 $customer_id = (int)$decoded->customer->_id;
             }
 
@@ -1479,7 +1479,7 @@ Class Utilities {
 
             $decoded = $this->customerTokenDecode($jwt_token);
 
-            if(empty($request['for'])||(!empty($request['for']) && !in_array( $request['for'],['starter_pack_reference','locate_trial']))){
+            if(empty($request['for']) || (!empty($request['for']) && !in_array( $request['for'],['starter_pack_reference','locate_trial']))){
                 $customer_id = (int)$decoded->customer->_id;
             }
 

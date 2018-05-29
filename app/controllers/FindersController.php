@@ -1980,7 +1980,7 @@ class FindersController extends \BaseController {
 			'source' => (isset($data['source'])) ? $data['source'] : 'customer',
 			'status' => '1',
 			'order_id' => (isset($data['order_id']) && $data['order_id'] != "") ? intval($data['order_id']) : '',
-			'assisted_by' => (isset($data['assisted_by'])) ? intval($data['assisted_by']) : null
+			'assisted_by' => (isset($data['assisted_by'])) ? $data['assisted_by'] : null
 		];
 
 		(isset($_GET['device_type']) && $_GET['device_type'] != "") ? $reviewdata['source'] = strtolower($_GET['device_type']) : null ;
@@ -2970,15 +2970,15 @@ class FindersController extends \BaseController {
 				'description'=>'Burn Fat | Super Cardio'
 			);
 			
-			if(isset($_GET['device_type']) && $_GET['device_type'] == 'ios'){
+			// if(isset($_GET['device_type']) && $_GET['device_type'] == 'ios'){
 			
-				$extra_info[] = array(
-					'title'=>'Description',
-					'icon'=>'https://b.fitn.in/iconsv1/vendor-page/form.png',
-					'description'=> $item['short_description']
-				);
+			// 	$extra_info[] = array(
+			// 		'title'=>'Description',
+			// 		'icon'=>'https://b.fitn.in/iconsv1/vendor-page/form.png',
+			// 		'description'=> $item['short_description']
+			// 	);
 			
-			}
+			// }
 
 			if($category && ($category["_id"] == 42 || $category["_id"] == 45)){
 

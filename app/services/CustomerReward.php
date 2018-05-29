@@ -182,7 +182,9 @@ Class CustomerReward {
                             }
                         }
 
-                        if(in_array($finder_id,[13761,13762,13763,13764,13765]) && $amount <= 1000){
+                        $cult_gym = [13761,13762,13763,13764,13765,14078,14079,14081,14082,14085,14088];
+
+                        if(in_array($finder_id,$cult_gym) && $amount <= 1025){
 
                             $pos = strpos($reward['title'],'(Kit B)');
 
@@ -201,6 +203,16 @@ Class CustomerReward {
                                 $reward['image'] = 'https://b.fitn.in/gamification/reward/goodies/productskit/gymbag.png';
                             }
                             
+                        }
+
+                        $power_world_gym = [10861,10863,10868,10870,10872,10875,10876,10877,10880,10883,10886,10887,10888,10890,10891,10892,10894,10895,10897,10900];
+
+                        if(in_array($finder_id,$power_world_gym) && $amount == 3500){
+
+                            $reward_type_info = 'fitness_kit';
+
+                            $reward['contents'] = ['Waterproof Gym Bag'];
+                            $reward['image'] = 'https://b.fitn.in/gamification/reward/goodies/productskit/gymbag.png';
                         }
 
                     }
@@ -1325,61 +1337,61 @@ Class CustomerReward {
         //         return $resp;
         //     }
         // }
-        if(!isset($coupon) && (strtolower($couponCode) == "mad18") && $ratecard){
-            Log::info("New user code");
+        // if(!isset($coupon) && (strtolower($couponCode) == "mad18") && $ratecard){
+        //     Log::info("New user code");
             
-            $discount = 300;
+        //     $discount = 300;
 
-            $prev_order = null;
+        //     $prev_order = null;
 
-            if($customer_id){
+        //     if($customer_id){
 
-                if($ratecard->type == 'membership'){
-                    Log::info("membership");
-                    $prev_order = \Order::active()->where('type', 'memberships')->where("customer_id", $customer_id)->first();
-                }else{
-                    Log::info("workout-session");
-                    $prev_order = \Order::active()->whereIn('type', ['workout-session', 'memberships'])->where("customer_id", $customer_id)->first();
-                }
+        //         if($ratecard->type == 'membership'){
+        //             Log::info("membership");
+        //             $prev_order = \Order::active()->where('type', 'memberships')->where("customer_id", $customer_id)->first();
+        //         }else{
+        //             Log::info("workout-session");
+        //             $prev_order = \Order::active()->whereIn('type', ['workout-session', 'memberships'])->where("customer_id", $customer_id)->first();
+        //         }
 
-            }
+        //     }
             
             
-            Finder::$withoutAppends = true;
+        //     Finder::$withoutAppends = true;
             
-            $finder_city = Finder::find($ratecard->finder_id, ['city_id'])->city_id;
-            Log::info($finder_city);
-            if($prev_order){
-                Log::info('$prev_order');
-                Log::info($prev_order);
-                if($finder_city == 1){
-                    Log::info('MUMABAI');
+        //     $finder_city = Finder::find($ratecard->finder_id, ['city_id'])->city_id;
+        //     Log::info($finder_city);
+        //     if($prev_order){
+        //         Log::info('$prev_order');
+        //         Log::info($prev_order);
+        //         if($finder_city == 1 || $finder_city == 2){
+        //             Log::info('MUMABAI');
                     
-                    $discount = 300;
+        //             $discount = 300;
 
-                }else{
-                    Log::info('OUT MUMABAI');
+        //         }else{
+        //             Log::info('OUT MUMABAI');
                     
-                    $discount = 500;
-                }
+        //             $discount = 500;
+        //         }
 
-            }else{
-                Log::info('NO prev_order');
+        //     }else{
+        //         Log::info('NO prev_order');
                 
-                if($finder_city == 1){
-                    Log::info('MUMABAI');
+        //         if($finder_city == 1 || $finder_city == 2){
+        //             Log::info('MUMABAI');
                     
-                    $discount = 500;
-                }else{
-                    Log::info('OUT MUMABAI');
+        //             $discount = 500;
+        //         }else{
+        //             Log::info('OUT MUMABAI');
                     
-                    $discount = 750;
-                }
-            }
-            Log::info('$discount');
-            Log::info($discount);
-            $coupon = array("code" => strtolower($couponCode),"discount_max" => $discount,"discount_amount" => $discount);
-        }
+        //             $discount = 750;
+        //         }
+        //     }
+        //     Log::info('$discount');
+        //     Log::info($discount);
+        //     $coupon = array("code" => strtolower($couponCode),"discount_max" => $discount,"discount_amount" => $discount);
+        // }
         
         Log::info("coupon");
         Log::info($coupon);

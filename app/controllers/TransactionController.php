@@ -3500,7 +3500,7 @@ class TransactionController extends \BaseController {
     }
     
     
-    public function generateFreeDietPlanOrder($order){
+    public function generateFreeDietPlanOrder($order,$type = false){
     	
     	$data = [];
     	$data['type'] = "diet_plan";
@@ -3508,6 +3508,10 @@ class TransactionController extends \BaseController {
     	$data['customer_email'] = $order['customer_email'];
     	$data['customer_phone'] = $order['customer_phone'];
     	$data['customer_source'] = (!empty($order['customer_source'])?$order['customer_source']:'web');
+
+        if($type){
+            $data['pay_for'] = $type;
+        }
     	
     	$order['finder_id']=11128;
     	$rt=Ratecard::where("finder_id",$order['finder_id'])->where('validity',1)->where('validity_type','months')->where(function($query)
