@@ -121,6 +121,56 @@ Class CustomerReward {
 
                     $amount = (int) $order['amount_finder'];
 
+                    if(isset($finder['brand_id']) && $finder['brand_id'] == 134){
+
+                        $min_date = strtotime(' + 2 days');
+                        $max_date = strtotime(' + 32 days');
+
+                        $slab = [            
+                            [
+                                'min'=>25000,
+                                'max'=>0,
+                            ],
+                            [
+                                'min'=>20000,
+                                'max'=>25000,
+                            ],
+                            [
+                                'min'=>15000,
+                                'max'=>20000,
+                            ],
+                            [
+                                'min'=>10000,
+                                'max'=>15000,
+                            ],
+                            [
+                                'min'=>7500,
+                                'max'=>10000,
+                            ],
+                            [
+                                'min'=>5000,
+                                'max'=>7500,
+                            ],
+                            [
+                                'min'=>2000,
+                                'max'=>5000,
+                            ],
+                            [
+                                'min'=>1000,
+                                'max'=>2000,
+                            ],
+                        ];
+
+                        foreach ($slab as $slab_key => $slab_value) {
+
+                            if($amount >= $slab_value['min'] && $slab_value['max'] !== 0 ){
+
+                                $amount = $slab_value['max'];
+                                break;
+                            }
+                        }
+                    }
+
                     $reward['content'] = [];
 
                     $reward_data_flag = false;
