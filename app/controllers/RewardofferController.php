@@ -300,10 +300,15 @@ class RewardofferController extends BaseController {
         $rewards                =   [];
         $finder_name            =   $finder->title;
 
+        $cutl_vendor = false;
+        $cutl_amount = $amount;
+
         if(isset($finder['brand_id']) && $finder['brand_id'] == 134){
 
             $min_date = strtotime(' + 2 days');
             $max_date = strtotime(' + 32 days');
+
+            $cutl_vendor = true;
         }
 
         if($amount <= 1025){
@@ -403,6 +408,53 @@ class RewardofferController extends BaseController {
 
 
             Log::info('------------------------------findercategory_id --------------------------'.$findercategory_id);
+
+            if($cutl_vendor){
+
+                $slab = [            
+                    [
+                        'min'=>25000,
+                        'max'=>0,
+                    ],
+                    [
+                        'min'=>20000,
+                        'max'=>25000,
+                    ],
+                    [
+                        'min'=>15000,
+                        'max'=>20000,
+                    ],
+                    [
+                        'min'=>10000,
+                        'max'=>15000,
+                    ],
+                    [
+                        'min'=>7500,
+                        'max'=>10000,
+                    ],
+                    [
+                        'min'=>5000,
+                        'max'=>7500,
+                    ],
+                    [
+                        'min'=>2000,
+                        'max'=>5000,
+                    ],
+                    [
+                        'min'=>1000,
+                        'max'=>2000,
+                    ],
+                ];
+
+                foreach ($slab as $slab_key => $slab_value) {
+
+                    if($amount >= $slab_value['min'] && $slab_value['max'] !== 0 ){
+
+                        $amount = $slab_value['max'];
+                        break;
+                    }
+                }
+            }
 
             $rewardoffer           =   Rewardoffer::active()->where('findercategory_id', $findercategory_id)
                     ->where('amount_min','<=', $amount)
@@ -891,6 +943,8 @@ class RewardofferController extends BaseController {
         $cashback = null;
         
         $customerReward     =   new CustomerReward();
+
+        $amount = $cutl_amount;
 
         if($amount < 50000 || !isset($_GET['device_type'])){   
             
