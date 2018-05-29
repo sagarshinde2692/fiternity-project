@@ -1067,6 +1067,9 @@ class FindersController extends \BaseController {
 				$video_service_tags = ['All'];
 				$video_service_tags_others_count = 0;
 
+				
+					
+				
 				if(isset($finder['videos']) && is_array($finder['videos'])){
 
 					foreach($finder['videos'] as $key => $video){
@@ -1083,6 +1086,25 @@ class FindersController extends \BaseController {
 					
 					$finder['video_service_tags']['All'] = count($finder['videos']);
 				}
+			
+				if(isset($finder['playOverVideo'])&&$finder['playOverVideo']!=-1&&isset($finder['videos']) && is_array($finder['videos']))
+				{
+					try {
+						$povInd=$finder['videos'][(int)$finder['playOverVideo']];
+						Log::info(" povInd  :: ".print_r($povInd,true));
+						array_splice($finder['videos'],(int)$finder['playOverVideo'], 1);
+						$finder['playOverVideo']=$povInd;
+					} catch (Exception $e) {
+						$message = array(
+								'type'    => get_class($e),
+								'message' => $e->getMessage(),
+								'file'    => $e->getFile(),
+								'line'    => $e->getLine(),
+						);
+						Log::info(" playOverVideoError ".print_r($message,true));
+					}
+				}
+				else unset($finder['playOverVideo']);
 				
 
 				// if(count($finder['video_service_tags'])>1 && $video_service_tags_others_count>0){
@@ -3319,7 +3341,7 @@ class FindersController extends \BaseController {
 				->with(array('services'=>function($query){$query->select('*')->where('status','=','1')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))->orderBy('ordering', 'ASC');}))
 
 				->with(array('reviews'=>function($query){$query->where('status','=','1')->select('_id','finder_id','customer_id','rating','description','updated_at')->with(array('customer'=>function($query){$query->select('_id','name','picture')->where('status','=','1');}))->orderBy('updated_at', 'DESC')->limit(1);}))
-				->first(array('_id','slug','title','lat','lon','category_id','category','location_id','location','city_id','city','categorytags','locationtags','offerings','facilities','coverimage','finder_coverimage','contact','average_rating','photos','info','manual_trial_enable','manual_trial_auto','trial','commercial_type','multiaddress','membership','flags','custom_link','videos','total_rating_count'));
+				->first(array('_id','slug','title','lat','lon','category_id','category','location_id','location','city_id','city','categorytags','locationtags','offerings','facilities','coverimage','finder_coverimage','contact','average_rating','photos','info','manual_trial_enable','manual_trial_auto','trial','commercial_type','multiaddress','membership','flags','custom_link','videos','total_rating_count','playOverVideo'));
 
 			$finder = false;
 
@@ -3341,15 +3363,45 @@ class FindersController extends \BaseController {
 					}
 				}
 
-				if(isset($finderarr['videos'])){
-					foreach($finderarr['videos'] as $key => $video){
+				
+				
+
+				$finder         =   array_except($finderarr, array('info','finder_coverimage','location_id','category_id','city_id','coverimage','findercollections','categorytags','locationtags','offerings','facilities','blogs'));
+				
+				if(isset($finder['playOverVideo'])&&$finder['playOverVideo']!=-1&&isset($finder['videos']) && is_array($finder['videos']))
+				{
+					try {
+						$povInd=$finder['videos'][(int)$finder['playOverVideo']];
+						if(!isset($povInd['url']) || trim($povInd['url']) == ""){
+							$povInd=null;
+						}
+						Log::info(" povInd  :: ".print_r($povInd,true));
+						if(!empty($povInd))
+						{
+							array_splice($finder['videos'],(int)$finder['playOverVideo'], 1);
+							$finder['playOverVideo']=$povInd;
+						}
+					} catch (Exception $e) {
+						$message = array(
+								'type'    => get_class($e),
+								'message' => $e->getMessage(),
+								'file'    => $e->getFile(),
+								'line'    => $e->getLine(),
+						);
+						Log::info(" playOverVideoError ".print_r($message,true));
+					}
+				}
+				else unset($finder['playOverVideo']);
+				
+				if(isset($finder['videos'])){
+					foreach($finder['videos'] as $key => $video){
 						if(!isset($video['url']) || trim($video['url']) == ""){
-							unset($finderarr['videos'][$key]);
+							unset($finder['videos'][$key]);
 						}
 					}
 				}
-
-				$finder         =   array_except($finderarr, array('info','finder_coverimage','location_id','category_id','city_id','coverimage','findercollections','categorytags','locationtags','offerings','facilities','blogs'));
+				
+				
 				$coverimage     =   ($finderarr['finder_coverimage'] != '') ? $finderarr['finder_coverimage'] : 'default/'.$finderarr['category_id'].'-'.rand(1, 19).'.jpg';
 				array_set($finder, 'coverimage', $coverimage);
 
@@ -3359,6 +3411,10 @@ class FindersController extends \BaseController {
 				$finder['today_closing_hour']           =   null;
 				$finder['open_now']                     =   false;
 				$finder['open_close_hour_for_week']     =   [];
+				
+				
+				
+				
 
 				if(isset($finderarr['category_id']) && $finderarr['category_id'] != ""){
 					$finder['category_id'] = $finderarr['category_id'];
