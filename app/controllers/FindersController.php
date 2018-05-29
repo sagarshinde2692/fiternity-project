@@ -836,6 +836,11 @@ class FindersController extends \BaseController {
 					$finder['brand'] = $finderarr['brand'];
 
 				}
+				$finder['cult_enquiry'] = null;
+
+				if(isset($finderarr['brand_id']) && $finderarr['brand_id'] == 134){
+					$finder['cult_enquiry'] = true;
+				}
 
 
 				if(isset($finderarr['category_id']) && $finderarr['category_id'] == 41){
