@@ -831,6 +831,7 @@ class RewardofferController extends BaseController {
                                         $rewards_value['contents'] = ['Workout Session'];
                                         $rewards_value['gallery'] = [];
                                         $rewards_value['description'] = $session_content;
+                                        $rewards_value['quantity'] = $data_value['total'];
 
                                         break;
                                     }
