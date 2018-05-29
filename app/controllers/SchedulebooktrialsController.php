@@ -2210,6 +2210,10 @@ class SchedulebooktrialsController extends \BaseController {
                 'pre_trial_status'              =>      'yet_to_connect'
             );
 
+            if(!empty($order['assisted_by'])){
+                $booktrialdata['assisted_by'] = $order['assisted_by'];
+            }
+
             if(!empty($order['manual_order'])){
                 $booktrialdata['manual_order'] = $order['manual_order'];
             }
@@ -3245,6 +3249,10 @@ class SchedulebooktrialsController extends \BaseController {
                 'diet_plan_link'                =>      $diet_plan_link,
                 'pre_trial_status'              =>      'yet_to_connect'
             );
+
+            if(!empty($data['assisted_by'])){
+                $booktrialdata['assisted_by'] = $data['assisted_by'];
+            }
 
             if(!empty($data['manual_order'])){
                 $booktrialdata['manual_order'] = $data['manual_order'];
