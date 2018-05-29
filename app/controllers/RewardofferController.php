@@ -243,12 +243,6 @@ class RewardofferController extends BaseController {
             }
         }
 
-        if(in_array($ratecard_id,[103151,103152,103153,103154,103155,103156,103157,103158])){
-
-            $min_date = null;
-            $max_date = strtotime(date('2018-03-30 23:59:59'));
-        }
-
         if(isset($data['service_category_id']) && $data['service_category_id'] != ""){
 
             $service_category_id = (int)$data['service_category_id'];
@@ -314,36 +308,55 @@ class RewardofferController extends BaseController {
 
         if($amount <= 1025){
             switch ($finder_id) {
-                case 13761 : 
-                    if(time() <= strtotime(date('2018-06-15 23:59:59'))){
-                        $min_date = strtotime(date('2018-06-15 00:00:00'));
-                        $max_date = strtotime(date('2018-06-15 23:59:59'));
-                    }
-                    break;
-                case 13762 : 
-                    if(time() <= strtotime(date('2018-05-18 23:59:59'))){
-                        $min_date = strtotime(date('2018-05-18 00:00:00'));
-                        $max_date = strtotime(date('2018-05-18 23:59:59'));
-                    }
-                    break;
-                case 13763 : 
-                    if(time() <= strtotime(date('2018-04-23 23:59:59'))){
-                        $min_date = strtotime(date('2018-04-23 00:00:00'));
-                        $max_date = strtotime(date('2018-04-23 23:59:59'));
-                    }
-                    break;
-                case 13764 : 
-                    if(time() <= strtotime(date('2018-05-20 23:59:59'))){
-                        $min_date = strtotime(date('2018-05-20 00:00:00'));
-                        $max_date = strtotime(date('2018-05-20 23:59:59'));
-                    }
-                    break;
                 case 13765 :
                     if(time() <= strtotime(date('2018-06-14 23:59:59'))){
                         $min_date = strtotime(date('2018-06-14 00:00:00'));
                         $max_date = strtotime(date('2018-06-14 23:59:59'));
                     }
                     break;
+                case 13761 : 
+                    if(time() <= strtotime(date('2018-06-15 23:59:59'))){
+                        $min_date = strtotime(date('2018-06-15 00:00:00'));
+                        $max_date = strtotime(date('2018-06-15 23:59:59'));
+                    }
+                    break;
+                case 14079 : 
+                    if(time() <= strtotime(date('2018-06-28 23:59:59'))){
+                        $min_date = strtotime(date('2018-06-28 00:00:00'));
+                        $max_date = strtotime(date('2018-06-28 23:59:59'));
+                    }
+                    break;
+                case 14081 : 
+                    if(time() <= strtotime(date('2018-06-25 23:59:59'))){
+                        $min_date = strtotime(date('2018-06-25 00:00:00'));
+                        $max_date = strtotime(date('2018-06-25 23:59:59'));
+                    }
+                    break;
+                case 14082 : 
+                    if(time() <= strtotime(date('2018-06-04 23:59:59'))){
+                        $min_date = strtotime(date('2018-06-04 00:00:00'));
+                        $max_date = strtotime(date('2018-06-04 23:59:59'));
+                    }
+                    break;
+                case 14088 : 
+                    if(time() <= strtotime(date('2018-06-07 23:59:59'))){
+                        $min_date = strtotime(date('2018-06-07 00:00:00'));
+                        $max_date = strtotime(date('2018-06-07 23:59:59'));
+                    }
+                    break;
+                case 14085 : 
+                    if(time() <= strtotime(date('2018-06-30 23:59:59'))){
+                        $min_date = strtotime(date('2018-06-30 00:00:00'));
+                        $max_date = strtotime(date('2018-06-30 23:59:59'));
+                    }
+                    break;
+                case 14078 : 
+                    if(time() <= strtotime(date('2018-06-30 23:59:59'))){
+                        $min_date = strtotime(date('2018-06-30 00:00:00'));
+                        $max_date = strtotime(date('2018-06-30 23:59:59'));
+                    }
+                    break;
+                
                 default: break;
             }     
         }
@@ -536,7 +549,9 @@ class RewardofferController extends BaseController {
                                         }
                                     }
 
-                                    if(in_array($finder_id,[13761,13762,13763,13764,13765]) && $amount <= 1000){
+                                    $cult_gym = [13761,13762,13763,13764,13765,14078,14079,14081,14082,14085,14088];
+
+                                    if(in_array($finder_id,$cult_gym) && $amount <= 1025){
 
                                         $pos = strpos($rewards_value['title'],'(Kit B)');
 

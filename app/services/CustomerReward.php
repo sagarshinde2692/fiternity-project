@@ -182,7 +182,9 @@ Class CustomerReward {
                             }
                         }
 
-                        if(in_array($finder_id,[13761,13762,13763,13764,13765]) && $amount <= 1000){
+                        $cult_gym = [13761,13762,13763,13764,13765,14078,14079,14081,14082,14085,14088];
+
+                        if(in_array($finder_id,$cult_gym) && $amount <= 1025){
 
                             $pos = strpos($reward['title'],'(Kit B)');
 
