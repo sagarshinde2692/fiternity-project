@@ -243,6 +243,7 @@ Class CustomerReward {
                                 $reward['description'] = $session_content;
                                 $reward['quantity'] = $data_value['total'];
                                 $reward['payload']['amount'] = $data_value['amount'];
+                                $reward['session'] = $data_value['session'];
 
                                 break;
                             }
@@ -259,7 +260,48 @@ Class CustomerReward {
         return "success";
     }
 
-    public function createCoupon(){
+    public function createSessionCoupon($data){
+
+        $bulk_insert = [];
+
+        $coupon_code = [];
+
+        foreach ($data['session'] as $session_value){
+
+            for ($i=1; $i <= $session_value['quantity'] ; $i++) { 
+
+                $coupon_code[] = $code = strtolower(substr($data['customer_name'], 0, 2)).$data['_id'].$session_value['slabs'].$i;
+                
+                $coupon_data = [
+                    'validity'=>time()+(86400*30),
+                    'code'=>$code,
+                    'amount'=>$session_value['slabs'],
+                    'customer_id'=>$data['customer_id'],
+                    'myreward_id'=>$data['_id'],
+                    'reward_type'=>$data['reward_type'],
+                    'created_at'=>new MongoDate(),
+                    'updated_at'=>new MongoDate()
+                ];
+
+                if($data['reward_type'] == 'swimming_sessions'){
+                    $coupon_data['service_category_id'] = 123;
+                }
+
+                if(!empty($data['order_id'])){
+                    $coupon_data['order_id'] = (int)$data['order_id'];
+                }
+
+                if(!empty($data['booktrial_id'])){
+                    $coupon_data['booktrial_id'] = (int)$data['booktrial_id'];
+                }
+
+                $bulk_insert[] = $coupon_data;
+            }    
+        }
+
+        CustomerCoupn::insert($bulk_insert);
+
+        return $coupon_code;
         
     }
 
@@ -294,6 +336,12 @@ Class CustomerReward {
 
                 $order->update();
             }
+        }
+
+        if(in_array($reward['reward_type'],['sessions','swimming_sessions'])){
+
+            $myreward->customer_coupon = $this->createSessionCoupon($myreward->toArray());
+            $myreward->update();
         }
         
         return "success";
