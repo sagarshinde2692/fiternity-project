@@ -221,7 +221,8 @@ Class FinderMailer extends Mailer {
 						'priyankamohnish@fitternity.com',
 						'dharatanna@fitternity.com',
 						'pranjalisalvi@fitternity.com',
-						'hardikkhamkar@fitternity.com'
+						'hardikkhamkar@fitternity.com',
+						'ismailbaig@fitternity.com'
 					];
 					break;
 				case 4 : 
@@ -248,6 +249,13 @@ Class FinderMailer extends Mailer {
 		}
 
 		$user_email = array_merge($user_email,$fitternity_email);
+
+		$common = [
+			'kinnarijariwala@fitternity.com',
+			'siddharthshah@fitternity.com'
+		];
+
+		$user_email = array_merge($user_email,$common);
 
 		$message_data 	= array(
 			'user_email' => $user_email,
