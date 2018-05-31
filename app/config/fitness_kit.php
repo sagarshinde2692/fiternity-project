@@ -1016,6 +1016,81 @@ return [
 		],
 	],
 
+	'swimming_session' => [
+		[
+			'min'=>7500,
+			'max'=>10000,
+			'session' => [
+				[
+					'slabs'=>1500,
+					'quantity'=>1
+				]
+			],
+			'total'=>1,
+			'amount'=>1500
+		],
+		[
+			'min'=>10000,
+			'max'=>15000,
+			'session' => [
+				[
+					'slabs'=>1500,
+					'quantity'=>1
+				]
+			],
+			'total'=>1,
+			'amount'=>1500
+		],
+		[
+			'min'=>15000,
+			'max'=>20000,
+			'session' => [
+				[
+					'slabs'=>1500,
+					'quantity'=>1
+				]
+			],
+			'total'=>1,
+			'amount'=>1500
+		],
+		[
+			'min'=>20000,
+			'max'=>25000,
+			'session' => [
+				[
+					'slabs'=>1500,
+					'quantity'=>2
+				]
+			],
+			'total'=>2,
+			'amount'=>3000
+		],
+		[
+			'min'=>25000,
+			'max'=>35000,
+			'session' => [
+				[
+					'slabs'=>1500,
+					'quantity'=>2
+				]
+			],
+			'total'=>2,
+			'amount'=>3000
+		],
+		[
+			'min'=>35000,
+			'max'=>0,
+			'session' => [
+				[
+					'slabs'=>1500,
+					'quantity'=>2
+				]
+			],
+			'total'=>2,
+			'amount'=>3000
+		],
+	],
+
 
 
 ];

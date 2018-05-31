@@ -839,6 +839,38 @@ class RewardofferController extends BaseController {
                                 }
                             }
 
+                            if($rewards_value['reward_type'] == "swimming_sessions"){
+
+                                $reward_type_info = 'swimming_sessions';
+
+                                $workout_session_array = Config::get('fitness_kit.swimming_session');
+
+                                rsort($workout_session_array);
+
+                                foreach ($workout_session_array as $data_key => $data_value) {
+
+                                    if($amount >= $data_value['min'] ){
+
+                                        $session_content = $data_value['total']." Swimming Sessions";
+
+                                        foreach ($data_value['session'] as $session_value){
+                                            $session_content .= " <br>- ".$session_value['slabs']." x ".$session_value['quantity'];
+                                        }
+
+                                        $rewards_value['payload_amount'] = $data_value['amount'];
+                                        $rewards_value['new_amount'] = $data_value['amount'];
+                                        $rewards_value['title'] = "Swimming Session";
+                                        $rewards_value['contents'] = ['Swimming Session'];
+                                        $rewards_value['gallery'] = [];
+                                        $rewards_value['description'] = $session_content;
+                                        $rewards_value['quantity'] = $data_value['total'];
+                                        $rewards_value['payload']['amount'] = $data_value['amount'];
+
+                                        break;
+                                    }
+                                }
+                            }
+
                         }
                     }
 
