@@ -1563,9 +1563,35 @@ Class CustomerReward {
                 "coupon_applied" => $applyCustomerCoupn
             ];
 
-            $customerCoupn = \CustomerCoupn::where('code', strtolower($couponCode))->where('validity','<=',time())->firts();
+            $decoded = $this->customerTokenDecode($jwt_token);
+            $customer_id = $decoded->customer->_id;
+
+            $customerCoupn = \CustomerCoupn::active()->where('code', strtolower($couponCode))->where('validity','>=',time())->first();
 
             if($customerCoupn){
+
+                $jwt_token = Request::header('Authorization');
+
+                if(empty($jwt_token)){
+
+                    $decoded = $this->customerTokenDecode($jwt_token);
+                    $customer_id = $decoded->customer->_id;
+
+                    if((int)$customerCoupn['customer_id'] !== $customer_id){
+
+                        $resp['user_login_error'] = true;
+                        $resp['error_message'] = 'Wrong Logged in User';
+
+                        return $resp;
+                    }
+
+                }else{
+
+                    $resp['user_login_error'] = true;
+                    $resp['error_message'] = 'User Login Required';
+
+                    return $resp;
+                }
 
                 if(!empty($ratecard['type']) && $ratecard['type'] == 'workout session'){
 
@@ -1607,6 +1633,7 @@ Class CustomerReward {
             }
 
             return $resp;
+
         }
 
 

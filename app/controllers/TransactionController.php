@@ -4690,7 +4690,7 @@ class TransactionController extends \BaseController {
 
             $errorMessage =  "Coupon is either not valid or expired";
 
-            if((isset($resp['fitternity_only_coupon']) && $resp['fitternity_only_coupon']) || (isset($resp['vendor_exclusive']) && $resp['vendor_exclusive']) || (isset($resp['app_only']) && $resp['app_only'])){
+            if(!empty($resp['fitternity_only_coupon']) || !empty($resp['vendor_exclusive']) || !empty($resp['app_only']) || !empty($resp['user_login_error']) ){
                 $errorMessage =  $resp['error_message'];
             }
 
