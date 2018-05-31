@@ -3641,6 +3641,13 @@ class CustomerController extends \BaseController {
 
 		}
 
+		if(isset($data['order_id'])){
+			$order = Order::find($data['order_id']);
+			$data['customer_name'] = $order['customer_name'];
+			$data['customer_email']= $order['customer_email'];
+			$data['customer_phone']= $order['customer_phone'];
+		}
+
 		if(isset($data['gender']) && $data['gender'] != ""){
 
 			$customerData['gender'] = $data['gender'];

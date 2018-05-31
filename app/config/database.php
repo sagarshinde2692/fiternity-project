@@ -1,9 +1,9 @@
 <?php
 
 //local
-// $host = "localhost";
-// $username = "";
-// $password = "";
+$host = "localhost";
+$username = "";
+$password = "";
 
 //stage
 // $host = "apistage.fitn.in";
@@ -12,9 +12,9 @@
 // $options = ['db' => 'admin','authMechanism' => 'MONGODB-CR']; // sets the authentication database required by mongo 3]
 
 //production
-$host = "54.179.134.14";
-$username = "";
-$password = "";
+// $host = "54.179.134.14";
+// $username = "";
+// $password = "";
 
 return array(
 
