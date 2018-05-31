@@ -1376,107 +1376,7 @@ Class CustomerReward {
         }
         
         $coupon = $query->first();
-        // if(!isset($coupon) && (strtolower($couponCode) == "srfit")){
-        //     $vendorMOU = Vendormou::where("vendors",$ratecard["finder_id"])->where('contract_start_date', '<=', new \DateTime())->where('contract_end_date', '>=', new \DateTime())->first();
-        //     $coupon = array("code" => strtolower($couponCode),"discount_max" => 1000,"discount_amount" => 0,"discount_min" => 200);
-        //     if(isset($vendorMOU)){
-        //         if(isset($vendorMOU["cos_percentage_normal"])){
-        //             $vendorMOU["cos_percentage_normal"] = 15;
-        //         }
-        //         if($vendorMOU["cos_percentage_normal"] >= 15){
-        //             $coupon["discount_percent"] = 5;
-        //         }elseif($vendorMOU["cos_percentage_normal"] >= 10 && $vendorMOU["cos_percentage_normal"] < 15){
-        //             $coupon["discount_percent"] = 3;
-        //         }elseif($vendorMOU["cos_percentage_normal"] < 10){
-        //             $coupon["discount_percent"] = 2;
-        //         }
-        //     }else{
-        //         $coupon["discount_percent"] = 5;
-        //     }
-        // }
-        // if(!isset($coupon) && (strtolower($couponCode) == "whfit")){
-        //     $coupon = array("code" => strtolower($couponCode),"discount_max" => 600,"discount_amount" => 0,"discount_min" => 100);
-        //     if($ratecard["validity_type"] == "days"){
-        //         if($ratecard["validity"] >= 30 && $ratecard["validity"] < 179){
-        //             $coupon["discount_percent"] = 2.5;
-        //         }else if($ratecard["validity"] >= 179){
-        //             $coupon["discount_percent"] = 5;
-        //             $coupon["discount_max"] = 1200;
-        //         }
-        //     }else if($ratecard["validity_type"] == "months"){
-        //         if($ratecard["validity"] >= 1 && $ratecard["validity"] <= 5){
-        //             $coupon["discount_percent"] = 2.3;
-        //         }else if($ratecard["validity"] >= 6){
-        //             $coupon["discount_max"] = 1200;
-        //             $coupon["discount_percent"] = 5;
-        //         }
-        //     }else if($ratecard["validity_type"] == "year"){
-        //             $coupon["discount_max"] = 1200;
-        //             $coupon["discount_percent"] = 5;
-        //     }
-        //     if(!isset($coupon["discount_percent"])){
-        //         $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "error_message"=>"Coupon cannot be applied for this purchase");
-        //         return $resp;
-        //     }
-        // }
-        // if(!isset($coupon) && (strtolower($couponCode) == "mad18") && $ratecard){
-        //     Log::info("New user code");
-            
-        //     $discount = 300;
-
-        //     $prev_order = null;
-
-        //     if($customer_id){
-
-        //         if($ratecard->type == 'membership'){
-        //             Log::info("membership");
-        //             $prev_order = \Order::active()->where('type', 'memberships')->where("customer_id", $customer_id)->first();
-        //         }else{
-        //             Log::info("workout-session");
-        //             $prev_order = \Order::active()->whereIn('type', ['workout-session', 'memberships'])->where("customer_id", $customer_id)->first();
-        //         }
-
-        //     }
-            
-            
-        //     Finder::$withoutAppends = true;
-            
-        //     $finder_city = Finder::find($ratecard->finder_id, ['city_id'])->city_id;
-        //     Log::info($finder_city);
-        //     if($prev_order){
-        //         Log::info('$prev_order');
-        //         Log::info($prev_order);
-        //         if($finder_city == 1 || $finder_city == 2){
-        //             Log::info('MUMABAI');
-                    
-        //             $discount = 300;
-
-        //         }else{
-        //             Log::info('OUT MUMABAI');
-                    
-        //             $discount = 500;
-        //         }
-
-        //     }else{
-        //         Log::info('NO prev_order');
-                
-        //         if($finder_city == 1 || $finder_city == 2){
-        //             Log::info('MUMABAI');
-                    
-        //             $discount = 500;
-        //         }else{
-        //             Log::info('OUT MUMABAI');
-                    
-        //             $discount = 750;
-        //         }
-        //     }
-        //     Log::info('$discount');
-        //     Log::info($discount);
-        //     $coupon = array("code" => strtolower($couponCode),"discount_max" => $discount,"discount_amount" => $discount);
-        // }
         
-        Log::info("coupon");
-        Log::info($coupon);
         if(isset($ratecard["flags"]) && isset($ratecard["flags"]["pay_at_vendor"]) && $ratecard["flags"]["pay_at_vendor"] === True){
             Log::info($ratecard);
             return $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false);
@@ -1648,11 +1548,68 @@ Class CustomerReward {
             if(isset($coupon['success_message']) && trim($coupon['success_message']) != ""){
                 $resp['custom_message'] = str_replace("<amt>",$discount_amount,$coupon['success_message']);
             }
+
         }else{
-            $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false);
-            // $resp = array("status"=> 400, "message" => "Coupon not found", "error_message" => "Coupon is either not valid or expired");
-            // return Response::json($resp,400);    
+
+            $applyCustomerCoupn = false;
+
+            $resp = [
+                "data"=>[
+                    "discount" => 0,
+                    "final_amount" => $price,
+                    "wallet_balance" => $wallet_balance,
+                    "only_discount" => $price
+                ], 
+                "coupon_applied" => $applyCustomerCoupn
+            ];
+
+            $customerCoupn = \CustomerCoupn::where('code', strtolower($couponCode))->where('validity','<=',time())->firts();
+
+            if($customerCoupn){
+
+                if(!empty($ratecard['type']) && $ratecard['type'] == 'workout session'){
+
+                    if(!empty($customerCoupn['service_category_id'])){
+
+                        $service = Service::find((int)$ratecard['service_id']);
+
+                        if($service && !empty($service['servicecategory_id']) && $service['servicecategory_id'] == $customerCoupn['service_category_id'] ){
+
+                            $applyCustomerCoupn = true;
+                        }
+
+                    }else{
+
+                        $applyCustomerCoupn = true;
+                    }
+
+                }
+
+                if($applyCustomerCoupn){
+
+                    $discount_amount = $customerCoupn["code"];
+
+                    $discount_price = $price - $discount_amount;
+
+                    $final_amount = $discount_price > $wallet_balance ? $discount_price - $wallet_balance : 0;
+
+                    $resp = [
+                        "data"=>[
+                            "discount" => $discount_amount,
+                            "final_amount" => $final_amount,
+                            "wallet_balance" => $wallet_balance,
+                            "only_discount" => $discount_price
+                        ],
+                        "coupon_applied" => $applyCustomerCoupn
+                    ];
+
+                }
+            }
+
+            return $resp;
         }
+
+
         return $resp;
     }
 
