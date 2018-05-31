@@ -2507,6 +2507,57 @@ class SchedulebooktrialsController extends \BaseController {
 
             $currentScheduleDateDiffMin = $currentDateTime->diffInMinutes($scheduleDateTime, false);
 
+            $schedule_date_time_hour = intval(date('H',strtotime($booktrial->schedule_date_time)));
+
+            $current_hour = intval(date('H',time()));
+
+            // $delayReminderbefore2Hours      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->addMinutes(-60 * 2);
+    
+            // $send_communication['customer_sms_offhours_confirmation'] = $this->customersms->offhoursConfirmation($booktrialdata, $delayReminderbefore2Hours);
+
+            if( $this->isWeekend(time()) && in_array(date('l', strtotime($booktrial->schedule_date_time)), Config::get('app.trial_comm.end_weekend')) && $schedule_date_time_hour < Config::get('app.trial_comm.off_hours_end_time')){
+                Log::info("Scheduling sunday 8pm");
+                $delayReminderPrevDaySunday      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d 20:00:00',strtotime($booktrial->schedule_date_time)))->addDays(-1);
+    
+                $send_communication['customer_sms_offhours_confirmation'] = $this->customersms->offhoursConfirmation($booktrialdata, $delayReminderPrevDaySunday);
+            
+            // }else if( $this->isOffHour($schedule_date_time_hour) &&  $this->isOffHour($current_hour) && $currentScheduleDateDiffMin <= 15*60){
+            }else if( $this->isOffHour($schedule_date_time_hour) &&  $this->isOffHour($current_hour)){
+                
+                if($current_hour < Config::get('app.trial_comm.offhours_fixed_time_1') && strtotime($booktrial->schedule_date_time) > strtotime(date('Y-m-d '.Config::get('app.trial_comm.offhours_fixed_time_1').':00:00', time()))){
+                    
+                    if($schedule_date_time_hour >= 8 && $schedule_date_time_hour < 11){
+                        Log::info("Scheduling offhours 2 hours before");
+                        $delayReminderbefore2Hours      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->addMinutes(-60 * Config::get('app.trial_comm.offhours_scheduled_td_hours'));
+    
+                        $send_communication['customer_sms_offhours_confirmation'] = $this->customersms->offhoursConfirmation($booktrialdata, $delayReminderbefore2Hours);
+    
+                    }else if($schedule_date_time_hour >= 6 && $schedule_date_time_hour < 8){
+                        Log::info("Scheduling offhours at 10 prev day");
+                        
+                        $delayReminderPrevDay      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d '.Config::get('app.trial_comm.offhours_fixed_time_1').':00:00',strtotime($booktrial->schedule_date_time)))->addDays(-1);
+    
+                        $send_communication['customer_sms_offhours_confirmation'] = $this->customersms->offhoursConfirmation($booktrialdata, $delayReminderPrevDay);
+
+                    }else{
+                        Log::info("Scheduling offhours 5 mins after booking");
+                    
+                        $delayReminderAfter5mins      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',time()))->addMinutes(Config::get('app.trial_comm.offhours_instant_td_mins'));
+        
+                        $send_communication['customer_sms_offhours_confirmation'] = $this->customersms->offhoursConfirmation($booktrialdata, $delayReminderAfter5mins);
+                    }
+                }else{
+
+                    Log::info("Scheduling offhours 5 mins after booking");
+                    
+                    $delayReminderAfter5mins      =    \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',time()))->addMinutes(Config::get('app.trial_comm.offhours_instant_td_mins'));
+    
+                    $send_communication['customer_sms_offhours_confirmation'] = $this->customersms->offhoursConfirmation($booktrialdata, $delayReminderAfter5mins);
+                
+                }
+                
+            }
+
             $customer_email_messageids 	=  $finder_email_messageids  =	$customer_sms_messageids  =  $finder_sms_messageids  =  $customer_notification_messageids  =  array();
 
             if($booktrial->going_status_txt == "rescheduled"){
@@ -2710,6 +2761,19 @@ class SchedulebooktrialsController extends \BaseController {
                     $this->utilities->setRedundant($order);
                 }
             }
+            if($currentScheduleDateDiffMin <= 60 && !$this->isWeekend(time()) && !$this->isOffHour(time())){
+                $this->publishConfirmationAlert($booktrialdata);
+            }
+
+            if( $this->isWeekend(strtotime($booktrial->schedule_date_time)) &&  $this->isWeekend(time()) ){
+                $cities 	=	City::active()->orderBy('name')->lists('name', '_id');
+                $booktrialdata['city_name'] = $cities[$booktrialdata['city_id']];
+                
+                $booktrialdata['confirm_link'] = Config::get('app.url').'/updatetrialstatus/'.$booktrialdata['_id'].'/confirm';
+                $booktrialdata['cancel_link'] = Config::get('app.url').'/updatetrialstatus/'.$booktrialdata['_id'].'/cancel';
+                $this->findermailer->trialAlert($booktrialdata);                
+                $this->findersms->trialAlert($booktrialdata);                
+            }
 
         }catch(\Exception $exception){
 
@@ -2744,7 +2808,8 @@ class SchedulebooktrialsController extends \BaseController {
         	"customer_sms_before10Min",
         	"customer_email_before10Min",
         	"customer_email_instant_workoutlevelstart",
-            "customer_notification_block_screen"
+            "customer_notification_block_screen",
+            "customer_sms_offhours_confirmation"
         ];
 
         foreach ($array as $value) {
@@ -2876,22 +2941,21 @@ class SchedulebooktrialsController extends \BaseController {
 
             if(!isset($data['manual_order'])){
             
-                $alreadyBookedTrials = $this->utilities->checkExistingTrialWithFinder($data['customer_email'], $data['customer_phone'], $data['finder_id']);
-                
-                // return $alreadyBookedTrials;
-                
-                if (count($alreadyBookedTrials) > 0) {
-                    $resp = array('status' => 403, 'message' => "You have already booked a trial for this vendor, please choose some other vendor");
-                    return Response::json($resp, 403);
-                }
+            $alreadyBookedTrials = Config::get('app.debug') ? [] : $this->utilities->checkExistingTrialWithFinder($data['customer_email'], $data['customer_phone'], $data['finder_id']);
+            
+            
+            if (count($alreadyBookedTrials) > 0) {
+                $resp = array('status' => 403, 'message' => "You have already booked a trial for this vendor, please choose some other vendor");
+                return Response::json($resp, 403);
+            }
 
-                // Throw an error if user has already booked a trial on same schedule timestamp..
-                $dates = $this->utilities->getDateTimeFromDateAndTimeRange($data['schedule_date'], $data['schedule_slot']);
-                $UpcomingTrialsOnTimestamp = $this->utilities->getUpcomingTrialsOnTimestamp($customer_id, $dates['start_timestamp'], $finderid);
-                if (count($UpcomingTrialsOnTimestamp) > 0) {
-                    $resp = array('status' => 403, 'message' => "You have already booked a trial on same datetime");
-                    return Response::json($resp, 403);
-                }
+            // Throw an error if user has already booked a trial on same schedule timestamp..
+            $dates = $this->utilities->getDateTimeFromDateAndTimeRange($data['schedule_date'], $data['schedule_slot']);
+            $UpcomingTrialsOnTimestamp = Config::get('app.debug') ? [] : $this->utilities->getUpcomingTrialsOnTimestamp($customer_id, $dates['start_timestamp'], $finderid);
+            if (count($UpcomingTrialsOnTimestamp) > 0) {
+                $resp = array('status' => 403, 'message' => "You have already booked a trial on same datetime");
+                return Response::json($resp, 403);
+            }
 
                 $disableTrial = $this->disableTrial($data);
 
@@ -4339,6 +4403,15 @@ class SchedulebooktrialsController extends \BaseController {
         array_set($bookdata, 'source_flag', $source_flag);
         array_set($bookdata, 'cancellation_reason_vendor', $reason);
         array_set($bookdata, 'final_lead_stage', 'cancel_stage');
+        array_set($bookdata, 'final_lead_status', 'cancelled_by_'.$source_flag);
+        if($source_flag == 'vendor'){
+            array_set($bookdata, 'pre_trial_vendor_confirmation', 'cancel');
+        }
+        if($booktrial['type']=='workout-session'){
+            array_set($bookdata, 'final_lead_stage', 'trial_stage');
+            array_set($bookdata, 'post_trial_status', 'no show');
+        }
+
         array_set($bookdata, 'cancel_by', $source_flag);
         $trialbooked        = 	$booktrial->update($bookdata);
 
@@ -4620,13 +4693,13 @@ class SchedulebooktrialsController extends \BaseController {
                 'source'                        =>      $booktrialdata->source,
                 'booktrial_link'                =>      $booktrial_link
             );
-
+            // return $booktrialdata;
+            $emaildata['paid']= $this->refundSessionAmount($booktrialdata);
             if($booktrialdata->source_flag == 'vendor'){
-
-                $this->customermailer->cancelBookTrialByVendor($emaildata);
-                $this->findermailer->cancelBookTrialByVendor($emaildata);
-                $this->customersms->cancelBookTrialByVendor($emaildata);
-                $this->findersms->cancelBookTrialByVendor($emaildata);
+                $this->customermailer->cancelBookTrial($emaildata);
+                $this->findermailer->cancelBookTrial($emaildata);
+                $this->findersms->cancelBookTrial($emaildata);
+                $this->customersms->cancelBookTrial($emaildata);
             }
             else{
                 $this->findermailer->cancelBookTrial($emaildata);
@@ -7281,7 +7354,137 @@ class SchedulebooktrialsController extends \BaseController {
         }
 
         return "done";
+    }
 
+    public function publishConfirmationAlert($booktrial_data){
+        
+
+        Log::info("publishing trial alert");
+        $pubnub = new \Pubnub\Pubnub('pub-c-df66f0bb-9e6f-488d-a205-38862765609d', 'sub-c-d9cf3842-cf1f-11e6-90ff-0619f8945a4f');
+        $booktrial_data = array_only($booktrial_data, ['_id', 'finder_name', 'schedule_date_time','finder_location','customer_name', 'city_id']);
+        $booktrial_data['schedule_date_time'] = date('d-m-Y g:i A',strtotime( $booktrial_data['schedule_date_time']));
+        $booktrial_data['type'] = 1;
+        
+        $cities 	=	City::active()->orderBy('name')->lists('name', '_id');
+        
+        $booktrial_data['city_name'] = $cities[$booktrial_data['city_id']];
+        $booktrial_data['trial_id'] = $booktrial_data['_id'];
+        unset($booktrial_data['_id']);
+        
+        Trialalert::create($booktrial_data);
+        $pubnub->publish('fitternity_trial_alert',$booktrial_data);
+        
+    }
+
+    function isWeekend($timestamp){
+        Log::info("hour");
+        Log::info(date('H',$timestamp)); 
+        if(in_array(date('l', $timestamp), Config::get('app.trial_comm.full_day_weekend')) ||  (in_array(date('l', $timestamp), Config::get('app.trial_comm.begin_weekend')) && intval(date('H',$timestamp)) >= Config::get('app.trial_comm.off_hours_begin_time')) ||  (in_array(date('l', $timestamp), Config::get('app.trial_comm.end_weekend')) && intval(date('H',$timestamp)) < Config::get('app.trial_comm.off_hours_end_time')) ){
+            
+            return true;
+        
+        }
+        return false;
+    }
+
+    function isOffHour($hour){
+        
+        if( $hour >= Config::get('app.trial_comm.off_hours_begin_time') || $hour < Config::get('app.trial_comm.off_hours_end_time')){
+            
+            return true;
+        
+        }
+        return false;
+    }
+
+    public function updatetrialstatus($_id, $action, $confirm=false){
+
+        if($confirm){
+            if($action == 'confirm'){
+                $booktrial = Booktrial::find(intval($_id));
+                $this->unsetEmptyDates($booktrial);
+                $booktrial->pre_trial_vendor_confirmation = 'confirmed';
+                $booktrial->update();
+                return "Trial Confirmed Successfully";
+
+            }else if($action == 'cancel'){
+                return $this->cancel($_id, 'vendor');
+            }
+        }else{
+            $booktrial = Booktrial::find(intval($_id));
+            $this->unsetEmptyDates($booktrial);
+            $booktrial_data = $booktrial->toArray();
+            $action_link = Config::get('app.url').'/updatetrialstatus/'.$_id.'/'.$action.'/1';
+            $cities 	=	City::active()->orderBy('name')->lists('name', '_id');
+            
+            return View::make('trialconfirm', compact('booktrial_data', 'action_link', 'action', 'cities'));
+        }
+
+
+    }
+
+    public function refundSessionAmount($booktrialdata){
+        $paid = 0;
+        if($booktrialdata['type'] == 'workout-session'){
+            Log::info('workout-session');
+            $order_id = $booktrialdata['order_id'];
+            $order = Order::where('_id',$order_id)->first();
+            
+            if($order){
+                if($order->status=='1'){
+
+                    Log::info('order');
+                    
+                    $order->update(['status' => '-1']);
+    
+                    if($order['amount'] >= 15000){
+                        $order_data = $order->toArray();
+                        $order_data['finder_vcc_email'] = "vinichellani@fitternity.com";
+                        $this->findermailer->orderFailureNotificationToLmd($order_data);
+                    }
+    
+                    $customer_id =  $order['customer_id'];
+    
+                    $refund = $paid = $order['amount'] + (isset($order['wallet_amount']) ? $order['wallet_amount'] : 0);
+                    Log::info($booktrialdata->source_flag);
+                    if($booktrialdata->source_flag == 'vendor'){
+                        Log::info("20");
+                        $refund = round($refund*1.2);
+                    }
+                    log::info($refund);
+                    $req = array(
+                        'customer_id'=>$customer_id,
+                        'order_id'=>$order_id,
+                        'amount'=>$refund,
+                        "type"=>'CREDIT',
+                        'entry'=>'credit',
+                        'description'=>'Refund for Session ID: '.$booktrialdata['code'],
+                    );
+    
+                    $walletTransactionResponse = $this->utilities->walletTransaction($req,$order->toArray());
+                    Log::info($walletTransactionResponse);
+    
+                    if($walletTransactionResponse['status'] != 200){
+                        return $paid = 0;
+                    }
+                }else{
+                    $order->update(['redundant_order' => '1']);
+                }
+
+
+            }
+            
+        }
+
+        return $paid;
+
+    }
+
+    public function isOfficeHour($timestamp){
+        if(!in_array(date('l', $timestamp), ['Sunday', 'Saturday']) && date('H',$timestamp) >= 11 && date('H',$timestamp) < 20 ){
+            return true;
+        }
+        return false;
     }
 
 }

@@ -115,9 +115,9 @@ Class FinderMailer extends Mailer {
 
 	protected function cancelBookTrialByVendor ($data){
 
-		return 'no email';
+		// return 'no email';
 
-		$label = 'Vendor-trial-cancellation-email-to-vendor';
+		$label = 'Cancel-Trial-Vendor';
 
 		if($data['finder_vcc_email'] != ''){
 			$user_email 	=  	explode(',', $data['finder_vcc_email']);
@@ -996,6 +996,24 @@ Class FinderMailer extends Mailer {
 		return $this->common($label,$data,$message_data, $delay);
 	}
 
+	public function trialAlert($data){
+
+		$label = 'TrialAlert-Fitternity';
+
+		$user_email = ["vinichellani@fitternity.com","rohityadav@fitternity.com","karishahuja@fitternity.com","mukeshraheja@fitternity.com","prachimayekar@fitternity.com"];
+		
+		// $user_email = ["dhruvsarawagi@fitternity.com"];
+		$user_name = 'Fitternity Team';
+
+		$message_data 	= array(
+			'user_email' => array($data['customer_email']),
+			'user_name' => $data['customer_name']
+		);
+
+		return $this->common($label,$data,$message_data);
+	}
+
+
 	public function common($label,$data,$message_data,$delay = 0){
 		// return($message_data['user_email']);
 		if(in_array(Config::get('mail.to_mailus'),$message_data['user_email'])){
@@ -1010,7 +1028,7 @@ Class FinderMailer extends Mailer {
 
 		$email_template = 	$this->bladeCompile($template->email_text,$data);
 		$email_subject = 	$this->bladeCompile($template->email_subject,$data);
-
+		
 		if(!Config::get('app.vendor_communication')){
 
 			$message_data['user_email'] = array('sailismart@fitternity.com');
