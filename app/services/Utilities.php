@@ -1016,6 +1016,26 @@ Class Utilities {
             $order["hash_verified"] = false;
             $order->update();
         }
+
+        if($hash_verified && !empty($order['coupon_code'])){
+
+            $customerCoupn = \CustomerCoupn::where('code', strtolower($order['coupon_code']))->first();
+
+            if($customerCoupn){
+
+                if($customerCoupn['stauts'] == "0"){
+
+                    $hash_verified = false;
+
+                    $order->update(['customer_coupn_error'=>true]);
+
+                }else{
+
+                    $customerCoupn->update(['stauts'=>'0','on_order_id'=>$order['_id']]);
+                }      
+            }
+        }
+
         return $hash_verified;
     }
 
