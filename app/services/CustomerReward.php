@@ -250,6 +250,39 @@ Class CustomerReward {
                         }
                     }
 
+                    if($reward['reward_type'] == "swimming_sessions"){
+
+                        $reward_type_info = 'swimming_sessions';
+
+                        $swimming_session_array = Config::get('fitness_kit.swimming_session');
+
+                        rsort($swimming_session_array);
+
+                        foreach ($swimming_session_array as $data_key => $data_value) {
+
+                            if($amount >= $data_value['min'] ){
+
+                                $session_content = $data_value['total']." Swimming Sessions";
+
+                                foreach ($data_value['session'] as $session_value){
+                                    $session_content .= " <br>- ".$session_value['slabs']." x ".$session_value['quantity'];
+                                }
+
+                                $reward['payload_amount'] = $data_value['amount'];
+                                $reward['new_amount'] = $data_value['amount'];
+                                $reward['title'] = "Swimming Session";
+                                $reward['contents'] = ['Swimming Session'];
+                                $reward['gallery'] = [];
+                                $reward['description'] = $session_content;
+                                $reward['quantity'] = $data_value['total'];
+                                $reward['payload']['amount'] = $data_value['amount'];
+                                $reward['session'] = $data_value['session'];
+
+                                break;
+                            }
+                        }
+                    }
+
                 }
 
             }

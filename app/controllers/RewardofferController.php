@@ -843,11 +843,11 @@ class RewardofferController extends BaseController {
 
                                 $reward_type_info = 'swimming_sessions';
 
-                                $workout_session_array = Config::get('fitness_kit.swimming_session');
+                                $swimming_session_array = Config::get('fitness_kit.swimming_session');
 
-                                rsort($workout_session_array);
+                                rsort($swimming_session_array);
 
-                                foreach ($workout_session_array as $data_key => $data_value) {
+                                foreach ($swimming_session_array as $data_key => $data_value) {
 
                                     if($amount >= $data_value['min'] ){
 
