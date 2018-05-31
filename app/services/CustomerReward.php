@@ -279,8 +279,8 @@ Class CustomerReward {
                     'customer_id'=>$data['customer_id'],
                     'myreward_id'=>$data['_id'],
                     'reward_type'=>$data['reward_type'],
-                    'created_at'=>new MongoDate(),
-                    'updated_at'=>new MongoDate()
+                    'created_at'=>new \MongoDate(),
+                    'updated_at'=>new \MongoDate()
                 ];
 
                 if($data['reward_type'] == 'swimming_sessions'){
@@ -299,7 +299,7 @@ Class CustomerReward {
             }    
         }
 
-        CustomerCoupn::insert($bulk_insert);
+        \CustomerCoupn::insert($bulk_insert);
 
         return $coupon_code;
         
