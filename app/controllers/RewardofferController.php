@@ -452,7 +452,8 @@ class RewardofferController extends BaseController {
                         'personal_trainer_at_home',
                         'healthy_tiffin',
                         'nutrition_store',
-                        'fitternity_voucher'
+                        'fitternity_voucher',
+                        'swimming_sessions'
                     );
 
 
@@ -464,7 +465,8 @@ class RewardofferController extends BaseController {
                             'personal_trainer_at_home',
                             'healthy_tiffin',
                             'nutrition_store',
-                            'fitternity_voucher'
+                            'fitternity_voucher',
+                            'swimming_sessions'
                         );
                     }
 
