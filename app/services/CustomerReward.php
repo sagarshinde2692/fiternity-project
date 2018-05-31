@@ -280,7 +280,8 @@ Class CustomerReward {
                     'myreward_id'=>$data['_id'],
                     'reward_type'=>$data['reward_type'],
                     'created_at'=>new \MongoDate(),
-                    'updated_at'=>new \MongoDate()
+                    'updated_at'=>new \MongoDate(),
+                    'status'=>'1'
                 ];
 
                 if($data['reward_type'] == 'swimming_sessions'){
