@@ -172,6 +172,8 @@ class RewardofferController extends BaseController {
 
         }
 
+        Finder::$withoutAppends = true;
+
         if($this->vendor_token){
 
             if(!isset($data['ratecard_id'])){
@@ -859,10 +861,34 @@ class RewardofferController extends BaseController {
                                         $rewards_value['description'] = $session_content;
                                         $rewards_value['quantity'] = $data_value['total'];
                                         $rewards_value['payload']['amount'] = $data_value['amount'];
+                                        $rewards_value['list'] = [];
 
                                         break;
                                     }
                                 }
+
+                                $swimming_service_ids = Service::where('city_id',$service['city_id'])->where('location_id',$service['location_id'])->where('servicecategory_id',123)->lists('_id');
+
+                                if(!empty($swimming_service_ids)){
+
+                                    $swimming_service_ids = array_map('intval',$swimming_service_ids);
+
+                                    $swimming_finder_ids = Ratecard::whereIn('service_id',$swimming_service_ids)->where('type','workout session')->lists('finder_id');
+
+                                    if(!empty($swimming_finder_ids)){
+
+                                        $swimming_finder_ids = array_map('intval',$swimming_finder_ids);
+
+                                        $swimming_finders = Finder::whereIn('_id',$swimming_finder_ids)->get(['title','slug','_id']);
+
+                                        if($swimming_finders){
+
+                                           $rewards_value['list'] = $swimming_finders->toArray();
+
+                                        }
+                                    }
+                                }
+
                             }
 
                         }
