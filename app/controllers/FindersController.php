@@ -5415,7 +5415,8 @@ class FindersController extends \BaseController {
 		$result = "<p><strong>Gym</strong></p>";
 
 		foreach($open_close_hour_for_week as $day){
-			$result = $result."<p><i>".ucwords($day)."</i></p>"
+			$result = $result."<p><i>".ucwords($day['day'])." : </i>".str_pad($day['opening_hour'], 8, '0', STR_PAD_LEFT)."-".$day['closing_hour']."</p>";
 		}
+		return $result;
 	}
 }
