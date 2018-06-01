@@ -1180,6 +1180,7 @@ Route::get('deleteCommunicationSidekiq','DebugController@deleteCommunicationSide
 Route::get('updateSubscriptionCode','DebugController@updateSubscriptionCode');
 Route::get('addvendorstripedata','DebugController@addvendorstripedata');
 Route::get('workoutRatecardReverseMigrate','MigrationReverseController@workoutRatecardReverseMigrate');
+Route::get('updatetrialstatus/{_id}/{action}/{confirm?}','SchedulebooktrialsController@updatetrialstatus');
 
 Route::get('loginoptions','CustomerController@loginOptions');
 Route::get('trialWorkout','DebugController@trialWorkout');

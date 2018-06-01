@@ -60,11 +60,11 @@ Class FinderSms extends VersionNextSms{
 
 	protected function cancelBookTrialByVendor ($data){
 
-		return 'no sms';
+		// return 'no sms';
 
 		$to = explode(',', $data['finder_vcc_mobile']);
 
-		$label = 'Vendor-trial-cancellation-email-to-vendor';
+		$label = 'Cancel-Trial-Vendor';
 
 		return $this->common($label,$to,$data);
 	}
@@ -258,6 +258,15 @@ Class FinderSms extends VersionNextSms{
 		return $this->common($label,$to,$data);
 	}
 
+	protected function trialAlert($data){
+
+		$label = 'TrialAlert-Fitternity';
+
+		$to = array('9930206022');
+
+        return $this->common($label,$to,$data);
+	}
+
 
 	public function common($label,$to,$data,$delay = 0){
 
@@ -267,7 +276,7 @@ Class FinderSms extends VersionNextSms{
 
 		if(!Config::get('app.vendor_communication')){
 
-			$to = array('7506262489');
+			$to = array('7506026203');
 		}
 		
 		return $this->sendToWorker($to, $message, $label, $delay);
