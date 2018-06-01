@@ -821,16 +821,12 @@ class RewardofferController extends BaseController {
 
                                     if($amount >= $data_value['min'] ){
 
-                                        $session_content = $data_value['total']." Workout Sessions";
-
-                                        foreach ($data_value['session'] as $session_value){
-                                            $session_content .= " <br>- ".$session_value['slabs']." x ".$session_value['quantity'];
-                                        }
+                                        $session_content = "Get access to FREE workouts - Anytime, Anywhere <br>- Across 12,000+ fitness centres & 7 cities <br>- 75,000 classes every week: Crossfit, Zumba, Yoga, Kickboxing & 13 more fitness forms <br>- Book real-time & get instant confirmation";
 
                                         $rewards_value['payload_amount'] = $data_value['amount'];
                                         $rewards_value['new_amount'] = $data_value['amount'];
-                                        $rewards_value['title'] = "Workout Session";
-                                        $rewards_value['contents'] = ['Workout Session'];
+                                        $rewards_value['title'] = "Workout Session Pack";
+                                        $rewards_value['contents'] = ['Workout Session Pack'];
                                         $rewards_value['gallery'] = [];
                                         $rewards_value['description'] = $session_content;
                                         $rewards_value['quantity'] = $data_value['total'];
@@ -853,16 +849,12 @@ class RewardofferController extends BaseController {
 
                                     if($amount >= $data_value['min'] ){
 
-                                        $session_content = $data_value['total']." Swimming Sessions";
-
-                                        foreach ($data_value['session'] as $session_value){
-                                            $session_content .= " <br>- ".$session_value['slabs']." x ".$session_value['quantity'];
-                                        }
+                                        $session_content = "Get a luxury experience like never before - VIP swimming session in city's best 5-star hotels <br>- Book across 50 hotels in 7 cities <br>- Exclusive pool & gym access <br>- Book real-time & get instant confirmation";
 
                                         $rewards_value['payload_amount'] = $data_value['amount'];
                                         $rewards_value['new_amount'] = $data_value['amount'];
-                                        $rewards_value['title'] = "Swimming Session";
-                                        $rewards_value['contents'] = ['Swimming Session'];
+                                        $rewards_value['title'] = "Swimming at 5-star Hotels";
+                                        $rewards_value['contents'] = ['Swimming at 5-star Hotels'];
                                         $rewards_value['gallery'] = [];
                                         $rewards_value['description'] = $session_content;
                                         $rewards_value['quantity'] = $data_value['total'];
