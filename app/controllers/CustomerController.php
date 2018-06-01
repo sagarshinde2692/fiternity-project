@@ -6200,7 +6200,7 @@ class CustomerController extends \BaseController {
 
 		Finder::$withoutAppends=true;
 
-		$finder = Finder::find((int)$data['finder_id']);
+		$finder = Finder::with(array('knowlarityno'=>function($query){$query->select('*')->where('status',true)->orderBy('extension', 'asc');}))->find((int)$data['finder_id']);
 
 		if($finder){
 
@@ -6213,13 +6213,18 @@ class CustomerController extends \BaseController {
 
 			$data['finder_name'] = ucwords($finder->title);
 
-			$knowlarity_no = KnowlarityNo::where('status',true)->where('vendor_id',(int)$data['finder_id'])->first();
+			// $knowlarity_no = KnowlarityNo::where('status',true)->where('vendor_id',(int)$data['finder_id'])->first();
+			$knowlarity_nos = $this->utilities->getContactOptions($finder);
 
-			if($knowlarity_no){
+			if(count($knowlarity_nos)){
+
+				$intent = isset($data['intent']) && $data['intent'] != ''? intval($data['intent']) : 0;
+
+				$knowlarity_no = $knowlarity_nos[$intent];
 
 				$extension = (isset($knowlarity_no['extension']) && $knowlarity_no['extension'] != "") ? " (extension : ".str_pad($knowlarity_no['extension'], 2, '0', STR_PAD_LEFT).")" : "";
 
-				$data['finder_number'] = "+91".$knowlarity_no['phone_number'].$extension;
+				$data['finder_number'] = $knowlarity_no['phone_number'].$extension;
 
 			}
 
