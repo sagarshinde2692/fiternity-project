@@ -1801,9 +1801,8 @@ class SchedulebooktrialsController extends \BaseController {
                 //     Log::info($hashreverse['reverse_hash']);
                 //     return  Response::json($resp, 400);
                 // }
-                //  $hash_verified = $this->utilities->verifyOrder($data,$order);
+                 $hash_verified = $this->utilities->verifyOrder($data,$order);
                  // return $order;
-                $hash_verified = true;
                 if(!$hash_verified){
                     $resp 	= 	array('status' => 401, 'order' => $order, 'message' => "Trial not booked.");
                     return  Response::json($resp, 400);
@@ -4824,7 +4823,8 @@ class SchedulebooktrialsController extends \BaseController {
         $current_date = date('Y-m-d 00:00:00');
 
         $from_date = new \MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($current_date))));
-        $to_date = new \MongoDate(strtotime(date('Y-m-d 00:00:00', strtotime($current_date." + 1 days"))));
+        $to_date = new \MongoDat
+        (strtotime(date('Y-m-d 00:00:00', strtotime($current_date." + 1 days"))));
 
         $booktrial  = \Booktrial::where('_id','!=',(int) $data['_id'])->where('customer_phone','LIKE','%'.substr($data['customer_phone'], -8).'%')->where('missedcall_review_batch','exists',true)->where('created_at','>',$from_date)->where('created_at','<',$to_date)->orderBy('_id','desc')->first();
         if(!empty($booktrial) && isset($booktrial->missedcall_review_batch) && $booktrial->missedcall_review_batch != ''){
