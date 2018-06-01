@@ -718,9 +718,16 @@ Class CustomerReward {
 
                 if(in_array($myreward['reward_type'],['sessions','swimming_sessions'])){
 
-                    $myreward->coupon_detail = $this->createSessionCoupon($myreward->toArray());
+                    $data['coupon'] = [];
 
-                    $myreward->coupon = pluck($myreward->customer_coupon_detail,'code');
+                    $data['coupon_detail'] = $myreward->coupon_detail = $this->createSessionCoupon($myreward->toArray());
+
+                    foreach ($data['coupon_detail'] as $value) {
+
+                        $data['coupon'][] = $value['code'];
+                    }
+
+                    $myreward->coupon = $data['coupon'];
                 }
 
                 $myreward->update();
@@ -732,6 +739,11 @@ Class CustomerReward {
                 if(isset($data['finder_id']) && $data['finder_id'] != ""){
                     $finderData = $this->getFinderData((int)$data['finder_id']);
                     $data  = array_merge($data,$finderData);
+                }
+
+                if(!empty($myreward['payload_amount'])){
+
+                    $data['payload_amount'] = $myreward['payload_amount'];
                 }
 
                 $data['my_reward'] = $myreward->toArray();
@@ -809,8 +821,6 @@ Class CustomerReward {
                 break;
             default : break;
         }
-
-        implode(", ", pieces)
 
         return $myreward_capture->update();
 
