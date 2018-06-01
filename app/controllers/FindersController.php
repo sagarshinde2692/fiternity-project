@@ -3581,7 +3581,7 @@ class FindersController extends \BaseController {
 					$info_timing = $this->getInfoTiming($finder['services']);
 
 					if(isset($finder['open_close_hour_for_week'])){
-						$info_timing = $this->createTiming($finder['open_close_hour_for_week']) + $info_timing;
+						$info_timing = $this->createTiming($finder['open_close_hour_for_week']).$info_timing;
 					}
 
 
@@ -5409,5 +5409,13 @@ class FindersController extends \BaseController {
 			unset($service['flags']['convinience_fee_applicable']);
 		}
 		
+	}
+
+	public function createTiming($open_close_hour_for_week){
+		$result = "<p><strong>Gym</strong></p>";
+
+		foreach($open_close_hour_for_week as $day){
+			$result = $result."<p><i>".ucwords($day)."</i></p>"
+		}
 	}
 }
