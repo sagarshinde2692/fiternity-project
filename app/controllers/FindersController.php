@@ -3579,6 +3579,12 @@ class FindersController extends \BaseController {
 
 				if(count($finder['services']) > 0 ){
 					$info_timing = $this->getInfoTiming($finder['services']);
+
+					if(isset($finder['open_close_hour_for_week'])){
+						$info_timing = $this->createTiming($finder['open_close_hour_for_week']) + $info_timing;
+					}
+
+
 					if(isset($finder['info']) && $info_timing != ""){
 						$finder['info']['timing'] = $info_timing;
 					}
