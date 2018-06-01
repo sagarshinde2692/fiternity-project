@@ -1031,7 +1031,21 @@ Class Utilities {
 
                 }else{
 
-                    $customerCoupn->update(['stauts'=>'0','on_order_id'=>$order['_id']]);
+                    $customerCoupn->claimed = $customerCoupn->claimed + 1;
+
+                    if($customerCoupn->quantity == $customerCoupn->claimed){
+                        $customerCoupn->status = "0";
+                    }
+
+                    $orders = [];
+
+                    if(!empty($customerCoupn->orders)){
+                        $orders = $customerCoupn->orders;
+                    }
+
+                    $orders[] = $order['_id'];
+
+                    $customerCoupn->update();
                 }      
             }
         }

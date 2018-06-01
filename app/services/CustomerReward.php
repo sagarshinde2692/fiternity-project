@@ -301,36 +301,42 @@ Class CustomerReward {
 
         foreach ($data['session'] as $session_value){
 
-            for ($i=1; $i <= $session_value['quantity'] ; $i++) { 
+            $code = strtolower(substr($data['customer_name'], 0, 2)).$data['_id'].$session_value['slabs'];
 
-                $coupon_code[] = $code = strtolower(substr($data['customer_name'], 0, 2)).$data['_id'].$session_value['slabs'].$i;
-                
-                $coupon_data = [
-                    'validity'=>time()+(86400*30),
-                    'code'=>$code,
-                    'amount'=>$session_value['slabs'],
-                    'customer_id'=>$data['customer_id'],
-                    'myreward_id'=>$data['_id'],
-                    'reward_type'=>$data['reward_type'],
-                    'created_at'=>new \MongoDate(),
-                    'updated_at'=>new \MongoDate(),
-                    'status'=>'1'
-                ];
+            $coupon_data = [
+                'validity'=>time()+(86400*30),
+                'code'=>$code,
+                'amount'=>$session_value['slabs'],
+                'quantity'=>$session_value['quantity'],
+                'claimed'=>0,
+                'customer_id'=>$data['customer_id'],
+                'myreward_id'=>$data['_id'],
+                'reward_type'=>$data['reward_type'],
+                'created_at'=>new \MongoDate(),
+                'updated_at'=>new \MongoDate(),
+                'status'=>'1'
+            ];
 
-                if($data['reward_type'] == 'swimming_sessions'){
-                    $coupon_data['service_category_id'] = 123;
-                }
+            if($data['reward_type'] == 'swimming_sessions'){
+                $coupon_data['service_category_id'] = 123;
+            }
 
-                if(!empty($data['order_id'])){
-                    $coupon_data['order_id'] = (int)$data['order_id'];
-                }
+            if(!empty($data['order_id'])){
+                $coupon_data['order_id'] = (int)$data['order_id'];
+            }
 
-                if(!empty($data['booktrial_id'])){
-                    $coupon_data['booktrial_id'] = (int)$data['booktrial_id'];
-                }
+            if(!empty($data['booktrial_id'])){
+                $coupon_data['booktrial_id'] = (int)$data['booktrial_id'];
+            }
 
-                $bulk_insert[] = $coupon_data;
-            }    
+            $bulk_insert[] = $coupon_data;
+
+            $coupon_code[] = [
+                'code'=>$code,
+                'amount'=>$session_value['slabs'],
+                'quantity'=>$session_value['quantity']
+            ];
+            
         }
 
         \CustomerCoupn::insert($bulk_insert);
@@ -370,12 +376,6 @@ Class CustomerReward {
 
                 $order->update();
             }
-        }
-
-        if(in_array($reward['reward_type'],['sessions','swimming_sessions'])){
-
-            $myreward->customer_coupon = $this->createSessionCoupon($myreward->toArray());
-            $myreward->update();
         }
         
         return "success";
@@ -691,7 +691,7 @@ Class CustomerReward {
                 return array('status' => 404,'message' => "Validity Is Over");
             }
 
-            $claim_all = array('personal_trainer_at_studio','personal_trainer_at_home','healthy_tiffin');
+            $claim_all = array('personal_trainer_at_studio','personal_trainer_at_home','healthy_tiffin','sessions','swimming_sessions');
             
             if(!isset($myreward->claimed) || $myreward->claimed < $myreward->quantity){
 
@@ -714,6 +714,13 @@ Class CustomerReward {
 
                 if(isset($data['tshirt_size'])){
                     $myreward->tshirt_size = $data['tshirt_size'];
+                }
+
+                if(in_array($myreward['reward_type'],['sessions','swimming_sessions'])){
+
+                    $myreward->coupon_detail = $this->createSessionCoupon($myreward->toArray());
+
+                    $myreward->coupon = pluck($myreward->customer_coupon_detail,'code');
                 }
 
                 $myreward->update();
@@ -790,8 +797,20 @@ Class CustomerReward {
                 $data['label'] = "Reward-DietPlan-Customer";
                 $myreward_capture->customer_sms_reward = $customerSms->rewardClaim($data);
                 break;
+            case 'sessions' : 
+                $data['label'] = "Reward-WorkoutSession-Customer";
+                $myreward_capture->customer_sms_reward = $customerSms->rewardClaim($data);
+                $myreward_capture->customer_email_reward = $customerMailer->rewardClaim($data);
+                break;
+            case 'swimming_sessions' : 
+                $data['label'] = "Reward-SwimmingSession-Customer";
+                $myreward_capture->customer_sms_reward = $customerSms->rewardClaim($data);
+                $myreward_capture->customer_email_reward = $customerMailer->rewardClaim($data);
+                break;
             default : break;
         }
+
+        implode(", ", pieces)
 
         return $myreward_capture->update();
 
