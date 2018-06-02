@@ -4826,7 +4826,7 @@ class CustomerController extends \BaseController {
 
 		}
 
-		if($action['change_start_date'] == null && !isset($order->requested_preferred_starting_date) && isset($order['success_date']) && time() <= strtotime($order['success_date'].'+29 days') && $change_start_date_request){
+		if($action['change_start_date'] == null && !isset($order->requested_preferred_starting_date) && isset($order['success_date']) && time() <= strtotime($order['success_date'].'+29 days') && $change_start_date_request && !$cult_vendor_flag){
 
 			$min_date = strtotime('+1 days');
 			$max_date = strtotime($order['success_date'].'+29 days');
