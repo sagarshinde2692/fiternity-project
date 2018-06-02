@@ -3308,7 +3308,18 @@ class CustomerController extends \BaseController {
 
 		if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android")){
 			if(isset($_GET['app_version']) && ((float)$_GET['app_version'] >= 4.2)){
-				$category_slug = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates"/*,"personal-trainers"*/,"luxury-hotels"/*,"healthy-snacks-and-beverages"*/,"spinning-and-indoor-cycling","healthy-tiffins"/*,"dietitians-and-nutritionists"*//*,"sport-nutrition-supliment-stores"*/,"aerobics","kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness");
+				
+				$category_new = citywise_categories($city);
+
+				foreach ($category_new as $key => $value) {
+					
+					if(isset($value["slug"]) && $value["slug"] == "fitness"){
+						unset($category_new[$key]);
+					}
+				}
+
+				$category_new = array_values($category_new);
+
 				$cache_tag = 'customer_home_by_city_4_2';
 			}elseif(isset($_GET['app_version']) && ((float)$_GET['app_version'] >= 2.5)){
 				$category_slug = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates"/*,"personal-trainers"*/,"luxury-hotels"/*,"healthy-snacks-and-beverages"*/,"spinning-and-indoor-cycling"/*,"healthy-tiffins"*//*,"dietitians-and-nutritionists"*//*,"sport-nutrition-supliment-stores"*/,"aerobics","kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness");
