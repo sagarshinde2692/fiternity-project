@@ -996,6 +996,20 @@ Class FinderMailer extends Mailer {
 		return $this->common($label,$data,$message_data, $delay);
 	}
 
+	protected function captureVendorWalkthrough ($data){
+
+		$label = 'Walkthrough-Vendor';
+
+		$user_email 	=  	explode(',', $data['finder_vcc_email']);
+
+		$message_data 	= array(
+			'user_email' => $user_email,
+			'user_name' =>  $data['finder_name']
+		);
+
+		return $this->common($label,$data,$message_data);
+	}
+
 	public function common($label,$data,$message_data,$delay = 0){
 		// return($message_data['user_email']);
 		if(in_array(Config::get('mail.to_mailus'),$message_data['user_email'])){
