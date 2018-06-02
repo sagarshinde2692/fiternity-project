@@ -1904,7 +1904,7 @@ class ServiceController extends \BaseController {
 				
 				if(strtotime($date.''.$last_slot['start_time']) > time()){
 
-					$data = ['date'=>$date, 'weekday'=>$weekday];
+					$data = ['date'=>date('d-m-Y', strtotime($date)), 'weekday'=>$weekday];
 		
 					$data['gym_start_time'] = [
 						'hour'=>intval(date('G', strtotime($first_slot['start_time']))),
@@ -1926,7 +1926,7 @@ class ServiceController extends \BaseController {
 						$data['gym_end_time']['hour'] = intval(date('G', strtotime('+30 minutes', time())));
 						$data['gym_end_time']['min'] = $data['gym_end_time']['hour'] == (date('G', time())) ? 30 : 0;
 					}
-					
+					$data['time_description'] = "Select between ".date('h:i a', strtotime($data['gym_start_time']['hour'].':'.$data['gym_start_time']['min']))." and ".date('h:i a', strtotime($data['gym_end_time']['hour'].':'.$data['gym_end_time']['min']));
 					array_push($available_dates, $data);
 				}else if(!$i){
 					$days++;
