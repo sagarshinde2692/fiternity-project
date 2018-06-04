@@ -3651,7 +3651,7 @@ class FindersController extends \BaseController {
 				// 	unset($finder['ozonetelno']);
 				// 	unset($finder['contact']['website']);
 				// }
-				if(isset($finderarr['knowlarityno']) && $finderarr['knowlarityno'] != ''){
+				if(isset($finderarr['knowlarityno']) && count($finderarr['knowlarityno'])){
 					$finder['knowlarityno'] = $finder['knowlarityno'][0];
 					$extension = (isset($finder['knowlarityno']['extension']) && $finder['knowlarityno']['extension'] != "") ? ",,4".$finder['knowlarityno']['extension'] : "";
 					$finder['knowlarityno']['phone_number'] = '+91'.$finder['knowlarityno']['phone_number'].$extension;
