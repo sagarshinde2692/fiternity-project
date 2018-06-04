@@ -6718,6 +6718,9 @@ class CustomerController extends \BaseController {
 
 	public function autoRegister(){
 		$data = Input::json()->all();
+
+		Log::info("autoRegister metropolis");
+		Log::info($data);
 		if( !isset($data['key']) || $data['key'] != '1jhvv123vhjc323@(*Bb@##*yhjj2Jhasda78&*gu'){
 			return array('status'=>404, 'message'=>'Not Authorized');
 		}
