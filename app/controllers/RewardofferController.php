@@ -469,6 +469,8 @@ class RewardofferController extends BaseController {
 
                 $power_world_gym = [10861,10863,10868,10870,10872,10875,10876,10877,10880,10883,10886,10887,10888,10890,10891,10892,10894,10895,10897,10900];
 
+                $multifit_qym = [9932,9954,12208,11223,1935,9481,9423,9304,13094,10970,13898,11021,14102,14107,13968,9600];
+
                 $rewardoffer = $rewardoffer->toArray();
                 
                 $rewards = isset($rewardoffer['rewards']) ? $rewardoffer['rewards'] : array();
@@ -934,6 +936,10 @@ class RewardofferController extends BaseController {
             foreach ($rewards as $reward_key => $reward_value) {
 
                 if($reward_value['reward_type'] == 'fitness_kit' && isset($reward_value['payload']['amount']) && $reward_value['payload']['amount'] == 0){
+                    unset($rewards[$reward_key]);
+                }
+
+                if(in_array($finder_id,$multifit_qym) & $reward_value['reward_type'] == 'diet_plan'){
                     unset($rewards[$reward_key]);
                 }
             }

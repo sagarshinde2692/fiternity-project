@@ -152,6 +152,7 @@ if(!function_exists('citywise_category')){
                 ["name" => "Healthy Tiffins","slug" => "healthy-tiffins"],
                 // ["name" => "Personal Trainers","slug" => "personal-trainers"],
                 // ["name" => "Sport Nutrition Supplement Stores","slug" => "sport-nutrition-supplement-stores"],
+                ["name" => "Luxury Hotels","slug" => "luxury-hotels"],
                 ["name" => "Aerial Fitness","slug" => "aerial-fitness"],
                 ["name" => "Pre-natal Classes","slug" => "pre-natal-classes"],
                 ["name" => "Kids Fitness","slug" => "kids-fitness-classes"]
@@ -169,8 +170,10 @@ if(!function_exists('citywise_category')){
                 ["name" => "Pilates","slug" => "pilates-classes"],
                 ["name" => "Spinning And Indoor Cycling","slug" => "spinning-classes"],
                 ["name" => "Healthy Tiffins","slug" => "healthy-tiffins"],
+                ["name" => "Swimming","slug" => "swimming-pools"],
                 // ["name" => "Personal Trainers","slug" => "personal-trainers"],
                 // ["name" => "Sport Nutrition Supplement Stores","slug" => "sport-nutrition-supplement-stores"],
+                ["name" => "Luxury Hotels","slug" => "luxury-hotels"],
                 ["name" => "Aerial Fitness","slug" => "aerial-fitness"],
                 ["name" => "Pre-natal Classes","slug" => "pre-natal-classes"],
                 ["name" => "Kids Fitness","slug" => "kids-fitness-classes"]
@@ -191,6 +194,7 @@ if(!function_exists('citywise_category')){
                 // ["name" => "Personal Trainers","slug" => "personal-trainers"],
                 // ["name" => "Sport Nutrition Supplement Stores","slug" => "sport-nutrition-supplement-stores"],
                 // ["name" => "Marathon Training","slug" => "marathon-training"],
+                ["name" => "Luxury Hotels","slug" => "luxury-hotels"],
                 ["name" => "Aerial Fitness","slug" => "aerial-fitness"],
                 ["name" => "Pre-natal Classes","slug" => "pre-natal-classes"],
                 ["name" => "Kids Fitness","slug" => "kids-fitness-classes"]
@@ -206,7 +210,7 @@ if(!function_exists('citywise_category')){
                 ["name" => "Dance","slug" => "dance-classes"],
                 ["name" => "Pilates","slug" => "pilates-classes"],
                 ["name" => "MMA And Kick Boxing","slug" => "mma-and-kick-boxing-classes"],
-                ["name" => "Spinning And Indoor Cycling","slug" => "spinning-classes"],
+                // ["name" => "Spinning And Indoor Cycling","slug" => "spinning-classes"],
                 ["name" => "Healthy Tiffins","slug" => "healthy-tiffins"],
                 // ["name" => "Personal Trainers","slug" => "personal-trainers"],
                 // ["name" => "Sport Nutrition Supplement Stores","slug" => "sport-nutrition-supplement-stores"],
@@ -223,6 +227,7 @@ if(!function_exists('citywise_category')){
                 ["name" => "Dance","slug" => "dance-classes"],
                 ["name" => "Yoga","slug" => "yoga-classes"],
                 ["name" => "MMA And Kick Boxing","slug" => "mma-and-kick-boxing-classes"],
+                ["name" => "Cross Functional Training","slug" => "functional-training"],
                 // ["name" => "Pre-natal Classes","slug" => "pre-natal-classes"],
                 // ["name" => "Kids Fitness","slug" => "kids-fitness-classes"]
             ];
@@ -258,8 +263,8 @@ if(!function_exists('citywise_category')){
                 ["name" => "Yoga","slug" => "yoga-classes"],
                 ["name" => "Aerobics","slug" => "aerobics"],
                 ["name" => "MMA And Kick Boxing","slug" => "mma-and-kick-boxing-classes"],
-                ["name" => "Cross Functional Training","slug" => "functional-training"]
-                // ["name" => "Dance","slug" => "dance-classes"],
+                ["name" => "Cross Functional Training","slug" => "functional-training"],
+                ["name" => "Dance","slug" => "dance-classes"],
                 // ["name" => "Pilates","slug" => "pilates-classes"]
                 // ["name" => "Spinning And Indoor Cycling","slug" => "spinning-classes"],
                 // ["name" => "Healthy Tiffins","slug" => "healthy-tiffins"],
