@@ -4904,6 +4904,8 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrial->unset($unset_keys);
         }
 
+        $booktrialModel = $booktrial;
+
         $booktrial = $booktrial->toArray();
 
         $unset = array('customer_emailqueuedids','customer_smsqueuedids','customer_notification_messageids','finder_emailqueuedids','finder_smsqueuedids','customer_auto_sms','followup_date_time','send_communication');
@@ -5003,6 +5005,14 @@ class SchedulebooktrialsController extends \BaseController {
 
         $booktrial['fit_code'] = $this->utilities->fitCode($booktrial);
 
+        if(empty($booktrial['surprise_fit_cash'])){
+            $booktrial['surprise_fit_cash'] = $this->utilities->getFitcash(['finder_id'=>$booktrial['finder_id']]);
+
+            $booktrialModel->surprise_fit_cash = $booktrial['surprise_fit_cash'];
+            $booktrialModel->update();
+        }
+
+
         $booktrial['lost_code'] = false;
         
         if(time() >= strtotime($booktrial['schedule_date_time'])){
@@ -5017,7 +5027,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         }else{
 
-            $booktrial['fitcode_message'] = 'Punch the code & get Rs '.$booktrial['fit_code'].' flat discount';
+            $booktrial['fitcode_message'] = 'Punch the code & get Rs '.$booktrial['surprise_fit_cash'].' flat discount';
         }
 
         $booktrial['fitcode_button_text'] = 'Enter Fitcode';
