@@ -6715,5 +6715,15 @@ class CustomerController extends \BaseController {
 
 		return Response::json($response,200);
 	}
+
+	public function autoRegister(){
+		$data = Input::json()->all();
+		if( !isset($data['key']) || $data['key'] != '1jhvv123vhjc323@(*Bb@##*yhjj2Jhasda78&*gu'){
+			return array('status'=>404, 'message'=>'Not Authorized');
+		}
+		$customer_id = autoRegisterCustomer($data);
+		return array('status'=>200, 'message'=>'Registered', 'customer_id'=>$customer_id);
+
+	}
 	
 }

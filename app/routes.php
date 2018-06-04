@@ -1181,8 +1181,9 @@ Route::get('loginoptions','CustomerController@loginOptions');
 Route::get('trialWorkout','DebugController@trialWorkout');
 Route::get('eventfitex','DebugController@eventfitex');
 
-
 Route::get('promoNotification','DebugController@promoNotification');
+
+Route::post('autoregister','CustomerController@autoRegister');
 
 
 
