@@ -2966,15 +2966,15 @@ class FindersController extends \BaseController {
 				'description'=>'Burn Fat | Super Cardio'
 			);
 			
-			// if(isset($_GET['device_type']) && $_GET['device_type'] == 'ios'){
+			if(isset($_GET['device_type']) && $_GET['device_type'] == 'android' && $_GET['app_version'] > 4.6){
 			
-			// 	$extra_info[] = array(
-			// 		'title'=>'Description',
-			// 		'icon'=>'https://b.fitn.in/iconsv1/vendor-page/form.png',
-			// 		'description'=> $item['short_description']
-			// 	);
+				$extra_info[] = array(
+					'title'=>'Description',
+					'icon'=>'https://b.fitn.in/iconsv1/vendor-page/form.png',
+					'description'=> $item['short_description']
+				);
 			
-			// }
+			}
 
 			if($category && ($category["_id"] == 42 || $category["_id"] == 45)){
 
