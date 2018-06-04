@@ -259,8 +259,7 @@ class TempsController extends \BaseController {
                 	$rules = array(
                 			'customer_phone' => 'required|max:15',
                 			'action'   =>   'required',
-                			'gender'   =>   'required',
-                			'city_id' => 'required'
+                			'gender'   =>   'required'
                 	);
                 	
                 	$validator = Validator::make($data,$rules);
