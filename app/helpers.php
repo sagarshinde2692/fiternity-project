@@ -152,7 +152,8 @@ if(!function_exists('citywise_category')){
                 ["name" => "Healthy Tiffins","slug" => "healthy-tiffins"],
                 // ["name" => "Personal Trainers","slug" => "personal-trainers"],
                 // ["name" => "Sport Nutrition Supplement Stores","slug" => "sport-nutrition-supplement-stores"],
-                ["name" => "Luxury Hotels","slug" => "luxury-hotels"],
+                // ["name" => "Luxury Hotels","slug" => "luxury-hotels"],
+            	["name" => "Swimming","slug" => "swimming-pools"],
                 ["name" => "Aerial Fitness","slug" => "aerial-fitness"],
                 ["name" => "Pre-natal Classes","slug" => "pre-natal-classes"],
                 ["name" => "Kids Fitness","slug" => "kids-fitness-classes"]
@@ -194,7 +195,8 @@ if(!function_exists('citywise_category')){
                 // ["name" => "Personal Trainers","slug" => "personal-trainers"],
                 // ["name" => "Sport Nutrition Supplement Stores","slug" => "sport-nutrition-supplement-stores"],
                 // ["name" => "Marathon Training","slug" => "marathon-training"],
-                ["name" => "Luxury Hotels","slug" => "luxury-hotels"],
+            	["name" => "Swimming","slug" => "swimming-pools"],
+            	["name" => "Luxury Hotels","slug" => "luxury-hotels"],
                 ["name" => "Aerial Fitness","slug" => "aerial-fitness"],
                 ["name" => "Pre-natal Classes","slug" => "pre-natal-classes"],
                 ["name" => "Kids Fitness","slug" => "kids-fitness-classes"]
