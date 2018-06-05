@@ -1270,7 +1270,7 @@ class FindersController extends \BaseController {
         if(!empty($data['cash_pickup']) && $data['cash_pickup']){
             $payment_modes[] = array(
                 'title' => 'Cash Pickup',
-                'subtitle' => 'Get Cash Picked up from your Preferd Location',
+                'subtitle' => 'Get Cash Picked up from your Preferred Location',
                 'value' => 'cod',
             );
         }
