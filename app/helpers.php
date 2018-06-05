@@ -3587,6 +3587,9 @@ if (!function_exists(('citywiseServiceCategoryIds'))){
             case 'ahmedabad':
                 $ids = [65, 19, 1, 3, 5];
                 break;
+            case 'all':
+                $ids = [65, 19, 5, 3, 1, 123, 114, 4, 2, 86];
+                break;
             default:
                 $ids = [65, 19, 5, 3, 1, 123, 114, 4, 2, 86];
         }
