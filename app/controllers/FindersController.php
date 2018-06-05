@@ -5404,4 +5404,82 @@ class FindersController extends \BaseController {
 		}
 		
 	}
+
+	public function getBrandVendors($brand_id,$city_id)
+	{
+		try {
+			
+			$data = ['brand_id'=>$brand_id,'city_id'=>$city_id];
+			$rules = ['brand_id' => 'required|numeric','city_id' => 'required|numeric'];
+			$validator = Validator::make($data,$rules);
+			if ($validator->fails()) {
+				$response = array('status' => 400, 'message' => 'Id absent.', 'errors' => $validator->errors());
+				return Response::json($response, 400);
+			}
+			else
+			{
+				$main=[];
+				$finders=Finder::active()->where("city_id",intval($city_id))->where("commercial_type","!=",0)->where("membership","!=","disable")->where("membership","!=","disable")->where("brand_id",intval($brand_id))->with(array('location'=>function($query){$query->select('_id','name','slug');}))->get(['location_id','slug','title','contact']);
+// 				return $finders;
+				if(!empty($finders))
+				{
+					$finderIds=[];
+					foreach ($finders as &$finder)
+					{
+						$t=((!empty($finder->contact)&&!empty($finder->contact)&&!empty($finder->contact))?$finder->contact:[]);
+						$oo=[
+								"_id"=>(!empty($finder->_id)?$finder->_id:""),
+								"title"=>(!empty($finder->title)?$finder->title:""),
+								"slug"=>(!empty($finder->slug)?$finder->slug:""),
+								"address"=>((!empty($t['address']))?$t['address']:""),
+								"name"=>(!empty($finder->location)&&!empty($finder->location->name))?$finder->location->name:""];
+						array_push($finderIds,$oo);
+					}
+					$services=Service::active()->whereIn("finder_id",array_map('intval',array_pluck($finderIds, "_id")))->whereIn("showOnFront",[null,'web'])->where("membership","!=","disable")->lists('_id');
+					$rateCards=Ratecard::whereIn("finder_id", array_map('intval',array_pluck($finderIds, "_id")))->whereIn("service_id",array_map('intval',$services))
+					->where(function ($query){ $query->where('price',9990 )->orWhere('special_price', 9990);})
+					->where("validity",3)->where("validity_type","months")->get(['_id','finder_id','service_id']);
+					
+					if(!empty($rateCards))
+					{
+						$alreadyHas=[];
+						foreach ($rateCards as &$rateCard)
+						{
+							$rf=intval($rateCard->finder_id);
+							if(!array_key_exists($rf, $alreadyHas))
+							{
+								$obj=[];
+								$find=array_values(array_filter($finderIds,function ($e) use ($rf) {return $e['_id'] == $rf;}))[0];
+								$rcd=(!empty($rateCard->_id)?$rateCard->_id:"");
+								$sid=(!empty($rateCard->service_id)?$rateCard->service_id:"");
+								if(!empty($rcd)&&!empty($sid))
+								{
+									$obj['url']=Config::get('app.website')."/buy/".((!empty($find)&&!empty($find['slug']))?$find['slug']:"")."/".$sid."/".$rcd;
+									$obj['name']=(!empty($find['title'])?$find['title']:"")." - ".(!empty($find['name'])?$find['name']:"");
+									$obj['address']=(!empty($find['address'])?$find['address']:"");
+									array_push($alreadyHas,intval($rf));
+									array_push($main,$obj);
+								}
+							}
+						}
+					}
+				}
+				return Response::json($main, 200);
+			}
+			
+		} catch (Exception $e) {
+			
+			$message = array(
+					'type'    => get_class($e),
+					'message' => $e->getMessage(),
+					'file'    => $e->getFile(),
+					'line'    => $e->getLine(),
+					'stack'    => $e->getTraceAsString()
+			);
+			Log::info("  Error ".print_r($message,true));
+			return Response::json($message, 400);
+			
+		}
+		
+	}
 }
