@@ -445,7 +445,7 @@ return [
 		],
 		[
 			'min'=>25000,
-			'max'=>0,
+			'max'=>35000,
 			'content'=>[
 				[
 					"product" => [
@@ -495,6 +495,85 @@ return [
 						$url.'gymkit/s7_shaker_3.png',
 						$url.'gymkit/s7_gymbag_4.png',
                      	$url.'gymkit/s7_detangler_5.png',
+                    ]
+				],
+				[
+					"product" => [
+						$products["Yoga Mat"]["title"],
+						$products["Yoga Mat Bag"]["title"],
+						$products["Cool-Water Bottle"]["title"],
+						$products["Tshirt Yoga Zumba"]["title"]
+					],
+					'category_id'=>[
+						1,
+						4
+					],
+					'amount'=>2250,
+					'image' => $url.'yogakit/yoga7.jpg',
+                    'gallery'=>[
+                    	$url.'yogakit/yoga7.jpg',
+                     	$url.'yogakit/s7_tshirtm_1.jpg',
+						$url.'yogakit/s7_yogamat_2.png',
+						$url.'yogakit/s7_yogamatbag_3.png',
+						$url.'yogakit/s7_bottle_4.png',
+                    ]
+				]
+			]
+		],
+		[
+			'min'=>35000,
+			'max'=>0,
+			'content'=>[
+				[
+					"product" => [
+						$products["Casual Tote Bag"]["title"],
+						$products["Cool-Water Bottle"]["title"],
+						$products["Compact Hand Towel"]["title"],
+						$products["Workout Friendly Armband"]["title"],
+						$products["Tshirt Yoga Zumba"]["title"]
+					],
+					'category_id'=>[
+						19,
+						2,
+						114,
+						123
+					],
+					'amount'=>1850,
+					'image' => $url.'zumbakit/zumba.7.jpg',
+                    'gallery'=>[
+                    	$url.'zumbakit/zumba.7.jpg',
+                     	$url.'zumbakit/s7_totebagr_1.png',
+						$url.'zumbakit/s7_bottle_2.png',
+						$url.'zumbakit/s7_towel_3.png',
+						$url.'zumbakit/s7_armband_4.png',
+						$url.'zumbakit/s7_tshirtf_5.jpg',
+                    ]
+				],
+				[
+					"product" => [
+						$products["Waterproof Gym Bag"]["title"],
+						$products["Shaker"]["title"],
+						$products["Compact Hand Towel"]["title"],
+						$products["Earphone Detangler"]["title"],
+						$products["Tshirt Crossfit"]["title"],
+						$products["Workout Friendly Armband"]["title"]
+					],
+					'category_id'=>[
+						111,
+						65,
+						5,
+						3
+					],
+					'amount'=>2250,
+					'image' => $url.'gymkit/gym8.jpg',
+                    'gallery'=>[
+                    	$url.'gymkit/gym8.jpg',
+                    	$url.'gymkit/s8_gymbag_1.png',
+                    	$url.'gymkit/s8_shaker_2.png',
+                    	$url.'gymkit/s8_towel_3.png',
+                    	$url.'gymkit/s8_detangler_4.png',
+						$url.'gymkit/s8_tshirt_5.png',
+						$url.'gymkit/s8_armband_6.png',
                     ]
 				],
 				[
