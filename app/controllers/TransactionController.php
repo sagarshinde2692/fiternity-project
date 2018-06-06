@@ -4218,7 +4218,9 @@ class TransactionController extends \BaseController {
             'field' => 'Total Amount Payable',
             'value' => 'Rs. '.$data['amount_final']
         );
-
+        if($payment_mode_type == 'pay_later'){
+            $$amount_payable = 'Rs. '.($data['amount_final']+$data['convinience']);
+        }
         
 
         if($payment_mode_type == 'part_payment' && isset($data['part_payment_calculation'])){
