@@ -3915,7 +3915,16 @@ Class Utilities {
 
                     if($credits_used < 5){
 
-                            return ['status'=>200, 'message'=>'Successfully applied referral discount', 'discount'=> 499, 'type'=>'self', 'customer'=>$customer];
+                            if($customer['pps_referral_credits'] - $credits_used > 0){
+
+                                return ['status'=>200, 'message'=>'Successfully applied referral discount', 'discount'=> 499, 'type'=>'self', 'customer'=>$customer];
+                            
+                            }else{
+                                    
+                                return ['status'=>400, 'message'=>'Your friends have not booked yet'];
+                                
+                            }
+
 
                     }else{
                         
