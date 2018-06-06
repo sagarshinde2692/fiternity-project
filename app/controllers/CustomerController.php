@@ -1630,11 +1630,15 @@ class CustomerController extends \BaseController {
 		}
 
 		$customer = Customer::find((int) $decodedToken->customer->_id);
+		
 		if(!empty($customer_data)){
+			$old_contact_no = $customer->contact_no;
 			$customer->update($customer_data);
+			$verify_phone = $old_contact_no != $customer->contact_no;
 			$message = implode(', ', array_keys($customer_data)) ;
 			$token = $this->createToken($customer);
-			return Response::json(array('status' => 200,'message' => $message.' updated successfull','token'=>$token, 'customer_data'=>$customer_data),200);
+			
+			return Response::json(array('status' => 200,'message' => $message.' updated successfull','token'=>$token, 'customer_token'=>$token['token'], 'message'=>'Profile updated successfully', 'verify_phone'=>$verify_phone, 'customer_data'=>$customer_data),200);
 		}
 		
 		return Response::json(array('status' => 400,'message' => 'customer data empty'),400);
