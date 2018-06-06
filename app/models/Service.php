@@ -335,7 +335,7 @@ class Service extends \Basemodel{
 
 				if($value['price'] >= 20000){
 
-					$value['campaign_offer'] = "(EMI options available)";
+					$value['campaign_offer'] = "(EMI available)";
 					$value['campaign_color'] = "#43a047";
 				}
 				

@@ -2061,7 +2061,7 @@ class FindersController extends \BaseController {
 			$review_id = $review->_id = $inserted_id;
 			$review->save();
 
-			$message = 'Review Created Successfully';
+			$message = 'Thank You. Your review is posted successfully';
 		}
 
 		$this->updateFinderRatingV2($finder);

@@ -3304,6 +3304,10 @@ class CustomerController extends \BaseController {
 
 				}
 
+				if(isset($_GET['notif_enabled']) && $_GET['notif_enabled']){
+					Customer::where('_id', $customer_id)->update(['notif_enabled'=>$_GET['notif_enabled']=='true' ? true : false]);
+				}
+
 			} catch (Exception $e) {
 				Log::error($e);
 			}
