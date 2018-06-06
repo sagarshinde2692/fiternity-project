@@ -4183,6 +4183,8 @@ class FindersController extends \BaseController {
 				unset($finderData['pending_payment']);	
 			}
 
+			$finderData['call_for_action_text'] = 'Get me started with a personalised trial experience';
+
 		}else{
 
 			$finderData['status'] = 404;
