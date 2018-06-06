@@ -4206,6 +4206,10 @@ class TransactionController extends \BaseController {
             'field' => 'Total Amount',
             'value' => 'Rs. '.(isset($data['original_amount_finder']) ? $data['original_amount_finder'] : $data['amount_finder'])
         );
+        
+        if(isset($data['session_payment']) && $data['session_payment']){
+            $amount_summary[0]['value'] = 'Rs. '.$data['amount_customer'];
+        }
 
         $amount_payable = [];
 
