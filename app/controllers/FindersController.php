@@ -3932,6 +3932,30 @@ class FindersController extends \BaseController {
 						$data['finder']['services_workout'] = $this->getTrialWorkoutRatecard($data['finder']['services'],$finder['type'],'workout session');
 						
 					}
+					// return $data['finder']['flags'];
+					if(!empty($data['finder']['flags']) && !empty($data['finder']['flags']['top_selling']))
+					if($data['finder']['flags']['top_selling'])		
+						 $data['finder']['overlayimage']='https://b.fitn.in/global/finder/best-seller.png';
+				    
+				    
+					if(!empty($data['finder']['flags']) && !empty($data['finder']['flags']['newly_launched']) && !empty($data['finder']['flags']['newly_launched_date'])){
+
+						if($data['finder']['flags']['newly_launched']&&$data['finder']['flags']['newly_launched_date']){
+
+							$launchedTime=strtotime($data['finder']['flags']['newly_launched_date']);	
+							$date1=date_create(date("Y/m/d"));
+							$date2=date_create(date('Y/m/d',$data['finder']['flags']['newly_launched_date']->sec));
+							$diff=date_diff($date1,$date2);
+							Log::info(" info diff ".print_r($diff,true));
+							if($diff->invert>0)
+							{
+								if($diff->days<=30)
+									$data['finder']['overlayimage']='https://b.fitn.in/global/finder/newly-launched.png';
+							}
+							else $data['finder']['overlayimage']='https://b.fitn.in/global/finder/opening-soon.png';
+						}
+
+					}
 
 				}
 
