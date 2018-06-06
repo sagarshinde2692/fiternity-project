@@ -268,7 +268,7 @@ class Service extends \Basemodel{
 
 					if(count($ratecardoffers) && isset($ratecardoffers[0]['offer_icon'])){
 						if(in_array($value['type'], ['membership', 'packages']) && ((isset($this->finder['membership']) && $this->finder['membership'] == 'disable') || (isset($this['membership']) && $this['membership'] == 'disable'))){
-							unset($ratecardoffers[0]['offer_icon']);
+							$ratecardoffers[0]['offer_icon'] = "";
 						}
 					}
 					
