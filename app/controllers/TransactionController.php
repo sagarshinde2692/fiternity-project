@@ -976,6 +976,10 @@ class TransactionController extends \BaseController {
             'pay_later'=>$pay_later
         );
 
+        $resp['payment_offers'] = [
+            'amazon_pay'=>'25'
+        ];
+
         // if(isset($_GET['device_type']) && in_array($_GET['device_type'], ['android', 'ios'])){
             
             $resp['data']['order_details'] = $this->getBookingDetails($order->toArray());
