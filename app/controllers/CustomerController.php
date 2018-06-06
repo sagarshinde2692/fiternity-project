@@ -7007,13 +7007,15 @@ class CustomerController extends \BaseController {
 		$data['body']['section_2'] = ['header'=>'Your unique code : '.$pps_referral_code, 'button_text'=>'INVITE & EARN'];
 
 		$free_sessions_remainig = $this->utilities->getRemainigPPSSessions($customer);
+
+		$pps_referral_credits = isset($customer->pps_referral_credits) ? $customer->pps_referral_credits : 0;
 		
-		$data['body']['section_3'] = ['header'=>'Your Stats', 'enabled'=>true, 'data'=>[(isset($customer->pps_referral_credits) ? $customer->pps_referral_credits : 0).' friends have used your code', $free_sessions_remainig.' out of 5 Free Workout sessions remaining']];
+		$data['body']['section_3'] = ['header'=>'Your Stats', 'enabled'=>$pps_referral_credits > 0, 'data'=>[$pps_referral_credits.' friends have used your code', $free_sessions_remainig.' out of 5 Free Workout sessions remaining']];
 		
 		$data['body']['section_4'] = [
 			'header'=>'How it works', 
 			'data'=>[
-				['text'=>'You share the code with your buddy. He uses it while booking his session…', 'info_text'=>'KNOW MORE', 'type'=>'type1'],
+				['text'=>'You share the code with your buddy. He uses it while booking his session…', 'info_text'=>'KNOW MORE v', 'type'=>'type1'],
 				['text'=>'You share the code with your buddy. He uses it while booking his session…', 'type'=>'type2', 'line1'=>'₹499', 'line2'=>'OFF']
 			]
 		];
