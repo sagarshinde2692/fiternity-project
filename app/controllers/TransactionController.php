@@ -769,6 +769,13 @@ class TransactionController extends \BaseController {
 
         }
 
+        if(isset($data['pay_later']) && $data['pay_later'] && isset($data['wallet']) && $data['wallet']){
+            $data['amount_final'] = $data['amount'] = $data['amount'] + $data['convinience_fee'];
+            $data['amount_customer'] = $data['amount'];
+            unset($data['instant_payment_discount']);
+        
+        }
+
         $data['base_amount'] = $order['amount_customer'] - $data['convinience_fee'] ;
 
         $hash = getHash($data);
@@ -4218,10 +4225,6 @@ class TransactionController extends \BaseController {
             'field' => 'Total Amount Payable',
             'value' => 'Rs. '.$data['amount_final']
         );
-        if($payment_mode_type == 'pay_later'){
-            $$amount_payable = 'Rs. '.($data['amount_final']+$data['convinience']);
-        }
-        
 
         if($payment_mode_type == 'part_payment' && isset($data['part_payment_calculation'])){
 
@@ -4384,8 +4387,7 @@ class TransactionController extends \BaseController {
 
             if(isset($data['type']) && $data['type'] == 'workout-session' && $payment_mode_type == 'pay_later'){
                 
-                $amount_payable['value'] = "Rs. ".($data['amount_finder']);
-
+                $amount_payable['value'] = "Rs. ".($data['amount_finder']+$data['convinience_fee']);
             }
         }
 
