@@ -2781,6 +2781,10 @@ Class Utilities {
             Log::info("vendor token hai");
             return false;
         }
+        $finder = Finder::find((int) $data["finder_id"]);
+        if(isset($finder) && $finder["commercial_type"] != 0){
+            return true;
+        }
         (!isset($data['ratecard_flags']) && isset($data['flags'])) ? $data['ratecard_flags'] = $data['flags'] : null;
 
         if((isset($data["ratecard_flags"]) && isset($data["ratecard_flags"]["convinience_fee_applicable"]) && $data["ratecard_flags"]["convinience_fee_applicable"]  && ( !isset($data['type']) || isset($data['type']) && in_array($data['type'], ["memberships", "membership"]))) || (isset($data['offer_convinience_fee']) && $data['offer_convinience_fee'])){
