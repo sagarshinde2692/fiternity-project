@@ -812,7 +812,12 @@ class ServiceController extends \BaseController {
 
 				foreach ($weekdayslots['slots'] as $slot) {
 
-					if(!isNotInoperationalDate($date, $city_id, $slot, $findercategory_id)){
+					if(!empty($finder)&&!empty($finder['flags'])&&!empty($finder['flags']['newly_launched_date']))
+					{
+						if($finder['flags']['newly_launched_date']->sec>$timestamp)
+							$dontShow=true;
+					}
+					if(!isNotInoperationalDate($date, $city_id, $slot, $findercategory_id)||(isset($dontShow)&&$dontShow)){
 						continue;
 					}
 
@@ -1434,7 +1439,7 @@ class ServiceController extends \BaseController {
 			$finder = Finder::active()->where('slug','=',$finder_slug)->whereNotIn('flags.state', ['closed', 'temporarily_shut'])
 				->with(array('facilities'=>function($query){$query->select( 'name', 'finders');}))
 				->with(array('reviews'=>function($query){$query->select('finder_id', 'customer', 'customer_id', 'rating', 'updated_at', 'description')->where('status','=','1')->orderBy('updated_at', 'DESC')->limit(3);}))
-				->first(['title', 'contact', 'average_rating', 'total_rating_count', 'photos', 'coverimage', 'slug', 'trial']);
+				->first(['title', 'contact', 'average_rating', 'total_rating_count', 'photos', 'coverimage', 'slug', 'trial','videos','playOverVideo']);
 
 			if(!$finder){
 				return Response::json(array('status'=>400, 'error_message'=>'Facility not active'), $this->error_status);
@@ -1593,6 +1598,39 @@ class ServiceController extends \BaseController {
 			$service_details['finder'] = $finder;
 
 			$service_details['workout_session_ratecard'] = $workout_session_ratecard;
+			
+			
+			$findAr=$finder->toArray();
+			
+						if(isset($findAr)&&isset($findAr['playOverVideo'])&&$findAr['playOverVideo']!=-1&&isset($findAr['videos']) && is_array($findAr['videos']))
+							{
+									try {
+											$povInd=$findAr['videos'][(int)$findAr['playOverVideo']];
+											if(!isset($povInd['url']) || trim($povInd['url']) == ""){
+													$povInd=null;
+												}
+												if(!empty($povInd))
+														$service_details['playOverVideo']=$povInd;
+								
+												} catch (Exception $e) {
+														$message = array(
+																		'type'    => get_class($e),
+																		'message' => $e->getMessage(),
+																		'file'    => $e->getFile(),
+																		'line'    => $e->getLine(),
+																);
+														Log::info(" playOverVideoError ".print_r($message,true));
+													}
+												}
+						else unset($service_details['playOverVideo']);
+			
+			
+			
+			
+			
+			
+			
+			
 			
 			// return $service_details;
 			// $service_details = array_except($service_details, array('gallery','videos','vendor_id','location_id','city_id','service','schedules','updated_at','created_at','traction','timings','trainers','offer_available','showOnFront','flags','remarks','trial_discount','rockbottom_price','threedays_trial','vip_trial','seo','batches','workout_tags','category', 'geometry', 'info', 'what_i_should_expect', 'what_i_should_carry', 'custom_location', 'name', 'workout_intensity', 'session_type', 'latlon_change', 'membership_end_date', 'membership_start_date', 'workout_results', 'vendor_name', 'location_name'));

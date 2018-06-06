@@ -243,12 +243,6 @@ class RewardofferController extends BaseController {
             }
         }
 
-        if(in_array($ratecard_id,[103151,103152,103153,103154,103155,103156,103157,103158])){
-
-            $min_date = null;
-            $max_date = strtotime(date('2018-03-30 23:59:59'));
-        }
-
         if(isset($data['service_category_id']) && $data['service_category_id'] != ""){
 
             $service_category_id = (int)$data['service_category_id'];
@@ -306,48 +300,70 @@ class RewardofferController extends BaseController {
         $rewards                =   [];
         $finder_name            =   $finder->title;
 
+        $cutl_vendor = false;
+        $cutl_amount = $amount;
+
         if(isset($finder['brand_id']) && $finder['brand_id'] == 134){
 
             $min_date = strtotime(' + 2 days');
             $max_date = strtotime(' + 32 days');
+
+            $cutl_vendor = true;
         }
 
-        if($amount <= 1000){
-
+        if($amount <= 1025){
             switch ($finder_id) {
+                case 13765 :
+                    if(time() <= strtotime(date('2018-06-14 23:59:59'))){
+                        $min_date = strtotime(date('2018-06-14 00:00:00'));
+                        $max_date = strtotime(date('2018-06-14 23:59:59'));
+                    }
+                    break;
                 case 13761 : 
-                    if(time() >= strtotime(date('2018-06-15 00:00:00')) && time() <= strtotime(date('2018-06-15 23:59:59'))){
+                    if(time() <= strtotime(date('2018-06-15 23:59:59'))){
                         $min_date = strtotime(date('2018-06-15 00:00:00'));
                         $max_date = strtotime(date('2018-06-15 23:59:59'));
                     }
                     break;
-                case 13762 : 
-                    if(time() >= strtotime(date('2018-05-18 00:00:00')) && time() <= strtotime(date('2018-05-18 23:59:59'))){
-                        $min_date = strtotime(date('2018-05-18 00:00:00'));
-                        $max_date = strtotime(date('2018-05-18 23:59:59'));
+                case 14079 : 
+                    if(time() <= strtotime(date('2018-06-28 23:59:59'))){
+                        $min_date = strtotime(date('2018-06-28 00:00:00'));
+                        $max_date = strtotime(date('2018-06-28 23:59:59'));
                     }
                     break;
-                case 13763 : 
-                    if(time() >= strtotime(date('2018-04-23 00:00:00')) && time() <= strtotime(date('2018-04-23 23:59:59'))){
-                        $min_date = strtotime(date('2018-04-23 00:00:00'));
-                        $max_date = strtotime(date('2018-04-23 23:59:59'));
+                case 14081 : 
+                    if(time() <= strtotime(date('2018-06-25 23:59:59'))){
+                        $min_date = strtotime(date('2018-06-25 00:00:00'));
+                        $max_date = strtotime(date('2018-06-25 23:59:59'));
                     }
                     break;
-                case 13764 : 
-                    if(time() >= strtotime(date('2018-05-20 00:00:00')) && time() <= strtotime(date('2018-05-20 23:59:59'))){
-                        $min_date = strtotime(date('2018-05-20 00:00:00'));
-                        $max_date = strtotime(date('2018-05-20 23:59:59'));
+                case 14082 : 
+                    if(time() <= strtotime(date('2018-06-04 23:59:59'))){
+                        $min_date = strtotime(date('2018-06-04 00:00:00'));
+                        $max_date = strtotime(date('2018-06-04 23:59:59'));
                     }
                     break;
-                case 13765 : 
-                    if(time() >= strtotime(date('2018-05-31 00:00:00')) && time() <= strtotime(date('2018-05-31 23:59:59'))){
-                        $min_date = strtotime(date('2018-05-31 00:00:00'));
-                        $max_date = strtotime(date('2018-05-31 23:59:59'));
+                case 14088 : 
+                    if(time() <= strtotime(date('2018-06-07 23:59:59'))){
+                        $min_date = strtotime(date('2018-06-07 00:00:00'));
+                        $max_date = strtotime(date('2018-06-07 23:59:59'));
                     }
                     break;
+                case 14085 : 
+                    if(time() <= strtotime(date('2018-06-30 23:59:59'))){
+                        $min_date = strtotime(date('2018-06-30 00:00:00'));
+                        $max_date = strtotime(date('2018-06-30 23:59:59'));
+                    }
+                    break;
+                case 14078 : 
+                    if(time() <= strtotime(date('2018-06-30 23:59:59'))){
+                        $min_date = strtotime(date('2018-06-30 00:00:00'));
+                        $max_date = strtotime(date('2018-06-30 23:59:59'));
+                    }
+                    break;
+                
                 default: break;
-            }
-            
+            }     
         }
 
         $service_name           =   "";
@@ -393,6 +409,53 @@ class RewardofferController extends BaseController {
 
             Log::info('------------------------------findercategory_id --------------------------'.$findercategory_id);
 
+            if($cutl_vendor){
+
+                $slab = [            
+                    [
+                        'min'=>25000,
+                        'max'=>0,
+                    ],
+                    [
+                        'min'=>20000,
+                        'max'=>25000,
+                    ],
+                    [
+                        'min'=>15000,
+                        'max'=>20000,
+                    ],
+                    [
+                        'min'=>10000,
+                        'max'=>15000,
+                    ],
+                    [
+                        'min'=>7500,
+                        'max'=>10000,
+                    ],
+                    [
+                        'min'=>5000,
+                        'max'=>7500,
+                    ],
+                    [
+                        'min'=>2000,
+                        'max'=>5000,
+                    ],
+                    [
+                        'min'=>1000,
+                        'max'=>2000,
+                    ],
+                ];
+
+                foreach ($slab as $slab_key => $slab_value) {
+
+                    if($amount >= $slab_value['min'] && $slab_value['max'] !== 0 ){
+
+                        $amount = $slab_value['max'];
+                        break;
+                    }
+                }
+            }
+
             $rewardoffer           =   Rewardoffer::active()->where('findercategory_id', $findercategory_id)
                     ->where('amount_min','<=', $amount)
                     ->where('amount_max','>', $amount)
@@ -403,9 +466,12 @@ class RewardofferController extends BaseController {
 
                                         // return $rewardoffer;
             if ($rewardoffer){
+
+                $power_world_gym = [10861,10863,10868,10870,10872,10875,10876,10877,10880,10883,10886,10887,10888,10890,10891,10892,10894,10895,10897,10900];
+
+                $multifit_qym = [9932,9954,12208,11223,1935,9481,9423,9304,13094,10970,13898,11021,14102,14107,13968,9600];
+
                 $rewardoffer = $rewardoffer->toArray();
-
-
                 
                 $rewards = isset($rewardoffer['rewards']) ? $rewardoffer['rewards'] : array();
 
@@ -537,7 +603,9 @@ class RewardofferController extends BaseController {
                                         }
                                     }
 
-                                    if(in_array($finder_id,[13761,13762,13763,13764,13765]) && $amount <= 1000){
+                                    $cult_gym = [13761,13762,13763,13764,13765,14078,14079,14081,14082,14085,14088];
+
+                                    if(in_array($finder_id,$cult_gym) && $amount <= 1025){
 
                                         $pos = strpos($rewards_value['title'],'(Kit B)');
 
@@ -832,6 +900,35 @@ class RewardofferController extends BaseController {
                 $rewards[$fitness_kit_2] = $data_fitness_kit_1;
             }
 
+            if(in_array($finder_id,$power_world_gym) && $amount == 3500){
+
+                $fitness_kit_count = 0;
+
+                foreach ($rewards as $rewards_key => &$rewards_value) {
+
+                    if($rewards_value['reward_type'] == 'fitness_kit'){
+
+                        if($fitness_kit_count == 0){
+
+                            $rewards_value['title'] = "Fitness Merchandis";
+                            $rewards_value['contents'] = ['Waterproof Gym Bag'];
+                            $rewards_value['image'] = 'https://b.fitn.in/gamification/reward_new/new/GymBag_1.png';
+                            $rewards_value['gallery'] = [];
+                            $rewards_value['description'] = "We have curated the perfect partner to kickstart your membership. Strike off this workout essential from your list & get going. <br>- Gym Bag with separate shoe compartment";
+                            $rewards_value['payload']['amount'] = 850;
+                            $rewards_value['new_amount'] = 850;
+
+                            $fitness_kit_count = 1;
+
+                        }else{
+
+                            unset($rewards[$rewards_key]);
+                            break;
+                        }
+                    }
+                }
+            }
+
         }
 
         if(!empty($rewards)){
@@ -841,6 +938,10 @@ class RewardofferController extends BaseController {
                 if($reward_value['reward_type'] == 'fitness_kit' && isset($reward_value['payload']['amount']) && $reward_value['payload']['amount'] == 0){
                     unset($rewards[$reward_key]);
                 }
+
+                if(in_array($finder_id,$multifit_qym) & $reward_value['reward_type'] == 'diet_plan'){
+                    unset($rewards[$reward_key]);
+                }
             }
 
         }
@@ -848,6 +949,8 @@ class RewardofferController extends BaseController {
         $cashback = null;
         
         $customerReward     =   new CustomerReward();
+
+        $amount = $cutl_amount;
 
         if($amount < 50000 || !isset($_GET['device_type'])){   
             

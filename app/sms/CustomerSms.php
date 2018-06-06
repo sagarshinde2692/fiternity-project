@@ -1101,6 +1101,20 @@ Class CustomerSms extends VersionNextSms{
 		return $this->common($label,$to,$data);	
 	}
 	
+	protected function offhoursConfirmation($data,$delay){
+
+		if(isset($data['pre_trial_vendor_confirmation']) && !in_array($data['pre_trial_vendor_confirmation'], ['yet_to_connect', ''])){
+			return "no_email_sent";
+		}
+		
+		$label = 'OffhoursConfirmation-Customer';
+		
+		$to = $data['customer_phone'];
+		
+		return $this->common($label,$to,$data,$delay);
+		
+	}
+	
 	public function common($label,$to,$data,$delay = 0){
 
 		if(isset($data['source']) && $data['source'] == 'cleartrip'){

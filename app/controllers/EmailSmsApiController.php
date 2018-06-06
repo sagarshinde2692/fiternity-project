@@ -761,7 +761,7 @@ class EmailSmsApiController extends \BaseController {
         if(!empty($data['capture_type'])&&$data['capture_type']=='starter_pack')
         {
         	
-        	$start_pack_rules = ['customer_email'=>'required|email|max:255','customer_name'=>'required','customer_phone'=>'required',/* 'fitness_goal'=>'required', */'customer_location'=>'required','city_id'=>'required'];
+        	$start_pack_rules = ['customer_email'=>'required|email|max:255','customer_name'=>'required','customer_phone'=>'required',/* 'fitness_goal'=>'required', */'customer_location'=>'required'];
         		
         	$validator = Validator::make($data, $start_pack_rules);
         		
@@ -838,7 +838,7 @@ class EmailSmsApiController extends \BaseController {
                 'amount_fitcash' => 0,
                 'amount_fitcash_plus' => 500,
                 "entry"=>'credit',
-                'type'=>'FITCASHPLUS'
+                'type'=>'FITCASHPLUS',
                 "description"=>"Added FitCash+ as Sign up Bonus for starter pack, Expires On : ".date('d-m-Y',time()+(86400*60)),
                 "validity"=>time()+(86400*60),
                 "for"=>"starter_pack"
@@ -860,7 +860,7 @@ class EmailSmsApiController extends \BaseController {
                         'amount_fitcash' => 0,
                         'amount_fitcash_plus' => 200,
                         "entry"=>'credit',
-                        'type'=>'FITCASHPLUS'
+                        'type'=>'FITCASHPLUS',
                         "description"=>"Added FitCash+ as Sign up Bonus for starter pack reference, Expires On : ".date('d-m-Y',time()+(86400*60)),
                         "validity"=>time()+(86400*60),
                         "for"=>"starter_pack_reference"

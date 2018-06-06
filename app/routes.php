@@ -617,7 +617,7 @@ Route::post('/queue/push', function(){
 Route::get('flushtag/{tag}', 'CacheApiController@flushTag');
 Route::get('flushtagkey/{tag}/{key}', 'CacheApiController@flushTagKey');
 //Route::get('flushall', 'CacheApiController@flushAll');
-Route::get('dropall', 'CacheApiController@flushAll');
+// Route::get('dropall', 'CacheApiController@flushAll');
 
 ##############################################################################
 /******************** CACHE SECTION END HERE *******************************/
@@ -1180,6 +1180,7 @@ Route::get('deleteCommunicationSidekiq','DebugController@deleteCommunicationSide
 Route::get('updateSubscriptionCode','DebugController@updateSubscriptionCode');
 Route::get('addvendorstripedata','DebugController@addvendorstripedata');
 Route::get('workoutRatecardReverseMigrate','MigrationReverseController@workoutRatecardReverseMigrate');
+Route::get('updatetrialstatus/{_id}/{action}/{confirm?}','SchedulebooktrialsController@updatetrialstatus');
 
 Route::get('loginoptions','CustomerController@loginOptions');
 Route::get('trialWorkout','DebugController@trialWorkout');
@@ -1198,3 +1199,5 @@ Route::get('PayPerSessionWallet','DebugController@PayPerSessionWallet');
 Route::get('manualTrialCommunication','SchedulebooktrialsController@manualTrialCommunication');
 
 Route::get('getreferralscreendata','CustomerController@getReferralScreenData');
+Route::get('addWallet','DebugController@addWallet');
+

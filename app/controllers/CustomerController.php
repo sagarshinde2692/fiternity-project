@@ -1634,7 +1634,7 @@ class CustomerController extends \BaseController {
 			$customer->update($customer_data);
 			$message = implode(', ', array_keys($customer_data)) ;
 			$token = $this->createToken($customer);
-			return Response::json(array('status' => 200,'message' => $message.' updated successfull','token'=>$token),200);
+			return Response::json(array('status' => 200,'message' => $message.' updated successfull','token'=>$token, 'customer_data'=>$customer_data),200);
 		}
 		
 		return Response::json(array('status' => 400,'message' => 'customer data empty'),400);
@@ -3121,13 +3121,12 @@ class CustomerController extends \BaseController {
 				$decoded = $this->customerTokenDecode($jwt_token);
 				$customeremail = $decoded->customer->email;
 				$customer_id = $decoded->customer->_id;
-				$workout_session_level_data = $this->utilities->getWorkoutSessionLevel($customer_id);
 
 				Log::info("------------home------------$customeremail");
 
 				Log::info('device_type'.$this->device_type);
 				Log::info('app_version'.$this->app_version);
-
+				$trials = [];
 				if($this->app_version > '4.4.3'){
 					Log::info("4.4.3");
 					$trials = Booktrial::where('customer_email', '=', $customeremail)->where('going_status_txt','!=','cancel')->where('post_trial_status', '!=', 'no show')->where('booktrial_type','auto')->where(function($query){return $query->where('schedule_date_time','>=',new DateTime())->orWhere('payment_done', false)->orWhere(function($query){	return 	$query->where('schedule_date_time', '>', new DateTime(date('Y-m-d H:i:s', strtotime('-3 days', time()))))->whereIn('post_trial_status', [null, '', 'unavailable']);	});})->orderBy('schedule_date_time', 'asc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code', 'payment_done', 'type', 'order_id', 'post_trial_status', 'amount_finder', 'kiosk_block_shown')->get();
@@ -3137,13 +3136,14 @@ class CustomerController extends \BaseController {
 					
 					$trials = Booktrial::where('customer_email', '=', $customeremail)->where('going_status_txt','!=','cancel')->where('booktrial_type','auto')->where('schedule_date_time','>=',new DateTime())->orderBy('schedule_date_time', 'asc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code')->get();
 				}
-
+				
 				$activate = [];
 				$let_us_know = [];
 				$no_block = [];
 				$future = [];
 
 				if(count($trials) > 0){
+					$workout_session_level_data = $this->utilities->getWorkoutSessionLevel($customer_id);
 
 					foreach ($trials as $trial) {
 
@@ -3308,7 +3308,18 @@ class CustomerController extends \BaseController {
 
 		if(isset($_GET['device_type']) && (strtolower($_GET['device_type']) == "android")){
 			if(isset($_GET['app_version']) && ((float)$_GET['app_version'] >= 4.2)){
-				$category_slug = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates"/*,"personal-trainers"*/,"luxury-hotels"/*,"healthy-snacks-and-beverages"*/,"spinning-and-indoor-cycling","healthy-tiffins"/*,"dietitians-and-nutritionists"*//*,"sport-nutrition-supliment-stores"*/,"aerobics","kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness");
+				
+				$category_new = citywise_categories($city);
+
+				foreach ($category_new as $key => $value) {
+					
+					if(isset($value["slug"]) && $value["slug"] == "fitness"){
+						unset($category_new[$key]);
+					}
+				}
+
+				$category_new = array_values($category_new);
+
 				$cache_tag = 'customer_home_by_city_4_2';
 			}elseif(isset($_GET['app_version']) && ((float)$_GET['app_version'] >= 2.5)){
 				$category_slug = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates"/*,"personal-trainers"*/,"luxury-hotels"/*,"healthy-snacks-and-beverages"*/,"spinning-and-indoor-cycling"/*,"healthy-tiffins"*//*,"dietitians-and-nutritionists"*//*,"sport-nutrition-supliment-stores"*/,"aerobics","kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness");
@@ -3322,11 +3333,11 @@ class CustomerController extends \BaseController {
 				$category_slug = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","luxury-hotels"/*,"healthy-snacks-and-beverages"*/,"spinning-and-indoor-cycling"/*,"healthy-tiffins"*//*,"dietitians-and-nutritionists"*//*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness"/*,"personal-trainers"*/);
 				$cat = array();
 				$cat['mumbai'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"marathon-training","dance","cross-functional-training","mma-and-kick-boxing","swimming","pilates","luxury-hotels"/*,"healthy-snacks-and-beverages"*/,"spinning-and-indoor-cycling"/*,"healthy-tiffins"*//*,"dietitians-and-nutritionists"*//*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness","aqua-fitness"/*,"personal-trainers"*/);
-				$cat['pune'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates"/*,"healthy-tiffins"*/,"cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling"/*,"sport-nutrition-supliment-stores"*/,"aerobics"/*,"kids-fitness"*/,"pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
-				$cat['bangalore'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates"/*,"healthy-tiffins"*/,"cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling"/*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
-				$cat['delhi'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates"/*,"healthy-tiffins"*/,"cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling"/*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
+				$cat['pune'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates"/*,"healthy-tiffins"*/,"cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling","swimming"/*,"luxury-hotels"*//*,"sport-nutrition-supliment-stores"*/,"aerobics"/*,"kids-fitness"*/,"pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
+				$cat['bangalore'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates"/*,"healthy-tiffins"*/,"cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling","luxury-hotels","swimming"/*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
+				$cat['delhi'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates"/*,"healthy-tiffins"*/,"cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling","luxury-hotels","swimming"/*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
 				$cat['gurgaon'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates"/*,"healthy-tiffins"*/,"cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling"/*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
-				$cat['noida'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"mma-and-kick-boxing","dance","kids-fitness","pre-natal-classes");
+				$cat['noida'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"cross-functional-training","mma-and-kick-boxing","dance","kids-fitness","pre-natal-classes");
 				if(isset($cat[$city])){
 					$category_slug = $cat[$city];
 				}
@@ -3458,25 +3469,25 @@ class CustomerController extends \BaseController {
 						'ratio'=>(float) number_format(100/375,2)
 					];
 				}
-				if(in_array($city,["mumbai","pune"])){
-					$result['campaigns'][] = [
-						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/MM_AppBanner_MP.png',
-						'link'=>'ftrnty://fitternity.com/',
-						'title'=>'Fitness Sale',
-						'height'=>100,
-						'width'=>375,
-						'ratio'=>(float) number_format(100/375,2)
-					];
-				}else{
-					$result['campaigns'][] = [
-						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/MM_AppBanner_OC.png',
-						'link'=>'ftrnty://fitternity.com/',
-						'title'=>'Fitness Sale',
-						'height'=>100,
-						'width'=>375,
-						'ratio'=>(float) number_format(100/375,2)
-					];
-				}
+				// if(in_array($city,["mumbai","pune"])){
+				// 	$result['campaigns'][] = [
+				// 		'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/MM_AppBanner_MP.png',
+				// 		'link'=>'ftrnty://fitternity.com/',
+				// 		'title'=>'Fitness Sale',
+				// 		'height'=>100,
+				// 		'width'=>375,
+				// 		'ratio'=>(float) number_format(100/375,2)
+				// 	];
+				// }else{
+				// 	$result['campaigns'][] = [
+				// 		'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/MM_AppBanner_OC.png',
+				// 		'link'=>'ftrnty://fitternity.com/',
+				// 		'title'=>'Fitness Sale',
+				// 		'height'=>100,
+				// 		'width'=>375,
+				// 		'ratio'=>(float) number_format(100/375,2)
+				// 	];
+				// }
 			// 	$result['campaigns'][] = [
 			// 		'image'=>'https://b.fitn.in/global/Homepage-branding-2018/fitnesssale-appbanner.png',
 			// 		'link'=>'https://www.fitternity.com/sale?mobile_app=true',
@@ -3485,23 +3496,6 @@ class CustomerController extends \BaseController {
 			// 		'width'=>375,
 			// 		'ratio'=>(float) number_format(100/375,2)
 			// 	];
-				// $result['campaigns'][] = [
-				// 	'image'=>'https://b.fitn.in/global/holi/holi-app.png',
-				// 	'link'=>'ftrnty://fitternity.com/',
-				// 	'title'=>'5% Discount',
-				// 	'height'=>100,
-				// 	'width'=>375,
-				// 	'ratio'=>(float) number_format(100/375,2)
-				// ];
-				// $result['campaigns'][] = [
-				// 	'image'=>'https://b.fitn.in/global/ios_homescreen_banner/women-banner.jpg',
-				// 	'link'=>'ftrnty://fitternity.com/',
-				// 	'title'=>'Women campaign',
-				// 	'height'=>100,
-				// 	'width'=>375,
-				// 	'ratio'=>(float) number_format(100/375,2)
-				// ];
-
 			}else{
 
 			// 	$result['campaigns'][] = [
@@ -3535,25 +3529,6 @@ class CustomerController extends \BaseController {
 						'image'=>'https://b.fitn.in/global/paypersession_branding/app_banners/App-pps%402x.png',
 						'link'=>'ftrnty://ftrnty.com/pps',
 						'title'=>'Pay Per Session',
-						'height'=>100,
-						'width'=>375,
-						'ratio'=>(float) number_format(100/375,2)
-					];
-				}
-				if(in_array($city,["mumbai","pune"])){
-					$result['campaigns'][] = [
-						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/MM_AppBanner_MP.png',
-						'link'=>'ftrnty://ftrnty.com/search/all',
-						'title'=>'Fitness Sale',
-						'height'=>100,
-						'width'=>375,
-						'ratio'=>(float) number_format(100/375,2)
-					];
-				}else{
-					$result['campaigns'][] = [
-						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/MM_AppBanner_OC.png',
-						'link'=>'ftrnty://ftrnty.com/search/all',
-						'title'=>'Fitness Sale',
 						'height'=>100,
 						'width'=>375,
 						'ratio'=>(float) number_format(100/375,2)
@@ -3675,6 +3650,13 @@ class CustomerController extends \BaseController {
 
             $data['customer_address'] = $customer_address;
 
+		}
+
+		if(isset($data['order_id'])){
+			$order = Order::find($data['order_id']);
+			$data['customer_name'] = $order['customer_name'];
+			$data['customer_email']= $order['customer_email'];
+			$data['customer_phone']= $order['customer_phone'];
 		}
 
 		if(isset($data['gender']) && $data['gender'] != ""){
@@ -4598,6 +4580,15 @@ class CustomerController extends \BaseController {
 
 	public function getAction($order,$method = false){
 
+		$finder = Finder::find((int)$order['finder_id']);
+
+		$cult_vendor_flag = false;
+
+		if($finder && isset($finder['brand_id']) && $finder['brand_id'] == 134){
+
+			$cult_vendor_flag = true;
+		}
+
 		$action = null;
 
 		$change_start_date = true;
@@ -4625,7 +4616,7 @@ class CustomerController extends \BaseController {
 			];
 		}
 
-		if(!isset($order->preferred_starting_change_date) && isset($order['start_date']) && time() <= strtotime($order['start_date'].'+11 days') && $change_start_date){
+		if(!isset($order->preferred_starting_change_date) && isset($order['start_date']) && time() <= strtotime($order['start_date'].'+11 days') && $change_start_date && !$cult_vendor_flag){
 
 			$min_date = strtotime('+1 days');
 			$max_date = strtotime($order['created_at'].'+29 days');
@@ -4835,7 +4826,7 @@ class CustomerController extends \BaseController {
 
 		}
 
-		if($action['change_start_date'] == null && !isset($order->requested_preferred_starting_date) && isset($order['success_date']) && time() <= strtotime($order['success_date'].'+29 days') && $change_start_date_request){
+		if($action['change_start_date'] == null && !isset($order->requested_preferred_starting_date) && isset($order['success_date']) && time() <= strtotime($order['success_date'].'+29 days') && $change_start_date_request && !$cult_vendor_flag){
 
 			$min_date = strtotime('+1 days');
 			$max_date = strtotime($order['success_date'].'+29 days');

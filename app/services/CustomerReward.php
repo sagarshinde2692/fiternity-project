@@ -121,6 +121,56 @@ Class CustomerReward {
 
                     $amount = (int) $order['amount_finder'];
 
+                    if(isset($finder['brand_id']) && $finder['brand_id'] == 134){
+
+                        $min_date = strtotime(' + 2 days');
+                        $max_date = strtotime(' + 32 days');
+
+                        $slab = [            
+                            [
+                                'min'=>25000,
+                                'max'=>0,
+                            ],
+                            [
+                                'min'=>20000,
+                                'max'=>25000,
+                            ],
+                            [
+                                'min'=>15000,
+                                'max'=>20000,
+                            ],
+                            [
+                                'min'=>10000,
+                                'max'=>15000,
+                            ],
+                            [
+                                'min'=>7500,
+                                'max'=>10000,
+                            ],
+                            [
+                                'min'=>5000,
+                                'max'=>7500,
+                            ],
+                            [
+                                'min'=>2000,
+                                'max'=>5000,
+                            ],
+                            [
+                                'min'=>1000,
+                                'max'=>2000,
+                            ],
+                        ];
+
+                        foreach ($slab as $slab_key => $slab_value) {
+
+                            if($amount >= $slab_value['min'] && $slab_value['max'] !== 0 ){
+
+                                $amount = $slab_value['max'];
+                                break;
+                            }
+                        }
+                    }
+
                     $reward['content'] = [];
 
                     $reward_data_flag = false;
@@ -182,7 +232,9 @@ Class CustomerReward {
                             }
                         }
 
-                        if(in_array($finder_id,[13761,13762,13763,13764,13765]) && $amount <= 1000){
+                        $cult_gym = [13761,13762,13763,13764,13765,14078,14079,14081,14082,14085,14088];
+
+                        if(in_array($finder_id,$cult_gym) && $amount <= 1025){
 
                             $pos = strpos($reward['title'],'(Kit B)');
 
@@ -201,6 +253,16 @@ Class CustomerReward {
                                 $reward['image'] = 'https://b.fitn.in/gamification/reward/goodies/productskit/gymbag.png';
                             }
                             
+                        }
+
+                        $power_world_gym = [10861,10863,10868,10870,10872,10875,10876,10877,10880,10883,10886,10887,10888,10890,10891,10892,10894,10895,10897,10900];
+
+                        if(in_array($finder_id,$power_world_gym) && $amount == 3500){
+
+                            $reward_type_info = 'fitness_kit';
+
+                            $reward['contents'] = ['Waterproof Gym Bag'];
+                            $reward['image'] = 'https://b.fitn.in/gamification/reward/goodies/productskit/gymbag.png';
                         }
 
                     }
@@ -1362,7 +1424,7 @@ Class CustomerReward {
         //         return $resp;
         //     }
         // }
-        if(!isset($coupon) && (strtolower($couponCode) == "mad18") && $ratecard){
+        if(!isset($coupon) && (strtolower($couponCode) == "mad18") && $ratecard && $ratecard["finder_id"] == 6168){
             Log::info("New user code");
             
             $discount = 300;
