@@ -3904,7 +3904,7 @@ Class Utilities {
 
     public function checkPPSReferral($code, $customer_id){
 
-        $customer = Customer::active()->where('pps_referral_code', $code)->first();
+        $customer = Customer::active()->where('pps_referral_code', strtoupper($code))->first();
 
         if($customer){
 
