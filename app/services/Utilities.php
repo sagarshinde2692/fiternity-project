@@ -2777,6 +2777,10 @@ Class Utilities {
         Log::info(debug_backtrace()[1]['function']);
         Log::info("Data for isConvinienceFeeApplicable");
         Log::info($data);
+
+        if(isset($data['session_payment']) && $data['session_payment']){
+            return false;
+        }
         if($this->vendor_token || in_array($data['finder_id'],Config::get('app.vendors_without_convenience_fee')) ){
             Log::info("vendor token hai");
             return false;
