@@ -558,8 +558,9 @@ class TransactionController extends \BaseController {
         }
 
         if(isset($data['pay_later']) && $data['pay_later'] && isset($data['wallet']) && $data['wallet']){
-            
+            $data['amount_final'] = $data['amount'] = $data['amount'] + $data['convinience_fee'];
             $data['amount_customer'] = $data['amount'];
+            unset($data['instant_payment_discount']);
         
         }
         
@@ -768,6 +769,13 @@ class TransactionController extends \BaseController {
 
         }
 
+        if(isset($data['pay_later']) && $data['pay_later'] && isset($data['wallet']) && $data['wallet']){
+            $data['amount_final'] = $data['amount'] = $data['amount'] + $data['convinience_fee'];
+            $data['amount_customer'] = $data['amount'];
+            unset($data['instant_payment_discount']);
+        
+        }
+
         $data['base_amount'] = $order['amount_customer'] - $data['convinience_fee'] ;
 
         $hash = getHash($data);
@@ -967,6 +975,10 @@ class TransactionController extends \BaseController {
             'pay_at_vendor'=>$pay_at_vendor_applicable,
             'pay_later'=>$pay_later
         );
+
+        $resp['payment_offers'] = [
+            'amazon_pay'=>'25% instant cashback'
+        ];
 
         // if(isset($_GET['device_type']) && in_array($_GET['device_type'], ['android', 'ios'])){
             
@@ -2271,6 +2283,9 @@ class TransactionController extends \BaseController {
             $service_id = isset($data['service_id']) ? $data['service_id'] : null;
 
             $couponCheck = $this->customerreward->couponCodeDiscountCheck($ratecard,$data["coupon_code"],$customer_id, $ticket, $ticket_quantity, $service_id);
+
+            Log::info("couponCheck");
+            Log::info($couponCheck);
 
             if(isset($couponCheck["coupon_applied"]) && $couponCheck["coupon_applied"]){
 
@@ -4203,6 +4218,10 @@ class TransactionController extends \BaseController {
             'field' => 'Total Amount',
             'value' => 'Rs. '.(isset($data['original_amount_finder']) ? $data['original_amount_finder'] : $data['amount_finder'])
         );
+        
+        if(isset($data['session_payment']) && $data['session_payment']){
+            $amount_summary[0]['value'] = 'Rs. '.$data['amount_customer'];
+        }
 
         $amount_payable = [];
 
@@ -4210,8 +4229,6 @@ class TransactionController extends \BaseController {
             'field' => 'Total Amount Payable',
             'value' => 'Rs. '.$data['amount_final']
         );
-
-        
 
         if($payment_mode_type == 'part_payment' && isset($data['part_payment_calculation'])){
 
@@ -4374,8 +4391,7 @@ class TransactionController extends \BaseController {
 
             if(isset($data['type']) && $data['type'] == 'workout-session' && $payment_mode_type == 'pay_later'){
                 
-                $amount_payable['value'] = "Rs. ".($data['amount_finder']);
-
+                $amount_payable['value'] = "Rs. ".($data['amount_finder']+$data['convinience_fee']);
             }
         }
 
@@ -4694,6 +4710,10 @@ class TransactionController extends \BaseController {
 
             if(!empty($resp['fitternity_only_coupon']) || !empty($resp['vendor_exclusive']) || !empty($resp['app_only']) || !empty($resp['user_login_error']) ){
                 $errorMessage =  $resp['error_message'];
+            }
+
+            if(isset($resp['referral_coupon']) && $resp['referral_coupon']){
+                $errorMessage =  $resp['message'];
             }
 
             $resp = array("status"=> 400, "message" => "Coupon not found", "error_message" =>$errorMessage, "data"=>$resp["data"]);

@@ -583,6 +583,10 @@ Class CustomerReward {
                     $customersms->giveCashbackOnTrialOrderSuccessAndInvite($order->toArray());
                 }            
             }
+
+            if(isset($order->coupon_code) && $utilities->isPPSReferralCode($order->coupon_code)){
+                $utilities->setPPSReferralData($order->toArray());
+            }
             
         }
         catch (Exception $e) {
@@ -1323,6 +1327,39 @@ Class CustomerReward {
                 $price = $ratecard["special_price"] == 0 ? $ratecard["price"] : $ratecard["special_price"];
             }
         }
+
+        $code = trim(strtoupper($couponCode));
+        Log::info(substr($code, -1 ));
+        Log::info($ratecard);
+        
+        $utilities = new Utilities;
+        
+        if($utilities->isPPSReferralCode($couponCode)){
+
+            if(!(isset($ratecard) && isset($ratecard['type']) && $ratecard['type'] == 'workout session')){
+                
+                return array("referral_coupon"=>true, "data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => 0, "only_discount" => $price), "coupon_applied" => false, "message"=>'Coupon is applicable only on workout sessions');
+            
+            }
+
+
+            $referral_resp = $utilities->checkPPSReferral($code, $customer_id);
+
+            if($referral_resp['status'] == 200){
+                $discount = $referral_resp['discount'];
+                $discount = $discount < $price ? $discount : $price;
+                $final_amount = $price - $discount;
+                $resp = array("referral_coupon"=>true, "data"=>array("discount" => $discount, "final_amount" => $final_amount, "wallet_balance" => 0, "only_discount" => $final_amount), "coupon_applied" => true, "message"=>$referral_resp['message']);
+                
+            }else{
+                
+                $resp = array("referral_coupon"=>true, "data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => 0, "only_discount" => $price), "coupon_applied" => false, "message"=>$referral_resp['message']);
+
+            }
+
+            return $resp;
+
+		}
             
         $customer_id = isset($customer_id) ? $customer_id : false;
         
