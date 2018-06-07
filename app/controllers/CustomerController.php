@@ -7003,7 +7003,7 @@ class CustomerController extends \BaseController {
 		
 		$data['body']['section_1'] = 'Refer a friend and both you and your friend get a free workout! Available on booking Pay-per-session, Workout Anytime Anywhere!';
 		
-		$data['body']['section_2'] = ['header'=>'Your unique code : '.$pps_referral_code, 'button_text'=>'INVITE & EARN'];
+		$data['body']['section_2'] = ['header'=>'Your unique code : '.$pps_referral_code, 'button_text'=>'INVITE & EARN', 'referral_code'=>$pps_referral_code];
 
 		$free_sessions_remainig = $this->utilities->getRemainigPPSSessions($customer);
 
