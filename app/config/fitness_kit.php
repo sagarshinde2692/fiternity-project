@@ -551,11 +551,11 @@ return [
 				],
 				[
 					"product" => [
-						$products["Waterproof Gym Bag"]["title"],
-						$products["Shaker"]["title"],
-						$products["Compact Hand Towel"]["title"],
-						$products["Earphone Detangler"]["title"],
 						$products["Tshirt Crossfit"]["title"],
+						$products["Compact Hand Towel"]["title"],
+						$products["Shaker"]["title"],
+						$products["Waterproof Gym Bag"]["title"],
+						$products["Earphone Detangler"]["title"],
 						$products["Workout Friendly Armband"]["title"]
 					],
 					'category_id'=>[
@@ -568,12 +568,12 @@ return [
 					'image' => $url.'gymkit/gym8.jpg',
                     'gallery'=>[
                     	$url.'gymkit/gym8.jpg',
-                    	$url.'gymkit/s8_gymbag_1.png',
-                    	$url.'gymkit/s8_shaker_2.png',
-                    	$url.'gymkit/s8_towel_3.png',
-                    	$url.'gymkit/s8_detangler_4.png',
-						$url.'gymkit/s8_tshirt_5.png',
-						$url.'gymkit/s8_armband_6.png',
+                    	$url.'gymkit/s8_tshirt_1.png',
+						$url.'gymkit/s8_towel_2.png',
+						$url.'gymkit/s8_shaker_3.png',
+						$url.'gymkit/s8_gymbag_4.png',
+						$url.'gymkit/s8_detangler_5.png',
+						$url.'gymkit/s8_armband_6.png'
                     ]
 				],
 				[
