@@ -1638,7 +1638,7 @@ class CustomerController extends \BaseController {
 			$message = implode(', ', array_keys($customer_data)) ;
 			$token = $this->createToken($customer);
 			
-			return Response::json(array('status' => 200,'token'=>$token, 'customer_token'=>$token['token'], 'message'=>'Profile updated successfully', 'verify_phone'=>$verify_phone, 'customer_data'=>$customer_data),200);
+			return Response::json(array('status' => 200,'token'=>$token, 'customer_token'=>$token['token'], 'message'=>'Profile updated successfully', 'verify_phone'=>$verify_phone, 'customer_data'=>$customer),200);
 		}
 		
 		return Response::json(array('status' => 400,'message' => 'customer data empty'),400);
