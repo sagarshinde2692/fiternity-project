@@ -3579,6 +3579,12 @@ class FindersController extends \BaseController {
 
 				if(count($finder['services']) > 0 ){
 					$info_timing = $this->getInfoTiming($finder['services']);
+
+					if(isset($finder['open_close_hour_for_week'])){
+						$info_timing = $this->createTiming($finder['open_close_hour_for_week']).$info_timing;
+					}
+
+
 					if(isset($finder['info']) && $info_timing != ""){
 						$finder['info']['timing'] = $info_timing;
 					}
@@ -5506,6 +5512,20 @@ class FindersController extends \BaseController {
 			return Response::json($message, 400);
 			
 		}
+	}
 		
+	public function createTiming($open_close_hour_for_week){
+
+		$result = "";
+		
+		if(count($open_close_hour_for_week)){
+			
+			$result = "<p><strong>Gym</strong></p>";
+	
+			foreach($open_close_hour_for_week as $day){
+				$result = $result."<p><i>".ucwords($day['day'])." : </i>".str_pad($day['opening_hour'], 8, '0', STR_PAD_LEFT)."-".$day['closing_hour']."</p>";
+			}
+		}
+		return $result;
 	}
 }
