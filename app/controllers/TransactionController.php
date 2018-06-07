@@ -977,7 +977,7 @@ class TransactionController extends \BaseController {
         );
 
         $resp['payment_offers'] = [
-            'amazon_pay'=>'25'
+            'amazon_pay'=>'25% instant cashback'
         ];
 
         // if(isset($_GET['device_type']) && in_array($_GET['device_type'], ['android', 'ios'])){
