@@ -1572,7 +1572,7 @@ Class CustomerReward {
 
                 if(!empty($coupon_data['service_category_ids']) && !in_array($service['servicecategory_id'],$coupon_data['service_category_ids'])){
      
-                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"Coupon not valid for this transaction");
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"This coupon is valid only on Yoga Sessions");
 
                     return $resp;   
                 }
@@ -1597,7 +1597,7 @@ Class CustomerReward {
 
                     if($order_count >= 4){
 
-                        $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"Already booked 4 workout session","user_login_error"=>true);
+                        $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"This coupon is applicable only for 4 sessions","user_login_error"=>true);
 
                         return $resp;
 
