@@ -4657,6 +4657,8 @@ class TransactionController extends \BaseController {
             $resp['status'] = 200;
             $resp['message'] = $resp['success_message'] = "Rs. ".$resp["data"]["discount"]." has been applied Successfully ";
 
+            $resp['message'] = $resp['success_message'] = "Coupon has been applied successfully";
+
             if(isset($resp['custom_message'])){
                 $resp['message'] = $resp['success_message'] = $resp['custom_message'];
             }
