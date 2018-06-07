@@ -1254,7 +1254,7 @@ class FindersController extends \BaseController {
 
         $payment_modes[] = array(
             'title' => 'Online Payment',
-            'subtitle' => 'Buy Memberships with Debit/Credit card , Paytm & other Mobile Wallets',
+            'subtitle' => 'Buy with Debit Card or Credit card, NetBanking, UPI and mobile wallets',
             'value' => 'paymentgateway',
         );
 
