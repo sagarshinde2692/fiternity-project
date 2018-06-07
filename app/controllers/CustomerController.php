@@ -7015,7 +7015,7 @@ class CustomerController extends \BaseController {
 			'header'=>'How it works', 
 			'data'=>[
 				['text'=>'You share the code with your buddy. He uses it while booking his session…', 'info_text'=>'KNOW MORE', 'type'=>'type1'],
-				['text'=>'You share the code with your buddy. He uses it while booking his session…', 'type'=>'type2', 'line1'=>'₹499', 'line2'=>'OFF']
+				['text'=>'5 friends using your code gets you Rs. 499 off on each session', 'type'=>'type2', 'line1'=>'₹499', 'line2'=>'OFF']
 			]
 		];
 
