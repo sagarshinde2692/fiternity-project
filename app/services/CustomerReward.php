@@ -1568,7 +1568,7 @@ Class CustomerReward {
                 }
                 
                 $finder = Finder::where('_id', $ratecard['finder_id'])->first(['flags']);
-                $service = Service::where('_id', $ratecard['service_id'])->first(['flags']);
+                $service = Service::where('_id', $ratecard['service_id'])->first(['flags','servicecategory_id']);
 
                 if(!empty($coupon_data['service_category_ids']) && !in_array($service['servicecategory_id'],$coupon_data['service_category_ids'])){
      
