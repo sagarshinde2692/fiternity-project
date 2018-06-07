@@ -617,7 +617,7 @@ Route::post('/queue/push', function(){
 Route::get('flushtag/{tag}', 'CacheApiController@flushTag');
 Route::get('flushtagkey/{tag}/{key}', 'CacheApiController@flushTagKey');
 //Route::get('flushall', 'CacheApiController@flushAll');
-// Route::get('dropall', 'CacheApiController@flushAll');
+Route::get('cachedrop', 'CacheApiController@flushAll');
 
 ##############################################################################
 /******************** CACHE SECTION END HERE *******************************/
@@ -1200,3 +1200,4 @@ Route::get('manualTrialCommunication','SchedulebooktrialsController@manualTrialC
 
 Route::get('addWallet','DebugController@addWallet');
 
+Route::get('getbrandvendors/{brand_id}/{city_id}', array('as' => 'finders.getbrandvendors','uses' => 'FindersController@getBrandVendors'));
