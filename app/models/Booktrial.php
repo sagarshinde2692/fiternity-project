@@ -45,4 +45,8 @@ class Booktrial extends \Basemodel {
 		return $this->hasMany('Invite','referrer_booktrial_id');
 	}
 
+	public function service(){
+		return $this->belongsTo('Service','service_id');
+	}
+
 }

@@ -15,6 +15,7 @@ class BaseController extends Controller {
     public function __construct() {
         $this->device_type = Request::header('Device-Type');
         $this->app_version = Request::header('App-Version');
+        $this->authorization = Request::header('Authorization');
      	//echo "call in base";
      	//$this->perpage =  Config::get('app.perpage');
     }
