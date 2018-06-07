@@ -1569,6 +1569,41 @@ Class CustomerReward {
                 
                 $finder = Finder::where('_id', $ratecard['finder_id'])->first(['flags']);
                 $service = Service::where('_id', $ratecard['service_id'])->first(['flags']);
+
+                if(!empty($coupon_data['service_category_ids']) && !in_array($service['servicecategory_id'],$coupon_data['service_category_ids'])){
+     
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"Coupon not valid for this transaction");
+
+                    return $resp;   
+                }
+
+                if(!empty($coupon_data['service_category_ids']) && in_array($service['servicecategory_id'],$coupon_data['service_category_ids'])){
+
+                    $jwt_token = Request::header('Authorization');
+
+                    if(empty($jwt_token)){
+
+                        $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"User Login Required","user_login_error"=>true);
+
+                        return $resp;
+                    }
+
+                    $decoded = $this->customerTokenDecode($jwt_token);
+                    $customer_id = $decoded->customer->_id;
+
+                    \Order::$withoutAppends = true;
+
+                    $order_count = \Order::active()->where('customer_id',$customer_id)->where('coupon_code',$couponCode)->count();
+
+                    if($order_count >= 4){
+
+                        $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"Already booked 4 workout session","user_login_error"=>true);
+
+                        return $resp;
+
+                    }
+                   
+                }
                 
                 if($this->hasCamapignOffer($ratecard) || $this->hasCamapignOffer($service) || $this->hasCamapignOffer($finder)){
                     
