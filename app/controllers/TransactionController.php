@@ -411,6 +411,10 @@ class TransactionController extends \BaseController {
                 $data = array_merge($data,$serviceDetail['data']);
             }
 
+            if($data['finder_id'] == 8892 && $data['type'] == 'workout-session'){
+                $data['amount_finder'] = 990;
+            }
+
         }else{
             $finderDetail['data']['finder_flags'] = [];
         }
