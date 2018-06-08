@@ -3328,7 +3328,7 @@ class SchedulebooktrialsController extends \BaseController {
             if(!empty($this->authorization)){
                 $logged_in_customer = customerTokenDecode($this->authorization);
                 $logged_in_customer_id = $logged_in_customer->customer->_id;
-                $$booktrialdata["logged_in_customer_id"] = $logged_in_customer_id;
+                $booktrialdata["logged_in_customer_id"] = $logged_in_customer_id;
             }
             $is_tab_active = isTabActive($booktrialdata['finder_id']);
 
