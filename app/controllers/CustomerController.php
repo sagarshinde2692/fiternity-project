@@ -3468,6 +3468,15 @@ class CustomerController extends \BaseController {
 						'width'=>375,
 						'ratio'=>(float) number_format(100/375,2)
 					];
+
+					$result['campaigns'][] = [
+						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/Yoga_AppBanner%402x.png',
+						'link'=>'ftrnty://ftrnty.com/pps?',
+						'title'=>'Free Yoga Session',
+						'height'=>100,
+						'width'=>375,
+						'ratio'=>(float) number_format(100/375,2)
+					];
 				}
 				// if(in_array($city,["mumbai","pune"])){
 				// 	$result['campaigns'][] = [
@@ -3525,6 +3534,16 @@ class CustomerController extends \BaseController {
 				// ];
 
 				if($this->app_version > '4.4.3'){
+
+					$result['campaigns'][] = [
+						'image'=>'https://b.fitn.in/global/paypersession_branding/app_banners/App-pps%402x.png',
+						'link'=>'ftrnty://ftrnty.com/pps',
+						'title'=>'Pay Per Session',
+						'height'=>100,
+						'width'=>375,
+						'ratio'=>(float) number_format(100/375,2)
+					];
+
 					$result['campaigns'][] = [
 						'image'=>'https://b.fitn.in/global/paypersession_branding/app_banners/App-pps%402x.png',
 						'link'=>'ftrnty://ftrnty.com/pps',
