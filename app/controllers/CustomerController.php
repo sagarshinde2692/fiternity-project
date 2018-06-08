@@ -1633,6 +1633,9 @@ class CustomerController extends \BaseController {
 		
 		if(!empty($customer_data)){
 			$old_contact_no = $customer->contact_no;
+			if(!empty($customer_data['contact_no']) && $old_contact_no != $customer_data['contact_no']){
+				$customer_data["verified"] = false;
+			}
 			$customer->update($customer_data);
 			$verify_phone = $old_contact_no != $customer->contact_no;
 			$message = implode(', ', array_keys($customer_data)) ;
@@ -5580,11 +5583,6 @@ class CustomerController extends \BaseController {
 				if(!isset($customer->referral_code)){
 
 					$customer->referral_code = generateReferralCode($customer->name);
-					$customer->update();
-				}
-
-				if(!isset($customer->pps_referral_code)){
-					$customer->pps_referral_code = $customer->referral_code;
 					$customer->update();
 				}
 

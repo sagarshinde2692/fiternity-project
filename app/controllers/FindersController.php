@@ -2051,7 +2051,7 @@ class FindersController extends \BaseController {
 			$fresh_review = false;
 
 			$review->update($reviewdata);
-			$message = 'Review Updated Successfully';
+			$message = 'Review has been updated successfully';
 			$review_id = $review->_id;
 
 		}else{
@@ -2061,7 +2061,7 @@ class FindersController extends \BaseController {
 			$review_id = $review->_id = $inserted_id;
 			$review->save();
 
-			$message = 'Thank You. Your review is posted successfully';
+			$message = 'Thank You. Your review has been successfully';
 		}
 
 		$this->updateFinderRatingV2($finder);
@@ -2084,6 +2084,9 @@ class FindersController extends \BaseController {
 		$this->cacheapi->flushTagKey('finder_detail_android_3_2',$finder->slug);
 		$this->cacheapi->flushTagKey('finder_detail_ios',$finder->slug);
 		$this->cacheapi->flushTagKey('finder_detail_ios_3_2',$finder->slug);
+		$this->cacheapi->flushTagKey('finder_detail_ios_4_4_3',$finder->slug);
+		$this->cacheapi->flushTagKey('finder_detail_android_4_4_3',$finder->slug);
+		
 
 
 		$order_count = Order::active()->where('type','memberships')->where('finder_id',(int)$data["finder_id"])->where('customer_id',(int)$data["customer_id"])->count();
@@ -3775,7 +3778,8 @@ class FindersController extends \BaseController {
 					$data['trials_detials']              =        [];
 					$data['trials_booked_status']        =        false;
 					$data['call_for_action_button']      =        "";
-
+					$data['call_for_action_text']      =        "";
+					
 					$data['finder']['offer_icon']        =        "";
 					$data['finder']['multiaddress']	     =		  $finder["multiaddress"];
 
@@ -3918,6 +3922,7 @@ class FindersController extends \BaseController {
 					// return $finder['facilities'];
 					if(in_array($category_id, $bookTrialArr)){
 						$data['call_for_action_button']      =      "Book a Trial";
+						$finderData['call_for_action_text'] = 'Get me started with a personalised trial experience';
 
 						if(in_array( 27 , $finder['facilities']) || in_array( "Free Trial" , $finder['facilities'])){
 							$data['call_for_action_button']      =      "Book a Free Trial";
@@ -3925,11 +3930,13 @@ class FindersController extends \BaseController {
 
 						if($category_id == 42 ){
 							$data['call_for_action_button']      =      "Book a Meal";
+							$finderData['call_for_action_text'] = 'Get a select set of meals and experience the choice of cuisine available with this trial';
 						}
 					}
 
 					if($commercial_type == 0 || in_array($finder['_id'], $cult_Ids)){
 						$data['call_for_action_button']       =      "";
+						$finderData['call_for_action_text']   =      "";
 					}
 
 					$data['finder']['pay_per_session']        =   true;
@@ -4233,8 +4240,6 @@ class FindersController extends \BaseController {
 				unset($finderData['pending_payment']);	
 			}
 
-			$finderData['call_for_action_text'] = 'Get me started with a personalised trial experience';
-
 		}else{
 
 			$finderData['status'] = 404;
@@ -4310,10 +4315,6 @@ class FindersController extends \BaseController {
 						(isset($ratecard['special_price']) && $ratecard['price'] == $ratecard['special_price']) ? $ratecard['special_price'] = 0 : null;
 						$ratecard['cashback_on_trial'] = "";
 
-						if($ratecard_price > 0 && $ratecard['type'] == 'trial'){
-							$ratecard['cashback_on_trial'] = "100% Cashback";
-						}
-
 						if((isset($finderservice['trial']) && $finderservice['trial']=='manual' || $finder_trial=='manual') && $ratecard['type'] == 'trial'){
 							if(isset($_GET['app_version']) && isset($_GET['device_type']) && (($_GET['device_type'] == 'android' && $_GET['app_version'] > 4.42) || ($_GET['device_type'] == 'ios' && version_compare($_GET['app_version'], '4.4.2') > 0))){
 								Log::info($ratecard['_id']);
@@ -4325,6 +4326,10 @@ class FindersController extends \BaseController {
 								$ratecard['direct_payment_enable'] = "0";
 								Log::info("direct_payment_enable");
 								
+							}
+						}else{
+							if($ratecard_price > 0 && $ratecard['type'] == 'trial'){
+								$ratecard['cashback_on_trial'] = "100% Cashback";
 							}
 						}
 					}
