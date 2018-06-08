@@ -3158,7 +3158,6 @@ class CustomerController extends \BaseController {
 
 						$data = $trial->toArray();
 
-
 						$data['finder_average_rating'] = 0;
 
 						$finder = Finder::find((int) $data['finder_id']);
@@ -3205,14 +3204,18 @@ class CustomerController extends \BaseController {
 								$data['subscription_text']  = "Show this subscription code at ".ucwords($data['finder_name'])." & get FitCode to activate your session";
 								
 							}else{
+
                                 $data['unlock'] = [
 									'header'=>'Your workout checklist',
 									'sub_header_2'=>"Wondering what to carry?\nWe’ve got you covered!",
 									'image'=>'https://b.fitn.in/paypersession/checklist_icon2.png'
                                 ];
+
 								$data['checklist'] = true;
-								
-								$data['subscription_text']  = "Show this subscription code at ".ucwords($data['finder_name'])." & get FitCode to unlock your surprise discount";
+
+								$fitcash_amount = $this->utilities->getFitcash(['finder_id'=>$data['finder_id']]);
+
+								$data['subscription_text']  = "Show this subscription code at ".ucwords($data['finder_name'])." & get FitCode to unlock your ".$fitcash_amount." Fitcash as discount";
 							
 							}
 							
@@ -7026,7 +7029,15 @@ class CustomerController extends \BaseController {
 
 		$pps_referral_credits = isset($customer->pps_referral_credits) ? $customer->pps_referral_credits : 0;
 		
-		$data['body']['section_3'] = ['header'=>'Your Stats', 'enabled'=>$pps_referral_credits > 0, 'data'=>[$pps_referral_credits.' friends have used your code', $free_sessions_remainig.' out of 5 Free Workout sessions remaining']];
+		$pps_referral_credits_used = isset($customer->pps_referral_credits_used) ? $customer->pps_referral_credits_used : 0;
+
+		if($pps_referral_credits){
+			$data['body']['section_3'] = ['header'=>'Your Stats', 'enabled'=>true, 'data'=>[$pps_referral_credits.' friends have used your code.', $pps_referral_credits_used.' session used out of '.$pps_referral_credits.' earned.']];
+		}else{
+			$data['body']['section_3'] = ['header'=>'Your Stats', 'enabled'=>true, 'data'=>['0 friends have used your code', 'Invite friends to get 5 free workouts']];
+		}
+		
+		// $data['body']['section_3'] = ['header'=>'Your Stats', 'enabled'=>$pps_referral_credits > 0, 'data'=>[$pps_referral_credits.' friends have used your code', $free_sessions_remainig.' out of 5 Free Workout sessions remaining']];
 		
 		$data['body']['section_4'] = [
 			'header'=>'How it works', 
