@@ -7026,6 +7026,14 @@ class CustomerController extends \BaseController {
 
 		$pps_referral_credits = isset($customer->pps_referral_credits) ? $customer->pps_referral_credits : 0;
 		
+		$pps_referral_credits_used = isset($customer->pps_referral_credits_used) ? $customer->pps_referral_credits_used : 0;
+
+		if($pps_referral_credits){
+			$data['body']['section_3'] = ['header'=>'Your Stats', 'enabled'=>true, 'data'=>[$pps_referral_credits.' friends have used your code. Invite friends to earn '.(5 - $pps_referral_credits).' more workouts.', $pps_referral_credits_used.' session used out of '.$pps_referral_credits.' earned.']];
+		}else{
+			$data['body']['section_3'] = ['header'=>'Your Stats', 'enabled'=>true, 'data'=>['0 friends have used your code', 'Invite friends to get 5 free workouts']];
+		}
+		
 		$data['body']['section_3'] = ['header'=>'Your Stats', 'enabled'=>$pps_referral_credits > 0, 'data'=>[$pps_referral_credits.' friends have used your code', $free_sessions_remainig.' out of 5 Free Workout sessions remaining']];
 		
 		$data['body']['section_4'] = [
