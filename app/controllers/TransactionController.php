@@ -411,10 +411,6 @@ class TransactionController extends \BaseController {
                 $data = array_merge($data,$serviceDetail['data']);
             }
 
-            if($data['finder_id'] == 8892 && $data['type'] == 'workout-session'){
-                $data['amount_finder'] = 990;
-            }
-
         }else{
             $finderDetail['data']['finder_flags'] = [];
         }
@@ -2793,6 +2789,10 @@ class TransactionController extends \BaseController {
 
         if($ratecard['type'] == 'workout session' && isset($ratecard['vendor_price']) && $ratecard['vendor_price'] != ''){
             $data['vendor_price'] = $ratecard['vendor_price'];
+        }
+
+        if($ratecard['finder_id'] == 8892 && $ratecard['type'] == 'workout session'){
+            $data['vendor_price'] = 990;
         }
 
         if(isset($data['preferred_starting_date']) && $data['preferred_starting_date']  != '' && $data['preferred_starting_date']  != '-'){
