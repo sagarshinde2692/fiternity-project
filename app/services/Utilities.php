@@ -2773,7 +2773,7 @@ Class Utilities {
          return $randomString;
      }
 
-     public function isConvinienceFeeApplicable($data){
+     public function isConvinienceFeeApplicable($data, $type="order"){
         Log::info(debug_backtrace()[1]['function']);
         Log::info("Data for isConvinienceFeeApplicable");
         Log::info($data);
@@ -2791,14 +2791,18 @@ Class Utilities {
         if(isset($finder) && $finder["commercial_type"] != 0){
             return true;
         }
-        (!isset($data['ratecard_flags']) && isset($data['flags'])) ? $data['ratecard_flags'] = $data['flags'] : null;
-
-        if((isset($data["ratecard_flags"]) && isset($data["ratecard_flags"]["convinience_fee_applicable"]) && $data["ratecard_flags"]["convinience_fee_applicable"]  && ( !isset($data['type']) || isset($data['type']) && in_array($data['type'], ["memberships", "membership"]))) || (isset($data['offer_convinience_fee']) && $data['offer_convinience_fee'])){
+        
+        if(!empty($data['type']) && in_array($data['type'], ["memberships", "membership", "package", "packages", "healthytiffinmembership"])) {
             Log::info("returning true");
             return true;
         
         }
-        if(isset($data['ratecard_flags']) && isset($data['ratecard_flags']["pay_at_vendor"]) && $data['ratecard_flags']["pay_at_vendor"] === True){
+        if($type == "order"){
+            $flags = $data['ratecard_flags'];
+        }else{
+            $flags = $data['flags'];
+        }
+        if(isset($flags) && isset($flags["pay_at_vendor"]) && $flags["pay_at_vendor"] === True){
             return false;
         }
         Log::info("returning false");
@@ -3027,9 +3031,10 @@ Class Utilities {
 
         if(Request::header('Authorization')){
 			$decoded                            =       decode_customer_token();
-			$customer_email                     =       $decoded->customer->email;
+            $customer_email                     =       $decoded->customer->email;
+            $customer_id                        =       $decoded->customer->_id;
             // $customer_phone                     =       isset($decoded->customer->contact_no) ? $decoded->customer->contact_no : "";
-            $pending_payment = \Booktrial::where('type', 'workout-session')->where(function ($query) use($customer_email) { $query->orWhere('customer_email', $customer_email);})->where('going_status_txt','!=','cancel')->where('payment_done', false)->where(function($query){return $query->orWhere('post_trial_status', '!=', 'no show')->orWhere('post_trial_verified_status','!=', 'yes');})->first(['_id', 'amount']);
+            $pending_payment = \Booktrial::where('type', 'workout-session')->where(function ($query) use($customer_email) { $query->orWhere('customer_email', $customer_email)->orWhere("logged_in_customer_id", $customer_id);})->where('going_status_txt','!=','cancel')->where('payment_done', false)->where(function($query){return $query->orWhere('post_trial_status', '!=', 'no show')->orWhere('post_trial_verified_status','!=', 'yes');})->first(['_id', 'amount']);
 
 			if(count($pending_payment) > 0){
 				return [
