@@ -3158,7 +3158,6 @@ class CustomerController extends \BaseController {
 
 						$data = $trial->toArray();
 
-
 						$data['finder_average_rating'] = 0;
 
 						$finder = Finder::find((int) $data['finder_id']);
@@ -3205,14 +3204,18 @@ class CustomerController extends \BaseController {
 								$data['subscription_text']  = "Show this subscription code at ".ucwords($data['finder_name'])." & get FitCode to activate your session";
 								
 							}else{
+
                                 $data['unlock'] = [
 									'header'=>'Your workout checklist',
 									'sub_header_2'=>"Wondering what to carry?\nWe’ve got you covered!",
 									'image'=>'https://b.fitn.in/paypersession/checklist_icon2.png'
                                 ];
+
 								$data['checklist'] = true;
-								
-								$data['subscription_text']  = "Show this subscription code at ".ucwords($data['finder_name'])." & get FitCode to unlock your surprise discount";
+
+								$fitcash_amount = $this->utilities->getFitcash(['finder_id'=>$data['finder_id']]);
+
+								$data['subscription_text']  = "Show this subscription code at ".ucwords($data['finder_name'])." & get FitCode to unlock your ".$fitcash_amount." Fitcash as discount";
 							
 							}
 							

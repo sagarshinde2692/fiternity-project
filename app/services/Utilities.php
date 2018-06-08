@@ -3474,27 +3474,27 @@ Class Utilities {
 
             $is_tab_active = (isset($booktrial['is_tab_active']) && $booktrial['is_tab_active']) ? true : false;
 
-            if($is_tab_active){
+            /*if($is_tab_active){
                 $fitcash = 250;
-            }
+            }*/
 
             if($stage == 'before_trial'){
 
-                $card_message = "Provide this & get your <b>FITCODE</b> from Gym/Studio to unlock your surprise discount.<br>Use this discount to buy your membership at lowest price";
+                $card_message = "Provide this & get your <b>FITCODE</b> from Gym/Studio to unlock Rs ".$fitcash." flat discount.<br>Use this discount to buy your membership at lowest price";
 
                 if($is_tab_active){
 
-                    $card_message = "Punch this code on the tab available at Gym/Studio to unlock your surprise discount.<br>Use this discount to buy your membership at lowest price";
+                    $card_message = "Punch this code on the tab available at Gym/Studio to unlock Rs ".$fitcash." flat discount .<br>Use this discount to buy your membership at lowest price";
                 }
             }
 
             if($stage == 'after_trial'){
 
-                $card_message = "Yes? Enter your <b>FITCODE</b> to get a <b>Surprise Discount</b><br/>No? You can always reschedule";
+                $card_message = "Yes? Enter your <b>FITCODE</b> to get <b>Rs ".$fitcash." flat discount</b><br/>No? You can always reschedule";
 
                 if($is_tab_active){
 
-                    $card_message = "Let us know now & we'll give a suprise discount to buy your membership at lowest price";
+                    $card_message = "Let us know now & we'll give Rs ".$fitcash." flat discount to buy your membership at lowest price";
                 }
 
             }
@@ -3589,45 +3589,30 @@ Class Utilities {
 
         $amount = 0;
         $days = 0;
-        $fitcash = 200;
-        $min_fitcash = 200;
-        $max_fitcash = 750;
+        $fitcash = 300;
 
         if(!empty($ratecards)){
 
             foreach ($ratecards as $ratecard) {
 
-                $amount += $this->getRatecardAmount($ratecard);
+                $new_days = $this->getDurationDay($ratecard);
 
-                $days += $this->getDurationDay($ratecard);
+                if($new_days >= $days){
+
+                    $days = $new_days;
+
+                    $new_amount = $this->getRatecardAmount($ratecard);
+
+                    if($new_amount >= $amount){
+                        $amount = $new_amount;
+                    }
+                }
 
             }
 
-            $vendorCommisionData = [
-                'finder_id'=>$finder_id
-            ];
-
-            $commision = $this->getVendorCommision($vendorCommisionData);
-
-            $percentage = 0.05;
-
-            if($commision > 10 && $commision < 15){
-                $percentage = 0.03;
+            if($amount >= 10000){
+                $fitcash = 500;
             }
-
-            if($commision <= 10){
-                $percentage = 0.02;
-            }
-
-            $fitcash = floor((($amount / $days) * 30)*$percentage);
-        }
-
-        if($fitcash < $min_fitcash){
-            $fitcash = $min_fitcash;
-        }
-
-        if($fitcash > $max_fitcash){
-            $fitcash = $max_fitcash;
         }
 
         return $fitcash;
