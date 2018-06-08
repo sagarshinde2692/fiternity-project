@@ -22,7 +22,7 @@ return array(
 	'new_search_url' =>'http://apistage.fitn.in:5000/',
 	'url' => 'http://apistage.fitn.in',
 	'admin_url' => 'http://adminstage.fitn.in',
-	'website' => 'http://apistage.fitn.in:8902',
+	'website' => 'http://apistage.fitn.in:8903',
 	'sidekiq_url' => 'http://kick.fitn.in/',
 	'queue' => 'booktrial',
 	'vendor_communication' => false,
