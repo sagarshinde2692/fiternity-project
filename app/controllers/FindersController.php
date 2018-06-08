@@ -3020,6 +3020,16 @@ class FindersController extends \BaseController {
 				}
 			}
 
+			if(isset($item['servicecategory_id']) && $item['servicecategory_id'] == 184){
+				$extra_info[] = array(
+					'title'=>'Note',
+					'icon'=>'https://b.fitn.in/iconsv1/vendor-page/form.png',
+					'description'=> "Personal Training is not inclusive of the Gym membership. To avail Personal Training, ensure to buy the Gym membership also.",
+					'text_color'=>'#f8a81b'
+				);
+			}
+
+
 			$batches = array();
 
 			if(isset($item['batches']) && count($item['batches']) > 0){
@@ -3064,6 +3074,10 @@ class FindersController extends \BaseController {
 				'short_description' => isset($item['short_description']) ? $item['short_description'] : "",
 				// 'showOnFront'=>(isset($item['showOnFront'])) ? $item['showOnFront'] : []
 			);
+			
+			// if(isset($service['servicecategory_id']) && $service['servicecategory_id'] == 184){
+			// 	$service['remarks'] = "Personal Training is not inclusive of the Gym membership. To avail Personal Training, ensure to buy the Gym membership also.";
+			// }
 
 			// if(isset($item['offer_available']) && $item['offer_available'] == true && !in_array($finder_id, Config::get('app.hot_offer_excluded_vendors'))){
 
