@@ -2039,7 +2039,7 @@ class SchedulebooktrialsController extends \BaseController {
             $additional_info			       = 	(Input::has('additional_info') && Input::json()->get('additional_info') != '') ? Input::json()->get('additional_info') : "";
 
 
-            // $orderid    =   (int) $data['order_id'];
+            $orderid    =   (int) $data['order_id'];
             // $order      =   Order::findOrFail($orderid);
             $type       =   $order->type;
 
