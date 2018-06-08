@@ -4066,22 +4066,22 @@ class FindersController extends \BaseController {
 
 			if(isset($_GET['device_type']) && in_array($_GET['device_type'], $device_type) && isset($_GET['app_version']) && (float)$_GET['app_version'] >= 3.2 && isset($finderData['finder']['services']) && count($finderData['finder']['services']) > 0){
 
-				if(isset($finderData['trials_booked_status']) && $finderData['trials_booked_status'] == true){
+				// if(isset($finderData['trials_booked_status']) && $finderData['trials_booked_status'] == true){
 
-					$finderData['finder']['services'] = [];
-					if(isset($finderData['finder']['services_workout'])){
+				// 	$finderData['finder']['services'] = [];
+				// 	if(isset($finderData['finder']['services_workout'])){
 
-						$finderData['finder']['services'] = $finderData['finder']['services_workout'];
-					}
+				// 		$finderData['finder']['services'] = $finderData['finder']['services_workout'];
+				// 	}
 
-				}else{
+				// }else{
 
-					$finderData['finder']['services'] = [];
-					if(isset($finderData['finder']['services_trial'])){
+				// 	$finderData['finder']['services'] = [];
+				// 	if(isset($finderData['finder']['services_trial'])){
 
 						$finderData['finder']['services'] = $finderData['finder']['services_trial'];
-					}
-				}
+				// 	}
+				// }
 
 				
 				if(!empty($finderData['finder']['services'])){
@@ -4256,46 +4256,70 @@ class FindersController extends \BaseController {
 
 			if(isset($finderservice['ratecard']) && count($finderservice['ratecard']) > 0){
 
-				$ratecard = Ratecard::where('type',$type)->where('service_id', intval($finderserviceObj['_id']))->first();
+				// $ratecard = Ratecard::where('type',$type)->where('service_id', intval($finderserviceObj['_id']))->first();
 
-				if($ratecard){
-					$ratecard = $ratecard->toArray();
-					$ratecard['offers'] = [];
+				// if($ratecard){
+				// 	$ratecard = $ratecard->toArray();
+				// 	$ratecard['offers'] = [];
 
-					if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
-	                    $ratecard_price = $ratecard['special_price'];
-	                }else{
-	                    $ratecard_price = $ratecard['price'];
-	                }
-					(isset($ratecard['special_price']) && $ratecard['price'] == $ratecard['special_price']) ? $ratecard['special_price'] = 0 : null;
+				// 	if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
+	            //         $ratecard_price = $ratecard['special_price'];
+	            //     }else{
+	            //         $ratecard_price = $ratecard['price'];
+	            //     }
+				// 	(isset($ratecard['special_price']) && $ratecard['price'] == $ratecard['special_price']) ? $ratecard['special_price'] = 0 : null;
 					
-					$ratecard['cashback_on_trial'] = "";
+				// 	$ratecard['cashback_on_trial'] = "";
 
-					if($ratecard_price > 0 && $type == 'trial'){
-						$ratecard['cashback_on_trial'] = "100% Cashback";
-					}
+				// 	if($ratecard_price > 0 && $type == 'trial'){
+				// 		$ratecard['cashback_on_trial'] = "100% Cashback";
+				// 	}
 
-					if((isset($finderservice['trial']) && $finderservice['trial']=='manual' || $finder_trial=='manual') && $ratecard['type'] == 'trial'){
-						if(isset($_GET['app_version']) && isset($_GET['device_type']) && (($_GET['device_type'] == 'android' && $_GET['app_version'] > 4.42) || ($_GET['device_type'] == 'ios' && version_compare($_GET['app_version'], '4.4.2') > 0))){
-							Log::info($ratecard['_id']);
-							$ratecard['manual_trial_enable'] = "1";
-							unset($ratecard['direct_payment_enable']);
-							Log::info("manual_trial_enable");
+				// 	if((isset($finderservice['trial']) && $finderservice['trial']=='manual' || $finder_trial=='manual') && $ratecard['type'] == 'trial'){
+				// 		if(isset($_GET['app_version']) && isset($_GET['device_type']) && (($_GET['device_type'] == 'android' && $_GET['app_version'] > 4.42) || ($_GET['device_type'] == 'ios' && version_compare($_GET['app_version'], '4.4.2') > 0))){
+				// 			Log::info($ratecard['_id']);
+				// 			$ratecard['manual_trial_enable'] = "1";
+				// 			unset($ratecard['direct_payment_enable']);
+				// 			Log::info("manual_trial_enable");
 							
-						}else{
-							$ratecard['direct_payment_enable'] = "0";
-							Log::info("direct_payment_enable");
+				// 		}else{
+				// 			$ratecard['direct_payment_enable'] = "0";
+				// 			Log::info("direct_payment_enable");
 							
-						}
-					}
-					array_push($ratecardArr, $ratecard);
-				}
+				// 		}
+				// 	}
+				// 	array_push($ratecardArr, $ratecard);
+				// }
 				// return $finderservice['ratecard'];
 				// exit;
 				foreach ($finderservice['ratecard'] as $ratecard){
 
 					if(in_array($ratecard["type"],["workout session", "trial"])){
-						continue;
+						if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
+							$ratecard_price = $ratecard['special_price'];
+						}else{
+							$ratecard_price = $ratecard['price'];
+						}
+						(isset($ratecard['special_price']) && $ratecard['price'] == $ratecard['special_price']) ? $ratecard['special_price'] = 0 : null;
+						$ratecard['cashback_on_trial'] = "";
+
+						if($ratecard_price > 0 && $ratecard['type'] == 'trial'){
+							$ratecard['cashback_on_trial'] = "100% Cashback";
+						}
+
+						if((isset($finderservice['trial']) && $finderservice['trial']=='manual' || $finder_trial=='manual') && $ratecard['type'] == 'trial'){
+							if(isset($_GET['app_version']) && isset($_GET['device_type']) && (($_GET['device_type'] == 'android' && $_GET['app_version'] > 4.42) || ($_GET['device_type'] == 'ios' && version_compare($_GET['app_version'], '4.4.2') > 0))){
+								Log::info($ratecard['_id']);
+								$ratecard['manual_trial_enable'] = "1";
+								unset($ratecard['direct_payment_enable']);
+								Log::info("manual_trial_enable");
+								
+							}else{
+								$ratecard['direct_payment_enable'] = "0";
+								Log::info("direct_payment_enable");
+								
+							}
+						}
 					}
 					if(isset($ratecard['flags'])){
 
