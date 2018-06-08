@@ -3992,6 +3992,10 @@ class SchedulebooktrialsController extends \BaseController {
                 array_set($booktrialdata, 'code',random_numbers(5));
             }
 
+            if(!isset($booktrial['surprise_fit_cash'])){
+                $booktrialdata['surprise_fit_cash'] = $this->utilities->getFitcash(['finder_id'=>$finderid]);
+            }
+
             if(!isset($booktrial['vendor_code'])){
                 array_set($booktrialdata,'vendor_code',random_numbers(5));
             }
@@ -7057,7 +7061,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             $booktrial->post_trial_status = 'attended';
 
-            $fitcash_amount = $this->utilities->getFitcash($['finder_id'=>$booktrial['finder_id']])
+            $fitcash_amount = $this->utilities->getFitcash(['finder_id'=>$booktrial['finder_id']]);
             
             $this->updateOrderStatus($booktrial);
             
