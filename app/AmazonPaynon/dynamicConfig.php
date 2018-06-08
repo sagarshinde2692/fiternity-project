@@ -1,20 +1,19 @@
 <?php
-namespace App\AmazonPay;
 require_once 'HttpCurl.php';
 
 getDynamicConfig();
 
 function getDynamicConfig(){
 	try{
-		$config = parse_ini_file( dirname(__DIR__)."/AmazonPay/config.ini" );
+		$config = parse_ini_file( dirname(__DIR__)."/AmazonPaynon/config.ini" );
 		if($config['lastFetchedTimeForFetchingConfig']<(time()-3600)){
 			$httpCurlRequest = new HttpCurl();
-			$dynamicConfig = $httpCurlRequest->httpGet('https://amazonpay.amazon.in/getDynamicConfig?key=serverSideSDKPHP', null);
+			$dynamicConfig = $httpCurlRequest->httpGet('https://AmazonPaynon.amazon.in/getDynamicConfig?key=serverSideSDKPHP', null);
 			$jsonObj = json_decode($dynamicConfig);
 			if(isset($jsonObj->{'publicKey'})){
 				$config[ 'publicKey' ] = $jsonObj->{'publicKey'};
 				$config[ 'lastFetchedTimeForFetchingConfig' ] = time();
-				$fp = fopen(dirname(__DIR__).'/AmazonPay/config.ini', 'w');
+				$fp = fopen(dirname(__DIR__).'/AmazonPaynon/config.ini', 'w');
 				flock($fp, LOCK_EX);
 				foreach ( $config as $name => $value )
 				{

@@ -221,7 +221,7 @@ Route::get('reviews/{customerid}/{from?}/{size?}',  array('as' => 'customer.revi
 Route::get('orderhistory/{customeremail}/{from?}/{size?}',  array('as' => 'customer.orderhistory','uses' => 'CustomerController@orderHistory'));
 Route::get('bookmarks/{customerid}',  array('as' => 'customer.bookmarks','uses' => 'CustomerController@getBookmarks'));
 Route::get('updatebookmarks/{customerid}/{finderid}/{remove?}',  array('as' => 'customer.updatebookmarks','uses' => 'CustomerController@updateBookmarks'));
-Route::get('updateservicebookmarks/{customerid}/{serviceid}/{remove?}',  array('as' => 'customer.updateservicebookmarks','uses' => 'CustomerController@updateServiceBookmarks'));
+Route::get('updateservicebookmarks/{serviceid}/{remove?}',  array('as' => 'customer.updateservicebookmarks','uses' => 'CustomerController@updateServiceBookmarks'));
 Route::get('customerdetail/{customerid}',  array('as' => 'customer.customerdetail','uses' => 'CustomerController@customerDetail'));
 Route::get('foryou/{customeremail}/{city_id}/{lat?}/{lon?}',  array('as' => 'customer.foryou','uses' => 'CustomerController@foryou'));
 
@@ -396,6 +396,9 @@ Route::get('getfinderreview/{slug}', array('as' => 'finders.getfinderreview','us
 Route::get('findertopreview/{slug}/{limit?}', array('as' => 'finders.findertopreview','uses' => 'FindersController@finderTopReview'));
 
 Route::get('finderdetail/app/{slug}', array('as' => 'finders.finderdetailapp','uses' => 'FindersController@finderDetailApp'));
+
+Route::get('getbrandvendors/{brand_id}/{city_id}', array('as' => 'finders.getbrandvendors','uses' => 'FindersController@getBrandVendors'));
+
 // Route::get("/pushBrandOutlets/{index_name}", "GlobalPushController@pushBrandOutlets");
 /******************** FINDERS SECTION END HERE ********************/
 ##############################################################################
@@ -617,8 +620,7 @@ Route::post('/queue/push', function(){
 Route::get('flushtag/{tag}', 'CacheApiController@flushTag');
 Route::get('flushtagkey/{tag}/{key}', 'CacheApiController@flushTagKey');
 //Route::get('flushall', 'CacheApiController@flushAll');
-Route::get('cachedrop', 'CacheApiController@flushAll');
-// Route::get('dropall', 'CacheApiController@flushAll');
+Route::get('dropall', 'CacheApiController@flushAll');
 
 ##############################################################################
 /******************** CACHE SECTION END HERE *******************************/
@@ -1140,14 +1142,16 @@ Route::get('markRoutedOrders', 'DebugController@markRoutedOrders');
 
 Route::get('cityfitnessoptions', 'HomeController@cityFitnessOptions');
 
-// AMAZON PAY
+// AMAZON PAY 
+Route::post('verifyamazonchecksumsignature', 'TransactionController@verifyAmazonChecksumSignature');
 Route::post('generateamazonchecksum', 'TransactionController@generateAmazonChecksum');
 Route::match(array('GET', 'POST'),'verifyamazonchecksum/{id?}', 'TransactionController@verifyAmazonChecksum');
 Route::post('generateamazonurl', 'TransactionController@generateAmazonUrl');
 
-Route::post('verifyamazonchecksumsignature', 'TransactionController@verifyAmazonChecksumSignature');
 Route::post('amazonsignandencrypt', 'TransactionController@amazonSignAndEncrypt');
 Route::post('amazonsignandencryptop', 'TransactionController@amazonSignAndEncryptForOperation');
+
+
 
 
 Route::get('verifyfitcode/{booktrial_id}/{code}','SchedulebooktrialsController@verifyFitCode');
@@ -1195,15 +1199,18 @@ Route::get('checkemail/{email}/{phone}','HomeController@checkemail');
 
 Route::post('setdefaultaccount','CustomerController@setDefaultAccount');
 
-
 Route::get('promoNotification','DebugController@promoNotification');
 Route::post('getPageViewsForVendors','FindersController@getPageViewsForVendors');
 
 Route::get('PayPerSessionWallet','DebugController@PayPerSessionWallet');
+Route::post('autoregister','CustomerController@autoRegister');
+
 
 Route::get('manualTrialCommunication','SchedulebooktrialsController@manualTrialCommunication');
 
 Route::get('getreferralscreendata','CustomerController@getReferralScreenData');
-Route::get('addWallet','DebugController@addWallet');
 
+Route::get('addWallet','DebugController@addWallet');
 Route::get('getbrandvendors/{brand_id}/{city_id}', array('as' => 'finders.getbrandvendors','uses' => 'FindersController@getBrandVendors'));
+
+Route::get('vendorStripe','DebugController@vendorStripe');
