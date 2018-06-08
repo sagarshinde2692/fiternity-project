@@ -1140,11 +1140,15 @@ Route::get('markRoutedOrders', 'DebugController@markRoutedOrders');
 
 Route::get('cityfitnessoptions', 'HomeController@cityFitnessOptions');
 
-// AMAZON PAY 
-// Route::post('verifyamazonchecksum', 'TransactionController@verifyAmazonChecksum');
+// AMAZON PAY
 Route::post('generateamazonchecksum', 'TransactionController@generateAmazonChecksum');
 Route::match(array('GET', 'POST'),'verifyamazonchecksum/{id?}', 'TransactionController@verifyAmazonChecksum');
 Route::post('generateamazonurl', 'TransactionController@generateAmazonUrl');
+
+Route::post('verifyamazonchecksumsignature', 'TransactionController@verifyAmazonChecksumSignature');
+Route::post('amazonsignandencrypt', 'TransactionController@amazonSignAndEncrypt');
+Route::post('amazonsignandencryptop', 'TransactionController@amazonSignAndEncryptForOperation');
+
 
 Route::get('verifyfitcode/{booktrial_id}/{code}','SchedulebooktrialsController@verifyFitCode');
 Route::get('lostfitcode/{booktrial_id}','SchedulebooktrialsController@lostFitCode');
