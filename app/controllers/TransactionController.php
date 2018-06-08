@@ -669,6 +669,7 @@ class TransactionController extends \BaseController {
         if(isset($data['pay_later']) && $data['pay_later'] && isset($data['wallet']) && $data['wallet']){
             $data['amount_final'] = $data['amount'] = $data['amount'] + $data['convinience_fee'];
             $data['amount_customer'] = $data['amount'];
+            $data['coupon_discount_amount'] = 0;
             unset($data['instant_payment_discount']);
         
         }
