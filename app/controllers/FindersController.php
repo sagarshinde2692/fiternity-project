@@ -4068,22 +4068,22 @@ class FindersController extends \BaseController {
 
 			if(isset($_GET['device_type']) && in_array($_GET['device_type'], $device_type) && isset($_GET['app_version']) && (float)$_GET['app_version'] >= 3.2 && isset($finderData['finder']['services']) && count($finderData['finder']['services']) > 0){
 
-				// if(isset($finderData['trials_booked_status']) && $finderData['trials_booked_status'] == true){
+				if(isset($finderData['trials_booked_status']) && $finderData['trials_booked_status'] == true){
 
-				// 	$finderData['finder']['services'] = [];
-				// 	if(isset($finderData['finder']['services_workout'])){
+					$finderData['finder']['services'] = [];
+					if(isset($finderData['finder']['services_workout'])){
 
-				// 		$finderData['finder']['services'] = $finderData['finder']['services_workout'];
-				// 	}
+						$finderData['finder']['services'] = $finderData['finder']['services_workout'];
+					}
 
-				// }else{
+				}else{
 
-				// 	$finderData['finder']['services'] = [];
-				// 	if(isset($finderData['finder']['services_trial'])){
+					$finderData['finder']['services'] = [];
+					if(isset($finderData['finder']['services_trial'])){
 
 						$finderData['finder']['services'] = $finderData['finder']['services_trial'];
-				// 	}
-				// }
+					}
+				}
 
 				
 				if(!empty($finderData['finder']['services'])){
@@ -4297,6 +4297,11 @@ class FindersController extends \BaseController {
 				foreach ($finderservice['ratecard'] as $ratecard){
 
 					if(in_array($ratecard["type"],["workout session", "trial"])){
+
+						if($type == "workout session" && in_array($ratecard["type"],["trial"])){
+							continue;
+						}
+
 						if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0){
 							$ratecard_price = $ratecard['special_price'];
 						}else{
