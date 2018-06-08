@@ -1999,6 +1999,9 @@ class ServiceController extends \BaseController {
 						return $value;
 					}
 				}));
+				if(empty($weekdayslots) || empty($weekdayslots['slots'])){
+					continue;
+				}
 				$first_slot = $weekdayslots['slots'][0];
 				$last_slot = $weekdayslots['slots'][count($weekdayslots['slots'])-1];
 				
