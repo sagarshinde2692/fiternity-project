@@ -2785,13 +2785,6 @@ Class Utilities {
             Log::info("vendor token hai");
             return false;
         }
-        $finder = Finder::find((int) $data["finder_id"]);
-        if(!empty($finder)&&!empty($finder->_id)&&in_array(intval($finder->_id),[14085,14081,14079 ,13765,13761]))
-        	return false;
-        if(isset($finder) && $finder["commercial_type"] != 0){
-            return true;
-        }
-        
         if(!empty($data['type']) && in_array($data['type'], ["memberships", "membership", "package", "packages", "healthytiffinmembership"])) {
             Log::info("returning true");
             return true;
@@ -2805,6 +2798,14 @@ Class Utilities {
         if(isset($flags) && isset($flags["pay_at_vendor"]) && $flags["pay_at_vendor"] === True){
             return false;
         }
+        $finder = Finder::find((int) $data["finder_id"]);
+        if(!empty($finder)&&!empty($finder->_id)&&in_array(intval($finder->_id),[14085,14081,14079 ,13765,13761]))
+        	return false;
+        if(isset($finder) && $finder["commercial_type"] != 0){
+            return true;
+        }
+        
+        
         Log::info("returning false");
         
         return false;
