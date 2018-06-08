@@ -400,6 +400,7 @@ class GlobalPushController extends \BaseController
     $city_id = (int) $city_id;
     $indexdocs = Finder::active()
         ->where('status', '=', '1')
+        ->whereNotIn('_id', Config::get('app.hide_from_search'))
         ->where('city_id', $city_id)
         ->where('flags.state', '!=', 'closed')
         ->whereNotIn('categorytags',[37])
