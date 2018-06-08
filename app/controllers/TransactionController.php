@@ -650,7 +650,7 @@ class TransactionController extends \BaseController {
                 "part_payment_and_convinience_fee_amount"=>$part_payment_amount + $convinience_fee
             );
 
-        
+        }
 
         $data['convinience_fee'] = 0;
 
