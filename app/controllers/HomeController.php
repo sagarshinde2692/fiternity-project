@@ -465,6 +465,17 @@ class HomeController extends BaseController {
                 'width'=>375,
                 'ratio'=>(float) number_format(100/375,2)
             ];
+
+            $campaigns[] = [
+                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Yoga_WebBanner.png',
+                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Yoga_MobBanner.png',
+                'link'=>Config::get('app.website').'/article/celebrate-international-yoga-day-for-the-full-month-of-june-with-fitternity',
+                'title'=>'Free Yoga Session',
+                'height'=>100,
+                'width'=>375,
+                'ratio'=>(float) number_format(100/375,2)
+            ];
+
             // if($city == "mumbai" || $city == "pune"){
                 
             //     $campaigns[] = [
