@@ -16,7 +16,8 @@ use App\Services\Utilities as Utilities;
 use App\Services\CustomerReward as CustomerReward;
 use App\Services\CustomerInfo as CustomerInfo;
 use App\Notification\CustomerNotification as CustomerNotification;
-use App\AmazonPay\PWAINBackendSDK;
+use App\AmazonPay\PWAINBackendSDK as PWAINBackendSDK;
+use App\AmazonPaynon\PWAINBackendSDK as PWAINBackendSDKNon;
 use App\Services\Fitapi as Fitapi;
 use App\Services\Fitweb as Fitweb;
 
@@ -558,8 +559,9 @@ class TransactionController extends \BaseController {
         }
 
         if(isset($data['pay_later']) && $data['pay_later'] && isset($data['wallet']) && $data['wallet']){
-            
+            $data['amount_final'] = $data['amount'] = $data['amount'] + $data['convinience_fee'];
             $data['amount_customer'] = $data['amount'];
+            unset($data['instant_payment_discount']);
         
         }
         
@@ -768,6 +770,13 @@ class TransactionController extends \BaseController {
 
         }
 
+        if(isset($data['pay_later']) && $data['pay_later'] && isset($data['wallet']) && $data['wallet']){
+            $data['amount_final'] = $data['amount'] = $data['amount'] + $data['convinience_fee'];
+            $data['amount_customer'] = $data['amount'];
+            unset($data['instant_payment_discount']);
+        
+        }
+
         $data['base_amount'] = $order['amount_customer'] - $data['convinience_fee'] ;
 
         $hash = getHash($data);
@@ -967,6 +976,10 @@ class TransactionController extends \BaseController {
             'pay_at_vendor'=>$pay_at_vendor_applicable,
             'pay_later'=>$pay_later
         );
+
+        // $resp['payment_offers'] = [
+        //     'amazon_pay'=>'25% instant cashback'
+        // ];
 
         // if(isset($_GET['device_type']) && in_array($_GET['device_type'], ['android', 'ios'])){
             
@@ -2271,6 +2284,9 @@ class TransactionController extends \BaseController {
             $service_id = isset($data['service_id']) ? $data['service_id'] : null;
 
             $couponCheck = $this->customerreward->couponCodeDiscountCheck($ratecard,$data["coupon_code"],$customer_id, $ticket, $ticket_quantity, $service_id);
+
+            Log::info("couponCheck");
+            Log::info($couponCheck);
 
             if(isset($couponCheck["coupon_applied"]) && $couponCheck["coupon_applied"]){
 
@@ -4207,6 +4223,10 @@ class TransactionController extends \BaseController {
             'field' => 'Total Amount',
             'value' => 'Rs. '.(isset($data['original_amount_finder']) ? $data['original_amount_finder'] : $data['amount_finder'])
         );
+        
+        if(isset($data['session_payment']) && $data['session_payment']){
+            $amount_summary[0]['value'] = 'Rs. '.$data['amount_customer'];
+        }
 
         $amount_payable = [];
 
@@ -4214,8 +4234,6 @@ class TransactionController extends \BaseController {
             'field' => 'Total Amount Payable',
             'value' => 'Rs. '.$data['amount_final']
         );
-
-        
 
         if($payment_mode_type == 'part_payment' && isset($data['part_payment_calculation'])){
 
@@ -4378,8 +4396,7 @@ class TransactionController extends \BaseController {
 
             if(isset($data['type']) && $data['type'] == 'workout-session' && $payment_mode_type == 'pay_later'){
                 
-                $amount_payable['value'] = "Rs. ".($data['amount_finder']);
-
+                $amount_payable['value'] = "Rs. ".($data['amount_finder']+$data['convinience_fee']);
             }
         }
 
@@ -4698,6 +4715,10 @@ class TransactionController extends \BaseController {
 
             if(!empty($resp['fitternity_only_coupon']) || !empty($resp['vendor_exclusive']) || !empty($resp['app_only']) || !empty($resp['user_login_error']) ){
                 $errorMessage =  $resp['error_message'];
+            }
+
+            if(isset($resp['referral_coupon']) && $resp['referral_coupon']){
+                $errorMessage =  $resp['message'];
             }
 
             $resp = array("status"=> 400, "message" => "Coupon not found", "error_message" =>$errorMessage, "data"=>$resp["data"]);
@@ -5559,71 +5580,29 @@ class TransactionController extends \BaseController {
     }
 
     public function rewardScreen(){
-
-        $data = [];
-
-        $data['title'] = 'Complimentry Rewards';
-        $data['banner'] = 'https://b.fitn.in/global/Rewards-page/rewards-web-banner.png';
-        $data['rewards'] = [];
-
-        $data['rewards'][] = [ 
-            'title' => 'Merchandise Kits',
-            'description'=>'We have shaped the perfect fitness kit for you. Strike off these workout essentials from your cheat sheet & get going.',
-            'type'=>'fitness_kit',
-            'items'=>[
-                [
-                    'title'=>'Cross Fit & Gym',
-                    'description'=>"Lifts and Squats is all you need to think about as we have your workout gear ready - <br/> ● Gym Bag<br/> ● Shaker<br/> ● Arm Band<br/> ● T-Shirt<br/> ● Towel<br/> ● Bottle<br/> ● Earphone Detangler",
-                    'products'=>['Gym Bag','Shaker','Arm Band','T-Shirt','Towel','Bottle','Earphone Detangler'],
-                    'image'=>'https://b.fitn.in/global/Rewards-page/crossfit%26gym.png'
-                ],
-                [
-                    'title'=>'Zumba & Dance',
-                    'description'=>"Groove your way to Fitness while we give you a hip workout wear - <br/> ● Tote Bag<br/> ● Bottle<br/> ● Towel<br/> ● Shoe Bag<br/> ● T-Shirt<br/> ● Arm-Band<br/> ● Earphone Detangler",
-                    'products'=>['Tote Bag','Bottle','Towel','Shoe Bag','T-Shirt','Arm-Band','Earphone Detangler'],
-                    'image'=>'https://b.fitn.in/global/Rewards-page/zumba.png'
-                ],
-                [
-                    'title'=>'Yoga & Pilates',
-                    'description'=>"Lifts and Squats is all you need to think about as we have your workout gear ready - <br/> ● Gym Bag <br/> ● Shaker<br/> ● Arm Band<br/> ● T-Shirt<br/> ● Towel<br/> ● Bottle<br/> ● Earphone Detangler",
-                    'products'=>['Gym Bag','Shaker','Arm Band','T-Shirt','Towel','Bottle','Earphone Detangler'],
-                    'image'=>'https://b.fitn.in/global/Rewards-page/yoga%26pilates.png'
-                ],
-            ]
-        ];
-
-        $data['rewards'][] = [
-            'title'=>'Online Diet Consultation',
-            'description'=>'Eating right is 70% & workout is 30% of leading a healthy & fit lifestyle! Fitternity’s got you covered 100% cover.',
-            'type'=>'diet_plan',
-            'items'=>[
-                [
-                    'title'=>'',
-                    'description'=>"Get a detailed diet plan from out expert dietitian for better workout performance & faster goal achivement.<br/><br/>You will get: <br/> ● Telephonic consultation with your dietician<br/> ● Personalised & customised diet plan<br/> ● Regular follow-ups & progress tracking<br/> ● Healthy recepies & hacks",
-                    'products'=>['Telephonic consultation with your dietician','Personalised & customised diet plan','Regular follow-ups & progress tracking','Healthy recepies & hacks'],
-                    'image'=>'https://b.fitn.in/gamification/reward/diet_plan.jpg'
-                ]
-            ]
-
-        ];
-
-        $data['rewards'][] = [
-            'title'=>'Instant Cashback',
-            'description'=>'Who doesn’t love some money in their wallet? Get 5% back on your purchase!',
-            'type'=>'cashback',
-            'items'=>[
-                [
-                    'title'=>'',
-                    'description'=>"Get upto Rs 2500 Fitcash+ in your wallet as cashback which is fully redeemable against any Memberships/Session & Diet Plan purchase on Fitternity. Validity of the cashback varies on the amount and duration of the membership. Cashback chosen as reward can be availed for renewal.",
-                    'products'=>[],
-                    'image'=>'https://b.fitn.in/gamification/reward/cashback1.jpg'
-                ]
-            ]
-
-        ];
-
-        return Response::json($data);
-
+    	$data = [];
+    	$data['title'] = 'Complimentry Rewards';
+    	$data['banner'] = 'https://b.fitn.in/global/Rewards-page/rewards-web-banner.png';
+    	$data['rewards'] = [];
+    	$data['rewards'][] = [
+    			'title' => 'Merchandise Kits',
+    			'description'=>'We have shaped the perfect fitness kit for you. Strike off these workout essentials from your cheat sheet & get going.',
+    			'type'=>'fitness_kit',
+    			'items'=>Config::get('rewardscreenitems.complimentry_rewards.merchandise_kits'),
+    	];
+    	$data['rewards'][] = [
+    			'title'=>'Online Diet Consultation',
+    			'description'=>"Eating right is 70% & workout is 30% of leading a healthy & fit lifestyle! Fitternity's got you covered 100% cover.",
+    			'type'=>'diet_plan',
+    			'items'=>Config::get('rewardscreenitems.complimentry_rewards.online_diet_consultation'),
+    	];
+    	$data['rewards'][] = [
+    			'title'=>'Instant Cashback',
+    			'description'=>"Who doesn't love some money in their wallet? Get 5% back on your purchase!",
+    			'type'=>'cashback',
+    			'items'=>Config::get('rewardscreenitems.complimentry_rewards.instant_cashback'),
+    	];
+    	return Response::json($data);
     }
 
 
@@ -5704,7 +5683,7 @@ class TransactionController extends \BaseController {
 
     public function generateAmazonUrl(){
         $config = Config::get('amazonpay.config');
-        $client = new PWAINBackendSDK($config);
+        $client = new PWAINBackendSDKNon($config);
         $post_params = Input::all();
         Log::info(Input::all());
         if(isset($post_params["order_id"])){
@@ -5729,7 +5708,7 @@ class TransactionController extends \BaseController {
         
         $config = Config::get('amazonpay.config');
         
-        $client = new PWAINBackendSDK($config);
+        $client = new PWAINBackendSDKNon($config);
         // Request can be either GET or POST
         $val = ($_POST);
         // For testing in sandbox mode, remove for production
@@ -5740,13 +5719,105 @@ class TransactionController extends \BaseController {
         $response = $client->generateSignatureAndEncrypt($val);
         return $response;
     }
+    public function amazonSignAndEncrypt(){
+    	
+    	$config = Config::get('amazonpay.config_seamless');
+    	$client = new PWAINBackendSDK($config);
+    	$val = ($_GET);
+    	
+    	unset($val['sellerId']);
+    	$response = $client->generateSignatureAndEncrypt($val);
+    	return $response;
+    }
+    
+    public function amazonSignAndEncryptForOperation(){
+    	
+    	$config = Config::get('amazonpay.config_seamless');
+    	$client = new PWAINBackendSDK($config);
+    	$val = ($_GET);
+    	$val['operationName'] = 'SIGN_AND_ENCRYPT_GET_CHARGE_STATUS_REQUEST';
+    	unset($val['sellerId']);
+    	unset($val['awsAccessKeyId']);
+    	
+    	$response = $client->generateSignatureAndEncrypt($val);
+    	return $response;
+    	
+    }
+    
+    
+    public function verifyAmazonChecksumSignature($website = false){
+    	
+    	error_reporting(E_ERROR | E_PARSE);
+    	$config = Config::get('amazonpay.config_seamless');
+    	
+    	$client = new PWAINBackendSDK($config);
+    	
+    	// Request can be either GET or POST
+    	Log::info(Input::all());
+    	
+    	$val = (Input::all());
+    	Log::info("verifyAmazonChecksum post data  verifyAmazonChecksumSignature ---------------------------------------------------------",$val);
+    	unset($val['sellerId']);
+    	$response = $client->verifySignature($val);
+    	Log::info(" info response  ".print_r($response,true));
+    	$val['isSignatureValid'] = $response ? 'true' : 'false';
+    	
+    	$val['order_id'] = null;
+    	
+    	// $val['isSignatureValid'] = 'true';
+    	
+    	if($val['isSignatureValid'] == 'true'&&!empty($val["verificationOperationName"])&&$val["verificationOperationName"]=='VERIFY_CHARGE_STATUS'&&isset($val["transactionValue"])){
+    		
+    		Log::info(" info AMAZON ".print_r("AMAZON SUCCESS.",true));
+    		
+    		$order = Order::where('txnid',$val['merchantTransactionId'])->first();
+    		
+    		if($order){
+    			
+    			$order->pg_type = "AMAZON";
+    			$order->amazon_hash = $val["hash"] = getpayTMhash($order->toArray())['reverse_hash'];
+    			$order->update();
+    			
+    			$val['order_id'] = $order->_id;
+    			
+    			$success_data = [
+    					'txnid'=>$order['txnid'],
+    					'amount'=>(int)$val["transactionValue"],
+    					'status' => 'success',
+    					'hash'=> $val["hash"]
+    			];
+    			if($website == "1"){
+    				$url = Config::get('app.website')."/paymentsuccess?". http_build_query($success_data, '', '&');
+    				if($order['type'] == "booktrials" || $order['type'] == "workout-session"){
+    					$url = Config::get('app.website')."/paymentsuccesstrial?". http_build_query($success_data, '', '&');
+    				}
+    				Log::info(http_build_query($success_data, '', '&'));
+    				Log::info($url);
+    				return Redirect::to($url);
+    			}else{
+    				Log::info(" info success data ".print_r($success_data,true));
+    				$paymentSuccess = $this->fitweb->paymentSuccess($success_data);
+    			}
+    		}
+    		
+    		if(isset($paymentSuccess)&&isset($paymentSuccess['status']) && $paymentSuccess['status'] == 200){
+    			$val['isSignatureValid'] = "true";
+    		}else{
+    			$val['isSignatureValid'] = "false";
+    		}
+    		Log::info(" info val".print_r(json_encode($val),true));
+    		return Response::json($val);
+    	}
+    	Log::info(" info ".print_r("nothing passed",true));
+    	return $val['isSignatureValid'];
+    }
 
     public function verifyAmazonChecksum($website = false){ 
 
 
         $config = Config::get('amazonpay.config');
 
-        $client = new PWAINBackendSDK($config);
+        $client = new PWAINBackendSDKNon($config);
 
         // Request can be either GET or POST
         Log::info(Input::all());

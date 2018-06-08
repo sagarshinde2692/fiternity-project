@@ -1,8 +1,8 @@
-<?php namespace App\AmazonPay;
+<?php
+namespace App\AmazonPay;
 require_once 'HttpCurl.php';
-use Exception;
-use InvalidArgumentException;
 class PWAINBackendSDK {
+	private $MAX_ERROR_RETRY = 5;
 	private $fields = array ();
 	private $config = array (
             'merchant_id' => null,
@@ -172,15 +172,24 @@ class PWAINBackendSDK {
 		$startTime = $this->microtime_float();
 		try{
 			$this->validateNotEmpty ( $paymentResponseMap, "paymentResponseMap" );
-			// if(isset($paymentResponseMap['verificationOperationName']) && $paymentResponseMap['verificationOperationName'] == 'VERIFY_PROCESS_CHARGE_RESPONSE') {
-			// 	unset ( $paymentResponseMap['verificationOperationName'] );
-			// 	$this->checkForRequiredParameters ( $paymentResponseMap, $this->params_verifySignatureForProcessChargeResponse );			
-			// } elseif (isset($paymentResponseMap['verificationOperationName']) && $paymentResponseMap['verificationOperationName'] == 'VERIFY_CHARGE_STATUS') {
-			// 	unset ( $paymentResponseMap['verificationOperationName'] );
-			// 	$this->checkForRequiredParameters ( $paymentResponseMap, $this->params_verifySignatureForChargeStatus );			
-			// } else {
+			if(isset($paymentResponseMap['verificationOperationName']) && $paymentResponseMap['verificationOperationName'] == 'VERIFY_PROCESS_CHARGE_RESPONSE') {
+				unset ( $paymentResponseMap['verificationOperationName'] );
+				$this->checkForRequiredParameters ( $paymentResponseMap, $this->params_verifySignatureForProcessChargeResponse );
+			} elseif (isset($paymentResponseMap['verificationOperationName']) && $paymentResponseMap['verificationOperationName'] == 'VERIFY_CHARGE_STATUS') {
+				unset ( $paymentResponseMap['verificationOperationName'] );
+				$this->checkForRequiredParameters ( $paymentResponseMap, $this->params_verifySignatureForChargeStatus );
+			} else {
 				$this->checkForRequiredParameters ( $paymentResponseMap, $this->params_verifySignature );
-			// }		
+			}
+			/* if($paymentResponseMap['verificationOperationName'] == 'VERIFY_PROCESS_CHARGE_RESPONSE') {
+				unset ( $paymentResponseMap['verificationOperationName'] );
+				$this->checkForRequiredParameters ( $paymentResponseMap, $this->params_verifySignatureForProcessChargeResponse );			
+			} elseif ($paymentResponseMap['verificationOperationName'] == 'VERIFY_CHARGE_STATUS') {
+				unset ( $paymentResponseMap['verificationOperationName'] );
+				$this->checkForRequiredParameters ( $paymentResponseMap, $this->params_verifySignatureForChargeStatus );			
+			} else {
+				$this->checkForRequiredParameters ( $paymentResponseMap, $this->params_verifySignature );
+			} */		
 			$providedSignature = $paymentResponseMap ['signature'];
 			unset ( $paymentResponseMap ['signature'] );
 			$this->validateNotNull ( $providedSignature, "ProvidedSignature" );
@@ -248,8 +257,7 @@ class PWAINBackendSDK {
             		'refund_amount' => 'RefundAmount.Amount',
             		'currency_code' => 'RefundAmount.CurrencyCode',
             		'seller_refund_note' => 'SellerRefundNote',
-            		'soft_descriptor' => 'SoftDescriptor',
-            		'content_type' => 'ContentType'
+            		'soft_descriptor' => 'SoftDescriptor'
             );
             $responseObject = $this->setParametersAndPost($parameters, $fieldMappings, $requestParameters);
             $response = $this->toArray($responseObject);
@@ -588,7 +596,7 @@ class PWAINBackendSDK {
 		$this->validateNotEmpty ( $parameters, "parameters" );
 		$parameters = $this->addParametersForEncryption ( $parameters );
 		$this->serviceUrl = 'amazonpay.amazon.in';
-		//$this->serviceUrl = 'payments-in-preprod.amazon.com';
+		//$this->serviceUrl = 'payments-in-preprod.amazon.com;
 		$this->urlScheme = 'POST';
 		$this->path = '/';
 		return $this->signParameters ( $parameters );
@@ -637,7 +645,7 @@ class PWAINBackendSDK {
 		return $data;
 	}
 	private function getParametersToEncrypted($parameters) {
-		$parameters = $this->urlEncodeParams ( $parameters );
+		$parameters['Signature'] = $this->urlEncode($parameters['Signature'], false);
 		unset ( $parameters ['SignatureMethod'] );
 		unset ( $parameters ['SignatureVersion'] );
 		return $parameters;
@@ -1112,7 +1120,7 @@ class PWAINBackendSDK {
 
 	private function pauseOnRetry($retries, $status)
 	{
-		if ($retries <= self::MAX_ERROR_RETRY) {
+		if ($retries <= $MAX_ERROR_RETRY) {
 			$delay = (int) (pow(4, $retries) * 100000);
 			usleep($delay);
 		} else {
@@ -1222,7 +1230,7 @@ class PWAINBackendSDK {
 					pclose ( popen ( "start /B ". $cmd, "r" ) );
 				}
 				else {
-					$httpCurlRequest = new \HttpCurl();
+					$httpCurlRequest = new HttpCurl();
 					exec ( $cmd." > /dev/null &" );
 				}
 			}

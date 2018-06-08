@@ -1,11 +1,10 @@
 <?php
-namespace App\AmazonPay;
 require_once 'HttpCurl.php';
 
 postMetrics();
 
 function postMetrics(){
-	$config = parse_ini_file( dirname(__DIR__)."/AmazonPay/config.ini" );
+	$config = parse_ini_file( dirname(__DIR__)."/AmazonPaynon/config.ini" );
 	$metricsSize = getFileSize();
 	if(($config['lastFetchedTimeForPostingMetrics']<(time()-300))||($metricsSize)>500000){
 		$data['latency'] = parseLatencyFile();
@@ -14,9 +13,9 @@ function postMetrics(){
 		$post_data['sdkType'] = 'ServerSideSDKPHP';
 		$post_data = json_encode(array('data' => $post_data));
 		$httpCurlRequest = new HttpCurl();
-		$response = $httpCurlRequest->httpPost('http://amazonpay.amazon.in/publishMetrics/data=$post_data', null, null);
+		$response = $httpCurlRequest->httpPost('http://AmazonPaynon.amazon.in/publishMetrics/data=$post_data', null, null);
 		$config[ 'lastFetchedTimeForPostingMetrics' ] = time();
-		$fp = fopen(dirname(__DIR__).'/AmazonPay/config.ini', 'w');
+		$fp = fopen(dirname(__DIR__).'/AmazonPaynon/config.ini', 'w');
 		flock($fp, LOCK_EX);
 		foreach ( $config as $name => $value )
 		{
@@ -24,22 +23,22 @@ function postMetrics(){
 		}
 		flock($fp, LOCK_UN);
 		fclose($fp);
-		if(file_exists(dirname(__DIR__).'/AmazonPay/metrics/latencyMetrics.txt')){
-			unlink(dirname(__DIR__).'/AmazonPay/metrics/latencyMetrics.txt');
+		if(file_exists(dirname(__DIR__).'/AmazonPaynon/metrics/latencyMetrics.txt')){
+			unlink(dirname(__DIR__).'/AmazonPaynon/metrics/latencyMetrics.txt');
 		}
-		if(file_exists(dirname(__DIR__).'/AmazonPay/metrics/countMetrics.txt')){
-			unlink(dirname(__DIR__).'/AmazonPay/metrics/countMetrics.txt');
+		if(file_exists(dirname(__DIR__).'/AmazonPaynon/metrics/countMetrics.txt')){
+			unlink(dirname(__DIR__).'/AmazonPaynon/metrics/countMetrics.txt');
 		}
 	}
 }
 
 function getFileSize(){
 	$size = 0;
-	if(file_exists(dirname(__DIR__).'/AmazonPay/metrics/latencyMetrics.txt')){
-		$size = $size + filesize(dirname(__DIR__).'/AmazonPay/metrics/latencyMetrics.txt');
+	if(file_exists(dirname(__DIR__).'/AmazonPaynon/metrics/latencyMetrics.txt')){
+		$size = $size + filesize(dirname(__DIR__).'/PayWithAmazon/metrics/latencyMetrics.txt');
 	}
-	if(file_exists(dirname(__DIR__).'/AmazonPay/metrics/countMetrics.txt')){
-		$size = $size + filesize(dirname(__DIR__).'/AmazonPay/metrics/countMetrics.txt');
+	if(file_exists(dirname(__DIR__).'/AmazonPaynon/metrics/countMetrics.txt')){
+		$size = $size + filesize(dirname(__DIR__).'/PayWithAmazon/metrics/countMetrics.txt');
 	}
 	return $size;
 }
@@ -57,8 +56,8 @@ function preg_grep_keys( $pattern, $input, $flags = 0 )
 
 function parseLatencyFile(){
 	$pattern='/(?<operation>\w+)\s+(?<key>\w+)\s+(?<time>\d+(\.\d{1,6})?)/i';
-	if(file_exists(dirname(__DIR__).'/AmazonPay/metrics/latencyMetrics.txt')){
-		$lines = file(dirname(__DIR__).'/AmazonPay/metrics/latencyMetrics.txt');
+	if(file_exists(dirname(__DIR__).'/AmazonPaynon/metrics/latencyMetrics.txt')){
+		$lines = file(dirname(__DIR__).'/AmazonPaynon/metrics/latencyMetrics.txt');
 		$title = 'data';
 		$json_data=array();
 		foreach ($lines as $line_num => $line) {
@@ -75,8 +74,8 @@ function parseLatencyFile(){
 
 function parseCountFile(){
 	$pattern='/(?<key>\w+)\s+(?<count>\d+)/i';
-	if(file_exists(dirname(__DIR__).'/AmazonPay/metrics/countMetrics.txt')){
-		$lines = file(dirname(__DIR__).'/AmazonPay/metrics/countMetrics.txt');
+	if(file_exists(dirname(__DIR__).'/AmazonPaynon/metrics/countMetrics.txt')){
+		$lines = file(dirname(__DIR__).'/AmazonPaynon/metrics/countMetrics.txt');
 		$title = 'data';
 		$json_data=array();
 		foreach ($lines as $line_num => $line) {

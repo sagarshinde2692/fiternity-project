@@ -1,5 +1,4 @@
 <?php
-namespace App\AmazonPay;
 require_once 'HttpCurl.php';
 /* Class IPN_Handler
  * Takes headers and body of the IPN message as input in the constructor
