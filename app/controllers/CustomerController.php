@@ -7034,7 +7034,7 @@ class CustomerController extends \BaseController {
 			$data['body']['section_3'] = ['header'=>'Your Stats', 'enabled'=>true, 'data'=>['0 friends have used your code', 'Invite friends to get 5 free workouts']];
 		}
 		
-		$data['body']['section_3'] = ['header'=>'Your Stats', 'enabled'=>$pps_referral_credits > 0, 'data'=>[$pps_referral_credits.' friends have used your code', $free_sessions_remainig.' out of 5 Free Workout sessions remaining']];
+		// $data['body']['section_3'] = ['header'=>'Your Stats', 'enabled'=>$pps_referral_credits > 0, 'data'=>[$pps_referral_credits.' friends have used your code', $free_sessions_remainig.' out of 5 Free Workout sessions remaining']];
 		
 		$data['body']['section_4'] = [
 			'header'=>'How it works', 
