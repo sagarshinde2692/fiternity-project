@@ -3922,7 +3922,7 @@ class FindersController extends \BaseController {
 					// return $finder['facilities'];
 					if(in_array($category_id, $bookTrialArr)){
 						$data['call_for_action_button']      =      "Book a Trial";
-						$finderData['call_for_action_text'] = 'Get me started with a personalised trial experience';
+						$data['call_for_action_text'] = 'Get me started with a personalised trial experience';
 
 						if(in_array( 27 , $finder['facilities']) || in_array( "Free Trial" , $finder['facilities'])){
 							$data['call_for_action_button']      =      "Book a Free Trial";
@@ -3930,13 +3930,13 @@ class FindersController extends \BaseController {
 
 						if($category_id == 42 ){
 							$data['call_for_action_button']      =      "Book a Meal";
-							$finderData['call_for_action_text'] = 'Get a select set of meals and experience the choice of cuisine available with this trial';
+							$data['call_for_action_text'] = 'Get a select set of meals and experience the choice of cuisine available with this trial';
 						}
 					}
 
 					if($commercial_type == 0 || in_array($finder['_id'], $cult_Ids)){
 						$data['call_for_action_button']       =      "";
-						$finderData['call_for_action_text']   =      "";
+						$data['call_for_action_text']   =      "";
 					}
 
 					$data['finder']['pay_per_session']        =   true;
