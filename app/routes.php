@@ -618,6 +618,7 @@ Route::get('flushtag/{tag}', 'CacheApiController@flushTag');
 Route::get('flushtagkey/{tag}/{key}', 'CacheApiController@flushTagKey');
 //Route::get('flushall', 'CacheApiController@flushAll');
 Route::get('cachedrop', 'CacheApiController@flushAll');
+// Route::get('dropall', 'CacheApiController@flushAll');
 
 ##############################################################################
 /******************** CACHE SECTION END HERE *******************************/
@@ -1139,11 +1140,15 @@ Route::get('markRoutedOrders', 'DebugController@markRoutedOrders');
 
 Route::get('cityfitnessoptions', 'HomeController@cityFitnessOptions');
 
-// AMAZON PAY 
-// Route::post('verifyamazonchecksum', 'TransactionController@verifyAmazonChecksum');
+// AMAZON PAY
 Route::post('generateamazonchecksum', 'TransactionController@generateAmazonChecksum');
 Route::match(array('GET', 'POST'),'verifyamazonchecksum/{id?}', 'TransactionController@verifyAmazonChecksum');
 Route::post('generateamazonurl', 'TransactionController@generateAmazonUrl');
+
+Route::post('verifyamazonchecksumsignature', 'TransactionController@verifyAmazonChecksumSignature');
+Route::post('amazonsignandencrypt', 'TransactionController@amazonSignAndEncrypt');
+Route::post('amazonsignandencryptop', 'TransactionController@amazonSignAndEncryptForOperation');
+
 
 Route::get('verifyfitcode/{booktrial_id}/{code}','SchedulebooktrialsController@verifyFitCode');
 Route::get('lostfitcode/{booktrial_id}','SchedulebooktrialsController@lostFitCode');
@@ -1198,6 +1203,7 @@ Route::get('PayPerSessionWallet','DebugController@PayPerSessionWallet');
 
 Route::get('manualTrialCommunication','SchedulebooktrialsController@manualTrialCommunication');
 
+Route::get('getreferralscreendata','CustomerController@getReferralScreenData');
 Route::get('addWallet','DebugController@addWallet');
 
 Route::get('getbrandvendors/{brand_id}/{city_id}', array('as' => 'finders.getbrandvendors','uses' => 'FindersController@getBrandVendors'));

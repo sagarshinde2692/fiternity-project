@@ -1453,7 +1453,7 @@ class ServiceController extends \BaseController {
 			// 	$service_details = json_decode(json_encode($service_details_response['data']), true);
 			// }
 			
-			$service_details = Service::active()->where('finder_id', $finder['_id'])->where('slug', $service_slug)->with('location')->with(array('ratecards'))->first(['name', 'contact', 'photos', 'lat', 'lon', 'calorie_burn', 'address', 'servicecategory_id', 'finder_id', 'location_id','trial']);
+			$service_details = Service::active()->where('finder_id', $finder['_id'])->where('slug', $service_slug)->with('location')->with(array('ratecards'))->first(['name', 'contact', 'photos', 'lat', 'lon', 'calorie_burn', 'address', 'servicecategory_id', 'finder_id', 'location_id','trial','workoutsessionschedules']);
 			// return $service_details;
 			if(!$service_details){
 				
@@ -1693,7 +1693,9 @@ class ServiceController extends \BaseController {
 		
 		if(isset($_GET['keyword']) && $_GET['keyword']){
 			$schedule_data['recursive'] = true;
+			$service_details['gym_date_data'] = $this->getPPSAvailableDateTime($service_details, 3);
 		}
+		unset($service_details['workoutsessionschedules']);
 		$schedule = json_decode(json_encode($this->getScheduleByFinderService($schedule_data)->getData()));
 
 		if($schedule->status != 200){
@@ -1860,15 +1862,73 @@ class ServiceController extends \BaseController {
 
 			$servicecategories = $servicecategories->toArray();
 			array_unshift($ordered_categories, ['_id'=>0, 'name'=>'I want to explore all options', 'slug'=>'', 'image'=>'select-all-icon']);
-		}	
+		}
+		
 		$data  = [
 			'status'=>200,
 			'header'=>'Which fitness form do you want to try?',
 			// 'all_message'=> "I want to explore all options",
 			'category'=>$ordered_categories,
 			'message'=>"",
-			'base_url'=>"http://b.fitn.in/iconsv1/"
+			'base_url'=>"http://b.fitn.in/iconsv1/",
+			'rebook_trials'=>[]
 		];
+
+		try{
+
+			if($this->authorization){
+				Log::info($this->authorization);
+				$decoded = decode_customer_token();
+				
+				$customer_email = $decoded->customer->email;
+				Service::$withoutAppends = true;
+				Finder::$withoutAppends = true;
+				Booktrial::$withoutAppends = true;
+				Ratecard::$withoutAppends = true;
+
+				$trials		=	Booktrial::where('customer_email', '=', $customer_email)
+					->whereIn('booktrial_type', array('auto'))
+					->where('type', 'workout-session')
+					->with(array('service'=>function($query){ $query->where('status','1')->where('trial', '!=', 'disable')->with(array('ratecards'=>function($query){ $query->where('type', 'workout session')->select('service_id', 'price','special_price');}))->select('_id', 'slug');}))
+					->with(array('finder'=>function($query){$query->where('status', '1')->whereNotIn('flags.state', ['closed', 'temporarily_shut'])->where('trial', '!=', 'disable')->select('_id', 'slug');}))
+					// ->where('going_status_txt','!=','cancel')
+					->orderBy('_id', 'desc')
+					->get(['finder_id', 'service_id', 'finder_name', 'service_name']);
+				
+				$rebook_trials = [];
+				$rebook_service_ids = [];
+				foreach($trials as $trial){
+
+					if(count($rebook_trials) < 3){
+							if($trial['finder'] && $trial['service'] && count($trial['service']['ratecards']) && !in_array($trial['service_id'], $rebook_service_ids)){
+								
+								$trial['title'] = ucwords(preg_replace('/membership/i', 'Workout', $trial['service_name'])).' at '.$trial['finder_name'];
+
+								$trial['amount'] = '₹'.($trial['service']['ratecards'][0]['special_price'] != 0 ? $trial['service']['ratecards'][0]['special_price'] : $trial['service']['ratecards'][0]['price']);
+								$trial['service_slug'] = $trial['service']['slug'];
+								$trial['finder_slug'] = $trial['finder']['slug'];
+								
+								array_push($rebook_trials, array_only($trial->toArray(), ['_id', 'title', 'amount', 'service_slug', 'finder_slug']));
+								array_push($rebook_service_ids, $trial['service_id']);
+							}
+							
+					}else{
+
+						break;
+
+					}
+
+				}
+
+				$data['rebook_trials'] = $rebook_trials;
+
+			}			
+
+
+		}catch(Exception $e){
+			Log::info($e);
+		}
+		// return DB::getQueryLog();
 
 		return $data;
 
@@ -1915,6 +1975,66 @@ class ServiceController extends \BaseController {
 			$session_count += $timing["count"];
 		}
 		return $data = array("header"=> "When would you like to workout?","subheader"=>$subheader, "categories" => $timings, "session_count"=> $session_count);
+	}
+
+	public function getPPSAvailableDateTime($service, $days){
+		
+		 $workoutsessionschedules = $service['workoutsessionschedules'];
+
+		$available_dates = [];
+
+		$weekdays_available = array_pluck($workoutsessionschedules, 'weekday');
+
+		for($i = 0; $i < $days; $i++){
+			
+			$date = date('Y-m-d', strtotime("+$i days"));
+			$weekday = strtolower(date( "l", strtotime($date)));
+			if(in_array($weekday, $weekdays_available)){
+				$weekdayslots = head(array_where($workoutsessionschedules, function($key, $value) use ($weekday){
+					if($value['weekday'] == $weekday){
+						return $value;
+					}
+				}));
+				$first_slot = $weekdayslots['slots'][0];
+				$last_slot = $weekdayslots['slots'][count($weekdayslots['slots'])-1];
+				
+				if(strtotime($date.''.$last_slot['start_time']) > time()){
+
+					$data = ['date'=>date('d-m-Y', strtotime($date)), 'weekday'=>$weekday];
+		
+					$data['gym_start_time'] = [
+						'hour'=>intval(date('G', strtotime($first_slot['start_time']))),
+						'min'=>intval(date('i', strtotime($first_slot['start_time']))),
+					];
+			
+					$data['gym_end_time'] = [
+						'hour'=>intval(date('G', strtotime($last_slot['start_time']))),
+						'min'=>intval(date('i', strtotime($last_slot['start_time']))),
+					];
+					
+					if($i == 0 && intval(date('G', time())) >= $data['gym_start_time']['hour']){
+						Log::info("asdas");
+						$data['gym_start_time']['hour'] = intval(date('G', strtotime('+30 minutes', time())));
+						$data['gym_start_time']['min'] = $data['gym_start_time']['hour'] == (date('G', time())) ? 30 : 0;
+					}
+	
+					if($i == 0 && intval(date('G', time())) >= $data['gym_end_time']['hour']){
+						$data['gym_end_time']['hour'] = intval(date('G', strtotime('+30 minutes', time())));
+						$data['gym_end_time']['min'] = $data['gym_end_time']['hour'] == (date('G', time())) ? 30 : 0;
+					}
+					$data['time_description'] = "Select between ".date('h:i a', strtotime($data['gym_start_time']['hour'].':'.$data['gym_start_time']['min']))." and ".date('h:i a', strtotime($data['gym_end_time']['hour'].':'.$data['gym_end_time']['min']));
+					array_push($available_dates, $data);
+				}else if(!$i){
+					$days++;
+				}
+			}
+
+
+		
+		}
+
+		return $available_dates;
+		
 	}
 
 

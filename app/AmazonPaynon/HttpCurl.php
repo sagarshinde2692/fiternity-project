@@ -2,7 +2,6 @@
 /* Class HttpCurl
  * Handles Curl POST function for all requests
  */
-namespace App\AmazonPay;
 class HttpCurl
 {
     private $config = array();

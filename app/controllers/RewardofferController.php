@@ -1046,7 +1046,7 @@ class RewardofferController extends BaseController {
 
         }
 
-        if($this->utilities->isConvinienceFeeApplicable($ratecard)){
+        if($this->utilities->isConvinienceFeeApplicable($ratecard, "ratecard")){
 
             $convinience_fee_percent = Config::get('app.convinience_fee');
 

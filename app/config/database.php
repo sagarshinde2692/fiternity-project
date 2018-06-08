@@ -69,8 +69,8 @@ return array(
 			'port'     => 27017,
 			'database' => 'fitadmin',
 		    'username' => $username,
-		    'password' => $password,
-// 			'options' => $options
+		    'password' => $password
+			// 'options' => $options
 			// 'options' => [
 			// 		'db' => 'admin' // sets the authentication database required by mongo 3
 			// 	]
@@ -82,8 +82,8 @@ return array(
 			'port'     => 27017,
 			'database' => 'fitapi',
             'username' => $username,
-            'password' => $password,
-// 			'options' => $options
+            'password' => $password
+			// 'options' => $options
 			// 'options' => [
 			// 	'db' => 'admin' // sets the authentication database required by mongo 3
 			// ]

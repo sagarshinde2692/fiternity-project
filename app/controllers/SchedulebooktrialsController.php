@@ -60,7 +60,7 @@ class SchedulebooktrialsController extends \BaseController {
         $this->findersms                =   $findersms;
         $this->customernotification     =   $customernotification;
         $this->fitnessforce             =   $fitnessforce;
-        $this->sidekiq              =   $sidekiq;
+        $this->sidekiq               =   $sidekiq;
         $this->ozontelOutboundCall  =   $ozontelOutboundCall;
         $this->utilities            =   $utilities;
         $this->customerreward            =   $customerreward;
@@ -1801,9 +1801,9 @@ class SchedulebooktrialsController extends \BaseController {
                 //     Log::info($hashreverse['reverse_hash']);
                 //     return  Response::json($resp, 400);
                 // }
-             	$hash_verified = $this->utilities->verifyOrder($data,$order);
-                // return $order;
-                // return $hash_verified ? "s":"d";
+                 $hash_verified = $this->utilities->verifyOrder($data,$order);
+                 // return $order;
+                  // return $hash_verified ? "s":"d";
                 if(!$hash_verified){
                     $resp 	= 	array('status' => 401, 'order' => $order, 'message' => "Trial not booked.");
                     return  Response::json($resp, 400);
@@ -2039,8 +2039,8 @@ class SchedulebooktrialsController extends \BaseController {
             $additional_info			       = 	(Input::has('additional_info') && Input::json()->get('additional_info') != '') ? Input::json()->get('additional_info') : "";
 
 
-            $orderid    =   (int) $data['order_id'];
-            $order      =   Order::findOrFail($orderid);
+            // $orderid    =   (int) $data['order_id'];
+            // $order      =   Order::findOrFail($orderid);
             $type       =   $order->type;
 
             if($type == "vip_booktrials"){
@@ -2112,7 +2112,7 @@ class SchedulebooktrialsController extends \BaseController {
                 'campaign'				       =>		$campaign,
                 'premium_session' 		       =>		$premium_session,
                 'reminder_need_status' 	       =>		$reminder_need_status,
-
+                'logged_in_customer_id'         =>      !empty($order["logged_in_customer_id"]) ? $order["logged_in_customer_id"] : -1,
                 'customer_id' 			       =>		$customer_id,
                 'customer_name' 		       =>		$customer_name,
                 'customer_email' 		       =>		$customer_email,
@@ -3325,7 +3325,11 @@ class SchedulebooktrialsController extends \BaseController {
             if(!empty($data['punching_order'])){
                 $booktrialdata['punching_order'] = $data['punching_order'];
             }
-
+            if(!empty($this->authorization)){
+                $logged_in_customer = customerTokenDecode($this->authorization);
+                $logged_in_customer_id = $logged_in_customer->customer->_id;
+                $booktrialdata["logged_in_customer_id"] = $logged_in_customer_id;
+            }
             $is_tab_active = isTabActive($booktrialdata['finder_id']);
 
             if($is_tab_active){
