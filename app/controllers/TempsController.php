@@ -463,6 +463,10 @@ class TempsController extends \BaseController {
                 
                 if($customer) {
 
+                    $customer->verified = true;
+
+                    $customer->update();
+
                     if($customerToken == ""){
 
                         $customerToken = createCustomerToken((int)$customer->_id);
