@@ -6719,7 +6719,7 @@ class CustomerController extends \BaseController {
 	public function loginOptions(){
 
 		$response = [
-			'facebook'=>true,
+			'facebook'=>false,
 			'google'=>true,
 			'email'=>true,
 		];
