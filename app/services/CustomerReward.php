@@ -825,7 +825,7 @@ Class CustomerReward {
                 }
 
                 $result['status'] = 200;
-                $reslut['message'] = $message;
+                $result['message'] = $message;
 
                 return $result;
 
