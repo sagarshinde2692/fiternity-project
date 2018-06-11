@@ -3566,6 +3566,7 @@ class CustomerController extends \BaseController {
 						'width'=>375,
 						'ratio'=>(float) number_format(100/375,2)
 					];
+					
 				}
 
 			}
@@ -3610,6 +3611,38 @@ class CustomerController extends \BaseController {
 				'width'=>375,
 				'ratio'=>(float) number_format(100/375,2)
 			];
+
+			if($_REQUEST['device_type'] == 'ios'){
+
+				if($this->app_version > '4.4.3'){
+
+					$result['campaigns'][] = [
+						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/AmazonPay_AppBanner.jpg',
+						'link'=>'ftrnty://ftrnty.com/pps?',
+						'title'=>'Amazon Pay Offer',
+						'height'=>100,
+						'width'=>375,
+						'ratio'=>(float) number_format(100/375,2)
+					];
+				}
+
+			}else{
+
+				if($this->app_version > '4.4.3'){
+
+					$result['campaigns'][] = [
+						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/AmazonPay_AppBanner.jpg',
+						'link'=>'ftrnty://ftrnty.com/pps',
+						'title'=>'Amazon Pay Offer',
+						'height'=>100,
+						'width'=>375,
+						'ratio'=>(float) number_format(100/375,2)
+					];
+
+				}
+
+			}
+
 			// $result['campaigns'][] = [
 			// 	'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/amazon-pay.png',
 			// 	'link'=>'',
