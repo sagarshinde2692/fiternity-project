@@ -1016,6 +1016,40 @@ Class Utilities {
             $order["hash_verified"] = false;
             $order->update();
         }
+
+        if($hash_verified && !empty($order['coupon_code'])){
+
+            $customerCoupn = \CustomerCoupn::where('code', strtolower($order['coupon_code']))->first();
+
+            if($customerCoupn){
+
+                if($customerCoupn['stauts'] == "0"){
+
+                    $hash_verified = false;
+
+                    $order->update(['customer_coupn_error'=>true]);
+
+                }else{
+
+                    $customerCoupn->claimed = $customerCoupn->claimed + 1;
+
+                    if($customerCoupn->quantity == $customerCoupn->claimed){
+                        $customerCoupn->status = "0";
+                    }
+
+                    $orders = [];
+
+                    if(!empty($customerCoupn->orders)){
+                        $orders = $customerCoupn->orders;
+                    }
+
+                    $orders[] = $order['_id'];
+
+                    $customerCoupn->update();
+                }      
+            }
+        }
+
         return $hash_verified;
     }
 

@@ -172,6 +172,8 @@ class RewardofferController extends BaseController {
 
         }
 
+        Finder::$withoutAppends = true;
+
         if($this->vendor_token){
 
             if(!isset($data['ratecard_id'])){
@@ -506,7 +508,8 @@ class RewardofferController extends BaseController {
                         'personal_trainer_at_home',
                         'healthy_tiffin',
                         'nutrition_store',
-                        'fitternity_voucher'
+                        'fitternity_voucher',
+                        'swimming_sessions'
                     );
 
 
@@ -518,7 +521,8 @@ class RewardofferController extends BaseController {
                             'personal_trainer_at_home',
                             'healthy_tiffin',
                             'nutrition_store',
-                            'fitternity_voucher'
+                            'fitternity_voucher',
+                            'swimming_sessions'
                         );
                     }
 
@@ -529,7 +533,7 @@ class RewardofferController extends BaseController {
                         // if($amount < 2000){
                         //     $rewards = [];        
                         // }
-                        foreach ($rewards as $rewards_value){
+                        foreach ($rewards as &$rewards_value){
 
                             if(in_array($rewards_value['reward_type'],["fitness_kit","healthy_snacks"]) && $service_category_id != null){
 
@@ -860,6 +864,87 @@ class RewardofferController extends BaseController {
 
                                 // break;
                             }
+
+                            if($rewards_value['reward_type'] == "sessions"){
+
+                                $reward_type_info = 'sessions';
+
+                                $workout_session_array = Config::get('fitness_kit.workout_session');
+
+                                rsort($workout_session_array);
+
+                                foreach ($workout_session_array as $data_key => $data_value) {
+
+                                    if($amount >= $data_value['min'] ){
+
+                                        $session_content = "Get access to FREE workouts - Anytime, Anywhere <br>- Across 12,000+ fitness centres & 7 cities <br>- 75,000 classes every week: Crossfit, Zumba, Yoga, Kickboxing & 13 more fitness forms <br>- Book real-time & get instant confirmation";
+
+                                        $rewards_value['payload_amount'] = $data_value['amount'];
+                                        $rewards_value['new_amount'] = $data_value['amount'];
+                                        $rewards_value['title'] = "Workout Session Pack";
+                                        $rewards_value['contents'] = ['Workout Session Pack'];
+                                        $rewards_value['gallery'] = [];
+                                        $rewards_value['description'] = $session_content;
+                                        $rewards_value['quantity'] = $data_value['total'];
+                                        $rewards_value['payload']['amount'] = $data_value['amount'];
+
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if($rewards_value['reward_type'] == "swimming_sessions"){
+
+                                $reward_type_info = 'swimming_sessions';
+
+                                $swimming_session_array = Config::get('fitness_kit.swimming_session');
+
+                                rsort($swimming_session_array);
+
+                                foreach ($swimming_session_array as $data_key => $data_value) {
+
+                                    if($amount >= $data_value['min'] ){
+
+                                        $session_content = "Get a luxury experience like never before - VIP swimming session in city's best 5-star hotels <br>- Book across 50 hotels in 7 cities <br>- Exclusive pool & gym access <br>- Book real-time & get instant confirmation";
+
+                                        $rewards_value['payload_amount'] = $data_value['amount'];
+                                        $rewards_value['new_amount'] = $data_value['amount'];
+                                        $rewards_value['title'] = "Swimming at 5-star Hotels";
+                                        $rewards_value['contents'] = ['Swimming at 5-star Hotels'];
+                                        $rewards_value['gallery'] = [];
+                                        $rewards_value['description'] = $session_content;
+                                        $rewards_value['quantity'] = $data_value['total'];
+                                        $rewards_value['payload']['amount'] = $data_value['amount'];
+                                        $rewards_value['list'] = [];
+
+                                        break;
+                                    }
+                                }
+
+                                $swimming_service_ids = Service::where('city_id',$service['city_id'])->where('location_id',$service['location_id'])->where('servicecategory_id',123)->lists('_id');
+
+                                if(!empty($swimming_service_ids)){
+
+                                    $swimming_service_ids = array_map('intval',$swimming_service_ids);
+
+                                    $swimming_finder_ids = Ratecard::whereIn('service_id',$swimming_service_ids)->where('type','workout session')->lists('finder_id');
+
+                                    if(!empty($swimming_finder_ids)){
+
+                                        $swimming_finder_ids = array_map('intval',$swimming_finder_ids);
+
+                                        $swimming_finders = Finder::whereIn('_id',$swimming_finder_ids)->get(['title','slug','_id']);
+
+                                        if($swimming_finders){
+
+                                           $rewards_value['list'] = $swimming_finders->toArray();
+
+                                        }
+                                    }
+                                }
+
+                            }
+
                         }
                     }
 
