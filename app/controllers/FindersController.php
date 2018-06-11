@@ -3990,7 +3990,17 @@ class FindersController extends \BaseController {
 						$data['finder']['overlayimage'] = 'https://b.fitn.in/global/finder/temp-shut.png';
 					}
 
-				}
+                }
+                // return $data['finder']['services'];
+                $callOutObj= $this->getCalloutOffer($data['finder']['services'], 'finderDetailApp');
+
+                if(!empty($callOutObj))
+                {
+                    if(!empty($callOutObj['callout']))
+                    $data['finder']['callout']=(!empty($callOutObj['callout'])?$callOutObj['callout']:"");
+                    if(!empty($callOutObj['callout_ratecard_id']))
+                    $data['finder']['callout_ratecard_id']=(!empty($callOutObj['callout_ratecard_id'])?$callOutObj['callout_ratecard_id']:"");							
+                }
 
 
 				$data = Cache::tags($cache_name)->put($cache_key, $data, Config::get('cache.cache_time'));
@@ -5371,9 +5381,11 @@ class FindersController extends \BaseController {
 
 	public function getCalloutOffer($services, $source = 'finderdetail'){
 		if($source == 'finderDetailApp'){
-			$key = 'ratecard';
+            $key = 'ratecard';
+            $service_name = 'service_name';
 		}else{
-			$key = 'serviceratecard';
+            $key = 'serviceratecard';
+            $service_name = 'name';
 		}
 		$callout = "";
 		$callout_ratecard_id = "";
@@ -5382,7 +5394,7 @@ class FindersController extends \BaseController {
 				if(isset($ratecard['offers']) && count($ratecard['offers']) > 0 && isset($ratecard['offers'][0]['offer_type']) && $ratecard['offers'][0]['offer_type'] == 'newyears'){
 					if(!empty($ratecard['offers'][0]['callout']))
 					$callout = $ratecard['offers'][0]['callout'];
-					else $callout = $service['name']." - ".$this->getServiceDuration($ratecard)." @ Rs. ".$ratecard['offers'][0]['price'];
+					else $callout = $service[$service_name]." - ".$this->getServiceDuration($ratecard)." @ Rs. ".$ratecard['offers'][0]['price'];
 					$callout_ratecard_id=(!empty($ratecard['_id'])?$ratecard['_id']:"");
 					break;
 				}
