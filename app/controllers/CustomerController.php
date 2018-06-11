@@ -3527,6 +3527,37 @@ class CustomerController extends \BaseController {
 				'width'=>375,
 				'ratio'=>(float) number_format(100/375,2)
 			];
+
+			if($_REQUEST['device_type'] == 'ios'){
+
+				if($this->app_version > '4.4.3'){
+
+					$result['campaigns'][] = [
+						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/Group_AppBanner.png',
+						'link'=>'ftrnty://ftrnty.com/s/',
+						'title'=>'Group Membership',
+						'height'=>100,
+						'width'=>375,
+						'ratio'=>(float) number_format(100/375,2)
+					];
+				}
+
+			}else{
+
+				if($this->app_version > '4.4.3'){
+
+					$result['campaigns'][] = [
+						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/Group_AppBanner.png',
+						'link'=>'ftrnty://ftrnty.com/search/all',
+						'title'=>'Group Membership',
+						'height'=>100,
+						'width'=>375,
+						'ratio'=>(float) number_format(100/375,2)
+					];
+
+				}
+
+			}
 			
 			$result['campaigns'][] = [
 				'image'=>'https://b.fitn.in/global/ios_homescreen_banner/emi-app-banner.png',
@@ -3549,15 +3580,6 @@ class CustomerController extends \BaseController {
 						'width'=>375,
 						'ratio'=>(float) number_format(100/375,2)
 					];
-
-					$result['campaigns'][] = [
-						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/Group_AppBanner.png',
-						'link'=>'ftrnty://ftrnty.com/pps?',
-						'title'=>'Group Membership',
-						'height'=>100,
-						'width'=>375,
-						'ratio'=>(float) number_format(100/375,2)
-					];
 				}
 
 			}else{
@@ -3568,15 +3590,6 @@ class CustomerController extends \BaseController {
 						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/AmazonPay_AppBanner.jpg',
 						'link'=>'ftrnty://ftrnty.com/pps',
 						'title'=>'Amazon Pay Offer',
-						'height'=>100,
-						'width'=>375,
-						'ratio'=>(float) number_format(100/375,2)
-					];
-
-					$result['campaigns'][] = [
-						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/Group_AppBanner.png',
-						'link'=>'ftrnty://ftrnty.com/pps',
-						'title'=>'Group Membership',
 						'height'=>100,
 						'width'=>375,
 						'ratio'=>(float) number_format(100/375,2)

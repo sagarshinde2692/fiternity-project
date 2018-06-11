@@ -488,8 +488,8 @@ class HomeController extends BaseController {
             ];
 
             $campaigns[] = [
-                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/vgroup-web.png',
-                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/vgroup-mob.png',
+                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Group_WebBanner.png',
+                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Group_MobBanner.png',
                 'link'=>Config::get('app.website').'/groupmemberships',
                 'target'=>true,
                 'title'=>'Share your love for fitness',
@@ -514,16 +514,6 @@ class HomeController extends BaseController {
                 'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/AmazonPay_MobBanner.jpg',
                 'link'=>Config::get('app.download_app_link'),
                 'title'=>'Amazon pay Offer',
-                'height'=>100,
-                'width'=>375,
-                'ratio'=>(float) number_format(100/375,2)
-            ];
-
-            $campaigns[] = [
-                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Group_WebBanner.png',
-                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Group_MobBanner.png',
-                'link'=>Config::get('app.website').'/groupmemberships',
-                'title'=>'Group Membership',
                 'height'=>100,
                 'width'=>375,
                 'ratio'=>(float) number_format(100/375,2)
