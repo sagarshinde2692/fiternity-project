@@ -680,6 +680,8 @@ Class CustomerReward {
 
         $myreward = Myreward::find((int)$data['myreward_id']);
 
+        $result = [];
+
         if($myreward){
 
             $created_at = date('Y-m-d H:i:s',strtotime($myreward->created_at));
@@ -720,7 +722,7 @@ Class CustomerReward {
 
                     $data['coupon'] = [];
 
-                    $data['coupon_detail'] = $myreward->coupon_detail = $this->createSessionCoupon($myreward->toArray());
+                    $result['coupon_detail'] = $data['coupon_detail'] = $myreward->coupon_detail = $this->createSessionCoupon($myreward->toArray());
 
                     foreach ($data['coupon_detail'] as $value) {
 
@@ -768,7 +770,10 @@ Class CustomerReward {
                     default: $message = "Reward Claimed Successfull";break;
                 }
 
-                return array('status' => 200,'message' =>$message);
+                $result['status'] = 200;
+                $reslut['message'] = $message;
+
+                return array($result);
 
             }else{
 
