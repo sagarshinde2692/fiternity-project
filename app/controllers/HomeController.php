@@ -519,6 +519,16 @@ class HomeController extends BaseController {
                 'ratio'=>(float) number_format(100/375,2)
             ];
 
+            $campaigns[] = [
+                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Group_WebBanner.png',
+                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Group_MobBanner.png',
+                'link'=>Config::get('app.website').'/groupmemberships',
+                'title'=>'Group Membership',
+                'height'=>100,
+                'width'=>375,
+                'ratio'=>(float) number_format(100/375,2)
+            ];
+
             $homedata 	= 	array(
                 // 'popular_finders' => $popular_finders,
                 'footer_finders' => $footer_finders,
