@@ -2263,7 +2263,8 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
             if (!function_exists(('autoRegisterCustomer'))) {
 
                 function autoRegisterCustomer($data)
-                {
+                {   
+                    Log::info("autoRegisterCustomer");
 					Log::info(print_r($data,true));
                 	$customer= Customer::active()->where('email', $data['customer_email'])->first();
                     

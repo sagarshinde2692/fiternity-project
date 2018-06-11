@@ -6269,7 +6269,7 @@ class CustomerController extends \BaseController {
 
 		Finder::$withoutAppends=true;
 
-		$finder = Finder::find((int)$data['finder_id']);
+		$finder = Finder::with(array('knowlarityno'=>function($query){$query->select('*')->where('status',true)->orderBy('extension', 'asc');}))->find((int)$data['finder_id']);
 
 		if($finder){
 
@@ -6282,13 +6282,18 @@ class CustomerController extends \BaseController {
 
 			$data['finder_name'] = ucwords($finder->title);
 
-			$knowlarity_no = KnowlarityNo::where('status',true)->where('vendor_id',(int)$data['finder_id'])->first();
+			// $knowlarity_no = KnowlarityNo::where('status',true)->where('vendor_id',(int)$data['finder_id'])->first();
+			$knowlarity_nos = $this->utilities->getContactOptions($finder);
 
-			if($knowlarity_no){
+			if(count($knowlarity_nos)){
+
+				$intent = isset($data['intent']) && $data['intent'] != ''? intval($data['intent']) : 0;
+
+				$knowlarity_no = $knowlarity_nos[$intent];
 
 				$extension = (isset($knowlarity_no['extension']) && $knowlarity_no['extension'] != "") ? " (extension : ".str_pad($knowlarity_no['extension'], 2, '0', STR_PAD_LEFT).")" : "";
 
-				$data['finder_number'] = "+91".$knowlarity_no['phone_number'].$extension;
+				$data['finder_number'] = $knowlarity_no['phone_number'].$extension;
 
 			}
 
@@ -6791,6 +6796,18 @@ class CustomerController extends \BaseController {
 		setDefaultAccount(['source'=>'website', 'customer_phone'=>$decodedToken->customer->contact_no], $decodedToken->customer->_id);
 
 		return ['status'=>200, 'token'=>$jwt_token];
+	}
+	
+	public function autoRegister(){
+		$data = Input::json()->all();
+
+		Log::info("autoRegister metropolis");
+		Log::info($data);
+		if( !isset($data['key']) || $data['key'] != '1jhvv123vhjc323@(*Bb@##*yhjj2Jhasda78&*gu'){
+			return array('status'=>404, 'message'=>'Not Authorized');
+		}
+		$customer_id = autoRegisterCustomer($data);
+		return array('status'=>200, 'message'=>'Registered', 'customer_id'=>$customer_id);
 
 	}
 	
