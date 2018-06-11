@@ -5369,11 +5369,16 @@ class FindersController extends \BaseController {
 
 	}
 
-	public function getCalloutOffer($services){
+	public function getCalloutOffer($services, $source = 'finderdetail'){
+		if($source == 'finderDetailApp'){
+			$key = 'ratecard';
+		}else{
+			$key = 'serviceratecard';
+		}
 		$callout = "";
 		$callout_ratecard_id = "";
 		foreach($services as $service){
-			foreach($service['serviceratecard'] as $ratecard){
+			foreach($service[$key] as $ratecard){
 				if(isset($ratecard['offers']) && count($ratecard['offers']) > 0 && isset($ratecard['offers'][0]['offer_type']) && $ratecard['offers'][0]['offer_type'] == 'newyears'){
 					if(!empty($ratecard['offers'][0]['callout']))
 					$callout = $ratecard['offers'][0]['callout'];
