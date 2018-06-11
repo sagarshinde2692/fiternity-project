@@ -1200,6 +1200,8 @@ Route::get('promoNotification','DebugController@promoNotification');
 Route::post('getPageViewsForVendors','FindersController@getPageViewsForVendors');
 
 Route::get('PayPerSessionWallet','DebugController@PayPerSessionWallet');
+Route::post('autoregister','CustomerController@autoRegister');
+
 
 Route::get('manualTrialCommunication','SchedulebooktrialsController@manualTrialCommunication');
 
