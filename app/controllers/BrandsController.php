@@ -50,7 +50,7 @@ class BrandsController extends \BaseController {
                 $finders = vendorsByBrand($request);
 
                 $data = array(
-                        'brand'     => $brand,
+                        'brand'     => $brand->toArray(),
                         'finders'    => $finders
                 );
 
@@ -111,8 +111,8 @@ class BrandsController extends \BaseController {
 
         if(!empty($this->device_type) && $this->device_type == "android"){
 
-            unset($brand_detail['finders']['result']);
-            unset($brand_detail['finders']['aggregation']);
+            unset($brand_detail['finders']['results']);
+            unset($brand_detail['finders']['aggregations']);
         }
 
         return Response::json($brand_detail);
