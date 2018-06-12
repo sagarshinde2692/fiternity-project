@@ -884,7 +884,7 @@ class FindersController extends \BaseController {
 							if(!empty($callOutObj['callout']))
 							$finder['callout']=(!empty($callOutObj['callout'])?$callOutObj['callout']:"");
 							if(!empty($callOutObj['callout_ratecard_id']))
-							$finder['callout_ratecard_id']=(!empty($callOutObj['callout_ratecard_id'])?$callOutObj['callout_ratecard_id']:"");							
+							$finder['callout_ratecard_id']=(!empty($callOutObj['ratecard_id'])?$callOutObj['ratecard_id']:"");							
 						}
 // 				}
 				// 	$callout_offer = Offer::where('vendor_id', $finder['_id'])->where('hidden', false)->orderBy('order', 'asc')
@@ -3992,6 +3992,20 @@ class FindersController extends \BaseController {
 
 				}
 
+				$data['finder']['other_offers'] = null;
+
+				$getCalloutOffer = $this->getCalloutOffer($data['finder']['services']);
+
+				if(!empty($getCalloutOffer['callout'])){
+
+					$data['finder']['other_offers'] = $getCalloutOffer;
+
+					$data['finder']['other_offers']['icon'] = "";
+					$data['finder']['other_offers']['title'] = "Flash Offer";
+					$data['finder']['other_offers']['description'] = $getCalloutOffer['callout'];
+
+					unset($data['finder']['other_offers']['callout']);
+				}
 
 				$data = Cache::tags($cache_name)->put($cache_key, $data, Config::get('cache.cache_time'));
 
@@ -5370,20 +5384,39 @@ class FindersController extends \BaseController {
 	}
 
 	public function getCalloutOffer($services){
-		$callout = "";
-		$callout_ratecard_id = "";
+
+		$return = [
+			"callout"=>"",
+			"ratecard_id"=>null,
+			"service_id"=>null,
+			"type"=>""
+		];
+
 		foreach($services as $service){
+
 			foreach($service['serviceratecard'] as $ratecard){
-				if(isset($ratecard['offers']) && count($ratecard['offers']) > 0 && isset($ratecard['offers'][0]['offer_type']) && $ratecard['offers'][0]['offer_type'] == 'newyears'){
-					if(!empty($ratecard['offers'][0]['callout']))
-					$callout = $ratecard['offers'][0]['callout'];
-					else $callout = $service['name']." - ".$this->getServiceDuration($ratecard)." @ Rs. ".$ratecard['offers'][0]['price'];
-					$callout_ratecard_id=(!empty($ratecard['_id'])?$ratecard['_id']:"");
+
+				if(!empty($ratecard['offers']) && !empty($ratecard['offers'][0]['offer_type']) && $ratecard['offers'][0]['offer_type'] == 'newyears'){
+
+					$return['callout'] = $service['name']." - ".$this->getServiceDuration($ratecard)." @ Rs. ".$ratecard['offers'][0]['price'];
+
+					if(!empty($ratecard['offers'][0]['callout'])){
+						$return['callout'] = $ratecard['offers'][0]['callout'];
+					}
+
+					$return['ratecard_id'] = (int)$ratecard['_id'];
+
+					$return['service_id'] = (int)$ratecard['service_id'];
+
+					$return['type'] = $ratecard['type'];
+
 					break;
 				}
 			}	
 		}
-		return array("callout"=>$callout,"callout_ratecard_id"=>$callout_ratecard_id);
+
+		return $return;
+
 	}
 
 	public function getPageViewsForVendors(){
