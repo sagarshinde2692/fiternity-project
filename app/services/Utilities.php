@@ -1319,12 +1319,12 @@ Class Utilities {
 
             } else {
 
-                $allDeviceCount = 0;
+                /*$allDeviceCount = 0;
 
                 if(isset($data['customer_id']) && $data['customer_id'] != ''){
 
                     $allDeviceCount = Device::where('customer_id', (int)$data['customer_id'])->where('type','!=','web')->count();
-                }
+                }*/
 
                 $device_id = Device::max('_id') + 1;
                 $device = new Device();
@@ -1353,7 +1353,7 @@ Class Utilities {
                 $device->status = "1";
                 $device->save();
                 
-                if($allDeviceCount == 0 && isset($data['customer_id']) && $data['customer_id'] != ''){
+                /*if($allDeviceCount == 0 && isset($data['customer_id']) && $data['customer_id'] != ''){
 
                     $booktrial = \Booktrial::where('created_at','>',new \DateTime(date("d-m-Y 00:00:00",strtotime("20-4-2017 00:00:00"))))->where("customer_id",(int)$data['customer_id'])->where('type','booktrials')->count();
 
@@ -1377,7 +1377,7 @@ Class Utilities {
 
                         $this->walletTransaction($addWalletData);
                     }
-                }
+                }*/
 
             }
 
