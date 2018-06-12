@@ -100,8 +100,6 @@ class BrandsController extends \BaseController {
                 unset($brand['vendor_stripe']);
 
                 Cache::tags('brand_detail')->put("$slug-$city" ,$data,Config::get('cache.cache_time'));
-
-                $brand_detail = $data;
                 
             }else{
 
@@ -109,12 +107,14 @@ class BrandsController extends \BaseController {
             }
         }
 
+        $brand_detail = Cache::tags('brand_detail')->get("$slug-$city");
+
         if(!empty($this->device_type) && $this->device_type == "android"){
 
             unset($brand_detail['finders']['result']);
             unset($brand_detail['finders']['aggregation']);
         }
-        
+
         return Response::json($brand_detail);
     }
 
