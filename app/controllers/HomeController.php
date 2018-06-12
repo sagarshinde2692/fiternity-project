@@ -476,29 +476,6 @@ class HomeController extends BaseController {
                 'ratio'=>(float) number_format(100/375,2)
             ];
 
-            // if($city == "mumbai" || $city == "pune"){
-                
-            //     $campaigns[] = [
-            //         'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/MM_Web+banner_MP.png',
-            //         'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/MM_mobResponsive_banner_MP.png',
-            //         'link'=>Config::get('app.website').'/'.$city.'/fitness',
-            //         'title'=>'Mad 8 banner',
-            //         'height'=>100,
-            //         'width'=>375,
-            //         'ratio'=>(float) number_format(100/375,2)
-            //     ];
-            // }else{
-            //     $campaigns[] = [
-            //         'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/MM_Web+banner_OC.png',
-            //         'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/MM_mobResponsive_banner_OC.png',
-            //         'link'=>Config::get('app.website').'/'.$city.'/fitness',
-            //         'title'=>'Mad 8 banner',
-            //         'height'=>100,
-            //         'width'=>375,
-            //         'ratio'=>(float) number_format(100/375,2)
-            //     ];
-            // }
-
             $campaigns[] = [
                 'image'=>'https://b.fitn.in/global/Homepage-branding-2018/new-reward-web.png',
                 'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Rewards-MOB.png',
@@ -510,19 +487,9 @@ class HomeController extends BaseController {
                 'ratio'=>(float) number_format(100/375,2)
             ];
 
-            // $campaigns[] = [
-            //     'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/summer.jpg',
-            //     'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/summer-m.jpg',
-            //     'link'=>Config::get('app.website').'/'.$city.'/fitness',
-            //     'title'=>'Fitness Sale',
-            //     'height'=>100,
-            //     'width'=>375,
-            //     'ratio'=>(float) number_format(100/375,2)
-            // ];
-            
             $campaigns[] = [
-                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/vgroup-web.png',
-                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/vgroup-mob.png',
+                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Group_WebBanner.png',
+                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Group_MobBanner.png',
                 'link'=>Config::get('app.website').'/groupmemberships',
                 'target'=>true,
                 'title'=>'Share your love for fitness',
@@ -541,29 +508,16 @@ class HomeController extends BaseController {
                 'width'=>375,
                 'ratio'=>(float) number_format(100/375,2)
             ];
-            // $campaigns[] = [
-            //     'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Cover-web%26mob/AmazonPay_WebCard_Banner.png',
-            //     'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/amazon-pay.png',
-            //     'link'=>"",
-            //     // 'target'=>true,
-            //     'title'=>'Amazon Pay',
-            //     'height'=>100,
-            //     'width'=>375,
-            //     'ratio'=>(float) number_format(100/375,2)
-            // ];
-
-            /*if($city == "mumbai"){
-                $campaigns[] = [
-                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/web-banner-mfp.png',
-                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/mob-banner-mfp.png',
-                    'link'=>Config::get('app.website').'/mfp',
-                    'target'=>true,
-                    'title'=>'Save with Fitness',
-                    'height'=>100,
-                    'width'=>375,
-                    'ratio'=>(float) number_format(100/375,2)
-                ];   
-            }*/
+            
+            $campaigns[] = [
+                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/AmazonPay_WebBanner.jpg',
+                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/AmazonPay_MobBanner.jpg',
+                'link'=>Config::get('app.download_app_link'),
+                'title'=>'Amazon pay Offer',
+                'height'=>100,
+                'width'=>375,
+                'ratio'=>(float) number_format(100/375,2)
+            ];
 
             $homedata 	= 	array(
                 // 'popular_finders' => $popular_finders,

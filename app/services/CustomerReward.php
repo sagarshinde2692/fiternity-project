@@ -1508,13 +1508,28 @@ Class CustomerReward {
 
             if(isset($coupon["once_per_user"]) && $coupon["once_per_user"]){
 
-                
-                $coupon_already_used = \Order::active()->where("customer_id", $customer_id)->where('coupon_code', 'Like', $coupon['code'])->where('coupon_discount_amount', '>', 0)->first();
-                if($coupon_already_used){
+                $jwt_token = Request::header('Authorization');
 
-                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"Coupon already used");
+                if(empty($jwt_token)){
+
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"User Login Required","user_login_error"=>true);
+
                     return $resp;
-                
+                }
+
+                $decoded = $this->customerTokenDecode($jwt_token);
+                $customer_id = $decoded->customer->_id;
+
+                \Order::$withoutAppends = true;
+
+                $order_count = \Order::active()->where("customer_id", $customer_id)->where('coupon_code', 'Like', $coupon['code'])->where('coupon_discount_amount', '>', 0)->count();
+
+                if($order_count >= 1){
+
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"Coupon already used","user_login_error"=>true);
+
+                    return $resp;
+
                 }
             }
 
@@ -1630,7 +1645,7 @@ Class CustomerReward {
 
                     \Order::$withoutAppends = true;
 
-                    $order_count = \Order::active()->where('customer_id',$customer_id)->where('coupon_code',$couponCode)->count();
+                    $order_count = \Order::active()->where('customer_id',$customer_id)->where('coupon_code','like', $couponCode)->count();
 
                     if($order_count >= 4){
 
