@@ -49,12 +49,6 @@ class BrandsController extends \BaseController {
                 
                 $finders = vendorsByBrand($request);
 
-                if(!empty($this->device_type) && $this->device_type == "android"){
-
-                    unset($finders['result']);
-                    unset($finders['aggregation']);
-                }
-
                 $data = array(
                         'brand'     => $brand,
                         'finders'    => $finders
@@ -104,17 +98,24 @@ class BrandsController extends \BaseController {
                 }
 
                 unset($brand['vendor_stripe']);
-                
+
                 Cache::tags('brand_detail')->put("$slug-$city" ,$data,Config::get('cache.cache_time'));
-                
-                return Response::json(Cache::tags('brand_detail')->get("$slug-$city"));
+
+                $brand_detail = $data;
                 
             }else{
+
                 return Response::json(array('status' => 400,'message' => 'brand not found'),400);
             }
         }
 
-        return Response::json(Cache::tags('brand_detail')->get("$slug-$city"));
+        if(!empty($this->device_type) && $this->device_type == "android"){
+
+            unset($brand_detail['finders']['result']);
+            unset($brand_detail['finders']['aggregation']);
+        }
+        
+        return Response::json($brand_detail);
     }
 
     public function brandlist(){
