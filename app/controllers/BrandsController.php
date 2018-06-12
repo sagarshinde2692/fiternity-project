@@ -49,6 +49,12 @@ class BrandsController extends \BaseController {
                 
                 $finders = vendorsByBrand($request);
 
+                if(!empty($this->device_type) && $this->device_type == "android"){
+
+                    unset($finders['result']);
+                    unset($finders['aggregation']);
+                }
+
                 $data = array(
                         'brand'     => $brand,
                         'finders'    => $finders
