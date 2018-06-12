@@ -3492,60 +3492,8 @@ class CustomerController extends \BaseController {
 						'ratio'=>(float) number_format(100/375,2)
 					];
 				}
-				// if(in_array($city,["mumbai","pune"])){
-				// 	$result['campaigns'][] = [
-				// 		'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/MM_AppBanner_MP.png',
-				// 		'link'=>'ftrnty://fitternity.com/',
-				// 		'title'=>'Fitness Sale',
-				// 		'height'=>100,
-				// 		'width'=>375,
-				// 		'ratio'=>(float) number_format(100/375,2)
-				// 	];
-				// }else{
-				// 	$result['campaigns'][] = [
-				// 		'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/MM_AppBanner_OC.png',
-				// 		'link'=>'ftrnty://fitternity.com/',
-				// 		'title'=>'Fitness Sale',
-				// 		'height'=>100,
-				// 		'width'=>375,
-				// 		'ratio'=>(float) number_format(100/375,2)
-				// 	];
-				// }
-			// 	$result['campaigns'][] = [
-			// 		'image'=>'https://b.fitn.in/global/Homepage-branding-2018/fitnesssale-appbanner.png',
-			// 		'link'=>'https://www.fitternity.com/sale?mobile_app=true',
-			// 		'title'=>'Coupon Discount End of Jan Sale',
-			// 		'height'=>100,
-			// 		'width'=>375,
-			// 		'ratio'=>(float) number_format(100/375,2)
-			// 	];
+
 			}else{
-
-			// 	$result['campaigns'][] = [
-			// 		'image'=>'https://b.fitn.in/global/Homepage-branding-2018/fitnesssale-appbanner.png',
-			// 		'link'=>'https://www.fitternity.com/sale?mobile_app=android',
-			// 		'title'=>'Coupon Discount End of Jan Sale',
-			// 		'height'=>100,
-			// 		'width'=>375,
-			// 		'ratio'=>(float) number_format(100/375,2)
-			// 	];
-
-			// $result['campaigns'][] = [
-			// 		'image'=>'https://b.fitn.in/global/holi/holi-app.png',
-			// 		'link'=>'ftrnty://ftrnty.com/search/all',
-			// 		'title'=>'5% Discount',
-			// 		'height'=>100,
-			// 		'width'=>375,
-			// 		'ratio'=>(float) number_format(100/375,2)
-			// 	];
-				// $result['campaigns'][] = [
-				// 	'image'=>'https://b.fitn.in/global/ios_homescreen_banner/women-banner.jpg',
-				// 	'link'=>'ftrnty://ftrnty.com/search/all',
-				// 	'title'=>'Women campaign',
-				// 	'height'=>100,
-				// 	'width'=>375,
-				// 	'ratio'=>(float) number_format(100/375,2)
-				// ];
 
 				if($this->app_version > '4.4.3'){
 
@@ -3570,6 +3518,7 @@ class CustomerController extends \BaseController {
 				}
 
 			}
+
 			$result['campaigns'][] = [
 				'image'=>'https://b.fitn.in/global/ios_homescreen_banner/complimentary-rewards-appbanner.png',
 				'link'=>'https://www.fitternity.com/rewards?mobile_app=true',
@@ -3579,29 +3528,36 @@ class CustomerController extends \BaseController {
 				'ratio'=>(float) number_format(100/375,2)
 			];
 
-			// if($_REQUEST['device_type'] == 'ios'){
+			if($_REQUEST['device_type'] == 'ios'){
 
-			// 	$result['campaigns'][] = [
-			// 		'image'=>'https://b.fitn.in/global/ios_homescreen_banner/upto60off-appbanner.png',
-			// 		'link'=>'ftrnty://fitternity.com/',
-			// 		'title'=>'Save with Fitness',
-			// 		'height'=>100,
-			// 		'width'=>375,
-			// 		'ratio'=>(float) number_format(100/375,2)
-			// 	];
+				if($this->app_version > '4.4.3'){
 
-			// }else{
+					$result['campaigns'][] = [
+						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/Group_AppBanner.png',
+						'link'=>'ftrnty://ftrnty.com/s/',
+						'title'=>'Group Membership',
+						'height'=>100,
+						'width'=>375,
+						'ratio'=>(float) number_format(100/375,2)
+					];
+				}
 
-			// 	$result['campaigns'][] = [
-			// 		'image'=>'https://b.fitn.in/global/ios_homescreen_banner/upto60off-appbanner.png',
-			// 		'link'=>'ftrnty://ftrnty.com/search/all',
-			// 		'title'=>'Save with Fitness',
-			// 		'height'=>100,
-			// 		'width'=>375,
-			// 		'ratio'=>(float) number_format(100/375,2)
-			// 	];
+			}else{
 
-			// }
+				if($this->app_version > '4.4.3'){
+
+					$result['campaigns'][] = [
+						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/Group_AppBanner.png',
+						'link'=>'ftrnty://ftrnty.com/search/all',
+						'title'=>'Group Membership',
+						'height'=>100,
+						'width'=>375,
+						'ratio'=>(float) number_format(100/375,2)
+					];
+
+				}
+
+			}
 			
 			$result['campaigns'][] = [
 				'image'=>'https://b.fitn.in/global/ios_homescreen_banner/emi-app-banner.png',
@@ -3642,15 +3598,6 @@ class CustomerController extends \BaseController {
 				}
 
 			}
-
-			// $result['campaigns'][] = [
-			// 	'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/amazon-pay.png',
-			// 	'link'=>'',
-			// 	'title'=>'Amazon Pay',
-			// 	'height'=>100,
-			// 	'width'=>375,
-			// 	'ratio'=>(float) number_format(100/375,2)
-			// ];
 
 			$lat = isset($_REQUEST['lat']) && $_REQUEST['lat'] != "" ? $_REQUEST['lat'] : "";
 	        $lon = isset($_REQUEST['lon']) && $_REQUEST['lon'] != "" ? $_REQUEST['lon'] : "";

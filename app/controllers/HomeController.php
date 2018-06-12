@@ -488,8 +488,8 @@ class HomeController extends BaseController {
             ];
 
             $campaigns[] = [
-                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/vgroup-web.png',
-                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/vgroup-mob.png',
+                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Group_WebBanner.png',
+                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Group_MobBanner.png',
                 'link'=>Config::get('app.website').'/groupmemberships',
                 'target'=>true,
                 'title'=>'Share your love for fitness',

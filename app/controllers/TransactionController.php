@@ -2612,6 +2612,7 @@ class TransactionController extends \BaseController {
         $data['ratecard_remarks']  = (isset($data['remarks'])) ? $data['remarks'] : "";
         $data['duration'] = (isset($data['duration'])) ? $data['duration'] : "";
         $data['duration_type'] = (isset($data['duration_type'])) ? $data['duration_type'] : "";
+        $data['duration_day'] = $duration_day = 0;
 
         $data['service_duration'] = $data['validity']." ".ucwords($data['validity_type']);
 
@@ -2632,6 +2633,26 @@ class TransactionController extends \BaseController {
             $preferred_payment_date = date('Y-m-d 00:00:00', strtotime($data['preferred_payment_date']));
             $data['start_date'] = $preferred_payment_date;
             $data['preferred_payment_date'] = $preferred_payment_date;
+        }
+
+        if(!empty($data['validity']) && !empty($data['validity_type'])){
+
+            switch ($data['validity_type']){
+                case 'day': 
+                case 'days': 
+                    $data['duration_day'] = $duration_day = (int)$data['validity'];break;
+                case 'month':
+                case 'months': 
+                    $data['duration_day'] = $duration_day = (int)($data['validity'] * 30) ; break;
+                case 'year':
+                case 'years':
+                    $data['duration_day'] = $duration_day = (int)($data['validity'] * 30 * 12); break;
+                default : $data['duration_day'] = $duration_day =  $data['validity']; break;
+            }
+
+            if(isset($data['start_date']) && $data['start_date']  != '' && $data['start_date']  != '-'){
+                $data['end_date'] = date('Y-m-d 00:00:00', strtotime($data['start_date']."+ ".($duration_day-1)." days"));
+            }
         }
 
         $data['amount_finder'] = $data['amount'];
