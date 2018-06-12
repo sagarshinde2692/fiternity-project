@@ -3994,7 +3994,7 @@ class FindersController extends \BaseController {
 
 				$data['finder']['other_offers'] = null;
 
-				$getCalloutOffer = $this->getCalloutOffer($data['finder']['services']);
+				$getCalloutOffer = $this->getCalloutOffer($data['finder']['services'],'app');
 
 				if(!empty($getCalloutOffer['callout'])){
 
@@ -5383,7 +5383,15 @@ class FindersController extends \BaseController {
 
 	}
 
-	public function getCalloutOffer($services){
+	public function getCalloutOffer($services,$source = 'web'){
+
+		$key = 'serviceratecard';
+        $service_name = 'name';
+
+		if($source == 'app'){
+            $key = 'ratecard';
+            $service_name = 'service_name';
+		}
 
 		$return = [
 			"callout"=>"",
@@ -5394,11 +5402,11 @@ class FindersController extends \BaseController {
 
 		foreach($services as $service){
 
-			foreach($service['serviceratecard'] as $ratecard){
+			foreach($service[$key] as $ratecard){
 
 				if(!empty($ratecard['offers']) && !empty($ratecard['offers'][0]['offer_type']) && $ratecard['offers'][0]['offer_type'] == 'newyears'){
 
-					$return['callout'] = $service['name']." - ".$this->getServiceDuration($ratecard)." @ Rs. ".$ratecard['offers'][0]['price'];
+					$return['callout'] = $service[$service_name]." - ".$this->getServiceDuration($ratecard)." @ Rs. ".$ratecard['offers'][0]['price'];
 
 					if(!empty($ratecard['offers'][0]['callout'])){
 						$return['callout'] = $ratecard['offers'][0]['callout'];
@@ -5416,7 +5424,6 @@ class FindersController extends \BaseController {
 		}
 
 		return $return;
-
 	}
 
 	public function getPageViewsForVendors(){
