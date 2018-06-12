@@ -4001,7 +4001,7 @@ class FindersController extends \BaseController {
 					$data['finder']['other_offers'] = $getCalloutOffer;
 
 					$data['finder']['other_offers']['icon'] = "";
-					$data['finder']['other_offers']['title'] = "Flash Offer";
+					$data['finder']['other_offers']['title'] = "Monsoon Offer";
 					$data['finder']['other_offers']['description'] = $getCalloutOffer['callout'];
 
 					unset($data['finder']['other_offers']['callout']);
@@ -5397,7 +5397,9 @@ class FindersController extends \BaseController {
 			"callout"=>"",
 			"ratecard_id"=>null,
 			"service_id"=>null,
-			"type"=>""
+			"type"=>"",
+			"button_text"=>"Book",
+			"amount"=>0,
 		];
 
 		foreach($services as $service){
@@ -5417,6 +5419,12 @@ class FindersController extends \BaseController {
 					$return['service_id'] = (int)$ratecard['service_id'];
 
 					$return['type'] = $ratecard['type'];
+
+					$return['amount'] = $ratecard['offers'][0]['price'];
+
+					if(in_array($ratecard['type'],["membership","packages"])){
+						$return['button_text'] = "Buy";
+					}
 
 					break;
 				}
