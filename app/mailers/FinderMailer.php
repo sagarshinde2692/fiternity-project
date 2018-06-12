@@ -203,7 +203,9 @@ Class FinderMailer extends Mailer {
 					 	'kevalshah@fitternity.com',
 					 	'mitmehta@fitternity.com',
 						'dharatanna@fitternity.com',
-						'pranjalisalvi@fitternity.com'
+						'pranjalisalvi@fitternity.com',
+						"rajivharichandani@fitternity.com",
+						"allendpenha@fitternity.com",
 					];
 					break;
 				case 2 : 
@@ -211,7 +213,10 @@ Class FinderMailer extends Mailer {
 						'mitmehta@fitternity.com',
 						'vishankkapoor@fitternity.com',
 						'dharatanna@fitternity.com',
-						'pranjalisalvi@fitternity.com' 
+						'pranjalisalvi@fitternity.com',
+						'kevalshah@fitternity.com',
+						"rajivharichandani@fitternity.com",
+						"allendpenha@fitternity.com",
 					];
 					break;
 				case 3 : 
