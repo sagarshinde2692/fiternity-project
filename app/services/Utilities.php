@@ -2217,8 +2217,9 @@ Class Utilities {
                     ];
 
                     $customersms = new CustomerSms();
-
-                    $customersms->referralFitcash($sms_data);
+                    if(!(isset($_GET['source']) && $_GET['source'] == 'admin')){
+                        $customersms->referralFitcash($sms_data);
+                    }
                 }
             }
         }
@@ -3226,39 +3227,41 @@ Class Utilities {
     }
 
     public function sendGroupCommunication($data){
-        
-        $customer_id = $data['customer_id'];
+        if(!(isset($_GET['source']) && $_GET['source'] == 'admin')){
 
-        $group = $data['group'];
-
-        $customersms = new CustomerSms();
-        Log::info("sendGroupCommunication");
-        Log::info($data);
-        
-        foreach($group['members'] as $member){
-
-            if($member['customer_id'] == $customer_id){
-             
-                $order = \Order::find($member['order_id']);
-
-                $new_member_name = $order->customer_name;
-
-                $customersms->addGroupNewMember(['customer_phone'=>$order->customer_phone,'customer_name'=>$order->customer_name,'vendor_name'=>$order->finder_name, 'group_id'=>$group['group_id']]);
-
-            }
-
-        }
-
-        foreach($group['members'] as $member){
+            $customer_id = $data['customer_id'];
+    
+            $group = $data['group'];
+    
+            $customersms = new CustomerSms();
+            Log::info("sendGroupCommunication");
+            Log::info($data);
             
-            if($member['customer_id'] != $customer_id){
-                
-                $order = \Order::find($member['order_id'], ['customer_phone', 'customer_name']);
-                
-                $customersms->addGroupOldMembers(['customer_phone'=>$order->customer_phone,'customer_name'=>$order->customer_name, 'new_member_name'=>$new_member_name]);
-
+            foreach($group['members'] as $member){
+    
+                if($member['customer_id'] == $customer_id){
+                 
+                    $order = \Order::find($member['order_id']);
+    
+                    $new_member_name = $order->customer_name;
+    
+                    $customersms->addGroupNewMember(['customer_phone'=>$order->customer_phone,'customer_name'=>$order->customer_name,'vendor_name'=>$order->finder_name, 'group_id'=>$group['group_id']]);
+    
+                }
+    
             }
-
+    
+            foreach($group['members'] as $member){
+                
+                if($member['customer_id'] != $customer_id){
+                    
+                    $order = \Order::find($member['order_id'], ['customer_phone', 'customer_name']);
+                    
+                    $customersms->addGroupOldMembers(['customer_phone'=>$order->customer_phone,'customer_name'=>$order->customer_name, 'new_member_name'=>$new_member_name]);
+    
+                }
+    
+            }
         }
 
     }
