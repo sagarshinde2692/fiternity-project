@@ -2777,40 +2777,30 @@ Class Utilities {
         Log::info(debug_backtrace()[1]['function']);
         Log::info("Data for isConvinienceFeeApplicable");
         Log::info($data);
-
-        if(isset($data['session_payment']) && $data['session_payment']){
-            return false;
-        }
-        if($this->vendor_token || in_array($data['finder_id'],Config::get('app.vendors_without_convenience_fee')) ){
-            Log::info("vendor token hai");
-            return false;
-        }
-        if(!empty($data['type']) && in_array($data['type'], ["memberships", "membership", "package", "packages", "healthytiffinmembership"])) {
-            Log::info("returning true");
-            return true;
-        }else{
-            return false;
-        }
+        
         if($type == "order"){
-            $flags = $data['ratecard_flags'];
+        	$flags = $data['ratecard_flags'];
         }else{
-            $flags = $data['flags'];
-        }
-        if(isset($flags) && isset($flags["pay_at_vendor"]) && $flags["pay_at_vendor"] === True){
-            return false;
+        	$flags = $data['flags'];
         }
 
         $finder = Finder::find((int) $data["finder_id"]);
-        if(!empty($finder)&&!empty($finder->_id)&&in_array(intval($finder->_id),[14085,14081,14079 ,13765,13761]))
-        	return false;
-        if(isset($finder) && $finder["commercial_type"] != 0){
-            return true;
+        
+        if((isset($data['session_payment']) && $data['session_payment'])||
+           ($this->vendor_token)||
+           (in_array($data['finder_id'],Config::get('app.vendors_without_convenience_fee')))||
+           (isset($flags) && isset($flags["pay_at_vendor"]) && $flags["pay_at_vendor"] === True))
+        {
+            return false;
         }
         
+        /* if((!empty($data['type']) && in_array($data['type'], ["memberships", "membership", "package", "packages", "healthytiffinmembership"]))||(isset($finder) && $finder["commercial_type"] != 0)) {
+            Log::info("returning true");
+            return true;
+        } */
         
-        Log::info("returning false");
-        
-        return false;
+        Log::info("returning true");
+        return true;
     }
 
     public function trialBookedLocateScreen($data = false){
