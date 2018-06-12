@@ -4000,7 +4000,7 @@ class FindersController extends \BaseController {
 
 					$data['finder']['other_offers'] = $getCalloutOffer;
 
-					$data['finder']['other_offers']['icon'] = "";
+					$data['finder']['other_offers']['icon'] = "https://image.ibb.co/herJco/Screen_Shot_2018_06_11_at_7_11_33_PM.png";
 					$data['finder']['other_offers']['title'] = "Monsoon Offer";
 					$data['finder']['other_offers']['description'] = $getCalloutOffer['callout'];
 
