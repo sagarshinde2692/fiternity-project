@@ -48,23 +48,56 @@ class BrandsController extends \BaseController {
                 ];
                 
                 $finders = vendorsByBrand($request);
+
                 $data = array(
                         'brand'     => $brand,
                         'finders'    => $finders
                 );
-                $city_id= City::where("name",'like','%'.$city.'%')->first(['_id']);
-                if(!empty($brand['vendor_stripe'])&&!empty($brand['vendor_stripe']['cities'])&&!empty($city_id)&&!empty($city_id->_id)&&in_array((int)$city_id->_id, $brand['vendor_stripe']['cities'])){
-                	$data["stripe_data"] = [
-                			'text'=> (!empty($brand['vendor_stripe'])&&!empty($brand['vendor_stripe']['text']))?$brand['vendor_stripe']['text']:"",
-                			'background-color'=> (!empty($brand['vendor_stripe'])&&!empty($brand['vendor_stripe']['background_color']))?$brand['vendor_stripe']['background_color']:"",
-                			'text_color'=> (!empty($brand['vendor_stripe'])&&!empty($brand['vendor_stripe']['text_color']))?$brand['vendor_stripe']['text_color']:"",
-                			'background'=> (!empty($brand['vendor_stripe'])&&!empty($brand['vendor_stripe']['background_color']))?$brand['vendor_stripe']['background_color']:""
-                	];
+
+                $city_id = "";
+
+                $city = City::where("name",'like','%'.$city.'%')->first(['_id']);
+
+                if($city){
+                    $city_id = (int)$city['_id'];
                 }
-                if(!(!empty($brand['vendor_stripe'])&&!empty($brand['vendor_stripe']['text'])))
-                	unset($data["stripe_data"]);
+
+                $data["stripe_data"] = [
+                    'text'=>'',
+                    'background-color'=> '#000000',
+                    'text_color'=> '#ffffff',
+                    'background'=> '#000000'
+                ];
+
+                if(!empty($brand['vendor_stripe']) && !empty($brand['vendor_stripe']['cities']) && in_array($city_id,$brand['vendor_stripe']['cities'])){
+
+                    $data['stripe_data']['text'] = $brand['vendor_stripe']['text'];
+                    $data['stripe_data']['text_color'] = $brand['vendor_stripe']['text_color'];
+                    $data['stripe_data']['background-color'] = $brand['vendor_stripe']['background_color'];
+                    $data['stripe_data']['background'] = $brand['vendor_stripe']['background_color'];
+                }
+
+                if(!empty($brand['vendor_stripe']) && empty($brand['vendor_stripe']['cities']) && !empty($city_id)){
+
+                    foreach ($brand['vendor_stripe'] as $value) {
+
+                        if(in_array($city_id,$value['cities'])){
+
+                            $data['stripe_data']['text'] = $value['text'];
+                            $data['stripe_data']['text_color'] = $value['text_color'];
+                            $data['stripe_data']['background-color'] = $value['background_color'];
+                            $data['stripe_data']['background'] = $value['background_color'];
+
+                            break;
+                        }
+                    }
+                }
+
+                if(empty($data['stripe_data']['text'])){
+                    unset($data["stripe_data"]);
+                }
+
                 unset($brand['vendor_stripe']);
-                
                 
                 Cache::tags('brand_detail')->put("$slug-$city" ,$data,Config::get('cache.cache_time'));
                 
