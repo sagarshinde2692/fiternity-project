@@ -3573,7 +3573,7 @@ class CustomerController extends \BaseController {
 				if($this->app_version > '4.4.3'){
 
 					$result['campaigns'][] = [
-						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/AmazonPay_AppBanner.jpg',
+						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/AmazonPay_AppBanner.png',
 						'link'=>'ftrnty://ftrnty.com/pps?',
 						'title'=>'Amazon Pay Offer',
 						'height'=>100,
@@ -3587,7 +3587,7 @@ class CustomerController extends \BaseController {
 				if($this->app_version > '4.4.3'){
 
 					$result['campaigns'][] = [
-						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/AmazonPay_AppBanner.jpg',
+						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/AmazonPay_AppBanner.png',
 						'link'=>'ftrnty://ftrnty.com/pps',
 						'title'=>'Amazon Pay Offer',
 						'height'=>100,
