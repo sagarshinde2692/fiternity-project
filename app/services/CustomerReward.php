@@ -1721,11 +1721,7 @@ Class CustomerReward {
                 }
 
                 if($price <= $coupon['price_limit']){
-                    $coupon["discount_amount"] = $coupon['price_limit'];
-                    $coupon["discount_percent"] = 100;
-                }else{
-                    $coupon["discount_amount"] = 200;
-                    $coupon["discount_percent"] = 0;
+                    $coupon["discount_amount"] = 0;
                 }
             }
 
