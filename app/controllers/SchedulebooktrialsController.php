@@ -2210,9 +2210,12 @@ class SchedulebooktrialsController extends \BaseController {
                 'pre_trial_status'              =>      'yet_to_connect'
             );
 
-
             if(!empty($order['assisted_by'])){
                 $booktrialdata['assisted_by'] = $order['assisted_by'];
+            }
+
+            if(!empty($order['ratecard_remarks'])){
+                $booktrialdata['ratecard_remarks'] = $order['ratecard_remarks'];
             }
 
             $booktrialdata['surprise_fit_cash'] = $this->utilities->getFitcash(['finder_id'=>$finderid]);
