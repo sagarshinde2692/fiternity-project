@@ -2213,7 +2213,7 @@ class SchedulebooktrialsController extends \BaseController {
             $session_count = Booktrial::where('customer_id',$customer_id)->count();
 
             if($session_count == 0){
-                $booktrialdata['first_session'] = true;
+                $booktrialdata['first_booking'] = true;
             }
 
             if(!empty($order['assisted_by'])){
