@@ -81,7 +81,7 @@ class BrandsController extends \BaseController {
 
                     foreach ($brand['vendor_stripe'] as $value) {
 
-                        if(in_array($city_id,$value['cities'])){
+                        if(!empty($value['cities']) && in_array($city_id,$value['cities'])){
 
                             $data['stripe_data']['text'] = $value['text'];
                             $data['stripe_data']['text_color'] = $value['text_color'];
