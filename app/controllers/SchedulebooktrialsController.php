@@ -2787,8 +2787,8 @@ class SchedulebooktrialsController extends \BaseController {
                 $cities 	=	City::active()->orderBy('name')->lists('name', '_id');
                 $booktrialdata['city_name'] = $cities[$booktrialdata['city_id']];
                 
-                $booktrialdata['confirm_link'] = Config::get('app.url').'/updatetrialstatus/'.$booktrialdata['_id'].'/confirm';
-                $booktrialdata['cancel_link'] = Config::get('app.url').'/updatetrialstatus/'.$booktrialdata['_id'].'/cancel';
+                $booktrialdata['confirm_link'] = Config::get('app.url').'/updatetrialstatus/'.$booktrialdata['_id'].'/vendor/confirm';
+                $booktrialdata['cancel_link'] = Config::get('app.url').'/updatetrialstatus/'.$booktrialdata['_id'].'/vendor/cancel';
                 $this->findermailer->trialAlert($booktrialdata);                
                 $this->findersms->trialAlert($booktrialdata);                
             }
@@ -7437,7 +7437,7 @@ class SchedulebooktrialsController extends \BaseController {
         return false;
     }
 
-    public function updatetrialstatus($_id, $action, $confirm=false){
+    public function updatetrialstatus($_id, $source, $action, $confirm=false){
 
         if($confirm){
             if($action == 'confirm'){
@@ -7448,13 +7448,13 @@ class SchedulebooktrialsController extends \BaseController {
                 return "Trial Confirmed Successfully";
 
             }else if($action == 'cancel'){
-                return $this->cancel($_id, 'vendor');
+                return $this->cancel($_id, $source);
             }
         }else{
             $booktrial = Booktrial::find(intval($_id));
             $this->unsetEmptyDates($booktrial);
             $booktrial_data = $booktrial->toArray();
-            $action_link = Config::get('app.url').'/updatetrialstatus/'.$_id.'/'.$action.'/1';
+            $action_link = Config::get('app.url').'/updatetrialstatus/'.$_id.'/'.$source.'/'.$action.'/1';
             $cities 	=	City::active()->orderBy('name')->lists('name', '_id');
             
             return View::make('trialconfirm', compact('booktrial_data', 'action_link', 'action', 'cities'));
