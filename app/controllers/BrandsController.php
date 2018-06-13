@@ -97,7 +97,7 @@ class BrandsController extends \BaseController {
                     unset($data["stripe_data"]);
                 }
 
-                unset($brand['vendor_stripe']);
+                unset($data['brand']['vendor_stripe']);
 
                 Cache::tags('brand_detail')->put("$slug-$city" ,$data,Config::get('cache.cache_time'));
                 
