@@ -1690,6 +1690,38 @@ Class CustomerReward {
                 }
             }
 
+            if(isset($coupon['type']) && $coupon['type'] == 'syncron'){
+                
+                $jwt_token = Request::header('Authorization');
+
+                if(empty($jwt_token)){
+
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"User Login Required","user_login_error"=>true);
+
+                    return $resp;
+                }
+
+                $decoded = $this->customerTokenDecode($jwt_token);
+                
+                $customer_email = $decoded->customer->email;
+                
+                if(isset($coupon['customer_emails']) && is_array($coupon['customer_emails'])){
+                    if(!in_array($coupon['customer_emails'], strtolower($customer_email))){
+                        $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"User Login Required","user_login_error"=>true);
+
+                        return $resp;
+                    }
+                }
+
+                if($price <= $coupon['price_limit']){
+                    $coupon["discount_amount"] = $coupon['price_limit'];
+                    $coupon["discount_percent"] = 100;
+                }else{
+                    $coupon["discount_amount"] = 200;
+                    $coupon["discount_percent"] = 0;
+                }
+            }
+
             $discount_amount = $coupon["discount_amount"];
             $discount_amount = $discount_amount == 0 ? $coupon["discount_percent"]/100 * $price : $discount_amount;
             $discount_amount = intval($discount_amount);
