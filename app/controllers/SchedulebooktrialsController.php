@@ -2210,9 +2210,18 @@ class SchedulebooktrialsController extends \BaseController {
                 'pre_trial_status'              =>      'yet_to_connect'
             );
 
+            $session_count = Booktrial::where('customer_id',$customer_id)->count();
+
+            if($session_count == 0){
+                $booktrialdata['first_booking'] = true;
+            }
 
             if(!empty($order['assisted_by'])){
                 $booktrialdata['assisted_by'] = $order['assisted_by'];
+            }
+
+            if(!empty($order['ratecard_remarks'])){
+                $booktrialdata['ratecard_remarks'] = $order['ratecard_remarks'];
             }
 
             $booktrialdata['surprise_fit_cash'] = $this->utilities->getFitcash(['finder_id'=>$finderid]);
