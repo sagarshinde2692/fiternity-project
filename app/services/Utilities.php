@@ -2779,7 +2779,10 @@ Class Utilities {
         Log::info($data);
         
         if($type == "order"){
-        	$flags = $data['ratecard_flags'];
+            $flags = isset($data['ratecard_flags']) ? $data['ratecard_flags'] : array();
+            if($data["customer_source"] == "kiosk"){
+                return false;
+            }
         }else{
         	$flags = $data['flags'];
         }
