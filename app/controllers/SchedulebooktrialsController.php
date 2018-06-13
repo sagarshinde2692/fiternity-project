@@ -2525,9 +2525,9 @@ class SchedulebooktrialsController extends \BaseController {
                 $send_communication['customer_sms_offhours_confirmation'] = $this->customersms->offhoursConfirmation($booktrialdata, $delayReminderPrevDaySunday);
             
             // }else if( $this->isOffHour($schedule_date_time_hour) &&  $this->isOffHour($current_hour) && $currentScheduleDateDiffMin <= 15*60){
-            }else if( $this->isOffHour($schedule_date_time_hour) &&  $this->isOffHour($current_hour)){
+            }else if( $this->isOffHour($schedule_date_time_hour) &&  $this->isOffHour($current_hour) && (strtotime($booktrial->schedule_date_time) - time() <= 15*60*60)){
                 
-                if($current_hour < Config::get('app.trial_comm.offhours_fixed_time_1') && strtotime($booktrial->schedule_date_time) > strtotime(date('Y-m-d '.Config::get('app.trial_comm.offhours_fixed_time_1').':00:00', time()))){
+                if(time() < strtotime(date('Y-m-d '.Config::get('app.trial_comm.offhours_fixed_time_1').':00:00', time())) && strtotime($booktrial->schedule_date_time) > strtotime(date('Y-m-d '.Config::get('app.trial_comm.offhours_fixed_time_1').':00:00', time()))){
                     
                     if($schedule_date_time_hour >= 8 && $schedule_date_time_hour < 11){
                         Log::info("Scheduling offhours 2 hours before");
