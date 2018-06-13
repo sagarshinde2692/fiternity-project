@@ -4003,9 +4003,41 @@ class FindersController extends \BaseController {
 					$data['finder']['other_offers']['icon'] = "https://image.ibb.co/herJco/Screen_Shot_2018_06_11_at_7_11_33_PM.png";
 					$data['finder']['other_offers']['title'] = "Monsoon Offer";
 					$data['finder']['other_offers']['description'] = $getCalloutOffer['callout'];
+					$data['finder']['other_offers']['header'] = "Flash Offer";
 
 					unset($data['finder']['other_offers']['callout']);
 				}
+
+				$nearby_other_category_request = [
+                    "offset" => 0,
+                    "limit" => 4,
+                    "radius" => "3km",
+                    "category"=>"",
+                    "lat"=>$finderarr["lat"],
+                    "lon"=>$finderarr["lon"],
+                    "city"=>strtolower($finderarr["city"]["name"]),
+                    "keys"=>[
+                      "average_rating",
+                      "business_type",
+                      "commercial_type",
+                      "coverimage",
+                      "location",
+					  "subcategories",
+					  "categorytags",
+                      "slug",
+                      "name",
+                      "id",
+                      "city",
+                      "category"
+                    ],
+                    "not"=>[
+                    	"vendor"=>[(int)$finderarr["_id"]],
+                    ]
+                ];
+
+                $nearby_other_category = geoLocationFinder($nearby_other_category_request);
+
+                $data['nearby_other_category'] = $nearby_other_category;
 
 				$data = Cache::tags($cache_name)->put($cache_key, $data, Config::get('cache.cache_time'));
 
