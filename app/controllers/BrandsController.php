@@ -111,7 +111,7 @@ class BrandsController extends \BaseController {
 
         if(!empty($this->device_type) && $this->device_type == "android"){
 
-            unset($brand_detail['finders']['results']);
+            unset($brand_detail['finders']['request']);
             unset($brand_detail['finders']['aggregations']);
         }
 
