@@ -2780,7 +2780,7 @@ Class Utilities {
         
         if($type == "order"){
             $flags = isset($data['ratecard_flags']) ? $data['ratecard_flags'] : array();
-            if(isset($data['ratecard_flags']) && $data["customer_source"] == "kiosk"){
+            if(isset($data['customer_source']) && $data["customer_source"] == "kiosk"){
                 return false;
             }
         }else{
