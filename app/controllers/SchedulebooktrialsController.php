@@ -2210,6 +2210,12 @@ class SchedulebooktrialsController extends \BaseController {
                 'pre_trial_status'              =>      'yet_to_connect'
             );
 
+            $session_count = Booktrial::where('customer_id',$customer_id)->count();
+
+            if($session_count == 0){
+                $booktrialdata['first_session'] = true;
+            }
+
             if(!empty($order['assisted_by'])){
                 $booktrialdata['assisted_by'] = $order['assisted_by'];
             }
