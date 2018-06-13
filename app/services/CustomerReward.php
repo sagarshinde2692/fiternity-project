@@ -1840,6 +1840,13 @@ Class CustomerReward {
             }
 
             if(isset($coupon['type']) && $coupon['type'] == 'syncron'){
+
+                if($coupon['total_used'] >= $coupon['total_available']){
+                    
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"This coupon has exhausted");
+
+                    return $resp;
+                }
                 
                 $jwt_token = Request::header('Authorization');
 
@@ -1856,7 +1863,7 @@ Class CustomerReward {
                 
                 if(isset($coupon['customer_emails']) && is_array($coupon['customer_emails'])){
                     if(!in_array(strtolower($customer_email), $coupon['customer_emails'])){
-                        $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"User Login Required","user_login_error"=>true);
+                        $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Invalid Coupon");
 
                         return $resp;
                     }
