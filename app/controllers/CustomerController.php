@@ -3626,6 +3626,27 @@ class CustomerController extends \BaseController {
 
 	        $result['near_by_vendor'] = geoLocationFinder($near_by_vendor_request);
 		}
+
+		$result['category_header'] = "Discover | Try | Buy";
+		$result['category_subheader'] = "Fitness services near you";
+		$result['trending_header'] = "Trending near you";
+		$result['trending_subheader'] = "Checkout fitness services near you";
+
+		if(!empty($_REQUEST['auto_detect']) && $_REQUEST['auto_detect'] === true){
+
+			$result['category_header'] = "Discover | Try | Buy";
+			$result['category_subheader'] = "Fitness services near you";
+			$result['trending_header'] = "Trending near you";
+			$result['trending_subheader'] = "Checkout fitness services near you";
+		}
+
+		if(!empty($_REQUEST['selected_region'])){
+
+			$result['category_header'] = "Discover | Try | Buy";
+			$result['category_subheader'] = "Fitness services near ".ucwords($_REQUEST['selected_region']);
+			$result['trending_header'] = "Trending near ".ucwords($_REQUEST['selected_region']);
+			$result['trending_subheader'] = "Checkout fitness services near ".ucwords($_REQUEST['selected_region']);
+		}
 		
 		return Response::json($result);
 		
