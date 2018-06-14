@@ -4415,6 +4415,8 @@ class TransactionController extends \BaseController {
     public function checkCouponCode(){
         
         $data = Input::json()->all();
+        Log::info("checkCouponCode");
+        Log::info($data);
 
         if($this->vendor_token){
             $resp = array("status"=> 400, "message" => "Coupon code is not valid", "error_message" => "Coupon code is not valid");
