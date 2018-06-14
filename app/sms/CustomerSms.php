@@ -1018,6 +1018,7 @@ Class CustomerSms extends VersionNextSms{
 	
 	public function sendGroupInvite($data){
 		
+		return "no sms sent";
 		
 		$label = 'GroupInvite-Customer';
 		
@@ -1029,6 +1030,7 @@ Class CustomerSms extends VersionNextSms{
 
 	public function addGroupNewMember($data){
 
+		return "no sms sent";
 		
 		$label = 'AddGroupNewMember-Customer';
 		
@@ -1040,6 +1042,7 @@ Class CustomerSms extends VersionNextSms{
 
 	public function addGroupOldMembers($data){
 		
+		return "no sms sent";
 		
 		$label = 'AddGroupOldMembers-Customer';
 		
