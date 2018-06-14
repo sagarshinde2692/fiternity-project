@@ -4018,17 +4018,15 @@ class FindersController extends \BaseController {
                     "city"=>strtolower($finderarr["city"]["name"]),
                     "keys"=>[
                       "average_rating",
-                      "business_type",
-                      "commercial_type",
-                      "coverimage",
-                      "location",
-					  "subcategories",
-					  "categorytags",
-                      "slug",
-                      "name",
-                      "id",
-                      "city",
-                      "category"
+		              "contact",
+		              "coverimage",
+		              "location",
+		              "multiaddress",
+		              "slug",
+		              "name",
+		              "id",
+		              "categorytags",
+		              "category"
                     ],
                     "not"=>[
                     	"vendor"=>[(int)$finderarr["_id"]],
@@ -4037,7 +4035,7 @@ class FindersController extends \BaseController {
 
                 $nearby_other_category = geoLocationFinder($nearby_other_category_request);
 
-                $data['nearby_other_category'] = $nearby_other_category;
+                $data['near_by_vendor'] = $nearby_other_category;
 
 				$data = Cache::tags($cache_name)->put($cache_key, $data, Config::get('cache.cache_time'));
 
