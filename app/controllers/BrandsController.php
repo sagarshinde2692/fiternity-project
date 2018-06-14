@@ -48,9 +48,19 @@ class BrandsController extends \BaseController {
                 ];
                 
                 $finders = vendorsByBrand($request);
+
+                $finder_locations = [];
+                if(isset($finders['results'])){
+                    foreach($finders['results'] as $finder){
+                        if(isset($finder['location']) && $finder['location'] != ""){
+                            array_push($finder_locations, ucwords($finder['location']));
+                        }
+                    }
+                }
                 $data = array(
                         'brand'     => $brand,
-                        'finders'    => $finders
+                        'finders'    => $finders,
+                        'finder_locations'  => $finder_locations
                 );
                 $city_id= City::where("name",'like','%'.$city.'%')->first(['_id']);
                 if(!empty($brand['vendor_stripe'])&&!empty($brand['vendor_stripe']['cities'])&&!empty($city_id)&&!empty($city_id->_id)&&in_array((int)$city_id->_id, $brand['vendor_stripe']['cities'])){
