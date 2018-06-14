@@ -1631,16 +1631,13 @@ Class CustomerReward {
                 "coupon_applied" => $applyCustomerCoupn
             ];
 
-            $decoded = $this->customerTokenDecode($jwt_token);
-            $customer_id = $decoded->customer->_id;
-
             $customerCoupn = \CustomerCoupn::active()->where('code', strtolower($couponCode))->where('validity','>=',time())->first();
 
             if($customerCoupn){
 
                 $jwt_token = Request::header('Authorization');
 
-                if(empty($jwt_token)){
+                if(!empty($jwt_token)){
 
                     $decoded = $this->customerTokenDecode($jwt_token);
                     $customer_id = $decoded->customer->_id;
