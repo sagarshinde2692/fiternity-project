@@ -3628,9 +3628,9 @@ class CustomerController extends \BaseController {
 		}
 
 		$result['categoryheader'] = "Discover | Try | Buy";
-		$result['categorysubheader'] = "Fitness services near ".ucwords($city);
-		$result['trendingheader'] = "Trending near ".ucwords($city);
-		$result['trendingsubheader'] = "Checkout fitness services near ".ucwords($city);
+		$result['categorysubheader'] = "Fitness services in ".ucwords($city);
+		$result['trendingheader'] = "Trending in ".ucwords($city);
+		$result['trendingsubheader'] = "Checkout fitness services in ".ucwords($city);
 
 		if(!empty($_REQUEST['auto_detect']) && $_REQUEST['auto_detect'] === true){
 
@@ -3643,9 +3643,9 @@ class CustomerController extends \BaseController {
 		if(!empty($_REQUEST['selected_region'])){
 
 			$result['categoryheader'] = "Discover | Try | Buy";
-			$result['categorysubheader'] = "Fitness services near ".ucwords($_REQUEST['selected_region']);
-			$result['trendingheader'] = "Trending near ".ucwords($_REQUEST['selected_region']);
-			$result['trendingsubheader'] = "Checkout fitness services near ".ucwords($_REQUEST['selected_region']);
+			$result['categorysubheader'] = "Fitness services in ".ucwords($_REQUEST['selected_region']);
+			$result['trendingheader'] = "Trending in ".ucwords($_REQUEST['selected_region']);
+			$result['trendingsubheader'] = "Checkout fitness services in ".ucwords($_REQUEST['selected_region']);
 		}
 		
 		return Response::json($result);
