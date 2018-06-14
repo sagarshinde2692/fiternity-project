@@ -4036,7 +4036,10 @@ class FindersController extends \BaseController {
                 ];
 
                 $nearby_other_category = geoLocationFinder($nearby_other_category_request);
-                $data['near_by_vendor'] = $nearby_other_category;
+
+                $data['recommended_vendor']['title'] = "Trending near you";
+                $data['recommended_vendor']['description'] = "Checkout fitness services near you";
+                $data['recommended_vendor']['near_by_vendor'] = $nearby_other_category;
 
 				$data = Cache::tags($cache_name)->put($cache_key, $data, Config::get('cache.cache_time'));
 
