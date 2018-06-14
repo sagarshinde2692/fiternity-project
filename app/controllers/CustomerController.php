@@ -3115,7 +3115,7 @@ class CustomerController extends \BaseController {
 	public function home($city = 'mumbai',$cache = true){
 
 
-		Log::inf('--------customer_home_app--------',$_GET);
+		Log::info('--------customer_home_app--------',$_GET);
 
 		$jwt_token = Request::header('Authorization');
 		Log::info($jwt_token);
