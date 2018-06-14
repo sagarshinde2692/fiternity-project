@@ -3460,15 +3460,44 @@ class CustomerController extends \BaseController {
 		if(isset($_REQUEST['device_type']) && in_array($_REQUEST['device_type'],['ios','android']) && isset($_REQUEST['app_version']) && ((float)$_GET['app_version'] >= 4.4)){
 
 			$result['campaigns'] =  [];
-
-			// $result['campaigns'][] = [
-			// 	'image'=>'https://b.fitn.in/global/ios_homescreen_banner/pledge_1.png',
-			// 	'link'=>'ftrnty://ftrnty.com/abc',
-			// 	'title'=>'Pledge for Fitness',
-			// 	'height'=>100,
-			// 	'width'=>375,
-			// 	'ratio'=>(float) number_format(100/375,2)
-			// ];
+			if($city != "ahmedabad"){
+				$result['campaigns'][] = [
+					'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Mumbai_APP.png',
+					'link'=>'ftrnty://ftrnty.com/s/gyms/1',
+					'title'=>'Pledge for Fitness',
+					'height'=>100,
+					'width'=>375,
+					'ratio'=>(float) number_format(100/375,2)
+				];
+				switch($city){
+					case "pune":
+						$result['campaigns'][0]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Mumbai_APP.png";
+						$result['campaigns'][] = [
+							'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/Multifit_App.png',
+							'link'=>'ftrnty://ftrnty.com/s/gyms/1',
+							'title'=>'Pledge for Fitness',
+							'height'=>100,
+							'width'=>375,
+							'ratio'=>(float) number_format(100/375,2)
+						];
+					break;
+					case "bangalore":
+						$result['campaigns'][0]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Bangalore_APP.png";
+						break;
+					case "delhi":
+						$result['campaigns'][0]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Delhi_APP.png";
+						break;	
+					case "noida":
+						$result['campaigns'][0]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Noida_APP.png";
+						break;
+					case "hyderabad":
+						$result['campaigns'][0]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Hyderabad_APP.png";
+						break;					
+					case "gurgaon":
+						$result['campaigns'][0]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Gurugram_APP.png";
+						break;										
+				}
+			}
 			
 			if($_REQUEST['device_type'] == 'ios'){
 
