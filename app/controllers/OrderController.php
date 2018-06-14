@@ -70,6 +70,8 @@ class OrderController extends \BaseController {
 
     public function couponCode(){
         $data = Input::json()->all();
+        Log::info("couponCode");
+        Log::info($data);
         if(!isset($data['coupon'])){
             $resp = array("status"=> 400, "message" => "Coupon code missing", "error_message" => "Please enter a valid coupon");
             return Response::json($resp,400);
