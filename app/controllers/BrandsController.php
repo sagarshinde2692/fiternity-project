@@ -49,9 +49,18 @@ class BrandsController extends \BaseController {
                 
                 $finders = vendorsByBrand($request);
 
+                $finder_locations = [];
+                if(isset($finders['results'])){
+                    foreach($finders['results'] as $finder){
+                        if(isset($finder['location']) && $finder['location'] != ""){
+                            array_push($finder_locations, ucwords($finder['location']));
+                        }
+                    }
+                }
                 $data = array(
-                        'brand'     => $brand->toArray(),
-                        'finders'    => $finders
+                        'brand'     => $brand,
+                        'finders'    => $finders,
+                        'finder_locations'  => $finder_locations
                 );
 
                 $city_id = "";

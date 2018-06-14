@@ -995,7 +995,7 @@ class RewardofferController extends BaseController {
 
                         if($fitness_kit_count == 0){
 
-                            $rewards_value['title'] = "Fitness Merchandis";
+                            $rewards_value['title'] = "Fitness Merchandise";
                             $rewards_value['contents'] = ['Waterproof Gym Bag'];
                             $rewards_value['image'] = 'https://b.fitn.in/gamification/reward_new/new/GymBag_1.png';
                             $rewards_value['gallery'] = [];
