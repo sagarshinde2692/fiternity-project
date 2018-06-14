@@ -4513,4 +4513,11 @@ class HomeController extends BaseController {
             
         }
 
+        public function etst(){
+        	
+        	return Product::with("productcategory1")->get();
+        	
+        	
+        	
+        }
 }

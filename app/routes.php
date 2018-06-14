@@ -1207,3 +1207,5 @@ Route::get('getreferralscreendata','CustomerController@getReferralScreenData');
 Route::get('addWallet','DebugController@addWallet');
 
 Route::get('getbrandvendors/{brand_id}/{city_id}', array('as' => 'finders.getbrandvendors','uses' => 'FindersController@getBrandVendors'));
+
+Route::get('etst','HomeController@etst');
