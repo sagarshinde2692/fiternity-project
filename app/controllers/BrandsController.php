@@ -49,7 +49,7 @@ class BrandsController extends \BaseController {
                 
                 $finders = vendorsByBrand($request);
 
-                $finder_locations = [];
+                $finder_locations = ['All'];
                 if(isset($finders['results'])){
                     foreach($finders['results'] as $finder){
                         if(isset($finder['location']) && $finder['location'] != "" && !in_array(ucwords($finder['location']), $finder_locations)){
