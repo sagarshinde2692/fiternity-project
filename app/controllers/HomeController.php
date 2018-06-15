@@ -1819,9 +1819,37 @@ class HomeController extends BaseController {
                         $reward_details['image'] = $reward->image;
                     }
 
-                    if($reward->reward_type == 'sessions'){
-                        $reward_details['description'] = "Get access to multiple fitness sessions with instant booking at your convinience. Try Crossfit, Pilates, Yoga, MMA, Zumba & much more.Available across: - 5 Cities - Mumbai, Bangalore, Delhi, Pune & Gurgaon - 2500 fitness centers";
+                    if(in_array($reward['reward_type'],["sessions","swimming_sessions"])){
+
+                        $session_total = "";
+                        $session_amount = "";
+
                         $reward_details['image'] = 'https://b.fitn.in/gamification/reward/sessions.jpg';
+
+                        $workout_session_array = Config::get('fitness_kit.workout_session');
+
+                        if($reward['reward_type'] == "swimming_sessions"){
+
+                            $workout_session_array = Config::get('fitness_kit.swimming_session');
+
+                            $reward_details['image'] = 'https://b.fitn.in/gamification/reward/swimming_sessions.jpg';
+                        }
+
+                        rsort($workout_session_array);
+
+                        foreach ($workout_session_array as $data_key => $data_value) {
+
+                            if($item['amount_finder'] >= $data_value['min'] ){
+
+                                $session_total = $data_value['total'];
+                                $session_amount = $data_value['amount'];
+
+                                break;
+                            }
+                        }
+
+                        $reward_details['description'] = "Get access to multiple fitness sessions with instant booking at your convinience. Look out for the voucher in your profile (also sent on Email/sms). Get ".$session_total." sessions for free worth Rs. ".$session_amount;
+                        
                     }
 
                     if($reward->reward_type == 'diet_plan'){
