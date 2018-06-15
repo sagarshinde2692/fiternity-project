@@ -883,8 +883,9 @@ class FindersController extends \BaseController {
 						{
 							if(!empty($callOutObj['callout']))
 							$finder['callout']=(!empty($callOutObj['callout'])?$callOutObj['callout']:"");
-							if(!empty($callOutObj['callout_ratecard_id']))
+							if(!empty($callOutObj['ratecard_id']))
 							$finder['callout_ratecard_id']=(!empty($callOutObj['ratecard_id'])?$callOutObj['ratecard_id']:"");							
+
 						}
 // 				}
 				// 	$callout_offer = Offer::where('vendor_id', $finder['_id'])->where('hidden', false)->orderBy('order', 'asc')
