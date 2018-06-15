@@ -3120,7 +3120,7 @@ class FindersController extends \BaseController {
 								foreach ($ratecardoffersRecards as $ratecardoffersRecard){
 									$ratecardoffer                  =   $ratecardoffersRecard;
 									$ratecardoffer['offer_text']    =   "";
-									$ratecardoffer['offer_icon']    =   "https://b.fitn.in/global/monsoon-ratecard-back.png";
+									$ratecardoffer['offer_icon']    =   "https://b.fitn.in/global/trial-ratecard-monsoon.png";
 
 									if(isset($rateval['flags'])){
 
