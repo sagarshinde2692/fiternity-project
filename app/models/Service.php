@@ -265,6 +265,12 @@ class Service extends \Basemodel{
 							}
 						}
 					}
+
+					if(count($ratecardoffers) && isset($ratecardoffers[0]['offer_icon'])){
+						if(in_array($value['type'], ['membership', 'packages']) && ((isset($this->finder['membership']) && $this->finder['membership'] == 'disable') || (isset($this['membership']) && $this['membership'] == 'disable') || (isset($this->finder['flags']) && isset($this->finder['flags']['state']) && in_array($this->finder['flags']['state'], ['temporarily_shut', 'closed'])) || $this->finder['commercial_type'] == 0)){
+							$ratecardoffers[0]['offer_icon'] = "";
+						}
+					}
 					
                 }
 //                var_dump($ratecardoffers);exit;
