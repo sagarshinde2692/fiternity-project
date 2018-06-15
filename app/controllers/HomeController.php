@@ -454,18 +454,16 @@ class HomeController extends BaseController {
             //     ->take(4)->toArray();
 
             // $collections 			= 	Findercollection::active()->where('city_id', '=', intval($citydata['_id']))->orderBy('ordering')->get(array('name', 'slug', 'coverimage', 'ordering' ));
-            if($city != "pune"){
-                $campaigns[] = [
-                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/monsoon.png',
-                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/monsoon-mob.png',
-                    'link'=>Config::get('app.website').'/'.$city.'/fitness?trials=1',
-                    'title'=>'Pay Per Session',
-                    'height'=>100,
-                    'width'=>375,
-                    'ratio'=>(float) number_format(100/375,2)
-                ];
-            }
             $campaigns=  [];
+            $campaigns[] = [
+                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/monsoon.png',
+                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/monsoon-mob.png',
+                'link'=>Config::get('app.website').'/'.$city.'/fitness?trials=1',
+                'title'=>'Pay Per Session',
+                'height'=>100,
+                'width'=>375,
+                'ratio'=>(float) number_format(100/375,2)
+            ];
             switch($city){
                 case "bangalore":
                 $campaigns[] = [
