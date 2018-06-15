@@ -5371,7 +5371,8 @@ class TransactionController extends \BaseController {
         //     }
             
         }
-
+        Log::info("returning response");
+        Log::info($result);
         return $result;
     }
 
