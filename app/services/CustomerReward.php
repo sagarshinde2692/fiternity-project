@@ -301,7 +301,7 @@ Class CustomerReward {
 
         foreach ($data['session'] as $session_value){
 
-            $code = strtolower(substr($data['customer_name'], 0, 2)).$data['_id'].$session_value['slabs'];
+            $code = $data['_id'].$session_value['slabs'];
 
             $coupon_data = [
                 'validity'=>time()+(86400*30),
@@ -767,6 +767,8 @@ Class CustomerReward {
                     case 'healthy_snacks': $message = "Thank you! Your Healthy Snacks Hamper would be delivered in next 7 to 10 working days.";break;
                     case 'personal_trainer_at_studio': $message = "Thank you! We have notified ".$myreward->title."about your Personal training sessions.";break;
                     case 'personal_trainer_at_home': $message = "Your Personal Training at Home request has being processed. We will reach out to you shortly with trainer details to schedule your first session.";break;
+                    case 'swimming_sessions' :
+                    case 'sessions' : $message = "You have claimed your Free sessions pack. Look out for vouchers (also sent on email/sms) to book your sessions, available on Pay Per Session on the app.";break;
                     default: $message = "Reward Claimed Successfull";break;
                 }
 
