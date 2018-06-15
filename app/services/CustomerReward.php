@@ -1950,7 +1950,7 @@ Class CustomerReward {
 
                 if($applyCustomerCoupn){
 
-                    $discount_amount = $customerCoupn["code"];
+                    $discount_amount = $customerCoupn["amount"];
 
                     $discount_price = $price - $discount_amount;
 
