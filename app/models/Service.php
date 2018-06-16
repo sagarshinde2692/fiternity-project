@@ -273,38 +273,13 @@ class Service extends \Basemodel{
 					}
 					
                 }
-//                var_dump($ratecardoffers);exit;
-				// if(isset($this['offer_available']) && $this->offer_available && !$offer_exists && !in_array($this['finder_id'], Config::get('app.hot_offer_excluded_vendors'))){
-				// 	if(isset($value['type']) && ($value['type']=='membership' || $value['type']=='packages')){
-				// 		if(isset($value['validity']) && isset($value['validity_type'])){
-							
-				// 			if($value['validity_type']=='year'){
-				// 				$validity = $value['validity'] * 365;
-				// 			}else if($value['validity_type']=='months'){
-				// 				$validity = $value['validity'] * 30;
-				// 			}else if($value['validity_type']=='days'){
-				// 				$validity = $value['validity'];
-				// 			}
-				// 			if($validity){
-				// 				if($validity > $max_validity){
-				// 					$second_max_validity = $max_validity;
-				// 					$second_max_validity_ids = $max_validity_ids;
-				// 					$max_validity_ids = [$value['_id']];
-				// 					$max_validity = $validity;
-				// 				}else if($validity > $second_max_validity && $validity < $max_validity){
-				// 					$second_max_validity = $validity;
-				// 					$second_max_validity_ids = [$value['_id']];
-				// 				}else if($validity == $max_validity){
-				// 					array_push($max_validity_ids, $value['_id']);
-				// 				}else if($validity == $second_max_validity){
-				// 					array_push($second_max_validity_ids, $value['_id']);
-				// 				}
-				// 			}
-							
-							
-				// 		}
-				// 	}
-				// }
+
+				$ratecard_price = $value['price'];
+
+				if(isset($value['special_price']) && $value['special_price'] != 0){
+		            $ratecard_price = $value['special_price'];
+		        }
+
 
                 $value['offers']  = $ratecardoffers;
 
@@ -317,6 +292,17 @@ class Service extends \Basemodel{
                     if(isset($ratecardoffers[0]['remarks']) && $ratecardoffers[0]['remarks'] != ""){
                     	$value['remarks'] = $ratecardoffers[0]['remarks'];
                     }
+
+                    $offer_price = $ratecardoffers[0]['price'];
+
+                    if($offer_price !== 0 && $offer_price < $ratecard_price){
+
+                    	$offf_percentage = ceil(100 - (($offer_price/$ratecard_price)*100));
+
+                    	$value['campaign_offer'] = "Get ".$offf_percentage."% off - Limited Slots";
+						$value['campaign_color'] = "#43a047";
+                    }
+
 				}
 				
 				(isset($value['special_price']) && $value['price'] == $value['special_price']) ? $value['special_price'] = 0 : null;
@@ -339,11 +325,11 @@ class Service extends \Basemodel{
 					}
 				}
 
-				if($value['price'] >= 20000){
+				/*if($value['price'] >= 20000){
 
 					$value['campaign_offer'] = "(EMI available)";
 					$value['campaign_color'] = "#43a047";
-				}
+				}*/
 				
 				// if(isset($value['type']) && in_array($value['type'], ['membership', 'packages']) && isset($value['flags']) && isset($value['flags']['campaign_offer']) && $value['flags']['campaign_offer']){
 				// 	$value['campaign_offer'] = "(Women - Get additional 30% off)";
