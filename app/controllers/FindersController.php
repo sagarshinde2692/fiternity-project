@@ -941,8 +941,8 @@ class FindersController extends \BaseController {
                     ],
                     "not"=>[
                     	"vendor"=>[(int)$finderdata["_id"]],
-                    	"only_featured"=>true
-                    ]
+                    ],
+                    "only_featured"=>true
                 ];
 
                 $nearby_same_category = geoLocationFinder($nearby_same_category_request);
@@ -972,9 +972,9 @@ class FindersController extends \BaseController {
                     ],
                     "not"=>[
                     	"vendor"=>[(int)$finderdata["_id"]],
-                    	"category"=>[newcategorymapping($finderdata["category"]["name"])],
-                    	"only_featured"=>true
-                    ]
+                    	"category"=>[newcategorymapping($finderdata["category"]["name"])]
+                    ],
+                    "only_featured"=>true
                 ];
 
                 $nearby_other_category = geoLocationFinder($nearby_other_category_request);
