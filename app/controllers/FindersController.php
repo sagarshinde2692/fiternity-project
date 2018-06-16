@@ -4027,7 +4027,7 @@ class FindersController extends \BaseController {
 					$data['finder']['other_offers']['icon'] = "https://b.fitn.in/global/search/monsoon-2018/Group.png";
 					$data['finder']['other_offers']['title'] = "Monsoon Favourite Offer";
 					$data['finder']['other_offers']['description'] = $getCalloutOffer['callout'];
-					$data['finder']['other_offers']['header'] = "Flash Offer";
+					$data['finder']['other_offers']['header'] = "Monsoon Favourite Offer";
 					$data['finder']['other_offers']['features'] = [
 						'Lowest price of the year',
 						'Limited slots',
