@@ -1046,6 +1046,26 @@ Class Utilities {
                     $orders[] = $order['_id'];
 
                     $customerCoupn->update();
+
+                    $myrewards = \Myrewards::find($customerCoupn['myreward_id']);
+
+                    $myrewardsData = $myrewards->toArray();
+
+                    $coupon_detail = $myrewardsData['coupon_detail'];
+
+                    foreach ($coupon_detail as $key => &$value) {
+
+                        if(!isset($value['claimed'])){
+                            $value['claimed'] = 0;
+                        }
+
+                        $value['claimed'] += 1;
+
+                    }
+
+                    $myrewards->coupon_detail = $coupon_detail;
+                    $myrewards->update();
+
                 }      
             }
         }
