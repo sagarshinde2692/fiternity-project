@@ -2392,9 +2392,13 @@ class SchedulebooktrialsController extends \BaseController {
                 array_set($orderData, 'success_date', date('Y-m-d H:i:s',time()));
 
                 if(isset($order['coupon_code']) && $order['coupon_discount_amount'] > 0){
+
                     $coupon = Coupon::where('code', strtolower($order['coupon_code']))->first();
-                    $coupon->total_used = isset($coupon->total_used) ? $coupon->total_used + 1 : 1;
-                    $coupon->update();
+
+                    if($coupon){
+                        $coupon->total_used = isset($coupon->total_used) ? $coupon->total_used + 1 : 1;
+                        $coupon->update();
+                    }
                 }
                 
                 if(isset($order->payment_mode) && $order->payment_mode == "paymentgateway"){
