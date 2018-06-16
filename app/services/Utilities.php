@@ -21,7 +21,7 @@ use App\Mailers\CustomerMailer as CustomerMailer;
 
 Class Utilities {
 
-//    protected $myrewards;
+//    protected $myreward;
 //    protected $customerReward;
 
 
@@ -1047,11 +1047,11 @@ Class Utilities {
 
                     $customerCoupn->update();
 
-                    $myrewards = \Myrewards::find($customerCoupn['myreward_id']);
+                    $myreward = \Myreward::find($customerCoupn['myreward_id']);
 
-                    $myrewardsData = $myrewards->toArray();
+                    $myrewardData = $myreward->toArray();
 
-                    $coupon_detail = $myrewardsData['coupon_detail'];
+                    $coupon_detail = $myrewardData['coupon_detail'];
 
                     foreach ($coupon_detail as $key => &$value) {
 
@@ -1063,8 +1063,8 @@ Class Utilities {
 
                     }
 
-                    $myrewards->coupon_detail = $coupon_detail;
-                    $myrewards->update();
+                    $myreward->coupon_detail = $coupon_detail;
+                    $myreward->update();
 
                 }      
             }
