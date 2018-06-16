@@ -1055,16 +1055,21 @@ Class Utilities {
 
                     foreach ($coupon_detail as $key => &$value) {
 
-                        if(!isset($value['claimed'])){
-                            $value['claimed'] = 0;
+                        if($value['code'] == strtolower($order['coupon_code'])){
+
+                            if(!isset($value['claimed'])){
+                                $value['claimed'] = 0;
+                            }
+
+                            $value['claimed'] += 1;
+
+                            $myreward->coupon_detail = $coupon_detail;
+                            $myreward->update();
+
+                            break;
                         }
 
-                        $value['claimed'] += 1;
-
                     }
-
-                    $myreward->coupon_detail = $coupon_detail;
-                    $myreward->update();
 
                 }      
             }
