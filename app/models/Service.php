@@ -299,7 +299,7 @@ class Service extends \Basemodel{
 
                     	$offf_percentage = ceil(100 - (($offer_price/$ratecard_price)*100));
 
-                    	$value['campaign_offer'] = $offf_percentage."% off";
+                    	$value['campaign_offer'] = "Get ".$offf_percentage."% off - Limited Slots";
 						$value['campaign_color'] = "#43a047";
                     }
 
