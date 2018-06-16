@@ -384,7 +384,8 @@ Class CustomerReward {
             $coupon_code[] = [
                 'code'=>$code,
                 'amount'=>$session_value['slabs'],
-                'quantity'=>$session_value['quantity']
+                'quantity'=>$session_value['quantity'],
+                'claimed'=>0
             ];
             
         }
