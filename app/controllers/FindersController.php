@@ -937,7 +937,8 @@ class FindersController extends \BaseController {
                       "name",
                       "id",
                       "city",
-                      "category"
+                      "category",
+                      "overlayimage"
                     ],
                     "not"=>[
                     	"vendor"=>[(int)$finderdata["_id"]],
@@ -968,11 +969,12 @@ class FindersController extends \BaseController {
                       "name",
                       "id",
                       "city",
-                      "category"
+                      "category",
+                      "overlayimage"
                     ],
                     "not"=>[
                     	"vendor"=>[(int)$finderdata["_id"]],
-                    	"category"=>[newcategorymapping($finderdata["category"]["name"])]
+                    	// "category"=>[newcategorymapping($finderdata["category"]["name"])]
                     ],
                     "only_featured"=>true
                 ];
@@ -3124,7 +3126,7 @@ class FindersController extends \BaseController {
 								foreach ($ratecardoffersRecards as $ratecardoffersRecard){
 									$ratecardoffer                  =   $ratecardoffersRecard;
 									$ratecardoffer['offer_text']    =   "";
-									$ratecardoffer['offer_icon']    =   "https://b.fitn.in/iconsv1/fitmania/hot_offer_vendor.png";
+									$ratecardoffer['offer_icon']    =   "https://b.fitn.in/global/final_monsoon_tag.png";
 
 									if(isset($rateval['flags'])){
 
@@ -4025,7 +4027,6 @@ class FindersController extends \BaseController {
 					$data['finder']['other_offers'] = $getCalloutOffer;
 
 					$data['finder']['other_offers']['icon'] = "https://b.fitn.in/global/search/monsoon-2018/Group.png";
-					$data['finder']['other_offers']['title'] = "Monsoon Favourite Offer";
 					$data['finder']['other_offers']['description'] = $getCalloutOffer['callout'];
 					$data['finder']['other_offers']['header'] = "Monsoon Favourite Offer";
 					$data['finder']['other_offers']['features'] = [
@@ -4039,7 +4040,7 @@ class FindersController extends \BaseController {
 
 				$nearby_other_category_request = [
                     "offset" => 0,
-                    "limit" => 4,
+                    "limit" => 2,
                     "radius" => "3km",
                     "category"=>"",
                     "lat"=>$finderarr["lat"],
@@ -4056,7 +4057,8 @@ class FindersController extends \BaseController {
 		              "name",
 		              "id",
 		              "categorytags",
-		              "category"
+		              "category",
+		              "overlayimage"
                     ],
                     "not"=>[
                     	"vendor"=>[(int)$finderarr["_id"]],
