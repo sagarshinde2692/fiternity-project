@@ -937,7 +937,8 @@ class FindersController extends \BaseController {
                       "name",
                       "id",
                       "city",
-                      "category"
+                      "category",
+                      "overlayimage"
                     ],
                     "not"=>[
                     	"vendor"=>[(int)$finderdata["_id"]],
@@ -968,11 +969,12 @@ class FindersController extends \BaseController {
                       "name",
                       "id",
                       "city",
-                      "category"
+                      "category",
+                      "overlayimage"
                     ],
                     "not"=>[
                     	"vendor"=>[(int)$finderdata["_id"]],
-                    	"category"=>[newcategorymapping($finderdata["category"]["name"])]
+                    	// "category"=>[newcategorymapping($finderdata["category"]["name"])]
                     ],
                     "only_featured"=>true
                 ];
@@ -4023,7 +4025,6 @@ class FindersController extends \BaseController {
 					$data['finder']['other_offers'] = $getCalloutOffer;
 
 					$data['finder']['other_offers']['icon'] = "https://b.fitn.in/global/search/monsoon-2018/Group.png";
-					$data['finder']['other_offers']['title'] = "Monsoon Favourite Offer";
 					$data['finder']['other_offers']['description'] = $getCalloutOffer['callout'];
 					$data['finder']['other_offers']['header'] = "Monsoon Favourite Offer";
 					$data['finder']['other_offers']['features'] = [
@@ -4037,7 +4038,7 @@ class FindersController extends \BaseController {
 
 				$nearby_other_category_request = [
                     "offset" => 0,
-                    "limit" => 4,
+                    "limit" => 2,
                     "radius" => "3km",
                     "category"=>"",
                     "lat"=>$finderarr["lat"],
@@ -4054,7 +4055,8 @@ class FindersController extends \BaseController {
 		              "name",
 		              "id",
 		              "categorytags",
-		              "category"
+		              "category",
+		              "overlayimage"
                     ],
                     "not"=>[
                     	"vendor"=>[(int)$finderarr["_id"]],
