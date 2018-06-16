@@ -872,21 +872,23 @@ class FindersController extends \BaseController {
 					
 				
 				$this->removeConvinienceFee($finder);
-				
-				
-				
-							unset($finder['callout']);
-							unset($finder['callout_ratecard_id']);
-						$callOutObj= $this->getCalloutOffer($finder['services']);
 
-						if(!empty($callOutObj))
-						{
-							if(!empty($callOutObj['callout']))
-							$finder['callout']=(!empty($callOutObj['callout'])?$callOutObj['callout']:"");
-							if(!empty($callOutObj['ratecard_id']))
-							$finder['callout_ratecard_id']=(!empty($callOutObj['ratecard_id'])?$callOutObj['ratecard_id']:"");							
+				unset($finder['callout']);
+				unset($finder['callout_ratecard_id']);
 
-						}
+				$callOutObj= $this->getCalloutOffer($finder['services']);
+
+				if(!empty($callOutObj)){
+
+					if(!empty($callOutObj['callout'])){
+						$finder['callout'] = $callOutObj['callout'];
+					}
+
+					if(!empty($callOutObj['ratecard_id'])){
+						$finder['callout_ratecard_id'] = $callOutObj['ratecard_id'];
+					}						
+				}
+				
 // 				}
 				// 	$callout_offer = Offer::where('vendor_id', $finder['_id'])->where('hidden', false)->orderBy('order', 'asc')
 				// 					->where('offer_type', 'newyears')
@@ -914,12 +916,9 @@ class FindersController extends \BaseController {
 
 				$skip_categoryid_finders    = [41,42,45,25,46,10,26,40];
 
-				
-
-
 				$nearby_same_category_request = [
                     "offset" => 0,
-                    "limit" => 4,
+                    "limit" => 2,
                     "radius" => "3km",
                     "category"=>newcategorymapping($finderdata["category"]["name"]),
                     "lat"=>$finderdata["lat"],
@@ -927,35 +926,7 @@ class FindersController extends \BaseController {
                     "city"=>strtolower($finderdata["city"]["name"]),
                     "keys"=>[
                       "average_rating",
-                      "business_type",
-                      "commercial_type",
-                      "coverimage",
-                      "location",
-					  "subcategories",
-					  "categorytags",
-                      "slug",
-                      "name",
-                      "id",
-                      "city",
-                      "category"
-                    ],
-                    "not"=>[
-                    	"vendor"=>[(int)$finderdata["_id"]]
-                    ]
-                ];
-
-                $nearby_same_category = geoLocationFinder($nearby_same_category_request);
-
-				$nearby_other_category_request = [
-                    "offset" => 0,
-                    "limit" => 4,
-                    "radius" => "3km",
-                    "category"=>"",
-                    "lat"=>$finderdata["lat"],
-                    "lon"=>$finderdata["lon"],
-                    "city"=>strtolower($finderdata["city"]["name"]),
-                    "keys"=>[
-                      "average_rating",
+                      "total_rating_count",
                       "business_type",
                       "commercial_type",
                       "coverimage",
@@ -970,7 +941,39 @@ class FindersController extends \BaseController {
                     ],
                     "not"=>[
                     	"vendor"=>[(int)$finderdata["_id"]],
-                    	"category"=>[newcategorymapping($finderdata["category"]["name"])]
+                    	"only_featured"=>true
+                    ]
+                ];
+
+                $nearby_same_category = geoLocationFinder($nearby_same_category_request);
+
+				$nearby_other_category_request = [
+                    "offset" => 0,
+                    "limit" => 2,
+                    "radius" => "3km",
+                    "category"=>"",
+                    "lat"=>$finderdata["lat"],
+                    "lon"=>$finderdata["lon"],
+                    "city"=>strtolower($finderdata["city"]["name"]),
+                    "keys"=>[
+                      "average_rating",
+                      "total_rating_count",
+                      "business_type",
+                      "commercial_type",
+                      "coverimage",
+                      "location",
+					  "subcategories",
+					  "categorytags",
+                      "slug",
+                      "name",
+                      "id",
+                      "city",
+                      "category"
+                    ],
+                    "not"=>[
+                    	"vendor"=>[(int)$finderdata["_id"]],
+                    	"category"=>[newcategorymapping($finderdata["category"]["name"])],
+                    	"only_featured"=>true
                     ]
                 ];
 
@@ -3151,6 +3154,12 @@ class FindersController extends \BaseController {
 							}
 						}
 					}
+
+					$ratecard_price = $rateval['price'];
+
+					if(isset($rateval['special_price']) && $rateval['special_price'] != 0){
+			            $ratecard_price = $rateval['special_price'];
+			        }
 					
 
 					count($ratecardoffers)>0 ? $rateval['offers']  = $ratecardoffers: null;
@@ -3163,6 +3172,8 @@ class FindersController extends \BaseController {
 							$rateval['special_price'] = $ratecardoffers[0]['price'];
 						}*/
 
+						$offer_price = $ratecardoffers[0]['price'];
+
 						$rateval['special_price'] = $ratecardoffers[0]['price'];
 
                     	($rateval['price'] == $ratecardoffers[0]['price']) ? $rateval['special_price'] = 0 : null;
@@ -3170,6 +3181,16 @@ class FindersController extends \BaseController {
 						if(isset($ratecardoffers[0]['remarks']) && $ratecardoffers[0]['remarks'] != ""){
 							$rateval['remarks'] = $ratecardoffers[0]['remarks'];
 						}
+
+						if($offer_price !== 0 && $offer_price < $ratecard_price){
+
+	                    	$offf_percentage = ceil(100 - (($offer_price/$ratecard_price)*100));
+
+	                    	$rateval['campaign_offer'] = $offf_percentage."% off";
+							$rateval['campaign_color'] = "#43a047";
+	                    }
+
+
 					}
 
 					/*if($category->_id == 42){
@@ -3199,11 +3220,11 @@ class FindersController extends \BaseController {
 					            $rateval_price = $rateval['price'];
 					        }
 
-					        if($rateval_price >= 20000){
+					        /*if($rateval_price >= 20000){
 
 					        	$rateval['campaign_offer'] = "(EMI options available)";
 					        	$rateval['campaign_color'] = "#43a047";
-					        }
+					        }*/
 					        
 							array_push($ratecardArr, $rateval);
 						}
@@ -4021,6 +4042,7 @@ class FindersController extends \BaseController {
                     "city"=>strtolower($finderarr["city"]["name"]),
                     "keys"=>[
                       "average_rating",
+                      "total_rating_count",
 		              "contact",
 		              "coverimage",
 		              "location",
@@ -4033,7 +4055,8 @@ class FindersController extends \BaseController {
                     ],
                     "not"=>[
                     	"vendor"=>[(int)$finderarr["_id"]],
-                    ]
+                    ],
+                    "only_featured"=>true
                 ];
 
                 $nearby_other_category = geoLocationFinder($nearby_other_category_request);
