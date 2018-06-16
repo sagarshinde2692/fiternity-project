@@ -3186,7 +3186,7 @@ class FindersController extends \BaseController {
 
 	                    	$offf_percentage = ceil(100 - (($offer_price/$ratecard_price)*100));
 
-	                    	$rateval['campaign_offer'] = $offf_percentage."% off";
+	                    	$rateval['campaign_offer'] = "Get ".$offf_percentage."% off - Limited Slots";
 							$rateval['campaign_color'] = "#43a047";
 	                    }
 
