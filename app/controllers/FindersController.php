@@ -4026,6 +4026,11 @@ class FindersController extends \BaseController {
 					$data['finder']['other_offers']['title'] = "Monsoon Offer";
 					$data['finder']['other_offers']['description'] = $getCalloutOffer['callout'];
 					$data['finder']['other_offers']['header'] = "Flash Offer";
+					$data['finder']['other_offers']['features'] = [
+						'Lowest price of the year',
+						'Limited slots',
+						'EMI options available'
+					];
 
 					unset($data['finder']['other_offers']['callout']);
 				}
