@@ -5741,9 +5741,11 @@ class FindersController extends \BaseController {
 			],
 			'description'=>[
 				'header'=>'Do you relate to any one these?',
-				'data'=>['image'=>'https://b.fitn.in/global/final_monsoon_tag.png', 'text'=>'New to fitness and want to figure what’s best?'],
+				'data'=>[
+					['image'=>'https://b.fitn.in/global/final_monsoon_tag.png', 'text'=>'New to fitness and want to figure what’s best?'],
 					['image'=>'https://b.fitn.in/global/final_monsoon_tag.png', 'text'=>'Wish to do a variety of different workouts?'],
-					['image'=>'https://b.fitn.in/global/final_monsoon_tag.png', 'text'=>'Not sure if you will workout everyday?'],
+					['image'=>'https://b.fitn.in/global/final_monsoon_tag.png', 'text'=>'Not sure if you will workout everyday?']
+				],
 				'more_info'=>[
 					'header'=>'See how pay per session works',
 					'description'=>""
