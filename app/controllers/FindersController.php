@@ -872,20 +872,23 @@ class FindersController extends \BaseController {
 					
 				
 				$this->removeConvinienceFee($finder);
-				
-				
-				
-							unset($finder['callout']);
-							unset($finder['callout_ratecard_id']);
-						$callOutObj= $this->getCalloutOffer($finder['services']);
 
-						if(!empty($callOutObj))
-						{
-							if(!empty($callOutObj['callout']))
-							$finder['callout']=(!empty($callOutObj['callout'])?$callOutObj['callout']:"");
-							if(!empty($callOutObj['callout_ratecard_id']))
-							$finder['callout_ratecard_id']=(!empty($callOutObj['ratecard_id'])?$callOutObj['ratecard_id']:"");							
-						}
+				unset($finder['callout']);
+				unset($finder['callout_ratecard_id']);
+
+				$callOutObj= $this->getCalloutOffer($finder['services']);
+
+				if(!empty($callOutObj)){
+
+					if(!empty($callOutObj['callout'])){
+						$finder['callout'] = $callOutObj['callout'];
+					}
+
+					if(!empty($callOutObj['ratecard_id'])){
+						$finder['callout_ratecard_id'] = $callOutObj['ratecard_id'];
+					}						
+				}
+				
 // 				}
 				// 	$callout_offer = Offer::where('vendor_id', $finder['_id'])->where('hidden', false)->orderBy('order', 'asc')
 				// 					->where('offer_type', 'newyears')
@@ -913,12 +916,9 @@ class FindersController extends \BaseController {
 
 				$skip_categoryid_finders    = [41,42,45,25,46,10,26,40];
 
-				
-
-
 				$nearby_same_category_request = [
                     "offset" => 0,
-                    "limit" => 4,
+                    "limit" => 2,
                     "radius" => "3km",
                     "category"=>newcategorymapping($finderdata["category"]["name"]),
                     "lat"=>$finderdata["lat"],
@@ -926,6 +926,7 @@ class FindersController extends \BaseController {
                     "city"=>strtolower($finderdata["city"]["name"]),
                     "keys"=>[
                       "average_rating",
+                      "total_rating_count",
                       "business_type",
                       "commercial_type",
                       "coverimage",
@@ -936,18 +937,20 @@ class FindersController extends \BaseController {
                       "name",
                       "id",
                       "city",
-                      "category"
+                      "category",
+                      "overlayimage"
                     ],
                     "not"=>[
-                    	"vendor"=>[(int)$finderdata["_id"]]
-                    ]
+                    	"vendor"=>[(int)$finderdata["_id"]],
+                    ],
+                    "only_featured"=>true
                 ];
 
                 $nearby_same_category = geoLocationFinder($nearby_same_category_request);
 
 				$nearby_other_category_request = [
                     "offset" => 0,
-                    "limit" => 4,
+                    "limit" => 2,
                     "radius" => "3km",
                     "category"=>"",
                     "lat"=>$finderdata["lat"],
@@ -955,6 +958,7 @@ class FindersController extends \BaseController {
                     "city"=>strtolower($finderdata["city"]["name"]),
                     "keys"=>[
                       "average_rating",
+                      "total_rating_count",
                       "business_type",
                       "commercial_type",
                       "coverimage",
@@ -965,12 +969,14 @@ class FindersController extends \BaseController {
                       "name",
                       "id",
                       "city",
-                      "category"
+                      "category",
+                      "overlayimage"
                     ],
                     "not"=>[
                     	"vendor"=>[(int)$finderdata["_id"]],
-                    	"category"=>[newcategorymapping($finderdata["category"]["name"])]
-                    ]
+                    	// "category"=>[newcategorymapping($finderdata["category"]["name"])]
+                    ],
+                    "only_featured"=>true
                 ];
 
                 $nearby_other_category = geoLocationFinder($nearby_other_category_request);
@@ -3120,7 +3126,7 @@ class FindersController extends \BaseController {
 								foreach ($ratecardoffersRecards as $ratecardoffersRecard){
 									$ratecardoffer                  =   $ratecardoffersRecard;
 									$ratecardoffer['offer_text']    =   "";
-									$ratecardoffer['offer_icon']    =   "https://b.fitn.in/iconsv1/fitmania/hot_offer_vendor.png";
+									$ratecardoffer['offer_icon']    =   "https://b.fitn.in/global/final_monsoon_tag.png";
 
 									if(isset($rateval['flags'])){
 
@@ -3150,6 +3156,12 @@ class FindersController extends \BaseController {
 							}
 						}
 					}
+
+					$ratecard_price = $rateval['price'];
+
+					if(isset($rateval['special_price']) && $rateval['special_price'] != 0){
+			            $ratecard_price = $rateval['special_price'];
+			        }
 					
 
 					count($ratecardoffers)>0 ? $rateval['offers']  = $ratecardoffers: null;
@@ -3162,6 +3174,8 @@ class FindersController extends \BaseController {
 							$rateval['special_price'] = $ratecardoffers[0]['price'];
 						}*/
 
+						$offer_price = $ratecardoffers[0]['price'];
+
 						$rateval['special_price'] = $ratecardoffers[0]['price'];
 
                     	($rateval['price'] == $ratecardoffers[0]['price']) ? $rateval['special_price'] = 0 : null;
@@ -3169,6 +3183,16 @@ class FindersController extends \BaseController {
 						if(isset($ratecardoffers[0]['remarks']) && $ratecardoffers[0]['remarks'] != ""){
 							$rateval['remarks'] = $ratecardoffers[0]['remarks'];
 						}
+
+						if($offer_price !== 0 && $offer_price < $ratecard_price){
+
+	                    	$offf_percentage = ceil(100 - (($offer_price/$ratecard_price)*100));
+
+	                    	$rateval['campaign_offer'] = "Get ".$offf_percentage."% off - Limited Slots";
+							$rateval['campaign_color'] = "#43a047";
+	                    }
+
+
 					}
 
 					/*if($category->_id == 42){
@@ -3198,11 +3222,11 @@ class FindersController extends \BaseController {
 					            $rateval_price = $rateval['price'];
 					        }
 
-					        if($rateval_price >= 20000){
+					        /*if($rateval_price >= 20000){
 
 					        	$rateval['campaign_offer'] = "(EMI options available)";
 					        	$rateval['campaign_color'] = "#43a047";
-					        }
+					        }*/
 					        
 							array_push($ratecardArr, $rateval);
 						}
@@ -3787,6 +3811,7 @@ class FindersController extends \BaseController {
 					if(isset($data['finder']['multiaddress']	) && count($data['finder']['multiaddress'])>0 && isset($data['finder']['multiaddress'][0]['location'])){
 						$data['finder']['multiaddress']	[0]['location'] = [$finder['location']['name']];
 					}
+
 					
 					$campaign_offer = false;
 					
@@ -4002,17 +4027,21 @@ class FindersController extends \BaseController {
 
 					$data['finder']['other_offers'] = $getCalloutOffer;
 
-					$data['finder']['other_offers']['icon'] = "https://image.ibb.co/herJco/Screen_Shot_2018_06_11_at_7_11_33_PM.png";
-					$data['finder']['other_offers']['title'] = "Monsoon Offer";
+					$data['finder']['other_offers']['icon'] = "https://b.fitn.in/global/search/monsoon-2018/Group.png";
 					$data['finder']['other_offers']['description'] = $getCalloutOffer['callout'];
-					$data['finder']['other_offers']['header'] = "Flash Offer";
+					$data['finder']['other_offers']['header'] = "Monsoon Favourite Offer";
+					$data['finder']['other_offers']['features'] = [
+						'Lowest price of the year',
+						'Limited slots',
+						'EMI option available'
+					];
 
 					unset($data['finder']['other_offers']['callout']);
 				}
 
 				$nearby_other_category_request = [
                     "offset" => 0,
-                    "limit" => 4,
+                    "limit" => 2,
                     "radius" => "3km",
                     "category"=>"",
                     "lat"=>$finderarr["lat"],
@@ -4020,27 +4049,30 @@ class FindersController extends \BaseController {
                     "city"=>strtolower($finderarr["city"]["name"]),
                     "keys"=>[
                       "average_rating",
-                      "business_type",
-                      "commercial_type",
-                      "coverimage",
-                      "location",
-					  "subcategories",
-					  "categorytags",
-                      "slug",
-                      "name",
-                      "id",
-                      "city",
-                      "category"
+                      "total_rating_count",
+		              "contact",
+		              "coverimage",
+		              "location",
+		              "multiaddress",
+		              "slug",
+		              "name",
+		              "id",
+		              "categorytags",
+		              "category",
+		              "overlayimage"
                     ],
                     "not"=>[
                     	"vendor"=>[(int)$finderarr["_id"]],
-                    ]
+                    ],
+                    "only_featured"=>true
                 ];
 
                 $nearby_other_category = geoLocationFinder($nearby_other_category_request);
 
-                $data['nearby_other_category'] = $nearby_other_category;
-
+                $data['recommended_vendor']['title'] = "Trending near you";
+                $data['recommended_vendor']['description'] = "Checkout fitness services near you";
+				$data['recommended_vendor']['near_by_vendor'] = $nearby_other_category;
+				
 				$data = Cache::tags($cache_name)->put($cache_key, $data, Config::get('cache.cache_time'));
 
 			}
@@ -4216,7 +4248,7 @@ class FindersController extends \BaseController {
 						$finderData['call_for_action_button'] = "";
 						$finderData['finder']['pay_per_session'] = false;
 					}
-
+					$finderData['finder']['services'] = $this->addPPSStripe($finderData['finder']['services']);
 				}
 				if($finderData['finder']['commercial_type'] == 0){
 					$finderData['finder']['trial'] = "disable";
@@ -5664,4 +5696,61 @@ class FindersController extends \BaseController {
 		}
 		return $result;
 	}
+
+	public function addPPSStripe($services){
+		
+		foreach($services as &$service){
+			$pps_ratecard = null;
+			$pps_exists = false;
+			foreach($service['ratecard'] as $key => &$ratecard){
+				
+				if(isset($ratecard['type']) && $ratecard['type'] == 'workout session'){
+					$pps_exists = true;
+					$pps_ratecard = $ratecard;
+				}
+
+				if(isset($ratecard['type']) && $ratecard['type'] == 'membership'){
+					if(isset($pps_exists) && $pps_exists){
+						array_splice( $service['ratecard'], $key+1, 0, [$this->addPPSStripeData($pps_ratecard)]); 
+						break;
+					}else{
+						break;
+					}
+					
+				}
+			}
+		}
+		
+		return $services;
+	}
+
+	public function addPPSStripeData($ratecard){
+		$return = ['type'=>'pps_stripe', 'service_id'=>$ratecard['service_id'], 'finder_id'=>$ratecard['finder_id'], 'line1'=>'Not sure if you will utlize your Membership?', 'line2'=>'USE PAY - PER - SESSION', 'line3'=>'(562 Others On It)'];
+
+		$return['details'] =[
+			'pps'=>[
+				'header'=>'PAY - PER - SESSION',
+				'data'=>['Convenience', 'Variety', 'No Commitment'],
+			],
+			'description'=>[
+				'header'=>'Do you relate to any one these?',
+				'data'=>['image'=>'https://b.fitn.in/global/final_monsoon_tag.png', 'text'=>'New to fitness and want to figure what’s best?'],
+					['image'=>'https://b.fitn.in/global/final_monsoon_tag.png', 'text'=>'Wish to do a variety of different workouts?'],
+					['image'=>'https://b.fitn.in/global/final_monsoon_tag.png', 'text'=>'Not sure if you will workout everyday?'],
+				'more_info'=>[
+					'header'=>'See how pay per session works',
+					'description'=>""
+				]
+			],
+			'action_text'=>'BOOK A SESSION FOR RS '.($ratecard['special_price'] != 0 ? $ratecard['special_price'] : $ratecard['price']),
+			'assistance_text'=>'Need help? Let us assist you'
+
+		];
+
+		return $return;
+
+
+
+	}
+
 }

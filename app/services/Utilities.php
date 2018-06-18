@@ -21,7 +21,7 @@ use App\Mailers\CustomerMailer as CustomerMailer;
 
 Class Utilities {
 
-//    protected $myrewards;
+//    protected $myreward;
 //    protected $customerReward;
 
 
@@ -1046,6 +1046,31 @@ Class Utilities {
                     $orders[] = $order['_id'];
 
                     $customerCoupn->update();
+
+                    $myreward = \Myreward::find($customerCoupn['myreward_id']);
+
+                    $myrewardData = $myreward->toArray();
+
+                    $coupon_detail = $myrewardData['coupon_detail'];
+
+                    foreach ($coupon_detail as $key => &$value) {
+
+                        if($value['code'] == strtolower($order['coupon_code'])){
+
+                            if(!isset($value['claimed'])){
+                                $value['claimed'] = 0;
+                            }
+
+                            $value['claimed'] += 1;
+
+                            $myreward->coupon_detail = $coupon_detail;
+                            $myreward->update();
+
+                            break;
+                        }
+
+                    }
+
                 }      
             }
         }
@@ -2814,7 +2839,10 @@ Class Utilities {
         Log::info($data);
         
         if($type == "order"){
-        	$flags = $data['ratecard_flags'];
+            $flags = isset($data['ratecard_flags']) ? $data['ratecard_flags'] : array();
+            if(isset($data['customer_source']) && $data["customer_source"] == "kiosk"){
+                return false;
+            }
         }else{
         	$flags = $data['flags'];
         }

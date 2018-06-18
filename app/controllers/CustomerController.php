@@ -3114,6 +3114,9 @@ class CustomerController extends \BaseController {
 
 	public function home($city = 'mumbai',$cache = true){
 
+
+		Log::info('--------customer_home_app--------',$_GET);
+
 		$jwt_token = Request::header('Authorization');
 		Log::info($jwt_token);
 		$upcoming = array();
@@ -3460,15 +3463,52 @@ class CustomerController extends \BaseController {
 		if(isset($_REQUEST['device_type']) && in_array($_REQUEST['device_type'],['ios','android']) && isset($_REQUEST['app_version']) && ((float)$_GET['app_version'] >= 4.4)){
 
 			$result['campaigns'] =  [];
-
-			// $result['campaigns'][] = [
-			// 	'image'=>'https://b.fitn.in/global/ios_homescreen_banner/pledge_1.png',
-			// 	'link'=>'ftrnty://ftrnty.com/abc',
-			// 	'title'=>'Pledge for Fitness',
-			// 	'height'=>100,
-			// 	'width'=>375,
-			// 	'ratio'=>(float) number_format(100/375,2)
-			// ];
+			$result['campaigns'][] = [
+				'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/monsoon-app.png',
+				'link'=>'ftrnty://ftrnty.com/search/all',
+				'title'=>'Group Membership',
+				'height'=>100,
+				'width'=>375,
+				'ratio'=>(float) number_format(100/375,2)
+			];
+			if($city != "ahmedabad"){
+				$result['campaigns'][] = [
+					'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Mumbai_APP.png',
+					'link'=>'',
+					'title'=>'Pledge for Fitness',
+					'height'=>100,
+					'width'=>375,
+					'ratio'=>(float) number_format(100/375,2)
+				];
+				switch($city){
+					case "pune":
+						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Mumbai_APP.png";
+						$result['campaigns'][] = [
+							'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/Multifit_App.png',
+							'link'=>'',
+							'title'=>'Pledge for Fitness',
+							'height'=>100,
+							'width'=>375,
+							'ratio'=>(float) number_format(100/375,2)
+						];
+					break;
+					case "bangalore":
+						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Bangalore_APP.png";
+						break;
+					case "delhi":
+						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Delhi_APP.png";
+						break;	
+					case "noida":
+						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Noida_APP.png";
+						break;
+					case "hyderabad":
+						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Hyderabad_APP.png";
+						break;					
+					case "gurgaon":
+						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Gurugram_APP.png";
+						break;										
+				}
+			}
 			
 			if($_REQUEST['device_type'] == 'ios'){
 
@@ -3573,7 +3613,7 @@ class CustomerController extends \BaseController {
 				if($this->app_version > '4.4.3'){
 
 					$result['campaigns'][] = [
-						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/AmazonPay_AppBanner.jpg',
+						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/AmazonPay_AppBanner.png',
 						'link'=>'ftrnty://ftrnty.com/pps?',
 						'title'=>'Amazon Pay Offer',
 						'height'=>100,
@@ -3587,7 +3627,7 @@ class CustomerController extends \BaseController {
 				if($this->app_version > '4.4.3'){
 
 					$result['campaigns'][] = [
-						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/AmazonPay_AppBanner.jpg',
+						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/AmazonPay_AppBanner.png',
 						'link'=>'ftrnty://ftrnty.com/pps',
 						'title'=>'Amazon Pay Offer',
 						'height'=>100,
@@ -3605,7 +3645,7 @@ class CustomerController extends \BaseController {
 			$near_by_vendor_request = [
 	            "offset" => 0,
 	            "limit" => 9,
-	            "radius" => "3km",
+	            "radius" => "2km",
 	            "category"=>"",
 	            "lat"=>$lat,
 	            "lon"=>$lon,
@@ -3628,9 +3668,9 @@ class CustomerController extends \BaseController {
 		}
 
 		$result['categoryheader'] = "Discover | Try | Buy";
-		$result['categorysubheader'] = "Fitness services near ".ucwords($city);
-		$result['trendingheader'] = "Trending near ".ucwords($city);
-		$result['trendingsubheader'] = "Checkout fitness services near ".ucwords($city);
+		$result['categorysubheader'] = "Fitness services in ".ucwords($city);
+		$result['trendingheader'] = "Trending in ".ucwords($city);
+		$result['trendingsubheader'] = "Checkout fitness services in ".ucwords($city);
 
 		if(!empty($_REQUEST['auto_detect']) && $_REQUEST['auto_detect'] === true){
 
@@ -3643,9 +3683,9 @@ class CustomerController extends \BaseController {
 		if(!empty($_REQUEST['selected_region'])){
 
 			$result['categoryheader'] = "Discover | Try | Buy";
-			$result['categorysubheader'] = "Fitness services near ".ucwords($_REQUEST['selected_region']);
-			$result['trendingheader'] = "Trending near ".ucwords($_REQUEST['selected_region']);
-			$result['trendingsubheader'] = "Checkout fitness services near ".ucwords($_REQUEST['selected_region']);
+			$result['categorysubheader'] = "Fitness services in ".ucwords($_REQUEST['selected_region']);
+			$result['trendingheader'] = "Trending in ".ucwords($_REQUEST['selected_region']);
+			$result['trendingsubheader'] = "Checkout fitness services in ".ucwords($_REQUEST['selected_region']);
 		}
 		
 		return Response::json($result);
@@ -6745,7 +6785,7 @@ class CustomerController extends \BaseController {
 	public function loginOptions(){
 
 		$response = [
-			'facebook'=>false,
+			'facebook'=>true,
 			'google'=>true,
 			'email'=>true,
 		];

@@ -2392,9 +2392,13 @@ class SchedulebooktrialsController extends \BaseController {
                 array_set($orderData, 'success_date', date('Y-m-d H:i:s',time()));
 
                 if(isset($order['coupon_code']) && $order['coupon_discount_amount'] > 0){
+
                     $coupon = Coupon::where('code', strtolower($order['coupon_code']))->first();
-                    $coupon->total_used = isset($coupon->total_used) ? $coupon->total_used + 1 : 1;
-                    $coupon->update();
+
+                    if($coupon){
+                        $coupon->total_used = isset($coupon->total_used) ? $coupon->total_used + 1 : 1;
+                        $coupon->update();
+                    }
                 }
                 
                 if(isset($order->payment_mode) && $order->payment_mode == "paymentgateway"){
@@ -2779,7 +2783,7 @@ class SchedulebooktrialsController extends \BaseController {
                     $this->utilities->setRedundant($order);
                 }
             }
-            if($currentScheduleDateDiffMin <= 60 && !$this->isWeekend(time()) && !$this->isOffHour(time())){
+            if($currentScheduleDateDiffMin <= 60 && !$this->isWeekend(time()) && !$this->isOffHour($current_hour)){
                 $this->publishConfirmationAlert($booktrialdata);
             }
 
@@ -2787,8 +2791,8 @@ class SchedulebooktrialsController extends \BaseController {
                 $cities 	=	City::active()->orderBy('name')->lists('name', '_id');
                 $booktrialdata['city_name'] = $cities[$booktrialdata['city_id']];
                 
-                $booktrialdata['confirm_link'] = Config::get('app.url').'/updatetrialstatus/'.$booktrialdata['_id'].'/confirm';
-                $booktrialdata['cancel_link'] = Config::get('app.url').'/updatetrialstatus/'.$booktrialdata['_id'].'/cancel';
+                $booktrialdata['confirm_link'] = Config::get('app.url').'/updatetrialstatus/'.$booktrialdata['_id'].'/vendor/confirm';
+                $booktrialdata['cancel_link'] = Config::get('app.url').'/updatetrialstatus/'.$booktrialdata['_id'].'/vendor/cancel';
                 $this->findermailer->trialAlert($booktrialdata);                
                 $this->findersms->trialAlert($booktrialdata);                
             }
@@ -7437,7 +7441,7 @@ class SchedulebooktrialsController extends \BaseController {
         return false;
     }
 
-    public function updatetrialstatus($_id, $action, $confirm=false){
+    public function updatetrialstatus($_id, $source, $action, $confirm=false){
 
         if($confirm){
             if($action == 'confirm'){
@@ -7448,13 +7452,13 @@ class SchedulebooktrialsController extends \BaseController {
                 return "Trial Confirmed Successfully";
 
             }else if($action == 'cancel'){
-                return $this->cancel($_id, 'vendor');
+                return $this->cancel($_id, $source);
             }
         }else{
             $booktrial = Booktrial::find(intval($_id));
             $this->unsetEmptyDates($booktrial);
             $booktrial_data = $booktrial->toArray();
-            $action_link = Config::get('app.url').'/updatetrialstatus/'.$_id.'/'.$action.'/1';
+            $action_link = Config::get('app.url').'/updatetrialstatus/'.$_id.'/'.$source.'/'.$action.'/1';
             $cities 	=	City::active()->orderBy('name')->lists('name', '_id');
             
             return View::make('trialconfirm', compact('booktrial_data', 'action_link', 'action', 'cities'));

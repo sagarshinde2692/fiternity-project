@@ -351,7 +351,7 @@ Class CustomerReward {
 
         foreach ($data['session'] as $session_value){
 
-            $code = strtolower(substr($data['customer_name'], 0, 2)).$data['_id'].$session_value['slabs'];
+            $code = $data['_id'].$session_value['slabs'];
 
             $coupon_data = [
                 'validity'=>time()+(86400*30),
@@ -384,7 +384,8 @@ Class CustomerReward {
             $coupon_code[] = [
                 'code'=>$code,
                 'amount'=>$session_value['slabs'],
-                'quantity'=>$session_value['quantity']
+                'quantity'=>$session_value['quantity'],
+                'claimed'=>0
             ];
             
         }
@@ -821,6 +822,8 @@ Class CustomerReward {
                     case 'healthy_snacks': $message = "Thank you! Your Healthy Snacks Hamper would be delivered in next 7 to 10 working days.";break;
                     case 'personal_trainer_at_studio': $message = "Thank you! We have notified ".$myreward->title."about your Personal training sessions.";break;
                     case 'personal_trainer_at_home': $message = "Your Personal Training at Home request has being processed. We will reach out to you shortly with trainer details to schedule your first session.";break;
+                    case 'swimming_sessions' :
+                    case 'sessions' : $message = "You have claimed your Free sessions pack. Look out for vouchers (also sent on email/sms) to book your sessions, available on Pay Per Session on the app.";break;
                     default: $message = "Reward Claimed Successfull";break;
                 }
 
@@ -1464,6 +1467,7 @@ Class CustomerReward {
 
     public function couponCodeDiscountCheck($ratecard,$couponCode,$customer_id = false, $ticket = null, $ticket_quantity = 1, $service_id = null){
         // Log::info("dfjkhsdfkhskdjfhksdhfkjshdfkjhsdkjfhks",$ratecard["flags"]);
+        Log::info($ratecard);
         if($ticket){
 
             $price = $ticket['price'] * $ticket_quantity;
@@ -1902,16 +1906,13 @@ Class CustomerReward {
                 "coupon_applied" => $applyCustomerCoupn
             ];
 
-            $decoded = $this->customerTokenDecode($jwt_token);
-            $customer_id = $decoded->customer->_id;
-
             $customerCoupn = \CustomerCoupn::active()->where('code', strtolower($couponCode))->where('validity','>=',time())->first();
 
             if($customerCoupn){
 
                 $jwt_token = Request::header('Authorization');
 
-                if(empty($jwt_token)){
+                if(!empty($jwt_token)){
 
                     $decoded = $this->customerTokenDecode($jwt_token);
                     $customer_id = $decoded->customer->_id;
@@ -1952,7 +1953,7 @@ Class CustomerReward {
 
                 if($applyCustomerCoupn){
 
-                    $discount_amount = $customerCoupn["code"];
+                    $discount_amount = $customerCoupn["amount"];
 
                     $discount_price = $price - $discount_amount;
 

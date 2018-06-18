@@ -2179,7 +2179,8 @@ class TransactionController extends \BaseController {
             $ratecard = isset($data['ratecard_id'])?Ratecard::find($data['ratecard_id']):null;
 
             $service_id = isset($data['service_id']) ? $data['service_id'] : null;
-
+            Log::info("couponCheckratecard");
+            Log::info($data);
             $couponCheck = $this->customerreward->couponCodeDiscountCheck($ratecard,$data["coupon_code"],$customer_id, $ticket, $ticket_quantity, $service_id);
 
             Log::info("couponCheck");
@@ -2190,7 +2191,7 @@ class TransactionController extends \BaseController {
                 $data["coupon_discount_amount"] = $amount > $couponCheck["data"]["discount"] ? $couponCheck["data"]["discount"] : $amount;
 
                 $amount -= $data["coupon_discount_amount"];
-
+                
                 if(isset($couponCheck["vendor_coupon"]) && $couponCheck["vendor_coupon"]){
                     $data["payment_mode"] = "at the studio";
                     $data["secondary_payment_mode"] = "cod_membership";
@@ -4415,6 +4416,8 @@ class TransactionController extends \BaseController {
     public function checkCouponCode(){
         
         $data = Input::json()->all();
+        Log::info("checkCouponCode");
+        Log::info($data);
 
         if($this->vendor_token){
             $resp = array("status"=> 400, "message" => "Coupon code is not valid", "error_message" => "Coupon code is not valid");
@@ -4917,6 +4920,9 @@ class TransactionController extends \BaseController {
 
         $data = Input::json()->all();
 
+        Log::info("checkoutSummary");
+        Log::info($data);
+
         $result = [
 
             'order_details' => [],
@@ -5365,7 +5371,8 @@ class TransactionController extends \BaseController {
         //     }
             
         }
-
+        Log::info("returning response");
+        Log::info($result);
         return $result;
     }
 
