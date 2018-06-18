@@ -1069,6 +1069,366 @@ class TransactionController extends \BaseController {
         return Response::json($resp);
 
     }
+    
+    public function pr($data =null)
+    {
+    	
+    	
+    	$data = $data ? $data : Input::json()->all();
+    	Log::info('--------------  PRODUCT CAPTURE ---------------',$data);
+    	foreach ($data as $key => $value) {
+    		(is_string($value))?$data[$key] = trim($value):"";
+    	}
+    	
+    	if(!isset($data['type'])){
+    		return Response::json(array('status' => 404,'message' =>'type field is required'), $this->error_status);
+    	}
+    	
+    	if($this->vendor_token){
+    		$data['customer_source'] = 'kiosk';
+    		$decodeKioskVendorToken = decodeKioskVendorToken();
+    		$vendor = json_decode(json_encode($decodeKioskVendorToken->vendor),true);
+    		$data['finder_id'] = (int)$vendor['_id'];
+    	}
+    	
+    	$rules = array(
+    			'customer_name'=>'required',
+    			'customer_email'=>'required|email',
+    			'customer_phone'=>'required',
+    			'customer_source'=>'required',
+    			'type'=>'required'
+    	);
+    	
+    		if(!isset($data['ratecard_id']) && !isset($data['ticket_id'])){
+    			return Response::json(array('status'=>400, 'message'=>'Ratecard Id or ticket Id is required'), $this->error_status);
+    		}
+
+    	if(isset($data['paymentmode_selected']) && $data['paymentmode_selected'] != ""){
+    		
+    		switch ($data['paymentmode_selected']) {
+    			case 'cod': $data['payment_mode'] = 'cod';break;
+    			case 'emi': $data['payment_mode'] = 'paymentgateway';break;
+    			case 'paymentgateway': $data['payment_mode'] = 'paymentgateway';break;
+    			case 'pay_at_vendor': $data['payment_mode'] = 'at the studio';break;
+    			default:break;
+    		}
+    	}
+    	
+	    	$updating_cod = (isset($data['payment_mode']) && $data['payment_mode'] == 'cod') ? true : false;
+    	
+    		if(isset($data['finder_id']) && $data['finder_id'] != ""){
+    			
+    			$checkFinderState = $this->utilities->checkFinderState($data['finder_id']);	
+    			if($checkFinderState['status'] != 200){
+    				return Response::json($checkFinderState, $this->error_status);
+    			}
+    		}
+    		
+    		if($this->vendor_token && !isset($data['order_id'])){
+    			if($this->utilities->checkFitternityCustomer($data['customer_email'], $data['customer_phone'])){
+    				$data['routed_order'] = '0';
+    			}else{
+    				$data['routed_order'] = '1';
+    			}
+    		}
+    		$customerDetail = $this->getCustomerDetail($data);
+    		if($customerDetail['status'] != 200){
+    			return Response::json($customerDetail,$this->error_status);
+    		}
+    		
+    		$data = array_merge($data,$customerDetail['data']);
+    		$payment_mode = isset($data['payment_mode']) ? $data['payment_mode'] : "";
+    		
+    		if(isset($data['ratecard_id']))
+    		{
+    			$ratecard_id = (int) $data['ratecard_id'];	
+    			$ratecardDetail = $this->getRatecardDetail($data);
+    			
+    			if($ratecardDetail['status'] != 200){
+    				return Response::json($ratecardDetail,$this->error_status);
+    			}
+    			$data = array_merge($data,$ratecardDetail['data']);
+    			
+    			if(isset($data['customer_quantity'])){	
+    				$data['ratecard_amount'] = $data['amount'];
+    				$data['amount'] = $data['customer_quantity'] * $data['amount'];
+    				$data['amount_finder'] = $data['customer_quantity'] * $data['amount_finder'];
+    			}
+    		}
+    		
+    		if($payment_mode=='cod')
+    			$data['payment_mode'] = 'cod';
+    		
+    		$finder_id = (int) $data['finder_id'];
+    		$finderDetail = $this->getFinderDetail($finder_id);
+    		
+    		if($finderDetail['status'] != 200){
+    			return Response::json($finderDetail,$this->error_status);
+    		}
+    		$orderfinderdetail = $finderDetail;
+    		$data = array_merge($data,$orderfinderdetail['data']);
+    		unset($orderfinderdetail["data"]["finder_flags"]);
+    		$finderDetail['data']['finder_flags'] = [];
+    	
+    		
+    	if(isset($data['coupon_code']) && $this->utilities->isGroupId($data['coupon_code'])){
+    		if($this->utilities->validateGroupId(['group_id'=>$data['coupon_code'], 'customer_id'=>$data['customer_id']])){
+    			$data['group_id'] = $data['coupon_code'];
+    		}
+    		unset($data['coupon_code']);
+    	}
+    	
+    	$order = false;
+    	if(isset($data['order_id']) && $data['order_id'] != ""){
+    		$old_order_id = $order_id = $data['_id'] = intval($data['order_id']);
+    		$order = Order::find((int)$old_order_id);
+    		$data['repetition'] = 1;
+    		if($order){
+    			if(isset($order->repetition)){
+    				$data['repetition'] = $order->repetition + 1;
+    			}
+    			$order->update();
+    		}
+    		
+    	}else
+    		$order_id = $data['_id'] = $data['order_id'] = Order::max('_id') + 1;
+    	
+    	$data['code'] = (string) random_numbers(5); 
+    
+    	$data['amount_final'] = $data["amount_finder"];
+    	
+    	$txnid=""; 
+    	$successurl=""; 
+    	$mobilehash="";
+    	
+    	if(in_array($data['customer_source'],['android','ios','kiosk']))
+    	{
+    		$txnid = "MFIT".$data['_id'];
+    		(isset($old_order_id))?
+    				$txnid = "MFIT".$data['_id']."-R".$data['repetition']  :"";
+    		$successurl = $data['customer_source'] == "ios" ? Config::get('app.website')."/paymentsuccessios" : Config::get('app.website')."/paymentsuccessandroid";
+    	}
+    	else
+    	{
+    		$txnid = "FIT".$data['_id'];
+    		(isset($old_order_id))?
+    				$txnid = "FIT".$data['_id']."-R".$data['repetition']:"";
+    		$successurl = $data['type'] == "memberships" ? Config::get('app.website')."/paymentsuccess" : Config::get('app.website')."/paymentsuccesstrial";
+    	} 	
+    	$data['txnid'] = $txnid;
+    	
+    	$tmp_finder_flags = (array) $finderDetail['data']['finder_flags'];
+    	$part_payment = (!empty($tmp_finder_flags) && isset($finderDetail['data']['finder_flags']['part_payment'])) ? $finderDetail['data']['finder_flags']['part_payment'] : false;
+    	$cash_pickup = (!empty($tmp_finder_flags) && isset($finderDetail['data']['finder_flags']['cash_pickup'])) ? $finderDetail['data']['finder_flags']['cash_pickup'] : false;
+    	
+    	$data['convinience_fee'] = 0;
+    	
+    	if($this->utilities->isConvinienceFeeApplicable($data)){	
+    		$convinience_fee_percent = Config::get('app.convinience_fee');	
+    		$convinience_fee = round($data['amount_finder']*$convinience_fee_percent/100);
+    		$convinience_fee = $convinience_fee <= 199 ? $convinience_fee : 199;
+    		$data['convinience_fee'] = $convinience_fee;
+    	}
+
+    	if(isset($data['wallet']) && $data['wallet']){
+    		$data['amount_final'] = $data['amount'] = $data['amount'] + $data['convinience_fee'];
+    		$data['amount_customer'] = $data['amount'];
+    		$data['coupon_discount_amount'] = 0;
+    		unset($data['instant_payment_discount']);    		
+    	}
+    	
+    	$data['base_amount'] = $order['amount_customer'] - $data['convinience_fee'] ;
+//     	$hash = getHash($data);  						to be done
+    	
+    	$hash = ["a"=>12,"payment_related_details_for_mobile_sdk_hash"=>"","productinfo"=>"1212","service_name"=>"sdsd","finder_name"=>"sdsd","payment_hash"=>"dssdsd"];
+    
+    	$data = array_merge($data,$hash);
+    	$data = $this->unsetData($data);
+    	
+    	$data['payment_link'] = Config::get('app.website')."/paymentlink/".$data['order_id']; //$this->utilities->getShortenUrl(Config::get('app.website')."/paymentlink/".$data['order_id']);
+    	$data['profile_link'] = $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$data['customer_email']);
+    	$data['download_app_link'] = Config::get('app.download_app_link');
+    	
+    	
+    	$addUpdateDevice = $this->utilities->addUpdateDevice($data['customer_id']);
+    	foreach ($addUpdateDevice as $header_key => $header_value) {
+    		if($header_key != ""){
+    			$data[$header_key]  = $header_value;
+    		}
+    	}
+    	
+    	$data["status"] = "0";
+    	
+    	if(isset($data['paymentmode_selected']) && $data['paymentmode_selected'] == 'pay_at_vendor')
+    		$data['payment_mode'] = 'at the studio';
+    	
+    	$is_tab_active = isTabActive($data['finder_id']);
+    	if($is_tab_active)$data['is_tab_active'] = true;
+    	
+    	if(isset($old_order_id)){
+    		if($order){
+    			$order->update($data);
+    		}else{
+    			$order = new Order($data);
+    			$order->_id = $order_id;
+    			$order->save();
+    		}
+    	}else{	
+    		$order = new Order($data);
+    		$order->_id = $order_id;
+    		$order->save();
+    	}
+    	
+    	if(isset($data['payment_mode']) && $data['payment_mode'] == 'cod'){
+    		
+    		$group_id = isset($data['group_id']) ? $data['group_id'] : null;
+    		$order->group_id = $data['group_id'] = $this->utilities->addToGroup(['customer_id'=>$data['customer_id'], 'group_id'=>$group_id, 'order_id'=>$order['_id']]);
+    		$this->customermailer->orderUpdateCOD($order->toArray());
+    		$this->customersms->orderUpdateCOD($order->toArray());
+    		$order->cod_otp = $this->utilities->generateRandomString();
+    		$order->update();
+    	}
+    	
+//     	$this->utilities->financeUpdate($order);																						DIFFERENT FOR PRODUCT
+    	
+    	if(in_array($data['customer_source'],['android','ios','kiosk'])){
+    		$mobilehash = $data['payment_related_details_for_mobile_sdk_hash'];
+    	}
+    	
+    	$result['firstname'] = strtolower($data['customer_name']);
+    	$result['lastname'] = "";
+    	$result['phone'] = $data['customer_phone'];
+    	$result['email'] = strtolower($data['customer_email']);
+    	$result['orderid'] = $data['_id'];
+    	$result['txnid'] = $txnid;
+    	$result['amount'] = $data['amount'];
+    	$result['amount_final'] = $data['amount_final'];
+    	$result['productinfo'] = strtolower($data['productinfo']);
+    	$result['service_name'] = preg_replace("/^'|[^A-Za-z0-9 \'-]|'$/", '', strtolower($data['service_name']));
+    	$result['successurl'] = $successurl;
+    	$result['hash'] = $data['payment_hash'];
+    	$result['payment_related_details_for_mobile_sdk_hash'] = $mobilehash;
+    	$result['finder_name'] = strtolower($data['finder_name']);
+    	$result['type'] = $data['type'];
+    	
+    	
+    	if(isset($data['convinience_fee']))
+    	{
+    		$result['convinience_fee_charged'] = true;
+    		$result['convinience_fee'] = $data['convinience_fee'];
+    	}
+
+    	$cash_pickup_applicable = (isset($data['amount_final']) && $data['amount_final'] >= 2500) ? true : false;
+    	$emi_applicable = (isset($data['amount_final']) && $data['amount_final'] >= 5000) ? true : false;
+    	$pay_at_vendor_applicable = true;
+    	
+    	$resp   =   array(
+    			'status' => 200,
+    			'data' => $result,
+    			'message' => "Tmp Order Generated Sucessfully",
+    			'cash_pickup' => $cash_pickup_applicable,
+    			'emi'=>$emi_applicable,
+    			'pay_at_vendor'=>$pay_at_vendor_applicable
+    	);
+    	
+    	$resp['data']['order_details'] = $this->getBookingDetails($order->toArray());
+    	$payment_mode_type_array = ['paymentgateway'];
+    	if($emi_applicable && isset($order->amount_final) && $order->amount_final)
+    		$payment_mode_type_array[] = 'emi';
+    	
+    	if(!$this->vendor_token)
+    		if($cash_pickup_applicable)
+    			$payment_mode_type_array[] = 'cod';
+    	
+    	if($this->vendor_token)
+    		if($pay_at_vendor_applicable)		
+    			$payment_mode_type_array[] = 'pay_at_vendor';
+    	
+    			
+    			$payment_details = [];
+    	
+    	foreach ($payment_mode_type_array as $payment_mode_type) 
+    		$payment_details[$payment_mode_type] = $this->getPaymentDetails($order->toArray(),$payment_mode_type);
+    	
+    	$resp['data']['payment_details'] = $payment_details;
+    	$resp['data']['payment_modes'] = [];
+    	
+    	
+    	if(isset($order->amount_final) && $order->amount_final ){
+    		$resp['data']['payment_modes'] = $this->getPaymentModesProduct($resp);
+    	}
+
+    	
+    	$otp_flag = true;
+    	
+    	if($data['payment_mode'] == 'at the studio' && isset($data['wallet']) && $data['wallet'] && $otp_flag){
+    		
+    		$data_otp = array_only($data,['finder_id','order_id','service_id','ratecard_id','payment_mode','finder_vcc_mobile','finder_vcc_email','customer_name','service_name','service_duration','finder_name', 'customer_source','amount_finder','amount','finder_location','customer_email','customer_phone','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon']);
+    		
+    		$data_otp['action'] = "vendor_otp";
+    		
+    		$addTemp_flag  = true;
+    		
+    		if(isset($order['otp_data'])){
+    			$old_order = $order->toArray();
+    			$otp_data = $old_order['otp_data'];
+    			
+    			if(isset($otp_data['created_at']) && ((time() - $otp_data['created_at']) / 60) < 3){
+    				$addTemp_flag = false;
+    			}
+    			$temp_id = $order['otp_data']['temp_id'];
+    			$temp = Temp::find($temp_id);
+    			
+    			if(!$temp){
+    				
+    				return Response::json(['status' => 400, "message" => "Internal Error"],$this->error_status);
+    			}
+    			
+    			if($temp->verified == "Y"){
+    				
+    				return Response::json(array('status' => 400,'message' => 'Already Verified'),$this->error_status);
+    			}
+    			$otp_data['otp'] = $temp['otp'];
+    		}
+    		
+    		if($addTemp_flag){
+    			
+    			$addTemp = addTemp($data_otp);
+    			
+    			$otp_data = [
+    					'finder_vcc_mobile'=>$data_otp['finder_vcc_mobile'],
+    					'finder_vcc_email'=>$data_otp['finder_vcc_email'],
+    					'payment_mode'=>$data_otp['payment_mode'],
+    					'temp_id'=>$addTemp['_id'],
+    					'otp'=>$addTemp['otp'],
+    					'created_at'=>time()
+    			];
+    			
+    			$order->update(['otp_data'=>$otp_data]);
+    			
+    			$otp_data['otp'] = $addTemp['otp'];
+    		}
+    		
+    		
+    		$otp_data = array_merge($data_otp,$otp_data);
+    		
+    		$this->findersms->genericOtp($otp_data);
+    		$this->findermailer->genericOtp($otp_data);
+    		
+    		if(!$this->vendor_token){
+    			
+    			$this->customermailer->atVendorOrderCaputure($otp_data);
+    			$this->customersms->atVendorOrderCaputure($otp_data);
+    		}
+    		$resp['vendor_otp'] = $otp_data['otp'];
+    		$resp['data']['verify_otp_url'] = Config::get('app.url')."/kiosk/vendor/verifyotp";
+    		$resp['data']['resend_otp_url'] = Config::get('app.url')."/temp/regenerateotp/".$otp_data['temp_id'];
+    		if($data["customer_source"] == "website"){
+    			$resp['data']['show_success'] = true;
+    		}
+    	}	
+    	return Response::json($resp);	
+    }
 
     public function generateOtp($length = 4)
     {      
@@ -5924,6 +6284,58 @@ class TransactionController extends \BaseController {
 
         return $data;
 
+    }
+    
+    function getPaymentModesProduct($data){
+    	
+    	$payment_modes = [];
+    	
+    	
+    		$payment_modes[] = array(
+    				'title' => 'Online Payment',
+    				'subtitle' => 'Transact online with netbanking, card and wallet',
+    				'value' => 'paymentgateway',
+    		);
+    	
+    	$emi = $this->utilities->displayEmi(array('amount'=>$data['data']['amount']));
+    	
+    	if(!empty($data['emi']) && $data['emi']){
+    		$payment_modes[] = array(
+    				'title' => 'EMI',
+    				'subtitle' => 'Transact online with credit installments',
+    				'value' => 'emi',
+    		);
+    	}
+    	
+    	if(!$this->vendor_token){
+    		if(!empty($data['cash_pickup']) && $data['cash_pickup']){
+    			$payment_modes[] = array(
+    					'title' => 'Cash Pickup',
+    					'subtitle' => 'Schedule cash payment pick up',
+    					'value' => 'cod',
+    			);
+    		}
+    		
+    		if(!empty($data['part_payment']) && $data['part_payment']){
+    			$payment_modes[] = array(
+    					'title' => 'Reserve Payment',
+    					'subtitle' => 'Pay 20% to reserve membership and pay rest on joining',
+    					'value' => 'part_payment',
+    			);
+    		}
+    	}
+    	
+    	if($this->vendor_token){
+    		
+    		$payment_modes[] = array(
+    				'title' => 'Pay at Studio',
+    				'subtitle' => 'Transact via paying cash at the Center',
+    				'value' => 'pay_at_vendor',
+    		);
+    		
+    	}
+    	
+    	return $payment_modes;
     }
 
 }

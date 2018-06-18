@@ -1214,4 +1214,5 @@ Route::get('productdetail/{ratecard_id}/{product_id}','HomeController@getProduct
 Route::get('addproducttocart/{ratecard_id}/{quantity}','HomeController@addProductToCart');
 Route::post('addproductstocart','HomeController@addProductsToCart');
 
+Route::post('transaction/capture/pr','TransactionController@pr');
 
