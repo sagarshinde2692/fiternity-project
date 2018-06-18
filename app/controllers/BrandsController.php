@@ -83,7 +83,8 @@ class BrandsController extends \BaseController {
                 ];
 
                 if(!empty($brand['vendor_stripe']) && !empty($brand['vendor_stripe']['cities']) && in_array($city_id,$brand['vendor_stripe']['cities'])){
-
+                    $data['stripe_data']['line1'] = "NEVER SEEN BEFORE DISCOUNTS";
+                    $data['stripe_data']['line2'] = "Limited Slots";
                     $data['stripe_data']['text'] = $brand['vendor_stripe']['text'];
                     $data['stripe_data']['text_color'] = $brand['vendor_stripe']['text_color'];
                     $data['stripe_data']['background-color'] = $brand['vendor_stripe']['background_color'];
@@ -95,7 +96,8 @@ class BrandsController extends \BaseController {
                     foreach ($brand['vendor_stripe'] as $value) {
 
                         if(!empty($value['cities']) && in_array($city_id,$value['cities'])){
-
+                            $data['stripe_data']['line1'] = "NEVER SEEN BEFORE DISCOUNTS";
+                            $data['stripe_data']['line2'] = "Limited Slots";
                             $data['stripe_data']['text'] = $value['text'];
                             $data['stripe_data']['text_color'] = $value['text_color'];
                             $data['stripe_data']['background-color'] = $value['background_color'];
