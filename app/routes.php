@@ -1208,4 +1208,10 @@ Route::get('addWallet','DebugController@addWallet');
 
 Route::get('getbrandvendors/{brand_id}/{city_id}', array('as' => 'finders.getbrandvendors','uses' => 'FindersController@getBrandVendors'));
 
-Route::get('etst','HomeController@etst');
+Route::get('productshome','HomeController@getProductsHome');
+Route::get('productdetail/{ratecard_id}/{product_id}','HomeController@getProductDetail');
+
+Route::get('addproducttocart/{ratecard_id}/{quantity}','HomeController@addProductToCart');
+Route::post('addproductstocart','HomeController@addProductsToCart');
+
+

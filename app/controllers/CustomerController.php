@@ -764,7 +764,6 @@ class CustomerController extends \BaseController {
 				if($response['status'] == 200 && isset($response['token']) && $response['token'] != ""){
 
 					$customerTokenDecode = $this->customerTokenDecode($response['token']);
-
 					$data["customer_id"] = (int)$customerTokenDecode->customer->_id;
 
 					$this->addCustomerRegId($data);
@@ -978,6 +977,11 @@ class CustomerController extends \BaseController {
 
 
 		$customer->last_visited = Carbon::now();
+		$cart_id=getCartOfCustomer(intval($customer->_id));
+		if(!empty($cart_id))
+		{
+			$customer->cart_id=$cart_id;
+		}
 		$customer->update();
 
 		
@@ -1295,6 +1299,8 @@ class CustomerController extends \BaseController {
 					),
 					'corporate_login'=>$this->utilities->checkCorporateEmail($customer['email'])
 				);
+		if(!empty($customer['cart_id']))
+			$data['cart_id']=$customer['cart_id'];
 		if(!empty($customer['referral_code']))
 			$data['referral_code'] = $customer['referral_code'];
 		$jwt_claim = array(

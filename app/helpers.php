@@ -2260,16 +2260,46 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
             	}
               }
             }
+            
+            if (!function_exists(('getCartOfCustomer'))) {            	
+            	function getCartOfCustomer($customer_id)
+            	{
+            		try {
+            			if(!empty($customer_id))
+            			{
+            				Cart::$withoutAppends=true;
+            				$cart=Cart::where("customer_id",intval($customer_id))->first(['_id'])->toArray();
+            				if(!empty($cart))
+            					return $cart['_id'];
+            					else {
+            						$inserted_id = Cart::max('_id') + 1;
+            						$cartNew = new Cart();
+            						$cartNew->_id=$inserted_id;
+            						$cartNew->customer_id=$customer_id;
+            						$cartNew->products=[];
+            						$cartNew->status="1";
+            						$cartNew->save();
+            						return $inserted_id;
+            					};
+            			}
+            			else return null;
+            		} catch (Exception $e) {
+            			Log::error(print_r($e,true));
+            			return null;
+            		}
+            	}
+            }
+
             if (!function_exists(('autoRegisterCustomer'))) {
 
                 function autoRegisterCustomer($data)
                 {
-					Log::info(print_r($data,true));
                 	$customer= Customer::active()->where('email', $data['customer_email'])->first();
                     
                     if (!$customer) {
 
                         $inserted_id = Customer::max('_id') + 1;
+                        
                         $customer = new Customer();
                         $customer->_id = $inserted_id;
                         $customer->rx_user = (isset($data['rx_user'])&& $data['rx_user'] !="")? true : false;
@@ -2314,6 +2344,12 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         $customer->old_customer = false;
                         $customer->demonetisation = time();
                         $customer->save();
+                        $cart_id=getCartOfCustomer(intval($inserted_id));
+                        if(!empty($cart_id))
+                        {
+                        	$customer->cart_id=$cart_id;
+                        	$customer->update();
+                        }
                         registerMail($customer->_id);
 
                         // invalidateDuplicatePhones($data, $customer->toArray());
@@ -2370,6 +2406,10 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                             }
 
                             if (count($customerData) > 0) {
+                            	$cart_id=getCartOfCustomer(intval($customer->_id));
+                            	if(!empty($cart_id))
+                            		$customer->cart_id=$cart_id;
+                            	
                                 $customer->update($customerData);
                             }
 
@@ -2388,12 +2428,13 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
 
             }
 
+            
             if(!function_exists('createCustomerToken')){
                 function createCustomerToken($customer_id){
                     
                     $customer = Customer::find($customer_id);
                     $customer = array_except($customer->toArray(), array('password'));
-
+                    
                     $customer['name'] = (isset($customer['name'])) ? $customer['name'] : "";
                     $customer['email'] = (isset($customer['email'])) ? $customer['email'] : "";
                     $customer['picture'] = (isset($customer['picture'])) ? $customer['picture'] : "";
@@ -2406,6 +2447,9 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                     
                     $customer['gender'] = (isset($customer['gender'])) ? $customer['gender'] : "";
                     $customer['rx_user'] = (isset($customer['rx_user'])) ? $customer['rx_user'] : "";
+
+
+
 //                     $customer['rx_success_url'] = (isset($customer['rx_success_url'])) ? $customer['rx_success_url'] : "";
 
                     $data = array(
@@ -2428,7 +2472,10 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                             ); 
 
                     if(!empty($customer['referral_code']))
-                    	$data['referral_code'] = $customer['referral_code'];
+                    	$data['referral_code'] = $customer['referral_code'];	
+                    if(!empty($customer['cart_id']))
+                    	$data['cart_id']=$customer['cart_id'];
+                    		
                     $jwt_claim = array(
                         "iat" => Config::get('app.jwt.iat'),
                         "nbf" => Config::get('app.jwt.nbf'),

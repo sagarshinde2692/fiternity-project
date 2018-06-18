@@ -1,6 +1,7 @@
 <?PHP namespace App\Services;
 use Carbon\Carbon;
 use Customer;
+use Cart;
 use Customerwallet;
 use Validator;
 use Response;
@@ -3572,6 +3573,21 @@ Class Utilities {
 
     }
 
+    public function productsTabCartHomeCustomer($customerId){
+    	
+    	if(empty($customerId))
+    	{
+	    	$decoded = decode_customer_token();
+	    	$customer_id = $decoded->customer->_id;    		
+    	}
+    	if(!empty($customer_id))
+    	{
+    		Cart::$withoutAppends=true;
+    		return Cart::where("customer_id",intval($customer_id))->with("customer")->first();
+    	}
+    	else return null;
+    	
+    }
     public function getFitcash($data){
 
         $finder_id = (int)$data['finder_id'];
@@ -4011,6 +4027,8 @@ Class Utilities {
         //     return 5;
         // }
     }
+    
+    
     
 }
 
