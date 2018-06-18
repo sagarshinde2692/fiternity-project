@@ -2580,7 +2580,7 @@ if (!function_exists(('time_passed_check'))){
 
     function time_passed_check($servicecategory_id)
     {      
-        $service_category_id = array(2,19,65);
+        $service_category_id = array(2,19,65, 123);
 
         return (in_array((int)$servicecategory_id,$service_category_id)) ? 15*60 : 90*60 ;
     }
