@@ -3187,7 +3187,7 @@ class FindersController extends \BaseController {
 
 						if($offer_price !== 0 && $offer_price < $cost_price){
 
-	                    	$offf_percentage = ceil((($cost_price - $offer_price) /$ratecard_price) *100);
+	                    	$offf_percentage = ceil((($cost_price - $offer_price) /$cost_price) *100);
 
 	                    	$rateval['campaign_offer'] = "Get ".$offf_percentage."% off - Limited Slots";
 							$rateval['campaign_color'] = "#43a047";
