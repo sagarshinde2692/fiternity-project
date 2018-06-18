@@ -5737,7 +5737,7 @@ class FindersController extends \BaseController {
 		$return['pps_details'] =[
 			'pps'=>[
 				'header'=>'PAY - PER - SESSION',
-				'data'=>['Convenience', 'Variety', 'No Commitment'],
+				'data'=>"Convenience • Variety • No Commitment",
 			],
 			'description'=>[
 				'header'=>'Do you relate to any one these?',
