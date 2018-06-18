@@ -3813,8 +3813,6 @@ class FindersController extends \BaseController {
 
 					$data['finder']['services'] = $this->addPPSStripe($data['finder']['services']);
 
-					return $data['finder']['services'];
-					
 					$campaign_offer = false;
 					
 					// foreach($data['finder']['services'] as $serviceKey =>$service){
