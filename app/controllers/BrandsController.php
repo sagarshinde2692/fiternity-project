@@ -14,7 +14,7 @@ class BrandsController extends \BaseController {
     }
 
 
-    public function brandDetail($slug, $city, $cache = true){
+    public function brandDetail($slug, $city, $cache = false){
         
         $brand_detail = $cache ? Cache::tags('brand_detail')->has("$slug-$city") : false;
 
@@ -41,13 +41,27 @@ class BrandsController extends \BaseController {
                 if(isset($brand->logo)){
                     $brand->logo = "https://b.fitn.in/brand/logo/".$brand->logo;
                 }
-
                 $request = [
                     'brand_id' => $brand->_id,
                     'city'  => $city
                 ];
                 
                 $finders = vendorsByBrand($request);
+                $finder_locations = ['All Locations'];
+                if(isset($finders['results'])){
+                    foreach($finders['results'] as $finder){
+                        if(isset($finder['location']) && $finder['location'] != "" && !in_array(ucwords($finder['location']), $finder_locations)){
+                            array_push($finder_locations, ucwords($finder['location']));
+                        }
+                    }
+                }
+                $brand['finder_locations'] = $finder_locations;
+                array_shift($finder_locations);
+                $locations = implode(',', $finder_locations);
+                $brand["meta_data"] = array(
+                    "title" =>$brand["name"] . " in ". ucwords($city),
+                    "description" => "List of branches in ". ucwords($city)." in areas ".$locations.". See membership offers, reviews, location, fees"
+                );
                 $data = array(
                         'brand'     => $brand,
                         'finders'    => $finders
