@@ -275,6 +275,7 @@ class Service extends \Basemodel{
                 }
 
 				$ratecard_price = $value['price'];
+				$cost_price = $value['price'];
 
 				if(isset($value['special_price']) && $value['special_price'] != 0){
 		            $ratecard_price = $value['special_price'];
@@ -297,7 +298,7 @@ class Service extends \Basemodel{
 
                     if($offer_price !== 0 && $offer_price < $ratecard_price){
 
-                    	$offf_percentage = ceil(100 - (($offer_price/$ratecard_price)*100));
+                    	$offf_percentage = ceil((($cost_price - $offer_price)/$ratecard_price)*100);
 
                     	$value['campaign_offer'] = "Get ".$offf_percentage."% off - Limited Slots";
 						$value['campaign_color'] = "#43a047";
