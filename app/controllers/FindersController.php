@@ -5752,7 +5752,7 @@ class FindersController extends \BaseController {
 
 		$return['pps_details']['more_info'] = [
 			'header'=>'See how pay per session works',
-			'description'=>""
+			'description'=>"lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum lorem ipsum "
 		];
 
 		$return['pps_details']['action'] = [
