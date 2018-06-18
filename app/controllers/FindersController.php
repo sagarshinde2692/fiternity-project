@@ -3811,7 +3811,9 @@ class FindersController extends \BaseController {
 					if(isset($data['finder']['multiaddress']	) && count($data['finder']['multiaddress'])>0 && isset($data['finder']['multiaddress'][0]['location'])){
 						$data['finder']['multiaddress']	[0]['location'] = [$finder['location']['name']];
 					}
-					
+
+					$data['finder']['services'] = $this->addPPSStripe($data['finder']['services']);
+
 					$campaign_offer = false;
 					
 					// foreach($data['finder']['services'] as $serviceKey =>$service){
@@ -4070,8 +4072,8 @@ class FindersController extends \BaseController {
 
                 $data['recommended_vendor']['title'] = "Trending near you";
                 $data['recommended_vendor']['description'] = "Checkout fitness services near you";
-                $data['recommended_vendor']['near_by_vendor'] = $nearby_other_category;
-
+				$data['recommended_vendor']['near_by_vendor'] = $nearby_other_category;
+				
 				$data = Cache::tags($cache_name)->put($cache_key, $data, Config::get('cache.cache_time'));
 
 			}
@@ -5695,4 +5697,60 @@ class FindersController extends \BaseController {
 		}
 		return $result;
 	}
+
+	public function addPPSStripe($services){
+		
+		foreach($services as &$service){
+			$pps_ratecard = null;
+			foreach($service['ratecard'] as $key => &$ratecard){
+				
+				if(isset($ratecard['type']) && $ratecard['type'] == 'workout session'){
+					$pps_exists = true;
+					$pps_ratecard = $ratecard;
+				}
+
+				if(isset($ratecard['type']) && $ratecard['type'] == 'membership'){
+					if(isset($pps_exists) && $pps_exists){
+						array_splice( $service['ratecard'], $key+1, 0, [$this->addPPSStripeData($pps_ratecard)]); 
+						break;
+					}else{
+						break;
+					}
+					
+				}
+			}
+		}
+		
+		return $services;
+	}
+
+	public function addPPSStripeData($ratecard){
+		$return = ['type'=>'pps_stripe', 'service_id'=>$ratecard['service_id'], 'finder_id'=>$ratecard['finder_id'], 'line1'=>'Not sure if you will utlize your Membership?', 'line2'=>'USE PAY - PER - SESSION', 'line3'=>'(562 Others On It)'];
+
+		$return['details'] =[
+			'pps'=>[
+				'header'=>'PAY - PER - SESSION',
+				'data'=>['Convenience', 'Variety', 'No Commitment'],
+			],
+			'description'=>[
+				'header'=>'Do you relate to any one these?',
+				'data'=>['image'=>'https://b.fitn.in/global/final_monsoon_tag.png', 'text'=>'New to fitness and want to figure what’s best?'],
+					['image'=>'https://b.fitn.in/global/final_monsoon_tag.png', 'text'=>'Wish to do a variety of different workouts?'],
+					['image'=>'https://b.fitn.in/global/final_monsoon_tag.png', 'text'=>'Not sure if you will workout everyday?'],
+				'more_info'=>[
+					'header'=>'See how pay per session works',
+					'description'=>""
+				]
+			],
+			'action_text'=>'BOOK A SESSION FOR RS '.($ratecard['special_price'] != 0 ? $ratecard['special_price'] : $ratecard['price']),
+			'assistance_text'=>'Need help? Let us assist you'
+
+		];
+
+		return $return;
+
+
+
+	}
+
 }

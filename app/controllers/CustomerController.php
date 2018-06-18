@@ -3645,7 +3645,7 @@ class CustomerController extends \BaseController {
 			$near_by_vendor_request = [
 	            "offset" => 0,
 	            "limit" => 9,
-	            "radius" => "3km",
+	            "radius" => "2km",
 	            "category"=>"",
 	            "lat"=>$lat,
 	            "lon"=>$lon,
