@@ -3158,6 +3158,7 @@ class FindersController extends \BaseController {
 					}
 
 					$ratecard_price = $rateval['price'];
+					$cost_price = $rateval['price'];
 
 					if(isset($rateval['special_price']) && $rateval['special_price'] != 0){
 			            $ratecard_price = $rateval['special_price'];
@@ -3184,9 +3185,9 @@ class FindersController extends \BaseController {
 							$rateval['remarks'] = $ratecardoffers[0]['remarks'];
 						}
 
-						if($offer_price !== 0 && $offer_price < $ratecard_price){
+						if($offer_price !== 0 && $offer_price < $cost_price){
 
-	                    	$offf_percentage = ceil(100 - (($offer_price/$ratecard_price)*100));
+	                    	$offf_percentage = ceil((($cost_price - $offer_price) /$ratecard_price) *100);
 
 	                    	$rateval['campaign_offer'] = "Get ".$offf_percentage."% off - Limited Slots";
 							$rateval['campaign_color'] = "#43a047";
