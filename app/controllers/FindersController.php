@@ -5732,7 +5732,7 @@ class FindersController extends \BaseController {
 	}
 
 	public function addPPSStripeData($ratecard){
-		$return = ['type'=>'pps_stripe', 'service_id'=>$ratecard['service_id'], 'finder_id'=>$ratecard['finder_id'], 'line1'=>'Not sure if you will utlize your Membership?', 'line2'=>'USE PAY - PER - SESSION', 'line3'=>'(562 Others On It)'];
+		$return = ['type'=>'pps_stripe', 'service_id'=>$ratecard['service_id'], 'finder_id'=>$ratecard['finder_id'], 'line1'=>'Not sure if you will utlize your Membership?', 'line2'=>'USE PAY - PER - SESSION', 'line3'=>'(562 Others On It)', '_id'=>0];
 
 		$return['details'] =[
 			'pps'=>[
