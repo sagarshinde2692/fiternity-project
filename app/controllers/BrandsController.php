@@ -69,6 +69,8 @@ class BrandsController extends \BaseController {
                 $city_id= City::where("name",'like','%'.$city.'%')->first(['_id']);
                 if(!empty($brand['vendor_stripe'])&&!empty($brand['vendor_stripe']['cities'])&&!empty($city_id)&&!empty($city_id->_id)&&in_array((int)$city_id->_id, $brand['vendor_stripe']['cities'])){
                 	$data["stripe_data"] = [
+                            'line1' => "NEVER SEEN BEFORE DISCOUNTS",
+                            'line2' => "Limited Slots",
                 			'text'=> (!empty($brand['vendor_stripe'])&&!empty($brand['vendor_stripe']['text']))?$brand['vendor_stripe']['text']:"",
                 			'background-color'=> (!empty($brand['vendor_stripe'])&&!empty($brand['vendor_stripe']['background_color']))?$brand['vendor_stripe']['background_color']:"",
                 			'text_color'=> (!empty($brand['vendor_stripe'])&&!empty($brand['vendor_stripe']['text_color']))?$brand['vendor_stripe']['text_color']:"",
@@ -78,7 +80,9 @@ class BrandsController extends \BaseController {
                 if(!(!empty($brand['vendor_stripe'])&&!empty($brand['vendor_stripe']['text'])))
                 	unset($data["stripe_data"]);
                 unset($brand['vendor_stripe']);
-                
+                if(isset($data["stripe_data"])){
+                    $data['brand']['stripe_data'] = $data["stripe_data"];
+                }
                 
                 Cache::tags('brand_detail')->put("$slug-$city" ,$data,Config::get('cache.cache_time'));
                 
