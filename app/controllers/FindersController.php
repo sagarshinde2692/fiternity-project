@@ -4249,7 +4249,7 @@ class FindersController extends \BaseController {
 						$finderData['finder']['pay_per_session'] = false;
 					}
 
-					if($_GET['device_type']=='android' && $_GET['app_version'] > 4.9){
+					if(($_GET['device_type']=='android' && $_GET['app_version'] > 4.9) || ($_GET['device_type']=='ios' && $_GET['app_version'] > 4.8)){
 						$finderData['finder']['services'] = $this->addPPSStripe($finderData['finder']['services']);
 					}
 				}
