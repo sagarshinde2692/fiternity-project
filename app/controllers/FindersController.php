@@ -1197,7 +1197,7 @@ class FindersController extends \BaseController {
 					unset($response['finder']['payment_options']);
 				}
 
-				
+				$response['finder']['services'] = $this->addPPSStripe($response['finder']['services'], 'finderdetail');
 
 				Cache::tags('finder_detail')->put($cache_key,$response,Config::get('cache.cache_time'));
 
@@ -5697,12 +5697,18 @@ class FindersController extends \BaseController {
 		return $result;
 	}
 
-	public function addPPSStripe($services){
+	public function addPPSStripe($services, $source='app'){
+		
+		$ratecard_key = 'ratecard';
+
+		if($source != 'app'){
+			$ratecard_key = 'serviceratecard';
+		}
 		
 		foreach($services as &$service){
 			$pps_ratecard = null;
 			$pps_exists = false;
-			foreach($service['ratecard'] as $key => &$ratecard){
+			foreach($service[$ratecard_key] as $key => &$ratecard){
 				
 				if(isset($ratecard['type']) && $ratecard['type'] == 'workout session'){
 					$pps_exists = true;
@@ -5711,7 +5717,7 @@ class FindersController extends \BaseController {
 
 				if(isset($ratecard['type']) && $ratecard['type'] == 'membership'){
 					if(isset($pps_exists) && $pps_exists){
-						array_splice( $service['ratecard'], $key+1, 0, [$this->addPPSStripeData($pps_ratecard)]); 
+						array_splice( $service[$ratecard_key], $key+1, 0, [$this->addPPSStripeData($pps_ratecard)]); 
 						break;
 					}else{
 						break;
