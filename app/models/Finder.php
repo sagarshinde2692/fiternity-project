@@ -178,7 +178,7 @@ class Finder extends  \Basemodel {
 	}
 
 	public function knowlarityno(){
-		return $this->hasOne('KnowlarityNo','vendor_id');
+		return $this->hasMany('KnowlarityNo','vendor_id');
 	}
 
 }
