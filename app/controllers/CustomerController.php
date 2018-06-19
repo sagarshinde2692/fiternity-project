@@ -3483,14 +3483,25 @@ class CustomerController extends \BaseController {
 				switch($city){
 					case "pune":
 						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Mumbai_APP.png";
-						$result['campaigns'][] = [
-							'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/Multifit_App.png',
-							'link'=>'',
-							'title'=>'Pledge for Fitness',
-							'height'=>100,
-							'width'=>375,
-							'ratio'=>(float) number_format(100/375,2)
-						];
+						if(intval(date('d', time())) % 2 == 0){
+							$result['campaigns'][] = [
+								'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/Multifit_App.png',
+								'link'=>'',
+								'title'=>'Pledge for Fitness',
+								'height'=>100,
+								'width'=>375,
+								'ratio'=>(float) number_format(100/375,2)
+							];
+						}else{
+							array_splice($result['campaigns'], count($result['campaigns'])-1, 0, [[
+								'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/Multifit_App.png',
+								'link'=>'',
+								'title'=>'Pledge for Fitness',
+								'height'=>100,
+								'width'=>375,
+								'ratio'=>(float) number_format(100/375,2)
+							]]);
+						}
 					break;
 					case "bangalore":
 						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Bangalore_APP.png";
