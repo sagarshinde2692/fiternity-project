@@ -93,6 +93,7 @@ class FindersController extends \BaseController {
 
 	public function finderdetail($slug, $cache = true){
 
+		Log::info($_SERVER['REQUEST_URI']);
 		
 		$data   =  array();
 		$tslug  = (string) strtolower($slug);
