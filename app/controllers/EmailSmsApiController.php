@@ -599,7 +599,7 @@ class EmailSmsApiController extends \BaseController {
                 return Response::json($decodeOrderToken,$decodeOrderToken['status']);
             }
 
-            $data = array_merge($data,$decodeOrderToken);
+            $data = array_merge($data,$decodeOrderToken['data']);
         }
 
         if($data['capture_type'] == 'sale_pre_register_2018'){

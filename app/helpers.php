@@ -3658,7 +3658,7 @@ if (!function_exists('decodeOrderToken')) {
 
             $decodedToken = json_decode(json_encode($decodedToken), true);
 
-            return ['status' => 200,'message' => 'Token incorrect','order_token'=>$decodedToken['data']];
+            return ['status' => 200,'message' => 'Token incorrect','data'=>$decodedToken['data']];
 
         }catch(DomainException $e){
 
