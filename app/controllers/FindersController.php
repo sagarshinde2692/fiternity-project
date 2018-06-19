@@ -5792,12 +5792,16 @@ class FindersController extends \BaseController {
 		if(!empty($_GET['source'])){
 			$source = $_GET['source'];
 			Log::info("web Increased ".$source);
+			$finder = Finder::find($finder['_id']);
 			$total_hits = !empty($finder['hits'][$source]) ? $finder['hits'][$source] + 1 : 1 ;
+			Log::info($total_hits);
 			Finder::where('_id', $finder['_id'])->update(['hits.'.$source =>$total_hits]);
 		}else{
 			if(!empty($finder['flags']['hyper_local'])){
 				Log::info("app Increased featured");
+				$finder = Finder::find($finder['_id']);
 				$total_hits = !empty($finder['hits']['featured_search']) ? $finder['hits']['featured_search'] + 1 : 1 ;
+				Log::info($total_hits);
 				Finder::where('_id', $finder['_id'])->update(['hits.featured_search'=>$total_hits]);
 			}else{
 				Log::info("Not Increased featured");
