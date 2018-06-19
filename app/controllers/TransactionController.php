@@ -3003,6 +3003,8 @@ class TransactionController extends \BaseController {
         $finder_category                       =    (isset($finder['category']['name']) && $finder['category']['name'] != '') ? $finder['category']['name'] : "";
         $finder_category_slug                  =    (isset($finder['category']['slug']) && $finder['category']['slug'] != '') ? $finder['category']['slug'] : "";
         $finder_flags                       =   isset($finder['flags'])  ? $finder['flags'] : new stdClass();
+        $finder_notes                        =    (isset($finder['notes']) && $finder['notes'] != '') ? $finder['notes'] : "";
+        
         $data['finder_city'] =  trim($finder_city);
         $data['finder_location'] =  ucwords(trim($finder_location));
         $data['finder_address'] =  trim($finder_address);
@@ -3026,7 +3028,7 @@ class TransactionController extends \BaseController {
         $data['category_name'] = $finder_category;
         $data['category_slug'] = $finder_category_slug;
         $data['finder_flags'] = $finder_flags;
-        
+        $data['finder_notes'] = $finder_notes;
 
         return array('status' => 200,'data' =>$data);
     }
