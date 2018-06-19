@@ -3638,9 +3638,7 @@ if (!function_exists('encodeOrderToken')) {
         $jwt_key = Config::get('jwt.order.key');
         $jwt_alg = Config::get('jwt.order.alg');
 
-        $token = JWT::encode($jwt_claim,$jwt_key,$jwt_alg);
-
-        return array('status' => 200,'message' => 'Successfull Login', 'token' => $token);
+        return $token = JWT::encode($jwt_claim,$jwt_key,$jwt_alg);
     }
 
 }
