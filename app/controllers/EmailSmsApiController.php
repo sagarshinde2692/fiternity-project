@@ -34,7 +34,8 @@ class EmailSmsApiController extends \BaseController {
         TransactionController $transactionController,
         Utilities $utilities,
         FinderMailer $findermailer,
-        FinderSms $findersms
+        FinderSms $findersms,
+        FinderMailer $findermailer
     ){
         $this->cloudagent       =   $cloudagent;
         $this->sidekiq          =   $sidekiq;
@@ -43,7 +44,6 @@ class EmailSmsApiController extends \BaseController {
         $this->utilities            =   $utilities;
         $this->findermailer             =   $findermailer;
         $this->findersms             =   $findersms;
-
         $this->vendor_token = false;
         
         $vendor_token = Request::header('Authorization-Vendor');
@@ -589,6 +589,17 @@ class EmailSmsApiController extends \BaseController {
                 $resp = array('status' => 402,'message' => "Only 2 requests are allowed");
                 return Response::json($resp,$resp['status']);
             }
+        }
+
+        if(!empty($data['order_token'])){
+
+            $decodeOrderToken = decodeOrderToken($data['order_token']);
+
+            if($decodeOrderToken['status'] != 200){
+                return Response::json($decodeOrderToken,$decodeOrderToken['status']);
+            }
+
+            $data = array_merge($data,$decodeOrderToken);
         }
 
         if($data['capture_type'] == 'sale_pre_register_2018'){
