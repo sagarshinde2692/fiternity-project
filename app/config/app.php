@@ -4,19 +4,19 @@
 return array(
 
 	//local
-	'new_search_url' =>'http://apistage.fitn.in:5000/',
-	'url' => 'http://fitapi.com',
-	'admin_url' => 'http://fitadmin.com',
-	'website' => 'https://www.fitternity.com',
-	'sidekiq_url' => 'http://kick.fitn.in/', 
-	'queue' => 'booktrial',
-	'vendor_communication' => false,
-	'env' => 'stage',
-	'debug' => TRUE,
-	'metropolis' => 'http://localhost:3030',
-	'amazonpay_isSandbox' => 'true',
-	'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
-	'website_deeplink' =>'https://ftrnty.com',
+	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
+	// 'url' => 'http://fitapi.com',
+	// 'admin_url' => 'http://fitadmin.com',
+	// 'website' => 'https://www.fitternity.com',
+	// 'sidekiq_url' => 'http://kick.fitn.in/', 
+	// 'queue' => 'booktrial',
+	// 'vendor_communication' => false,
+	// 'env' => 'stage',
+	// 'debug' => TRUE,
+	// 'metropolis' => 'http://localhost:3030',
+	// 'amazonpay_isSandbox' => 'true',
+	// 'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
+	// 'website_deeplink' =>'https://ftrnty.com',
 
 	//stage
 	'new_search_url' =>'http://apistage.fitn.in:5000/',
