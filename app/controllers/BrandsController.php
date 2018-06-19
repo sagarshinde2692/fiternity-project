@@ -62,6 +62,7 @@ class BrandsController extends \BaseController {
                     "title" =>$brand["name"] . " in ". ucwords($city),
                     "description" => "List of branches in ". ucwords($city)." in areas ".$locations.". See membership offers, reviews, location, fees"
                 );
+                $brand['stats_data'] = (!empty($finders['metadata']['total_records']) ? $finders['metadata']['total_records'] : 0).' Outlets';
                 $data = array(
                         'brand'     => $brand,
                         'finders'    => $finders
@@ -69,8 +70,9 @@ class BrandsController extends \BaseController {
                 $city_id= City::where("name",'like','%'.$city.'%')->first(['_id']);
                 if(!empty($brand['vendor_stripe'])&&!empty($brand['vendor_stripe']['cities'])&&!empty($city_id)&&!empty($city_id->_id)&&in_array((int)$city_id->_id, $brand['vendor_stripe']['cities'])){
                 	$data["stripe_data"] = [
-                            'line1' => "NEVER SEEN BEFORE DISCOUNTS",
-                            'line2' => "Limited Slots",
+                            'header' => "NEVER SEEN BEFORE DISCOUNTS",
+                            'sub_title' => "• Limited Slots •",
+                			'title'=> (!empty($brand['vendor_stripe'])&&!empty($brand['vendor_stripe']['text']))?$brand['vendor_stripe']['text']:"",
                 			'text'=> (!empty($brand['vendor_stripe'])&&!empty($brand['vendor_stripe']['text']))?$brand['vendor_stripe']['text']:"",
                 			'background-color'=> (!empty($brand['vendor_stripe'])&&!empty($brand['vendor_stripe']['background_color']))?$brand['vendor_stripe']['background_color']:"",
                 			'text_color'=> (!empty($brand['vendor_stripe'])&&!empty($brand['vendor_stripe']['text_color']))?$brand['vendor_stripe']['text_color']:"",
