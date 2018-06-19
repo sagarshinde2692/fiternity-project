@@ -2268,9 +2268,9 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
             			if(!empty($customer_id))
             			{
             				Cart::$withoutAppends=true;
-            				$cart=Cart::where("customer_id",intval($customer_id))->first(['_id'])->toArray();
+            				$cart=Cart::where("customer_id",intval($customer_id))->first(['_id']);
             				if(!empty($cart))
-            					return $cart['_id'];
+            					return $cart->_id;
             					else {
             						$inserted_id = Cart::max('_id') + 1;
             						$cartNew = new Cart();
@@ -2404,14 +2404,11 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                                 }
 
                             }
-
-                            if (count($customerData) > 0) {
                             	$cart_id=getCartOfCustomer(intval($customer->_id));
                             	if(!empty($cart_id))
                             		$customer->cart_id=$cart_id;
                             	
                                 $customer->update($customerData);
-                            }
 
                         } catch (ValidationException $e) {
 

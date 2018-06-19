@@ -3,6 +3,7 @@ use Carbon\Carbon;
 use Customer;
 use Cart;
 use Customerwallet;
+use ProductRatecard;
 use Validator;
 use Response;
 use Config;
@@ -4038,6 +4039,172 @@ Class Utilities {
     }
     
     
-    
+	public function baseFailureStatusMessage($e)
+	{
+		$message = ['type'    => get_class($e),'message' => $e->getMessage(),'file'=> $e->getFile(),'line'=> $e->getLine()];
+		return  $message['type'].' : '.$message['message'].' in '.$message['file'].' on '.$message['line'];
+	}
+	
+	
+	public function addProductsToCart($cartDataInput=[],$cart_id=null)
+	{
+		try {
+			if(empty($cartDataInput))
+			{
+				$data = Input::json()->all();
+				$cartDataInput=(!empty($data['cart_data'])?$data['cart_data']:[]);
+			}
+			$response=["status"=>1,"response"=>["message"=>"Success"]];
+			$jwt_token = Request::header("Authorization");
+			if(!empty($jwt_token)||!empty($cart_id))
+			{
+				if(!empty($jwt_token))
+				{
+					$token_decoded=decode_customer_token();
+					$cart_id=((!empty($token_decoded->customer)&&!empty($token_decoded->customer->cart_id))?$token_decoded->customer->cart_id:null);					
+				}
+				else $cart_id=intval($cart_id);
+				if(!empty($cart_id)&&!empty($cartDataInput))
+				{
+					$cartData=[];
+					$cartDataExtended=[];
+					$cartDataRatecards=array_column($cartDataInput, 'ratecard_id');
+					$cartDataUnique=count(array_unique($cartDataRatecards));
+					$cartQuantityCount=count(array_column($cartDataInput, 'quantity'));
+					$cartRatecardsCount=count($cartDataRatecards);
+					if($cartRatecardsCount>0&&$cartQuantityCount>0&&$cartQuantityCount==$cartRatecardsCount)
+					{
+						$ratecards=ProductRatecard::active()->whereIn("_id",array_map('intval',$cartDataRatecards))->with(array('product'=>function($query){$query->select('_id','slug','title','slug','info','specification');}))->get(['price','product_id','title','color','size']);
+						if(!empty($ratecards))
+						{
+							$ratecards=$ratecards->toArray();
+							if($cartDataUnique!=count($ratecards))
+								return ['status'=>0,"message"=>"Invalid Ratecard Found."];
+							foreach ($ratecards as &$ratecard)
+							{
+								$neededObject = array_values(array_filter($cartDataInput,function ($e) use ($ratecard) {return $e['ratecard_id']== $ratecard['_id'];}));
+								if(!empty($neededObject)&&count($neededObject)>0)
+									$neededObject=$neededObject[0];
+									if(!empty($ratecard)&&!empty($neededObject)&&!empty($neededObject['quantity'])&&!empty($ratecard['product_id'])&&!empty($ratecard['_id'])&&isset($ratecard['price']))
+									{
+										array_push($cartData, ["product_id"=>$ratecard['product_id'],"ratecard_id"=>$ratecard['_id'],"price"=>$ratecard['price'],"quantity"=>intval($neededObject['quantity'])]);
+										$tmpRatecardinfo=['_id'=>!empty($ratecard['_id'])?$ratecard['_id']:"",'title'=>!empty($ratecard['title'])?$ratecard['title']:"",'color'=>!empty($ratecard['color'])?$ratecard['color']:"",
+												'size'=>!empty($ratecard['size'])?$ratecard['size']:"",'slug'=>!empty($ratecard['slug'])?$ratecard['slug']:""];
+										array_push($cartDataExtended, ["product"=>$ratecard['product'],"ratecard"=>$tmpRatecardinfo,"price"=>$ratecard['price'],"quantity"=>intval($neededObject['quantity'])]);
+										
+									}
+										else return ['status'=>0,"message"=>"Not a valid ratecard or ratecard doesn't exist."];
+							}
+							$addedToCart=Cart::where('_id', intval($cart_id))->first();
+							$addedToCart=$addedToCart->update(['products'=>$cartData]);					
+							$response['response']['data']=$cartDataExtended;
+							return $response;
+						}
+						else return ['status'=>0,"message"=>"No product Ratecards Found."];
+					}
+					else return ['status'=>0,"message"=>"Invalid Cart Input data."];
+				}
+				else return ['status'=>0,"message"=>"No Data To insert or cart Id is invalid/absent."];
+			}
+			else return ['status'=>0,"message"=>"Token Not Present"];
+			
+			return $response;
+		} catch (Exception $e) 
+		{
+			return  ['status'=>0,"message"=>$this->baseFailureStatusMessage($e)];
+		}
+		
+	}
+	public function getProductCartAmount($data)
+	{
+		try {
+			$resp=["status"=>1,"message"=>"success",'amount'=>[]];
+			$cart_data =$data['cart_data'];
+			$amount=0;
+			foreach ($cart_data as $cart_item)
+				$amount=$amount+(intval($cart_item['quantity'])*intval($cart_item['price']));
+				
+				
+				// KINDLY ADD WALLET AMOUNT HERE TO BE SUBTRACTED
+				// GET WALLET CALCULATED AMOUNT FROM DIFF FUNCTION
+				// MAKE DIFFERENT VARIABLE FOR WALLET AMOUNT ADD IT IN RESPONSE IN DATA WITH KEY wallet amount
+				
+				
+				// KINDLY ADD COUPON OFF AMOUNT HERE TO BE SUBTRACTED
+				// GET COUPON CALCULATED AMOUNT FROM DIFF FUNCTION
+				// MAKE DIFFERENT VARIABLE FOR WALLET AMOUNT ADD IT IN RESPONSE IN DATA WITH KEY coupon_amount
+				
+				
+				
+				
+				// AFTER CALCULATION SHOW ONLY DEDUCTION HERE
+				// $amount = $amount - $walletamuount - $couponAmount + $convinience_fee; 
+				
+				
+				
+				// FINALLY RETURN
+			
+				$resp['amount']['final']=$amount;
+				return $resp;
+		} catch (Exception $e) 
+		{
+			return  ['status'=>0,"message"=>$this->baseFailureStatusMessage($e)];
+		}
+		
+	}
+	
+	public function getProductHash($data)
+	{
+		try {
+			$resp=["status"=>1,"message"=>"success"];
+			$createdData=[];
+			$env = (!empty($data['env']) && $data['env'] == 1) ? "stage" : "production";
+			
+			$key = 'gtKFFx';
+			$salt = 'eCwWELxi';
+			
+			if($env == "production"){
+				$key = 'l80gyM';$salt = 'QBl78dtK';
+			}
+			
+			$txnid = $data['payment']['txnid'];
+			$amount = $data['amount_calculated']['final']; 
+			$productinfo=$createdData['productinfo'] =implode("_",array_map('strtolower', array_column($data['cart_data'],"ratecard_id")));
+			
+			$firstname = strtolower($data['customer']['customer_name']);
+			$email = strtolower($data['customer']['customer_email']);
+			$udf1 = "";
+			$udf2 = "";
+			$udf3 = "";
+			$udf4 = "";
+			$udf5 = "";
+			
+			$payhash_str = $key.'|'.$txnid.'|'.$amount.'|'.$productinfo.'|'.$firstname.'|'.$email.'|'.$udf1.'|'.$udf2.'|'.$udf3.'|'.$udf4.'|'.$udf5.'||||||'.$salt;
+			
+			$createdData['payment_hash'] = hash('sha512', $payhash_str);
+			
+			$verify_str = $salt.'||||||'.$udf5.'|'.$udf4.'|'.$udf3.'|'.$udf3.'|'.$udf2.'|'.$udf1.'|'.$email.'|'.$firstname.'|'.$productinfo.'|'.$amount.'|'.$txnid.'|'.$key;
+			
+			$createdData['verify_hash'] = hash('sha512', $verify_str);
+			
+			$cmnPaymentRelatedDetailsForMobileSdk1              =   'payment_related_details_for_mobile_sdk';
+			$detailsForMobileSdk_str1                           =   $key  . '|' . $cmnPaymentRelatedDetailsForMobileSdk1 . '|default|' . $salt ;
+			$detailsForMobileSdk1                               =   hash('sha512', $detailsForMobileSdk_str1);
+			$createdData['payment_related_details_for_mobile_sdk_hash'] =   $detailsForMobileSdk1;
+			$resp['data']=$createdData;
+			return $resp;
+		} catch (Exception $e)
+		{
+			return  ['status'=>0,"message"=>$this->baseFailureStatusMessage($e)];
+		}
+		
+	}
+	public function groupBy($array,$key) {
+		$return = array();
+		foreach($array as $val) {
+			$return[$val[$key]][] = $val;
+		}
+		return $return;
+	}
 }
 

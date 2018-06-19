@@ -4518,30 +4518,18 @@ class HomeController extends BaseController {
         		
         		$home=["status"=>1,"response"=>["products"=>[]]];
         		$homeData=Homepage::active()->where("type","product_tab")->first()->toArray();
-        		/* function my_sort($a,$b)
-        		{
-        			return ($a['base']==$b['base'])?0:($a['base']<$b['base'])?-1:1;
-        		} */
+        		
+        		
+        		
+        		
         		$t=&$homeData['home'];
-//         		usort($t,"my_sort");
         		$this->utilities->customSort('base',$t);
 
-        		function _group_by($array,$key) {
-        			$return = array();
-        			foreach($array as $val) {
-        				$return[$val[$key]][] = $val;
-        			}
-        			return $return;
-        		}
-        		$tp=_group_by($t,'base');
-        		/* function my_sort1($a,$b)
-        		{
-        			return ($a['index']==$b['index'])?0:($a['index']<$b['index'])?-1:1;
-        		} */
-        		foreach($tp as &$val) {
-//         			usort($val,"my_sort1");
+        		$tp=$this->utilities->groupBy($t,'base');
+        		
+        		foreach($tp as &$val) 
         			$this->utilities->customSort('index',$val);
-        		}
+        		
         		foreach($tp as &$val) {
         			foreach($val as &$vala) {
         				unset($vala["index"]);unset($vala["base"]);
@@ -4561,21 +4549,12 @@ class HomeController extends BaseController {
         		}
         		return $home;
         	} catch (Exception $e) {
-        		$message = array(
-        				'type'    => get_class($e),
-        				'message' => $e->getMessage(),
-        				'file'    => $e->getFile(),
-        				'line'    => $e->getLine(),
-        		);
-        		
-//         		Log::error(" info ".$e->getTraceAsString());
-        		
-        		return  Response::json(['status'=>0,"message"=>$message['type'].' : '.$message['message'].' in '.$message['file'].' on '.$message['line']]);
+        		return ['status'=>0,"message"=>$this->utilities->baseFailureStatusMessage($e)];
         	}
         		
         }
     
-        public function addProductToCart($ratecard_id,$quantity=1,$cache=true)
+        public function addProductToCart($ratecard_id,$quantity=1)
         {
         	try {
         		$ratecard_id=intval($ratecard_id);
@@ -4594,84 +4573,24 @@ class HomeController extends BaseController {
         				{
         					$ratecard=$ratecard->toArray();
         					$cartData=["product_id"=>$ratecard['product_id'],"ratecard_id"=>$ratecard['_id'],"price"=>$ratecard['price'],"quantity"=>quantity];
+        					$removedOldFromCart=Cart::where('_id', intval($cart_id))->pull('products', ['ratecard_id' => intval($ratecard['_id']), 'product_id' => intval($ratecard['product_id'])]);
         					$addedToCart=Cart::where('_id', intval($cart_id))->push('products',$cartData);
         					return $response;
         				}
-        				return Response::json(['status'=>0,message=>"Not a valid ratecard or ratecard doesn't exist."]);	
+        				return Response::json(['status'=>0,"message"=>"Not a valid ratecard or ratecard doesn't exist."]);	
         			}
         		}
-        		else return Response::json(['status'=>0,message=>"Token Not Present"]);
+        		else return Response::json(['status'=>0,"message"=>"Token Not Present"]);
         	   return $response;
-        	} catch (Exception $e) {
-        		$message = array(
-        				'type'    => get_class($e),
-        				'message' => $e->getMessage(),
-        				'file'    => $e->getFile(),
-        				'line'    => $e->getLine(),
-        		);
-        		
-        		return  Response::json(['status'=>0,"message"=>$message['type'].' : '.$message['message'].' in '.$message['file'].' on '.$message['line']]);
+        	} catch (Exception $e) 
+        	{
+        		return  Response::json(['status'=>0,"message"=>$this->utilities->baseFailureStatusMessage($e)]);
         	}
         }
         
         public function addProductsToCart($cartDataInput=[])
         {
-        	try {
-        		if(empty($cartDataInput))
-        		{
-        			$data = Input::json()->all();
-        			$cartDataInput=(!empty($data['cart_data'])?$data['cart_data']:[]); 
-        		}
-        		$response=["status"=>1,"response"=>["message"=>"Success"]];
-        		$jwt_token = Request::header("Authorization");
-        		if(!empty($jwt_token))
-        		{
-        			$token_decoded=decode_customer_token();
-        			$cart_id=((!empty($token_decoded->customer)&&!empty($token_decoded->customer->cart_id))?$token_decoded->customer->cart_id:null);
-        			if(!empty($cart_id)&&!empty($cartDataInput))
-        			{
-        				$cartData=[];
-        				$cartDataRatecards=array_column($cartDataInput, 'ratecard_id');
-        				$cartQuantityCount=count(array_column($cartDataInput, 'quantity'));
-        				$cartRatecardsCount=count($cartDataRatecards);
-        				if($cartRatecardsCount>0&&$cartQuantityCount>0&&$cartQuantityCount==$cartRatecardsCount)
-        				{
-	        				$ratecards=ProductRatecard::active()->whereIn("_id",array_map('intval',$cartDataRatecards))->get(['price','product_id']);
-	        				if(!empty($ratecards))
-	        				{
-	        					$ratecards=$ratecards->toArray();
-	        					foreach ($ratecards as &$ratecard)
-	        					{
-	        						$neededObject = array_values(array_filter($cartDataInput,function ($e) use ($ratecard) {	return $e['ratecard_id']== $ratecard['_id'];}));
-	        						if(!empty($neededObject)&&count($neededObject)>0)
-	        							 $neededObject=$neededObject[0];
-	        						if(!empty($ratecard)&&!empty($neededObject)&&!empty($neededObject['quantity'])&&!empty($ratecard['product_id'])&&!empty($ratecard['_id'])&&isset($ratecard['price']))
-	        							array_push($cartData, ["product_id"=>$ratecard['product_id'],"ratecard_id"=>$ratecard['_id'],"price"=>$ratecard['price'],"quantity"=>intval($neededObject['quantity'])]);
-	        						else return Response::json(['status'=>0,"message"=>"Not a valid ratecard or ratecard doesn't exist."]);
-	        					}
-	        					$addedToCart=Cart::where('_id', intval($cart_id))->first();
-	        					$addedToCart=$addedToCart->update(['products'=>$cartData]);
-	        					return $response;
-	        				}
-	        				else return Response::json(['status'=>0,"message"=>"No product Ratecards Found."]);
-        					
-        				}
-        				else return Response::json(['status'=>0,"message"=>"Invalid Input data."]);
-        			}
-        			else return Response::json(['status'=>0,"message"=>"No Data To insert or cart Id is invalid/absent."]);
-        		}
-        		else return Response::json(['status'=>0,"message"=>"Token Not Present"]);
-        		
-        		return $response;
-        	} catch (Exception $e) {
-        		$message = array(
-        				'type'    => get_class($e),
-        				'message' => $e->getMessage(),
-        				'file'    => $e->getFile(),
-        				'line'    => $e->getLine(),
-        		);
-        		return  Response::json(['status'=>0,"message"=>$message['type'].' : '.$message['message'].' in '.$message['file'].' on '.$message['line']]);
-        	}
+        	return Response::json($this->utilities->addProductsToCart($cartDataInput));
         }
         
         public function getProductDetail($ratecard_id,$product_id,$cache=false)
@@ -4700,15 +4619,6 @@ class HomeController extends BaseController {
         		$productInfo=(!empty($productView['info'])?$productView['info']:"");
         		$productFeatures=((!empty($productView['specification'])&&!empty($productView['specification']['primary'])&&!empty($productView['specification']['primary']['features']))?$productView['specification']['primary']['features']:[]);
         		$productSpecsSecondary=((!empty($productView['specification'])&&!empty($productView['specification']['secondary']))?$productView['specification']['secondary']:[]);
-        		
-        		
- /*        		function my_sort($a,$b)
-        		{
-        			if(empty($key))
-        				return null;
-        				else return ($a['order']==$b['order'])?0:($a['order']<$b['order'])?-1:1;
-        		} 
-        		usort($productSpecsSecondary,"my_sort");*/
         			
         		$this->utilities->customSort('order',$productSpecsSecondary);
         		foreach ($productSpecsSecondary as &$value) {
@@ -4716,13 +4626,9 @@ class HomeController extends BaseController {
         		}
         		return ["status"=>1,"response"=>["selected_product"=>$selectedRatecard,"detail"=>["info"=>$productInfo,"features"=>$productFeatures,"more_info"=>$productSpecsSecondary],"similar"=>$productSimilar]];
         	} catch (Exception $e) {
-        		$message = array(
-        				'type'    => get_class($e),
-        				'message' => $e->getMessage(),
-        				'file'    => $e->getFile(),
-        				'line'    => $e->getLine(),
-        		);
-        		return  Response::json(['status'=>0,"message"=>$message['type'].' : '.$message['message'].' in '.$message['file'].' on '.$message['line']]);
+        		return ['status'=>0,"message"=>$this->utilities->baseFailureStatusMessage($e)];
         	}
         }
+        
+       
 }
