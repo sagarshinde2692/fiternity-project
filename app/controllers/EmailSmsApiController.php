@@ -587,6 +587,17 @@ class EmailSmsApiController extends \BaseController {
             }
         }
 
+        if(!empty($data['order_token'])){
+
+            $decodeOrderToken = decodeOrderToken($data['order_token']);
+
+            if($decodeOrderToken['status'] != 200){
+                return Response::json($decodeOrderToken,$decodeOrderToken['status']);
+            }
+
+            $data = array_merge($data,$decodeOrderToken);
+        }
+
         if($data['capture_type'] == 'sale_pre_register_2018'){
 
             $rules = [
