@@ -96,7 +96,7 @@ return array(
 		// 	'port'     => 27017,
 		// 	'database' => 'fitadminnew',
         //     'username' => $username,
-        //     'password' => $password
+        //     'password' => $password,
 		// ),
 
 
