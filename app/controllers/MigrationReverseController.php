@@ -806,7 +806,10 @@ class MigrationReverseController extends \BaseController {
                 'poc'                                   => $finder_poc
             ];
 
-    
+            if(!empty($Finder['notes'])){
+
+                $insertData['notes'] = $Finder['notes'];
+            }
 
             $insertData['vip_trial']                    = (isset($Finder->vip_trial) &&  $Finder['vip_trial'] == true ) ? '1' : '0';
             $insertData['finder_type']                    = (isset($insertData['commercial_type']) && !empty(($insertData['commercial_type'])) ) ? (( $insertData['commercial_type'] == 1  || $insertData['commercial_type'] == 3 ) ? 1: 0) :0;
