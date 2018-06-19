@@ -550,15 +550,6 @@ class HomeController extends BaseController {
                     'width'=>375,
                     'ratio'=>(float) number_format(100/375,2)
                 ];
-                $campaigns[] = [
-                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/monsoon.png',
-                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/monsoon-mob.png',
-                    'link'=>Config::get('app.website').'/'.$city.'/fitness?trials=1',
-                    'title'=>'Pay Per Session',
-                    'height'=>100,
-                    'width'=>375,
-                    'ratio'=>(float) number_format(100/375,2)
-                ];
                 break;
             }
             
