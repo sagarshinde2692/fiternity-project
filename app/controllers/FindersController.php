@@ -938,7 +938,8 @@ class FindersController extends \BaseController {
                       "id",
                       "city",
                       "category",
-                      "overlayimage"
+					  "overlayimage",
+					  "featured"
                     ],
                     "not"=>[
                     	"vendor"=>[(int)$finderdata["_id"]],
@@ -970,7 +971,8 @@ class FindersController extends \BaseController {
                       "id",
                       "city",
                       "category",
-                      "overlayimage"
+					  "overlayimage",
+					  "featured"
                     ],
                     "not"=>[
                     	"vendor"=>[(int)$finderdata["_id"]],
