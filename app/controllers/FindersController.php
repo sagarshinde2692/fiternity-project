@@ -1243,6 +1243,15 @@ class FindersController extends \BaseController {
 		// 	$response['finder']['offer_icon_mob']        =        "https://a.fitn.in/fitimages/fitmania/offer_available_sale.svg";
 		// }
 		$response['finder']['offer_icon']        =        "https://a.fitn.in/fitimages/vendor-app-download-badge1.svg";
+		try{
+			if(!empty($_GET['source'])){
+				$this->updateFinderHit($response['finder']);
+			}else{
+				Log::info("Not increasing hits");
+			}
+		}catch(Exception $e){
+			Log::info($e);
+		}
 
 		// if(time() >= strtotime(date('2016-12-24 00:00:00')) && (int)$response['finder']['commercial_type'] != 0){
 
@@ -3159,6 +3168,7 @@ class FindersController extends \BaseController {
 					}
 
 					$ratecard_price = $rateval['price'];
+					$cost_price = $rateval['price'];
 
 					if(isset($rateval['special_price']) && $rateval['special_price'] != 0){
 			            $ratecard_price = $rateval['special_price'];
@@ -3185,9 +3195,9 @@ class FindersController extends \BaseController {
 							$rateval['remarks'] = $ratecardoffers[0]['remarks'];
 						}
 
-						if($offer_price !== 0 && $offer_price < $ratecard_price){
+						if($offer_price !== 0 && $offer_price < $cost_price){
 
-	                    	$offf_percentage = ceil(100 - (($offer_price/$ratecard_price)*100));
+	                    	$offf_percentage = ceil((($cost_price - $offer_price) /$cost_price) *100);
 
 	                    	$rateval['campaign_offer'] = "Get ".$offf_percentage."% off - Limited Slots";
 							$rateval['campaign_color'] = "#43a047";
@@ -4087,7 +4097,11 @@ class FindersController extends \BaseController {
 			$finder = Finder::active()->where('slug','=',$tslug)->first();
 
 			if($finder){
-
+				try{
+						$this->updateFinderHit($finder);
+				}catch(Exception $e){
+					Log::info($e);
+				}
 				$finderData['finder']['title'] = str_replace('crossfit', 'CrossFit', $finder['title']);
 				$finderData['finder']['title'] = str_replace('Crossfit', 'CrossFit', $finder['title']);
 				if(Request::header('Authorization')){
@@ -5771,4 +5785,21 @@ class FindersController extends \BaseController {
 
 	}
 
+	public function updateFinderHit($finder){
+		if(!empty($_GET['source'])){
+			$source = $_GET['source'];
+			Log::info("web Increased ".$source);
+			$total_hits = !empty($finder['hits'][$source]) ? $finder['hits'][$source] + 1 : 1 ;
+			Finder::where('_id', $finder['_id'])->update(['hits.'.$source =>$total_hits]);
+		}else{
+			if(!empty($finder['flags']['hyper_local'])){
+				Log::info("app Increased featured");
+				$total_hits = !empty($finder['hits']['featured_search']) ? $finder['hits']['featured_search'] + 1 : 1 ;
+				Finder::where('_id', $finder['_id'])->update(['hits.featured_search'=>$total_hits]);
+			}else{
+				Log::info("Not Increased featured");
+			}
+		}
+		
+	}
 }
