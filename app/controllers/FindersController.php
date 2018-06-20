@@ -3140,6 +3140,7 @@ class FindersController extends \BaseController {
 									$ratecardoffer                  =   $ratecardoffersRecard;
 									$ratecardoffer['offer_text']    =   "";
 									$ratecardoffer['offer_icon']    =   "https://b.fitn.in/global/final_monsoon_tag.png";
+									$ratecardoffer['offer_color'] 	= 	"#5EBBBA";
 
 									if(isset($rateval['flags'])){
 

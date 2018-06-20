@@ -3354,7 +3354,7 @@ class CustomerController extends \BaseController {
 				$cat['bangalore'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates"/*,"healthy-tiffins"*/,"cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling","luxury-hotels","swimming"/*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
 				$cat['delhi'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates"/*,"healthy-tiffins"*/,"cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling","luxury-hotels","swimming"/*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
 				$cat['gurgaon'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates"/*,"healthy-tiffins"*/,"cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling"/*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
-				$cat['noida'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"cross-functional-training","mma-and-kick-boxing","dance","kids-fitness","pre-natal-classes");
+				$cat['noida'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"cross-functional-training","mma-and-kick-boxing","dance",/*"kids-fitness","pre-natal-classes"*/);
 				if(isset($cat[$city])){
 					$category_slug = $cat[$city];
 				}

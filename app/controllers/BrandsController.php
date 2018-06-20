@@ -55,6 +55,9 @@ class BrandsController extends \BaseController {
                         }
                     }
                 }
+
+                sort($finder_locations);
+                
                 $brand['finder_locations'] = $finder_locations;
                 array_shift($finder_locations);
                 $locations = implode(',', $finder_locations);
