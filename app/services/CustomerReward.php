@@ -242,14 +242,14 @@ Class CustomerReward {
 
                                 $reward_type_info = 'fitness_kit';
 
-                                $reward['contents'] = ['Cool-Water Bottle'];
+                                $reward['content'] = ['Cool-Water Bottle'];
                                 $reward['image'] = 'https://b.fitn.in/gamification/reward/goodies/productskit/bottle.png';
 
                             }else{
 
                                 $reward_type_info = 'fitness_kit_2';
 
-                                $reward['contents'] = ['Waterproof Gym Bag'];
+                                $reward['content'] = ['Waterproof Gym Bag'];
                                 $reward['image'] = 'https://b.fitn.in/gamification/reward/goodies/productskit/gymbag.png';
                             }
                             
@@ -261,7 +261,7 @@ Class CustomerReward {
 
                             $reward_type_info = 'fitness_kit';
 
-                            $reward['contents'] = ['Waterproof Gym Bag'];
+                            $reward['content'] = ['Waterproof Gym Bag'];
                             $reward['image'] = 'https://b.fitn.in/gamification/reward/goodies/productskit/gymbag.png';
                         }
 
