@@ -237,7 +237,7 @@ Class CustomerReward {
 
                                 $reward['payload_amount'] = $data_value['amount'];
                                 $reward['new_amount'] = $data_value['amount'];
-                                $reward['title'] = "Workout Session";
+                                $reward['title'] = "Workout Session Package";
                                 $reward['contents'] = ['Workout Session'];
                                 $reward['gallery'] = [];
                                 $reward['description'] = $session_content;
@@ -270,7 +270,7 @@ Class CustomerReward {
 
                                 $reward['payload_amount'] = $data_value['amount'];
                                 $reward['new_amount'] = $data_value['amount'];
-                                $reward['title'] = "Swimming Session";
+                                $reward['title'] = "Swimming at 5-star Hotels";
                                 $reward['contents'] = ['Swimming Session'];
                                 $reward['gallery'] = [];
                                 $reward['description'] = $session_content;
