@@ -4069,7 +4069,7 @@ class FindersController extends \BaseController {
 
                 $nearby_other_category = geoLocationFinder($nearby_other_category_request);
 
-                $data['recommended_vendor']['title'] = "Trending near you";
+                $data['recommended_vendor']['title'] = "Other popular options in ".$finderarr["location"]["name"];
                 $data['recommended_vendor']['description'] = "Checkout fitness services near you";
                 $data['recommended_vendor']['near_by_vendor'] = $nearby_other_category;
 
