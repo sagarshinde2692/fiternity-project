@@ -4432,12 +4432,22 @@ class SchedulebooktrialsController extends \BaseController {
         array_set($bookdata, 'cancellation_reason_vendor', $reason);
         array_set($bookdata, 'final_lead_stage', 'cancel_stage');
         array_set($bookdata, 'final_lead_status', 'cancelled_by_'.$source_flag);
+
         if($source_flag == 'vendor'){
             array_set($bookdata, 'pre_trial_vendor_confirmation', 'cancel');
         }
+
         if($booktrial['type']=='workout-session'){
             array_set($bookdata, 'final_lead_stage', 'trial_stage');
             array_set($bookdata, 'post_trial_status', 'no show');
+
+        }else{
+
+            if(!empty($booktrial['schedule_date_time']) && time() < strtotime($booktrial['schedule_date_time'])){
+
+                array_set($bookdata, 'final_lead_stage', 'trial_stage');
+            }
+
         }
 
         array_set($bookdata, 'cancel_by', $source_flag);
