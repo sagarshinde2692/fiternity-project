@@ -2724,7 +2724,11 @@ class TransactionController extends \BaseController {
         if($ratecard['type'] == 'workout session' && isset($ratecard['vendor_price']) && $ratecard['vendor_price'] != ''){
             $data['vendor_price'] = $ratecard['vendor_price'];
         }
-
+        
+        if(!isset($data['type'])){
+            $data['type'] = $ratecard['type'];
+        }
+        
         if($ratecard['finder_id'] == 8892 && $ratecard['type'] == 'workout session'){
             $data['vendor_price'] = 990;
         }
