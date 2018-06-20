@@ -3474,7 +3474,7 @@ class CustomerController extends \BaseController {
 			if($city != "ahmedabad"){
 				$result['campaigns'][] = [
 					'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Mumbai_APP.png',
-					'link'=>'',
+					'link'=>'ftrnty://ftrnty.com/s?brand=golds-gym&city='.strtolower($city),
 					'title'=>'Pledge for Fitness',
 					'height'=>100,
 					'width'=>375,
