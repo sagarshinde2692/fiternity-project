@@ -2224,8 +2224,6 @@ class SchedulebooktrialsController extends \BaseController {
                 $booktrialdata['ratecard_remarks'] = $order['ratecard_remarks'];
             }
 
-            $booktrialdata['surprise_fit_cash'] = $this->utilities->getFitcash(['finder_id'=>$finderid]);
-
             if(!empty($order['manual_order'])){
                 $booktrialdata['manual_order'] = $order['manual_order'];
             }
@@ -2328,6 +2326,8 @@ class SchedulebooktrialsController extends \BaseController {
             }
 
             $booktrialdata['give_fitcash_plus'] = $give_fitcash_plus;
+
+            $booktrialdata['surprise_fit_cash'] = $this->utilities->getFitcash($booktrialdata);
 
             $this->utilities->demonetisation($order);
 
@@ -3336,8 +3336,6 @@ class SchedulebooktrialsController extends \BaseController {
                 $booktrialdata['assisted_by'] = $data['assisted_by'];
             }
 
-            $booktrialdata['surprise_fit_cash'] = $this->utilities->getFitcash(['finder_id'=>$finderid]);
-
             if(!empty($data['manual_order'])){
                 $booktrialdata['manual_order'] = $data['manual_order'];
             }
@@ -3413,6 +3411,8 @@ class SchedulebooktrialsController extends \BaseController {
             if(isset($data['recommended_booktrial_id']) && $data['recommended_booktrial_id'] != ""){
                 $booktrialdata['recommended_booktrial_id'] = (int)$data['recommended_booktrial_id'];
             }
+
+            $booktrialdata['surprise_fit_cash'] = $this->utilities->getFitcash($booktrialdata);
 
             if(isset($data['_id'])){
                 $booktrialid = (int) $data['_id'];
@@ -4008,7 +4008,7 @@ class SchedulebooktrialsController extends \BaseController {
             }
 
             if(!isset($booktrial['surprise_fit_cash'])){
-                $booktrialdata['surprise_fit_cash'] = $this->utilities->getFitcash(['finder_id'=>$finderid]);
+                $booktrialdata['surprise_fit_cash'] = $this->utilities->getFitcash($booktrial->toArray());
             }
 
             if(!isset($booktrial['vendor_code'])){
@@ -5113,7 +5113,7 @@ class SchedulebooktrialsController extends \BaseController {
         $booktrial['fit_code'] = $this->utilities->fitCode($booktrial);
 
         if(empty($booktrial['surprise_fit_cash'])){
-            $booktrial['surprise_fit_cash'] = $this->utilities->getFitcash(['finder_id'=>$booktrial['finder_id']]);
+            $booktrial['surprise_fit_cash'] = $this->utilities->getFitcash($booktrial);
 
             $booktrialModel->surprise_fit_cash = $booktrial['surprise_fit_cash'];
             $booktrialModel->update();
@@ -7076,7 +7076,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             $booktrial->post_trial_status = 'attended';
 
-            $fitcash_amount = $this->utilities->getFitcash(['finder_id'=>$booktrial['finder_id']]);
+            $fitcash_amount = $this->utilities->getFitcash($booktrial->toArray());
             
             $this->updateOrderStatus($booktrial);
             
