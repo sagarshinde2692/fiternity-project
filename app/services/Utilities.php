@@ -1062,10 +1062,9 @@ Class Utilities {
                             }
 
                             $value['claimed'] += 1;
-
+                            
                             $myreward->coupon_detail = $coupon_detail;
                             $myreward->update();
-
                             break;
                         }
 

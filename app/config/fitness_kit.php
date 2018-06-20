@@ -1019,7 +1019,7 @@ return [
 				]
 			],
 			'total'=>2,
-			'amount'=>789
+			'amount'=>798
 		],
 		[
 			'min'=>10000,
