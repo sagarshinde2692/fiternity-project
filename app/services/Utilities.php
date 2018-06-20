@@ -1021,6 +1021,52 @@ Class Utilities {
         return $hash_verified;
     }
 
+    
+    public function verifyOrderProduct($data,$order)
+    {
+    	try {
+    		
+    		$orderArr=$order->toArray();
+    		$hash_verified = false;
+    		if((isset($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin'])) || in_array($orderArr['payment']['pg_type'],['PAYTM','AMAZON'])|| !empty($orderArr['cod_otp_verified']) || !empty($orderArr['vendor_otp_verified'])){
+    			if((in_array($orderArr['payment']['pg_type'],['PAYTM','AMAZON'])) && !(empty($data["order_success_flag"])))
+    			{
+    				$hashreverse = getReverseHashProduct($orderArr);
+    				if($hashreverse['status']&&$hashreverse['data']['reverse_hash']==$data["verify_hash"] )
+    					$hash_verified = true;
+    					else
+    						$hash_verified = false;
+    			}
+    			if((!empty($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin'])) || !empty($orderArr['cod_otp_verified'])||!empty($orderArr['vendor_otp_verified']))
+    				$hash_verified = true;
+    				
+    		}
+    		else
+    		{
+    			// If amount is zero check for wallet amount
+    			if($data['amount'] == 0)
+    				$hash_verified = true;
+    				else
+    				{
+    					$hashreverse = getReverseHashProduct($orderArr);
+    					if($hashreverse['status']&&$data["verify_hash"] == $hashreverse['data']['reverse_hash'])
+    						$hash_verified = true;
+    						else
+    							$hash_verified = false;
+    				}
+    		}
+    		if(!$hash_verified){
+    			$order->payment->hash_verified= false;
+    			$order->update();
+    		}
+    		return $hash_verified;
+    		
+    	} catch (Exception $e) {
+    		Log::error(" Error [verifyOrderProduct] ".print_r($this->baseFailureStatusMessage($e),true));
+    		return false;
+    	}
+    }
+    
 
     public function deleteCommunication($order){
 
@@ -4153,11 +4199,64 @@ Class Utilities {
 		
 	}
 	
-	public function getProductHash($data)
+	public function getCartSummary($order)
 	{
 		try {
+			
+			if(empty($order))
+				return ["status"=>0,"message"=>"No order present."];
+				
+			$resp=["status"=>1,"message"=>"success","data"=>[]];
+			
+			$cart_data =$order['cart_data'];
+			$cart_desc=[];
+			$amount=0;
+			foreach ($cart_data as $cart_item)
+			{
+				$temp=[];
+				$temp['quantity']=$cart_item['quantity'];
+				$temp['price']=(intval($cart_item['quantity'])*intval($cart_item['price']));
+				$temp['size']=$cart_item['ratecard']['size'];
+				$temp['title']=$cart_item['product']['title'];
+				$temp['sub_title']=$cart_item['ratecard']['color'];
+				array_push($cart_desc,$temp);
+				$amount=$amount+(intval($cart_item['quantity'])*intval($cart_item['price']));
+			}
+								
+			$resp['data']['cart_details']=$cart_desc;
+			$resp['data']['total_cart_amount']=$amount;
+			$resp['data']['total_amount']=$amount;
+	// 			$this->getProductCartAmount($order);
+			return $resp;
+		} catch (Exception $e)
+		{
+			return  ['status'=>0,"message"=>$this->baseFailureStatusMessage($e)];
+		}
+		
+	}
+	public function groupBy($array,$key) {
+		$return = array();
+		foreach($array as $val) {
+			$return[$val[$key]][] = $val;
+		}
+		return $return;
+	}
+	
+	public function getProductHash($data)
+	{
+		
+		try {
+			
 			$resp=["status"=>1,"message"=>"success"];
+			
 			$createdData=[];
+			
+			
+			// defaulters
+			
+			(!empty($data['payment_mode']))?
+				$createdData['payment_mode']=$data['payment_mode']:"";
+			
 			$env = (!empty($data['env']) && $data['env'] == 1) ? "stage" : "production";
 			
 			$key = 'gtKFFx';
@@ -4168,8 +4267,12 @@ Class Utilities {
 			}
 			
 			$txnid = $data['payment']['txnid'];
-			$amount = $data['amount_calculated']['final']; 
-			$productinfo=$createdData['productinfo'] =implode("_",array_map('strtolower', array_column($data['cart_data'],"ratecard_id")));
+			$amount = $data['amount_calculated']['final'];
+			$tmp=[];
+			foreach ($data['cart_data'] as $value) {
+				array_push($tmp,$value['ratecard']['_id']);
+			}
+			$productinfo=$createdData['productinfo'] =implode("_",array_map('strtolower', $tmp));
 			
 			$firstname = strtolower($data['customer']['customer_name']);
 			$email = strtolower($data['customer']['customer_email']);
@@ -4192,19 +4295,14 @@ Class Utilities {
 			$detailsForMobileSdk1                               =   hash('sha512', $detailsForMobileSdk_str1);
 			$createdData['payment_related_details_for_mobile_sdk_hash'] =   $detailsForMobileSdk1;
 			$resp['data']=$createdData;
+			
 			return $resp;
 		} catch (Exception $e)
 		{
 			return  ['status'=>0,"message"=>$this->baseFailureStatusMessage($e)];
 		}
 		
-	}
-	public function groupBy($array,$key) {
-		$return = array();
-		foreach($array as $val) {
-			$return[$val[$key]][] = $val;
-		}
-		return $return;
+		
 	}
 }
 

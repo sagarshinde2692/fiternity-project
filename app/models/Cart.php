@@ -32,6 +32,7 @@ class Cart extends  \Basemodel {
 		return parent::getArrayableAppends();
 	}
 	
+	
 	protected $appends = array('rc');
 
 	public function customer()
@@ -62,4 +63,6 @@ class Cart extends  \Basemodel {
 		return array_values($tpa); 
 		
 	}
+
+	
 }

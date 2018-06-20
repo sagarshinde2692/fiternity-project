@@ -2828,6 +2828,51 @@ if (!function_exists(('getpayTMhash'))){
         return $data;
     }
 }
+if (!function_exists(('getBaseSuccessObject'))){
+	function getBaseSuccessObject(){
+		return ['status'=>1,'message'=>'success'];
+	}
+}
+if (!function_exists(('getReverseHashProduct'))){
+	function getReverseHashProduct($data){
+	
+		try {
+			
+			$resp=getBaseSuccessObject();
+			$createdData=[];
+			$tmp=[];
+			foreach ($data['cart_data'] as $value) {
+				array_push($tmp,$value['ratecard']['_id']);
+			}
+			
+			$productinfo = $createdData['productinfo'] = implode("_",array_map('strtolower', $tmp));
+			
+			$key = 'fitterKEY';
+			$salt = '1086fit';
+			
+			$txnid = $data['payment']['txnid'];
+			$amount = $data['amount_calculated']['final'].".00";
+			$firstname = strtolower($data['customer']['customer_name']);
+			$email = strtolower($data['customer']['customer_email']);
+			$udf1 = "";
+			$udf2 = "";
+			$udf3 = "";
+			$udf4 = "";
+			$udf5 = "";
+			
+			$payhash_str = $salt.'|success||||||'.'|'.$email.'|'.$firstname.'|'.$productinfo.'|'.$amount.'|'.$txnid.'|'.$key;
+			
+			$createdData['reverse_hash'] = hash('sha512', $payhash_str);
+			$resp['data']=$createdData;
+			return $resp;
+			
+		} catch (Exception $e) {
+			$message = ['type'    => get_class($e),'message' => $e->getMessage(),'file'=> $e->getFile(),'line'=> $e->getLine()];
+			return ['status'=>0,"message"=>$message['type'].' : '.$message['message'].' in '.$message['file'].' on '.$message['line']];
+		}
+		
+	}
+}
 
 if (!function_exists(('customerTokenDecode'))){
     function customerTokenDecode($token){

@@ -8,6 +8,7 @@ use \GuzzleHttp\Client;
 use App\Notification\CustomerNotification as CustomerNotification;
 use App\Services\Sidekiq as Sidekiq;
 use App\Services\Utilities as Utilities;
+use anlutro\cURL\Response;
 
 class HomeController extends BaseController {
 
@@ -550,6 +551,7 @@ class HomeController extends BaseController {
 
     public function getSuccessMsg($type, $id){
 
+
         $customer_id = "";
         $jwt_token = Request::header('Authorization');
         $device_type = Request::header('Device-Type');
@@ -566,6 +568,9 @@ class HomeController extends BaseController {
 
         if($type != "" && $id != ""){
 
+        	if($type=='product') 
+        		return $this->getProductSuccessMsg($id);
+        	
             $booktrialItemArr   =   ["personaltrainertrial","manualtrial","manualautotrial","booktrialfree"];
             $orderItemArr       =   ["healthytiffintrail","healthytiffintrial","membershipwithpg","membershipwithoutpg","healthytiffinmembership","personaltrainermembership","booktrial","workoutsession","workout-session","booktrials"];
             $captureItemArr     =   ["manualmembership"];
@@ -578,7 +583,6 @@ class HomeController extends BaseController {
                 
                 
                 //reliance section 
-                
                 
                 
                 if(isset($itemData['source'])&&$itemData['source']=='website'&&isset($itemData['rx_user'])&&$itemData['rx_user']==true)
@@ -1935,6 +1939,89 @@ class HomeController extends BaseController {
 
             return Response::json($resp);
         }
+    }
+    
+    public function getProductSuccessMsg($id,$type=null){
+    	
+    	try {
+    	
+    		$jwt_token = Request::header('Authorization');
+    		if(!empty($jwt_token )&& $jwt_token != 'null'){
+    			$decoded = customerTokenDecode($jwt_token);
+    			$customer_id = (int)$decoded->customer->_id;
+    		}
+    		
+    		$resp=["status"=>1,"message"=>"success"];
+    		$finalData=[];
+    		$order =Order::where("_id",intval($id))->where("type",'product')->first();
+    		if(!empty($order))
+    			$order =  $order->toArray();
+    		else return ['status'=>0,"message"=>"Failed to get Order."];
+    		
+    		
+    		// KINDLY PUT ALL DEFAULTS HERE SO IT WILL BE MERGED FINALLY.
+    		
+    		$defaults=["showDeliveryAddress"=>false];
+    		
+    		if(empty($customer_id))
+    		{
+    			$customer_id=$order['customer']['logged_in_customer_id'];
+    			if(empty($customer_id))
+    				
+    				return ['status'=>0,"message"=>"Failed to get Customer."];
+    		}
+    		
+    		$customer=Customer::find(intval($customer_id));
+    		$customer= $customer->toArray();
+    		
+    		if(!empty($order['payment'])&&!empty($order['payment']['payment_mode']))
+    			$payment_mode=$order['payment']['payment_mode'];
+    			else $payment_mode=null;
+    			
+    			
+    			
+    			$header=["status_text"=>"Order Successfull","status_icon"=>"https://image.flaticon.com/teams/slug/freepik.jpg"];
+    			$customer_description='Hi'.$customer['name'].', your order has been successfully placed with Fitternity. It will be delivered to you within 7-10 working days.
+    									   You can track your order online with the information provided via SMS and E-mail';
+    			($payment_mode=='cod')?
+    			$finalData['customer_description']=$customer_description:"";
+    			
+    			$cart_summary=$this->utilities->getCartSummary($order);
+    			if($cart_summary['status'])
+    			{
+    				$cart_details=$cart_summary['data']['cart_details'];
+    				$cart_total=$cart_summary['data']['total_cart_amount'];
+    				$total_amount=$cart_summary['data']['total_amount'];
+    			}
+    			else
+    				return $cart_summary;
+    				
+    				$order_summary=[];
+    				array_push($order_summary, ["key"=>"items","value"=>count($cart_details)]);
+    				array_push($order_summary, ["key"=>"items total","value"=>"Rs. ".$cart_total]);
+    				
+    				(!empty($cart_summary['data']['coupon_discount']))?
+    				array_push($order_summary, ["key"=>"Coupon Discount","value"=>"- Rs. ".$cart_total ,"color"=>"#f7a81e"]):"";
+    				
+    				$orderDetail=["order_id"=>$order['_id'],"payment_mode"=>$payment_mode,"summary"=>$order_summary,"total"=>"Rs. ".$total_amount];
+    				
+    				
+    				$finalData["header"]=$header;
+    				
+    				$finalData["cart_summary"]=$cart_details;
+    				$finalData["order_detail"]=$orderDetail;
+//     				$finalData=array_merge($finalData,$defaults);
+    				
+    				$resp['data']=$finalData;
+    				return $resp;
+    				
+    		
+    	} catch (Exception $e) 
+    	{
+    		Log::error(" Error [getProductSuccessMsg] ".print_r($this->baseFailureStatusMessage($e),true));
+    		return  ['status'=>0,"message"=>$this->baseFailureStatusMessage($e)];
+    	}
+    	
     }
     
     public function geoLocationFinder($request){

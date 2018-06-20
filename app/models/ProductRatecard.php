@@ -9,4 +9,5 @@ class ProductRatecard extends \Basemodel {
 	public function product() {
 		return $this->belongsTo('Product','product_id');
 	}
+	
 }
