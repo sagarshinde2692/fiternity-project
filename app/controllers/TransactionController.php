@@ -2742,7 +2742,7 @@ class TransactionController extends \BaseController {
         }
 
         if(!isset($data['type'])){
-            $data['type'] == $ratecard['type'];
+            $data['type'] = $ratecard['type'];
         }
 
         if($ratecard['finder_id'] == 8892 && $ratecard['type'] == 'workout session'){
