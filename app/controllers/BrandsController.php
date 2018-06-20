@@ -81,15 +81,28 @@ class BrandsController extends \BaseController {
                 
                 
                 Cache::tags('brand_detail')->put("$slug-$city" ,$data,Config::get('cache.cache_time'));
-                
-                return Response::json(Cache::tags('brand_detail')->get("$slug-$city"));
+                $return = Cache::tags('brand_detail')->get("$slug-$city");
+                // return Response::json();
                 
             }else{
                 return Response::json(array('status' => 400,'message' => 'brand not found'),400);
             }
+        }else{
+            $return = Cache::tags('brand_detail')->get("$slug-$city");
         }
+        
+        if(!empty($_GET['source'])){
+			$source = $_GET['source'];
+            Log::info("web Increased ".$source);
+            
+			$brand = Brand::find($return['brand']['_id'], ['hits']);
+			$total_hits = !empty($brand['hits'][$city][$source]) ? $brand['hits'][$city][$source] + 1 : 1 ;
+			Log::info($total_hits);
+			Brand::where('_id', $brand['_id'])->update(['hits.'.$city.'.'.$source =>$total_hits]);
+		}
 
-        return Response::json(Cache::tags('brand_detail')->get("$slug-$city"));
+        return Response::json($return);
+        
     }
 
     public function brandlist(){
