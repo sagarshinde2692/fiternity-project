@@ -5772,7 +5772,7 @@ class FindersController extends \BaseController {
 
 		$return['pps_details']['more_info'] = [
 			'header'=>'See how pay per session works',
-			'description'=>"Step 1: Choose your workout form out of 17 different options<br><br>Step 2: Book session of your choice near you with instant booking<br><br>Step3: Enjoy your workout and repeat",
+			'description'=>'Step 1: Choose your workout form out of 17 different options<br><br>Step 2: Book session of your choice near you with instant booking<br><br>Step3: Enjoy your workout and repeat',
 		];
 
 		$return['pps_details']['action'] = [
