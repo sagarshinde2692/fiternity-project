@@ -3638,37 +3638,51 @@ Class Utilities {
 
         $finder_id = (int)$data['finder_id'];
 
-        \Ratecard::$withoutAppends = true;
+        if(!empty($data['type']) && $data['type'] == 'booktrials'){
 
-        $ratecards = \Ratecard::where('finder_id',$finder_id)->whereIn('type',['membership','packages'])->get();
+            if(!empty($data['is_tab_active']) && $data['is_tab_active'] === true){
 
-        $amount = 0;
-        $days = 0;
-        $fitcash = 300;
+                return 250;
+            }
+        
+            \Ratecard::$withoutAppends = true;
 
-        if(!empty($ratecards)){
+            $ratecards = \Ratecard::where('finder_id',$finder_id)->whereIn('type',['membership','packages'])->get();
 
-            foreach ($ratecards as $ratecard) {
+            $amount = 0;
+            $days = 0;
+            $fitcash = 300;
 
-                $new_days = $this->getDurationDay($ratecard);
+            if(!empty($ratecards)){
 
-                if($new_days >= $days){
+                foreach ($ratecards as $ratecard) {
 
-                    $days = $new_days;
+                    $new_days = $this->getDurationDay($ratecard);
 
-                    $new_amount = $this->getRatecardAmount($ratecard);
+                    if($new_days >= $days){
 
-                    if($new_amount >= $amount){
-                        $amount = $new_amount;
+                        $days = $new_days;
+
+                        $new_amount = $this->getRatecardAmount($ratecard);
+
+                        if($new_amount >= $amount){
+                            $amount = $new_amount;
+                        }
                     }
+
                 }
 
+                if($amount >= 10000){
+                    $fitcash = 500;
+                }
             }
 
-            if($amount >= 10000){
-                $fitcash = 500;
-            }
+            return $fitcash;
         }
+
+        $getWorkoutSessionFitcash = $this->getWorkoutSessionFitcash($data);
+
+        $fitcash = round($getWorkoutSessionFitcash * $data['amount_finder'] / 100);
 
         return $fitcash;
 
@@ -3821,7 +3835,7 @@ Class Utilities {
     }
 
     public function getWorkoutSessionFitcash($booktrialData){
-        Log::info($this->getWorkoutSessionLevel($booktrialData['customer_id']));
+        // Log::info($this->getWorkoutSessionLevel($booktrialData['customer_id']));
         $fitcash =  $this->getWorkoutSessionLevel($booktrialData['customer_id'])['current_level']['cashback'];
         return $fitcash;
         
