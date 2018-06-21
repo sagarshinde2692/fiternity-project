@@ -1942,6 +1942,13 @@ Class CustomerReward {
                         if($service && !empty($service['servicecategory_id']) && $service['servicecategory_id'] == $customerCoupn['service_category_id'] ){
 
                             $applyCustomerCoupn = true;
+
+                        }else{
+
+                            $resp['user_login_error'] = true;
+                            $resp['error_message'] = 'This coupon is applicable only on swimming sessions.';
+
+                            return $resp;
                         }
 
                     }else{
