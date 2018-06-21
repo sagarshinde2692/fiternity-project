@@ -1725,6 +1725,57 @@ Class CustomerReward {
                 }
             }
 
+            if(isset($coupon['conditions']) && is_array($coupon['conditions']) && in_array('once_new_pps', $coupon['conditions'])){
+                
+                $jwt_token = Request::header('Authorization');
+
+                if(empty($jwt_token)){
+
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"User Login Required","user_login_error"=>true);
+
+                    return $resp;
+                }
+
+                $decoded = $this->customerTokenDecode($jwt_token);
+                
+                $customer_id = $decoded->customer->_id;
+
+                $prev_workout_session_count = Booktrial::where('created_at', '>', new DateTime('2018-04-22'))->where('type', 'workout-session')->count();
+
+                if($prev_workout_session_count){
+                    
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"Coupon is valid for fist time user only","user_login_error"=>true);
+
+                    return $resp;
+                }
+                
+            }
+
+            if(isset($coupon['conditions']) && is_array($coupon['conditions']) && in_array('fitternity_employees', $coupon['conditions'])){
+                
+                $jwt_token = Request::header('Authorization');
+
+                if(empty($jwt_token)){
+
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"User Login Required","user_login_error"=>true);
+
+                    return $resp;
+                }
+
+                $decoded = $this->customerTokenDecode($jwt_token);
+                
+                $customer_email = $decoded->customer->email;
+
+                if(!in_array(strtolower($customer_email), Config::get('fitternityemails'))){
+                    
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Coupon valid only for fitternity users","user_login_error"=>true);
+
+                    return $resp;
+                
+                }
+                
+            }
+
             $discount_amount = $coupon["discount_amount"];
             $discount_amount = $discount_amount == 0 ? $coupon["discount_percent"]/100 * $price : $discount_amount;
             $discount_amount = intval($discount_amount);
