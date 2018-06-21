@@ -947,8 +947,6 @@ class FindersController extends \BaseController {
                     "only_featured"=>true
                 ];
 
-                $nearby_same_category = geoLocationFinder($nearby_same_category_request);
-
 				$nearby_other_category_request = [
                     "offset" => 0,
                     "limit" => 2,
@@ -979,7 +977,17 @@ class FindersController extends \BaseController {
                     	// "category"=>[newcategorymapping($finderdata["category"]["name"])]
                     ],
                     "only_featured"=>true
-                ];
+				];
+				
+				if(!$this->utilities->isIntegratedVendor($finderdata)){
+					$nearby_same_category['limit'] = $nearby_other_category['limit'] = 4;
+					unset($nearby_same_category['only_featured']);
+					unset($nearby_other_category['only_featured']);
+				}else{
+					Log::info("Integrated vendor");
+				}
+				
+				$nearby_same_category = geoLocationFinder($nearby_same_category_request);
 
                 $nearby_other_category = geoLocationFinder($nearby_other_category_request);
 
