@@ -823,12 +823,13 @@ Class CustomerReward {
                     case 'personal_trainer_at_studio': $message = "Thank you! We have notified ".$myreward->title."about your Personal training sessions.";break;
                     case 'personal_trainer_at_home': $message = "Your Personal Training at Home request has being processed. We will reach out to you shortly with trainer details to schedule your first session.";break;
                     case 'swimming_sessions' :
-                    case 'sessions' : $message = "You have claimed your Free sessions pack. Look out for vouchers (also sent on email/sms) to book your sessions, available on Pay Per Session on the app.";break;
+                    case 'sessions' : $message = "Congratulations! You have successfully claimed your reward - ".$myreward->title." <br/>Your coupon code vouchers (worth Rs. ".$myreward['payload']['amount'].") are as follows. (also shared via sms/email)";break;
                     default: $message = "Reward Claimed Successfull";break;
                 }
 
                 $result['status'] = 200;
                 $result['message'] = $message;
+                $result['header'] = $myreward->title;
 
                 return $result;
 
