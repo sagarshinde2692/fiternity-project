@@ -1711,6 +1711,15 @@ Class CustomerReward {
                 $decoded = $this->customerTokenDecode($jwt_token);
                 
                 $customer_email = $decoded->customer->email;
+
+                $booktrial_count = \Booktrial::where('customer_email',$customer_email)->where('created_at','>=',new \MongoDate(strtotime(date('Y-m-d 00:00:00'))))->where('created_at','<=',new \MongoDate(strtotime(date('Y-m-d 23:59:59'))))->count();
+
+                if($booktrial_count > 0){
+
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"User can book only one session per day","user_login_error"=>true);
+
+                    return $resp;
+                }
                 
                 if(isset($coupon['customer_emails']) && is_array($coupon['customer_emails'])){
                     if(!in_array(strtolower($customer_email), $coupon['customer_emails'])){
