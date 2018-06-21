@@ -3187,7 +3187,7 @@ class TransactionController extends \BaseController {
             return Response::json(array('status' => 404,'message' => 'Order already success'),404);
         }
 
-        $order->pg_type = $data['pg_type'];
+        $order->pg_type_selected = $data['pg_type'];
         $order->pg_date = date('Y-m-d H:i:s',time());
         $order->update();
 
