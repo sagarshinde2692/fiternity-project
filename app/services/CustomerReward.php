@@ -1720,6 +1720,8 @@ Class CustomerReward {
                     }
                 }
 
+                \Booktrial::$withoutAppends = true;
+
                 $booktrial_count = \Booktrial::where('customer_email',$customer_email)->where('created_at','>=',new \MongoDate(strtotime(date('Y-m-d 00:00:00'))))->where('created_at','<=',new \MongoDate(strtotime(date('Y-m-d 23:59:59'))))->count();
 
                 if($booktrial_count > 0){
