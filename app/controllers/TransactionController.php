@@ -1076,11 +1076,29 @@ class TransactionController extends \BaseController {
     	
     	$data = $data ? $data : Input::json()->all();
     	Log::info('--------------  PRODUCT CAPTURE ---------------',$data);
+    	
     	foreach ($data as $key => $value) {
     		(is_string($value))?$data[$key] = trim($value):"";
     	}
     	
+    	$rules = array(
+    			'customer_source'=>'required',
+    			'city_id'=>'required',
+    			'customer_name'=>'required',
+    			'customer_email'=>'required|email',
+    			'customer_phone'=>'required',
+    			'type'=>'required'
+    	);
     	
+    	$validator = Validator::make($data,$rules);
+    	$failedCheck=$this->checkProductCaptureFailureStatus($data);
+
+    	if ($validator->fails())
+    		return Response::json(['status' => 0,'message' => error_message($validator->errors())]);
+    		if(!$failedCheck['status'])
+    			return Response::json($failedCheck);
+    		
+    			
    	 // ALL FINDER DETAIL TO BE ENTERED HERE IN THIS BLOCK ,  SOME VARIABLE MIGHT BE UPDATED LATER IN THE CODE.
     	if($this->vendor_token)
     	{
@@ -1101,24 +1119,6 @@ class TransactionController extends \BaseController {
     			$pay_at_vendor_applicable = true;
     			$result['finder_name'] = strtolower($data['finder_name']);
     	}
-    	
-    	$rules = array(
-    			'customer_source'=>'required',
-    			'city_id'=>'required',
-    			'customer_name'=>'required',
-    			'customer_email'=>'required|email',
-    			'customer_phone'=>'required',
-    			'type'=>'required'
-    	);
-    	
-    	$validator = Validator::make($data,$rules);
-    	$failedCheck=$this->checkProductCaptureFailureStatus($data);
-    	
-    	if ($validator->fails())
-    		return Response::json(['status' => 0,'message' => error_message($validator->errors())]);
-    		if(!$failedCheck['status'])
-    			return Response::json($failedCheck);
-    	
     	
     	
     	$customerDetail = $this->getCustomerDetail($data);
@@ -1278,15 +1278,6 @@ class TransactionController extends \BaseController {
     	
     	
     	
-    	if(isset($old_order_id))
-    			$order->update($data);
-    	else
-    	{	
-    		$order = new Order($data);
-    		$order->_id = $order_id;
-    		$order->save();
-    	}
-    	
     	if(isset($data['payment_mode']) && $data['payment_mode'] == 'cod'){
     		
     		$group_id = isset($data['group_id']) ? $data['group_id'] : null;
@@ -1442,7 +1433,17 @@ class TransactionController extends \BaseController {
     		$resp['data']['resend_otp_url'] = Config::get('app.url')."/temp/regenerateotp/".$otp_data['temp_id'];
     		if($data["customer_source"] == "website")
     			$resp['data']['show_success'] = true;
-    	}	
+    	}
+    	
+    	
+    	if(isset($old_order_id))
+    		$order->update($data);	
+    	else
+    		{
+    			$order = new Order($data);
+    			$order->_id = $order_id;
+    			$order->save();
+    		}
     	return Response::json($resp);	
     }
 
