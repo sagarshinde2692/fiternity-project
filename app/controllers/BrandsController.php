@@ -15,6 +15,7 @@ class BrandsController extends \BaseController {
 
 
     public function brandDetail($slug, $city, $cache = true){
+		Log::info($_SERVER['REQUEST_URI']);
         
         $brand_detail = $cache ? Cache::tags('brand_detail')->has("$slug-$city") : false;
 
@@ -140,7 +141,18 @@ class BrandsController extends \BaseController {
             unset($brand_detail['finders']['aggregations']);
         }
 
+        if(!empty($_GET['source'])){
+			$source = $_GET['source'];
+            Log::info("web Increased ".$source);
+            
+			$brand = Brand::find($brand_detail['brand']['_id'], ['hits']);
+			$total_hits = !empty($brand['hits'][$city][$source]) ? $brand['hits'][$city][$source] + 1 : 1 ;
+			Log::info($total_hits);
+			Brand::where('_id', $brand['_id'])->update(['hits.'.$city.'.'.$source =>$total_hits]);
+		}
+
         return Response::json($brand_detail);
+        
     }
 
     public function brandlist(){
