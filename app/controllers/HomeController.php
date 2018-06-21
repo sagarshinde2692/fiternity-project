@@ -4605,29 +4605,30 @@ class HomeController extends BaseController {
         		
         		$home=["status"=>1,"response"=>["products"=>[]]];
         		$homeData=Homepage::active()->where("type","product_tab")->first()->toArray();
-        		
-        		
-        		
-        		
         		$t=&$homeData['home'];
         		$this->utilities->customSort('base',$t);
-
         		$tp=$this->utilities->groupBy($t,'base');
         		
-        		foreach($tp as &$val) 
-        			$this->utilities->customSort('index',$val);
-        		
+        		foreach($tp as &$val) $this->utilities->customSort('index',$val);
         		foreach($tp as &$val) {
         			foreach($val as &$vala) {
         				unset($vala["index"]);unset($vala["base"]);
-        				$vala['product_id']=(string) $vala['product_id'];
+        				$vala['product_id']=$vala['product_id'];
+        				$tmp_data=array_values(array_filter($homeData['rc'],function ($e) use ($vala) {return $vala['ratecard_id']== $e['ratecard']['_id'];}));
+        				if(!empty($tmp_data))
+        				{
+        					$tmp_data=$tmp_data[0];
+        					$vala['product_title']=$tmp_data['product']['title'];
+        					$vala['ratecard_title']=$tmp_data['ratecard']['title'];
+        				}	
         			}
         		}
+        		
         		$home["response"]['products']=$tp;
         		$jwt_token = Request::header("Authorization");
         		if(isset($jwt_token))
         		{
-        			$cart=$this->utilities->productsTabCartHomeCustomer(null);
+        			$cart=$this->utilities->productsTabCartHomeCustomer();
         			if(!empty($cart))
         			{
         				$cart=$cart->toArray();
@@ -4636,6 +4637,7 @@ class HomeController extends BaseController {
         		}
         		return $home;
         	} catch (Exception $e) {
+        		
         		return ['status'=>0,"message"=>$this->utilities->baseFailureStatusMessage($e)];
         	}
         		
@@ -4684,16 +4686,32 @@ class HomeController extends BaseController {
         {
         	try {
         		$ratecard_id=intval($ratecard_id);$product_id=intval($product_id);
-        		$productView=Product::where("_id",$product_id)->with('ratecard')->first()->toArray();
+        		$productView=Product::where("_id",$product_id)->with('ratecard')->first();
+        		if(empty($productView))
+        			return ['status'=>0,"message"=>"Not a valid product Id."];
+        		else $productView=$productView->toArray();
         		$rateCards=$productView['ratecard'];
         		$selectedRatecard="";
+        		$selectedIndex=-1;
+        		
         		for( $i=0; $i<count($rateCards); $i++)
         		{
         			if($rateCards[$i]['_id'] == $ratecard_id) {
         				$selectedRatecard=$rateCards[$i];
-        				unset($productView[$i]);
+        				$selectedIndex=$i;
         			}
+        			else {
+        				unset($rateCards[$i]['servicecategory_id']);
+        				unset($rateCards[$i]['productcategory_id']);
+        				unset($rateCards[$i]['status']);
+        				unset($rateCards[$i]['order']);
+        				
+        			}
+        			
         		}
+        		
+        		unset($rateCards[$selectedIndex]);
+        		
         		if(!empty($selectedRatecard))
         		{
         			$productSimilar=ProductRatecard::active()->where("product_id","!=",$product_id)->whereIn("servicecategory_id",$selectedRatecard['servicecategory_id'])->get(["price","_id","title","color","size","product_id"])->toArray();
@@ -4701,7 +4719,9 @@ class HomeController extends BaseController {
         			
         		}
         		else $productSimilar=[];
-        		unset($selectedRatecard['servicecategory_id']);
+        		if(!empty($selectedRatecard))
+        			unset($selectedRatecard['servicecategory_id']);
+        		else return ['status'=>0,"message"=>"Not a valid Ratecard Id."];
         		
         		$productInfo=(!empty($productView['info'])?$productView['info']:"");
         		$productFeatures=((!empty($productView['specification'])&&!empty($productView['specification']['primary'])&&!empty($productView['specification']['primary']['features']))?$productView['specification']['primary']['features']:[]);
@@ -4711,7 +4731,7 @@ class HomeController extends BaseController {
         		foreach ($productSpecsSecondary as &$value) {
         			unset($value['order']);
         		}
-        		return ["status"=>1,"response"=>["selected_product"=>$selectedRatecard,"detail"=>["info"=>$productInfo,"features"=>$productFeatures,"more_info"=>$productSpecsSecondary],"similar"=>$productSimilar]];
+        		return ["status"=>1,"response"=>["selected_product"=>$selectedRatecard,"product_ratecards"=>array_values($rateCards),"detail"=>["info"=>$productInfo,"features"=>$productFeatures,"more_info"=>$productSpecsSecondary],"similar_products"=>$productSimilar]];
         	} catch (Exception $e) {
         		return ['status'=>0,"message"=>$this->utilities->baseFailureStatusMessage($e)];
         	}

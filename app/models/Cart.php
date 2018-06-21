@@ -35,10 +35,7 @@ class Cart extends  \Basemodel {
 	
 	protected $appends = array('rc');
 
-	public function customer()
-	{
-		return $this->belongsTo('Customer',"customer_id");
-	}
+
 	
 	public function getRcAttribute()
 	{
@@ -62,6 +59,11 @@ class Cart extends  \Basemodel {
 		}
 		return array_values($tpa); 
 		
+	}
+	
+	public function customer()
+	{
+		return $this->belongsTo('Customer',"customer_id");
 	}
 
 	

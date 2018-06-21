@@ -3629,7 +3629,7 @@ Class Utilities {
 
     }
 
-    public function productsTabCartHomeCustomer($customerId){
+    public function productsTabCartHomeCustomer($customerId=null){
     	
     	if(empty($customerId))
     	{
