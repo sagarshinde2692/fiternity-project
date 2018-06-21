@@ -73,10 +73,10 @@ class BrandsController extends \BaseController {
 
                 $city_id = "";
 
-                $city = City::where("name",'like','%'.$city.'%')->first(['_id']);
+                $cityData = City::where("name",'like','%'.$city.'%')->first(['_id']);
 
-                if($city){
-                    $city_id = (int)$city['_id'];
+                if($cityData){
+                    $city_id = (int)$cityData['_id'];
                 }
 
                 $data["stripe_data"] = [
