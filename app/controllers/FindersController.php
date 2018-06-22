@@ -3246,7 +3246,7 @@ class FindersController extends \BaseController {
 					        }else{
 					            $rateval_price = $rateval['price'];
 					        }
-							if($rateval_price>= 20000){
+							if($rateval_price>= 5000){
 
 								$rateval['campaign_offer'] = !empty($rateval['campaign_offer']) ?  $rateval['campaign_offer']."(EMI available)" : "(EMI available)";
 								$rateval['campaign_color'] = "#43a047";
