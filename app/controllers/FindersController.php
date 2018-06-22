@@ -169,7 +169,7 @@ class FindersController extends \BaseController {
 				// ->with(array('ozonetelno'=>function($query){$query->select('*')->where('status','=','1');}))
 				->with(array('knowlarityno'=>function($query){$query->select('*')->where('status',true)->orderBy('extension', 'asc');}))
 
-				->with(array('services'=>function($query){$query->where('status','=','1')->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->orderBy('ordering', 'ASC');}))
+				->with(array('services'=>function($query){$query->where('status','=','1')->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('location'=>function($query){$query->select('_id','name');}))->orderBy('ordering', 'ASC');}))
 
 				->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1')->orderBy('updated_at', 'DESC')->limit(5);}))
 				// ->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1')->orderBy('_id', 'DESC');}))
@@ -446,9 +446,9 @@ class FindersController extends \BaseController {
 				$finderarr['services'] = $this->sortNoMembershipServices($finderarr['services'], 'finderdetail');
 				
 
-
 				
-				array_set($finder, 'services', pluck( $finderarr['services'] , ['_id', 'name', 'lat', 'lon', 'serviceratecard', 'session_type', 'workout_tags', 'calorie_burn', 'workout_results', 'short_description','service_trainer','timing','category','subcategory','batches','vip_trial','meal_type','trial','membership', 'offer_available', 'showOnFront', 'traction', 'timings', 'flags','location_id','slug']  ));
+
+				array_set($finder, 'services', pluck( $finderarr['services'] , ['_id', 'name', 'lat', 'lon', 'serviceratecard', 'session_type', 'workout_tags', 'calorie_burn', 'workout_results', 'short_description','service_trainer','timing','category','subcategory','batches','vip_trial','meal_type','trial','membership', 'offer_available', 'showOnFront', 'traction', 'timings', 'flags','location_id','slug','location']  ));
 				array_set($finder, 'categorytags', pluck( $finderarr['categorytags'] , array('_id', 'name', 'slug', 'offering_header') ));
 				// array_set($finder, 'findercollections', pluck( $finderarr['findercollections'] , array('_id', 'name', 'slug') ));
 				// array_set($finder, 'blogs', pluck( $finderarr['blogs'] , array('_id', 'title', 'slug', 'coverimage') ));
@@ -2974,7 +2974,7 @@ class FindersController extends \BaseController {
 		}else{
 			$items = $finder["services"];
 
-			$items = pluck($items, array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos','trial','membership', 'traction', 'location_id','offer_available', 'showOnFront','calorie_burn', 'slug'));
+			$items = pluck($items, array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos','trial','membership', 'traction', 'location_id','offer_available', 'showOnFront','calorie_burn', 'slug', 'location'));
 
 		}
 
@@ -3103,6 +3103,7 @@ class FindersController extends \BaseController {
 				'offer_available' => isset($item['offer_available']) ? $item['offer_available'] : false,
 				'short_description' => isset($item['short_description']) ? $item['short_description'] : "",
 				'slug'=>isset($item['slug']) ? $item['slug'] : "",
+				'location'=>isset($item['location']) ? $item['location'] : null
 				// 'showOnFront'=>(isset($item['showOnFront'])) ? $item['showOnFront'] : []
 			);
 			
@@ -3410,13 +3411,13 @@ class FindersController extends \BaseController {
 				// ->with(array('ozonetelno'=>function($query){$query->select('*')->where('status','=','1');}))
 				->with(array('knowlarityno'=>function($query){$query->select('*')->where('status',true)->orderBy('extension', 'asc');}))
 
-				->with(array('services'=>function($query){$query->select('*')->where('status','=','1')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))->orderBy('ordering', 'ASC');}))
+				->with(array('services'=>function($query){$query->select('*')->where('status','=','1')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))->with(array('location'=>function($query){$query->select('_id','name');}))->orderBy('ordering', 'ASC');}))
 
 				->with(array('reviews'=>function($query){$query->where('status','=','1')->select('_id','finder_id','customer_id','rating','description','updated_at')->with(array('customer'=>function($query){$query->select('_id','name','picture')->where('status','=','1');}))->orderBy('updated_at', 'DESC')->limit(1);}))
 				->first(array('_id','slug','title','lat','lon','category_id','category','location_id','location','city_id','city','categorytags','locationtags','offerings','facilities','coverimage','finder_coverimage','contact','average_rating','photos','info','manual_trial_enable','manual_trial_auto','trial','commercial_type','multiaddress','membership','flags','custom_link','videos','total_rating_count','playOverVideo'));
-
+			
 			$finder = false;
-
+			
 			if($finderarr){
 				$finderarr = $finderarr->toArray();
 
@@ -3623,7 +3624,7 @@ class FindersController extends \BaseController {
 
 				// return $finderarr['services'];
 
-				array_set($finder, 'services', pluck( $finderarr['services'] , ['_id', 'name', 'lat', 'lon', 'ratecards', 'serviceratecard', 'session_type', 'trialschedules', 'workoutsessionschedules', 'workoutsession_active_weekdays', 'active_weekdays', 'workout_tags', 'short_description', 'photos','service_trainer','timing','category', 'subcategory','batches','vip_trial','meal_type','trial','membership', 'timings','finder_id','servicecategory_id','traction','location_id', 'offer_available','calorie_burn', 'slug']  ));
+				array_set($finder, 'services', pluck( $finderarr['services'] , ['_id', 'name', 'lat', 'lon', 'ratecards', 'serviceratecard', 'session_type', 'trialschedules', 'workoutsessionschedules', 'workoutsession_active_weekdays', 'active_weekdays', 'workout_tags', 'short_description', 'photos','service_trainer','timing','category', 'subcategory','batches','vip_trial','meal_type','trial','membership', 'timings','finder_id','servicecategory_id','traction','location_id', 'offer_available','calorie_burn', 'slug', 'location']  ));
 
 				array_set($finder, 'categorytags', array_map('ucwords',array_values(array_unique(array_flatten(pluck( $finderarr['categorytags'] , array('name') ))))));
 				array_set($finder, 'locationtags', array_map('ucwords',array_values(array_unique(array_flatten(pluck( $finderarr['locationtags'] , array('name') ))))));
@@ -5748,7 +5749,7 @@ class FindersController extends \BaseController {
 
 				if(isset($ratecard['type']) && $ratecard['type'] == 'membership'){
 					if(isset($pps_exists) && $pps_exists){
-						array_splice( $service[$ratecard_key], $key+1, 0, [$this->addPPSStripeData($pps_ratecard, $service['slug'], $finder['slug'])]); 
+						array_splice( $service[$ratecard_key], $key+1, 0, [$this->addPPSStripeData($pps_ratecard, $service, $finder)]); 
 						break;
 					}else{
 						break;
@@ -5761,8 +5762,15 @@ class FindersController extends \BaseController {
 		return $finder['services'];
 	}
 
-	public function addPPSStripeData($ratecard, $service_slug, $finder_slug){
-		$return = ['type'=>'pps_stripe', 'service_id'=>$ratecard['service_id'], 'finder_id'=>$ratecard['finder_id'], 'line1'=>'Not sure if you will utlize your Membership?', 'line2'=>'USE PAY - PER - SESSION', 'line3'=>'(562 Others in Bandra are using it)', '_id'=>0];
+	public function addPPSStripeData($ratecard, $service, $finder){
+		
+		$count = !empty($service['traction']['trials']) ? $service['traction']['trials'] : (!empty($service['traction']['sales']) ? $service['traction']['sales'] : (!empty($service['traction']['requests']) ? $service['traction']['requests'] : 0));
+		$count = $count * 5;
+		if(!$count){
+			$count = round(time()/1000000);
+		}
+		
+		$return = ['type'=>'pps_stripe', 'service_id'=>$ratecard['service_id'], 'finder_id'=>$ratecard['finder_id'], 'line1'=>'Not sure if you will utlize your Membership?', 'line2'=>'USE PAY - PER - SESSION', 'line3'=>'('.$count.' Others in '.(!empty($service['location']['name']) ? $service['location']['name'] : 'this location').' are on it)', '_id'=>0];
 
 		$return['pps_details'] =[
 			'pps'=>[
@@ -5790,8 +5798,8 @@ class FindersController extends \BaseController {
 			'action_text'=>'BOOK A SESSION FOR RS '.($ratecard['special_price'] != 0 ? $ratecard['special_price'] : $ratecard['price']),
 			'assistance_text'=>'Need help? Let us assist you',
 			'phone_number'=>Config::get('app.contact_us_customer_number'),
-			'finder_slug'=>$finder_slug,
-			'service_slug'=>$service_slug,
+			'finder_slug'=>$finder['slug'],
+			'service_slug'=>$service['slug'],
 		];
 
 		return $return;
