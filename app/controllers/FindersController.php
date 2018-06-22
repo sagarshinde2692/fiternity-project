@@ -3391,7 +3391,7 @@ class FindersController extends \BaseController {
 				->with(array('services'=>function($query){$query->select('*')->where('status','=','1')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))->with(array('location'=>function($query){$query->select('_id','name');}))->orderBy('ordering', 'ASC');}))
 
 				->with(array('reviews'=>function($query){$query->where('status','=','1')->select('_id','finder_id','customer_id','rating','description','updated_at')->with(array('customer'=>function($query){$query->select('_id','name','picture')->where('status','=','1');}))->orderBy('updated_at', 'DESC')->limit(1);}))
-				->first(array('_id','slug','title','lat','lon','category_id','category','location_id','location','city_id','city','categorytags','locationtags','offerings','facilities','coverimage','finder_coverimage','contact','average_rating','photos','info','manual_trial_enable','manual_trial_auto','trial','commercial_type','multiaddress','membership','flags','custom_link','videos','total_rating_count','playOverVideo'));
+				->first(array('_id','slug','title','lat','lon','category_id','category','location_id','location','city_id','city','categorytags','locationtags','offerings','facilities','coverimage','finder_coverimage','contact','average_rating','photos','info','manual_trial_enable','manual_trial_auto','trial','commercial_type','multiaddress','membership','flags','custom_link','videos','total_rating_count','playOverVideo','pageviews'));
 			
 			$finder = false;
 			
