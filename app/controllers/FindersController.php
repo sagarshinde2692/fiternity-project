@@ -5735,11 +5735,13 @@ class FindersController extends \BaseController {
 
 	public function addPPSStripeData($ratecard, $service, $finder){
 		
-		$count = !empty($service['traction']['trials']) ? $service['traction']['trials'] : (!empty($service['traction']['sales']) ? $service['traction']['sales'] : (!empty($service['traction']['requests']) ? $service['traction']['requests'] : 0));
-		$count = $count * 5;
+		$count = !empty($finder['pageviews']) ? $finder['pageviews'] : 0;
+		
 		if(!$count){
-			$count = round(time()/1000000);
+			$count = 10233;
 		}
+
+		$count = round($count/10) + (!empty($service['traction']['sales']) ? $service['traction']['sales'] : 0 ) + (!empty($service['traction']['trials']) ? $service['traction']['trials'] : 0 ) + (!empty($service['traction']['requests']) ? $service['traction']['requests'] : 0 );
 		
 		$return = ['type'=>'pps_stripe', 'service_id'=>$ratecard['service_id'], 'finder_id'=>$ratecard['finder_id'], 'line1'=>'Not sure if you will utlize your Membership?', 'line2'=>'USE PAY - PER - SESSION', 'line3'=>'('.$count.' Others in '.(!empty($service['location']['name']) ? $service['location']['name'] : 'this location').' are on it)', '_id'=>0];
 
