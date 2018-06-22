@@ -2439,7 +2439,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                     
                     $jwt_key = Config::get('app.jwt.key');
                     $jwt_alg = Config::get('app.jwt.alg');
-
+                    JWT::$leeway = 500;
                     $token = JWT::encode($jwt_claim,$jwt_key,$jwt_alg);
 
                     return $token;
