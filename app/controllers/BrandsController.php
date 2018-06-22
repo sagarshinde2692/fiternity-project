@@ -47,7 +47,11 @@ class BrandsController extends \BaseController {
                 ];
                 
                 $finders = vendorsByBrand($request);
-                $finder_locations = ['All Locations'];
+                $device = Request::header('Device-Type');
+                $finder_locations = [];
+                if($device == 'android'){
+                    $finder_locations = ['All Locations'];
+                }
                 if(isset($finders['results'])){
                     foreach($finders['results'] as $finder){
                         if(isset($finder['location']) && $finder['location'] != "" && !in_array(ucwords($finder['location']), $finder_locations)){
@@ -71,7 +75,7 @@ class BrandsController extends \BaseController {
                 if(!empty($brand['vendor_stripe'])&&!empty($brand['vendor_stripe']['cities'])&&!empty($city_id)&&!empty($city_id->_id)&&in_array((int)$city_id->_id, $brand['vendor_stripe']['cities'])){
                 	$data["stripe_data"] = [
                             'header' => "NEVER SEEN BEFORE DISCOUNTS",
-                            'sub_title' => "• Limited Slots •",
+                            'sub_title' => "&bull; Limited Slots &bull;",
                 			'title'=> (!empty($brand['vendor_stripe'])&&!empty($brand['vendor_stripe']['text']))?$brand['vendor_stripe']['text']:"",
                 			'text'=> (!empty($brand['vendor_stripe'])&&!empty($brand['vendor_stripe']['text']))?$brand['vendor_stripe']['text']:"",
                 			'background-color'=> (!empty($brand['vendor_stripe'])&&!empty($brand['vendor_stripe']['background_color']))?$brand['vendor_stripe']['background_color']:"",
