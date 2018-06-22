@@ -772,7 +772,7 @@ return array(
 	'paypersession_level_icon_base_url'=>'https://b.fitn.in/paypersession/level-',
 	'paypersession_lock_icon'=>'https://b.fitn.in/paypersession/lock-icon.png',
 	'remove_patti_from_brands' => [
-									1579,1580,1581,1582,1583,1584,1602,1604,1605,1606,1607,2235,2236,2244,6893,7064//Powerhouse
+									// 1579,1580,1581,1582,1583,1584,1602,1604,1605,1606,1607,2235,2236,2244,6893,7064//Powerhouse
 									],
 
 	'routed_order_fitcash'=>300,
