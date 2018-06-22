@@ -5762,7 +5762,7 @@ class FindersController extends \BaseController {
 	}
 
 	public function addPPSStripeData($ratecard, $service_slug, $finder_slug){
-		$return = ['type'=>'pps_stripe', 'service_id'=>$ratecard['service_id'], 'finder_id'=>$ratecard['finder_id'], 'line1'=>'Not sure if you will utlize your Membership?', 'line2'=>'USE PAY - PER - SESSION', 'line3'=>'(562 Others On It)', '_id'=>0];
+		$return = ['type'=>'pps_stripe', 'service_id'=>$ratecard['service_id'], 'finder_id'=>$ratecard['finder_id'], 'line1'=>'Not sure if you will utlize your Membership?', 'line2'=>'USE PAY - PER - SESSION', 'line3'=>'(562 Others in Bandra are using it)', '_id'=>0];
 
 		$return['pps_details'] =[
 			'pps'=>[
@@ -5779,10 +5779,12 @@ class FindersController extends \BaseController {
 			],
 		];
 
-		$return['pps_details']['more_info'] = [
-			'header'=>'See how pay per session works',
-			'description'=>'<span>Step 1: Choose your workout form out of 17 different options<br><br>Step 2: Book session of your choice near you with instant booking<br><br>Step3: Enjoy your workout and repeat</span>',
-		];
+		// $return['pps_details']['more_info'] = [
+		// 	'header'=>'See how pay per session works',
+		// 	'description'=>"Step 1: Choose your workout form out of 17 different options<br><br>Step 2: Book session of your choice near you with instant booking<br><br>Step3: Enjoy your workout and repeat",
+		// ];
+		
+		$return['pps_details']['ps'] = "P.S - Really economical for users who end up working out 6-8 times a month";
 
 		$return['pps_details']['action'] = [
 			'action_text'=>'BOOK A SESSION FOR RS '.($ratecard['special_price'] != 0 ? $ratecard['special_price'] : $ratecard['price']),
