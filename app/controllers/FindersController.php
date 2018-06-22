@@ -5719,7 +5719,7 @@ class FindersController extends \BaseController {
 
 				if(isset($ratecard['type']) && $ratecard['type'] == 'membership'){
 					if(isset($pps_exists) && $pps_exists){
-						array_splice( $service[$ratecard_key], $key+1, 0, [$this->addPPSStripeData($pps_ratecard, $service['slug'], $finder['slug'])]); 
+						array_splice( $service[$ratecard_key], $key+1, 0, [$this->addPPSStripeData($pps_ratecard, $service, $finder)]); 
 						break;
 					}else{
 						break;
@@ -5732,8 +5732,15 @@ class FindersController extends \BaseController {
 		return $finder['services'];
 	}
 
-	public function addPPSStripeData($ratecard, $service_slug, $finder_slug){
-		$return = ['type'=>'pps_stripe', 'service_id'=>$ratecard['service_id'], 'finder_id'=>$ratecard['finder_id'], 'line1'=>'Not sure if you will utlize your Membership?', 'line2'=>'USE PAY - PER - SESSION', 'line3'=>'(562 Others in Bandra are using it)', '_id'=>0];
+	public function addPPSStripeData($ratecard, $service, $finder){
+		
+		$count = !empty($service['traction']['trials']) ? $service['traction']['trials'] : (!empty($service['traction']['sales']) ? $service['traction']['sales'] : (!empty($service['traction']['requests']) ? $service['traction']['requests'] : 0));
+		$count = $count * 5;
+		if(!$count){
+			$count = round(time()/1000000);
+		}
+		
+		$return = ['type'=>'pps_stripe', 'service_id'=>$ratecard['service_id'], 'finder_id'=>$ratecard['finder_id'], 'line1'=>'Not sure if you will utlize your Membership?', 'line2'=>'USE PAY - PER - SESSION', 'line3'=>'('.$count.' Others in '..' are on it)', '_id'=>0];
 
 		$return['pps_details'] =[
 			'pps'=>[
@@ -5761,8 +5768,8 @@ class FindersController extends \BaseController {
 			'action_text'=>'BOOK A SESSION FOR RS '.($ratecard['special_price'] != 0 ? $ratecard['special_price'] : $ratecard['price']),
 			'assistance_text'=>'Need help? Let us assist you',
 			'phone_number'=>Config::get('app.contact_us_customer_number'),
-			'finder_slug'=>$finder_slug,
-			'service_slug'=>$service_slug,
+			'finder_slug'=>$finder['slug'],
+			'service_slug'=>$service['slug'],
 		];
 
 		return $return;
