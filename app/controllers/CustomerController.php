@@ -3461,7 +3461,7 @@ class CustomerController extends \BaseController {
 
 			$result['campaigns'] =  [];
 			$result['campaigns'][] = [
-				'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/monsoon-app.png',
+				'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/monsoon-with-code.jpg',
 				'link'=>'ftrnty://ftrnty.com/search/all',
 				'title'=>'Group Membership',
 				'height'=>100,
