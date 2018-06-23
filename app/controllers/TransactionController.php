@@ -2724,7 +2724,11 @@ class TransactionController extends \BaseController {
         if($ratecard['type'] == 'workout session' && isset($ratecard['vendor_price']) && $ratecard['vendor_price'] != ''){
             $data['vendor_price'] = $ratecard['vendor_price'];
         }
-
+        
+        if(!isset($data['type'])){
+            $data['type'] = $ratecard['type'];
+        }
+        
         if($ratecard['finder_id'] == 8892 && $ratecard['type'] == 'workout session'){
             $data['vendor_price'] = 990;
         }
@@ -3183,7 +3187,7 @@ class TransactionController extends \BaseController {
             return Response::json(array('status' => 404,'message' => 'Order already success'),404);
         }
 
-        $order->pg_type = $data['pg_type'];
+        $order->pg_type_selected = $data['pg_type'];
         $order->pg_date = date('Y-m-d H:i:s',time());
         $order->update();
 

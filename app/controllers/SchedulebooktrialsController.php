@@ -1605,7 +1605,7 @@ class SchedulebooktrialsController extends \BaseController {
                     $sndInstantEmailCustomer        =   $this->customermailer->healthyTiffinMembership($order->toArray());
                     $sndInstantSmsCustomer         =    $this->customersms->healthyTiffinMembership($order->toArray());
 
-                    $this->customermailer->payPerSessionFree($emailData);
+                    $this->customermailer->payPerSessionFree($order->toArray());
                 }
 
             }else{
@@ -1613,7 +1613,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $sndInstantEmailCustomer        =   $this->customermailer->healthyTiffinMembership($order->toArray());
                 $sndInstantSmsCustomer         =    $this->customersms->healthyTiffinMembership($order->toArray());
 
-                $this->customermailer->payPerSessionFree($emailData);
+                $this->customermailer->payPerSessionFree($order->toArray());
             }
 
             if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
@@ -2393,8 +2393,10 @@ class SchedulebooktrialsController extends \BaseController {
 
                 if(isset($order['coupon_code']) && $order['coupon_discount_amount'] > 0){
                     $coupon = Coupon::where('code', strtolower($order['coupon_code']))->first();
-                    $coupon->total_used = isset($coupon->total_used) ? $coupon->total_used + 1 : 1;
-                    $coupon->update();
+                    if($coupon){
+                        $coupon->total_used = isset($coupon->total_used) ? $coupon->total_used + 1 : 1;
+                        $coupon->update();
+                    }
                 }
                 
                 if(isset($order->payment_mode) && $order->payment_mode == "paymentgateway"){
@@ -4432,12 +4434,22 @@ class SchedulebooktrialsController extends \BaseController {
         array_set($bookdata, 'cancellation_reason_vendor', $reason);
         array_set($bookdata, 'final_lead_stage', 'cancel_stage');
         array_set($bookdata, 'final_lead_status', 'cancelled_by_'.$source_flag);
+
         if($source_flag == 'vendor'){
             array_set($bookdata, 'pre_trial_vendor_confirmation', 'cancel');
         }
+
         if($booktrial['type']=='workout-session'){
             array_set($bookdata, 'final_lead_stage', 'trial_stage');
             array_set($bookdata, 'post_trial_status', 'no show');
+
+        }else{
+
+            if(!empty($booktrial['schedule_date_time']) && time() < strtotime($booktrial['schedule_date_time'])){
+
+                array_set($bookdata, 'final_lead_stage', 'trial_stage');
+            }
+
         }
 
         array_set($bookdata, 'cancel_by', $source_flag);
