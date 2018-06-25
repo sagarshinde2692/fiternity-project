@@ -1903,9 +1903,9 @@ Class CustomerReward {
 
                 $decoded = $this->customerTokenDecode($jwt_token);
                 
-                $customer_id = $decoded->customer->_id;
+                $customer_phone = $decoded->customer->contact_no;
 
-                $prev_workout_session_count = \Booktrial::where('created_at', '>', new \DateTime('2018-04-22'))->where('customer_id', $customer_id)->where('type', 'workout-session')->count();
+                $prev_workout_session_count = \Booktrial::where('created_at', '>', new \DateTime('2018-04-22'))->where('customer_phone', 'LIKE', '%'.substr($customer_phone, -10).'%')->where('type', 'workout-session')->count();
 
                 if($prev_workout_session_count){
                     
