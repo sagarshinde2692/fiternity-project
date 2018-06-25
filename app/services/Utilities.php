@@ -3693,7 +3693,15 @@ Class Utilities {
 
         $order->gst_applicable = 'yes';
 
-        $order->cos_percentage = $this->getVendorCommision($order->toArray());
+        if(empty($order->vendor_commission)){
+
+            $order->cos_percentage = $this->getVendorCommision($order->toArray());
+        
+        }else{
+        
+            $order->cos_percentage = $order->vendor_commission;
+        
+        }
 
         $order->cos_finder_amount = ceil(($order->amount_finder * $order->cos_percentage) / 100);
 
