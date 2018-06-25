@@ -97,6 +97,12 @@ class CustomerController extends \BaseController {
 
 		foreach ($trials as $trial){
 
+			array_set($trial, 'type_text', 'Trial');
+
+			if($trial['type'] == 'workout-session'){
+				array_set($trial, 'type_text', 'Workout Session');
+			}
+
 			array_set($trial, 'message', '');
 			array_set($trial, 'finder_offerings', []);
 
