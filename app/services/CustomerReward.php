@@ -1789,8 +1789,8 @@ Class CustomerReward {
             if(isset($coupon['success_message']) && trim($coupon['success_message']) != ""){
                 $resp['custom_message'] = str_replace("<amt>",$discount_amount,$coupon['success_message']);
             }
-            if(isset($coupon['vendor_commission']) && $coupon['vendor_commission']){
-                $resp['vendor_commission'] = 0;
+            if(!empty($coupon['vendor_commission'])){
+                $resp['vendor_commission'] = $coupon['vendor_commission'];
             }
         }else{
             $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false);
