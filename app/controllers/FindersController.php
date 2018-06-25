@@ -5474,7 +5474,7 @@ class FindersController extends \BaseController {
 
 				if(!empty($ratecard['offers']) && !empty($ratecard['offers'][0]['offer_type']) && $ratecard['offers'][0]['offer_type'] == 'newyears'){
 
-					$return['callout'] = $service[$service_name]." - ".$this->getServiceDuration($ratecard)." @ Rs. ".$ratecard['offers'][0]['price'];
+					$return['callout'] = $service[$service_name]." - <b>".$this->getServiceDuration($ratecard)."</b> @ Rs. <b>".$ratecard['offers'][0]['price']."</b>";
 
 					if(!empty($ratecard['offers'][0]['callout'])){
 						$return['callout'] = $ratecard['offers'][0]['callout'];
