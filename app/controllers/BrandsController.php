@@ -48,11 +48,15 @@ class BrandsController extends \BaseController {
                 ];
                 
                 $finders = vendorsByBrand($request);
-                $device = Request::header('Device-Type');
+
+                
                 $finder_locations = [];
-                if($device == 'android'){
-                    $finder_locations = ['All Locations'];
+
+                if($this->device_type == 'android'){
+
+                    $finder_locations[] = 'All Locations';
                 }
+                
                 if(isset($finders['results'])){
                     foreach($finders['results'] as $finder){
                         if(isset($finder['location']) && $finder['location'] != "" && !in_array(ucwords($finder['location']), $finder_locations)){
