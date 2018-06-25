@@ -1954,7 +1954,7 @@ Class CustomerReward {
             if(isset($coupon['success_message']) && trim($coupon['success_message']) != ""){
                 $resp['custom_message'] = str_replace("<amt>",$discount_amount,$coupon['success_message']);
             }
-            if(!empty($coupon['vendor_commission'])){
+            if(isset($coupon['vendor_commission']) && is_numeric($coupon['vendor_commission'])){
                 $resp['vendor_commission'] = $coupon['vendor_commission'];
             }
         }else{
