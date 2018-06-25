@@ -1905,7 +1905,7 @@ Class CustomerReward {
                 
                 $customer_id = $decoded->customer->_id;
 
-                $prev_workout_session_count = \Booktrial::where('created_at', '>', new \DateTime('2018-04-22'))->where('type', 'workout-session')->count();
+                $prev_workout_session_count = \Booktrial::where('created_at', '>', new \DateTime('2018-04-22'))->where('customer_id', $customer_id)->where('type', 'workout-session')->count();
 
                 if($prev_workout_session_count){
                     
@@ -1933,7 +1933,7 @@ Class CustomerReward {
 
                 if(!in_array(strtolower($customer_email), Config::get('fitternityemails'))){
                     
-                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Coupon valid only for fitternity users","user_login_error"=>true);
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Coupon is either not valid or expired","user_login_error"=>true);
 
                     return $resp;
                 
