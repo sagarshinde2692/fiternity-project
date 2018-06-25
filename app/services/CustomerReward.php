@@ -1905,7 +1905,7 @@ Class CustomerReward {
                 
                 $customer_id = $decoded->customer->_id;
 
-                $prev_workout_session_count = \Booktrial::where('created_at', '>', new DateTime('2018-04-22'))->where('type', 'workout-session')->count();
+                $prev_workout_session_count = \Booktrial::where('created_at', '>', new \DateTime('2018-04-22'))->where('type', 'workout-session')->count();
 
                 if($prev_workout_session_count){
                     
