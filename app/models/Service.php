@@ -294,16 +294,6 @@ class Service extends \Basemodel{
                     	$value['remarks'] = $ratecardoffers[0]['remarks'];
                     }
 
-                    $offer_price = $ratecardoffers[0]['price'];
-
-                    if($offer_price !== 0 && $offer_price < $cost_price){
-
-                    	$offf_percentage = ceil((($cost_price - $offer_price)/$cost_price)*100);
-
-                    	$value['campaign_offer'] = "Get ".$offf_percentage."% off - Limited Slots";
-						$value['campaign_color'] = "#43a047";
-                    }
-
 				}
 				
 				(isset($value['special_price']) && $value['price'] == $value['special_price']) ? $value['special_price'] = 0 : null;
@@ -325,6 +315,17 @@ class Service extends \Basemodel{
 						$value['validity_type'] = "month";
 					}
 				}
+
+				$offer_price = (!empty($value['special_price'])) ? $value['special_price'] : 0 ;
+				$cost_price = (!empty($value['price'])) ? $value['price'] : 0 ;
+
+                if($offer_price !== 0 && $offer_price < $cost_price){
+
+                	$offf_percentage = ceil((($cost_price - $offer_price)/$cost_price)*100);
+
+                	$value['campaign_offer'] = "Get ".$offf_percentage."% off - Limited Slots";
+					$value['campaign_color'] = "#43a047";
+                }
 
 				if($ratecard_price >= 5000){
 
