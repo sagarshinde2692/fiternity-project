@@ -1768,7 +1768,7 @@ Class CustomerReward {
 
                 if(!in_array(strtolower($customer_email), Config::get('fitternityemails'))){
                     
-                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Coupon valid only for fitternity users","user_login_error"=>true);
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Coupon is either not valid or expired","user_login_error"=>true);
 
                     return $resp;
                 
