@@ -2187,6 +2187,10 @@ class TransactionController extends \BaseController {
 
             if(isset($couponCheck["coupon_applied"]) && $couponCheck["coupon_applied"]){
 
+                if(isset($couponCheck['vendor_commission'])){
+                    $data['vendor_commission'] = $couponCheck['vendor_commission'];
+                }
+
                 $data["coupon_discount_amount"] = $amount > $couponCheck["data"]["discount"] ? $couponCheck["data"]["discount"] : $amount;
 
                 $amount -= $data["coupon_discount_amount"];
