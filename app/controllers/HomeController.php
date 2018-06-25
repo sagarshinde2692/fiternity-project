@@ -754,35 +754,6 @@ class HomeController extends BaseController {
                 	$itemData->update();
                 }
                 }
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
 
                 $dates = array('start_date', 'start_date_starttime', 'schedule_date', 'schedule_date_time', 'followup_date', 'followup_date_time','missedcall_date','customofferorder_expiry_date','auto_followup_date');
                 $unset_keys = [];
@@ -1077,10 +1048,12 @@ class HomeController extends BaseController {
 
                 $header = "BOOKING SUCCESSFUL!";
 
-                $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.' <br><br>Activate your session through FitCode';
+                $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.' <br><br>Activate your session through FitCode provided by'.$finder_name.' FitCode helps you mark your attendance that let\'s you earn cashbacks';  
 
                 if(isset($item['pay_later']) && $item['pay_later']){
-                    $subline = $subline.'<br><br>Attend and pay later to earn Cashback!</p>';
+                    $subline .='<br><br>Attend and pay later to earn Cashback!</p>';
+                }else{
+                    $subline .= '</p>';
                 }
 
                 $streak_items = [];
