@@ -3693,7 +3693,7 @@ Class Utilities {
 
         $order->gst_applicable = 'yes';
 
-        if(empty($order->vendor_commission)){
+        if(!isset($order->vendor_commission)){
 
             $order->cos_percentage = $this->getVendorCommision($order->toArray());
         
