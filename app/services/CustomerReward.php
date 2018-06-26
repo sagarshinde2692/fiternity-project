@@ -1805,7 +1805,7 @@ Class CustomerReward {
                 $customer_phone = $decoded->customer->contact_no;
                 $customer_email = $decoded->customer->email;
                 
-                $prev_workout_session_count = \Order::active()->where('type', 'workout-session')->where('success_date', '>', new \DateTime(date('d-m-Y', strtotime('-30 days'))))->where(function($query) use ($customer_email, $customer_phone){ return $query->orWhere('customer_phone', 'LIKE', '%'.substr($customer_phone, -10).'%')->orWhere('customer_email', $customer_email);})->where('coupon_code', 'Like', $coupon['code'])->where('coupon_discount_amount', '<', 0)->count();
+                $prev_workout_session_count = \Order::active()->where('success_date', '>', new \DateTime(date('d-m-Y', strtotime('-30 days'))))->where(function($query) use ($customer_email, $customer_phone){ return $query->orWhere('customer_phone', 'LIKE', '%'.substr($customer_phone, -10).'%')->orWhere('customer_email', $customer_email);})->where('coupon_code', 'Like', $coupon['code'])->where('coupon_discount_amount', '<', 0)->count();
 
                 if($prev_workout_session_count){
                     
