@@ -1751,7 +1751,9 @@ Class CustomerReward {
                 
                 $customer_phone = $decoded->customer->contact_no;
 
-                $prev_workout_session_count = \Booktrial::where('created_at', '>', new \DateTime('2018-04-22'))->where('customer_phone', 'LIKE', '%'.substr($customer_phone, -10).'%')->where('type', 'workout-session')->count();
+                $customer_email = $decoded->customer->email;
+
+                $prev_workout_session_count = \Booktrial::where('created_at', '>', new \DateTime('2018-04-22'))->where(function($query) use ($customer_email, $customer_phone){ return $query->orWhere('customer_phone', 'LIKE', '%'.substr($customer_phone, -10).'%')->orWhere('customer_email', $customer_email);})->where('type', 'workout-session')->count();
 
                 if($prev_workout_session_count){
                     
@@ -1785,6 +1787,40 @@ Class CustomerReward {
                 
                 }
                 
+            }
+
+            if(isset($coupon['conditions']) && is_array($coupon['conditions']) && in_array('once_per_month', $coupon['conditions'])){
+                
+                $jwt_token = Request::header('Authorization');
+
+                if(empty($jwt_token)){
+
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"User Login Required","user_login_error"=>true);
+
+                    return $resp;
+                }
+
+                $decoded = $this->customerTokenDecode($jwt_token);
+                
+                $customer_phone = $decoded->customer->contact_no;
+                $customer_email = $decoded->customer->email;
+                
+                $prev_workout_session_count = \Order::active()->where('type', 'workout-session')->where('success_date', '>', new \DateTime(date('d-m-Y', strtotime('-30 days'))))->where(function($query) use ($customer_email, $customer_phone){ return $query->orWhere('customer_phone', 'LIKE', '%'.substr($customer_phone, -10).'%')->orWhere('customer_email', $customer_email);})->where('coupon_code', 'Like', $coupon['code'])->where('coupon_discount_amount', '<', 0)->count();
+
+                if($prev_workout_session_count){
+                    
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"This coupon can be used only once every month ","user_login_error"=>true);
+
+                    return $resp;    
+                }
+                
+            }
+
+            if(isset($coupon['min_price']) && is_numeric($coupon['min_price']) &&  $price < $coupon['min_price']){
+                
+                $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Minimum purchase price should be:Rs.".$coupon['min_price'],"user_login_error"=>true);
+
+                return $resp;
             }
 
             $discount_amount = $coupon["discount_amount"];
