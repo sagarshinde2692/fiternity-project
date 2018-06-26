@@ -122,9 +122,16 @@ class TransactionController extends \BaseController {
             // 'ratecard_id'=>'required|integer|min:1',
             'type'=>'required'
         );
-        $asshole_numbers = ["7838038094","7982850036","8220720704","8510829603"];
+
+        $asshole_numbers = ["7838038094","7982850036","8220720704","8510829603","9990099996","8368952443"];
         
         if(in_array(substr($data["customer_phone"], -10), $asshole_numbers)){
+            return Response::json("Can't book anything for you.", $this->error_status);
+        }
+
+        $asshole_emails = ["vasuk573@gmail.com","vasukatara01@gmail.com"];
+        
+        if(in_array(strtolower($data["customer_email"]),$asshole_emails)){
             return Response::json("Can't book anything for you.", $this->error_status);
         }
 
@@ -2187,6 +2194,10 @@ class TransactionController extends \BaseController {
 
             if(isset($couponCheck["coupon_applied"]) && $couponCheck["coupon_applied"]){
 
+                if(isset($couponCheck['vendor_commission'])){
+                    $data['vendor_commission'] = $couponCheck['vendor_commission'];
+                }
+
                 $data["coupon_discount_amount"] = $amount > $couponCheck["data"]["discount"] ? $couponCheck["data"]["discount"] : $amount;
 
                 $amount -= $data["coupon_discount_amount"];
@@ -2724,7 +2735,11 @@ class TransactionController extends \BaseController {
         if($ratecard['type'] == 'workout session' && isset($ratecard['vendor_price']) && $ratecard['vendor_price'] != ''){
             $data['vendor_price'] = $ratecard['vendor_price'];
         }
-
+        
+        if(!isset($data['type'])){
+            $data['type'] = $ratecard['type'];
+        }
+        
         if($ratecard['finder_id'] == 8892 && $ratecard['type'] == 'workout session'){
             $data['vendor_price'] = 990;
         }
@@ -3183,7 +3198,7 @@ class TransactionController extends \BaseController {
             return Response::json(array('status' => 404,'message' => 'Order already success'),404);
         }
 
-        $order->pg_type = $data['pg_type'];
+        $order->pg_type_selected = $data['pg_type'];
         $order->pg_date = date('Y-m-d H:i:s',time());
         $order->update();
 

@@ -234,6 +234,7 @@ Class FinderMailer extends Mailer {
 					break;
 				case 4 : 
 				case 8 : 
+				case 9 :
 					$fitternity_email = [
 						'vikramkhanna@fitternity.com',
 						'niveditasomani@fitternity.com',
@@ -254,6 +255,8 @@ Class FinderMailer extends Mailer {
 					break;
 			}
 		}
+
+
 
 		$user_email = array_merge($user_email,$fitternity_email);
 
@@ -1028,6 +1031,19 @@ Class FinderMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 
+	protected function captureVendorWalkthrough ($data){
+
+		$label = 'Walkthrough-Vendor';
+
+		$user_email 	=  	explode(',', $data['finder_vcc_email']);
+
+		$message_data 	= array(
+			'user_email' => $user_email,
+			'user_name' =>  $data['finder_name']
+		);
+
+		return $this->common($label,$data,$message_data);
+	}
 
 	public function common($label,$data,$message_data,$delay = 0){
 		// return($message_data['user_email']);

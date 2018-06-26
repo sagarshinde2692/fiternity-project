@@ -165,7 +165,7 @@ class FindersController extends \BaseController {
 				->with('offerings')
 				->with('facilities')
 				// ->with(array('ozonetelno'=>function($query){$query->select('*')->where('status','=','1');}))
-				->with(array('knowlarityno'=>function($query){$query->select('*')->where('status',true);}))
+				->with(array('knowlarityno'=>function($query){$query->select('*')->where('status',true)->orderBy('extension', 'asc');}))
 
 				->with(array('services'=>function($query){$query->where('status','=','1')->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->orderBy('ordering', 'ASC');}))
 
@@ -369,10 +369,10 @@ class FindersController extends \BaseController {
 				// 	$finderarr['ozonetelno']['phone_number'] = '+'.$finderarr['ozonetelno']['phone_number'];
 				// 	$finder['ozonetelno'] = $finderarr['ozonetelno'];
 				// }
-
-				if(isset($finderarr['knowlarityno']) && $finderarr['knowlarityno'] != ''){
-					$finderarr['knowlarityno']['phone_number'] = '+91'.$finderarr['knowlarityno']['phone_number'];
-					$finderarr['knowlarityno']['extension'] = strlen($finderarr['knowlarityno']['extension']) < 2 && $finderarr['knowlarityno']['extension'] >= 1  ?  "0".$finderarr['knowlarityno']['extension'] : $finderarr['knowlarityno']['extension'];
+				if(isset($finderarr['knowlarityno']) && count($finderarr['knowlarityno'])){
+					$finderarr['knowlarityno'] = $this->utilities->getContactOptions($finderarr);
+					// $finderarr['knowlarityno']['phone_number'] = '+91'.$finderarr['knowlarityno']['phone_number'];
+					// $finderarr['knowlarityno']['extension'] = strlen($finderarr['knowlarityno']['extension']) < 2 && $finderarr['knowlarityno']['extension'] >= 1  ?  "0".$finderarr['knowlarityno']['extension'] : $finderarr['knowlarityno']['extension'];
 					$finder['knowlarityno'] = $finderarr['knowlarityno'];
 					$finder['ozonetelno'] = $finder['knowlarityno'];
 				}
@@ -510,7 +510,7 @@ class FindersController extends \BaseController {
 
 				$pay_per_session_abandunt_catyegory             =   [41,42,45,25,46,10,26,40];
 
-				if((isset($finder['trial']) && in_array($finder['trial'], ['disable', 'manual'])) || $finder['manual_trial_enable'] == "1" || count($finder['services']) == 0 || $finder['commercial_type'] == 0 || in_array($finder['category_id'],$pay_per_session_abandunt_catyegory)){
+				if((isset($finder['trial']) && in_array($finder['trial'], ['disable', 'manual'])) || (!empty($finder['manual_trial_enable']) && $finder['manual_trial_enable'] == "1") || count($finder['services']) == 0 || $finder['commercial_type'] == 0 || in_array($finder['category_id'],$pay_per_session_abandunt_catyegory)){
 					$finder['pay_per_session'] = false;
 				}
 				
@@ -3404,7 +3404,7 @@ class FindersController extends \BaseController {
 				->with('offerings')
 				->with('facilities')
 				// ->with(array('ozonetelno'=>function($query){$query->select('*')->where('status','=','1');}))
-				->with(array('knowlarityno'=>function($query){$query->select('*')->where('status',true);}))
+				->with(array('knowlarityno'=>function($query){$query->select('*')->where('status',true)->orderBy('extension', 'asc');}))
 
 				->with(array('services'=>function($query){$query->select('*')->where('status','=','1')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))->orderBy('ordering', 'ASC');}))
 
@@ -3785,11 +3785,12 @@ class FindersController extends \BaseController {
 				// 	unset($finder['ozonetelno']);
 				// 	unset($finder['contact']['website']);
 				// }
-				if(isset($finderarr['knowlarityno']) && $finderarr['knowlarityno'] != ''){
-					$extension = (isset($finder['knowlarityno']['extension']) && $finder['knowlarityno']['extension'] != "") ? ",,".$finder['knowlarityno']['extension'] : "";
+				if(isset($finderarr['knowlarityno']) && count($finderarr['knowlarityno'])){
+					$finder['knowlarityno'] = $finder['knowlarityno'][0];
+					$extension = (isset($finder['knowlarityno']['extension']) && $finder['knowlarityno']['extension'] != "") ? ",,4".$finder['knowlarityno']['extension'] : "";
 					$finder['knowlarityno']['phone_number'] = '+91'.$finder['knowlarityno']['phone_number'].$extension;
 					$finder['contact']['phone'] = $finder['knowlarityno']['phone_number'];
-					unset($finder['knowlarityno']);
+					// unset($finder['knowlarityno']);
 					unset($finder['contact']['website']);
 				}
 				// if($finderarr['city_id'] == 4 || $finderarr['city_id'] == 8 || $finderarr['city_id'] == 9){

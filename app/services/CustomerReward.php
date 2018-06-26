@@ -242,14 +242,14 @@ Class CustomerReward {
 
                                 $reward_type_info = 'fitness_kit';
 
-                                $reward['contents'] = ['Cool-Water Bottle'];
+                                $reward['content'] = ['Cool-Water Bottle'];
                                 $reward['image'] = 'https://b.fitn.in/gamification/reward/goodies/productskit/bottle.png';
 
                             }else{
 
                                 $reward_type_info = 'fitness_kit_2';
 
-                                $reward['contents'] = ['Waterproof Gym Bag'];
+                                $reward['content'] = ['Waterproof Gym Bag'];
                                 $reward['image'] = 'https://b.fitn.in/gamification/reward/goodies/productskit/gymbag.png';
                             }
                             
@@ -261,7 +261,7 @@ Class CustomerReward {
 
                             $reward_type_info = 'fitness_kit';
 
-                            $reward['contents'] = ['Waterproof Gym Bag'];
+                            $reward['content'] = ['Waterproof Gym Bag'];
                             $reward['image'] = 'https://b.fitn.in/gamification/reward/goodies/productskit/gymbag.png';
                         }
 
@@ -1711,7 +1711,7 @@ Class CustomerReward {
                 $decoded = $this->customerTokenDecode($jwt_token);
                 
                 $customer_email = $decoded->customer->email;
-                
+
                 if(isset($coupon['customer_emails']) && is_array($coupon['customer_emails'])){
                     if(!in_array(strtolower($customer_email), $coupon['customer_emails'])){
                         $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Invalid Coupon");
@@ -1720,9 +1720,71 @@ Class CustomerReward {
                     }
                 }
 
+                \Booktrial::$withoutAppends = true;
+
+                $booktrial_count = \Booktrial::where('customer_email',$customer_email)->where('created_at','>=',new \MongoDate(strtotime(date('Y-m-d 00:00:00'))))->where('created_at','<=',new \MongoDate(strtotime(date('Y-m-d 23:59:59'))))->count();
+
+                if($booktrial_count > 0){
+
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"User can book only one session per day","user_login_error"=>true);
+
+                    return $resp;
+                }
+
                 if($price <= $coupon['price_limit']){
                     $coupon["discount_amount"] = 0;
                 }
+            }
+
+            if(isset($coupon['conditions']) && is_array($coupon['conditions']) && in_array('once_new_pps', $coupon['conditions'])){
+                
+                $jwt_token = Request::header('Authorization');
+
+                if(empty($jwt_token)){
+
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"User Login Required","user_login_error"=>true);
+
+                    return $resp;
+                }
+
+                $decoded = $this->customerTokenDecode($jwt_token);
+                
+                $customer_phone = $decoded->customer->contact_no;
+
+                $prev_workout_session_count = \Booktrial::where('created_at', '>', new \DateTime('2018-04-22'))->where('customer_phone', 'LIKE', '%'.substr($customer_phone, -10).'%')->where('type', 'workout-session')->count();
+
+                if($prev_workout_session_count){
+                    
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"Coupon is valid for first time user only","user_login_error"=>true);
+
+                    return $resp;
+                }
+                
+            }
+
+            if(isset($coupon['conditions']) && is_array($coupon['conditions']) && in_array('fitternity_employees', $coupon['conditions'])){
+                
+                $jwt_token = Request::header('Authorization');
+
+                if(empty($jwt_token)){
+
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"User Login Required","user_login_error"=>true);
+
+                    return $resp;
+                }
+
+                $decoded = $this->customerTokenDecode($jwt_token);
+                
+                $customer_email = $decoded->customer->email;
+
+                if(!in_array(strtolower($customer_email), Config::get('fitternityemails'))){
+                    
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Coupon is either not valid or expired","user_login_error"=>true);
+
+                    return $resp;
+                
+                }
+                
             }
 
             $discount_amount = $coupon["discount_amount"];
@@ -1737,6 +1799,9 @@ Class CustomerReward {
             $resp = array("data"=>array("discount" => $discount_amount, "final_amount" => $final_amount, "wallet_balance" => $wallet_balance, "only_discount" => $discount_price), "coupon_applied" => true, 'otp'=>$fitternity_only_coupon, "vendor_coupon"=>$vendor_coupon, "vendor_routed_coupon" => $vendor_routed_coupon);
             if(isset($coupon['success_message']) && trim($coupon['success_message']) != ""){
                 $resp['custom_message'] = str_replace("<amt>",$discount_amount,$coupon['success_message']);
+            }
+            if(isset($coupon['vendor_commission']) && is_numeric($coupon['vendor_commission'])){
+                $resp['vendor_commission'] = $coupon['vendor_commission'];
             }
         }else{
             $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false);
