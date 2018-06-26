@@ -141,9 +141,17 @@ class TransactionController extends \BaseController {
                 return Response::json(array('status'=>400, 'message'=>'Ratecard Id or ticket Id is required'), $this->error_status);
             }
         }
-
         
+        if(!empty($data['third_party'])&&$data['type']!='workout-session')
+        	return Response::json(array('status'=>400, 'message'=>'Third Party currently only serving workout sessions.'), $this->error_status);
 
+        if(empty($data['service_id']))
+        {
+        	Ratecard::$withoutAppends=true;
+        	$servId=Ratecard::where("_id",intval($data['ratecard_id']))->first(['service_id']);
+        	(!empty($servId))?$data['service_id']=$servId->service_id:"";
+        }
+        
         $workout = array('vip_booktrials','3daystrial','booktrials','workout-session');
         if(in_array($data['type'],$workout)){
             $service_category = Service::find($data['service_id'], ['servicecategory_id']);
@@ -331,6 +339,7 @@ class TransactionController extends \BaseController {
             }
     
             $customerDetail = $this->getCustomerDetail($data);
+            
     
             if($customerDetail['status'] != 200){
                 return Response::json($customerDetail,$this->error_status);
@@ -368,6 +377,25 @@ class TransactionController extends \BaseController {
                     
                 }
     
+            }
+            if(!empty($data['third_party']))
+            {
+            	if(!empty(intval($data['total_sessions'])))
+            	{
+            		$data['total_sessions']=intval($data['total_sessions'])-1;
+            		$order_id = Order::max('_id') + 1;
+            		$order = new Order($data);
+            		$order->_id = $order_id;
+            		$order->status = "1";
+            		$order->save();
+            		
+            		$cust=Customer::where("_id",intval($data['logged_in_customer_id']))->first();
+            		$cust->total_sessions=intval($data['total_sessions']);
+            		$cust->third_party_token_id=$data['third_party_token_id'];
+            		$cust->save();
+            		return Response::json(['status'=>200,"message"=>"Successfully Generated and maintained Workout session. "],200);
+            	}
+            	else return Response::json(['status'=>200,"message"=>"No Workout session left. "],200);
             }
     
             if(isset($data['manual_order']) && $data['manual_order']){
@@ -761,6 +789,7 @@ class TransactionController extends \BaseController {
             if($order){
                $order->update($data); 
             }else{
+            	
                 $order = new Order($data);
                 $order->_id = $order_id;
                 $order->save();
@@ -1920,6 +1949,15 @@ class TransactionController extends \BaseController {
         if(isset($data['customer_phone']) && $data['customer_phone'] != ''){
             setVerifiedContact($customer_id, $data['customer_phone']);
         }
+        
+        if(!empty($data['third_party'])&&!empty($customer->third_party_last_transacted_time))
+        {
+
+        	$data['total_sessions']=$customer->total_sessions;
+        	$data['third_party_token_id']=$customer->third_party_token_id;
+
+        }
+        	
 
         $device_type = (isset($data['device_type']) && $data['device_type'] != '') ? $data['device_type'] : "";
         $gcm_reg_id = (isset($data['gcm_reg_id']) && $data['gcm_reg_id'] != '') ? $data['gcm_reg_id'] : "";
@@ -1936,7 +1974,7 @@ class TransactionController extends \BaseController {
                 $data['gcm_reg_id'] = $getRegId["reg_id"];
             }
         }
-
+         
         if($device_type != '' && $gcm_reg_id != ''){
 
             $regData = array();

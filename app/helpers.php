@@ -2274,6 +2274,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         $customer = new Customer();
                         $customer->_id = $inserted_id;
                         $customer->rx_user = (isset($data['rx_user'])&& $data['rx_user'] !="")? true : false;
+                        
                         if(isset($data['rx_user'])&& $data['rx_user'] !="")
                         {
                         	$customer->rx_latest_date = new DateTime();
@@ -2288,7 +2289,6 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         $customer->fitness_goal = isset($data['fitness_goal']) ? $data['fitness_goal'] : "";
                         $customer->picture = "https://www.gravatar.com/avatar/" . md5($data['customer_email']) . "?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png";
                         $customer->password = md5(time());
-                        
 
                         if (isset($data['customer_phone']) && $data['customer_phone'] != '') {
                             $customer->contact_no = $data['customer_phone'];
@@ -2314,6 +2314,16 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         $customer->ishulluser = 1;
                         $customer->old_customer = false;
                         $customer->demonetisation = time();
+                        
+                        if(!empty($data['third_party'])&&!empty($data['third_party_id'])&&!empty($data['third_party_token_id'])&&!empty($data['third_party_remaining_sessions']))
+                        {
+                        	$customer->third_party_registered = time();
+                        	$customer->third_party_last_transacted_time = time();
+                        	$customer->total_sessions=$data['third_party_remaining_sessions'];
+                        	$customer->third_party_token_id=$data['third_party_token_id'];
+                        }
+
+                        
                         $customer->save();
                         registerMail($customer->_id);
 
@@ -2336,7 +2346,14 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                                 }
 
                             }
-
+                            if(!empty($data['third_party'])&&!empty($data['third_party_id'])&&!empty($data['third_party_token_id'])&&!empty($data['third_party_remaining_sessions']))
+                            {
+                            	$customerData['third_party_last_transacted_time']= time();
+                            	$customerData['total_sessions']=$data['third_party_remaining_sessions'];
+                            	$customerData['third_party_token_id']=$data['third_party_token_id'];	
+                            }
+                            	
+                            
                             if (isset($data['rx_user']) ) {
                             	if(isset($data['rx_user'])&& $data['rx_user'] !="")
                             	{
