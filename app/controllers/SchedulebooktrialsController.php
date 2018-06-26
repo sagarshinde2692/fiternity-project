@@ -2394,7 +2394,6 @@ class SchedulebooktrialsController extends \BaseController {
                 if(isset($order['coupon_code']) && $order['coupon_discount_amount'] > 0){
 
                     $coupon = Coupon::where('code', strtolower($order['coupon_code']))->first();
-
                     if($coupon){
                         $coupon->total_used = isset($coupon->total_used) ? $coupon->total_used + 1 : 1;
                         $coupon->update();

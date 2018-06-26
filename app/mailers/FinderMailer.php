@@ -234,6 +234,7 @@ Class FinderMailer extends Mailer {
 					break;
 				case 4 : 
 				case 8 : 
+				case 9 :
 					$fitternity_email = [
 						'vikramkhanna@fitternity.com',
 						'niveditasomani@fitternity.com',
@@ -254,6 +255,8 @@ Class FinderMailer extends Mailer {
 					break;
 			}
 		}
+
+
 
 		$user_email = array_merge($user_email,$fitternity_email);
 
