@@ -6364,6 +6364,8 @@ public function productSuccess($data)
     		
     		$order = Order::where('txnid',$val['merchantTransactionId'])->first();
     		
+    		
+    		
     		if($order){
     			
     			$order->pg_type = "AMAZON";
@@ -6426,18 +6428,35 @@ public function productSuccess($data)
         
         if($val['isSignatureValid'] == 'true'){
 
-            $order = Order::where('txnid',$val['sellerOrderId'])->first();
+        	
+        	$order = Order::where(function($query)
+        	{$query->orWhere('txnid', $val['sellerOrderId'])->orWhere('payment.txnid',$val['sellerOrderId']);
+        	})->first();
 
             if($order){
-
-                $order->pg_type = "AMAZON";
-                $order->amazon_hash = $val["hash"] = getpayTMhash($order->toArray())['reverse_hash'];
+            	if($order->type=='product')
+            	{
+            		$order->payment->pg_type="AMAZON";
+            		$revereseHash=getReverseHashProduct($order->toArray());
+            		if($revereseHash['status'])
+            			 $order->payment->amazon_hash = $val["hash"] = $revereseHash['data']['reverse_hash'];
+            		else $val['isSignatureValid'] = "false";
+            		return Response::json($val);
+            	}
+                else 
+                {
+                		
+                		$order->pg_type = "AMAZON";
+                		$order->amazon_hash = $val["hash"] = getpayTMhash($order->toArray())['reverse_hash'];
+                }
+                
+                
                 $order->update();
 
                 $val['order_id'] = $order->_id;
 
                 $success_data = [
-                    'txnid'=>$order['txnid'],
+                	'txnid'=>$val['sellerOrderId'],
                     'amount'=>(int)$val["orderTotalAmount"],
                     'status' => 'success',
                     'hash'=> $val["hash"]
