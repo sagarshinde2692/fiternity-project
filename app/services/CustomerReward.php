@@ -742,6 +742,10 @@ Class CustomerReward {
 
                     $result["cta"] = "Schedule Now";
                     $result["url"] = "ftrnty://ftrnty.com/pps";
+
+                    if($myreward['reward_type'] == 'swimming_sessions'){
+                        $result["url"] = "ftrnty://ftrnty.com/pps?cat=swimming-pools";
+                    }
                 }
 
                 $myreward->update();
