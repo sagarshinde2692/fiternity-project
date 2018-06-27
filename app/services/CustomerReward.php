@@ -785,6 +785,12 @@ Class CustomerReward {
                     }
 
                     $myreward->coupon = $data['coupon'];
+
+                    foreach ($result['coupon_detail'] as &$value) {
+
+                        $value['text'] = "Your code is ".$value['code']." (".$value['amount'].")";
+                        $value['usage_text'] = $value['claimed']."/".$value['quantity']." used";
+                    }
                 }
 
                 $myreward->update();
