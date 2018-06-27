@@ -3720,12 +3720,15 @@ class CustomerController extends \BaseController {
             $decoded = $this->customerTokenDecode($jwt_token);
             $customer_id = $decoded->customer->_id;
             $data['customer_id'] = $customer_id;
-
+			
         }else{
-            $customer_id = $data['customer_id'] ;
+			$customer_id = $data['customer_id'] ;
         }
-
+		
 		$customer = Customer::find((int)$customer_id);
+		$data['customer_name'] = $customer->name;
+		$data['customer_email'] = $customer->email;
+		$data['customer_phone'] = $customer->contact_no;
 
 		if(isset($data['customer_address']) && is_array($data['customer_address']) && !empty($data['customer_address'])){
 
