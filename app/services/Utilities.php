@@ -3703,11 +3703,13 @@ Class Utilities {
         
         }
 
-        $order->cos_finder_amount = ceil(($order->amount_finder * $order->cos_percentage) / 100);
+        $amount_used = (isset($order->vendor_price)) ? $order->vendor_price : $order->amount_finder;
+
+        $order->cos_finder_amount = ceil(($amount_used * $order->cos_percentage) / 100);
 
         $order->gst_percentage = Config::get('app.gst_on_cos_percentage');
 
-        $order->amount_transferred_to_vendor = $order->amount_finder;
+        $order->amount_transferred_to_vendor = $amount_used;
 
         if($order->payment_mode == "at the studio"){
             $order->amount_transferred_to_vendor = 0;
