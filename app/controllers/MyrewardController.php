@@ -93,7 +93,13 @@ class MyrewardController extends BaseController {
 
             $myrewards = $myrewards->toArray();
 
-            foreach ($myrewards as $key => $value){
+            foreach ($myrewards as $key => &$value){
+
+                $value["cta"] = "Get Now";
+
+                if($value['status'] == "1"){
+                    $value["cta"] = "Claimed";
+                }
 
                 $created_at = date('Y-m-d H:i:s',strtotime($value['created_at']));
                 
@@ -114,12 +120,33 @@ class MyrewardController extends BaseController {
                     $myrewards[$key]['payload']['amount'] = $value['payload']['amount'] * $value['quantity'];
                 }
 
+                if(in_array($value['reward_type'],['sessions','swimming_sessions'])){
+                    $value["cta"] = "Unlock Coupon";
+                }
+
                 if(!empty($value['coupon_detail'])){
+
+                    $value["cta"] = "Schedule Now";
+                    $value["claimed"] = 0;
+                    $value["status"] = "0";
 
                     foreach ($value['coupon_detail'] as &$val) {
 
                         $val['text'] = "Your code is ".$val['code']." (".$val['amount'].")";
                         $val['usage_text'] = $val['claimed']."/".$val['quantity']." used";
+
+                        $value["claimed"] += $val['claimed'];
+                    }
+
+                    if($value["quantity"] == $value["claimed"]){
+                        $value["status"] = "1";
+                        $value["cta"] = "Claimed";
+                    }
+
+                    $value["url"] = "ftrnty://ftrnty.com/pps";
+
+                    if($value['reward_type'] == 'swimming_sessions'){
+                        $value["url"] = "ftrnty://ftrnty.com/pps?cat=swimming-pools";
                     }
                 }
 
