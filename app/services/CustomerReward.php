@@ -1809,7 +1809,7 @@ Class CustomerReward {
 
                 if($prev_workout_session_count){
                     
-                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"This coupon can be used only once every month ","user_login_error"=>true);
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Already used","user_login_error"=>true);
 
                     return $resp;    
                 }
@@ -1818,7 +1818,7 @@ Class CustomerReward {
 
             if(isset($coupon['min_price']) && is_numeric($coupon['min_price']) &&  $price < $coupon['min_price']){
                 
-                $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Minimum purchase price should be:Rs.".$coupon['min_price'],"user_login_error"=>true);
+                $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Applicable on minimum purchase of Rs. ".$coupon['min_price'],"user_login_error"=>true);
 
                 return $resp;
             }
