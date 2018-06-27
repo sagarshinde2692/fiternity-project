@@ -938,15 +938,14 @@ class FindersController extends \BaseController {
                       "id",
                       "city",
                       "category",
-                      "overlayimage"
+					  "overlayimage",
+					  "featured"
                     ],
                     "not"=>[
                     	"vendor"=>[(int)$finderdata["_id"]],
                     ],
                     "only_featured"=>true
                 ];
-
-                $nearby_same_category = geoLocationFinder($nearby_same_category_request);
 
 				$nearby_other_category_request = [
                     "offset" => 0,
@@ -970,14 +969,25 @@ class FindersController extends \BaseController {
                       "id",
                       "city",
                       "category",
-                      "overlayimage"
+					  "overlayimage",
+					  "featured"
                     ],
                     "not"=>[
                     	"vendor"=>[(int)$finderdata["_id"]],
                     	// "category"=>[newcategorymapping($finderdata["category"]["name"])]
                     ],
                     "only_featured"=>true
-                ];
+				];
+				
+				if(!$this->utilities->isIntegratedVendor($finderdata)){
+					$nearby_same_category['limit'] = $nearby_other_category['limit'] = 4;
+					unset($nearby_same_category['only_featured']);
+					unset($nearby_other_category['only_featured']);
+				}else{
+					Log::info("Integrated vendor");
+				}
+				
+				$nearby_same_category = geoLocationFinder($nearby_same_category_request);
 
                 $nearby_other_category = geoLocationFinder($nearby_other_category_request);
 
@@ -1243,6 +1253,15 @@ class FindersController extends \BaseController {
 		// 	$response['finder']['offer_icon_mob']        =        "https://a.fitn.in/fitimages/fitmania/offer_available_sale.svg";
 		// }
 		$response['finder']['offer_icon']        =        "https://a.fitn.in/fitimages/vendor-app-download-badge1.svg";
+		try{
+			if(!empty($_GET['source'])){
+				$this->updateFinderHit($response['finder']);
+			}else{
+				Log::info("Not increasing hits");
+			}
+		}catch(Exception $e){
+			Log::info($e);
+		}
 
 		// if(time() >= strtotime(date('2016-12-24 00:00:00')) && (int)$response['finder']['commercial_type'] != 0){
 
@@ -4085,7 +4104,11 @@ class FindersController extends \BaseController {
 			$finder = Finder::active()->where('slug','=',$tslug)->first();
 
 			if($finder){
-
+				try{
+						$this->updateFinderHit($finder);
+				}catch(Exception $e){
+					Log::info($e);
+				}
 				$finderData['finder']['title'] = str_replace('crossfit', 'CrossFit', $finder['title']);
 				$finderData['finder']['title'] = str_replace('Crossfit', 'CrossFit', $finder['title']);
 				if(Request::header('Authorization')){
@@ -5694,5 +5717,27 @@ class FindersController extends \BaseController {
 			}
 		}
 		return $result;
+	}
+
+	public function updateFinderHit($finder){
+		if(!empty($_GET['source'])){
+			$source = $_GET['source'];
+			Log::info("web Increased ".$source);
+			$finder = Finder::find($finder['_id']);
+			$total_hits = !empty($finder['hits'][$source]) ? $finder['hits'][$source] + 1 : 1 ;
+			Log::info($total_hits);
+			Finder::where('_id', $finder['_id'])->update(['hits.'.$source =>$total_hits]);
+		}else{
+			if(!empty($finder['flags']['hyper_local'])){
+				Log::info("app Increased featured");
+				$finder = Finder::find($finder['_id']);
+				$total_hits = !empty($finder['hits']['featured_search']) ? $finder['hits']['featured_search'] + 1 : 1 ;
+				Log::info($total_hits);
+				Finder::where('_id', $finder['_id'])->update(['hits.featured_search'=>$total_hits]);
+			}else{
+				Log::info("Not Increased featured");
+			}
+		}
+		
 	}
 }

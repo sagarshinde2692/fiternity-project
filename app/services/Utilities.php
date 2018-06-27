@@ -4020,6 +4020,13 @@ Class Utilities {
         //     return 5;
         // }
     }
+
+    public function isIntegratedVendor($finderdata){
+        if($finderdata['commercial_type'] == 0 || (isset($finderdata['membership']) && $finderdata['membership'] == 'disable' && isset($finderdata['trial']) && $finderdata['trial'] == 'disable') || (!empty($finderdata['flags']['state']) && in_array($finderdata['flags']['state'], ['temporarily_shut', 'closed']))){
+            return false;
+        }
+        return true;
+    }
     
     public function getContactOptions($finderarr){
 		$knowlarity_no = [];
