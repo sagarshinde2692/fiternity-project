@@ -3620,6 +3620,7 @@ class CustomerController extends \BaseController {
             $data['customer_id'] = $customer_id;
 
         }else{
+
             $customer_id = $data['customer_id'] ;
         }
 
@@ -3645,6 +3646,24 @@ class CustomerController extends \BaseController {
 
 			$customerData['gender'] = $data['gender'];
 			$customer->update($customerData);
+		}
+
+		if(empty($data['customer_name'])){
+			$data['customer_name'] = $customer['name'];
+		}
+
+		if(empty($data['customer_email'])){
+			$data['customer_email'] = $customer['email'];
+		}
+
+		if(empty($data['customer_phone'])){
+
+			$data['customer_phone'] = "-";
+
+			if(empty($customer['contact_no'])){
+
+				$data['customer_phone'] = $customer['contact_no'];
+			}
 		}
 
 		$token = $this->createToken($customer);

@@ -114,6 +114,15 @@ class MyrewardController extends BaseController {
                     $myrewards[$key]['payload']['amount'] = $value['payload']['amount'] * $value['quantity'];
                 }
 
+                if(!empty($value['coupon_detail'])){
+
+                    foreach ($value['coupon_detail'] as &$val) {
+
+                        $val['text'] = "Your code is ".$val['code']." (".$val['amount'].")";
+                        $val['usage_text'] = $val['claimed']."/".$val['quantity']." used";
+                    }
+                }
+
             }
         }
 
