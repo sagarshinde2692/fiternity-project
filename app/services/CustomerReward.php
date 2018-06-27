@@ -681,7 +681,9 @@ Class CustomerReward {
 
         $myreward = Myreward::find((int)$data['myreward_id']);
 
-        $result = [];
+        $result = [
+            "cta" => "Claimed"
+        ];
 
         if($myreward){
 
@@ -737,6 +739,9 @@ Class CustomerReward {
                         $value['text'] = "Your code is ".$value['code']." (".$value['amount'].")";
                         $value['usage_text'] = $value['claimed']."/".$value['quantity']." used";
                     }
+
+                    $result["cta"] = "Schedule Now";
+                    $result["url"] = "ftrnty://ftrnty.com/pps";
                 }
 
                 $myreward->update();
