@@ -295,7 +295,7 @@ class Service extends \Basemodel{
 
                     $offer_price = $ratecardoffers[0]['price'];
 
-                    if($offer_price !== 0 && $offer_price < $ratecard_price){
+                    if($offer_price !== 0 && $offer_price < $ratecard_price && !in_array($value['type'], ['workout session', 'trial'])){
 
                     	$offf_percentage = ceil(100 - (($offer_price/$ratecard_price)*100));
 

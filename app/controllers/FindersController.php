@@ -3186,7 +3186,7 @@ class FindersController extends \BaseController {
 							$rateval['remarks'] = $ratecardoffers[0]['remarks'];
 						}
 
-						if($offer_price !== 0 && $offer_price < $ratecard_price){
+						if($offer_price !== 0 && $offer_price < $ratecard_price && !in_array($rateval['type'], ['workout session', 'trial'])){
 
 	                    	$offf_percentage = ceil(100 - (($offer_price/$ratecard_price)*100));
 
@@ -5772,7 +5772,7 @@ class FindersController extends \BaseController {
 		$return['pps_details']['ps'] = "P:S. - Really economical for users who end up working out 6-8 times a month";
 
 		$return['pps_details']['action'] = [
-			'action_text'=>'BOOK A SESSION FOR RS '.($ratecard['special_price'] != 0 ? $ratecard['special_price'] : $ratecard['price']),
+			'action_text'=>'Book Session here @Rs.'.($ratecard['special_price'] != 0 ? $ratecard['special_price'] : $ratecard['price']),
 			'assistance_text'=>'Need help? Let us assist you',
 			'phone_number'=>Config::get('app.contact_us_customer_number'),
 			'finder_slug'=>$finder['slug'],
