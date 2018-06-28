@@ -4301,6 +4301,9 @@ class CustomerController extends \BaseController {
 				$this->utilities->walletTransaction($walletData);
 
 				$resp 	= 	array('status' => 200,'message' => "Thank you. Rs ".$cashback_amount." has been successfully added to your fitcash wallet", 'walletdata' => $walletData);
+				if(!empty($fitcashcode['success_message'])){
+					$resp['message'] = $fitcashcode['success_message'];
+				}
 				if($code == "yogaday"){
 					$resp["popup"] = array();
 					$resp["popup"]["header_image"] = "https://b.fitn.in/iconsv1/global/fitcash.jpg";
