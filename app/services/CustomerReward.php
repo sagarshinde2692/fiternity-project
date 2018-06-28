@@ -796,7 +796,7 @@ Class CustomerReward {
 
                     foreach ($result['coupon_detail'] as &$value) {
 
-                        $value['text'] = "Your code is ".$value['code']." (".$value['amount'].")";
+                        $value['text'] = "Your code is ".$value['code']." (Rs.".$value['amount'].")";
                         $value['usage_text'] = $value['claimed']."/".$value['quantity']." booked";
                     }
 
