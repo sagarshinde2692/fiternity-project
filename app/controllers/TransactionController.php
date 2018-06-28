@@ -878,7 +878,8 @@ class TransactionController extends \BaseController {
             'cash_pickup' => $cash_pickup_applicable,
             'emi'=>$emi_applicable,
             'pay_at_vendor'=>$pay_at_vendor_applicable,
-            'pay_later'=>$pay_later
+            'pay_later'=>$pay_later,
+            'finder_name'=>$data['finder_name']
         );
 
         // $resp['payment_offers'] = [
@@ -4423,10 +4424,10 @@ class TransactionController extends \BaseController {
             }
         }
 
-        if($this->vendor_token){
+        if($this->vendor_token || empty($this->device_type)){
 
             $payment_modes[] = array(
-                'title' => 'Pay at Studio',
+                'title' => 'Pay at '.$data['finder_name'],
                 'subtitle' => 'Transact via paying cash at the Center',
                 'value' => 'pay_at_vendor',
             );
