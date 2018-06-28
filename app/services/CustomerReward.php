@@ -237,7 +237,7 @@ Class CustomerReward {
 
                                 $reward['payload_amount'] = $data_value['amount'];
                                 $reward['new_amount'] = $data_value['amount'];
-                                $reward['title'] = "Workout Session Package";
+                                $reward['title'] = "Workout Session Pack (".$data_value['total']." Sessions)";
                                 $reward['contents'] = ['Workout Session'];
                                 $reward['gallery'] = [];
                                 $reward['description'] = $session_content;
@@ -270,7 +270,7 @@ Class CustomerReward {
 
                                 $reward['payload_amount'] = $data_value['amount'];
                                 $reward['new_amount'] = $data_value['amount'];
-                                $reward['title'] = "Swimming at 5-star Hotels";
+                                $reward['title'] = "Swimming at 5-star Hotels (".$data_value['total']." Sessions)";
                                 $reward['contents'] = ['Swimming Session'];
                                 $reward['gallery'] = [];
                                 $reward['description'] = $session_content;
@@ -742,6 +742,7 @@ Class CustomerReward {
 
                     $result["cta"] = "Schedule Now";
                     $result["url"] = "ftrnty://ftrnty.com/pps";
+                    $result["copy_text"] = "Copied";
 
                     if($myreward['reward_type'] == 'swimming_sessions'){
                         $result["url"] = "ftrnty://ftrnty.com/pps?cat=swimming-pools";

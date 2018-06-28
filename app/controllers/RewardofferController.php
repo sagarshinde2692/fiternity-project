@@ -827,7 +827,7 @@ class RewardofferController extends BaseController {
 
                                         $rewards_value['payload_amount'] = $data_value['amount'];
                                         $rewards_value['new_amount'] = $data_value['amount'];
-                                        $rewards_value['title'] = "Workout Session Pack";
+                                        $rewards_value['title'] = "Workout Session Pack (".$data_value['total']." Sessions)";
                                         $rewards_value['contents'] = ['Workout Session Pack'];
                                         $rewards_value['gallery'] = [];
                                         $rewards_value['description'] = $session_content;
@@ -851,11 +851,11 @@ class RewardofferController extends BaseController {
 
                                     if($amount >= $data_value['min'] ){
 
-                                        $session_content = "Get a luxury experience like never before - VIP swimming session in city's best 5-star hotels <br>- Book across 50 hotels in 7 cities <br>- Exclusive pool & gym access <br>- Book real-time & get instant confirmation";
+                                        $session_content = "Get a luxury experience like never before - VIP swimming session in city's best 5-star hotels <br>- Book across 50 hotels in 7 cities <br>- Hotels including JW Marriott, Hyatt, Sofitel, Lalit & many more <br>- Book real-time & get instant confirmation";
 
                                         $rewards_value['payload_amount'] = $data_value['amount'];
                                         $rewards_value['new_amount'] = $data_value['amount'];
-                                        $rewards_value['title'] = "Swimming at 5-star Hotels";
+                                        $rewards_value['title'] = "Swimming at 5-star Hotels (".$data_value['total']." Sessions)";
                                         $rewards_value['contents'] = ['Swimming at 5-star Hotels'];
                                         $rewards_value['gallery'] = [];
                                         $rewards_value['description'] = $session_content;

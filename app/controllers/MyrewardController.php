@@ -148,6 +148,8 @@ class MyrewardController extends BaseController {
                     if($value['reward_type'] == 'swimming_sessions'){
                         $value["url"] = "ftrnty://ftrnty.com/pps?cat=swimming-pools";
                     }
+
+                    $value["copy_text"] = "Copied";
                 }
 
             }
