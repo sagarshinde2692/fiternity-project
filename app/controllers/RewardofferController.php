@@ -11,7 +11,9 @@ class RewardofferController extends BaseController {
     public function __construct(
         Utilities $utilities
     ) {
+
         parent::__construct();
+
         $this->utilities = $utilities;
         
         $this->vendor_token = false;
