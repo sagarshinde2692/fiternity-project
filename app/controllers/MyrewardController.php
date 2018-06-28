@@ -95,6 +95,11 @@ class MyrewardController extends BaseController {
 
             foreach ($myrewards as $key => &$value){
 
+                if(in_array($value['reward_type'],['swimming_sessions','sessions']) && !empty($this->app_version) && intval($this->app_version) < 4.9){
+                    unset($myrewards[$key]);
+                    continue;
+                }
+
                 $value["cta"] = "Get Now";
 
                 if($value['status'] == "1"){
@@ -126,9 +131,13 @@ class MyrewardController extends BaseController {
 
                 if(!empty($value['coupon_detail'])){
 
-                    $value["cta"] = "Schedule Now";
                     $value["claimed"] = 0;
-                    $value["status"] = "0";
+
+                    if(!empty($this->device_type)){
+
+                        $value["cta"] = "Schedule Now";
+                        $value["status"] = "0";
+                    }
 
                     foreach ($value['coupon_detail'] as &$val) {
 
