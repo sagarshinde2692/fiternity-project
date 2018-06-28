@@ -6943,11 +6943,6 @@ class SchedulebooktrialsController extends \BaseController {
 
         $customer_id = (int)$decoded->customer->_id;
         
-        
-        
-        
-        
-
         $booktrial = Booktrial::where('vendor_code',$vendor_code)
            ->where('customer_id',$customer_id)
            ->where('_id',$booktrial_id)

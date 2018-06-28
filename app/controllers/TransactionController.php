@@ -383,22 +383,22 @@ class TransactionController extends \BaseController {
             	
             	if(isset($data['total_sessions_used']))
             	{
-            		if(intval($data['total_sessions_used'])>intval($data['total_sessions']))
+            		if(intval($data['total_sessions_used'])<intval($data['total_sessions']))
             		{
-	            		$data['total_sessions_used']=intval($data['total_sessions_used'])+1;
-	            		$data['total_sessions']=intval($data['total_sessions']);
-	            		$order_id = Order::max('_id') + 1;
+// 	            		$data['total_sessions_used']=intval($data['total_sessions_used'])+1;
+// 	            		$data['total_sessions']=intval($data['total_sessions']);
+	            		/* $order_id = Order::max('_id') + 1;
 	            		$order = new Order($data);
 	            		$order->_id = $order_id;
 // 	            		verify
-	            		$order->save();
+	            		$order->save(); */
 	            		
 	            		$cust=Customer::where("_id",intval($data['logged_in_customer_id']))->first();
 	            		$cust->total_sessions=intval($data['total_sessions']);
 	            		$cust->total_sessions_used=intval($data['total_sessions_used']);
 	            		$cust->third_party_token_id=$data['third_party_token_id'];
 	            		$cust->save();
-	            		return Response::json(['status'=>1,"message"=>"Successfully Generated and maintained Workout session. "]);            			
+// 	            		return Response::json(['status'=>1,"message"=>"Successfully Generated and maintained Workout session. "]);            			
             		}
             		else return Response::json(['status'=>1,"message"=>"Total sessions already crossed. "]);
             	}
@@ -1108,7 +1108,8 @@ class TransactionController extends \BaseController {
         if(isset($data['manual_order']) && $data['manual_order'] && $data['type'] != 'memberships'){
             $resp['data']['payment_modes'] = [];
         }
-
+        if(!empty($data['third_party']))
+        	return $this->successCommon($data);
         return Response::json($resp);
 
     }
@@ -1414,9 +1415,12 @@ class TransactionController extends \BaseController {
             $resp   =   array('status' => 401, 'statustxt' => 'error',"message" => "Status should be Bought");
             return Response::json($resp,401);
         }
-
-
-        $hash_verified = $this->utilities->verifyOrder($data,$order);
+        if(!empty($data['third_party']))
+        {
+        	$hash_verified = true;
+        	$data['status'] ='success';
+        }
+        else $hash_verified = $this->utilities->verifyOrder($data,$order);
 
         if($data['status'] == 'success' && $hash_verified){
             // Give Rewards / Cashback to customer based on selection, on purchase success......
