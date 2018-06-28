@@ -2315,12 +2315,15 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         $customer->old_customer = false;
                         $customer->demonetisation = time();
                         
-                        if(!empty($data['third_party'])&&!empty($data['third_party_id'])&&!empty($data['third_party_token_id'])&&!empty($data['third_party_remaining_sessions']))
+                        if(!empty($data['third_party'])&&!empty($data['third_party_id'])&&!empty($data['third_party_token_id'])&&isset($data['third_party_used_sessions']))
                         {
                         	$customer->third_party_registered = time();
                         	$customer->third_party_last_transacted_time = time();
-                        	$customer->total_sessions=$data['third_party_remaining_sessions'];
+                        	if(!empty($data['third_party_total_sessions']))
+                        		$customer->total_sessions=$data['third_party_total_sessions'];
+                        	$customer->total_sessions_used=$data['third_party_used_sessions'];
                         	$customer->third_party_token_id=$data['third_party_token_id'];
+                        	$customer->third_party_id=$data['third_party_id'];
                         }
 
                         
@@ -2346,11 +2349,14 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                                 }
 
                             }
-                            if(!empty($data['third_party'])&&!empty($data['third_party_id'])&&!empty($data['third_party_token_id'])&&!empty($data['third_party_remaining_sessions']))
+                            if(!empty($data['third_party'])&&!empty($data['third_party_id'])&&!empty($data['third_party_token_id'])&&isset($data['third_party_used_sessions']))
                             {
                             	$customerData['third_party_last_transacted_time']= time();
-                            	$customerData['total_sessions']=$data['third_party_remaining_sessions'];
+                            	if(!empty($data['third_party_total_sessions']))
+                            		$customerData['total_sessions']=$data['third_party_total_sessions'];
+                            	$customerData['total_sessions_used']=$data['third_party_used_sessions'];
                             	$customerData['third_party_token_id']=$data['third_party_token_id'];	
+                            	$customerData['third_party_id']=$data['third_party_id'];
                             }
                             	
                             

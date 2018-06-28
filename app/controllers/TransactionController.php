@@ -380,22 +380,29 @@ class TransactionController extends \BaseController {
             }
             if(!empty($data['third_party']))
             {
-            	if(!empty(intval($data['total_sessions'])))
+            	
+            	if(isset($data['total_sessions_used']))
             	{
-            		$data['total_sessions']=intval($data['total_sessions'])-1;
-            		$order_id = Order::max('_id') + 1;
-            		$order = new Order($data);
-            		$order->_id = $order_id;
-            		$order->status = "1";
-            		$order->save();
-            		
-            		$cust=Customer::where("_id",intval($data['logged_in_customer_id']))->first();
-            		$cust->total_sessions=intval($data['total_sessions']);
-            		$cust->third_party_token_id=$data['third_party_token_id'];
-            		$cust->save();
-            		return Response::json(['status'=>200,"message"=>"Successfully Generated and maintained Workout session. "],200);
+            		if(intval($data['total_sessions_used'])>intval($data['total_sessions']))
+            		{
+	            		$data['total_sessions_used']=intval($data['total_sessions_used'])+1;
+	            		$data['total_sessions']=intval($data['total_sessions']);
+	            		$order_id = Order::max('_id') + 1;
+	            		$order = new Order($data);
+	            		$order->_id = $order_id;
+// 	            		verify
+	            		$order->save();
+	            		
+	            		$cust=Customer::where("_id",intval($data['logged_in_customer_id']))->first();
+	            		$cust->total_sessions=intval($data['total_sessions']);
+	            		$cust->total_sessions_used=intval($data['total_sessions_used']);
+	            		$cust->third_party_token_id=$data['third_party_token_id'];
+	            		$cust->save();
+	            		return Response::json(['status'=>1,"message"=>"Successfully Generated and maintained Workout session. "]);            			
+            		}
+            		else return Response::json(['status'=>1,"message"=>"Total sessions already crossed. "]);
             	}
-            	else return Response::json(['status'=>200,"message"=>"No Workout session left. "],200);
+            	else return Response::json(['status'=>2,"message"=>"Total sessions used not present. "]);
             }
     
             if(isset($data['manual_order']) && $data['manual_order']){
@@ -1954,6 +1961,7 @@ class TransactionController extends \BaseController {
         {
 
         	$data['total_sessions']=$customer->total_sessions;
+        	$data['total_sessions_used']=$customer->total_sessions_used;
         	$data['third_party_token_id']=$customer->third_party_token_id;
 
         }
