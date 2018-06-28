@@ -143,7 +143,7 @@ class MyrewardController extends BaseController {
                     foreach ($value['coupon_detail'] as &$val) {
 
                         $val['text'] = "Your code is ".$val['code']." (".$val['amount'].")";
-                        $val['usage_text'] = $val['claimed']."/".$val['quantity']." used";
+                        $val['usage_text'] = $val['claimed']."/".$val['quantity']." booked";
 
                         $value["claimed"] += $val['claimed'];
                     }
