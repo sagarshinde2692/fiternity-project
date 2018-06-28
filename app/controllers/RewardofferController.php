@@ -11,6 +11,7 @@ class RewardofferController extends BaseController {
     public function __construct(
         Utilities $utilities
     ) {
+        parent::__construct();
         $this->utilities = $utilities;
         
         $this->vendor_token = false;
@@ -23,6 +24,8 @@ class RewardofferController extends BaseController {
         }
 
         $this->error_status = ($this->vendor_token) ? 200 : 400;
+
+
     }
 
 
@@ -1029,7 +1032,7 @@ class RewardofferController extends BaseController {
                 if(in_array($finder_id,$multifit_qym) & $reward_value['reward_type'] == 'diet_plan'){
                     unset($rewards[$reward_key]);
                 }
-                
+
                 if($reward_value['reward_type'] == 'swimming_sessions' && in_array($city_id,[5,6])){
                     unset($rewards[$reward_key]);
                 }
