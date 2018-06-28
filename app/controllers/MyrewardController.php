@@ -10,6 +10,7 @@ class MyrewardController extends BaseController {
         Utilities $utilities
     )
     {
+         parent::__construct();
         $this->utilities = $utilities;
     }
 
