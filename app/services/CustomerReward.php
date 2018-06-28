@@ -26,7 +26,13 @@ use Service;
 
 Class CustomerReward {
 
+    public $device_type;
+    public $app_version;
+
     public function __construct() {
+
+        $this->device_type = Request::header('Device-Type');
+        $this->app_version = Request::header('App-Version');
 
     }
 
@@ -794,12 +800,15 @@ Class CustomerReward {
                         $value['usage_text'] = $value['claimed']."/".$value['quantity']." used";
                     }
 
-                    $result["cta"] = "Schedule Now";
-                    $result["url"] = "ftrnty://ftrnty.com/pps";
-                    $result["copy_text"] = "Copied";
+                    if(!empty($this->device_type)){
 
-                    if($myreward['reward_type'] == 'swimming_sessions'){
-                        $result["url"] = "ftrnty://ftrnty.com/pps?cat=swimming-pools";
+                        $result["cta"] = "Schedule Now";
+                        $result["url"] = "ftrnty://ftrnty.com/pps";
+                        $result["copy_text"] = "Copied";
+
+                        if($myreward['reward_type'] == 'swimming_sessions'){
+                            $result["url"] = "ftrnty://ftrnty.com/pps?cat=swimming-pools";
+                        }
                     }
                 }
 

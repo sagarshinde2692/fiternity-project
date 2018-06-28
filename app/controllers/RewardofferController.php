@@ -313,6 +313,8 @@ class RewardofferController extends BaseController {
             $cutl_vendor = true;
         }
 
+        $city_id = (int)$finder['city_id'];
+
         if($amount <= 1025){
             switch ($finder_id) {
                 case 13765 :
@@ -1025,6 +1027,14 @@ class RewardofferController extends BaseController {
                 }
 
                 if(in_array($finder_id,$multifit_qym) & $reward_value['reward_type'] == 'diet_plan'){
+                    unset($rewards[$reward_key]);
+                }
+                
+                if($reward_value['reward_type'] == 'swimming_sessions' && in_array($city_id,[5,6])){
+                    unset($rewards[$reward_key]);
+                }
+
+                if(in_array($reward_value['reward_type'],['swimming_sessions','sessions']) && !empty($this->app_version) && intval($this->app_version) < 4.9){
                     unset($rewards[$reward_key]);
                 }
             }
