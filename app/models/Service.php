@@ -213,6 +213,9 @@ class Service extends \Basemodel{
 							 return true; 
 							}
 					});
+					if(isset($this->membership) && $this->membership == 'disable' || isset($this->finder['membership']) && $this->finder['membership'] == 'disable'){
+						$ratecardoffersRecards = [];
+					}
                     foreach ($ratecardoffersRecards as $ratecardoffersRecard){
             			$offer_exists = true;
                         $ratecardoffer                  =   $ratecardoffersRecard;
