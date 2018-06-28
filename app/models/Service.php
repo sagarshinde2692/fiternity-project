@@ -282,9 +282,9 @@ class Service extends \Basemodel{
 		        }
 
 
-                $value['offers']  = $ratecardoffers;
-
-                if(count($ratecardoffers) > 0 && isset($ratecardoffers[0]['price'])){
+				$value['offers']  = $ratecardoffers;
+				
+				if(count($ratecardoffers) > 0 && isset($ratecardoffers[0]['price'])){
                 	
                     $value['special_price'] = $ratecardoffers[0]['price'];
 
@@ -295,7 +295,7 @@ class Service extends \Basemodel{
                     }
 
 				}
-				
+
 				(isset($value['special_price']) && $value['price'] == $value['special_price']) ? $value['special_price'] = 0 : null;
 
 				if(intval($value['validity'])%360 == 0){
@@ -319,7 +319,7 @@ class Service extends \Basemodel{
 				$offer_price = (!empty($value['special_price'])) ? $value['special_price'] : 0 ;
 				$cost_price = (!empty($value['price'])) ? $value['price'] : 0 ;
 
-                if($offer_price !== 0 && $offer_price < $cost_price){
+                if($offer_price !== 0 && $offer_price < $cost_price && !in_array($value['type'], ['workout session', 'trial'])){
 
                 	$offf_percentage = ceil((($cost_price - $offer_price)/$cost_price)*100);
 
