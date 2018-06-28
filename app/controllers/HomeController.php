@@ -3459,10 +3459,19 @@ class HomeController extends BaseController {
         $data = Input::json()->all();
         $device_type = $data['device_type'];
         $to = $data['to'];
+        if(!empty($data['addOns']))
+        $addOns = $data['addOns'];
         if($device_type == "android"){
             $notification_object = array("notif_id" => 2005,"notif_type" => "promotion", "notif_object" => array("promo_id"=>739423,"promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> "593a9380820095bf3e8b4568","title"=> $data["title"],"text"=> $data["body"]));
+            if(!empty($addOns))
+            	foreach ($addOns as $key => $value) 
+            		$notification_object['notif_object'][$key]=$value;
+            
         }else{
         	$notification_object = array("aps"=>array("alert"=> array("body" => $data["body"],"title" => $data["title"]), "sound" => "default", "badge" => 1), "notif_object" => array("promo_id"=>739423,"notif_type" => "promotion","promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> "593a9380820095bf3e8b4568","title"=> $data["title"],"text"=> $data["body"]));
+        	if(!empty($addOns))
+        		foreach ($addOns as $key => $value)
+        			$notification_object['notif_object'][$key]=$value;
         }
         $notificationData = array("to" =>$data['to'],"delay" => 0,"label"=>$data['label'],"app_payload"=>$notification_object);
         $route  = $device_type;
