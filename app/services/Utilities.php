@@ -1016,6 +1016,65 @@ Class Utilities {
             $order["hash_verified"] = false;
             $order->update();
         }
+
+        if($hash_verified && !empty($order['coupon_code'])){
+
+            $customerCoupn = \CustomerCoupn::where('code', strtolower($order['coupon_code']))->first();
+
+            if($customerCoupn){
+
+                if($customerCoupn['stauts'] == "0"){
+
+                    $hash_verified = false;
+
+                    $order->update(['customer_coupn_error'=>true]);
+
+                }else{
+
+                    $customerCoupn->claimed = $customerCoupn->claimed + 1;
+
+                    if($customerCoupn->quantity == $customerCoupn->claimed){
+                        $customerCoupn->status = "0";
+                    }
+
+                    $orders = [];
+
+                    if(!empty($customerCoupn->orders)){
+                        $orders = $customerCoupn->orders;
+                    }
+
+                    $orders[] = $order['_id'];
+
+                    $customerCoupn->update();
+
+                    $myreward = \Myreward::find($customerCoupn['myreward_id']);
+
+                    $myrewardData = $myreward->toArray();
+
+                    $coupon_detail = $myrewardData['coupon_detail'];
+
+                    foreach ($coupon_detail as $key => &$value) {
+
+                        if($value['code'] == strtolower($order['coupon_code'])){
+
+                            if(!isset($value['claimed'])){
+                                $value['claimed'] = 0;
+                            }
+
+                            $value['claimed'] += 1;
+
+                            $myreward->coupon_detail = $coupon_detail;
+                            $myreward->update();
+
+                            break;
+                        }
+
+                    }
+
+                }      
+            }
+        }
+
         return $hash_verified;
     }
 
