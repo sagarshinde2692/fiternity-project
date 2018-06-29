@@ -3636,9 +3636,11 @@ Class Utilities {
 
     public function getFitcash($data){
 
+        $fitcash = 0;
+
         $finder_id = (int)$data['finder_id'];
 
-        if(!empty($data['type']) && $data['type'] == 'booktrials'){
+        if(!empty($data['type']) && in_array(strtolower($data['type']),['booktrials','3daystrial'])){
 
             if(!empty($data['is_tab_active']) && $data['is_tab_active'] === true){
 
@@ -3680,9 +3682,12 @@ Class Utilities {
             return $fitcash;
         }
 
-        $getWorkoutSessionFitcash = $this->getWorkoutSessionFitcash($data);
+        if(!empty($data['amount_finder'])){
 
-        $fitcash = round($getWorkoutSessionFitcash * $data['amount_finder'] / 100);
+            $getWorkoutSessionFitcash = $this->getWorkoutSessionFitcash($data);
+
+            $fitcash = round($getWorkoutSessionFitcash * $data['amount_finder'] / 100);
+        }
 
         return $fitcash;
 
