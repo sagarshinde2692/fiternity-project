@@ -3635,7 +3635,8 @@ Class Utilities {
     }
 
     public function getFitcash($data){
-
+        Log::info(__FUNCTION__." called from ".debug_backtrace()[1]['function']);
+        
         $finder_id = (int)$data['finder_id'];
 
         if(!empty($data['type']) && $data['type'] == 'booktrials'){
@@ -3844,7 +3845,7 @@ Class Utilities {
 
     public function getWorkoutSessionFitcash($booktrialData){
         // Log::info($this->getWorkoutSessionLevel($booktrialData['customer_id']));
-        Log::info(debug_backtrace()[1]['function']);
+        Log::info(__FUNCTION__." called from ".debug_backtrace()[1]['function']);
 
         Log::info("booktrialData");
         Log::info($booktrialData);
