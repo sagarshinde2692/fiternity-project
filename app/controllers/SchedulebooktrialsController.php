@@ -7088,6 +7088,23 @@ class SchedulebooktrialsController extends \BaseController {
 
             $booktrial->post_trial_status = 'attended';
 
+            $lostcode_reason = !empty($booktrial->lostcode_reason) ? $booktrial->lostcode_reason : array();
+
+            if(!empty($_GET['reason'])){
+                
+                $key = $_GET['reason'];
+                $lostcode_reason[$key] = time();
+                
+            }
+            
+            if(!empty($_GET['source']) && $_GET['source'] == "activate_session"){
+
+                $lostcode_reason['didnt_get_fitcode'] = time();
+            
+            }
+
+            $booktrial->lostcode_reason = $lostcode_reason;
+
             $fitcash_amount = $this->utilities->getFitcash(['finder_id'=>$booktrial['finder_id']]);
             
             $this->updateOrderStatus($booktrial);
