@@ -3844,6 +3844,8 @@ Class Utilities {
 
     public function getWorkoutSessionFitcash($booktrialData){
         // Log::info($this->getWorkoutSessionLevel($booktrialData['customer_id']));
+        Log::info("booktrialData");
+        Log::info($booktrialData);
         $fitcash =  $this->getWorkoutSessionLevel($booktrialData['customer_id'])['current_level']['cashback'];
         return $fitcash;
         
