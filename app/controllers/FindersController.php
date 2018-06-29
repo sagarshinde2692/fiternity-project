@@ -5744,21 +5744,24 @@ class FindersController extends \BaseController {
 		foreach($finder['services'] as &$service){
 			$pps_ratecard = null;
 			$pps_exists = false;
-			foreach($service[$ratecard_key] as $key => &$ratecard){
-				
-				if(isset($ratecard['type']) && $ratecard['type'] == 'workout session'){
-					$pps_exists = true;
-					$pps_ratecard = $ratecard;
-				}
+			if($this->utilities->isFinderIntegrated($finder) && $this->utilities->isServiceIntegrated($service)){
 
-				if(isset($ratecard['type']) && $ratecard['type'] == 'membership'){
-					if(isset($pps_exists) && $pps_exists){
-						array_splice( $service[$ratecard_key], $key+1, 0, [$this->addPPSStripeData($pps_ratecard, $service, $finder)]); 
-						break;
-					}else{
-						break;
-					}
+				foreach($service[$ratecard_key] as $key => &$ratecard){
 					
+					if(isset($ratecard['type']) && $ratecard['type'] == 'workout session'){
+						$pps_exists = true;
+						$pps_ratecard = $ratecard;
+					}
+	
+					if(isset($ratecard['type']) && $ratecard['type'] == 'membership'){
+						if(isset($pps_exists) && $pps_exists){
+							array_splice( $service[$ratecard_key], $key+1, 0, [$this->addPPSStripeData($pps_ratecard, $service, $finder)]); 
+							break;
+						}else{
+							break;
+						}
+						
+					}
 				}
 			}
 		}

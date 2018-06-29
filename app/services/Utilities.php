@@ -4149,5 +4149,33 @@ Class Utilities {
         return true;
     }
     
+    public function isFinderIntegrated($finder){
+        try{
+            if((!empty($finder['commercial_type']) && $finder['commercial_type'] == 0) || (!empty($finder['membership']) && $finder['membership'] == 'disable') || (!empty($finder['trial']) && $finder['trial'] == 'disable') || (!empty($finder['flags']['state']) && in_array($finder['flags']['state'], ['temporarily_shut', 'closed']))){
+                return false;
+            }else{
+                return true;
+            }
+        }catch(Exception $e){
+            Log::info($e);
+            return true;
+        }
+    }
+    
+    
+    
+    public function isServiceIntegrated($service){
+        try{
+            if((!empty($service['membership']) && $service['membership'] == 'disable') || (!empty($service['trial']) && $service['trial'] == 'disable')){
+                return false;
+            }else{
+                return true;
+            }
+        }catch(Exception $e){
+            Log::info($e);
+            return true;
+        }
+    }
+    
 }
 
