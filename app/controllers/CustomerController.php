@@ -3460,14 +3460,14 @@ class CustomerController extends \BaseController {
 		if(isset($_REQUEST['device_type']) && in_array($_REQUEST['device_type'],['ios','android']) && isset($_REQUEST['app_version']) && ((float)$_GET['app_version'] >= 4.4)){
 
 			$result['campaigns'] =  [];
-			$result['campaigns'][] = [
-				'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/monsoon-with-code.jpg',
-				'link'=>'ftrnty://ftrnty.com/search/all',
-				'title'=>'Group Membership',
-				'height'=>100,
-				'width'=>375,
-				'ratio'=>(float) number_format(100/375,2)
-			];
+			// $result['campaigns'][] = [
+			// 	'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/monsoon-with-code.jpg',
+			// 	'link'=>'ftrnty://ftrnty.com/search/all',
+			// 	'title'=>'Group Membership',
+			// 	'height'=>100,
+			// 	'width'=>375,
+			// 	'ratio'=>(float) number_format(100/375,2)
+			// ];
 			if($city != "ahmedabad"){
 				$result['campaigns'][] = [
 					'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Mumbai_APP.png',
@@ -3479,7 +3479,7 @@ class CustomerController extends \BaseController {
 				];
 				switch($city){
 					case "pune":
-						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Mumbai_APP.png";
+						$result['campaigns'][0]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Mumbai_APP.png";
 						if(intval(date('d', time())) % 2 == 0){
 							$result['campaigns'][] = [
 								'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/Multifit_App.png',
@@ -3501,19 +3501,19 @@ class CustomerController extends \BaseController {
 						}
 					break;
 					case "bangalore":
-						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Bangalore_APP.png";
+						$result['campaigns'][0]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Bangalore_APP.png";
 						break;
 					case "delhi":
-						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Delhi_APP.png";
+						$result['campaigns'][0]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Delhi_APP.png";
 						break;	
 					case "noida":
-						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Noida_APP.png";
+						$result['campaigns'][0]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Noida_APP.png";
 						break;
 					case "hyderabad":
-						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Hyderabad_APP.png";
+						$result['campaigns'][0]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Hyderabad_APP.png";
 						break;					
 					case "gurgaon":
-						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Gurugram_APP.png";
+						$result['campaigns'][0]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Gurugram_APP.png";
 						break;										
 				}
 			}
@@ -3531,14 +3531,6 @@ class CustomerController extends \BaseController {
 						'ratio'=>(float) number_format(100/375,2)
 					];
 
-					$result['campaigns'][] = [
-						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/Yoga_AppBanner%402x.png',
-						'link'=>'ftrnty://ftrnty.com/pps?',
-						'title'=>'Free Yoga Session',
-						'height'=>100,
-						'width'=>375,
-						'ratio'=>(float) number_format(100/375,2)
-					];
 				}
 
 			}else{
@@ -3547,15 +3539,6 @@ class CustomerController extends \BaseController {
 
 					$result['campaigns'][] = [
 						'image'=>'https://b.fitn.in/global/paypersession_branding/app_banners/App-pps%402x.png',
-						'link'=>'ftrnty://ftrnty.com/pps',
-						'title'=>'Pay Per Session',
-						'height'=>100,
-						'width'=>375,
-						'ratio'=>(float) number_format(100/375,2)
-					];
-
-					$result['campaigns'][] = [
-						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/Yoga_AppBanner%402x.png',
 						'link'=>'ftrnty://ftrnty.com/pps',
 						'title'=>'Pay Per Session',
 						'height'=>100,
@@ -3575,77 +3558,6 @@ class CustomerController extends \BaseController {
 				'width'=>375,
 				'ratio'=>(float) number_format(100/375,2)
 			];
-
-			if($_REQUEST['device_type'] == 'ios'){
-
-				if($this->app_version > '4.4.3'){
-
-					$result['campaigns'][] = [
-						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/Group_AppBanner.png',
-						'link'=>'ftrnty://ftrnty.com/s/',
-						'title'=>'Group Membership',
-						'height'=>100,
-						'width'=>375,
-						'ratio'=>(float) number_format(100/375,2)
-					];
-				}
-
-			}else{
-
-				if($this->app_version > '4.4.3'){
-
-					$result['campaigns'][] = [
-						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/Group_AppBanner.png',
-						'link'=>'ftrnty://ftrnty.com/search/all',
-						'title'=>'Group Membership',
-						'height'=>100,
-						'width'=>375,
-						'ratio'=>(float) number_format(100/375,2)
-					];
-
-				}
-
-			}
-			
-			$result['campaigns'][] = [
-				'image'=>'https://b.fitn.in/global/ios_homescreen_banner/emi-app-banner.png',
-				'link'=>'https://www.fitternity.com/emi?mobile_app=true',
-				'title'=>'Easy EMI',
-				'height'=>100,
-				'width'=>375,
-				'ratio'=>(float) number_format(100/375,2)
-			];
-
-			if($_REQUEST['device_type'] == 'ios'){
-
-				if($this->app_version > '4.4.3'){
-
-					$result['campaigns'][] = [
-						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/AmazonPay_AppBanner.png',
-						'link'=>'ftrnty://ftrnty.com/pps?',
-						'title'=>'Amazon Pay Offer',
-						'height'=>100,
-						'width'=>375,
-						'ratio'=>(float) number_format(100/375,2)
-					];
-				}
-
-			}else{
-
-				if($this->app_version > '4.4.3'){
-
-					$result['campaigns'][] = [
-						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/AmazonPay_AppBanner.png',
-						'link'=>'ftrnty://ftrnty.com/pps',
-						'title'=>'Amazon Pay Offer',
-						'height'=>100,
-						'width'=>375,
-						'ratio'=>(float) number_format(100/375,2)
-					];
-
-				}
-
-			}
 
 			$lat = isset($_REQUEST['lat']) && $_REQUEST['lat'] != "" ? $_REQUEST['lat'] : "";
 	        $lon = isset($_REQUEST['lon']) && $_REQUEST['lon'] != "" ? $_REQUEST['lon'] : "";
