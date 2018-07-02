@@ -1016,6 +1016,65 @@ Class Utilities {
             $order["hash_verified"] = false;
             $order->update();
         }
+
+        if($hash_verified && !empty($order['coupon_code'])){
+
+            $customerCoupn = \CustomerCoupn::where('code', strtolower($order['coupon_code']))->first();
+
+            if($customerCoupn){
+
+                if($customerCoupn['stauts'] == "0"){
+
+                    $hash_verified = false;
+
+                    $order->update(['customer_coupn_error'=>true]);
+
+                }else{
+
+                    $customerCoupn->claimed = $customerCoupn->claimed + 1;
+
+                    if($customerCoupn->quantity == $customerCoupn->claimed){
+                        $customerCoupn->status = "0";
+                    }
+
+                    $orders = [];
+
+                    if(!empty($customerCoupn->orders)){
+                        $orders = $customerCoupn->orders;
+                    }
+
+                    $orders[] = $order['_id'];
+
+                    $customerCoupn->update();
+
+                    $myreward = \Myreward::find($customerCoupn['myreward_id']);
+
+                    $myrewardData = $myreward->toArray();
+
+                    $coupon_detail = $myrewardData['coupon_detail'];
+
+                    foreach ($coupon_detail as $key => &$value) {
+
+                        if($value['code'] == strtolower($order['coupon_code'])){
+
+                            if(!isset($value['claimed'])){
+                                $value['claimed'] = 0;
+                            }
+
+                            $value['claimed'] += 1;
+
+                            $myreward->coupon_detail = $coupon_detail;
+                            $myreward->update();
+
+                            break;
+                        }
+
+                    }
+
+                }      
+            }
+        }
+
         return $hash_verified;
     }
 
@@ -2792,7 +2851,8 @@ Class Utilities {
         if((isset($data['session_payment']) && $data['session_payment'])||
            ($this->vendor_token)||
            (in_array($data['finder_id'],Config::get('app.vendors_without_convenience_fee')))||
-           (isset($flags) && isset($flags["pay_at_vendor"]) && $flags["pay_at_vendor"] === True))
+           (isset($flags) && isset($flags["pay_at_vendor"]) && $flags["pay_at_vendor"] === True)||
+           (!empty($data['type']) && in_array($data['type'], ["workout session", "workout-session", "trial", "booktrials"])))
         {
             return false;
         }
@@ -3692,13 +3752,23 @@ Class Utilities {
 
         $order->gst_applicable = 'yes';
 
-        $order->cos_percentage = $this->getVendorCommision($order->toArray());
+        if(!isset($order->vendor_commission)){
 
-        $order->cos_finder_amount = ceil(($order->amount_finder * $order->cos_percentage) / 100);
+            $order->cos_percentage = $this->getVendorCommision($order->toArray());
+        
+        }else{
+        
+            $order->cos_percentage = $order->vendor_commission;
+        
+        }
+
+        $amount_used = (isset($order->vendor_price)) ? $order->vendor_price : $order->amount_finder;
+
+        $order->cos_finder_amount = ceil(($amount_used * $order->cos_percentage) / 100);
 
         $order->gst_percentage = Config::get('app.gst_on_cos_percentage');
 
-        $order->amount_transferred_to_vendor = $order->amount_finder;
+        $order->amount_transferred_to_vendor = $amount_used;
 
         if($order->payment_mode == "at the studio"){
             $order->amount_transferred_to_vendor = 0;
@@ -4010,6 +4080,13 @@ Class Utilities {
         // }else{
         //     return 5;
         // }
+    }
+
+    public function isIntegratedVendor($finderdata){
+        if($finderdata['commercial_type'] == 0 || (isset($finderdata['membership']) && $finderdata['membership'] == 'disable' && isset($finderdata['trial']) && $finderdata['trial'] == 'disable') || (!empty($finderdata['flags']['state']) && in_array($finderdata['flags']['state'], ['temporarily_shut', 'closed']))){
+            return false;
+        }
+        return true;
     }
     
     public function getContactOptions($finderarr){

@@ -578,53 +578,11 @@ class HomeController extends BaseController {
             ];
 
             $campaigns[] = [
-                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Yoga_WebBanner.png',
-                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Yoga_MobBanner.png',
-                'link'=>Config::get('app.website').'/article/celebrate-international-yoga-day-for-the-full-month-of-june-with-fitternity',
-                'title'=>'Free Yoga Session',
-                'height'=>100,
-                'width'=>375,
-                'ratio'=>(float) number_format(100/375,2)
-            ];
-
-            $campaigns[] = [
                 'image'=>'https://b.fitn.in/global/Homepage-branding-2018/new-reward-web.png',
                 'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Rewards-MOB.png',
                 'link'=>Config::get('app.website').'/rewards',
                 'target'=>true,
                 'title'=>'Rewards with every purchase',
-                'height'=>100,
-                'width'=>375,
-                'ratio'=>(float) number_format(100/375,2)
-            ];
-
-            $campaigns[] = [
-                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Group_WebBanner.png',
-                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Group_MobBanner.png',
-                'link'=>Config::get('app.website').'/groupmemberships',
-                'target'=>true,
-                'title'=>'Share your love for fitness',
-                'height'=>100,
-                'width'=>375,
-                'ratio'=>(float) number_format(100/375,2)
-            ];
-
-            $campaigns[] = [
-                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Webbanner-Emi.png',
-                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Mobbanner-EMI.png',
-                'link'=>Config::get('app.website').'/emi',
-                'target'=>true,
-                'title'=>'Save with Fitness',
-                'height'=>100,
-                'width'=>375,
-                'ratio'=>(float) number_format(100/375,2)
-            ];
-            
-            $campaigns[] = [
-                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/AmazonPay_WebBanner.jpg',
-                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/AmazonPay_MobBanner.jpg',
-                'link'=>Config::get('app.download_app_link'),
-                'title'=>'Amazon pay Offer',
                 'height'=>100,
                 'width'=>375,
                 'ratio'=>(float) number_format(100/375,2)
@@ -1903,9 +1861,41 @@ class HomeController extends BaseController {
                         $reward_details['image'] = $reward->image;
                     }
 
-                    if($reward->reward_type == 'sessions'){
-                        $reward_details['description'] = "Get access to multiple fitness sessions with instant booking at your convinience. Try Crossfit, Pilates, Yoga, MMA, Zumba & much more.Available across: - 5 Cities - Mumbai, Bangalore, Delhi, Pune & Gurgaon - 2500 fitness centers";
+                    if(in_array($reward['reward_type'],["sessions","swimming_sessions"])){
+
+                        $session_total = "";
+                        $session_amount = "";
+
                         $reward_details['image'] = 'https://b.fitn.in/gamification/reward/sessions.jpg';
+
+                        $workout_session_array = Config::get('fitness_kit.workout_session');
+
+                        if($reward['reward_type'] == "swimming_sessions"){
+
+                            $workout_session_array = Config::get('fitness_kit.swimming_session');
+
+                            $reward_details['image'] = 'https://b.fitn.in/gamification/reward/swimming_sessions.jpg';
+                        }
+
+                        rsort($workout_session_array);
+
+                        foreach ($workout_session_array as $data_key => $data_value) {
+
+                            if($item['amount_finder'] >= $data_value['min'] ){
+
+                                $session_total = $data_value['total'];
+                                $session_amount = $data_value['amount'];
+
+                                break;
+                            }
+                        }
+
+                        $reward_details['description'] = "Get access to multiple fitness sessions with instant booking at your convinience. Look out for the voucher in your profile (also sent on Email/sms).<br/>Get ".$session_total." sessions for free worth Rs. ".$session_amount;
+
+                        if($reward['reward_type'] == "swimming_sessions"){
+                            $reward_details['description'] = "Get a luxury experience like never before - VIP swimming session in city's best 5-star hotels Look out for the voucher in your profile (also sent on Email/sms).<br/>Get ".$session_total." swimming sessions for free worth Rs. ".$session_amount." by applying the voucher while booking your slot on Fitternity App";
+                        }
+                        
                     }
 
                     if($reward->reward_type == 'diet_plan'){

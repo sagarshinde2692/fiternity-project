@@ -63,7 +63,8 @@ return array(
 	'reliance_url' =>'https://rhealthcircle.reliancegeneral.co.in/fitternity/callback',
 	'website_deeplink' =>'https://ftrnty.com',
 
-
+	'pubnub_publish' => 'pub-c-d9aafff8-bb9e-42a0-a24b-17ab5500036f',
+	'pubnub_sub' => 'sub-c-05ef3130-d0e6-11e6-bbe2-02ee2ddab7fe',
 	'download_app_link' => 'https://go.onelink.me/I0CO?pid=techfitsms',//https://www.fitternity.com/downloadapp?source=fittech',
 
     'business' => 'http://business.fitternity.com',
@@ -771,7 +772,9 @@ return array(
 	],
 	'paypersession_level_icon_base_url'=>'https://b.fitn.in/paypersession/level-',
 	'paypersession_lock_icon'=>'https://b.fitn.in/paypersession/lock-icon.png',
-	'remove_patti_from_brands' => [],
+	'remove_patti_from_brands' => [
+									// 1579,1580,1581,1582,1583,1584,1602,1604,1605,1606,1607,2235,2236,2244,6893,7064//Powerhouse
+									],
 
 	'routed_order_fitcash'=>300,
 	'fitcode_fitcash'=>300,

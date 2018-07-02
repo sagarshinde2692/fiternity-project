@@ -1605,7 +1605,7 @@ class SchedulebooktrialsController extends \BaseController {
                     $sndInstantEmailCustomer        =   $this->customermailer->healthyTiffinMembership($order->toArray());
                     $sndInstantSmsCustomer         =    $this->customersms->healthyTiffinMembership($order->toArray());
 
-                    $this->customermailer->payPerSessionFree($emailData);
+                    $this->customermailer->payPerSessionFree($order->toArray());
                 }
 
             }else{
@@ -1613,7 +1613,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $sndInstantEmailCustomer        =   $this->customermailer->healthyTiffinMembership($order->toArray());
                 $sndInstantSmsCustomer         =    $this->customersms->healthyTiffinMembership($order->toArray());
 
-                $this->customermailer->payPerSessionFree($emailData);
+                $this->customermailer->payPerSessionFree($order->toArray());
             }
 
             if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
@@ -2393,8 +2393,10 @@ class SchedulebooktrialsController extends \BaseController {
 
                 if(isset($order['coupon_code']) && $order['coupon_discount_amount'] > 0){
                     $coupon = Coupon::where('code', strtolower($order['coupon_code']))->first();
-                    $coupon->total_used = isset($coupon->total_used) ? $coupon->total_used + 1 : 1;
-                    $coupon->update();
+                    if($coupon){
+                        $coupon->total_used = isset($coupon->total_used) ? $coupon->total_used + 1 : 1;
+                        $coupon->update();
+                    }
                 }
                 
                 if(isset($order->payment_mode) && $order->payment_mode == "paymentgateway"){
@@ -4432,12 +4434,22 @@ class SchedulebooktrialsController extends \BaseController {
         array_set($bookdata, 'cancellation_reason_vendor', $reason);
         array_set($bookdata, 'final_lead_stage', 'cancel_stage');
         array_set($bookdata, 'final_lead_status', 'cancelled_by_'.$source_flag);
+
         if($source_flag == 'vendor'){
             array_set($bookdata, 'pre_trial_vendor_confirmation', 'cancel');
         }
+
         if($booktrial['type']=='workout-session'){
             array_set($bookdata, 'final_lead_stage', 'trial_stage');
             array_set($bookdata, 'post_trial_status', 'no show');
+
+        }else{
+
+            if(!empty($booktrial['schedule_date_time']) && time() < strtotime($booktrial['schedule_date_time'])){
+
+                array_set($bookdata, 'final_lead_stage', 'trial_stage');
+            }
+
         }
 
         array_set($bookdata, 'cancel_by', $source_flag);
@@ -6836,7 +6848,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         Log::info("pubNub array : ",$array);
 
-        $pubnub = new \Pubnub\Pubnub('pub-c-df66f0bb-9e6f-488d-a205-38862765609d', 'sub-c-d9cf3842-cf1f-11e6-90ff-0619f8945a4f');
+        $pubnub = new \Pubnub\Pubnub(Config::get('app.pubnub_publish'), Config::get('app.pubnub_sub'));
  
         $pubnub->publish('fitternity_ozonetel',$array);
 
@@ -7400,7 +7412,7 @@ class SchedulebooktrialsController extends \BaseController {
         
 
         Log::info("publishing trial alert");
-        $pubnub = new \Pubnub\Pubnub('pub-c-df66f0bb-9e6f-488d-a205-38862765609d', 'sub-c-d9cf3842-cf1f-11e6-90ff-0619f8945a4f');
+        $pubnub = new \Pubnub\Pubnub(Config::get('app.pubnub_publish'), Config::get('app.pubnub_sub'));
         $booktrial_data = array_only($booktrial_data, ['_id', 'finder_name', 'schedule_date_time','finder_location','customer_name', 'city_id']);
         $booktrial_data['schedule_date_time'] = date('d-m-Y g:i A',strtotime( $booktrial_data['schedule_date_time']));
         $booktrial_data['type'] = 1;

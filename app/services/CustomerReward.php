@@ -26,7 +26,13 @@ use Service;
 
 Class CustomerReward {
 
+    public $device_type;
+    public $app_version;
+
     public function __construct() {
+
+        $this->device_type = Request::header('Device-Type');
+        $this->app_version = Request::header('App-Version');
 
     }
 
@@ -267,6 +273,72 @@ Class CustomerReward {
 
                     }
 
+                    if($reward['reward_type'] == "sessions"){
+
+                        $reward_type_info = 'sessions';
+
+                        $workout_session_array = Config::get('fitness_kit.workout_session');
+
+                        rsort($workout_session_array);
+
+                        foreach ($workout_session_array as $data_key => $data_value) {
+
+                            if($amount >= $data_value['min'] ){
+
+                                $session_content = $data_value['total']." Workout Sessions";
+
+                                foreach ($data_value['session'] as $session_value){
+                                    $session_content .= " <br>- ".$session_value['slabs']." x ".$session_value['quantity'];
+                                }
+
+                                $reward['payload_amount'] = $data_value['amount'];
+                                $reward['new_amount'] = $data_value['amount'];
+                                $reward['title'] = "Workout Session Pack (".$data_value['total']." Sessions)";
+                                $reward['contents'] = ['Workout Session'];
+                                $reward['gallery'] = [];
+                                $reward['description'] = $session_content;
+                                $reward['quantity'] = $data_value['total'];
+                                $reward['payload']['amount'] = $data_value['amount'];
+                                $reward['session'] = $data_value['session'];
+
+                                break;
+                            }
+                        }
+                    }
+
+                    if($reward['reward_type'] == "swimming_sessions"){
+
+                        $reward_type_info = 'swimming_sessions';
+
+                        $swimming_session_array = Config::get('fitness_kit.swimming_session');
+
+                        rsort($swimming_session_array);
+
+                        foreach ($swimming_session_array as $data_key => $data_value) {
+
+                            if($amount >= $data_value['min'] ){
+
+                                $session_content = $data_value['total']." Swimming Sessions";
+
+                                foreach ($data_value['session'] as $session_value){
+                                    $session_content .= " <br>- ".$session_value['slabs']." x ".$session_value['quantity'];
+                                }
+
+                                $reward['payload_amount'] = $data_value['amount'];
+                                $reward['new_amount'] = $data_value['amount'];
+                                $reward['title'] = "Swimming at 5-star Hotels (".$data_value['total']." Sessions)";
+                                $reward['contents'] = ['Swimming Session'];
+                                $reward['gallery'] = [];
+                                $reward['description'] = $session_content;
+                                $reward['quantity'] = $data_value['total'];
+                                $reward['payload']['amount'] = $data_value['amount'];
+                                $reward['session'] = $data_value['session'];
+
+                                break;
+                            }
+                        }
+                    }
+
                 }
 
             }
@@ -277,7 +349,58 @@ Class CustomerReward {
         return "success";
     }
 
+    public function createSessionCoupon($data){
 
+        $bulk_insert = [];
+
+        $coupon_code = [];
+
+        foreach ($data['session'] as $session_value){
+
+            $code = $data['_id'].$session_value['slabs'];
+
+            $coupon_data = [
+                'validity'=>time()+(86400*30),
+                'code'=>$code,
+                'amount'=>$session_value['slabs'],
+                'quantity'=>$session_value['quantity'],
+                'claimed'=>0,
+                'customer_id'=>$data['customer_id'],
+                'myreward_id'=>$data['_id'],
+                'reward_type'=>$data['reward_type'],
+                'created_at'=>new \MongoDate(),
+                'updated_at'=>new \MongoDate(),
+                'status'=>'1'
+            ];
+
+            if($data['reward_type'] == 'swimming_sessions'){
+                $coupon_data['service_category_id'] = 123;
+            }
+
+            if(!empty($data['order_id'])){
+                $coupon_data['order_id'] = (int)$data['order_id'];
+            }
+
+            if(!empty($data['booktrial_id'])){
+                $coupon_data['booktrial_id'] = (int)$data['booktrial_id'];
+            }
+
+            $bulk_insert[] = $coupon_data;
+
+            $coupon_code[] = [
+                'code'=>$code,
+                'amount'=>$session_value['slabs'],
+                'quantity'=>$session_value['quantity'],
+                'claimed'=>0
+            ];
+            
+        }
+
+        \CustomerCoupn::insert($bulk_insert);
+
+        return $coupon_code;
+        
+    }
 
     public function saveToMyRewards($reward){
 
@@ -618,6 +741,10 @@ Class CustomerReward {
 
         $myreward = Myreward::find((int)$data['myreward_id']);
 
+        $result = [
+            "cta" => "Claimed"
+        ];
+
         if($myreward){
 
             $created_at = date('Y-m-d H:i:s',strtotime($myreward->created_at));
@@ -629,7 +756,7 @@ Class CustomerReward {
                 return array('status' => 404,'message' => "Validity Is Over");
             }
 
-            $claim_all = array('personal_trainer_at_studio','personal_trainer_at_home','healthy_tiffin');
+            $claim_all = array('personal_trainer_at_studio','personal_trainer_at_home','healthy_tiffin','sessions','swimming_sessions');
             
             if(!isset($myreward->claimed) || $myreward->claimed < $myreward->quantity){
 
@@ -654,6 +781,37 @@ Class CustomerReward {
                     $myreward->tshirt_size = $data['tshirt_size'];
                 }
 
+                if(in_array($myreward['reward_type'],['sessions','swimming_sessions'])){
+
+                    $data['coupon'] = [];
+
+                    $result['coupon_detail'] = $data['coupon_detail'] = $myreward->coupon_detail = $this->createSessionCoupon($myreward->toArray());
+
+                    foreach ($data['coupon_detail'] as $value) {
+
+                        $data['coupon'][] = $value['code'];
+                    }
+
+                    $myreward->coupon = $data['coupon'];
+
+                    foreach ($result['coupon_detail'] as &$value) {
+
+                        $value['text'] = "Your code is ".$value['code']." (Rs.".$value['amount'].")";
+                        $value['usage_text'] = $value['claimed']."/".$value['quantity']." booked";
+                    }
+
+                    if(!empty($this->device_type)){
+
+                        $result["cta"] = "Schedule Now";
+                        $result["url"] = "ftrnty://ftrnty.com/pps";
+                        $result["copy_text"] = "Copied";
+
+                        if($myreward['reward_type'] == 'swimming_sessions'){
+                            $result["url"] = "ftrnty://ftrnty.com/pps?cat=swimming-pools";
+                        }
+                    }
+                }
+
                 $myreward->update();
 
                 if(isset($myreward->finder_id) && $myreward->finder_id != ""){
@@ -663,6 +821,11 @@ Class CustomerReward {
                 if(isset($data['finder_id']) && $data['finder_id'] != ""){
                     $finderData = $this->getFinderData((int)$data['finder_id']);
                     $data  = array_merge($data,$finderData);
+                }
+
+                if(!empty($myreward['payload_amount'])){
+
+                    $data['payload_amount'] = $myreward['payload_amount'];
                 }
 
                 $data['my_reward'] = $myreward->toArray();
@@ -684,10 +847,16 @@ Class CustomerReward {
                     case 'healthy_snacks': $message = "Thank you! Your Healthy Snacks Hamper would be delivered in next 7 to 10 working days.";break;
                     case 'personal_trainer_at_studio': $message = "Thank you! We have notified ".$myreward->title."about your Personal training sessions.";break;
                     case 'personal_trainer_at_home': $message = "Your Personal Training at Home request has being processed. We will reach out to you shortly with trainer details to schedule your first session.";break;
+                    case 'swimming_sessions' :
+                    case 'sessions' : $message = "Congratulations! You have successfully claimed your reward - ".$myreward->title." <br/>Your coupon code vouchers (worth Rs. ".$myreward['payload']['amount'].") are as follows. (also shared via sms/email)";break;
                     default: $message = "Reward Claimed Successfull";break;
                 }
 
-                return array('status' => 200,'message' =>$message);
+                $result['status'] = 200;
+                $result['message'] = $message;
+                $result['header'] = $myreward->title;
+
+                return $result;
 
             }else{
 
@@ -727,6 +896,16 @@ Class CustomerReward {
             case 'diet_plan' : 
                 $data['label'] = "Reward-DietPlan-Customer";
                 $myreward_capture->customer_sms_reward = $customerSms->rewardClaim($data);
+                break;
+            case 'sessions' : 
+                $data['label'] = "Reward-WorkoutSession-Customer";
+                $myreward_capture->customer_sms_reward = $customerSms->rewardClaim($data);
+                $myreward_capture->customer_email_reward = $customerMailer->rewardClaim($data);
+                break;
+            case 'swimming_sessions' : 
+                $data['label'] = "Reward-SwimmingSession-Customer";
+                $myreward_capture->customer_sms_reward = $customerSms->rewardClaim($data);
+                $myreward_capture->customer_email_reward = $customerMailer->rewardClaim($data);
                 break;
             default : break;
         }
@@ -1381,6 +1560,7 @@ Class CustomerReward {
         }
         
         $coupon = $query->first();
+
         // if(!isset($coupon) && (strtolower($couponCode) == "srfit")){
         //     $vendorMOU = Vendormou::where("vendors",$ratecard["finder_id"])->where('contract_start_date', '<=', new \DateTime())->where('contract_end_date', '>=', new \DateTime())->first();
         //     $coupon = array("code" => strtolower($couponCode),"discount_max" => 1000,"discount_amount" => 0,"discount_min" => 200);
@@ -1480,8 +1660,6 @@ Class CustomerReward {
             $coupon = array("code" => strtolower($couponCode),"discount_max" => $discount,"discount_amount" => $discount);
         }
         
-        Log::info("coupon");
-        Log::info($coupon);
         if(isset($ratecard["flags"]) && isset($ratecard["flags"]["pay_at_vendor"]) && $ratecard["flags"]["pay_at_vendor"] === True){
             Log::info($ratecard);
             return $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false);
@@ -1711,7 +1889,7 @@ Class CustomerReward {
                 $decoded = $this->customerTokenDecode($jwt_token);
                 
                 $customer_email = $decoded->customer->email;
-                
+
                 if(isset($coupon['customer_emails']) && is_array($coupon['customer_emails'])){
                     if(!in_array(strtolower($customer_email), $coupon['customer_emails'])){
                         $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Invalid Coupon");
@@ -1720,9 +1898,108 @@ Class CustomerReward {
                     }
                 }
 
+                \Booktrial::$withoutAppends = true;
+
+                $booktrial_count = \Booktrial::where('customer_email',$customer_email)->where('created_at','>=',new \MongoDate(strtotime(date('Y-m-d 00:00:00'))))->where('created_at','<=',new \MongoDate(strtotime(date('Y-m-d 23:59:59'))))->count();
+
+                if($booktrial_count > 0){
+
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"User can book only one session per day","user_login_error"=>true);
+
+                    return $resp;
+                }
+
                 if($price <= $coupon['price_limit']){
                     $coupon["discount_amount"] = 0;
                 }
+            }
+
+            if(isset($coupon['conditions']) && is_array($coupon['conditions']) && in_array('once_new_pps', $coupon['conditions'])){
+                
+                $jwt_token = Request::header('Authorization');
+
+                if(empty($jwt_token)){
+
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"User Login Required","user_login_error"=>true);
+
+                    return $resp;
+                }
+
+                $decoded = $this->customerTokenDecode($jwt_token);
+                
+                $customer_phone = $decoded->customer->contact_no;
+
+                $customer_email = $decoded->customer->email;
+
+                $prev_workout_session_count = \Booktrial::where('created_at', '>', new \DateTime('2018-04-22'))->where(function($query) use ($customer_email, $customer_phone){ return $query->orWhere('customer_email', $customer_email);})->where('type', 'workout-session')->count();
+                
+                
+                if($prev_workout_session_count){
+                    
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"Coupon is valid for first time user only","user_login_error"=>true);
+
+                    return $resp;
+                }
+                
+            }
+
+            if(isset($coupon['conditions']) && is_array($coupon['conditions']) && in_array('fitternity_employees', $coupon['conditions'])){
+                
+                $jwt_token = Request::header('Authorization');
+
+                if(empty($jwt_token)){
+
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"User Login Required","user_login_error"=>true);
+
+                    return $resp;
+                }
+
+                $decoded = $this->customerTokenDecode($jwt_token);
+                
+                $customer_email = $decoded->customer->email;
+
+                if(!in_array(strtolower($customer_email), Config::get('fitternityemails'))){
+                    
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Coupon is either not valid or expired","user_login_error"=>true);
+
+                    return $resp;
+                
+                }
+                
+            }
+
+            if(isset($coupon['conditions']) && is_array($coupon['conditions']) && in_array('once_per_month', $coupon['conditions'])){
+                
+                $jwt_token = Request::header('Authorization');
+
+                if(empty($jwt_token)){
+
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"User Login Required","user_login_error"=>true);
+
+                    return $resp;
+                }
+
+                $decoded = $this->customerTokenDecode($jwt_token);
+                
+                $customer_phone = $decoded->customer->contact_no;
+                $customer_email = $decoded->customer->email;
+                
+                $prev_workout_session_count = \Order::active()->where('success_date', '>', new \DateTime(date('d-m-Y', strtotime('first day of this month'))))->where(function($query) use ($customer_email, $customer_phone){ return $query->orWhere('customer_phone', 'LIKE', '%'.substr($customer_phone, -10).'%')->orWhere('customer_email', $customer_email);})->where('coupon_code', 'Like', $coupon['code'])->where('coupon_discount_amount', '>', 0)->count();
+
+                if($prev_workout_session_count){
+                    
+                    $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Already used","user_login_error"=>true);
+
+                    return $resp;    
+                }
+                
+            }
+
+            if(isset($coupon['min_price']) && is_numeric($coupon['min_price']) &&  $price < $coupon['min_price']){
+                
+                $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"Applicable on minimum purchase of Rs. ".$coupon['min_price'],"user_login_error"=>true);
+
+                return $resp;
             }
 
             $discount_amount = $coupon["discount_amount"];
@@ -1738,11 +2015,103 @@ Class CustomerReward {
             if(isset($coupon['success_message']) && trim($coupon['success_message']) != ""){
                 $resp['custom_message'] = str_replace("<amt>",$discount_amount,$coupon['success_message']);
             }
+
+            if(isset($coupon['vendor_commission']) && is_numeric($coupon['vendor_commission'])){
+                $resp['vendor_commission'] = $coupon['vendor_commission'];
+            }
+            
         }else{
-            $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false);
-            // $resp = array("status"=> 400, "message" => "Coupon not found", "error_message" => "Coupon is either not valid or expired");
-            // return Response::json($resp,400);    
+
+            $applyCustomerCoupn = false;
+
+            $resp = [
+                "data"=>[
+                    "discount" => 0,
+                    "final_amount" => $price,
+                    "wallet_balance" => $wallet_balance,
+                    "only_discount" => $price
+                ], 
+                "coupon_applied" => $applyCustomerCoupn
+            ];
+
+            $customerCoupn = \CustomerCoupn::active()->where('code', strtolower($couponCode))->where('validity','>=',time())->first();
+
+            if($customerCoupn){
+
+                $jwt_token = Request::header('Authorization');
+
+                if(!empty($jwt_token)){
+
+                    $decoded = $this->customerTokenDecode($jwt_token);
+                    $customer_id = $decoded->customer->_id;
+
+                    if((int)$customerCoupn['customer_id'] !== $customer_id){
+
+                        $resp['user_login_error'] = true;
+                        $resp['error_message'] = 'Wrong Logged in User';
+
+                        return $resp;
+                    }
+
+                }else{
+
+                    $resp['user_login_error'] = true;
+                    $resp['error_message'] = 'User Login Required';
+
+                    return $resp;
+                }
+
+                if(!empty($ratecard['type']) && $ratecard['type'] == 'workout session'){
+
+                    if(!empty($customerCoupn['service_category_id'])){
+
+                        $service = Service::find((int)$ratecard['service_id']);
+
+                        if($service && !empty($service['servicecategory_id']) && $service['servicecategory_id'] == $customerCoupn['service_category_id'] ){
+
+                            $applyCustomerCoupn = true;
+
+                        }else{
+
+                            $resp['user_login_error'] = true;
+                            $resp['error_message'] = 'This coupon is applicable only on swimming sessions.';
+
+                            return $resp;
+                        }
+
+                    }else{
+
+                        $applyCustomerCoupn = true;
+                    }
+
+                }
+
+                if($applyCustomerCoupn){
+
+                    $discount_amount = $customerCoupn["amount"];
+
+                    $discount_price = $price - $discount_amount;
+
+                    $final_amount = $discount_price > $wallet_balance ? $discount_price - $wallet_balance : 0;
+
+                    $resp = [
+                        "data"=>[
+                            "discount" => $discount_amount,
+                            "final_amount" => $final_amount,
+                            "wallet_balance" => $wallet_balance,
+                            "only_discount" => $discount_price
+                        ],
+                        "coupon_applied" => $applyCustomerCoupn
+                    ];
+
+                }
+            }
+
+            return $resp;
+
         }
+
+
         return $resp;
     }
 
