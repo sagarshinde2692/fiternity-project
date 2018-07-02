@@ -4142,7 +4142,7 @@ class FindersController extends \BaseController {
 		}
 
 		$finderData = Cache::tags($cache_name)->get($cache_key);
-		
+	
 		if(count($finderData) > 0 && isset($finderData['status']) && $finderData['status'] == 200){
 
 			$finder = Finder::active()->where('slug','=',$tslug)->first();
@@ -4159,37 +4159,37 @@ class FindersController extends \BaseController {
 				if(isset($location_id)){
 					$location_id = intval($location_id);
 
-					$location_id_services =array_where($finderData['services'] , function($key, $value) use ($location_id){
+					$location_id_services =array_where($finderData['finder']['services'] , function($key, $value) use ($location_id){
 						if($value['location_id'] == $location_id)
 							{
 							 return $value; 
 							}
 					});
-					$non_location_id_services = array_where($finderData['services'] , function($key, $value) use ($location_id){
+					$non_location_id_services = array_where($finderData['finder']['services'] , function($key, $value) use ($location_id){
 						if($value['location_id'] != $location_id)
 							{
 							 return $value; 
 							}
 					});
 
-					$data['finder']['services'] = array_merge($location_id_services, $non_location_id_services);
+					$finderData['finder']['services'] = array_merge($location_id_services, $non_location_id_services);
 
 					
-					$location_id_address =array_where($finderData['multiaddress'] , function($key, $value) use ($location_id){
+					$location_id_address =array_where($finderData['finder']['multiaddress'] , function($key, $value) use ($location_id){
 						if($value['location_id'][0] == $location_id)
 							{
 							 return $value; 
 							}
 					});
 
-					$non_location_id_address =array_where($finderData['multiaddress'] , function($key, $value) use ($location_id){
+					$non_location_id_address =array_where($finderData['finder']['multiaddress'] , function($key, $value) use ($location_id){
 						if($value['location_id'][0] != $location_id)
 							{
 							 return $value; 
 							}
 					});
 
-					$data['finder']['multiaddress'] = array_merge($location_id_address, $non_location_id_address);
+					$finderData['finder']['multiaddress'] = array_merge($location_id_address, $non_location_id_address);
 
 				}
 
@@ -4197,7 +4197,7 @@ class FindersController extends \BaseController {
 					$category_id = Servicecategory::where('slug', $category_slug)->where('parent_id', 0)->first(['_id']);
 								
 					$category_id = $category_id['_id'];
-					$category_slug_services = array_where($finderData['services'] , function($key, $value) use ($category_id){
+					$category_slug_services = array_where($finderData['finder']['services'] , function($key, $value) use ($category_id){
 							if($value['servicecategory_id'] == $category_id)
 								{
 								 return $value; 
@@ -4205,19 +4205,19 @@ class FindersController extends \BaseController {
 						});
 	
 					$non_category_slug_services = array();
-					$non_category_slug_services = array_where($finderData['services'] , function($key, $value) use ($category_id){
+					$non_category_slug_services = array_where($finderData['finder']['services'] , function($key, $value) use ($category_id){
 							if($value['servicecategory_id'] != $category_id)
 								{
 								 return $value; 
 								}
 						});
 	
-		        	$finderData['services']  = array_merge($category_slug_services, $non_category_slug_services);
+		        	$finderData['finder']['services']  = array_merge($category_slug_services, $non_category_slug_services);
 
 				}
 
 
-				$finderData['services'] = $this->sortNoMembershipServices($finderData['services'], 'finderDetailApp');
+				$finderData['finder']['services'] = $this->sortNoMembershipServices($finderData['finder']['services'], 'finderDetailApp');
 				
 				if(Request::header('Authorization')){
 
