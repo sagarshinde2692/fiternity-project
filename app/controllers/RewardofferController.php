@@ -1040,7 +1040,7 @@ class RewardofferController extends BaseController {
                     unset($rewards[$reward_key]);
                 }
 
-                if(in_array($reward_value['reward_type'],['swimming_sessions','sessions']) && !empty($this->app_version) && intval($this->app_version) < 4.9){
+                if(in_array($reward_value['reward_type'],['swimming_sessions','sessions']) && !empty($this->app_version) && float($this->app_version) < 4.9){
                     unset($rewards[$reward_key]);
                 }
             }
