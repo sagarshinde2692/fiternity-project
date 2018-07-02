@@ -192,7 +192,7 @@ class Service extends \Basemodel{
 									->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()) ))
 									->get(['start_date','end_date','price','type','allowed_qty','remarks','offer_type','ratecard_id','callout'])
 									->toArray();
-			
+			$finder = $this->finder;
 			foreach ($ratecardsarr as $key => $value) {
 
 				if((isset($value['expiry_date']) && $value['expiry_date'] != "" && strtotime("+ 1 days", strtotime($value['expiry_date'])) < time()) || (isset($value['start_date']) && $value['start_date'] != "" && strtotime($value['start_date']) > time())){
@@ -213,6 +213,9 @@ class Service extends \Basemodel{
 							 return true; 
 							}
 					});
+					if(isset($this->membership) && $this->membership == 'disable' || isset($finder['membership']) && $finder['membership'] == 'disable'){
+						$ratecardoffersRecards = [];
+					}
                     foreach ($ratecardoffersRecards as $ratecardoffersRecard){
             			$offer_exists = true;
                         $ratecardoffer                  =   $ratecardoffersRecard;
@@ -267,7 +270,7 @@ class Service extends \Basemodel{
 					}
 
 					if(count($ratecardoffers) && isset($ratecardoffers[0]['offer_icon'])){
-						if(in_array($value['type'], ['membership', 'packages']) && ((isset($this->finder['membership']) && $this->finder['membership'] == 'disable') || (isset($this['membership']) && $this['membership'] == 'disable') || (isset($this->finder['flags']) && isset($this->finder['flags']['state']) && in_array($this->finder['flags']['state'], ['temporarily_shut', 'closed'])) || $this->finder['commercial_type'] == 0)){
+						if(in_array($value['type'], ['membership', 'packages']) && ((isset($finder['membership']) && $finder['membership'] == 'disable') || (isset($this['membership']) && $this['membership'] == 'disable') || (isset($finder['flags']) && isset($finder['flags']['state']) && in_array($finder['flags']['state'], ['temporarily_shut', 'closed'])) || $finder['commercial_type'] == 0)){
 							$ratecardoffers[0]['offer_icon'] = "";
 						}
 					}
@@ -284,7 +287,8 @@ class Service extends \Basemodel{
 
                 $value['offers']  = $ratecardoffers;
 
-                if(count($ratecardoffers) > 0 && isset($ratecardoffers[0]['price'])){
+                // if(count($ratecardoffers) > 0 && isset($ratecardoffers[0]['price'])  && isFinderIntegrated($finder) && isServiceIntegrated($this)){
+                if(count($ratecardoffers) > 0 && isset($ratecardoffers[0]['price'])  ){
                 	
                     $value['special_price'] = $ratecardoffers[0]['price'];
 
@@ -319,7 +323,7 @@ class Service extends \Basemodel{
 				$offer_price = (!empty($value['special_price'])) ? $value['special_price'] : 0 ;
 				$cost_price = (!empty($value['price'])) ? $value['price'] : 0 ;
 
-                if($offer_price !== 0 && $offer_price < $cost_price){
+                if($offer_price !== 0 && $offer_price < $cost_price && !in_array($value['type'], ['workout session', 'trial'])){
 
                 	$offf_percentage = ceil((($cost_price - $offer_price)/$cost_price)*100);
 

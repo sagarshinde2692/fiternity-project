@@ -73,6 +73,7 @@ class BrandsController extends \BaseController {
                     "title" =>$brand["name"] . " in ". ucwords($city),
                     "description" => "List of branches in ". ucwords($city)." in areas ".$locations.". See membership offers, reviews, location, fees"
                 );
+                $brand['stats_data'] = (!empty($finders['metadata']['total_records']) ? $finders['metadata']['total_records'] : 0).' Outlets';
                 $data = array(
                         'brand'     => $brand,
                         'finders'    => $finders
@@ -80,6 +81,9 @@ class BrandsController extends \BaseController {
                 $city_id= City::where("name",'like','%'.$city.'%')->first(['_id']);
                 if(!empty($brand['vendor_stripe'])&&!empty($brand['vendor_stripe']['cities'])&&!empty($city_id)&&!empty($city_id->_id)&&in_array((int)$city_id->_id, $brand['vendor_stripe']['cities'])){
                 	$data["stripe_data"] = [
+                            'header' => "NEVER SEEN BEFORE DISCOUNTS",
+                            'sub_title' => "&bull; Limited Slots &bull;",
+                			'title'=> (!empty($brand['vendor_stripe'])&&!empty($brand['vendor_stripe']['text']))?$brand['vendor_stripe']['text']:"",
                 			'text'=> (!empty($brand['vendor_stripe'])&&!empty($brand['vendor_stripe']['text']))?$brand['vendor_stripe']['text']:"",
                 			'background-color'=> (!empty($brand['vendor_stripe'])&&!empty($brand['vendor_stripe']['background_color']))?$brand['vendor_stripe']['background_color']:"",
                 			'text_color'=> (!empty($brand['vendor_stripe'])&&!empty($brand['vendor_stripe']['text_color']))?$brand['vendor_stripe']['text_color']:"",
@@ -89,7 +93,9 @@ class BrandsController extends \BaseController {
                 if(!(!empty($brand['vendor_stripe'])&&!empty($brand['vendor_stripe']['text'])))
                 	unset($data["stripe_data"]);
                 unset($brand['vendor_stripe']);
-                
+                if(isset($data["stripe_data"])){
+                    $data['brand']['stripe_data'] = $data["stripe_data"];
+                }
                 
                 Cache::tags('brand_detail')->put("$slug-$city" ,$data,Config::get('cache.cache_time'));
                 
