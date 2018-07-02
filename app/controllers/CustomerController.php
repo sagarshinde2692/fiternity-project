@@ -3479,7 +3479,7 @@ class CustomerController extends \BaseController {
 				];
 				switch($city){
 					case "pune":
-						$result['campaigns'][0]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Mumbai_APP.png";
+						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Pune_APP.png";
 						if(intval(date('d', time())) % 2 == 0){
 							$result['campaigns'][] = [
 								'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/Multifit_App.png',
