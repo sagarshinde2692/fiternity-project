@@ -3460,14 +3460,14 @@ class CustomerController extends \BaseController {
 		if(isset($_REQUEST['device_type']) && in_array($_REQUEST['device_type'],['ios','android']) && isset($_REQUEST['app_version']) && ((float)$_GET['app_version'] >= 4.4)){
 
 			$result['campaigns'] =  [];
-			// $result['campaigns'][] = [
-			// 	'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/monsoon-with-code.jpg',
-			// 	'link'=>'ftrnty://ftrnty.com/search/all',
-			// 	'title'=>'Group Membership',
-			// 	'height'=>100,
-			// 	'width'=>375,
-			// 	'ratio'=>(float) number_format(100/375,2)
-			// ];
+			$result['campaigns'][] = [
+				'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/monsoon%20banner%20-%20app%20new.png',
+				'link'=>'ftrnty://ftrnty.com/search/all',
+				'title'=>'Group Membership',
+				'height'=>100,
+				'width'=>375,
+				'ratio'=>(float) number_format(100/375,2)
+			];
 			if($city != "ahmedabad"){
 				$result['campaigns'][] = [
 					'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Mumbai_APP.png',
