@@ -987,10 +987,30 @@ class FindersController extends \BaseController {
 					Log::info("Integrated vendor");
 				}
 				
+
+				$nearby_other_options_meta = [
+                    "offset" => 0,
+                    "limit" => 0,
+                    "radius" => "2km",
+                    "category"=>"",
+                    "lat"=>$finderdata["lat"],
+                    "lon"=>$finderdata["lon"],
+                    "city"=>strtolower($finderdata["city"]["name"]),
+                    "keys"=>[
+                    ]
+				];
+				
 				$nearby_same_category = geoLocationFinder($nearby_same_category_request);
 
-                $nearby_other_category = geoLocationFinder($nearby_other_category_request);
+				$nearby_other_category = geoLocationFinder($nearby_other_category_request);
+				
+				$nearby_other_options_meta = geoLocationFinderMeta($nearby_other_options_meta);
 
+				$finder['nearby_options'] = "";
+				if(in_array($finder['_id'], [576,1451,1460,1647,9883,2522,401,1486,1488,1458,1487,1452,1878,4830,4827,4831,4829,13138,13135,13137,13136,11836,11828,11829,11838,13680,11830,11451])){
+					$finder['nearby_options'] = isset($nearby_other_options_meta['total_records']) ? $nearby_other_options_meta['total_records'] : "";
+				}
+				
                 // $nearby_same_category = array();
 
 				// $nearby_same_category       =   Finder::where('category_id','=',$findercategoryid)
