@@ -3624,6 +3624,62 @@ if (!function_exists(('citywiseServiceCategoryIds'))){
 	}
 }
 
+if (!function_exists(('geoLocationFinderMeta'))){
 
+    function geoLocationFinderMeta($request){
+
+        $client = new Client( ['debug' => false, 'base_uri' => Config::get("app.url")."/"] );
+        $offset  = $request['offset'];
+        $limit   = $request['limit'];
+        $radius  = $request['radius'];
+        $lat    =  $request['lat'];
+        $lon    =  $request['lon'];
+        $category = $request['category'];
+        $keys = $request['keys'];
+        $city = $request['city'];
+        $not = isset($request['not']) ? $request['not'] : new \stdClass();
+        $region = isset($request['region']) ? $request['region'] : [];
+
+        $payload = [
+            "category"=>$category,
+            "sort"=>[
+              "order"=>"desc",
+              "sortfield"=>"popularity"
+          ],
+          "offset"=>[
+              "from"=>$offset,
+              "number_of_records"=>$limit
+          ],
+          "location"=>[
+              "geo"=>[
+                  "lat"=>$lat,
+                  "lon"=>$lon,
+                  "radius"=>$radius
+              ],
+              "regions"=>$region,
+              "city"=>$city
+          ],
+          "keys"=>$keys,
+          "not"=>$not
+      ];
+
+        $url = Config::get('app.new_search_url')."/search/vendor";
+
+        $metadata = [];
+
+        try {
+
+            $response  =   json_decode($client->post($url,['json'=>$payload])->getBody()->getContents(),true);
+
+            return $response['metadata'];
+
+        }catch (Exception $e) {
+
+            return $metadata;
+        }
+
+    }
+    
+}
 
 ?>
