@@ -3146,6 +3146,7 @@ class FindersController extends \BaseController {
 									$ratecardoffer                  =   $ratecardoffersRecard;
 									$ratecardoffer['offer_text']    =   "";
 									$ratecardoffer['offer_icon']    =   "https://b.fitn.in/global/final_monsoon_tag.png";
+									$ratecardoffer['offer_color'] 	= 	"#5EBBBA";
 
 									if(isset($rateval['flags'])){
 
@@ -4087,7 +4088,7 @@ class FindersController extends \BaseController {
 
                 $nearby_other_category = geoLocationFinder($nearby_other_category_request);
 
-                $data['recommended_vendor']['title'] = "Trending near you";
+                $data['recommended_vendor']['title'] = "Other popular options in ".$finderarr["location"]["name"];
                 $data['recommended_vendor']['description'] = "Checkout fitness services near you";
                 $data['recommended_vendor']['near_by_vendor'] = $nearby_other_category;
 
@@ -5496,10 +5497,15 @@ class FindersController extends \BaseController {
 
 				if(!empty($ratecard['offers']) && !empty($ratecard['offers'][0]['offer_type']) && $ratecard['offers'][0]['offer_type'] == 'newyears'){
 
-					$return['callout'] = $service[$service_name]." - ".$this->getServiceDuration($ratecard)." @ Rs. ".$ratecard['offers'][0]['price'];
+					$return['callout'] = $service[$service_name]." - ".$this->getServiceDuration($ratecard)." @ Rs. ".$ratecard['offers'][0]['price'].". ";
+
+					if($source == 'app'){
+
+						$return['callout'] = $service[$service_name]." - <b>".$this->getServiceDuration($ratecard)."</b> @ Rs. <b>".$ratecard['offers'][0]['price']."</b>. ";
+					}
 
 					if(!empty($ratecard['offers'][0]['callout'])){
-						$return['callout'] = $ratecard['offers'][0]['callout'];
+						$return['callout'] .= $ratecard['offers'][0]['callout'];
 					}
 
 					$return['ratecard_id'] = (int)$ratecard['_id'];

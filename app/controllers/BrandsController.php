@@ -48,7 +48,14 @@ class BrandsController extends \BaseController {
                 ];
                 
                 $finders = vendorsByBrand($request);
-                $finder_locations = ['All Locations'];
+                
+                $finder_locations = [];
+
+                if($this->device_type == 'android'){
+
+                    $finder_locations[] = 'All Locations';
+                }
+
                 if(isset($finders['results'])){
                     foreach($finders['results'] as $finder){
                         if(isset($finder['location']) && $finder['location'] != "" && !in_array(ucwords($finder['location']), $finder_locations)){
@@ -56,6 +63,9 @@ class BrandsController extends \BaseController {
                         }
                     }
                 }
+
+                sort($finder_locations);
+                
                 $brand['finder_locations'] = $finder_locations;
                 array_shift($finder_locations);
                 $locations = implode(',', $finder_locations);

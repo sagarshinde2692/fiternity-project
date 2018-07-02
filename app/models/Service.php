@@ -294,16 +294,6 @@ class Service extends \Basemodel{
                     	$value['remarks'] = $ratecardoffers[0]['remarks'];
                     }
 
-                    $offer_price = $ratecardoffers[0]['price'];
-
-                    if($offer_price !== 0 && $offer_price < $cost_price){
-
-                    	$offf_percentage = ceil((($cost_price - $offer_price)/$cost_price)*100);
-
-                    	$value['campaign_offer'] = "Get ".$offf_percentage."% off - Limited Slots";
-						$value['campaign_color'] = "#43a047";
-                    }
-
 				}
 				
 				(isset($value['special_price']) && $value['price'] == $value['special_price']) ? $value['special_price'] = 0 : null;
@@ -326,11 +316,22 @@ class Service extends \Basemodel{
 					}
 				}
 
-				/*if($value['price'] >= 20000){
+				$offer_price = (!empty($value['special_price'])) ? $value['special_price'] : 0 ;
+				$cost_price = (!empty($value['price'])) ? $value['price'] : 0 ;
 
-					$value['campaign_offer'] = "(EMI available)";
+                if($offer_price !== 0 && $offer_price < $cost_price){
+
+                	$offf_percentage = ceil((($cost_price - $offer_price)/$cost_price)*100);
+
+                	$value['campaign_offer'] = "Get ".$offf_percentage."% off - Limited Slots";
 					$value['campaign_color'] = "#43a047";
-				}*/
+                }
+
+				if($ratecard_price >= 5000){
+
+					$value['campaign_offer'] = !empty($value['campaign_offer']) ?  $value['campaign_offer']." (EMI available)" : "(EMI available)";
+					$value['campaign_color'] = "#43a047";
+				}
 				
 				// if(isset($value['type']) && in_array($value['type'], ['membership', 'packages']) && isset($value['flags']) && isset($value['flags']['campaign_offer']) && $value['flags']['campaign_offer']){
 				// 	$value['campaign_offer'] = "(Women - Get additional 30% off)";
