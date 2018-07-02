@@ -48,6 +48,7 @@ class BrandsController extends \BaseController {
                 ];
                 
                 $finders = vendorsByBrand($request);
+
                 
                 $finder_locations = [];
 
@@ -55,7 +56,7 @@ class BrandsController extends \BaseController {
 
                     $finder_locations[] = 'All Locations';
                 }
-
+                
                 if(isset($finders['results'])){
                     foreach($finders['results'] as $finder){
                         if(isset($finder['location']) && $finder['location'] != "" && !in_array(ucwords($finder['location']), $finder_locations)){
@@ -76,27 +77,62 @@ class BrandsController extends \BaseController {
                 $brand['stats_data'] = (!empty($finders['metadata']['total_records']) ? $finders['metadata']['total_records'] : 0).' Outlets';
                 $data = array(
                         'brand'     => $brand,
-                        'finders'    => $finders
+                        'finders'    => $finders,
                 );
-                $city_id= City::where("name",'like','%'.$city.'%')->first(['_id']);
-                if(!empty($brand['vendor_stripe'])&&!empty($brand['vendor_stripe']['cities'])&&!empty($city_id)&&!empty($city_id->_id)&&in_array((int)$city_id->_id, $brand['vendor_stripe']['cities'])){
-                	$data["stripe_data"] = [
-                            'header' => "NEVER SEEN BEFORE DISCOUNTS",
-                            'sub_title' => "&bull; Limited Slots &bull;",
-                			'title'=> (!empty($brand['vendor_stripe'])&&!empty($brand['vendor_stripe']['text']))?$brand['vendor_stripe']['text']:"",
-                			'text'=> (!empty($brand['vendor_stripe'])&&!empty($brand['vendor_stripe']['text']))?$brand['vendor_stripe']['text']:"",
-                			'background-color'=> (!empty($brand['vendor_stripe'])&&!empty($brand['vendor_stripe']['background_color']))?$brand['vendor_stripe']['background_color']:"",
-                			'text_color'=> (!empty($brand['vendor_stripe'])&&!empty($brand['vendor_stripe']['text_color']))?$brand['vendor_stripe']['text_color']:"",
-                			'background'=> (!empty($brand['vendor_stripe'])&&!empty($brand['vendor_stripe']['background_color']))?$brand['vendor_stripe']['background_color']:""
-                	];
+
+                $city_id = "";
+
+                $cityData = City::where("name",'like','%'.$city.'%')->first(['_id']);
+
+                if($cityData){
+                    $city_id = (int)$cityData['_id'];
                 }
-                if(!(!empty($brand['vendor_stripe'])&&!empty($brand['vendor_stripe']['text'])))
-                	unset($data["stripe_data"]);
-                unset($brand['vendor_stripe']);
+
+                $data["stripe_data"] = [
+                    'text'=>'',
+                    'background-color'=> '#000000',
+                    'text_color'=> '#ffffff',
+                    'background'=> '#000000'
+                ];
+
+                if(!empty($brand['vendor_stripe']) && !empty($brand['vendor_stripe']['cities']) && in_array($city_id,$brand['vendor_stripe']['cities'])){
+                    $data['stripe_data']['header']  = "NEVER SEEN BEFORE DISCOUNTS";
+                    $data['stripe_data']['sub_title']  = "&bull; Limited Slots &bull;";
+                    $data['stripe_data']['title'] = $brand['vendor_stripe']['text'];
+                    $data['stripe_data']['text'] = $brand['vendor_stripe']['text'];
+                    $data['stripe_data']['text_color'] = $brand['vendor_stripe']['text_color'];
+                    $data['stripe_data']['background-color'] = $brand['vendor_stripe']['background_color'];
+                    $data['stripe_data']['background'] = $brand['vendor_stripe']['background_color'];
+                }
+
+                if(!empty($brand['vendor_stripe']) && empty($brand['vendor_stripe']['cities']) && !empty($city_id)){
+
+                    foreach ($brand['vendor_stripe'] as $value) {
+
+                        if(!empty($value['cities']) && in_array($city_id,$value['cities'])){
+                            $data['stripe_data']['header']  = "NEVER SEEN BEFORE DISCOUNTS";
+                            $data['stripe_data']['sub_title']  = "&bull; Limited Slots &bull;";
+                            $data['stripe_data']['title'] = $value['text'];
+                            $data['stripe_data']['text'] = $value['text'];
+                            $data['stripe_data']['text_color'] = $value['text_color'];
+                            $data['stripe_data']['background-color'] = $value['background_color'];
+                            $data['stripe_data']['background'] = $value['background_color'];
+
+                            break;
+                        }
+                    }
+                }
+
+                if(empty($data['stripe_data']['text'])){
+                    unset($data["stripe_data"]);
+                }
+
+                unset($data['brand']['vendor_stripe']);
+
                 if(isset($data["stripe_data"])){
                     $data['brand']['stripe_data'] = $data["stripe_data"];
                 }
-                
+
                 Cache::tags('brand_detail')->put("$slug-$city" ,$data,Config::get('cache.cache_time'));
                 
             }else{
@@ -106,7 +142,13 @@ class BrandsController extends \BaseController {
         }
 
         $brand_detail = Cache::tags('brand_detail')->get("$slug-$city");
-        
+
+        if(!empty($this->device_type) && $this->device_type == "android"){
+
+            unset($brand_detail['finders']['request']);
+            unset($brand_detail['finders']['aggregations']);
+        }
+
         if(!empty($_GET['source'])){
 			$source = $_GET['source'];
             Log::info("web Increased ".$source);
