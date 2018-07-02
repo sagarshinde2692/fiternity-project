@@ -5772,7 +5772,7 @@ class FindersController extends \BaseController {
 		// 	'description'=>"Step 1: Choose your workout form out of 17 different options<br><br>Step 2: Book session of your choice near you with instant booking<br><br>Step3: Enjoy your workout and repeat",
 		// ];
 		
-		$return['pps_details']['ps'] = "P:S. - Really economical for users who end up working out 6-8 times a month";
+		$return['pps_details']['ps'] = "P.S. - Really economical for users who end up working out 6-8 times a month";
 
 		$return['pps_details']['action'] = [
 			'action_text'=>'Book Session here @Rs.'.($ratecard['special_price'] != 0 ? $ratecard['special_price'] : $ratecard['price']),
