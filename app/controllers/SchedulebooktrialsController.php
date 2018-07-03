@@ -7088,22 +7088,22 @@ class SchedulebooktrialsController extends \BaseController {
 
             $booktrial->post_trial_status = 'attended';
 
-            $lostcode_reason = !empty($booktrial->lostcode_reason) ? $booktrial->lostcode_reason : array();
-
+            $lostfitcode = !empty($booktrial->lostfitcode) ? $booktrial->lostfitcode : array();
+            $reason = 'didnt_get_fitcode';
             if(!empty($_GET['reason'])){
-                
                 $key = $_GET['reason'];
-                $lostcode_reason[$key] = time();
-                
+                $lostcode_reasons_array = ["not_interested_in_fitcash","lost_fitcode","didnt_get_fitcode"];
+                $lostfitcode['time'] = time();
+                $reason = $lostcode_reasons_array[$key-1];
+                $lostfitcode['reason'] = $reason;
             }
             
             if(!empty($_GET['source']) && $_GET['source'] == "activate_session"){
-
-                $lostcode_reason['didnt_get_fitcode'] = time();
-            
+                $reason = 'didnt_get_fitcode';
+                $lostfitcode['didnt_get_fitcode'] = time();
             }
 
-            $booktrial->lostcode_reason = $lostcode_reason;
+            $booktrial->lostfitcode = $lostfitcode;
 
             $fitcash_amount = $this->utilities->getFitcash(['finder_id'=>$booktrial['finder_id']]);
             
@@ -7112,9 +7112,9 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrial->post_trial_initail_status = 'interested';
             $booktrial->post_trial_status_updated_by_lostfitcode = time();
             $booktrial->post_trial_status_date = time();
-            $booktrial->update();
-
+            
             $message = "Hi ".ucwords($booktrial['customer_name']).", Thank you for your request. Rs ".$fitcash_amount." will be added post verifying your attendance with ".ucwords($booktrial['finder_name'])." within 48 hours";
+            $booktrial->update();
 
             $response = [
                 'status' => 200,
