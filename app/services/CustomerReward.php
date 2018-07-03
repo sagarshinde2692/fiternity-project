@@ -796,7 +796,7 @@ Class CustomerReward {
 
                     foreach ($result['coupon_detail'] as &$value) {
 
-                        $value['text'] = "Your code is ".$value['code']." (".$value['amount'].")";
+                        $value['text'] = "Your code is ".$value['code']." (Rs.".$value['amount'].")";
                         $value['usage_text'] = $value['claimed']."/".$value['quantity']." booked";
                     }
 
@@ -1932,8 +1932,9 @@ Class CustomerReward {
 
                 $customer_email = $decoded->customer->email;
 
-                $prev_workout_session_count = \Booktrial::where('created_at', '>', new \DateTime('2018-04-22'))->where(function($query) use ($customer_email, $customer_phone){ return $query->orWhere('customer_phone', 'LIKE', '%'.substr($customer_phone, -10).'%')->orWhere('customer_email', $customer_email);})->where('type', 'workout-session')->count();
-
+                $prev_workout_session_count = \Booktrial::where('created_at', '>', new \DateTime('2018-04-22'))->where(function($query) use ($customer_email, $customer_phone){ return $query->orWhere('customer_email', $customer_email);})->where('type', 'workout-session')->count();
+                
+                
                 if($prev_workout_session_count){
                     
                     $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>$vendor_coupon, "error_message"=>"Coupon is valid for first time user only","user_login_error"=>true);
@@ -2015,9 +2016,11 @@ Class CustomerReward {
             if(isset($coupon['success_message']) && trim($coupon['success_message']) != ""){
                 $resp['custom_message'] = str_replace("<amt>",$discount_amount,$coupon['success_message']);
             }
+
             if(isset($coupon['vendor_commission']) && is_numeric($coupon['vendor_commission'])){
                 $resp['vendor_commission'] = $coupon['vendor_commission'];
             }
+            
         }else{
 
             $applyCustomerCoupn = false;

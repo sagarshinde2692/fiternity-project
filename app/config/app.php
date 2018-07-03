@@ -63,7 +63,8 @@ return array(
 	// 'reliance_url' =>'https://rhealthcircle.reliancegeneral.co.in/fitternity/callback',
 	// 'website_deeplink' =>'https://ftrnty.com',
 
-
+	'pubnub_publish' => 'pub-c-d9aafff8-bb9e-42a0-a24b-17ab5500036f',
+	'pubnub_sub' => 'sub-c-05ef3130-d0e6-11e6-bbe2-02ee2ddab7fe',
 	'download_app_link' => 'https://go.onelink.me/I0CO?pid=techfitsms',//https://www.fitternity.com/downloadapp?source=fittech',
 
     'business' => 'http://business.fitternity.com',
