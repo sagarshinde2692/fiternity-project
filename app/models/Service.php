@@ -192,7 +192,7 @@ class Service extends \Basemodel{
 									->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()) ))
 									->get(['start_date','end_date','price','type','allowed_qty','remarks','offer_type','ratecard_id','callout'])
 									->toArray();
-			
+			$finder = $this->finder;
 			foreach ($ratecardsarr as $key => $value) {
 
 				if((isset($value['expiry_date']) && $value['expiry_date'] != "" && strtotime("+ 1 days", strtotime($value['expiry_date'])) < time()) || (isset($value['start_date']) && $value['start_date'] != "" && strtotime($value['start_date']) > time())){
@@ -213,6 +213,9 @@ class Service extends \Basemodel{
 							 return true; 
 							}
 					});
+					if(isset($this->membership) && $this->membership == 'disable' || isset($finder['membership']) && $finder['membership'] == 'disable'){
+						$ratecardoffersRecards = [];
+					}
                     foreach ($ratecardoffersRecards as $ratecardoffersRecard){
             			$offer_exists = true;
                         $ratecardoffer                  =   $ratecardoffersRecard;
@@ -267,7 +270,7 @@ class Service extends \Basemodel{
 					}
 
 					if(count($ratecardoffers) && isset($ratecardoffers[0]['offer_icon'])){
-						if(in_array($value['type'], ['membership', 'packages']) && ((isset($this->finder['membership']) && $this->finder['membership'] == 'disable') || (isset($this['membership']) && $this['membership'] == 'disable') || (isset($this->finder['flags']) && isset($this->finder['flags']['state']) && in_array($this->finder['flags']['state'], ['temporarily_shut', 'closed'])) || $this->finder['commercial_type'] == 0)){
+						if(in_array($value['type'], ['membership', 'packages']) && ((isset($finder['membership']) && $finder['membership'] == 'disable') || (isset($this['membership']) && $this['membership'] == 'disable') || (isset($finder['flags']) && isset($finder['flags']['state']) && in_array($finder['flags']['state'], ['temporarily_shut', 'closed'])) || $finder['commercial_type'] == 0)){
 							$ratecardoffers[0]['offer_icon'] = "";
 						}
 					}
@@ -284,7 +287,8 @@ class Service extends \Basemodel{
 
                 $value['offers']  = $ratecardoffers;
 
-                if(count($ratecardoffers) > 0 && isset($ratecardoffers[0]['price'])){
+                // if(count($ratecardoffers) > 0 && isset($ratecardoffers[0]['price'])  && isFinderIntegrated($finder) && isServiceIntegrated($this)){
+                if(count($ratecardoffers) > 0 && isset($ratecardoffers[0]['price'])  ){
                 	
                     $value['special_price'] = $ratecardoffers[0]['price'];
 
@@ -292,16 +296,6 @@ class Service extends \Basemodel{
 
                     if(isset($ratecardoffers[0]['remarks']) && $ratecardoffers[0]['remarks'] != ""){
                     	$value['remarks'] = $ratecardoffers[0]['remarks'];
-                    }
-
-                    $offer_price = $ratecardoffers[0]['price'];
-
-                    if($offer_price !== 0 && $offer_price < $cost_price){
-
-                    	$offf_percentage = ceil((($cost_price - $offer_price)/$cost_price)*100);
-
-                    	$value['campaign_offer'] = "Get ".$offf_percentage."% off - Limited Slots";
-						$value['campaign_color'] = "#43a047";
                     }
 
 				}
@@ -326,11 +320,22 @@ class Service extends \Basemodel{
 					}
 				}
 
-				/*if($value['price'] >= 20000){
+				$offer_price = (!empty($value['special_price'])) ? $value['special_price'] : 0 ;
+				$cost_price = (!empty($value['price'])) ? $value['price'] : 0 ;
 
-					$value['campaign_offer'] = "(EMI available)";
+                if($offer_price !== 0 && $offer_price < $cost_price && !in_array($value['type'], ['workout session', 'trial'])){
+
+                	$offf_percentage = ceil((($cost_price - $offer_price)/$cost_price)*100);
+
+                	$value['campaign_offer'] = "Get ".$offf_percentage."% off - Limited Slots";
 					$value['campaign_color'] = "#43a047";
-				}*/
+                }
+
+				if($ratecard_price >= 5000){
+
+					$value['campaign_offer'] = !empty($value['campaign_offer']) ?  $value['campaign_offer']." (EMI available)" : "(EMI available)";
+					$value['campaign_color'] = "#43a047";
+				}
 				
 				// if(isset($value['type']) && in_array($value['type'], ['membership', 'packages']) && isset($value['flags']) && isset($value['flags']['campaign_offer']) && $value['flags']['campaign_offer']){
 				// 	$value['campaign_offer'] = "(Women - Get additional 30% off)";

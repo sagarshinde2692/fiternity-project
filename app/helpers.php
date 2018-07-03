@@ -3623,7 +3623,93 @@ if (!function_exists(('citywiseServiceCategoryIds'))){
         return $ids;
 	}
 }
+if (!function_exists(('isFinderIntegrated'))){
+	
+	 function isFinderIntegrated($finder){
+        try{
+            if((!empty($finder['commercial_type']) && $finder['commercial_type'] == 0) || (!empty($finder['membership']) && $finder['membership'] == 'disable') || (!empty($finder['trial']) && $finder['trial'] == 'disable') || (!empty($finder['flags']['state']) && in_array($finder['flags']['state'], ['temporarily_shut', 'closed']))){
+                return false;
+            }else{
+                return true;
+            }
+        }catch(Exception $e){
+            Log::info($e);
+            return true;
+        }
+    }
+}
+if (!function_exists(('isServiceIntegrated'))){
+	
+    function isServiceIntegrated($service){
+        try{
+            if((!empty($service['membership']) && $service['membership'] == 'disable') || (!empty($service['trial']) && $service['trial'] == 'disable')){
+                return false;
+            }else{
+                return true;
+            }
+        }catch(Exception $e){
+            Log::info($e);
+            return true;
+        }
+    }
+}
 
+if (!function_exists(('geoLocationFinderMeta'))){
 
+    function geoLocationFinderMeta($request){
+
+        $client = new Client( ['debug' => false, 'base_uri' => Config::get("app.url")."/"] );
+        $offset  = $request['offset'];
+        $limit   = $request['limit'];
+        $radius  = $request['radius'];
+        $lat    =  $request['lat'];
+        $lon    =  $request['lon'];
+        $category = $request['category'];
+        $keys = $request['keys'];
+        $city = $request['city'];
+        $not = isset($request['not']) ? $request['not'] : new \stdClass();
+        $region = isset($request['region']) ? $request['region'] : [];
+
+        $payload = [
+            "category"=>$category,
+            "sort"=>[
+              "order"=>"desc",
+              "sortfield"=>"popularity"
+          ],
+          "offset"=>[
+              "from"=>$offset,
+              "number_of_records"=>$limit
+          ],
+          "location"=>[
+              "geo"=>[
+                  "lat"=>$lat,
+                  "lon"=>$lon,
+                  "radius"=>$radius
+              ],
+              "regions"=>$region,
+              "city"=>$city
+          ],
+          "keys"=>$keys,
+          "not"=>$not
+      ];
+
+        $url = Config::get('app.new_search_url')."/search/vendor";
+
+        $metadata = [];
+
+        try {
+
+            $response  =   json_decode($client->post($url,['json'=>$payload])->getBody()->getContents(),true);
+
+            return $response['metadata'];
+
+        }catch (Exception $e) {
+
+            return $metadata;
+        }
+
+    }
+    
+}
 
 ?>

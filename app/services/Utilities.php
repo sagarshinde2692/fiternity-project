@@ -4123,6 +4123,5 @@ Class Utilities {
 		
 		return $knowlarity_no;
 	}
-    
 }
 
