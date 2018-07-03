@@ -1227,7 +1227,7 @@ class FindersController extends \BaseController {
 					unset($response['finder']['payment_options']);
 				}
 
-				$response['finder']['services'] = $this->addPPSStripe($response['finder'], 'finderdetail');
+				// $response['finder']['services'] = $this->addPPSStripe($response['finder'], 'finderdetail');
 
 				Cache::tags('finder_detail')->put($cache_key,$response,Config::get('cache.cache_time'));
 
