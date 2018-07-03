@@ -892,6 +892,11 @@ class FindersController extends \BaseController {
 						$finder['callout_ratecard_id'] = $callOutObj['ratecard_id'];
 					}						
 				}
+
+				if(!empty($finder['contact']['address']) && !empty($finder['landmark'])){
+
+					$finder['contact']['address'] = ucwords(str_replace($finder['landmark'],"<b>".$finder['landmark']."</b>",$finder['contact']['address']));
+				}
 				
 // 				}
 				// 	$callout_offer = Offer::where('vendor_id', $finder['_id'])->where('hidden', false)->orderBy('order', 'asc')
