@@ -577,53 +577,11 @@ class HomeController extends BaseController {
             ];
 
             $campaigns[] = [
-                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Yoga_WebBanner.png',
-                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Yoga_MobBanner.png',
-                'link'=>Config::get('app.website').'/article/celebrate-international-yoga-day-for-the-full-month-of-june-with-fitternity',
-                'title'=>'Free Yoga Session',
-                'height'=>100,
-                'width'=>375,
-                'ratio'=>(float) number_format(100/375,2)
-            ];
-
-            $campaigns[] = [
                 'image'=>'https://b.fitn.in/global/Homepage-branding-2018/new-reward-web.png',
                 'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Rewards-MOB.png',
                 'link'=>Config::get('app.website').'/rewards',
                 'target'=>true,
                 'title'=>'Rewards with every purchase',
-                'height'=>100,
-                'width'=>375,
-                'ratio'=>(float) number_format(100/375,2)
-            ];
-
-            $campaigns[] = [
-                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Group_WebBanner.png',
-                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Group_MobBanner.png',
-                'link'=>Config::get('app.website').'/groupmemberships',
-                'target'=>true,
-                'title'=>'Share your love for fitness',
-                'height'=>100,
-                'width'=>375,
-                'ratio'=>(float) number_format(100/375,2)
-            ];
-
-            $campaigns[] = [
-                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Webbanner-Emi.png',
-                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Mobbanner-EMI.png',
-                'link'=>Config::get('app.website').'/emi',
-                'target'=>true,
-                'title'=>'Save with Fitness',
-                'height'=>100,
-                'width'=>375,
-                'ratio'=>(float) number_format(100/375,2)
-            ];
-            
-            $campaigns[] = [
-                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/AmazonPay_WebBanner.jpg',
-                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/AmazonPay_MobBanner.jpg',
-                'link'=>Config::get('app.download_app_link'),
-                'title'=>'Amazon pay Offer',
                 'height'=>100,
                 'width'=>375,
                 'ratio'=>(float) number_format(100/375,2)
