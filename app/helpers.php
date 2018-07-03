@@ -3062,8 +3062,8 @@ if (!function_exists('decodeKioskVendorToken')) {
         Log::info("Vendor Token : ".$jwt_token);
         
         Log::info("decodeKioskVendorToken : ",json_decode(json_encode($decodedToken),true));
-        Log::info($decodeKioskVendorToken->vendor->_id);
-        if(!empty($decodeKioskVendorToken->vendor->_id) && in_array($decodeKioskVendorToken->vendor->_id, [9932])){
+        Log::info($decodedToken->vendor->_id);
+        if(!empty($decodedToken->vendor->_id) && in_array($decodedToken->vendor->_id, [9932])){
             Log::info("exiting tab vendor");
             exit();
         }
