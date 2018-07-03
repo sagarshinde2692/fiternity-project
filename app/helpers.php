@@ -3058,10 +3058,16 @@ if (!function_exists('decodeKioskVendorToken')) {
         $jwt_key                =   Config::get('jwt.kiosk.key');
         $jwt_alg                =   Config::get('jwt.kiosk.alg');
         $decodedToken           =   JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
-
+        
         Log::info("Vendor Token : ".$jwt_token);
-
+        
         Log::info("decodeKioskVendorToken : ",json_decode(json_encode($decodedToken),true));
+        
+        if(!empty($decodeKioskVendorToken->vendor->_id) && in_array($decodeKioskVendorToken->vendor->_id, [9932])){
+            Log::info("exiting tab vendor");
+            exit();
+        }
+
 
         return $decodedToken;
     }
