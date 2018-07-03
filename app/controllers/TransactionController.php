@@ -469,6 +469,7 @@ class TransactionController extends \BaseController {
         }else{
 
             $order_id = $data['_id'] = $data['order_id'] = Order::max('_id') + 1;
+            $order = new Order(['_id'=>$order_id]);
         }
 
         $data['code'] = (string) random_numbers(5); //(string)$data['order_id'];

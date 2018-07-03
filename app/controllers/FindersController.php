@@ -1999,9 +1999,41 @@ class FindersController extends \BaseController {
 	public function addReview($data = false){
 
 		if(!$data){
-			$data = Input::json()->all();
+			$data = Input::all();
+		}
+		// Log::info($data['image']->getClientOriginalName());
+// return;
+		// return $_FILES;
+		// return Input::file();
+		$images = Input::file('image2') ;
+		$s3 = AWS::get('s3');
+		$images_urls = [];
+		foreach($images as $value){
+
+			$file_name = str_replace(" ","-",$value->getClientOriginalName());
+			$destinationPath = public_path().'/review-images1';
+			$file_path =  join('/', [$destinationPath, $file_name]);
+			// return getenv('default');
+			// return $s3->getCredentials()->getAccessKeyId( );
+			try{
+				$resp = $value->move($destinationPath,$file_name);
+				$key  = Config::get('app.aws.review_images.path').$file_name;
+				$result = $s3->putObject(array(
+					'Bucket'     => Config::get('app.aws.bucket'),
+					'Key'        => $key,
+					'SourceFile' => $file_path
+				));
+				unlink($file_path);
+				array_push($images_urls, Config::get('app.aws.review_images.url').$file_name);
+				
+			}catch(Exception $e){
+				Log::info($e);
+				unlink($file_path);
+			}
 		}
 
+		
+		return $images_urls;
 		$jwt_token = Request::header('Authorization');
 
 	    if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
@@ -2478,9 +2510,21 @@ class FindersController extends \BaseController {
 		$finder_id          =   (int) $finder_id;
 		$from               =   ($from != '') ? intval($from) : 0;
 		$size               =   ($size != '') ? intval($size) : 10;
+		
+		$reviews            =   Review::with(array('finder'=>function($query){$query->select('_id','title','slug','coverimage');}))->active()->where('finder_id','=',$finder_id)->take($size)->skip($from)->orderBy('updated_at', 'desc')->get();
+		// return $reviews;
+		$customer_ids = array_column($reviews->toArray(), 'customer_id');
+ 		// return $customer_ids;
 
-		$reviews            =   Review::with(array('finder'=>function($query){$query->select('_id','title','slug','coverimage','images','tags');}))->active()->where('finder_id','=',$finder_id)->take($size)->skip($from)->orderBy('updated_at', 'desc')->get();
-
+		$ongoing_membership_customer_ids = Order::active()->whereIn('customer_id', $customer_ids)->where('finder_id', $finder_id)->where('start_date', '<=', new DateTime())->where('end_date', '>=', new DateTime())->lists('customer_id');
+		
+		foreach($reviews as &$review){
+			if(in_array($review['customer_id'], $ongoing_membership_customer_ids)){
+				$review['tags'] = ['ongoing membership'];
+			}else{
+				$review['tags'] = [];
+			}
+		}
 		$remaining_count =  Review::active()->where('finder_id','=',$finder_id)->count() - ($from+$size);
 
 		$remaining_count    =   ($remaining_count > 0) ? $remaining_count : 0;
