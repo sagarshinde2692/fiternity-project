@@ -148,7 +148,7 @@ class TransactionController extends \BaseController {
         if(empty($data['service_id']))
         {
         	Ratecard::$withoutAppends=true;
-        	$servId=Ratecard::where("_id",intval($data['ratecard_id']))->first(['service_id']);
+        	$servId=Ratecard::find(intval($data['ratecard_id']))->first(['service_id']);
         	(!empty($servId))?$data['service_id']=$servId->service_id:"";
         }
         
@@ -1109,7 +1109,56 @@ class TransactionController extends \BaseController {
             $resp['data']['payment_modes'] = [];
         }
         if(!empty($data['third_party']))
-        	return $this->successCommon($data);
+        {
+        	$data1 = [];
+        	$data1['status'] = 'success';
+        	$data1['order_success_flag'] = 'thirdparty';
+        	$data1['order_id'] = (int)$order['_id'];
+        	$data1['customer_name'] = $order['customer_name'];
+        	$data1['customer_email'] = $order['customer_email'];
+        	$data1['customer_phone'] = $order['customer_phone'];
+        	$data1['finder_id'] = (int)$order['finder_id'];
+        	$data1['service_name'] = $order['service_name'];
+        	$data1['type'] = $order['type'];
+        	$data1['premium_session'] = true;
+        	
+        	if(!empty($data['third_party']))
+        		$data1['third_party'] = $data['third_party'];
+        	
+        	if(!empty($data['third_party_last_transacted_time']))
+        		$data1['third_party_last_transacted_time'] = $data['third_party_last_transacted_time'];
+        	if(isset($data['total_sessions']))
+        		$data1['total_sessions'] = $data['total_sessions'];
+        	if(isset($data['total_sessions_used']))
+        		$data1['total_sessions_used'] = $data['total_sessions_used'];
+        	if(!empty($data['third_party_token_id']))
+        		$data1['third_party_token_id'] = $data['third_party_token_id'];
+        	if(!empty($data['third_party_id']))
+        			$data1['third_party_id'] = $data['third_party_id'];
+        		
+        		
+        	if(isset($order['start_date']) && $order['start_date'] != ""){
+        		$data1['schedule_date'] = date('d-m-Y',strtotime($order['start_date']));
+        	}
+        	
+        	if(isset($order['start_date']) && $order['start_date'] != ""){
+        		$data1['schedule_date'] = date('d-m-Y',strtotime($order['start_date']));
+        	}
+        	
+        	if(isset($order['start_time']) && $order['start_time'] != "" && isset($order['end_time']) && $order['end_time'] != ""){
+        		$data1['schedule_slot'] = $order['start_time']."-".$order['end_time'];
+        	}
+        	
+        	if(isset($order['schedule_date']) && $order['schedule_date'] != ""){
+        		$data1['schedule_date'] = $order['schedule_date'];
+        	}
+        	
+        	if(isset($order['schedule_slot']) && $order['schedule_slot'] != ""){
+        		$data1['schedule_slot'] = $order['schedule_slot'];
+        	}	
+//         	return $data1;	
+        	return $this->fitapi->storeBooktrial($data1);	
+        }
         return Response::json($resp);
 
     }
@@ -1415,12 +1464,8 @@ class TransactionController extends \BaseController {
             $resp   =   array('status' => 401, 'statustxt' => 'error',"message" => "Status should be Bought");
             return Response::json($resp,401);
         }
-        if(!empty($data['third_party']))
-        {
-        	$hash_verified = true;
-        	$data['status'] ='success';
-        }
-        else $hash_verified = $this->utilities->verifyOrder($data,$order);
+      
+        $hash_verified = $this->utilities->verifyOrder($data,$order);
 
         if($data['status'] == 'success' && $hash_verified){
             // Give Rewards / Cashback to customer based on selection, on purchase success......

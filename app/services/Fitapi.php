@@ -3,6 +3,7 @@
 use \GuzzleHttp\Exception\RequestException;
 use \GuzzleHttp\Client;
 use \Response;
+use \Log;
 
 Class Fitapi {
 
@@ -26,7 +27,7 @@ Class Fitapi {
     public function storeBooktrial ($data){
 
         $json = $data;
-
+        Log::info(" info storebooktrial ".print_r($json ,true));
         try {
             $response = json_decode($this->client->post('storebooktrial',['json'=>$json])->getBody()->getContents());
             $return  = ['status'=>200,
