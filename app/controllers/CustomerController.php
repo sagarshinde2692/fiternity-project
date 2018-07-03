@@ -3527,6 +3527,14 @@ class CustomerController extends \BaseController {
 						break;										
 				}
 			}
+
+			if(!$this->app_version || $this->app_version < '4.9'){
+				foreach($result['campaigns'] as &$campaign){
+					if(isset($campaign['title']) && $campaign['title'] == 'Pledge for Fitness'){
+						$campaign['link'] = '';
+					}
+				}
+			}
 			
 			if($_REQUEST['device_type'] == 'ios'){
 

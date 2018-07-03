@@ -5787,7 +5787,7 @@ class FindersController extends \BaseController {
 		foreach($finder['services'] as &$service){
 			$pps_ratecard = null;
 			$pps_exists = false;
-			if($this->utilities->isFinderIntegrated($finder) && $this->utilities->isServiceIntegrated($service)){
+			if(isFinderIntegrated($finder) && isServiceIntegrated($service)){
 
 				foreach($service[$ratecard_key] as $key => &$ratecard){
 					
