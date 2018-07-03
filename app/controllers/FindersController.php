@@ -2003,6 +2003,7 @@ class FindersController extends \BaseController {
 		}
 		
 
+		// return $images = Input::file('images') ;
 		
 		
 		$jwt_token = Request::header('Authorization');
@@ -2043,12 +2044,12 @@ class FindersController extends \BaseController {
 		if($this->vendor_token){
 			$data['source'] = 'kiosk';
 		}
-
+		// return $data;
 		$reviewdata = [
 			'finder_id' => intval($data['finder_id']),
 			'customer_id' => intval($data['customer_id']),
 			'rating' => floatval($data['rating']),
-			'detail_rating' => array_map('floatval',$data['detail_rating']),
+			'detail_rating' => array_map('floatval',json_decode($data['detail_rating'])),
 			'description' => (isset($data['description'])) ? $data['description'] : '',
 			'uploads' => (isset($data['uploads'])) ? $data['uploads'] : [],
 			'booktrial_id' => (isset($data['booktrialid'])) ? intval($data['booktrialid']) : '',
@@ -2093,32 +2094,35 @@ class FindersController extends \BaseController {
 		}
 
 		$images = Input::file('images') ;
-		$s3 = AWS::get('s3');
 		$images_urls = [];
-		foreach($images as $value){
+		if($images){
+			$s3 = AWS::get('s3');
 
-			$file_name = str_replace(" ","-",$value->getClientOriginalName());
-			$destinationPath = public_path().'/review-images';
-			$file_path =  join('/', [$destinationPath, $file_name]);
-			// return getenv('default');
-			// return $s3->getCredentials()->getAccessKeyId( );
-			try{
-				$resp = $value->move($destinationPath,$file_name);
-				$key  = Config::get('app.aws.review_images.path').$file_name;
-				$result = $s3->putObject(array(
-					'Bucket'     => Config::get('app.aws.bucket'),
-					'Key'        => $key,
-					'SourceFile' => $file_path
-				));
-				unlink($file_path);
-				array_push($images_urls, Config::get('app.aws.review_images.url').$file_name);
-				
-			}catch(Exception $e){
-				Log::info($e);
-				unlink($file_path);
+			foreach($images as $key => $value){
+	
+				$file_name = "review-".$data['customer_id']."-".time()."-$key";
+				$destinationPath = public_path().'/review-images';
+				$file_path =  join('/', [$destinationPath, $file_name]);
+				// return getenv('default');
+				// return $s3->getCredentials()->getAccessKeyId( );
+				try{
+					$resp = $value->move($destinationPath,$file_name);
+					$key  = $finder['slug']."/".$file_name;
+					$result = $s3->putObject(array(
+						'Bucket'     => Config::get('app.aws.bucket'),
+						'Key'        => Config::get('app.aws.review_images.path').$key,
+						'SourceFile' => $file_path
+					));
+					unlink($file_path);
+					array_push($images_urls, Config::get('app.aws.review_images.url').$key);
+					
+				}catch(Exception $e){
+					Log::info($e);
+					unlink($file_path);
+				}
 			}
+			$reviewdata['images'] = $images_urls;
 		}
-		$reviewdata['images'] = $images_urls;
 		
 		$fresh_review = true;
 
