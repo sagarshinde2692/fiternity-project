@@ -799,15 +799,28 @@ class ServiceController extends \BaseController {
                 }
 				
                 if($type == "workoutsessionschedules"){
-	            	$service["workout_session"] = [
-		    			"available" => true,
-		    			"amount" => $ratecard_price
-		    		];
+                	$temp=$this->utilities->getPeakAndNonPeakPrice($weekdayslots['slots'],$this->utilities->getPrimaryCategory(null,$service['service_id']));
+
+                	$service["workout_session"] = [];
+                	$service['cost']=[];
+                	if(!empty($temp))
+                	{
+                		if(isset($temp['peak']))
+                		{
+                				$service["workout_session"]['available']=true;
+                				$service["workout_session"]["peak_amount"]=$temp['peak'];
+                				$service['cost']['peak'] = "₹ ".$temp['peak'];
+                		}
+                		if(isset($temp['non_peak']))
+                		{
+	                			$service["workout_session"]["non_peak_amount"]=$temp['non_peak'];
+	                			$service['cost']['non_peak'] = "₹ ".$temp['non_peak'];
+                		}
+                	}
 		    	}
 
-		    	if($ratecard_price > 0){
-
-		    		$service['cost'] = "₹ ".$ratecard_price;
+		    	if($ratecard_price > 0&&$type !== "workoutsessionschedules"){
+		    		$service['cost'] = "₹. ".$ratecard_price;
 		    	}
 
 				foreach ($weekdayslots['slots'] as $slot) {
@@ -1501,7 +1514,7 @@ class ServiceController extends \BaseController {
 			
 			$service_details['amount'] = (($workout_session_ratecard['special_price']!=0) ? $workout_session_ratecard['special_price'] : $workout_session_ratecard['price']);
 
-			$service_details['price'] = "₹".$service_details['amount']." PER SESSION";
+			$service_details['price'] = "â‚¹".$service_details['amount']." PER SESSION";
 
 			$service_details['contact'] = [
 				'address'=>''
@@ -1908,7 +1921,7 @@ class ServiceController extends \BaseController {
 								
 								$trial['title'] = ucwords(preg_replace('/membership/i', 'Workout', $trial['service_name'])).' at '.$trial['finder_name'];
 
-								$trial['amount'] = '₹'.($trial['service']['ratecards'][0]['special_price'] != 0 ? $trial['service']['ratecards'][0]['special_price'] : $trial['service']['ratecards'][0]['price']);
+								$trial['amount'] = 'â‚¹'.($trial['service']['ratecards'][0]['special_price'] != 0 ? $trial['service']['ratecards'][0]['special_price'] : $trial['service']['ratecards'][0]['price']);
 								$trial['service_slug'] = $trial['service']['slug'];
 								$trial['finder_slug'] = $trial['finder']['slug'];
 								

@@ -347,13 +347,12 @@ class TransactionController extends \BaseController {
             
               
             $payment_mode = isset($data['payment_mode']) ? $data['payment_mode'] : "";
-    
+            
             if(isset($data['ratecard_id'])){
                 
                 $ratecard_id = (int) $data['ratecard_id'];
     
                 $ratecardDetail = $this->getRatecardDetail($data);
-    
                 if($ratecardDetail['status'] != 200){
                     return Response::json($ratecardDetail,$this->error_status);
                 }
@@ -444,11 +443,10 @@ class TransactionController extends \BaseController {
         if(isset($data['order_id']) && $data['order_id'] != ""){
 
             $old_order_id = $order_id = $data['_id'] = intval($data['order_id']);
-
             $order = Order::find((int)$old_order_id);
 
             $data['repetition'] = 1;
-
+            
             if($order){
 
                 if(isset($order->repetition)){
@@ -470,7 +468,7 @@ class TransactionController extends \BaseController {
 
             $order_id = $data['_id'] = $data['order_id'] = Order::max('_id') + 1;
         }
-
+        
         $data['code'] = (string) random_numbers(5); //(string)$data['order_id'];
 
         if(isset($data['referal_trial_id'])){
@@ -553,7 +551,7 @@ class TransactionController extends \BaseController {
         $data['amount_final'] = $data["amount_finder"];
 
         if(!$updating_part_payment && !isset($data['myreward_id']) && (!(isset($data['pay_later']) && $data['pay_later']) || !(isset($data['wallet']) && $data['wallet']))) {
-
+	
             $cashbackRewardWallet =$this->getCashbackRewardWallet($data,$order);
             Log::info("cashbackRewardWallet",$cashbackRewardWallet);
 
@@ -612,11 +610,9 @@ class TransactionController extends \BaseController {
 
 
             if($finderDetail["data"]["finder_flags"]["part_payment"]){
-
                 if($this->utilities->isConvinienceFeeApplicable($data)){
                     
                     $convinience_fee_percent = Config::get('app.convinience_fee');
-
                     $convinience_fee = round($part_payment_data['amount_finder']*$convinience_fee_percent/100);
 
                     $convinience_fee = $convinience_fee <= 199 ? $convinience_fee : 199;
@@ -1968,8 +1964,21 @@ class TransactionController extends \BaseController {
 
         $customer = \Customer::find($customer_id);
 
+        //************************************************************************************ IF ONLY AMOUNT CUSTOMER*******************************************************************************************
+        //********************************************************************************** DYANMIC PRICING START**************************************************************************************************
+        
+        /* if($data['type'] == 'workout-session')
+         {
+         try {
+         (isset($data['start_time'])&&isset($data['start_date'])&&isset($data['service_id'])&&isset($data['end_time']))?
+         $am_calc=$this->utilities->getWsSlotPrice($data['start_time'],$data['end_time'],$data['service_id'],$data['start_date']):"";
+         (isset($am_calc))?$data['amount']=$am_calc:"";
+         } catch (Exception $e) {Log::error(" Error :: ".print_r($e,true));}
+         } */
+        //********************************************************************************** DYANMIC PRICING END****************************************************************************************************
+        
         if(isset($customer->demonetisation)){
-
+			
             return $this->getCashbackRewardWalletNew($data,$order);
 
         }
@@ -1991,7 +2000,7 @@ class TransactionController extends \BaseController {
             $decoded = customerTokenDecode($jwt_token);
             $customer_id = $decoded->customer->_id;
         }
-
+	
         $amount = $data['amount_customer'] = $data['amount'];
 
         $convinience_fee = 0;
@@ -2808,6 +2817,40 @@ class TransactionController extends \BaseController {
             $data['amount_finder'] = $data['amount'];
         }
 
+        if(isset($data['schedule_date']) && $data['schedule_date'] != ""){
+        	
+        	$schedule_date = date('Y-m-d 00:00:00', strtotime($data['schedule_date']));
+        	array_set($data, 'start_date', $schedule_date);
+        	
+        	array_set($data, 'end_date', $schedule_date);
+        	
+        	$data['membership_duration_type'] = 'workout_session';
+        }
+        
+        if(isset($data['schedule_slot']) && $data['schedule_slot'] != ""){
+        	
+        	$schedule_slot = explode("-", $data['schedule_slot']);
+        	
+        	$data['start_time'] = trim($schedule_slot[0]);
+        	if(count($schedule_slot) == 1){
+        		$data['end_time'] = date('g:i a', strtotime('+1 hour', strtotime($schedule_slot[0])));
+        		$data['schedule_slot'] = $schedule_slot[0].'-'.$data['end_time'];
+        	}else{
+        		$data['end_time']= trim($schedule_slot[1]);
+        	}
+        }
+        
+        //********************************************************************************** DYANMIC PRICING START**************************************************************************************************
+        if($data['type'] == 'workout-session')
+        {
+        	try {
+        		(isset($data['start_time'])&&isset($data['start_date'])&&isset($data['service_id'])&&isset($data['end_time']))?
+        			$am_calc=$this->utilities->getWsSlotPrice($data['start_time'],$data['end_time'],$data['service_id'],$data['start_date']):"";
+        		(isset($am_calc))?$data['amount_finder']=$am_calc:"";
+        	} catch (Exception $e) {Log::error(" Error :: ".print_r($e,true));}
+        }
+        //********************************************************************************** DYANMIC PRICING END****************************************************************************************************
+        
         $data['amount'] = $data['amount_finder'];
 
        /* $corporate_discount_percent = $this->utilities->getCustomerDiscount();
@@ -2821,29 +2864,6 @@ class TransactionController extends \BaseController {
 
             $customer_info = new CustomerInfo();
             $response = $customer_info->addHealthInfo($data);
-        }
-
-        if(isset($data['schedule_date']) && $data['schedule_date'] != ""){
-
-            $schedule_date = date('Y-m-d 00:00:00', strtotime($data['schedule_date']));
-            array_set($data, 'start_date', $schedule_date);
-
-            array_set($data, 'end_date', $schedule_date);
-
-            $data['membership_duration_type'] = 'workout_session';
-        }
-
-        if(isset($data['schedule_slot']) && $data['schedule_slot'] != ""){
-            
-            $schedule_slot = explode("-", $data['schedule_slot']);
-
-            $data['start_time'] = trim($schedule_slot[0]);
-            if(count($schedule_slot) == 1){
-                $data['end_time'] = date('g:i a', strtotime('+1 hour', strtotime($schedule_slot[0])));
-                $data['schedule_slot'] = $schedule_slot[0].'-'.$data['end_time'];
-            }else{
-                $data['end_time']= trim($schedule_slot[1]);
-            }
         }
 
         $batch = array();
