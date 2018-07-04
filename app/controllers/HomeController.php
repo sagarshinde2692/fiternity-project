@@ -1021,7 +1021,7 @@ class HomeController extends BaseController {
 
                 $header = "BOOKING SUCCESSFUL!";
 
-                $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.' <br><br>Activate your session through FitCode provided by'.$finder_name.' FitCode helps you mark your attendance that let\'s you earn cashbacks';  
+                $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.' <br><br>Activate your session through FitCode provided by '.$finder_name.'. FitCode helps you mark your attendance that let\'s you earn cashbacks';  
 
                 if(isset($item['pay_later']) && $item['pay_later']){
                     $subline .='<br><br>Attend and pay later to earn Cashback!</p>';
