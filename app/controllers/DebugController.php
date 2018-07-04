@@ -7398,5 +7398,59 @@ public function yes($msg){
 
 	}
 
+	public function updateCouponUsed(){
+
+		Order::$withoutAppends = true;
+
+		$order = Order::raw(function($collection){
+
+			$aggregate = [];
+
+			$match['$match']['status'] = "1";
+			$match['$match']['coupon_code']['$exists'] = true;
+
+			$aggregate[] = $match;
+
+			$group = array(
+				'$group' => array(
+					'_id' => '$coupon_code',
+					'count' => array(
+						'$sum' => 1
+						)
+					)
+				);
+
+			$aggregate[] = $group;
+
+			return $collection->aggregate($aggregate);
+
+		});
+
+		$request = [];
+
+		foreach ($order['result'] as $key => $value) {
+
+			if(is_string($value['_id'])){
+
+				$request[strtolower($value['_id'])] = $value['count'];
+			}
+		}
+
+		foreach ($request as $key => $value) {
+
+			$coupon = Coupon::where('code',$key)->first();
+
+			if($coupon){
+
+				$coupon->total_used = (int)$value;
+				$coupon->update();
+			}
+
+		}
+
+		return "Done";
+
+	}
+
 }
 
