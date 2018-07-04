@@ -3528,6 +3528,20 @@ class CustomerController extends \BaseController {
 				}
 			}
 
+			if($city == "mumbai"){
+
+				$result['campaigns'][] = [
+					'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/YFC_App%20banner.png',
+					'link'=>'ftrnty://ftrnty.com/s?brand=your-fitness-club&city='.strtolower($city),
+					'title'=>'Your Fitness Club (YFC)',
+					'height'=>100,
+					'width'=>375,
+					'ratio'=>(float) number_format(100/375,2)
+				];
+
+			}
+
+
 			if(!$this->app_version || $this->app_version < '4.9'){
 				foreach($result['campaigns'] as &$campaign){
 					if(isset($campaign['title']) && $campaign['title'] == 'Pledge for Fitness'){
