@@ -101,8 +101,8 @@ class BrandsController extends \BaseController {
                     $data['stripe_data']['title'] = $brand['vendor_stripe']['text'];
                     $data['stripe_data']['text'] = $brand['vendor_stripe']['text'];
                     $data['stripe_data']['text_color'] = $brand['vendor_stripe']['text_color'];
-                    $data['stripe_data']['background-color'] = $brand['vendor_stripe']['background_color'];
-                    $data['stripe_data']['background'] = $brand['vendor_stripe']['background_color'];
+                    $data['stripe_data']['background-color'] = isset($brand['vendor_stripe']['background_color']) ? $brand['vendor_stripe']['background_color'] : "#0066b9";
+                    $data['stripe_data']['background'] = isset($brand['vendor_stripe']['background_color']) ? $brand['vendor_stripe']['background_color'] : "#0066b9";
                 }
 
                 if(!empty($brand['vendor_stripe']) && empty($brand['vendor_stripe']['cities']) && !empty($city_id)){
