@@ -486,6 +486,7 @@ class GlobalPushController extends \BaseController
     $brands = Finder::raw(function($collection){
       $aggregate = [];
       $match['$match']['brand_id']['$ne'] = '';
+      $match['$match']['_id']['$nin'] = Config::get('app.hide_from_search');
       $aggregate[] = $match;
       $group = array(
           '$group' => array(
