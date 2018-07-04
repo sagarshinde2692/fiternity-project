@@ -20,6 +20,19 @@ class Review extends  \Basemodel {
 	    //'description' => 'required'
 	];
 
+	public static $withoutAppends = false;
+
+	public static $setAppends = [];
+	
+
+	protected function getArrayableAppends()
+	{
+		if(self::$withoutAppends){
+			return self::$setAppends;
+		}
+		return parent::getArrayableAppends();
+	}
+
 	protected $appends = array('customer');
 
 	public function getCustomerAttribute(){

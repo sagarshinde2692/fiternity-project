@@ -7398,5 +7398,59 @@ public function yes($msg){
 
 	}
 
+	public function tagReviews(){
+		Review::$withoutAppends = true;
+		$reviews = Review::where('customer_id', 149788)->get(['finder_id', 'customer_id']);
+		
+		$customer_ids = array_pluck($reviews->toArray(), 'customer_id');
+		
+		$transactions = Transaction::raw(function($collection) use ($customer_ids){
+
+			$match['$match']['$and'] = [
+					// ['customer_id'=>['$in'=>$customer_ids]],
+					['$or'=>[['transaction_type'=>['$ne'=>'Order']], ['status'=>'1', 'type'=>['$nin'=>['booktrials','workout-session']]]]],
+					['transaction_type'=>['$ne'=>'Capture']],
+					['customer_id'=> ['$in'=>[44704,149788]]]
+			];
+
+			$aggregate[] = $match;
+
+			$project['$project'] = [
+				'customer_id'=>1,
+				'finder_id'=>1,
+				'transaction_type'=>1,
+				'type'=>1,
+				'created_at'=>1,
+				'start_date'=>1,
+				'data'=>['$cond'=>['if'=>['']]]
+			];
+
+			$aggregate[] = $project;
+
+			$sort['$sort'] = [
+				'date'=>-1
+			];
+			$aggregate[] = $sort;
+
+			$group['$group'] = [
+				'_id'=>['customer_id'=>'$customer_id', 'finder_id'=>'$finder_id'],
+				'transactions'=>['$push'=>'$$ROOT']
+			];
+			$aggregate[] = $group;
+
+			return $collection->aggregate($aggregate);
+
+		});
+
+		$transactions_data = [];
+		
+		foreach($transactions['result'] as $x){
+			$transactions_data[$x['_id']['finder_id']."-".$x['_id']['customer_id']] = $x['transactions'];
+		}
+
+		return $transactions_data;
+
+	}
+
 }
 

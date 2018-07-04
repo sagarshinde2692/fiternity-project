@@ -1207,5 +1207,6 @@ Route::get('manualTrialCommunication','SchedulebooktrialsController@manualTrialC
 
 Route::get('getreferralscreendata','CustomerController@getReferralScreenData');
 Route::get('addWallet','DebugController@addWallet');
+Route::get('tagReviews','DebugController@tagReviews');
 
 Route::get('getbrandvendors/{brand_id}/{city_id}', array('as' => 'finders.getbrandvendors','uses' => 'FindersController@getBrandVendors'));
