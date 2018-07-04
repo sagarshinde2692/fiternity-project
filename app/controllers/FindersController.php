@@ -2101,11 +2101,26 @@ class FindersController extends \BaseController {
 			foreach($images as $key => $value){
 				Log::info("Asdsad");
 				// return get_class($value);
+
 				$file_extension = $value->getClientOriginalExtension();
-				$file_name = "review-".$data['customer_id']."-".time()."-$key.".$file_extension;
+				$mime_type = $value->getClientMimeType();
+				$file_name = "review-".$data['customer_id']."-".time()."-$key";
 				$local_directory = public_path().'/review-images';
-				$local_path =  join('/', [$local_directory, $file_name]);
-				// return getenv('default');
+				
+				$local_path_original =  join('/', [$local_directory, $file_name.".".$file_extension]);
+				$local_path_compressed =  join('/', [$local_directory, $file_name."-c.".$file_extension]);
+				$resp = $value->move($local_directory,$file_name.".".$file_extension);
+				
+				if ($mime_type == 'image/jpeg'){
+					$image = imagecreatefromjpeg($local_path_original.".".$file_extension);
+				}elseif ($mime_type == 'image/gif'){
+					$image = imagecreatefromgif($local_path_original.".".$file_extension);
+				}elseif ($mime_type == 'image/png'){
+					$image = imagecreatefrompng($local_path_original.".".$file_extension);
+				}
+
+				imagejpeg($image, $local_path_compressed, 30);
+				
 				// return $s3->getCredentials()->getAccessKeyId( );
 				try{
 					$resp = $value->move($local_directory,$file_name);
