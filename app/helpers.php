@@ -3063,6 +3063,12 @@ if (!function_exists('decodeKioskVendorToken')) {
 
         Log::info("decodeKioskVendorToken : ",json_decode(json_encode($decodedToken),true));
 
+        if(!empty($decodedToken->vendor->_id) && in_array($decodedToken->vendor->_id, [7116,7081,3175,3178])){
+            Log::info($decodedToken->vendor->_id);
+            Log::info("exiting tab vendor");
+            exit();
+        }
+
         return $decodedToken;
     }
 
