@@ -2099,26 +2099,33 @@ class FindersController extends \BaseController {
 			$s3 = AWS::get('s3');
 
 			foreach($images as $key => $value){
-	
-				$file_name = "review-".$data['customer_id']."-".time()."-$key";
-				$destinationPath = public_path().'/review-images';
-				$file_path =  join('/', [$destinationPath, $file_name]);
+				Log::info("Asdsad");
+				// return get_class($value);
+				$file_extension = $value->getClientOriginalExtension();
+				$file_name = "review-".$data['customer_id']."-".time()."-$key.".$file_extension;
+				$local_directory = public_path().'/review-images';
+				$local_path =  join('/', [$local_directory, $file_name]);
 				// return getenv('default');
 				// return $s3->getCredentials()->getAccessKeyId( );
 				try{
-					$resp = $value->move($destinationPath,$file_name);
-					$key  = $finder['slug']."/".$file_name;
+					$resp = $value->move($local_directory,$file_name);
+					$sub_path  = $finder['_id']."/".$file_name;
 					$result = $s3->putObject(array(
 						'Bucket'     => Config::get('app.aws.bucket'),
-						'Key'        => Config::get('app.aws.review_images.path').$key,
-						'SourceFile' => $file_path
+						'Key'        => Config::get('app.aws.review_images.path').$sub_path,
+						'SourceFile' => $local_path
 					));
-					unlink($file_path);
-					array_push($images_urls, Config::get('app.aws.review_images.url').$key);
+					if(file_exists($local_path)){
+						unlink($local_path);
+					}
+					
+					array_push($images_urls, Config::get('app.aws.review_images.url').$sub_path);
 					
 				}catch(Exception $e){
 					Log::info($e);
-					unlink($file_path);
+					if(file_exists($local_path)){
+						unlink($local_path);
+					}
 				}
 			}
 			$reviewdata['images'] = $images_urls;
