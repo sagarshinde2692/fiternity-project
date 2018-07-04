@@ -464,6 +464,7 @@ class HomeController extends BaseController {
                 'width'=>375,
                 'ratio'=>(float) number_format(100/375,2)
             ];
+
             switch($city){
                 case "bangalore":
                 $campaigns[] = [
@@ -565,6 +566,19 @@ class HomeController extends BaseController {
                 }
                 
                 break;
+            }
+
+            if($city == 'mumbai'){
+
+                $campaigns[] = [
+                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/YFC_Web%20banner.png',
+                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/YFC_MobResponsive_banner.png',
+                    'link'=>Config::get('app.website').'/your-fitness-club-mumbai',
+                    'title'=>'Your Fitness Club (YFC)',
+                    'height'=>100,
+                    'width'=>375,
+                    'ratio'=>(float) number_format(100/375,2)
+                ];
             }
             
             $campaigns[] = [
