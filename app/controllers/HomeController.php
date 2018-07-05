@@ -8,7 +8,7 @@ use \GuzzleHttp\Client;
 use App\Notification\CustomerNotification as CustomerNotification;
 use App\Services\Sidekiq as Sidekiq;
 use App\Services\Utilities as Utilities;
-use anlutro\cURL\Response;
+// use anlutro\cURL\Response;
 
 class HomeController extends BaseController {
 
