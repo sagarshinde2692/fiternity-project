@@ -36,7 +36,7 @@ class Homepage extends \Basemodel {
 		$rc=array_column($home, "ratecard_id");
 		$pro=array_column($home, "product_id");
 		Product::$withoutAppends=true;
-		$combined=["rc"=>ProductRatecard::whereIn("_id",$rc)->get(["title","price"]),"pc"=>Product::whereIn("_id",$pro)->get(["title"])];
+		$combined=["rc"=>ProductRatecard::whereIn("_id",$rc)->get(["title","price"]),"pc"=>Product::whereIn("_id",$pro)->with('primarycategory')->get(["title",'productcategory'])];
 		$rateMain=[];
 		$productMain=[];
 		foreach ($combined['rc'] as &$value)

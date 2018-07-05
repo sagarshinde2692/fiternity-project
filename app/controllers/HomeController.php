@@ -4604,12 +4604,17 @@ class HomeController extends BaseController {
         	try {
         		
         		$home=["status"=>1,"response"=>["products"=>[]]];
-        		$homeData=Homepage::active()->where("type","product_tab")->first()->toArray();
+        		$homeData=Homepage::active()->where("type","product_tab")->first();
+        		if(!empty($homeData))
+        			$homeData=$homeData->toArray();
+        		else return ['status'=>0,"message"=>"No home data found."];
         		$t=&$homeData['home'];
+//         		return $t;
         		$this->utilities->customSort('base',$t);
         		$tp=$this->utilities->groupBy($t,'base');
         		
-        		foreach($tp as &$val) $this->utilities->customSort('index',$val);
+        		foreach($tp as &$val) 
+        			$this->utilities->customSort('index',$val);
         		foreach($tp as &$val) {
         			foreach($val as &$vala) {
         				unset($vala["index"]);unset($vala["base"]);
@@ -4619,12 +4624,15 @@ class HomeController extends BaseController {
         				{
         					$tmp_data=$tmp_data[0];
         					$vala['product_title']=$tmp_data['product']['title'];
+        					(!empty($tmp_data['product'])&&!empty($tmp_data['product']['primarycategory'])&&!empty($tmp_data['product']['primarycategory']['slug']))?
+        						$vala['product_category_slug']=$tmp_data['product']['primarycategory']['slug']:"";
+        					$vala['product_title']=$tmp_data['product']['title'];
         					$vala['ratecard_title']=$tmp_data['ratecard']['title'];
         				}	
         			}
         		}
         		
-        		$home["response"]['products']=$tp;
+        		$home["response"]['products']=array_values($tp);
         		$jwt_token = Request::header("Authorization");
         		if(isset($jwt_token))
         		{
@@ -4705,13 +4713,9 @@ class HomeController extends BaseController {
         				unset($rateCards[$i]['productcategory_id']);
         				unset($rateCards[$i]['status']);
         				unset($rateCards[$i]['order']);
-        				
         			}
-        			
         		}
-        		
         		unset($rateCards[$selectedIndex]);
-        		
         		if(!empty($selectedRatecard))
         		{
         			$productSimilar=ProductRatecard::active()->where("product_id","!=",$product_id)->whereIn("servicecategory_id",$selectedRatecard['servicecategory_id'])->get(["price","_id","title","color","size","product_id"])->toArray();
@@ -4735,6 +4739,13 @@ class HomeController extends BaseController {
         	} catch (Exception $e) {
         		return ['status'=>0,"message"=>$this->utilities->baseFailureStatusMessage($e)];
         	}
+        }
+        
+        public function productsCats()
+        {
+        	
+        	
+        	
         }
         
        
