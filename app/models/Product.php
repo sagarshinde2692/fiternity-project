@@ -30,7 +30,7 @@ class Product extends \Basemodel {
 	
 
 	public function primarycategory() {
-		return $this->belongsTo ( 'ProductCategory', "productcategory.primary" );
+		return $this->belongsTo('ProductCategory', "productcategory.primary" );
 	}
 	public function ratecard() {
 		return $this->hasMany('ProductRatecard','product_id');
