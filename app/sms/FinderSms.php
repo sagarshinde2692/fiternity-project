@@ -280,7 +280,7 @@ Class FinderSms extends VersionNextSms{
 	
 		$label = 'BrandVendorEmpty-FItternity';
 
-		$to = ['7506026203'];
+		$to = ['7506026203','9730401839'];
 
 		return $this->common($label,$to,$data);
 	}
