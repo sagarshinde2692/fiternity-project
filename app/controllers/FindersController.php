@@ -2102,30 +2102,47 @@ class FindersController extends \BaseController {
 			foreach($images as $key => $value){
 				Log::info("Asdsad");
 				// return get_class($value);
-
-				$file_extension = $value->getClientOriginalExtension();
-				$mime_type = $value->getClientMimeType();
-				$file_name = "review-".$data['customer_id']."-".time()."-$key";
-				$local_directory = public_path().'/review-images';
-				
-				$local_path_original =  join('/', [$local_directory, $file_name.".".$file_extension]);
-				$local_path_compressed =  join('/', [$local_directory, $file_name."-c.".$file_extension]);
-				$resp = $value->move($local_directory,$file_name.".".$file_extension);
-				
-				if ($mime_type == 'image/jpeg'){
-					$image = imagecreatefromjpeg($local_path_original.".".$file_extension);
-				}elseif ($mime_type == 'image/gif'){
-					$image = imagecreatefromgif($local_path_original.".".$file_extension);
-				}elseif ($mime_type == 'image/png'){
-					$image = imagecreatefrompng($local_path_original.".".$file_extension);
+				if($value->getError()){
+					return Response::json(['status'=>400, 'message'=>'Please upload jpg/jpeg/png imgage formats with max. size of 4 MB']);
 				}
 
-				imagejpeg($image, $local_path_compressed, 30);
+				$file_name = "review-".$data['customer_id']."-".time()."-$key";
+
+				$local_path_compressed = $this->utilities->compressImage( $value, $file_name, 'review-images');
+
+				$stamp = imagecreatefrompng('images/watermark.png');
+				$im = imagecreatefromjpeg($local_path_compressed);
+
+				
+				$resp = imagecopy($im, $stamp,(imagesx($im)-imagesx($stamp))/2, (imagesy($im)-imagesy($stamp))/2,0, 0, imagesx($stamp), imagesy($stamp));
+				Log::info($resp);
+				header('Content-type: image/png');
+				return imagepng($im);
+				imagedestroy($im);	
+				return $resp;
+				return ;
+				$this->utilities->uploadImageS3( $value, $file_name, 'review-images', Config::get('app.aws.review_images.path'));
+				// $file_extension = $value->getClientOriginalExtension();
+				// $mime_type = $value->getClientMimeType();
+				// $file_name_compressed = $file_name."-c";
+				// $local_directory = public_path().'/review-images';
+				
+				// $local_path_original =  join('/', [$local_directory, $file_name.".".$file_extension]);
+				// $local_path_compressed =  join('/', [$local_directory, $file_name_compressed.".".$file_extension]);
+				// $resp = $value->move($local_directory,$file_name.".".$file_extension);
+				
+				// if ($mime_type == 'image/jpeg'){
+				// 	$image = imagecreatefromjpeg($local_path_original.".".$file_extension);
+				// }elseif ($mime_type == 'image/png'){
+				// 	$image = imagecreatefrompng($local_path_original.".".$file_extension);
+				// }
+
+				// imagejpeg($image, $local_path_compressed, 30);
 				
 				// return $s3->getCredentials()->getAccessKeyId( );
 				try{
 					$resp = $value->move($local_directory,$file_name);
-					$sub_path  = $finder['_id']."/".$file_name;
+					$sub_path  = $finder['_id']."/".$file_name.".".$file_extension;
 					$result = $s3->putObject(array(
 						'Bucket'     => Config::get('app.aws.bucket'),
 						'Key'        => Config::get('app.aws.review_images.path').$sub_path,

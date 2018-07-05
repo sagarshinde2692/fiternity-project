@@ -4122,7 +4122,34 @@ Class Utilities {
 		}
 		
 		return $knowlarity_no;
-	}
+    }
+    
+    public function compressImage($file, $file_name, $directory){
+        $mime_type = $file->getClientMimeType();
+        $file_extension = $file->getClientOriginalExtension();
+        $file_name_compressed = $file_name."-c";
+        $local_directory = public_path().'/'.$directory;
+        
+        $local_path_original =  join('/', [$local_directory, $file_name.".".$file_extension]);
+        $local_path_compressed =  join('/', [$local_directory, $file_name_compressed.".".$file_extension]);
+        $resp = $file->move($local_directory,$file_name.".".$file_extension);
+        
+        if ($mime_type == 'image/jpeg'){
+            $image = imagecreatefromjpeg($local_path_original);
+        }elseif ($mime_type == 'image/png'){
+            $image = imagecreatefrompng($local_path_original);
+        }
+
+        imagejpeg($image, $local_path_compressed, 30);
+
+        return $local_path_compressed;
+    }
+
+    public function uploadImageS3(){
+
+    }
+
+
     
 }
 
