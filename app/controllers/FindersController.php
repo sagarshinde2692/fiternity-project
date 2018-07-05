@@ -116,7 +116,7 @@ class FindersController extends \BaseController {
 		if(isset($_GET['category_slug']) && $_GET['category_slug'] != ''){
 			// Log::info("Category exists");
 			$category_slug = $_GET['category_slug'];
-			$cache_key  = $tslug.'-'.$category_slug;
+			// $cache_key  = $tslug.'-'.$category_slug;
 		}
 
 		$customer_email = null;
@@ -420,27 +420,27 @@ class FindersController extends \BaseController {
 					usort($finderarr['services'], "cmp");
 				}
 				
-				$category_slug_services = array();
-				$category_slug_services = array_where($finderarr['services'], function($key, $value) use ($category_slug){
-							if($value['category']['slug'] == $category_slug)
-								{
-								 return $value; 
-								}
-						});
+				// $category_slug_services = array();
+				// $category_slug_services = array_where($finderarr['services'], function($key, $value) use ($category_slug){
+				// 			if($value['category']['slug'] == $category_slug)
+				// 				{
+				// 				 return $value; 
+				// 				}
+				// 		});
 
-				$non_category_slug_services = array();
-				$non_category_slug_services = array_where($finderarr['services'], function($key, $value) use ($category_slug){
-							if($value['category']['slug'] != $category_slug)
-								{
-								 return $value; 
-								}
-						});
+				// $non_category_slug_services = array();
+				// $non_category_slug_services = array_where($finderarr['services'], function($key, $value) use ($category_slug){
+				// 			if($value['category']['slug'] != $category_slug)
+				// 				{
+				// 				 return $value; 
+				// 				}
+				// 		});
 
 
-	        	//usort($category_slug_services, "cmp");
-	        	//usort($non_category_slug_services, "cmp");
+	        	// //usort($category_slug_services, "cmp");
+	        	// //usort($non_category_slug_services, "cmp");
 	        	
-	        	$finderarr['services'] = array_merge($category_slug_services, $non_category_slug_services);
+	        	// $finderarr['services'] = array_merge($category_slug_services, $non_category_slug_services);
 
 
 				$finderarr['services'] = $this->sortNoMembershipServices($finderarr['services'], 'finderdetail');
@@ -1256,7 +1256,52 @@ class FindersController extends \BaseController {
 			$response = Cache::tags('finder_detail')->get($cache_key);
 
 		}
+		
+		Log::info("$category_slug:1:$category_slug");
 
+		// if($category_slug){
+		// 	Log::info("$category_slug::$category_slug");
+		// 	$category_id = Servicecategory::where('slug', $category_slug)->where('parent_id', 0)->first(['_id']);
+		// 	$category_id = $category_id['_id'];
+		// 	$category_sorted_services = array();
+
+		// 	foreach($response['finder']['services'] as $service){
+		// 		if($service['category']['_id'] == $category_id){
+		// 			array_unshift($category_sorted_services, $service);
+		// 		}else{
+		// 			array_push($category_sorted_services, $service);
+		// 		}
+		// 	}
+		
+		// 	$response['finder']['services'] = $category_sorted_services;
+		// }
+
+		// $response['finder']['services'] = $this->sortNoMembershipServices($response['finder']['services'], 'finderdetail');
+		if($category_slug){
+			Log::info("$category_slug::$category_slug");
+
+			$category_slug_services = array();
+			$category_slug_services = array_where($response['finder']['services'], function($key, $value) use ($category_slug){
+				if($value['category']['slug'] == $category_slug)
+					{
+						return $value; 
+					}
+			});
+
+			$non_category_slug_services = array();
+			$non_category_slug_services = array_where($response['finder']['services'], function($key, $value) use ($category_slug){
+				if($value['category']['slug'] != $category_slug)
+					{
+						return $value; 
+					}
+			});
+
+			$response['finder']['services'] = array_merge($category_slug_services, $non_category_slug_services);
+		}
+
+
+		$response['finder']['services'] = $this->sortNoMembershipServices($response['finder']['services'], 'finderdetail');
+		
 		if(Request::header('Authorization')){
 			// $decoded                            =       decode_customer_token();
 			$customer_email                     =       $decoded->customer->email;
@@ -3370,14 +3415,14 @@ class FindersController extends \BaseController {
 		if(isset($_GET['category_slug']) && $_GET['category_slug'] != ''){
 			// Log::info("Category exists");
 			$category_slug = $_GET['category_slug'];
-			$cache_key  = $tslug.'-'.$category_slug;
+			// $cache_key  = $tslug.'-'.$category_slug;
 		}
 
 		$location_id = null;
 		if(isset($_GET['location_id']) && $_GET['location_id'] != ''){
 			// Log::info("location exists");
 			$location_id = $_GET['location_id'];
-			$cache_key  = $cache_key.'-'.$location_id;
+			// $cache_key  = $cache_key.'-'.$location_id;
 		}
 
 		// Log::info($cache_key);
@@ -3904,8 +3949,7 @@ class FindersController extends \BaseController {
 					}*/
 					
 					
-					$category_id = Servicecategory::where('slug', $category_slug)->where('parent_id', 0)->first(['_id']);
-					;
+					
 
 					$traction_exists = false;
 					
@@ -3922,66 +3966,66 @@ class FindersController extends \BaseController {
 						usort($data['finder']['services'], "cmp");
 					}
 
-					if($location_id){
-						$location_id = intval($location_id);
-						$location_id_services =array_where($data['finder']['services'] , function($key, $value) use ($location_id){
-							if($value['location_id'] == $location_id)
-								{
-								 return $value; 
-								}
-						});
-						$non_location_id_services = array_where($data['finder']['services'] , function($key, $value) use ($location_id){
-							if($value['location_id'] != $location_id)
-								{
-								 return $value; 
-								}
-						});
+					// if($location_id){
+					// 	$location_id = intval($location_id);
+					// 	$location_id_services =array_where($data['finder']['services'] , function($key, $value) use ($location_id){
+					// 		if($value['location_id'] == $location_id)
+					// 			{
+					// 			 return $value; 
+					// 			}
+					// 	});
+					// 	$non_location_id_services = array_where($data['finder']['services'] , function($key, $value) use ($location_id){
+					// 		if($value['location_id'] != $location_id)
+					// 			{
+					// 			 return $value; 
+					// 			}
+					// 	});
 
-						$data['finder']['services'] = array_merge($location_id_services, $non_location_id_services);
+					// 	$data['finder']['services'] = array_merge($location_id_services, $non_location_id_services);
 
-						$location_id_address =array_where($data['finder']['multiaddress'] , function($key, $value) use ($location_id){
-							if($value['location_id'][0] == $location_id)
-								{
-								 return $value; 
-								}
-						});
+					// 	$location_id_address =array_where($data['finder']['multiaddress'] , function($key, $value) use ($location_id){
+					// 		if($value['location_id'][0] == $location_id)
+					// 			{
+					// 			 return $value; 
+					// 			}
+					// 	});
 
-						$non_location_id_address =array_where($data['finder']['multiaddress'] , function($key, $value) use ($location_id){
-							if($value['location_id'][0] != $location_id)
-								{
-								 return $value; 
-								}
-						});
+					// 	$non_location_id_address =array_where($data['finder']['multiaddress'] , function($key, $value) use ($location_id){
+					// 		if($value['location_id'][0] != $location_id)
+					// 			{
+					// 			 return $value; 
+					// 			}
+					// 	});
 
-						$data['finder']['multiaddress'] = array_merge($location_id_address, $non_location_id_address);
+					// 	$data['finder']['multiaddress'] = array_merge($location_id_address, $non_location_id_address);
 
-					}
-
-					
+					// }
 
 					
-					$category_slug_services = array();
-					$category_slug_services = array_where($data['finder']['services'] , function($key, $value) use ($category_id){
-							if($value['servicecategory_id'] == $category_id['_id'])
-								{
-								 return $value; 
-								}
-						});
 
-					$non_category_slug_services = array();
-					$non_category_slug_services = array_where($data['finder']['services'] , function($key, $value) use ($category_id){
-							if($value['servicecategory_id'] != $category_id['_id'])
-								{
-								 return $value; 
-								}
-						});
+					
+					// $category_slug_services = array();
+					// $category_slug_services = array_where($data['finder']['services'] , function($key, $value) use ($category_id){
+					// 		if($value['servicecategory_id'] == $category_id['_id'])
+					// 			{
+					// 			 return $value; 
+					// 			}
+					// 	});
+
+					// $non_category_slug_services = array();
+					// $non_category_slug_services = array_where($data['finder']['services'] , function($key, $value) use ($category_id){
+					// 		if($value['servicecategory_id'] != $category_id['_id'])
+					// 			{
+					// 			 return $value; 
+					// 			}
+					// 	});
 
 				
 
-		        	$data['finder']['services']  = array_merge($category_slug_services, $non_category_slug_services);
+		        	// $data['finder']['services']  = array_merge($category_slug_services, $non_category_slug_services);
 
 
-					$data['finder']['services'] = $this->sortNoMembershipServices($data['finder']['services'], 'finderDetailApp');
+					// $data['finder']['services'] = $this->sortNoMembershipServices($data['finder']['services'], 'finderDetailApp');
 
 					foreach($data['finder']['services'] as &$serviceObj){
 						if((isset($finder['membership']) && $finder['membership']=='disable') || (isset($serviceObj['membership']) && $serviceObj['membership']=='disable')){
@@ -4136,7 +4180,7 @@ class FindersController extends \BaseController {
 		}
 
 		$finderData = Cache::tags($cache_name)->get($cache_key);
-		
+	
 		if(count($finderData) > 0 && isset($finderData['status']) && $finderData['status'] == 200){
 
 			$finder = Finder::active()->where('slug','=',$tslug)->first();
@@ -4149,6 +4193,70 @@ class FindersController extends \BaseController {
 				}
 				$finderData['finder']['title'] = str_replace('crossfit', 'CrossFit', $finder['title']);
 				$finderData['finder']['title'] = str_replace('Crossfit', 'CrossFit', $finder['title']);
+
+				if(isset($location_id)){
+					$location_id = intval($location_id);
+
+					$location_id_services =array_where($finderData['finder']['services'] , function($key, $value) use ($location_id){
+						if($value['location_id'] == $location_id)
+							{
+							 return $value; 
+							}
+					});
+					$non_location_id_services = array_where($finderData['finder']['services'] , function($key, $value) use ($location_id){
+						if($value['location_id'] != $location_id)
+							{
+							 return $value; 
+							}
+					});
+
+					$finderData['finder']['services'] = array_merge($location_id_services, $non_location_id_services);
+
+					
+					$location_id_address =array_where($finderData['finder']['multiaddress'] , function($key, $value) use ($location_id){
+						if($value['location_id'][0] == $location_id)
+							{
+							 return $value; 
+							}
+					});
+
+					$non_location_id_address =array_where($finderData['finder']['multiaddress'] , function($key, $value) use ($location_id){
+						if($value['location_id'][0] != $location_id)
+							{
+							 return $value; 
+							}
+					});
+
+					$finderData['finder']['multiaddress'] = array_merge($location_id_address, $non_location_id_address);
+
+				}
+
+				if($category_slug){
+					$category_id = Servicecategory::where('slug', $category_slug)->where('parent_id', 0)->first(['_id']);
+								
+					$category_id = $category_id['_id'];
+					$category_slug_services = array_where($finderData['finder']['services'] , function($key, $value) use ($category_id){
+							if($value['servicecategory_id'] == $category_id)
+								{
+								 return $value; 
+								}
+						});
+	
+					$non_category_slug_services = array();
+					$non_category_slug_services = array_where($finderData['finder']['services'] , function($key, $value) use ($category_id){
+							if($value['servicecategory_id'] != $category_id)
+								{
+								 return $value; 
+								}
+						});
+	
+		        	$finderData['finder']['services']  = array_merge($category_slug_services, $non_category_slug_services);
+
+				}
+
+
+				$finderData['finder']['services'] = $this->sortNoMembershipServices($finderData['finder']['services'], 'finderDetailApp');
+				
 				if(Request::header('Authorization')){
 
 					$decoded                            =       decode_customer_token();
