@@ -3697,7 +3697,9 @@ Class Utilities {
     	{
     		try {
     			$decoded = decode_customer_token();
-    			$customer_id = $decoded->customer->_id;
+    			if(!empty($decoded)&&!empty($decoded->customer))
+    				$customer_id = $decoded->customer->_id;
+    			else return null;
     		} catch (Exception $e) {
     			return null;
     		}
