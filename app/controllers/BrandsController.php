@@ -132,7 +132,7 @@ class BrandsController extends \BaseController {
                 if(isset($data["stripe_data"])){
                     $data['brand']['stripe_data'] = $data["stripe_data"];
                 }
-
+                
                 if(empty($finders) || empty($finders['metadata']['total_records'])){
                     Log::info("Not caching brand");
 
