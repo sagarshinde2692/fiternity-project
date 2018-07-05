@@ -275,6 +275,15 @@ Class FinderSms extends VersionNextSms{
 
 		return $this->common($label,$to,$data);
 	}
+	
+	protected function brandVendorEmpty ($data){
+	
+		$label = 'BrandVendorEmpty-FItternity';
+
+		$to = ['7506026203'];
+
+		return $this->common($label,$to,$data);
+	}
 
 	public function common($label,$to,$data,$delay = 0){
 

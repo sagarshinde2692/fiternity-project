@@ -4,19 +4,19 @@
 return array(
 
 	//local
-	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
-	// 'url' => 'http://fitapi.com',
-	// 'admin_url' => 'http://fitadmin.com',
-	// 'website' => 'https://www.fitternity.com',
-	// 'sidekiq_url' => 'http://kick.fitn.in/', 
-	// 'queue' => 'booktrial',
-	// 'vendor_communication' => false,
-	// 'env' => 'stage',
-	// 'debug' => TRUE,
-	// 'metropolis' => 'http://localhost:3030',
-	// 'amazonpay_isSandbox' => 'true',
-	// 'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
-	// 'website_deeplink' =>'https://ftrnty.com',
+	'new_search_url' =>'http://apistage.fitn.in:5000/',
+	'url' => 'http://fitapi.com',
+	'admin_url' => 'http://fitadmin.com',
+	'website' => 'https://www.fitternity.com',
+	'sidekiq_url' => 'http://kick.fitn.in/', 
+	'queue' => 'booktrial',
+	'vendor_communication' => false,
+	'env' => 'stage',
+	'debug' => TRUE,
+	'metropolis' => 'http://localhost:3030',
+	'amazonpay_isSandbox' => 'true',
+	'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
+	'website_deeplink' =>'https://ftrnty.com',
 
 	//stage
 	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
@@ -49,19 +49,19 @@ return array(
 	// 'website_deeplink' =>'https://ftrnty.com',
 
 	//live
-	'new_search_url' =>'http://c1.fitternity.com/',
-	'url' => 'https://a1.fitternity.com',
-	'admin_url' => 'https://fitn.in',
-	'website' => 'https://www.fitternity.com',
-	'sidekiq_url' => 'http://nw.fitn.in/',
-	'queue' => 'booktrial',
-	'vendor_communication' => true,
-	'env' => 'production',
-	'debug' => false,
-	'metropolis' => 'https://c1.fitternity.com',
-	'amazonpay_isSandbox' => 'false',
-	'reliance_url' =>'https://rhealthcircle.reliancegeneral.co.in/fitternity/callback',
-	'website_deeplink' =>'https://ftrnty.com',
+	// 'new_search_url' =>'http://c1.fitternity.com/',
+	// 'url' => 'https://a1.fitternity.com',
+	// 'admin_url' => 'https://fitn.in',
+	// 'website' => 'https://www.fitternity.com',
+	// 'sidekiq_url' => 'http://nw.fitn.in/',
+	// 'queue' => 'booktrial',
+	// 'vendor_communication' => true,
+	// 'env' => 'production',
+	// 'debug' => false,
+	// 'metropolis' => 'https://c1.fitternity.com',
+	// 'amazonpay_isSandbox' => 'false',
+	// 'reliance_url' =>'https://rhealthcircle.reliancegeneral.co.in/fitternity/callback',
+	// 'website_deeplink' =>'https://ftrnty.com',
 
 	'pubnub_publish' => 'pub-c-d9aafff8-bb9e-42a0-a24b-17ab5500036f',
 	'pubnub_sub' => 'sub-c-05ef3130-d0e6-11e6-bbe2-02ee2ddab7fe',
@@ -282,21 +282,21 @@ return array(
 	//will be implemented everywhere in future when other api will be changed
 	/*************************************************************************/
 	//Production
-	'es' =>array(
-		'url'		=> 			'ESAdmin:fitternity2020@54.169.120.141:8050',
-		'host'		=> 			'ESAdmin:fitternity2020@54.169.120.141',
-		'port'		=>			8050,
-		'default_index' => 	'fitternity',
-		'default_type' 	=> 	'finder',
-	),
-	//stage
 	// 'es' =>array(
-	//  	'url'		=> 			'139.59.16.74:1243',
-	//  	'host'		=> 			'139.59.16.74',
-	//  	'port'		=>			1243,
-	//  	'default_index' => 	'fitternity',
-	//  	'default_type' 	=> 	'finder',
+	// 	'url'		=> 			'ESAdmin:fitternity2020@54.169.120.141:8050',
+	// 	'host'		=> 			'ESAdmin:fitternity2020@54.169.120.141',
+	// 	'port'		=>			8050,
+	// 	'default_index' => 	'fitternity',
+	// 	'default_type' 	=> 	'finder',
 	// ),
+	//stage
+	'es' =>array(
+	 	'url'		=> 			'139.59.16.74:1243',
+	 	'host'		=> 			'139.59.16.74',
+	 	'port'		=>			1243,
+	 	'default_index' => 	'fitternity',
+	 	'default_type' 	=> 	'finder',
+	),
 	//local
 	// 'es' =>array(
 	// 	'url'		=> 			'localhost:9200',
