@@ -464,6 +464,7 @@ class HomeController extends BaseController {
                 'width'=>375,
                 'ratio'=>(float) number_format(100/375,2)
             ];
+
             switch($city){
                 case "bangalore":
                 $campaigns[] = [
@@ -565,6 +566,19 @@ class HomeController extends BaseController {
                 }
                 
                 break;
+            }
+
+            if($city == 'mumbai'){
+
+                $campaigns[] = [
+                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/YFC_Web%20banner.png',
+                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/YFC_MobResponsive_banner.png',
+                    'link'=>Config::get('app.website').'/your-fitness-club-mumbai',
+                    'title'=>'Your Fitness Club (YFC)',
+                    'height'=>100,
+                    'width'=>375,
+                    'ratio'=>(float) number_format(100/375,2)
+                ];
             }
             
             $campaigns[] = [
@@ -1010,7 +1024,7 @@ class HomeController extends BaseController {
 
                 $header = "BOOKING SUCCESSFUL!";
 
-                $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.' <br><br>Activate your session through FitCode provided by'.$finder_name.' FitCode helps you mark your attendance that let\'s you earn cashbacks';  
+                $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.' <br><br>Activate your session through FitCode provided by '.$finder_name.'. FitCode helps you mark your attendance that let\'s you earn cashbacks';  
 
                 if(isset($item['pay_later']) && $item['pay_later']){
                     $subline .='<br><br>Attend and pay later to earn Cashback!</p>';

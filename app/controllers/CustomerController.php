@@ -3475,6 +3475,7 @@ class CustomerController extends \BaseController {
 		if(isset($_REQUEST['device_type']) && in_array($_REQUEST['device_type'],['ios','android']) && isset($_REQUEST['app_version']) && ((float)$_GET['app_version'] >= 4.4)){
 
 			$result['campaigns'] =  [];
+
 			$result['campaigns'][] = [
 				'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/monsoon%20banner%20-%20app%20new.png',
 				'link'=>'ftrnty://ftrnty.com/search/all',
@@ -3483,7 +3484,9 @@ class CustomerController extends \BaseController {
 				'width'=>375,
 				'ratio'=>(float) number_format(100/375,2)
 			];
+
 			if($city != "ahmedabad"){
+
 				$result['campaigns'][] = [
 					'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Mumbai_APP.png',
 					'link'=>'ftrnty://ftrnty.com/s?brand=golds-gym&city='.strtolower($city),
@@ -3492,13 +3495,14 @@ class CustomerController extends \BaseController {
 					'width'=>375,
 					'ratio'=>(float) number_format(100/375,2)
 				];
+
 				switch($city){
 					case "pune":
 						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Pune_APP.png";
 						if(intval(date('d', time())) % 2 == 0){
 							$result['campaigns'][] = [
 								'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/Multifit_App.png',
-								'link'=>'',
+								'link'=>'ftrnty://ftrnty.com/s?brand=multifit&city='.strtolower($city),
 								'title'=>'Pledge for Fitness',
 								'height'=>100,
 								'width'=>375,
@@ -3507,7 +3511,7 @@ class CustomerController extends \BaseController {
 						}else{
 							array_splice($result['campaigns'], count($result['campaigns'])-1, 0, [[
 								'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/Multifit_App.png',
-								'link'=>'',
+								'link'=>'ftrnty://ftrnty.com/s?brand=multifit&city='.strtolower($city),
 								'title'=>'Pledge for Fitness',
 								'height'=>100,
 								'width'=>375,
@@ -3516,20 +3520,42 @@ class CustomerController extends \BaseController {
 						}
 					break;
 					case "bangalore":
-						$result['campaigns'][0]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Bangalore_APP.png";
+						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Bangalore_APP.png";
 						break;
 					case "delhi":
-						$result['campaigns'][0]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Delhi_APP.png";
+						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Delhi_APP.png";
 						break;	
 					case "noida":
-						$result['campaigns'][0]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Noida_APP.png";
+						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Noida_APP.png";
 						break;
 					case "hyderabad":
-						$result['campaigns'][0]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Hyderabad_APP.png";
+						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Hyderabad_APP.png";
 						break;					
 					case "gurgaon":
-						$result['campaigns'][0]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Gurugram_APP.png";
+						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Gurugram_APP.png";
 						break;										
+				}
+			}
+
+			if($city == "mumbai"){
+
+				$result['campaigns'][] = [
+					'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/YFC_App%20banner.png',
+					'link'=>'ftrnty://ftrnty.com/s?brand=your-fitness-club&city='.strtolower($city),
+					'title'=>'Your Fitness Club (YFC)',
+					'height'=>100,
+					'width'=>375,
+					'ratio'=>(float) number_format(100/375,2)
+				];
+
+			}
+
+
+			if(!$this->app_version || $this->app_version < '4.9'){
+				foreach($result['campaigns'] as &$campaign){
+					if(isset($campaign['title']) && $campaign['title'] == 'Pledge for Fitness'){
+						$campaign['link'] = '';
+					}
 				}
 			}
 			

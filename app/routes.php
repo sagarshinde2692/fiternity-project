@@ -1218,3 +1218,4 @@ Route::post('addproductstocart','HomeController@addProductsToCart');
 
 Route::post('transaction/capture/product','TransactionController@productCapture');
 
+Route::get('updateCouponUsed','DebugController@updateCouponUsed');

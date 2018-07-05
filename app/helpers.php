@@ -3160,6 +3160,12 @@ if (!function_exists('decodeKioskVendorToken')) {
         }
 
 
+        if(!empty($decodedToken->vendor->_id) && in_array($decodedToken->vendor->_id, [7116,7081,3175,3178])){
+            Log::info($decodedToken->vendor->_id);
+            Log::info("exiting tab vendor");
+            exit();
+        }
+
         return $decodedToken;
     }
 

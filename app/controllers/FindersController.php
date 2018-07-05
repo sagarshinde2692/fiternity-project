@@ -1236,7 +1236,7 @@ class FindersController extends \BaseController {
 					unset($response['finder']['payment_options']);
 				}
 
-				$response['finder']['services'] = $this->addPPSStripe($response['finder'], 'finderdetail');
+				// $response['finder']['services'] = $this->addPPSStripe($response['finder'], 'finderdetail');
 
 				Cache::tags('finder_detail')->put($cache_key,$response,Config::get('cache.cache_time'));
 
@@ -5537,7 +5537,12 @@ class FindersController extends \BaseController {
 
 				if(!empty($ratecard['offers']) && !empty($ratecard['offers'][0]['offer_type']) && $ratecard['offers'][0]['offer_type'] == 'newyears'){
 
-					$return['callout'] = $service[$service_name]." - <b>".$this->getServiceDuration($ratecard)."</b> @ Rs. <b>".$ratecard['offers'][0]['price']."</b>. ";
+					$return['callout'] = $service[$service_name]." - ".$this->getServiceDuration($ratecard)." @ Rs. ".$ratecard['offers'][0]['price'].". ";
+
+					if($source == 'app'){
+
+						$return['callout'] = $service[$service_name]." - <b>".$this->getServiceDuration($ratecard)."</b> @ Rs. <b>".$ratecard['offers'][0]['price']."</b>. ";
+					}
 
 					if(!empty($ratecard['offers'][0]['callout'])){
 						$return['callout'] .= $ratecard['offers'][0]['callout'];
@@ -5760,6 +5765,27 @@ class FindersController extends \BaseController {
 		return $result;
 	}
 
+	public function updateFinderHit($finder){
+		if(!empty($_GET['source'])){
+			$source = $_GET['source'];
+			Log::info("web Increased ".$source);
+			$finder = Finder::find($finder['_id']);
+			$total_hits = !empty($finder['hits'][$source]) ? $finder['hits'][$source] + 1 : 1 ;
+			Log::info($total_hits);
+			Finder::where('_id', $finder['_id'])->update(['hits.'.$source =>$total_hits]);
+		}else{
+			if(!empty($finder['flags']['hyper_local'])){
+				Log::info("app Increased featured");
+				$finder = Finder::find($finder['_id']);
+				$total_hits = !empty($finder['hits']['featured_search']) ? $finder['hits']['featured_search'] + 1 : 1 ;
+				Log::info($total_hits);
+				Finder::where('_id', $finder['_id'])->update(['hits.featured_search'=>$total_hits]);
+			}else{
+				Log::info("Not Increased featured");
+			}
+		}
+		
+	}
 	public function addPPSStripe($finder, $source='app'){
 		
 		$ratecard_key = 'ratecard';
@@ -5771,7 +5797,7 @@ class FindersController extends \BaseController {
 		foreach($finder['services'] as &$service){
 			$pps_ratecard = null;
 			$pps_exists = false;
-			if($this->utilities->isFinderIntegrated($finder) && $this->utilities->isServiceIntegrated($service)){
+			if(isFinderIntegrated($finder) && isServiceIntegrated($service)){
 
 				foreach($service[$ratecard_key] as $key => &$ratecard){
 					
@@ -5828,7 +5854,7 @@ class FindersController extends \BaseController {
 		// 	'description'=>"Step 1: Choose your workout form out of 17 different options<br><br>Step 2: Book session of your choice near you with instant booking<br><br>Step3: Enjoy your workout and repeat",
 		// ];
 		
-		$return['pps_details']['ps'] = "P:S. - Really economical for users who end up working out 6-8 times a month";
+		$return['pps_details']['ps'] = "P.S. - Really economical for users who end up working out 6-8 times a month";
 
 		$return['pps_details']['action'] = [
 			'action_text'=>'Book Session here @Rs.'.($ratecard['special_price'] != 0 ? $ratecard['special_price'] : $ratecard['price']),
@@ -5844,25 +5870,4 @@ class FindersController extends \BaseController {
 
 	}
 
-	public function updateFinderHit($finder){
-		if(!empty($_GET['source'])){
-			$source = $_GET['source'];
-			Log::info("web Increased ".$source);
-			$finder = Finder::find($finder['_id']);
-			$total_hits = !empty($finder['hits'][$source]) ? $finder['hits'][$source] + 1 : 1 ;
-			Log::info($total_hits);
-			Finder::where('_id', $finder['_id'])->update(['hits.'.$source =>$total_hits]);
-		}else{
-			if(!empty($finder['flags']['hyper_local'])){
-				Log::info("app Increased featured");
-				$finder = Finder::find($finder['_id']);
-				$total_hits = !empty($finder['hits']['featured_search']) ? $finder['hits']['featured_search'] + 1 : 1 ;
-				Log::info($total_hits);
-				Finder::where('_id', $finder['_id'])->update(['hits.featured_search'=>$total_hits]);
-			}else{
-				Log::info("Not Increased featured");
-			}
-		}
-		
-	}
 }
