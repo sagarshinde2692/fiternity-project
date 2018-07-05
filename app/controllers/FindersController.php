@@ -2107,59 +2107,31 @@ class FindersController extends \BaseController {
 				}
 
 				$file_name = "review-".$data['customer_id']."-".time()."-$key";
-
-				$local_path_compressed = $this->utilities->compressImage( $value, $file_name, 'review-images');
-
-				$stamp = imagecreatefrompng('images/watermark.png');
-				$im = imagecreatefromjpeg($local_path_compressed);
-
 				
-				$resp = imagecopy($im, $stamp,(imagesx($im)-imagesx($stamp))/2, (imagesy($im)-imagesy($stamp))/2,0, 0, imagesx($stamp), imagesy($stamp));
-				Log::info($resp);
-				header('Content-type: image/png');
-				return imagepng($im);
+				$path_compresed = $this->utilities->compressImage( $value, $file_name);
+
+				$watermark = imagecreatefrompng('images/watermark.png');
+				
+				$im = imagecreatefromjpeg($path_compresed);
+				
+				imagecopy($im, $watermark,(imagesx($im)-imagesx($watermark))/2, (imagesy($im)-imagesy($watermark))/2,0, 0, imagesx($watermark), imagesy($watermark));
+
+				$compressed_path_parts = pathinfo($path_compresed);
+
+				$path_watermarked = $compressed_path_parts['dirname'].'/'.$compressed_path_parts['filename'].'-w.'.$compressed_path_parts['extension'];
+				
+				imagejpeg($im, $path_watermarked);
+				
 				imagedestroy($im);	
-				return $resp;
-				return ;
-				$this->utilities->uploadImageS3( $value, $file_name, 'review-images', Config::get('app.aws.review_images.path'));
-				// $file_extension = $value->getClientOriginalExtension();
-				// $mime_type = $value->getClientMimeType();
-				// $file_name_compressed = $file_name."-c";
-				// $local_directory = public_path().'/review-images';
 				
-				// $local_path_original =  join('/', [$local_directory, $file_name.".".$file_extension]);
-				// $local_path_compressed =  join('/', [$local_directory, $file_name_compressed.".".$file_extension]);
-				// $resp = $value->move($local_directory,$file_name.".".$file_extension);
+				$compressed_s3_path  = $finder['_id']."/".$compressed_path_parts['filename'].".".$compressed_path_parts['extension'];
 				
-				// if ($mime_type == 'image/jpeg'){
-				// 	$image = imagecreatefromjpeg($local_path_original.".".$file_extension);
-				// }elseif ($mime_type == 'image/png'){
-				// 	$image = imagecreatefrompng($local_path_original.".".$file_extension);
-				// }
-
-				// imagejpeg($image, $local_path_compressed, 30);
+				$watermarked_s3_path  = $finder['_id']."/".$compressed_path_parts['filename']."-w.".$compressed_path_parts['extension'];
 				
-				// return $s3->getCredentials()->getAccessKeyId( );
-				try{
-					$resp = $value->move($local_directory,$file_name);
-					$sub_path  = $finder['_id']."/".$file_name.".".$file_extension;
-					$result = $s3->putObject(array(
-						'Bucket'     => Config::get('app.aws.bucket'),
-						'Key'        => Config::get('app.aws.review_images.path').$sub_path,
-						'SourceFile' => $local_path
-					));
-					if(file_exists($local_path)){
-						unlink($local_path);
-					}
-					
-					array_push($images_urls, Config::get('app.aws.review_images.url').$sub_path);
-					
-				}catch(Exception $e){
-					Log::info($e);
-					if(file_exists($local_path)){
-						unlink($local_path);
-					}
-				}
+				$this->utilities->uploadImageS3( $path_compresed, Config::get('app.aws.review_images.url').$compressed_s3_path);
+				
+				$this->utilities->uploadImageS3( $path_watermarked,Config::get('app.aws.review_images.url').$watermarked_s3_path);
+				
 			}
 			$reviewdata['images'] = $images_urls;
 		}

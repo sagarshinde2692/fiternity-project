@@ -4124,15 +4124,15 @@ Class Utilities {
 		return $knowlarity_no;
     }
     
-    public function compressImage($file, $file_name, $directory){
+    public function compressImage($file, $src, $dst, $dir='tmp-images'){
         $mime_type = $file->getClientMimeType();
         $file_extension = $file->getClientOriginalExtension();
-        $file_name_compressed = $file_name."-c";
-        $local_directory = public_path().'/'.$directory;
+        $local_directory = public_path().'/'.$dir;
+        $dst = $src."-c";
         
-        $local_path_original =  join('/', [$local_directory, $file_name.".".$file_extension]);
-        $local_path_compressed =  join('/', [$local_directory, $file_name_compressed.".".$file_extension]);
-        $resp = $file->move($local_directory,$file_name.".".$file_extension);
+        $local_path_original =  join('/', [$local_directory, $src.".".$file_extension]);
+        $local_path_compressed =  join('/', [$local_directory, $dst.".".$file_extension]);
+        $resp = $file->move($local_directory,$src.".".$file_extension);
         
         if ($mime_type == 'image/jpeg'){
             $image = imagecreatefromjpeg($local_path_original);
@@ -4141,15 +4141,32 @@ Class Utilities {
         }
 
         imagejpeg($image, $local_path_compressed, 30);
-
+        
         return $local_path_compressed;
     }
 
-    public function uploadImageS3(){
-
+    public function uploadFileToS3($localpath, $s3_path){
+        try{
+					
+            $sub_path  = $finder['_id']."/".$file_name.".".$file_extension;
+            $result = $s3->putObject(array(
+                'Bucket'     => Config::get('app.aws.bucket'),
+                'Key'        => Config::get('app.aws.review_images.path').$sub_path,
+                'SourceFile' => $local_path
+            ));
+            if(file_exists($local_path)){
+                unlink($local_path);
+            }
+            
+            array_push($images_urls, Config::get('app.aws.review_images.url').$sub_path);
+            
+        }catch(Exception $e){
+            Log::info($e);
+            if(file_exists($local_path)){
+                unlink($local_path);
+            }
+        }
     }
 
-
-    
 }
 
