@@ -4624,8 +4624,12 @@ class HomeController extends BaseController {
         				{
         					$tmp_data=$tmp_data[0];
         					$vala['product_title']=$tmp_data['product']['title'];
-        					(!empty($tmp_data['product'])&&!empty($tmp_data['product']['primarycategory'])&&!empty($tmp_data['product']['primarycategory']['slug']))?
-        						$vala['product_category_slug']=$tmp_data['product']['primarycategory']['slug']:"";
+        					if(!empty($tmp_data['product'])&&!empty($tmp_data['product']['primarycategory'])&&!empty($tmp_data['product']['primarycategory']['slug']))
+        					{
+        						$vala['product_category_slug']=$tmp_data['product']['primarycategory']['slug'];
+        						$vala['product_category_id']=$tmp_data['product']['primarycategory']['_id'];
+        					}
+        					
         					$vala['product_title']=$tmp_data['product']['title'];
         					$vala['ratecard_title']=$tmp_data['ratecard']['title'];
         				}	
