@@ -3695,8 +3695,12 @@ Class Utilities {
     	
     	if(empty($customerId))
     	{
-	    	$decoded = decode_customer_token();
-	    	$customer_id = $decoded->customer->_id;    		
+    		try {
+    			$decoded = decode_customer_token();
+    			$customer_id = $decoded->customer->_id;
+    		} catch (Exception $e) {
+    			return null;
+    		}
     	}
     	if(!empty($customer_id))
     	{
