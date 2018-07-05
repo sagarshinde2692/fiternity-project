@@ -1,7 +1,9 @@
 <?PHP namespace App\Services;
 use Carbon\Carbon;
 use Customer;
+use Cart;
 use Customerwallet;
+use ProductRatecard;
 use Validator;
 use Response;
 use Config;
@@ -1077,6 +1079,52 @@ Class Utilities {
         return $hash_verified;
     }
 
+    
+    public function verifyOrderProduct($data,$order)
+    {
+    	try {
+    		
+    		$orderArr=$order->toArray();
+    		$hash_verified = false;
+    		if((isset($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin'])) || in_array($orderArr['payment']['pg_type'],['PAYTM','AMAZON'])|| !empty($orderArr['cod_otp_verified']) || !empty($orderArr['vendor_otp_verified'])){
+    			if((in_array($orderArr['payment']['pg_type'],['PAYTM','AMAZON'])) && !(empty($data["order_success_flag"])))
+    			{
+    				$hashreverse = getReverseHashProduct($orderArr);
+    				if($hashreverse['status']&&$hashreverse['data']['reverse_hash']==$data["verify_hash"] )
+    					$hash_verified = true;
+    					else
+    						$hash_verified = false;
+    			}
+    			if((!empty($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin'])) || !empty($orderArr['cod_otp_verified'])||!empty($orderArr['vendor_otp_verified']))
+    				$hash_verified = true;
+    				
+    		}
+    		else
+    		{
+    			// If amount is zero check for wallet amount
+    			if($data['amount'] == 0)
+    				$hash_verified = true;
+    				else
+    				{
+    					$hashreverse = getReverseHashProduct($orderArr);
+    					if($hashreverse['status']&&$data["verify_hash"] == $hashreverse['data']['reverse_hash'])
+    						$hash_verified = true;
+    						else
+    							$hash_verified = false;
+    				}
+    		}
+    		if(!$hash_verified){
+    			$order->payment->hash_verified= false;
+    			$order->update();
+    		}
+    		return $hash_verified;
+    		
+    	} catch (Exception $e) {
+    		Log::error(" Error [verifyOrderProduct] ".print_r($this->baseFailureStatusMessage($e),true));
+    		return false;
+    	}
+    }
+    
 
     public function deleteCommunication($order){
 
@@ -1167,7 +1215,16 @@ Class Utilities {
         }
 
     }
-
+    public function customSort($field, &$array, $direction = 'asc')
+    {
+    	usort($array, create_function('$a, $b', '
+        		$a = $a["' . $field . '"];
+        		$b = $b["' . $field . '"];
+        		if ($a == $b) return 0;
+        		return ($a ' . ($direction == 'desc' ? '>' : '<') .' $b) ? -1 : 1;
+    			'));
+    	return true;
+    }
     public function deleteTrialCommunication($booktrial){
 
         $queue_id = [];
@@ -3634,6 +3691,21 @@ Class Utilities {
 
     }
 
+    public function productsTabCartHomeCustomer($customerId=null){
+    	
+    	if(empty($customerId))
+    	{
+	    	$decoded = decode_customer_token();
+	    	$customer_id = $decoded->customer->_id;    		
+    	}
+    	if(!empty($customer_id))
+    	{
+    		Cart::$withoutAppends=true;
+    		return Cart::where("customer_id",intval($customer_id))->with("customer")->first();
+    	}
+    	else return null;
+    	
+    }
     public function getFitcash($data){
         Log::info(__FUNCTION__." called from ".debug_backtrace()[1]['function']);
         
@@ -4179,5 +4251,225 @@ Class Utilities {
         }
     }
     
+    
+	public function baseFailureStatusMessage($e)
+	{
+		$message = ['type'    => get_class($e),'message' => $e->getMessage(),'file'=> $e->getFile(),'line'=> $e->getLine()];
+		return  $message['type'].' : '.$message['message'].' in '.$message['file'].' on '.$message['line'];
+	}
+	
+	
+	public function addProductsToCart($cartDataInput=[],$cart_id=null)
+	{
+		try {
+			if(empty($cartDataInput))
+			{
+				$data = Input::json()->all();
+				$cartDataInput=(!empty($data['cart_data'])?$data['cart_data']:[]);
+			}
+			$response=["status"=>1,"response"=>["message"=>"Success"]];
+			$jwt_token = Request::header("Authorization");
+			if(!empty($jwt_token)||!empty($cart_id))
+			{
+				if(!empty($jwt_token))
+				{
+					$token_decoded=decode_customer_token();
+					$cart_id=((!empty($token_decoded->customer)&&!empty($token_decoded->customer->cart_id))?$token_decoded->customer->cart_id:null);					
+				}
+				else $cart_id=intval($cart_id);
+				if(!empty($cart_id)&&!empty($cartDataInput))
+				{
+					$cartData=[];
+					$cartDataExtended=[];
+					$cartDataRatecards=array_column($cartDataInput, 'ratecard_id');
+					$cartDataUnique=count(array_unique($cartDataRatecards));
+					$cartQuantityCount=count(array_column($cartDataInput, 'quantity'));
+					$cartRatecardsCount=count($cartDataRatecards);
+					if($cartRatecardsCount>0&&$cartQuantityCount>0&&$cartQuantityCount==$cartRatecardsCount)
+					{
+						$ratecards=ProductRatecard::active()->whereIn("_id",array_map('intval',$cartDataRatecards))->with(array('product'=>function($query){$query->select('_id','slug','title','slug','info','specification');}))->get(['price','product_id','title','color','size']);
+						if(!empty($ratecards))
+						{
+							$ratecards=$ratecards->toArray();
+							if($cartDataUnique!=count($ratecards))
+								return ['status'=>0,"message"=>"Invalid Ratecard Found."];
+							foreach ($ratecards as &$ratecard)
+							{
+								$neededObject = array_values(array_filter($cartDataInput,function ($e) use ($ratecard) {return $e['ratecard_id']== $ratecard['_id'];}));
+								if(!empty($neededObject)&&count($neededObject)>0)
+									$neededObject=$neededObject[0];
+									if(!empty($ratecard)&&!empty($neededObject)&&!empty($neededObject['quantity'])&&!empty($ratecard['product_id'])&&!empty($ratecard['_id'])&&isset($ratecard['price']))
+									{
+										array_push($cartData, ["product_id"=>$ratecard['product_id'],"ratecard_id"=>$ratecard['_id'],"price"=>$ratecard['price'],"quantity"=>intval($neededObject['quantity'])]);
+										$tmpRatecardinfo=['_id'=>!empty($ratecard['_id'])?$ratecard['_id']:"",'title'=>!empty($ratecard['title'])?$ratecard['title']:"",'color'=>!empty($ratecard['color'])?$ratecard['color']:"",
+												'size'=>!empty($ratecard['size'])?$ratecard['size']:"",'slug'=>!empty($ratecard['slug'])?$ratecard['slug']:""];
+										array_push($cartDataExtended, ["product"=>$ratecard['product'],"ratecard"=>$tmpRatecardinfo,"price"=>$ratecard['price'],"quantity"=>intval($neededObject['quantity'])]);
+										
+									}
+										else return ['status'=>0,"message"=>"Not a valid ratecard or ratecard doesn't exist."];
+							}
+							$addedToCart=Cart::where('_id', intval($cart_id))->first();
+							$addedToCart=$addedToCart->update(['products'=>$cartData]);					
+							$response['response']['data']=$cartDataExtended;
+							return $response;
+						}
+						else return ['status'=>0,"message"=>"No product Ratecards Found."];
+					}
+					else return ['status'=>0,"message"=>"Invalid Cart Input data."];
+				}
+				else return ['status'=>0,"message"=>"No Data To insert or cart Id is invalid/absent."];
+			}
+			else return ['status'=>0,"message"=>"Token Not Present"];
+			
+			return $response;
+		} catch (Exception $e) 
+		{
+			return  ['status'=>0,"message"=>$this->baseFailureStatusMessage($e)];
+		}
+		
+	}
+	public function getProductCartAmount($data)
+	{
+		try {
+			$resp=["status"=>1,"message"=>"success",'amount'=>[]];
+			$cart_data =$data['cart_data'];
+			$amount=0;
+			foreach ($cart_data as $cart_item)
+				$amount=$amount+(intval($cart_item['quantity'])*intval($cart_item['price']));
+				
+				
+				// KINDLY ADD WALLET AMOUNT HERE TO BE SUBTRACTED
+				// GET WALLET CALCULATED AMOUNT FROM DIFF FUNCTION
+				// MAKE DIFFERENT VARIABLE FOR WALLET AMOUNT ADD IT IN RESPONSE IN DATA WITH KEY wallet amount
+				
+				
+				// KINDLY ADD COUPON OFF AMOUNT HERE TO BE SUBTRACTED
+				// GET COUPON CALCULATED AMOUNT FROM DIFF FUNCTION
+				// MAKE DIFFERENT VARIABLE FOR WALLET AMOUNT ADD IT IN RESPONSE IN DATA WITH KEY coupon_amount
+				
+				
+				
+				
+				// AFTER CALCULATION SHOW ONLY DEDUCTION HERE
+				// $amount = $amount - $walletamuount - $couponAmount + $convinience_fee; 
+				
+				
+				
+				// FINALLY RETURN
+			
+				$resp['amount']['final']=$amount;
+				return $resp;
+		} catch (Exception $e) 
+		{
+			return  ['status'=>0,"message"=>$this->baseFailureStatusMessage($e)];
+		}
+		
+	}
+	
+	public function getCartSummary($order)
+	{
+		try {
+			
+			if(empty($order))
+				return ["status"=>0,"message"=>"No order present."];
+				
+			$resp=["status"=>1,"message"=>"success","data"=>[]];
+			
+			$cart_data =$order['cart_data'];
+			$cart_desc=[];
+			$amount=0;
+			foreach ($cart_data as $cart_item)
+			{
+				$temp=[];
+				$temp['quantity']=$cart_item['quantity'];
+				$temp['price']=(intval($cart_item['quantity'])*intval($cart_item['price']));
+				$temp['size']=$cart_item['ratecard']['size'];
+				$temp['title']=$cart_item['product']['title'];
+				$temp['sub_title']=$cart_item['ratecard']['color'];
+				array_push($cart_desc,$temp);
+				$amount=$amount+(intval($cart_item['quantity'])*intval($cart_item['price']));
+			}
+								
+			$resp['data']['cart_details']=$cart_desc;
+			$resp['data']['total_cart_amount']=$amount;
+			$resp['data']['total_amount']=$amount;
+	// 			$this->getProductCartAmount($order);
+			return $resp;
+		} catch (Exception $e)
+		{
+			return  ['status'=>0,"message"=>$this->baseFailureStatusMessage($e)];
+		}
+		
+	}
+	public function groupBy($array,$key) {
+		$return = array();
+		foreach($array as $val) {
+			$return[$val[$key]][] = $val;
+		}
+		return $return;
+	}
+	
+	public function getProductHash($data)
+	{
+		
+		try {
+			
+			$resp=["status"=>1,"message"=>"success"];
+			
+			$createdData=[];
+			
+			
+			// defaulters
+			
+			(!empty($data['payment_mode']))?
+				$createdData['payment_mode']=$data['payment_mode']:"";
+			
+			$env = (!empty($data['env']) && $data['env'] == 1) ? "stage" : "production";
+			
+			$key = 'gtKFFx';
+			$salt = 'eCwWELxi';
+			
+			if($env == "production"){
+				$key = 'l80gyM';$salt = 'QBl78dtK';
+			}
+			
+			$txnid = $data['payment']['txnid'];
+			$amount = $data['amount_calculated']['final'];
+			$tmp=[];
+			foreach ($data['cart_data'] as $value) {
+				array_push($tmp,$value['ratecard']['_id']);
+			}
+			$productinfo=$createdData['productinfo'] =implode("_",array_map('strtolower', $tmp));
+			
+			$firstname = strtolower($data['customer']['customer_name']);
+			$email = strtolower($data['customer']['customer_email']);
+			$udf1 = "";
+			$udf2 = "";
+			$udf3 = "";
+			$udf4 = "";
+			$udf5 = "";
+			
+			$payhash_str = $key.'|'.$txnid.'|'.$amount.'|'.$productinfo.'|'.$firstname.'|'.$email.'|'.$udf1.'|'.$udf2.'|'.$udf3.'|'.$udf4.'|'.$udf5.'||||||'.$salt;
+			
+			$createdData['payment_hash'] = hash('sha512', $payhash_str);
+			
+			$verify_str = $salt.'||||||'.$udf5.'|'.$udf4.'|'.$udf3.'|'.$udf3.'|'.$udf2.'|'.$udf1.'|'.$email.'|'.$firstname.'|'.$productinfo.'|'.$amount.'|'.$txnid.'|'.$key;
+			
+			$createdData['verify_hash'] = hash('sha512', $verify_str);
+			
+			$cmnPaymentRelatedDetailsForMobileSdk1              =   'payment_related_details_for_mobile_sdk';
+			$detailsForMobileSdk_str1                           =   $key  . '|' . $cmnPaymentRelatedDetailsForMobileSdk1 . '|default|' . $salt ;
+			$detailsForMobileSdk1                               =   hash('sha512', $detailsForMobileSdk_str1);
+			$createdData['payment_related_details_for_mobile_sdk_hash'] =   $detailsForMobileSdk1;
+			$resp['data']=$createdData;
+			
+			return $resp;
+		} catch (Exception $e)
+		{
+			return  ['status'=>0,"message"=>$this->baseFailureStatusMessage($e)];
+		}
+		
+		
+	}
 }
 

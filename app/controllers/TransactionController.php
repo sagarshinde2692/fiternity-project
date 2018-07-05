@@ -1081,6 +1081,383 @@ class TransactionController extends \BaseController {
         return Response::json($resp);
 
     }
+    
+    public function productCapture($data =null)
+    {
+    	
+    	
+    	$data = $data ? $data : Input::json()->all();
+    	Log::info('--------------  PRODUCT CAPTURE ---------------',$data);
+    	
+    	foreach ($data as $key => $value) {
+    		(is_string($value))?$data[$key] = trim($value):"";
+    	}
+    	
+    	$rules = array(
+    			'customer_source'=>'required',
+    			'city_id'=>'required',
+    			'customer_name'=>'required',
+    			'customer_email'=>'required|email',
+    			'customer_phone'=>'required',
+    			'type'=>'required'
+    	);
+    	
+    	$validator = Validator::make($data,$rules);
+    	$failedCheck=$this->checkProductCaptureFailureStatus($data);
+
+    	if ($validator->fails())
+    		return Response::json(['status' => 0,'message' => error_message($validator->errors())]);
+    		if(!$failedCheck['status'])
+    			return Response::json($failedCheck);
+    		
+    			
+   	 // ALL FINDER DETAIL TO BE ENTERED HERE IN THIS BLOCK ,  SOME VARIABLE MIGHT BE UPDATED LATER IN THE CODE.
+    	if($this->vendor_token)
+    	{
+    		$data['customer']['customer_source'] = 'kiosk';
+    		$decodeKioskVendorToken = decodeKioskVendorToken();
+    		$vendor = json_decode(json_encode($decodeKioskVendorToken->vendor),true);
+    		
+    	
+    		
+    		$finderDetail = $this->getFinderDetail((int)$vendor['_id']);
+    			if($finderDetail['status'] != 200)
+    				return Response::json($finderDetail,$this->error_status);
+    			$data['finder']=$finderDetail['data'];
+    			$finderDetail['data']['finder']['finder_flags'] = [];
+    			
+    			$is_tab_active = isTabActive($data['finder_id']);
+    			($is_tab_active)?$data['finder']['is_tab_active'] = true:"";
+    			$pay_at_vendor_applicable = true;
+    			$result['finder_name'] = strtolower($data['finder_name']);
+    	}
+    	
+    	
+    	$customerDetail = $this->getCustomerDetail($data);
+    	
+    	if($customerDetail['status'] != 200)
+    		return Response::json(['status'=>0,"message"=>"Failed to get customer detail."]);
+    	else $data['customer']=$customerDetail['data'];
+    		
+    	unset($data['customer']['cart_data']);
+    		// Cart data added based on cart id or token.
+    	if($data['customer']['customer_source']=='kiosk')
+    		{
+    			
+    			$addToCartResponse=$this->utilities->addProductsToCart($data['cart_data'],$data['cart_data']);
+    			if($addToCartResponse['status'])
+    				$data['cart_data']=$addToCartResponse['response']['data'];
+    				else return Response::json($addToCartResponse);
+    		} 
+    		
+    		// payment mode 
+    	if(isset($data['paymentmode_selected']) && $data['paymentmode_selected'] != ""){
+
+    		switch ($data['paymentmode_selected']) {
+    			case 'cod': $data['payment_mode'] = 'cod';break;
+    			case 'emi': $data['payment_mode'] = 'paymentgateway';break;
+    			case 'paymentgateway': $data['payment_mode'] = 'paymentgateway';break;
+    			case 'pay_at_vendor': $data['payment_mode'] = 'at the studio';break;
+    			default:break;
+    			}
+    		}
+    		
+    		// cod
+	    	$updating_cod = (isset($data['payment_mode']) && $data['payment_mode'] == 'cod') ? true : false;
+    		$payment_mode = isset($data['payment_mode']) ? $data['payment_mode'] : "";
+    		if($payment_mode=='cod')$data['payment_mode'] = 'cod';
+    		
+    	
+    		
+    		// calculated total cart amount.
+	    		$amount=$this->utilities->getProductCartAmount($data);
+    		if(!$amount['status'])
+    			return Response::json($amount);
+    			else $data['amount_calculated']=$amount['amount'];
+    			
+    			
+    			//*********************************************************USE THIS CODE IN GET PRODUCT CART AMOUNT.************************************************
+    			// 			  															COUPON CODE
+    			
+    			 // use this coupon code in getproductcart amount method by creating another function there.
+    	 
+	    	/* if(isset($data['coupon_code']) && $this->utilities->isGroupId($data['coupon_code']))
+	    	{
+	    		if($this->utilities->validateGroupId(['group_id'=>$data['coupon_code'], 'customer_id'=>$data['customer_id']])){
+	    			$data['group_id'] = $data['coupon_code'];
+	    		}
+	    		unset($data['coupon_code']);
+	    	} */
+    			
+    			//**************************************************************************************************.************************************************
+    	
+    	
+    	$order = false;
+    	if(!empty($data['order_id']))
+    	{
+    		$old_order_id = $order_id = $data['_id'] = intval($data['order_id']);
+    		$order = Order::find((int)$old_order_id);
+    		$data['repetition'] = 1;
+    		if($order)
+    			(!empty($order->repetition)) ? $data['repetition'] = $order->repetition+1:"";
+    		else     			
+    			return Response::json(['status'=>0,"message"=>"Not a valid order id."]);
+    	}
+    	else $order_id = $data['_id'] = $data['order_id'] = Order::max('_id') + 1;
+    	
+
+    	$data['code'] = (string) random_numbers(5);
+    	
+    	
+    	
+    	$successurl=""; 
+    	$mobilehash="";
+    	
+    	if(in_array($data['customer']['customer_source'],['android','ios','kiosk']))
+    	{
+    		$txnid = "MFIT".$data['_id'];
+    		(isset($old_order_id))?
+    				$txnid = "MFIT".$data['_id']."-R".$data['repetition']  :"";
+    		$successurl = $data['customer']['customer_source'] == "ios" ? Config::get('app.website')."/paymentsuccessios" : Config::get('app.website')."/paymentsuccessandroid";
+    	}
+    	else
+    	{
+    		$txnid = "FIT".$data['_id'];
+    		(!empty($old_order_id))?
+    				$txnid = "FIT".$data['_id']."-R".$data['repetition']:"";
+    		$successurl = $data['type'] == "memberships" ? Config::get('app.website')."/paymentsuccess" : Config::get('app.website')."/paymentsuccesstrial";
+    	}
+    	
+    	$data['payment']['txnid'] = $txnid;
+    	
+    	 //*********************************************************USE THIS CODE IN GET PRODUCT CART AMOUNT.************************************************
+    	// 			  														CONVINIENCE FEE  AMOUNT
+    	
+    	/* if($this->utilities->isConvinienceFeeApplicable($data)){	
+    		$convinience_fee_percent = Config::get('app.convinience_fee');	
+    		$convinience_fee = round($data['amount_finder']*$convinience_fee_percent/100);
+    		$convinience_fee = $convinience_fee <= 199 ? $convinience_fee : 199;
+    		$data['convinience_fee'] = $convinience_fee;
+    	} */
+    	
+    	 //**************************************************************************************************.************************************************
+
+    	
+    	//*********************************************************USE THIS CODE IN GET PRODUCT CART AMOUNT .************************************************
+    	//																		WALLET AMOUNT
+    	
+    	
+/*     	if(isset($data['wallet']) && $data['wallet']){
+    		$data['amount_final'] = $data['amount'] = $data['amount'] + $data['convinience_fee'];
+    		$data['amount_customer'] = $data['amount'];
+    		$data['coupon_discount_amount'] = 0;
+    		unset($data['instant_payment_discount']);    		
+    	} */
+    	
+    	//**************************************************************************************************.************************************************
+    	
+    	
+    	$hash = $this->utilities->getProductHash($data);  	
+    	if(!$hash['status'])
+    		Response::json($hash);
+    	else $data['payment']=array_merge($data['payment'],$hash['data']);
+    	
+    	
+    	$data['link']['payment_link'] = Config::get('app.website')."/paymentlink/".$data['order_id']; //$this->utilities->getShortenUrl(Config::get('app.website')."/paymentlink/".$data['order_id']);
+    	$data['link']['profile_link'] = $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$data['customer_email']);
+    	$data['link']['download_app_link'] = Config::get('app.download_app_link');
+    	
+    	
+    	// 									ADDED LATEST DEVICE INFO IN ORDER FROM REQUEST HEADER IF PROVIDED
+    	
+    	$addUpdateDevice = $this->utilities->addUpdateDevice($data['customer']['customer_id']);
+    	
+    	$data['device']=[];
+    	foreach ($addUpdateDevice as $header_key => $header_value) {
+    		($header_key != "")?
+    		$data['device'][$header_key]= $header_value:"";
+    	}
+    	
+    	$data["status"] = "0";
+    	
+    	
+    	
+    	
+    	
+    	unset($data['customer_name']);unset($data['customer_phone']);
+    	unset($data['customer_email']);unset($data['customer_identity']);
+    	unset($data['customer_source']);unset($data['payment_mode']);
+    	
+    	
+    	
+    	if(isset($data['payment_mode']) && $data['payment_mode'] == 'cod'){
+    		
+    		$group_id = isset($data['group_id']) ? $data['group_id'] : null;
+    		$order->group_id = $data['group_id'] = $this->utilities->addToGroup(['customer_id'=>$data['customer']['customer_id'], 'group_id'=>$group_id, 'order_id'=>$order['_id']]);
+//     		$this->customermailer->orderUpdateCOD($order->toArray());
+//     		$this->customersms->orderUpdateCOD($order->toArray());
+    		$order->cod_otp = $this->utilities->generateRandomString();
+    		$order->update();
+    	}
+    	
+    	// 																											FINANCE CODE
+    	//																	***********************************  TO BE WRITTEN LATER *********************************** 
+
+		// 																					    		$this->utilities->financeUpdate($order);
+		
+    	//																	*********************************************************************************************************
+    	
+    	if(in_array($data['customer']['customer_source'],['android','ios','kiosk']))
+    	{
+    		$mobilehash = $data['payment']['payment_related_details_for_mobile_sdk_hash'];
+    	}
+    	
+    	$result['firstname'] = strtolower($data['customer']['customer_name']);
+    	$result['lastname'] = "";
+    	$result['phone'] = $data['customer']['customer_phone'];
+    	$result['email'] = strtolower($data['customer']['customer_email']);
+    	$result['orderid'] = $data['_id'];
+    	$result['txnid'] = $txnid;
+    	$result['amount'] = $data['amount_calculated']['final'];
+    	$result['productinfo'] = strtolower($data['payment']['productinfo']);
+    	$result['successurl'] = $successurl;
+    	$result['hash'] = $data['payment']['payment_hash'];
+    	$result['payment_related_details_for_mobile_sdk_hash'] = $mobilehash;
+    	$result['type'] = $data['type'];
+    	
+    	
+    	/* if(!empty($data['convinience_fee']))
+    	{
+    		$result['convinience_fee_charged'] = true;
+    		$result['convinience_fee'] = $data['convinience_fee'];
+    	} */
+
+    	$cash_pickup_applicable = (isset($data['amount_calculated']['final']) && $data['amount_calculated']['final']>= 2500) ? true : false;
+    	$emi_applicable = (isset($data['amount_calculated']['final']) && $data['amount_calculated']['final']>= 5000) ? true : false;
+    	
+    	$resp   =   [
+    			'status' => 1,
+    			'data' => $result,
+    			'message' => "Tmp Order Generated Sucessfully",
+    			'cash_pickup' => $cash_pickup_applicable,
+    			'emi'=>$emi_applicable
+    	];
+    	
+    	// Commented dont know why its being used right now.
+    	
+		//     	$resp['data']['order_details'] = $this->getBookingDetails($order->toArray());
+    	
+    	
+    	$payment_mode_type_array = ['paymentgateway'];
+    	$payment_details = [];
+    
+
+    	$orderArray=$order->toArray();
+    	if(isset($orderArray['calculated_amount']['final']))
+    	{
+	    	(!empty($emi_applicable)&& !empty($order->amount))?	array_push($payment_mode_type_array, 'emi'):"";
+	    	
+	    	(!empty($cash_pickup_applicable)&& !empty($order->amount))?array_push($payment_mode_type_array, 'cod'):"";
+	    	
+	    	if($this->vendor_token)
+	    		if(!empty($pay_at_vendor_applicable))
+	    			array_push($payment_mode_type_array, 'pay_at_vendor');
+    	}
+    			
+    		
+    	foreach ($payment_mode_type_array as $payment_mode_type) 
+    	{
+	    		$payment_info=$this->getPaymentDetailsProduct($order->toArray());
+	    		if($payment_info['status'])
+	    			$payment_details[$payment_mode_type] =$payment_info['details'];
+	    			else return Response::json($payment_info);
+    	}
+    	
+    	
+    	
+    	$resp['data']['payment_details'] = $payment_details;
+    	$resp['data']['payment_modes'] = [];
+    	
+    	
+    	if(!empty($orderArray['amount_calculated']['final']))
+    		$resp['data']['payment_modes'] = $this->getPaymentModesProduct($resp);
+
+    	
+    	$otp_flag = true;
+    	
+    	if(!empty($data['payment_mode'])&&$data['payment_mode'] == 'at the studio' && isset($data['wallet']) && $data['wallet'] && $otp_flag){
+    		
+    		$data_otp = array_only($data,['finder_id','order_id','service_id','ratecard_id','payment_mode','finder_vcc_mobile','finder_vcc_email','customer_name','service_name','service_duration','finder_name', 'customer_source','amount_finder','amount','finder_location','customer_email','customer_phone','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon']);
+    		
+    		$data_otp['action'] = "vendor_otp";
+    		
+    		$addTemp_flag  = true;
+    		
+    		if(isset($order['otp_data'])){
+    			$old_order = $order->toArray();
+    			$otp_data = $old_order['otp_data'];
+    			
+    			if(isset($otp_data['created_at']) && ((time() - $otp_data['created_at']) / 60) < 3){
+    				$addTemp_flag = false;
+    			}
+    			$temp_id = $order['otp_data']['temp_id'];
+    			$temp = Temp::find($temp_id);
+    			
+    			if(!$temp){
+    				
+    				return Response::json(['status' => 400, "message" => "Internal Error"],$this->error_status);
+    			}
+    			
+    			if($temp->verified == "Y"){
+    				
+    				return Response::json(array('status' => 400,'message' => 'Already Verified'),$this->error_status);
+    			}
+    			$otp_data['otp'] = $temp['otp'];
+    		}
+    		
+    		if($addTemp_flag){
+    			
+    			$addTemp = addTemp($data_otp);
+    			
+    			$otp_data = [
+    					'finder_vcc_mobile'=>$data_otp['finder_vcc_mobile'],
+    					'finder_vcc_email'=>$data_otp['finder_vcc_email'],
+    					'payment_mode'=>$data_otp['payment_mode'],
+    					'temp_id'=>$addTemp['_id'],
+    					'otp'=>$addTemp['otp'],
+    					'created_at'=>time()
+    			];
+    			$order->update(['otp_data'=>$otp_data]);	
+    			$otp_data['otp'] = $addTemp['otp'];
+    		}
+    		$otp_data = array_merge($data_otp,$otp_data);
+    		
+    		$this->findersms->genericOtp($otp_data);
+    		$this->findermailer->genericOtp($otp_data);
+    		
+    		if(!$this->vendor_token){
+    			
+    			$this->customermailer->atVendorOrderCaputure($otp_data);
+    			$this->customersms->atVendorOrderCaputure($otp_data);
+    		}
+    		$resp['vendor_otp'] = $otp_data['otp'];
+    		$resp['data']['verify_otp_url'] = Config::get('app.url')."/kiosk/vendor/verifyotp";
+    		$resp['data']['resend_otp_url'] = Config::get('app.url')."/temp/regenerateotp/".$otp_data['temp_id'];
+    		if($data["customer_source"] == "website")
+    			$resp['data']['show_success'] = true;
+    	}
+    	
+    	
+    	if(isset($old_order_id))
+    		$order->update($data);	
+    	else
+    		{
+    			$order = new Order($data);
+    			$order->_id = $order_id;
+    			$order->save();
+    		}
+    	return Response::json($resp);	
+    }
 
     public function generateOtp($length = 4)
     {      
@@ -1371,6 +1748,9 @@ class TransactionController extends \BaseController {
         
         $order_id   =   (int) $data['order_id'];
         $order      =   Order::findOrFail($order_id);
+        
+        if(!empty($order)&&!empty($order['type'])&&$order['type']=='product')
+        	return $this->productSuccess($data);
 
         //If Already Status Successfull Just Send Response
         if(!isset($data["order_success_flag"]) && isset($order->status) && $order->status == '1' && isset($order->order_action) && $order->order_action == 'bought'){
@@ -1890,7 +2270,6 @@ class TransactionController extends \BaseController {
         $array = array('preferred_starting_date','start_date','start_date_starttime','end_date','preferred_payment_date');
 
         foreach ($array as $key => $value){
-
             if(isset($data[$value])){
                 if($data[$value] == ""){
                     unset($data[$value]);
@@ -1918,7 +2297,11 @@ class TransactionController extends \BaseController {
         }
 
         $customer = Customer::find((int)$customer_id);
-
+        
+        
+        if(!empty($customer['cart_id']))
+        	$data['cart_id']  = $customer['cart_id'];
+        else return ['status' => 400,'message' => "Cart doesn't exists with customer."];
         if(isset($data['address']) && $data['address'] != ''){
 
             $data['customer_address']  = $data['address'];
@@ -1972,7 +2355,287 @@ class TransactionController extends \BaseController {
 
     }
 
+public function productSuccess($data)
+{
+		
+	$rules = array(
+			'order_id'=>'required'
+	);
+	
+	$validator = Validator::make($data,$rules);
+	
+	if ($validator->fails()) {
+		return Response::json(array('status' => 404,'message' => error_message($validator->errors())),404);
+	}
+	
+	$order_id   =   (int) $data['order_id'];
+	$order      =   Order::findOrFail($order_id);
+	
+	if(!isset($data["order_success_flag"]) && isset($order->status) && $order->status == '1' && isset($order->order_action) && $order->order_action == 'bought'){
+		
+		$resp   =   array('status' => 401, 'statustxt' => 'error', "message" => "Already Status Successfull");
+		return Response::json($resp,401);
+		
+	}elseif(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin" && isset($order->status) && $order->status != '1' && isset($order->order_action) && $order->order_action != 'bought'){
+		
+		$resp   =   array('status' => 401, 'statustxt' => 'error',"message" => "Status should be Bought");
+		return Response::json($resp,401);
+	}
+	
+	
+	$hash_verified = $this->utilities->verifyOrderProduct($data,$order);
+	
+	if($data['status'] == 'success' && $hash_verified){
+		// Give Rewards / Cashback to customer based on selection, on purchase success......	
+		// $this->utilities->demonetisation($order);
+		
+		array_set($data, 'status', '1');
+		array_set($data, 'order_action', 'bought');
+		array_set($data, 'followup_status', 'catch_up');
+		array_set($data, 'followup_status_count', 1);
 
+		
+		if((!isset($data['order_success_flag']) || $data['order_success_flag'] != 'admin')){
+			array_set($data, 'status', '3');
+		}
+		
+		
+		if(((!isset($data['order_success_flag']) || $data['order_success_flag'] != 'admin') && !isset($order['success_date'])) || (isset($order['update_success_date']) && $order['update_success_date'] == "1" && isset($data['order_success_flag']) && $data['order_success_flag'] == 'admin')){
+			array_set($data['payment'], 'success_date', date('Y-m-d H:i:s',time()));
+		}
+		
+		
+		$data['link']['workout_article_link'] = $this->utilities->getShortenUrl(Config::get('app.website')."/article/complete-guide-to-help-you-prepare-for-the-first-week-of-your-workout");
+		$data['link']['download_app_link'] = Config::get('app.download_app_link');
+		$data['link']['diet_plan_link'] = $this->utilities->getShortenUrl(Config::get('app.website')."/diet-plan");
+		$data['link']["profile_link"] = isset($profile_link) ? $profile_link : $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$data['customer_email']);
+		
+		
+		if(isset($order->payment_mode) && $order->payment_mode == "paymentgateway"){
+			
+			array_set($data['payment'], 'membership_bought_at', 'Fitternity Payu Mode');
+			
+/* 			$count  = Order::where("status","1")->where('customer.customer_email',$order['customer']['customer_email'])->where('customer.customer_phone','LIKE','%'.substr($order['customer']['customer_phone'], -8).'%')->where('_id','!=',(int)$order->_id)->count();
+			
+			if($count > 0){
+				array_set($data, 'acquisition_type', 'renewal_direct');
+				array_set($data, 'membership_type', 'renewal');
+			}else{
+				array_set($data,'acquisition_type','direct_payment');
+				array_set($data['payment'], 'customer_purchase', 'new');
+			} */
+			
+			if($order['customer']['customer_source'] != 'admin'){
+				array_set($data['payment'], 'secondary_payment_mode', 'payment_gateway_membership');
+			}
+		}
+		
+		
+		
+		$order->update($data);
+		
+		//send welcome email to payment gateway customer
+		
+			$finder = Finder::find((int)$order['finder']['finder_id']);
+			
+			if (filter_var(trim($order['customer']['customer_email']), FILTER_VALIDATE_EMAIL) === false){
+				$order->update(['email_not_sent'=>'captureOrderStatus']);
+			}else{
+
+
+// 			***************************************************************************************  EMAIL  ****************************************************************************************
+				
+				/* if(!in_array($finder->category_id, $abundant_category)){
+					$emailData      =   [];
+					$emailData      =   $order->toArray();
+					if($emailData['type'] == 'events'){
+						if(isset($emailData['event_id']) && $emailData['event_id'] != ''){
+							$emailData['event'] = DbEvent::find(intval($emailData['event_id']))->toArray();
+						}
+						if(isset($emailData['ticket_id']) && $emailData['ticket_id'] != ''){
+							$emailData['ticket'] = Ticket::find(intval($emailData['ticket_id']))->toArray();
+						}
+					}
+					
+					//print_pretty($emailData);exit;
+					if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin" && $order->type != 'diet_plan'){
+						if(isset($data["send_communication_customer"]) && $data["send_communication_customer"] != ""){
+							
+							$sndPgMail  =   $this->customermailer->sendPgOrderMail($emailData);
+							
+							$this->customermailer->payPerSessionFree($emailData);
+						}
+						
+					}else{
+						
+						$sndPgMail  =   $this->customermailer->sendPgOrderMail($emailData);
+						
+						$this->customermailer->payPerSessionFree($emailData);
+						
+						if(isset($order['routed_order']) && $order['routed_order'] == "1" && !in_array($reward_type,['cashback','diet_plan'])){
+							$this->customermailer->routedOrder($emailData);
+						}
+					}
+				} */
+				
+
+				//no email to Healthy Snacks Beverages and Healthy Tiffins
+			/* 	if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" && $order->type != 'diet_plan'){
+					
+					if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
+						if(isset($data["send_communication_vendor"]) && $data["send_communication_vendor"] != ""){
+							
+							$sndPgMail  =   $this->findermailer->sendPgOrderMail($order->toArray());
+						}
+						
+					}else{
+						$sndPgMail  =   $this->findermailer->sendPgOrderMail($order->toArray());
+					}
+					
+				} */
+			}
+// 			***************************************************************************************  EMAIL  ****************************************************************************************
+
+			
+// 			***************************************************************************************  SMS  ****************************************************************************************
+			//SEND payment gateway SMS TO CUSTOMER and vendor
+			/* if(!in_array($finder->category_id, $abundant_category)){
+				$emailData      =   [];
+				$emailData      =   $order->toArray();
+				if($emailData['type'] == 'events'){
+					if(isset($emailData['event_id']) && $emailData['event_id'] != ''){
+						$emailData['event'] = DbEvent::find(intval($emailData['event_id']))->toArray();
+					}
+					if(isset($emailData['ticket_id']) && $emailData['ticket_id'] != ''){
+						$emailData['ticket'] = Ticket::find(intval($emailData['ticket_id']))->toArray();
+					}
+				}
+				
+				if($this->utilities->checkCorporateLogin()){
+					Log::info("outside checkCorporateLogin ");
+					$emailData['customer_email'] =   $emailData['customer_email'].',vg@fitmein.in';
+				}
+				
+				//print_pretty($emailData);exit;
+				if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin" && $order->type != 'diet_plan'){
+					if(isset($data["send_communication_customer"]) && $data["send_communication_customer"] != ""){
+						
+						$sndPgSms   =   $this->customersms->sendPgOrderSms($emailData);
+					}
+					
+				}else{
+					$sndPgSms   =   $this->customersms->sendPgOrderSms($emailData);
+				}
+			} */
+			
+
+			
+			
+			//no sms to Healthy Snacks Beverages and Healthy Tiffins
+/* 			if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" && $order->type != 'diet_plan'){
+				
+				if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
+					if(isset($data["send_communication_vendor"]) && $data["send_communication_vendor"] != ""){
+						
+						$sndPgSms   =   $this->findersms->sendPgOrderSms($order->toArray());
+					}
+					
+				}else{
+					$sndPgSms   =   $this->findersms->sendPgOrderSms($order->toArray());
+				}
+				
+			} */
+
+// 			***************************************************************************************  SMS  ****************************************************************************************
+		
+// 		$this->utilities->sendCorporateMail($order->toArray());
+		
+			
+			
+		if(isset($order->city_id)){
+			$city = City::find((int)$order->city_id,['_id','name','slug']);
+			$order->update(['city_name'=>$city->name,'city_slug'=>$city->slug]);
+		}
+		
+		if(!empty($order['finder']['finder_category_id'])){
+			
+			$category = Findercategory::find((int)$order['finder']['finder_category_id'],['_id','name','slug']);
+			$order->update(['finder.category_name'=>$category->name,'finder.category_slug'=>$category->slug]);
+		}
+		
+		
+		/* if(isset($order->coupon_code)){
+			$coupon = Coupon::where('code', strtolower($order['coupon_code']))->first();
+			Log::info("coupon");
+			$fitternity_only_coupon = ($coupon && isset($coupon->fitternity_only) && $coupon->fitternity_only) ? true : false;
+			
+			if(!$fitternity_only_coupon){
+				$customer_update 	=	Customer::where('_id', $order->customer_id)->push('applied_promotion_codes', $order->coupon_code, true);
+			}
+		} */
+		
+		
+// 		$this->utilities->setRedundant($order);
+		
+// 		$this->utilities->addAmountToReferrer($order);
+		
+// 		$this->utilities->addAssociateAgent($order);
+		
+		if(!empty($order['finder'])&&!empty($order['finder']['finder_id']))
+		
+		/* $start_date_last_30_days = date("d-m-Y 00:00:00", strtotime('-31 days',strtotime(date('d-m-Y 00:00:00'))));
+		$sales_count_last_30_days = Order::active()->where('finder_id',$finder_id)->where('created_at', '>=', new DateTime($start_date_last_30_days))->count();
+		
+		if($sales_count_last_30_days == 0){
+			$mailData=array();
+			$mailData['finder_name']=$order['finder_name'];
+			$mailData['finder_id']=$order['finder_id'];
+			$mailData['finder_city']=$order['finder_city'];
+			$mailData['finder_location']=$order['finder_location'];
+			$mailData['customer_name']=$order['customer_name'];
+			$mailData['customer_email']=$order['customer_email'];
+			
+			$sndMail  =   $this->findermailer->sendNoPrevSalesMail($mailData);
+		} */
+		
+// 		$this->utilities->deleteCommunication($order);
+		
+		/* if(isset($order->redundant_order)){
+			$order->unset('redundant_order');
+		} */
+		
+// 		$this->utilities->sendDemonetisationCustomerSms($order);
+		
+		// if(isset($order->customer_id)){
+		//     setDefaultAccount($order->toArray(), $order->customer_id);
+		// }
+		
+		$resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
+		
+		if($order['payment']['payment_mode'] == 'at the studio')
+		{
+			$resp   =   array('status' => 200,"message" => "Transaction Successful");
+		}
+		
+		return Response::json($resp);
+		
+	}else{
+		if($hash_verified == false){
+			$Oldorder 		= 	Order::findOrFail($order_id);
+			$Oldorder['payment']["hash_verified"] = false;
+			$Oldorder->update();
+			$resp 	= 	array('status' => 200, 'statustxt' => 'failed', 'order' => $order, 'message' => "Transaction Failed :)");
+			return Response::json($resp);
+		}
+	}
+	
+	
+	$orderdata 		=	$order->update($data);
+	$resp 	= 	array('status' => 200, 'statustxt' => 'failed', 'order' => $order, 'message' => "Transaction Failed :)");
+	return Response::json($resp);
+	
+	
+}
     public function getCashbackRewardWallet($data,$order){
 
         $customer_id = (int)$data['customer_id'];
@@ -2736,7 +3399,18 @@ class TransactionController extends \BaseController {
         return array('status' => 200,'data' =>$data);
 
     }
-
+    public function getProductRatecardDetail($data){
+    	
+    	
+    	$ratecard = ProductRatecard::find((int)$data['ratecard_id']);
+    	
+    	if(!$ratecard){
+    		return array('status' => 404,'message' =>'Ratecard does not exists');
+    	}
+    	
+    	$ratecard = $ratecard->toArray();
+    	
+    }
     public function getRatecardDetail($data){
 
         $ratecard = Ratecard::find((int)$data['ratecard_id']);
@@ -5741,6 +6415,8 @@ class TransactionController extends \BaseController {
     		
     		$order = Order::where('txnid',$val['merchantTransactionId'])->first();
     		
+    		
+    		
     		if($order){
     			
     			$order->pg_type = "AMAZON";
@@ -5803,18 +6479,35 @@ class TransactionController extends \BaseController {
         
         if($val['isSignatureValid'] == 'true'){
 
-            $order = Order::where('txnid',$val['sellerOrderId'])->first();
+        	
+        	$order = Order::where(function($query)
+        	{$query->orWhere('txnid', $val['sellerOrderId'])->orWhere('payment.txnid',$val['sellerOrderId']);
+        	})->first();
 
             if($order){
-
-                $order->pg_type = "AMAZON";
-                $order->amazon_hash = $val["hash"] = getpayTMhash($order->toArray())['reverse_hash'];
+            	if($order->type=='product')
+            	{
+            		$order->payment->pg_type="AMAZON";
+            		$revereseHash=getReverseHashProduct($order->toArray());
+            		if($revereseHash['status'])
+            			 $order->payment->amazon_hash = $val["hash"] = $revereseHash['data']['reverse_hash'];
+            		else $val['isSignatureValid'] = "false";
+            		return Response::json($val);
+            	}
+                else 
+                {
+                		
+                		$order->pg_type = "AMAZON";
+                		$order->amazon_hash = $val["hash"] = getpayTMhash($order->toArray())['reverse_hash'];
+                }
+                
+                
                 $order->update();
 
                 $val['order_id'] = $order->_id;
 
                 $success_data = [
-                    'txnid'=>$order['txnid'],
+                	'txnid'=>$val['sellerOrderId'],
                     'amount'=>(int)$val["orderTotalAmount"],
                     'status' => 'success',
                     'hash'=> $val["hash"]
@@ -5976,5 +6669,116 @@ class TransactionController extends \BaseController {
         return $data;
 
     }
+    
+    function getPaymentModesProduct($data){
+    	
+    	$payment_modes = [];
+    	    	
+    	array_push($payment_modes, ['title' => 'Online Payment','subtitle' => 'Transact online with netbanking, card and wallet','value' => 'paymentgateway']);
+    	array_push($payment_modes, ['title' => 'Cash Pickup','subtitle' => 'Schedule cash payment pick up','value' => 'cod']);
+    	
+    	$emi = $this->utilities->displayEmi(array('amount'=>$data['data']['amount']));    		
+    	if(!empty($data['emi']) && $data['emi'])
+    	   array_push($payment_modes, ['title' => 'EMI','subtitle' => 'Transact online with credit installments','value' => 'emi']);
+    	
+    	   
+        if($this->vendor_token)
+    		array_push($payment_modes, ['title' => 'Pay at Studio','subtitle' => 'Transact via paying cash at the Center','value' => 'pay_at_vendor']);
+    		
+    	return $payment_modes;
+    }
+    public function checkProductCaptureFailureStatus($data){
+    	
+    	try {
+    		$check=["status"=>1,"message"=>""];
+    		if(!empty($data['customer_source']))
+    		{
+    			if($data['customer_source']=='kiosk'&&empty($data['cart_data']))
+    				$check=["status"=>0,"message"=>"card_data key can't be empty."];
+    				else if($data['customer_source']!='kiosk')
+    					$check=["status"=>0,"message"=>"Products currently launched only for kiosk."];
+    			
+    		}
+    		if(!empty($data['finder_id']))
+    		{	
+    			$checkFinderState = $this->utilities->checkFinderState($data['finder_id']);
+    			if($checkFinderState['status'] != 200)
+    				$check=["status"=>0,"message"=>$checkFinderState['message']];
+    		}
+
+    		return $check;
+    	} catch (Exception $e) 
+    	{
+    		return ['status'=>0,"message"=>$this->utilities->baseFailureStatusMessage($e)];
+    	}
+    	
+    }
+    
+    
+    public function getPaymentDetailsProduct($data){
+    	
+    	try {
+    		$response=["status"=>1,"message"=>"success"];
+    		$you_save = 0;
+    		$amount_summary= ['field' => 'Total Amount','value' => 'Rs. '.(isset($data['amount_calculated']['final']) ? $data['amount_calculated']['final']: $data['amount_calculated']['final'])];
+    		$amount_payable = ['field' => 'Total Amount Payable', 'value' => 'Rs. '.$data['amount_calculated']['final']];
+    		
+    		
+    		// 	******************************************************************************	CONVINIENCE FEE  ******************************************************************************
+    		
+    		/* 	if(isset($data['convinience_fee']) && $data['convinience_fee'] > 0){
+    		
+    		$amount_summary[] = array(
+    		'field' => 'Convenience Fee',
+    		'value' => '+Rs. '.$data['convinience_fee']
+    		);
+    		} */
+    		
+    		// 	******************************************************************************	CASHBACK DETAIL /  WALLET  APPLIED ******************************************************************************
+    		
+    		/* 	if(isset($data['cashback_detail']) && isset($data['cashback_detail']['amount_deducted_from_wallet']) && $data['cashback_detail']['amount_deducted_from_wallet'] > 0 &&  $payment_mode_type != 'pay_later'){
+    		
+    		$amount_summary[] = array(
+    		'field' => 'Fitcash Applied',
+    		'value' => '-Rs. '.$data['cashback_detail']['amount_deducted_from_wallet']
+    		);
+    		$you_save += $data['cashback_detail']['amount_deducted_from_wallet'];
+    		
+    		} */
+    		
+    		// 	******************************************************************************	COUPON DISCOUNT  ******************************************************************************
+    		/* if(isset($data['coupon_discount_amount']) && $data['coupon_discount_amount'] > 0){
+    		
+    		$amount_summary[] = array(
+    		'field' => 'Coupon Discount',
+    		'value' => '-Rs. '.$data['coupon_discount_amount']
+    		);
+    		$you_save += $data['coupon_discount_amount'];
+    		
+    		} */
+    		
+    		// 	******************************************************************************	APP DISCOUNT  ******************************************************************************
+    		
+    		/* if(isset($data['app_discount_amount']) && $data['app_discount_amount'] > 0){
+    		 $amount_summary[] = array(
+    		 'field' => 'App Discount',
+    		 'value' => '-Rs. '.$data['app_discount_amount']
+    		 );
+    		 $you_save += $data['app_discount_amount'];
+    		 } */
+    		
+    		$payment_details  = ["amount_summary"=>$amount_summary,"amount_payable"=>$amount_payable];
+    		
+    		if($you_save > 0)
+    			$payment_details['savings'] = ['field' => 'Your total savings',	'value' => "Rs.".$you_save];
+    		
+    		$response['details']=$payment_details;
+    		return $response;
+    		
+    	} catch (Exception $e) {
+    		return ['status'=>0,"message"=>$this->utilities->baseFailureStatusMessage($e)];
+    	}
+    }
+    
 
 }

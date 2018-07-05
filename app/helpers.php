@@ -2260,17 +2260,49 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
             	}
               }
             }
+            
+            if (!function_exists(('getCartOfCustomer'))) {            	
+            	function getCartOfCustomer($customer_id)
+            	{
+            		try {
+            			if(!empty($customer_id))
+            			{
+            				Cart::$withoutAppends=true;
+            				$cart=Cart::where("customer_id",intval($customer_id))->first(['_id']);
+            				if(!empty($cart))
+            					return $cart->_id;
+            					else {
+            						$inserted_id = Cart::max('_id') + 1;
+            						$cartNew = new Cart();
+            						$cartNew->_id=$inserted_id;
+            						$cartNew->customer_id=$customer_id;
+            						$cartNew->products=[];
+            						$cartNew->status="1";
+            						$cartNew->save();
+            						return $inserted_id;
+            					};
+            			}
+            			else return null;
+            		} catch (Exception $e) {
+            			Log::error(print_r($e,true));
+            			return null;
+            		}
+            	}
+            }
+
             if (!function_exists(('autoRegisterCustomer'))) {
 
                 function autoRegisterCustomer($data)
                 {   
                     Log::info("autoRegisterCustomer");
 					Log::info(print_r($data,true));
+
                 	$customer= Customer::active()->where('email', $data['customer_email'])->first();
                     
                     if (!$customer) {
 
                         $inserted_id = Customer::max('_id') + 1;
+                        
                         $customer = new Customer();
                         $customer->_id = $inserted_id;
                         $customer->rx_user = (isset($data['rx_user'])&& $data['rx_user'] !="")? true : false;
@@ -2315,6 +2347,12 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         $customer->old_customer = false;
                         $customer->demonetisation = time();
                         $customer->save();
+                        $cart_id=getCartOfCustomer(intval($inserted_id));
+                        if(!empty($cart_id))
+                        {
+                        	$customer->cart_id=$cart_id;
+                        	$customer->update();
+                        }
                         registerMail($customer->_id);
 
                         // invalidateDuplicatePhones($data, $customer->toArray());
@@ -2369,10 +2407,11 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                                 }
 
                             }
-
-                            if (count($customerData) > 0) {
+                            	$cart_id=getCartOfCustomer(intval($customer->_id));
+                            	if(!empty($cart_id))
+                            		$customer->cart_id=$cart_id;
+                            	
                                 $customer->update($customerData);
-                            }
 
                         } catch (ValidationException $e) {
 
@@ -2389,12 +2428,13 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
 
             }
 
+            
             if(!function_exists('createCustomerToken')){
                 function createCustomerToken($customer_id){
                     
                     $customer = Customer::find($customer_id);
                     $customer = array_except($customer->toArray(), array('password'));
-
+                    
                     $customer['name'] = (isset($customer['name'])) ? $customer['name'] : "";
                     $customer['email'] = (isset($customer['email'])) ? $customer['email'] : "";
                     $customer['picture'] = (isset($customer['picture'])) ? $customer['picture'] : "";
@@ -2407,6 +2447,9 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                     
                     $customer['gender'] = (isset($customer['gender'])) ? $customer['gender'] : "";
                     $customer['rx_user'] = (isset($customer['rx_user'])) ? $customer['rx_user'] : "";
+
+
+
 //                     $customer['rx_success_url'] = (isset($customer['rx_success_url'])) ? $customer['rx_success_url'] : "";
 
                     $data = array(
@@ -2429,7 +2472,10 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                             ); 
 
                     if(!empty($customer['referral_code']))
-                    	$data['referral_code'] = $customer['referral_code'];
+                    	$data['referral_code'] = $customer['referral_code'];	
+                    if(!empty($customer['cart_id']))
+                    	$data['cart_id']=$customer['cart_id'];
+                    		
                     $jwt_claim = array(
                         "iat" => Config::get('app.jwt.iat'),
                         "nbf" => Config::get('app.jwt.nbf'),
@@ -2784,6 +2830,51 @@ if (!function_exists(('getpayTMhash'))){
         // Log::info($data['paytm_hash']);
         return $data;
     }
+}
+if (!function_exists(('getBaseSuccessObject'))){
+	function getBaseSuccessObject(){
+		return ['status'=>1,'message'=>'success'];
+	}
+}
+if (!function_exists(('getReverseHashProduct'))){
+	function getReverseHashProduct($data){
+	
+		try {
+			
+			$resp=getBaseSuccessObject();
+			$createdData=[];
+			$tmp=[];
+			foreach ($data['cart_data'] as $value) {
+				array_push($tmp,$value['ratecard']['_id']);
+			}
+			
+			$productinfo = $createdData['productinfo'] = implode("_",array_map('strtolower', $tmp));
+			
+			$key = 'fitterKEY';
+			$salt = '1086fit';
+			
+			$txnid = $data['payment']['txnid'];
+			$amount = $data['amount_calculated']['final'].".00";
+			$firstname = strtolower($data['customer']['customer_name']);
+			$email = strtolower($data['customer']['customer_email']);
+			$udf1 = "";
+			$udf2 = "";
+			$udf3 = "";
+			$udf4 = "";
+			$udf5 = "";
+			
+			$payhash_str = $salt.'|success||||||'.'|'.$email.'|'.$firstname.'|'.$productinfo.'|'.$amount.'|'.$txnid.'|'.$key;
+			
+			$createdData['reverse_hash'] = hash('sha512', $payhash_str);
+			$resp['data']=$createdData;
+			return $resp;
+			
+		} catch (Exception $e) {
+			$message = ['type'    => get_class($e),'message' => $e->getMessage(),'file'=> $e->getFile(),'line'=> $e->getLine()];
+			return ['status'=>0,"message"=>$message['type'].' : '.$message['message'].' in '.$message['file'].' on '.$message['line']];
+		}
+		
+	}
 }
 
 if (!function_exists(('customerTokenDecode'))){
