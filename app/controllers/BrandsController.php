@@ -132,6 +132,17 @@ class BrandsController extends \BaseController {
                 if(isset($data["stripe_data"])){
                     $data['brand']['stripe_data'] = $data["stripe_data"];
                 }
+                
+                if(empty($finders) || empty($finders['metadata']['total_records'])){
+                    Log::info("Not caching brand");
+
+                    if(Config::get('app.debug')){
+                        $findersms = new \App\Sms\FinderSms();
+                        $findersms->brandVendorEmpty(['url'=>Config::get('app.url').$_SERVER['REQUEST_URI']]);
+                    }
+
+                    return Response::json($data);
+                }
 
                 Cache::tags('brand_detail')->put("$slug-$city" ,$data,Config::get('cache.cache_time'));
                 
