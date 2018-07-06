@@ -4714,21 +4714,27 @@ class HomeController extends BaseController {
         			$this->utilities->customSort('index',$val);
         		foreach($tp as &$val) {
         			foreach($val as &$vala) {
-        				unset($vala["index"]);unset($vala["base"]);
-        				$vala['product_id']=$vala['product_id'];
-        				$tmp_data=array_values(array_filter($homeData['rc'],function ($e) use ($vala) {return $vala['ratecard_id']== $e['ratecard']['_id'];}));
+                        unset($vala["index"]);unset($vala["base"]);
+                        if(isset($vala['product_id'])){
+                            $vala['product_id']=$vala['product_id'];
+
+                        }
+                        $tmp_data=array_values(array_filter($homeData['rc'],function ($e) use ($vala) {return $vala['ratecard_id']== $e['ratecard']['_id'];}));
+                    
         				if(!empty($tmp_data))
         				{
         					$tmp_data=$tmp_data[0];
         					$vala['product_title']=$tmp_data['product']['title'];
+        					$vala['product_slug']=$tmp_data['product']['slug'];
         					if(!empty($tmp_data['product'])&&!empty($tmp_data['product']['primarycategory'])&&!empty($tmp_data['product']['primarycategory']['slug']))
         					{
-        						$vala['product_category_slug']=$tmp_data['product']['primarycategory']['slug'];
+                                $vala['product_category_slug']=$tmp_data['product']['primarycategory']['slug'];
         						$vala['product_category_id']=$tmp_data['product']['primarycategory']['_id'];
         					}
         					
         					$vala['product_title']=$tmp_data['product']['title'];
         					$vala['ratecard_title']=$tmp_data['ratecard']['title'];
+                            $vala['price']=$tmp_data['ratecard']['price'];
         				}	
         			}
         		}
