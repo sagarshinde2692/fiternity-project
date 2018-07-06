@@ -4739,7 +4739,11 @@ class HomeController extends BaseController {
         			}
         		}
         		
-        		$home["response"]['products']=array_values($tp);
+                $home["response"]['products']=array_values($tp);
+                if(isset($homeData['header_image'])){
+                    array_unshift($home["response"]['products'], [['type'=>'header', 'url'=>$homeData['header_image']]]);
+                    // $home["response"]['header_image']=$homeData['header_image'];
+                }
         		$jwt_token = Request::header("Authorization");
         		if(isset($jwt_token))
         		{
