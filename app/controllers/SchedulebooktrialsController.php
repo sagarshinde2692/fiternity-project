@@ -7090,7 +7090,7 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrial->post_trial_status = 'attended';
 
             $lostfitcode = !empty($booktrial->lostfitcode) ? $booktrial->lostfitcode : array();
-            
+            // $reason = 'didnt_get_fitcode';
             $reason_message_array = [
                 "Thanks for your feedback",
                 "Thanks! We'll put the Fitcash in your wallet within 48 hours",
