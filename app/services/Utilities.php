@@ -4124,7 +4124,7 @@ Class Utilities {
 		return $knowlarity_no;
     }
     
-    public function compressImage($file, $src, $dst, $dir='tmp-images'){
+    public function compressImage($file, $src, $dir='tmp-images'){
         $mime_type = $file->getClientMimeType();
         $file_extension = $file->getClientOriginalExtension();
         $local_directory = public_path().'/'.$dir;
@@ -4141,30 +4141,25 @@ Class Utilities {
         }
 
         imagejpeg($image, $local_path_compressed, 30);
+
+        unlink($local_path_original);
         
         return $local_path_compressed;
     }
 
-    public function uploadFileToS3($localpath, $s3_path){
+    public function uploadFileToS3($local_path, $s3_path){
         try{
+            $s3 = \AWS::get('s3');
 					
-            $sub_path  = $finder['_id']."/".$file_name.".".$file_extension;
             $result = $s3->putObject(array(
                 'Bucket'     => Config::get('app.aws.bucket'),
-                'Key'        => Config::get('app.aws.review_images.path').$sub_path,
+                'Key'        => $s3_path,
                 'SourceFile' => $local_path
             ));
-            if(file_exists($local_path)){
-                unlink($local_path);
-            }
-            
-            array_push($images_urls, Config::get('app.aws.review_images.url').$sub_path);
-            
+            return true;
         }catch(Exception $e){
             Log::info($e);
-            if(file_exists($local_path)){
-                unlink($local_path);
-            }
+            return false;
         }
     }
 

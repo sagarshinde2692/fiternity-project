@@ -2096,14 +2096,16 @@ class FindersController extends \BaseController {
 
 		$images = Input::file('images') ;
 		$images_urls = [];
+		
 		if($images){
-			$s3 = AWS::get('s3');
 
 			foreach($images as $key => $value){
 				Log::info("Asdsad");
 				// return get_class($value);
 				if($value->getError()){
+					
 					return Response::json(['status'=>400, 'message'=>'Please upload jpg/jpeg/png imgage formats with max. size of 4 MB']);
+				
 				}
 
 				$file_name = "review-".$data['customer_id']."-".time()."-$key";
@@ -2128,13 +2130,55 @@ class FindersController extends \BaseController {
 				
 				$watermarked_s3_path  = $finder['_id']."/".$compressed_path_parts['filename']."-w.".$compressed_path_parts['extension'];
 				
-				$this->utilities->uploadImageS3( $path_compresed, Config::get('app.aws.review_images.url').$compressed_s3_path);
-				
-				$this->utilities->uploadImageS3( $path_watermarked,Config::get('app.aws.review_images.url').$watermarked_s3_path);
-				
+				$this->utilities->uploadFileToS3( $path_compresed, Config::get('app.aws.review_images.path').$compressed_s3_path);
+				$this->utilities->uploadFileToS3( $path_watermarked,Config::get('app.aws.review_images.path').$watermarked_s3_path);
+				unlink($path_compresed);
+				unlink($path_watermarked);
+
+				array_push($images_urls, Config::get('app.aws.review_images.url').$watermarked_s3_path);
 			}
+			
 			$reviewdata['images'] = $images_urls;
+		
 		}
+
+		if(!empty($data['tag'])){
+			$txn = null;
+			switch($data['tag']){
+				case 'trial':
+					$txn = Booktrial::where('customer_id', $customer_id)->where('finder_id', $finder_id)->where('type', 'booktrial')->first();
+				break;
+				case 'workout-session':
+					$txn = Booktrial::where('customer_id', $customer_id)->where('finder_id', $finder_id)->where('type', 'workout-session')->first();
+				break;
+				case 'membership':
+					$txn = Booktrial::where('customer_id', $customer_id)->where('finder_id', $finder_id)->whereNotIn('type', ['workout-session', 'booktrial'])->first();
+				break;
+			}
+
+			if($txn){
+				$reviewdata['tag'] = [$data['tag'].'_verified'];
+			}
+		}else{
+
+			$prev_order = Transaction::where('customer_id', $customer_id)->where('finder_id', $finder_id)->where(function($query){$query->orWhere('transaction_type', '!=', 'Order')->orWhere('status', '1');})->orderBy('_id', 'desc')->first();
+
+			if($prev_order && !empty($prev_order['type'])){
+				$type = $prev_order ;
+				switch($type){
+					case 'booktrial':
+					$reviewdata['tag'] = 'trial_verified';
+					break;
+					case 'worktout-session':
+					$reviewdata['tag'] = 'workout_sesison_verified';
+
+					break;
+					default:
+					$reviewdata['tag'] = 'membership_verified';
+				}
+			}
+		}
+		
 		
 		$fresh_review = true;
 
