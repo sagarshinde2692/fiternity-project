@@ -7099,8 +7099,8 @@ class SchedulebooktrialsController extends \BaseController {
             }
             
             if(!empty($_GET['source']) && $_GET['source'] == "activate_session"){
-                $reason = 'didnt_get_fitcode';
-                $lostfitcode['didnt_get_fitcode'] = time();
+                $lostfitcode['reason'] = 'didnt_get_fitcode';
+                $lostfitcode['time'] = time();
             }
 
             $booktrial->lostfitcode = $lostfitcode;
