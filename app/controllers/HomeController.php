@@ -4700,11 +4700,11 @@ class HomeController extends BaseController {
         {
         	try {
         		
-        		$home=["status"=>1,"response"=>["products"=>[]]];
+        		$home=["status"=>200,"response"=>["products"=>[]]];
         		$homeData=Homepage::active()->where("type","product_tab")->first();
         		if(!empty($homeData))
         			$homeData=$homeData->toArray();
-        		else return ['status'=>0,"message"=>"No home data found."];
+        		else return ['status'=>400,"message"=>"No home data found."];
         		$t=&$homeData['home'];
 //         		return $t;
         		$this->utilities->customSort('base',$t);
