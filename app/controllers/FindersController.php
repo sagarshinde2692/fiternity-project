@@ -4962,6 +4962,10 @@ class FindersController extends \BaseController {
 						[
 							"title"=>"Book healthy, calorie counted yet tasty tiffin subscription.",
 							"image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/point4.png"
+						],
+						[
+							"title"=>"Fitsotre",
+							"image"=>"https://b.fitn.in/products/fitstore_header.jpg"
 						]
 					]
 				],
@@ -5047,6 +5051,14 @@ class FindersController extends \BaseController {
 					"banner_image"=>"https://b.fitn.in/global/tabapp-homescreen/rewards-big-picture-1.jpg",
 					"id"=>7,
 					'type'=>'rewards'
+				],
+				[
+					"title"=>"Fitstore",
+					"description"=>"Rate your experience & help fellow fitness enthusiasts.",
+					"image"=>"https://b.fitn.in/products/fitstore_header.jpg",
+					"banner_image"=>"https://b.fitn.in/global/tabapp-homescreen/postreview-big.png",
+					"id"=>8,
+					'type'=>'fitstore'
 				],
 			];
 		}
