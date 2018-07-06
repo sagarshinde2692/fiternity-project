@@ -7115,21 +7115,21 @@ class SchedulebooktrialsController extends \BaseController {
             
             $this->updateOrderStatus($booktrial);
 
-            $req = array(
-                "customer_id"=>$booktrial['customer_id'],
-                "trial_id"=>$booktrial['_id'],
-                "amount"=> $fitcash_amount,
-                "amount_fitcash" => 0,
-                "amount_fitcash_plus" => $fitcash_amount,
-                "type"=>'CREDIT',
-                'entry'=>'credit',
-                'validity'=>time()+(86400*21),
-                'description'=>"Added FitCash+ on Lost Fitcode, Applicable for buying a membership at ".ucwords($booktrial['finder_name'])." Expires On : ".date('d-m-Y',time()+(86400*21)),
-                "valid_finder_id"=>intval($booktrial['finder_id']),
-                "finder_id"=>intval($booktrial['finder_id']),
-            );
+            // $req = array(
+            //     "customer_id"=>$booktrial['customer_id'],
+            //     "trial_id"=>$booktrial['_id'],
+            //     "amount"=> $fitcash_amount,
+            //     "amount_fitcash" => 0,
+            //     "amount_fitcash_plus" => $fitcash_amount,
+            //     "type"=>'CREDIT',
+            //     'entry'=>'credit',
+            //     'validity'=>time()+(86400*21),
+            //     'description'=>"Added FitCash+ on Lost Fitcode, Applicable for buying a membership at ".ucwords($booktrial['finder_name'])." Expires On : ".date('d-m-Y',time()+(86400*21)),
+            //     "valid_finder_id"=>intval($booktrial['finder_id']),
+            //     "finder_id"=>intval($booktrial['finder_id']),
+            // );
             
-            $this->utilities->walletTransaction($req);
+            // $this->utilities->walletTransaction($req);
             
             $booktrial->post_trial_initail_status = 'interested';
             $booktrial->post_trial_status_updated_by_lostfitcode = time();
