@@ -2108,6 +2108,94 @@ Class CustomerReward {
                 }
             }
 
+
+            if(strtolower($couponCode) == 'zumba'){
+
+                $jwt_token = Request::header('Authorization');
+
+                if(!empty($jwt_token)){
+
+                    $decoded = $this->customerTokenDecode($jwt_token);
+                    $customer_id = $decoded->customer->_id;
+
+                    if((int)$customerCoupn['customer_id'] !== $customer_id){
+
+                        $resp['user_login_error'] = true;
+                        $resp['error_message'] = 'Wrong Logged in User';
+
+                        return $resp;
+                    }
+
+                }else{
+
+                    $resp['user_login_error'] = true;
+                    $resp['error_message'] = 'User Login Required';
+
+                    return $resp;
+                }
+
+                if(!empty($ratecard['type']) && $ratecard['type'] == 'workout session'){
+
+                    $service = Service::find((int)$ratecard['service_id']);
+
+                    if($service && !empty($service['servicecategory_id']) && $service['servicecategory_id'] == 19){
+
+                        $applyCustomerCoupn = true;
+
+                    }else{
+
+                        $resp['user_login_error'] = true;
+                        $resp['error_message'] = 'This coupon is applicable only on zumba sessions.';
+
+                        return $resp;
+                    }
+
+                }
+
+                if($applyCustomerCoupn){
+
+                    $final_amount = 149;
+
+                    if($wallet_balance >= $price){
+
+                        $discount_amount = 0;
+                        $discount_price = 0;
+                        $final_amount = 0;
+                        $applyCustomerCoupn = false;
+
+                        $resp['user_login_error'] = true;
+                        $resp['error_message'] = 'Use Fitcash First';                                                                                                                                                                                                               
+
+                    }else{
+
+                        $discount_amount = $price - $final_amount;
+                        $discount_price = $price - $final_amount;
+
+                        if($wallet_balance >= $final_amount){
+                            
+                            $final_amount = 0;
+
+                        }else{
+
+                            $final_amount = $final_amount - $wallet_balance;
+                        }
+
+                    }
+
+                    $resp = [
+                        "data"=>[
+                            "discount" => $discount_amount,
+                            "final_amount" => $final_amount,
+                            "wallet_balance" => $wallet_balance,
+                            "only_discount" => $discount_price
+                        ],
+                        "coupon_applied" => $applyCustomerCoupn
+                    ];
+
+                }
+
+            }
+
             return $resp;
 
         }
