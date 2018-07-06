@@ -5305,9 +5305,9 @@ class FindersController extends \BaseController {
 				],
 				[
 					"title"=>"Fitstore",
-					"description"=>"Rate your experience & help fellow fitness enthusiasts.",
+					"description"=>"Buy products",
 					"image"=>"https://b.fitn.in/products/fitstore_header.jpg",
-					"banner_image"=>"https://b.fitn.in/global/tabapp-homescreen/postreview-big.png",
+					"banner_image"=>"https://b.fitn.in/products/fitstore_header.jpg",
 					"id"=>8,
 					'type'=>'fitstore'
 				],
