@@ -1605,7 +1605,7 @@ class SchedulebooktrialsController extends \BaseController {
                     $sndInstantEmailCustomer        =   $this->customermailer->healthyTiffinMembership($order->toArray());
                     $sndInstantSmsCustomer         =    $this->customersms->healthyTiffinMembership($order->toArray());
 
-                    $this->customermailer->payPerSessionFree($order->toArray());
+                    // $this->customermailer->payPerSessionFree($order->toArray());
                 }
 
             }else{
@@ -1613,7 +1613,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $sndInstantEmailCustomer        =   $this->customermailer->healthyTiffinMembership($order->toArray());
                 $sndInstantSmsCustomer         =    $this->customersms->healthyTiffinMembership($order->toArray());
 
-                $this->customermailer->payPerSessionFree($order->toArray());
+                // $this->customermailer->payPerSessionFree($order->toArray());
             }
 
             if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
@@ -6848,7 +6848,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         Log::info("pubNub array : ",$array);
 
-        $pubnub = new \Pubnub\Pubnub('pub-c-df66f0bb-9e6f-488d-a205-38862765609d', 'sub-c-d9cf3842-cf1f-11e6-90ff-0619f8945a4f');
+        $pubnub = new \Pubnub\Pubnub(Config::get('app.pubnub_publish'), Config::get('app.pubnub_sub'));
  
         $pubnub->publish('fitternity_ozonetel',$array);
 
@@ -7429,7 +7429,7 @@ class SchedulebooktrialsController extends \BaseController {
         
 
         Log::info("publishing trial alert");
-        $pubnub = new \Pubnub\Pubnub('pub-c-df66f0bb-9e6f-488d-a205-38862765609d', 'sub-c-d9cf3842-cf1f-11e6-90ff-0619f8945a4f');
+        $pubnub = new \Pubnub\Pubnub(Config::get('app.pubnub_publish'), Config::get('app.pubnub_sub'));
         $booktrial_data = array_only($booktrial_data, ['_id', 'finder_name', 'schedule_date_time','finder_location','customer_name', 'city_id']);
         $booktrial_data['schedule_date_time'] = date('d-m-Y g:i A',strtotime( $booktrial_data['schedule_date_time']));
         $booktrial_data['type'] = 1;

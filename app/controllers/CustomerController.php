@@ -97,6 +97,12 @@ class CustomerController extends \BaseController {
 
 		foreach ($trials as $trial){
 
+			array_set($trial, 'type_text', 'Trial');
+
+			if($trial['type'] == 'workout-session'){
+				array_set($trial, 'type_text', 'Workout Session');
+			}
+
 			array_set($trial, 'message', '');
 			array_set($trial, 'finder_offerings', []);
 
@@ -3351,7 +3357,7 @@ class CustomerController extends \BaseController {
 				$cat['bangalore'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates"/*,"healthy-tiffins"*/,"cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling","luxury-hotels","swimming"/*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
 				$cat['delhi'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates"/*,"healthy-tiffins"*/,"cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling","luxury-hotels","swimming"/*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
 				$cat['gurgaon'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"pilates"/*,"healthy-tiffins"*/,"cross-functional-training","mma-and-kick-boxing","dance","spinning-and-indoor-cycling"/*,"sport-nutrition-supliment-stores"*/,"kids-fitness","pre-natal-classes","aerial-fitness"/*,"personal-trainers"*/);
-				$cat['noida'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"cross-functional-training","mma-and-kick-boxing","dance","kids-fitness","pre-natal-classes");
+				$cat['noida'] = array("gyms","yoga","zumba","fitness-studios",/*"crossfit",*/"cross-functional-training","mma-and-kick-boxing","dance",/*"kids-fitness","pre-natal-classes"*/);
 				if(isset($cat[$city])){
 					$category_slug = $cat[$city];
 				}
@@ -3460,30 +3466,34 @@ class CustomerController extends \BaseController {
 		if(isset($_REQUEST['device_type']) && in_array($_REQUEST['device_type'],['ios','android']) && isset($_REQUEST['app_version']) && ((float)$_GET['app_version'] >= 4.4)){
 
 			$result['campaigns'] =  [];
+
 			$result['campaigns'][] = [
-				'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/monsoon-with-code.jpg',
+				'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/monsoon%20banner%20-%20app%20new.png',
 				'link'=>'ftrnty://ftrnty.com/search/all',
 				'title'=>'Group Membership',
 				'height'=>100,
 				'width'=>375,
 				'ratio'=>(float) number_format(100/375,2)
 			];
+
 			if($city != "ahmedabad"){
+
 				$result['campaigns'][] = [
 					'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Mumbai_APP.png',
-					'link'=>'',
+					'link'=>'ftrnty://ftrnty.com/s?brand=golds-gym&city='.strtolower($city),
 					'title'=>'Pledge for Fitness',
 					'height'=>100,
 					'width'=>375,
 					'ratio'=>(float) number_format(100/375,2)
 				];
+
 				switch($city){
 					case "pune":
-						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Mumbai_APP.png";
+						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Pune_APP.png";
 						if(intval(date('d', time())) % 2 == 0){
 							$result['campaigns'][] = [
 								'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/Multifit_App.png',
-								'link'=>'',
+								'link'=>'ftrnty://ftrnty.com/s?brand=multifit&city='.strtolower($city),
 								'title'=>'Pledge for Fitness',
 								'height'=>100,
 								'width'=>375,
@@ -3492,7 +3502,7 @@ class CustomerController extends \BaseController {
 						}else{
 							array_splice($result['campaigns'], count($result['campaigns'])-1, 0, [[
 								'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/Multifit_App.png',
-								'link'=>'',
+								'link'=>'ftrnty://ftrnty.com/s?brand=multifit&city='.strtolower($city),
 								'title'=>'Pledge for Fitness',
 								'height'=>100,
 								'width'=>375,
@@ -3517,6 +3527,28 @@ class CustomerController extends \BaseController {
 						break;										
 				}
 			}
+
+			if($city == "mumbai"){
+
+				$result['campaigns'][] = [
+					'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/YFC_App%20banner.png',
+					'link'=>'ftrnty://ftrnty.com/s?brand=your-fitness-club&city='.strtolower($city),
+					'title'=>'Your Fitness Club (YFC)',
+					'height'=>100,
+					'width'=>375,
+					'ratio'=>(float) number_format(100/375,2)
+				];
+
+			}
+
+
+			if(!$this->app_version || $this->app_version < '4.9'){
+				foreach($result['campaigns'] as &$campaign){
+					if(isset($campaign['title']) && $campaign['title'] == 'Pledge for Fitness'){
+						$campaign['link'] = '';
+					}
+				}
+			}
 			
 			if($_REQUEST['device_type'] == 'ios'){
 
@@ -3531,14 +3563,6 @@ class CustomerController extends \BaseController {
 						'ratio'=>(float) number_format(100/375,2)
 					];
 
-					$result['campaigns'][] = [
-						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/Yoga_AppBanner%402x.png',
-						'link'=>'ftrnty://ftrnty.com/pps?',
-						'title'=>'Free Yoga Session',
-						'height'=>100,
-						'width'=>375,
-						'ratio'=>(float) number_format(100/375,2)
-					];
 				}
 
 			}else{
@@ -3547,15 +3571,6 @@ class CustomerController extends \BaseController {
 
 					$result['campaigns'][] = [
 						'image'=>'https://b.fitn.in/global/paypersession_branding/app_banners/App-pps%402x.png',
-						'link'=>'ftrnty://ftrnty.com/pps',
-						'title'=>'Pay Per Session',
-						'height'=>100,
-						'width'=>375,
-						'ratio'=>(float) number_format(100/375,2)
-					];
-
-					$result['campaigns'][] = [
-						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/Yoga_AppBanner%402x.png',
 						'link'=>'ftrnty://ftrnty.com/pps',
 						'title'=>'Pay Per Session',
 						'height'=>100,
@@ -3575,77 +3590,6 @@ class CustomerController extends \BaseController {
 				'width'=>375,
 				'ratio'=>(float) number_format(100/375,2)
 			];
-
-			if($_REQUEST['device_type'] == 'ios'){
-
-				if($this->app_version > '4.4.3'){
-
-					$result['campaigns'][] = [
-						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/Group_AppBanner.png',
-						'link'=>'ftrnty://ftrnty.com/s/',
-						'title'=>'Group Membership',
-						'height'=>100,
-						'width'=>375,
-						'ratio'=>(float) number_format(100/375,2)
-					];
-				}
-
-			}else{
-
-				if($this->app_version > '4.4.3'){
-
-					$result['campaigns'][] = [
-						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/Group_AppBanner.png',
-						'link'=>'ftrnty://ftrnty.com/search/all',
-						'title'=>'Group Membership',
-						'height'=>100,
-						'width'=>375,
-						'ratio'=>(float) number_format(100/375,2)
-					];
-
-				}
-
-			}
-			
-			$result['campaigns'][] = [
-				'image'=>'https://b.fitn.in/global/ios_homescreen_banner/emi-app-banner.png',
-				'link'=>'https://www.fitternity.com/emi?mobile_app=true',
-				'title'=>'Easy EMI',
-				'height'=>100,
-				'width'=>375,
-				'ratio'=>(float) number_format(100/375,2)
-			];
-
-			if($_REQUEST['device_type'] == 'ios'){
-
-				if($this->app_version > '4.4.3'){
-
-					$result['campaigns'][] = [
-						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/AmazonPay_AppBanner.png',
-						'link'=>'ftrnty://ftrnty.com/pps?',
-						'title'=>'Amazon Pay Offer',
-						'height'=>100,
-						'width'=>375,
-						'ratio'=>(float) number_format(100/375,2)
-					];
-				}
-
-			}else{
-
-				if($this->app_version > '4.4.3'){
-
-					$result['campaigns'][] = [
-						'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/AmazonPay_AppBanner.png',
-						'link'=>'ftrnty://ftrnty.com/pps',
-						'title'=>'Amazon Pay Offer',
-						'height'=>100,
-						'width'=>375,
-						'ratio'=>(float) number_format(100/375,2)
-					];
-
-				}
-
-			}
 
 			$lat = isset($_REQUEST['lat']) && $_REQUEST['lat'] != "" ? $_REQUEST['lat'] : "";
 	        $lon = isset($_REQUEST['lon']) && $_REQUEST['lon'] != "" ? $_REQUEST['lon'] : "";

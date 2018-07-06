@@ -167,7 +167,7 @@ class FindersController extends \BaseController {
 				// ->with(array('ozonetelno'=>function($query){$query->select('*')->where('status','=','1');}))
 				->with(array('knowlarityno'=>function($query){$query->select('*')->where('status',true)->orderBy('extension', 'asc');}))
 
-				->with(array('services'=>function($query){$query->where('status','=','1')->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->orderBy('ordering', 'ASC');}))
+				->with(array('services'=>function($query){$query->where('status','=','1')->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('location'=>function($query){$query->select('_id','name');}))->orderBy('ordering', 'ASC');}))
 
 				->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1')->orderBy('updated_at', 'DESC')->limit(5);}))
 				// ->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1')->orderBy('_id', 'DESC');}))
@@ -444,9 +444,9 @@ class FindersController extends \BaseController {
 				$finderarr['services'] = $this->sortNoMembershipServices($finderarr['services'], 'finderdetail');
 				
 
-
 				
-				array_set($finder, 'services', pluck( $finderarr['services'] , ['_id', 'name', 'lat', 'lon', 'serviceratecard', 'session_type', 'workout_tags', 'calorie_burn', 'workout_results', 'short_description','service_trainer','timing','category','subcategory','batches','vip_trial','meal_type','trial','membership', 'offer_available', 'showOnFront', 'traction', 'timings', 'flags','location_id']  ));
+
+				array_set($finder, 'services', pluck( $finderarr['services'] , ['_id', 'name', 'lat', 'lon', 'serviceratecard', 'session_type', 'workout_tags', 'calorie_burn', 'workout_results', 'short_description','service_trainer','timing','category','subcategory','batches','vip_trial','meal_type','trial','membership', 'offer_available', 'showOnFront', 'traction', 'timings', 'flags','location_id','slug','location']  ));
 				array_set($finder, 'categorytags', pluck( $finderarr['categorytags'] , array('_id', 'name', 'slug', 'offering_header') ));
 				// array_set($finder, 'findercollections', pluck( $finderarr['findercollections'] , array('_id', 'name', 'slug') ));
 				// array_set($finder, 'blogs', pluck( $finderarr['blogs'] , array('_id', 'title', 'slug', 'coverimage') ));
@@ -987,10 +987,30 @@ class FindersController extends \BaseController {
 					Log::info("Integrated vendor");
 				}
 				
+
+				$nearby_other_options_meta = [
+                    "offset" => 0,
+                    "limit" => 0,
+                    "radius" => "2km",
+                    "category"=>"",
+                    "lat"=>$finderdata["lat"],
+                    "lon"=>$finderdata["lon"],
+                    "city"=>strtolower($finderdata["city"]["name"]),
+                    "keys"=>[
+                    ]
+				];
+				
 				$nearby_same_category = geoLocationFinder($nearby_same_category_request);
 
-                $nearby_other_category = geoLocationFinder($nearby_other_category_request);
+				$nearby_other_category = geoLocationFinder($nearby_other_category_request);
+				
+				$nearby_other_options_meta = geoLocationFinderMeta($nearby_other_options_meta);
 
+				$finder['nearby_options'] = "";
+				if(in_array($finder['_id'], [576,1451,1460,1647,9883,2522,401,1486,1488,1458,1487,1452,1878,4830,4827,4831,4829,13138,13135,13137,13136,11836,11828,11829,11838,13680,11830,11451])){
+					$finder['nearby_options'] = isset($nearby_other_options_meta['total_records']) ? $nearby_other_options_meta['total_records'] : "";
+				}
+				
                 // $nearby_same_category = array();
 
 				// $nearby_same_category       =   Finder::where('category_id','=',$findercategoryid)
@@ -1207,7 +1227,7 @@ class FindersController extends \BaseController {
 					unset($response['finder']['payment_options']);
 				}
 
-				
+				// $response['finder']['services'] = $this->addPPSStripe($response['finder'], 'finderdetail');
 
 				Cache::tags('finder_detail')->put($cache_key,$response,Config::get('cache.cache_time'));
 
@@ -2972,7 +2992,7 @@ class FindersController extends \BaseController {
 		}else{
 			$items = $finder["services"];
 
-			$items = pluck($items, array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos','trial','membership', 'traction', 'location_id','offer_available', 'showOnFront','calorie_burn'));
+			$items = pluck($items, array('_id','name','finder_id', 'serviceratecard','trialschedules','servicecategory_id','batches','short_description','photos','trial','membership', 'traction', 'location_id','offer_available', 'showOnFront','calorie_burn', 'slug', 'location'));
 
 		}
 
@@ -3025,15 +3045,15 @@ class FindersController extends \BaseController {
 				'description'=>'Burn Fat | Super Cardio'
 			);
 			
-			// if(isset($_GET['device_type']) && $_GET['device_type'] == 'ios'){
+			if(isset($_GET['device_type']) && $_GET['device_type'] == 'android'){
 			
-			// 	$extra_info[] = array(
-			// 		'title'=>'Description',
-			// 		'icon'=>'https://b.fitn.in/iconsv1/vendor-page/form.png',
-			// 		'description'=> $item['short_description']
-			// 	);
+				$extra_info[] = array(
+					'title'=>'Description',
+					'icon'=>'https://b.fitn.in/iconsv1/vendor-page/form.png',
+					'description'=> $item['short_description']
+				);
 			
-			// }
+			}
 
 			if($category && ($category["_id"] == 42 || $category["_id"] == 45)){
 
@@ -3100,6 +3120,8 @@ class FindersController extends \BaseController {
 				'location_id' => $item['location_id'],
 				'offer_available' => isset($item['offer_available']) ? $item['offer_available'] : false,
 				'short_description' => isset($item['short_description']) ? $item['short_description'] : "",
+				'slug'=>isset($item['slug']) ? $item['slug'] : "",
+				'location'=>isset($item['location']) ? $item['location'] : null
 				// 'showOnFront'=>(isset($item['showOnFront'])) ? $item['showOnFront'] : []
 			);
 			
@@ -3146,6 +3168,7 @@ class FindersController extends \BaseController {
 									$ratecardoffer                  =   $ratecardoffersRecard;
 									$ratecardoffer['offer_text']    =   "";
 									$ratecardoffer['offer_icon']    =   "https://b.fitn.in/global/final_monsoon_tag.png";
+									$ratecardoffer['offer_color'] 	= 	"#5EBBBA";
 
 									if(isset($rateval['flags'])){
 
@@ -3204,7 +3227,7 @@ class FindersController extends \BaseController {
 							$rateval['remarks'] = $ratecardoffers[0]['remarks'];
 						}
 
-						if($offer_price !== 0 && $offer_price < $cost_price){
+						if($offer_price !== 0 && $offer_price < $cost_price && !in_array($rateval['type'], ['workout session', 'trial'])){
 
 	                    	$offf_percentage = ceil((($cost_price - $offer_price) /$cost_price) *100);
 
@@ -3241,7 +3264,11 @@ class FindersController extends \BaseController {
 					        }else{
 					            $rateval_price = $rateval['price'];
 					        }
+							if($rateval_price>= 5000){
 
+								$rateval['campaign_offer'] = !empty($rateval['campaign_offer']) ?  $rateval['campaign_offer']."(EMI available)" : "(EMI available)";
+								$rateval['campaign_color'] = "#43a047";
+							}
 					        /*if($rateval_price >= 20000){
 
 					        	$rateval['campaign_offer'] = "(EMI options available)";
@@ -3406,13 +3433,13 @@ class FindersController extends \BaseController {
 				// ->with(array('ozonetelno'=>function($query){$query->select('*')->where('status','=','1');}))
 				->with(array('knowlarityno'=>function($query){$query->select('*')->where('status',true)->orderBy('extension', 'asc');}))
 
-				->with(array('services'=>function($query){$query->select('*')->where('status','=','1')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))->orderBy('ordering', 'ASC');}))
+				->with(array('services'=>function($query){$query->select('*')->where('status','=','1')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))->with(array('location'=>function($query){$query->select('_id','name');}))->orderBy('ordering', 'ASC');}))
 
 				->with(array('reviews'=>function($query){$query->where('status','=','1')->select('_id','finder_id','customer_id','rating','description','updated_at')->with(array('customer'=>function($query){$query->select('_id','name','picture')->where('status','=','1');}))->orderBy('updated_at', 'DESC')->limit(1);}))
-				->first(array('_id','slug','title','lat','lon','category_id','category','location_id','location','city_id','city','categorytags','locationtags','offerings','facilities','coverimage','finder_coverimage','contact','average_rating','photos','info','manual_trial_enable','manual_trial_auto','trial','commercial_type','multiaddress','membership','flags','custom_link','videos','total_rating_count','playOverVideo'));
-
+				->first(array('_id','slug','title','lat','lon','category_id','category','location_id','location','city_id','city','categorytags','locationtags','offerings','facilities','coverimage','finder_coverimage','contact','average_rating','photos','info','manual_trial_enable','manual_trial_auto','trial','commercial_type','multiaddress','membership','flags','custom_link','videos','total_rating_count','playOverVideo','pageviews'));
+			
 			$finder = false;
-
+			
 			if($finderarr){
 				$finderarr = $finderarr->toArray();
 
@@ -3619,7 +3646,7 @@ class FindersController extends \BaseController {
 
 				// return $finderarr['services'];
 
-				array_set($finder, 'services', pluck( $finderarr['services'] , ['_id', 'name', 'lat', 'lon', 'ratecards', 'serviceratecard', 'session_type', 'trialschedules', 'workoutsessionschedules', 'workoutsession_active_weekdays', 'active_weekdays', 'workout_tags', 'short_description', 'photos','service_trainer','timing','category', 'subcategory','batches','vip_trial','meal_type','trial','membership', 'timings','finder_id','servicecategory_id','traction','location_id', 'offer_available','calorie_burn']  ));
+				array_set($finder, 'services', pluck( $finderarr['services'] , ['_id', 'name', 'lat', 'lon', 'ratecards', 'serviceratecard', 'session_type', 'trialschedules', 'workoutsessionschedules', 'workoutsession_active_weekdays', 'active_weekdays', 'workout_tags', 'short_description', 'photos','service_trainer','timing','category', 'subcategory','batches','vip_trial','meal_type','trial','membership', 'timings','finder_id','servicecategory_id','traction','location_id', 'offer_available','calorie_burn', 'slug', 'location']  ));
 
 				array_set($finder, 'categorytags', array_map('ucwords',array_values(array_unique(array_flatten(pluck( $finderarr['categorytags'] , array('name') ))))));
 				array_set($finder, 'locationtags', array_map('ucwords',array_values(array_unique(array_flatten(pluck( $finderarr['locationtags'] , array('name') ))))));
@@ -3831,6 +3858,7 @@ class FindersController extends \BaseController {
 					if(isset($data['finder']['multiaddress']	) && count($data['finder']['multiaddress'])>0 && isset($data['finder']['multiaddress'][0]['location'])){
 						$data['finder']['multiaddress']	[0]['location'] = [$finder['location']['name']];
 					}
+
 					
 					$campaign_offer = false;
 					
@@ -4087,10 +4115,10 @@ class FindersController extends \BaseController {
 
                 $nearby_other_category = geoLocationFinder($nearby_other_category_request);
 
-                $data['recommended_vendor']['title'] = "Trending near you";
+                $data['recommended_vendor']['title'] = "Other popular options in ".$finderarr["location"]["name"];
                 $data['recommended_vendor']['description'] = "Checkout fitness services near you";
-                $data['recommended_vendor']['near_by_vendor'] = $nearby_other_category;
-
+				$data['recommended_vendor']['near_by_vendor'] = $nearby_other_category;
+				
 				$data = Cache::tags($cache_name)->put($cache_key, $data, Config::get('cache.cache_time'));
 
 			}
@@ -4271,6 +4299,9 @@ class FindersController extends \BaseController {
 						$finderData['finder']['pay_per_session'] = false;
 					}
 
+					if($_GET['app_version'] > 4.8){
+						$finderData['finder']['services'] = $this->addPPSStripe($finderData['finder']);
+					}
 				}
 				if($finderData['finder']['commercial_type'] == 0){
 					$finderData['finder']['trial'] = "disable";
@@ -5496,10 +5527,15 @@ class FindersController extends \BaseController {
 
 				if(!empty($ratecard['offers']) && !empty($ratecard['offers'][0]['offer_type']) && $ratecard['offers'][0]['offer_type'] == 'newyears'){
 
-					$return['callout'] = $service[$service_name]." - ".$this->getServiceDuration($ratecard)." @ Rs. ".$ratecard['offers'][0]['price'];
+					$return['callout'] = $service[$service_name]." - ".$this->getServiceDuration($ratecard)." @ Rs. ".$ratecard['offers'][0]['price'].". ";
+
+					if($source == 'app'){
+
+						$return['callout'] = $service[$service_name]." - <b>".$this->getServiceDuration($ratecard)."</b> @ Rs. <b>".$ratecard['offers'][0]['price']."</b>. ";
+					}
 
 					if(!empty($ratecard['offers'][0]['callout'])){
-						$return['callout'] = $ratecard['offers'][0]['callout'];
+						$return['callout'] .= $ratecard['offers'][0]['callout'];
 					}
 
 					$return['ratecard_id'] = (int)$ratecard['_id'];
@@ -5740,4 +5776,88 @@ class FindersController extends \BaseController {
 		}
 		
 	}
+	public function addPPSStripe($finder, $source='app'){
+		
+		$ratecard_key = 'ratecard';
+
+		if($source != 'app'){
+			$ratecard_key = 'serviceratecard';
+		}
+		
+		foreach($finder['services'] as &$service){
+			$pps_ratecard = null;
+			$pps_exists = false;
+			if(isFinderIntegrated($finder) && isServiceIntegrated($service)){
+
+				foreach($service[$ratecard_key] as $key => &$ratecard){
+					
+					if(isset($ratecard['type']) && $ratecard['type'] == 'workout session'){
+						$pps_exists = true;
+						$pps_ratecard = $ratecard;
+					}
+	
+					if(isset($ratecard['type']) && $ratecard['type'] == 'membership'){
+						if(isset($pps_exists) && $pps_exists){
+							array_splice( $service[$ratecard_key], $key+1, 0, [$this->addPPSStripeData($pps_ratecard, $service, $finder)]); 
+							break;
+						}else{
+							break;
+						}
+						
+					}
+				}
+			}
+		}
+		
+		return $finder['services'];
+	}
+
+	public function addPPSStripeData($ratecard, $service, $finder){
+		
+		$count = !empty($finder['pageviews']) ? $finder['pageviews'] : 0;
+		
+		if(!$count){
+			$count = 10233;
+		}
+
+		$count = round($count/10) + (!empty($service['traction']['sales']) ? $service['traction']['sales'] : 0 ) + (!empty($service['traction']['trials']) ? $service['traction']['trials'] : 0 ) + (!empty($service['traction']['requests']) ? $service['traction']['requests'] : 0 );
+		
+		$return = ['type'=>'pps_stripe', 'service_id'=>$ratecard['service_id'], 'finder_id'=>$ratecard['finder_id'], 'line1'=>'Scared of commitment or not sure of being regular with your workouts?', 'line2'=>'USE PAY - PER - SESSION', 'line3'=>'('.$count.' people in '.(!empty($service['location']['name']) ? $service['location']['name'] : 'this location').' are using it)', '_id'=>0];
+
+		$return['pps_details'] =[
+			'pps'=>[
+				'header'=>'PAY - PER - SESSION',
+				'data'=>"Convenience • Variety • No Commitment",
+			],
+			'description'=>[
+				'header'=>'',
+				'data'=>[
+					['image'=>'https://b.fitn.in/paypersession/pps_stripe1.png', 'text'=>'Pay only when you use (Make each rupee count)'],
+					['image'=>'https://b.fitn.in/paypersession/pps_stripe2.png', 'text'=>'Have the flexibility of working out at different places'],
+					['image'=>'https://b.fitn.in/paypersession/pps_stripe3.png', 'text'=>'Getting regular? Upgrade to a membership or session pack']
+				],
+			],
+		];
+
+		// $return['pps_details']['more_info'] = [
+		// 	'header'=>'See how pay per session works',
+		// 	'description'=>"Step 1: Choose your workout form out of 17 different options<br><br>Step 2: Book session of your choice near you with instant booking<br><br>Step3: Enjoy your workout and repeat",
+		// ];
+		
+		$return['pps_details']['ps'] = "P.S. - Really economical for users who end up working out 6-8 times a month";
+
+		$return['pps_details']['action'] = [
+			'action_text'=>'Book Session here @Rs.'.($ratecard['special_price'] != 0 ? $ratecard['special_price'] : $ratecard['price']),
+			'assistance_text'=>'Need help? Let us assist you',
+			'phone_number'=>Config::get('app.contact_us_customer_number'),
+			'finder_slug'=>$finder['slug'],
+			'service_slug'=>$service['slug'],
+		];
+
+		return $return;
+
+
+
+	}
+
 }

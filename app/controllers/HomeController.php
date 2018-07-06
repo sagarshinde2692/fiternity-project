@@ -464,6 +464,7 @@ class HomeController extends BaseController {
                 'width'=>375,
                 'ratio'=>(float) number_format(100/375,2)
             ];
+
             switch($city){
                 case "bangalore":
                 $campaigns[] = [
@@ -566,6 +567,19 @@ class HomeController extends BaseController {
                 
                 break;
             }
+
+            if($city == 'mumbai'){
+
+                $campaigns[] = [
+                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/YFC_Web%20banner.png',
+                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/YFC_MobResponsive_banner.png',
+                    'link'=>Config::get('app.website').'/your-fitness-club-mumbai',
+                    'title'=>'Your Fitness Club (YFC)',
+                    'height'=>100,
+                    'width'=>375,
+                    'ratio'=>(float) number_format(100/375,2)
+                ];
+            }
             
             $campaigns[] = [
                 'image'=>'https://b.fitn.in/global/paypersession_branding/web_and_mobresponsive_banners/Homepage-pps.png',
@@ -578,53 +592,11 @@ class HomeController extends BaseController {
             ];
 
             $campaigns[] = [
-                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Yoga_WebBanner.png',
-                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Yoga_MobBanner.png',
-                'link'=>Config::get('app.website').'/article/celebrate-international-yoga-day-for-the-full-month-of-june-with-fitternity',
-                'title'=>'Free Yoga Session',
-                'height'=>100,
-                'width'=>375,
-                'ratio'=>(float) number_format(100/375,2)
-            ];
-
-            $campaigns[] = [
                 'image'=>'https://b.fitn.in/global/Homepage-branding-2018/new-reward-web.png',
                 'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Rewards-MOB.png',
                 'link'=>Config::get('app.website').'/rewards',
                 'target'=>true,
                 'title'=>'Rewards with every purchase',
-                'height'=>100,
-                'width'=>375,
-                'ratio'=>(float) number_format(100/375,2)
-            ];
-
-            $campaigns[] = [
-                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Group_WebBanner.png',
-                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Group_MobBanner.png',
-                'link'=>Config::get('app.website').'/groupmemberships',
-                'target'=>true,
-                'title'=>'Share your love for fitness',
-                'height'=>100,
-                'width'=>375,
-                'ratio'=>(float) number_format(100/375,2)
-            ];
-
-            $campaigns[] = [
-                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Webbanner-Emi.png',
-                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Mobbanner-EMI.png',
-                'link'=>Config::get('app.website').'/emi',
-                'target'=>true,
-                'title'=>'Save with Fitness',
-                'height'=>100,
-                'width'=>375,
-                'ratio'=>(float) number_format(100/375,2)
-            ];
-            
-            $campaigns[] = [
-                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/AmazonPay_WebBanner.jpg',
-                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/AmazonPay_MobBanner.jpg',
-                'link'=>Config::get('app.download_app_link'),
-                'title'=>'Amazon pay Offer',
                 'height'=>100,
                 'width'=>375,
                 'ratio'=>(float) number_format(100/375,2)
@@ -755,35 +727,6 @@ class HomeController extends BaseController {
                 	$itemData->update();
                 }
                 }
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
 
                 $dates = array('start_date', 'start_date_starttime', 'schedule_date', 'schedule_date_time', 'followup_date', 'followup_date_time','missedcall_date','customofferorder_expiry_date','auto_followup_date');
                 $unset_keys = [];
@@ -1078,10 +1021,12 @@ class HomeController extends BaseController {
 
                 $header = "BOOKING SUCCESSFUL!";
 
-                $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.' <br><br>Activate your session through FitCode';
+                $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.' <br><br>Activate your session through FitCode provided by '.$finder_name.'. FitCode helps you mark your attendance that let\'s you earn cashbacks';  
 
                 if(isset($item['pay_later']) && $item['pay_later']){
-                    $subline = $subline.'<br><br>Attend and pay later to earn Cashback!</p>';
+                    $subline .='<br><br>Attend and pay later to earn Cashback!</p>';
+                }else{
+                    $subline .= '</p>';
                 }
 
                 $streak_items = [];

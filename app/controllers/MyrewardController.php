@@ -96,7 +96,7 @@ class MyrewardController extends BaseController {
 
             foreach ($myrewards as $key => &$value){
 
-                if(in_array($value['reward_type'],['swimming_sessions','sessions']) && !empty($this->app_version) && intval($this->app_version) < 4.9){
+                if(in_array($value['reward_type'],['swimming_sessions','sessions']) && !empty($this->app_version) && floatval($this->app_version) < 4.9){
                     unset($myrewards[$key]);
                     continue;
                 }
