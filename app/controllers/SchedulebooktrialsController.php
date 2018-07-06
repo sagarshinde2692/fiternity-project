@@ -7090,17 +7090,22 @@ class SchedulebooktrialsController extends \BaseController {
 
             $lostfitcode = !empty($booktrial->lostfitcode) ? $booktrial->lostfitcode : array();
             $reason = 'didnt_get_fitcode';
+            $reason_message_array = [
+                "Thanks for your feedback",
+                "Thanks! We'll put the Fitcash in your wallet within 48 hours",
+            ];
+            
             if(!empty($_GET['reason'])){
-                $key = $_GET['reason'];
+                $key = intval($_GET['reason']) - 1;
                 $lostcode_reasons_array = ["not_interested_in_fitcash","lost_fitcode","didnt_get_fitcode"];
-                $lostfitcode['time'] = time();
-                $reason = $lostcode_reasons_array[$key-1];
-                $lostfitcode['reason'] = $reason;
+                $reason = $lostcode_reasons_array[$key];
+                $lostfitcode[$reason] = time();
+                $reason_message = (isset($reason_message_array[$key])) ? $reason_message_array[$key] : null;
             }
             
             if(!empty($_GET['source']) && $_GET['source'] == "activate_session"){
-                $lostfitcode['reason'] = 'didnt_get_fitcode';
-                $lostfitcode['time'] = time();
+                $reason = 'didnt_get_fitcode';
+                $lostfitcode[$reason]= time();
             }
 
             $booktrial->lostfitcode = $lostfitcode;
@@ -7114,6 +7119,12 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrial->post_trial_status_date = time();
             
             $message = "Hi ".ucwords($booktrial['customer_name']).", Thank you for your request. Rs ".$fitcash_amount." will be added post verifying your attendance with ".ucwords($booktrial['finder_name'])." within 48 hours";
+
+            
+            if($reason_message){
+                $message = $reason_message;
+            }
+            
             $booktrial->update();
 
             $response = [
