@@ -1605,7 +1605,7 @@ class SchedulebooktrialsController extends \BaseController {
                     $sndInstantEmailCustomer        =   $this->customermailer->healthyTiffinMembership($order->toArray());
                     $sndInstantSmsCustomer         =    $this->customersms->healthyTiffinMembership($order->toArray());
 
-                    $this->customermailer->payPerSessionFree($order->toArray());
+                    // $this->customermailer->payPerSessionFree($order->toArray());
                 }
 
             }else{
@@ -1613,7 +1613,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $sndInstantEmailCustomer        =   $this->customermailer->healthyTiffinMembership($order->toArray());
                 $sndInstantSmsCustomer         =    $this->customersms->healthyTiffinMembership($order->toArray());
 
-                $this->customermailer->payPerSessionFree($order->toArray());
+                // $this->customermailer->payPerSessionFree($order->toArray());
             }
 
             if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
@@ -7089,7 +7089,24 @@ class SchedulebooktrialsController extends \BaseController {
 
             $booktrial->post_trial_status = 'attended';
 
-            $fitcash_amount = $this->utilities->getFitcash($booktrial->toArray());
+            $lostfitcode = !empty($booktrial->lostfitcode) ? $booktrial->lostfitcode : array();
+            $reason = 'didnt_get_fitcode';
+            if(!empty($_GET['reason'])){
+                $key = $_GET['reason'];
+                $lostcode_reasons_array = ["not_interested_in_fitcash","lost_fitcode","didnt_get_fitcode"];
+                $lostfitcode['time'] = time();
+                $reason = $lostcode_reasons_array[$key-1];
+                $lostfitcode['reason'] = $reason;
+            }
+            
+            if(!empty($_GET['source']) && $_GET['source'] == "activate_session"){
+                $lostfitcode['reason'] = 'didnt_get_fitcode';
+                $lostfitcode['time'] = time();
+            }
+
+            $booktrial->lostfitcode = $lostfitcode;
+
+            $fitcash_amount = $this->utilities->getFitcash(['finder_id'=>$booktrial['finder_id']]);
             
             $this->updateOrderStatus($booktrial);
 
@@ -7112,9 +7129,10 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrial->post_trial_initail_status = 'interested';
             $booktrial->post_trial_status_updated_by_lostfitcode = time();
             $booktrial->post_trial_status_date = time();
-            $booktrial->update();
-
+            
             $message = "Hi ".ucwords($booktrial['customer_name']).", Thank you for your request. Rs ".$fitcash_amount." will be added post verifying your attendance with ".ucwords($booktrial['finder_name'])." within 48 hours";
+            
+            $booktrial->update();
 
             $response = [
                 'status' => 200,

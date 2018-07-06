@@ -2029,14 +2029,14 @@ class TransactionController extends \BaseController {
 
                                 $sndPgMail  =   $this->customermailer->sendPgOrderMail($emailData);
 
-                                $this->customermailer->payPerSessionFree($emailData);
+                                // $this->customermailer->payPerSessionFree($emailData);
                             }
 
                         }else{
                             
                             $sndPgMail  =   $this->customermailer->sendPgOrderMail($emailData);
 
-                            $this->customermailer->payPerSessionFree($emailData);
+                            // $this->customermailer->payPerSessionFree($emailData);
 
                             if(isset($order['routed_order']) && $order['routed_order'] == "1" && !in_array($reward_type,['cashback','diet_plan'])){
                                 $this->customermailer->routedOrder($emailData);
