@@ -2118,13 +2118,13 @@ Class CustomerReward {
                     $decoded = $this->customerTokenDecode($jwt_token);
                     $customer_id = $decoded->customer->_id;
 
-                    if((int)$customerCoupn['customer_id'] !== $customer_id){
+                    /*if((int)$customerCoupn['customer_id'] !== $customer_id){
 
                         $resp['user_login_error'] = true;
                         $resp['error_message'] = 'Wrong Logged in User';
 
                         return $resp;
-                    }
+                    }*/
 
                 }else{
 
