@@ -2150,13 +2150,11 @@ Class CustomerReward {
 
                     if($wallet_balance >= $price){
 
-                        $discount_amount = 0;
-                        $discount_price = $price;
-                        $final_amount = $price;
-                        $applyCustomerCoupn = false;
-
+                        $resp['coupon_applied'] = false;
                         $resp['user_login_error'] = true;
-                        $resp['error_message'] = 'Use Fitcash First';                                                                                                                                                                                                               
+                        $resp['error_message'] = 'Use Fitcash First';
+
+                        return $resp;
 
                     }else{
 
