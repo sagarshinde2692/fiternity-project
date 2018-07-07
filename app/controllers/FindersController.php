@@ -2146,13 +2146,13 @@ class FindersController extends \BaseController {
 			$txn = null;
 			switch($data['tag']){
 				case 'trial':
-					$txn = Booktrial::where('customer_id', $customer_id)->where('finder_id', $finder_id)->where('type', 'booktrial')->first();
+					$txn = Booktrial::where('customer_id', $reviewdata['customer_id'])->where('finder_id', $reviewdata['finder_id'])->where('type', 'booktrial')->first();
 				break;
 				case 'workout-session':
-					$txn = Booktrial::where('customer_id', $customer_id)->where('finder_id', $finder_id)->where('type', 'workout-session')->first();
+					$txn = Booktrial::where('customer_id', $reviewdata['customer_id'])->where('finder_id', $reviewdata['finder_id'])->where('type', 'workout-session')->first();
 				break;
 				case 'membership':
-					$txn = Booktrial::where('customer_id', $customer_id)->where('finder_id', $finder_id)->whereNotIn('type', ['workout-session', 'booktrial'])->first();
+					$txn = Booktrial::where('customer_id', $reviewdata['customer_id'])->where('finder_id', $reviewdata['finder_id'])->whereNotIn('type', ['workout-session', 'booktrial'])->first();
 				break;
 			}
 
