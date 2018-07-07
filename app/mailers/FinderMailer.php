@@ -253,13 +253,12 @@ Class FinderMailer extends Mailer {
 					break;
 				case 5 : 
 					$fitternity_email = [
-						'virenmehta@fitternity.com',
 						'silkeshakadam@fitternity.com',
 						'priyankamohnish@fitternity.com',
-						'dharatanna@fitternity.com',
-						'pranjalisalvi@fitternity.com',
 						'hardikkhamkar@fitternity.com',
-						'ismailbaig@fitternity.com'
+						'virenmehta@fitternity.com',
+						'nishantullal@fitternity.com',
+						'zeeshanshaikh@fitternity.com'
 					];
 					break;
 				default:
