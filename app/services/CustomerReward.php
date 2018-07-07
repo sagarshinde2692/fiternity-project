@@ -2118,14 +2118,6 @@ Class CustomerReward {
                     $decoded = $this->customerTokenDecode($jwt_token);
                     $customer_id = $decoded->customer->_id;
 
-                    /*if((int)$customerCoupn['customer_id'] !== $customer_id){
-
-                        $resp['user_login_error'] = true;
-                        $resp['error_message'] = 'Wrong Logged in User';
-
-                        return $resp;
-                    }*/
-
                 }else{
 
                     $resp['user_login_error'] = true;
@@ -2145,7 +2137,7 @@ Class CustomerReward {
                     }else{
 
                         $resp['user_login_error'] = true;
-                        $resp['error_message'] = 'This coupon is applicable only on zumba sessions.';
+                        $resp['error_message'] = '4';
 
                         return $resp;
                     }
@@ -2154,13 +2146,17 @@ Class CustomerReward {
 
                 if($applyCustomerCoupn){
 
+                    Log::info('Use Fitcash First in');
+
                     $final_amount = 149;
 
                     if($wallet_balance >= $price){
 
+                        Log::info('Use Fitcash First');
+
                         $discount_amount = 0;
                         $discount_price = 0;
-                        $final_amount = 0;
+                        $final_amount = $price;
                         $applyCustomerCoupn = false;
 
                         $resp['user_login_error'] = true;
@@ -2172,7 +2168,7 @@ Class CustomerReward {
                         $discount_price = $price - $final_amount;
 
                         if($wallet_balance >= $final_amount){
-                            
+
                             $final_amount = 0;
 
                         }else{
