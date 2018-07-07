@@ -4706,10 +4706,8 @@ class HomeController extends BaseController {
         			$homeData=$homeData->toArray();
         		else return ['status'=>400,"message"=>"No home data found."];
         		$t=&$homeData['home'];
-//         		return $t;
         		$this->utilities->customSort('base',$t);
         		$tp=$this->utilities->groupBy($t,'base');
-        		
         		foreach($tp as &$val) 
         			$this->utilities->customSort('index',$val);
         		foreach($tp as &$val) {
@@ -4740,10 +4738,7 @@ class HomeController extends BaseController {
         		}
         		
                 $home["response"]['products']=array_values($tp);
-                if(isset($homeData['header_image'])){
-                    array_unshift($home["response"]['products'], [['type'=>'header', 'url'=>$homeData['header_image']]]);
-                    // $home["response"]['header_image']=$homeData['header_image'];
-                }
+                (isset($homeData['header_image']))?array_unshift($home["response"]['products'], [['type'=>'header', 'url'=>$homeData['header_image']]]):"";
         		$jwt_token = Request::header("Authorization");
         		if(isset($jwt_token))
         		{
@@ -4757,7 +4752,7 @@ class HomeController extends BaseController {
         		return $home;
         	} catch (Exception $e) {
         		
-        		return ['status'=>0,"message"=>$this->utilities->baseFailureStatusMessage($e)];
+        		return ['status'=>400,"message"=>$this->utilities->baseFailureStatusMessage($e)];
         	}
         		
         }
