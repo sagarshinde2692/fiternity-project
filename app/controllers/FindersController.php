@@ -2055,6 +2055,10 @@ class FindersController extends \BaseController {
 		if(!$data){
 			$data = Input::all();
 		}
+
+		if(!$data){
+			$data = Input::json()->all();
+		}
 		
 
 		// return $images = Input::file('images') ;
@@ -2099,11 +2103,14 @@ class FindersController extends \BaseController {
 			$data['source'] = 'kiosk';
 		}
 		// return $data;
+		if(isset($data['detail_rating']) && is_string($data['detail_rating'])){
+			$data['detail_rating'] = json_decode($data['detail_rating']);
+		}
 		$reviewdata = [
 			'finder_id' => intval($data['finder_id']),
 			'customer_id' => intval($data['customer_id']),
 			'rating' => floatval($data['rating']),
-			'detail_rating' => array_map('floatval',json_decode($data['detail_rating'])),
+			'detail_rating' => array_map('floatval',$data['detail_rating']),
 			'description' => (isset($data['description'])) ? $data['description'] : '',
 			'uploads' => (isset($data['uploads'])) ? $data['uploads'] : [],
 			'booktrial_id' => (isset($data['booktrialid'])) ? intval($data['booktrialid']) : '',
