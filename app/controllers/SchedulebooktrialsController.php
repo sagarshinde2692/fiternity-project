@@ -7066,7 +7066,8 @@ class SchedulebooktrialsController extends \BaseController {
     
     
     public function lostFitCode($booktrial_id){
-
+        
+        Log::info($_SERVER['REQUEST_URI']);
         $booktrial_id = (int) $booktrial_id;
 
         $response = array('status' => 400,'message' =>'Sorry! Cannot locate your booking');
