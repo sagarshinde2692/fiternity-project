@@ -338,8 +338,8 @@ return array(
 	),
 
 	'aws' => array(
-		// 'key' 								=> 'AKIAIRQP65VEX5N23QRQ',
-		// 'secret' 							=> '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',
+		'key' 								=> 'AKIAIRQP65VEX5N23QRQ',
+		'secret' 							=> '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',
 		'region' 							=> 'ap-southeast-1',
 		'bucket'							=> 'b.fitn.in',
 		'ozonetel' =>array(
