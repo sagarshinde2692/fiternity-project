@@ -2215,7 +2215,7 @@ class FindersController extends \BaseController {
 			}
 		}else{
 
-			$prev_order = Transaction::where('customer_id', $customer_id)->where('finder_id', $finder_id)->where(function($query){$query->orWhere('transaction_type', '!=', 'Order')->orWhere('status', '1');})->orderBy('_id', 'desc')->first();
+			$prev_order = Transaction::where('customer_id', $reviewdata['customer_id'])->where('finder_id', $reviewdata['finder_id'])->where(function($query){$query->orWhere('transaction_type', '!=', 'Order')->orWhere('status', '1');})->orderBy('_id', 'desc')->first();
 
 			if($prev_order && !empty($prev_order['type'])){
 				$type = $prev_order ;
