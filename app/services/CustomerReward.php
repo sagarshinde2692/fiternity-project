@@ -2137,7 +2137,7 @@ Class CustomerReward {
                     }else{
 
                         $resp['user_login_error'] = true;
-                        $resp['error_message'] = '4';
+                        $resp['error_message'] = 'This coupon is applicable only on zumba sessions.';
 
                         return $resp;
                     }
@@ -2146,17 +2146,10 @@ Class CustomerReward {
 
                 if($applyCustomerCoupn){
 
-                    Log::info('Use Fitcash First in');
-
                     $final_amount = 149;
 
                     if($wallet_balance >= $price){
 
-                        Log::info('Use Fitcash First');
-
-                        $discount_amount = 0;
-                        $discount_price = 0;
-                        $final_amount = $price;
                         $applyCustomerCoupn = false;
 
                         $resp['user_login_error'] = true;
