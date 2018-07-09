@@ -6650,7 +6650,7 @@ class CustomerController extends \BaseController {
 				$response['subscription_code'] = implode('  ',str_split($data['code']));
 				$response['button_text'] = [
 					'activate'=>['text'=>'ACTIVATE SESSION','url'=>Config::get('app.url')."/sessionstatuscapture/activate/".$data['_id']],
-					'didnt_get'=>['text'=>'Didn’t get FitCode','url'=>Config::get('app.url')."/sessionstatuscapture/lost/".$data['_id']]."?source=activate_session",
+					'didnt_get'=>['text'=>'Didn’t get FitCode','url'=>Config::get('app.url')."/sessionstatuscapture/lost/".$data['_id']."?source=activate_session"],
 					'cant_make'=>['text'=>'CAN’T MAKE IT','url'=>Config::get('app.url')."/sessionstatuscapture/didnotattend/".$data['_id']]
 				];
 				$response['block'] = true;
