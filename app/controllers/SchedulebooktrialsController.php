@@ -2592,7 +2592,8 @@ class SchedulebooktrialsController extends \BaseController {
                 $send_communication["customer_email_instant"] = $this->customermailer->bookTrial($booktrialdata);
                 
                 if(!empty($booktrialdata)&&!empty($booktrialdata['type'])&&$booktrialdata['type']=='workout-session'&&!empty($booktrialdata['customer_id'])&&!empty($booktrialdata['_id']))
-                {
+                {   
+                    $booktrial->off_hours = true;
                 	$alreadyWorkoutTaken=Order::where("booktrial_id","!=",(int)$booktrialdata['_id'])->where("type","=",'workout-session')->where("status","=","1")->where("created_at",">=",new DateTime("2018/04/23"))->where("customer_id","=",(int)$booktrialdata['customer_id'])->first();
                 	Log::info(" alreadyWorkoutTaken ".print_r($alreadyWorkoutTaken,true));
                 	if(empty($alreadyWorkoutTaken))
