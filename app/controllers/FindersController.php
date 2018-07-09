@@ -2218,7 +2218,7 @@ class FindersController extends \BaseController {
 			}
 
 			if($txn){
-				$reviewdata['tag'] = [$data['tag'].'_verified'];
+				$reviewdata['tag'] = $data['tag'].'_verified';
 			}
 		}else{
 
