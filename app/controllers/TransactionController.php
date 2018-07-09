@@ -5159,12 +5159,51 @@ public function productSuccess($data)
 
         $payment_modes = [];
 
+        $payment_options = [];
+
+        $payment_options[] = [
+            'title' => 'Wallet',
+            'subtitle' => 'Transact online with Wallets',
+            'value'=>'wallet',
+            'options'=>[
+                [
+                    'title' => 'Paytm',
+                    'subtitle' => 'Paytm',
+                    'value' => 'paytm'
+                ],
+                [
+                    'title' => 'AmazonPay',
+                    'subtitle' => 'AmazonPay',
+                    'value' => 'amazonpay'
+                ],
+                [
+                    'title' => 'Mobikwik',
+                    'subtitle' => 'Mobikwik',
+                    'value' => 'mobikwik'
+                ],
+                [
+                    'title' => 'PayU',
+                    'subtitle' => 'PayU',
+                    'value' => 'payu'
+                ]
+            ]
+        ];
+
+        if(!empty($data['emi']) && $data['emi']){
+            $payment_options[] = array(
+                'title' => 'EMI',
+                'subtitle' => 'Transact online with credit installments',
+                'value' => 'emi',
+            );
+        }
+
         if($data['pay_later']){
             
             $payment_modes[] = array(
                 'title' => 'Pay now',
                 'subtitle' => 'Pay 20% less',
                 'value' => 'paymentgateway',
+                'payment_options'=>$payment_options
             );
 
         }else{
@@ -5172,6 +5211,7 @@ public function productSuccess($data)
                 'title' => 'Online Payment',
                 'subtitle' => 'Transact online with netbanking, card and wallet',
                 'value' => 'paymentgateway',
+                'payment_options'=>$payment_options
             );
         }
 
