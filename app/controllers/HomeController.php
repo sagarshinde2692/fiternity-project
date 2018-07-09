@@ -4702,8 +4702,10 @@ class HomeController extends BaseController {
         public function getProductDetail($ratecard_id,$product_id,$cache=false)
         {
         	try {
-        		$ratecard_id=intval($ratecard_id);$product_id=intval($product_id);
-        		$productView=Product::where("_id",$product_id)->with('ratecard')->first();
+        		$ratecard_id=intval($ratecard_id);
+        		$product_id=intval($product_id);
+        		$productView=Product::where("_id",$product_id)->with('ratecard')->with('primarycategory')->first();
+//         		return $productView;
         		if(empty($productView))
         			return ['status'=>0,"message"=>"Not a valid product Id."];
         		else $productView=$productView->toArray();
@@ -4724,6 +4726,28 @@ class HomeController extends BaseController {
         				unset($rateCards[$i]['order']);
         			}
         		}
+        		$selectedRatecard['cost']=$this->utilities->getRupeeForm($selectedRatecard['price']);
+        		
+        		if(!empty($productView['specification'])&&!empty($productView['specification']['secondary']))
+        			$selectedRatecard['details']=$this->utilities->getProductDetailsCustom($productView['specification']['secondary'],'secondary');
+        		
+        		if(empty($selectedRatecard['images'])&&!empty($productView['images']))
+        				$selectedRatecard['images']=$productView['images'];
+        			
+        		if(!empty($productView['specification'])&&!empty($productView['specification']['primary'])&&!empty($productView['specification']['primary']['features']))
+        					$selectedRatecard['key_details']=$this->utilities->getProductDetailsCustom($productView['specification']['primary']['features']);
+        		array_unshift($selectedRatecard['key_details'],["name"=>"color","value"=>$selectedRatecard['color']]);
+        		
+        		$selectedRatecard['size_options']=["title"=>"Select Size","sub_title"=>"Size Chart"];
+        		return $selectedRatecard;
+        		if(!empty($productView['primarycategory'])&&!empty($productView['primarycategory']['slug']))
+        		{
+        			$selectedRatecard['product_category_slug']=$productView['primarycategory']['slug'];
+        			$selectedRatecard['product_category_id']=$productView['primarycategory']['_id'];
+        		}
+        			
+        		
+        		return $selectedRatecard;
         		unset($rateCards[$selectedIndex]);
         		if(!empty($selectedRatecard))
         		{
@@ -4749,7 +4773,7 @@ class HomeController extends BaseController {
         		return ['status'=>0,"message"=>$this->utilities->baseFailureStatusMessage($e)];
         	}
         }
-        
+ 
         public function productsCats()
         {
         	

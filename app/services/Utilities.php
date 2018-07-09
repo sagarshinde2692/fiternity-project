@@ -4310,5 +4310,23 @@ Class Utilities {
 		
 		
 	}
+	public function getRupeeForm($number) {
+		return json_decode('"'."\u20b9".'"')." ".(isset($number)?$number:"");
+	}
+	
+	public function getProductDetailsCustom($t,$type="primary",$base=[])
+	{
+		$temp=array_values(array_filter($t,function($e) {return isset($e['status'])&&$e['status']== 1;}));
+		$this->customSort('order', $temp);
+		if($type=='primary')
+			return array_map(function($e){return ["name"=>$e['name'],"value"=>$e['value']];}, $temp);
+		else 
+		{
+			foreach ($temp as $value)
+			{array_push($base,"<b>".$value['name']."</b>");array_push($base,"<br />".$value['value']."<br />");}
+			return implode("", $base);
+		}
+		
+	}
 }
 
