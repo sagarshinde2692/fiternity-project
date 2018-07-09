@@ -4326,6 +4326,7 @@ Class Utilities {
 			array_push($base,"<b>".$value['name']."</b>");
 			array_push($base,"<br />".$value['value']."<br />");
 		}
+		return $base;
 	}
 	
 	public function attachCart(&$data)
