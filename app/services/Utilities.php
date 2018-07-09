@@ -4316,15 +4316,35 @@ Class Utilities {
 	
 	public function getProductDetailsCustom($t,$type="primary",$base=[])
 	{
-		$temp=array_values(array_filter($t,function($e) {return isset($e['status'])&&$e['status']== 1;}));
-		$this->customSort('order', $temp);
-		if($type=='primary')
-			return array_map(function($e){return ["name"=>$e['name'],"value"=>$e['value']];}, $temp);
-		else 
+		try {
+			$temp=array_values(array_filter($t,function($e) {return isset($e['status'])&&$e['status']== 1;}));
+			$this->customSort('order', $temp);
+			return ($type=='primary')?array_map(function($e){return ["name"=>$e['name'],"value"=>$e['value']];},$temp):implode("",$this->decorateKeyValueDesc($temp,$base));
+		} catch (Exception $e) {
+			Log::error(" [ getProductDetailsCustom ]".print_r($this->baseFailureStatusMessage($e),true));
+			return "";
+		}
+	}
+	public function decorateKeyValueDesc(&$temp,&$base)
+	{
+		foreach ($temp as $value)
 		{
-			foreach ($temp as $value)
-			{array_push($base,"<b>".$value['name']."</b>");array_push($base,"<br />".$value['value']."<br />");}
-			return implode("", $base);
+			array_push($base,"<b>".$value['name']."</b>");
+			array_push($base,"<br />".$value['value']."<br />");
+		}
+	}
+	
+	public function attachCart(&$data)
+	{
+		$jwt=Request::header("Authorization");
+		if(isset($jwt))
+		{
+			$cart=$this->productsTabCartHomeCustomer();
+			if(!empty($cart))
+			{
+				$cart=$cart->toArray();
+				$data['cart'] =["count"=>count($cart['products'])];
+			}
 		}
 		
 	}
