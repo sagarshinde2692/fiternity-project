@@ -984,8 +984,12 @@ Class Utilities {
 
 
     public function verifyOrder($data,$order){
-
-        if((isset($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin'])) || $order->pg_type == "PAYTM" || $order->pg_type == "AMAZON" || (isset($order['cod_otp_verified']) && $order['cod_otp_verified']) || (isset($order['vendor_otp_verified']) && $order['vendor_otp_verified']) || (isset($order['pay_later']) && $order['pay_later'] && !(isset($order['session_payment']) && $order['session_payment'])) || (isset($order->manual_order_punched) && $order->manual_order_punched)){
+    	Log::info(" info data".print_r($data,true));
+    	Log::info(" info order ".print_r($order,true));
+    	if(!empty($data['third_party'])&&!empty($order['type'])&&$order['type']=='workout-session')
+    		$hash_verified = true;
+    	
+    	else if((isset($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin'])) || $order->pg_type == "PAYTM" || $order->pg_type == "AMAZON" || (isset($order['cod_otp_verified']) && $order['cod_otp_verified']) || (isset($order['vendor_otp_verified']) && $order['vendor_otp_verified']) || (isset($order['pay_later']) && $order['pay_later'] && !(isset($order['session_payment']) && $order['session_payment'])) || (isset($order->manual_order_punched) && $order->manual_order_punched)){
             if(($order->pg_type == "PAYTM"|| $order->pg_type == "AMAZON") && !(isset($data["order_success_flag"]))){
                 $hashreverse = getpayTMhash($order);
                 if($data["verify_hash"] == $hashreverse['reverse_hash']){
@@ -999,7 +1003,8 @@ Class Utilities {
                 $hash_verified = true;
             }
             
-        }else{
+	    	}
+        else {
             // If amount is zero check for wallet amount
             if($data['amount'] == 0 || isset($order->full_payment_wallet) && $order->full_payment_wallet == true){
                 $hash_verified = true;

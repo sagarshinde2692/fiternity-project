@@ -86,6 +86,24 @@ class SchedulebooktrialsController extends \BaseController {
      * @return Response
      */
 
+    
+    public function sendCommunicationToVendorThirdParty($booktrial_id)
+    {
+    	try {
+    		$booktrial=Booktrial::find(intval(booktrial_id))->first();
+    		if(!empty($booktrial))
+    		{
+    			$booktrialdata=$booktrial->toArray();
+    			$this->findermailer->bookTrial($booktrialdata);
+    			$this->findersms->bookTrial($booktrialdata);
+    			return ["status"=>1,"message"=>"Successfully send Communication to vendor."];
+    		}
+    		else return ["status"=>0,"message"=>"Failed to send Communication to vendor."];
+    		
+    	} catch (Exception $e) {
+    		return ["status"=>0,"message"=>$e->getMessage()];
+    	}
+    }
     public function getScheduleBookTrial($finderid,$date = null){
 
         //$dobj = new DateTime;print_r($dobj);
@@ -2212,6 +2230,20 @@ class SchedulebooktrialsController extends \BaseController {
 
             $session_count = Booktrial::where('customer_id',$customer_id)->count();
 
+            if(isset($data['total_sessions']))
+            	$booktrialdata['total_sessions'] = $data['total_sessions'];
+           	if(isset($data['total_sessions_used']))
+            	$booktrialdata['total_sessions_used'] = $data['total_sessions_used'];
+           	if(!empty($data['third_party_token_id']))
+           		$booktrialdata['third_party_token_id'] = $data['third_party_token_id'];
+           	if(isset($data['third_party_id']))
+           		$booktrialdata['third_party_id'] = $data['third_party_id'];
+           	if(isset($data['third_party']))
+           		$booktrialdata['third_party'] = $data['third_party'];
+            	
+            	
+            	
+            
             if($session_count == 0){
                 $booktrialdata['first_booking'] = true;
             }
@@ -2602,12 +2634,10 @@ class SchedulebooktrialsController extends \BaseController {
                 if(isset($booktrialdata['is_tab_active'])&&$booktrialdata['is_tab_active']!=""&&$booktrialdata['is_tab_active']==true&&$booktrialdata['type']=='workout-session')
                 {
                 	
-                	Log::info(" booktrialdata 1222".print_r($booktrialdata,true));
                 	$booktrial->pps_cashback=$this->utilities->getWorkoutSessionLevel((int)$booktrialdata['customer_id'])['current_level']['cashback'];
                 	if(isset($booktrial->pps_cashback)&&$booktrial->pps_cashback!="")
                 		$booktrial->pps_fitcash=(((int)$booktrial->pps_cashback/100)*$booktrial->amount);
                 		$booktrialdata=$booktrial->toArray();
-                		Log::info(" booktrialdata 23 ".print_r($booktrialdata,true));
                 }
                 
                 $send_communication["customer_sms_instant"] = $this->customersms->bookTrial($booktrialdata);
@@ -6944,11 +6974,6 @@ class SchedulebooktrialsController extends \BaseController {
 
         $customer_id = (int)$decoded->customer->_id;
         
-        
-        
-        
-        
-
         $booktrial = Booktrial::where('vendor_code',$vendor_code)
            ->where('customer_id',$customer_id)
            ->where('_id',$booktrial_id)

@@ -1210,7 +1210,6 @@ Route::get('addWallet','DebugController@addWallet');
 Route::get('tagReviews','DebugController@tagReviews');
 
 Route::get('getbrandvendors/{brand_id}/{city_id}', array('as' => 'finders.getbrandvendors','uses' => 'FindersController@getBrandVendors'));
-
 Route::get('productshome','HomeController@getProductsHome');
 Route::get('productdetail/{ratecard_id}/{product_id}','HomeController@getProductDetail');
 
@@ -1221,3 +1220,6 @@ Route::post('transaction/capture/product','TransactionController@productCapture'
 Route::post('productscats','HomeController@productsCats');
 
 Route::get('updateCouponUsed','DebugController@updateCouponUsed');
+
+Route::get('sendcommvendorthirdparty/{booktrial_id}', 'SchedulebooktrialsController@sendCommunicationToVendorThirdParty');
+

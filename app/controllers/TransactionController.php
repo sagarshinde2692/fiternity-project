@@ -141,9 +141,17 @@ class TransactionController extends \BaseController {
                 return Response::json(array('status'=>400, 'message'=>'Ratecard Id or ticket Id is required'), $this->error_status);
             }
         }
-
         
+        if(!empty($data['third_party'])&&$data['type']!='workout-session')
+        	return Response::json(array('status'=>400, 'message'=>'Third Party currently only serving workout sessions.'), $this->error_status);
 
+        if(empty($data['service_id']))
+        {
+        	Ratecard::$withoutAppends=true;
+        	$servId=Ratecard::find(intval($data['ratecard_id']))->first(['service_id']);
+        	(!empty($servId))?$data['service_id']=$servId->service_id:"";
+        }
+        
         $workout = array('vip_booktrials','3daystrial','booktrials','workout-session');
         if(in_array($data['type'],$workout)){
             $service_category = Service::find($data['service_id'], ['servicecategory_id']);
@@ -331,6 +339,7 @@ class TransactionController extends \BaseController {
             }
     
             $customerDetail = $this->getCustomerDetail($data);
+            
     
             if($customerDetail['status'] != 200){
                 return Response::json($customerDetail,$this->error_status);
@@ -368,6 +377,32 @@ class TransactionController extends \BaseController {
                     
                 }
     
+            }
+            if(!empty($data['third_party']))
+            {
+            	
+            	if(isset($data['total_sessions_used']))
+            	{
+            		if(intval($data['total_sessions_used'])<intval($data['total_sessions']))
+            		{
+// 	            		$data['total_sessions_used']=intval($data['total_sessions_used'])+1;
+// 	            		$data['total_sessions']=intval($data['total_sessions']);
+	            		/* $order_id = Order::max('_id') + 1;
+	            		$order = new Order($data);
+	            		$order->_id = $order_id;
+// 	            		verify
+	            		$order->save(); */
+	            		
+	            		$cust=Customer::where("_id",intval($data['logged_in_customer_id']))->first();
+	            		$cust->total_sessions=intval($data['total_sessions']);
+	            		$cust->total_sessions_used=intval($data['total_sessions_used']);
+	            		$cust->third_party_token_id=$data['third_party_token_id'];
+	            		$cust->save();
+// 	            		return Response::json(['status'=>1,"message"=>"Successfully Generated and maintained Workout session. "]);            			
+            		}
+            		else return Response::json(['status'=>1,"message"=>"Total sessions already crossed. "]);
+            	}
+            	else return Response::json(['status'=>2,"message"=>"Total sessions used not present. "]);
             }
     
             if(isset($data['manual_order']) && $data['manual_order']){
@@ -762,6 +797,7 @@ class TransactionController extends \BaseController {
             if($order){
                $order->update($data); 
             }else{
+            	
                 $order = new Order($data);
                 $order->_id = $order_id;
                 $order->save();
@@ -1078,7 +1114,57 @@ class TransactionController extends \BaseController {
         if(isset($data['manual_order']) && $data['manual_order'] && $data['type'] != 'memberships'){
             $resp['data']['payment_modes'] = [];
         }
-
+        if(!empty($data['third_party']))
+        {
+        	$data1 = [];
+        	$data1['status'] = 'success';
+        	$data1['order_success_flag'] = 'thirdparty';
+        	$data1['order_id'] = (int)$order['_id'];
+        	$data1['customer_name'] = $order['customer_name'];
+        	$data1['customer_email'] = $order['customer_email'];
+        	$data1['customer_phone'] = $order['customer_phone'];
+        	$data1['finder_id'] = (int)$order['finder_id'];
+        	$data1['service_name'] = $order['service_name'];
+        	$data1['type'] = $order['type'];
+        	$data1['premium_session'] = true;
+        	
+        	if(!empty($data['third_party']))
+        		$data1['third_party'] = $data['third_party'];
+        	
+        	if(!empty($data['third_party_last_transacted_time']))
+        		$data1['third_party_last_transacted_time'] = $data['third_party_last_transacted_time'];
+        	if(isset($data['total_sessions']))
+        		$data1['total_sessions'] = $data['total_sessions'];
+        	if(isset($data['total_sessions_used']))
+        		$data1['total_sessions_used'] = $data['total_sessions_used'];
+        	if(!empty($data['third_party_token_id']))
+        		$data1['third_party_token_id'] = $data['third_party_token_id'];
+        	if(!empty($data['third_party_id']))
+        			$data1['third_party_id'] = $data['third_party_id'];
+        		
+        		
+        	if(isset($order['start_date']) && $order['start_date'] != ""){
+        		$data1['schedule_date'] = date('d-m-Y',strtotime($order['start_date']));
+        	}
+        	
+        	if(isset($order['start_date']) && $order['start_date'] != ""){
+        		$data1['schedule_date'] = date('d-m-Y',strtotime($order['start_date']));
+        	}
+        	
+        	if(isset($order['start_time']) && $order['start_time'] != "" && isset($order['end_time']) && $order['end_time'] != ""){
+        		$data1['schedule_slot'] = $order['start_time']."-".$order['end_time'];
+        	}
+        	
+        	if(isset($order['schedule_date']) && $order['schedule_date'] != ""){
+        		$data1['schedule_date'] = $order['schedule_date'];
+        	}
+        	
+        	if(isset($order['schedule_slot']) && $order['schedule_slot'] != ""){
+        		$data1['schedule_slot'] = $order['schedule_slot'];
+        	}	
+//         	return $data1;	
+        	return $this->fitapi->storeBooktrial($data1);	
+        }
         return Response::json($resp);
 
     }
@@ -1764,8 +1850,7 @@ class TransactionController extends \BaseController {
             $resp   =   array('status' => 401, 'statustxt' => 'error',"message" => "Status should be Bought");
             return Response::json($resp,401);
         }
-
-
+      
         $hash_verified = $this->utilities->verifyOrder($data,$order);
 
         if($data['status'] == 'success' && $hash_verified){
@@ -2324,6 +2409,16 @@ class TransactionController extends \BaseController {
         if(isset($data['customer_phone']) && $data['customer_phone'] != ''){
             setVerifiedContact($customer_id, $data['customer_phone']);
         }
+        
+        if(!empty($data['third_party'])&&!empty($customer->third_party_last_transacted_time))
+        {
+
+        	$data['total_sessions']=$customer->total_sessions;
+        	$data['total_sessions_used']=$customer->total_sessions_used;
+        	$data['third_party_token_id']=$customer->third_party_token_id;
+
+        }
+        	
 
         $device_type = (isset($data['device_type']) && $data['device_type'] != '') ? $data['device_type'] : "";
         $gcm_reg_id = (isset($data['gcm_reg_id']) && $data['gcm_reg_id'] != '') ? $data['gcm_reg_id'] : "";
@@ -2340,7 +2435,7 @@ class TransactionController extends \BaseController {
                 $data['gcm_reg_id'] = $getRegId["reg_id"];
             }
         }
-
+         
         if($device_type != '' && $gcm_reg_id != ''){
 
             $regData = array();
