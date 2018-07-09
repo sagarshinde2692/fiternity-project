@@ -4208,7 +4208,6 @@ Class Utilities {
 	public function getCartSummary($order)
 	{
 		try {
-			
 			if(empty($order))
 				return ["status"=>0,"message"=>"No order present."];
 				
@@ -4254,17 +4253,12 @@ Class Utilities {
 		try {
 			
 			$resp=["status"=>1,"message"=>"success"];
-			
 			$createdData=[];
 			
-			
 			// defaulters
-			
 			(!empty($data['payment_mode']))?
 				$createdData['payment_mode']=$data['payment_mode']:"";
-			
 			$env = (!empty($data['env']) && $data['env'] == 1) ? "stage" : "production";
-			
 			$key = 'gtKFFx';
 			$salt = 'eCwWELxi';
 			
@@ -4325,7 +4319,7 @@ Class Utilities {
 			return "";
 		}
 	}
-	public function decorateKeyValueDesc(&$temp,&$base)
+	private function decorateKeyValueDesc(&$temp,&$base)
 	{
 		foreach ($temp as $value)
 		{

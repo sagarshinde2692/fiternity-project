@@ -4803,12 +4803,10 @@ class HomeController extends BaseController {
         			unset($selectedRatecard['order']);
         			unset($selectedRatecard['status']);
         			unset($selectedRatecard['servicecategory_id']);
-        			unset($selectedRatecard['flags']);
-        			
+        			unset($selectedRatecard['flags']);	
         		}
         		else return ['status'=>400,"message"=>"Not a valid Ratecard Id."];
         		
-        			
         		/* $productInfo=(!empty($productView['info'])?$productView['info']:"");
         		$productFeatures=((!empty($productView['specification'])&&!empty($productView['specification']['primary'])&&!empty($productView['specification']['primary']['features']))?$productView['specification']['primary']['features']:[]);
         		$productSpecsSecondary=((!empty($productView['specification'])&&!empty($productView['specification']['secondary']))?$productView['specification']['secondary']:[]);
