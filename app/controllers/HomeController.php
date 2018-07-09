@@ -4736,8 +4736,7 @@ class HomeController extends BaseController {
         			(empty($selectedRatecard['image'])&&!empty($productView['images']))?$selectedRatecard['images']=$productView['images']:"";
         			(!empty($productView['specification'])&&!empty($productView['specification']['primary'])&&!empty($productView['specification']['primary']['features']))?$selectedRatecard['key_details']=$this->utilities->getProductDetailsCustom($productView['specification']['primary']['features']):"";
         			
-        			array_unshift($selectedRatecard['key_details'],["name"=>"color","value"=>$selectedRatecard['color']]);
-        			
+        			(!empty($selectedRatecard['key_details']))?array_unshift($selectedRatecard['key_details'],["name"=>"color","value"=>$selectedRatecard['color']]):"";
         			$selectedRatecard['size_options']=["title"=>"Select Size","sub_title"=>"Size Chart"];
         			$otherSizes=ProductRatecard::where("status","1")->where("_id","!=",intval($selectedRatecard['_id']))->where("color",$selectedRatecard['color'])->where("product_id",intval($productView['_id']))->get();
         			$selectedRatecard['size_options']['sizes']=[];
