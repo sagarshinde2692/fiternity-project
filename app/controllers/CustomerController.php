@@ -5221,6 +5221,7 @@ class CustomerController extends \BaseController {
 				case 'n-10m':
 				
 					$response = array_only($response, ['notification_id', 'transaction_type']);
+					Log::info($data);
 					$response ['block_screen_data']= $this->getBlockScreenData($time, $data);
 		
 					break;
