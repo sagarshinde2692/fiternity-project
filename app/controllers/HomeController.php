@@ -4814,36 +4814,36 @@ class HomeController extends BaseController {
         			if($rateCards[$i]['_id'] == $ratecard_id) {
         				$selectedRatecard=$rateCards[$i];
         				$selectedIndex=$i;
+        				break;
         			}
-        			else {
+        			/* else {
         				unset($rateCards[$i]['servicecategory_id']);
         				unset($rateCards[$i]['productcategory_id']);
         				unset($rateCards[$i]['status']);
         				unset($rateCards[$i]['order']);
-        			}
+        			} */
         		}
-        		$selectedRatecard['cost']=$this->utilities->getRupeeForm($selectedRatecard['price']);
-        		(!empty($productView['specification'])&&!empty($productView['specification']['secondary']))?$selectedRatecard['details']=$this->utilities->getProductDetailsCustom($productView['specification']['secondary'],'secondary'):"";
-        		if(!empty($selectedRatecard['image'])&&!empty($selectedRatecard['image']['secondary'])&&count($selectedRatecard['image']['secondary'])>0)
-        			$selectedRatecard['images']=$selectedRatecard['image']['secondary'];
-        		else if(!empty($productView['image'])&&!empty($productView['image']['secondary'])&&count($productView['image']['secondary'])>0)
-        			$selectedRatecard['images']=$productView['image']['secondary'];
-        		unset($selectedRatecard['image']);
-        		(empty($selectedRatecard['image'])&&!empty($productView['images']))?$selectedRatecard['images']=$productView['images']:"";
-        		(!empty($productView['specification'])&&!empty($productView['specification']['primary'])&&!empty($productView['specification']['primary']['features']))?$selectedRatecard['key_details']=$this->utilities->getProductDetailsCustom($productView['specification']['primary']['features']):"";
-
-        		array_unshift($selectedRatecard['key_details'],["name"=>"color","value"=>$selectedRatecard['color']]);
-        		
-        		$selectedRatecard['size_options']=["title"=>"Select Size","sub_title"=>"Size Chart"];
-        		$otherSizes=ProductRatecard::where("status","1")->where("_id","!=",intval($selectedRatecard['_id']))->where("color",$selectedRatecard['color'])->where("product_id",intval($productView['_id']))->get();
-        		$selectedRatecard['size_options']['sizes']=[];
-        		if(!empty($productView['primarycategory'])&&!empty($productView['primarycategory']['slug']))
+        		if(!empty($selectedRatecard))
         		{
-        			$selectedRatecard['product_category_slug']=$productView['primarycategory']['slug'];
-        			$selectedRatecard['product_category_id']=$productView['primarycategory']['_id'];
-        		}
-        		
-        		if(!empty($otherSizes)&&count($otherSizes)>0)
+        			$selectedRatecard['cost']=$this->utilities->getRupeeForm($selectedRatecard['price']);
+        			(!empty($productView['specification'])&&!empty($productView['specification']['secondary']))?$selectedRatecard['details']=$this->utilities->getProductDetailsCustom($productView['specification']['secondary'],'secondary'):"";
+        			(!empty($selectedRatecard['image'])&&!empty($selectedRatecard['image']['secondary'])&&count($selectedRatecard['image']['secondary'])>0)?$selectedRatecard['images']=$selectedRatecard['image']['secondary']:
+        			(!empty($productView['image'])&&!empty($productView['image']['secondary'])&&count($productView['image']['secondary'])>0)?$selectedRatecard['images']=$productView['image']['secondary']:"";
+        			unset($selectedRatecard['image']);
+        			(empty($selectedRatecard['image'])&&!empty($productView['images']))?$selectedRatecard['images']=$productView['images']:"";
+        			(!empty($productView['specification'])&&!empty($productView['specification']['primary'])&&!empty($productView['specification']['primary']['features']))?$selectedRatecard['key_details']=$this->utilities->getProductDetailsCustom($productView['specification']['primary']['features']):"";
+        			
+        			(!empty($selectedRatecard['key_details']))?array_unshift($selectedRatecard['key_details'],["name"=>"color","value"=>$selectedRatecard['color']]):"";
+        			$selectedRatecard['size_options']=["title"=>"Select Size","sub_title"=>"Size Chart"];
+        			$otherSizes=ProductRatecard::where("status","1")->where("_id","!=",intval($selectedRatecard['_id']))->where("color",$selectedRatecard['color'])->where("product_id",intval($productView['_id']))->get();
+        			$selectedRatecard['size_options']['sizes']=[];
+        			if(!empty($productView['primarycategory'])&&!empty($productView['primarycategory']['slug']))
+        			{
+        				$selectedRatecard['product_category_slug']=$productView['primarycategory']['slug'];
+        				$selectedRatecard['product_category_id']=$productView['primarycategory']['_id'];
+        			}
+        			
+        			if(!empty($otherSizes)&&count($otherSizes)>0)
         			{
         				$otherSizes=$otherSizes->toArray();
         				foreach ($otherSizes as $current) {
@@ -4858,19 +4858,18 @@ class HomeController extends BaseController {
         				}
         			}
         			else unset($selectedRatecard['size_options']);
-        			/* else 
-        				array_push($selectedRatecard['size_options']['sizes'],[
-        					"value"=>$selectedRatecard['size'],
-        					"enabled"=>(!empty($selectedRatecard['flags'])&&!empty($selectedRatecard['flags']['available'])?true:false),
-        					"ratecard_id"=>$selectedRatecard['_id'],
-        					"product_id"=>$productView['_id'],
-        					"price"=>$selectedRatecard['price'],
-        					"cost"=>$selectedRatecard['cost']
-        			]); */
-        		unset($rateCards[$selectedIndex]);
-        		$mainSimilar=[];
-        		if(!empty($selectedRatecard))
-        		{
+        			/* else
+        			 array_push($selectedRatecard['size_options']['sizes'],[
+        			 "value"=>$selectedRatecard['size'],
+        			 "enabled"=>(!empty($selectedRatecard['flags'])&&!empty($selectedRatecard['flags']['available'])?true:false),
+        			 "ratecard_id"=>$selectedRatecard['_id'],
+        			 "product_id"=>$productView['_id'],
+        			 "price"=>$selectedRatecard['price'],
+        			 "cost"=>$selectedRatecard['cost']
+        			 ]); */
+        			unset($rateCards[$selectedIndex]);
+        			$mainSimilar=[];
+        			
         			$selectedRatecard['ratecard_id']=$selectedRatecard['_id'];
         			unset($selectedRatecard['_id']);
         			$productSimilar=ProductRatecard::active()->with(array('product'=>function($query){$query->with('primarycategory')->orderBy('ordering', 'ASC');}))->where("product_id","!=",$product_id)->whereIn("servicecategory_id",$selectedRatecard['servicecategory_id'])->get();
@@ -4879,11 +4878,9 @@ class HomeController extends BaseController {
         				$productSimilar=$productSimilar->toArray();
         				foreach ($productSimilar as $value) {
         					$url="";
-        					if(!empty($value['image'])&&!empty($value['image']['primary']))
-        						$url=$value['image']['primary'];	
-        				    else if(!empty($value['product']&&!empty($value['product']['images'])&&!empty($value['product']['images']['primary'])))
-        						$url=$value['product']['images']['primary'];
-        						
+        					(!empty($value['image'])&&!empty($value['image']['primary']))?$url=$value['image']['primary']:	
+        				    (!empty($value['product']&&!empty($value['product']['images'])&&!empty($value['product']['images']['primary'])))?
+        					  $url=$value['product']['images']['primary']:"";
         					array_push($mainSimilar, [
         							'cost'=>$this->utilities->getRupeeForm($value['price']),
         							'price'=>$value['price'],
@@ -4902,13 +4899,10 @@ class HomeController extends BaseController {
         			unset($selectedRatecard['order']);
         			unset($selectedRatecard['status']);
         			unset($selectedRatecard['servicecategory_id']);
-        			unset($selectedRatecard['flags']);
-        			
+        			unset($selectedRatecard['flags']);	
         		}
-        		if(empty($selectedRatecard))
-        			return ['status'=>400,"message"=>"Not a valid Ratecard Id."];
+        		else return ['status'=>400,"message"=>"Not a valid Ratecard Id."];
         		
-        			
         		/* $productInfo=(!empty($productView['info'])?$productView['info']:"");
         		$productFeatures=((!empty($productView['specification'])&&!empty($productView['specification']['primary'])&&!empty($productView['specification']['primary']['features']))?$productView['specification']['primary']['features']:[]);
         		$productSpecsSecondary=((!empty($productView['specification'])&&!empty($productView['specification']['secondary']))?$productView['specification']['secondary']:[]);
@@ -4917,12 +4911,10 @@ class HomeController extends BaseController {
         		foreach ($productSpecsSecondary as &$value) {
         			unset($value['order']);
         		} */
-        			if(!empty($selectedRatecard))
-        				$finalData['product']=$selectedRatecard;
-        			if(!empty($mainSimilar)&&count($mainSimilar)>0)
-        				$finalData['similar_products']=["title"=>"Similar Products","sub_title"=>"Get Fitter","items"=>$mainSimilar];
-        			
-        				return ["status"=>200,"response"=>$finalData];
+        			(!empty($selectedRatecard))?$finalData['product']=$selectedRatecard:"";
+        			(!empty($mainSimilar)&&count($mainSimilar)>0)?$finalData['similar_products']=["title"=>"Similar Products","sub_title"=>"Get Fitter","items"=>$mainSimilar]:"";
+        			$this->utilities->attachCart($finalData);
+        			return ["status"=>200,"response"=>$finalData];
         	} catch (Exception $e) {
         		return ['status'=>400,"message"=>$this->utilities->baseFailureStatusMessage($e)];
         	}
