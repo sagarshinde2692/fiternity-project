@@ -4023,7 +4023,7 @@ class SchedulebooktrialsController extends \BaseController {
                     $booktrialdata['pre_trial_vendor_confirmation'] = (isset($finderid) && in_array($finderid, Config::get('app.trial_auto_confirm_finder_ids'))) ? 'confirmed' : 'yet_to_connect';
                 }
             }
-
+            $booktrialdata['reschedule_count'] = isset($booktrial['reschedule_count']) ? $booktrial['reschedule_count'] + 1 : 1;
 
             if($update_only_info == ''){
                 array_set($booktrialdata, 'schedule_slot_start_time', $schedule_slot_start_time);
