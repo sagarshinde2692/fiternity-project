@@ -4760,8 +4760,8 @@ class HomeController extends BaseController {
         					]);
         				}
         			}
-        			else unset($selectedRatecard['size_options']);
-        			/* else
+//         			else unset($selectedRatecard['size_options']);
+        			else
         			 array_push($selectedRatecard['size_options']['sizes'],[
         			 "value"=>$selectedRatecard['size'],
         			 "enabled"=>(!empty($selectedRatecard['flags'])&&!empty($selectedRatecard['flags']['available'])?true:false),
@@ -4769,7 +4769,7 @@ class HomeController extends BaseController {
         			 "product_id"=>$productView['_id'],
         			 "price"=>$selectedRatecard['price'],
         			 "cost"=>$selectedRatecard['cost']
-        			 ]); */
+        			 ]);
         			unset($rateCards[$selectedIndex]);
         			$mainSimilar=[];
         			
@@ -4792,6 +4792,7 @@ class HomeController extends BaseController {
         							'product_title'=>$value['product']['title'],
         							'product_slug'=>$value['product']['slug'],
         							'url'=>$url,
+        							'type'=>'product',
         							'product_category_slug'=>$value['product']['primarycategory']['slug'],
         							'product_category_id'=>$value['product']['primarycategory']['_id'],
         							'ratecard_title'=>$value['title'],
@@ -4871,6 +4872,7 @@ class HomeController extends BaseController {
         							'product_title'=>$value['product']['title'],
         							'product_slug'=>$value['product']['slug'],
         							'url'=>$url,
+        							'type'=>'product',
         							'product_category_slug'=>$value['product']['primarycategory']['slug'],
         							'product_category_id'=>$value['product']['primarycategory']['_id'],
         							'ratecard_title'=>$value['title'],
@@ -4906,6 +4908,7 @@ class HomeController extends BaseController {
         							'product_title'=>$value['title'],
         							'product_slug'=>$value['slug'],
         							'url'=>$url,
+        							'type'=>'category',
         							'product_category_slug'=>$value['primarycategory']['slug'],
         							'product_category_id'=>$value['primarycategory']['_id']
         					]);
