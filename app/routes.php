@@ -1210,6 +1210,7 @@ Route::get('getbrandvendors/{brand_id}/{city_id}', array('as' => 'finders.getbra
 
 Route::get('productshome','HomeController@getProductsHome');
 Route::get('productdetail/{ratecard_id}/{product_id}','HomeController@getProductDetail');
+Route::get('catproducts/{productcategory_id}','HomeController@getCategoryBasedProducts');
 
 Route::get('addproducttocart/{ratecard_id}/{quantity}','HomeController@addProductToCart');
 Route::post('addproductstocart','HomeController@addProductsToCart');
