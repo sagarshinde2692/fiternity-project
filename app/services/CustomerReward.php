@@ -2108,7 +2108,6 @@ Class CustomerReward {
                 }
             }
 
-
             if(strtolower($couponCode) == 'zumba'){
 
                 $jwt_token = Request::header('Authorization');
@@ -2124,6 +2123,19 @@ Class CustomerReward {
                     $resp['error_message'] = 'User Login Required';
 
                     return $resp;
+                }
+
+                \Order::$withoutAppends = true;
+
+                $order_count = \Order::active()->where('customer_id',$customer_id)->where('coupon_code','like', $couponCode)->count();
+
+                if($order_count >= 1){
+
+                    $resp['user_login_error'] = true;
+                    $resp['error_message'] = 'This coupon is applicable only for 1 Zumba Session';
+
+                    return $resp;
+
                 }
 
                 if(!empty($ratecard['type']) && $ratecard['type'] == 'workout session'){
