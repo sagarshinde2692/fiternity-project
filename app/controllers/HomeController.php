@@ -4830,7 +4830,7 @@ class HomeController extends BaseController {
         			(!empty($selectedRatecard['image'])&&!empty($selectedRatecard['image']['secondary'])&&count($selectedRatecard['image']['secondary'])>0)?$selectedRatecard['images']=$selectedRatecard['image']['secondary']:
         			(!empty($productView['image'])&&!empty($productView['image']['secondary'])&&count($productView['image']['secondary'])>0)?$selectedRatecard['images']=$productView['image']['secondary']:"";
         			unset($selectedRatecard['image']);
-        			(empty($selectedRatecard['image'])&&!empty($productView['images']))?$selectedRatecard['images']=$productView['images']:"";
+//         			(empty($selectedRatecard['image'])&&!empty($productView['images']))?$selectedRatecard['images']=$productView['images']:"";
         			(!empty($productView['specification'])&&!empty($productView['specification']['primary'])&&!empty($productView['specification']['primary']['features']))?$selectedRatecard['key_details']=$this->utilities->getProductDetailsCustom($productView['specification']['primary']['features']):"";
         			
         			(!empty($selectedRatecard['key_details']))?array_unshift($selectedRatecard['key_details'],["name"=>"color","value"=>$selectedRatecard['color']]):"";
@@ -4878,9 +4878,10 @@ class HomeController extends BaseController {
         				$productSimilar=$productSimilar->toArray();
         				foreach ($productSimilar as $value) {
         					$url="";
-        					(!empty($value['image'])&&!empty($value['image']['primary']))?$url=$value['image']['primary']:	
-        				    (!empty($value['product']&&!empty($value['product']['images'])&&!empty($value['product']['images']['primary'])))?
-        					  $url=$value['product']['images']['primary']:"";
+        					if(!empty($value['image'])&&!empty($value['image']['primary']))
+        						$url=$value['image']['primary'];
+        				    else if(!empty($value['product']&&!empty($value['product']['image'])&&!empty($value['product']['image']['primary'])))
+        					  $url=$value['product']['image']['primary'];
         					array_push($mainSimilar, [
         							'cost'=>$this->utilities->getRupeeForm($value['price']),
         							'price'=>$value['price'],
