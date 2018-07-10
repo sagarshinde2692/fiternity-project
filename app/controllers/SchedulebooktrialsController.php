@@ -4440,7 +4440,7 @@ class SchedulebooktrialsController extends \BaseController {
         }
 
         if($booktrial['type']=='workout-session'){
-            array_set($bookdata, 'final_lead_stage', 'trial_stage');
+            array_set($bookdata, 'final_lead_stage', 'cancel_stage');
             array_set($bookdata, 'post_trial_status', 'no show');
 
         }else{
