@@ -2576,7 +2576,7 @@ class SchedulebooktrialsController extends \BaseController {
             
             // }else if( $this->isOffHour($schedule_date_time_hour) &&  $this->isOffHour($current_hour) && $currentScheduleDateDiffMin <= 15*60){
             }else if( $this->isOffHour($schedule_date_time_hour) &&  $this->isOffHour($current_hour) && (strtotime($booktrial->schedule_date_time) - time() <= 15*60*60)){
-                
+                $booktrial->off_hours = true;
                 if(time() < strtotime(date('Y-m-d '.Config::get('app.trial_comm.offhours_fixed_time_1').':00:00', time())) && strtotime($booktrial->schedule_date_time) > strtotime(date('Y-m-d '.Config::get('app.trial_comm.offhours_fixed_time_1').':00:00', time()))){
                     
                     if($schedule_date_time_hour >= 8 && $schedule_date_time_hour < 11){
@@ -2625,7 +2625,8 @@ class SchedulebooktrialsController extends \BaseController {
                 $send_communication["customer_email_instant"] = $this->customermailer->bookTrial($booktrialdata);
                 
                 if(!empty($booktrialdata)&&!empty($booktrialdata['type'])&&$booktrialdata['type']=='workout-session'&&!empty($booktrialdata['customer_id'])&&!empty($booktrialdata['_id']))
-                {
+                {   
+                    
                 	$alreadyWorkoutTaken=Order::where("booktrial_id","!=",(int)$booktrialdata['_id'])->where("type","=",'workout-session')->where("status","=","1")->where("created_at",">=",new DateTime("2018/04/23"))->where("customer_id","=",(int)$booktrialdata['customer_id'])->first();
                 	Log::info(" alreadyWorkoutTaken ".print_r($alreadyWorkoutTaken,true));
                 	if(empty($alreadyWorkoutTaken))
@@ -4053,7 +4054,7 @@ class SchedulebooktrialsController extends \BaseController {
                     $booktrialdata['pre_trial_vendor_confirmation'] = (isset($finderid) && in_array($finderid, Config::get('app.trial_auto_confirm_finder_ids'))) ? 'confirmed' : 'yet_to_connect';
                 }
             }
-
+            $booktrialdata['reschedule_count'] = isset($booktrial['reschedule_count']) ? $booktrial['reschedule_count'] + 1 : 1;
 
             if($update_only_info == ''){
                 array_set($booktrialdata, 'schedule_slot_start_time', $schedule_slot_start_time);
@@ -4471,7 +4472,7 @@ class SchedulebooktrialsController extends \BaseController {
         }
 
         if($booktrial['type']=='workout-session'){
-            array_set($bookdata, 'final_lead_stage', 'trial_stage');
+            array_set($bookdata, 'final_lead_stage', 'cancel_stage');
             array_set($bookdata, 'post_trial_status', 'no show');
 
         }else{
