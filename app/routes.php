@@ -1224,3 +1224,7 @@ Route::get('updateCouponUsed','DebugController@updateCouponUsed');
 
 Route::get('sendcommvendorthirdparty/{booktrial_id}', 'SchedulebooktrialsController@sendCommunicationToVendorThirdParty');
 
+Route::get('getbrandvendors/{brand_id}/{city_id}', array('as' => 'finders.getbrandvendors','uses' => 'FindersController@getBrandVendors'));
+
+
+Route::post('getcustomercarddetails','CustomerController@getCustomerCardDetails');

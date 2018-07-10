@@ -76,7 +76,18 @@ return array(
 	),
 	'fitternity_vendors' => [11907,9869,9891,11128,12064],
 	'vendors_without_convenience_fee' => [7116,9149,12008,1860,6593,14085,14081,13761,13765,14079],
-	
+	'payu' => array(
+		'prod'=>array(
+			"key" => 'l80gyM',
+			"salt" => 'QBl78dtK',
+			"url" => "https://info.payu.in/merchant/postservice.php?form=2"
+		),
+		'test'=>array(
+			"key" => 'gtKFFx',
+			"salt" => 'eCwWELxi',
+			"url" => "https://test.payu.in/merchant/postservice.php?form=2"
+		)
+		),
 
 	/*
 	|--------------------------------------------------------------------------
