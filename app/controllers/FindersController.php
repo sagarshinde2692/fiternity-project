@@ -2061,6 +2061,7 @@ class FindersController extends \BaseController {
 		}
 
 		Log::info(getallheaders());
+		Log::info($data);
 
 		// return $images = Input::file('images') ;
 		
