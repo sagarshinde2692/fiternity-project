@@ -2153,7 +2153,7 @@ class FindersController extends \BaseController {
 			$txn = null;
 			switch($data['tag']){
 				case 'trial':
-					$txn = Booktrial::where('customer_id', $reviewdata['customer_id'])->where('finder_id', $reviewdata['finder_id'])->where('type', 'booktrial')->first();
+					$txn = Booktrial::where('customer_id', $reviewdata['customer_id'])->where('finder_id', $reviewdata['finder_id'])->where('type', 'booktrials')->first();
 				break;
 				case 'workout-session':
 					$txn = Booktrial::where('customer_id', $reviewdata['customer_id'])->where('finder_id', $reviewdata['finder_id'])->where('type', 'workout-session')->first();
