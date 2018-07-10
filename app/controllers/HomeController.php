@@ -4921,6 +4921,123 @@ class HomeController extends BaseController {
         	}
         }
  
+        
+        public function getCategoryBasedProducts($productcategory_id)
+        {
+        
+        	try {
+        		$productcategory_id=intval($productcategory_id);
+        		$productView=Product::where("productcategory.primary",$productcategory_id)->with('ratecard')->with('primarycategory')->get();
+        		
+        		if(empty($productView))return ['status'=>400,"message"=>"Not a valid Product Category Id."];
+        		else $productView=$productView->toArray();
+        		
+        		$productIds=array_column($productView, "_id");
+        	
+        		$rates=ProductRatecard::active()->raw(function($collection) use($productIds)
+        		 {
+        		 return $collection->aggregate(
+        		 [
+        		 ['$match' => ['product_id' => ['$in'=>$productIds]]],
+        		 ['$group' => ['_id' => ["p_id"=>'$product_id','color'=>'$color'],'details' => ['$push'=>['ratecards'=>'$_id']]]],
+        		 ['$match' => ['details.0' => ['$exists'=>true]]],
+        		 ['$project' => ["rcs"=>['$arrayElemAt' => ['$details',0]]]]
+        		 ]);
+        		 });
+        		 
+        		(!empty($rates)&&!empty($rates['result']))?
+        		$ratecards=array_values(array_column(array_column($rates['result'], 'rcs'), 'ratecards')):"";
+        		if(!empty($ratecards))
+        			$ratecards=ProductRatecard::active()->whereIn("_id",$ratecards)->with(array('product'=>function($query){$query->with('primarycategory')->orderBy('ordering', 'ASC');}))->get();
+        		else return ['status'=>400,"message"=>"Not Ratecards found for productcategoryid : ".$productcategory_id];
+        		
+        		$categories=[];
+        		if(!empty($ratecards))
+        		{
+        			$ratecards=$ratecards->toArray();
+        			foreach ($ratecards as $value) {
+        			$url="";
+        			if(!empty($value['image'])&&!empty($value['image']['primary']))
+        				$url=$value['image']['primary'];
+        				else if(!empty($value['product']&&!empty($value['product']['image'])&&!empty($value['product']['image']['primary'])))
+        					$url=$value['product']['image']['primary'];
+        					array_push($categories, [
+        							'cost'=>$this->utilities->getRupeeForm($value['price']),
+        							'price'=>$value['price'],
+        							'product_id'=>$value['product']['_id'],
+        							'product_title'=>$value['product']['title'],
+        							'product_slug'=>$value['product']['slug'],
+        							'url'=>$url,
+        							'product_category_slug'=>$value['product']['primarycategory']['slug'],
+        							'product_category_id'=>$value['product']['primarycategory']['_id'],
+        							'ratecard_title'=>$value['title'],
+        							'ratecard_id'=>$value['_id']
+        					]);
+        			}
+        			
+        			
+        			$products=Product::raw(function($collection) use($productcategory_id)
+        			{
+        				
+        				return $collection->aggregate(
+        						[
+        								['$match' => ['productcategory.primary' => ['$nin'=>[$productcategory_id]]]],
+        								['$group' => ['_id' => ["p_id"=>'$productcategory.primary'],'details' => ['$push'=>['products'=>'$_id']]]],
+        								['$match' => ['details.0' => ['$exists'=>true]]],
+        								['$project' => ["prods"=>['$arrayElemAt' => ['$details',0]]]]
+        						]);
+        			});
+        
+        			(!empty($products)&&!empty($products['result']))?
+        			$products=array_values(array_column(array_column($products['result'], 'prods'), 'products')):"";
+        			$products=Product::whereIn("_id",$products)->with('ratecard')->with('primarycategory')->get();
+        			$productSimilar=[];
+        			if(!empty($products))
+        			{
+        				$products=$products->toArray();
+        				foreach ($products as $value) {
+        					$url="";
+        					(!empty($value['image'])&&!empty($value['image']['primary']))?$url=$value['image']['primary']:"";
+        					array_push($productSimilar, [
+        							'product_id'=>$value['_id'],
+        							'product_title'=>$value['title'],
+        							'product_slug'=>$value['slug'],
+        							'url'=>$url,
+        							'product_category_slug'=>$value['primarycategory']['slug'],
+        							'product_category_id'=>$value['primarycategory']['_id']
+        					]);
+        				}
+        				
+        			}
+        			$finalData=[];
+        			(!empty($categories)&&count($categories)>0)?$finalData['categories']=["title"=>"category Based Products","sub_title"=>"Get Fitter","items"=>$categories]:"";
+        			(!empty($productSimilar)&&count($productSimilar)>0)?$finalData['similar_products']=["title"=>"Similar Products","sub_title"=>"Get Fitter","items"=>$productSimilar]:"";
+        			$this->utilities->attachCart($finalData);
+        			return ["status"=>200,"response"=>$finalData];
+        		}
+        		else return ['status'=>400,"message"=>"Not Ratecards found for productcategoryid : ".$productcategory_id];
+        		
+        		
+        		
+        		
+        		
+        		
+        		
+        		
+        			
+        			/* $productInfo=(!empty($productView['info'])?$productView['info']:"");
+        			 $productFeatures=((!empty($productView['specification'])&&!empty($productView['specification']['primary'])&&!empty($productView['specification']['primary']['features']))?$productView['specification']['primary']['features']:[]);
+        			 $productSpecsSecondary=((!empty($productView['specification'])&&!empty($productView['specification']['secondary']))?$productView['specification']['secondary']:[]);
+        			 
+        			 $this->utilities->customSort('order',$productSpecsSecondary);
+        			 foreach ($productSpecsSecondary as &$value) {
+        			 unset($value['order']);
+        			 } */
+        			
+        	} catch (Exception $e) {
+        		return ['status'=>400,"message"=>$this->utilities->baseFailureStatusMessage($e)];
+        	}
+        }
         public function productsCats()
         {
         	
