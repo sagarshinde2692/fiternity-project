@@ -8,7 +8,7 @@ use \GuzzleHttp\Client;
 use App\Notification\CustomerNotification as CustomerNotification;
 use App\Services\Sidekiq as Sidekiq;
 use App\Services\Utilities as Utilities;
-use anlutro\cURL\Response;
+// use anlutro\cURL\Response;
 
 class HomeController extends BaseController {
 
@@ -455,7 +455,132 @@ class HomeController extends BaseController {
 
             // $collections 			= 	Findercollection::active()->where('city_id', '=', intval($citydata['_id']))->orderBy('ordering')->get(array('name', 'slug', 'coverimage', 'ordering' ));
             $campaigns=  [];
+            $campaigns[] = [
+                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/monsoon.png',
+                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/monsoon-mob.png',
+                'link'=>Config::get('app.website').'/'.$city.'/fitness?trials=1',
+                'title'=>'Pay Per Session',
+                'height'=>100,
+                'width'=>375,
+                'ratio'=>(float) number_format(100/375,2)
+            ];
 
+            switch($city){
+                case "bangalore":
+                $campaigns[] = [
+                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Gold%27s%20Gym_Bangalore_Web%20banner.png',
+                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Gold%27s%20Gym_Bangalore_Mobile%20Responsive%20and%20SRP.png',
+                    'link'=>Config::get('app.website').'/golds-gym-bangalore',
+                    'title'=>'Pay Per Session',
+                    'height'=>100,
+                    'width'=>375,
+                    'ratio'=>(float) number_format(100/375,2)
+                ];
+                break;
+                case "delhi":
+                $campaigns[] = [
+                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Gold%27s%20Gym_Delhi_Web%20banner.png',
+                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Gold%27s%20Gym_Delhi_Mobile%20Responsive%20and%20SRP.png',
+                    'link'=>Config::get('app.website').'/golds-gym-delhi',
+                    'title'=>'Pay Per Session',
+                    'height'=>100,
+                    'width'=>375,
+                    'ratio'=>(float) number_format(100/375,2)
+                ];
+                break;
+                case "gurgaon":
+                $campaigns[] = [
+                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Gold%27s%20Gym_Gurugram_Web%20banner.png',
+                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Gold%27s%20Gym_Gurugram_Mobile%20Responsive%20and%20SRP.png',
+                    'link'=>Config::get('app.website').'/golds-gym-gurgaon',
+                    'title'=>'Pay Per Session',
+                    'height'=>100,
+                    'width'=>375,
+                    'ratio'=>(float) number_format(100/375,2)
+                ];
+                break;
+                case "hyderabad":
+                $campaigns[] = [
+                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Gold%27s%20Gym_Hyderabad_Web%20banner.png',
+                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Gold%27s%20Gym_Hyderabad_Mobile%20Responsive%20and%20SRP.png',
+                    'link'=>Config::get('app.website').'/golds-gym-hyderabad',
+                    'title'=>'Pay Per Session',
+                    'height'=>100,
+                    'width'=>375,
+                    'ratio'=>(float) number_format(100/375,2)
+                ];
+                break;
+                case "mumbai":
+                $campaigns[] = [
+                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Gold%27s%20Gym_Mumbai_Web%20banner.png',
+                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Gold%27s%20Gym_Mumbai_Mobile%20Responsive%20and%20SRP.png',
+                    'link'=>Config::get('app.website').'/golds-gym-mumbai',
+                    'title'=>'Pay Per Session',
+                    'height'=>100,
+                    'width'=>375,
+                    'ratio'=>(float) number_format(100/375,2)
+                ];
+                break;
+                case "noida":
+                $campaigns[] = [
+                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Gold%27s%20Gym_Noida_Web%20banner.png',
+                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Gold%27s%20Gym_Noida_Mobile%20Responsive%20and%20SRP.png',
+                    'link'=>Config::get('app.website').'/golds-gym-noida',
+                    'title'=>'Pay Per Session',
+                    'height'=>100,
+                    'width'=>375,
+                    'ratio'=>(float) number_format(100/375,2)
+                ];
+                break;
+                case "pune":
+                $campaigns[] = [
+                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Gold%27s%20Gym_Pune_Web%20banner.png',
+                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Gold%27s%20Gym_Pune_Mobile%20Responsive%20and%20SRP.png',
+                    'link'=>Config::get('app.website').'/golds-gym-pune',
+                    'title'=>'Pay Per Session',
+                    'height'=>100,
+                    'width'=>375,
+                    'ratio'=>(float) number_format(100/375,2)
+                ];
+                if(intval(date('d', time())) % 2 == 0){
+
+                    $campaigns[] = [
+                        'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Multifit_Web%20banner.png',
+                        'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Multifit_Mob%20and%20srp.png',
+                        'link'=>Config::get('app.website').'/multifit-pune',
+                        'title'=>'Pay Per Session',
+                        'height'=>100,
+                        'width'=>375,
+                        'ratio'=>(float) number_format(100/375,2)
+                    ];
+                }else{
+                    array_splice($campaigns, count($campaigns)-1, 0, [[
+                        'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Multifit_Web%20banner.png',
+                        'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Multifit_Mob%20and%20srp.png',
+                        'link'=>Config::get('app.website').'/multifit-pune',
+                        'title'=>'Pay Per Session',
+                        'height'=>100,
+                        'width'=>375,
+                        'ratio'=>(float) number_format(100/375,2)
+                    ]]);
+                }
+                
+                break;
+            }
+
+            if($city == 'mumbai'){
+
+                $campaigns[] = [
+                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/YFC_Web%20banner.png',
+                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/YFC_MobResponsive_banner.png',
+                    'link'=>Config::get('app.website').'/your-fitness-club-mumbai',
+                    'title'=>'Your Fitness Club (YFC)',
+                    'height'=>100,
+                    'width'=>375,
+                    'ratio'=>(float) number_format(100/375,2)
+                ];
+            }
+            
             $campaigns[] = [
                 'image'=>'https://b.fitn.in/global/paypersession_branding/web_and_mobresponsive_banners/Homepage-pps.png',
                 'mob_image'=>'https://b.fitn.in/global/paypersession_branding/web_and_mobresponsive_banners/Mob-homepage.png',
@@ -467,53 +592,11 @@ class HomeController extends BaseController {
             ];
 
             $campaigns[] = [
-                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Yoga_WebBanner.png',
-                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Yoga_MobBanner.png',
-                'link'=>Config::get('app.website').'/article/celebrate-international-yoga-day-for-the-full-month-of-june-with-fitternity',
-                'title'=>'Free Yoga Session',
-                'height'=>100,
-                'width'=>375,
-                'ratio'=>(float) number_format(100/375,2)
-            ];
-
-            $campaigns[] = [
                 'image'=>'https://b.fitn.in/global/Homepage-branding-2018/new-reward-web.png',
                 'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Rewards-MOB.png',
                 'link'=>Config::get('app.website').'/rewards',
                 'target'=>true,
                 'title'=>'Rewards with every purchase',
-                'height'=>100,
-                'width'=>375,
-                'ratio'=>(float) number_format(100/375,2)
-            ];
-
-            $campaigns[] = [
-                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Group_WebBanner.png',
-                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Group_MobBanner.png',
-                'link'=>Config::get('app.website').'/groupmemberships',
-                'target'=>true,
-                'title'=>'Share your love for fitness',
-                'height'=>100,
-                'width'=>375,
-                'ratio'=>(float) number_format(100/375,2)
-            ];
-
-            $campaigns[] = [
-                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Webbanner-Emi.png',
-                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Mobbanner-EMI.png',
-                'link'=>Config::get('app.website').'/emi',
-                'target'=>true,
-                'title'=>'Save with Fitness',
-                'height'=>100,
-                'width'=>375,
-                'ratio'=>(float) number_format(100/375,2)
-            ];
-            
-            $campaigns[] = [
-                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/AmazonPay_WebBanner.jpg',
-                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/AmazonPay_MobBanner.jpg',
-                'link'=>Config::get('app.download_app_link'),
-                'title'=>'Amazon pay Offer',
                 'height'=>100,
                 'width'=>375,
                 'ratio'=>(float) number_format(100/375,2)
@@ -647,35 +730,6 @@ class HomeController extends BaseController {
                 	$itemData->update();
                 }
                 }
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
-                
 
                 $dates = array('start_date', 'start_date_starttime', 'schedule_date', 'schedule_date_time', 'followup_date', 'followup_date_time','missedcall_date','customofferorder_expiry_date','auto_followup_date');
                 $unset_keys = [];
@@ -970,10 +1024,12 @@ class HomeController extends BaseController {
 
                 $header = "BOOKING SUCCESSFUL!";
 
-                $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.' <br><br>Activate your session through FitCode';
+                $subline = '<p style="align:center">Your '.$service_name.' session at '.$finder_name.' is confirmed on '.$schedule_date.' at '.$start_time.' <br><br>Activate your session through FitCode provided by '.$finder_name.'. FitCode helps you mark your attendance that let\'s you earn cashbacks';  
 
                 if(isset($item['pay_later']) && $item['pay_later']){
-                    $subline = $subline.'<br><br>Attend and pay later to earn Cashback!</p>';
+                    $subline .='<br><br>Attend and pay later to earn Cashback!</p>';
+                }else{
+                    $subline .= '</p>';
                 }
 
                 $streak_items = [];
@@ -1822,9 +1878,41 @@ class HomeController extends BaseController {
                         $reward_details['image'] = $reward->image;
                     }
 
-                    if($reward->reward_type == 'sessions'){
-                        $reward_details['description'] = "Get access to multiple fitness sessions with instant booking at your convinience. Try Crossfit, Pilates, Yoga, MMA, Zumba & much more.Available across: - 5 Cities - Mumbai, Bangalore, Delhi, Pune & Gurgaon - 2500 fitness centers";
+                    if(in_array($reward['reward_type'],["sessions","swimming_sessions"])){
+
+                        $session_total = "";
+                        $session_amount = "";
+
                         $reward_details['image'] = 'https://b.fitn.in/gamification/reward/sessions.jpg';
+
+                        $workout_session_array = Config::get('fitness_kit.workout_session');
+
+                        if($reward['reward_type'] == "swimming_sessions"){
+
+                            $workout_session_array = Config::get('fitness_kit.swimming_session');
+
+                            $reward_details['image'] = 'https://b.fitn.in/gamification/reward/swimming_sessions.jpg';
+                        }
+
+                        rsort($workout_session_array);
+
+                        foreach ($workout_session_array as $data_key => $data_value) {
+
+                            if($item['amount_finder'] >= $data_value['min'] ){
+
+                                $session_total = $data_value['total'];
+                                $session_amount = $data_value['amount'];
+
+                                break;
+                            }
+                        }
+
+                        $reward_details['description'] = "Get access to multiple fitness sessions with instant booking at your convinience. Look out for the voucher in your profile (also sent on Email/sms).<br/>Get ".$session_total." sessions for free worth Rs. ".$session_amount;
+
+                        if($reward['reward_type'] == "swimming_sessions"){
+                            $reward_details['description'] = "Get a luxury experience like never before - VIP swimming session in city's best 5-star hotels Look out for the voucher in your profile (also sent on Email/sms).<br/>Get ".$session_total." swimming sessions for free worth Rs. ".$session_amount." by applying the voucher while booking your slot on Fitternity App";
+                        }
+                        
                     }
 
                     if($reward->reward_type == 'diet_plan'){
@@ -3430,10 +3518,19 @@ class HomeController extends BaseController {
         $data = Input::json()->all();
         $device_type = $data['device_type'];
         $to = $data['to'];
+        if(!empty($data['addOns']))
+        $addOns = $data['addOns'];
         if($device_type == "android"){
-            $notification_object = array("notif_id" => 2005,"notif_type" => "promotion", "notif_object" => array("promo_id"=>739423,"promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> "593a9380820095bf3e8b4568","title"=> $data["title"],"text"=> ""));
+            $notification_object = array("notif_id" => 2005,"notif_type" => "promotion", "notif_object" => array("promo_id"=>739423,"promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> "593a9380820095bf3e8b4568","title"=> $data["title"],"text"=> $data["body"]));
+            if(!empty($addOns))
+            	foreach ($addOns as $key => $value) 
+            		$notification_object['notif_object'][$key]=$value;
+            
         }else{
-            $notification_object = array("aps"=>array("alert"=> array("body" => $data["title"]), "sound" => "default", "badge" => 1), "notif_object" => array("promo_id"=>739423,"notif_type" => "promotion","promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> "593a9380820095bf3e8b4568","title"=> $data["title"],"text"=> ""));
+        	$notification_object = array("aps"=>array("alert"=> array("body" => $data["body"],"title" => $data["title"]), "sound" => "default", "badge" => 1), "notif_object" => array("promo_id"=>739423,"notif_type" => "promotion","promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> "593a9380820095bf3e8b4568","title"=> $data["title"],"text"=> $data["body"]));
+        	if(!empty($addOns))
+        		foreach ($addOns as $key => $value)
+        			$notification_object['notif_object'][$key]=$value;
         }
         $notificationData = array("to" =>$data['to'],"delay" => 0,"label"=>$data['label'],"app_payload"=>$notification_object);
         $route  = $device_type;
@@ -4761,7 +4858,7 @@ class HomeController extends BaseController {
         				}
         			}
 //         			else unset($selectedRatecard['size_options']);
-        			else
+        			else if(!empty($selectedRatecard['product_category_id'])&&in_array($selectedRatecard['product_category_id'], [7,8,9]))
         			 array_push($selectedRatecard['size_options']['sizes'],[
         			 "value"=>$selectedRatecard['size'],
         			 "enabled"=>(!empty($selectedRatecard['flags'])&&!empty($selectedRatecard['flags']['available'])?true:false),
@@ -4770,6 +4867,7 @@ class HomeController extends BaseController {
         			 "price"=>$selectedRatecard['price'],
         			 "cost"=>$selectedRatecard['cost']
         			 ]);
+        			 else unset($selectedRatecard['size_options']);
         			unset($rateCards[$selectedIndex]);
         			$mainSimilar=[];
         			
