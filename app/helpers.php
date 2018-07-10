@@ -715,6 +715,22 @@ if (!function_exists('es_curl_request')) {
     }
 }
 
+if (!function_exists('curl_call')) {
+    function curl_call($qs, $wsUrl)
+    {
+        $c = curl_init();
+        curl_setopt($c, CURLOPT_URL, $wsUrl);
+        curl_setopt($c, CURLOPT_POST, 1);
+        curl_setopt($c, CURLOPT_POSTFIELDS, $qs);
+        curl_setopt($c, CURLOPT_CONNECTTIMEOUT, 30);
+        curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($c, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($c, CURLOPT_SSL_VERIFYPEER, 0);
+        return curl_exec($c);
+        
+    }
+}
+
 
 //return date in mysql format
 if (!function_exists('get_mysql_date')) {

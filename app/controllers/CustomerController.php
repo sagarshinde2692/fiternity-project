@@ -7092,4 +7092,30 @@ class CustomerController extends \BaseController {
 
 	}
 
+	public function getCustomerCardDetails(){
+		$jwt = Request::header('Authorization');
+		$decoded = $this->customerTokenDecode($jwt);
+		$id = $decoded->customer->_id;
+		$key = Config::get("app.payu.test.key");
+        $salt = Config::get("app.payu.test.salt");
+		$wsUrl = Config::get("app.payu.test.url");
+		$data =	Input::all();
+		$env = (isset($data['env']) && $data['env'] == 1) ? "stage" : "production";
+        if($env == "production"){
+            $key = Config::get("app.payu.prod.key");
+			$salt = Config::get("app.payu.prod.salt");;
+			$wsUrl = Config::get("app.payu.prod.url");
+		}
+		$var1 = $key.":".$id;
+		$payhash_str = $key."|get_user_cards|".$var1."|".$salt;
+        Log::info("Get card details".$payhash_str);
+		$hash = hash('sha512', $payhash_str);        
+		
+
+		$r = array('key' => $key , 'hash' =>$hash , 'var1' => $var1, 'command' => "get_user_cards");   
+		$qs= http_build_query($r);
+		$userData = curl_call($qs, $wsUrl);
+		return json_decode($userData, true);
+	}
+
 }
