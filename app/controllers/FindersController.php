@@ -2059,7 +2059,8 @@ class FindersController extends \BaseController {
 		if(!$data){
 			$data = Input::json()->all();
 		}
-		
+
+		Log::info(getallheaders());
 
 		// return $images = Input::file('images') ;
 		
