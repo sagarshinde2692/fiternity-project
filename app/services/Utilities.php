@@ -4535,6 +4535,88 @@ Class Utilities {
 			return "";
 		}
 	}
+	
+	public function getQueryMultiplier($arr=[],$product_id)
+	{
+		$t=[];
+		foreach ($arr as $current)
+			if(!empty($current['value']))
+				$t[$current['type']]=$current['value'];
+				$t['product_id'] =$product_id;
+				$t['status']="1";
+
+	  return $t;
+	}
+	public function getSelectionView($data,$product_id=null,$arr=[])
+	{
+// 		return array_merge(['product_id' =>$product_id,'status' =>"1"],$arr);
+		if(count($data)==1)
+		{
+			Log::info(" info data".print_r($data,true));
+			Log::info(" info product_id".print_r($product_id,true));
+			Log::info(" info arr".print_r($arr,true));
+		}
+			
+			$intrinsic_data=array_shift($data);
+			if(count($data)==0)
+			{
+				Log::info(" info intrinsic_data when data is 0 ".print_r($intrinsic_data,true));
+				Log::info(" info intrinsic_data when data is 0 ".print_r($arr,true));
+				
+			}
+			if(!empty($intrinsic_data))
+			{
+				array_push($arr,['type'=>$intrinsic_data['name']]);	
+				$rates=ProductRatecard::active()->raw(function($collection) use($product_id,$intrinsic_data,$arr)
+				{
+					return $collection->aggregate(
+							[
+									['$match' => $this->getQueryMultiplier($arr,$product_id)],
+									['$group' => ['_id' =>$intrinsic_data['name'],'details' => ['$push'=>['_id'=>'$_id','size'=>'$size','color'=>'$color','flavour'=>'$flavour','flags'=>'$flags','price'=>'$price']]]],
+									['$match' => ['details.0' => ['$exists'=>true]]]
+							]);
+				});
+				if(count($data)==0)
+				Log::info(" info  when data is 0 ".print_r($rates,true));
+				
+				if(!empty($rates)&&!empty($rates['result']))
+				{
+					$temp['variants']=["title"=>"Select ".$intrinsic_data['name'],"sub_title"=>$intrinsic_data['name']];
+					$temp['variants']['options']=[];
+					if(count($data)==0)
+						Log::info(" info  asasas data is 0 ".print_r($intrinsic_data['name'],true));
+					foreach ($rates['result'][0]['details'] as $current) {
+						$tt=[
+								"value"=>(!empty($current[$intrinsic_data['name']]))?$current[$intrinsic_data['name']]:"",
+								"enabled"=>(!empty($current['flags'])&&!empty($current['flags']['available'])?true:false),
+								"ratecard_id"=>$current['_id'],
+								"product_id"=>$product_id,
+								"price"=>$current['price'],
+								"cost"=>$this->getRupeeForm($current['price'])
+						];
+						$arr[count($arr)-1]['value']=$tt['value'];
+						$el=$this->getSelectionView($data,$product_id,$arr);
+						(!empty($el)&&!empty($el['variants']))?$tt['more']=$el['variants']:"";
+						array_push($temp['variants']['options'], $tt);
+					}
+					 return $temp;
+				}
+				return null;
+		}
+		return null;
+	}
+	public function getFilteredAndOrdered($data=[],$sort_key="order",$filter_key="status",$filter_value=1,$sort="asc",$tmp_data=[])
+	{
+		try {
+			$tmp_data=array_values(array_filter($data,function ($e) use ($filter_value,$filter_key) {return $filter_value== $e[$filter_key];}));
+			if(!empty($tmp_data))
+				$this->customSort($sort_key, $tmp_data);
+		} catch (Exception $e) {
+			Log::error(" [ getFilteredAndOrdered ]".print_r($this->baseFailureStatusMessage($e),true));
+		}
+		return $tmp_data;
+	}
+	
 	private function decorateKeyValueDesc(&$temp,&$base)
 	{
 		foreach ($temp as $value)
