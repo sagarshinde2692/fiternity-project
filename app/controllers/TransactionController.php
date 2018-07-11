@@ -5161,7 +5161,7 @@ public function productSuccess($data)
 
         $payment_options = [];
 
-        $payment_options[] = [
+        $payment_options['wallet'] = [
             'title' => 'Wallet',
             'subtitle' => 'Transact online with Wallets',
             'value'=>'wallet',
@@ -5190,7 +5190,7 @@ public function productSuccess($data)
         ];
 
         if(!empty($data['emi']) && $data['emi']){
-            $payment_options[] = array(
+            $payment_options['emi'] = array(
                 'title' => 'EMI',
                 'subtitle' => 'Transact online with credit installments',
                 'value' => 'emi',
