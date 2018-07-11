@@ -4826,7 +4826,7 @@ class HomeController extends BaseController {
         		if(!empty($selectedRatecard))
         		{
         			$selectedRatecard['cost']=$this->utilities->getRupeeForm($selectedRatecard['price']);
-        			(!empty($productView['specification'])&&!empty($productView['specification']['secondary']))?$selectedRatecard['details']=$this->utilities->getProductDetailsCustom($productView['specification']['secondary'],'secondary'):"";
+        			 (!empty($productView['specification'])&&!empty($productView['specification']['secondary']))?$selectedRatecard['details']=$this->utilities->getProductDetailsCustom($productView['specification']['secondary'],'secondary'):"";
         			(!empty($selectedRatecard['image'])&&!empty($selectedRatecard['image']['secondary'])&&count($selectedRatecard['image']['secondary'])>0)?$selectedRatecard['images']=$selectedRatecard['image']['secondary']:
         			(!empty($productView['image'])&&!empty($productView['image']['secondary'])&&count($productView['image']['secondary'])>0)?$selectedRatecard['images']=$productView['image']['secondary']:"";
         			unset($selectedRatecard['image']);
@@ -4834,40 +4834,52 @@ class HomeController extends BaseController {
         			(!empty($productView['specification'])&&!empty($productView['specification']['primary'])&&!empty($productView['specification']['primary']['features']))?$selectedRatecard['key_details']=$this->utilities->getProductDetailsCustom($productView['specification']['primary']['features']):"";
         			
         			(!empty($selectedRatecard['key_details']))?array_unshift($selectedRatecard['key_details'],["name"=>"color","value"=>$selectedRatecard['color']]):"";
-        			$selectedRatecard['size_options']=["title"=>"Select Size","sub_title"=>"Size Chart"];
-        			$otherSizes=ProductRatecard::where("status","1")->where("_id","!=",intval($selectedRatecard['_id']))->where("color",$selectedRatecard['color'])->where("product_id",intval($productView['_id']))->get();
-        			$selectedRatecard['size_options']['sizes']=[];
+        			
+        			
+        			if(!empty($productView['selection_view'])&&is_array($productView['selection_view']))
+        			{
+        				$selectionViewFiltered=$this->utilities->getFilteredAndOrdered($productView['selection_view'],'level');
+        				(!empty($selectionViewFiltered))?$selectedRatecard=array_merge($selectedRatecard,$this->utilities->getSelectionView($selectionViewFiltered,intval($productView['_id']))):"";	
+        				
+        				
+        			/* 	$selectedRatecard['size_options']=["title"=>"Select Size","sub_title"=>"Size Chart"];
+        				
+        				$otherSizes=ProductRatecard::where("status","1")->where("_id","!=",intval($selectedRatecard['_id']))->where("color",$selectedRatecard['color'])->where("product_id",intval($productView['_id']))->get();
+        				$selectedRatecard['size_options']['sizes']=[];
+        				if(!empty($otherSizes)&&count($otherSizes)>0)
+        				{
+        					$otherSizes=$otherSizes->toArray();
+        					foreach ($otherSizes as $current) {
+        						array_push($selectedRatecard['size_options']['sizes'],[
+        								"value"=>$current['size'],
+        								"enabled"=>(!empty($current['flags'])&&!empty($current['flags']['available'])?true:false),
+        								"ratecard_id"=>$current['_id'],
+        								"product_id"=>$productView['_id'],
+        								"price"=>$current['price'],
+        								"cost"=>$this->utilities->getRupeeForm($current['price'])
+        						]);
+        					}
+        				}
+        				//         			else unset($selectedRatecard['size_options']);
+        				else if(!empty($selectedRatecard['product_category_id'])&&in_array($selectedRatecard['product_category_id'], [7,8,9]))
+        					array_push($selectedRatecard['size_options']['sizes'],[
+        							"value"=>$selectedRatecard['size'],
+        							"enabled"=>(!empty($selectedRatecard['flags'])&&!empty($selectedRatecard['flags']['available'])?true:false),
+        							"ratecard_id"=>$selectedRatecard['_id'],
+        							"product_id"=>$productView['_id'],
+        							"price"=>$selectedRatecard['price'],
+        							"cost"=>$selectedRatecard['cost']
+        					]);
+        					else unset($selectedRatecard['size_options']); */
+        			}
+        			
+        			
         			if(!empty($productView['primarycategory'])&&!empty($productView['primarycategory']['slug']))
         			{
         				$selectedRatecard['product_category_slug']=$productView['primarycategory']['slug'];
         				$selectedRatecard['product_category_id']=$productView['primarycategory']['_id'];
         			}
         			
-        			if(!empty($otherSizes)&&count($otherSizes)>0)
-        			{
-        				$otherSizes=$otherSizes->toArray();
-        				foreach ($otherSizes as $current) {
-        					array_push($selectedRatecard['size_options']['sizes'],[
-        							"value"=>$current['size'],
-        							"enabled"=>(!empty($current['flags'])&&!empty($current['flags']['available'])?true:false),
-        							"ratecard_id"=>$current['_id'],
-        							"product_id"=>$productView['_id'],
-        							"price"=>$current['price'],
-        							"cost"=>$this->utilities->getRupeeForm($current['price'])
-        					]);
-        				}
-        			}
-//         			else unset($selectedRatecard['size_options']);
-        			else if(!empty($selectedRatecard['product_category_id'])&&in_array($selectedRatecard['product_category_id'], [7,8,9]))
-        			 array_push($selectedRatecard['size_options']['sizes'],[
-        			 "value"=>$selectedRatecard['size'],
-        			 "enabled"=>(!empty($selectedRatecard['flags'])&&!empty($selectedRatecard['flags']['available'])?true:false),
-        			 "ratecard_id"=>$selectedRatecard['_id'],
-        			 "product_id"=>$productView['_id'],
-        			 "price"=>$selectedRatecard['price'],
-        			 "cost"=>$selectedRatecard['cost']
-        			 ]);
-        			 else unset($selectedRatecard['size_options']);
         			unset($rateCards[$selectedIndex]);
         			$mainSimilar=[];
         			
