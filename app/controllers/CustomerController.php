@@ -1274,7 +1274,8 @@ class CustomerController extends \BaseController {
 	public function createToken($customer){
 
 		$customer = array_except($customer->toArray(), array('password'));
-
+		Log::info("createToken");
+		Log::info($customer);
 		$customer['name'] = (isset($customer['name'])) ? $customer['name'] : "";
 		$customer['email'] = (isset($customer['email'])) ? $customer['email'] : "";
 		$customer['picture'] = (isset($customer['picture'])) ? $customer['picture'] : "";
