@@ -2837,13 +2837,18 @@ class TransactionController extends \BaseController {
             
             $schedule_slot = explode("-", $data['schedule_slot']);
 
-            $data['start_time'] = trim($schedule_slot[0]);
+            //$data['start_time'] = trim($schedule_slot[0]);
+
+            $data['start_time'] = date("h:i a", strtotime(trim($schedule_slot[0])));
+
             if(count($schedule_slot) == 1){
-                $data['end_time'] = date('g:i a', strtotime('+1 hour', strtotime($schedule_slot[0])));
+                $data['end_time'] = date('h:i a', strtotime('+1 hour', strtotime($schedule_slot[0])));
                 $data['schedule_slot'] = $schedule_slot[0].'-'.$data['end_time'];
             }else{
                 $data['end_time']= trim($schedule_slot[1]);
             }
+
+            $data['schedule_slot'] = $data['start_time'].'-'.$data['end_time'];
         }
 
         $batch = array();
