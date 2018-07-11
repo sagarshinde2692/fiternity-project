@@ -4858,7 +4858,7 @@ class HomeController extends BaseController {
         				}
         			}
 //         			else unset($selectedRatecard['size_options']);
-        			else
+        			else if(!empty($selectedRatecard['product_category_id'])&&in_array($selectedRatecard['product_category_id'], [7,8,9]))
         			 array_push($selectedRatecard['size_options']['sizes'],[
         			 "value"=>$selectedRatecard['size'],
         			 "enabled"=>(!empty($selectedRatecard['flags'])&&!empty($selectedRatecard['flags']['available'])?true:false),
@@ -4867,6 +4867,7 @@ class HomeController extends BaseController {
         			 "price"=>$selectedRatecard['price'],
         			 "cost"=>$selectedRatecard['cost']
         			 ]);
+        			 else unset($selectedRatecard['size_options']);
         			unset($rateCards[$selectedIndex]);
         			$mainSimilar=[];
         			
