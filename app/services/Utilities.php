@@ -4192,7 +4192,11 @@ Class Utilities {
 		}
 		return null;
 	}
-	
+	public function getDayWs($date=null)
+	{
+		return $this->days[date("w",strtotime($date))];
+		
+	}
 	public function getWsSlotPrice($start=null,$end=null,$service_id=null,$start_date=null) {
 		
 		try {
@@ -4221,6 +4225,10 @@ Class Utilities {
 			throw $e;
 		}
 		return null;
+	}
+	
+	public function getRupeeForm($number) {
+		return json_decode('"'."\u20b9".'"')." ".(isset($number)?$number:"");
 	}
 }
 
