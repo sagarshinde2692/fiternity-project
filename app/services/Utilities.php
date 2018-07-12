@@ -4548,38 +4548,38 @@ Class Utilities {
 	  return $t;
 	}
 	public function getSelectionView($data,$product_id=null,$arr=[])
-	{	
-			$intrinsic_data=array_shift($data);
-			if(!empty($intrinsic_data)&&!empty($product_id))
+	{
+		$intrinsic_data=array_shift($data);
+		if(!empty($intrinsic_data)&&!empty($product_id))
+		{
+			array_push($arr,['type'=>$intrinsic_data['name']]);
+			$rates=ProductRatecard::active()->raw(function($collection) use($product_id,$intrinsic_data,$arr)
 			{
-				array_push($arr,['type'=>$intrinsic_data['name']]);	
-				$rates=ProductRatecard::active()->raw(function($collection) use($product_id,$intrinsic_data,$arr)
-				{
-				 	return $collection->aggregate([
-				 			['$match' => $this->getQueryMultiplier($arr,$product_id)],
-				 			['$group' => ['_id' =>$intrinsic_data['name'],'details' => ['$push'=>['_id'=>'$_id','properties'=>'$properties','flags'=>'$flags','price'=>'$price']]]],
-				 			['$match' => ['details.0' => ['$exists'=>true]]]]);
-				});
-				if(!empty($rates)&&!empty($rates['result']))
-				{
-					$temp['variants']=["title"=>"Select ".$intrinsic_data['name'],"sub_title"=>$intrinsic_data['name'],'options'=>[]];
-					foreach ($rates['result'][0]['details'] as $current) {
-						$tt=[
-								"value"=>(!empty($current['properties'])&&!empty($current['properties'][$intrinsic_data['name']]))?$current['properties'][$intrinsic_data['name']]:"",
-								"enabled"=>(!empty($current['flags'])&&!empty($current['flags']['available'])?true:false),
-								"ratecard_id"=>$current['_id'],"product_id"=>$product_id,"price"=>$current['price'],
-								"cost"=>$this->getRupeeForm($current['price'])
-						];
-						if(!empty($tt['value']))
-						{
-							$arr[count($arr)-1]['value']=$tt['value'];$el=$this->getSelectionView($data,$product_id,$arr);
-							(!empty($el)&&!empty($el['variants']))?$tt['more']=$el['variants']:"";
-							array_push($temp['variants']['options'], $tt);
-						}
+				return $collection->aggregate([
+						['$match' => $this->getQueryMultiplier($arr,$product_id)],
+						['$group' => ['_id' =>$intrinsic_data['name'],'details' => ['$push'=>['_id'=>'$_id','properties'=>'$properties','flags'=>'$flags','price'=>'$price']]]],
+						['$match' => ['details.0' => ['$exists'=>true]]]]);
+			});
+			if(!empty($rates)&&!empty($rates['result']))
+			{
+				$temp['variants']=["title"=>"Select ".$intrinsic_data['name'],"sub_title"=>$intrinsic_data['name'],'options'=>[]];
+				foreach ($rates['result'][0]['details'] as $current) {
+					$tt=[
+							"value"=>(!empty($current['properties'])&&!empty($current['properties'][$intrinsic_data['name']]))?$current['properties'][$intrinsic_data['name']]:"",
+							"enabled"=>(!empty($current['flags'])&&!empty($current['flags']['available'])?true:false),
+							"ratecard_id"=>$current['_id'],"product_id"=>$product_id,"price"=>$current['price'],
+							"cost"=>$this->getRupeeForm($current['price'])
+					];
+					if(!empty($tt['value']))
+					{
+						$arr[count($arr)-1]['value']=$tt['value'];$el=$this->getSelectionView($data,$product_id,$arr);
+						(!empty($el)&&!empty($el['variants']))?$tt['more']=$el['variants']:"";
+						array_push($temp['variants']['options'], $tt);
 					}
-					return (count($temp['variants']['options'])>0)?$temp:[];
 				}
-				return [];
+				return (count($temp['variants']['options'])>0)?$temp:[];
+			}
+			return [];
 		}
 		return [];
 	}
