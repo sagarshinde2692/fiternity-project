@@ -27,7 +27,10 @@ class Product extends \Basemodel {
 	}
 	
 	protected $appends = array('secondarycategory');
-	
+	public function setIdAttribute($value){
+		
+		$this->attributes['_id'] = intval($value);
+	}
 
 	public function primarycategory() {
 		return $this->belongsTo('ProductCategory', "productcategory.primary" );
@@ -63,7 +66,7 @@ class Product extends \Basemodel {
 				)
 		];
 		$usr="";$opts=[];
-		if(!empty(config::get ( "database.connections.mongodb2.username")))
+		if(!empty(Config::get ( "database.connections.mongodb2.username")))
 		{
 			$opts=["authMechanism"=>config::get ( "database.connections.mongodb2.options.authMechanism"),"db"=>config::get ( "database.connections.mongodb2.options.db")];
 			$usr=config::get ( "database.connections.mongodb2.username" ).":".config::get ( "database.connections.mongodb2.password" )."@";

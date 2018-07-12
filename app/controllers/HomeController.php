@@ -4751,7 +4751,7 @@ class HomeController extends BaseController {
         		}
         		return $home;
         	} catch (Exception $e) {
-        		
+        		Log::error($e);
         		return ['status'=>400,"message"=>$this->utilities->baseFailureStatusMessage($e)];
         	}
         		
