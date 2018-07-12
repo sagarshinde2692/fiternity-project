@@ -4230,5 +4230,26 @@ Class Utilities {
 	public function getRupeeForm($number) {
 		return json_decode('"'."\u20b9".'"')." ".(isset($number)?$number:"");
 	}
+	public function getAnySlotAvailablePNp($requested_date,$service_details) {
+		$closeDate=date('Y-m-d', strtotime($requested_date.' + 7 days'));
+		$iterDate=date('Y-m-d', strtotime($requested_date));
+		$p_np=null;
+		while($closeDate!==$iterDate)
+		{
+			$day=$this->getDayWs($requested_date);
+			if(!empty($day))
+			{
+				$tmp=array_values(array_filter($service_details['workoutsessionschedules'],function ($e) use($day){if($e['weekday']==$day)return $e;}));
+				if(!empty($tmp))
+				{
+					$p_np=$this->getPeakAndNonPeakPrice($tmp[0]['slots'],$this->getPrimaryCategory(null,$service_details['_id']));
+					return $p_np;
+				}
+			}
+			else $iterDate=date('Y-m-d', strtotime($requested_date. ' + 1 days'));
+		}
+		return $p_np;
+	}
+	
 }
 

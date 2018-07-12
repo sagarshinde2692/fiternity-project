@@ -1701,23 +1701,7 @@ class ServiceController extends \BaseController {
 			}
 		}
 		$service_details['dynamic_pricing'] = ["title"=>"RUSH HOUR","sub_title"=>"RUSH HOUR","rush"=>["data"=>[],"title"=>"RUSH HOUR","sub_title"=>"RUSH HOUR"],"non_rush"=>["data"=>[],"title"=>"NON RUSH HOUR","sub_title"=>"NON RUSH HOUR"]];
-		
-		$closeDate=date('Y-m-d', strtotime($requested_date.' + 7 days'));$iterDate=date('Y-m-d', strtotime($requested_date));
-		
-		while($closeDate!==$iterDate) 
-		{
-			$day=$this->utilities->getDayWs($requested_date);
-			if(!empty($day))
-			{
-				$tmp=array_values(array_filter($service_details['workoutsessionschedules'],function ($e) use($day){if($e['weekday']==$day)return $e;}));
-				if(!empty($tmp))
-				{
-					$p_np=$this->utilities->getPeakAndNonPeakPrice($tmp[0]['slots'],$this->utilities->getPrimaryCategory(null,$service_details['_id']));
-					break;
-				}
-			}
-			else $iterDate=date('Y-m-d', strtotime($requested_date. ' + 1 days'));
-		}
+		$p_np=$this->utilities->getAnySlotAvailablePNp($requested_date,$service_details);		
 		if(!empty($p_np))
 		{
 			$service_details['dynamic_pricing']['rush']['sub_title']=$this->utilities->getRupeeForm($p_np['peak']);
