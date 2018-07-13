@@ -798,7 +798,7 @@ class ServiceController extends \BaseController {
 					$ratecard_price = $ratecard['price'];
                 }
 				
-                if($type == "workoutsessionschedules"){
+                /* if($type == "workoutsessionschedules"){
                 	$temp=$this->utilities->getPeakAndNonPeakPrice($weekdayslots['slots'],$this->utilities->getPrimaryCategory(null,$service['service_id']));
 
                 	$service["workout_session"] = [];
@@ -817,7 +817,7 @@ class ServiceController extends \BaseController {
 	                			$service['cost']['non_peak'] = "₹ ".$temp['non_peak'];
                 		}
                 	}
-		    	}
+		    	} */
 
 		    	if($ratecard_price > 0&&$type !== "workoutsessionschedules"){
 		    		$service['cost'] = "₹. ".$ratecard_price;

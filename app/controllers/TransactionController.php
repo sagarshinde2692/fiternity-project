@@ -2840,15 +2840,16 @@ class TransactionController extends \BaseController {
         	}
         }
         
+        
         //********************************************************************************** DYANMIC PRICING START**************************************************************************************************
-        if($data['type'] == 'workout-session')
+        /* if($data['type'] == 'workout-session')
         {
         	try {
         		(isset($data['start_time'])&&isset($data['start_date'])&&isset($data['service_id'])&&isset($data['end_time']))?
         			$am_calc=$this->utilities->getWsSlotPrice($data['start_time'],$data['end_time'],$data['service_id'],$data['start_date']):"";
         		(isset($am_calc))?$data['amount_finder']=$am_calc:"";
         	} catch (Exception $e) {Log::error(" Error :: ".print_r($e,true));}
-        }
+        } */
         //********************************************************************************** DYANMIC PRICING END****************************************************************************************************
         
         $data['amount'] = $data['amount_finder'];
