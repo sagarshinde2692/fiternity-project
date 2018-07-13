@@ -4761,14 +4761,14 @@ class HomeController extends BaseController {
         		if(!empty($jwt_token))
         		{
         			$token_decoded=decode_customer_token();
-        			$cart_id=$token_decoded['customer']['cart_id'];
+        			(!empty($token_decoded)&&!empty($token_decoded->customer))?$cart_id=$token_decoded->customer->cart_id:"";
         			if(!empty($cart_id))
         			{
         				$ratecard=ProductRatecard::where("_id",$ratecard_id)->first(['price','product_id']);
         				if(!empty($ratecard)&&!empty($ratecard->product_id)&&!empty($ratecard->_id)&&isset($ratecard->price))
         				{
         					$ratecard=$ratecard->toArray();
-        					$cartData=["product_id"=>$ratecard['product_id'],"ratecard_id"=>$ratecard['_id'],"price"=>$ratecard['price'],"quantity"=>quantity];
+        					$cartData=["product_id"=>$ratecard['product_id'],"ratecard_id"=>$ratecard['_id'],"price"=>$ratecard['price'],"quantity"=>$quantity];
         					$removedOldFromCart=Cart::where('_id', intval($cart_id))->pull('products', ['ratecard_id' => intval($ratecard['_id']), 'product_id' => intval($ratecard['product_id'])]);
         					($quantity>0)?$addedToCart=Cart::where('_id', intval($cart_id))->push('products',$cartData):"";
         					$this->utilities->attachCart($response["response"]);
