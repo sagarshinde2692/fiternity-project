@@ -16,7 +16,7 @@ return array(
 // 	'debug' => TRUE,
 // 	'metropolis' => 'http://localhost:3030',
 // 	'amazonpay_isSandbox' => 'true',
-// 	'non_peak_hours' => ["off"=>0.8,"gym"=>["off"=>0.8,"start"=>10,"end"=>16],"studios"=>["start"=>11,"end"=>16,"off"=>0.8]],
+// 	'non_peak_hours' => ["off"=>0.8,"gym"=>["off"=>0.8,"start"=>10,"end"=>18],"studios"=>["start"=>11,"end"=>17,"off"=>0.8]],
 // 	'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
 // 	'website_deeplink' =>'https://ftrnty.com',
 
@@ -32,7 +32,7 @@ return array(
 	'env' => 'stage',
 	'debug' => TRUE,
 	'metropolis' => 'http://apisatge.fitn.in:8989',
-	'non_peak_hours' => ["off"=>0.8,"gym"=>["off"=>0.8,"start"=>10,"end"=>6],"studios"=>["start"=>11,"end"=>5,"off"=>0.8]],
+	'non_peak_hours' => ["off"=>0.8,"gym"=>["off"=>0.8,"start"=>10,"end"=>18],"studios"=>["start"=>11,"end"=>17,"off"=>0.8]],
 	'amazonpay_isSandbox' => 'true',
 	'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
 	'website_deeplink' =>'https://ftrnty.com',
@@ -50,7 +50,7 @@ return array(
 	// 'debug' => TRUE,
 	// 'metropolis' => 'http://apisatge.fitn.in:8989',
 	// 'amazonpay_isSandbox' => 'true',
-	// 'non_peak_hours' => ["off"=>0.8,"gym"=>["off"=>0.8,"start"=>10,"end"=>6],"studios"=>["start"=>11,"end"=>5,"off"=>0.8]],
+	// 'non_peak_hours' => ["off"=>0.8,"gym"=>["off"=>0.8,"start"=>10,"end"=>18],"studios"=>["start"=>11,"end"=>17,"off"=>0.8]],
 	// 'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
 	// 'website_deeplink' =>'https://ftrnty.com',
 
