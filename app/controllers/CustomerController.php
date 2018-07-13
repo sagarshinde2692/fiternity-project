@@ -94,7 +94,7 @@ class CustomerController extends \BaseController {
 		$hour = 60*60;
 		$hour12 = 60*60*12;
 		$hour2 = 60*60*2;
-
+		
 		foreach ($trials as $trial){
 
 			array_set($trial, 'type_text', 'Trial');
@@ -180,9 +180,9 @@ class CustomerController extends \BaseController {
 					array_set($trial, 'payment_pending', true);
 
 				}
-
+				$trial['fitcash_text'] = "";
 				try{
-					$trial['fitcash_text'] = "Enter your Fitcode to get  Rs.".$this->utitlies->getFitcash($trial)." Fitcash.";
+					$trial['fitcash_text'] = "Enter your Fitcode to get  Rs.".$this->utilities->getFitcash($trial)." Fitcash.";
 				}catch(Exception $e){
 					Log::info($e);
 				}
