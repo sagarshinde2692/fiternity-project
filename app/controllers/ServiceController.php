@@ -1877,7 +1877,23 @@ class ServiceController extends \BaseController {
 			'base_url'=>"http://b.fitn.in/iconsv1/",
 			'rebook_trials'=>[]
 		];
-
+		$cityId=City::where("slug",$city)->first(['_id']);
+		if(!empty($cityId))
+		{
+			$cityId=$cityId->_id;
+			$servicesGym=Service::where("city_id",$cityId)->whereIn("servicecategory_id",[65,82])->lists('_id');
+			
+			$servicesZumba=Service::where("city_id",$cityId)->whereIn("servicecategory_id",[19,20,21,132,133,189])->lists('_id');
+			
+			$servicesCrossfit=Service::where("city_id",$cityId)->whereIn("servicecategory_id",[5,111,112,10])->lists('_id');
+			
+			$gymCount= Order::where("type","workout-session")->whereIn("service_id",$servicesGym)->count();
+			$zumbaCount= Order::where("type","workout-session")->whereIn("service_id",$servicesZumba)->count();
+			$cfCount= Order::where("type","workout-session")->whereIn("service_id",$servicesCrossfit)->count();
+			$total= Order::where("type","workout-session")->where("city_id",$cityId)->count();
+			
+			$data["stats_count"]=["crossfit"=>$cfCount,"zumba"=>$zumbaCount,"gym"=>$gymCount,"total"=>$total,"categories"=>count($included_ids)];
+		}
 		try{
 
 			if($this->authorization){
