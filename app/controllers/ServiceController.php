@@ -10,7 +10,7 @@ use App\Services\Metropolis as Metropolis;
 use App\Services\Utilities as Utilities;
 
 class ServiceController extends \BaseController {
-
+	protected $utilities;
 	public function __construct(Utilities $utilities) {
 
 		parent::__construct();
@@ -798,16 +798,29 @@ class ServiceController extends \BaseController {
 					$ratecard_price = $ratecard['price'];
                 }
 				
-                if($type == "workoutsessionschedules"){
-	            	$service["workout_session"] = [
-		    			"available" => true,
-		    			"amount" => $ratecard_price
-		    		];
-		    	}
+                /* if($type == "workoutsessionschedules"){
+                	$temp=$this->utilities->getPeakAndNonPeakPrice($weekdayslots['slots'],$this->utilities->getPrimaryCategory(null,$service['service_id']));
 
-		    	if($ratecard_price > 0){
+                	$service["workout_session"] = [];
+                	$service['cost']=[];
+                	if(!empty($temp))
+                	{
+                		if(isset($temp['peak']))
+                		{
+                				$service["workout_session"]['available']=true;
+                				$service["workout_session"]["peak_amount"]=$temp['peak'];
+                				$service['cost']['peak'] = "₹ ".$temp['peak'];
+                		}
+                		if(isset($temp['non_peak']))
+                		{
+	                			$service["workout_session"]["non_peak_amount"]=$temp['non_peak'];
+	                			$service['cost']['non_peak'] = "₹ ".$temp['non_peak'];
+                		}
+                	}
+		    	} */
 
-		    		$service['cost'] = "₹ ".$ratecard_price;
+		    	if($ratecard_price > 0&&$type !== "workoutsessionschedules"){
+		    		$service['cost'] = "₹. ".$ratecard_price;
 		    	}
 
 				foreach ($weekdayslots['slots'] as $slot) {
@@ -1457,15 +1470,25 @@ class ServiceController extends \BaseController {
 			// return $service_details;
 			if(!$service_details){
 				
+				
+// 				workoutsessionschedules
 				return Response::json(array('status'=>400, 'error_message'=>'Service not active'), $this->error_status);
 			
 			};
 			$service_details['finder_slug'] = $finder['slug'];
 			$service_details['lat'] = (string)$service_details['lat'];
 			$service_details['lon'] = (string)$service_details['lon'];
+			
+			
 
 			// return $service_details;
 			$service_details = $service_details->toArray();
+
+			/* $service_details['dynamic_pricing'] = ["title"=>"RUSH HOUR","sub_title"=>"RUSH HOUR","rush"=>["title"=>"RUSH HOUR","sub_title"=>"RUSH HOUR"],"non_rush"=>["title"=>"NON RUSH HOUR","sub_title"=>"NON RUSH HOUR"]];
+			
+			$this->utilities->getDayWs()
+			array_values(array_filter([],function ($e) use()))
+			$this->utilities->getPeakAndNonPeakPrice($service_details,$this->utilities->getPrimaryCategory(null,$service_details['_id'])); */
 
 			// $service_details['title'] = $service_details['name'].' at '.$finder['title'];
 			$service_details['title'] = preg_replace('/membership/i', 'Workout', $service_details['name']).' at '.$finder['title'];
@@ -1502,7 +1525,7 @@ class ServiceController extends \BaseController {
 			
 			$service_details['amount'] = (($workout_session_ratecard['special_price']!=0) ? $workout_session_ratecard['special_price'] : $workout_session_ratecard['price']);
 
-			$service_details['price'] = "₹".$service_details['amount']." PER SESSION";
+			$service_details['price'] = "â‚¹".$service_details['amount']." PER SESSION";
 
 			$service_details['contact'] = [
 				'address'=>''
@@ -1678,7 +1701,20 @@ class ServiceController extends \BaseController {
 					break;
 			}
 		}
-
+		$service_details['dynamic_pricing'] = ["title"=>"RUSH HOUR","sub_title"=>"RUSH HOUR","rush"=>["data"=>[],"title"=>"RUSH HOUR","sub_title"=>"RUSH HOUR"],"non_rush"=>["data"=>[],"title"=>"NON RUSH HOUR","sub_title"=>"NON RUSH HOUR"]];
+		$p_np=$this->utilities->getAnySlotAvailablePNp($requested_date,$service_details);		
+		if(!empty($p_np))
+		{
+			$service_details['dynamic_pricing']['rush']['sub_title']=$this->utilities->getRupeeForm($p_np['peak']);
+			$service_details['dynamic_pricing']['non_rush']['sub_title']=$this->utilities->getRupeeForm($p_np['non_peak']);
+		}
+		
+		array_push($service_details['dynamic_pricing']['rush']['data'], ["name"=>"Moring","value"=>"6am -10am"]);
+		array_push($service_details['dynamic_pricing']['rush']['data'], ["name"=>"Evening","value"=>"6pm -10pm"]);
+		array_push($service_details['dynamic_pricing']['non_rush']['data'], ["name"=>"Moring","value"=>"10am -6pm"]);
+		array_push($service_details['dynamic_pricing']['non_rush']['data'], ["name"=>"Evening","value"=>"10pm -12am"]);
+		
+						
 		$schedule_data = [
 			'service_id'=>$service_details['_id'],
 			'requested_date'=>$requested_date,
@@ -1926,7 +1962,7 @@ class ServiceController extends \BaseController {
 								
 								$trial['title'] = ucwords(preg_replace('/membership/i', 'Workout', $trial['service_name'])).' at '.$trial['finder_name'];
 
-								$trial['amount'] = '₹'.($trial['service']['ratecards'][0]['special_price'] != 0 ? $trial['service']['ratecards'][0]['special_price'] : $trial['service']['ratecards'][0]['price']);
+								$trial['amount'] = 'â‚¹'.($trial['service']['ratecards'][0]['special_price'] != 0 ? $trial['service']['ratecards'][0]['special_price'] : $trial['service']['ratecards'][0]['price']);
 								$trial['service_slug'] = $trial['service']['slug'];
 								$trial['finder_slug'] = $trial['finder']['slug'];
 								
