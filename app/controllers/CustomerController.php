@@ -180,9 +180,9 @@ class CustomerController extends \BaseController {
 					array_set($trial, 'payment_pending', true);
 
 				}
-
+				$trial['fitcash_text'] = "Enter your Fitcode to get Fitcash";
 				try{
-					$trial['fitcash_text'] = "Enter your Fitcode to get  Rs.".$this->utitlies->getFitcash($trial)." Fitcash.";
+					$trial['fitcash_text'] = "Enter your Fitcode to get  Rs.".$this->utilities->getFitcash($trial)." Fitcash.";
 				}catch(Exception $e){
 					Log::info($e);
 				}
