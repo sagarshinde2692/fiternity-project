@@ -822,7 +822,7 @@ class ServiceController extends \BaseController {
 		    	if($ratecard_price > 0&&$type !== "workoutsessionschedules"){
 		    		$service['cost'] = "₹. ".$ratecard_price;
 		    	}
-		    	array_push($slots,["title"=>"RUSH HOUR","price"=>"","data"=>[]]);array_push($slots,["title"=>"NON RUSH HOUR","price"=>"","data"=>[]]);
+// 		    	array_push($slots,["title"=>"RUSH HOUR","price"=>"","data"=>[]]);array_push($slots,["title"=>"NON RUSH HOUR","price"=>"","data"=>[]]);
 				foreach ($weekdayslots['slots'] as $slot) {
 
 					if(!empty($finder)&&!empty($finder['flags'])&&!empty($finder['flags']['newly_launched_date']))
@@ -885,10 +885,12 @@ class ServiceController extends \BaseController {
                         array_set($slot,'epoch_start_time',strtotime(strtoupper($date." ".$slot['start_time'])));
 						array_set($slot,'epoch_end_time',strtotime(strtoupper($date." ".$slot['end_time'])));
 						$total_slots_count +=1;
-						$ck=$this->utilities->getWSNonPeakPrice($slot['start_time_24_hour_format'],$slot['end_time_24_hour_format'],null,$this->utilities->getPrimaryCategory(null,$service['service_id'],true));
+// 						$ck=$this->utilities->getWSNonPeakPrice($slot['start_time_24_hour_format'],$slot['end_time_24_hour_format'],null,$this->utilities->getPrimaryCategory(null,$service['service_id'],true));
 						if(!$slot['passed']){
 							$total_slots_available_count +=1;
 							 							
+							array_push($slots,$slot);
+							
 							if(intval($slot['start_time_24_hour_format']) < 12){
 								array_push($slots_timewise['morning'], $slot);
 							}elseif(intval($slot['start_time_24_hour_format']) < 16){
@@ -896,9 +898,9 @@ class ServiceController extends \BaseController {
 							}else{
 								array_push($slots_timewise['evening'], $slot);
 							}
-							if(isset($_GET['source']) && $_GET['source'] == 'pps')
+							/* if(isset($_GET['source']) && $_GET['source'] == 'pps')
 								(!empty($ck)&&!empty($ck['peak']))?array_push($slots[0]['data'], $slot):array_push($slots[1]['data'], $slot);
-							else array_push($slots,$slot);
+							else array_push($slots,$slot); */
 						}
                     }catch(Exception $e){
 
@@ -911,7 +913,7 @@ class ServiceController extends \BaseController {
             
 			
             $service['slot_passed_flag'] = $slot_passed_flag;
-            if(count($slots[0]['data'])==0)unset($slots[0]);if(count($slots[1]['data'])==0)unset($slots[1]);
+//             if(count($slots[0]['data'])==0)unset($slots[0]);if(count($slots[1]['data'])==0)unset($slots[1]);
 			$service['slots'] = $slots;
 			$service['slots_timewise'] = $slots_timewise;
 			$service['total_slots_count'] = $total_slots_count;
@@ -1039,7 +1041,7 @@ class ServiceController extends \BaseController {
 					{
 						$slots = pluck($schedule['slots'], ['slot_time', 'price', 'service_id', 'finder_id', 'ratecard_id', 'epoch_start_time', 'epoch_end_time']);
 					}
-					$slots=$schedule['slots']; 
+// 					$slots=$schedule['slots']; 
 				}
 
 				$message = "";
@@ -1702,6 +1704,7 @@ class ServiceController extends \BaseController {
 		}
 		$service_details['dynamic_pricing'] = ["title"=>"RUSH HOUR","sub_title"=>"RUSH HOUR","rush"=>["data"=>[],"title"=>"RUSH HOUR","sub_title"=>"RUSH HOUR"],"non_rush"=>["data"=>[],"title"=>"NON RUSH HOUR","sub_title"=>"NON RUSH HOUR"]];
 		$p_np=$this->utilities->getAnySlotAvailablePNp($requested_date,$service_details);		
+// 		return $service_details;
 		if(!empty($p_np))
 		{
 			$service_details['dynamic_pricing']['rush']['sub_title']=$this->utilities->getRupeeForm($p_np['peak']);
