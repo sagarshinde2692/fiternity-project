@@ -1460,6 +1460,7 @@ class ServiceController extends \BaseController {
 				return Response::json(array('status'=>400, 'error_message'=>'Service not active'), $this->error_status);
 			
 			};
+			$service_details['finder_slug'] = $finder['slug'];
 			$service_details['lat'] = (string)$service_details['lat'];
 			$service_details['lon'] = (string)$service_details['lon'];
 
