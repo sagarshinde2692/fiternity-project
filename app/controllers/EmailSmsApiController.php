@@ -591,6 +591,17 @@ class EmailSmsApiController extends \BaseController {
             }
         }
 
+        if(!empty($data['order_token'])){
+
+            $decodeOrderToken = decodeOrderToken($data['order_token']);
+
+            if($decodeOrderToken['status'] != 200){
+                return Response::json($decodeOrderToken,$decodeOrderToken['status']);
+            }
+
+            $data = array_merge($data,$decodeOrderToken['data']);
+        }
+
         if($data['capture_type'] == 'sale_pre_register_2018'){
 
             $rules = [
@@ -946,6 +957,7 @@ class EmailSmsApiController extends \BaseController {
                         $this->findersms->captureVendorWalkthrough($data);
 			            $this->findermailer->captureVendorWalkthrough($data);
                     }
+
                     break;
                 default:
                     $this->customermailer->landingPageCallback($data);
@@ -969,6 +981,8 @@ class EmailSmsApiController extends \BaseController {
             case 'walkthrough': $message = "Walkin Captured Successfully";break;
             case 'starter_pack': $message = "Thank you for signing up. Amount of Rs.500 has been credited to your wallet.";break;
             case 'exit_intent': $message = "Successfully stored exit intent of the user.";break;
+            case 'membership_invoice_request': $message = "Thank you for membership invoice request, We will get back to you";break;
+            case 'membership_cancel_request': $message = "Thank you for membership cancellation request, We will get back to you";break;
             default:$message = "Received the Request";break;
         }
 

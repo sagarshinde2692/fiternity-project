@@ -1552,6 +1552,21 @@ class TransactionController extends \BaseController {
                 
             }
             $data["profile_link"] = isset($profile_link) ? $profile_link : $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$data['customer_email']);
+
+            $encodeOrderTokenData = [
+                'order_id'=>$order['_id'],
+                'customer_id'=>$order['customer_id'],
+                'customer_email'=>$order['customer_email'],
+                'customer_name'=>$order['customer_name'],
+                'customer_phone'=>$order['customer_phone'],
+            ];
+
+            $data['order_token'] = $order_token = encodeOrderToken($encodeOrderTokenData);
+
+            $data['membership_invoice_request_url'] = Config::get('app.website')."/membership?capture_type=membership_invoice_request&order_token=".$order_token;
+
+            $data['membership_cancel_request_url'] = Config::get('app.website')."/membership?capture_type=membership_cancel_request&order_token=".$order_token;
+
             $order->update($data);
 
             //send welcome email to payment gateway customer
@@ -3008,6 +3023,8 @@ class TransactionController extends \BaseController {
         $finder_category                       =    (isset($finder['category']['name']) && $finder['category']['name'] != '') ? $finder['category']['name'] : "";
         $finder_category_slug                  =    (isset($finder['category']['slug']) && $finder['category']['slug'] != '') ? $finder['category']['slug'] : "";
         $finder_flags                       =   isset($finder['flags'])  ? $finder['flags'] : new stdClass();
+        $finder_notes                        =    (isset($finder['notes']) && $finder['notes'] != '') ? $finder['notes'] : "";
+        
         $data['finder_city'] =  trim($finder_city);
         $data['finder_location'] =  ucwords(trim($finder_location));
         $data['finder_address'] =  trim($finder_address);
@@ -3031,7 +3048,7 @@ class TransactionController extends \BaseController {
         $data['category_name'] = $finder_category;
         $data['category_slug'] = $finder_category_slug;
         $data['finder_flags'] = $finder_flags;
-        
+        $data['finder_notes'] = $finder_notes;
 
         return array('status' => 200,'data' =>$data);
     }
