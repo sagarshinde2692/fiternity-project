@@ -881,6 +881,10 @@ class TransactionController extends \BaseController {
             'pay_later'=>$pay_later
         );
 
+        if(!empty($data['ratecard_pay_at_vendor'])){
+           $resp['ratecard_pay_at_vendor'] = true;
+        }
+
         // $resp['payment_offers'] = [
         //     'amazon_pay'=>'25% instant cashback'
         // ];
@@ -2741,6 +2745,13 @@ class TransactionController extends \BaseController {
 
         $ratecard = $ratecard->toArray();
 
+        if(isset($ratecard['flags']) && empty($this->device_type)){
+
+            if(isset($ratecard['flags']['pay_at_vendor']) && $ratecard['flags']['pay_at_vendor']){
+                $data['ratecard_pay_at_vendor'] = true;
+            }
+        }
+
         $data['service_duration'] = $this->getServiceDuration($ratecard);
 
         $data['ratecard_remarks']  = (isset($ratecard['remarks'])) ? $ratecard['remarks'] : "";
@@ -4426,7 +4437,7 @@ class TransactionController extends \BaseController {
             }
         }
 
-        if($this->vendor_token){
+        if($this->vendor_token || !empty($data['ratecard_pay_at_vendor'])){
 
             $payment_modes[] = array(
                 'title' => 'Pay at Studio',
