@@ -4305,7 +4305,7 @@ Class Utilities {
 					
 					if(!empty($dataProd['status']))
 						$temp['product']=$dataProd['data'];
-					else return ["status"=>0,"message"=>"Couldn't get product detail."];
+					else return $dataProd;
 					$temp['quantity']=$cart_item['quantity'];
 					$temp['price']=(intval($cart_item['quantity'])*intval($cart_item['price']));
 					array_push($cart_desc,$temp);
