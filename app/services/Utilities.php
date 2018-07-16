@@ -4463,10 +4463,9 @@ Class Utilities {
 				{
 					$temp=[];
 					$dataProd=$hc->getProductDetail($cart_item['ratecard']['_id'], $cart_item['product']['_id'],true);
-					
 					if(!empty($dataProd['status']))
 						$temp['product']=$dataProd['data'];
-					else return ["status"=>0,"message"=>"Couldn't get product detail."];
+					else return $dataProd;
 					$temp['quantity']=$cart_item['quantity'];
 					$temp['price']=(intval($cart_item['quantity'])*intval($cart_item['price']));
 					array_push($cart_desc,$temp);

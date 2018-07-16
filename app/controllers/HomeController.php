@@ -5004,29 +5004,7 @@ class HomeController extends BaseController {
         		return  ['status'=>0,"message"=>$this->utilities->baseFailureStatusMessage($e)];
         	}	        	
         }
-        public function getFinalCartSummary()
-        {
-        	try {
-        		$data  =  Input::json()->all();
-        		$rules = ['cart'=>'required'];
-        		$validator = Validator::make($data,$rules);
-        		
-        		if ($validator->fails()) {
-        			return ['status'=> 0,'message' => error_message($validator->errors())];
-        		}
-        		$t=[];
-        		$cart_id=$this->utilities->attachCart($t,true);
-        		$dataCart=$this->utilities->getCartFinalSummary($data['cart'], $cart_id);
-        		
-        		if(!empty($dataCart)&&!empty($dataCart['status']))
-        			$finalData=['status'=>200,"response"=>$dataCart['data']];
-        			else return $dataCart;
-        			$this->utilities->fetchCustomerAddresses($finalData['response']);
-        			return $finalData;
-        	} catch (Exception $e) {
-        		return  ['status'=>0,"message"=>$this->utilities->baseFailureStatusMessage($e)];
-        	}
-        }
+       
         public function getCustomerAddress()
         {
         	try {
