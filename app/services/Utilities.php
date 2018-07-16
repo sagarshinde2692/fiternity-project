@@ -9,6 +9,7 @@ use Response;
 use Config;
 use JWT;
 use Finder;
+use Service;
 use Request;
 use Log;
 use App\Services\Sidekiq as Sidekiq;
@@ -32,6 +33,7 @@ Class Utilities {
     $this->vendor_token = false;
         
     $vendor_token = Request::header('Authorization-Vendor');
+    $this->days=["sunday","monday","tuesday","wednesday","thursday","friday","saturday"];
 
     if($vendor_token){
 
@@ -3722,36 +3724,24 @@ Class Utilities {
         
 
         $fitcash = 0;
-
         $finder_id = (int)$data['finder_id'];
-
         if(!empty($data['type']) && in_array(strtolower($data['type']),['booktrials','3daystrial'])){
-
             if(!empty($data['is_tab_active']) && $data['is_tab_active'] === true){
-
                 return 250;
             }
         
             \Ratecard::$withoutAppends = true;
 
             $ratecards = \Ratecard::where('finder_id',$finder_id)->whereIn('type',['membership','packages'])->get();
-
             $amount = 0;
             $days = 0;
             $fitcash = 300;
-
             if(!empty($ratecards)){
-
                 foreach ($ratecards as $ratecard) {
-
                     $new_days = $this->getDurationDay($ratecard);
-
                     if($new_days >= $days){
-
                         $days = $new_days;
-
                         $new_amount = $this->getRatecardAmount($ratecard);
-
                         if($new_amount >= $amount){
                             $amount = $new_amount;
                         }
@@ -3766,16 +3756,12 @@ Class Utilities {
 
             return $fitcash;
         }
-
         if(!empty($data['amount_finder'])){
-
             $getWorkoutSessionFitcash = $this->getWorkoutSessionFitcash($data);
 
             $fitcash = round($getWorkoutSessionFitcash * $data['amount_finder'] / 100);
         }
-
         return $fitcash;
-
     }
 
     public function getRatecardAmount($ratecard){
@@ -4228,6 +4214,7 @@ Class Utilities {
 		return $knowlarity_no;
 	}
     
+
     public function isIntegratedVendor($finderdata){
         if($finderdata['commercial_type'] == 0 || (isset($finderdata['membership']) && $finderdata['membership'] == 'disable' && isset($finderdata['trial']) && $finderdata['trial'] == 'disable') || (!empty($finderdata['flags']['state']) && in_array($finderdata['flags']['state'], ['temporarily_shut', 'closed']))){
             return false;
@@ -4535,6 +4522,66 @@ Class Utilities {
 			return "";
 		}
 	}
+	
+	public function getQueryMultiplier($arr=[],$product_id)
+	{
+		$t=[];
+		foreach ($arr as $current)
+			if(!empty($current['value']))
+				$t[$current['type']]=$current['value'];
+				$t['product_id'] =$product_id;
+				$t['status']="1";
+
+	  return $t;
+	}
+	public function getSelectionView($data,$product_id=null,$arr=[])
+	{
+		$intrinsic_data=array_shift($data);
+		if(!empty($intrinsic_data)&&!empty($product_id))
+		{
+			array_push($arr,['type'=>$intrinsic_data['name']]);
+			$rates=ProductRatecard::active()->raw(function($collection) use($product_id,$intrinsic_data,$arr)
+			{
+				return $collection->aggregate([
+						['$match' => $this->getQueryMultiplier($arr,$product_id)],
+						['$group' => ['_id' =>$intrinsic_data['name'],'details' => ['$push'=>['_id'=>'$_id','properties'=>'$properties','flags'=>'$flags','price'=>'$price']]]],
+						['$match' => ['details.0' => ['$exists'=>true]]]]);
+			});
+			if(!empty($rates)&&!empty($rates['result']))
+			{
+				$temp['variants']=["title"=>"Select ".$intrinsic_data['name'],"sub_title"=>$intrinsic_data['name'],'options'=>[]];
+				foreach ($rates['result'][0]['details'] as $current) {
+					$tt=[
+							"value"=>(!empty($current['properties'])&&!empty($current['properties'][$intrinsic_data['name']]))?$current['properties'][$intrinsic_data['name']]:"",
+							"enabled"=>(!empty($current['flags'])&&!empty($current['flags']['available'])?true:false),
+							"ratecard_id"=>$current['_id'],"product_id"=>$product_id,"price"=>$current['price'],
+							"cost"=>$this->getRupeeForm($current['price'])
+					];
+					if(!empty($tt['value']))
+					{
+						$arr[count($arr)-1]['value']=$tt['value'];$el=$this->getSelectionView($data,$product_id,$arr);
+						(!empty($el)&&!empty($el['variants']))?$tt['more']=$el['variants']:"";
+						array_push($temp['variants']['options'], $tt);
+					}
+				}
+				return (count($temp['variants']['options'])>0)?$temp:[];
+			}
+			return [];
+		}
+		return [];
+	}
+	public function getFilteredAndOrdered($data=[],$sort_key="order",$filter_key="status",$filter_value=1,$sort="asc",$tmp_data=[])
+	{
+		try {
+			$tmp_data=array_values(array_filter($data,function ($e) use ($filter_value,$filter_key) {return $filter_value== $e[$filter_key];}));
+			if(!empty($tmp_data))
+				$this->customSort($sort_key, $tmp_data);
+		} catch (Exception $e) {
+			Log::error(" [ getFilteredAndOrdered ]".print_r($this->baseFailureStatusMessage($e),true));
+		}
+		return $tmp_data;
+	}
+	
 	private function decorateKeyValueDesc(&$temp,&$base)
 	{
 		foreach ($temp as $value)
@@ -4558,6 +4605,128 @@ Class Utilities {
 			}
 		}
 		
+	}
+
+	public function getPrimaryCategory($finder_id=null,$service_id=null) {
+		
+		try {
+			if(!empty($finder_id))
+			{
+				Finder::$withoutAppends=true;$finder=Finder::find(intval($finder_id))->with('category')->first(['category_id']);
+				return (!empty($finder)&&!empty($finder->category))?$finder->toArray()['category']['name']:null;
+			}
+			else if(!empty($service_id))
+			{
+				Service::$withoutAppends=true;$service=Service::find(intval($service_id))->with('category')->first(['servicecategory_id']);
+				return (!empty($service)&&!empty($service->category))?$service->toArray()['category']['name']:null;
+			}
+			else return null;
+		} catch (Exception $e) {
+			Log::error(" Error Message ::  ".print_r($e->getMessage(),true));
+			return null;
+		}
+		return null;
+	}
+	public function getWSNonPeakPrice($start=null,$end=null,$workoutSessionPrice=null,$service_cat=null,$just_tag=false) {
+		
+		try {
+			$peak=true;
+			if(!empty($workoutSessionPrice)&&!empty($start)&&!empty($end)&&!empty($service_cat))
+			{   
+				if($service_cat=='gym')
+				{
+					if(intval($start)>=Config::get('app.non_peak_hours.gym.start')&&intval($end)<=Config::get('app.non_peak_hours.gym.end'))
+					{
+						(!$just_tag)?$workoutSessionPrice=Config::get('app.non_peak_hours.gym.off')*intval($workoutSessionPrice):"";$peak=false;
+					}
+				}
+				else if(intval($start)>=Config::get('app.non_peak_hours.studios.start')&&intval($end)<=Config::get('app.non_peak_hours.studios.end'))
+				{
+					(!$just_tag)?$workoutSessionPrice=Config::get('app.non_peak_hours.studios.off')*intval($workoutSessionPrice):"";$peak=false;
+				}			
+			}
+			return ['wsprice'=>$workoutSessionPrice,'peak'=>$peak];
+		} catch (Exception $e) {
+			Log::error(" Error Message ::  ".print_r($e->getMessage(),true));
+			return null;
+		}
+		return null;
+	}
+	public function getPeakAndNonPeakPrice($slots=[],$service_cat=null) {
+	
+		try {
+			if(empty($service_cat))throw new Exception("No Service Category Exists.");
+			$resp=[];
+			foreach ($slots as $value) 
+			{
+				if(!isset($resp['peak'])||!isset($resp['non_peak']))
+				{
+					$temp=$this->getWSNonPeakPrice($value['start_time_24_hour_format'],$value['end_time_24_hour_format'],$value['price'],$service_cat,true);
+					if(!empty($temp)&&isset($temp['wsprice']))
+						(!empty($temp['peak']))?$resp['peak']=$temp['wsprice']:$resp['non_peak']=$temp['wsprice'];
+				}
+				else return $resp;
+			}
+		} catch (Exception $e) {
+			Log::error(" Error Message ::  ".print_r($e->getMessage(),true));
+			throw $e;
+		}
+		return null;
+	}
+	public function getDayWs($date=null)
+	{
+		return $this->days[date("w",strtotime($date))];
+		
+	}
+	public function getWsSlotPrice($start=null,$end=null,$service_id=null,$start_date=null) {
+		
+		try {
+				if(!isset($service_id))throw new Exception("Service id Not Defined.");
+				else if(!isset($start_date))throw new Exception("Start Date not present.");
+				else if(!isset($start)||!isset($end))throw new Exception("Start/End Not Defined.");
+				else {
+						$day=$this->days[date("w",strtotime($start_date))];
+						if(empty($day))throw new Exception("Day Not present in the schedules.");	
+							$start=(str_contains($start, "pm"))?doubleval($start)+12:doubleval($start);$end=(str_contains($end, "pm"))?doubleval($end)+12:doubleval($end);
+						Service::$withoutAppends=true;
+						$service=Service::where("_id",intval($service_id))->first(['workoutsessionschedules']);
+						if(isset($service)&&!empty($service->workoutsessionschedules))
+						{
+							$r=array_values(array_filter($service->workoutsessionschedules, function($a) use ($day){return !empty($a['weekday'])&&$a['weekday']==$day;}));
+							if(!empty($r[0])&&!empty($r[0]['slots']))
+									{
+										$r=$r[0]['slots'];
+										$r=array_values(array_filter($r, function($a) use ($start,$end){return isset($a['start_time_24_hour_format'])&&isset($a['end_time_24_hour_format'])&&$a['start_time_24_hour_format'] >=$start&&$a['end_time_24_hour_format'] <=$end;}));
+										return (!empty($r[0])&&isset($r[0]['price']))?$r[0]['price']:null;
+									}else return null;
+						}else return null;
+					}
+		} catch (Exception $e) {
+			Log::error(" Error Message ::  ".print_r($e->getMessage(),true));
+			throw $e;
+		}
+		return null;
+	}
+	
+	public function getAnySlotAvailablePNp($requested_date,$service_details) {
+		$closeDate=date('Y-m-d', strtotime($requested_date.' + 7 days'));
+		$iterDate=date('Y-m-d', strtotime($requested_date));
+		$p_np=null;
+		while($closeDate!==$iterDate)
+		{
+			$day=$this->getDayWs($requested_date);
+			if(!empty($day))
+			{
+				$tmp=array_values(array_filter($service_details['workoutsessionschedules'],function ($e) use($day){if($e['weekday']==$day)return $e;}));
+				if(!empty($tmp))
+				{
+					$p_np=$this->getPeakAndNonPeakPrice($tmp[0]['slots'],$this->getPrimaryCategory(null,$service_details['_id']));
+					return $p_np;
+				}
+			}
+			else $iterDate=date('Y-m-d', strtotime($requested_date. ' + 1 days'));
+		}
+		return $p_np;
 	}
 }
 

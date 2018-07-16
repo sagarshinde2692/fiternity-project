@@ -54,7 +54,7 @@ class CustomerController extends \BaseController {
     // Listing Schedule Tirals for Normal Customer
 	public function getAutoBookTrials($customeremail){
 
-		$selectfields 	=	array('finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt','service_id','what_i_should_carry','what_i_should_expect','origin','trial_attended_finder', 'type','amount','created_at', 'amount_finder','vendor_code','post_trial_status', 'payment_done','manual_order');
+		$selectfields 	=	array('finder', 'finder_id', 'finder_name', 'finder_slug', 'service_name', 'schedule_date', 'schedule_slot_start_time', 'schedule_date_time', 'schedule_slot_end_time', 'code', 'going_status', 'going_status_txt','service_id','what_i_should_carry','what_i_should_expect','origin','trial_attended_finder', 'type','amount','created_at', 'amount_finder','vendor_code','post_trial_status', 'payment_done','manual_order','customer_id');
 
 		if(isset($_GET['device_type']) && $_GET['device_type'] == "website"){
 
@@ -94,7 +94,7 @@ class CustomerController extends \BaseController {
 		$hour = 60*60;
 		$hour12 = 60*60*12;
 		$hour2 = 60*60*2;
-
+		
 		foreach ($trials as $trial){
 
 			array_set($trial, 'type_text', 'Trial');
@@ -179,6 +179,12 @@ class CustomerController extends \BaseController {
 
 					array_set($trial, 'payment_pending', true);
 
+				}
+				$trial['fitcash_text'] = "";
+				try{
+					$trial['fitcash_text'] = "Enter your Fitcode to get  Rs.".$this->utilities->getFitcash($trial)." Fitcash.";
+				}catch(Exception $e){
+					Log::info($e);
 				}
 
 				array_push($upcomingtrials, $trial);	

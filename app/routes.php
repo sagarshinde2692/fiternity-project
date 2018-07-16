@@ -1234,3 +1234,4 @@ Route::get('getbrandvendors/{brand_id}/{city_id}', array('as' => 'finders.getbra
 
 
 Route::post('getcustomercarddetails','CustomerController@getCustomerCardDetails');
+Route::get('toto/{vendorservice_id}', 'MigrationReverseController@tot');

@@ -7119,8 +7119,7 @@ class SchedulebooktrialsController extends \BaseController {
             $lostfitcode = !empty($booktrial->lostfitcode) ? $booktrial->lostfitcode : array();
             // $reason = 'didnt_get_fitcode';
             $reason_message_array = [
-                "Thanks for your feedback",
-                "Thanks! We'll put the Fitcash in your wallet within 48 hours",
+                "Thanks for your feedback"
             ];
             $reason_message = null;
             if(!empty($_GET['reason'])){
@@ -7135,10 +7134,28 @@ class SchedulebooktrialsController extends \BaseController {
                 $reason = 'didnt_get_fitcode';
                 $lostfitcode[$reason]= time();
             }
-
+            
             $booktrial->lostfitcode = $lostfitcode;
-
-            $fitcash_amount = $this->utilities->getFitcash(['finder_id'=>$booktrial['finder_id']]);
+            
+            $fitcash_amount = $this->utilities->getFitcash($booktrial);
+            $device_type = Request::header('Device-Type');
+            if(in_array($device_type, ['ios', 'android']) && empty($booktrial->post_trial_status_updated_by_lostfitcode) && empty($booktrial->post_trial_status_updated_by_fitcode)){
+                $req = array(
+                        "customer_id"=>$booktrial['customer_id'],
+                        "trial_id"=>$booktrial['_id'],
+                        "amount"=> $fitcash_amount,
+                        "amount_fitcash" => 0,
+                        "amount_fitcash_plus" => $fitcash_amount,
+                        "type"=>'CREDIT',
+                        'entry'=>'credit',
+                        'validity'=>time()+(86400*21),
+                        'description'=>"Added FitCash+ on Lost Fitcode, Applicable for buying a membership at ".ucwords($booktrial['finder_name'])." Expires On : ".date('d-m-Y',time()+(86400*21)),
+                        "valid_finder_id"=>intval($booktrial['finder_id']),
+                        "finder_id"=>intval($booktrial['finder_id']),
+                    );
+                    
+                $this->utilities->walletTransaction($req);
+            }
             
             $this->updateOrderStatus($booktrial);
 
@@ -7162,8 +7179,7 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrial->post_trial_status_updated_by_lostfitcode = time();
             $booktrial->post_trial_status_date = time();
             
-            $message = "Hi ".ucwords($booktrial['customer_name']).", Thank you for your request. Rs ".$fitcash_amount." will be added post verifying your attendance with ".ucwords($booktrial['finder_name'])." within 48 hours";
-
+            $message = 'Hi, '.ucwords($booktrial['customer_name']).'! Thanks for your update. Rs. '.$fitcash_amount.' will be added into your Fitternity wallet within 48 hours';
             
             if($reason_message){
                 $message = $reason_message;
