@@ -1223,12 +1223,13 @@ Route::post('transaction/capture/product','TransactionController@productCapture'
 Route::post('productscats','HomeController@productsCats');
 
 
+
 Route::get('productSpecifications','DebugController@productSpecifications');
 Route::get('addPriceToProduct','DebugController@addPriceToProduct');
 Route::get('addRatecards','DebugController@addRatecards');
 Route::get('updateProductHomePage','DebugController@updateProductHomePage');
 
-Route::post('cartsummary','HomeController@getFinalCartSummary');
+Route::get('cartsummary','HomeController@getFinalCartSummary');
 
 Route::get('customeraddress','HomeController@getCustomerAddress');
 Route::post('customeraddress','HomeController@setCustomerAddress');
