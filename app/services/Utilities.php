@@ -4472,7 +4472,7 @@ Class Utilities {
 		return $base;
 	}
 	
-	public function attachCart(&$data,$onlyId=false)
+	public function attachCart(&$data,$onlyCart=false)
 	{
 		$jwt=Request::header("Authorization");
 		if(isset($jwt))
@@ -4481,7 +4481,7 @@ Class Utilities {
 			if(!empty($cart))
 			{
 				$cart=$cart->toArray();
-				if($onlyId)return $cart['_id'];
+				if($onlyCart)return $cart;
 				$data['cart'] =["count"=>count($cart['products'])];
 			}
 		}
