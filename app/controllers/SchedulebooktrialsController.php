@@ -7089,7 +7089,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             $booktrial->post_trial_status = 'attended';
 
-            $lostfitcode = !empty($booktrial->lostfitcode) ? $booktrial->lostfitcode : array();
+            $lostfitcode = !empty($booktrial->lostfitcode) ? (object)$booktrial->lostfitcode : new stdClass();
             // $reason = 'didnt_get_fitcode';
             $reason_message_array = [
                 "Thanks for your feedback"
@@ -7099,13 +7099,13 @@ class SchedulebooktrialsController extends \BaseController {
                 $key = intval($_GET['reason']) - 1;
                 $lostcode_reasons_array = ["not_interested_in_fitcash","lost_fitcode","didnt_get_fitcode"];
                 $reason = $lostcode_reasons_array[$key];
-                $lostfitcode[$reason] = time();
+                $lostfitcode->$reason = time();
                 $reason_message = (isset($reason_message_array[$key])) ? $reason_message_array[$key] : null;
             }
             
             if(!empty($_GET['source']) && $_GET['source'] == "activate_session"){
                 $reason = 'didnt_get_fitcode';
-                $lostfitcode[$reason]= time();
+                $lostfitcode->$reason= time();
             }
             
             $booktrial->lostfitcode = $lostfitcode;
@@ -7113,22 +7113,30 @@ class SchedulebooktrialsController extends \BaseController {
             $fitcash_amount = $this->utilities->getFitcash($booktrial);
             $device_type = Request::header('Device-Type');
             // if(in_array($device_type, ['ios', 'android']) && empty($booktrial->post_trial_status_updated_by_lostfitcode) && empty($booktrial->post_trial_status_updated_by_fitcode)){
-            if(empty($booktrial->post_trial_status_updated_by_lostfitcode) && empty($booktrial->post_trial_status_updated_by_fitcode)){
-                $req = array(
-                        "customer_id"=>$booktrial['customer_id'],
-                        "trial_id"=>$booktrial['_id'],
-                        "amount"=> $fitcash_amount,
-                        "amount_fitcash" => 0,
-                        "amount_fitcash_plus" => $fitcash_amount,
-                        "type"=>'CREDIT',
-                        'entry'=>'credit',
-                        'validity'=>time()+(86400*21),
-                        'description'=>"Added FitCash+ on Lost Fitcode, Applicable for buying a membership at ".ucwords($booktrial['finder_name'])." Expires On : ".date('d-m-Y',time()+(86400*21)),
-                        "valid_finder_id"=>intval($booktrial['finder_id']),
-                        "finder_id"=>intval($booktrial['finder_id']),
-                    );
-                    
-                $this->utilities->walletTransaction($req);
+            if( !(isset($_GET['reason']) && $_GET['reason'] == 1) && empty($booktrial->post_trial_status_updated_by_lostfitcode) && empty($booktrial->post_trial_status_updated_by_fitcode)){
+
+                $update = Booktrial::where('_id',$booktrial['_id'])->where('post_trial_status_updated_by_lostfitcode', 'exists', false)->where('post_trial_status_updated_by_fitcode', 'exists', false)->update(['post_trial_status_updated_by_lostfitcode'=>time()]);
+
+                if($update){
+                    $req = array(
+                            "customer_id"=>$booktrial['customer_id'],
+                            "trial_id"=>$booktrial['_id'],
+                            "amount"=> $fitcash_amount,
+                            "amount_fitcash" => 0,
+                            "amount_fitcash_plus" => $fitcash_amount,
+                            "type"=>'CREDIT',
+                            'entry'=>'credit',
+                            'validity'=>time()+(86400*21),
+                            'description'=>"Added FitCash+ on Lost Fitcode, Applicable for buying a membership at ".ucwords($booktrial['finder_name'])." Expires On : ".date('d-m-Y',time()+(86400*21)),
+                            "valid_finder_id"=>intval($booktrial['finder_id']),
+                            "finder_id"=>intval($booktrial['finder_id']),
+                        );
+                    Log::info("adding fitachs");
+                    $this->utilities->walletTransaction($req);
+                }
+                
+            }else{
+                Log::info("not adding fitachs");
             }
             
             $this->updateOrderStatus($booktrial);
