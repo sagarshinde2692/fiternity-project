@@ -1217,4 +1217,9 @@ Route::post('addproductstocart','HomeController@addProductsToCart');
 
 Route::post('transaction/capture/product','TransactionController@productCapture');
 Route::post('productscats','HomeController@productsCats');
+Route::post('cartsummary','HomeController@getFinalCartSummary');
+
+Route::get('customeraddress','HomeController@getCustomerAddress');
+Route::post('customeraddress','HomeController@setCustomerAddress');
+
 

@@ -4791,12 +4791,12 @@ class HomeController extends BaseController {
         	return Response::json($this->utilities->addProductsToCart($cartDataInput));
         }
         
-        public function getProductDetail($ratecard_id,$product_id,$cache=false)
+        public function getProductDetail($ratecard_id,$product_id,$getProductInternal=false,$cache=false)
         {
         	try {
         		$ratecard_id=intval($ratecard_id);$product_id=intval($product_id);
         		$productView=Product::where("_id",$product_id)->with(array('ratecard'=>function($query){$query->select('_id','title','flags','product_id','price','order','status','properties','extra_info');}))->with('primarycategory')->first();
-        		if(empty($productView))return ['status'=>400,"message"=>"Not a valid product Id."];else $productView=$productView->toArray();
+        		if(empty($productView))return ['status'=>0,"message"=>"Not a valid product Id."];else $productView=$productView->toArray();
         		$selectedRatecard=array_values(array_filter($productView['ratecard'],function ($e) use ($ratecard_id) {return $ratecard_id== $e['_id'];}));
         		if(!empty($selectedRatecard))
         		{
@@ -4840,13 +4840,14 @@ class HomeController extends BaseController {
         			unset($selectedRatecard['order']);unset($selectedRatecard['status']);
         			unset($selectedRatecard['servicecategory_id']);unset($selectedRatecard['flags']);
         		}
-        		else return ['status'=>400,"message"=>"Not a valid Ratecard Id."];
+        		else return ['status'=>0,"message"=>"Not a valid Ratecard Id."];
         		(!empty($selectedRatecard))?$finalData['product']=$selectedRatecard:"";
+        		if($getProductInternal) return ["status"=>1,"data"=>$finalData['product']];
         		(!empty($mainSimilar)&&count($mainSimilar)>0)?$finalData['similar_products']=["title"=>"Similar Products","sub_title"=>"Get Fitter","items"=>$mainSimilar]:"";
         		$this->utilities->attachCart($finalData);
         		return ["status"=>200,"response"=>$finalData];
         	} catch (Exception $e) {
-        		return ['status'=>400,"message"=>$this->utilities->baseFailureStatusMessage($e)];
+        		return ['status'=>0,"message"=>$this->utilities->baseFailureStatusMessage($e)];
         	}
         }
  
@@ -4976,5 +4977,85 @@ class HomeController extends BaseController {
         	
         }
         
-       
+ 
+        public function getFinalCartSummary()
+        {
+        	try {
+        		$data  =  Input::json()->all();
+        		$rules = ['cart'=>'required'];
+        		$validator = Validator::make($data,$rules);
+        		
+        		if ($validator->fails()) {
+        			return ['status'=> 0,'message' => error_message($validator->errors())];
+        		}
+        		$t=[];
+        		$cart_id=$this->utilities->attachCart($t,true);
+        		$dataCart=$this->utilities->getCartFinalSummary($data['cart'], $cart_id);
+        
+        		if(!empty($dataCart)&&!empty($dataCart['status']))
+        			$finalData=['status'=>200,"response"=>$dataCart['data']];
+        		else return $dataCart;
+        		$this->utilities->fetchCustomerAddresses($finalData['response']);
+        		return $finalData;
+        	} catch (Exception $e) {
+        		return  ['status'=>0,"message"=>$this->utilities->baseFailureStatusMessage($e)];
+        	}	        	
+        }
+        public function getFinalCartSummary()
+        {
+        	try {
+        		$data  =  Input::json()->all();
+        		$rules = ['cart'=>'required'];
+        		$validator = Validator::make($data,$rules);
+        		
+        		if ($validator->fails()) {
+        			return ['status'=> 0,'message' => error_message($validator->errors())];
+        		}
+        		$t=[];
+        		$cart_id=$this->utilities->attachCart($t,true);
+        		$dataCart=$this->utilities->getCartFinalSummary($data['cart'], $cart_id);
+        		
+        		if(!empty($dataCart)&&!empty($dataCart['status']))
+        			$finalData=['status'=>200,"response"=>$dataCart['data']];
+        			else return $dataCart;
+        			$this->utilities->fetchCustomerAddresses($finalData['response']);
+        			return $finalData;
+        	} catch (Exception $e) {
+        		return  ['status'=>0,"message"=>$this->utilities->baseFailureStatusMessage($e)];
+        	}
+        }
+        public function getCustomerAddress()
+        {
+        	try {
+        		$resp=["status"=>1,"data"=>[]];
+        		$customer=$this->utilities->getCustomerAddress();
+        		if(!empty($customer))
+        		{
+        			$customer=$customer->toArray();
+        			$resp['data']=(!empty($customer['$customer_addresses_product'])?$customer['$customer_addresses_product']:[]);
+        		}
+        		
+        	} catch (Exception $e) {
+        		return  ['status'=>0,"message"=>$this->utilities->baseFailureStatusMessage($e)];
+        	}
+        }
+        public function setCustomerAddress()
+        {
+        	try {
+        		$resp=["status"=>1,"messge"=>"Success"];
+        		$data  =  Input::json()->all();
+        		$rules = ['customer_address'=>'required'];
+        		$validator = Validator::make($data,$rules);
+        		
+        		if ($validator->fails()) {
+        			return ['status'=> 0,'message' => error_message($validator->errors())];
+        		}
+        		$added=$this->utilities->addCustomerAddress(null,$data['customer_address']);
+        		return (!empty($added))?$resp:['status'=>0,"message"=>"Couldn't add address"];
+        		
+        	} catch (Exception $e) {
+        		return  ['status'=>0,"message"=>$this->utilities->baseFailureStatusMessage($e)];
+        	}
+        }
+        
 }

@@ -20,6 +20,7 @@ use App\Sms\CustomerSms as CustomerSms;
 use App\Mailers\FinderMailer as FinderMailer;
 use App\Services\Fitapi as Fitapi;
 use App\Mailers\CustomerMailer as CustomerMailer;
+use App\Notification\CustomerNotification;
 
 Class Utilities {
 
@@ -3647,9 +3648,49 @@ Class Utilities {
     		Cart::$withoutAppends=true;
     		return Cart::where("customer_id",intval($customer_id))->with("customer")->first();
     	}
-    	else return null;
-    	
+    	else return null;	
     }
+    public function getCustomerAddress($customerId=null){
+    	
+    	if(empty($customerId))
+    	{
+    		try {
+    			$decoded = decode_customer_token();
+    			if(!empty($decoded)&&!empty($decoded->customer))
+    				$customer_id = $decoded->customer->_id;
+    				else return null;
+    		} catch (Exception $e) {
+    			return null;
+    		}
+    	}
+    	if(!empty($customer_id))
+    	{
+    		Customer::$withoutAppends=true;
+    		return Customer::where("_id",intval($customer_id))->first(['customer_addresses_product']);
+    	}
+    	else return null;
+    }
+    public function addCustomerAddress($customerId=null,$customer_address){
+    	
+    	if(empty($customerId))
+    	{
+    		try {
+    			$decoded = decode_customer_token();
+    			if(!empty($decoded)&&!empty($decoded->customer))
+    				$customer_id = $decoded->customer->_id;
+    				else return null;
+    		} catch (Exception $e) {
+    			return null;
+    		}
+    	}
+    	if(!empty($customer_id))
+    	{
+    		$added=Customer::where("_id",intval($customer_id))->push('customer_addresses_product',$customer_address);
+    		return (!empty($added))?true:false;
+    	}
+    	else return null;
+    }
+    
     public function getFitcash($data){
 
         $finder_id = (int)$data['finder_id'];
@@ -4098,7 +4139,7 @@ Class Utilities {
 	}
 	
 	
-	public function addProductsToCart($cartDataInput=[],$cart_id=null)
+	public function addProductsToCart($cartDataInput=[],$cart_id=null,$cart_summary=false)
 	{
 		try {
 			if(empty($cartDataInput))
@@ -4110,12 +4151,13 @@ Class Utilities {
 			$jwt_token = Request::header("Authorization");
 			if(!empty($jwt_token)||!empty($cart_id))
 			{
-				if(!empty($jwt_token))
+				if(!empty($cart_id))
+				$cart_id=intval($cart_id);
+				else 
 				{
 					$token_decoded=decode_customer_token();
 					$cart_id=((!empty($token_decoded->customer)&&!empty($token_decoded->customer->cart_id))?$token_decoded->customer->cart_id:null);					
 				}
-				else $cart_id=intval($cart_id);
 				if(!empty($cart_id)&&!empty($cartDataInput))
 				{
 					$cartData=[];
@@ -4140,13 +4182,14 @@ Class Utilities {
 									if(!empty($ratecard)&&!empty($neededObject)&&!empty($neededObject['quantity'])&&!empty($ratecard['product_id'])&&!empty($ratecard['_id'])&&isset($ratecard['price']))
 									{
 										array_push($cartData, ["product_id"=>$ratecard['product_id'],"ratecard_id"=>$ratecard['_id'],"price"=>$ratecard['price'],"quantity"=>intval($neededObject['quantity'])]);
-										$tmpRatecardinfo=['_id'=>!empty($ratecard['_id'])?$ratecard['_id']:"",'title'=>!empty($ratecard['title'])?$ratecard['title']:"",'color'=>!empty($ratecard['color'])?$ratecard['color']:"",
-												'size'=>!empty($ratecard['size'])?$ratecard['size']:"",'slug'=>!empty($ratecard['slug'])?$ratecard['slug']:""];
+										$tmpRatecardinfo=['_id'=>!empty($ratecard['_id'])?$ratecard['_id']:"",'title'=>!empty($ratecard['title'])?$ratecard['title']:"",'color'=>(!empty($ratecard['properties'])&&!empty($ratecard['properties']['color']))?$ratecard['properties']['color']:"",
+												'size'=>(!empty($ratecard['properties'])&&!empty($ratecard['properties']['size']))?$ratecard['properties']['size']:"",'slug'=>!empty($ratecard['slug'])?$ratecard['slug']:""];
 										array_push($cartDataExtended, ["product"=>$ratecard['product'],"ratecard"=>$tmpRatecardinfo,"price"=>$ratecard['price'],"quantity"=>intval($neededObject['quantity'])]);
 										
 									}
 										else return ['status'=>0,"message"=>"Not a valid ratecard or ratecard doesn't exist."];
 							}
+							if($cart_summary)return ['status'=>1,"data"=>$cartDataExtended];
 							$addedToCart=Cart::where('_id', intval($cart_id))->first();
 							$addedToCart=$addedToCart->update(['products'=>$cartData]);					
 							$response['response']['data']=$cartDataExtended;
@@ -4233,6 +4276,46 @@ Class Utilities {
 			$resp['data']['total_amount']=$amount;
 	// 			$this->getProductCartAmount($order);
 			return $resp;
+		} catch (Exception $e)
+		{
+			return  ['status'=>0,"message"=>$this->baseFailureStatusMessage($e)];
+		}
+		
+	}
+	public function getCartFinalSummary($cart_data,$cart_id)
+	{
+		try {
+			if(empty($cart_data))
+				return ["status"=>0,"message"=>"No Cart Data present."];
+				
+				$resp=["status"=>1,"message"=>"success","data"=>[]];
+				
+				$cart_desc=[];
+				$cart_details=[];
+				$cart_data=$this->addProductsToCart($cart_data,$cart_id,true);
+				if(!empty($cart_data)&&!empty($cart_data['status']))$cart_data=$cart_data['data'];
+				else return ["status"=>0,"message"=>"couldn't get cart data."];
+				$amount=0;
+				$hc=new \HomeController(new CustomerNotification(), new Sidekiq(),$this);
+	
+				foreach ($cart_data as $cart_item)
+				{
+					$temp=[];
+					$dataProd=$hc->getProductDetail($cart_item['ratecard']['_id'], $cart_item['product']['_id'],true);
+					
+					if(!empty($dataProd['status']))
+						$temp['product']=$dataProd['data'];
+					else return ["status"=>0,"message"=>"Couldn't get product detail."];
+					$temp['quantity']=$cart_item['quantity'];
+					$temp['price']=(intval($cart_item['quantity'])*intval($cart_item['price']));
+					array_push($cart_desc,$temp);
+					$amount=$amount+(intval($cart_item['quantity'])*intval($cart_item['price']));
+				}
+				
+				$resp['data']['cart_details']=$cart_desc;
+// 				$resp['data']['total_cart_amount']=$amount;
+				$resp['data']['total_amount']=$amount;
+				return $resp;
 		} catch (Exception $e)
 		{
 			return  ['status'=>0,"message"=>$this->baseFailureStatusMessage($e)];
@@ -4389,7 +4472,7 @@ Class Utilities {
 		return $base;
 	}
 	
-	public function attachCart(&$data)
+	public function attachCart(&$data,$onlyId=false)
 	{
 		$jwt=Request::header("Authorization");
 		if(isset($jwt))
@@ -4398,7 +4481,23 @@ Class Utilities {
 			if(!empty($cart))
 			{
 				$cart=$cart->toArray();
+				if($onlyId)return $cart['_id'];
 				$data['cart'] =["count"=>count($cart['products'])];
+			}
+		}
+		
+	}
+	
+	public function fetchCustomerAddresses(&$data)
+	{
+		$jwt=Request::header("Authorization");
+		if(isset($jwt))
+		{
+			$customer=$this->getCustomerAddress();
+			if(!empty($customer))
+			{
+				$customer=$customer->toArray();
+				$data['customer_address'] =(!empty($customer['$customer_addresses_product'])?$customer['$customer_addresses_product']:[]);
 			}
 		}
 		
