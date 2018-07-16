@@ -7112,7 +7112,8 @@ class SchedulebooktrialsController extends \BaseController {
             
             $fitcash_amount = $this->utilities->getFitcash($booktrial);
             $device_type = Request::header('Device-Type');
-            if(in_array($device_type, ['ios', 'android']) && empty($booktrial->post_trial_status_updated_by_lostfitcode) && empty($booktrial->post_trial_status_updated_by_fitcode)){
+            // if(in_array($device_type, ['ios', 'android']) && empty($booktrial->post_trial_status_updated_by_lostfitcode) && empty($booktrial->post_trial_status_updated_by_fitcode)){
+            if(empty($booktrial->post_trial_status_updated_by_lostfitcode) && empty($booktrial->post_trial_status_updated_by_fitcode)){
                 $req = array(
                         "customer_id"=>$booktrial['customer_id'],
                         "trial_id"=>$booktrial['_id'],
