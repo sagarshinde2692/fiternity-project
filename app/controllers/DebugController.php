@@ -7400,29 +7400,42 @@ public function yes($msg){
 
 	public function tagReviews(){
 		Review::$withoutAppends = true;
-		$reviews = Review::where('customer_id', 149788)->get(['finder_id', 'customer_id']);
+		$reviews = Review::where('customer_id', '$exists', true)->where('finder_id','$exists', true)->get(['finder_id', 'customer_id', 'created_at']);
+		// return count($reviews);
 		
 		$customer_ids = array_pluck($reviews->toArray(), 'customer_id');
 		
 		$transactions = Transaction::raw(function($collection) use ($customer_ids){
 
 			$match['$match']['$and'] = [
-					// ['customer_id'=>['$in'=>$customer_ids]],
-					['$or'=>[['transaction_type'=>['$ne'=>'Order']], ['status'=>'1', 'type'=>['$nin'=>['booktrials','workout-session']]]]],
+					
+					['customer_id'=>['$in'=>$customer_ids]],
+					
+					['type'=>['$in'=>["workout-session","memberships","booktrials","healthytiffintrail","healthytiffinmembership","3daystrial","vip_booktrials","membership","booktrial",]]],
+					
+					['$or'=>[
+						['transaction_type'=>['$ne'=>'Order'], 'schedule_date_time'=>['$exists'=>true], 'post_trial_status'=>'attended'], 
+						['status'=>'1', 'type'=>['$nin'=>['booktrials','workout-session']], 'start_date'=>['$exists'=>true]]]],
+					
 					['transaction_type'=>['$ne'=>'Capture']],
-					['customer_id'=> ['$in'=>[44704,149788]]]
+
+			
 			];
 
 			$aggregate[] = $match;
 
 			$project['$project'] = [
+				'date'=>['$cond'=>
+					['if'=>['$gt'=>['$start_date',NULL]], 'then'=>'$start_date', 'else'=>'$schedule_date_time']
+				],
 				'customer_id'=>1,
 				'finder_id'=>1,
 				'transaction_type'=>1,
+				'booktrial_origin'=>1,
 				'type'=>1,
-				'created_at'=>1,
+				'schedule_date_time'=>1,
 				'start_date'=>1,
-				'data'=>['$cond'=>['if'=>['']]]
+				'reference_id'=>1,
 			];
 
 			$aggregate[] = $project;
@@ -7434,7 +7447,8 @@ public function yes($msg){
 
 			$group['$group'] = [
 				'_id'=>['customer_id'=>'$customer_id', 'finder_id'=>'$finder_id'],
-				'transactions'=>['$push'=>'$$ROOT']
+				// 'transaction'=>['$first'=>'$type']
+				'transaction'=>['$push'=>['type'=>'$type', 'date'=>'$date', '_id'=> '$_id']]
 			];
 			$aggregate[] = $group;
 
@@ -7442,13 +7456,45 @@ public function yes($msg){
 
 		});
 
+		// return $transactions;
+		
 		$transactions_data = [];
 		
 		foreach($transactions['result'] as $x){
-			$transactions_data[$x['_id']['finder_id']."-".$x['_id']['customer_id']] = $x['transactions'];
+			$transactions_data[$x['_id']['finder_id']."-".$x['_id']['customer_id']] = $x['transaction'];
+		}
+		
+		$update_data = ['trial_verified'=>[], 'membership_verified'=>[], 'workout-session_verified'=>[]];
+		
+		foreach($reviews as $review){
+			$key = $review['finder_id']."-".$review['customer_id'];
+			
+			if(isset($transactions_data[$key])){
+				
+				foreach($transactions_data[$key] as $transaction){
+					// return $transaction['date']->sec;
+					if($transaction['date']->sec < strtotime($review['created_at'])){
+						
+						if(in_array($transaction['type'], ["memberships","healthytiffinmembership","membership"])){
+							array_push($update_data['membership_verified'], $review['_id']);
+						}elseif(in_array($transaction['type'], ['workout-session'])){
+							array_push($update_data['workout-session_verified'], $review['_id']);
+						}else{
+							array_push($update_data['trial_verified'], $review['_id']);
+						}
+						break;
+					}
+				}
+			}
 		}
 
-		return $transactions_data;
+		// return $transactions_data;
+		$result=[];
+		$result['update_trial_verified'] = Review::whereIn('_id', $update_data['trial_verified'])->update(['tag_update_by_script'=>true,'tag'=>'trial_verified']);
+		$result['update_membership_verified'] = Review::whereIn('_id', $update_data['membership_verified'])->update(['tag_update_by_script'=>true,'tag'=>'membership_verified']);
+		$result['update_workout_session_verified'] = Review::whereIn('_id', $update_data['workout-session_verified'])->update(['tag_update_by_script'=>true,'tag'=>'workout-session_verified']);
+		
+		return $result;
 
 	}
 
