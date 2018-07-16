@@ -657,7 +657,7 @@ class ServiceController extends \BaseController {
         $type 					= 	(isset($request['type']) && $request['type'] != "") ? $request['type'] : "trial" ;
         $recursive 				= 	(isset($request['recursive']) && $request['recursive'] != "" && $request['recursive'] == "true") ? true : false ;
 
-		$selectedFieldsForService = array('_id','name','finder_id','servicecategory_id','vip_trial','three_day_trial','address','trial', 'city_id');
+		$selectedFieldsForService = array('_id','name','finder_id','servicecategory_id','vip_trial','three_day_trial','address','trial', 'city_id', 'flags');
 		Service::$withoutAppends=true;
 		Service::$setAppends=['trial_active_weekdays', 'workoutsession_active_weekdays'];
 		
@@ -736,6 +736,11 @@ class ServiceController extends \BaseController {
 			
 			if(isset($request['time_interval']) && $request['time_interval']){
 				$time_in_seconds = $request['time_interval'];
+			}
+
+			if(!empty($item['flags']['session_time_interval']) && is_numeric($item['flags']['session_time_interval'])){
+				$time_in_seconds = $item['flags']['session_time_interval'] * 3600;
+				Log::info("increasing time");
 			}
 
             $service = array(
@@ -1916,7 +1921,6 @@ class ServiceController extends \BaseController {
 			'base_url'=>"http://b.fitn.in/iconsv1/",
 			'rebook_trials'=>[]
 		];
-
 		$cityId=City::where("slug",$city)->first(['_id']);
 		if(!empty($cityId))
 		{

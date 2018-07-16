@@ -3767,59 +3767,6 @@ if (!function_exists(('citywiseServiceCategoryIds'))){
 	}
 }
 
-if (!function_exists('encodeOrderToken')) {
-
-    function encodeOrderToken($data){
-
-        $jwt_claim = array(
-            "iat" => Config::get('jwt.order.iat'),
-            "nbf" => Config::get('jwt.order.nbf'),
-            "exp" => Config::get('jwt.order.exp'),
-            "data" => $data
-        );
-        
-        $jwt_key = Config::get('jwt.order.key');
-        $jwt_alg = Config::get('jwt.order.alg');
-
-        $token = JWT::encode($jwt_claim,$jwt_key,$jwt_alg);
-
-        return $token;
-    }
-
-}
-
-if (!function_exists('decodeOrderToken')) {
-
-    function decodeOrderToken($jwt_token){
-
-        $jwt_key                =   Config::get('jwt.order.key');
-        $jwt_alg                =   Config::get('jwt.order.alg');
-
-        try{
-
-            $decodedToken = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
-
-            $decodedToken = json_decode(json_encode($decodedToken), true);
-
-            return ['status' => 200,'message' => 'Token incorrect','data'=>$decodedToken['data']];
-
-        }catch(DomainException $e){
-
-            return ['status' => 400,'message' => 'Error','error_message' => 'Error',];
-        }catch(ExpiredException $e){
-
-            return ['status' => 400,'message' => 'Token Expired','error_message' => 'Token has been expired']; 
-        }catch(SignatureInvalidException $e){
-
-            return ['status' => 400,'message' => 'Signature verification failed','error_message' => 'Token Incorrect'];
-        }catch(Exception $e){
-
-            return ['status' => 400,'message' => 'Error, please try later','error_message' => 'Error, please try later'];
-        }
-    }
-
-}
-
 
 if (!function_exists(('isFinderIntegrated'))){
 	
@@ -3907,6 +3854,59 @@ if (!function_exists(('geoLocationFinderMeta'))){
 
     }
     
+}
+
+if (!function_exists('encodeOrderToken')) {
+
+    function encodeOrderToken($data){
+
+        $jwt_claim = array(
+            "iat" => Config::get('jwt.order.iat'),
+            "nbf" => Config::get('jwt.order.nbf'),
+            "exp" => Config::get('jwt.order.exp'),
+            "data" => $data
+        );
+        
+        $jwt_key = Config::get('jwt.order.key');
+        $jwt_alg = Config::get('jwt.order.alg');
+
+        $token = JWT::encode($jwt_claim,$jwt_key,$jwt_alg);
+
+        return $token;
+    }
+
+}
+
+if (!function_exists('decodeOrderToken')) {
+
+    function decodeOrderToken($jwt_token){
+
+        $jwt_key                =   Config::get('jwt.order.key');
+        $jwt_alg                =   Config::get('jwt.order.alg');
+
+        try{
+
+            $decodedToken = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+
+            $decodedToken = json_decode(json_encode($decodedToken), true);
+
+            return ['status' => 200,'message' => 'Token incorrect','data'=>$decodedToken['data']];
+
+        }catch(DomainException $e){
+
+            return ['status' => 400,'message' => 'Error','error_message' => 'Error',];
+        }catch(ExpiredException $e){
+
+            return ['status' => 400,'message' => 'Token Expired','error_message' => 'Token has been expired']; 
+        }catch(SignatureInvalidException $e){
+
+            return ['status' => 400,'message' => 'Signature verification failed','error_message' => 'Token Incorrect'];
+        }catch(Exception $e){
+
+            return ['status' => 400,'message' => 'Error, please try later','error_message' => 'Error, please try later'];
+        }
+    }
+
 }
 
 ?>

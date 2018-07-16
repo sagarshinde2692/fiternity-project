@@ -916,7 +916,7 @@ class TransactionController extends \BaseController {
         );
 
         if(!empty($data['ratecard_pay_at_vendor'])){
-            $resp['ratecard_pay_at_vendor'] = true;
+           $resp['ratecard_pay_at_vendor'] = true;
         }
 
         // $resp['payment_offers'] = [
@@ -3666,6 +3666,34 @@ public function productSuccess($data)
             $response = $customer_info->addHealthInfo($data);
         }
 
+        if(isset($data['schedule_date']) && $data['schedule_date'] != ""){
+
+            $schedule_date = date('Y-m-d 00:00:00', strtotime($data['schedule_date']));
+            array_set($data, 'start_date', $schedule_date);
+
+            array_set($data, 'end_date', $schedule_date);
+
+            $data['membership_duration_type'] = 'workout_session';
+        }
+
+        if(isset($data['schedule_slot']) && $data['schedule_slot'] != ""){
+            
+            $schedule_slot = explode("-", $data['schedule_slot']);
+
+            //$data['start_time'] = trim($schedule_slot[0]);
+
+            $data['start_time'] = date("h:i a", strtotime(trim($schedule_slot[0])));
+
+            if(count($schedule_slot) == 1){
+                $data['end_time'] = date('h:i a', strtotime('+1 hour', strtotime($schedule_slot[0])));
+                $data['schedule_slot'] = $schedule_slot[0].'-'.$data['end_time'];
+            }else{
+                $data['end_time']= trim($schedule_slot[1]);
+            }
+
+            $data['schedule_slot'] = $data['start_time'].'-'.$data['end_time'];
+        }
+
         $batch = array();
 
         $data['batch_time'] = "";
@@ -5304,14 +5332,14 @@ public function productSuccess($data)
             return Response::json($resp,400);
         }
 
-        if(!empty($data['coupon']) && strtolower($data['coupon']) == 'fitmein'){
+        // if(!empty($data['coupon']) && strtolower($data['coupon']) == 'fitmein'){
 
-            if(empty($data['fitmein']) || $data['fitmein'] !== true){
+        //     if(empty($data['fitmein']) || $data['fitmein'] !== true){
 
-                $resp = array("status"=> 400, "message" => "Please enter a valid coupon", "error_message" => "Please enter a valid coupon");
-                return Response::json($resp,400);
-            }
-        }
+        //         $resp = array("status"=> 400, "message" => "Please enter a valid coupon", "error_message" => "Please enter a valid coupon");
+        //         return Response::json($resp,400);
+        //     }
+        // }
         
         if(!isset($data['ratecard_id']) && !isset($data['ticket_id'])){
             $resp = array("status"=> 400, "message" => "Ratecard Id or ticket Id must be present", "error_message" => "Coupon cannot be applied on this transaction");

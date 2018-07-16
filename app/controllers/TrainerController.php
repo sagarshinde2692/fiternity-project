@@ -79,7 +79,16 @@ class TrainerController extends \BaseController {
 		$allstarthours = [];
 		$unavailable_slots = 0;
 		$total_slots = 0;
-		if(!empty($schedules) && isNotInoperationalDate(date('Y-m-d',strtotime($request['date'])), 1)){
+
+		$no_slots_date = [
+			'16-07-2018',
+			'17-07-2018',
+			'18-07-2018',
+			'19-07-2018',
+			'20-07-2018'
+		];
+
+		if(!in_array($date,$no_slots_date) && !empty($schedules) && isNotInoperationalDate(date('Y-m-d',strtotime($request['date'])), 1)){
 
 			$schedules = $schedules->toArray();
 
