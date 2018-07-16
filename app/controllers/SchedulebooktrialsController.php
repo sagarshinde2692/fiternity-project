@@ -7103,7 +7103,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $reason_message = (isset($reason_message_array[$key])) ? $reason_message_array[$key] : null;
             }
             
-            if(!empty($_GET['source']) && $_GET['source'] == "activate_session"){
+            if(empty($_GET['reason'])){
                 $reason = 'didnt_get_fitcode';
                 $lostfitcode->$reason= time();
             }
