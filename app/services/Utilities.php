@@ -4305,16 +4305,14 @@ Class Utilities {
 						$temp['product']=$dataProd['data'];
 					else return $dataProd;
 					$temp['quantity']=$cart_item['quantity'];
-					$temp['price']=(intval($cart_item['quantity'])*intval($cart_item['price']));
-					$temp['cost']=$this->getRupeeForm($temp['price']);
+					$temp['price']=$this->getRupeeForm((intval($cart_item['quantity'])*intval($cart_item['price'])));
 					array_push($cart_desc,$temp);
 					$amount=$amount+(intval($cart_item['quantity'])*intval($cart_item['price']));
 				}
 				
 				$resp['data']['cart_details']=$cart_desc;
 // 				$resp['data']['total_cart_amount']=$amount;
-				$resp['data']['total_amount']=$amount;
-				$resp['data']['total_amount_cost']=$this->getRupeeForm($resp['data']['total_amount']);
+				$resp['data']['total_amount']=$this->getRupeeForm($amount);
 				return $resp;
 		} catch (Exception $e)
 		{
