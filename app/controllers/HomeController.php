@@ -4815,7 +4815,8 @@ class HomeController extends BaseController {
         			{
         				$selectionViewFiltered=$this->utilities->getFilteredAndOrdered($productView['selection_view'],'level');
         				(!empty($selectionViewFiltered))?$selectedRatecard=array_merge($selectedRatecard,$this->utilities->getSelectionView($selectionViewFiltered,intval($productView['_id']))):"";
-        				unset($selectedRatecard['properties']);unset($selectedRatecard['extra_info']);
+        				unset($selectedRatecard['extra_info']);
+        				if(empty($getProductInternal))unset($selectedRatecard['properties']);
         			}
         			if(!empty($productView['primarycategory'])&&!empty($productView['primarycategory']['slug'])){$selectedRatecard['product_category_slug']=$productView['primarycategory']['slug'];$selectedRatecard['product_category_id']=$productView['primarycategory']['_id'];}
         			$mainSimilar=[];
