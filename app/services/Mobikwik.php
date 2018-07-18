@@ -47,7 +47,7 @@ Class Mobikwik {
         return hash_hmac("sha256",$string,$this->key);
     }
 
-    function verifyChecksum($checksum,$data) {
+    public function verifyChecksum($checksum,$data) {
 
         $create_checksum = $this->createChecksum($data);
 
@@ -331,13 +331,15 @@ Class Mobikwik {
 
     }
 
-    public function addMoneyToWallet($data){
+    public function addMoney($data){
 
         $data = [
+            'amount'=>(int)$data['amount'],
             'cell'=>substr($data['cell'],-10),
             'merchantname'=>$this->merchantname,
             'mid'=>$this->mid,
-            'msgcode'=>501,
+            'orderid'=>(int)$data['order_id'],
+            'redirecturl'=>\Config::get('app.url'),
             'token'=>$data['token']
         ];
 
@@ -346,6 +348,117 @@ Class Mobikwik {
         $data['checksum'] = $checksum;
 
         $url = 'addmoneytowallet';
+
+        try {
+
+            $response = $this->client->post($url,['form_params'=>$data])->getBody()->getContents();
+
+            $xml = simplexml_load_string($response);
+
+            $json = json_encode($xml);
+            $response = json_decode($json,TRUE);
+
+            $return  = [
+                'status'=>200,
+                'response'=>$response
+            ];
+
+            return $return;
+
+        }catch (RequestException $e) {
+
+            $response = $e->getResponse();
+
+            $error = [  'status'=>$response->getStatusCode(),
+                        'reason'=>$response->getReasonPhrase()
+            ];
+
+            return $error;
+
+        }catch (Exception $e) {
+
+            $error = [  'status'=>400,
+                        'reason'=>'Error'
+            ];
+
+            return $error;
+        }
+
+    }
+
+    public function debitMoney($data){
+
+        $data = [
+            'amount'=>(int)$data['amount'],
+            'cell'=>substr($data['cell'],-10),
+            'comment'=>'Debit',
+            'merchantname'=>$this->merchantname,
+            'mid'=>$this->mid,
+            'msgcode'=>503,
+            'orderid'=>(int)$data['order_id'],
+            'token'=>$data['token'],
+            'txntype'=>'debit'
+        ];
+
+        $checksum = $this->createChecksum($data);
+
+        $data['checksum'] = $checksum;
+
+        $url = 'debitwallet';
+
+        try {
+
+            $response = $this->client->post($url,['form_params'=>$data])->getBody()->getContents();
+
+            $xml = simplexml_load_string($response);
+
+            $json = json_encode($xml);
+            $response = json_decode($json,TRUE);
+
+            $return  = [
+                'status'=>200,
+                'response'=>$response
+            ];
+
+            return $return;
+
+        }catch (RequestException $e) {
+
+            $response = $e->getResponse();
+
+            $error = [  'status'=>$response->getStatusCode(),
+                        'reason'=>$response->getReasonPhrase()
+            ];
+
+            return $error;
+
+        }catch (Exception $e) {
+
+            $error = [  'status'=>400,
+                        'reason'=>'Error'
+            ];
+
+            return $error;
+        }
+
+    }
+
+    public function regenerateToken($data){
+
+        $data = [
+            'cell'=>substr($data['cell'],-10),
+            'merchantname'=>$this->merchantname,
+            'mid'=>$this->mid,
+            'msgcode'=>507,
+            'token'=>$data['token'],
+            'txntype'=>1
+        ];
+
+        $checksum = $this->createChecksum($data);
+
+        $data['checksum'] = $checksum;
+
+        $url = 'tokenregenerate';
 
         try {
 

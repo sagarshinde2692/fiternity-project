@@ -121,6 +121,38 @@ class PaymentGatewayController extends \BaseController {
 		return Response::json($response);
 	}
 
+	public function regenerateTokenMobikwik(){
+
+		$data = Input::json()->all();
+
+		$regenerateToken = $this->mobikwik->regenerateToken($data);
+
+		$response = [
+			'status'=>400,
+			'message'=>'something went wrong'
+		];
+
+		if($regenerateToken['status'] == 200){
+
+			$response = [
+				'message'=>$regenerateToken['response']['statusdescription'],
+				'status'=>400
+			];
+
+			if($regenerateToken['response']['status'] == 'SUCCESS' && $regenerateToken['response']['statuscode'] === '0'){
+
+				$response = [
+					'token'=>$regenerateToken['response']['token'],
+					'message'=>$regenerateToken['response']['statusdescription'],
+					'status'=>200
+				];
+			}
+
+		}
+
+		return Response::json($response);
+	}
+
 	public function createUserMobikwik(){
 
 		$data = Input::json()->all();
@@ -144,6 +176,105 @@ class PaymentGatewayController extends \BaseController {
 				$response = [
 					'token'=>$createUser['response']['token'],
 					'message'=>$createUser['response']['statusdescription'],
+					'status'=>200
+				];
+			}
+
+		}
+
+		return Response::json($response);
+	}
+
+	public function checkBalanceMobikwik(){
+
+		$data = Input::json()->all();
+
+		$checkBalance = $this->mobikwik->checkBalance($data);
+
+		$response = [
+			'status'=>400,
+			'message'=>'something went wrong'
+		];
+
+		if($checkBalance['status'] == 200){
+
+			$response = [
+				'message'=>$checkBalance['response']['statusdescription'],
+				'status'=>400
+			];
+
+			if($checkBalance['response']['status'] == 'SUCCESS' && $checkBalance['response']['statuscode'] === '0'){
+
+				$response = [
+					'amount'=>$checkBalance['response']['balanceamount'],
+					'message'=>$checkBalance['response']['statusdescription'],
+					'status'=>200
+				];
+			}
+
+		}
+
+		return Response::json($response);
+	}
+
+	public function addMoneyMobikwik(){
+
+		$data = Input::json()->all();
+
+		$addMoney = $this->mobikwik->addMoney($data);
+
+		$response = [
+			'status'=>400,
+			'message'=>'something went wrong'
+		];
+
+		if($addMoney['status'] == 200){
+
+			$response = [
+				'message'=>$addMoney['response']['statusdescription'],
+				'status'=>400
+			];
+
+			if($addMoney['response']['status'] == 'SUCCESS' && $addMoney['response']['statuscode'] === '0'){
+
+				$response = [
+					'amount'=>$addMoney['response']['balanceamount'],
+					'message'=>$addMoney['response']['statusdescription'],
+					'status'=>200
+				];
+			}
+
+		}
+
+		return Response::json($response);
+	}
+
+	public function debitMoneyMobikwik(){
+
+		$data = Input::json()->all();
+
+		$debitMoney = $this->mobikwik->debitMoney($data);
+
+		$response = [
+			'status'=>400,
+			'message'=>'something went wrong'
+		];
+
+		if($debitMoney['status'] == 200){
+
+			$response = [
+				'message'=>$debitMoney['response']['statusdescription'],
+				'status'=>400
+			];
+
+			if($debitMoney['response']['status'] == 'SUCCESS' && $debitMoney['response']['statuscode'] === '0'){
+
+				$response = [
+					'debit_amount'=>$debitMoney['response']['debitedamount'],
+					'balance_amount'=>$debitMoney['response']['balanceamount'],
+					'order_id'=>$debitMoney['response']['orderid'],
+					'reference_id'=>$debitMoney['response']['refId'],
+					'message'=>$debitMoney['response']['statusdescription'],
 					'status'=>200
 				];
 			}
