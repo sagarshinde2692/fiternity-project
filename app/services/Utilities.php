@@ -4497,13 +4497,14 @@ Class Utilities {
 			if(!empty($cart))
 			{
 				$cart=$cart->toArray();
-				$tmp_data=array_values(array_filter($cart,function ($e) use ($data) {return (!empty($data['ratecard_id'])&&!empty($e['ratecard_id'])&&$data['ratecard_id']== $e['ratecard_id']);}));
-				if(!empty($tmp_data))
-				{
-					$tmp_data=$tmp_data[0];
-					if(!empty($tmp_data['quantity']))
-						$data['quantity']=$tmp_data['quantity'];
-				}
+				if(!empty($cart['products']))
+					$tmp_data=array_values(array_filter($cart['products'],function ($e) use ($data) {return (!empty($data['ratecard_id'])&&!empty($e['ratecard_id'])&&$data['ratecard_id']== $e['ratecard_id']);}));
+					if(!empty($tmp_data))
+					{
+						$tmp_data=$tmp_data[0];
+						if(!empty($tmp_data['quantity']))
+							$data['quantity']=$tmp_data['quantity'];
+					}
 			}
 		}
 		
