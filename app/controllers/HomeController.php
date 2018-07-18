@@ -4776,7 +4776,6 @@ class HomeController extends BaseController {
         					if(!empty($_GET['cart_summary']))
         					{	
         						$cart=$this->utilities->attachCart($response["response"],true);
-        						$response["response"]['cart']=$this->utilities->getCartTotalCount($cart);
         						$dataCart=$this->utilities->getCartFinalSummary($cart['products'], $cart['_id']);
         						if(!empty($dataCart)&&!empty($dataCart['status']))
         							$response["response"]['cart_summary']=$dataCart['data'];
