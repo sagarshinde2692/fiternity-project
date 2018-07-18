@@ -4861,7 +4861,7 @@ class HomeController extends BaseController {
         		$productcategory_id=intval($productcategory_id);
         		$productView=Product::where("productcategory.primary",$productcategory_id)->with('ratecard')->with('primarycategory')->get();
         		
-        		if(empty($productView))return ['status'=>400,"message"=>"Not a valid Product Category Id."];
+        		if(empty($productView))return ['status'=>0,"message"=>"Not a valid Product Category Id."];
         		else $productView=$productView->toArray();
         		
         		$productIds=array_column($productView, "_id");
@@ -4882,7 +4882,7 @@ class HomeController extends BaseController {
         		$ratecards=array_values(array_column(array_column($rates['result'], 'rcs'), 'ratecards')):"";
         		if(!empty($ratecards))
         			$ratecards=ProductRatecard::active()->whereIn("_id",$ratecards)->with(array('product'=>function($query){$query->with('primarycategory')->orderBy('ordering', 'ASC');}))->get();
-        		else return ['status'=>400,"message"=>"Not Ratecards found for productcategoryid : ".$productcategory_id];
+        		else return ['status'=>0,"message"=>"Not Ratecards found for productcategoryid : ".$productcategory_id];
         		
         		$categories=[];
         		if(!empty($ratecards))
@@ -4950,16 +4950,8 @@ class HomeController extends BaseController {
         			$this->utilities->attachCart($finalData);
         			return ["status"=>200,"response"=>$finalData];
         		}
-        		else return ['status'=>400,"message"=>"Not Ratecards found for productcategoryid : ".$productcategory_id];
+        		else return ['status'=>0,"message"=>"Not Ratecards found for productcategoryid : ".$productcategory_id];
         		
-        		
-        		
-        		
-        		
-        		
-        		
-        		
-        			
         			/* $productInfo=(!empty($productView['info'])?$productView['info']:"");
         			 $productFeatures=((!empty($productView['specification'])&&!empty($productView['specification']['primary'])&&!empty($productView['specification']['primary']['features']))?$productView['specification']['primary']['features']:[]);
         			 $productSpecsSecondary=((!empty($productView['specification'])&&!empty($productView['specification']['secondary']))?$productView['specification']['secondary']:[]);
@@ -4970,7 +4962,7 @@ class HomeController extends BaseController {
         			 } */
         			
         	} catch (Exception $e) {
-        		return ['status'=>400,"message"=>$this->utilities->baseFailureStatusMessage($e)];
+        		return ['status'=>0,"message"=>$this->utilities->baseFailureStatusMessage($e)];
         	}
         }
         public function productsCats()
