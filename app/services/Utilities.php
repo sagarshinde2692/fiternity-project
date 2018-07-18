@@ -4483,11 +4483,12 @@ Class Utilities {
 			{
 				$cart=$cart->toArray();
 				if($onlyCart)return $cart;
-				$data['cart'] =["count"=>count($cart['products'])];
+				$data['cart'] =["count"=>array_reduce((!empty($cart['products'])?$cart['products']:[]),function ($carry, $item) {$carry+=$item;return $carry;})];
 			}
 		}
 		
 	}
+	
 	public function attachProductQuantity(&$data)
 	{
 		$jwt=Request::header("Authorization");
