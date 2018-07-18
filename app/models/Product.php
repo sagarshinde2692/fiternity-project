@@ -44,7 +44,6 @@ class Product extends \Basemodel {
 	
 	public function getSecondarycategoryAttribute()
 	{
-		
 		$ops = [
 				array (
 						'$lookup' => [
@@ -62,17 +61,21 @@ class Product extends \Basemodel {
 						]
 				)
 		];
+		
 		$usr="";$opts=[];
-		if(!empty(config::get ( "database.connections.mongodb2.username")))
+		if(!empty(Config::get ( "database.connections.mongodb2.username")))
 		{
 			$opts=["authMechanism"=>config::get ( "database.connections.mongodb2.options.authMechanism"),"db"=>config::get ( "database.connections.mongodb2.options.db")];
 			$usr=config::get ( "database.connections.mongodb2.username" ).":".config::get ( "database.connections.mongodb2.password" )."@";
 		}
-		$mongoclient = new MongoClient(config::get ( "database.connections.mongodb2.driver" ) . "://".$usr. config::get ( "database.connections.mongodb2.host" ) . ":" . config::get ( "database.connections.mongodb2.port" ).'/'. config::get ( "database.connections.mongodb2.database"),$opts);
+// 		return config::get ( "database.connections.mongodb2.driver" ) . "://".$usr. config::get ( "database.connections.mongodb2.host" ) . ":" . config::get ( "database.connections.mongodb2.port" ).'/'. config::get ( "database.connections.mongodb2.database");
+		if(!empty($opts)&&!empty($opts['authMechanism'])&&!empty($opts['db']))
+			 $mongoclient = new MongoClient(config::get ( "database.connections.mongodb2.driver" ) . "://".$usr. config::get ( "database.connections.mongodb2.host" ) . ":" . config::get ( "database.connections.mongodb2.port").'/'. config::get ( "database.connections.mongodb2.database"),$opts);
+		else $mongoclient = new MongoClient(config::get ( "database.connections.mongodb2.driver" ) . "://".$usr. config::get ( "database.connections.mongodb2.host" ) . ":" . config::get ( "database.connections.mongodb2.port"));
 			
-		$c = $mongoclient->selectDB ( config::get ( "database.connections.mongodb2.database" ) )->selectCollection ( "products" );
-		$rr = $c->aggregate ( $ops ) ['result'] [0];
-		$mongoclient->close();
-		return $rr;
+			$c = $mongoclient->selectDB ( config::get ( "database.connections.mongodb2.database" ) )->selectCollection ( "products" );
+			$rr = $c->aggregate ( $ops ) ['result'] [0];
+			$mongoclient->close();
+			return $rr;
 	}
 }

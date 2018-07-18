@@ -4771,7 +4771,16 @@ class HomeController extends BaseController {
         					$cartData=["product_id"=>$ratecard['product_id'],"ratecard_id"=>$ratecard['_id'],"price"=>$ratecard['price'],"quantity"=>$quantity];
         					$removedOldFromCart=Cart::where('_id', intval($cart_id))->pull('products', ['ratecard_id' => intval($ratecard['_id']), 'product_id' => intval($ratecard['product_id'])]);
         					($quantity>0)?$addedToCart=Cart::where('_id', intval($cart_id))->push('products',$cartData):"";
-        					$this->utilities->attachCart($response["response"]);
+        					
+        					if(!empty($_GET['cart_summary']))
+        					{	
+        						$cart=$this->utilities->attachCart($response["response"],true);
+        						$response["response"]['cart']=$this->utilities->getCartTotalCount($cart);
+        						$dataCart=$this->utilities->getCartFinalSummary($cart['products'], $cart['_id']);
+        						if(!empty($dataCart)&&!empty($dataCart['status']))
+        							$response["response"]['cart_summary']=$dataCart['data'];
+        					}
+        					else $this->utilities->attachCart($response["response"]);
         					return $response;
         				}
         				return Response::json(['status'=>400,"message"=>"Not a valid ratecard or ratecard doesn't exist."]);
@@ -4813,7 +4822,8 @@ class HomeController extends BaseController {
         			{
         				$selectionViewFiltered=$this->utilities->getFilteredAndOrdered($productView['selection_view'],'level');
         				(!empty($selectionViewFiltered))?$selectedRatecard=array_merge($selectedRatecard,$this->utilities->getSelectionView($selectionViewFiltered,intval($productView['_id']))):"";
-        				unset($selectedRatecard['properties']);unset($selectedRatecard['extra_info']);
+        				unset($selectedRatecard['extra_info']);
+        				if(empty($getProductInternal))unset($selectedRatecard['properties']);
         			}
         			if(!empty($productView['primarycategory'])&&!empty($productView['primarycategory']['slug'])){$selectedRatecard['product_category_slug']=$productView['primarycategory']['slug'];$selectedRatecard['product_category_id']=$productView['primarycategory']['_id'];}
         			$mainSimilar=[];
