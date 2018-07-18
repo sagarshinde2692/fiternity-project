@@ -3226,7 +3226,7 @@ class CustomerController extends \BaseController {
 
 								$data['checklist'] = true;
 
-								$fitcash_amount = $this->utilities->getFitcash(['finder_id'=>$data['finder_id']]);
+								$fitcash_amount = $this->utilities->getFitcash($trial);
 
 								$data['subscription_text']  = "Show this subscription code at ".ucwords($data['finder_name'])." & get FitCode to unlock your ".$fitcash_amount." Fitcash as discount";
 							

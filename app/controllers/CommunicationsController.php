@@ -70,7 +70,8 @@ class CommunicationsController extends \BaseController {
 												->first();
 
 				if(empty($transaction_data['surprise_fit_cash'])){
-					$transaction_data->surprise_fit_cash = $this->utilities->getFitcash(['finder_id'=>$transaction_data['finder_id']]);
+					
+					$transaction_data->surprise_fit_cash = $this->utilities->getFitcash($transaction_data->toArray());
 				}
 
 			}
