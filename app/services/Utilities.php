@@ -4297,17 +4297,16 @@ Class Utilities {
 				else return ["status"=>0,"message"=>"couldn't get cart data."];
 				$amount=0;
 				$hc=new \HomeController(new CustomerNotification(), new Sidekiq(),$this);
-	
 				foreach ($cart_data as $cart_item)
 				{
 					$temp=[];
 					$dataProd=$hc->getProductDetail($cart_item['ratecard']['_id'], $cart_item['product']['_id'],true);
-					
 					if(!empty($dataProd['status']))
 						$temp['product']=$dataProd['data'];
 					else return $dataProd;
 					$temp['quantity']=$cart_item['quantity'];
 					$temp['price']=(intval($cart_item['quantity'])*intval($cart_item['price']));
+					$temp['cost']=$this->getRupeeForm($temp['price']);
 					array_push($cart_desc,$temp);
 					$amount=$amount+(intval($cart_item['quantity'])*intval($cart_item['price']));
 				}
@@ -4315,6 +4314,7 @@ Class Utilities {
 				$resp['data']['cart_details']=$cart_desc;
 // 				$resp['data']['total_cart_amount']=$amount;
 				$resp['data']['total_amount']=$amount;
+				$resp['data']['total_amount_cost']=$this->getRupeeForm($resp['data']['total_amount']);
 				return $resp;
 		} catch (Exception $e)
 		{
