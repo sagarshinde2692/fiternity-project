@@ -4843,6 +4843,7 @@ class HomeController extends BaseController {
         		}
         		else return ['status'=>0,"message"=>"Not a valid Ratecard Id."];
         		(!empty($selectedRatecard))?$finalData['product']=$selectedRatecard:"";
+        		$this->utilities->attachProductQuantity($finalData['product']);
         		if($getProductInternal) return ["status"=>1,"data"=>$finalData['product']];
         		(!empty($mainSimilar)&&count($mainSimilar)>0)?$finalData['similar_products']=["title"=>"Similar Products","sub_title"=>"Get Fitter","items"=>$mainSimilar]:"";
         		$this->utilities->attachCart($finalData);
