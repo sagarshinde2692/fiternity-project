@@ -4803,7 +4803,7 @@ class HomeController extends BaseController {
         		if(!empty($selectedRatecard))
         		{
         			$selectedRatecard=$selectedRatecard[0];
-        			
+        
         			$selectedRatecard['cost']=$this->utilities->getRupeeForm($selectedRatecard['price']);
         			(!empty($productView['specification'])&&!empty($productView['specification']['secondary']))?$selectedRatecard['details']=$this->utilities->getProductDetailsCustom($productView['specification']['secondary'],'secondary'):"";
         			if(!empty($selectedRatecard['image'])&&!empty($selectedRatecard['image']['secondary'])&&count($selectedRatecard['image']['secondary'])>0)$selectedRatecard['images']=$selectedRatecard['image']['secondary'];
