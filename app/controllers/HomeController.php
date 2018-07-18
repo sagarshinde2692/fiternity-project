@@ -4772,7 +4772,16 @@ class HomeController extends BaseController {
         					$cartData=["product_id"=>$ratecard['product_id'],"ratecard_id"=>$ratecard['_id'],"price"=>$ratecard['price'],"quantity"=>$quantity];
         					$removedOldFromCart=Cart::where('_id', intval($cart_id))->pull('products', ['ratecard_id' => intval($ratecard['_id']), 'product_id' => intval($ratecard['product_id'])]);
         					($quantity>0)?$addedToCart=Cart::where('_id', intval($cart_id))->push('products',$cartData):"";
-        					$this->utilities->attachCart($response["response"]);
+        					
+        					if(!empty($_GET['cart_summary']))
+        					{	
+        						$cart=$this->utilities->attachCart($response["response"],true);
+        						$response["response"]['cart']=$this->utilities->getCartTotalCount($cart);
+        						$dataCart=$this->utilities->getCartFinalSummary($cart['products'], $cart['_id']);
+        						if(!empty($dataCart)&&!empty($dataCart['status']))
+        							$response["response"]['cart_summary']=$dataCart['data'];
+        					}
+        					else $this->utilities->attachCart($response["response"]);
         					return $response;
         				}
         				return Response::json(['status'=>400,"message"=>"Not a valid ratecard or ratecard doesn't exist."]);

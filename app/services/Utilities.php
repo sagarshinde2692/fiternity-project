@@ -4686,11 +4686,12 @@ Class Utilities {
 			{
 				$cart=$cart->toArray();
 				if($onlyCart)return $cart;
-				$data['cart']=["count"=>array_reduce((!empty($cart['products'])?array_map(function($e){return (!empty($e['quantity'])?intval($e['quantity']):0);},$cart['products']):[]),function($carry,$item){$carry+=$item;return $carry;})];
+				$data['cart']=["count"=>$this->getCartTotalCount($cart)];
 			}
 		}
 		
 	}
+
 
 
 	public function getPrimaryCategory($finder_id=null,$service_id=null) {
@@ -4852,6 +4853,10 @@ Class Utilities {
 		}
 		
 
+	}
+	public function getCartTotalCount($cart=null)
+	{
+		return (!empty($cart))?array_reduce((!empty($cart['products'])?array_map(function($e){return (!empty($e['quantity'])?intval($e['quantity']):0);},$cart['products']):[]),function($carry,$item){$carry+=$item;return $carry;}):null;
 	}
 }
 
