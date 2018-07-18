@@ -4693,6 +4693,7 @@ Class Utilities {
 	}
 
 
+
 	public function getPrimaryCategory($finder_id=null,$service_id=null) {
 		
 		try {
@@ -4813,6 +4814,27 @@ Class Utilities {
 			else $iterDate=date('Y-m-d', strtotime($requested_date. ' + 1 days'));
 		}
 		return $p_np;
+}
+	public function attachProductQuantity(&$data)
+	{
+		$jwt=Request::header("Authorization");
+		if(isset($jwt))
+		{
+			$cart=$this->productsTabCartHomeCustomer();
+			if(!empty($cart))
+			{
+				$cart=$cart->toArray();
+				$tmp_data=array_values(array_filter($cart,function ($e) use ($data) {return (!empty($data['ratecard_id'])&&!empty($e['ratecard'])&&$data['ratecard_id']== $e['ratecard']);}));
+				if(!empty($tmp_data))
+				{
+					$tmp_data=$tmp_data[0];
+					if(isset($tmp_data['quantity']))
+						$data['quantity']=$tmp_data['quantity'];
+				}
+			}
+		}
+		
+
 	}
 	
 	public function fetchCustomerAddresses(&$data)
