@@ -3577,7 +3577,7 @@ Class Utilities {
 
         $finder_id = (int)$data['finder_id'];
 
-        if(!empty($data['type']) && $data['type'] == 'booktrials'){
+        if(!empty($data['type']) && in_array($data['type'],['booktrials','3daystrial'])){
 
             if(!empty($data['is_tab_active']) && $data['is_tab_active'] === true){
 
