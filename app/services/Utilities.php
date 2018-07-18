@@ -4686,7 +4686,7 @@ Class Utilities {
 			{
 				$cart=$cart->toArray();
 				if($onlyCart)return $cart;
-				$data['cart'] =["count"=>count($cart['products'])];
+				$data['cart'] =["count"=>array_reduce((!empty($cart['products'])?$cart['products']:[]),function ($carry, $item) {$carry+=$item;return $carry;})];
 			}
 		}
 		
@@ -4815,6 +4815,7 @@ Class Utilities {
 		}
 		return $p_np;
 }
+
 	public function attachProductQuantity(&$data)
 	{
 		$jwt=Request::header("Authorization");
@@ -4825,13 +4826,13 @@ Class Utilities {
 			{
 				$cart=$cart->toArray();
 				if(!empty($cart['products']))
-				$tmp_data=array_values(array_filter($cart['products'],function ($e) use ($data) {return (!empty($data['ratecard_id'])&&!empty($e['ratecard_id'])&&$data['ratecard_id']== $e['ratecard_id']);}));
-				if(!empty($tmp_data))
-				{
-					$tmp_data=$tmp_data[0];
-					if(!empty($tmp_data['quantity']))
-						$data['quantity']=$tmp_data['quantity'];
-				}
+					$tmp_data=array_values(array_filter($cart['products'],function ($e) use ($data) {return (!empty($data['ratecard_id'])&&!empty($e['ratecard_id'])&&$data['ratecard_id']== $e['ratecard_id']);}));
+					if(!empty($tmp_data))
+					{
+						$tmp_data=$tmp_data[0];
+						if(!empty($tmp_data['quantity']))
+							$data['quantity']=$tmp_data['quantity'];
+					}
 			}
 		}
 		
