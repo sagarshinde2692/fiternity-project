@@ -76,13 +76,289 @@ Class Mobikwik {
 
         $data['checksum'] = $checksum;
 
+        $url = 'querywallet';
+
         try {
 
-            $response = $this->client->post($url,['body'=>$data])->getBody()->getContents();
+            $response = $this->client->post($url,['form_params'=>$data])->getBody()->getContents();
+
+            $xml = simplexml_load_string($response);
+
+            $json = json_encode($xml);
+            $response = json_decode($json,TRUE);
 
             $return  = [
                 'status'=>200,
-                'data'=>$response
+                'response'=>$response
+            ];
+
+            return $return;
+
+        }catch (RequestException $e) {
+
+            $response = $e->getResponse();
+
+            $error = [  'status'=>$response->getStatusCode(),
+                        'reason'=>$response->getReasonPhrase()
+            ];
+
+            return $error;
+
+        }catch (Exception $e) {
+
+            $error = [  'status'=>400,
+                        'reason'=>'Error'
+            ];
+
+            return $error;
+        }
+
+    }
+
+    public function generateOtp($data){
+
+        $data = [
+            'amount'=>(int)$data['amount'],
+            'cell'=>substr($data['cell'],-10),
+            'merchantname'=>$this->merchantname,
+            'mid'=>$this->mid,
+            'msgcode'=>504,
+            'tokentype'=>1
+        ];
+
+        $checksum = $this->createChecksum($data);
+
+        $data['checksum'] = $checksum;
+
+        $url = 'otpgenerate';
+
+        try {
+
+            $response = $this->client->post($url,['form_params'=>$data])->getBody()->getContents();
+
+            $xml = simplexml_load_string($response);
+
+            $json = json_encode($xml);
+            $response = json_decode($json,TRUE);
+
+            $return  = [
+                'status'=>200,
+                'response'=>$response
+            ];
+
+            return $return;
+
+        }catch (RequestException $e) {
+
+            $response = $e->getResponse();
+
+            $error = [  'status'=>$response->getStatusCode(),
+                        'reason'=>$response->getReasonPhrase()
+            ];
+
+            return $error;
+
+        }catch (Exception $e) {
+
+            $error = [  'status'=>400,
+                        'reason'=>'Error'
+            ];
+
+            return $error;
+        }
+
+    }
+
+    public function generateToken($data){
+
+        $data = [
+            'amount'=>(int)$data['amount'],
+            'cell'=>substr($data['cell'],-10),
+            'merchantname'=>$this->merchantname,
+            'mid'=>$this->mid,
+            'msgcode'=>507,
+            'otp'=>$data['otp'],
+            'tokentype'=>1
+        ];
+
+        $checksum = $this->createChecksum($data);
+
+        $data['checksum'] = $checksum;
+
+        $url = 'tokengenerate';
+
+        try {
+
+            $response = $this->client->post($url,['form_params'=>$data])->getBody()->getContents();
+
+            $xml = simplexml_load_string($response);
+
+            $json = json_encode($xml);
+            $response = json_decode($json,TRUE);
+
+            $return  = [
+                'status'=>200,
+                'response'=>$response
+            ];
+
+            return $return;
+
+        }catch (RequestException $e) {
+
+            $response = $e->getResponse();
+
+            $error = [  'status'=>$response->getStatusCode(),
+                        'reason'=>$response->getReasonPhrase()
+            ];
+
+            return $error;
+
+        }catch (Exception $e) {
+
+            $error = [  'status'=>400,
+                        'reason'=>'Error'
+            ];
+
+            return $error;
+        }
+
+    }
+
+    public function createUser($data){
+
+        $data = [
+            'cell'=>substr($data['cell'],-10),
+            'email'=>$data['email'],
+            'merchantname'=>$this->merchantname,
+            'mid'=>$this->mid,
+            'msgcode'=>502,
+            'otp'=>$data['otp']
+        ];
+
+        $checksum = $this->createChecksum($data);
+
+        $data['checksum'] = $checksum;
+
+        $url = 'createwalletuser';
+
+        try {
+
+            $response = $this->client->post($url,['form_params'=>$data])->getBody()->getContents();
+
+            $xml = simplexml_load_string($response);
+
+            $json = json_encode($xml);
+            $response = json_decode($json,TRUE);
+
+            $return  = [
+                'status'=>200,
+                'response'=>$response
+            ];
+
+            return $return;
+
+        }catch (RequestException $e) {
+
+            $response = $e->getResponse();
+
+            $error = [  'status'=>$response->getStatusCode(),
+                        'reason'=>$response->getReasonPhrase()
+            ];
+
+            return $error;
+
+        }catch (Exception $e) {
+
+            $error = [  'status'=>400,
+                        'reason'=>'Error'
+            ];
+
+            return $error;
+        }
+
+    }
+
+    public function checkBalance($data){
+
+        $data = [
+            'cell'=>substr($data['cell'],-10),
+            'merchantname'=>$this->merchantname,
+            'mid'=>$this->mid,
+            'msgcode'=>501,
+            'token'=>$data['token']
+        ];
+
+        $checksum = $this->createChecksum($data);
+
+        $data['checksum'] = $checksum;
+
+        $url = 'userbalance';
+
+        try {
+
+            $response = $this->client->post($url,['form_params'=>$data])->getBody()->getContents();
+
+            $xml = simplexml_load_string($response);
+
+            $json = json_encode($xml);
+            $response = json_decode($json,TRUE);
+
+            $return  = [
+                'status'=>200,
+                'response'=>$response
+            ];
+
+            return $return;
+
+        }catch (RequestException $e) {
+
+            $response = $e->getResponse();
+
+            $error = [  'status'=>$response->getStatusCode(),
+                        'reason'=>$response->getReasonPhrase()
+            ];
+
+            return $error;
+
+        }catch (Exception $e) {
+
+            $error = [  'status'=>400,
+                        'reason'=>'Error'
+            ];
+
+            return $error;
+        }
+
+    }
+
+    public function addMoneyToWallet($data){
+
+        $data = [
+            'cell'=>substr($data['cell'],-10),
+            'merchantname'=>$this->merchantname,
+            'mid'=>$this->mid,
+            'msgcode'=>501,
+            'token'=>$data['token']
+        ];
+
+        $checksum = $this->createChecksum($data);
+
+        $data['checksum'] = $checksum;
+
+        $url = 'addmoneytowallet';
+
+        try {
+
+            $response = $this->client->post($url,['form_params'=>$data])->getBody()->getContents();
+
+            $xml = simplexml_load_string($response);
+
+            $json = json_encode($xml);
+            $response = json_decode($json,TRUE);
+
+            $return  = [
+                'status'=>200,
+                'response'=>$response
             ];
 
             return $return;
