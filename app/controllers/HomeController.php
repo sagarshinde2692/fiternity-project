@@ -5017,7 +5017,7 @@ class HomeController extends BaseController {
         public function setCustomerAddress()
         {
         	try {
-        		$resp=["status"=>1,"messge"=>"Success"];
+        		$resp=["status"=>200,"messge"=>"Success"];
         		$data  =  Input::json()->all();
         		$rules = ['customer_address'=>'required'];
         		$validator = Validator::make($data,$rules);
