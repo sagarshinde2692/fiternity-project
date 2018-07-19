@@ -10,7 +10,7 @@ class CronController extends BaseController {
 	public function cronLog(){
 
 		$data = Input::json()->all();
-
+		Log::info($data);
 		$rules = [
 			'label' => 'required',
 			'start_time' => 'required',
@@ -37,7 +37,7 @@ class CronController extends BaseController {
 		$cronlog->status = $data['status'];
 		$cronlog->message = $data['message'];
 		$cronlog->save();
-
+		Log::info("saved");
 		return Response::json(array('status' => 200,'message' => 'success'),200);
 									
 	}
