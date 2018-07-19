@@ -62,6 +62,23 @@ class PaymentGatewayController extends \BaseController {
 
 		$data = Input::json()->all();
 
+		$rules = [
+			'cell' => 'required|min:10|max:10',
+			'amount' => 'required|'
+		];
+
+		$validator = Validator::make($data,$rules);
+
+		if($validator->fails()) {
+
+			$response = [
+				'status'=>400,
+				'message'=>error_message($validator->errors())
+			];
+
+			return Response::json($response);
+		}
+
 		$generateOtp = $this->mobikwik->generateOtp($data);
 
 		$response = [
@@ -92,6 +109,24 @@ class PaymentGatewayController extends \BaseController {
 	public function generateTokenMobikwik(){
 
 		$data = Input::json()->all();
+
+		$rules = [
+			'cell' => 'required|min:10|max:10',
+			'amount' => 'required',
+			'otp' => 'required'
+		];
+
+		$validator = Validator::make($data,$rules);
+
+		if($validator->fails()) {
+
+			$response = [
+				'status'=>400,
+				'message'=>error_message($validator->errors())
+			];
+
+			return Response::json($response);
+		}
 
 		$generateToken = $this->mobikwik->generateToken($data);
 
@@ -125,6 +160,23 @@ class PaymentGatewayController extends \BaseController {
 
 		$data = Input::json()->all();
 
+		$rules = [
+			'cell' => 'required|min:10|max:10',
+			'token' => 'required'
+		];
+
+		$validator = Validator::make($data,$rules);
+
+		if($validator->fails()) {
+
+			$response = [
+				'status'=>400,
+				'message'=>error_message($validator->errors())
+			];
+
+			return Response::json($response);
+		}
+
 		$regenerateToken = $this->mobikwik->regenerateToken($data);
 
 		$response = [
@@ -156,6 +208,24 @@ class PaymentGatewayController extends \BaseController {
 	public function createUserMobikwik(){
 
 		$data = Input::json()->all();
+
+		$rules = [
+			'cell' => 'required|min:10|max:10',
+			'email' => 'required|email',
+			'otp' => 'required'
+		];
+
+		$validator = Validator::make($data,$rules);
+
+		if($validator->fails()) {
+
+			$response = [
+				'status'=>400,
+				'message'=>error_message($validator->errors())
+			];
+
+			return Response::json($response);
+		}
 
 		$createUser = $this->mobikwik->createUser($data);
 
@@ -189,6 +259,23 @@ class PaymentGatewayController extends \BaseController {
 
 		$data = Input::json()->all();
 
+		$rules = [
+			'cell' => 'required|min:10|max:10',
+			'token' => 'required'
+		];
+
+		$validator = Validator::make($data,$rules);
+		
+		if($validator->fails()) {
+
+			$response = [
+				'status'=>400,
+				'message'=>error_message($validator->errors())
+			];
+
+			return Response::json($response);
+		}
+
 		$checkBalance = $this->mobikwik->checkBalance($data);
 
 		$response = [
@@ -220,6 +307,25 @@ class PaymentGatewayController extends \BaseController {
 	public function addMoneyMobikwik(){
 
 		$data = Input::json()->all();
+
+		$rules = [
+			'cell' => 'required|min:10|max:10',
+			'amount' => 'required',
+			'token' => 'required',
+			'txnid' => 'required'
+		];
+
+		$validator = Validator::make($data,$rules);
+		
+		if($validator->fails()) {
+
+			$response = [
+				'status'=>400,
+				'message'=>error_message($validator->errors())
+			];
+
+			return Response::json($response);
+		}
 
 		$addMoney = $this->mobikwik->addMoney($data);
 
@@ -253,6 +359,25 @@ class PaymentGatewayController extends \BaseController {
 
 		$data = Input::json()->all();
 
+		$rules = [
+			'cell' => 'required|min:10|max:10',
+			'amount' => 'required',
+			'token' => 'required',
+			'txnid' => 'required'
+		];
+
+		$validator = Validator::make($data,$rules);
+		
+		if($validator->fails()) {
+
+			$response = [
+				'status'=>400,
+				'message'=>error_message($validator->errors())
+			];
+
+			return Response::json($response);
+		}
+
 		$debitMoney = $this->mobikwik->debitMoney($data);
 
 		$response = [
@@ -272,7 +397,7 @@ class PaymentGatewayController extends \BaseController {
 				$response = [
 					'debit_amount'=>$debitMoney['response']['debitedamount'],
 					'balance_amount'=>$debitMoney['response']['balanceamount'],
-					'order_id'=>$debitMoney['response']['orderid'],
+					'txnid'=>$debitMoney['response']['orderid'],
 					'reference_id'=>$debitMoney['response']['refId'],
 					'message'=>$debitMoney['response']['statusdescription'],
 					'status'=>200

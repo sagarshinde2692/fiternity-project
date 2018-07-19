@@ -338,7 +338,7 @@ Class Mobikwik {
             'cell'=>substr($data['cell'],-10),
             'merchantname'=>$this->merchantname,
             'mid'=>$this->mid,
-            'orderid'=>(int)$data['order_id'],
+            'orderid'=>(int)$data['txnid'],
             'redirecturl'=>\Config::get('app.url'),
             'token'=>$data['token']
         ];
@@ -395,7 +395,7 @@ Class Mobikwik {
             'merchantname'=>$this->merchantname,
             'mid'=>$this->mid,
             'msgcode'=>503,
-            'orderid'=>(int)$data['order_id'],
+            'orderid'=>(int)$data['txnid'],
             'token'=>$data['token'],
             'txntype'=>'debit'
         ];

@@ -1214,4 +1214,8 @@ Route::get('updateCouponUsed','DebugController@updateCouponUsed');
 
 Route::get('checkexistinguser/mobikwik/{cell}','PaymentGatewayController@checkExistingUserMobikwik');
 Route::post('generateotp/mobikwik','PaymentGatewayController@generateOtpMobikwik');
-Route::post('generatetoken/mobikwik','PaymentGatewayController@generateTokenMobikwik');
+Route::post('regeneratetoken/mobikwik','PaymentGatewayController@generateTokenMobikwik');
+Route::post('createuser/mobikwik','PaymentGatewayController@createUserMobikwik');
+Route::post('checkbalance/mobikwik','PaymentGatewayController@checkBalanceMobikwik');
+Route::post('addmoney/mobikwik','PaymentGatewayController@addMoneyMobikwik');
+Route::post('debitmoney/mobikwik','PaymentGatewayController@debitMoneyMobikwik');
