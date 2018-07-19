@@ -4,21 +4,21 @@
 return array(
 
 	//local
-
-// 	'new_search_url' =>'http://apistage.fitn.in:5000/',
-// 	'url' => 'http://fitapi.com',
-// 	'admin_url' => 'http://fitadmin.com',
-// 	'website' => 'https://www.fitternity.com',
-// 	'sidekiq_url' => 'http://kick.fitn.in/', 
-// 	'queue' => 'booktrial',
-// 	'vendor_communication' => false,
-// 	'env' => 'stage',
-// 	'debug' => TRUE,
-// 	'metropolis' => 'http://localhost:3030',
-// 	'amazonpay_isSandbox' => 'true',
-// 	'non_peak_hours' => ["off"=>0.8,"gym"=>["off"=>0.8,"start"=>10,"end"=>18],"studios"=>["start"=>11,"end"=>17,"off"=>0.8]],
-// 	'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
-// 	'website_deeplink' =>'https://ftrnty.com',
+	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
+	// 'url' => 'http://fitapi.com',
+	// 'admin_url' => 'http://fitadmin.com',
+	// 'website' => 'https://www.fitternity.com',
+	// 'sidekiq_url' => 'http://kick.fitn.in/', 
+	// 'queue' => 'booktrial',
+	// 'vendor_communication' => false,
+	// 'env' => 'stage',
+	// 'debug' => TRUE,
+	// 'metropolis' => 'http://localhost:3030',
+	// 'amazonpay_isSandbox' => 'true',
+	// 'non_peak_hours' => ["off"=>0.8,"gym"=>["off"=>0.8,"start"=>10,"end"=>18],"studios"=>["start"=>11,"end"=>17,"off"=>0.8]],
+	// 'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
+	// 'website_deeplink' =>'https://ftrnty.com',
+	// 'mobikwik_sandbox'=>true,
 
 	//stage
 
@@ -36,7 +36,7 @@ return array(
 	'amazonpay_isSandbox' => 'true',
 	'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
 	'website_deeplink' =>'https://ftrnty.com',
-
+	'mobikwik_sandbox'=>true,
 
 	//beta
 	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
@@ -53,6 +53,7 @@ return array(
 	// 'non_peak_hours' => ["off"=>0.8,"gym"=>["off"=>0.8,"start"=>10,"end"=>18],"studios"=>["start"=>11,"end"=>17,"off"=>0.8]],
 	// 'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
 	// 'website_deeplink' =>'https://ftrnty.com',
+	// 'mobikwik_sandbox'=>true,
 
 	//live
 	// 	'new_search_url' =>'http://c1.fitternity.com/',
@@ -69,7 +70,7 @@ return array(
 	//	'non_peak_hours' => ["off"=>0.8,"gym"=>["off"=>0.8,"start"=>10,"end"=>18],"studios"=>["start"=>11,"end"=>17,"off"=>0.8]],
 	// 	'reliance_url' =>'https://rhealthcircle.reliancegeneral.co.in/fitternity/callback',
 	// 	'website_deeplink' =>'https://ftrnty.com',
-
+	// 	'mobikwik_sandbox'=>false,
 
 	'pubnub_publish' => 'pub-c-d9aafff8-bb9e-42a0-a24b-17ab5500036f',
 	'pubnub_sub' => 'sub-c-05ef3130-d0e6-11e6-bbe2-02ee2ddab7fe',
