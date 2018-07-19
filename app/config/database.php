@@ -6,7 +6,7 @@
 // $password = "";
 
 //stage
-$host = "apistage.fitn.in";
+$host = "localhost";
 $username = "admin";
 $password = "fit123";
 $options = ['db' => 'admin','authMechanism' => 'MONGODB-CR']; // sets the authentication database required by mongo 3]
