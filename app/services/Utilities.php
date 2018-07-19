@@ -3725,9 +3725,11 @@ Class Utilities {
     	{
     		try {
     			$decoded = decode_customer_token();
-    			if(!empty($decoded)&&!empty($decoded->customer))
-    				$customer_id = $decoded->customer->_id;
-    				else return null;
+    			if(!empty($decoded)&&!empty($decoded->customer)){
+                    $customer_id = $decoded->customer->_id;
+                    Log::info($customer_id);
+                }
+                else return null;
     		} catch (Exception $e) {
     			return null;
     		}
@@ -4845,10 +4847,11 @@ Class Utilities {
 		if(isset($jwt))
 		{
 			$customer=$this->getCustomerAddress();
+            Log::info($customer);
 			if(!empty($customer))
 			{
 				$customer=$customer->toArray();
-				$data['customer_address'] =(!empty($customer['$customer_addresses_product'])?$customer['$customer_addresses_product']:[]);
+                $data['customer_address'] =(!empty($customer['customer_addresses_product'])?$customer['customer_addresses_product']:[]);
 			}
 		}
 		
