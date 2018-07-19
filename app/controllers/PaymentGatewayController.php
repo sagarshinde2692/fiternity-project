@@ -41,7 +41,7 @@ class PaymentGatewayController extends \BaseController {
 			$response = [
 				'user_exists'=>false,
 				'status'=>400,
-				'message'=>$generateOtp['response']['statusdescription'],
+				'message'=>$checkExistingUser['response']['statusdescription'],
 			];
 
 			if($checkExistingUser['response']['status'] == 'SUCCESS' && $checkExistingUser['response']['statuscode'] === '0'){
@@ -49,7 +49,7 @@ class PaymentGatewayController extends \BaseController {
 				$response = [
 					'user_exists'=>true,
 					'status'=>200,
-					'message'=>$generateOtp['response']['statusdescription']
+					'message'=>$checkExistingUser['response']['statusdescription']
 				];
 			}
 
