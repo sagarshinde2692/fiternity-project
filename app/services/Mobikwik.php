@@ -10,7 +10,8 @@ Class Mobikwik {
     protected $debug = false;
     protected $client;
     protected $mid;
-    protected $key;
+    protected $secret_key;
+    protected $si_secret_key;
     protected $merchantname;
 
     public function __construct() {
@@ -24,15 +25,18 @@ Class Mobikwik {
 
         $base_uri = 'https://walletapi.mobikwik.com';
         $this->mid = 'MBK9005';
-        $this->key = 'ju6tygh7u7tdg554k098ujd5468o';
+        $this->secret_key = 'ju6tygh7u7tdg554k098ujd5468o';
+        $this->si_secret_key = 'lu6tygh7u7tdg554k098ujd5468o';
         $this->merchantname = 'TestMerchant';
 
         $mobikwik_sandbox = \Config::get('app.mobikwik_sandbox');
 
         if($mobikwik_sandbox){
+
             $base_uri = 'https://test.mobikwik.com';
             $this->mid = 'MBK9005';
-            $this->key = 'ju6tygh7u7tdg554k098ujd5468o';
+            $this->secret_key = 'ju6tygh7u7tdg554k098ujd5468o';
+            $this->si_secret_key = 'lu6tygh7u7tdg554k098ujd5468o';
             $this->merchantname = 'TestMerchant';
         }
 
@@ -44,7 +48,14 @@ Class Mobikwik {
 
         $string = "'".implode("''",array_values($data))."'";
 
-        return hash_hmac("sha256",$string,$this->key);
+        $final_secret_key = $this->secret_key;
+
+        if(!empty($data['msgcode']) && $data['msgcode'] == 507){
+
+            $final_secret_key = $this->si_secret_key;
+        }
+
+        return hash_hmac("sha256",$string,$final_secret_key);
     }
 
     public function verifyChecksum($checksum,$data) {
@@ -58,6 +69,47 @@ Class Mobikwik {
         }
         
         return $flag;
+    }
+
+    public function postForm($data,$url){
+
+        try {
+
+            $response = $this->client->post($url,['form_params'=>$data])->getBody()->getContents();
+
+            $xml = simplexml_load_string($response);
+
+            $json = json_encode($xml);
+            $response = json_decode($json,TRUE);
+
+            $return  = [
+                'status'=>200,
+                'response'=>$response
+            ];
+
+            return $return;
+
+        }catch (RequestException $e) {
+
+            $response = $e->getResponse();
+
+            $error = [  
+                'status'=>$response->getStatusCode(),
+                'message'=>$response->getReasonPhrase()
+            ];
+
+            return $error;
+
+        }catch (Exception $e) {
+
+            $error = [  
+                'status'=>400,
+                'message'=>'Error'
+            ];
+
+            return $error;
+        }
+
     }
 
     public function checkExistingUser($cell){
@@ -78,40 +130,7 @@ Class Mobikwik {
 
         $url = 'querywallet';
 
-        try {
-
-            $response = $this->client->post($url,['form_params'=>$data])->getBody()->getContents();
-
-            $xml = simplexml_load_string($response);
-
-            $json = json_encode($xml);
-            $response = json_decode($json,TRUE);
-
-            $return  = [
-                'status'=>200,
-                'response'=>$response
-            ];
-
-            return $return;
-
-        }catch (RequestException $e) {
-
-            $response = $e->getResponse();
-
-            $error = [  'status'=>$response->getStatusCode(),
-                        'reason'=>$response->getReasonPhrase()
-            ];
-
-            return $error;
-
-        }catch (Exception $e) {
-
-            $error = [  'status'=>400,
-                        'reason'=>'Error'
-            ];
-
-            return $error;
-        }
+        return $this->postForm($data,$url);
 
     }
 
@@ -132,40 +151,7 @@ Class Mobikwik {
 
         $url = 'otpgenerate';
 
-        try {
-
-            $response = $this->client->post($url,['form_params'=>$data])->getBody()->getContents();
-
-            $xml = simplexml_load_string($response);
-
-            $json = json_encode($xml);
-            $response = json_decode($json,TRUE);
-
-            $return  = [
-                'status'=>200,
-                'response'=>$response
-            ];
-
-            return $return;
-
-        }catch (RequestException $e) {
-
-            $response = $e->getResponse();
-
-            $error = [  'status'=>$response->getStatusCode(),
-                        'reason'=>$response->getReasonPhrase()
-            ];
-
-            return $error;
-
-        }catch (Exception $e) {
-
-            $error = [  'status'=>400,
-                        'reason'=>'Error'
-            ];
-
-            return $error;
-        }
+        return $this->postForm($data,$url);
 
     }
 
@@ -187,40 +173,28 @@ Class Mobikwik {
 
         $url = 'tokengenerate';
 
-        try {
+        return $this->postForm($data,$url);
 
-            $response = $this->client->post($url,['form_params'=>$data])->getBody()->getContents();
+    }
 
-            $xml = simplexml_load_string($response);
+    public function regenerateToken($data){
 
-            $json = json_encode($xml);
-            $response = json_decode($json,TRUE);
+        $data = [
+            'cell'=>substr($data['cell'],-10),
+            'merchantname'=>$this->merchantname,
+            'mid'=>$this->mid,
+            'msgcode'=>507,
+            'token'=>$data['token'],
+            'tokentype'=>1
+        ];
 
-            $return  = [
-                'status'=>200,
-                'response'=>$response
-            ];
+        $checksum = $this->createChecksum($data);
 
-            return $return;
+        $data['checksum'] = $checksum;
 
-        }catch (RequestException $e) {
+        $url = 'tokenregenerate';
 
-            $response = $e->getResponse();
-
-            $error = [  'status'=>$response->getStatusCode(),
-                        'reason'=>$response->getReasonPhrase()
-            ];
-
-            return $error;
-
-        }catch (Exception $e) {
-
-            $error = [  'status'=>400,
-                        'reason'=>'Error'
-            ];
-
-            return $error;
-        }
+        return $this->postForm($data,$url);
 
     }
 
@@ -228,7 +202,7 @@ Class Mobikwik {
 
         $data = [
             'cell'=>substr($data['cell'],-10),
-            'email'=>$data['email'],
+            // 'email'=>$data['email'],
             'merchantname'=>$this->merchantname,
             'mid'=>$this->mid,
             'msgcode'=>502,
@@ -241,40 +215,7 @@ Class Mobikwik {
 
         $url = 'createwalletuser';
 
-        try {
-
-            $response = $this->client->post($url,['form_params'=>$data])->getBody()->getContents();
-
-            $xml = simplexml_load_string($response);
-
-            $json = json_encode($xml);
-            $response = json_decode($json,TRUE);
-
-            $return  = [
-                'status'=>200,
-                'response'=>$response
-            ];
-
-            return $return;
-
-        }catch (RequestException $e) {
-
-            $response = $e->getResponse();
-
-            $error = [  'status'=>$response->getStatusCode(),
-                        'reason'=>$response->getReasonPhrase()
-            ];
-
-            return $error;
-
-        }catch (Exception $e) {
-
-            $error = [  'status'=>400,
-                        'reason'=>'Error'
-            ];
-
-            return $error;
-        }
+        return $this->postForm($data,$url);
 
     }
 
@@ -294,44 +235,11 @@ Class Mobikwik {
 
         $url = 'userbalance';
 
-        try {
-
-            $response = $this->client->post($url,['form_params'=>$data])->getBody()->getContents();
-
-            $xml = simplexml_load_string($response);
-
-            $json = json_encode($xml);
-            $response = json_decode($json,TRUE);
-
-            $return  = [
-                'status'=>200,
-                'response'=>$response
-            ];
-
-            return $return;
-
-        }catch (RequestException $e) {
-
-            $response = $e->getResponse();
-
-            $error = [  'status'=>$response->getStatusCode(),
-                        'reason'=>$response->getReasonPhrase()
-            ];
-
-            return $error;
-
-        }catch (Exception $e) {
-
-            $error = [  'status'=>400,
-                        'reason'=>'Error'
-            ];
-
-            return $error;
-        }
+        return $this->postForm($data,$url);
 
     }
 
-    public function addMoney($data){
+    public function addMoney($data){    
 
         $data = [
             'amount'=>(int)$data['amount'],
@@ -349,40 +257,7 @@ Class Mobikwik {
 
         $url = 'addmoneytowallet';
 
-        try {
-
-            $response = $this->client->post($url,['form_params'=>$data])->getBody()->getContents();
-
-            $xml = simplexml_load_string($response);
-
-            $json = json_encode($xml);
-            $response = json_decode($json,TRUE);
-
-            $return  = [
-                'status'=>200,
-                'response'=>$response
-            ];
-
-            return $return;
-
-        }catch (RequestException $e) {
-
-            $response = $e->getResponse();
-
-            $error = [  'status'=>$response->getStatusCode(),
-                        'reason'=>$response->getReasonPhrase()
-            ];
-
-            return $error;
-
-        }catch (Exception $e) {
-
-            $error = [  'status'=>400,
-                        'reason'=>'Error'
-            ];
-
-            return $error;
-        }
+        return $this->postForm($data,$url);
 
     }
 
@@ -406,95 +281,26 @@ Class Mobikwik {
 
         $url = 'debitwallet';
 
-        try {
-
-            $response = $this->client->post($url,['form_params'=>$data])->getBody()->getContents();
-
-            $xml = simplexml_load_string($response);
-
-            $json = json_encode($xml);
-            $response = json_decode($json,TRUE);
-
-            $return  = [
-                'status'=>200,
-                'response'=>$response
-            ];
-
-            return $return;
-
-        }catch (RequestException $e) {
-
-            $response = $e->getResponse();
-
-            $error = [  'status'=>$response->getStatusCode(),
-                        'reason'=>$response->getReasonPhrase()
-            ];
-
-            return $error;
-
-        }catch (Exception $e) {
-
-            $error = [  'status'=>400,
-                        'reason'=>'Error'
-            ];
-
-            return $error;
-        }
+        return $this->postForm($data,$url);
 
     }
 
-    public function regenerateToken($data){
+    public function checkStatus($data){                                    
 
         $data = [
-            'cell'=>substr($data['cell'],-10),
-            'merchantname'=>$this->merchantname,
             'mid'=>$this->mid,
-            'msgcode'=>507,
-            'token'=>$data['token'],
-            'tokentype'=>1
+            'orderid'=>(int)$data['txnid']
         ];
 
         $checksum = $this->createChecksum($data);
 
         $data['checksum'] = $checksum;
 
-        $url = 'tokenregenerate';
+        $url = 'checkstatus';
 
-        try {
-
-            $response = $this->client->post($url,['form_params'=>$data])->getBody()->getContents();
-
-            $xml = simplexml_load_string($response);
-
-            $json = json_encode($xml);
-            $response = json_decode($json,TRUE);
-
-            $return  = [
-                'status'=>200,
-                'response'=>$response
-            ];
-
-            return $return;
-
-        }catch (RequestException $e) {
-
-            $response = $e->getResponse();
-
-            $error = [  'status'=>$response->getStatusCode(),
-                        'reason'=>$response->getReasonPhrase()
-            ];
-
-            return $error;
-
-        }catch (Exception $e) {
-
-            $error = [  'status'=>400,
-                        'reason'=>'Error'
-            ];
-
-            return $error;
-        }
-
+        return $this->postForm($data,$url);
     }
+
+    
 
 }                                       

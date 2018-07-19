@@ -211,7 +211,7 @@ class PaymentGatewayController extends \BaseController {
 
 		$rules = [
 			'cell' => 'required|min:10|max:10',
-			'email' => 'required|email',
+			// 'email' => 'required|email',
 			'otp' => 'required'
 		];
 
@@ -408,5 +408,63 @@ class PaymentGatewayController extends \BaseController {
 
 		return Response::json($response);
 	}
+
+	public function verifyAddMoneyMobikwik(){
+
+		$data = $_POST;
+
+		Log::info('verifyAddMoneyMobikwik',$data);
+
+		$rules = [
+			'Statusmessage' => 'required',
+			'statuscode' => 'required',
+			'orderid' => 'required',
+			'amount' => 'required',
+			'mid' => 'required',
+			'Checksum' => 'required'
+		];
+
+		$validator = Validator::make($data,$rules);
+		
+		if($validator->fails()) {
+
+			$response = [
+				'status'=>400,
+				'message'=>error_message($validator->errors())
+			];
+
+			return Response::json($response);
+		}
+
+		$verifyAddMoney = $this->mobikwik->verifyAddMoney($data);
+
+		$response = [
+			'status'=>400,
+			'message'=>'something went wrong'
+		];
+
+		if($debitMoney['status'] == 200){
+
+			$response = [
+				'message'=>$debitMoney['response']['statusdescription'],
+				'status'=>400
+			];
+
+			if($debitMoney['response']['status'] == 'SUCCESS' && $debitMoney['response']['statuscode'] === '0'){
+
+				$response = [
+					'debit_amount'=>$debitMoney['response']['debitedamount'],
+					'balance_amount'=>$debitMoney['response']['balanceamount'],
+					'txnid'=>$debitMoney['response']['orderid'],
+					'reference_id'=>$debitMoney['response']['refId'],
+					'message'=>$debitMoney['response']['statusdescription'],
+					'status'=>200
+				];
+			}
+
+		}
+
+		return Response::json($response);
+    }
 
 }
