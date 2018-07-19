@@ -451,7 +451,7 @@ Class Mobikwik {
             'mid'=>$this->mid,
             'msgcode'=>507,
             'token'=>$data['token'],
-            'txntype'=>1
+            'tokentype'=>1
         ];
 
         $checksum = $this->createChecksum($data);
