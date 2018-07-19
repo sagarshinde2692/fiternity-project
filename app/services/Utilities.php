@@ -4447,7 +4447,7 @@ Class Utilities {
 	{
 		try {
 			if(empty($cart_data))
-				return ["status"=>0,"message"=>"No Cart Data present."];
+				return ["status"=>200,"message"=>"No Cart Data present."];
 				
 				$resp=["status"=>1,"message"=>"success","data"=>[]];
 				
