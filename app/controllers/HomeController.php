@@ -4772,8 +4772,8 @@ class HomeController extends BaseController {
         					$cartData=["product_id"=>$ratecard['product_id'],"ratecard_id"=>$ratecard['_id'],"price"=>$ratecard['price'],"quantity"=>$quantity];
         					$removedOldFromCart=Cart::where('_id', intval($cart_id))->pull('products', ['ratecard_id' => intval($ratecard['_id']), 'product_id' => intval($ratecard['product_id'])]);
         					($quantity>0)?$addedToCart=Cart::where('_id', intval($cart_id))->push('products',$cartData):"";
-        					
-        					if(!empty($_GET['cart_summary']))
+                            
+        					if(!empty($_GET['cart_summary']) && filter_var($_GET['cart_summary'], FILTER_VALIDATE_BOOLEAN))
         					{	
         						$cart=$this->utilities->attachCart($response["response"],true);
         						$dataCart=$this->utilities->getCartFinalSummary($cart['products'], $cart['_id']);
