@@ -3763,28 +3763,38 @@ Class Utilities {
     }
     
     public function getFitcash($data){
-        Log::info(__FUNCTION__." called from ".debug_backtrace()[1]['function']);
-        
+
+        $finder_id = (int)$data['finder_id'];
 
         $fitcash = 0;
-        $finder_id = (int)$data['finder_id'];
-        if(!empty($data['type']) && in_array(strtolower($data['type']),['booktrials','3daystrial'])){
+
+        if(!empty($data['type']) && in_array($data['type'],['booktrials','3daystrial'])){
+
             if(!empty($data['is_tab_active']) && $data['is_tab_active'] === true){
+
                 return 250;
             }
         
             \Ratecard::$withoutAppends = true;
 
             $ratecards = \Ratecard::where('finder_id',$finder_id)->whereIn('type',['membership','packages'])->get();
+
             $amount = 0;
             $days = 0;
             $fitcash = 300;
+
             if(!empty($ratecards)){
+
                 foreach ($ratecards as $ratecard) {
+
                     $new_days = $this->getDurationDay($ratecard);
+
                     if($new_days >= $days){
+
                         $days = $new_days;
+
                         $new_amount = $this->getRatecardAmount($ratecard);
+
                         if($new_amount >= $amount){
                             $amount = $new_amount;
                         }
@@ -3799,12 +3809,15 @@ Class Utilities {
 
             return $fitcash;
         }
-        if(!empty($data['amount_finder'])){
+
+        if(!empty($data['amount_finder']) && !empty($data['type']) && in_array($data['type'],['workout-session'])){
+
             $getWorkoutSessionFitcash = $this->getWorkoutSessionFitcash($data);
 
             $fitcash = round($getWorkoutSessionFitcash * $data['amount_finder'] / 100);
         }
         return $fitcash;
+
     }
 
     public function getRatecardAmount($ratecard){
