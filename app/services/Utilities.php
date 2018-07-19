@@ -4685,8 +4685,8 @@ Class Utilities {
 			if(!empty($cart))
 			{
 				$cart=$cart->toArray();
-				if($onlyCart)return $cart;
 				$data['cart']=["count"=>$this->getCartTotalCount($cart)];
+				if($onlyCart)return $cart;
 			}
 		}
 		
