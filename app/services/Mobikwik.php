@@ -24,7 +24,7 @@ Class Mobikwik {
 
         $base_uri = 'https://walletapi.mobikwik.com';
         $this->mid = 'MBK9005';
-        $this->key = 'ju6tygh7u7tdg554k098ujd5468o';
+        $this->key = 'lu6tygh7u7tdg554k098ujd5468o';
         $this->merchantname = 'TestMerchant';
 
         $mobikwik_sandbox = \Config::get('app.mobikwik_sandbox');
@@ -32,7 +32,7 @@ Class Mobikwik {
         if($mobikwik_sandbox){
             $base_uri = 'https://test.mobikwik.com';
             $this->mid = 'MBK9005';
-            $this->key = 'ju6tygh7u7tdg554k098ujd5468o';
+            $this->key = 'lu6tygh7u7tdg554k098ujd5468o';
             $this->merchantname = 'TestMerchant';
         }
 
