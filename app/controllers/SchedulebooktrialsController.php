@@ -7138,6 +7138,7 @@ class SchedulebooktrialsController extends \BaseController {
             $booktrial->lostfitcode = $lostfitcode;
             
             $fitcash_amount = $this->utilities->getFitcash($booktrial);
+
             $device_type = Request::header('Device-Type');
             // if(in_array($device_type, ['ios', 'android']) && empty($booktrial->post_trial_status_updated_by_lostfitcode) && empty($booktrial->post_trial_status_updated_by_fitcode)){
             if( !(isset($_GET['reason']) && $_GET['reason'] == 1) && empty($booktrial->post_trial_status_updated_by_lostfitcode) && empty($booktrial->post_trial_status_updated_by_fitcode)){

@@ -677,6 +677,8 @@ class ServiceController extends \BaseController {
         }
      	 $items = $query->with(array('serviceratecards'=> function($query) use ($ratecard_type){
 			 $query->where('type',$ratecard_type);
+		 }))->with(array('category'=>function($query){
+			 $query->select('name');
 		 }))->get($selectedFieldsForService)->toArray();
 
 		//  $items = $query->get()->toArray();
@@ -763,7 +765,9 @@ class ServiceController extends \BaseController {
 				'workoutsession_active_weekdays' => $item["workoutsession_active_weekdays"],
 				'trial_active_weekdays' => $item["trial_active_weekdays"],
 				'inoperational_dates_array' => $finder['inoperational_dates_array'],
-				'cost'=>'Free Via Fitternity'
+				'cost'=>'Free Via Fitternity',
+				'servicecategory_id'=>!empty($item['servicecategory_id']) ? $item['servicecategory_id'] : 0,
+				'category'=>!empty($item['category']['name']) ? $item['category']['name'] : ""
 			);
 			
 			$slots = array();

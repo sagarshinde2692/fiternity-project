@@ -7779,5 +7779,79 @@ public function yes($msg){
 	}
 
 
+	public function lostFitcode(){
+
+		ini_set('memory_limit','512M');
+        ini_set('max_execution_time', 300);
+
+		$utilities = new Utilities();
+		$customersms = new CustomerSms();
+
+		Booktrial::$withoutAppends = true;
+
+		Wallet::$withoutAppends = true;
+
+		$booktrial_ids = Booktrial::where('post_trial_status_updated_by_lostfitcode','exists',true)->lists('_id');
+
+		$booktrial_ids = array_map('intval',$booktrial_ids);
+
+		$trial_ids = Wallet::where('entry','credit')
+				->where('for','locate_trial')
+			    ->whereIn('trial_id',$booktrial_ids)
+			    ->lists('trial_id');
+
+		$trial_ids = array_map('intval',$trial_ids);
+
+		$final_trial_ids = array_values(array_diff($booktrial_ids,$trial_ids));
+
+		if(!empty($final_trial_ids)){
+
+			$booktrials = Booktrial::whereIn('_id',$final_trial_ids)->get(['_id','customer_id','type','amount_finder','amount','customer_phone','customer_name','customer_email','vendor_link','finder_name','finder_id']);
+
+			foreach ($booktrials as $booktrial){
+
+				$fitcash = $utilities->getFitcash($booktrial);
+
+				if($fitcash > 0){
+
+					$req = array(
+							"customer_id"=>$booktrial['customer_id'],
+							"trial_id"=>$booktrial['_id'],
+							"amount"=> $fitcash,
+							"amount_fitcash" => 0,
+							"amount_fitcash_plus" => $fitcash,
+							"type"=>'CREDIT',
+							'entry'=>'credit',
+			                'for'=>'locate_trial',
+							'validity'=>time()+(86400*7),
+							'description'=>"Added FitCash+ on Trial Attendance, Expires On : ".date('d-m-Y',time()+(86400*7))
+					);
+			                		
+			        $utilities->walletTransaction($req);
+
+			        $sms_data = [];
+
+			        $sms_data['customer_phone'] = $booktrial['customer_phone'];
+
+			        $sms_data['message'] = "Hi ".ucwords($customer['name']).", Rs. ".$fitcash." has been added in your Fitternity wallet on attending trial at ".$data['finder_name'].". Use this to buy your membership at lowest price with assured rewards - Buy now - ".$data['vendor_link'].". Limited Slots. Quick assistance, Call - ".Config::get('app.contact_us_customer_number');
+
+			        if($data['type'] == 'workout-session'){
+
+						$sms_data['message'] = "Hi ".ucwords($customer['name']).", Rs. ".$fitcash." has been added in your Fitternity wallet on attending session at ".$data['finder_name'].". Use this to book your next session for free. Available on Pay Per Session. Book Now - ".Config::get('app.download_app_link')." Quick assistance, Call - ".Config::get('app.contact_us_customer_number');
+					}
+
+			        $customersms->custom($sms_data);
+			    }
+
+		    }
+
+		}
+
+	    return 'success';
+	}
+
+
+
+
 }
 

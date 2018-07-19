@@ -10,6 +10,8 @@
 class Wallet extends  \Basemodel {
 
 	protected $collection = "wallets";
+
+	public static $withoutAppends = false;
 	
 	// Add your validation rules here
 	public static $rules = [
