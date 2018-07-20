@@ -248,7 +248,7 @@ Class Mobikwik {
             'cell'=>substr($data['cell'],-10),
             'merchantname'=>$this->merchantname,
             'mid'=>$this->mid,
-            'orderid'=>(int)$data['txnid'],
+            'orderid'=>$data['txnid'],
             'redirecturl'=>\Config::get('app.url').'/verifyaddmoney/mobikwik',
             'token'=>$data['token']
         ];
@@ -277,7 +277,7 @@ Class Mobikwik {
             'merchantname'=>$this->merchantname,
             'mid'=>$this->mid,
             'msgcode'=>503,
-            'orderid'=>(int)$data['txnid'],
+            'orderid'=>$data['txnid'],
             'token'=>$data['token'],
             'txntype'=>'debit'
         ];
@@ -296,7 +296,7 @@ Class Mobikwik {
 
         $data = [
             'mid'=>$this->mid,
-            'orderid'=>(int)$data['txnid']
+            'orderid'=>$data['txnid']
         ];
 
         $checksum = $this->createChecksum($data);
