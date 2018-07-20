@@ -4124,14 +4124,36 @@ Class Utilities {
 	}
     
     public function updateRatecardSlots($data){
+        
+        $ratecard_id = $data['ratecard_id'];
+        
+        $ratecard = Ratecard::find($ratecard_id);
 
-        $ratecard = Order::find($data['ratecard_id']);
+        $available_slots = $ratecard->available_slots - 1;
+        $ratecard->available_slots = $available_slots;
 
-        $available_slots = $ratecard->available_slots;
+        if(!$available_slots)
 
-        $ratecard->available_slots = $available_slots - 1;
+        $offer = Offer::where('ratecard_id', $ratecard_id)->where('added_by_script', '!=', true)->where('hidden', false)->orderBy('order', 'asc')
+                                ->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
+                                ->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()) ))
+                                ->first(['start_date','end_date','price','type','allowed_qty','remarks','offer_type','ratecard_id','callout']);
+                                
+                                
+        if(!empty($offer)){
+            
 
+            
+
+
+        }
+                                
+                                
         $ratecard->save();
+                                
+
+
+        
 
         Cache::tags('finder_detail')->forget($data['finder_slug']);
         Cache::tags('finder_detail_android')->forget($data['finder_slug']);
@@ -4139,12 +4161,6 @@ Class Utilities {
         Cache::tags('finder_detail_ios_4_4_3')->forget($data['finder_slug']);
         Cache::tags('finder_detail_android_4_4_3')->forget($data['finder_slug']);
     
-    }
-
-    public function updateRatecardPrice($ratecard){
-
-        
-
     }
 
 }
