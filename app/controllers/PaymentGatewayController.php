@@ -135,7 +135,7 @@ class PaymentGatewayController extends \BaseController {
 			'message'=>'something went wrong'
 		];
 
-		$checkExistingUser = $this->checkExistingUserMobikwik($data['cell']);
+		$checkExistingUser = $this->mobikwik->checkExistingUser($data['cell']);
 
 		if($checkExistingUser['status'] == 200 && !empty($checkExistingUser['response']['statuscode'])){
 
