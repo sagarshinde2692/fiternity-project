@@ -247,7 +247,7 @@ Class Mobikwik {
             'merchantname'=>$this->merchantname,
             'mid'=>$this->mid,
             'orderid'=>(int)$data['txnid'],
-            'redirecturl'=>\Config::get('app.url'),
+            'redirecturl'=>\Config::get('app.url').'/verifyaddmoney/mobikwik',
             'token'=>$data['token']
         ];
 
@@ -257,7 +257,34 @@ Class Mobikwik {
 
         $url = 'addmoneytowallet';
 
-        return $this->postForm($data,$url);
+        try {
+
+            $response = $this->client->post($url,['form_params'=>$data])->getBody()->getContents();
+
+            $response = json_decode($response,TRUE);
+
+            return $response;
+
+        }catch (RequestException $e) {
+
+            $response = $e->getResponse();
+
+            $error = [  
+                'status'=>$response->getStatusCode(),
+                'message'=>$response->getReasonPhrase()
+            ];
+
+            return $error;
+
+        }catch (Exception $e) {
+
+            $error = [  
+                'status'=>400,
+                'message'=>'Error'
+            ];
+
+            return $error;
+        }
 
     }
 
@@ -285,7 +312,7 @@ Class Mobikwik {
 
     }
 
-    public function checkStatus($data){                                    
+    public function checkStatus($data){
 
         $data = [
             'mid'=>$this->mid,

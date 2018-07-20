@@ -69,7 +69,7 @@ class PaymentGatewayController extends \BaseController {
 
 		$validator = Validator::make($data,$rules);
 
-		if($validator->fails()) {
+		if($validator->fails()){
 
 			$response = [
 				'status'=>400,
@@ -118,7 +118,7 @@ class PaymentGatewayController extends \BaseController {
 
 		$validator = Validator::make($data,$rules);
 
-		if($validator->fails()) {
+		if($validator->fails()){
 
 			$response = [
 				'status'=>400,
@@ -167,7 +167,7 @@ class PaymentGatewayController extends \BaseController {
 
 		$validator = Validator::make($data,$rules);
 
-		if($validator->fails()) {
+		if($validator->fails()){
 
 			$response = [
 				'status'=>400,
@@ -217,7 +217,7 @@ class PaymentGatewayController extends \BaseController {
 
 		$validator = Validator::make($data,$rules);
 
-		if($validator->fails()) {
+		if($validator->fails()){
 
 			$response = [
 				'status'=>400,
@@ -266,7 +266,7 @@ class PaymentGatewayController extends \BaseController {
 
 		$validator = Validator::make($data,$rules);
 		
-		if($validator->fails()) {
+		if($validator->fails()){
 
 			$response = [
 				'status'=>400,
@@ -317,7 +317,7 @@ class PaymentGatewayController extends \BaseController {
 
 		$validator = Validator::make($data,$rules);
 		
-		if($validator->fails()) {
+		if($validator->fails()){
 
 			$response = [
 				'status'=>400,
@@ -368,7 +368,7 @@ class PaymentGatewayController extends \BaseController {
 
 		$validator = Validator::make($data,$rules);
 		
-		if($validator->fails()) {
+		if($validator->fails()){
 
 			$response = [
 				'status'=>400,
@@ -413,8 +413,6 @@ class PaymentGatewayController extends \BaseController {
 
 		$data = $_POST;
 
-		Log::info('verifyAddMoneyMobikwik',$data);
-
 		$rules = [
 			'Statusmessage' => 'required',
 			'statuscode' => 'required',
@@ -426,7 +424,7 @@ class PaymentGatewayController extends \BaseController {
 
 		$validator = Validator::make($data,$rules);
 		
-		if($validator->fails()) {
+		if($validator->fails()){
 
 			$response = [
 				'status'=>400,
@@ -436,31 +434,17 @@ class PaymentGatewayController extends \BaseController {
 			return Response::json($response);
 		}
 
-		$verifyAddMoney = $this->mobikwik->verifyAddMoney($data);
-
 		$response = [
 			'status'=>400,
 			'message'=>'something went wrong'
 		];
 
-		if($debitMoney['status'] == 200){
+		if($data['statuscode'] === '0'){
 
 			$response = [
-				'message'=>$debitMoney['response']['statusdescription'],
-				'status'=>400
+				'status'=>200,
+				'message'=>$data['amount'].' Added to wallet'
 			];
-
-			if($debitMoney['response']['status'] == 'SUCCESS' && $debitMoney['response']['statuscode'] === '0'){
-
-				$response = [
-					'debit_amount'=>$debitMoney['response']['debitedamount'],
-					'balance_amount'=>$debitMoney['response']['balanceamount'],
-					'txnid'=>$debitMoney['response']['orderid'],
-					'reference_id'=>$debitMoney['response']['refId'],
-					'message'=>$debitMoney['response']['statusdescription'],
-					'status'=>200
-				];
-			}
 
 		}
 
