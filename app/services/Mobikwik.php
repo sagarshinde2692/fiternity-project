@@ -73,6 +73,8 @@ Class Mobikwik {
 
     public function postForm($data,$url){
 
+        \Log::info('postForm',$data);
+
         try {
 
             $response = $this->client->post($url,['form_params'=>$data])->getBody()->getContents();

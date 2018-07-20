@@ -40,7 +40,7 @@ class PaymentGatewayController extends \BaseController {
 
 			$response = [
 				'user_exists'=>false,
-				'status'=>400,
+				'status'=>200,
 				'message'=>$checkExistingUser['response']['statusdescription'],
 			];
 
@@ -78,6 +78,8 @@ class PaymentGatewayController extends \BaseController {
 
 			return Response::json($response);
 		}
+
+		// $checkExistingUser = $this->checkExistingUserMobikwik($data['cell']);
 
 		$generateOtp = $this->mobikwik->generateOtp($data);
 
