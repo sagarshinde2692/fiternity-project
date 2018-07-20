@@ -1215,7 +1215,7 @@ class TransactionController extends \BaseController {
     			$data['finder']=$finderDetail['data'];
     			$finderDetail['data']['finder']['finder_flags'] = [];
     			
-    			$is_tab_active = isTabActive($data['finder_id']);
+    			$is_tab_active = isTabActive((int)$vendor['_id']);
     			($is_tab_active)?$data['finder']['is_tab_active'] = true:"";
     			$pay_at_vendor_applicable = true;
     			$result['finder_name'] = strtolower($data['finder_name']);
