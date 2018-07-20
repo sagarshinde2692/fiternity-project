@@ -350,7 +350,7 @@ class PaymentGatewayController extends \BaseController {
 			if($checkBalance['response']['status'] == 'SUCCESS' && $checkBalance['response']['statuscode'] === '0'){
 
 				$response = [
-					'amount'=>$checkBalance['response']['balanceamount'],
+					'wallet_balance'=>$checkBalance['response']['balanceamount'],
 					'message'=>$checkBalance['response']['statusdescription'],
 					'status'=>200
 				];
