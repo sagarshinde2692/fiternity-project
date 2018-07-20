@@ -6715,7 +6715,6 @@ class CustomerController extends \BaseController {
 						],
 						'didnt_get'=>[
 							'text'=>'Didn’t get FitCode',
-							'url'=>Config::get('app.url')."/sessionstatuscapture/lost/".$data['_id']."?source=activate_session", 
 							"header"=> "Didn't get Fitcode?",
 							"subtitle"=> "Let us know the reason to assist you better",
 							"options" => [
