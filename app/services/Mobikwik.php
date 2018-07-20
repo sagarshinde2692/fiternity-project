@@ -139,7 +139,7 @@ Class Mobikwik {
     public function generateOtp($data){
 
         $data = [
-            'amount'=>(int)$data['amount'],
+            'amount'=>$data['amount'],
             'cell'=>substr($data['cell'],-10),
             'merchantname'=>$this->merchantname,
             'mid'=>$this->mid,
@@ -160,7 +160,7 @@ Class Mobikwik {
     public function generateToken($data){
 
         $data = [
-            'amount'=>(int)$data['amount'],
+            'amount'=>$data['amount'],
             'cell'=>substr($data['cell'],-10),
             'merchantname'=>$this->merchantname,
             'mid'=>$this->mid,
@@ -244,7 +244,7 @@ Class Mobikwik {
     public function addMoney($data){    
 
         $data = [
-            'amount'=>(int)$data['amount'],
+            'amount'=>$data['amount'],
             'cell'=>substr($data['cell'],-10),
             'merchantname'=>$this->merchantname,
             'mid'=>$this->mid,
@@ -271,7 +271,7 @@ Class Mobikwik {
     public function debitMoney($data){
 
         $data = [
-            'amount'=>(int)$data['amount'],
+            'amount'=>$data['amount'],
             'cell'=>substr($data['cell'],-10),
             'comment'=>'Debit',
             'merchantname'=>$this->merchantname,
