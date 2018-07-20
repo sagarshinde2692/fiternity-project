@@ -4132,28 +4132,42 @@ Class Utilities {
         $available_slots = $ratecard->available_slots - 1;
         $ratecard->available_slots = $available_slots;
 
-        if(!$available_slots)
-
-        $offer = Offer::where('ratecard_id', $ratecard_id)->where('added_by_script', '!=', true)->where('hidden', false)->orderBy('order', 'asc')
-                                ->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
-                                ->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()) ))
-                                ->first(['start_date','end_date','price','type','allowed_qty','remarks','offer_type','ratecard_id','callout']);
-                                
-                                
-        if(!empty($offer)){
+        if(!$available_slots){
             
-
+            $offer = Offer::where('ratecard_id', $ratecard_id)->where('added_by_script', '!=', true)->where('hidden', false)->orderBy('order', 'asc')
+            ->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
+            ->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()) ))
+            ->first(['start_date','end_date','price','type','allowed_qty','remarks','offer_type','ratecard_id','callout']);
             
+            
+            if(!empty($offer)){
+                
+                $price = $offer['price'];
+                
+                $new_price = round($price * 1.01);
+                
+                $new_price = $price + ($new_price > 50 ? ($new_price < 75 ? $new_price : 75) : 50);
 
+                
+                $offer_data = $offer->toArray();
+                
+                $offer_data['new_price'] = $new_price;
 
-        }
-                                
-                                
-        $ratecard->save();
-                                
-
-
+                $create_offer  = $this->createOffer($offer_data);
+                
+            }
+            
+            $days_passed = date('d', time());
+            
+            $days_left = 25 - $days_passed;
+            
+            $new_slots = round($ratecard->total_slots_created / $days_passed * $days_left);
+            
+            $ratecard->total_slots_created = $ratecard->total_slots_created + $new_slots;
+                                    
+            $ratecard->save();
         
+        }
 
         Cache::tags('finder_detail')->forget($data['finder_slug']);
         Cache::tags('finder_detail_android')->forget($data['finder_slug']);
@@ -4162,6 +4176,18 @@ Class Utilities {
         Cache::tags('finder_detail_android_4_4_3')->forget($data['finder_slug']);
     
     }
+
+    public function createOffer($offer_data){
+        
+        $offer_id = Offer::max('_id') + 1;
+        $offer_data['_id'] = $offer_id;
+        $offer_data['added_by_script'] = true;
+        $offer = new Offer($offer_data);
+        $offer_data->_id = $offer_id;
+        $offer->save();
+
+    }
+
 
 }
 
