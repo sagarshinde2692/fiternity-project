@@ -2116,8 +2116,8 @@ class HomeController extends BaseController {
     							
     	} catch (Exception $e)
     	{
-    		Log::error(" Error [getProductSuccessMsg] ".print_r($this->baseFailureStatusMessage($e),true));
-    		return  ['status'=>0,"message"=>$this->baseFailureStatusMessage($e)];
+    		Log::error(" Error [getProductSuccessMsg] ".print_r($this->utilities->baseFailureStatusMessage($e),true));
+    		return  ['status'=>0,"message"=>$this->utilities->baseFailureStatusMessage($e)];
     	}
     	
     }
