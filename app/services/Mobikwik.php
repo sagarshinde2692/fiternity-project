@@ -23,7 +23,7 @@ Class Mobikwik {
 
         $debug = ($debug) ? $debug : $this->debug;
 
-        $base_uri = 'https://walletapi.mobikwik.com';
+        $this->base_uri = 'https://walletapi.mobikwik.com';
         $this->mid = 'MBK9006';
         $this->secret_key = 'ju6tygh7u7tdg554k098ujd5468o';
         $this->si_secret_key = 'lu6tygh7u7tdg554k098ujd5468o';
@@ -33,14 +33,14 @@ Class Mobikwik {
 
         if($mobikwik_sandbox){
 
-            $base_uri = 'https://test.mobikwik.com';
+            $this->base_uri = 'https://test.mobikwik.com';
             $this->mid = 'MBK9006';
             $this->secret_key = 'ju6tygh7u7tdg554k098ujd5468o';
             $this->si_secret_key = 'lu6tygh7u7tdg554k098ujd5468o';
             $this->merchantname = 'TestMerchant';
         }
 
-        $this->client = new Client( ['debug' => $debug, 'base_uri' => $base_uri] );
+        $this->client = new Client( ['debug' => $debug, 'base_uri' => $this->base_uri] );
 
     }
 
@@ -248,7 +248,7 @@ Class Mobikwik {
             'cell'=>substr($data['cell'],-10),
             'merchantname'=>$this->merchantname,
             'mid'=>$this->mid,
-            'orderid'=>(int)$data['txnid'],
+            'orderid'=>$data['txnid'],
             'redirecturl'=>\Config::get('app.url').'/verifyaddmoney/mobikwik',
             'token'=>$data['token']
         ];
@@ -259,34 +259,12 @@ Class Mobikwik {
 
         $url = 'addmoneytowallet';
 
-        try {
+        $response = [
+            'url'=>$this->base_uri.'/'.$url,
+            'data'=>$data
+        ];
 
-            $response = $this->client->post($url,['form_params'=>$data])->getBody()->getContents();
-
-            $response = json_decode($response,TRUE);
-
-            return $response;
-
-        }catch (RequestException $e) {
-
-            $response = $e->getResponse();
-
-            $error = [  
-                'status'=>$response->getStatusCode(),
-                'message'=>$response->getReasonPhrase()
-            ];
-
-            return $error;
-
-        }catch (Exception $e) {
-
-            $error = [  
-                'status'=>400,
-                'message'=>'Error'
-            ];
-
-            return $error;
-        }
+        return $response;
 
     }
 
@@ -299,7 +277,7 @@ Class Mobikwik {
             'merchantname'=>$this->merchantname,
             'mid'=>$this->mid,
             'msgcode'=>503,
-            'orderid'=>(int)$data['txnid'],
+            'orderid'=>$data['txnid'],
             'token'=>$data['token'],
             'txntype'=>'debit'
         ];
@@ -318,7 +296,7 @@ Class Mobikwik {
 
         $data = [
             'mid'=>$this->mid,
-            'orderid'=>(int)$data['txnid']
+            'orderid'=>$data['txnid']
         ];
 
         $checksum = $this->createChecksum($data);
