@@ -764,6 +764,7 @@ class TransactionController extends \BaseController {
                 $order = new Order($data);
                 $order->_id = $order_id;
                 $order->save();
+                $redisid = Queue::connection('redis')->push('TransactionController@updateRatecardSlots', array('order_id'=>$order_id),Config::get('app.queue'));
             }
 
         }else{
@@ -771,6 +772,7 @@ class TransactionController extends \BaseController {
             $order = new Order($data);
             $order->_id = $order_id;
             $order->save();
+            $redisid = Queue::connection('redis')->push('TransactionController@updateRatecardSlots', array('order_id'=>$order_id),Config::get('app.queue'));
         }
 
         if(isset($data['payment_mode']) && $data['payment_mode'] == 'cod'){
@@ -5972,6 +5974,15 @@ class TransactionController extends \BaseController {
 
         return $data;
 
+    }
+
+    public function updateRatecardSlots($job, $data){
+        
+        if($job){
+            $job->delete();
+        }
+        
+        $this->utilities->updateRatecardSlots($data);
     }
 
 }

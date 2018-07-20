@@ -821,7 +821,7 @@ Class Utilities {
         $finder_lon                        =    (isset($finder['lon']) && $finder['lon'] != '') ? $finder['lon'] : "";
         $finder_lat                        =    (isset($finder['lat']) && $finder['lat'] != '') ? $finder['lat'] : "";
         $finder_category_id                =    (isset($finder['category_id']) && $finder['category_id'] != '') ? $finder['category_id'] : "";
-        $finder_slug                       =    (isset($finder['slug']) && $finder['slug'] != '') ? $finder['slug'] : "";
+        $data['finder_slug']                       =    (isset($finder['slug']) && $finder['slug'] != '') ? $finder['slug'] : "";
         $finder_name                       =    (isset($finder['title']) && $finder['title'] != '') ? ucwords($finder['title']) : "";
 
         $data['finder_city'] =  trim($finder_city);
@@ -4122,5 +4122,30 @@ Class Utilities {
 		
 		return $knowlarity_no;
 	}
+    
+    public function updateRatecardSlots($data){
+
+        $ratecard = Order::find($data['ratecard_id']);
+
+        $available_slots = $ratecard->available_slots;
+
+        $ratecard->available_slots = $available_slots - 1;
+
+        $ratecard->save();
+
+        Cache::tags('finder_detail')->forget($data['finder_slug']);
+        Cache::tags('finder_detail_android')->forget($data['finder_slug']);
+        Cache::tags('finder_detail_ios')->forget($data['finder_slug']);
+        Cache::tags('finder_detail_ios_4_4_3')->forget($data['finder_slug']);
+        Cache::tags('finder_detail_android_4_4_3')->forget($data['finder_slug']);
+    
+    }
+
+    public function updateRatecardPrice($ratecard){
+
+        
+
+    }
+
 }
 
