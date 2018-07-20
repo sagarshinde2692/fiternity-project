@@ -4141,6 +4141,46 @@ Class Utilities {
 		}
 		
 		return $knowlarity_no;
-	}
+    }
+    
+    public function compressImage($file, $src, $dir='tmp-images'){
+        $mime_type = $file->getClientMimeType();
+        $file_extension = $file->getClientOriginalExtension();
+        $local_directory = public_path().'/'.$dir;
+        $dst = $src."-c";
+        
+        $local_path_original =  join('/', [$local_directory, $src.".".$file_extension]);
+        $local_path_compressed =  join('/', [$local_directory, $dst.".".$file_extension]);
+        $resp = $file->move($local_directory,$src.".".$file_extension);
+        
+        if ($mime_type == 'image/jpeg'){
+            $image = imagecreatefromjpeg($local_path_original);
+        }elseif ($mime_type == 'image/png'){
+            $image = imagecreatefrompng($local_path_original);
+        }
+
+        imagejpeg($image, $local_path_compressed, 30);
+
+        unlink($local_path_original);
+        
+        return $local_path_compressed;
+    }
+
+    public function uploadFileToS3($local_path, $s3_path){
+        try{
+            $s3 = \AWS::get('s3');
+					
+            $result = $s3->putObject(array(
+                'Bucket'     => Config::get('app.aws.bucket'),
+                'Key'        => $s3_path,
+                'SourceFile' => $local_path
+            ));
+            return true;
+        }catch(Exception $e){
+            Log::info($e);
+            return false;
+        }
+    }
+
 }
 
