@@ -1350,19 +1350,18 @@ class TransactionController extends \BaseController {
     	if(!empty($order))
     		$orderArray=$order->toArray();
     	
-    		
-    	if(isset($orderArray['calculated_amount']['final']))
+    	
+    	if(isset($data['amount_calculated']['final']))
     	{
-	    	(!empty($emi_applicable)&& !empty($order->amount))?	array_push($payment_mode_type_array, 'emi'):"";
-	    	
-	    	(!empty($cash_pickup_applicable)&& !empty($order->amount))?array_push($payment_mode_type_array, 'cod'):"";
+    		(!empty($emi_applicable)&& !empty($data['amount_calculated']['final']))?	array_push($payment_mode_type_array, 'emi'):"";
+    		(!empty($cash_pickup_applicable)&& !empty($data['amount_calculated']['final']))?array_push($payment_mode_type_array, 'cod'):"";
 	    	
 	    	if($this->vendor_token)
 	    		if(!empty($pay_at_vendor_applicable))
 	    			array_push($payment_mode_type_array, 'pay_at_vendor');
     	}
     			
-    		
+    	
     	foreach ($payment_mode_type_array as $payment_mode_type) 
     	{
     		$payment_info=$this->getPaymentDetailsProduct($data);
