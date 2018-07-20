@@ -1178,7 +1178,7 @@ class TransactionController extends \BaseController {
     	
     	$rules = array(
     			'customer_source'=>'required',
-    			'city_id'=>'required',
+    			/* 'city_id'=>'required', */
     			'customer_name'=>'required',
     			'customer_email'=>'required|email',
     			'customer_phone'=>'required',
@@ -1201,7 +1201,13 @@ class TransactionController extends \BaseController {
     		$decodeKioskVendorToken = decodeKioskVendorToken();
     		$vendor = json_decode(json_encode($decodeKioskVendorToken->vendor),true);
     		
-    	
+    		if(empty($data['deliver_to_vendor']))
+    		{
+    			$tmp_cust_addr='customer_address';
+    			if(empty($data[$tmp_cust_addr]))
+    				return ['status' => 0,'message' => $tmp_cust_addr." required if not delvered to vendor"];
+    		}
+    			
     		
     		$finderDetail = $this->getFinderDetail((int)$vendor['_id']);
     			if($finderDetail['status'] != 200)
@@ -1227,7 +1233,8 @@ class TransactionController extends \BaseController {
     	if($data['customer']['customer_source']=='kiosk')
     		{
     			
-    			$addToCartResponse=$this->utilities->addProductsToCart($data['cart_data'],$data['cart_data']);
+    			 $addToCartResponse=$this->utilities->addProductsToCart($data['cart_data'],null);
+    			
     			if($addToCartResponse['status'])
     				$data['cart_data']=$addToCartResponse['response']['data'];
     				else return Response::json($addToCartResponse);
@@ -1434,8 +1441,11 @@ class TransactionController extends \BaseController {
     	$payment_mode_type_array = ['paymentgateway'];
     	$payment_details = [];
     
-
-    	$orderArray=$order->toArray();
+    	
+    	if(!empty($order))
+    		$orderArray=$order->toArray();
+    	
+    		
     	if(isset($orderArray['calculated_amount']['final']))
     	{
 	    	(!empty($emi_applicable)&& !empty($order->amount))?	array_push($payment_mode_type_array, 'emi'):"";
@@ -1450,7 +1460,7 @@ class TransactionController extends \BaseController {
     		
     	foreach ($payment_mode_type_array as $payment_mode_type) 
     	{
-	    		$payment_info=$this->getPaymentDetailsProduct($order->toArray());
+    		$payment_info=$this->getPaymentDetailsProduct($data);
 	    		if($payment_info['status'])
 	    			$payment_details[$payment_mode_type] =$payment_info['details'];
 	    			else return Response::json($payment_info);
@@ -1460,6 +1470,8 @@ class TransactionController extends \BaseController {
     	
     	$resp['data']['payment_details'] = $payment_details;
     	$resp['data']['payment_modes'] = [];
+    	$prd_details=$this->utilities->getAllProductDetails($data);
+    	$resp['data']['product_details']=(!empty($prd_details)&&!empty($prd_details['status'])&&!empty($prd_details['data'])&&!empty($prd_details['data']['cart_details'])?$prd_details['data']['cart_details']:[]);
     	
     	
     	if(!empty($orderArray['amount_calculated']['final']))
@@ -6905,8 +6917,8 @@ public function productSuccess($data)
     	try {
     		$response=["status"=>1,"message"=>"success"];
     		$you_save = 0;
-    		$amount_summary= ['field' => 'Total Amount','value' => 'Rs. '.(isset($data['amount_calculated']['final']) ? $data['amount_calculated']['final']: $data['amount_calculated']['final'])];
-    		$amount_payable = ['field' => 'Total Amount Payable', 'value' => 'Rs. '.$data['amount_calculated']['final']];
+    		$amount_summary= ['field' => 'Total Amount','value' => $this->utilities->getRupeeForm((isset($data['amount_calculated']['final']) ? $data['amount_calculated']['final']: $data['amount_calculated']['final']))];
+    		$amount_payable = ['field' => 'Total Amount Payable', 'value' => $this->utilities->getRupeeForm($data['amount_calculated']['final'])];
     		
     		
     		// 	******************************************************************************	CONVINIENCE FEE  ******************************************************************************
@@ -6955,7 +6967,7 @@ public function productSuccess($data)
     		$payment_details  = ["amount_summary"=>$amount_summary,"amount_payable"=>$amount_payable];
     		
     		if($you_save > 0)
-    			$payment_details['savings'] = ['field' => 'Your total savings',	'value' => "Rs.".$you_save];
+    			$payment_details['savings'] = ['field' => 'Your total savings',	'value' => $this->utilities->getRupeeForm($you_save)];
     		
     		$response['details']=$payment_details;
     		return $response;
