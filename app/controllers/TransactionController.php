@@ -1470,7 +1470,7 @@ class TransactionController extends \BaseController {
     	$resp['data']['payment_details'] = $payment_details;
     	$resp['data']['payment_modes'] = [];
     	$prd_details=$this->utilities->getAllProductDetails($data);
-    	$resp['data']['product_details']=(!empty($prd_details)&&!empty($prd_details['status'])&&!empty($prd_details['data'])&&!empty($prd_details['data']['cart_details'])?$prd_details['data']['cart_details']:[]);
+    	$resp['data']['order_details']=(!empty($prd_details)&&!empty($prd_details['status'])&&!empty($prd_details['data'])&&!empty($prd_details['data']['cart_details'])?$prd_details['data']['cart_details']:[]);
     	
     	
     	if(!empty($orderArray['amount_calculated']['final']))
