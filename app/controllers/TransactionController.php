@@ -1368,7 +1368,7 @@ class TransactionController extends \BaseController {
     		$payment_info=$this->getPaymentDetailsProduct($data);
 	    		if($payment_info['status'])
 	    			$payment_details[$payment_mode_type] =$payment_info['details'];
-	    			else return Response::json($payment_info);
+	    		else return Response::json($payment_info);
     	}
     	
     	
@@ -1379,10 +1379,9 @@ class TransactionController extends \BaseController {
     	$resp['data']['order_details']=(!empty($prd_details)&&!empty($prd_details['status'])&&!empty($prd_details['data'])&&!empty($prd_details['data']['cart_details'])?$prd_details['data']['cart_details']:[]);
     	
     	
-    	if(!empty($orderArray['amount_calculated']['final']))
+    	if(!empty($data['amount_calculated']['final']))
     		$resp['data']['payment_modes'] = $this->getPaymentModesProduct($resp);
 
-    	
     	$otp_flag = true;
     	
     	if(!empty($data['payment_mode'])&&$data['payment_mode'] == 'at the studio' && isset($data['wallet']) && $data['wallet'] && $otp_flag){
