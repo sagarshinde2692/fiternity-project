@@ -2069,10 +2069,19 @@ class HomeController extends BaseController {
     			
     			
     			$header=["status_text"=>"Order Successfull","status_icon"=>"https://image.flaticon.com/teams/slug/freepik.jpg"];
-    			$customer_description='Hi'.$customer['name'].', your order has been successfully placed with Fitternity. It will be delivered to you within 7-10 working days.
-    									   You can track your order online with the information provided via SMS and E-mail';
-    			($payment_mode=='cod')?
-    			$finalData['customer_description']=$customer_description:"";
+    			$customer_description='Hi'.$customer['name'].', your order has been successfully placed with Fitternity.'.
+//     			'It will be delivered to you within 7-10 working days.'.
+    			'You can track your order online with the information provided via SMS and E-mail';
+    			
+    			
+    			if(!empty($order['customer_address']))$shipping_address=$this->utilities->formatShippingAddress($order['customer_address'],$customer['name']);
+    			else if(!empty($order['finder'])&&!empty($order['finder']['finder_address']))
+    				$shipping_address=$this->utilities->formatShippingAddress($order['finder']['finder_address'],$customer['name'],true);
+    				
+//     			($payment_mode=='cod')?$finalData['customer_description']=$customer_description:"";
+    			$finalData['customer_description']=$customer_description;
+    			if(!empty($shipping_address))
+    				$finalData['shipping_address']=$shipping_address;
     			
     			$cart_summary=$this->utilities->getCartSummary($order);
     			if($cart_summary['status'])
@@ -2091,7 +2100,8 @@ class HomeController extends BaseController {
     				(!empty($cart_summary['data']['coupon_discount']))?
     				array_push($order_summary, ["key"=>"Coupon Discount","value"=>"- Rs. ".$cart_total ,"color"=>"#f7a81e"]):"";
     				
-    				$orderDetail=["order_id"=>$order['_id'],"payment_mode"=>$payment_mode,"summary"=>$order_summary,"total"=>"Rs. ".$total_amount];
+    				$orderDetail=["order_id"=>$order['_id'],"summary"=>$order_summary,"total"=>"Rs. ".$total_amount];
+    				if($payment_mode)$orderDetail["payment_mode"]=$payment_mode;
     				
     				
     				$finalData["header"]=$header;

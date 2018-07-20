@@ -4428,8 +4428,7 @@ Class Utilities {
 	public function getCartSummary($order)
 	{
 		try {
-			if(empty($order))
-				return ["status"=>0,"message"=>"No order present."];
+			if(empty($order))return ["status"=>0,"message"=>"No order present."];
 				
 			$resp=["status"=>1,"message"=>"success","data"=>[]];
 			
@@ -4929,6 +4928,26 @@ Class Utilities {
 		
 		
 		
+	}
+	public function formatShippingAddress($data=[],$cust_name="",$finder=false)
+	{
+		
+		$temp="";
+		$cur_seperator=", ";
+		if(!$finder)
+		{
+			if(!empty($cust_name))$temp=$temp+$cust_name." <br />";
+			if(!empty($data["line1"]))$temp=$temp+line1.$cur_seperator;
+			if(!empty($data["line2"]))$temp=$temp+$data["line2"].$cur_seperator;
+			if(!empty($data["landmark"]))$temp=$temp+$data["landmark"].$cur_seperator;
+			if(!empty($data["pincode"]))$temp=$temp+$data["pincode"].$cur_seperator;
+			if(!empty($data["city"]))$temp=$temp+$data["city"].$cur_seperator;			
+		}
+		else {
+			if(!empty($cust_name))$temp=$temp+$cust_name." <br />";
+			if(!empty($data))$temp=$temp+$data;
+		}
+		return $temp;
 	}
 }
 
