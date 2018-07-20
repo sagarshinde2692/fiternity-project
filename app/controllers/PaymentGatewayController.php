@@ -42,6 +42,7 @@ class PaymentGatewayController extends \BaseController {
 				'user_exists'=>false,
 				'status'=>200,
 				'message'=>$checkExistingUser['response']['statusdescription'],
+				'statuscode'=>$checkExistingUser['response']['statuscode'],
 			];
 
 			if($checkExistingUser['response']['status'] == 'SUCCESS' && $checkExistingUser['response']['statuscode'] === '0'){
@@ -49,7 +50,8 @@ class PaymentGatewayController extends \BaseController {
 				$response = [
 					'user_exists'=>true,
 					'status'=>200,
-					'message'=>$checkExistingUser['response']['statusdescription']
+					'message'=>$checkExistingUser['response']['statusdescription'],
+					'statuscode'=>$checkExistingUser['response']['statuscode'],
 				];
 			}
 
@@ -78,8 +80,6 @@ class PaymentGatewayController extends \BaseController {
 
 			return Response::json($response);
 		}
-
-		// $checkExistingUser = $this->checkExistingUserMobikwik($data['cell']);
 
 		$generateOtp = $this->mobikwik->generateOtp($data);
 
@@ -130,12 +130,54 @@ class PaymentGatewayController extends \BaseController {
 			return Response::json($response);
 		}
 
-		$generateToken = $this->mobikwik->generateToken($data);
-
 		$response = [
 			'status'=>400,
 			'message'=>'something went wrong'
 		];
+
+		$checkExistingUser = $this->checkExistingUserMobikwik($data['cell']);
+
+		if($checkExistingUser['status'] == 200 && !empty($checkExistingUser['response']['statuscode'])){
+
+			if($checkExistingUser['response']['statuscode'] === "159" || $checkExistingUser['response']['statuscode'] === '0'){
+
+				if($checkExistingUser['response']['statuscode'] === "159"){
+
+					$createUser = $this->mobikwik->createUser($data);
+
+					if($createUser['status'] == 200){
+
+						$response = [
+							'message'=>$createUser['response']['statusdescription'],
+							'status'=>400
+						];
+
+						if($createUser['response']['status'] == 'SUCCESS' && $createUser['response']['statuscode'] === '0'){
+
+							$response = [
+								'message'=>$createUser['response']['statusdescription'],
+								'status'=>200
+							];
+						}
+
+					}
+					
+				}
+
+			}else{
+
+				$response = [
+					'status'=>400,
+					'message'=>$checkExistingUser['response']['statusdescription'],
+					'statuscode'=>$checkExistingUser['response']['statuscode'],
+				];
+
+				return Response::json($response);
+			}
+
+		}
+
+		$generateToken = $this->mobikwik->generateToken($data);
 
 		if($generateToken['status'] == 200){
 
@@ -149,8 +191,22 @@ class PaymentGatewayController extends \BaseController {
 				$response = [
 					'token'=>$generateToken['response']['token'],
 					'message'=>$generateToken['response']['statusdescription'],
+					'wallet_balance'=>0,
 					'status'=>200
 				];
+
+				$checkBalanceData = [
+					'cell'=>$data['cell'],
+					'token'=>$generateToken['response']['token']
+				];
+
+				$checkBalance = $this->mobikwik->checkBalance($checkBalanceData);
+
+				if($checkBalance['status'] == 200 && $checkBalance['response']['status'] == 'SUCCESS' && $checkBalance['response']['statuscode'] === '0'){
+
+					$response['wallet_balance'] = $checkBalance['response']['balanceamount'];
+				}
+
 			}
 
 		}
