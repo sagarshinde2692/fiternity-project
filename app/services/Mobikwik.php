@@ -259,34 +259,12 @@ Class Mobikwik {
 
         $url = 'addmoneytowallet';
 
-        try {
+        $response = [
+            'url'=>$this->base_uri.'/'.$url,
+            'data'=>$data
+        ];
 
-            $response = $this->client->post($url,['form_params'=>$data])->getBody()->getContents();
-
-            $response = json_decode($response,TRUE);
-
-            return $response;
-
-        }catch (RequestException $e) {
-
-            $response = $e->getResponse();
-
-            $error = [  
-                'status'=>$response->getStatusCode(),
-                'message'=>$response->getReasonPhrase()
-            ];
-
-            return $error;
-
-        }catch (Exception $e) {
-
-            $error = [  
-                'status'=>400,
-                'message'=>'Error'
-            ];
-
-            return $error;
-        }
+        return $response;
 
     }
 

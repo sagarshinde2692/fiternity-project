@@ -384,30 +384,7 @@ class PaymentGatewayController extends \BaseController {
 			return Response::json($response);
 		}
 
-		$addMoney = $this->mobikwik->addMoney($data);
-
-		$response = [
-			'status'=>400,
-			'message'=>'something went wrong'
-		];
-
-		if($addMoney['status'] == 200){
-
-			$response = [
-				'message'=>$addMoney['response']['statusdescription'],
-				'status'=>400
-			];
-
-			if($addMoney['response']['status'] == 'SUCCESS' && $addMoney['response']['statuscode'] === '0'){
-
-				$response = [
-					'amount'=>$addMoney['response']['balanceamount'],
-					'message'=>$addMoney['response']['statusdescription'],
-					'status'=>200
-				];
-			}
-
-		}
+		$response = $this->mobikwik->addMoney($data);
 
 		return Response::json($response);
 	}
@@ -457,6 +434,55 @@ class PaymentGatewayController extends \BaseController {
 					'txnid'=>$debitMoney['response']['orderid'],
 					'reference_id'=>$debitMoney['response']['refId'],
 					'message'=>$debitMoney['response']['statusdescription'],
+					'status'=>200
+				];
+			}
+
+		}
+
+		return Response::json($response);
+	}
+
+	public function refundMoneyMobikwik(){
+
+		$data = Input::json()->all();
+
+		$rules = [
+			'amount' => 'required',
+			'txnid' => 'required'
+		];
+
+		$validator = Validator::make($data,$rules);
+		
+		if($validator->fails()){
+
+			$response = [
+				'status'=>400,
+				'message'=>error_message($validator->errors())
+			];
+
+			return Response::json($response);
+		}
+
+		$refundMoney = $this->mobikwik->refundMoney($data);
+
+		$response = [
+			'status'=>400,
+			'message'=>'something went wrong'
+		];
+
+		if($refundMoney['status'] == 200){
+
+			$response = [
+				'message'=>'amount not refunded',
+				'status'=>400
+			];
+
+			if($refundMoney['response']['statuscode'] === '0'){
+
+				$response = [
+					'txnid'=>$debitMoney['response']['txid'],
+					'reference_id'=>$debitMoney['response']['refId'],
 					'status'=>200
 				];
 			}
