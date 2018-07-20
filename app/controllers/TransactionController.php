@@ -1462,7 +1462,7 @@ class TransactionController extends \BaseController {
     		$payment_info=$this->getPaymentDetailsProduct($data);
 	    		if($payment_info['status'])
 	    			$payment_details[$payment_mode_type] =$payment_info['details'];
-	    			else return Response::json($payment_info);
+	    		else return Response::json($payment_info);
     	}
     	
     	
@@ -1470,13 +1470,12 @@ class TransactionController extends \BaseController {
     	$resp['data']['payment_details'] = $payment_details;
     	$resp['data']['payment_modes'] = [];
     	$prd_details=$this->utilities->getAllProductDetails($data);
-    	$resp['data']['product_details']=(!empty($prd_details)&&!empty($prd_details['status'])&&!empty($prd_details['data'])&&!empty($prd_details['data']['cart_details'])?$prd_details['data']['cart_details']:[]);
+    	$resp['data']['order_details']=(!empty($prd_details)&&!empty($prd_details['status'])&&!empty($prd_details['data'])&&!empty($prd_details['data']['cart_details'])?$prd_details['data']['cart_details']:[]);
     	
     	
-    	if(!empty($orderArray['amount_calculated']['final']))
+    	if(!empty($data['amount_calculated']['final']))
     		$resp['data']['payment_modes'] = $this->getPaymentModesProduct($resp);
 
-    	
     	$otp_flag = true;
     	
     	if(!empty($data['payment_mode'])&&$data['payment_mode'] == 'at the studio' && isset($data['wallet']) && $data['wallet'] && $otp_flag){
@@ -6869,8 +6868,63 @@ public function productSuccess($data)
     function getPaymentModesProduct($data){
     	
     	$payment_modes = [];
-    	    	
-    	array_push($payment_modes, ['title' => 'Online Payment','subtitle' => 'Transact online with netbanking, card and wallet','value' => 'paymentgateway']);
+    	$payment_options = [];
+    	$payment_options['wallet'] = [
+    			'title' => 'Wallet',
+    			'subtitle' => 'Transact online with Wallets',
+    			'value'=>'wallet',
+    			'options'=>[
+    					[
+    							'title' => 'Paytm',
+    							'subtitle' => 'Paytm',
+    							'value' => 'paytm'
+    					],
+    					[
+    							'title' => 'AmazonPay',
+    							'subtitle' => 'AmazonPay',
+    							'value' => 'amazonpay'
+    					],
+    					[
+    							'title' => 'Mobikwik',
+    							'subtitle' => 'Mobikwik',
+    							'value' => 'mobikwik'
+    					],
+    					[
+    							'title' => 'PayU',
+    							'subtitle' => 'PayU',
+    							'value' => 'payu'
+    					]
+    			]
+    	];
+    	
+    	if(!empty($data['emi']) && $data['emi']){
+    		$payment_options['emi'] = array(
+    				'title' => 'EMI',
+    				'subtitle' => 'Transact online with credit installments',
+    				'value' => 'emi',
+    		);
+    	}
+    	
+    	/* if($data['pay_later']){
+    		
+    		$payment_modes[] = array(
+    				'title' => 'Pay now',
+    				'subtitle' => 'Pay 20% less',
+    				'value' => 'paymentgateway',
+    				'payment_options'=>$payment_options
+    		);
+    		
+    	}else{
+    		$payment_modes[] = array(
+    				'title' => 'Online Payment',
+    				'subtitle' => 'Transact online with netbanking, card and wallet',
+    				'value' => 'paymentgateway',
+    				'payment_options'=>$payment_options
+    		);
+    	} */
+    	
+    	
+    	array_push($payment_modes, ['title' => 'Online Payment','subtitle' => 'Transact online with netbanking, card and wallet','value' => 'paymentgateway','payment_options'=>$payment_options]);
     	array_push($payment_modes, ['title' => 'Cash Pickup','subtitle' => 'Schedule cash payment pick up','value' => 'cod']);
     	
     	$emi = $this->utilities->displayEmi(array('amount'=>$data['data']['amount']));    		
@@ -6916,7 +6970,7 @@ public function productSuccess($data)
     	try {
     		$response=["status"=>1,"message"=>"success"];
     		$you_save = 0;
-    		$amount_summary= ['field' => 'Total Amount','value' => $this->utilities->getRupeeForm((isset($data['amount_calculated']['final']) ? $data['amount_calculated']['final']: $data['amount_calculated']['final']))];
+    		$amount_summary= [['field' => 'Total Amount','value' => $this->utilities->getRupeeForm((isset($data['amount_calculated']['final']) ? $data['amount_calculated']['final']: $data['amount_calculated']['final']))]];
     		$amount_payable = ['field' => 'Total Amount Payable', 'value' => $this->utilities->getRupeeForm($data['amount_calculated']['final'])];
     		
     		
