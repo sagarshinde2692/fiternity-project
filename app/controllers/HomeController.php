@@ -2039,7 +2039,7 @@ class HomeController extends BaseController {
     			$customer_id = (int)$decoded->customer->_id;
     		}
     		
-    		$resp=["status"=>1,"message"=>"success"];
+    		$resp=["status"=>200,"message"=>"success"];
     		$finalData=[];
     		$order =Order::where("_id",intval($id))->where("type",'product')->first();
     		if(!empty($order))
