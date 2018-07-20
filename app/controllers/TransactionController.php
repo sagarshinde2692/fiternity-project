@@ -1426,7 +1426,7 @@ class TransactionController extends \BaseController {
     	$emi_applicable = (isset($data['amount_calculated']['final']) && $data['amount_calculated']['final']>= 5000) ? true : false;
     	
     	$resp   =   [
-    			'status' => 1,
+    			'status' => 200,
     			'data' => $result,
     			'message' => "Tmp Order Generated Sucessfully",
     			'cash_pickup' => $cash_pickup_applicable,
