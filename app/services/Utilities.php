@@ -4342,6 +4342,7 @@ Class Utilities {
 					$cartDataUnique=count(array_unique($cartDataRatecards));
 					$cartQuantityCount=count(array_column($cartDataInput, 'quantity'));
 					$cartRatecardsCount=count($cartDataRatecards);
+// 					return $cartDataInput;
 					if($cartRatecardsCount>0&&$cartQuantityCount>0&&$cartQuantityCount==$cartRatecardsCount)
 					{
 						$ratecards=ProductRatecard::active()->whereIn("_id",array_map('intval',$cartDataRatecards))->with(array('product'=>function($query){$query->select('_id','slug','title','slug','info','specification');}))->get(['price','product_id','title','color','size']);
@@ -4359,7 +4360,7 @@ Class Utilities {
 									{
 										array_push($cartData, ["product_id"=>$ratecard['product_id'],"ratecard_id"=>$ratecard['_id'],"price"=>$ratecard['price'],"quantity"=>intval($neededObject['quantity'])]);
 										$tmpRatecardinfo=['_id'=>!empty($ratecard['_id'])?$ratecard['_id']:"",'title'=>!empty($ratecard['title'])?$ratecard['title']:"",'color'=>(!empty($ratecard['properties'])&&!empty($ratecard['properties']['color']))?$ratecard['properties']['color']:"",
-												'size'=>(!empty($ratecard['properties'])&&!empty($ratecard['properties']['size']))?$ratecard['properties']['size']:"",'slug'=>!empty($ratecard['slug'])?$ratecard['slug']:""];
+												'size'=>(!empty($ratecard['properties'])&&!empty($ratecard['properties']['size']))?$ratecard['properties']['size']:"",'slug'=>!empty($ratecard['slug'])?$ratecard['slug']:"",'properties'=>!empty($ratecard['properties'])?$ratecard['properties']:""];
 										array_push($cartDataExtended, ["product"=>$ratecard['product'],"ratecard"=>$tmpRatecardinfo,"price"=>$ratecard['price'],"quantity"=>intval($neededObject['quantity'])]);
 										
 									}
@@ -4874,5 +4875,60 @@ Class Utilities {
 	{
 		return (!empty($cart))?array_reduce((!empty($cart['products'])?array_map(function($e){return (!empty($e['quantity'])?intval($e['quantity']):0);},$cart['products']):[]),function($carry,$item){$carry+=$item;return $carry;}):null;
 	}
+
+
+	public function getAllProductDetails($order)
+	{
+		
+		try {
+			if(empty($order))
+				return ["status"=>0,"message"=>"No data present."];
+			if(empty($order['cart_data']))
+					return ["status"=>0,"message"=>"No Cart Data present."];
+				$resp=["status"=>1,"message"=>"success","data"=>[]];
+				$cart_data =$order['cart_data'];
+				$cart_desc=[];
+				foreach ($cart_data as $cart_item)
+				{
+					$temp=[];
+					$detail=$this->productProperties($cart_item['ratecard']);
+					$temp['field']=(!empty($cart_item['product'])&&!empty($cart_item['product']['title']))?$cart_item['product']['title']:(!empty($cart_item['ratecard'])&&!empty($cart_item['ratecard']['title'])?$cart_item['ratecard']['title']:"");
+					$temp['value']=(intval($cart_item['quantity'])).(!empty($detail)&&!empty($detail['status'])&&!empty($detail['data'])?$detail['data']:" items");
+					array_push($cart_desc,$temp);
+				}
+				$resp['data']['cart_details']=$cart_desc;
+				return $resp;
+		} catch (Exception $e)
+		{
+			return  ['status'=>0,"message"=>$this->baseFailureStatusMessage($e)];
+		}
+		
+		
+		
+	}
+	
+	public function productProperties($ratecard)
+	{
+		
+		try {
+			if(empty($ratecard))
+				return ["status"=>0,"message"=>"No Ratecards present."];
+				
+				$resp=["status"=>1,"message"=>"success","data"=>""];
+				$rc =(!empty($ratecard['properties'])?$ratecard['properties']:[]);
+				
+				foreach ($rc as $key => $value) 
+					$resp['data']=$resp['data'].$value." ";
+
+				return $resp;
+		} catch (Exception $e)
+		{
+			return  ['status'=>0,"message"=>$this->baseFailureStatusMessage($e)];
+		}
+		
+		
+		
+	}
 }
+
 
