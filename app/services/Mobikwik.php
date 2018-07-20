@@ -50,7 +50,7 @@ Class Mobikwik {
 
         $final_secret_key = $this->secret_key;
 
-        if(!empty($data['msgcode']) && $data['msgcode'] == 507){
+        if(!empty($data['token'])){
 
             $final_secret_key = $this->si_secret_key;
         }
