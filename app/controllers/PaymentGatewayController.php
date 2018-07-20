@@ -244,7 +244,6 @@ class PaymentGatewayController extends \BaseController {
 			if($createUser['response']['status'] == 'SUCCESS' && $createUser['response']['statuscode'] === '0'){
 
 				$response = [
-					'token'=>$createUser['response']['token'],
 					'message'=>$createUser['response']['statusdescription'],
 					'status'=>200
 				];
