@@ -4533,8 +4533,8 @@ Class Utilities {
 			foreach ($data['cart_data'] as $value) {
 				array_push($tmp,$value['ratecard']['_id']);
 			}
-			// $productinfo=$createdData['productinfo'] =implode("_",array_map('strtolower', $tmp));
-			$productinfo=$createdData['productinfo'] ="asdasda-asdasdas";
+			$productinfo=$createdData['productinfo'] =implode("_",array_map('strtolower', $tmp));
+			// $productinfo=$createdData['productinfo'] ="asdasda-asdasdas";
 			
 			$firstname = strtolower($data['customer']['customer_name']);
 			$email = strtolower($data['customer']['customer_email']);
