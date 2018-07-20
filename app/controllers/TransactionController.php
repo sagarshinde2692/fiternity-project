@@ -6681,7 +6681,7 @@ public function productSuccess($data)
     	try {
     		$response=["status"=>1,"message"=>"success"];
     		$you_save = 0;
-    		$amount_summary= ['field' => 'Total Amount','value' => $this->utilities->getRupeeForm((isset($data['amount_calculated']['final']) ? $data['amount_calculated']['final']: $data['amount_calculated']['final']))];
+    		$amount_summary= [['field' => 'Total Amount','value' => $this->utilities->getRupeeForm((isset($data['amount_calculated']['final']) ? $data['amount_calculated']['final']: $data['amount_calculated']['final']))]];
     		$amount_payable = ['field' => 'Total Amount Payable', 'value' => $this->utilities->getRupeeForm($data['amount_calculated']['final'])];
     		
     		
