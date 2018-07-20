@@ -2069,7 +2069,7 @@ class HomeController extends BaseController {
     				
     				
     				$header=["status_text"=>"Order Successfull","status_icon"=>"https://image.flaticon.com/teams/slug/freepik.jpg"];
-    				$customer_description='Hi'.$customer['name'].', your order has been successfully placed with Fitternity.'.
+    				$customer_description='Hi '.$customer['name'].', your order has been successfully placed with Fitternity.'.
       				//     			'It will be delivered to you within 7-10 working days.'.
     				'You can track your order online with the information provided via SMS and E-mail';
     				
@@ -2077,7 +2077,7 @@ class HomeController extends BaseController {
     				if(!empty($order['customer_address']))$shipping_address=$this->utilities->formatShippingAddress($order['customer_address'],$customer['name']);
     				else if(!empty($order['finder'])&&!empty($order['finder']['finder_address']))
     					$shipping_address=$this->utilities->formatShippingAddress($order['finder']['finder_address'],$customer['name'],true);
-    					
+    				
     					//     			($payment_mode=='cod')?$finalData['customer_description']=$customer_description:"";
     					$finalData['customer_description']=$customer_description;
     					if(!empty($shipping_address))
