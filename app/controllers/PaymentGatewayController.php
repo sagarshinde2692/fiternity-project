@@ -494,7 +494,7 @@ class PaymentGatewayController extends \BaseController {
 
 	public function verifyAddMoneyMobikwik(){
 
-		$data = $_POST;
+		$data = $_REQUEST;
 
 		$rules = [
 			'Statusmessage' => 'required',
