@@ -6696,16 +6696,56 @@ class CustomerController extends \BaseController {
 				break;
 			case 'let_us_know':
 			case 'n+2':
-				$response['header'] = "LET US KNOW";
-				$response['sub_header_2'] = "Did you attend your ".$data['service_name']." at ".$data['finder_name']." on ".date('jS M \a\t g:i a', strtotime($data['schedule_date_time']))."? \n\nLet us know and earn Cashback!";
-				$response['subscription_code'] = $data['code'];
-				$response['button_text'] = [
-					'attended'=>['text'=>'ATTENDED','url'=>Config::get('app.url')."/sessionstatuscapture/lost/".$data['_id']."?source=let_us_know"],
-					'did_not_attend'=>['text'=>'DID NOT ATTEND','url'=>Config::get('app.url')."/sessionstatuscapture/didnotattend/".$data['_id']]
-				];
-				$response['image'] = 'https://b.fitn.in/paypersession/happy_face_icon-2.png';
+				$app_version = Request::header('App-Version');
+				$device_type = Request::header('Device-Type');
+				if(($device_type == 'ios' && $app_version > '4.9') || ($device_type == 'android' && $app_version > '4.9')){
+					$fitcash = "";
+					if(isset($data['type']) && $data['type']=='booktrials'){
+						$fitcash = $this->utilities->getFitcash($data);
+					}else{
+						$fitcash = $this->utilities->getWorkoutSessionFitcash($data)."%";
+					}
+					$response['header'] = "LET US KNOW";
+					$response['sub_header_2'] = "Did you attend your ".$data['service_name']." at ".$data['finder_name']." on ".date('jS M \a\t g:i a', strtotime($data['schedule_date_time']))."? \n\nEnter your FitCode given by ".$data['finder_name']." and earn ".$fitcash." Cashback!";
+					
+					$response['button_text'] = [
+						'activate'=>[
+							'text'=>'GET MY FITCASH',
+							'url'=>Config::get('app.url')."/sessionstatuscapture/activate/".$data['_id']
+						],
+						'didnt_get'=>[
+							'text'=>'Didn’t get FitCode',
+							'url'=>Config::get('app.url')."/sessionstatuscapture/lost/".$data['_id']."?source=activate_session", 
+							"header"=> "Didn't get Fitcode?",
+							"subtitle"=> "Let us know the reason to assist you better",
+							"options" => [
+								[
+									"text" => "Don't have/Don't remember fitcode",
+									"url" => Config::get('app.url')."/sessionstatuscapture/lost/".$data['_id']."?reason=2"
+								],
+								[
+									"text" => "Gym/studio did not provide fitcode",
+									"url" => Config::get('app.url')."/sessionstatuscapture/lost/".$data['_id']."?reason=3"
+								]
+							]
+						],
+					];
+					$response['block'] = true;
+
+				}else{	
+					
+					$response['header'] = "LET US KNOW";
+					$response['sub_header_2'] = "Did you attend your ".$data['service_name']." at ".$data['finder_name']." on ".date('jS M \a\t g:i a', strtotime($data['schedule_date_time']))."? \n\nLet us know and earn Cashback!";
+					$response['subscription_code'] = $data['code'];
+					$response['button_text'] = [
+						'attended'=>['text'=>'ATTENDED','url'=>Config::get('app.url')."/sessionstatuscapture/lost/".$data['_id']."?source=let_us_know"],
+						'did_not_attend'=>['text'=>'DID NOT ATTEND','url'=>Config::get('app.url')."/sessionstatuscapture/didnotattend/".$data['_id']]
+					];
+					$response['image'] = 'https://b.fitn.in/paypersession/happy_face_icon-2.png';
+					
+					$response['block'] = true;
 				
-				$response['block'] = true;
+				}
 				break;
 			case 'n-3':
 			case 'session_reminder':
