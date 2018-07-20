@@ -1214,8 +1214,6 @@ class TransactionController extends \BaseController {
     				return Response::json($finderDetail,$this->error_status);
     			$data['finder']=$finderDetail['data'];
     			$finderDetail['data']['finder']['finder_flags'] = [];
-    			
-    			$is_tab_active = isTabActive($data['finder']['finder_id']);
     			($is_tab_active)?$data['finder']['is_tab_active'] = true:"";
     			$pay_at_vendor_applicable = true;
     			$result['finder_name'] = strtolower($data['finder']['finder_name']);
