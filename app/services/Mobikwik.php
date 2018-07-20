@@ -23,7 +23,7 @@ Class Mobikwik {
 
         $debug = ($debug) ? $debug : $this->debug;
 
-        $base_uri = 'https://walletapi.mobikwik.com';
+        $this->base_uri = 'https://walletapi.mobikwik.com';
         $this->mid = 'MBK9006';
         $this->secret_key = 'ju6tygh7u7tdg554k098ujd5468o';
         $this->si_secret_key = 'lu6tygh7u7tdg554k098ujd5468o';
@@ -33,14 +33,14 @@ Class Mobikwik {
 
         if($mobikwik_sandbox){
 
-            $base_uri = 'https://test.mobikwik.com';
+            $this->base_uri = 'https://test.mobikwik.com';
             $this->mid = 'MBK9006';
             $this->secret_key = 'ju6tygh7u7tdg554k098ujd5468o';
             $this->si_secret_key = 'lu6tygh7u7tdg554k098ujd5468o';
             $this->merchantname = 'TestMerchant';
         }
 
-        $this->client = new Client( ['debug' => $debug, 'base_uri' => $base_uri] );
+        $this->client = new Client( ['debug' => $debug, 'base_uri' => $this->base_uri] );
 
     }
 
