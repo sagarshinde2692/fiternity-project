@@ -4523,9 +4523,9 @@ Class Utilities {
 			$key = 'gtKFFx';
 			$salt = 'eCwWELxi';
 			
-			if($env == "production"){
-				$key = 'l80gyM';$salt = 'QBl78dtK';
-			}
+			// if($env == "production"){
+			// 	$key = 'l80gyM';$salt = 'QBl78dtK';
+			// }
 			
 			$txnid = $data['payment']['txnid'];
 			$amount = $data['amount_calculated']['final'];
