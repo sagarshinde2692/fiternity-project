@@ -496,7 +496,9 @@ class PaymentGatewayController extends \BaseController {
 
 		$data = $_REQUEST;
 
-		$rules = [
+		Log::info('verifyAddMoneyMobikwik',$data);
+
+		/*$rules = [
 			'Statusmessage' => 'required',
 			'statuscode' => 'required',
 			'orderid' => 'required',
@@ -515,7 +517,7 @@ class PaymentGatewayController extends \BaseController {
 			];
 
 			return Response::json($response);
-		}
+		}*/
 
 		$response = [
 			'status'=>400,
