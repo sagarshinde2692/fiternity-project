@@ -1091,7 +1091,7 @@ Class Utilities {
     public function verifyOrderProduct($data,$order)
     {
     	try {
-    		Log::info(" info [verifyOrderProduct] data".print_r(data,true));
+    		Log::info(" info [verifyOrderProduct] data".print_r($data,true));
     		$orderArr=$order->toArray();
     		$hash_verified = false;
     		if((isset($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin'])) || (!empty($orderArr['payment'])&&!empty($orderArr['payment']['pg_type'])&&in_array($orderArr['payment']['pg_type'],['PAYTM','AMAZON']))|| !empty($orderArr['cod_otp_verified']) || !empty($orderArr['vendor_otp_verified'])){
