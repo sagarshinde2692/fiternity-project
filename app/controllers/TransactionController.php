@@ -1305,7 +1305,7 @@ class TransactionController extends \BaseController {
     	if(in_array($data['customer']['customer_source'],['android','ios','kiosk']))
     	{
     		$txnid = "MFIT".$data['_id'];(isset($old_order_id))?$txnid = "MFIT".$data['_id']."-R".$data['repetition']  :"";	
-    		$successurl = $data['type'] == "product" ? Config::get('app.url')."/transaction/success":"";
+    		$successurl = $data['type'] == "product" ? Config::get('app.website')."/paymentsuccess":"";
     	}
     	$data['payment']['txnid'] = $txnid;
     	
