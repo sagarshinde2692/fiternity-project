@@ -383,6 +383,8 @@ class PaymentGatewayController extends \BaseController {
 			return Response::json($response);
 		}
 
+		$data['txnid'] = $data['txnid']."-MBKC";
+
 		$response = $this->mobikwik->addMoney($data);
 
 		return Response::json($response);
@@ -410,6 +412,8 @@ class PaymentGatewayController extends \BaseController {
 
 			return Response::json($response);
 		}
+
+		$data['txnid'] = $data['txnid']."-MBKD";
 
 		$debitMoney = $this->mobikwik->debitMoney($data);
 
