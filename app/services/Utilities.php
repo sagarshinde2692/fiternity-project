@@ -4388,7 +4388,7 @@ Class Utilities {
 			}
 			
 			$txnid = $data['payment']['txnid'];
-			$amount = $data['amount_calculated']['final'].".00";
+			$amount = $data['amount_calculated']['final'];
 			$tmp=[];
 			foreach ($data['cart_data'] as $value) {
 				array_push($tmp,$value['ratecard']['_id']);
