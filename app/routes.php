@@ -1213,5 +1213,12 @@ Route::get('getbrandvendors/{brand_id}/{city_id}', array('as' => 'finders.getbra
 Route::get('updateCouponUsed','DebugController@updateCouponUsed');
 
 Route::get('checkexistinguser/mobikwik/{cell}','PaymentGatewayController@checkExistingUserMobikwik');
-Route::post('generateotp/mobikwik','PaymentGatewayController@generateOtpMobikwik');
+Route::post('generateotp/mobikwik','PaymentGatewayController@generateOtpMobikwik');\
 Route::post('generatetoken/mobikwik','PaymentGatewayController@generateTokenMobikwik');
+Route::post('regeneratetoken/mobikwik','PaymentGatewayController@regenerateTokenMobikwik');
+Route::post('createuser/mobikwik','PaymentGatewayController@createUserMobikwik');
+Route::post('checkbalance/mobikwik','PaymentGatewayController@checkBalanceMobikwik');
+Route::post('addmoney/mobikwik','PaymentGatewayController@addMoneyMobikwik');
+Route::post('debitmoney/mobikwik','PaymentGatewayController@debitMoneyMobikwik');
+Route::match(array('GET', 'POST'),'verifyaddmoney/mobikwik', 'PaymentGatewayController@verifyAddMoneyMobikwik');
+Route::post('checkstatus/mobikwik','PaymentGatewayController@checkStatusMobikwik');
