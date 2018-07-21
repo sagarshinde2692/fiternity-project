@@ -427,14 +427,58 @@ class PaymentGatewayController extends \BaseController {
 
 			if($debitMoney['response']['status'] == 'SUCCESS' && $debitMoney['response']['statuscode'] === '0'){
 
+				$checkStatusData = [
+					'txnid'=> $data['txnid']
+				];
+
+				$checkStatus = $this->mobikwik->checkStatus($checkStatusData);
+
+				if($checkStatus['status'] == 200){
+
+					if($checkStatus['response']['statuscode'] !== '0'){
+
+						$response = [
+							'message'=>'Check Status Error',
+							'status'=>400
+						];
+
+						return Response::json($response);
+					}
+
+				}else{
+
+					$response = [
+						'message'=>'Check Status Error',
+						'status'=>400
+					];
+
+					return Response::json($response);
+				}
+
 				$response = [
 					'debit_amount'=>$debitMoney['response']['debitedamount'],
 					'balance_amount'=>$debitMoney['response']['balanceamount'],
 					'txnid'=>$debitMoney['response']['orderid'],
 					'reference_id'=>$debitMoney['response']['refId'],
 					'message'=>$debitMoney['response']['statusdescription'],
+					'token'=>$data['token'],
 					'status'=>200
 				];
+
+				$regenerateTokenData = [
+					'cell'=> $data['cell'],
+					'token'=>$data['token']
+				];
+
+				$regenerateToken = $this->mobikwik->regenerateToken($regenerateTokenData);
+
+				if($debitMoney['status'] == 200){
+
+					if($regenerateToken['response']['status'] == 'SUCCESS' && $regenerateToken['response']['statuscode'] === '0'){
+
+						$response['token'] = $regenerateToken['response']['token'];
+					}
+				}
 			}
 
 		}
@@ -573,9 +617,9 @@ class PaymentGatewayController extends \BaseController {
 			if($checkStatus['response']['statuscode'] === '0'){
 
 				$response = [
-				'message'=>'Success',
-				'status'=>400
-			];
+					'message'=>'Success',
+					'status'=>200
+				];
 			}
 
 		}
