@@ -1094,7 +1094,7 @@ Class Utilities {
     		
     		$orderArr=$order->toArray();
     		$hash_verified = false;
-    		if((isset($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin'])) || in_array($orderArr['payment']['pg_type'],['PAYTM','AMAZON'])|| !empty($orderArr['cod_otp_verified']) || !empty($orderArr['vendor_otp_verified'])){
+    		if((isset($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin'])) || (!empty($orderArr['payment'])&&!empty($orderArr['payment']['pg_type'])&&in_array($orderArr['payment']['pg_type'],['PAYTM','AMAZON']))|| !empty($orderArr['cod_otp_verified']) || !empty($orderArr['vendor_otp_verified'])){
     			if((in_array($orderArr['payment']['pg_type'],['PAYTM','AMAZON'])) && !(empty($data["order_success_flag"])))
     			{
     				$hashreverse = getReverseHashProduct($orderArr);
@@ -4737,6 +4737,7 @@ Class Utilities {
 				$data['cart']=["count"=>$this->getCartTotalCount($cart)];
 				if($onlyCart)return $cart;
 			}
+			else return null;
 		}
 		
 	}

@@ -2532,7 +2532,35 @@ public function productSuccess($data)
 		}
 		
 		
-		
+		$order=$order->toArray();
+		$cart_data=(!empty($order['cart_data'])?$order['cart_data']:[]);
+		$cart=$this->utilities->attachCart($cart,true);
+		$cart_new=[];
+		if(!empty($cart))
+		{
+			if(!empty($cart['products'])){
+			foreach ($cart['products'] as $value) 
+			{
+				$tmpVal=$value;
+				if(!empty($value)&&!empty($value['ratecard_id']))
+				{
+					$tmp_data=array_values(array_filter($cart_data,function ($e) use ($value) {return (!empty($e['ratecard'])&&!empty($e['ratecard']['_id'])&&$value['ratecard_id']== $e['ratecard']['_id']);}));
+					if(!empty($tmp_data))
+					{
+						$tmp_data=$tmp_data[0];
+						if(!empty($tmp_data))
+						{
+							$tmpcnt=(intval($value['quantity'])>0?intval($value['quantity'])-intval($tmp_data['quantity']):0);
+							($tmpcnt<0)?$tmpVal['quantity']=0:$tmpVal['quantity']=$tmpcnt;
+						}
+					}
+				}
+				if($tmpVal['quantity']>0)
+					array_push($cart_new,$tmpVal);
+			}
+				Cart::where("_id",intval($cart['_id']))->update(['products'=>$cart_new]);
+			}
+		}
 		$order->update($data);
 		
 		//send welcome email to payment gateway customer
