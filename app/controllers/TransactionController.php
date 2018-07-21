@@ -1841,6 +1841,7 @@ class TransactionController extends \BaseController {
         $order_id   =   (int) $data['order_id'];
         $order      =   Order::findOrFail($order_id);
         
+        Log::info(" info order_type _____________________".print_r($order['type'],true));
         if(!empty($order)&&!empty($order['type'])&&$order['type']=='product')
         	return $this->productSuccess($data);
 
