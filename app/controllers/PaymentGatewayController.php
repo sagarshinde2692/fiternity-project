@@ -344,7 +344,7 @@ class PaymentGatewayController extends \BaseController {
 
 			$response = [
 				'message'=>$checkBalance['response']['statusdescription'],
-				'status'=>400
+				'status'=>400 //199 Either Invalid Token (Expiry or Token mismatch) or Token mismatched due to transaction amount exceeding authorized amount
 			];
 
 			if($checkBalance['response']['status'] == 'SUCCESS' && $checkBalance['response']['statuscode'] === '0'){
@@ -355,7 +355,6 @@ class PaymentGatewayController extends \BaseController {
 					'status'=>200
 				];
 			}
-
 		}
 
 		return Response::json($response);
@@ -528,12 +527,60 @@ class PaymentGatewayController extends \BaseController {
 
 			$response = [
 				'status'=>200,
-				'message'=>$data['amount'].' Added to wallet'
+				'message'=>$data['amount'].' Added to wallet',
+				'orderid'=>$data['orderid']
 			];
 
 		}
 
 		return Response::json($response);
     }
+
+    public function checkStatusMobikwik(){
+
+		$data = Input::json()->all();
+
+		$rules = [
+			'txnid' => 'required'
+		];
+
+		$validator = Validator::make($data,$rules);
+		
+		if($validator->fails()){
+
+			$response = [
+				'status'=>400,
+				'message'=>error_message($validator->errors())
+			];
+
+			return Response::json($response);
+		}
+
+		$checkStatus = $this->mobikwik->checkStatus($data);
+
+		$response = [
+			'status'=>400,
+			'message'=>'Status not Success'
+		];
+
+		if($checkStatus['status'] == 200){
+
+			$response = [
+				'message'=>'Status not Success',
+				'status'=>400
+			];
+
+			if($checkStatus['response']['statuscode'] === '0'){
+
+				$response = [
+				'message'=>'Success',
+				'status'=>400
+			];
+			}
+
+		}
+
+		return Response::json($response);
+	}
 
 }
