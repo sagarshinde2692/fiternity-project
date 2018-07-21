@@ -583,7 +583,7 @@ class PaymentGatewayController extends \BaseController {
 
 		$response = htmlentities(json_encode($response));
 
-		return Response::json($response);
+		return View::make('paymentgateway.mobikwik', compact('response'));
     }
 
     public function checkStatusMobikwik(){
