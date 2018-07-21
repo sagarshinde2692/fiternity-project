@@ -2043,8 +2043,12 @@ class HomeController extends BaseController {
     		$finalData=[];
     		$order =Order::where("_id",intval($id))->where("type",'product')->first();
     		if(!empty($order))
+    		{
     			$order =  $order->toArray();
-    			else return ['status'=>0,"message"=>"Failed to get Order."];
+    			if($order['status']!="1")return ['status'=>0,"message"=>"Order not succesfull."];
+    		}
+    			
+    		else return ['status'=>0,"message"=>"Failed to get Order."];
     			
     			
     			// KINDLY PUT ALL DEFAULTS HERE SO IT WILL BE MERGED FINALLY.
@@ -2059,6 +2063,7 @@ class HomeController extends BaseController {
     					return ['status'=>0,"message"=>"Failed to get Customer."];
     			}
 
+    			
     			
     			$customer=Customer::find(intval($customer_id));
     			$customer= $customer->toArray();
