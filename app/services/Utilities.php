@@ -4137,7 +4137,7 @@ Class Utilities {
             $offer = Offer::where('ratecard_id', $ratecard_id)->where('added_by_script', '!=', true)->where('hidden', false)->orderBy('order', 'asc')
             ->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
             ->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()) ))
-            ->first(['start_date','end_date','price','type','allowed_qty','remarks','offer_type','ratecard_id','callout']);
+            ->first(['price','type','ratecard_id']);
             
             
             if(!empty($offer)){
