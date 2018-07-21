@@ -264,12 +264,11 @@ Class Mobikwik {
         $checksum = $this->createChecksum($data);
 
         $data['checksum'] = $checksum;
-
-        $url = 'addmoneytowallet';
+        
+        $url = $this->base_uri.'/addmoneytowallet?'.http_build_query($data, "&");
 
         $response = [
-            'url'=>$this->base_uri.'/'.$url,
-            'data'=>$data
+            'url'=>$url
         ];
 
         return $response;
