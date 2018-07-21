@@ -2060,6 +2060,7 @@ class HomeController extends BaseController {
     			}
 
     			
+    			
     			$customer=Customer::find(intval($customer_id));
     			$customer= $customer->toArray();
     			

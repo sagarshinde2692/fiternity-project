@@ -1091,7 +1091,7 @@ Class Utilities {
     public function verifyOrderProduct($data,$order)
     {
     	try {
-    		
+    		Log::info(" info [verifyOrderProduct] data".print_r(data,true));
     		$orderArr=$order->toArray();
     		$hash_verified = false;
     		if((isset($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin'])) || (!empty($orderArr['payment'])&&!empty($orderArr['payment']['pg_type'])&&in_array($orderArr['payment']['pg_type'],['PAYTM','AMAZON']))|| !empty($orderArr['cod_otp_verified']) || !empty($orderArr['vendor_otp_verified'])){
@@ -1110,20 +1110,21 @@ Class Utilities {
     		else
     		{
     			// If amount is zero check for wallet amount
-    			if($data['amount'] == 0)
+    			if($orderArr['amount_calculated']['final']== 0)
     				$hash_verified = true;
     				else
     				{
-    					$hashreverse = getReverseHashProduct($orderArr);
-    					if($hashreverse['status']&&$data["verify_hash"] == $hashreverse['data']['reverse_hash'])
+    					 $hashreverse = getReverseHashProduct($orderArr);
+    					 if($hashreverse['status']&&$data["verify_hash"] == $hashreverse['data']['reverse_hash'])
     						$hash_verified = true;
     						else
-    							$hash_verified = false;
+    						$hash_verified = false;
     				}
     		}
     		if(!$hash_verified){
-    			$order->payment->hash_verified= false;
-    			$order->update();
+    			
+    			$orderArr['payment']["hash_verified"]=false; 
+    			$order->update($orderArr);
     		}
     		return $hash_verified;
     		
@@ -4315,7 +4316,7 @@ Class Utilities {
 	}
 	
 	
-	public function addProductsToCart($cartDataInput=[],$cart_id=null,$cart_summary=false)
+	public function addProductsToCart($cartDataInput=[],$cart_id=null,$cart_summary=false,$update=true)
 	{
 		try {
 			if(empty($cartDataInput))
@@ -4349,8 +4350,7 @@ Class Utilities {
 						if(!empty($ratecards))
 						{
 							$ratecards=$ratecards->toArray();
-							if($cartDataUnique!=count($ratecards))
-								return ['status'=>0,"message"=>"Invalid Ratecard Found."];
+							if($cartDataUnique!=count($ratecards))return ['status'=>0,"message"=>"Invalid Ratecard Found."];
 							foreach ($ratecards as &$ratecard)
 							{
 								$neededObject = array_values(array_filter($cartDataInput,function ($e) use ($ratecard) {return $e['ratecard_id']== $ratecard['_id'];}));
@@ -4367,8 +4367,10 @@ Class Utilities {
 										else return ['status'=>0,"message"=>"Not a valid ratecard or ratecard doesn't exist."];
 							}
 							if($cart_summary)return ['status'=>1,"data"=>$cartDataExtended];
-							$addedToCart=Cart::where('_id', intval($cart_id))->first();
-							$addedToCart=$addedToCart->update(['products'=>$cartData]);					
+							if($update) {
+								$addedToCart=Cart::where('_id', intval($cart_id))->first();
+								$addedToCart=$addedToCart->update(['products'=>$cartData]);													
+							}
 							$response['response']['data']=$cartDataExtended;
 							return $response;
 						}
@@ -4429,7 +4431,6 @@ Class Utilities {
 	{
 		try {
 			if(empty($order))return ["status"=>0,"message"=>"No order present."];
-				
 			$resp=["status"=>1,"message"=>"success","data"=>[]];
 			
 			$cart_data =$order['cart_data'];
@@ -4447,11 +4448,11 @@ Class Utilities {
 				array_push($cart_desc,$temp);
 				$amount=$amount+(intval($cart_item['quantity'])*intval($cart_item['price']));
 			}
-								
+			
 			$resp['data']['cart_details']=$cart_desc;
 			$resp['data']['total_cart_amount']=$amount;
 			$resp['data']['total_amount']=$amount;
-	// 			$this->getProductCartAmount($order);
+			// 			$this->getProductCartAmount($order);
 			return $resp;
 		} catch (Exception $e)
 		{
@@ -4460,37 +4461,38 @@ Class Utilities {
 		
 	}
 	
-// 	public function  getProductImages($cart_data)
-// 	{
+	// 	public function  getProductImages($cart_data)
+	// 	{
+	
+		// 		$data=array_map(function($e){return [ratecard_id=>intval($e['ratecard']['_id']),product_id=>intval($e['product']['_id'])];},$cart_data);
 		
-// 		$data=array_map(function($e){return [ratecard_id=>intval($e['ratecard']['_id']),product_id=>intval($e['product']['_id'])];},$cart_data);
-		
-// 		$products=array_column(array_column($cart_data,'product'),'_id');
-// 		$ratecards=array_column(array_column($cart_data,'ratecard'),'_id');
-// 		\Product::$withoutAppends=true;
-// 		$productView=Product::whereIn("_id",$products)->with(array('ratecard'=>function($query) use ($ratecards) {$query->whereIn("_id",$ratecards)->select('_id','product_id','image');}))->get(['image']);
-// 		$map=[];
-// 		if(!empty($productView))
-// 		{
-// 			$productView=$productView->toArray();
-// 			foreach ($productView as $product) {
-// 				foreach ($ratecards as $value) {
-// 					$selectedRatecard=array_values(array_filter($productView['ratecard'],function ($e) use ($value) {return $value==$e['_id'];}));
-// 					if(!empty($selectedRatecard))
-// 					{
-// 						$selectedRatecard=$selectedRatecard[0];
-// 						if(!empty($selectedRatecard['image'])&&!empty($selectedRatecard['primary'])/* &&count($selectedRatecard['image']['secondary'])>0 */)
-// 							$img=$selectedRatecard['image']['primary'];
-// 					}
-// 					else if(!empty($value['image'])&&!empty($value['image']['primary'])/* &&count($productView['image']['secondary'])>0 */)
-// 						$img=$value['image']['primary'];
-// 						$map[intval($value['ratecard']['_id'])]=$img;
-// 				}
-// 			}
-// 		}
+		// 		$products=array_column(array_column($cart_data,'product'),'_id');
+		// 		$ratecards=array_column(array_column($cart_data,'ratecard'),'_id');
+		// 		\Product::$withoutAppends=true;
+		// 		$productView=Product::whereIn("_id",$products)->with(array('ratecard'=>function($query) use ($ratecards) {$query->whereIn("_id",$ratecards)->select('_id','product_id','image');}))->get(['image']);
+		// 		$map=[];
+		// 		if(!empty($productView))
+			// 		{
+		// 			$productView=$productView->toArray();
+		// 			foreach ($productView as $product) {
+		// 				foreach ($ratecards as $value) {
+		// 					$selectedRatecard=array_values(array_filter($productView['ratecard'],function ($e) use ($value) {return $value==$e['_id'];}));
+		// 					if(!empty($selectedRatecard))
+			// 					{
+		// 						$selectedRatecard=$selectedRatecard[0];
+		// 						if(!empty($selectedRatecard['image'])&&!empty($selectedRatecard['primary'])/* &&count($selectedRatecard['image']['secondary'])>0 */)
+			// 							$img=$selectedRatecard['image']['primary'];
+			// 					}
+			// 					else if(!empty($value['image'])&&!empty($value['image']['primary'])/* &&count($productView['image']['secondary'])>0 */)
+				// 						$img=$value['image']['primary'];
+			// 						$map[intval($value['ratecard']['_id'])]=$img;
+			// 				}
+			// 			}
+			// 		}
 			
-// 		return $map;
-// 	}
+			// 		return $map;
+			// 	}
+			
 	public function getCartFinalSummary($cart_data,$cart_id)
 	{
 		try {
@@ -4552,6 +4554,7 @@ Class Utilities {
 			(!empty($data['payment_mode']))?
 				$createdData['payment_mode']=$data['payment_mode']:"";
 			$env = (!empty($data['env']) && $data['env'] == 1) ? "stage" : "production";
+			
 			$key = 'gtKFFx';
 			$salt = 'eCwWELxi';
 			
@@ -4560,7 +4563,7 @@ Class Utilities {
 			}
 			
 			$txnid = $data['payment']['txnid'];
-			$amount = $data['amount_calculated']['final'];
+			$amount = $data['amount_calculated']['final'].".00";
 			$tmp=[];
 			foreach ($data['cart_data'] as $value) {
 				array_push($tmp,$value['ratecard']['_id']);
@@ -4580,9 +4583,9 @@ Class Utilities {
 			
 			$createdData['payment_hash'] = hash('sha512', $payhash_str);
 			
-			$verify_str = $salt.'||||||'.$udf5.'|'.$udf4.'|'.$udf3.'|'.$udf3.'|'.$udf2.'|'.$udf1.'|'.$email.'|'.$firstname.'|'.$productinfo.'|'.$amount.'|'.$txnid.'|'.$key;
+			$verify_str = $salt.'|success||||||'.$udf5.'|'.$udf4.'|'.$udf3.'|'.$udf2.'|'.$udf1.'|'.$email.'|'.$firstname.'|'.$productinfo.'|'.$amount.'|'.$txnid.'|'.$key;
 			
-			$createdData['verify_hash'] = hash('sha512', $verify_str);
+			 $createdData['verify_hash'] = hash('sha512', $verify_str);
 			
 			$cmnPaymentRelatedDetailsForMobileSdk1              =   'payment_related_details_for_mobile_sdk';
 			$detailsForMobileSdk_str1                           =   $key  . '|' . $cmnPaymentRelatedDetailsForMobileSdk1 . '|default|' . $salt ;
@@ -4740,7 +4743,9 @@ Class Utilities {
 			else return null;
 		}
 		
+
 	}
+
 
 
 
@@ -4815,6 +4820,7 @@ Class Utilities {
 		return $this->days[date("w",strtotime($date))];
 		
 	}
+	
 	public function getWsSlotPrice($start=null,$end=null,$service_id=null,$start_date=null) {
 		
 		try {
@@ -4970,8 +4976,7 @@ Class Utilities {
 		$cur_seperator=", ";
 		if(!$finder)
 		{
-			
-			if(!empty($cust_name))$temp=$temp.$cust_name." <br />";
+			if(!empty($data["name"]))$temp=$temp.$data["name"]." <br />";
 			if(!empty($data["line1"]))$temp=$temp.$data["line1"].$cur_seperator;
 			if(!empty($data["line2"]))$temp=$temp.$data["line2"].$cur_seperator;
 			if(!empty($data["landmark"]))$temp=$temp.$data["landmark"].$cur_seperator;
@@ -4984,7 +4989,7 @@ Class Utilities {
 			if(!empty($data))$temp=$temp+$data;
 		}
 		return $temp;
-	}
+	}	
 }
 
 
