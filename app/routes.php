@@ -1255,5 +1255,6 @@ Route::post('checkbalance/mobikwik','PaymentGatewayController@checkBalanceMobikw
 Route::post('addmoney/mobikwik','PaymentGatewayController@addMoneyMobikwik');
 Route::post('debitmoney/mobikwik','PaymentGatewayController@debitMoneyMobikwik');
 Route::match(array('GET', 'POST'),'verifyaddmoney/mobikwik', 'PaymentGatewayController@verifyAddMoneyMobikwik');
+Route::post('checkstatus/mobikwik','PaymentGatewayController@checkStatusMobikwik');
 
 Route::get('lostFitcode','DebugController@lostFitcode');

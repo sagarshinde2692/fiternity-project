@@ -27,7 +27,7 @@ Class Mobikwik {
         $this->mid = 'MBK9006';
         $this->secret_key = 'ju6tygh7u7tdg554k098ujd5468o';
         $this->si_secret_key = 'lu6tygh7u7tdg554k098ujd5468o';
-        $this->merchantname = 'TestMerchant';
+        $this->merchantname = 'Test Merchant';
 
         $mobikwik_sandbox = \Config::get('app.mobikwik_sandbox');
 
@@ -37,7 +37,7 @@ Class Mobikwik {
             $this->mid = 'MBK9006';
             $this->secret_key = 'ju6tygh7u7tdg554k098ujd5468o';
             $this->si_secret_key = 'lu6tygh7u7tdg554k098ujd5468o';
-            $this->merchantname = 'TestMerchant';
+            $this->merchantname = 'Test Merchant';
         }
 
         $this->client = new Client( ['debug' => $debug, 'base_uri' => $this->base_uri] );
@@ -50,7 +50,7 @@ Class Mobikwik {
 
         $final_secret_key = $this->secret_key;
 
-        if(!empty($data['token'])){
+        if(!empty($data['token']) && !empty($data['msgcode']) && $data['msgcode'] == 507 ){
 
             $final_secret_key = $this->si_secret_key;
         }
@@ -77,7 +77,13 @@ Class Mobikwik {
 
         try {
 
-            $response = $this->client->post($url,['form_params'=>$data])->getBody()->getContents();
+            $url = $url."?".http_build_query($data, "&");
+
+            \Log::info('postFormUrl '.$url);
+
+            // $response = $this->client->post($url,['form_params'=>$data])->getBody()->getContents();
+
+            $response = $this->client->get($url)->getBody()->getContents();
 
             $xml = simplexml_load_string($response);
 
@@ -88,6 +94,8 @@ Class Mobikwik {
                 'status'=>200,
                 'response'=>$response
             ];
+
+            \Log::info('postFormResponse',$response);
 
             return $return;
 
@@ -257,11 +265,11 @@ Class Mobikwik {
 
         $data['checksum'] = $checksum;
 
-        $url = 'addmoneytowallet';
+        $url = $this->base_uri.'/addmoneytowallet?'.http_build_query($data, "&");
 
         $response = [
-            'url'=>$this->base_uri.'/'.$url,
-            'data'=>$data
+            'url'=>$url,
+            'status'=>200
         ];
 
         return $response;
