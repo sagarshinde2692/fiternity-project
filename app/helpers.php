@@ -2847,8 +2847,17 @@ if (!function_exists(('getReverseHashProduct'))){
 			
 			$productinfo = $createdData['productinfo'] = implode("_",array_map('strtolower', $tmp));
 			
-			$key = 'fitterKEY';
-			$salt = '1086fit';
+			$env = (!empty($data['env']) && $data['env'] == 1) ? "stage" : "production";
+			/* if(Config::get('app.env') == 'stage'){
+				$env= 1;
+			} */
+			
+			$key = 'gtKFFx';
+			$salt = 'eCwWELxi';
+			
+			if($env == "production"){
+				$key = 'l80gyM';$salt = 'QBl78dtK';
+			}
 			
 			$txnid = $data['payment']['txnid'];
 			$amount = $data['amount_calculated']['final'].".00";
@@ -2860,9 +2869,9 @@ if (!function_exists(('getReverseHashProduct'))){
 			$udf4 = "";
 			$udf5 = "";
 			
-			$payhash_str = $salt.'|success||||||'.'|'.$email.'|'.$firstname.'|'.$productinfo.'|'.$amount.'|'.$txnid.'|'.$key;
+			 $payhash_str = $salt.'|success||||||'.$udf5.'|'.$udf4.'|'.$udf3.'|'.$udf2.'|'.$udf1.'|'.$email.'|'.$firstname.'|'.$productinfo.'|'.$amount.'|'.$txnid.'|'.$key;
 			
-			$createdData['reverse_hash'] = hash('sha512', $payhash_str);
+			 $createdData['reverse_hash'] = hash('sha512', $payhash_str);
 			$resp['data']=$createdData;
 			return $resp;
 			
