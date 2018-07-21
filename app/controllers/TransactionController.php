@@ -1304,19 +1304,9 @@ class TransactionController extends \BaseController {
     	
     	if(in_array($data['customer']['customer_source'],['android','ios','kiosk']))
     	{
-    		$txnid = "MFIT".$data['_id'];
-    		(isset($old_order_id))?
-    				$txnid = "MFIT".$data['_id']."-R".$data['repetition']  :"";
-    		$successurl = $data['customer']['customer_source'] == "ios" ? Config::get('app.website')."/paymentsuccessios" : Config::get('app.website')."/paymentsuccessandroid";
+    		$txnid = "MFIT".$data['_id'];(isset($old_order_id))?$txnid = "MFIT".$data['_id']."-R".$data['repetition']  :"";	
+    		$successurl = $data['type'] == "product" ? Config::get('app.url')."/transaction/success":"";
     	}
-    	else
-    	{
-    		$txnid = "FIT".$data['_id'];
-    		(!empty($old_order_id))?
-    				$txnid = "FIT".$data['_id']."-R".$data['repetition']:"";
-    		$successurl = $data['type'] == "memberships" ? Config::get('app.website')."/paymentsuccess" : Config::get('app.website')."/paymentsuccesstrial";
-    	}
-    	
     	$data['payment']['txnid'] = $txnid;
     	
     	 //*********************************************************USE THIS CODE IN GET PRODUCT CART AMOUNT.************************************************
