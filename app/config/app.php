@@ -350,6 +350,10 @@ return array(
 			'path'							=> 'qrcode/',
 			'url'							=> 'http://b.fitn.in/qrcode/',
 		),
+		'review_images'=>array(
+			'path'							=> 'review-images/',
+			'url'							=> 'https://d3oorwrq3wx4ad.cloudfront.net/review-images/',
+		),
 	),
 
 	'customer_care_number' => '+919699998838',

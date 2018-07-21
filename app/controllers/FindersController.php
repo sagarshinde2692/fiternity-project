@@ -1999,9 +1999,17 @@ class FindersController extends \BaseController {
 	public function addReview($data = false){
 
 		if(!$data){
-			$data = Input::json()->all();
+			$data = Input::all();
 		}
 
+		if(!$data){
+			$data = Input::json()->all();
+		}
+		
+
+		// return $images = Input::file('images') ;
+		
+		
 		$jwt_token = Request::header('Authorization');
 
 	    if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
@@ -2040,7 +2048,10 @@ class FindersController extends \BaseController {
 		if($this->vendor_token){
 			$data['source'] = 'kiosk';
 		}
-
+		// return $data;
+		if(isset($data['detail_rating']) && is_string($data['detail_rating'])){
+			$data['detail_rating'] = json_decode($data['detail_rating']);
+		}
 		$reviewdata = [
 			'finder_id' => intval($data['finder_id']),
 			'customer_id' => intval($data['customer_id']),
@@ -2052,7 +2063,8 @@ class FindersController extends \BaseController {
 			'source' => (isset($data['source'])) ? $data['source'] : 'customer',
 			'status' => '1',
 			'order_id' => (isset($data['order_id']) && $data['order_id'] != "") ? intval($data['order_id']) : '',
-			'assisted_by' => (isset($data['assisted_by'])) ? $data['assisted_by'] : null
+			'assisted_by' => (isset($data['assisted_by'])) ? $data['assisted_by'] : null,
+			'tag' => (isset($data['tag'])) ? $data['tag'] : []
 		];
 
 		(isset($_GET['device_type']) && $_GET['device_type'] != "") ? $reviewdata['source'] = strtolower($_GET['device_type']) : null ;
@@ -2089,6 +2101,92 @@ class FindersController extends \BaseController {
 			}
 		}
 
+		$images = Input::file('images') ;
+		$images_urls = [];
+		
+		if($images){
+
+			foreach($images as $key => $value){
+				Log::info("Asdsad");
+				// return get_class($value);
+				if($value->getError()){
+					
+					return Response::json(['status'=>400, 'message'=>'Please upload jpg/jpeg/png imgage formats with max. size of 4 MB']);
+				
+				}
+
+				$file_name = "review-".$data['customer_id']."-".time()."-$key";
+				
+				$path_compresed = $this->utilities->compressImage( $value, $file_name);
+
+				$watermark = imagecreatefrompng('images/watermark.png');
+				
+				$im = imagecreatefromjpeg($path_compresed);
+				
+				imagecopy($im, $watermark,(imagesx($im)-imagesx($watermark))/2, (imagesy($im)-imagesy($watermark))/2,0, 0, imagesx($watermark), imagesy($watermark));
+
+				$compressed_path_parts = pathinfo($path_compresed);
+
+				$path_watermarked = $compressed_path_parts['dirname'].'/'.$compressed_path_parts['filename'].'-w.'.$compressed_path_parts['extension'];
+				
+				imagejpeg($im, $path_watermarked);
+				
+				imagedestroy($im);	
+				
+				$compressed_s3_path  = $finder['_id']."/".$compressed_path_parts['filename'].".".$compressed_path_parts['extension'];
+				
+				$watermarked_s3_path  = $finder['_id']."/".$compressed_path_parts['filename']."-w.".$compressed_path_parts['extension'];
+				
+				$this->utilities->uploadFileToS3( $path_compresed, Config::get('app.aws.review_images.path').$compressed_s3_path);
+				$this->utilities->uploadFileToS3( $path_watermarked,Config::get('app.aws.review_images.path').$watermarked_s3_path);
+				unlink($path_compresed);
+				unlink($path_watermarked);
+
+				array_push($images_urls, Config::get('app.aws.review_images.url').$watermarked_s3_path);
+			}
+			
+			$reviewdata['images'] = $images_urls;
+		
+		}
+
+		if(!empty($data['tag'])){
+			$txn = null;
+			switch($data['tag']){
+				case 'trial':
+					$txn = Booktrial::where('customer_id', $reviewdata['customer_id'])->where('finder_id', $reviewdata['finder_id'])->where('type', 'booktrials')->first();
+				break;
+				case 'workout-session':
+					$txn = Booktrial::where('customer_id', $reviewdata['customer_id'])->where('finder_id', $reviewdata['finder_id'])->where('type', 'workout-session')->first();
+				break;
+				case 'membership':
+					$txn = Booktrial::where('customer_id', $reviewdata['customer_id'])->where('finder_id', $reviewdata['finder_id'])->whereNotIn('type', ['workout-session', 'booktrial'])->first();
+				break;
+			}
+
+			if($txn){
+				$reviewdata['tag'] = [$data['tag'].'_verified'];
+			}
+		}else{
+
+			$prev_order = Transaction::where('customer_id', $reviewdata['customer_id'])->where('finder_id', $reviewdata['finder_id'])->where(function($query){$query->orWhere('transaction_type', '!=', 'Order')->orWhere('status', '1');})->orderBy('_id', 'desc')->first();
+
+			if($prev_order && !empty($prev_order['type'])){
+				$type = $prev_order ;
+				switch($type){
+					case 'booktrial':
+					$reviewdata['tag'] = 'trial_verified';
+					break;
+					case 'worktout-session':
+					$reviewdata['tag'] = 'workout_sesison_verified';
+
+					break;
+					default:
+					$reviewdata['tag'] = 'membership_verified';
+				}
+			}
+		}
+		
+		
 		$fresh_review = true;
 
 		if($review){
@@ -2478,9 +2576,21 @@ class FindersController extends \BaseController {
 		$finder_id          =   (int) $finder_id;
 		$from               =   ($from != '') ? intval($from) : 0;
 		$size               =   ($size != '') ? intval($size) : 10;
-
+		
 		$reviews            =   Review::with(array('finder'=>function($query){$query->select('_id','title','slug','coverimage');}))->active()->where('finder_id','=',$finder_id)->take($size)->skip($from)->orderBy('updated_at', 'desc')->get();
+		// return $reviews;
+		$customer_ids = array_column($reviews->toArray(), 'customer_id');
+ 		// return $customer_ids;
 
+		$ongoing_membership_customer_ids = Order::active()->whereIn('customer_id', $customer_ids)->where('finder_id', $finder_id)->where('start_date', '<=', new DateTime())->where('end_date', '>=', new DateTime())->lists('customer_id');
+		
+		foreach($reviews as &$review){
+			if(in_array($review['customer_id'], $ongoing_membership_customer_ids)){
+				$review['tags'] = ['ongoing membership'];
+			}else{
+				$review['tags'] = [];
+			}
+		}
 		$remaining_count =  Review::active()->where('finder_id','=',$finder_id)->count() - ($from+$size);
 
 		$remaining_count    =   ($remaining_count > 0) ? $remaining_count : 0;
