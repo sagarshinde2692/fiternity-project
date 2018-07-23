@@ -250,7 +250,7 @@ Class Mobikwik {
     }
 
     public function addMoney($data){
-        
+
         $data = [
             'amount'=>(float)$data['amount'],
             'cell'=>substr($data['cell'],-10),
@@ -261,9 +261,9 @@ Class Mobikwik {
             'token'=>$data['token']
         ];
 
-        if(!empty($data['source']) && $data['source'] == 'website'){
+        if(stripos($data['orderid'],'fit') == 0){
 
-            $data['redirecturl'] = "localhost:3000/verifymobikwik";
+            $data['redirecturl'] = "http://localhost:3000/verifymobikwik";
         }
 
         $checksum = $this->createChecksum($data);
