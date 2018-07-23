@@ -413,7 +413,35 @@ class PaymentGatewayController extends \BaseController {
 			return Response::json($response);
 		}
 
-		$data['txnid'] = $data['txnid']."-MBKD";
+		$order = Order::where('txnid',$data['txnid'])->first();
+
+		if(!$order){
+
+			$response = [
+				'status'=>400,
+				'message'=>'Order not found'
+			];
+
+			return Response::json($response);
+		}
+
+		if($order['amount'] !== $data['amount']){
+
+			$response = [
+				'status'=>400,
+				'message'=>'Order amount diff'
+			];
+
+			return Response::json($response);
+		}
+
+		$success_data = [
+        	'txnid'=>$data['txnid'],
+            'amount'=>(int)$data["amount"],
+            'status' => 'success'
+        ];
+
+        $data['txnid'] = $data['txnid']."-MBKD";
 
 		$debitMoney = $this->mobikwik->debitMoney($data);
 
@@ -483,6 +511,18 @@ class PaymentGatewayController extends \BaseController {
 						$response['token'] = $regenerateToken['response']['token'];
 					}
 				}
+
+				$order->pg_type = "MOBIKWIK";
+        		$order->mobikwik_hash = $success_data['hash'] = getpayTMhash($order->toArray())['reverse_hash'];
+        		$order->update();
+
+                $paymentSuccess = $this->fitweb->paymentSuccess($success_data);
+
+                if(isset($paymentSuccess['status']) && $paymentSuccess['status'] !== 200){
+	                $response['status'] = 400;
+	                $response['message'] = 'Payment success error';
+	            }
+
 			}
 
 		}
