@@ -2405,7 +2405,7 @@ class TransactionController extends \BaseController {
     		
     		$cart_data=(!empty($order['cart_data'])?$order['cart_data']:[]);
     		
-    		$cart=$this->utilities->attachCart($cart,true);
+    		$cart=$this->utilities->attachCart($cart,true,$orderArr['customer']['logged_in_customer_id']);
     		$cart_new=[];
     		
     		if(!empty($cart))

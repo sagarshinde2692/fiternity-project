@@ -4747,7 +4747,7 @@ class HomeController extends BaseController {
         		
         		$home["response"]['products']=array_values($tp);
         		(isset($homeData['header_image']))?array_unshift($home["response"]['products'], [['type'=>'header', 'url'=>$homeData['header_image']]]):"";
-        		$this->utilities->attachCart($home["response"]);
+        		$this->utilities->attachCart($home["response"],false);
         		return $home;
         	} catch (Exception $e) {
         		
@@ -4785,7 +4785,7 @@ class HomeController extends BaseController {
         						if(!empty($dataCart)&&!empty($dataCart['status']))
         							$response["response"]['cart_summary']=$dataCart['data'];
         					}
-        					else $this->utilities->attachCart($response["response"]);
+        					else $this->utilities->attachCart($response["response"],false);
         					return $response;
         				}
         				return Response::json(['status'=>400,"message"=>"Not a valid ratecard or ratecard doesn't exist."]);
@@ -4861,7 +4861,7 @@ class HomeController extends BaseController {
         		$this->utilities->attachProductQuantity($finalData['product']);
         		if($getProductInternal) return ["status"=>1,"data"=>$finalData['product']];
         		(!empty($mainSimilar)&&count($mainSimilar)>0)?$finalData['similar_products']=["title"=>"Similar Products","sub_title"=>"Get Fitter","items"=>$mainSimilar]:"";
-        		$this->utilities->attachCart($finalData);
+        		$this->utilities->attachCart($finalData,false);
         		return ["status"=>200,"response"=>$finalData];
         	} catch (Exception $e) {
         		return ['status'=>0,"message"=>$this->utilities->baseFailureStatusMessage($e)];
@@ -4961,7 +4961,7 @@ class HomeController extends BaseController {
         			$finalData=[];
         			(!empty($categories)&&count($categories)>0)?$finalData['categories']=["title"=>"category Based Products","sub_title"=>"Get Fitter","items"=>$categories]:"";
         			(!empty($productSimilar)&&count($productSimilar)>0)?$finalData['similar_products']=["title"=>"Similar Products","sub_title"=>"Get Fitter","items"=>$productSimilar]:"";
-        			$this->utilities->attachCart($finalData);
+        			$this->utilities->attachCart($finalData,false);
         			return ["status"=>200,"response"=>$finalData];
         		}
         		else return ['status'=>0,"message"=>"Not Ratecards found for productcategoryid : ".$productcategory_id];
