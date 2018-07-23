@@ -2521,7 +2521,6 @@ class TransactionController extends \BaseController {
     		}
     		
     		$cart_data=(!empty($order['cart_data'])?$order['cart_data']:[]);
-    		
     		$cart=$this->utilities->attachCart($cart,true);
     		$cart_new=[];
     		
@@ -2547,10 +2546,10 @@ class TransactionController extends \BaseController {
     						}
     					}
     					
-    					if($tmpVal['quantity']>0)
-    						array_push($cart_new,$tmpVal);
+    					($tmpVal['quantity']>0)?array_push($cart_new,$tmpVal):"";
     					
     				}
+    				Log::info(" info  cart_new :: ".print_r($cart_new,true));
     			  Cart::where("_id",intval($cart['_id']))->update(['products'=>$cart_new]);
     			}
     		}
