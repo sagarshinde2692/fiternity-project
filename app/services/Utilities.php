@@ -1115,6 +1115,7 @@ Class Utilities {
     				else
     				{
     					 $hashreverse = getReverseHashProduct($orderArr);
+    					 Log::info(" info hashreverse :: ".print_r($hashreverse ,true));
     					 if($hashreverse['status']&&$data["verify_hash"] == $hashreverse['data']['reverse_hash'])
     						$hash_verified = true;
     						else
