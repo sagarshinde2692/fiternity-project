@@ -1115,6 +1115,7 @@ Class Utilities {
     				else
     				{
     					 $hashreverse = getReverseHashProduct($orderArr);
+    					 Log::info(" info hashreverse :: ".print_r($hashreverse ,true));
     					 if($hashreverse['status']&&$data["verify_hash"] == $hashreverse['data']['reverse_hash'])
     						$hash_verified = true;
     						else
@@ -3700,9 +3701,9 @@ Class Utilities {
 
     }
 
-    public function productsTabCartHomeCustomer($customerId=null){
+    public function productsTabCartHomeCustomer($customer_id=null){
     	
-    	if(empty($customerId))
+    	if(empty($customer_id))
     	{
     		try {
     			$decoded = decode_customer_token();
@@ -3720,9 +3721,9 @@ Class Utilities {
     	}
     	else return null;	
     }
-    public function getCustomerAddress($customerId=null){
+    public function getCustomerAddress($customer_id=null){
     	
-    	if(empty($customerId))
+    	if(empty($customer_id))
     	{
     		try {
     			$decoded = decode_customer_token();
@@ -3742,9 +3743,9 @@ Class Utilities {
     	}
     	else return null;
     }
-    public function addCustomerAddress($customerId=null,$customer_address){
+    public function addCustomerAddress($customer_id=null,$customer_address){
     	
-    	if(empty($customerId))
+    	if(empty($customer_id))
     	{
     		try {
     			$decoded = decode_customer_token();
@@ -4728,17 +4729,18 @@ Class Utilities {
 		return $base;
 	}
 	
-	public function attachCart(&$data,$onlyCart=false)
+	public function attachCart(&$data,$onlyCart=false,$customer_id=null)
 	{
 		$jwt=Request::header("Authorization");
 		if(isset($jwt))
 		{
-			$cart=$this->productsTabCartHomeCustomer();
+			$cart=$this->productsTabCartHomeCustomer($customer_id);
 			if(!empty($cart))
 			{
 				$cart=$cart->toArray();
-				$data['cart']=["count"=>$this->getCartTotalCount($cart)];
+				Log::info(" info attachCart cart ::".print_r($cart,true));
 				if($onlyCart)return $cart;
+				$data['cart']=["count"=>$this->getCartTotalCount($cart)];
 			}
 			else return null;
 		}
