@@ -2045,80 +2045,80 @@ class HomeController extends BaseController {
     		if(!empty($order))
     		{
     			$order =  $order->toArray();
-    			if($order['status']!="1")return ['status'=>0,"message"=>"Order not succesfull."];
+    			if($order['status']!="1")
+    				return ['status'=>0,"message"=>"Order not succesful."];
     		}
-    			
     		else return ['status'=>0,"message"=>"Failed to get Order."];
-    			
-    			
-    			// KINDLY PUT ALL DEFAULTS HERE SO IT WILL BE MERGED FINALLY.
-    			
-    			$defaults=["showDeliveryAddress"=>false];
-    			
+    		
+    		
+    		// KINDLY PUT ALL DEFAULTS HERE SO IT WILL BE MERGED FINALLY.
+    		
+    		$defaults=["showDeliveryAddress"=>false];
+    		
+    		if(empty($customer_id))
+    		{
+    			$customer_id=$order['customer']['logged_in_customer_id'];
     			if(empty($customer_id))
-    			{
-    				$customer_id=$order['customer']['logged_in_customer_id'];
-    				if(empty($customer_id))
+    				return ['status'=>0,"message"=>"Failed to get Customer."];
+    		}
+    		
+    		
+    		
+    		$customer=Customer::find(intval($customer_id));
+    		$customer= $customer->toArray();
+    		
+    		if(!empty($order['payment'])&&!empty($order['payment']['payment_mode']))
+    			$payment_mode=$order['payment']['payment_mode'];
+    			else $payment_mode=null;
+    			
+    			
+    			$header=["status_text"=>"Order Successfull","status_icon"=>"https://image.flaticon.com/teams/slug/freepik.jpg"];
+    			$customer_description='Hi '.$customer['name'].', your order has been successfully placed with Fitternity.'.
+      			//     			'It will be delivered to you within 7-10 working days.'.
+    			'You can track your order online with the information provided via SMS and E-mail';
+    			
+    			
+    			if(!empty($order['customer_address']))$shipping_address=$this->utilities->formatShippingAddress($order['customer_address'],$customer['name']);
+    			else if(!empty($order['finder'])&&!empty($order['finder']['finder_address']))
+    				$shipping_address=$this->utilities->formatShippingAddress($order['finder']['finder_address'],$customer['name'],true);
+    				
+    				//     			($payment_mode=='cod')?$finalData['customer_description']=$customer_description:"";
+    				$finalData['customer_description']=$customer_description;
+    				if(!empty($shipping_address))
+    					$finalData['shipping_address']=$shipping_address;
     					
-    					return ['status'=>0,"message"=>"Failed to get Customer."];
-    			}
 
-    			
-    			
-    			$customer=Customer::find(intval($customer_id));
-    			$customer= $customer->toArray();
-    			
-    			if(!empty($order['payment'])&&!empty($order['payment']['payment_mode']))
-    				$payment_mode=$order['payment']['payment_mode'];
-    				else $payment_mode=null;
-    				
-    				
-    				$header=["status_text"=>"Order Successfull","status_icon"=>"https://image.flaticon.com/teams/slug/freepik.jpg"];
-    				$customer_description='Hi '.$customer['name'].', your order has been successfully placed with Fitternity.'.
-      				//     			'It will be delivered to you within 7-10 working days.'.
-    				'You can track your order online with the information provided via SMS and E-mail';
-    				
-    				
-    				if(!empty($order['customer_address']))$shipping_address=$this->utilities->formatShippingAddress($order['customer_address'],$customer['name']);
-    				else if(!empty($order['finder'])&&!empty($order['finder']['finder_address']))
-    					$shipping_address=$this->utilities->formatShippingAddress($order['finder']['finder_address'],$customer['name'],true);
-    				
-    					//     			($payment_mode=='cod')?$finalData['customer_description']=$customer_description:"";
-    					$finalData['customer_description']=$customer_description;
-    					if(!empty($shipping_address))
-    						$finalData['shipping_address']=$shipping_address;
+    					$cart_summary=$this->utilities->getCartSummary($order);
+    					if($cart_summary['status'])
+    					{
+    						$cart_details=$cart_summary['data']['cart_details'];
+    						$cart_total=$cart_summary['data']['total_cart_amount'];
+    						$total_amount=$cart_summary['data']['total_amount'];
+    					}
+    					else
+    						return $cart_summary;
     						
-    						$cart_summary=$this->utilities->getCartSummary($order);
-    						if($cart_summary['status'])
-    						{
-    							$cart_details=$cart_summary['data']['cart_details'];
-    							$cart_total=$cart_summary['data']['total_cart_amount'];
-    							$total_amount=$cart_summary['data']['total_amount'];
-    						}
-    						else
-    							return $cart_summary;
-    							
-    							$order_summary=[];
-    							array_push($order_summary, ["key"=>"items","value"=>count($cart_details)]);
-    							array_push($order_summary, ["key"=>"items total","value"=>"Rs. ".$cart_total]);
-    							
-    							(!empty($cart_summary['data']['coupon_discount']))?
-    							array_push($order_summary, ["key"=>"Coupon Discount","value"=>"- Rs. ".$cart_total ,"color"=>"#f7a81e"]):"";
-    							
-    							$orderDetail=["order_id"=>$order['_id'],"summary"=>$order_summary,"total"=>"Rs. ".$total_amount];
-    							if($payment_mode)$orderDetail["payment_mode"]=$payment_mode;
-    							
-    							
-    							$finalData["header"]=$header;
-    							
-    							$finalData["cart_summary"]=$cart_details;
-    							$finalData["order_detail"]=$orderDetail;
-    							//     				$finalData=array_merge($finalData,$defaults);
-    							
-    							$resp['data']=$finalData;
-    							return $resp;
-    							
-    							
+    						$order_summary=[];
+    						array_push($order_summary, ["key"=>"items","value"=>count($cart_details)]);
+    						array_push($order_summary, ["key"=>"items total","value"=>"Rs. ".$cart_total]);
+    						
+    						(!empty($cart_summary['data']['coupon_discount']))?
+    						array_push($order_summary, ["key"=>"Coupon Discount","value"=>"- Rs. ".$cart_total ,"color"=>"#f7a81e"]):"";
+    						
+    						$orderDetail=["order_id"=>$order['_id'],"summary"=>$order_summary,"total"=>"Rs. ".$total_amount];
+    						if($payment_mode)$orderDetail["payment_mode"]=$payment_mode;
+    						
+    						
+    						$finalData["header"]=$header;
+    						
+    						$finalData["cart_summary"]=$cart_details;
+    						$finalData["order_detail"]=$orderDetail;
+    						//     				$finalData=array_merge($finalData,$defaults);
+    						
+    						$resp['data']=$finalData;
+    						return $resp;
+    						
+    						
     	} catch (Exception $e)
     	{
     		Log::error(" Error [getProductSuccessMsg] ".print_r($this->utilities->baseFailureStatusMessage($e),true));
@@ -4748,16 +4748,7 @@ class HomeController extends BaseController {
         		
         		$home["response"]['products']=array_values($tp);
         		(isset($homeData['header_image']))?array_unshift($home["response"]['products'], [['type'=>'header', 'url'=>$homeData['header_image']]]):"";
-        		$jwt_token = Request::header("Authorization");
-        		if(isset($jwt_token))
-        		{
-        			$cart=$this->utilities->productsTabCartHomeCustomer();
-        			if(!empty($cart))
-        			{
-        				$cart=$cart->toArray();
-        				$home["response"]['cart'] =["count"=>count($cart['products'])];
-        			}
-        		}
+        		$this->utilities->attachCart($home["response"]);
         		return $home;
         	} catch (Exception $e) {
         		Log::error($e);
