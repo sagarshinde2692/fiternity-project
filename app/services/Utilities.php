@@ -4738,8 +4738,9 @@ Class Utilities {
 			if(!empty($cart))
 			{
 				$cart=$cart->toArray();
-				$data['cart']=["count"=>$this->getCartTotalCount($cart)];
+				Log::info(" info attachCart cart ::".print_r($cart,true));
 				if($onlyCart)return $cart;
+				$data['cart']=["count"=>$this->getCartTotalCount($cart)];
 			}
 			else return null;
 		}
