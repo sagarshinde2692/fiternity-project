@@ -147,7 +147,7 @@ Class Mobikwik {
     public function generateOtp($data){
 
         $data = [
-            'amount'=>(float)$data['amount'],
+            'amount'=>50000,//(float)$data['amount'],
             'cell'=>substr($data['cell'],-10),
             'merchantname'=>$this->merchantname,
             'mid'=>$this->mid,
@@ -168,7 +168,7 @@ Class Mobikwik {
     public function generateToken($data){
 
         $data = [
-            'amount'=>(float)$data['amount'],
+            'amount'=>50000,//(float)$data['amount'],
             'cell'=>substr($data['cell'],-10),
             'merchantname'=>$this->merchantname,
             'mid'=>$this->mid,

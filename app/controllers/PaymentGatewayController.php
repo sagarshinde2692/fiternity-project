@@ -431,7 +431,7 @@ class PaymentGatewayController extends \BaseController {
 
 			if($debitMoney['response']['status'] == 'SUCCESS' && $debitMoney['response']['statuscode'] === '0'){
 
-				/*$checkStatusData = [
+				$checkStatusData = [
 					'txnid'=> $data['orderid']
 				];
 
@@ -457,7 +457,7 @@ class PaymentGatewayController extends \BaseController {
 					];
 
 					return Response::json($response);
-				}*/
+				}
 
 				$response = [
 					'debit_amount'=>$debitMoney['response']['debitedamount'],
