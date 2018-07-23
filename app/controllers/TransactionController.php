@@ -2521,7 +2521,7 @@ class TransactionController extends \BaseController {
     		}
     		
     		$cart_data=(!empty($order['cart_data'])?$order['cart_data']:[]);
-    		Log::info(" info  cart_data :: ".print_r($cart_new,true));
+    		Log::info(" info  cart_data :: ".print_r($cart_data,true));
     		$cart=$this->utilities->attachCart($cart,true);
     		Log::info(" info  cart :: ".print_r($cart,true));
     		$cart_new=[];
