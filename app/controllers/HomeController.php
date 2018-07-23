@@ -4747,16 +4747,7 @@ class HomeController extends BaseController {
         		
         		$home["response"]['products']=array_values($tp);
         		(isset($homeData['header_image']))?array_unshift($home["response"]['products'], [['type'=>'header', 'url'=>$homeData['header_image']]]):"";
-        		$jwt_token = Request::header("Authorization");
-        		if(isset($jwt_token))
-        		{
-        			$cart=$this->utilities->productsTabCartHomeCustomer();
-        			if(!empty($cart))
-        			{
-        				$cart=$cart->toArray();
-        				$home["response"]['cart'] =["count"=>count($cart['products'])];
-        			}
-        		}
+        		$this->utilities->attachCart($home["response"]);
         		return $home;
         	} catch (Exception $e) {
         		
