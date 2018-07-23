@@ -249,8 +249,8 @@ Class Mobikwik {
 
     }
 
-    public function addMoney($data){    
-
+    public function addMoney($data){
+        
         $data = [
             'amount'=>(float)$data['amount'],
             'cell'=>substr($data['cell'],-10),
@@ -260,6 +260,11 @@ Class Mobikwik {
             'redirecturl'=>\Config::get('app.url').'/verifyaddmoney/mobikwik',
             'token'=>$data['token']
         ];
+
+        if(!empty($data['source']) && $data['source'] == 'website'){
+
+            $data['redirecturl'] = "localhost:3000/verifymobikwik";
+        }
 
         $checksum = $this->createChecksum($data);
 
