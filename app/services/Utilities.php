@@ -3721,9 +3721,9 @@ Class Utilities {
     	}
     	else return null;	
     }
-    public function getCustomerAddress($customerId=null){
+    public function getCustomerAddress($customer_id=null){
     	
-    	if(empty($customerId))
+    	if(empty($customer_id))
     	{
     		try {
     			$decoded = decode_customer_token();
@@ -3743,9 +3743,9 @@ Class Utilities {
     	}
     	else return null;
     }
-    public function addCustomerAddress($customerId=null,$customer_address){
+    public function addCustomerAddress($customer_id=null,$customer_address){
     	
-    	if(empty($customerId))
+    	if(empty($customer_id))
     	{
     		try {
     			$decoded = decode_customer_token();
@@ -4729,13 +4729,12 @@ Class Utilities {
 		return $base;
 	}
 	
-	public function attachCart(&$data,$onlyCart=false)
+	public function attachCart(&$data,$onlyCart=false,$customer_id=null)
 	{
 		$jwt=Request::header("Authorization");
 		if(isset($jwt))
 		{
-			$cart=$this->productsTabCartHomeCustomer();
-			Log::info(" info attachCart cart 12 ::".print_r($cart,true));
+			$cart=$this->productsTabCartHomeCustomer($customer_id);
 			if(!empty($cart))
 			{
 				$cart=$cart->toArray();
