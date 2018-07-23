@@ -5002,6 +5002,8 @@ class HomeController extends BaseController {
         {
         	try {
         		$t=[];
+        		$tt=Request::header("Authorization");
+        		Log::info(" token  ".print_r($tt,true));
         		$cart=$this->utilities->attachCart($t,true);
         		$dataCart=$this->utilities->getCartFinalSummary($cart['products'], $cart['_id']);
         		
