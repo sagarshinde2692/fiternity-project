@@ -1,18 +1,25 @@
 <html>
 <head>
 	<meta http-equiv="Content-Type" content="text/html;charset=ISO-8859-I">
-	<title>Paytm</title>
-	<script type="text/javascript">
-		function response(){
-			return document.getElementById('response').value;
-		}
-	</script>
+	<title>Mobikwik</title>
 </head>
 <body>
-  Redirect back to the app<br>
+  Redirect from Mobikwik<br>
 
-  <form name="frm" method="post">
+  <form name="form" method="post">
     <input type="hidden" id="response" name="responseField" value='<?php echo $response?>'>
   </form>
 </body>
+
+	<script type="text/javascript">
+
+		response();
+
+		function response(){
+
+			return document.getElementById('response').value;
+		}
+
+	</script>
+
 </html>

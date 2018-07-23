@@ -511,6 +511,26 @@ class PaymentGatewayController extends \BaseController {
 		return Response::json($response);
 	}
 
+	public function verifyPayment($status = 'success'){
+
+		$response = [
+			'status'=>200,
+			'message'=>'200 Added to wallet',
+		];
+
+		if($status == "failure"){
+
+			$response = [
+				'status'=>400,
+				'message'=>'failure status'
+			];
+		}
+
+		$response = htmlentities(json_encode($response));
+
+		return View::make('paymentgateway.mobikwik', compact('response'));
+	}
+
 	public function verifyAddMoneyMobikwik(){
 
 		$data = $_REQUEST;
