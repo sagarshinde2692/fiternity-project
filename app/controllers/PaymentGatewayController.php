@@ -432,7 +432,7 @@ class PaymentGatewayController extends \BaseController {
 			if($debitMoney['response']['status'] == 'SUCCESS' && $debitMoney['response']['statuscode'] === '0'){
 
 				$checkStatusData = [
-					'txnid'=> $data['orderid']
+					'txnid'=> $data['txnid']
 				];
 
 				$checkStatus = $this->mobikwik->checkStatus($checkStatusData);
