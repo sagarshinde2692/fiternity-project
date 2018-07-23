@@ -3701,9 +3701,9 @@ Class Utilities {
 
     }
 
-    public function productsTabCartHomeCustomer($customerId=null){
+    public function productsTabCartHomeCustomer($customer_id=null){
     	
-    	if(empty($customerId))
+    	if(empty($customer_id))
     	{
     		try {
     			$decoded = decode_customer_token();
@@ -4735,6 +4735,7 @@ Class Utilities {
 		if(isset($jwt))
 		{
 			$cart=$this->productsTabCartHomeCustomer();
+			Log::info(" info attachCart cart 12 ::".print_r($cart,true));
 			if(!empty($cart))
 			{
 				$cart=$cart->toArray();
