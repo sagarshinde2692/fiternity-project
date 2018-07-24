@@ -396,6 +396,8 @@ class PaymentGatewayController extends \BaseController {
 
 		$data = Input::json()->all();
 
+		Log::info('debitMoneyMobikwik',$data);
+
 		$rules = [
 			'cell' => 'required|min:10|max:10',
 			'amount' => 'required',
