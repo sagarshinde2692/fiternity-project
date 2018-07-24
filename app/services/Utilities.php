@@ -4347,25 +4347,29 @@ Class Utilities {
 // 					return $cartDataInput;
 					if($cartRatecardsCount>0&&$cartQuantityCount>0&&$cartQuantityCount==$cartRatecardsCount)
 					{
-						$ratecards=ProductRatecard::active()->whereIn("_id",array_map('intval',$cartDataRatecards))->with(array('product'=>function($query){$query->select('_id','slug','title','slug','info','specification');}))->get(['price','product_id','title','color','size']);
+						$ratecards=ProductRatecard::active()->whereIn("_id",array_map('intval',$cartDataRatecards))->with(array('product'=>function($query){$query->active()->select('_id','slug','title','slug','info','specification');}))->get(['price','product_id','title','color','size']);
 						if(!empty($ratecards))
 						{
 							$ratecards=$ratecards->toArray();
 							if($cartDataUnique!=count($ratecards))return ['status'=>0,"message"=>"Invalid Ratecard Found."];
 							foreach ($ratecards as &$ratecard)
 							{
-								$neededObject = array_values(array_filter($cartDataInput,function ($e) use ($ratecard) {return $e['ratecard_id']== $ratecard['_id'];}));
-								if(!empty($neededObject)&&count($neededObject)>0)
-									$neededObject=$neededObject[0];
-									if(!empty($ratecard)&&!empty($neededObject)&&!empty($neededObject['quantity'])&&!empty($ratecard['product_id'])&&!empty($ratecard['_id'])&&isset($ratecard['price']))
-									{
-										array_push($cartData, ["product_id"=>$ratecard['product_id'],"ratecard_id"=>$ratecard['_id'],"price"=>$ratecard['price'],"quantity"=>intval($neededObject['quantity'])]);
-										$tmpRatecardinfo=['_id'=>!empty($ratecard['_id'])?$ratecard['_id']:"",'title'=>!empty($ratecard['title'])?$ratecard['title']:"",'color'=>(!empty($ratecard['properties'])&&!empty($ratecard['properties']['color']))?$ratecard['properties']['color']:"",
-												'size'=>(!empty($ratecard['properties'])&&!empty($ratecard['properties']['size']))?$ratecard['properties']['size']:"",'slug'=>!empty($ratecard['slug'])?$ratecard['slug']:"",'properties'=>!empty($ratecard['properties'])?$ratecard['properties']:""];
-										array_push($cartDataExtended, ["product"=>$ratecard['product'],"ratecard"=>$tmpRatecardinfo,"price"=>$ratecard['price'],"quantity"=>intval($neededObject['quantity'])]);
-										
-									}
+								if(!empty($ratecard['product']))
+								{
+									$neededObject = array_values(array_filter($cartDataInput,function ($e) use ($ratecard) {return $e['ratecard_id']== $ratecard['_id'];}));
+									if(!empty($neededObject)&&count($neededObject)>0)
+										$neededObject=$neededObject[0];
+										if(!empty($ratecard)&&!empty($neededObject)&&!empty($neededObject['quantity'])&&!empty($ratecard['product_id'])&&!empty($ratecard['_id'])&&isset($ratecard['price']))
+										{
+											array_push($cartData, ["product_id"=>$ratecard['product_id'],"ratecard_id"=>$ratecard['_id'],"price"=>$ratecard['price'],"quantity"=>intval($neededObject['quantity'])]);
+											$tmpRatecardinfo=['_id'=>!empty($ratecard['_id'])?$ratecard['_id']:"",'title'=>!empty($ratecard['title'])?$ratecard['title']:"",'color'=>(!empty($ratecard['properties'])&&!empty($ratecard['properties']['color']))?$ratecard['properties']['color']:"",
+													'size'=>(!empty($ratecard['properties'])&&!empty($ratecard['properties']['size']))?$ratecard['properties']['size']:"",'slug'=>!empty($ratecard['slug'])?$ratecard['slug']:"",'properties'=>!empty($ratecard['properties'])?$ratecard['properties']:""];
+											array_push($cartDataExtended, ["product"=>$ratecard['product'],"ratecard"=>$tmpRatecardinfo,"price"=>$ratecard['price'],"quantity"=>intval($neededObject['quantity'])]);
+											
+										}
 										else return ['status'=>0,"message"=>"Not a valid ratecard or ratecard doesn't exist."];
+								}
+								else return ['status'=>0,"message"=>"Not a valid product id."];
 							}
 							if($cart_summary)return ['status'=>1,"data"=>$cartDataExtended];
 							if($update) {

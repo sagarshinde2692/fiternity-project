@@ -47,7 +47,7 @@ class Homepage extends \Basemodel {
 		});
 		(!empty($rates)&&!empty($rates['result']))?
 		$rc=array_values(array_intersect(array_column(array_column($rates['result'], 'rcs'), 'ratecards'),$rc)):""; */
-		$combined=["rc"=>ProductRatecard::whereIn("_id",$rc)->get(["title","price"]),"pc"=>Product::whereIn("_id",$pro)->with('primarycategory')->get(["title",'productcategory','slug'])];
+		$combined=["rc"=>ProductRatecard::active()->whereIn("_id",$rc)->get(["title","price"]),"pc"=>Product::active()->whereIn("_id",$pro)->with('primarycategory')->get(["title",'productcategory','slug'])];
 		
 		$rateMain=[];
 		$productMain=[];
@@ -58,7 +58,13 @@ class Homepage extends \Basemodel {
 
 		$tpa=[];
 		foreach ($home as $key => &$value)
-			array_push($tpa,["ratecard"=>$rateMain[$value['ratecard_id']],"product"=>$productMain[$value['product_id']]]);
+		{
+			$rc1=(!empty($value)&&!empty($rateMain)&&!empty($value['ratecard_id'])&&!empty($rateMain[$value['ratecard_id']]))?$rateMain[$value['ratecard_id']]:"";
+			$pc1=(!empty($value)&&!empty($productMain)&&!empty($value['product_id'])&&!empty($productMain[$value['product_id']]))?$productMain[$value['product_id']]:"";
+			if(!empty($rc1)&&!empty($pc1))
+				array_push($tpa,["ratecard"=>$rateMain[$value['ratecard_id']],"product"=>$productMain[$value['product_id']]]);
+		}
+			
 		return array_values($tpa);
 	}
 }
