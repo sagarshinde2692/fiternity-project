@@ -1031,7 +1031,7 @@ Class Utilities {
 
                 }else{
 
-                    $order->update(['myreward_id'=>(int)$customerCoupn['myreward_id']]);
+                    $order->update(['myreward_id'=>$customerCoupn['myreward_id']]);
 
                     $customerCoupn->claimed = $customerCoupn->claimed + 1;
 
