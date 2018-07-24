@@ -4860,7 +4860,7 @@ class HomeController extends BaseController {
         		(!empty($selectedRatecard))?$finalData['product']=$selectedRatecard:"";
         		$this->utilities->attachProductQuantity($finalData['product']);
         		if($getProductInternal) return ["status"=>1,"data"=>$finalData['product']];
-        		(!empty($mainSimilar)&&count($mainSimilar)>0)?$finalData['similar_products']=["title"=>"Similar Products","sub_title"=>"Get Fitter","items"=>$mainSimilar]:"";
+        		(!empty($mainSimilar)&&count($mainSimilar)>0)?$finalData['similar_products']=["title"=>"Other Products","sub_title"=>"Get Fitter","items"=>$mainSimilar]:"";
         		$this->utilities->attachCart($finalData,false);
         		return ["status"=>200,"response"=>$finalData];
         	} catch (Exception $e) {
