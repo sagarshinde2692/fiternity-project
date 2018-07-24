@@ -4646,7 +4646,14 @@ Class Utilities {
 			if(!empty($data))$temp=$temp+$data;
 		}
 		return $temp;
-	}	
+	}
+	public function getRateCardBaseImage($ratecards=[])
+	{
+		foreach ($ratecards as $value) 
+			if(!empty($value)&&!empty($value['image'])&&!empty($value['image']['primary']))
+				return $value['image']['primary'];
+		return "";
+	}
 }
 
 
