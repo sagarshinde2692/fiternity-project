@@ -1023,7 +1023,7 @@ Class Utilities {
 
             if($customerCoupn){
 
-                if($customerCoupn['stauts'] == "0"){
+                if($customerCoupn['status'] == "0"){
 
                     $hash_verified = false;
 
