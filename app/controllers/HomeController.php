@@ -4946,7 +4946,6 @@ class HomeController extends BaseController {
         
         			(!empty($products)&&!empty($products['result']))?
         			$products=array_values(array_column(array_column($products['result'], 'prods'), 'products')):"";
-        			select('_id','name','slug');
         			$products=Product::active()->whereIn("_id",$products)->with(array('ratecard'=>function($query){$query->active()->get();}))->with('primarycategory')->get();
         			$productSimilar=[];
         			if(!empty($products))
