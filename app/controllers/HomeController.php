@@ -4846,8 +4846,10 @@ class HomeController extends BaseController {
         					if(!empty($value['product']))
         					{
         						$url="";
-        						(!empty($value['image'])&&!empty($value['image']['primary']))?$url=$value['image']['primary']:
-        						(!empty($value['product']&&!empty($value['product']['image'])&&!empty($value['product']['image']['primary'])))?$url=$value['product']['image']['primary']:"";
+        						if(!empty($value['image'])&&!empty($value['image']['primary']))
+        							$url=$value['image']['primary'];
+        							else if (!empty($value['product']&&!empty($value['product']['image'])&&!empty($value['product']['image']['primary'])))
+        								$url=$value['product']['image']['primary'];
         						array_push($mainSimilar, [
         								'cost'=>$this->utilities->getRupeeForm($value['price']),'price'=>$value['price'],
         								'product_id'=>((!empty($value['product']['_id']))?$value['product']['_id']:""),'product_title'=>((!empty($value['product']['title']))?$value['product']['title']:""),
@@ -4960,8 +4962,9 @@ class HomeController extends BaseController {
         					if(!empty($value['ratecard']))
         					{
         						$url="";
-        							if(!empty($value['ratecard']&&!empty($value['ratecard']['image'])&&!empty($value['ratecard']['image']['primary'])))
-        								$url=$value['ratecard']['image']['primary'];
+        						$rc_url=$this->utilities->getRateCardBaseImage($value['ratecard']);
+        							if(!empty($rc_url))
+        								$url=$rc_url;
 									else if(!empty($value['image'])&&!empty($value['image']['primary']))
         									$url=$value['image']['primary'];
 	        					array_push($productSimilar, [
