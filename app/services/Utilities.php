@@ -1023,13 +1023,15 @@ Class Utilities {
 
             if($customerCoupn){
 
-                if($customerCoupn['stauts'] == "0"){
+                if($customerCoupn['status'] == "0"){
 
                     $hash_verified = false;
 
                     $order->update(['customer_coupn_error'=>true]);
 
                 }else{
+
+                    $order->update(['myreward_id'=>$customerCoupn['myreward_id']]);
 
                     $customerCoupn->claimed = $customerCoupn->claimed + 1;
 
