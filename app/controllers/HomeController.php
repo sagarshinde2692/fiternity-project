@@ -3536,13 +3536,13 @@ class HomeController extends BaseController {
         if(!empty($data['addOns']))
         $addOns = $data['addOns'];
         if($device_type == "android"){
-            $notification_object = array("notif_id" => 2005,"notif_type" => "promotion", "notif_object" => array("promo_id"=>739423,"promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> "593a9380820095bf3e8b4568","title"=> $data["title"],"text"=> $data["body"]));
+        	$notification_object = array("notif_id" => 2005,"notif_type" => "promotion", "notif_object" => array("promo_id"=>739423,"label"=>(!empty($data['label'])?$data['label']:""),"promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> "593a9380820095bf3e8b4568","title"=> $data["title"],"text"=> $data["body"]));
             if(!empty($addOns))
             	foreach ($addOns as $key => $value) 
             		$notification_object['notif_object'][$key]=$value;
             
         }else{
-        	$notification_object = array("aps"=>array("alert"=> array("body" => $data["body"],"title" => $data["title"]), "sound" => "default", "badge" => 1), "notif_object" => array("promo_id"=>739423,"notif_type" => "promotion","promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> "593a9380820095bf3e8b4568","title"=> $data["title"],"text"=> $data["body"]));
+        	$notification_object = array("aps"=>array("alert"=> array("body" => $data["body"],"title" => $data["title"]), "sound" => "default", "badge" => 1), "notif_object" => array("promo_id"=>739423,"label"=>(!empty($data['label'])?$data['label']:""),"notif_type" => "promotion","promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> "593a9380820095bf3e8b4568","title"=> $data["title"],"text"=> $data["body"]));
         	if(!empty($addOns))
         		foreach ($addOns as $key => $value)
         			$notification_object['notif_object'][$key]=$value;
@@ -4809,6 +4809,8 @@ class HomeController extends BaseController {
         
         public function getProductDetail($ratecard_id,$product_id,$getProductInternal=false,$cache=false)
         {
+    		Log::info($_SERVER['REQUEST_URI']);
+
         	try {
         		$ratecard_id=intval($ratecard_id);$product_id=intval($product_id);
         		$productView=Product::where("_id",$product_id)->with(array('ratecard'=>function($query){$query->select('_id','title','flags','product_id','price','order','status','properties','extra_info','image');}))->with('primarycategory')->first();
@@ -4824,7 +4826,7 @@ class HomeController extends BaseController {
         			else if(!empty($productView['image'])&&!empty($productView['image']['secondary'])&&count($productView['image']['secondary'])>0)$selectedRatecard['images']=$productView['image']['secondary'];
         			unset($selectedRatecard['image']);
         			(!empty($productView['specification'])&&!empty($productView['specification']['primary'])&&!empty($productView['specification']['primary']['features']))?$selectedRatecard['key_details']=$this->utilities->getProductDetailsCustom($productView['specification']['primary']['features']):"";
-        			(!empty($selectedRatecard['key_details']))?array_unshift($selectedRatecard['key_details'],["name"=>"color","value"=>$selectedRatecard['color']]):"";
+//         			(!empty($selectedRatecard['key_details']))?array_unshift($selectedRatecard['key_details'],["name"=>"color","value"=>$selectedRatecard['color']]):"";
         			if(!empty($productView['selection_view'])&&is_array($productView['selection_view']))
         			{
         				$selectionViewFiltered=$this->utilities->getFilteredAndOrdered($productView['selection_view'],'level');
@@ -4862,7 +4864,7 @@ class HomeController extends BaseController {
         		(!empty($selectedRatecard))?$finalData['product']=$selectedRatecard:"";
         		$this->utilities->attachProductQuantity($finalData['product']);
         		if($getProductInternal) return ["status"=>1,"data"=>$finalData['product']];
-        		(!empty($mainSimilar)&&count($mainSimilar)>0)?$finalData['similar_products']=["title"=>"Similar Products","sub_title"=>"Get Fitter","items"=>$mainSimilar]:"";
+        		(!empty($mainSimilar)&&count($mainSimilar)>0)?$finalData['similar_products']=["title"=>"Other Products","sub_title"=>"Get Fitter","items"=>$mainSimilar]:"";
         		$this->utilities->attachCart($finalData,false);
         		return ["status"=>200,"response"=>$finalData];
         	} catch (Exception $e) {
@@ -4962,8 +4964,8 @@ class HomeController extends BaseController {
         				
         			}
         			$finalData=[];
-        			(!empty($categories)&&count($categories)>0)?$finalData['categories']=["title"=>"category Based Products","sub_title"=>"Get Fitter","items"=>$categories]:"";
-        			(!empty($productSimilar)&&count($productSimilar)>0)?$finalData['similar_products']=["title"=>"Similar Products","sub_title"=>"Get Fitter","items"=>$productSimilar]:"";
+        			(!empty($categories)&&count($categories)>0)?$finalData['categories']=["title"=>(($productcategory_id==10)?"GNC":"category Based Products"),"sub_title"=>(($productcategory_id==10)?"":"Get Fitter"),"items"=>$categories]:"";
+        			(!empty($productSimilar)&&count($productSimilar)>0)?$finalData['similar_products']=["title"=>"Other Products","sub_title"=>"Get Fitter","items"=>$productSimilar]:"";
         			$this->utilities->attachCart($finalData,false);
         			return ["status"=>200,"response"=>$finalData];
         		}
