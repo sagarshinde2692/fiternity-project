@@ -442,7 +442,8 @@ class PaymentGatewayController extends \BaseController {
 		$success_data = [
         	'txnid'=>$data['txnid'],
             'amount'=>(int)$data["amount"],
-            'status' => 'success'
+            'status' => 'success',
+            'type'=>$order['type']
         ];
 
         $data['txnid'] = $data['txnid']."-MBKD";
@@ -522,12 +523,20 @@ class PaymentGatewayController extends \BaseController {
         		$order->mobikwik_debit_amount = $response['debit_amount'];
         		$order->update();
 
-                $paymentSuccess = $this->fitweb->paymentSuccess($success_data);
+        		if(stripos($success_data['txnid'],'fit') == 0){
 
-                if(isset($paymentSuccess['status']) && $paymentSuccess['status'] !== 200){
-	                $response['status'] = 400;
-	                $response['message'] = 'Payment success error';
-	            }
+        			$response['success_data'] = $success_data;
+
+		        }else{
+
+		        	$paymentSuccess = $this->fitweb->paymentSuccess($success_data);
+
+	                if($paymentSuccess['status'] !== 200){
+	                	
+		                $response['status'] = 400;
+		                $response['message'] = 'Payment success error';
+		            }
+		        }
 
 			}
 
