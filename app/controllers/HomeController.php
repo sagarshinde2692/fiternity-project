@@ -4862,7 +4862,7 @@ class HomeController extends BaseController {
         		(!empty($selectedRatecard))?$finalData['product']=$selectedRatecard:"";
         		$this->utilities->attachProductQuantity($finalData['product']);
         		if($getProductInternal) return ["status"=>1,"data"=>$finalData['product']];
-        		(!empty($mainSimilar)&&count($mainSimilar)>0)?$finalData['similar_products']=["title"=>"Similar Products","sub_title"=>"Get Fitter","items"=>$mainSimilar]:"";
+        		(!empty($mainSimilar)&&count($mainSimilar)>0)?$finalData['similar_products']=["title"=>"Other Products","sub_title"=>"Get Fitter","items"=>$mainSimilar]:"";
         		$this->utilities->attachCart($finalData,false);
         		return ["status"=>200,"response"=>$finalData];
         	} catch (Exception $e) {
@@ -4962,8 +4962,8 @@ class HomeController extends BaseController {
         				
         			}
         			$finalData=[];
-        			(!empty($categories)&&count($categories)>0)?$finalData['categories']=["title"=>"category Based Products","sub_title"=>"Get Fitter","items"=>$categories]:"";
-        			(!empty($productSimilar)&&count($productSimilar)>0)?$finalData['similar_products']=["title"=>"Similar Products","sub_title"=>"Get Fitter","items"=>$productSimilar]:"";
+        			(!empty($categories)&&count($categories)>0)?$finalData['categories']=["title"=>(($productcategory_id==10)?"GNC":"category Based Products"),"sub_title"=>(($productcategory_id==10)?"":"Get Fitter"),"items"=>$categories]:"";
+        			(!empty($productSimilar)&&count($productSimilar)>0)?$finalData['similar_products']=["title"=>"Other Products","sub_title"=>"Get Fitter","items"=>$productSimilar]:"";
         			$this->utilities->attachCart($finalData,false);
         			return ["status"=>200,"response"=>$finalData];
         		}
