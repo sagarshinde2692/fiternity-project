@@ -4809,7 +4809,7 @@ class HomeController extends BaseController {
         {
         	try {
         		$ratecard_id=intval($ratecard_id);$product_id=intval($product_id);
-        		$productView=Product::where("_id",$product_id)->with(array('ratecard'=>function($query){$query->select('_id','title','flags','product_id','price','order','status','properties','extra_info','image');}))->with('primarycategory')->first();
+        		$productView=Product::active()->where("_id",$product_id)->with(array('ratecard'=>function($query){$query->active()->select('_id','title','flags','product_id','price','order','status','properties','extra_info','image');}))->with('primarycategory')->first();
         		if(empty($productView))return ['status'=>0,"message"=>"Not a valid product Id."];else $productView=$productView->toArray();
         		$selectedRatecard=array_values(array_filter($productView['ratecard'],function ($e) use ($ratecard_id) {return $ratecard_id== $e['_id'];}));
         		if(!empty($selectedRatecard))
@@ -4833,8 +4833,8 @@ class HomeController extends BaseController {
         			if(!empty($productView['primarycategory'])&&!empty($productView['primarycategory']['slug'])){$selectedRatecard['product_category_slug']=$productView['primarycategory']['slug'];$selectedRatecard['product_category_id']=$productView['primarycategory']['_id'];}
         			$mainSimilar=[];
         			$selectedRatecard['ratecard_id']=$selectedRatecard['_id'];
-        			(!empty($productView['servicecategory'])&&!empty($productView['servicecategory']['primary']))?$sameCatProducts=Product::where("_id","!=",$product_id)->where("servicecategory.primary",$productView['servicecategory']['primary'])->lists('_id'):"";
-        			(!empty($sameCatProducts))?$productSimilar=ProductRatecard::active()->with(array('product'=>function($query){$query->with('primarycategory');}))->where("product_id","!=",$product_id)->whereIn("product_id",$sameCatProducts)->get(['_id','title','product_id','price']):"";
+        			(!empty($productView['servicecategory'])&&!empty($productView['servicecategory']['primary']))?$sameCatProducts=Product::active()->where("_id","!=",$product_id)->where("servicecategory.primary",$productView['servicecategory']['primary'])->lists('_id'):"";
+        			(!empty($sameCatProducts))?$productSimilar=ProductRatecard::active()->with(array('product'=>function($query){$query->active()->with('primarycategory')->get();}))->where("product_id","!=",$product_id)->whereIn("product_id",$sameCatProducts)->get(['_id','title','product_id','price']):"";
         			if(!empty($productSimilar))
         			{
         				$productSimilar=$productSimilar->toArray();
@@ -4874,7 +4874,7 @@ class HomeController extends BaseController {
         
         	try {
         		$productcategory_id=intval($productcategory_id);
-        		$productView=Product::where("productcategory.primary",$productcategory_id)->with('ratecard')->with('primarycategory')->get();
+        		$productView=Product::active()->where("productcategory.primary",$productcategory_id)->with(array('ratecard'=>function($query){$query->active()->get();}))->with('primarycategory')->get();
         		
         		if(empty($productView))return ['status'=>0,"message"=>"Not a valid Product Category Id."];
         		else $productView=$productView->toArray();
@@ -4895,7 +4895,7 @@ class HomeController extends BaseController {
         		(!empty($rates)&&!empty($rates['result']))?
         		$ratecards=array_values(array_column(array_column($rates['result'], 'rcs'), 'ratecards')):"";
         		if(!empty($ratecards))
-        			$ratecards=ProductRatecard::active()->whereIn("_id",$ratecards)->with(array('product'=>function($query){$query->with('primarycategory')->orderBy('ordering', 'ASC');}))->get();
+        			$ratecards=ProductRatecard::active()->whereIn("_id",$ratecards)->with(array('product'=>function($query){$query->active()->with('primarycategory')->orderBy('ordering', 'ASC');}))->get();
         		else return ['status'=>0,"message"=>"Not Ratecards found for productcategoryid : ".$productcategory_id];
         		
         		$categories=[];
@@ -4924,7 +4924,7 @@ class HomeController extends BaseController {
         			}
         			
         			
-        			$products=Product::raw(function($collection) use($productcategory_id)
+        			$products=Product::active()->raw(function($collection) use($productcategory_id)
         			{
         				
         				return $collection->aggregate(
@@ -4938,7 +4938,8 @@ class HomeController extends BaseController {
         
         			(!empty($products)&&!empty($products['result']))?
         			$products=array_values(array_column(array_column($products['result'], 'prods'), 'products')):"";
-        			$products=Product::whereIn("_id",$products)->with('ratecard')->with('primarycategory')->get();
+        			select('_id','name','slug');
+        			$products=Product::active()->whereIn("_id",$products)->with(array('ratecard'=>function($query){$query->active()->get();}))->with('primarycategory')->get();
         			$productSimilar=[];
         			if(!empty($products))
         			{
