@@ -4942,7 +4942,7 @@ class HomeController extends BaseController {
         				
         				return $collection->aggregate(
         						[
-        								['$match' => ['productcategory.primary' => ['$nin'=>[$productcategory_id]]]],
+        								['$match' => ['status'=>'1','productcategory.primary' => ['$nin'=>[$productcategory_id]]]],
         								['$group' => ['_id' => ["p_id"=>'$productcategory.primary'],'details' => ['$push'=>['products'=>'$_id']]]],
         								['$match' => ['details.0' => ['$exists'=>true]]],
         								['$project' => ["prods"=>['$arrayElemAt' => ['$details',0]]]]
@@ -4957,10 +4957,13 @@ class HomeController extends BaseController {
         			{
         				$products=$products->toArray();
         				foreach ($products as $value) {
-        					if(!empty($value['product']))
+        					if(!empty($value['ratecard']))
         					{
-	        					$url="";
-	        					(!empty($value['image'])&&!empty($value['image']['primary']))?$url=$value['image']['primary']:"";
+        						$url="";
+        							if(!empty($value['ratecard']&&!empty($value['ratecard']['image'])&&!empty($value['ratecard']['image']['primary'])))
+        								$url=$value['ratecard']['image']['primary'];
+									else if(!empty($value['image'])&&!empty($value['image']['primary']))
+        									$url=$value['image']['primary'];
 	        					array_push($productSimilar, [
 	        							'product_id'=>$value['_id'],
 	        							'product_title'=>$value['title'],
