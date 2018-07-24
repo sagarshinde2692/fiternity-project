@@ -4843,17 +4843,21 @@ class HomeController extends BaseController {
         			{
         				$productSimilar=$productSimilar->toArray();
         				foreach ($productSimilar as $value) {
-        					$url="";
-        					(!empty($value['image'])&&!empty($value['image']['primary']))?$url=$value['image']['primary']:
-        					(!empty($value['product']&&!empty($value['product']['image'])&&!empty($value['product']['image']['primary'])))?$url=$value['product']['image']['primary']:"";
-        					array_push($mainSimilar, [
-        							'cost'=>$this->utilities->getRupeeForm($value['price']),'price'=>$value['price'],
-        							'product_id'=>$value['product']['_id'],'product_title'=>$value['product']['title'],
-        							'product_slug'=>$value['product']['slug'],'url'=>$url,'type'=>'product',
-        							'product_category_slug'=>$value['product']['primarycategory']['slug'],
-        							'product_category_id'=>$value['product']['primarycategory']['_id'],
-        							'ratecard_title'=>$value['title'],'ratecard_id'=>$value['_id']
-        					]);
+        					if(!empty($value['product']))
+        					{
+        						$url="";
+        						(!empty($value['image'])&&!empty($value['image']['primary']))?$url=$value['image']['primary']:
+        						(!empty($value['product']&&!empty($value['product']['image'])&&!empty($value['product']['image']['primary'])))?$url=$value['product']['image']['primary']:"";
+        						array_push($mainSimilar, [
+        								'cost'=>$this->utilities->getRupeeForm($value['price']),'price'=>$value['price'],
+        								'product_id'=>((!empty($value['product']['_id']))?$value['product']['_id']:""),'product_title'=>((!empty($value['product']['title']))?$value['product']['title']:""),
+        								'product_slug'=>((!empty($value['product']['slug']))?$value['product']['slug']:""),'url'=>$url,'type'=>'product',
+        								'product_category_slug'=>$value['product']['primarycategory']['slug'],
+        								'product_category_id'=>$value['product']['primarycategory']['_id'],
+        								'ratecard_title'=>$value['title'],'ratecard_id'=>$value['_id']
+        						]);
+        					}
+        					
         				}
         			}
         			unset($selectedRatecard['_id']);unset($selectedRatecard['productcategory_id']);
@@ -4908,24 +4912,28 @@ class HomeController extends BaseController {
         		{
         			$ratecards=$ratecards->toArray();
         			foreach ($ratecards as $value) {
-        			$url="";
-        			if(!empty($value['image'])&&!empty($value['image']['primary']))
-        				$url=$value['image']['primary'];
-        				else if(!empty($value['product']&&!empty($value['product']['image'])&&!empty($value['product']['image']['primary'])))
-        					$url=$value['product']['image']['primary'];
-        					array_push($categories, [
-        							'cost'=>$this->utilities->getRupeeForm($value['price']),
-        							'price'=>$value['price'],
-        							'product_id'=>$value['product']['_id'],
-        							'product_title'=>$value['product']['title'],
-        							'product_slug'=>$value['product']['slug'],
-        							'url'=>$url,
-        							'type'=>'product',
-        							'product_category_slug'=>$value['product']['primarycategory']['slug'],
-        							'product_category_id'=>$value['product']['primarycategory']['_id'],
-        							'ratecard_title'=>$value['title'],
-        							'ratecard_id'=>$value['_id']
-        					]);
+        				if(!empty($value['product']))
+        				{
+        					$url="";
+        					if(!empty($value['image'])&&!empty($value['image']['primary']))
+        						$url=$value['image']['primary'];
+        						else if(!empty($value['product']&&!empty($value['product']['image'])&&!empty($value['product']['image']['primary'])))
+        							$url=$value['product']['image']['primary'];
+        							array_push($categories, [
+        									'cost'=>$this->utilities->getRupeeForm($value['price']),
+        									'price'=>$value['price'],
+        									'product_id'=>$value['product']['_id'],
+        									'product_title'=>$value['product']['title'],
+        									'product_slug'=>$value['product']['slug'],
+        									'url'=>$url,
+        									'type'=>'product',
+        									'product_category_slug'=>$value['product']['primarycategory']['slug'],
+        									'product_category_id'=>$value['product']['primarycategory']['_id'],
+        									'ratecard_title'=>$value['title'],
+        									'ratecard_id'=>$value['_id']
+        							]);
+        				}
+        			
         			}
         			
         			
@@ -4943,24 +4951,26 @@ class HomeController extends BaseController {
         
         			(!empty($products)&&!empty($products['result']))?
         			$products=array_values(array_column(array_column($products['result'], 'prods'), 'products')):"";
-        			select('_id','name','slug');
         			$products=Product::active()->whereIn("_id",$products)->with(array('ratecard'=>function($query){$query->active()->get();}))->with('primarycategory')->get();
         			$productSimilar=[];
         			if(!empty($products))
         			{
         				$products=$products->toArray();
         				foreach ($products as $value) {
-        					$url="";
-        					(!empty($value['image'])&&!empty($value['image']['primary']))?$url=$value['image']['primary']:"";
-        					array_push($productSimilar, [
-        							'product_id'=>$value['_id'],
-        							'product_title'=>$value['title'],
-        							'product_slug'=>$value['slug'],
-        							'url'=>$url,
-        							'type'=>'category',
-        							'product_category_slug'=>$value['primarycategory']['slug'],
-        							'product_category_id'=>$value['primarycategory']['_id']
-        					]);
+        					if(!empty($value['product']))
+        					{
+	        					$url="";
+	        					(!empty($value['image'])&&!empty($value['image']['primary']))?$url=$value['image']['primary']:"";
+	        					array_push($productSimilar, [
+	        							'product_id'=>$value['_id'],
+	        							'product_title'=>$value['title'],
+	        							'product_slug'=>$value['slug'],
+	        							'url'=>$url,
+	        							'type'=>'category',
+	        							'product_category_slug'=>$value['primarycategory']['slug'],
+	        							'product_category_id'=>$value['primarycategory']['_id']
+	        					]);
+        					}
         				}
         				
         			}
