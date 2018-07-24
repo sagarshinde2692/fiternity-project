@@ -4822,7 +4822,7 @@ class HomeController extends BaseController {
         			else if(!empty($productView['image'])&&!empty($productView['image']['secondary'])&&count($productView['image']['secondary'])>0)$selectedRatecard['images']=$productView['image']['secondary'];
         			unset($selectedRatecard['image']);
         			(!empty($productView['specification'])&&!empty($productView['specification']['primary'])&&!empty($productView['specification']['primary']['features']))?$selectedRatecard['key_details']=$this->utilities->getProductDetailsCustom($productView['specification']['primary']['features']):"";
-        			(!empty($selectedRatecard['key_details']))?array_unshift($selectedRatecard['key_details'],["name"=>"color","value"=>$selectedRatecard['color']]):"";
+//         			(!empty($selectedRatecard['key_details']))?array_unshift($selectedRatecard['key_details'],["name"=>"color","value"=>$selectedRatecard['color']]):"";
         			if(!empty($productView['selection_view'])&&is_array($productView['selection_view']))
         			{
         				$selectionViewFiltered=$this->utilities->getFilteredAndOrdered($productView['selection_view'],'level');
