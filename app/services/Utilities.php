@@ -4472,10 +4472,8 @@ Class Utilities {
 			if(!empty($rates)&&!empty($rates['result']))
 			{
 				$temp['variants']=["title"=>"Select ".$intrinsic_data['name'],"sub_title"=>$intrinsic_data['name'],'options'=>[]];
-				
-				$ky_used=[];
-				foreach ($rates['result'] as $key => $value) {	
-					foreach ($value['details'] as $key1 =>$current) {
+				foreach ($rates['result'] as $value) {	
+					foreach ($value['details'] as $key=>$current) {
 						$tt=[
 								"value"=>(!empty($current['properties'])&&!empty($current['properties'][$intrinsic_data['name']]))?$current['properties'][$intrinsic_data['name']]:"",
 								"enabled"=>(!empty($current['flags'])&&!empty($current['flags']['available'])?true:false),
@@ -4489,7 +4487,7 @@ Class Utilities {
 							$el=$this->getSelectionView($data,$product_id,$arr);
 							(!empty($el)&&!empty($el['variants']))?$tt['more']=$el['variants']:"";
 							if(count($arr)<=1)
-								($key1==0)?array_push($temp['variants']['options'], $tt):"";
+								($key==0)?array_push($temp['variants']['options'], $tt):"";
 							else array_push($temp['variants']['options'], $tt);
 						}
 					}	
