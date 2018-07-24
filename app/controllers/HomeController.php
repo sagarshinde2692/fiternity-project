@@ -4809,6 +4809,8 @@ class HomeController extends BaseController {
         
         public function getProductDetail($ratecard_id,$product_id,$getProductInternal=false,$cache=false)
         {
+    		Log::info($_SERVER['REQUEST_URI']);
+
         	try {
         		$ratecard_id=intval($ratecard_id);$product_id=intval($product_id);
         		$productView=Product::where("_id",$product_id)->with(array('ratecard'=>function($query){$query->select('_id','title','flags','product_id','price','order','status','properties','extra_info','image');}))->with('primarycategory')->first();
