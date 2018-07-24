@@ -8,7 +8,7 @@
  */
 
 use App\Services\Mobikwik as Mobikwik;
-
+use App\Services\Fitweb as Fitweb;
 
 class PaymentGatewayController extends \BaseController {
 
@@ -16,13 +16,15 @@ class PaymentGatewayController extends \BaseController {
 
 	public function __construct(
 
-		Mobikwik $mobikwik
+		Mobikwik $mobikwik,
+		Fitweb $fitweb
 
 	) {
 
      	parent::__construct();
 
      	$this->mobikwik = $mobikwik;
+     	$this->fitweb = $fitweb;
     }
 
 	
@@ -514,6 +516,8 @@ class PaymentGatewayController extends \BaseController {
 
 				$order->pg_type = "MOBIKWIK";
         		$order->mobikwik_hash = $success_data['hash'] = getpayTMhash($order->toArray())['reverse_hash'];
+        		$order->mobikwik_orderid = $response['txnid'];
+        		$order->mobikwik_debit_amount = $response['debit_amount'];
         		$order->update();
 
                 $paymentSuccess = $this->fitweb->paymentSuccess($success_data);
