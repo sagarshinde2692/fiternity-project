@@ -1213,6 +1213,7 @@ class TransactionController extends \BaseController {
     						$txnid = "MFIT".$data['_id'];(isset($old_order_id))?$txnid = "MFIT".$data['_id']."-R".$data['repetition']  :"";
     						$successurl = $data['type'] == "product" ? Config::get('app.website')."/paymentsuccessandroid":"";
     					}
+    					else return ["status"=>0,"message"=>"customer_source not in ['android','ios','kiosk']"];
     					$data['payment']['txnid'] = $txnid;
     					
     					//*********************************************************USE THIS CODE IN GET PRODUCT CART AMOUNT.************************************************
