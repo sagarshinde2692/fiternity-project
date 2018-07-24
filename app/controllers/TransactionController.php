@@ -1815,6 +1815,8 @@ class TransactionController extends \BaseController {
     }
 
     public function successCommon($data){
+
+        Log::info('successCommon',$data);
         
         $rules = array(
             'order_id'=>'required'
