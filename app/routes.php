@@ -1211,11 +1211,8 @@ Route::get('tagReviews','DebugController@tagReviews');
 
 Route::get('getbrandvendors/{brand_id}/{city_id}', array('as' => 'finders.getbrandvendors','uses' => 'FindersController@getBrandVendors'));
 
-<<<<<<< HEAD
 Route::get('updateCouponUsed','DebugController@updateCouponUsed');
 
 Route::get('lostFitcode','DebugController@lostFitcode');
-=======
 
 Route::post('getcustomercarddetails','CustomerController@getCustomerCardDetails');
->>>>>>> saveCards
