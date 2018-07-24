@@ -4347,7 +4347,7 @@ Class Utilities {
 // 					return $cartDataInput;
 					if($cartRatecardsCount>0&&$cartQuantityCount>0&&$cartQuantityCount==$cartRatecardsCount)
 					{
-						$ratecards=ProductRatecard::active()->whereIn("_id",array_map('intval',$cartDataRatecards))->with(array('product'=>function($query){$query->select('_id','slug','title','slug','info','specification');}))->get(['price','product_id','title','color','size']);
+						$ratecards=ProductRatecard::active()->whereIn("_id",array_map('intval',$cartDataRatecards))->with(array('product'=>function($query){$query->active()->select('_id','slug','title','slug','info','specification');}))->get(['price','product_id','title','color','size']);
 						if(!empty($ratecards))
 						{
 							$ratecards=$ratecards->toArray();
