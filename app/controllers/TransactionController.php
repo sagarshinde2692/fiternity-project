@@ -1412,14 +1412,14 @@ class TransactionController extends \BaseController {
     						 $result['convinience_fee'] = $data['convinience_fee'];
     						 } */
     						
-    						$cash_pickup_applicable = (isset($data['amount_calculated']['final']) && $data['amount_calculated']['final']>= 2500) ? true : false;
+//     						$cash_pickup_applicable = (isset($data['amount_calculated']['final']) && $data['amount_calculated']['final']>= 2500) ? true : false;
     						$emi_applicable = (isset($data['amount_calculated']['final']) && $data['amount_calculated']['final']>= 5000) ? true : false;
     						
     						$resp   =   [
     								'status' => 200,
     								'data' => $result,
     								'message' => "Tmp Order Generated Sucessfully",
-    								'cash_pickup' => $cash_pickup_applicable,
+//     								'cash_pickup' => $cash_pickup_applicable,
     								'emi'=>$emi_applicable
     						];
     						
@@ -6953,7 +6953,7 @@ class TransactionController extends \BaseController {
     	
     	
     	array_push($payment_modes, ['title' => 'Online Payment','subtitle' => 'Transact online with netbanking, card and wallet','value' => 'paymentgateway','payment_options'=>$payment_options]);
-    	array_push($payment_modes, ['title' => 'Cash Pickup','subtitle' => 'Schedule cash payment pick up','value' => 'cod']);
+//     	array_push($payment_modes, ['title' => 'Cash Pickup','subtitle' => 'Schedule cash payment pick up','value' => 'cod']);
     	
     	$emi = $this->utilities->displayEmi(array('amount'=>$data['data']['amount']));    		
     	if(!empty($data['emi']) && $data['emi'])
