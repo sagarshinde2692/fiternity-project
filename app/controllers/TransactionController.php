@@ -6999,6 +6999,7 @@ class TransactionController extends \BaseController {
     		$response=["status"=>1,"message"=>"success"];
     		$you_save = 0;
     		$amount_summary= [['field' => 'Total Amount','value' => $this->utilities->getRupeeForm((isset($data['amount_calculated']['final']) ? $data['amount_calculated']['final']: $data['amount_calculated']['final']))]];
+    		if(empty($data['deliver_to_vendor']))array_push($amount_summary,['field' => 'Delivery charges','value' =>$this->utilities->getRupeeForm(50)]);
     		$amount_payable = ['field' => 'Total Amount Payable', 'value' => $this->utilities->getRupeeForm($data['amount_calculated']['final'])];
     		
     		

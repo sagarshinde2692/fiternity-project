@@ -4420,10 +4420,14 @@ Class Utilities {
 				// $amount = $amount - $walletamuount - $couponAmount + $convinience_fee; 
 				
 				
+				// DELIVERY CHARGES
+				if(empty($data['deliver_to_vendor']))
+					$amount=$amount+50;
 				
 				// FINALLY RETURN
 			
 				$resp['amount']['final']=$amount;
+				
 				return $resp;
 		} catch (Exception $e) 
 		{
