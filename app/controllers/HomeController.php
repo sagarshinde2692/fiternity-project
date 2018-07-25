@@ -2099,7 +2099,7 @@ class HomeController extends BaseController {
     						return $cart_summary;
     						
     						$order_summary=[];
-    						array_push($order_summary, ["key"=>"Total Amount","value"=>count($cart_details)]);
+    						array_push($order_summary, ["key"=>"Total Amount","value"=>$cart_total]);
     						if(empty($order['deliver_to_vendor']))
     							array_push($order_summary, ["key"=>"Delivery Charges","value"=>$this->utilities->getRupeeForm(50)]);
     						array_push($order_summary, ["key"=>"Amount Paid","value"=>$this->utilities->getRupeeForm($total_amount)]);
