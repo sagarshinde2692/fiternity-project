@@ -4464,9 +4464,10 @@ Class Utilities {
 			$rates=ProductRatecard::active()->raw(function($collection) use($product_id,$intrinsic_data,$arr)
 			{
 				return $collection->aggregate([
-						['$match' => $this->getQueryMultiplier($arr,$product_id)],
-						['$group' => ['_id' =>'$properties.'.$intrinsic_data['name'],'details' => ['$push'=>['_id'=>'$_id','properties'=>'$properties','flags'=>'$flags','price'=>'$price']]]],
-						['$match' => ['details.0' => ['$exists'=>true]]]]);
+						['$match'=>$this->getQueryMultiplier($arr,$product_id)],
+						['$group'=>['_id' =>'$properties.'.$intrinsic_data['name'],'details' => ['$push'=>['_id'=>'$_id','properties'=>'$properties','flags'=>'$flags','price'=>'$price']]]],
+						['$match'=>['details.0' => ['$exists'=>true]]]
+				]);
 			});
 			if(!empty($rates)&&!empty($rates['result']))
 			{
@@ -4482,11 +4483,9 @@ Class Utilities {
 						
 						if(!empty($tt['value']))
 						{
-							$arr[count($arr)-1]['value']=$tt['value'];
-							$el=$this->getSelectionView($data,$product_id,$arr);
+							$arr[count($arr)-1]['value']=$tt['value'];$this->attachProductQuantity($tt);$el=$this->getSelectionView($data,$product_id,$arr);
 							(!empty($el)&&!empty($el['variants']))?$tt['more']=$el['variants']:"";
-							if(count($arr)<=1)
-								($key==0)?array_push($temp['variants']['options'], $tt):"";
+							if(count($arr)<=1)($key==0)?array_push($temp['variants']['options'], $tt):"";
 							else array_push($temp['variants']['options'], $tt);
 						}
 					}	
@@ -4540,7 +4539,7 @@ Class Utilities {
 		return (!empty($cart))?array_reduce((!empty($cart['products'])?array_map(function($e){return (!empty($e['quantity'])?intval($e['quantity']):0);},$cart['products']):[]),function($carry,$item){$carry+=$item;return $carry;}):null;
 	}
 	
-	public function attachProductQuantity(&$data)
+	public function attachProductQuantity(&$data,$onlyQuantity=false)
 	{
 		$jwt=Request::header("Authorization");
 		if(isset($jwt))
@@ -4555,11 +4554,17 @@ Class Utilities {
 					{
 						$tmp_data=$tmp_data[0];
 						if(!empty($tmp_data['quantity']))
-							$data['quantity']=$tmp_data['quantity'];
+						{
+							if($onlyQuantity)return $tmp_data['quantity'];
+							else $data['quantity']=$tmp_data['quantity'];
+						}
+						else {
+							if($onlyQuantity) return 1;
+							else $data['quantity']=1;
+						}
 					}
 			}
 		}
-		
 	}
 	
 	public function fetchCustomerAddresses(&$data)
