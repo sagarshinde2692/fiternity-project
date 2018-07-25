@@ -4420,12 +4420,15 @@ Class Utilities {
 				
 				
 				// DELIVERY CHARGES
+				$resp['amount']['cart_amount']=$amount;
 				if(empty($data['deliver_to_vendor']))
 					$amount=$amount+50;
 				
 				// FINALLY RETURN
 			
 				$resp['amount']['final']=$amount;
+				$resp['amount']['delivery']=50;
+				
 				
 				return $resp;
 		} catch (Exception $e) 
