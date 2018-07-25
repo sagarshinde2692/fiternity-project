@@ -826,7 +826,7 @@ Class Utilities {
         $finder_lon                        =    (isset($finder['lon']) && $finder['lon'] != '') ? $finder['lon'] : "";
         $finder_lat                        =    (isset($finder['lat']) && $finder['lat'] != '') ? $finder['lat'] : "";
         $finder_category_id                =    (isset($finder['category_id']) && $finder['category_id'] != '') ? $finder['category_id'] : "";
-        $finder_slug                       =    (isset($finder['slug']) && $finder['slug'] != '') ? $finder['slug'] : "";
+        $data['finder_slug']                       =    (isset($finder['slug']) && $finder['slug'] != '') ? $finder['slug'] : "";
         $finder_name                       =    (isset($finder['title']) && $finder['title'] != '') ? ucwords($finder['title']) : "";
 
         $data['finder_city'] =  trim($finder_city);
@@ -5009,6 +5009,79 @@ Class Utilities {
 				return $value['image']['primary'];
 		return "";
 	}
+    public function updateRatecardSlots($data=[]){
+        // $data = \Order::find(130984);
+        $ratecard_id = $data['ratecard_id'];
+        
+        $ratecard = \Ratecard::find($ratecard_id);
+
+        $available_slots = $ratecard->available_slots = $ratecard->available_slots - 1;
+
+        if(!$available_slots){
+            
+            $offer = \Offer::where('ratecard_id', $ratecard_id)->where('added_by_script', '!=', true)->where('hidden', false)->orderBy('order', 'asc')
+            ->where('start_date', '<=', new \DateTime( date("d-m-Y 00:00:00", time()) ))
+            ->where('end_date', '>=', new \DateTime( date("d-m-Y 00:00:00", time()) ))
+            ->first(['price','type','ratecard_id']);
+            
+            
+            if(!empty($offer)){
+                
+                $price = $offer['price'];
+                
+                $new_price = round($price * 1.01);
+                
+                $new_price = $price + ($new_price > 50 ? ($new_price < 75 ? $new_price : 75) : 50);
+
+                
+                $offer_data = $offer->toArray();
+                
+                $offer_data['new_price'] = $new_price;
+
+                $create_offer  = $this->createOffer($offer_data);
+                
+            }
+            
+            Log::info($days_passed = date('d', time()));
+            
+            Log::info($days_left = 25 - $days_passed);
+            
+            Log::info($new_slots = round($ratecard->total_slots_created / $days_passed * $days_left));
+            
+            $ratecard->available_slots = $new_slots;
+            
+            $ratecard->total_slots_created = $ratecard->total_slots_created + $new_slots;
+                                    
+            
+        }
+        $ratecard->save();
+        
+        $this->busrtFinderCache($data['finder_slug']);
+    
+    }
+
+    public function createOffer($offer_data){
+        
+        $offer_id = \Offer::max('_id') + 1;
+        $offer_data['_id'] = $offer_id;
+        $offer_data['added_by_script'] = true;
+        $offer = new Offer($offer_data);
+        $offer_data->_id = $offer_id;
+        $offer->save();
+
+    }
+
+    public function busrtFinderCache($slug){
+
+        \Cache::tags('finder_detail')->forget($slug);
+        \Cache::tags('finder_detail_android')->forget($slug);
+        \Cache::tags('finder_detail_ios')->forget($slug);
+        \Cache::tags('finder_detail_ios_4_4_3')->forget($slug);
+        \Cache::tags('finder_detail_android_4_4_3')->forget($slug);
+        
+    }
+
+
 }
 
 

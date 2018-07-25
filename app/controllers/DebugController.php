@@ -7853,5 +7853,10 @@ public function yes($msg){
 
 
 
+	public function updateRatecardSlots(){
+		$utilities = new Utilities();
+		return $utilities->updateRatecardSlots();
+	}
+
 }
 

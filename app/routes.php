@@ -1259,3 +1259,5 @@ Route::post('checkstatus/mobikwik','PaymentGatewayController@checkStatusMobikwik
 Route::get('verifypayment/{status}','PaymentGatewayController@verifyPayment');
 
 Route::get('lostFitcode','DebugController@lostFitcode');
+Route::get('updateCouponUsed','DebugController@updateCouponUsed');
+Route::get('updateRatecardSlots','DebugController@updateRatecardSlots');
