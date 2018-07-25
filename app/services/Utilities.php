@@ -4133,9 +4133,10 @@ Class Utilities {
 
         if(!$available_slots){
             
-            $offer = \Offer::where('ratecard_id', $ratecard_id)->where('added_by_script', '!=', true)->where('hidden', false)->orderBy('order', 'asc')
+            $offer = \Offer::where('ratecard_id', $ratecard_id)->where('added_by_script', '!=', true)->where('hidden', false)
             ->where('start_date', '<=', new \DateTime( date("d-m-Y 00:00:00", time()) ))
             ->where('end_date', '>=', new \DateTime( date("d-m-Y 00:00:00", time()) ))
+            ->orderBy('order', 'asc')
             ->first(['price','type','ratecard_id']);
             
             
