@@ -2099,10 +2099,10 @@ class HomeController extends BaseController {
     						return $cart_summary;
     						
     						$order_summary=[];
-    						array_push($order_summary, ["key"=>"Total no of products","value"=>count($cart_details)]);
+    						array_push($order_summary, ["key"=>"Total Amount","value"=>count($cart_details)]);
     						if(empty($order['deliver_to_vendor']))
     							array_push($order_summary, ["key"=>"Delivery Charges","value"=>$this->utilities->getRupeeForm(50)]);
-    						array_push($order_summary, ["key"=>"items total","value"=>$this->utilities->getRupeeForm($total_amount)]);
+    						array_push($order_summary, ["key"=>"Amount Paid","value"=>$this->utilities->getRupeeForm($total_amount)]);
     						
     						(!empty($cart_summary['data']['coupon_discount']))?
     						array_push($order_summary, ["key"=>"Coupon Discount","value"=>"- Rs. ".$cart_total ,"color"=>"#f7a81e"]):"";

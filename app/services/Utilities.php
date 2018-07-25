@@ -4347,7 +4347,7 @@ Class Utilities {
 // 					return $cartDataInput;
 					if($cartRatecardsCount>0&&$cartQuantityCount>0&&$cartQuantityCount==$cartRatecardsCount)
 					{
-						$ratecards=ProductRatecard::active()->whereIn("_id",array_map('intval',$cartDataRatecards))->with(array('product'=>function($query){$query->active()->select('_id','slug','title','slug','info','specification');}))->get(['price','product_id','title','color','size']);
+						$ratecards=ProductRatecard::active()->whereIn("_id",array_map('intval',$cartDataRatecards))->with(array('product'=>function($query){$query->active()->select('_id','slug','title','slug','info','specification','image');}))->get(['price','product_id','title','color','size','image']);
 						if(!empty($ratecards))
 						{
 							$ratecards=$ratecards->toArray();
@@ -4363,9 +4363,8 @@ Class Utilities {
 										{
 											array_push($cartData, ["product_id"=>$ratecard['product_id'],"ratecard_id"=>$ratecard['_id'],"price"=>$ratecard['price'],"quantity"=>intval($neededObject['quantity'])]);
 											$tmpRatecardinfo=['_id'=>!empty($ratecard['_id'])?$ratecard['_id']:"",'title'=>!empty($ratecard['title'])?$ratecard['title']:"",'color'=>(!empty($ratecard['properties'])&&!empty($ratecard['properties']['color']))?$ratecard['properties']['color']:"",
-													'size'=>(!empty($ratecard['properties'])&&!empty($ratecard['properties']['size']))?$ratecard['properties']['size']:"",'slug'=>!empty($ratecard['slug'])?$ratecard['slug']:"",'properties'=>!empty($ratecard['properties'])?$ratecard['properties']:""];
+													'size'=>(!empty($ratecard['properties'])&&!empty($ratecard['properties']['size']))?$ratecard['properties']['size']:"",'slug'=>!empty($ratecard['slug'])?$ratecard['slug']:"",'properties'=>!empty($ratecard['properties'])?$ratecard['properties']:"",'image'=>!empty($ratecard['image'])?$ratecard['image']:""];
 											array_push($cartDataExtended, ["product"=>$ratecard['product'],"ratecard"=>$tmpRatecardinfo,"price"=>$ratecard['price'],"quantity"=>intval($neededObject['quantity'])]);
-											
 										}
 										else return ['status'=>0,"message"=>"Not a valid ratecard or ratecard doesn't exist."];
 								}
@@ -4447,13 +4446,18 @@ Class Utilities {
 			$amount=0;
 			foreach ($cart_data as $cart_item)
 			{
+				$img_url="";
+				if(!empty($cart_item['ratecard'])&&!empty($cart_item['ratecard']['image'])&&!empty($cart_item['ratecard']['image']['primary']))
+					$img_url=$cart_item['ratecard']['image']['primary'];
+					else if (!empty($cart_item['product']&&!empty($cart_item['product']['image'])&&!empty($cart_item['product']['image']['primary'])))
+						$img_url=$cart_item['product']['image']['primary'];
 				$temp=[];
 				$temp['quantity']=$cart_item['quantity'];
 				$temp['price']=(intval($cart_item['quantity'])*intval($cart_item['price']));
 				$temp['size']=$cart_item['ratecard']['size'];
 				$temp['title']=$cart_item['product']['title'];
 				$temp['sub_title']=$cart_item['ratecard']['color'];
-				$temp['image']="http://b.fitn.in/products/details/shoebag.png";
+				$temp['image']=$img_url;
 				array_push($cart_desc,$temp);
 				$amount=$amount+(intval($cart_item['quantity'])*intval($cart_item['price']));
 			}
@@ -4470,37 +4474,75 @@ Class Utilities {
 		}
 	}
 	
-	// 	public function  getProductImages($cart_data)
-	// 	{
+// 		public function  getProductImages($cart_data)
+// 		{
 	
-		// 		$data=array_map(function($e){return [ratecard_id=>intval($e['ratecard']['_id']),product_id=>intval($e['product']['_id'])];},$cart_data);
+// 				$data=array_map(function($e){return [ratecard_id=>intval($e['ratecard']['_id']),product_id=>intval($e['product']['_id'])];},$cart_data);
 		
-		// 		$products=array_column(array_column($cart_data,'product'),'_id');
-		// 		$ratecards=array_column(array_column($cart_data,'ratecard'),'_id');
-		// 		\Product::$withoutAppends=true;
-		// 		$productView=Product::whereIn("_id",$products)->with(array('ratecard'=>function($query) use ($ratecards) {$query->whereIn("_id",$ratecards)->select('_id','product_id','image');}))->get(['image']);
-		// 		$map=[];
-		// 		if(!empty($productView))
-			// 		{
-		// 			$productView=$productView->toArray();
-		// 			foreach ($productView as $product) {
-		// 				foreach ($ratecards as $value) {
-		// 					$selectedRatecard=array_values(array_filter($productView['ratecard'],function ($e) use ($value) {return $value==$e['_id'];}));
-		// 					if(!empty($selectedRatecard))
-			// 					{
-		// 						$selectedRatecard=$selectedRatecard[0];
-		// 						if(!empty($selectedRatecard['image'])&&!empty($selectedRatecard['primary'])/* &&count($selectedRatecard['image']['secondary'])>0 */)
-			// 							$img=$selectedRatecard['image']['primary'];
-			// 					}
-			// 					else if(!empty($value['image'])&&!empty($value['image']['primary'])/* &&count($productView['image']['secondary'])>0 */)
-				// 						$img=$value['image']['primary'];
-			// 						$map[intval($value['ratecard']['_id'])]=$img;
-			// 				}
-			// 			}
-			// 		}
+// 				$products=array_column(array_column($cart_data,'product'),'_id');
+// 				$ratecards=array_column(array_column($cart_data,'ratecard'),'_id');
+// // 				\Product::$withoutAppends=true;
+// // 				$productView=Product::whereIn("_id",$products)->with(array('ratecard'=>function($query) use ($ratecards) {$query->whereIn("_id",$ratecards)->select('_id','product_id','image');}))->get(['image']);
+// // 				$map=[];
+// // 				if(!empty($productView))
+// // 					{
+// // 					$productView=$productView->toArray();
+// // 					foreach ($productView as $product) {
+// // 						foreach ($ratecards as $value) {
+// // 							$selectedRatecard=array_values(array_filter($productView['ratecard'],function ($e) use ($value) {return $value==$e['_id'];}));
+// // 							if(!empty($selectedRatecard))
+// // 								{
+// // 								$selectedRatecard=$selectedRatecard[0];
+// // 								if(!empty($selectedRatecard['image'])&&!empty($selectedRatecard['primary'])/* &&count($selectedRatecard['image']['secondary'])>0 */)
+// // 										$img=$selectedRatecard['image']['primary'];
+// // 								}
+// // 								else if(!empty($value['image'])&&!empty($value['image']['primary'])/* &&count($productView['image']['secondary'])>0 */)
+// // 										$img=$value['image']['primary'];
+// // 									$map[intval($value['ratecard']['_id'])]=$img;
+// // 							}
+// // 						}
+// // 					}
+					
+// 					$rc=array_column($home, "ratecard_id");
+// 					$pro=array_column($home, "product_id");
+					
+// 					$products=array_column(array_column($cart_data,'product'),'_id');
+// 					$ratecards=array_column(array_column($cart_data,'ratecard'),'_id');
+					
+// 					Product::$withoutAppends=true;
+// 					/* $rates=ProductRatecard::raw(function($collection)
+// 					 {
+// 					 return $collection->aggregate(
+// 					 [
+// 					 ['$group' => ['_id' => ["p_id"=>'$product_id','color'=>'$color'],'details' => ['$push'=>['ratecards'=>'$_id']]]],
+// 					 ['$match' => ['details.0' => ['$exists'=>true]]],
+// 					 ['$project' => ["rcs"=>['$arrayElemAt' => ['$details',0]]]]
+// 					 ]);
+// 					 });
+// 					 (!empty($rates)&&!empty($rates['result']))?
+// 					 $rc=array_values(array_intersect(array_column(array_column($rates['result'], 'rcs'), 'ratecards'),$rc)):""; */
+// 					$combined=["rc"=>ProductRatecard::active()->whereIn("_id",$rc)->get(["title","price"]),"pc"=>Product::active()->whereIn("_id",$pro)->with('primarycategory')->get(["title",'productcategory','slug'])];
+					
+					
+// 				$rateMain=[];
+// 				$productMain=[];
+// 				foreach ($combined['rc'] as &$value)
+// 					$rateMain[$value->_id]=$value;
+// 					foreach ($combined['pc'] as &$value)
+// 						$productMain[$value->_id]=$value;
+					
+// 				$tpa=[];
+// 				foreach ($home as $key => &$value)
+// 				{
+// 					$rc1=(!empty($value)&&!empty($rateMain)&&!empty($value['ratecard_id'])&&!empty($rateMain[$value['ratecard_id']]))?$rateMain[$value['ratecard_id']]:"";
+// 					$pc1=(!empty($value)&&!empty($productMain)&&!empty($value['product_id'])&&!empty($productMain[$value['product_id']]))?$productMain[$value['product_id']]:"";
+// 					if(!empty($rc1)&&!empty($pc1))
+// 						array_push($tpa,["ratecard"=>$rateMain[$value['ratecard_id']],"product"=>$productMain[$value['product_id']]]);
+// 				}
+					
 			
-			// 		return $map;
-			// 	}
+// 					return $map;
+// 		}
 			
 	public function getCartFinalSummary($cart_data,$cart_id)
 	{
