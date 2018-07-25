@@ -4460,6 +4460,7 @@ Class Utilities {
 			
 			$resp['data']['cart_details']=$cart_desc;
 			$resp['data']['total_cart_amount']=$amount;
+			if(empty($order['deliver_to_vendor']))$amount=$amount+50;
 			$resp['data']['total_amount']=$amount;
 			// 			$this->getProductCartAmount($order);
 			return $resp;
@@ -4467,7 +4468,6 @@ Class Utilities {
 		{
 			return  ['status'=>0,"message"=>$this->baseFailureStatusMessage($e)];
 		}
-		
 	}
 	
 	// 	public function  getProductImages($cart_data)
