@@ -4833,6 +4833,15 @@ class HomeController extends BaseController {
         			if(!empty($productView['primarycategory'])&&!empty($productView['primarycategory']['slug'])){$selectedRatecard['product_category_slug']=$productView['primarycategory']['slug'];$selectedRatecard['product_category_id']=$productView['primarycategory']['_id'];}
         			$mainSimilar=[];
         			$selectedRatecard['ratecard_id']=$selectedRatecard['_id'];
+        			
+        			if($getProductInternal)
+        			{
+        				unset($selectedRatecard['_id']);unset($selectedRatecard['productcategory_id']);
+        				unset($selectedRatecard['order']);unset($selectedRatecard['status']);
+        				unset($selectedRatecard['servicecategory_id']);unset($selectedRatecard['flags']);
+        				return ["status"=>1,"data"=>$selectedRatecard];
+        			}
+        			
         			(!empty($productView['servicecategory'])&&!empty($productView['servicecategory']['primary']))?$sameCatProducts=Product::active()->where("_id","!=",$product_id)->where("servicecategory.primary",$productView['servicecategory']['primary'])->lists('_id'):"";
         			(!empty($sameCatProducts))?$productSimilar=ProductRatecard::active()->with(array('product'=>function($query){$query->active()->with('primarycategory')->get();}))->where("product_id","!=",$product_id)->whereIn("product_id",$sameCatProducts)->get(['_id','title','product_id','price','image']):"";
         			if(!empty($productSimilar))
@@ -4854,18 +4863,19 @@ class HomeController extends BaseController {
         								'product_category_id'=>$value['product']['primarycategory']['_id'],
         								'ratecard_title'=>$value['title'],'ratecard_id'=>$value['_id']
         						]);
-        					}
-        					
+        					}		
         				}
         			}
-        			unset($selectedRatecard['_id']);unset($selectedRatecard['productcategory_id']);
-        			unset($selectedRatecard['order']);unset($selectedRatecard['status']);
-        			unset($selectedRatecard['servicecategory_id']);unset($selectedRatecard['flags']);
+        			if(!$getProductInternal)
+        			{
+        				unset($selectedRatecard['_id']);unset($selectedRatecard['productcategory_id']);
+        				unset($selectedRatecard['order']);unset($selectedRatecard['status']);
+        				unset($selectedRatecard['servicecategory_id']);unset($selectedRatecard['flags']);
+        				$finalData['product']=$selectedRatecard;
+        			}	
         		}
         		else return ['status'=>0,"message"=>"Not a valid Ratecard Id."];
-        		(!empty($selectedRatecard))?$finalData['product']=$selectedRatecard:"";
         		$this->utilities->attachProductQuantity($finalData['product']);
-        		if($getProductInternal) return ["status"=>1,"data"=>$finalData['product']];
         		(!empty($mainSimilar)&&count($mainSimilar)>0)?$finalData['similar_products']=["title"=>"Other Products","sub_title"=>"Get Fitter","items"=>$mainSimilar]:"";
         		$this->utilities->attachCart($finalData,false);
         		return ["status"=>200,"response"=>$finalData];

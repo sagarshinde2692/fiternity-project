@@ -4326,22 +4326,21 @@ Class Utilities {
 	{
 		try {
 			if(empty($cart_data))
-				return ["status"=>0,"message"=>"No Cart Data present."];
-				
+				return ["status"=>0,"message"=>"No Cart Data present Or Cart is Empty."];
 				$resp=["status"=>1,"message"=>"success","data"=>[]];
 				
 				$cart_desc=[];
 				$cart_details=[];
-				$cart_data=$this->addProductsToCart($cart_data,$cart_id,true);
+				/* $cart_data=$this->addProductsToCart($cart_data,$cart_id,true);
 				if(!empty($cart_data)&&!empty($cart_data['status']))$cart_data=$cart_data['data'];
-				else return ["status"=>0,"message"=>"couldn't get cart data."];
+				else return ["status"=>0,"message"=>(!empty($cart_data['message'])?$cart_data['message']:"couldn't get cart data.")]; */
 				$amount=0;
 				$count=0;
 				$hc=new \HomeController(new CustomerNotification(), new Sidekiq(),$this);
 				foreach ($cart_data as $cart_item)
 				{
 					$temp=[];
-					$dataProd=$hc->getProductDetail($cart_item['ratecard']['_id'], $cart_item['product']['_id'],true);
+					$dataProd=$hc->getProductDetail($cart_item['ratecard_id'], $cart_item['product_id'],true);
 					if(!empty($dataProd['status']))
 						$temp['product']=$dataProd['data'];
 					else return $dataProd;
