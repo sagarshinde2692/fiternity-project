@@ -3748,10 +3748,10 @@ if (!function_exists(('citywiseServiceCategoryIds'))){
                 $ids = [65, 19, 5, 3, 1, 123, 114, 4, 2, 86];
                 break;
             case 'bangalore':
-                $ids = [65, 19, 5, 3, 1, 4, 2, 86];
+                $ids = [65, 19, 5, 3, 1, 123, 4, 2, 86];
                 break;
             case 'delhi':
-                $ids = [65, 19, 5, 3, 1, 4, 2, 86];
+                $ids = [65, 19, 5, 3, 1, 123, 4, 2, 86];
                 break;
             case 'gurgaon':
                 $ids = [65, 19, 5, 3, 1, 4, 2, 86];

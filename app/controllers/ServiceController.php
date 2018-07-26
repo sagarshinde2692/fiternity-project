@@ -10,6 +10,7 @@ use App\Services\Metropolis as Metropolis;
 use App\Services\Utilities as Utilities;
 
 class ServiceController extends \BaseController {
+
 	protected $utilities;
 	public function __construct(Utilities $utilities) {
 
@@ -883,9 +884,20 @@ class ServiceController extends \BaseController {
 						if(isset($request['show_all']) && $request['show_all']){
 							$slot_datetime_pass_status = false;
 						}
-
 						($slot_datetime_pass_status == false) ? $slot_passed_flag = false : null;
-
+					
+						
+						
+						// ********************************************************************************** slot allowance check start
+						
+						if(in_array(intval($service['finder_id']),Config::get('app.slotAllowance.vendors'))&&in_array(intval($service['service_id']),Config::get('app.slotAllowance.services')))
+						{
+							$otpt=$this->utilities->getSlotBookedCount($slot["slot_time"],$service['service_id'],$date,(isset($slot['limited_seat'])?$slot['limited_seat']:10000));
+							$slot_datetime_pass_status=!$otpt['allowed'];
+						}
+						
+						//********************************************************************************** slot allowance check end
+						
                         array_set($slot, 'price', $ratecard_price);
                         array_set($slot, 'passed', $slot_datetime_pass_status);
                         array_set($slot, 'service_id', $item['_id']);

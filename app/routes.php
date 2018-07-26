@@ -1215,6 +1215,7 @@ Route::get('productshome','HomeController@getProductsHome');
 Route::get('productdetail/{ratecard_id}/{product_id}','HomeController@getProductDetail');
 Route::get('catproducts/{productcategory_id}','HomeController@getCategoryBasedProducts');
 
+
 Route::get('addproducttocart/{ratecard_id}/{quantity}','HomeController@addProductToCart');
 Route::post('addproductstocart','HomeController@addProductsToCart');
 
@@ -1234,17 +1235,20 @@ Route::get('customeraddress','HomeController@getCustomerAddress');
 Route::post('customeraddress','HomeController@setCustomerAddress');
 
 
-
 Route::get('updateCouponUsed','DebugController@updateCouponUsed');
+
 
 Route::get('sendcommvendorthirdparty/{booktrial_id}', 'SchedulebooktrialsController@sendCommunicationToVendorThirdParty');
 
 Route::get('getbrandvendors/{brand_id}/{city_id}', array('as' => 'finders.getbrandvendors','uses' => 'FindersController@getBrandVendors'));
 
 
+Route::get('lostFitcode','DebugController@lostFitcode');
+
+
 Route::post('getcustomercarddetails','CustomerController@getCustomerCardDetails');
+
 Route::get('toto/{vendorservice_id}', 'MigrationReverseController@tot');
-Route::get('updateCouponUsed','DebugController@updateCouponUsed');
 
 Route::get('checkexistinguser/mobikwik/{cell}','PaymentGatewayController@checkExistingUserMobikwik');
 Route::post('generateotp/mobikwik','PaymentGatewayController@generateOtpMobikwik');\
@@ -1258,6 +1262,6 @@ Route::match(array('GET', 'POST'),'verifyaddmoney/mobikwik', 'PaymentGatewayCont
 Route::post('checkstatus/mobikwik','PaymentGatewayController@checkStatusMobikwik');
 Route::get('verifypayment/{status}','PaymentGatewayController@verifyPayment');
 
-Route::get('lostFitcode','DebugController@lostFitcode');
 Route::get('updateCouponUsed','DebugController@updateCouponUsed');
 Route::get('updateRatecardSlots','DebugController@updateRatecardSlots');
+

@@ -1827,12 +1827,15 @@ class SchedulebooktrialsController extends \BaseController {
                     return  Response::json($resp, 400);
                 }
                 
+                
                 if(isset($order['session_payment']) && $order['session_payment']){
-                	Log::info(" info ".print_r("AAAYA 112",true));
+//                 	Log::info(" info ".print_r("AAAYA 112",true));
                 	
                     return $this->payLaterPaymentSuccess($order['_id']);
                     
                 }
+                
+                
     
             }
 
@@ -1870,6 +1873,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $schedule_date_starttime 	       =	strtoupper($slot_date ." ".$schedule_slot_start_time);
 
             }
+            
 
             if(isset($order->booktrial_id)){
                 $booktrialid = (int)$order->booktrial_id;
@@ -2440,6 +2444,23 @@ class SchedulebooktrialsController extends \BaseController {
            
             array_set($orderData, 'booktrial_id', (int)$booktrialid);
             $order->update($orderData);
+            
+            
+            // ********************************************************************************** slot allowance check start
+            
+            if(in_array(intval($order_data['finder_id']),Config::get('app.slotAllowance.vendors'))&&in_array(intval($order_data['service_id']),Config::get('app.slotAllowance.services'))&&in_array($order_data['type'],Config::get('app.slotAllowance.types')))
+            {
+            	$allowed_qty=$this->utilities->getSlotReqdField($order_data['start_time'],$order_data['end_time'],$order_data['service_id'],$order_data['schedule_date']);
+            	$allowed_qty=(($allowed_qty)?$allowed_qty:10000);
+            	$otpt=$this->utilities->getSlotBookedCount($order_data['schedule_slot'],$order_data['service_id'],$order_data['schedule_date'],$allowed_qty);
+            	if($otpt['count']>$allowed_qty)
+            		$order->update(['slot_allowance_overbooked'=>true,'slot_allowance_overbooked_count'=>$otpt['count']]);
+            }
+            //********************************************************************************** slot allowance check end
+            
+            
+            
+            
 
             if(isset($order->vendor_price) && $order->vendor_price != ''){
                 $order->original_amount_finder = $order->amount_finder;
