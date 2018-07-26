@@ -2449,6 +2449,7 @@ class OrderController extends \BaseController {
                                 'type'=>'DEBIT',
                                 'entry'=>'debit',
                                 'description'=> $this->utilities->getDescription($data),
+                                'order_type'=>$order['type'],
                             );
                             $walletTransactionResponse = $this->utilities->walletTransactionNew($req);
                             
@@ -2489,6 +2490,7 @@ class OrderController extends \BaseController {
                                 'amount_fitcash_plus' => $fitcash_plus,
                                 'type'=>'DEBIT',
                                 'entry'=>'debit',
+                                'order_type'=>$order['type'],
                                 'description'=>$this->utilities->getDescription($data),
                             );
                             $walletTransactionResponse = $this->utilities->walletTransactionOld($req,$data);
