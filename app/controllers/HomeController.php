@@ -2045,9 +2045,9 @@ class HomeController extends BaseController {
     		if(!empty($order))
     		{
     			$order =  $order->toArray();
-    			if($order['status']!="1")return ['status'=>0,"message"=>"Order not succesful."];
+    			if($order['status']!="1")
+    				return ['status'=>0,"message"=>"Order not succesful."];
     		}
-    		
     		else return ['status'=>0,"message"=>"Failed to get Order."];
     		
     		
@@ -2059,7 +2059,6 @@ class HomeController extends BaseController {
     		{
     			$customer_id=$order['customer']['logged_in_customer_id'];
     			if(empty($customer_id))
-    				
     				return ['status'=>0,"message"=>"Failed to get Customer."];
     		}
     		
@@ -2088,6 +2087,7 @@ class HomeController extends BaseController {
     				if(!empty($shipping_address))
     					$finalData['shipping_address']=$shipping_address;
     					
+    					
     					$cart_summary=$this->utilities->getCartSummary($order);
     					if($cart_summary['status'])
     					{
@@ -2099,26 +2099,28 @@ class HomeController extends BaseController {
     						return $cart_summary;
     						
     						$order_summary=[];
-    						array_push($order_summary, ["key"=>"items","value"=>count($cart_details)]);
-    						array_push($order_summary, ["key"=>"items total","value"=>"Rs. ".$cart_total]);
-    						
-    						(!empty($cart_summary['data']['coupon_discount']))?
-    						array_push($order_summary, ["key"=>"Coupon Discount","value"=>"- Rs. ".$cart_total ,"color"=>"#f7a81e"]):"";
-    						
-    						$orderDetail=["order_id"=>$order['_id'],"summary"=>$order_summary,"total"=>"Rs. ".$total_amount];
-    						if($payment_mode)$orderDetail["payment_mode"]=$payment_mode;
-    						
-    						
-    						$finalData["header"]=$header;
-    						
-    						$finalData["cart_summary"]=$cart_details;
-    						$finalData["order_detail"]=$orderDetail;
-    						//     				$finalData=array_merge($finalData,$defaults);
-    						
-    						$resp['data']=$finalData;
-    						return $resp;
-    						
-    						
+    						array_push($order_summary, ["key"=>"Total Amount","value"=>$cart_total]);
+    						if(empty($order['deliver_to_vendor']))
+    							array_push($order_summary, ["key"=>"Delivery Charges","value"=>$this->utilities->getRupeeForm(50)]);
+    							array_push($order_summary, ["key"=>"Amount Paid","value"=>$this->utilities->getRupeeForm($total_amount)]);
+    							
+    							(!empty($cart_summary['data']['coupon_discount']))?
+    							array_push($order_summary, ["key"=>"Coupon Discount","value"=>"- Rs. ".$cart_total ,"color"=>"#f7a81e"]):"";
+    							
+    							$orderDetail=["order_id"=>$order['_id'],"summary"=>$order_summary,"total"=>$this->utilities->getRupeeForm($total_amount)];
+    							if($payment_mode)$orderDetail["payment_mode"]=$payment_mode;
+    							
+    							
+    							$finalData["header"]=$header;
+    							
+    							$finalData["cart_summary"]=$cart_details;
+    							$finalData["order_detail"]=$orderDetail;
+    							//     				$finalData=array_merge($finalData,$defaults);
+    							
+    							$resp['data']=$finalData;
+    							return $resp;
+    							
+    							
     	} catch (Exception $e)
     	{
     		Log::error(" Error [getProductSuccessMsg] ".print_r($this->utilities->baseFailureStatusMessage($e),true));
@@ -4986,7 +4988,7 @@ class HomeController extends BaseController {
         				
         			}
         			$finalData=[];
-        			(!empty($categories)&&count($categories)>0)?$finalData['categories']=["title"=>(($productcategory_id==10)?"GNC":"category Based Products"),"sub_title"=>(($productcategory_id==10)?"":"Get Fitter"),"items"=>$categories]:"";
+        			(!empty($categories)&&count($categories)>0)?$finalData['categories']=["title"=>(($productcategory_id==10)?"Health Supplements By GNC":"category Based Products"),"sub_title"=>(($productcategory_id==10)?"":"Get Fitter"),"items"=>$categories]:"";
         			(!empty($productSimilar)&&count($productSimilar)>0)?$finalData['similar_products']=["title"=>"Other Products","sub_title"=>"Get Fitter","items"=>$productSimilar]:"";
         			$this->utilities->attachCart($finalData,false);
         			return ["status"=>200,"response"=>$finalData];

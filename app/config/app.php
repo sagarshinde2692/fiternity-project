@@ -17,6 +17,7 @@ return array(
 // 	'amazonpay_isSandbox' => 'true',
 // 	'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
 // 	'website_deeplink' =>'https://ftrnty.com',
+//	'product_delivery_charges' => 50,
 
 	//stage
 	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
@@ -32,6 +33,7 @@ return array(
 	// 'amazonpay_isSandbox' => 'true',
 	// 'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
 	// 'website_deeplink' =>'https://ftrnty.com',
+	//	'product_delivery_charges' => 50,
 
 	//beta
 	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
@@ -47,6 +49,7 @@ return array(
 	// 'amazonpay_isSandbox' => 'true',
 	// 'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
 	// 'website_deeplink' =>'https://ftrnty.com',
+	//	'product_delivery_charges' => 50,
 
 	//live
 	'new_search_url' =>'http://c1.fitternity.com/',
@@ -62,6 +65,7 @@ return array(
 	'amazonpay_isSandbox' => 'false',
 	'reliance_url' =>'https://rhealthcircle.reliancegeneral.co.in/fitternity/callback',
 	'website_deeplink' =>'https://ftrnty.com',
+	'product_delivery_charges' => 50,
 
 
 	'download_app_link' => 'https://go.onelink.me/I0CO?pid=techfitsms',//https://www.fitternity.com/downloadapp?source=fittech',

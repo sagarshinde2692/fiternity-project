@@ -1318,14 +1318,14 @@ class TransactionController extends \BaseController {
     						 $result['convinience_fee'] = $data['convinience_fee'];
     						 } */
     						
-    						$cash_pickup_applicable = (isset($data['amount_calculated']['final']) && $data['amount_calculated']['final']>= 2500) ? true : false;
+//     						$cash_pickup_applicable = (isset($data['amount_calculated']['final']) && $data['amount_calculated']['final']>= 2500) ? true : false;
     						$emi_applicable = (isset($data['amount_calculated']['final']) && $data['amount_calculated']['final']>= 5000) ? true : false;
     						
     						$resp   =   [
     								'status' => 200,
     								'data' => $result,
     								'message' => "Tmp Order Generated Sucessfully",
-    								'cash_pickup' => $cash_pickup_applicable,
+//     								'cash_pickup' => $cash_pickup_applicable,
     								'emi'=>$emi_applicable
     						];
     						
@@ -6712,7 +6712,7 @@ class TransactionController extends \BaseController {
     	
     	
     	array_push($payment_modes, ['title' => 'Online Payment','subtitle' => 'Transact online with netbanking, card and wallet','value' => 'paymentgateway','payment_options'=>$payment_options]);
-    	array_push($payment_modes, ['title' => 'Cash Pickup','subtitle' => 'Schedule cash payment pick up','value' => 'cod']);
+//     	array_push($payment_modes, ['title' => 'Cash Pickup','subtitle' => 'Schedule cash payment pick up','value' => 'cod']);
     	
     	$emi = $this->utilities->displayEmi(array('amount'=>$data['data']['amount']));    		
     	if(!empty($data['emi']) && $data['emi'])
@@ -6757,7 +6757,8 @@ class TransactionController extends \BaseController {
     	try {
     		$response=["status"=>1,"message"=>"success"];
     		$you_save = 0;
-    		$amount_summary= [['field' => 'Total Amount','value' => $this->utilities->getRupeeForm((isset($data['amount_calculated']['final']) ? $data['amount_calculated']['final']: $data['amount_calculated']['final']))]];
+    		$amount_summary= [['field' => 'Total Amount','value' => $this->utilities->getRupeeForm((isset($data['amount_calculated']['cart_amount']) ? $data['amount_calculated']['cart_amount']: $data['amount_calculated']['cart_amount']))]];
+    		if(empty($data['deliver_to_vendor']))array_push($amount_summary,['field' => 'Delivery charges','value' =>$this->utilities->getRupeeForm(intval(Config::get('app.product_delivery_charges')))]);
     		$amount_payable = ['field' => 'Total Amount Payable', 'value' => $this->utilities->getRupeeForm($data['amount_calculated']['final'])];
     		
     		
@@ -6808,10 +6809,10 @@ class TransactionController extends \BaseController {
     		
     		if($you_save > 0)
     			$payment_details['savings'] = ['field' => 'Your total savings',	'value' => $this->utilities->getRupeeForm($you_save)];
-    		
-    		$response['details']=$payment_details;
-    		return $response;
-    		
+    			
+    			$response['details']=$payment_details;
+    			return $response;
+    			
     	} catch (Exception $e) {
     		return ['status'=>0,"message"=>$this->utilities->baseFailureStatusMessage($e)];
     	}

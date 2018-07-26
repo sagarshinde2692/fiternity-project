@@ -4153,70 +4153,70 @@ Class Utilities {
 			if(!empty($jwt_token)||!empty($cart_id))
 			{
 				if(!empty($cart_id))
-				$cart_id=intval($cart_id);
-				else 
-				{
-					$token_decoded=decode_customer_token();
-					$cart_id=((!empty($token_decoded->customer)&&!empty($token_decoded->customer->cart_id))?$token_decoded->customer->cart_id:null);					
-				}
-				if(!empty($cart_id)&&!empty($cartDataInput))
-				{
-					$cartData=[];
-					$cartDataExtended=[];
-					$cartDataRatecards=array_column($cartDataInput, 'ratecard_id');
-					$cartDataUnique=count(array_unique($cartDataRatecards));
-					$cartQuantityCount=count(array_column($cartDataInput, 'quantity'));
-					$cartRatecardsCount=count($cartDataRatecards);
-// 					return $cartDataInput;
-					if($cartRatecardsCount>0&&$cartQuantityCount>0&&$cartQuantityCount==$cartRatecardsCount)
+					$cart_id=intval($cart_id);
+					else
 					{
-						$ratecards=ProductRatecard::active()->whereIn("_id",array_map('intval',$cartDataRatecards))->with(array('product'=>function($query){$query->active()->select('_id','slug','title','slug','info','specification');}))->get(['price','product_id','title','color','size']);
-						if(!empty($ratecards))
-						{
-							$ratecards=$ratecards->toArray();
-							if($cartDataUnique!=count($ratecards))return ['status'=>0,"message"=>"Invalid Ratecard Found."];
-							foreach ($ratecards as &$ratecard)
-							{
-								if(!empty($ratecard['product']))
-								{
-									$neededObject = array_values(array_filter($cartDataInput,function ($e) use ($ratecard) {return $e['ratecard_id']== $ratecard['_id'];}));
-									if(!empty($neededObject)&&count($neededObject)>0)
-										$neededObject=$neededObject[0];
-										if(!empty($ratecard)&&!empty($neededObject)&&!empty($neededObject['quantity'])&&!empty($ratecard['product_id'])&&!empty($ratecard['_id'])&&isset($ratecard['price']))
-										{
-											array_push($cartData, ["product_id"=>$ratecard['product_id'],"ratecard_id"=>$ratecard['_id'],"price"=>$ratecard['price'],"quantity"=>intval($neededObject['quantity'])]);
-											$tmpRatecardinfo=['_id'=>!empty($ratecard['_id'])?$ratecard['_id']:"",'title'=>!empty($ratecard['title'])?$ratecard['title']:"",'color'=>(!empty($ratecard['properties'])&&!empty($ratecard['properties']['color']))?$ratecard['properties']['color']:"",
-													'size'=>(!empty($ratecard['properties'])&&!empty($ratecard['properties']['size']))?$ratecard['properties']['size']:"",'slug'=>!empty($ratecard['slug'])?$ratecard['slug']:"",'properties'=>!empty($ratecard['properties'])?$ratecard['properties']:""];
-											array_push($cartDataExtended, ["product"=>$ratecard['product'],"ratecard"=>$tmpRatecardinfo,"price"=>$ratecard['price'],"quantity"=>intval($neededObject['quantity'])]);
-											
-										}
-										else return ['status'=>0,"message"=>"Not a valid ratecard or ratecard doesn't exist."];
-								}
-								else return ['status'=>0,"message"=>"Not a valid product id."];
-							}
-							if($cart_summary)return ['status'=>1,"data"=>$cartDataExtended];
-							if($update) {
-								$addedToCart=Cart::where('_id', intval($cart_id))->first();
-								$addedToCart=$addedToCart->update(['products'=>$cartData]);													
-							}
-							$response['response']['data']=$cartDataExtended;
-							return $response;
-						}
-						else return ['status'=>0,"message"=>"No product Ratecards Found."];
+						$token_decoded=decode_customer_token();
+						$cart_id=((!empty($token_decoded->customer)&&!empty($token_decoded->customer->cart_id))?$token_decoded->customer->cart_id:null);
 					}
-					else return ['status'=>0,"message"=>"Invalid Cart Input data."];
-				}
-				else return ['status'=>0,"message"=>"No Data To insert or cart Id is invalid/absent."];
+					if(!empty($cart_id)&&!empty($cartDataInput))
+					{
+						$cartData=[];
+						$cartDataExtended=[];
+						$cartDataRatecards=array_column($cartDataInput, 'ratecard_id');
+						$cartDataUnique=count(array_unique($cartDataRatecards));
+						$cartQuantityCount=count(array_column($cartDataInput, 'quantity'));
+						$cartRatecardsCount=count($cartDataRatecards);
+						// 					return $cartDataInput;
+						if($cartRatecardsCount>0&&$cartQuantityCount>0&&$cartQuantityCount==$cartRatecardsCount)
+						{
+							$ratecards=ProductRatecard::active()->whereIn("_id",array_map('intval',$cartDataRatecards))->with(array('product'=>function($query){$query->active()->select('_id','slug','title','slug','info','specification','image');}))->get(['price','properties','product_id','title','color','size','image']);
+							if(!empty($ratecards))
+							{
+								$ratecards=$ratecards->toArray();
+								if($cartDataUnique!=count($ratecards))return ['status'=>0,"message"=>"Invalid Ratecard Found."];
+								foreach ($ratecards as &$ratecard)
+								{
+									if(!empty($ratecard['product']))
+									{
+										$neededObject = array_values(array_filter($cartDataInput,function ($e) use ($ratecard) {return $e['ratecard_id']== $ratecard['_id'];}));
+										if(!empty($neededObject)&&count($neededObject)>0)
+											$neededObject=$neededObject[0];
+											if(!empty($ratecard)&&!empty($neededObject)&&!empty($neededObject['quantity'])&&!empty($ratecard['product_id'])&&!empty($ratecard['_id'])&&isset($ratecard['price']))
+											{
+												array_push($cartData, ["product_id"=>$ratecard['product_id'],"ratecard_id"=>$ratecard['_id'],"price"=>$ratecard['price'],"quantity"=>intval($neededObject['quantity'])]);
+												$tmpRatecardinfo=['_id'=>!empty($ratecard['_id'])?$ratecard['_id']:"",'title'=>!empty($ratecard['title'])?$ratecard['title']:"",'color'=>(!empty($ratecard['properties'])&&!empty($ratecard['properties']['color']))?$ratecard['properties']['color']:"",
+														'size'=>(!empty($ratecard['properties'])&&!empty($ratecard['properties']['size']))?$ratecard['properties']['size']:"",'slug'=>!empty($ratecard['slug'])?$ratecard['slug']:"",'properties'=>!empty($ratecard['properties'])?$ratecard['properties']:"",'image'=>!empty($ratecard['image'])?$ratecard['image']:""];
+												array_push($cartDataExtended, ["product"=>$ratecard['product'],"ratecard"=>$tmpRatecardinfo,"price"=>$ratecard['price'],"quantity"=>intval($neededObject['quantity'])]);
+											}
+											else return ['status'=>0,"message"=>"Not a valid ratecard or ratecard doesn't exist."];
+									}
+									else return ['status'=>0,"message"=>"Not a valid product id."];
+								}
+								if($cart_summary)return ['status'=>1,"data"=>$cartDataExtended];
+								if($update) {
+									$addedToCart=Cart::where('_id', intval($cart_id))->first();
+									$addedToCart=$addedToCart->update(['products'=>$cartData]);
+								}
+								$response['response']['data']=$cartDataExtended;
+								return $response;
+							}
+							else return ['status'=>0,"message"=>"No product Ratecards Found."];
+						}
+						else return ['status'=>0,"message"=>"Invalid Cart Input data."];
+					}
+					else return ['status'=>0,"message"=>"No Data To insert or cart Id is invalid/absent."];
 			}
 			else return ['status'=>0,"message"=>"Token Not Present"];
 			
 			return $response;
-		} catch (Exception $e) 
+		} catch (Exception $e)
 		{
 			return  ['status'=>0,"message"=>$this->baseFailureStatusMessage($e)];
 		}
 		
 	}
+	
 	public function getProductCartAmount($data)
 	{
 		try {
@@ -4240,15 +4240,23 @@ Class Utilities {
 				
 				
 				// AFTER CALCULATION SHOW ONLY DEDUCTION HERE
-				// $amount = $amount - $walletamuount - $couponAmount + $convinience_fee; 
+				// $amount = $amount - $walletamuount - $couponAmount + $convinience_fee;
 				
 				
-				
-				// FINALLY RETURN
-			
-				$resp['amount']['final']=$amount;
-				return $resp;
-		} catch (Exception $e) 
+				// DELIVERY CHARGES
+				$resp['amount']['cart_amount']=$amount;
+				if(empty($data['deliver_to_vendor']))
+				{
+					$resp['amount']['delivery']=intval(Config::get('app.product_delivery_charges'));
+					$amount=$amount+$resp['amount']['delivery'];
+				}
+					
+					
+					// FINALLY RETURN
+					$resp['amount']['final']=$amount;
+					
+					return $resp;
+		} catch (Exception $e)
 		{
 			return  ['status'=>0,"message"=>$this->baseFailureStatusMessage($e)];
 		}
@@ -4259,7 +4267,6 @@ Class Utilities {
 	{
 		try {
 			if(empty($order))return ["status"=>0,"message"=>"No order present."];
-			
 			$resp=["status"=>1,"message"=>"success","data"=>[]];
 			
 			$cart_data =$order['cart_data'];
@@ -4267,19 +4274,25 @@ Class Utilities {
 			$amount=0;
 			foreach ($cart_data as $cart_item)
 			{
-				$temp=[];
-				$temp['quantity']=$cart_item['quantity'];
-				$temp['price']=(intval($cart_item['quantity'])*intval($cart_item['price']));
-				$temp['size']=$cart_item['ratecard']['size'];
-				$temp['title']=$cart_item['product']['title'];
-				$temp['sub_title']=$cart_item['ratecard']['color'];
-				$temp['image']="http://b.fitn.in/products/details/shoebag.png";
-				array_push($cart_desc,$temp);
-				$amount=$amount+(intval($cart_item['quantity'])*intval($cart_item['price']));
+				$img_url="";
+				if(!empty($cart_item['ratecard'])&&!empty($cart_item['ratecard']['image'])&&!empty($cart_item['ratecard']['image']['primary']))
+					$img_url=$cart_item['ratecard']['image']['primary'];
+					else if (!empty($cart_item['product']&&!empty($cart_item['product']['image'])&&!empty($cart_item['product']['image']['primary'])))
+						$img_url=$cart_item['product']['image']['primary'];
+						$temp=[];
+						$temp['quantity']=$cart_item['quantity'];
+						$temp['price']=(intval($cart_item['quantity'])*intval($cart_item['price']));
+						$temp['size']=$cart_item['ratecard']['size'];
+						$temp['title']=$cart_item['product']['title'];
+						$temp['sub_title']=$cart_item['ratecard']['color'];
+						$temp['image']=$img_url;
+						array_push($cart_desc,$temp);
+						$amount=$amount+(intval($cart_item['quantity'])*intval($cart_item['price']));
 			}
 			
 			$resp['data']['cart_details']=$cart_desc;
 			$resp['data']['total_cart_amount']=$amount;
+			if(empty($order['deliver_to_vendor']))$amount=$amount+intval(Config::get('app.product_delivery_charges'));
 			$resp['data']['total_amount']=$amount;
 			// 			$this->getProductCartAmount($order);
 			return $resp;
@@ -4287,7 +4300,6 @@ Class Utilities {
 		{
 			return  ['status'=>0,"message"=>$this->baseFailureStatusMessage($e)];
 		}
-		
 	}
 	
 	// 	public function  getProductImages($cart_data)
