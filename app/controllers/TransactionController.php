@@ -7011,7 +7011,8 @@ class TransactionController extends \BaseController {
     		$response=["status"=>1,"message"=>"success"];
     		$you_save = 0;
     		$amount_summary= [['field' => 'Total Amount','value' => $this->utilities->getRupeeForm((isset($data['amount_calculated']['cart_amount']) ? $data['amount_calculated']['cart_amount']: $data['amount_calculated']['cart_amount']))]];
-    		if(empty($data['deliver_to_vendor']))array_push($amount_summary,['field' => 'Delivery charges','value' =>$this->utilities->getRupeeForm(50)]);
+    		if(empty($data['deliver_to_vendor']))array_push($amount_summary,['field' => 'Delivery charges','value' =>$this->utilities->getRupeeForm(intval(Config::get('app.product_delivery_charges')))]);
+
     		$amount_payable = ['field' => 'Total Amount Payable', 'value' => $this->utilities->getRupeeForm($data['amount_calculated']['final'])];
     		
     		
@@ -7062,10 +7063,10 @@ class TransactionController extends \BaseController {
     		
     		if($you_save > 0)
     			$payment_details['savings'] = ['field' => 'Your total savings',	'value' => $this->utilities->getRupeeForm($you_save)];
-    		
-    		$response['details']=$payment_details;
-    		return $response;
-    		
+    			
+    			$response['details']=$payment_details;
+    			return $response;
+    			
     	} catch (Exception $e) {
     		return ['status'=>0,"message"=>$this->utilities->baseFailureStatusMessage($e)];
     	}
