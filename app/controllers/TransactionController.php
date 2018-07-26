@@ -359,7 +359,19 @@ class TransactionController extends \BaseController {
                 }
     
                 $data = array_merge($data,$ratecardDetail['data']);
-    
+                
+                
+                // ********************************************************************************** slot allowance check start
+                
+                if(in_array(intval($data['finder_id']),Config::get('app.slotAllowance.vendors'))&&in_array(intval($data['service_id']),Config::get('app.slotAllowance.services'))&&in_array($data['type'],Config::get('app.slotAllowance.types')))
+                {
+                	$allowed_qty=$this->utilities->getSlotReqdField($data['start_time'],$data['end_time'],$data['service_id'],$data['schedule_date']);
+                	$otpt=$this->utilities->getSlotBookedCount($data['schedule_slot'],$data['service_id'],$data['schedule_date'],(($allowed_qty)?$allowed_qty:10000));
+                	if(!$otpt['allowed'])
+                		return Response::json("All Slots already booked for this date and slot.",0);
+                }
+                //********************************************************************************** slot allowance check end
+                
                 if(isset($data['customer_quantity'])){
                     
                     $data['ratecard_amount'] = $data['amount'];

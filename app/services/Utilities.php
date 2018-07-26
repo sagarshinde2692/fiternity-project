@@ -24,7 +24,7 @@ Class Utilities {
 //    protected $myrewards;
 //    protected $customerReward;
 
-
+   
    public function __construct() {
        
     $this->vendor_token = false;
@@ -4182,6 +4182,85 @@ Class Utilities {
             Log::info($e);
             return false;
         }
+    }
+    
+    public function getDayWs($date=null)
+    {
+    	return $this->$week_days[date("w",strtotime($date))];
+    	
+    }
+    public function getSlotReqdField($start=null,$end=null,$service_id=null,$start_date=null,$required='limited_seat',$buy_type='workoutsessionschedules') {
+    	
+    	try {
+    		if(!isset($service_id))throw new Exception("Service id Not Defined.");
+    		else if(!isset($start_date))throw new Exception("Start Date not present.");
+    		else if(!isset($start)||!isset($end))throw new Exception("Start/End Not Defined.");
+    		else {
+    			$week_days=["sunday","monday","tuesday","wednesday","thursday","friday","saturday"];
+    			$day=$week_days[date("w",strtotime($start_date))];
+    			if(empty($day))throw new Exception("Day Not present in the schedules.");
+    			$start=(str_contains($start, "pm"))?doubleval($start)+12:doubleval($start);$end=(str_contains($end, "pm"))?doubleval($end)+12:doubleval($end);
+    			\Service::$withoutAppends=true;
+    			$service=\Service::where("_id",intval($service_id))->first([$buy_type]);
+    			if(isset($service)&&!empty($service[$buy_type]))
+    			{
+    				$r=array_values(array_filter($service[$buy_type], function($a) use ($day){return !empty($a['weekday'])&&$a['weekday']==$day;}));
+    				if(!empty($r[0])&&!empty($r[0]['slots']))
+    				{
+    					$r=$r[0]['slots'];
+    					$r=array_values(array_filter($r, function($a) use ($start,$end){return isset($a['start_time_24_hour_format'])&&isset($a['end_time_24_hour_format'])&&$a['start_time_24_hour_format'] >=$start&&$a['end_time_24_hour_format'] <=$end;}));
+    					return (!empty($r[0])&&isset($r[0][$required]))?$r[0][$required]:null;
+    				}else return null;
+    			}else return null;
+    		}
+    	} catch (Exception $e) {
+    		Log::error(" Error Message ::  ".print_r($e->getMessage(),true));
+    		return null;
+    	}
+    	return null;
+    }
+    
+    public function getSlotBookedCount($slot=null,$service_id=null,$date=null,$allowed_qty=10000,$serv_type='workout-session') {
+    	
+    	$data=["count"=>0,"allowed"=>false];
+    	try {
+    		
+    		if(!isset($service_id))throw new Exception("Service id Not Defined.");
+    		else if(!isset($slot))throw new Exception("Slot not present.");
+    		else if(!isset($date))throw new Exception("Date not present.");
+    		else {
+    			$slot_times=explode('-',$slot);
+    			$slot=trim($slot_times[0]).'-'.trim($slot_times[1]);
+    			$orders=\Order::active()->where("service_id",intval($service_id))
+    			->where("type",$serv_type)
+    			->where("schedule_slot",$slot)
+    			->where("schedule_date",$date)->lists("_id");
+    			if(empty($orders))
+    			{
+    				$data['allowed']=true;
+    				return $data;
+    			}
+    			else {
+    				$orders=$orders->toArray();
+    				if(count($orders)<$allowed_qty)
+    				{
+    					$data['count']=count($orders);
+    					$data['allowed']=true;
+    					return $data;
+    				}
+    				else {
+    					$data['count']=count($orders);
+    					$data['allowed']=false;
+    					return $data;
+    				};
+    			}
+    			return $data;
+    		}
+    	} catch (Exception $e) {
+    		Log::error(" Error Message ::  ".print_r($e->getMessage(),true));
+    		return $data;
+    	}
+    	return $data;
     }
 
 }
