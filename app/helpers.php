@@ -2831,7 +2831,7 @@ if (!function_exists(('getHash'))){
         $detailsForMobileSdk_str1                           =   $key  . '|' . $cmnPaymentRelatedDetailsForMobileSdk1 . '|'. $customer_referId .'|' . $salt ;
         $detailsForMobileSdk1                               =   hash('sha512', $detailsForMobileSdk_str1);
         $data['payment_related_details_for_mobile_sdk_hash'] =   $detailsForMobileSdk1;
-        
+        Log::info($detailsForMobileSdk_str1);
         return $data;
     }
 }
