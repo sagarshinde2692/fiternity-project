@@ -4467,7 +4467,7 @@ Class Utilities {
 
 	  return $t;
 	}
-	public function getSelectionView($data,$product_id=null,$arr=[])
+	public function getSelectionView($data,$product_id=null,$productView="",$arr=[])
 	{
 		$intrinsic_data=array_shift($data);
 		if(!empty($intrinsic_data)&&!empty($product_id))
@@ -4477,7 +4477,7 @@ Class Utilities {
 			{
 				return $collection->aggregate([
 						['$match'=>$this->getQueryMultiplier($arr,$product_id)],
-						['$group'=>['_id' =>'$properties.'.$intrinsic_data['name'],'details' => ['$push'=>['_id'=>'$_id','properties'=>'$properties','flags'=>'$flags','price'=>'$price']]]],
+						['$group'=>['_id' =>'$properties.'.$intrinsic_data['name'],'details' => ['$push'=>['_id'=>'$_id','properties'=>'$properties','flags'=>'$flags','price'=>'$price','info'=>'$info']]]],
 						['$match'=>['details.0' => ['$exists'=>true]]]
 				]);
 			});
@@ -4493,9 +4493,15 @@ Class Utilities {
 								"cost"=>$this->getRupeeForm($current['price'])
 						];
 						
+						if(!empty($current['info'])&&!empty($current['info']['long_description']))$tt['long_description']=$current['info']['long_description'];
+						else if(!empty($productView['info'])&&!empty($productView['info']['long_description']))$tt['long_description']=$productView['info']['long_description'];
+						
+						if(!empty($current['info'])&&!empty($current['info']['short_description'])&&count($current['info']['short_description'])>0)$tt['short_description']=$this->getProductDetailsCustom($current['info']['short_description'],'secondary');
+						else if(!empty($productView['info'])&&!empty($productView['info']['short_description'])&&count($productView['info']['short_description'])>0)$tt['short_description']=$this->getProductDetailsCustom($productView['info']['short_description'],'secondary');
+						
 						if(!empty($tt['value']))
 						{
-							$arr[count($arr)-1]['value']=$tt['value'];$this->attachProductQuantity($tt);$el=$this->getSelectionView($data,$product_id,$arr);
+							$arr[count($arr)-1]['value']=$tt['value'];$this->attachProductQuantity($tt);$el=$this->getSelectionView($data,$product_id,$productView,$arr);
 							(!empty($el)&&!empty($el['variants']))?$tt['more']=$el['variants']:"";
 							if(count($arr)<=1)($key==0)?array_push($temp['variants']['options'], $tt):"";
 							else array_push($temp['variants']['options'], $tt);
@@ -4524,8 +4530,8 @@ Class Utilities {
 	{
 		foreach ($temp as $value)
 		{
-			array_push($base,"<b>".$value['name']."</b>");
-			array_push($base,"<br />".$value['value']."<br />");
+			array_push($base,"<b>".$value['name']." : </b>");
+			array_push($base,$value['value']."<br />");
 		}
 		return $base;
 	}

@@ -4811,7 +4811,7 @@ class HomeController extends BaseController {
         {
         	try {
         		$ratecard_id=intval($ratecard_id);$product_id=intval($product_id);
-        		$productView=Product::active()->where("_id",$product_id)->with(array('ratecard'=>function($query){$query->active()->select('_id','title','flags','product_id','price','order','status','properties','extra_info','image');}))->with('primarycategory')->first();
+        		$productView=Product::active()->where("_id",$product_id)->with(array('ratecard'=>function($query){$query->active()->select('_id','title','info','flags','product_id','price','order','status','properties','extra_info','image');}))->with('primarycategory')->first();
         		if(empty($productView))return ['status'=>0,"message"=>"Not a valid product Id."];else $productView=$productView->toArray();
         		$selectedRatecard=array_values(array_filter($productView['ratecard'],function ($e) use ($ratecard_id) {return $ratecard_id== $e['_id'];}));
         		if(!empty($selectedRatecard))
@@ -4819,7 +4819,16 @@ class HomeController extends BaseController {
         			$selectedRatecard=$selectedRatecard[0];
         			
         			$selectedRatecard['cost']=$this->utilities->getRupeeForm($selectedRatecard['price']);
-        			(!empty($productView['specification'])&&!empty($productView['specification']['secondary']))?$selectedRatecard['details']=$this->utilities->getProductDetailsCustom($productView['specification']['secondary'],'secondary'):"";
+        			(!empty($productView['specification'])&&!empty($productView['specification']['secondary']))?
+        			$selectedRatecard['details']=$this->utilities->getProductDetailsCustom($productView['specification']['secondary'],'secondary'):"";
+        			
+        			if(!empty($selectedRatecard['info'])&&!empty($selectedRatecard['info']['long_description']))$selectedRatecard['long_description']=$selectedRatecard['info']['long_description'];
+        			else if(!empty($productView['info'])&&!empty($productView['info']['long_description']))$selectedRatecard['long_description']=$productView['info']['long_description'];
+        			
+        			if(!empty($selectedRatecard['info'])&&!empty($selectedRatecard['info']['short_description'])&&count($selectedRatecard['info']['short_description'])>0)$selectedRatecard['short_description']=$this->utilities->getProductDetailsCustom($selectedRatecard['info']['short_description'],'secondary');
+        			else if(!empty($productView['info'])&&!empty($productView['info']['short_description'])&&count($productView['info']['short_description'])>0)$selectedRatecard['short_description']=$this->utilities->getProductDetailsCustom($productView['info']['short_description'],'secondary');
+        			unset($selectedRatecard['info']);
+        			
         			if(!empty($selectedRatecard['image'])&&!empty($selectedRatecard['image']['secondary'])&&count($selectedRatecard['image']['secondary'])>0)$selectedRatecard['images']=$selectedRatecard['image']['secondary'];
         			else if(!empty($productView['image'])&&!empty($productView['image']['secondary'])&&count($productView['image']['secondary'])>0)$selectedRatecard['images']=$productView['image']['secondary'];
         			unset($selectedRatecard['image']);
@@ -4828,7 +4837,7 @@ class HomeController extends BaseController {
         			if(!empty($productView['selection_view'])&&is_array($productView['selection_view']))
         			{
         				$selectionViewFiltered=$this->utilities->getFilteredAndOrdered($productView['selection_view'],'level');
-        				(!empty($selectionViewFiltered))?$selectedRatecard=array_merge($selectedRatecard,$this->utilities->getSelectionView($selectionViewFiltered,intval($productView['_id']))):"";
+        				(!empty($selectionViewFiltered))?$selectedRatecard=array_merge($selectedRatecard,$this->utilities->getSelectionView($selectionViewFiltered,intval($productView['_id']),$productView)):"";
         				unset($selectedRatecard['extra_info']);
         				if(empty($getProductInternal))unset($selectedRatecard['properties']);
         			}
@@ -4845,7 +4854,7 @@ class HomeController extends BaseController {
         			}
         			
         			(!empty($productView['servicecategory'])&&!empty($productView['servicecategory']['primary']))?$sameCatProducts=Product::active()->where("_id","!=",$product_id)->where("servicecategory.primary",$productView['servicecategory']['primary'])->lists('_id'):"";
-        			(!empty($sameCatProducts))?$productSimilar=ProductRatecard::active()->with(array('product'=>function($query){$query->active()->with('primarycategory')->get();}))->where("product_id","!=",$product_id)->whereIn("product_id",$sameCatProducts)->get(['_id','title','product_id','price','image']):"";
+        			(!empty($sameCatProducts))?$productSimilar=ProductRatecard::active()->with(array('product'=>function($query){$query->active()->with('primarycategory')->get();}))->where("product_id","!=",$product_id)->whereIn("product_id",$sameCatProducts)->take(4)->get(['_id','title','product_id','price','image']):"";
         			if(!empty($productSimilar))
         			{
         				$productSimilar=$productSimilar->toArray();
@@ -4913,7 +4922,7 @@ class HomeController extends BaseController {
         		(!empty($rates)&&!empty($rates['result']))?
         		$ratecards=array_values(array_column(array_column($rates['result'], 'rcs'), 'ratecards')):"";
         		if(!empty($ratecards))
-        			$ratecards=ProductRatecard::active()->whereIn("_id",$ratecards)->with(array('product'=>function($query){$query->active()->with('primarycategory')->orderBy('ordering', 'ASC');}))->get();
+        			$ratecards=ProductRatecard::active()->whereIn("_id",$ratecards)->with(array('product'=>function($query){$query->active()->with('primarycategory')->orderBy('ordering', 'ASC');}))->take(4)->get();
         		else return ['status'=>0,"message"=>"Not Ratecards found for productcategoryid : ".$productcategory_id];
         		
         		$categories=[];
