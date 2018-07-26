@@ -7419,8 +7419,7 @@ public function yes($msg){
 						)
 					)
 				);
-
-			$aggregate[] = $group;
+				$aggregate[] = $group;
 
 			return $collection->aggregate($aggregate);
 
@@ -7504,6 +7503,7 @@ public function yes($msg){
 		return $transactions_data;
 
 	}
+
 
 	public function addProducts(){
 		
@@ -7776,6 +7776,7 @@ public function yes($msg){
 		$homepage->home = $home;
 		$homepage->save();
 		return "dne";
+
 	}
 
 
@@ -7849,9 +7850,6 @@ public function yes($msg){
 
 	    return 'success';
 	}
-
-
-
 
 	public function updateRatecardSlots(){
 		$utilities = new Utilities();

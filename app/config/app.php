@@ -19,9 +19,10 @@ return array(
 	// 'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
 	// 'website_deeplink' =>'https://ftrnty.com',
 	// 'mobikwik_sandbox'=>true,
+	// 'slotAllowance' =>['vendors'=>[8892],'services'=>[17626],'types'=>['workout-session']],
+
 
 	//stage
-
 	'new_search_url' =>'http://apistage.fitn.in:5000/',
 	'url' => 'http://apistage.fitn.in',
 	'admin_url' => 'http://adminstage.fitn.in',
@@ -32,11 +33,10 @@ return array(
 	'env' => 'stage',
 	'debug' => TRUE,
 	'metropolis' => 'http://apisatge.fitn.in:8989',
-	'non_peak_hours' => ["off"=>0.8,"gym"=>["off"=>0.8,"start"=>10,"end"=>18],"studios"=>["start"=>11,"end"=>17,"off"=>0.8]],
 	'amazonpay_isSandbox' => 'true',
 	'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
 	'website_deeplink' =>'https://ftrnty.com',
-	'mobikwik_sandbox'=>true,
+	'slotAllowance' =>['vendors'=>[8892],'services'=>[17626],'types'=>['workout-session']],
 
 	//beta
 	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
@@ -54,6 +54,7 @@ return array(
 	// 'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
 	// 'website_deeplink' =>'https://ftrnty.com',
 	// 'mobikwik_sandbox'=>true,
+	// 'slotAllowance' =>['vendors'=>[8892],'services'=>[17626],'types'=>['workout-session']],
 
 	//live
 	// 	'new_search_url' =>'http://c1.fitternity.com/',
@@ -71,6 +72,7 @@ return array(
 	// 	'reliance_url' =>'https://rhealthcircle.reliancegeneral.co.in/fitternity/callback',
 	// 	'website_deeplink' =>'https://ftrnty.com',
 	// 	'mobikwik_sandbox'=>false,
+	// 	'slotAllowance' =>['vendors'=>[8892],'services'=>[17626],'types'=>['workout-session']],
 
 	'pubnub_publish' => 'pub-c-d9aafff8-bb9e-42a0-a24b-17ab5500036f',
 	'pubnub_sub' => 'sub-c-05ef3130-d0e6-11e6-bbe2-02ee2ddab7fe',
