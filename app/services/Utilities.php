@@ -2171,7 +2171,7 @@ Class Utilities {
         $customer_id = (int) $customer_id;
 
         $finder_id = ($data && isset($data['finder_id']) && $data['finder_id'] != "") ? (int)$data['finder_id'] : "";
-        $order_type = ($data && isset($data['order_type']) && $data['order_type'] != "") ? (int)$data['order_type'] : "";
+        $order_type = ($data && isset($data['order_type']) && $data['order_type'] != "") ? $data['order_type'] : "";
 
         $query = Wallet::active()->where('customer_id',$customer_id)->where('balance','>',0);
 
