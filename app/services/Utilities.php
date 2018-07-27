@@ -4123,55 +4123,65 @@ Class Utilities {
 		return $knowlarity_no;
 	}
     
-    public function updateRatecardSlots($data=[]){
-        // $data = \Order::find(130984);
-        $ratecard_id = $data['ratecard_id'];
+    public function updateRatecardSlots($order_id){
         
-        $ratecard = \Ratecard::find($ratecard_id);
+        $order = \Order::find(int($order_id));
 
-        $available_slots = $ratecard->available_slots = $ratecard->available_slots - 1;
+        if($order && !empty($order['ratecard_id'])){
 
-        if(!$available_slots){
-            
-            $offer = \Offer::where('ratecard_id', $ratecard_id)->where('added_by_script', '!=', true)->where('hidden', false)
-            ->where('start_date', '<=', new \DateTime( date("d-m-Y 00:00:00", time()) ))
-            ->where('end_date', '>=', new \DateTime( date("d-m-Y 00:00:00", time()) ))
-            ->orderBy('order', 'asc')
-            ->first(['price','type','ratecard_id']);
-            
-            
-            if(!empty($offer)){
-                
-                $price = $offer['price'];
-                
-                $new_price = round($price * 1.01);
-                
-                $new_price = $price + ($new_price > 50 ? ($new_price < 75 ? $new_price : 75) : 50);
+            $ratecard_id = $order['ratecard_id'];
+    
+            if($ratecard && isset($ratecard->available_slots)){
 
+                $ratecard = \Ratecard::find($ratecard_id);
+        
+                $available_slots = $ratecard->available_slots = $ratecard->available_slots - 1;
+        
+                if(!$available_slots){
+                    
+                    $offer = \Offer::where('ratecard_id', $ratecard_id)->where('added_by_script', '!=', true)->where('hidden', false)
+                    ->where('start_date', '<=', new \DateTime( date("d-m-Y 00:00:00", time()) ))
+                    ->where('end_date', '>=', new \DateTime( date("d-m-Y 00:00:00", time()) ))
+                    ->orderBy('order', 'asc')
+                    ->first(['price','type','ratecard_id']);
+                    
+                    
+                    if(!empty($offer)){
+                        
+                        $price = $offer['price'];
+                        
+                        $new_price = round($price * 1.01);
+                        
+                        $new_price = $price + ($new_price > 50 ? ($new_price < 75 ? $new_price : 75) : 50);
+        
+                        
+                        $offer_data = $offer->toArray();
+                        
+                        $offer_data['new_price'] = $new_price;
+        
+                        $create_offer  = $this->createOffer($offer_data);
+                        
+                    }
+                    
+                    Log::info($days_passed = date('d', time()));
+                    
+                    Log::info($days_left = 25 - $days_passed);
+                    
+                    Log::info($new_slots = round($ratecard->total_slots_created / $days_passed * $days_left));
+                    
+                    $ratecard->available_slots = $new_slots;
+                    
+                    $ratecard->total_slots_created = $ratecard->total_slots_created + $new_slots;
+                                            
+                    
+                }
                 
-                $offer_data = $offer->toArray();
+                $ratecard->save();
                 
-                $offer_data['new_price'] = $new_price;
-
-                $create_offer  = $this->createOffer($offer_data);
-                
+                $this->busrtFinderCache($order['finder_slug']);
             }
-            
-            Log::info($days_passed = date('d', time()));
-            
-            Log::info($days_left = 25 - $days_passed);
-            
-            Log::info($new_slots = round($ratecard->total_slots_created / $days_passed * $days_left));
-            
-            $ratecard->available_slots = $new_slots;
-            
-            $ratecard->total_slots_created = $ratecard->total_slots_created + $new_slots;
-                                    
-            
         }
-        $ratecard->save();
         
-        $this->busrtFinderCache($data['finder_slug']);
     
     }
 
