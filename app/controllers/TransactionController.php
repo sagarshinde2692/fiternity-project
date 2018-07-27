@@ -4777,9 +4777,9 @@ class TransactionController extends \BaseController {
 
         if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
             $decoded = customerTokenDecode($jwt_token);
-            $data['customer_email'] = (int)$decoded->customer->email;
-            $data['customer_name'] = (int)$decoded->customer->name;
-            $data['customer_phone'] = (int)$decoded->customer->contact_no;
+            $data['customer_email'] = $decoded->customer->email;
+            $data['customer_name'] = $decoded->customer->name;
+            $data['customer_phone'] = $decoded->customer->contact_no;
         }else{
             return Response::json(array("message"=>"Empty token or token should be string","status"=>401));
         }
