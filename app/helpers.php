@@ -1886,7 +1886,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         'inputcat' => $catname,
                         'inputcat1' => strtolower($cat['name']),
                         'city' => $city,
-                        'location' => (isset($loc['name']) && $loc['name'] != '') ? $loc['name'] : "",
+                        'location' => (isset($loc['slug']) && $loc['slug'] != '') ? $loc['slug'] : "",
                         'type' => 'categorylocation',
                         'slug' => "",
                         'geolocation' => array('lat' => $lat, 'lon' => $lon),

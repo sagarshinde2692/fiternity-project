@@ -4167,7 +4167,7 @@ class TransactionController extends \BaseController {
                 $order->previous_booktrial_id = (int)$booktrial->_id;
             }
 
-            $this->utilities->updateRatecardSlots($order);
+            // $this->utilities->updateRatecardSlots($order);
 
             $order->update();
 
@@ -5656,7 +5656,7 @@ class TransactionController extends \BaseController {
     }
 
     public function walletOrderCapture(){
-        
+        ini_set('always_populate_raw_post_data', -1);
         $data = Input::all();
 
         Log::info("wallet capture");
@@ -5665,42 +5665,49 @@ class TransactionController extends \BaseController {
 
         $rules = array(
             'amount'=>'required',
-            'customer_email'=>'required|email',
-            'customer_phone'=>'required',
             'customer_source'=>'required',
-            'type'=>'required'
         );
 
         $validator = Validator::make($data,$rules);
 
+        if ($validator->fails()) {
+            Log::info($validator->errors());
+
+            if(Config::get('app.debug')){
+                return Response::json(array('status' => 404,'message' => error_message($validator->errors())),404);
+            }else{
+                return Response::json(array('status' => 404,'message' => 'Invalid request'),404);
+            }
+        }
+
+        $jwt_token = Request::header('Authorization');
+
+        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+            $decoded = customerTokenDecode($jwt_token);
+            $data['customer_email'] = $decoded->customer->email;
+            $data['customer_name'] = $decoded->customer->name;
+            $data['customer_phone'] = $decoded->customer->contact_no;
+        }else{
+            return Response::json(array("message"=>"Empty token or token should be string","status"=>401));
+        }
+        
+        $data['type'] = 'wallet';
+        
         $customerDetail = $this->getCustomerDetail($data);
         
         if($customerDetail['status'] != 200){
             return Response::json($customerDetail,$customerDetail['status']);
         }
         
-        if($data['type'] != 'wallet'){
-            return Response::json(array('message'=>'Invalid parameters'), 400);
-        }
-
         $data = array_merge($data,$customerDetail['data']);
 
         Log::info("before pledge");
 
         Log::info($data);
 
-        $fitternity_share = $this->getFitternityShareAmount($data);
-
-        Log::info("prev pledge");
-        Log::info($fitternity_share);
-
-        $data['fitternity_share_change'] = ((int)$data['fitternity_share']) != $fitternity_share ? true : false;
-
-        $data["fitternity_share"] = $fitternity_share;
+        $data["fitcash_amount"] = round($data['amount'] * (1 + Config::get('app.add_wallet_extra')/100));
         
-        $data["fitcash_amount"] = $data['amount'] + $data["fitternity_share"];
-        
-        $data['amount_finder'] = $data['amount'];
+        $data['amount_finder'] = 0;
 
         $data['payment_mode'] = 'paymentgateway';
         
@@ -5722,10 +5729,12 @@ class TransactionController extends \BaseController {
         $data['finder_name'] = 'Fitternity';
         $data['finder_slug'] = 'fitternity';
         
-        $data['service_name'] = 'Fitternity Pledge';
-        $data['service_id'] = 100000;
+        $data['service_name'] = 'Wallet';
+        
+        $data['service_id'] = 100001;
         
         $hash = getHash($data);
+        
         $data = array_merge($data,$hash);
         
         $order = new Order($data);
@@ -5747,8 +5756,7 @@ class TransactionController extends \BaseController {
         $result['hash'] = $data['payment_hash'];
         $result['payment_related_details_for_mobile_sdk_hash'] = $mobilehash;
         $result['finder_name'] = strtolower($data['finder_name']);
-        $result['fitternity_share'] = $data['fitternity_share'];
-        $result['fitternity_share_change'] = $data['fitternity_share_change'];
+        $result['fitcash_amount'] = $data['fitcash_amount'];
         
         
         $resp   =   array(
@@ -5769,7 +5777,8 @@ class TransactionController extends \BaseController {
         Log::info($data);
         
         $rules = array(
-            'order_id'=>'required'
+            'order_id'=>'required',
+            'status'=>'required'
         );
 
         $validator = Validator::make($data,$rules);
@@ -5797,14 +5806,6 @@ class TransactionController extends \BaseController {
 
             $order->status = "1";
 
-            $fitternity_share = $this->getFitternityShareAmount($order->toArray());
-
-            $order->fitternity_share_change_success = $order->fitternity_share != $fitternity_share ? true : false;
-            
-            $order->fitternity_share = $fitternity_share;
-
-            $order->fitcash_amount = $order->amount + $fitternity_share;
-
             $req = array(
                 "customer_id"=>$order['customer_id'],
                 "order_id"=>$order['_id'],
@@ -5813,7 +5814,7 @@ class TransactionController extends \BaseController {
                 "amount_fitcash_plus" => $order['fitcash_amount'],
                 "type"=>'CREDIT',
                 'entry'=>'credit',
-                'description'=>"Fitcash credited for PLEDGE",
+                'description'=>"Manually added to wallet",
             );
 
             Log::info($req);

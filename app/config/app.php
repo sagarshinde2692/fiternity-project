@@ -818,6 +818,8 @@ return array(
 		'full_day_weekend'=>['Sunday','Thursday'],
 		'begin_weekend'=>['Saturday'],
 		'end_weekend'=>['Monday'],
-	]
+	],
+
+	'add_wallet_extra'=>10
 
 );
