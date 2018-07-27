@@ -1074,6 +1074,8 @@ class RewardofferController extends BaseController {
                 $rewardObjData['new_amount'] = 6000;
                 $rewardObjData['payload']['amount'] = 600;
                 $rewardObjData['description'] = 'We have curated the perfect partner to kickstart your membership. Strike off this workout essential from your list & get going.'.implode('<br>- ',$rewards_snapfitness_contents);
+
+                $rewards[] = $rewardObjData;
             }
         }
 
