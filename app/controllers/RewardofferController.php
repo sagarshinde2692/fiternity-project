@@ -1072,7 +1072,7 @@ class RewardofferController extends BaseController {
                     'https://b.fitn.in/gamification/reward/mixed.jpg'
                 ];
                 $rewardObjData['new_amount'] = 6000;
-                $rewardObjData['payload']['amount'] = 600;
+                $rewardObjData['payload']['amount'] = 6000;
                 $rewardObjData['description'] = 'We have curated the perfect partner to kickstart your membership. Strike off this workout essential from your list & get going.<br>- '.implode('<br>- ',$rewards_snapfitness_contents);
 
                 $rewards[] = $rewardObjData;
