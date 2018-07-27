@@ -4167,7 +4167,7 @@ class TransactionController extends \BaseController {
                 $order->previous_booktrial_id = (int)$booktrial->_id;
             }
 
-            $this->utilities->updateRatecardSlots($order);
+            // $this->utilities->updateRatecardSlots($order);
 
             $order->update();
 
