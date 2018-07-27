@@ -4467,7 +4467,7 @@ Class Utilities {
 
 	  return $t;
 	}
-	public function getSelectionView($data,$product_id=null,$productView="",$arr=[])
+	public function getSelectionView($data,$product_id=null,$productView="",$ratecard_id=null,&$trav_idx=[],$arr=[])
 	{
 		$intrinsic_data=array_shift($data);
 		if(!empty($intrinsic_data)&&!empty($product_id))
@@ -4477,14 +4477,17 @@ Class Utilities {
 			{
 				return $collection->aggregate([
 						['$match'=>$this->getQueryMultiplier($arr,$product_id)],
+						['$sort'=>['properties.'.$intrinsic_data['name']=>-1]],
 						['$group'=>['_id' =>'$properties.'.$intrinsic_data['name'],'details' => ['$push'=>['_id'=>'$_id','properties'=>'$properties','flags'=>'$flags','price'=>'$price','info'=>'$info']]]],
 						['$match'=>['details.0' => ['$exists'=>true]]]
 				]);
 			});
+// 			if(count($arr)==1)
+// 				return $rates;
 			if(!empty($rates)&&!empty($rates['result']))
 			{
 				$temp['variants']=["title"=>"Select ".$intrinsic_data['name'],"sub_title"=>$intrinsic_data['name'],'options'=>[]];
-				foreach ($rates['result'] as $value) {	
+				foreach ($rates['result'] as $key1=>$value) {	
 					foreach ($value['details'] as $key=>$current) {
 						$tt=[
 								"value"=>(!empty($current['properties'])&&!empty($current['properties'][$intrinsic_data['name']]))?$current['properties'][$intrinsic_data['name']]:"",
@@ -4499,9 +4502,25 @@ Class Utilities {
 						if(!empty($current['info'])&&!empty($current['info']['short_description'])&&count($current['info']['short_description'])>0)$tt['short_description']=$this->getProductDetailsCustom($current['info']['short_description'],'secondary');
 						else if(!empty($productView['info'])&&!empty($productView['info']['short_description'])&&count($productView['info']['short_description'])>0)$tt['short_description']=$this->getProductDetailsCustom($productView['info']['short_description'],'secondary');
 						
+						
 						if(!empty($tt['value']))
 						{
-							$arr[count($arr)-1]['value']=$tt['value'];$this->attachProductQuantity($tt);$el=$this->getSelectionView($data,$product_id,$productView,$arr);
+							$arr[count($arr)-1]['value']=$tt['value'];$this->attachProductQuantity($tt);
+							/* if(($tt['ratecard_id']==$ratecard_id)&&count($value['details'])==1){
+								array_unshift($trav_idx,['ind'=>$key1,'inserted'=>true,'ratecard_id'=>$current['_id']]);
+							}
+							if(($tt['ratecard_id']==$ratecard_id)&&count($value['details'])>1){
+								$wqw=array_values(array_filter($trav_idx,function ($e) use ($current) {return $current['_id']== $e['ratecard_id']&&$e['inserted']==true;}));
+								if(!empty($wqw))
+								{
+									$wqw=$wqw[0];
+									array_unshift($trav_idx,['ind'=>$key,'inserted'=>false,'ratecard_id'=>$current['_id']]);
+								}
+							} */
+// 							return $el=$this->getSelectionView($data,$product_id,$productView,$ratecard_id,$trav_idx,$arr);
+							
+							$el=$this->getSelectionView($data,$product_id,$productView,$ratecard_id,$trav_idx,$arr);
+						
 							(!empty($el)&&!empty($el['variants']))?$tt['more']=$el['variants']:"";
 							if(count($arr)<=1)($key==0)?array_push($temp['variants']['options'], $tt):"";
 							else array_push($temp['variants']['options'], $tt);
