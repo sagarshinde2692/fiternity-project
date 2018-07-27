@@ -4,6 +4,7 @@
 return array(
 
 	//local
+
 // 	'new_search_url' =>'http://apistage.fitn.in:5000/',
 // 	'url' => 'http://fitapi.com',
 // 	'admin_url' => 'http://fitadmin.com',
@@ -20,6 +21,7 @@ return array(
 //	'product_delivery_charges' => 50,
 //  'mobikwik_sandbox'=>true,
 //  'slotAllowance' =>['vendors'=>[8892],'services'=>[17626],'types'=>['workout-session']],
+
 
 	//stage
 	'new_search_url' =>'http://apistage.fitn.in:5000/',
@@ -59,6 +61,7 @@ return array(
 	//  'product_delivery_charges' => 50,
 
 	//live
+
 	// 	'new_search_url' =>'http://c1.fitternity.com/',
 	// 	'url' => 'https://a1.fitternity.com',
 	// 	'admin_url' => 'https://fitn.in',
@@ -77,6 +80,7 @@ return array(
 	// 	'slotAllowance' =>['vendors'=>[8892],'services'=>[17626],'types'=>['workout-session']],
 	//	'product_delivery_charges' => 50,
 	
+
 
 	'pubnub_publish' => 'pub-c-d9aafff8-bb9e-42a0-a24b-17ab5500036f',
 	'pubnub_sub' => 'sub-c-05ef3130-d0e6-11e6-bbe2-02ee2ddab7fe',

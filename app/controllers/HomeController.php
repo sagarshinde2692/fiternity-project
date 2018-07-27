@@ -4839,8 +4839,12 @@ class HomeController extends BaseController {
 //         			(!empty($selectedRatecard['key_details']))?array_unshift($selectedRatecard['key_details'],["name"=>"color","value"=>$selectedRatecard['color']]):"";
         			if(!empty($productView['selection_view'])&&is_array($productView['selection_view']))
         			{
-        				$selectionViewFiltered=$this->utilities->getFilteredAndOrdered($productView['selection_view'],'level');
-        				(!empty($selectionViewFiltered))?$selectedRatecard=array_merge($selectedRatecard,$this->utilities->getSelectionView($selectionViewFiltered,intval($productView['_id']),$productView)):"";
+        				$selectionViewFiltered=$this->utilities->getFilteredAndOrdered($productView['selection_view'],'level');$trav_idx=[];
+//         					return $this->utilities->getSelectionView($selectionViewFiltered,intval($productView['_id']),$productView,intval($selectedRatecard['_id']),$trav_idx);
+        				(!empty($selectionViewFiltered))?$selectedRatecard=array_merge($selectedRatecard,$this->utilities->getSelectionView($selectionViewFiltered,intval($productView['_id']),$productView,intval($selectedRatecard['_id']),$trav_idx)):"";
+//         				if(!empty($trav_idx))$selectedRatecard['traverse_ind']=array_pluck($trav_idx, 	'ind');
+//         				if(!empty($trav_idx))$selectedRatecard['traverse_ind']=$trav_idx;
+//         				return $selectedRatecard;
         				unset($selectedRatecard['extra_info']);
         				if(empty($getProductInternal))unset($selectedRatecard['properties']);
         			}
