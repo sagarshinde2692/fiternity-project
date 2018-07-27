@@ -1026,6 +1026,57 @@ class RewardofferController extends BaseController {
 
         }
 
+        $duration_day = 0;
+
+        if(isset($ratecard['validity']) && $ratecard['validity'] != ""){
+
+            switch ($ratecard['validity_type']){
+                case 'days': 
+                    $duration_day = (int)$ratecard['validity'];break;
+                case 'months': 
+                    $duration_day = (int)($ratecard['validity'] * 30) ; break;
+                case 'year': 
+                    $duration_day = (int)($ratecard['validity'] * 30 * 12); break;
+                default : $duration_day =  $ratecard['validity']; break;
+            }
+        }
+
+        if(isset($finder['brand_id']) && $finder['brand_id'] == 66 && $finder['city_id'] == 3 && $service_category_id == 65 && $duration_day == 360){
+
+            $rewardObj = Reward::where('quantity_type','mixed')->first();
+
+            if($rewardObj){
+
+                $rewards = [];
+
+                $rewardObjData = $rewardObj->toArray();
+
+                unset($rewardObjData['rewrardoffers']);
+                unset($rewardObjData['updated_at']);
+                unset($rewardObjData['created_at']);
+
+                $rewards_snapfitness_contents = [
+                    'Couple Swimming Session (1 Session)',
+                    'Fitness Kit (Gym Bag + Shaker)',
+                    'Personalized Diet Consultation (1 month)',
+                    'Vouchers from Partner Brands  ( Amazon Nutrition)'
+                ];
+
+                $rewardObjData['title'] = 'Snap Hamper';
+                $rewardObjData['contents'] = $rewards_snapfitness_contents;
+                $rewardObjData['image'] = 'https://b.fitn.in/gamification/reward/mixed.jpg';
+                $rewardObjData['gallery'] = [
+                    'https://b.fitn.in/gamification/reward/mixed.jpg',
+                    'https://b.fitn.in/gamification/reward/mixed.jpg',
+                    'https://b.fitn.in/gamification/reward/mixed.jpg',
+                    'https://b.fitn.in/gamification/reward/mixed.jpg'
+                ];
+                $rewardObjData['new_amount'] = 6000;
+                $rewardObjData['payload']['amount'] = 600;
+                $rewardObjData['description'] = 'We have curated the perfect partner to kickstart your membership. Strike off this workout essential from your list & get going.'.implode('<br>- ',$rewards_snapfitness_contents);
+            }
+        }
+
         if(!empty($rewards)){
 
             foreach ($rewards as $reward_key => $reward_value) {

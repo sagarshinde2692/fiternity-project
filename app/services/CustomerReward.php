@@ -339,6 +339,19 @@ Class CustomerReward {
                         }
                     }
 
+                    if($reward['reward_type'] == "mixed"){
+
+                        $reward_type_info = 'mixed';
+
+                        $reward['content'] = [
+                            'Couple Swimming Session (1 Session)',
+                            'Fitness Kit (Gym Bag + Shaker)',
+                            'Personalized Diet Consultation (1 month)',
+                            'Vouchers from Partner Brands  ( Amazon Nutrition)'
+                        ];
+                        $reward['image'] = 'https://b.fitn.in/gamification/reward/mixed.jpg';
+                    }
+
                 }
 
             }
