@@ -110,7 +110,7 @@ Class Paytm {
 
         $checksum = $this->createChecksum($data);
 
-        $data['checksum'] = $checksum;
+        $data['CHECKSUM'] = $checksum;
 
         $url = 'querywallet';
 
@@ -142,20 +142,16 @@ Class Paytm {
     public function generateToken($data){
 
         $data = [
-            'amount'=>50000,//(float)$data['amount'],
-            'cell'=>substr($data['cell'],-10),
-            'merchantname'=>$this->merchantname,
-            'mid'=>$this->mid,
-            'msgcode'=>507,
-            'otp'=>$data['otp'],
-            'tokentype'=>1
+            'STATE'=>$data['state'],
+            'OTP'=>$data['otp'],
+            'MID'=>$this->mid,
         ];
 
         $checksum = $this->createChecksum($data);
 
-        $data['checksum'] = $checksum;
+        $data['CHECKSUM'] = $checksum;
 
-        $url = 'tokengenerate';
+        $url = 'VALIDATE_OTP';
 
         return $this->postForm($data,$url);
 
@@ -174,7 +170,7 @@ Class Paytm {
 
         $checksum = $this->createChecksum($data);
 
-        $data['checksum'] = $checksum;
+        $data['CHECKSUM'] = $checksum;
 
         $url = 'tokenregenerate';
 
@@ -195,7 +191,7 @@ Class Paytm {
 
         $checksum = $this->createChecksum($data);
 
-        $data['checksum'] = $checksum;
+        $data['CHECKSUM'] = $checksum;
 
         $url = 'createwalletuser';
 
@@ -215,9 +211,9 @@ Class Paytm {
 
         $checksum = $this->createChecksum($data);
 
-        $data['checksum'] = $checksum;
+        $data['CHECKSUM'] = $checksum;
 
-        $url = 'userbalance';
+        $url = 'checkBalance';
 
         return $this->postForm($data,$url);
 
@@ -242,7 +238,7 @@ Class Paytm {
 
         $checksum = $this->createChecksum($data);
 
-        $data['checksum'] = $checksum;
+        $data['CHECKSUM'] = $checksum;
 
         $url = $this->base_uri.'/addmoneytowallet?'.http_build_query($data, "&");
 
@@ -271,7 +267,7 @@ Class Paytm {
 
         $checksum = $this->createChecksum($data);
 
-        $data['checksum'] = $checksum;
+        $data['CHECKSUM'] = $checksum;
 
         $url = 'debitwallet';
 
@@ -288,7 +284,7 @@ Class Paytm {
 
         $checksum = $this->createChecksum($data);
 
-        $data['checksum'] = $checksum;
+        $data['CHECKSUM'] = $checksum;
 
         $url = 'checkstatus';
 

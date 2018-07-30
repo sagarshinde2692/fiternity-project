@@ -118,6 +118,7 @@ class PaymentGatewayController extends \BaseController {
 
 				$response = [
 					'message'=>$generateOtp['response']['message'],
+					'state'=>$generateOtp['response']['state'],
 					'status'=>200
 				];
 			}
@@ -190,6 +191,72 @@ class PaymentGatewayController extends \BaseController {
 		}
 
 		return $return;
+	}
+
+	public function generateTokenPaytm(){
+
+		$data = Input::json()->all();
+
+		$rules = [
+			'state' => 'required',
+			'otp' => 'required'
+		];
+
+		$validator = Validator::make($data,$rules);
+
+		if($validator->fails()){
+
+			$response = [
+				'status'=>400,
+				'message'=>error_message($validator->errors())
+			];
+
+			return Response::json($response);
+		}
+
+		$response = [
+			'status'=>400,
+			'message'=>'something went wrong'
+		];
+
+		$generateToken = $this->paytm->generateToken($data);
+
+				echo"<pre>";print_r($generateToken);exit;
+
+		if($generateToken['status'] == 200){
+
+			$response = [
+				'message'=>$generateToken['response']['ErrorMsg'],
+				'status'=>400
+			];
+
+			if($generateToken['response']['status'] == 'SUCCESS'){
+
+				$response = [
+					'txn_token'=>$generateToken['response']['TOKEN_DETAILS']['TXN_TOKEN'],
+					'paytm_token'=>$generateToken['response']['TOKEN_DETAILS']['PAYTM_TOKEN'],
+					'message'=>"Token Created",
+					'wallet_balance'=>0,
+					'status'=>200
+				];
+
+				$checkBalanceData = [
+					'cell'=>$data['cell'],
+					'token'=>$generateToken['response']['token']
+				];
+
+				$checkBalance = $this->mobikwik->checkBalance($checkBalanceData);
+
+				if($checkBalance['status'] == 200 && $checkBalance['response']['status'] == 'SUCCESS' && $checkBalance['response']['statuscode'] === '0'){
+
+					$response['wallet_balance'] = $checkBalance['response']['balanceamount'];
+				}
+
+			}
+
+		}
+
+		return Response::json($response);
 	}
 
 	public function generateTokenMobikwik(){

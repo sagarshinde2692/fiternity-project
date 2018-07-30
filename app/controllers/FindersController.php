@@ -3115,6 +3115,18 @@ class FindersController extends \BaseController {
 			]
 		];
 
+		if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13){
+
+			Finder::$withoutAppends=true;
+
+			$finder = Finder::find((int)$finder_id);
+
+			if(isset($finder['brand_id']) && $finder['brand_id'] == 66 && $finder['city_id'] == 3){
+
+				unset($response['perks']);
+			}
+		}
+
 		$this->kioskTabLastLoggedIn();
 
 		return Response::json($response,200);
@@ -5359,10 +5371,9 @@ class FindersController extends \BaseController {
 					]
 				],
 				"title"=>"Welcome to ".ucwords($finder['title']),
-				"powered"=>"Powered by Fitternity"
+				"powered"=>"Powered by Fitternity",
 			]
 		];
-
 
 		if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.08){
 
@@ -5424,6 +5435,23 @@ class FindersController extends \BaseController {
 					'type'=>'fitstore'
 				],
 			];
+		}
+
+		if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && isset($finder['brand_id']) && $finder['brand_id'] == 66 && $finder['city_id'] == 3){
+
+			$response["response"]["powered"] = "Powered by ";//.ucwords($finder['title']);
+			$response["response"]["logo"] = "";
+
+			unset($response["response"]["about"]);
+
+			foreach ($response["response"]["options"] as &$value){
+
+				$value['title'] = str_replace("Fitternity ","",$value['title']); 
+			}
+
+			array_pop($response["response"]["options"]);
+			array_pop($response["response"]["options"]);
+
 		}
 
 

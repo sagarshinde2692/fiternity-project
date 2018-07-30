@@ -1252,7 +1252,7 @@ Route::get('toto/{vendorservice_id}', 'MigrationReverseController@tot');
 
 Route::get('checkexistinguser/mobikwik/{cell}','PaymentGatewayController@checkExistingUserMobikwik');
 Route::post('generateotp/{type}','PaymentGatewayController@generateOtp');\
-Route::post('generatetoken/mobikwik','PaymentGatewayController@generateTokenMobikwik');
+Route::post('generatetoken/{type}','PaymentGatewayController@generateToken');
 Route::post('regeneratetoken/mobikwik','PaymentGatewayController@regenerateTokenMobikwik');
 Route::post('createuser/mobikwik','PaymentGatewayController@createUserMobikwik');
 Route::post('checkbalance/mobikwik','PaymentGatewayController@checkBalanceMobikwik');
