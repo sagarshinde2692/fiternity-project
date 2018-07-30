@@ -1024,6 +1024,60 @@ class RewardofferController extends BaseController {
 
         }
 
+        $duration_day = 0;
+
+        if(isset($ratecard['validity']) && $ratecard['validity'] != ""){
+
+            switch ($ratecard['validity_type']){
+                case 'days': 
+                    $duration_day = (int)$ratecard['validity'];break;
+                case 'months': 
+                    $duration_day = (int)($ratecard['validity'] * 30) ; break;
+                case 'year': 
+                    $duration_day = (int)($ratecard['validity'] * 30 * 12); break;
+                default : $duration_day =  $ratecard['validity']; break;
+            }
+        }
+
+        if(isset($finder['brand_id']) && $finder['brand_id'] == 66 && $finder['city_id'] == 3 && $service_category_id == 65 && $duration_day == 360){
+
+            $rewardObj = Reward::where('quantity_type','mixed')->first();
+
+            if($rewardObj){
+
+                $rewards = [];
+
+                $rewardObjData = $rewardObj->toArray();
+
+                unset($rewardObjData['rewrardoffers']);
+                unset($rewardObjData['updated_at']);
+                unset($rewardObjData['created_at']);
+
+                $rewards_snapfitness_contents = [
+                    '5-Stars Swimming Session(For 2 people)',
+                    'Fitness Merchandise Kit (Gym Bag + Shaker)',
+                    'Personalized Online Diet Consultation (for 1 month)',
+                    'Vouchers from ( Amazon,GNC & Faasos)'
+                ];
+
+                $rewardObjData['title'] = 'Snap Fitness Hamper';
+                $rewardObjData['contents'] = $rewards_snapfitness_contents;
+                $rewardObjData['image'] = 'https://b.fitn.in/gamification/reward/mixed.jpg';
+                $rewardObjData['gallery'] = [
+                    'https://b.fitn.in/gamification/reward/mixed.jpg',
+                    'https://b.fitn.in/gamification/reward/snap_fitness/swimming.jpg',
+                    'https://b.fitn.in/gamification/reward/snap_fitness/kit.jpg',
+                    'https://b.fitn.in/gamification/reward/snap_fitness/diet.jpg',
+                    'https://b.fitn.in/gamification/reward/snap_fitness/voucher.jpg',
+                ];
+                $rewardObjData['new_amount'] = 6000;
+                $rewardObjData['payload']['amount'] = 6000;
+                $rewardObjData['description'] = 'We have curated a perfect Fitness Start Pack for your membership just for you. Now you can strike this off your list and get going.<br>- '.implode('<br>- ',$rewards_snapfitness_contents);
+
+                $rewards[] = $rewardObjData;
+            }
+        }
+
         if(!empty($rewards)){
 
             foreach ($rewards as $reward_key => $reward_value) {
