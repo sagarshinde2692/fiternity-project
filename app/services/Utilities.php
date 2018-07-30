@@ -4220,7 +4220,7 @@ Class Utilities {
     	return null;
     }
     
-    public function getSlotBookedCount($slot=null,$service_id=null,$date=null,$allowed_qty=10000,$serv_type='workout-session') {
+    public function getSlotBookedCount($slot=null,$service_id=null,$date=null,$allowed_qty=10000,$serv_type=['workout-session','booktrials']) {
     	
     	$data=["count"=>0,"allowed"=>false];
     	try {
@@ -4232,7 +4232,7 @@ Class Utilities {
     			$slot_times=explode('-',$slot);
     			$slot=trim($slot_times[0]).'-'.trim($slot_times[1]);
     			$orders=\Order::active()->where("service_id",intval($service_id))
-    			->where("type",$serv_type)
+    			->whereIn("type",$serv_type)
     			->where("status","1")
     			->where("schedule_slot",$slot)
     			->where("schedule_date",$date)->lists("_id");
