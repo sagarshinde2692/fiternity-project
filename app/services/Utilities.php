@@ -5172,10 +5172,18 @@ Class Utilities {
 	}
     public function updateRatecardSlots($data=[]){
         // $data = \Order::find(130984);
+        if(!(isset($data['ratecard_id']) && isset($data['finder_slug']))){
+            return;
+        }
+        
         $ratecard_id = $data['ratecard_id'];
         
         $ratecard = \Ratecard::find($ratecard_id);
 
+        if(!($ratecard && !empty($ratecard->available_slots))){
+            return;
+        }
+        
         $available_slots = $ratecard->available_slots = $ratecard->available_slots - 1;
 
         if(!$available_slots){
@@ -5218,6 +5226,7 @@ Class Utilities {
         $ratecard->save();
         
         $this->busrtFinderCache($data['finder_slug']);
+
     
     }
 
