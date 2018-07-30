@@ -4705,7 +4705,7 @@ Class Utilities {
     
     public function getDayWs($date=null)
     {
-    	return $this->$week_days[date("w",strtotime($date))];
+    	return $this->days[date("w",strtotime($date))];
     	
     }
     public function getSlotReqdField($start=null,$end=null,$service_id=null,$start_date=null,$required='limited_seat',$buy_type='workoutsessionschedules') {
