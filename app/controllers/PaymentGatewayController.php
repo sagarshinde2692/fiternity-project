@@ -80,9 +80,9 @@ class PaymentGatewayController extends \BaseController {
 		return $return;
 	}
 
-	public function generateOtpPaytm(){
+	public function generateOtpPaytm($data = false){
 
-		$data = Input::json()->all();
+		$data = $data ? $data : Input::json()->all();  
 
 		$rules = [
 			'cell' => 'required'
@@ -110,17 +110,25 @@ class PaymentGatewayController extends \BaseController {
 		if($generateOtp['status'] == 200){
 
 			$response = [
-				'message'=>$generateOtp['response']['message'],
+				'message'=>'Error!, Please try after sometime',
 				'status'=>400
 			];
 
-			if($generateOtp['response']['status'] == 'SUCCESS'){
+			/*if($generateOtp['response']['STATUS'] == 'FAILURE' && $generateOtp['response']['ErrorCode'] == '432'){
+
+
+
+				return $this->generateOtpPaytm($data);
+			}*/
+
+			if(!empty($generateOtp['response']['status']) && $generateOtp['response']['status'] == 'SUCCESS'){
 
 				$response = [
 					'message'=>$generateOtp['response']['message'],
 					'state'=>$generateOtp['response']['state'],
 					'status'=>200
 				];
+
 			}
 
 		}
