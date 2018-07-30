@@ -75,6 +75,15 @@ class SchedulebooktrialsController extends \BaseController {
             $this->vendor_token = true;
         }
 
+        $this->kiosk_app_version = false;
+
+        if($vendor_token){
+
+            $this->vendor_token = true;
+
+            $this->kiosk_app_version = (float)Request::header('App-Version');
+        }
+
         $this->error_status = ($this->vendor_token) ? 200 : 400;
 
     }
@@ -3543,6 +3552,11 @@ class SchedulebooktrialsController extends \BaseController {
             $item['booked_locate'] = 'booked';
 
             $resp['kiosk'] = $this->utilities->trialBookedLocateScreen($item);
+
+            if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && isset($finder['brand_id']) && $finder['brand_id'] == 66 && $finder['city_id'] == 3){
+
+                $resp['kiosk']['title'] = "";
+            }
 
         }
 
