@@ -1067,9 +1067,10 @@ class RewardofferController extends BaseController {
                 $rewardObjData['image'] = 'https://b.fitn.in/gamification/reward/mixed.jpg';
                 $rewardObjData['gallery'] = [
                     'https://b.fitn.in/gamification/reward/mixed.jpg',
-                    'https://b.fitn.in/gamification/reward/mixed.jpg',
-                    'https://b.fitn.in/gamification/reward/mixed.jpg',
-                    'https://b.fitn.in/gamification/reward/mixed.jpg'
+                    'https://b.fitn.in/gamification/reward/snap_fitness/diet.jpg',
+                    'https://b.fitn.in/gamification/reward/snap_fitness/kit.jpg',
+                    'https://b.fitn.in/gamification/reward/snap_fitness/swimming.jpg',
+                    'https://b.fitn.in/gamification/reward/snap_fitness/voucher.jpg',
                 ];
                 $rewardObjData['new_amount'] = 6000;
                 $rewardObjData['payload']['amount'] = 6000;
