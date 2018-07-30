@@ -4752,6 +4752,7 @@ Class Utilities {
     			$slot=trim($slot_times[0]).'-'.trim($slot_times[1]);
     			$orders=\Order::active()->where("service_id",intval($service_id))
     			->where("type",$serv_type)
+    			->where("status","1")
     			->where("schedule_slot",$slot)
     			->where("schedule_date",$date)->lists("_id");
     			if(empty($orders))
@@ -4760,7 +4761,7 @@ Class Utilities {
     				return $data;
     			}
     			else {
-    				$orders=$orders->toArray();
+//     				$orders=$orders->toArray();
     				if(count($orders)<$allowed_qty)
     				{
     					$data['count']=count($orders);
@@ -5172,10 +5173,18 @@ Class Utilities {
 	}
     public function updateRatecardSlots($data=[]){
         // $data = \Order::find(130984);
+        if(!(isset($data['ratecard_id']) && isset($data['finder_slug']))){
+            return;
+        }
+        
         $ratecard_id = $data['ratecard_id'];
         
         $ratecard = \Ratecard::find($ratecard_id);
 
+        if(!($ratecard && !empty($ratecard->available_slots))){
+            return;
+        }
+        
         $available_slots = $ratecard->available_slots = $ratecard->available_slots - 1;
 
         if(!$available_slots){
@@ -5218,6 +5227,7 @@ Class Utilities {
         $ratecard->save();
         
         $this->busrtFinderCache($data['finder_slug']);
+
     
     }
 

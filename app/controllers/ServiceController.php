@@ -884,22 +884,23 @@ class ServiceController extends \BaseController {
 						if(isset($request['show_all']) && $request['show_all']){
 							$slot_datetime_pass_status = false;
 						}
-						($slot_datetime_pass_status == false) ? $slot_passed_flag = false : null;
 					
 						
-						
+						$slot_booked_allowance=true;
 						// ********************************************************************************** slot allowance check start
 						
 						if(in_array(intval($service['finder_id']),Config::get('app.slotAllowance.vendors'))&&in_array(intval($service['service_id']),Config::get('app.slotAllowance.services')))
 						{
 							$otpt=$this->utilities->getSlotBookedCount($slot["slot_time"],$service['service_id'],$date,(isset($slot['limited_seat'])?$slot['limited_seat']:10000));
-							$slot_datetime_pass_status=!$otpt['allowed'];
+							$slot_booked_allowance=$otpt['allowed'];
 						}
 						
 						//********************************************************************************** slot allowance check end
 						
+						
+						($slot_datetime_pass_status == false&&$slot_booked_allowance) ? $slot_passed_flag = false : null;
                         array_set($slot, 'price', $ratecard_price);
-                        array_set($slot, 'passed', $slot_datetime_pass_status);
+                        array_set($slot, 'passed', $slot_datetime_pass_status&&!$slot_booked_allowance);
                         array_set($slot, 'service_id', $item['_id']);
                         array_set($slot, 'finder_id', $item['finder_id']);
                         array_set($slot, 'ratecard_id', $ratecard['_id']);
