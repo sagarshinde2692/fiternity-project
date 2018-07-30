@@ -891,7 +891,7 @@ class ServiceController extends \BaseController {
 						
 						if(in_array(intval($service['finder_id']),Config::get('app.slotAllowance.vendors'))&&in_array(intval($service['service_id']),Config::get('app.slotAllowance.services')))
 						{
-							$otpt=$this->utilities->getSlotBookedCount($slot["slot_time"],$service['service_id'],$date,(isset($slot['limited_seat'])?$slot['limited_seat']:10000));
+							$otpt=$this->utilities->getSlotBookedCount($slot["slot_time"],$service['service_id'],date('d-m-Y',strtotime($date)),(isset($slot['limited_seat'])?$slot['limited_seat']:10000));
 							$slot_booked_allowance=$otpt['allowed'];
 						}
 						
