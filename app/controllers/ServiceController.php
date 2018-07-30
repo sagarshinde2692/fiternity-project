@@ -878,7 +878,6 @@ class ServiceController extends \BaseController {
 						
 						
 						($slot_datetime_pass_status == false&&$slot_booked_allowance) ? $slot_passed_flag = false : null;
-						
                         array_set($slot, 'price', $ratecard_price);
                         array_set($slot, 'passed', $slot_datetime_pass_status&&!$slot_booked_allowance);
                         array_set($slot, 'service_id', $item['_id']);
