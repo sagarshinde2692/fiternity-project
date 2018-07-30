@@ -6480,7 +6480,13 @@ class SchedulebooktrialsController extends \BaseController {
         }
 
         if(isset($item['myreward_id']) && $item['myreward_id'] != ""){
+
             $booking_details_data['price']['value']= "Free Via Fitternity";
+
+            if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && isset($finder['brand_id']) && $finder['brand_id'] == 66 && $finder['city_id'] == 3){
+
+                $booking_details_data['price']['value'] = "Free";
+            }
         }
 
         if(isset($item['part_payment']) && $item['part_payment']){

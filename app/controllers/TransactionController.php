@@ -73,6 +73,15 @@ class TransactionController extends \BaseController {
             $this->vendor_token = true;
         }
 
+        $this->kiosk_app_version = false;
+
+        if($vendor_token){
+
+            $this->vendor_token = true;
+
+            $this->kiosk_app_version = (float)Request::header('App-Version');
+        }
+
         $this->error_status = ($this->vendor_token) ? 200 : 400;
 
     }
