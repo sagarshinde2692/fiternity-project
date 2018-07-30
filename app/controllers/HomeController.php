@@ -34,6 +34,15 @@ class HomeController extends BaseController {
 
             $this->vendor_token = true;
         }
+
+        $this->kiosk_app_version = false;
+
+        if($vendor_token){
+
+            $this->vendor_token = true;
+
+            $this->kiosk_app_version = (float)Request::header('App-Version');
+        }
     }
 
 
@@ -1447,7 +1456,14 @@ class HomeController extends BaseController {
 
             $booking_details_data["start_time"] = ['field'=>'START TIME','value'=>'-','position'=>$position++];
 
-            $booking_details_data["price"] = ['field'=>'AMOUNT','value'=>'Free Via Fitternity','position'=>$position++];
+            if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && isset($finder['brand_id']) && $finder['brand_id'] == 66 && $finder['city_id'] == 3){
+
+                 $booking_details_data["price"] = ['field'=>'AMOUNT','value'=>'Free','position'=>$position++];
+
+            }else{
+
+                $booking_details_data["price"] = ['field'=>'AMOUNT','value'=>'Free Via Fitternity','position'=>$position++];
+            }
 
             $booking_details_data["address"] = ['field'=>'ADDRESS','value'=>'','position'=>$position++];
 
@@ -2019,6 +2035,11 @@ class HomeController extends BaseController {
                     $item['membership_locate'] = 'booked';
 
                     $resp['kiosk_membership'] = $this->utilities->membershipBookedLocateScreen($item);
+
+                    if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && isset($finder['brand_id']) && $finder['brand_id'] == 66 && $finder['city_id'] == 3){
+
+                        $resp['kiosk_membership']['features'] = [];
+                    }
                 }
             }
 
