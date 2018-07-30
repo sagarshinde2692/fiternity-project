@@ -73,7 +73,7 @@ class PaymentGatewayController extends \BaseController {
 				$return = $this->generateOtpPaytm();
 				break;
 			default:
-				$return = ['status'=>400,'message'=>'not found!'];
+				$return = ['status'=>401,'message'=>'not found!'];
 				break;
 		}
 
@@ -186,7 +186,7 @@ class PaymentGatewayController extends \BaseController {
 				$return = $this->generateTokenPaytm();
 				break;
 			default:
-				$return = ['status'=>400,'message'=>'not found!'];
+				$return = ['status'=>401,'message'=>'not found!'];
 				break;
 		}
 
@@ -221,8 +221,6 @@ class PaymentGatewayController extends \BaseController {
 
 		$generateToken = $this->paytm->generateToken($data);
 
-				echo"<pre>";print_r($generateToken);exit;
-
 		if($generateToken['status'] == 200){
 
 			$response = [
@@ -241,15 +239,14 @@ class PaymentGatewayController extends \BaseController {
 				];
 
 				$checkBalanceData = [
-					'cell'=>$data['cell'],
-					'token'=>$generateToken['response']['token']
+					'paytm_token'=>$response['paytm_token']
 				];
 
-				$checkBalance = $this->mobikwik->checkBalance($checkBalanceData);
+				$checkBalance = $this->paytm->checkBalance($checkBalanceData);
 
-				if($checkBalance['status'] == 200 && $checkBalance['response']['status'] == 'SUCCESS' && $checkBalance['response']['statuscode'] === '0'){
+				if($checkBalance['status'] == 200 && !empty($checkBalance['response']['STATUS']) && $checkBalance['response']['STATUS'] == 'ACTIVE'){
 
-					$response['wallet_balance'] = $checkBalance['response']['balanceamount'];
+					$response['wallet_balance'] = $checkBalance['response']['WALLETBALANCE'];
 				}
 
 			}
@@ -458,6 +455,70 @@ class PaymentGatewayController extends \BaseController {
 				];
 			}
 
+		}
+
+		return Response::json($response);
+	}
+
+	public function checkBalance($type){
+
+		switch ($type) {
+			case 'mobikwik': 
+				$return = $this->checkBalanceMobikwik();
+				break;
+			case 'paytm': 
+				$return = $this->checkBalancePaytm();
+				break;
+			default:
+				$return = ['status'=>401,'message'=>'not found!'];
+				break;
+		}
+
+		return $return;
+	}
+
+	public function checkBalancePaytm(){
+
+		$data = Input::json()->all();
+
+		$rules = [
+			'paytm_token' => 'required'
+		];
+
+		$validator = Validator::make($data,$rules);
+		
+		if($validator->fails()){
+
+			$response = [
+				'status'=>400,
+				'message'=>error_message($validator->errors())
+			];
+
+			return Response::json($response);
+		}
+
+		$checkBalance = $this->paytm->checkBalance($data);
+
+		$response = [
+			'status'=>400,
+			'message'=>'something went wrong'
+		];
+
+		if($checkBalance['status'] == 200){
+
+			$response = [
+				'message'=>"User Inactive",
+				'status'=>400
+			];
+
+			if($checkBalance['response']['STATUS'] == 'ACTIVE'){
+
+				$response = [
+					'wallet_balance'=>$checkBalance['response']['WALLETBALANCE'],
+					'message'=>"your wallet balance is ".$checkBalance['response']['WALLETBALANCE'],
+					'status'=>200
+				];
+			}
 		}
 
 		return Response::json($response);

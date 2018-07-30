@@ -202,11 +202,8 @@ Class Paytm {
     public function checkBalance($data){
 
         $data = [
-            'cell'=>substr($data['cell'],-10),
-            'merchantname'=>$this->merchantname,
-            'mid'=>$this->mid,
-            'msgcode'=>501,
-            'token'=>$data['token']
+            'TOKEN'=>$data['paytm_token'],
+            'MID'=>$this->mid
         ];
 
         $checksum = $this->createChecksum($data);

@@ -1255,7 +1255,7 @@ Route::post('generateotp/{type}','PaymentGatewayController@generateOtp');\
 Route::post('generatetoken/{type}','PaymentGatewayController@generateToken');
 Route::post('regeneratetoken/mobikwik','PaymentGatewayController@regenerateTokenMobikwik');
 Route::post('createuser/mobikwik','PaymentGatewayController@createUserMobikwik');
-Route::post('checkbalance/mobikwik','PaymentGatewayController@checkBalanceMobikwik');
+Route::post('checkbalance/{type}','PaymentGatewayController@checkBalance');
 Route::post('addmoney/mobikwik','PaymentGatewayController@addMoneyMobikwik');
 Route::post('debitmoney/mobikwik','PaymentGatewayController@debitMoneyMobikwik');
 Route::match(array('GET', 'POST'),'verifyaddmoney/mobikwik', 'PaymentGatewayController@verifyAddMoneyMobikwik');
