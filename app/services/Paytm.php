@@ -23,7 +23,7 @@ Class Paytm {
 
         $debug = ($debug) ? $debug : $this->debug;
 
-        $this->base_uri = 'https://pguat.paytm.com/oltp/HANDLER_INTERNAL';
+        $this->base_uri = 'https://pguat.paytm.com/oltp/HANDLER_INTERNAL/';
         $this->mid = 'Fitern22272466067721';
         $this->secret_key = 'j&0CCJb%B26dMs79';
         $this->merchantname = 'Test Merchant';
@@ -32,7 +32,7 @@ Class Paytm {
 
         if($paytm_sandbox){
 
-            $this->base_uri = 'https://pguat.paytm.com/oltp/HANDLER_INTERNAL';
+            $this->base_uri = 'https://pguat.paytm.com/oltp/HANDLER_INTERNAL/';
             $this->mid = 'Fitern22272466067721';
             $this->secret_key = 'j&0CCJb%B26dMs79';
             $this->merchantname = 'Test Merchant';
@@ -60,9 +60,9 @@ Class Paytm {
 
             $JsonData =json_encode($data);
 
-            $body = ['JsonData'=>urlencode($JsonData)];
+            $body = 'JsonData='.urlencode($JsonData);
 
-            $response = json_decode($this->client->post($url,['form_params'=>$body])->getBody()->getContents(),true);
+            $response = json_decode($this->client->post($url,['body'=>$body])->getBody()->getContents(),true);
 
             $return  = [
                 'status'=>200,

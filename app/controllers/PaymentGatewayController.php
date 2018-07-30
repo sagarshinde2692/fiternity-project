@@ -78,7 +78,6 @@ class PaymentGatewayController extends \BaseController {
 		}
 
 		return $return;
-
 	}
 
 	public function generateOtpPaytm(){
@@ -103,8 +102,6 @@ class PaymentGatewayController extends \BaseController {
 
 		$generateOtp = $this->paytm->generateOtp($data);
 
-				echo"<pre>";print_r($generateOtp);exit;
-
 		$response = [
 			'status'=>400,
 			'message'=>'something went wrong'
@@ -113,14 +110,14 @@ class PaymentGatewayController extends \BaseController {
 		if($generateOtp['status'] == 200){
 
 			$response = [
-				'message'=>$generateOtp['response']['statusdescription'],
+				'message'=>$generateOtp['response']['message'],
 				'status'=>400
 			];
 
-			if($generateOtp['response']['status'] == 'SUCCESS' && $generateOtp['response']['statuscode'] === '0'){
+			if($generateOtp['response']['status'] == 'SUCCESS'){
 
 				$response = [
-					'message'=>$generateOtp['response']['statusdescription'],
+					'message'=>$generateOtp['response']['message'],
 					'status'=>200
 				];
 			}
@@ -176,6 +173,23 @@ class PaymentGatewayController extends \BaseController {
 		}
 
 		return Response::json($response);
+	}
+
+	public function generateToken($type){
+
+		switch ($type) {
+			case 'mobikwik': 
+				$return = $this->generateTokenMobikwik();
+				break;
+			case 'paytm': 
+				$return = $this->generateTokenPaytm();
+				break;
+			default:
+				$return = ['status'=>400,'message'=>'not found!'];
+				break;
+		}
+
+		return $return;
 	}
 
 	public function generateTokenMobikwik(){

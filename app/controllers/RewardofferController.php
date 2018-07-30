@@ -1056,10 +1056,10 @@ class RewardofferController extends BaseController {
                 unset($rewardObjData['created_at']);
 
                 $rewards_snapfitness_contents = [
-                    'Couple Swimming Session (1 Session)',
-                    'Fitness Kit (Gym Bag + Shaker)',
-                    'Personalized Diet Consultation (1 month)',
-                    'Vouchers from Partner Brands  ( Amazon Nutrition)'
+                    'Luxury Swimming Session for 2 at 5-Stars (J W Marriot, Novotel, The Conrad & many more)',
+                    'Cool Fitness Merchandise Kit (Water Proof Gym Bag + Trendy Shaker)',
+                    'Personalized Diet Consultation for 1 month (Bi-Weekly consultation to deliver results)',
+                    'Vouchers from Partner Brands (Amazon Nutrition)'
                 ];
 
                 $rewardObjData['title'] = 'Snap Hamper';
@@ -1067,14 +1067,14 @@ class RewardofferController extends BaseController {
                 $rewardObjData['image'] = 'https://b.fitn.in/gamification/reward/mixed.jpg';
                 $rewardObjData['gallery'] = [
                     'https://b.fitn.in/gamification/reward/mixed.jpg',
-                    'https://b.fitn.in/gamification/reward/snap_fitness/diet.jpg',
-                    'https://b.fitn.in/gamification/reward/snap_fitness/kit.jpg',
                     'https://b.fitn.in/gamification/reward/snap_fitness/swimming.jpg',
+                    'https://b.fitn.in/gamification/reward/snap_fitness/kit.jpg',
+                    'https://b.fitn.in/gamification/reward/snap_fitness/diet.jpg',
                     'https://b.fitn.in/gamification/reward/snap_fitness/voucher.jpg',
                 ];
                 $rewardObjData['new_amount'] = 6000;
                 $rewardObjData['payload']['amount'] = 6000;
-                $rewardObjData['description'] = 'We have curated the perfect partner to kickstart your membership. Strike off this workout essential from your list & get going.<br>- '.implode('<br>- ',$rewards_snapfitness_contents);
+                $rewardObjData['description'] = 'We have curated a perfect Fitness Start Pack for your membership just for you. Now you can strike this off your list and get going.<br>- '.implode('<br>- ',$rewards_snapfitness_contents);
 
                 $rewards[] = $rewardObjData;
             }
