@@ -1058,11 +1058,11 @@ class RewardofferController extends BaseController {
                 $rewards_snapfitness_contents = [
                     '5-Stars Swimming Session(For 2 people)',
                     'Fitness Merchandise Kit (Gym Bag + Shaker)',
-                    'Personalized Diet Consultation (for 1 month)',
+                    'Personalized Online Diet Consultation (for 1 month)',
                     'Vouchers from ( Amazon,GNC & Faasos)'
                 ];
 
-                $rewardObjData['title'] = 'Snap Hamper';
+                $rewardObjData['title'] = 'Snap Fitness Hamper';
                 $rewardObjData['contents'] = $rewards_snapfitness_contents;
                 $rewardObjData['image'] = 'https://b.fitn.in/gamification/reward/mixed.jpg';
                 $rewardObjData['gallery'] = [

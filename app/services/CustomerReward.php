@@ -343,13 +343,27 @@ Class CustomerReward {
 
                         $reward_type_info = 'mixed';
 
-                        $reward['content'] = [
-                            'Couple Swimming Session (1 Session)',
-                            'Fitness Kit (Gym Bag + Shaker)',
-                            'Personalized Diet Consultation (1 month)',
-                            'Vouchers from Partner Brands  ( Amazon Nutrition)'
+                        $snapfitness_contents = [
+                            '5-Stars Swimming Session(For 2 people)',
+                            'Fitness Merchandise Kit (Gym Bag + Shaker)',
+                            'Personalized Online Diet Consultation (for 1 month)',
+                            'Vouchers from ( Amazon,GNC & Faasos)'
                         ];
+
+                        $reward['title'] = 'Snap Fitness Hamper';
+                        $reward['content'] = $snapfitness_contents;
                         $reward['image'] = 'https://b.fitn.in/gamification/reward/mixed.jpg';
+                        $reward['gallery'] = [
+                            'https://b.fitn.in/gamification/reward/mixed.jpg',
+                            'https://b.fitn.in/gamification/reward/snap_fitness/swimming.jpg',
+                            'https://b.fitn.in/gamification/reward/snap_fitness/kit.jpg',
+                            'https://b.fitn.in/gamification/reward/snap_fitness/diet.jpg',
+                            'https://b.fitn.in/gamification/reward/snap_fitness/voucher.jpg',
+                        ];
+                        $reward['new_amount'] = 6000;
+                        $reward['payload']['amount'] = 6000;
+                        $reward['payload_amount'] = 6000;
+                        $reward['description'] = 'We have curated a perfect Fitness Start Pack for your membership just for you. Now you can strike this off your list and get going.<br>- '.implode('<br>- ',$snapfitness_contents);
                     }
 
                 }

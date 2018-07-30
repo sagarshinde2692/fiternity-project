@@ -5454,7 +5454,6 @@ class FindersController extends \BaseController {
 
 		}
 
-
 		return Response::json($response,$response['status']);
 	}
 
