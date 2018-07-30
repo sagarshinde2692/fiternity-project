@@ -1695,7 +1695,7 @@ Class Utilities {
                     $request_amount_balance = $request_amount = $request['amount'] = (int)($wallet_limit - $current_wallet_balance);
                 }
 
-                $order = \Order::where('status','!=','1')->find((int)$request['order_id'])->toArray();
+                $order = \Order::where('status','!=','1')->find((int)$request['order_id']);
 
                 $wallet_transaction = $order['wallet_transaction_debit']['wallet_transaction'];
                 $wallet_amount = $order['wallet_transaction_debit']['amount'];
