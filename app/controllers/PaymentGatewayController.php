@@ -8,15 +8,15 @@
  */
 
 use App\Services\Mobikwik as Mobikwik;
+use App\Services\Paytm as Paytm;
 use App\Services\Fitweb as Fitweb;
 
 class PaymentGatewayController extends \BaseController {
 
-	protected $mobikwik;
-
 	public function __construct(
 
 		Mobikwik $mobikwik,
+		Paytm $paytm,
 		Fitweb $fitweb
 
 	) {
@@ -24,6 +24,7 @@ class PaymentGatewayController extends \BaseController {
      	parent::__construct();
 
      	$this->mobikwik = $mobikwik;
+     	$this->paytm = $paytm;
      	$this->fitweb = $fitweb;
     }
 
@@ -62,12 +63,79 @@ class PaymentGatewayController extends \BaseController {
 		return Response::json($response);
 	}
 
+	public function generateOtp($type){
+
+		switch ($type) {
+			case 'mobikwik': 
+				$return = $this->generateOtpMobikwik();
+				break;
+			case 'paytm': 
+				$return = $this->generateOtpPaytm();
+				break;
+			default:
+				$return = ['status'=>400,'message'=>'not found!'];
+				break;
+		}
+
+		return $return;
+
+	}
+
+	public function generateOtpPaytm(){
+
+		$data = Input::json()->all();
+
+		$rules = [
+			'cell' => 'required'
+		];
+
+		$validator = Validator::make($data,$rules);
+
+		if($validator->fails()){
+
+			$response = [
+				'status'=>400,
+				'message'=>error_message($validator->errors())
+			];
+
+			return Response::json($response);
+		}
+
+		$generateOtp = $this->paytm->generateOtp($data);
+
+				echo"<pre>";print_r($generateOtp);exit;
+
+		$response = [
+			'status'=>400,
+			'message'=>'something went wrong'
+		];
+
+		if($generateOtp['status'] == 200){
+
+			$response = [
+				'message'=>$generateOtp['response']['statusdescription'],
+				'status'=>400
+			];
+
+			if($generateOtp['response']['status'] == 'SUCCESS' && $generateOtp['response']['statuscode'] === '0'){
+
+				$response = [
+					'message'=>$generateOtp['response']['statusdescription'],
+					'status'=>200
+				];
+			}
+
+		}
+
+		return Response::json($response);
+	}
+
 	public function generateOtpMobikwik(){
 
 		$data = Input::json()->all();
 
 		$rules = [
-			'cell' => 'required|min:10|max:10',
+			'cell' => 'required',
 			'amount' => 'required|'
 		];
 
@@ -115,7 +183,7 @@ class PaymentGatewayController extends \BaseController {
 		$data = Input::json()->all();
 
 		$rules = [
-			'cell' => 'required|min:10|max:10',
+			'cell' => 'required',
 			'amount' => 'required',
 			'otp' => 'required'
 		];
@@ -221,7 +289,7 @@ class PaymentGatewayController extends \BaseController {
 		$data = Input::json()->all();
 
 		$rules = [
-			'cell' => 'required|min:10|max:10',
+			'cell' => 'required',
 			'token' => 'required'
 		];
 
@@ -270,7 +338,7 @@ class PaymentGatewayController extends \BaseController {
 		$data = Input::json()->all();
 
 		$rules = [
-			'cell' => 'required|min:10|max:10',
+			'cell' => 'required',
 			// 'email' => 'required|email',
 			'otp' => 'required'
 		];
@@ -319,7 +387,7 @@ class PaymentGatewayController extends \BaseController {
 		$data = Input::json()->all();
 
 		$rules = [
-			'cell' => 'required|min:10|max:10',
+			'cell' => 'required',
 			'token' => 'required'
 		];
 
@@ -367,7 +435,7 @@ class PaymentGatewayController extends \BaseController {
 		$data = Input::json()->all();
 
 		$rules = [
-			'cell' => 'required|min:10|max:10',
+			'cell' => 'required',
 			'amount' => 'required',
 			'token' => 'required',
 			'txnid' => 'required'
@@ -399,7 +467,7 @@ class PaymentGatewayController extends \BaseController {
 		Log::info('debitMoneyMobikwik',$data);
 
 		$rules = [
-			'cell' => 'required|min:10|max:10',
+			'cell' => 'required',
 			'amount' => 'required',
 			'token' => 'required',
 			'txnid' => 'required'
