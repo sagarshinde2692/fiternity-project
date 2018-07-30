@@ -1056,10 +1056,10 @@ class RewardofferController extends BaseController {
                 unset($rewardObjData['created_at']);
 
                 $rewards_snapfitness_contents = [
-                    'Luxury Swimming Session for 2 at 5-Stars (J W Marriot, Novotel, The Conrad & many more)',
-                    'Cool Fitness Merchandise Kit (Water Proof Gym Bag + Trendy Shaker)',
-                    'Personalized Diet Consultation for 1 month (Bi-Weekly consultation to deliver results)',
-                    'Vouchers from Partner Brands (Amazon Nutrition)'
+                    '5-Stars Swimming Session(For 2 people)',
+                    'Fitness Merchandise Kit (Gym Bag + Shaker)',
+                    'Personalized Diet Consultation (for 1 month)',
+                    'Vouchers from ( Amazon,GNC & Faasos)'
                 ];
 
                 $rewardObjData['title'] = 'Snap Hamper';
