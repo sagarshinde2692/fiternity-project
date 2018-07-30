@@ -4837,13 +4837,23 @@ class HomeController extends BaseController {
         			unset($selectedRatecard['image']);
         			(!empty($productView['specification'])&&!empty($productView['specification']['primary'])&&!empty($productView['specification']['primary']['features']))?$selectedRatecard['key_details']=$this->utilities->getProductDetailsCustom($productView['specification']['primary']['features']):"";
 //         			(!empty($selectedRatecard['key_details']))?array_unshift($selectedRatecard['key_details'],["name"=>"color","value"=>$selectedRatecard['color']]):"";
+        			
+        			$props_arr=[];
+        			if(!empty($selectedRatecard['properties']))foreach ($selectedRatecard['properties'] as $k=>$v)(!empty($k)&&!empty($v))?array_push($props_arr,["field"=>$k,"value"=>$v]):"";
+        			(!empty($props_arr))?$selectedRatecard['properties']=$props_arr:"";
+        					
         			if(!empty($productView['selection_view'])&&is_array($productView['selection_view']))
         			{
-        				$selectionViewFiltered=$this->utilities->getFilteredAndOrdered($productView['selection_view'],'level');
-        				(!empty($selectionViewFiltered))?$selectedRatecard=array_merge($selectedRatecard,$this->utilities->getSelectionView($selectionViewFiltered,intval($productView['_id']),$productView)):"";
+        				$selectionViewFiltered=$this->utilities->getFilteredAndOrdered($productView['selection_view'],'level');$trav_idx=[];
+//         					return $this->utilities->getSelectionView($selectionViewFiltered,intval($productView['_id']),$productView,intval($selectedRatecard['_id']),$trav_idx);
+        				(!empty($selectionViewFiltered))?$selectedRatecard=array_merge($selectedRatecard,$this->utilities->getSelectionView($selectionViewFiltered,intval($productView['_id']),$productView,intval($selectedRatecard['_id']),$trav_idx)):"";
+//         				if(!empty($trav_idx))$selectedRatecard['traverse_ind']=array_pluck($trav_idx, 	'ind');
+//         				if(!empty($trav_idx))$selectedRatecard['traverse_ind']=$trav_idx;
+//         				return $selectedRatecard;
         				unset($selectedRatecard['extra_info']);
         				if(empty($getProductInternal))unset($selectedRatecard['properties']);
         			}
+        		
         			if(!empty($productView['primarycategory'])&&!empty($productView['primarycategory']['slug'])){$selectedRatecard['product_category_slug']=$productView['primarycategory']['slug'];$selectedRatecard['product_category_id']=$productView['primarycategory']['_id'];}
         			$mainSimilar=[];
         			$selectedRatecard['ratecard_id']=$selectedRatecard['_id'];
