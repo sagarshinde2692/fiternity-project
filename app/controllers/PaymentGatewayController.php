@@ -102,6 +102,8 @@ class PaymentGatewayController extends \BaseController {
 
 		$generateOtp = $this->paytm->generateOtp($data);
 
+				echo"<pre>";print_r($generateOtp);exit;
+
 		$response = [
 			'status'=>400,
 			'message'=>'something went wrong'
