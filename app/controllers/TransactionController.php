@@ -368,7 +368,7 @@ class TransactionController extends \BaseController {
                 	$allowed_qty=$this->utilities->getSlotReqdField($data['start_time'],$data['end_time'],$data['service_id'],$data['schedule_date']);
                 	$otpt=$this->utilities->getSlotBookedCount($data['schedule_slot'],$data['service_id'],$data['schedule_date'],(($allowed_qty)?$allowed_qty:10000));
                 	if(!$otpt['allowed'])
-                		return Response::json("All Slots already booked for this date and slot.",0);
+                		return Response::json("All Slots already booked for this date and slot.",400);
                 }
                 //********************************************************************************** slot allowance check end
                 
