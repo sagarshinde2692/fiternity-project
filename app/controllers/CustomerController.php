@@ -7220,7 +7220,71 @@ class CustomerController extends \BaseController {
 		$response['block'] = true;
 
 		return $response;
-	
+	}
+	public function getCustomerUnmarkedAttendance()
+	{
+		$resp=['status'=>200,'response'=>[]];
+		try {
+			$jwt_token = Request::header('Authorization');
+			if(empty($jwt_token)) return ['status' => 400,'message' =>"Token absent"];
+			$decoded = customerTokenDecode($jwt_token);
+			$customer_id = (int)$decoded->customer->_id;
+			$data =	Input::json()->all();
+			$rules = ['code' => 'required'];
+			$validator = Validator::make($data, $rules);
+			
+			if ($validator->fails()) return ['status' => 400,'message' =>$this->errorMessage($validator->errors())];
+			else
+			{
+				$dcd=$this->utilities->decryptQr($data['code'], Config::get('app.core_key'));
+				if(empty($dcd))
+					return ['status' => 400,'message' =>"Invalid Qr Code"];
+				$data=json_decode(preg_replace('/[\x00-\x1F\x7F]/', '', $dcd),true);
+				
+				if(empty($data['vendor_id'])||empty($data['owner'])||$data['owner']!='fitternity') return ['status' => 400,'message' =>"Invalid Qr Code"];
+				$cur=new DateTime();
+				$twoDays=new DateTime(date('Y-m-d',strtotime("-2 days")));
+				$booktrial = Booktrial::where('customer_id',$customer_id)
+				->whereIn('type',['booktrials','3daystrial', 'workout-session'])
+				->where('finder_id',intval($data['vendor_id']))
+				->where('post_trial_status_updated_by_fitcode', 'exists', false)
+				->where('schedule_date_time', '<=',$cur)
+				->where('schedule_date_time', '>=',$twoDays)
+				->orderBy('schedule_date_time','desc')
+				->get();
+			
+				if(!empty($booktrial)&&count($booktrial)>0)
+				{
+					$booktrial=$booktrial->toArray();
+					$cnt=count($booktrial);
+					if($cnt==1&&!empty($booktrial[0]['_id']))
+					{
+						$pop_up=["title"=>"Confirmation",
+								"message"=>'Did you attend the session - '.(!empty($booktrial[0]['service_name'])?$booktrial[0]['service_name']:"").' at '.(!empty($booktrial[0]['schedule_slot_start_time'])?$booktrial[0]['schedule_slot_start_time']:"").'?',
+								"positivebtn"=>"yes",
+								"negativebtn"=>"No",
+								"options"=>["mark"=>false,"_id"=>$booktrial[0]['_id']]	
+							];
+					}
+					else
+					{
+						$header= "We have found ".$cnt." bookings for ".(!empty($booktrial[0]['finder_name'])?$booktrial[0]['finder_name']:"");
+						$options=[];
+						foreach ($booktrial as $value)
+							(!empty($value['_id']))?array_push($options, ['name'=>(!empty($value['service_name'])?$value['service_name']:""),'subtitle'=>date_format(new DateTime($value['schedule_date_time']),"l, jS M Y H:ia"),"_id"=>$value['_id'],"mark"=>false]):"";
+					}
+				}
+				else $resp['message']="No bookings found.";
+				if(!empty($pop_up))$resp['response']['pop_up']=$pop_up;
+				if(!empty($header))$resp['response']['header']=$header;
+				if(!empty($options))$resp['response']['options']=$options;
+				return $resp;
+			}
+		} 
+		catch (Exception $e) {
+			return ['status'=>400,'message'=>$e->getMessage().' - Line :'.$e->getLine().' - Code :'.$e->getCode().' - File :'.$e->getFile()];
+		}
+		return $resp;
 	}
 
 }

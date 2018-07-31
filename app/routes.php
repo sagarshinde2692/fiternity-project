@@ -1266,3 +1266,4 @@ Route::get('updateCouponUsed','DebugController@updateCouponUsed');
 Route::get('updateRatecardSlots','DebugController@updateRatecardSlots');
 
 Route::get('updateratecardslotsbyid/{order_id}','TransactionController@updateRatecardSlotsByOrderId');
+Route::post('getunmarkedattendance','CustomerController@getCustomerUnmarkedAttendance');
