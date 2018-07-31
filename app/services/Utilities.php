@@ -4703,6 +4703,7 @@ Class Utilities {
         }
     }
     
+
     public function getDayWs($date=null)
     {
     	return $this->days[date("w",strtotime($date))];
@@ -5278,6 +5279,13 @@ Class Utilities {
         
     }
 
+    
+    function decryptQr($encrypted_string, $encryption_key) {	
+    	$iv_size = mcrypt_get_iv_size(MCRYPT_BLOWFISH, MCRYPT_MODE_ECB);
+    	$iv = mcrypt_create_iv($iv_size, MCRYPT_RAND);
+    	$decrypted_string = mcrypt_decrypt(MCRYPT_BLOWFISH, $encryption_key, hex2bin($encrypted_string), MCRYPT_MODE_ECB, $iv);
+    	return $decrypted_string;
+    }
 
 }
 

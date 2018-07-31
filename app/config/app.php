@@ -22,6 +22,7 @@ return array(
 //  'mobikwik_sandbox'=>true,
 // 'paytm_sandbox'=>true,
 //  'slotAllowance' =>['vendors'=>[8892],'services'=>[17626],'types'=>['workout-session']],
+// 	"core_key"=> "FITITRNTY",
 
 
 	//stage
@@ -42,6 +43,7 @@ return array(
 	'mobikwik_sandbox'=>true,
 	'paytm_sandbox'=>true,
 	'product_delivery_charges' => 50,
+	"core_key"=> "FITITRNTY",
 
 	//beta
 	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
@@ -62,6 +64,8 @@ return array(
 	// 'paytm_sandbox'=>true,
 	// 'slotAllowance' =>['vendors'=>[8892],'services'=>[17626],'types'=>['workout-session']],
 	// 'product_delivery_charges' => 50,
+	// "core_key"=> "FITITRNTY",
+
 
 	//live
 
@@ -83,8 +87,8 @@ return array(
 	//  'paytm_sandbox'=>false,
 	// 	'slotAllowance' =>['vendors'=>[8892],'services'=>[17626],'types'=>['workout-session']],
 	//	'product_delivery_charges' => 50,
+	// 	"core_key"=> "FITITRNTY",
 	
-
 
 	'pubnub_publish' => 'pub-c-d9aafff8-bb9e-42a0-a24b-17ab5500036f',
 	'pubnub_sub' => 'sub-c-05ef3130-d0e6-11e6-bbe2-02ee2ddab7fe',
