@@ -4191,6 +4191,11 @@ Class Utilities {
     	$decrypted_string = mcrypt_decrypt(MCRYPT_BLOWFISH, $encryption_key, hex2bin($encrypted_string), MCRYPT_MODE_ECB, $iv);
     	return $decrypted_string;
     }
+    public function updateOrderStatus($booktrial){
+    	if(isset($booktrial->pay_later) && $booktrial->pay_later && isset($booktrial->payment_done) && !$booktrial->payment_done){
+    		Order::where('_id', $booktrial->order_id)->where('status', '0')->update(['status'=>'4']);
+    	}
+    }
 
 }
 

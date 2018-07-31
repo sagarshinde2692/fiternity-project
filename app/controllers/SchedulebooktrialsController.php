@@ -6756,7 +6756,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             $booktrial->post_trial_status = 'attended';
 
-            $this->updateOrderStatus($booktrial);
+            $this->utilities->updateOrderStatus($booktrial);
             
             $booktrial->post_trial_initail_status = 'interested';
             $booktrial->post_trial_status_updated_by_kiosk = time();
@@ -7043,7 +7043,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             $booktrial->post_trial_status = 'attended';
 
-            $this->updateOrderStatus($booktrial);
+            $this->utilities->updateOrderStatus($booktrial);
             
             $booktrial->post_trial_initail_status = 'interested';
             $booktrial->post_trial_status_updated_by_fitcode = time();
@@ -7141,7 +7141,7 @@ class SchedulebooktrialsController extends \BaseController {
                 Log::info("not adding fitachs");
             }
             
-            $this->updateOrderStatus($booktrial);
+            $this->utilities->updateOrderStatus($booktrial);
             
             $booktrial->post_trial_initail_status = 'interested';
             $booktrial->post_trial_status_updated_by_lostfitcode = time();
