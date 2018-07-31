@@ -4,20 +4,26 @@
 return array(
 
 	//local
-	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
-	// 'url' => 'http://fitapi.com',
-	// 'admin_url' => 'http://fitadmin.com',
-	// 'website' => 'https://www.fitternity.com',
-	// 'sidekiq_url' => 'http://kick.fitn.in/', 
-	// 'queue' => 'booktrial',
-	// 'vendor_communication' => false,
-	// 'env' => 'stage',
-	// 'debug' => TRUE,
-	// 'metropolis' => 'http://localhost:3030',
-	// 'amazonpay_isSandbox' => 'true',
-	// 'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
-	// 'website_deeplink' =>'https://ftrnty.com',
-	// 'slotAllowance' =>['vendors'=>[8892],'services'=>[17626],'types'=>['workout-session']],
+
+// 	'new_search_url' =>'http://apistage.fitn.in:5000/',
+// 	'url' => 'http://fitapi.com',
+// 	'admin_url' => 'http://fitadmin.com',
+// 	'website' => 'https://www.fitternity.com',
+// 	'sidekiq_url' => 'http://kick.fitn.in/', 
+// 	'queue' => 'booktrial',
+// 	'vendor_communication' => false,
+// 	'env' => 'stage',
+// 	'debug' => TRUE,
+// 	'metropolis' => 'http://localhost:3030',
+// 	'amazonpay_isSandbox' => 'true',
+// 	'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
+// 	'website_deeplink' =>'https://ftrnty.com',
+//	'product_delivery_charges' => 50,
+//  'mobikwik_sandbox'=>true,
+// 'paytm_sandbox'=>true,
+//  'slotAllowance' =>['vendors'=>[8892],'services'=>[17626],'types'=>['workout-session']],
+// 	"core_key"=> "FITITRNTY",
+
 
 	//stage
 	'new_search_url' =>'http://apistage.fitn.in:5000/',
@@ -33,7 +39,11 @@ return array(
 	'amazonpay_isSandbox' => 'true',
 	'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
 	'website_deeplink' =>'https://ftrnty.com',
-	'slotAllowance' =>['vendors'=>[8892],'services'=>[17626],'types'=>['workout-session']],
+	'slotAllowance' =>['vendors'=>[8892],'services'=>[17626],'types'=>['workout-session','booktrials']],
+	'mobikwik_sandbox'=>true,
+	'paytm_sandbox'=>true,
+	'product_delivery_charges' => 50,
+	"core_key"=> "FITITRNTY",
 
 	//beta
 	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
@@ -47,28 +57,42 @@ return array(
 	// 'debug' => TRUE,
 	// 'metropolis' => 'http://apisatge.fitn.in:8989',
 	// 'amazonpay_isSandbox' => 'true',
+	// 'non_peak_hours' => ["off"=>0.8,"gym"=>["off"=>0.8,"start"=>10,"end"=>18],"studios"=>["start"=>11,"end"=>17,"off"=>0.8]],
 	// 'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
 	// 'website_deeplink' =>'https://ftrnty.com',
+	// 'mobikwik_sandbox'=>true,
+	// 'paytm_sandbox'=>true,
 	// 'slotAllowance' =>['vendors'=>[8892],'services'=>[17626],'types'=>['workout-session']],
+	// 'product_delivery_charges' => 50,
+	// "core_key"=> "FITITRNTY",
+
 
 	//live
-// 	'new_search_url' =>'http://c1.fitternity.com/',
-// 	'url' => 'https://a1.fitternity.com',
-// 	'admin_url' => 'https://fitn.in',
-// 	'website' => 'https://www.fitternity.com',
-// 	'sidekiq_url' => 'http://nw.fitn.in/',
-// 	'queue' => 'booktrial',
-// 	'vendor_communication' => true,
-// 	'env' => 'production',
-// 	'debug' => false,
-// 	'metropolis' => 'https://c1.fitternity.com',
-// 	'amazonpay_isSandbox' => 'false',
-// 	'reliance_url' =>'https://rhealthcircle.reliancegeneral.co.in/fitternity/callback',
-// 	'website_deeplink' =>'https://ftrnty.com',
-// 	'slotAllowance' =>['vendors'=>[8892],'services'=>[17626],'types'=>['workout-session']],
+
+	// 	'new_search_url' =>'http://c1.fitternity.com/',
+	// 	'url' => 'https://a1.fitternity.com',
+	// 	'admin_url' => 'https://fitn.in',
+	// 	'website' => 'https://www.fitternity.com',
+	// 	'sidekiq_url' => 'http://nw.fitn.in/',
+	// 	'queue' => 'booktrial',
+	// 	'vendor_communication' => true,
+	// 	'env' => 'production',
+	// 	'debug' => false,
+	// 	'metropolis' => 'https://c1.fitternity.com',
+	// 	'amazonpay_isSandbox' => 'false',
+	//	'non_peak_hours' => ["off"=>0.8,"gym"=>["off"=>0.8,"start"=>10,"end"=>18],"studios"=>["start"=>11,"end"=>17,"off"=>0.8]],
+	// 	'reliance_url' =>'https://rhealthcircle.reliancegeneral.co.in/fitternity/callback',
+	// 	'website_deeplink' =>'https://ftrnty.com',
+	// 	'mobikwik_sandbox'=>false,
+	//  'paytm_sandbox'=>false,
+	// 	'slotAllowance' =>['vendors'=>[8892],'services'=>[17626],'types'=>['workout-session']],
+	//	'product_delivery_charges' => 50,
+	// 	"core_key"=> "FITITRNTY",
+	
 
 	'pubnub_publish' => 'pub-c-d9aafff8-bb9e-42a0-a24b-17ab5500036f',
 	'pubnub_sub' => 'sub-c-05ef3130-d0e6-11e6-bbe2-02ee2ddab7fe',
+	
 	'download_app_link' => 'https://go.onelink.me/I0CO?pid=techfitsms',//https://www.fitternity.com/downloadapp?source=fittech',
 
     'business' => 'http://business.fitternity.com',
@@ -297,21 +321,21 @@ return array(
 	//will be implemented everywhere in future when other api will be changed
 	/*************************************************************************/
 	//Production
-	'es' =>array(
-		'url'		=> 			'ESAdmin:fitternity2020@54.169.120.141:8050',
-		'host'		=> 			'ESAdmin:fitternity2020@54.169.120.141',
-		'port'		=>			8050,
-		'default_index' => 	'fitternity',
-		'default_type' 	=> 	'finder',
-	),
-	//stage
 	// 'es' =>array(
-	//  	'url'		=> 			'139.59.16.74:1243',
-	//  	'host'		=> 			'139.59.16.74',
-	//  	'port'		=>			1243,
-	//  	'default_index' => 	'fitternity',
-	//  	'default_type' 	=> 	'finder',
+	// 	'url'		=> 			'ESAdmin:fitternity2020@54.169.120.141:8050',
+	// 	'host'		=> 			'ESAdmin:fitternity2020@54.169.120.141',
+	// 	'port'		=>			8050,
+	// 	'default_index' => 	'fitternity',
+	// 	'default_type' 	=> 	'finder',
 	// ),
+	//stage
+	'es' =>array(
+	 	'url'		=> 			'139.59.16.74:1243',
+	 	'host'		=> 			'139.59.16.74',
+	 	'port'		=>			1243,
+	 	'default_index' => 	'fitternity',
+	 	'default_type' 	=> 	'finder',
+	),
 	//local
 	// 'es' =>array(
 	// 	'url'		=> 			'localhost:9200',
@@ -791,9 +815,7 @@ return array(
 	],
 	'paypersession_level_icon_base_url'=>'https://b.fitn.in/paypersession/level-',
 	'paypersession_lock_icon'=>'https://b.fitn.in/paypersession/lock-icon.png',
-	'remove_patti_from_brands' => [
-									// 1579,1580,1581,1582,1583,1584,1602,1604,1605,1606,1607,2235,2236,2244,6893,7064//Powerhouse
-									],
+	'remove_patti_from_brands' => [],
 
 	'routed_order_fitcash'=>300,
 	'fitcode_fitcash'=>300,
@@ -805,9 +827,11 @@ return array(
 		'offhours_instant_td_mins'=>5,
 		'offhours_fixed_time_1'=>22,
 		'offhours_fixed_time_2'=>20,
-		'full_day_weekend'=>['Sunday'],
+		'full_day_weekend'=>['Sunday','Thursday'],
 		'begin_weekend'=>['Saturday'],
 		'end_weekend'=>['Monday'],
-	]
+	],
+
+	'add_wallet_extra'=>10
 
 );
