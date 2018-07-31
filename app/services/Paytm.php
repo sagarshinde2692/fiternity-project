@@ -24,6 +24,7 @@ Class Paytm {
         $this->base_uri = 'https://secure.paytm.in/oltp/HANDLER_INTERNAL/';
         $this->mid = 'fitter45826906213917';
         $this->secret_key = 'j&0CCJb%B26dMs79';
+        $this->transaction_api = "https://secure.paytm.in/oltp-web/processTransaction?orderid=";
 
         $paytm_sandbox = \Config::get('app.paytm_sandbox');
 
@@ -32,6 +33,7 @@ Class Paytm {
             $this->base_uri = 'https://pguat.paytm.com/oltp/HANDLER_INTERNAL/';
             $this->mid = 'Fitern22272466067721';
             $this->secret_key = 'j&0CCJb%B26dMs79';
+            $this->transaction_api = "https://pguat.paytm.com/oltp-web/processTransaction?orderid=";
         }
 
         $this->client = new Client( ['debug' => $debug, 'base_uri' => $this->base_uri] );
@@ -240,6 +242,53 @@ Class Paytm {
 
         return $this->postForm($data,$url);
     }
+
+    public function transaction($data){
+
+        $data = [
+            'REQUEST_TYPE'=>'PAYTM_EXPRESS',
+            'MID'=>$this->mid,
+            'ORDER_ID'=>$data['txnid'],
+            'CUST_ID'=>$data['customer_id'],
+            'TXN_AMOUNT'=>(float)$data['amount'],
+            'CHANNEL_ID'=>'WAP',
+            'INDUSTRY_TYPE_ID'=>'Retail',
+            'WEBSITE'=>'fitweb',
+            'PAYMENT_DETAILS'=>'',
+            'THEME'=>'merchant',
+            'AUTH_MODE'=>'',
+            'PAYMENT_TYPE_ID'=>'',
+            
+
+            'cell'=>substr($data['cell'],-10),
+            'merchantname'=>$this->merchantname,
+            'redirecturl'=>\Config::get('app.url').'/verifyaddmoney/mobikwik',
+            'token'=>$data['token']
+        ];
+
+        if(stripos($data['orderid'],'fit') == 0){
+
+            $data['CHANNEL_ID'] = 'WEB';
+
+            $data['redirecturl'] = "http://localhost:3000/verifymobikwik";
+        }
+
+        $checksum = $this->createChecksum($data);
+
+        $data['CHECKSUM'] = $checksum;
+
+        $url = $this->base_uri.'/addmoneytowallet?'.http_build_query($data, "&");
+
+        $response = [
+            'url'=>$url,
+            'status'=>200
+        ];
+
+        return $response;
+
+    }
+
+    https://pguat.paytm.com/oltp-web/processTransaction?orderid=<Order_ID>
 
     public function encrypt_e($input, $ky) {
         $key = $ky;
