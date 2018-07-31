@@ -3550,13 +3550,9 @@ class SchedulebooktrialsController extends \BaseController {
             $item = [];
 
             $item['booked_locate'] = 'booked';
+            $item['finder_id'] = (int)$booktrial['finder_id'];
 
             $resp['kiosk'] = $this->utilities->trialBookedLocateScreen($item);
-
-            if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && isset($finder['brand_id']) && $finder['brand_id'] == 66 && $finder['city_id'] == 3){
-
-                $resp['kiosk']['title'] = "";
-            }
 
         }
 
@@ -6859,7 +6855,8 @@ class SchedulebooktrialsController extends \BaseController {
             ];
 
             $data = [
-                'booked_locate'=>'locate'
+                'booked_locate'=>'locate',
+                'finder_id'=>(int)$booktrial['finder_id']
             ];
 
             $response = array_merge($response,$this->utilities->trialBookedLocateScreen($data));

@@ -40,6 +40,16 @@ Class Utilities {
 
         $this->vendor_token = true;
     }
+
+    $this->kiosk_app_version = false;
+
+    if($vendor_token){
+
+        $this->vendor_token = true;
+
+        $this->kiosk_app_version = (float)Request::header('App-Version');
+    }
+
        
    }
     
@@ -2937,6 +2947,13 @@ Class Utilities {
 
     public function trialBookedLocateScreen($data = false){
 
+        if(isset($data['finder_id'])){
+
+            Finder::$withoutAppends=true;
+
+            $finder = Finder::find((int)$data['finder_id']);
+        }
+
         $fitcash_amount = 150;
 
         $response['message_title'] = "DONE!";
@@ -2979,10 +2996,23 @@ Class Utilities {
             ]
         ];
 
+        if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && isset($finder['brand_id']) && $finder['brand_id'] == 66 && isset($finder['city_id']) && $finder['city_id'] == 3){
+
+            $response['title'] = "";
+            $response['message'] = "";
+        }
+
         return $response;
     }
 
     public function membershipBookedLocateScreen($data){
+
+        if(isset($data['finder_id'])){
+
+            Finder::$withoutAppends=true;
+
+            $finder = Finder::find((int)$data['finder_id']);
+        }
 
         $response['message_title'] = "DONE!";
 
@@ -3019,6 +3049,12 @@ Class Utilities {
             'description'=>'<b>Don’t    let    your    workout    be    monotonous.</b>    Try    different    workouts    around    you    by    only    paying    per    session!',
             'type'=>'pay_per_session'
         ];
+
+        if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && isset($finder['brand_id']) && $finder['brand_id'] == 66 && isset($finder['city_id']) && $finder['city_id'] == 3){
+
+            $response['features'] = [];
+            $response['message'] = "";
+        }
 
         return $response;
     }
