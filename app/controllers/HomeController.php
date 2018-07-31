@@ -1954,7 +1954,13 @@ class HomeController extends BaseController {
                     }
 
                     if($reward->reward_type == 'mixed'){
+
                         $reward_details = null;
+
+                        if(!empty($booking_details_data["reward"]) && !empty($booking_details_data["reward"]["value"])){
+
+                            $booking_details_data["reward"]["value"] = "Snap Fitenss Hamper (We will get in touch with you shortly to assist with your reward claiming)";
+                        }
                     }
                 }
             }
