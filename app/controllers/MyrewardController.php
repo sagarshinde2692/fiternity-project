@@ -164,6 +164,11 @@ class MyrewardController extends BaseController {
                     $value["copy_text"] = "Copied";
                 }
 
+                if($value['reward_type'] == 'mixed'){
+                    $value["status"] = "1";
+                    $value["cta"] = "Claimed";
+                }
+
             }
         }
 

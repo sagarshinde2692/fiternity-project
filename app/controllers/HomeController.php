@@ -1953,6 +1953,9 @@ class HomeController extends BaseController {
                         }
                     }
 
+                    if($reward->reward_type == 'mixed'){
+                        $reward_details = null;
+                    }
                 }
             }
 
