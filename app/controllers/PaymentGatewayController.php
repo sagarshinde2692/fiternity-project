@@ -102,8 +102,6 @@ class PaymentGatewayController extends \BaseController {
 
 		$generateOtp = $this->paytm->generateOtp($data);
 
-				echo"<pre>";print_r($generateOtp);exit;
-
 		$response = [
 			'status'=>400,
 			'message'=>'something went wrong'
@@ -111,17 +109,13 @@ class PaymentGatewayController extends \BaseController {
 
 		if($generateOtp['status'] == 200){
 
-			$response = [
-				'message'=>'Error!, Please try after sometime',
-				'status'=>400
-			];
+			if(!empty($generateToken['response']['ErrorMsg'])){
 
-			/*if($generateOtp['response']['STATUS'] == 'FAILURE' && $generateOtp['response']['ErrorCode'] == '432'){
-
-
-
-				return $this->generateOtpPaytm($data);
-			}*/
+				$response = [
+					'message'=>$generateToken['response']['ErrorMsg'],
+					'status'=>400
+				];
+			}
 
 			if(!empty($generateOtp['response']['status']) && $generateOtp['response']['status'] == 'SUCCESS'){
 
@@ -132,7 +126,6 @@ class PaymentGatewayController extends \BaseController {
 				];
 
 			}
-
 		}
 
 		return Response::json($response);
@@ -233,12 +226,15 @@ class PaymentGatewayController extends \BaseController {
 
 		if($generateToken['status'] == 200){
 
-			$response = [
-				'message'=>$generateToken['response']['ErrorMsg'],
-				'status'=>400
-			];
+			if(!empty($generateToken['response']['ErrorMsg'])){
 
-			if($generateToken['response']['status'] == 'SUCCESS'){
+				$response = [
+					'message'=>$generateToken['response']['ErrorMsg'],
+					'status'=>400
+				];
+			}
+
+			if(!empty($generateToken['response']['STATUS']) && $generateToken['response']['STATUS'] == 'SUCCESS'){
 
 				$response = [
 					'txn_token'=>$generateToken['response']['TOKEN_DETAILS']['TXN_TOKEN'],
@@ -260,7 +256,6 @@ class PaymentGatewayController extends \BaseController {
 				}
 
 			}
-
 		}
 
 		return Response::json($response);
@@ -521,7 +516,7 @@ class PaymentGatewayController extends \BaseController {
 				'status'=>400
 			];
 
-			if($checkBalance['response']['STATUS'] == 'ACTIVE'){
+			if(!empty($checkBalance['response']['STATUS']) && $checkBalance['response']['STATUS'] == 'ACTIVE'){
 
 				$response = [
 					'wallet_balance'=>$checkBalance['response']['WALLETBALANCE'],

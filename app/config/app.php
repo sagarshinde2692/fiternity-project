@@ -20,6 +20,7 @@ return array(
 // 	'website_deeplink' =>'https://ftrnty.com',
 //	'product_delivery_charges' => 50,
 //  'mobikwik_sandbox'=>true,
+// 'paytm_sandbox'=>true,
 //  'slotAllowance' =>['vendors'=>[8892],'services'=>[17626],'types'=>['workout-session']],
 
 
@@ -39,6 +40,7 @@ return array(
 	'website_deeplink' =>'https://ftrnty.com',
 	'slotAllowance' =>['vendors'=>[8892],'services'=>[17626],'types'=>['workout-session']],
 	'mobikwik_sandbox'=>true,
+	'paytm_sandbox'=>true,
 	'product_delivery_charges' => 50,
 
 	//beta
@@ -57,8 +59,9 @@ return array(
 	// 'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
 	// 'website_deeplink' =>'https://ftrnty.com',
 	// 'mobikwik_sandbox'=>true,
+	// 'paytm_sandbox'=>true,
 	// 'slotAllowance' =>['vendors'=>[8892],'services'=>[17626],'types'=>['workout-session']],
-	//  'product_delivery_charges' => 50,
+	// 'product_delivery_charges' => 50,
 
 	//live
 
@@ -77,6 +80,7 @@ return array(
 	// 	'reliance_url' =>'https://rhealthcircle.reliancegeneral.co.in/fitternity/callback',
 	// 	'website_deeplink' =>'https://ftrnty.com',
 	// 	'mobikwik_sandbox'=>false,
+	//  'paytm_sandbox'=>false,
 	// 	'slotAllowance' =>['vendors'=>[8892],'services'=>[17626],'types'=>['workout-session']],
 	//	'product_delivery_charges' => 50,
 	

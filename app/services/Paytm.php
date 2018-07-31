@@ -11,8 +11,6 @@ Class Paytm {
     protected $client;
     protected $mid;
     protected $secret_key;
-    protected $si_secret_key;
-    protected $merchantname;
 
     public function __construct() {
 
@@ -23,10 +21,9 @@ Class Paytm {
 
         $debug = ($debug) ? $debug : $this->debug;
 
-        $this->base_uri = 'https://pguat.paytm.com/oltp/HANDLER_INTERNAL/';
-        $this->mid = 'Fitern22272466067721';
+        $this->base_uri = 'https://secure.paytm.in/oltp/HANDLER_INTERNAL/';
+        $this->mid = 'fitter45826906213917';
         $this->secret_key = 'j&0CCJb%B26dMs79';
-        $this->merchantname = 'Test Merchant';
 
         $paytm_sandbox = \Config::get('app.paytm_sandbox');
 
@@ -35,7 +32,6 @@ Class Paytm {
             $this->base_uri = 'https://pguat.paytm.com/oltp/HANDLER_INTERNAL/';
             $this->mid = 'Fitern22272466067721';
             $this->secret_key = 'j&0CCJb%B26dMs79';
-            $this->merchantname = 'Test Merchant';
         }
 
         $this->client = new Client( ['debug' => $debug, 'base_uri' => $this->base_uri] );
@@ -96,33 +92,11 @@ Class Paytm {
 
     }
 
-    public function checkExistingUser($cell){
-
-        $cell = substr($cell,-10);
-
-        $data = [
-            'action'=>'existingusercheck',
-            'cell'=>$cell,
-            'merchantname'=>$this->merchantname,
-            'mid'=>$this->mid,
-            'msgcode'=>500
-        ];
-
-        $checksum = $this->createChecksum($data);
-
-        $data['CHECKSUM'] = $checksum;
-
-        $url = 'querywallet';
-
-        return $this->postForm($data,$url);
-
-    }
-
     public function generateOtp($data){
 
         $data = [
             'PHONE'=>substr($data['cell'],-10),
-            'USER_TYPE'=>'01',
+            'USER_TYPE'=>'00',
             'RESPONSE_TYPE'=>'token',
             'SCOPE'=>'paytm,txn',
             'MID'=>$this->mid,
@@ -157,6 +131,23 @@ Class Paytm {
 
     }
 
+    public function checkBalance($data){
+
+        $data = [
+            'TOKEN'=>$data['paytm_token'],
+            'MID'=>$this->mid
+        ];
+
+        $checksum = $this->createChecksum($data);
+
+        $data['CHECKSUM'] = $checksum;
+
+        $url = 'checkBalance';
+
+        return $this->postForm($data,$url);
+
+    }
+
     public function regenerateToken($data){
 
         $data = [
@@ -173,44 +164,6 @@ Class Paytm {
         $data['CHECKSUM'] = $checksum;
 
         $url = 'tokenregenerate';
-
-        return $this->postForm($data,$url);
-
-    }
-
-    public function createUser($data){
-
-        $data = [
-            'cell'=>substr($data['cell'],-10),
-            // 'email'=>$data['email'],
-            'merchantname'=>$this->merchantname,
-            'mid'=>$this->mid,
-            'msgcode'=>502,
-            'otp'=>$data['otp']
-        ];
-
-        $checksum = $this->createChecksum($data);
-
-        $data['CHECKSUM'] = $checksum;
-
-        $url = 'createwalletuser';
-
-        return $this->postForm($data,$url);
-
-    }
-
-    public function checkBalance($data){
-
-        $data = [
-            'TOKEN'=>$data['paytm_token'],
-            'MID'=>$this->mid
-        ];
-
-        $checksum = $this->createChecksum($data);
-
-        $data['CHECKSUM'] = $checksum;
-
-        $url = 'checkBalance';
 
         return $this->postForm($data,$url);
 
