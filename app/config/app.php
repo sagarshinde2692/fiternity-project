@@ -39,7 +39,7 @@ return array(
 	'amazonpay_isSandbox' => 'true',
 	'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
 	'website_deeplink' =>'https://ftrnty.com',
-	'slotAllowance' =>['vendors'=>[8892],'services'=>[17626],'types'=>['workout-session']],
+	'slotAllowance' =>['vendors'=>[8892],'services'=>[17626],'types'=>['workout-session','booktrials']],
 	'mobikwik_sandbox'=>true,
 	'paytm_sandbox'=>true,
 	'product_delivery_charges' => 50,
