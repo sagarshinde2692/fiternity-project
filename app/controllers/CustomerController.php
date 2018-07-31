@@ -6698,7 +6698,7 @@ class CustomerController extends \BaseController {
 							$fitcash = $this->utilities->getWorkoutSessionFitcash($data)."%";
 						}
 						$response['header'] = "LET US KNOW";
-						$response['sub_header_2'] = "Did you attend your ".$data['service_name']." at ".$data['finder_name']." on ".date('jS M \a\t g:i a', strtotime($data['schedule_date_time']))."? \n\nEnter your FitCode given by ".$data['finder_name']." and earn ".$fitcash." Cashback!";
+						$response['sub_header'] = "Did you attend your ".$data['service_name']." at ".$data['finder_name']." on ".date('jS M \a\t g:i a', strtotime($data['schedule_date_time']))."? \n\nEnter your FitCode given by ".$data['finder_name']." and earn ".$fitcash." Cashback!";
 						
 						$response['button_text'] = [
 							'activate'=>[
