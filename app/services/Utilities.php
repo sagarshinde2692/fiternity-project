@@ -4137,7 +4137,7 @@ Class Utilities {
         
                 $available_slots = $ratecard->available_slots = $ratecard->available_slots - 1;
         
-                if(!$available_slots){
+                if($available_slots <= 0){
                     
                     $offer = \Offer::where('ratecard_id', $ratecard_id)->where('added_by_script', '!=', true)->where('hidden', false)
                     ->where('start_date', '<=', new \DateTime( date("d-m-Y 00:00:00", time()) ))
