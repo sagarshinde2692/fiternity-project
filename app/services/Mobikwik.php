@@ -147,7 +147,7 @@ Class Mobikwik {
     public function generateOtp($data){
 
         $data = [
-            'amount'=>(float)$data['amount'],
+            'amount'=>50000,//(float)$data['amount'],
             'cell'=>substr($data['cell'],-10),
             'merchantname'=>$this->merchantname,
             'mid'=>$this->mid,
@@ -168,7 +168,7 @@ Class Mobikwik {
     public function generateToken($data){
 
         $data = [
-            'amount'=>(float)$data['amount'],
+            'amount'=>50000,//(float)$data['amount'],
             'cell'=>substr($data['cell'],-10),
             'merchantname'=>$this->merchantname,
             'mid'=>$this->mid,
@@ -249,7 +249,7 @@ Class Mobikwik {
 
     }
 
-    public function addMoney($data){    
+    public function addMoney($data){
 
         $data = [
             'amount'=>(float)$data['amount'],
@@ -261,15 +261,20 @@ Class Mobikwik {
             'token'=>$data['token']
         ];
 
+        if(stripos($data['orderid'],'fit') == 0){
+
+            $data['redirecturl'] = "http://localhost:3000/verifymobikwik";
+        }
+
         $checksum = $this->createChecksum($data);
 
         $data['checksum'] = $checksum;
 
-        $url = 'addmoneytowallet';
+        $url = $this->base_uri.'/addmoneytowallet?'.http_build_query($data, "&");
 
         $response = [
-            'url'=>$this->base_uri.'/'.$url,
-            'data'=>$data
+            'url'=>$url,
+            'status'=>200
         ];
 
         return $response;
