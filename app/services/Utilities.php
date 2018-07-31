@@ -2744,7 +2744,7 @@ Class Utilities {
 					if(!in_array($emi['bankName'], $bankList)){
 						array_push($bankList, $emi['bankName']);
 					}
-					Log::info("inside1");
+					// Log::info("inside1");
 					$emiData = array();
 						$emiData['total_amount'] =  "";
 						$emiData['emi'] ="";
@@ -2758,7 +2758,7 @@ Class Utilities {
 			
 			}elseif(isset($data['bankName'])&&isset($data['amount'])){
 					if($emi['bankName'] == $data['bankName'] && $data['amount']>=$emi['minval']){
-						Log::info("inside2");
+						// Log::info("inside2");
 						$emiData = array();
 						if(!in_array($emi['bankName'], $bankList)){
 							array_push($bankList, $emi['bankName']);
@@ -2784,7 +2784,7 @@ Class Utilities {
 					if(!in_array($emi['bankName'], $bankList)){
 						array_push($bankList, $emi['bankName']);
 					}
-					Log::info("inside3");
+					// Log::info("inside3");
 					$emiData = array();
 					$emiData['total_amount'] =  (string)round($data['amount']*(100+$emi['rate'])/100, 2);
 					$emiData['emi'] =(string)round($emiData['total_amount']/$emi['bankTitle'], 2);
@@ -2809,7 +2809,7 @@ Class Utilities {
 				if(!in_array($emi['bankName'], $bankList)){
 						array_push($bankList, $emi['bankName']);
 					}
-				Log::info("inside4");
+				// Log::info("inside4");
 				$emiData = array();
 						$emiData['total_amount'] =  "";
 						$emiData['emi'] ="";
@@ -5171,51 +5171,73 @@ Class Utilities {
 				return $value['image']['primary'];
 		return "";
 	}
-    
-   
-    public function updateRatecardSlots($order_id){
-        
-        $order = \Order::find(int($order_id));
+    public function updateRatecardSlots($data){
+        Log::info("inside updateRatecardSlots");
 
+        // if(intval(date('d', time())) >= 25){
+        //     return;
+        // }
+
+        $order = \Order::find(intval($data['order_id']));
+        
         if($order && !empty($order['ratecard_id'])){
 
+            if(!empty($order->ratecard_sidekiq_id_deleted)){
+                return;
+            }
+            
+            if(!empty($order->ratecard_sidekiq_id) && empty($order->ratecard_sidekiq_id_deleted)){
+                
+                $sidekiq = new Sidekiq();
+                $sidekiq->delete($order->ratecard_sidekiq_id);
+                $order->ratecard_sidekiq_id_deleted = true;
+            }
+
+
             $ratecard_id = $order['ratecard_id'];
-    
+            $ratecard = \Ratecard::find($ratecard_id);
+            Log::info($ratecard);
             if($ratecard && isset($ratecard->available_slots)){
 
-                $ratecard = \Ratecard::find($ratecard_id);
         
                 $available_slots = $ratecard->available_slots = $ratecard->available_slots - 1;
-        
+                Log::info("reducing slots");
+                Log::info("new slots".$available_slots);
                 if($available_slots <= 0){
                     
                     $offer = \Offer::where('ratecard_id', $ratecard_id)->where('added_by_script', '!=', true)->where('hidden', false)
                     ->where('start_date', '<=', new \DateTime( date("d-m-Y 00:00:00", time()) ))
                     ->where('end_date', '>=', new \DateTime( date("d-m-Y 00:00:00", time()) ))
                     ->orderBy('order', 'asc')
-                    ->first(['price','type','ratecard_id']);
+                    ->first();
                     
                     
                     if(!empty($offer)){
-                        
                         $price = $offer['price'];
                         
-                        $new_price = round($price * 1.01);
+                        $ratecard->price_increased_times = isset($ratecard->price_increased_times) ? $ratecard->price_increased_times + 1 : 1;
+                        
+                        $new_price = round($price * (1 + $ratecard->price_increased_times/100));
                         
                         $new_price = $price + ($new_price > 50 ? ($new_price < 75 ? $new_price : 75) : 50);
-        
                         
                         $offer_data = $offer->toArray();
                         
-                        $offer_data['new_price'] = $new_price;
+                        $offer_data['price'] = $new_price;
+                        $offer_data['end_date'] = \Carbon\Carbon::createFromFormat('d-m-Y H:i:s', date('d-m-Y 00:00:00', strtotime('+24 days', strtotime('first day of this month'))));
+                        
+                        Log::info("increasing price");
+                        Log::info("old price:". $price);
+                        Log::info("new price:".$new_price);
         
                         $create_offer  = $this->createOffer($offer_data);
+
                         
                     }
                     
                     Log::info($days_passed = date('d', time()));
                     
-                    Log::info($days_left = 25 - $days_passed);
+                    Log::info($days_left = abs(25 - $days_passed));
                     
                     Log::info($new_slots = round($ratecard->total_slots_created / $days_passed * $days_left));
                     
@@ -5238,10 +5260,10 @@ Class Utilities {
     public function createOffer($offer_data){
         
         $offer_id = \Offer::max('_id') + 1;
-        $offer_data['_id'] = $offer_id;
         $offer_data['added_by_script'] = true;
-        $offer = new Offer($offer_data);
-        $offer_data->_id = $offer_id;
+        $offer_data['created_from_offer'] = $offer_data['_id'];
+        $offer = new \Offer($offer_data);
+        $offer->_id = $offer_id;
         $offer->save();
 
     }
