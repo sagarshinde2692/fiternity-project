@@ -1216,3 +1216,5 @@ Route::get('updateCouponUsed','DebugController@updateCouponUsed');
 Route::get('lostFitcode','DebugController@lostFitcode');
 
 Route::post('getcustomercarddetails','CustomerController@getCustomerCardDetails');
+
+Route::post('getunmarkedattendance','CustomerController@getCustomerUnmarkedAttendance');
