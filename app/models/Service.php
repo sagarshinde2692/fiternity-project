@@ -250,6 +250,12 @@ class Service extends \Basemodel{
                             $ratecardoffer['offer_text']    =  ($difference->d == 1) ? "Expires Today" : ($difference->d > 3 ? "Expires soon" : "Expires in ".$difference->days." days");
 
 						}
+
+						if(!empty($value['available_slots']) && is_numeric($value['available_slots'])){
+                            $ratecardoffer['offer_text']    =  $value['available_slots']." slots left";
+						}
+
+						
                         array_push($ratecardoffers,$ratecardoffer);
                     }
 					if(isset($value['flags'])){
