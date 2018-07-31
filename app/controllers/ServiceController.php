@@ -26,6 +26,15 @@ class ServiceController extends \BaseController {
 
             $this->vendor_token = true;
 		}
+
+		$this->kiosk_app_version = false;
+
+        if($vendor_token){
+
+            $this->vendor_token = true;
+
+            $this->kiosk_app_version = (float)Request::header('App-Version');
+        }
 		
 		$this->error_status = ($this->vendor_token) ? 200 : 400;
 	}
@@ -770,6 +779,11 @@ class ServiceController extends \BaseController {
 				'servicecategory_id'=>!empty($item['servicecategory_id']) ? $item['servicecategory_id'] : 0,
 				'category'=>!empty($item['category']['name']) ? $item['category']['name'] : ""
 			);
+
+			if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && isset($finder['brand_id']) && $finder['brand_id'] == 66 && $finder['city_id'] == 3){
+
+				$service['cost'] = 'Free';
+			}
 			
 			$slots = array();
 

@@ -977,7 +977,7 @@ class HomeController extends BaseController {
 
             if(isset($itemData['finder_id']) && $itemData['finder_id'] != ""){
 
-                $finder = Finder::with(array('city'=>function($query){$query->select('name','slug');}))->with(array('location'=>function($query){$query->select('name','slug');}))->find((int)$itemData['finder_id'],array('_id','title','location_id','contact','lat','lon','manual_trial_auto','city_id'));
+                $finder = Finder::with(array('city'=>function($query){$query->select('name','slug');}))->with(array('location'=>function($query){$query->select('name','slug');}))->find((int)$itemData['finder_id'],array('_id','title','location_id','contact','lat','lon','manual_trial_auto','city_id','brand_id'));
 
                 if(isset($finder['title']) && $finder['title'] != ""){
                     $finder_name = ucwords($finder['title']);
@@ -2034,6 +2034,11 @@ class HomeController extends BaseController {
                     $item['booked_locate'] = 'booked';
 
                     $resp['kiosk'] = $this->utilities->trialBookedLocateScreen($item);
+
+                    if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && isset($finder['brand_id']) && $finder['brand_id'] == 66 && $finder['city_id'] == 3){
+
+                        $resp['kiosk']['title'] = "";
+                    }
                 }
 
                 if($item['type'] == 'memberships'){
