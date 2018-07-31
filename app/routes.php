@@ -1212,3 +1212,5 @@ Route::get('getbrandvendors/{brand_id}/{city_id}', array('as' => 'finders.getbra
 
 Route::get('updateCouponUsed','DebugController@updateCouponUsed');
 Route::get('updateRatecardSlots','DebugController@updateRatecardSlots');
+
+Route::get('updateratecardslotsbyid/{order_id}','TransactionController@updateRatecardSlotsByOrderId');

@@ -764,7 +764,7 @@ class TransactionController extends \BaseController {
                 $order = new Order($data);
                 $order->_id = $order_id;
                 $order->save();
-                $redisid = Queue::connection('redis')->push('TransactionController@updateRatecardSlots', array('order_id'=>$order_id),Config::get('app.queue'));
+                $redisid = Queue::connection('sync')->push('TransactionController@updateRatecardSlots', array('order_id'=>$order_id, 'delay'=>date('d-m-Y H:i:s',strtotime('+10 minutes'))),Config::get('app.queue'));
             }
 
         }else{
@@ -772,7 +772,7 @@ class TransactionController extends \BaseController {
             $order = new Order($data);
             $order->_id = $order_id;
             $order->save();
-            $redisid = Queue::connection('redis')->push('TransactionController@updateRatecardSlots', array('order_id'=>$order_id),Config::get('app.queue'));
+            $redisid = Queue::connection('sync')->push('TransactionController@updateRatecardSlots', array('order_id'=>$order_id, 'delay'=>date('d-m-Y H:i:s',strtotime('+10 minutes'))),Config::get('app.queue'));
         }
 
         if(isset($data['payment_mode']) && $data['payment_mode'] == 'cod'){
@@ -1867,6 +1867,7 @@ class TransactionController extends \BaseController {
             if($order['payment_mode'] == 'at the studio'){
                 $resp   =   array('status' => 200,"message" => "Transaction Successful");
             }
+            $redisid = Queue::connection('sync')->push('TransactionController@updateRatecardSlots', array('order_id'=>$order_id, 'delay'=>0),Config::get('app.queue'));
 
             return Response::json($resp);
 
@@ -5981,8 +5982,28 @@ class TransactionController extends \BaseController {
         if($job){
             $job->delete();
         }
+        if(empty($data['order_id'])){
+            return "NoOrderId";
+        }
+        // if(intval(date('d', time())) >= 25){
+        //     return;
+        // }
+        if(!empty($data['delay'])){
+            $order = Order::find(intval($data['order_id']));
+            if(!isset($order->ratecard_sidekiq_id)){
+                $queue_id = $this->utilities->hitURLAfterDelay(Config::get('app.url').'/updateratecardslotsbyid/'.$data['order_id'], 10);
+                $order->ratecard_sidekiq_id = $queue_id;
+                $order->save();
+            }
+        }else{
+            $this->utilities->updateRatecardSlots($data);
+        }
         
-        $this->utilities->updateRatecardSlots($data);
+    }
+
+    public function updateRatecardSlotsByOrderId($order_id){
+        Log::info('updateRatecardSlotsByOrderId');
+        $this->utilities->updateRatecardSlots(['order_id'=>$order_id]);
     }
 
 }

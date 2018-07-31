@@ -4405,7 +4405,7 @@ class CustomerController extends \BaseController {
 					if(!in_array($emi['bankName'], $bankList)){
 						array_push($bankList, $emi['bankName']);
 					}
-					Log::info("inside1");
+					// Log::info("inside1");
 					$emiData = array();
 						$emiData['total_amount'] =  "";
 						$emiData['emi'] ="";
@@ -4427,7 +4427,7 @@ class CustomerController extends \BaseController {
 			
 			}elseif(isset($data['bankName'])&&isset($data['amount'])){
 					if($emi['bankName'] == $data['bankName'] && $data['amount']>=$emi['minval']){
-						Log::info("inside2");
+						// Log::info("inside2");
 						$emiData = array();
 						if(!in_array($emi['bankName'], $bankList)){
 							array_push($bankList, $emi['bankName']);
@@ -4465,7 +4465,7 @@ class CustomerController extends \BaseController {
 					if(!in_array($emi['bankName'], $bankList)){
 						array_push($bankList, $emi['bankName']);
 					}
-					Log::info("inside3");
+					// Log::info("inside3");
 					$emiData = array();
                     $interest = $emi['rate']/1200.00;
                     $t = pow(1+$interest, $emi['bankTitle']);
@@ -4502,7 +4502,7 @@ class CustomerController extends \BaseController {
 				if(!in_array($emi['bankName'], $bankList)){
 						array_push($bankList, $emi['bankName']);
 					}
-				Log::info("inside4");
+				// Log::info("inside4");
 				$emiData = array();
 						$emiData['total_amount'] =  "";
 						$emiData['emi'] ="";
@@ -6409,7 +6409,7 @@ class CustomerController extends \BaseController {
 					if(!in_array($emi['bankName'], $bankList)){
 						array_push($bankList, $emi['bankName']);
 					}
-					Log::info("inside1");
+					// Log::info("inside1");
 					$emiData = array();
 					$emiData['total_amount'] =  "";
 					$emiData['emi'] ="";
@@ -6428,7 +6428,7 @@ class CustomerController extends \BaseController {
 			
 			}elseif(isset($data['bankName'])&&isset($data['amount'])){
 				if($emi['bankName'] == $data['bankName'] && $data['amount']>=$emi['minval']){
-					Log::info("inside2");
+					// Log::info("inside2");
 					$emiData = array();
 					if(!in_array($emi['bankName'], $bankList)){
 						array_push($bankList, $emi['bankName']);
@@ -6465,7 +6465,7 @@ class CustomerController extends \BaseController {
 					if(!in_array($emi['bankName'], $bankList)){
 						array_push($bankList, $emi['bankName']);
 					}
-					Log::info("inside3");
+					// Log::info("inside3");
 					$emiData = array();
 					$interest = $emi['rate']/1200.00;
 					$t = pow(1+$interest, $emi['bankTitle']);
@@ -6501,7 +6501,7 @@ class CustomerController extends \BaseController {
 				if(!in_array($emi['bankName'], $bankList)){
 						array_push($bankList, $emi['bankName']);
 					}
-				Log::info("inside4");
+				// Log::info("inside4");
 				$emiData = array();
 						$emiData['total_amount'] =  "";
 						$emiData['emi'] ="";
