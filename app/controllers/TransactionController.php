@@ -2590,7 +2590,7 @@ class TransactionController extends \BaseController {
     		if (filter_var(trim($order['customer']['customer_email']), FILTER_VALIDATE_EMAIL) === false){
     			$order->update(['email_not_sent'=>'captureOrderStatus']);
     		}else{
-    			
+    			$sndPgMail  =   $this->customermailer->sendPgProductOrderMail($order->toArray());
     			
     			// 			***************************************************************************************  EMAIL  ****************************************************************************************
     			

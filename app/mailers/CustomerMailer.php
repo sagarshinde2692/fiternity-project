@@ -699,6 +699,22 @@ Class CustomerMailer extends Mailer {
 		return $this->common($label,$data,$message_data);
 	}
 	
+	public function sendPgProductOrderMail($data){
+
+		if(empty($data['customer']['customer_email'])){
+			Log::info("sendPgProductOrderMail not sent. Email not present");
+		}
+
+		$label = 'SendPgProductOrderMail-Customer';
+		
+		$message_data 	= array(
+			'user_email' => array($data['customer']['customer_email']),
+			'user_name' => !empty($data['customer']['customer_name']) ? $data['customer']['customer_name'] : '',
+		);
+
+		return $this->common($label,$data,$message_data);
+	}
+	
 	protected function common($label,$data,$message_data,$delay = 0){
 
 		if(isset($data['source']) && $data['source'] == 'cleartrip'){
