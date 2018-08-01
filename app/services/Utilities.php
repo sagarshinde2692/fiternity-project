@@ -4595,7 +4595,7 @@ Class Utilities {
 	{
 		try {
 			if(empty($cart_data))
-				return ["status"=>0,"message"=>"No Cart Data present Or Cart is Empty."];
+				return ["status"=>5,"message"=>"No Cart Data present Or Cart is Empty."];
 				$resp=["status"=>1,"message"=>"success","data"=>[]];
 				
 				$cart_desc=[];
@@ -5135,7 +5135,7 @@ Class Utilities {
 			if(empty($order))
 				return ["status"=>0,"message"=>"No data present."];
 			if(empty($order['cart_data']))
-					return ["status"=>0,"message"=>"No Cart Data present."];
+					return ["status"=>5,"message"=>"No Cart Data present."];
 				$resp=["status"=>1,"message"=>"success","data"=>[]];
 				$cart_data =$order['cart_data'];
 				$cart_desc=[];
