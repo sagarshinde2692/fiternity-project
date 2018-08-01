@@ -1,7 +1,7 @@
 <?php
 
 //local
-// $host = "localhost";
+$host = "localhost";
 // $username = "";
 // $password = "";
 
@@ -12,7 +12,7 @@
 // $options = ['db' => 'admin','authMechanism' => 'MONGODB-CR']; // sets the authentication database required by mongo 3]
 
 //production
-$host = "54.179.134.14";
+// $host = "54.179.134.14";
 $username = "";
 $password = "";
 
