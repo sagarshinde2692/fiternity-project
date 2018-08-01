@@ -921,7 +921,7 @@ class RewardofferController extends BaseController {
                                         $rewards_value['contents'] = ['Swimming at 5-star Hotels'];
                                         $rewards_value['gallery'] = [];
                                         $rewards_value['description'] = $session_content;
-                                        $no_of_sessions = $rewards_value['quantity'] = $data_value['total'];
+                                        $rewards_value['quantity'] = $data_value['total'];
                                         $rewards_value['payload']['amount'] = $data_value['amount'];
                                         $rewards_value['list'] = [];
 
@@ -1053,8 +1053,19 @@ class RewardofferController extends BaseController {
                 unset($rewardObjData['updated_at']);
                 unset($rewardObjData['created_at']);
 
+                foreach ($swimming_session_array as $data_key => $data_value) {
+
+                    if($amount >= $data_value['min'] ){
+
+                        $no_of_sessions = $data_value['total'];
+                        break;
+                    }
+                }
+
+                $no_of_sessions = (!empty($no_of_sessions) ? $no_of_sessions == 1 ? '1 session' : $no_of_sessions.' sessions' : '1 session');
+
                 $rewards_snapfitness_contents = [
-                    'Swimming session at 5 star hotels ('.!empty($no_of_sessions) ? $no_of_sessions : '1'.' sessions)',
+                    'Swimming session at 5 star hotels ('.$no_of_sessions.' )',
                     'Fitness Merchandise Kit (Gym Bag + Shaker)',
                     'Personalized Online Diet Consultation (for 1 month)',
                     'Free Vouchers from ( Amazon,GNC & Faasos)'
