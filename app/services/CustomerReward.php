@@ -330,7 +330,7 @@ Class CustomerReward {
                                 $reward['contents'] = ['Swimming Session'];
                                 $reward['gallery'] = [];
                                 $reward['description'] = $session_content;
-                                $reward['quantity'] = $data_value['total'];
+                                $no_of_sessions = $reward['quantity'] = $data_value['total'];
                                 $reward['payload']['amount'] = $data_value['amount'];
                                 $reward['session'] = $data_value['session'];
 
@@ -344,10 +344,10 @@ Class CustomerReward {
                         $reward_type_info = 'mixed';
 
                         $snapfitness_contents = [
-                            '5-Stars Swimming Session(For 2 people)',
+                            'Swimming session at 5 star hotels ('.!empty($no_of_sessions) ? $no_of_sessions : '1'.' sessions)',
                             'Fitness Merchandise Kit (Gym Bag + Shaker)',
                             'Personalized Online Diet Consultation (for 1 month)',
-                            'Vouchers from ( Amazon,GNC & Faasos)'
+                            'Free Vouchers from ( Amazon,GNC & Faasos)'
                         ];
 
                         $reward['title'] = 'Snap Fitness Hamper';
