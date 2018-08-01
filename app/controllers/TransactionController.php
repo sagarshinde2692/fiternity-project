@@ -2344,7 +2344,7 @@ class TransactionController extends \BaseController {
     	
     	$order_id   =   (int) $data['order_id'];
     	$order      =   Order::findOrFail($order_id);
-    	
+        
     	if(!isset($data["order_success_flag"]) && isset($order->status) && $order->status == '1' && isset($order->order_action) && $order->order_action == 'bought'){
     		
     		$resp   =   array('status' => 401, 'statustxt' => 'error', "message" => "Already Status Successfull");
@@ -2447,7 +2447,9 @@ class TransactionController extends \BaseController {
     		if (filter_var(trim($order['customer']['customer_email']), FILTER_VALIDATE_EMAIL) === false){
     			$order->update(['email_not_sent'=>'captureOrderStatus']);
     		}else{
-    			$sndPgMail  =   $this->customermailer->sendPgProductOrderMail($order->toArray());
+                $emailData = $order->toArray();
+                $emailData['near_options'] = $this->getNearBySessions($order);
+    			$sndPgMail  =   $this->customermailer->sendPgProductOrderMail($emailData);
     			
     			// 			***************************************************************************************  EMAIL  ****************************************************************************************
     			
@@ -6816,6 +6818,30 @@ class TransactionController extends \BaseController {
     	} catch (Exception $e) {
     		return ['status'=>0,"message"=>$this->utilities->baseFailureStatusMessage($e)];
     	}
+    }
+
+    public function getNearBySessions($order){
+        $nearby_same_category_request = [
+            "offset" => 0,
+            "limit" => 2,
+            "radius" => "3km",
+            "category"=>newcategorymapping($order["finder"]["category_name"]),
+            "lat"=>$order['finder']["finder_lat"],
+            "lon"=>$order['finder']["finder_lon"],
+            "city"=>strtolower($order["finder"]["city_name"]),
+            "keys"=>[
+              "slug",
+              "name",
+              "id",
+              'address',
+              'coverimage'
+            ],
+            "not"=>[
+                "vendor"=>[(int)$order['finder']["finder_id"]]
+            ],
+        ];
+
+        return $nearby_same_category = geoLocationFinder($nearby_same_category_request);
     }
     
 
