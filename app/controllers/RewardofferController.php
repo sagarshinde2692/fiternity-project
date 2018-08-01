@@ -923,7 +923,7 @@ class RewardofferController extends BaseController {
                                         $rewards_value['contents'] = ['Swimming at 5-star Hotels'];
                                         $rewards_value['gallery'] = [];
                                         $rewards_value['description'] = $session_content;
-                                        $rewards_value['quantity'] = $data_value['total'];
+                                        $no_of_sessions = $rewards_value['quantity'] = $data_value['total'];
                                         $rewards_value['payload']['amount'] = $data_value['amount'];
                                         $rewards_value['list'] = [];
 
@@ -1056,10 +1056,10 @@ class RewardofferController extends BaseController {
                 unset($rewardObjData['created_at']);
 
                 $rewards_snapfitness_contents = [
-                    '5-Stars Swimming Session(For 2 people)',
+                    'Swimming session at 5 star hotels ('.!empty($no_of_sessions) ? $no_of_sessions : '1'.' sessions)',
                     'Fitness Merchandise Kit (Gym Bag + Shaker)',
                     'Personalized Online Diet Consultation (for 1 month)',
-                    'Vouchers from ( Amazon,GNC & Faasos)'
+                    'Free Vouchers from ( Amazon,GNC & Faasos)'
                 ];
 
                 $rewardObjData['title'] = 'Snap Fitness Hamper';
