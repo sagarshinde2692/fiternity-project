@@ -4809,7 +4809,7 @@ class HomeController extends BaseController {
         					{	
         						$cart=$this->utilities->attachCart($response["response"],true);
         						$dataCart=$this->utilities->getCartFinalSummary($cart['products'], $cart['_id']);
-        						if(!empty($dataCart)&&!empty($dataCart['status'])&&!(isset($dataCart['message']) && $dataCart['message'] == 'No Cart Data present.'))
+        						if(!empty($dataCart)&&!empty($dataCart['status'])&&!(isset($dataCart['message']) && $dataCart['message'] == 'No Cart Data present Or Cart is Empty.'))
         							$response["response"]['cart_summary']=$dataCart['data'];
         					}
         					else $this->utilities->attachCart($response["response"],false);
@@ -5072,7 +5072,7 @@ class HomeController extends BaseController {
         		$cart=$this->utilities->attachCart($t,true);
         		$dataCart=$this->utilities->getCartFinalSummary($cart['products'], $cart['_id']);
         		
-        		if(!empty($dataCart)&& !empty($dataCart['status']) && !(isset($dataCart['message']) && $dataCart['message'] == 'No Cart Data present.'))
+        		if(!empty($dataCart)&& !empty($dataCart['status']) && !(isset($dataCart['message']) && $dataCart['message'] == 'No Cart Data present Or Cart is Empty.'))
         			$finalData=['status'=>200,"response"=>$dataCart['data']];
         			else return $dataCart;
         			$this->utilities->fetchCustomerAddresses($finalData['response']);
