@@ -330,7 +330,7 @@ Class CustomerReward {
                                 $reward['contents'] = ['Swimming Session'];
                                 $reward['gallery'] = [];
                                 $reward['description'] = $session_content;
-                                $no_of_sessions = $reward['quantity'] = $data_value['total'];
+                                $reward['quantity'] = $data_value['total'];
                                 $reward['payload']['amount'] = $data_value['amount'];
                                 $reward['session'] = $data_value['session'];
 
@@ -340,11 +340,27 @@ Class CustomerReward {
                     }
 
                     if($reward['reward_type'] == "mixed"){
-
+                        
                         $reward_type_info = 'mixed';
 
+                        $swimming_session_array = Config::get('fitness_kit.swimming_session');
+
+                        rsort($swimming_session_array);
+
+                        foreach ($swimming_session_array as $data_key => $data_value) {
+
+                            if($amount >= $data_value['min'] ){
+        
+                                $no_of_sessions = $data_value['total'];
+                                break;
+                            }
+                        }
+                        
+                        $no_of_sessions = (!empty($no_of_sessions) ? $no_of_sessions == 1 ? '1 session' : $no_of_sessions.' sessions' : '1 session');
+                        
+    
                         $snapfitness_contents = [
-                            'Swimming session at 5 star hotels ('.!empty($no_of_sessions) ? $no_of_sessions : '1'.' sessions)',
+                            'Swimming session at 5 star hotels ('.$no_of_sessions.' )',
                             'Fitness Merchandise Kit (Gym Bag + Shaker)',
                             'Personalized Online Diet Consultation (for 1 month)',
                             'Free Vouchers from ( Amazon,GNC & Faasos)'
