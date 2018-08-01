@@ -1422,6 +1422,12 @@ class TransactionController extends \BaseController {
 
                 $this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
 
+                $updated_order = Order::where('_id', $order->_id)->first();
+
+                if($updated_order && !empty($updated_order->reward_content)){
+                    $order->reward_content = $updated_order->reward_content;
+                }
+
                 if(isset($order->reward_ids) && !empty($order->reward_ids)){
 
                     $reward_detail = array();
