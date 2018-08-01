@@ -3028,7 +3028,7 @@ class CustomerController extends \BaseController {
 		'friend_phone' => 'required|string',
 		'friend_gender' => 'required|string'
 		];
-		$data = Input::all();
+		$data = Input::json()->all();
 		$validator = Validator::make($data,$rules);
 		if ($validator->fails()) {
 			return Response::json(
