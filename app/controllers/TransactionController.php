@@ -73,6 +73,15 @@ class TransactionController extends \BaseController {
             $this->vendor_token = true;
         }
 
+        $this->kiosk_app_version = false;
+
+        if($vendor_token){
+
+            $this->vendor_token = true;
+
+            $this->kiosk_app_version = (float)Request::header('App-Version');
+        }
+
         $this->error_status = ($this->vendor_token) ? 200 : 400;
 
     }
@@ -1412,6 +1421,12 @@ class TransactionController extends \BaseController {
                 }
 
                 $this->customerreward->giveCashbackOrRewardsOnOrderSuccess($order);
+
+                $updated_order = Order::where('_id', $order->_id)->first();
+
+                if($updated_order && !empty($updated_order->reward_content)){
+                    $order->reward_content = $updated_order->reward_content;
+                }
 
                 if(isset($order->reward_ids) && !empty($order->reward_ids)){
 

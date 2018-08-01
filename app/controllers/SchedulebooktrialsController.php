@@ -75,6 +75,15 @@ class SchedulebooktrialsController extends \BaseController {
             $this->vendor_token = true;
         }
 
+        $this->kiosk_app_version = false;
+
+        if($vendor_token){
+
+            $this->vendor_token = true;
+
+            $this->kiosk_app_version = (float)Request::header('App-Version');
+        }
+
         $this->error_status = ($this->vendor_token) ? 200 : 400;
 
     }
@@ -3489,6 +3498,7 @@ class SchedulebooktrialsController extends \BaseController {
             $item = [];
 
             $item['booked_locate'] = 'booked';
+            $item['finder_id'] = (int)$booktrial['finder_id'];
 
             $resp['kiosk'] = $this->utilities->trialBookedLocateScreen($item);
 
@@ -6316,7 +6326,7 @@ class SchedulebooktrialsController extends \BaseController {
         $finder_address = "";
         $finder_id = "";
 
-        $finder = Finder::with(array('city'=>function($query){$query->select('name','slug');}))->with(array('location'=>function($query){$query->select('name','slug');}))->find((int)$ratecard['finder_id'],array('_id','title','location_id','contact','lat','lon','manual_trial_auto','city_id'));
+        $finder = Finder::with(array('city'=>function($query){$query->select('name','slug');}))->with(array('location'=>function($query){$query->select('name','slug');}))->find((int)$ratecard['finder_id'],array('_id','title','location_id','contact','lat','lon','manual_trial_auto','city_id','brand_id'));
 
         if(isset($finder['_id']) && $finder['_id'] != ""){
             $finder_id = $finder['_id'];
@@ -6375,7 +6385,14 @@ class SchedulebooktrialsController extends \BaseController {
 
         $booking_details_data["address"] = ['field'=>'ADDRESS','value'=>'','position'=>$position++];
 
-        $booking_details_data["price"] = ['field'=>'AMOUNT','value'=>'Free Via Fitternity','position'=>$position++,'image'=>'https://b.fitn.in/global/tabapp-homescreen/freetrail-summary/amount.png'];
+        if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && isset($finder['brand_id']) && $finder['brand_id'] == 66 && $finder['city_id'] == 3){
+
+            $booking_details_data["price"] = ['field'=>'AMOUNT','value'=>'Free','position'=>$position++,'image'=>'https://b.fitn.in/global/tabapp-homescreen/freetrail-summary/amount.png'];
+
+        }else{
+
+            $booking_details_data["price"] = ['field'=>'AMOUNT','value'=>'Free Via Fitternity','position'=>$position++,'image'=>'https://b.fitn.in/global/tabapp-homescreen/freetrail-summary/amount.png'];
+        }
 
         if($poc != ""){ 
             $booking_details_data["poc"] = ['field'=>'POINT OF CONTACT','value'=>$poc,'position'=>$position++];
@@ -6414,7 +6431,13 @@ class SchedulebooktrialsController extends \BaseController {
         }
 
         if(isset($item['myreward_id']) && $item['myreward_id'] != ""){
+
             $booking_details_data['price']['value']= "Free Via Fitternity";
+
+            if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && isset($finder['brand_id']) && $finder['brand_id'] == 66 && $finder['city_id'] == 3){
+
+                $booking_details_data['price']['value'] = "Free";
+            }
         }
 
         if(isset($item['part_payment']) && $item['part_payment']){
@@ -6787,7 +6810,8 @@ class SchedulebooktrialsController extends \BaseController {
             ];
 
             $data = [
-                'booked_locate'=>'locate'
+                'booked_locate'=>'locate',
+                'finder_id'=>(int)$booktrial['finder_id']
             ];
 
             $response = array_merge($response,$this->utilities->trialBookedLocateScreen($data));

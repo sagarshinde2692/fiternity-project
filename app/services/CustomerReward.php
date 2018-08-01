@@ -339,6 +339,49 @@ Class CustomerReward {
                         }
                     }
 
+                    if($reward['reward_type'] == "mixed"){
+                        
+                        $reward_type_info = 'mixed';
+
+                        $swimming_session_array = Config::get('fitness_kit.swimming_session');
+
+                        rsort($swimming_session_array);
+
+                        foreach ($swimming_session_array as $data_key => $data_value) {
+
+                            if($amount >= $data_value['min'] ){
+        
+                                $no_of_sessions = $data_value['total'];
+                                break;
+                            }
+                        }
+                        
+                        $no_of_sessions = (!empty($no_of_sessions) ? $no_of_sessions == 1 ? '1 session' : $no_of_sessions.' sessions' : '1 session');
+                        
+    
+                        $snapfitness_contents = [
+                            'Swimming session at 5 star hotels ('.$no_of_sessions.' )',
+                            'Fitness Merchandise Kit (Gym Bag + Shaker)',
+                            'Personalized Online Diet Consultation (for 1 month)',
+                            'Free Vouchers from ( Amazon,GNC & Faasos)'
+                        ];
+
+                        $reward['title'] = 'Snap Fitness Hamper';
+                        $reward['content'] = $snapfitness_contents;
+                        $reward['image'] = 'https://b.fitn.in/gamification/reward/mixed.jpg';
+                        $reward['gallery'] = [
+                            'https://b.fitn.in/gamification/reward/mixed.jpg',
+                            'https://b.fitn.in/gamification/reward/snap_fitness/swimming.jpg',
+                            'https://b.fitn.in/gamification/reward/snap_fitness/kit.jpg',
+                            'https://b.fitn.in/gamification/reward/snap_fitness/diet.jpg',
+                            'https://b.fitn.in/gamification/reward/snap_fitness/voucher.jpg',
+                        ];
+                        $reward['new_amount'] = 6000;
+                        $reward['payload']['amount'] = 6000;
+                        $reward['payload_amount'] = 6000;
+                        $reward['description'] = 'We have curated a perfect Fitness Start Pack for your membership just for you. Now you can strike this off your list and get going.<br>- '.implode('<br>- ',$snapfitness_contents);
+                    }
+
                 }
 
             }
