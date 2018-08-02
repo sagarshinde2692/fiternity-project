@@ -7436,6 +7436,7 @@ class CustomerController extends \BaseController {
 			if(!empty($updated))$resp['response']['successfully_updated']=$updated;
 			if(!empty($un_updated))$resp['response']['failed']=$un_updated;
 			if(isset($total_fitcash))$resp['response']['total_fitcash_added']=$total_fitcash;
+			$resp['response']['message']="Thank You, we have accepted your response.";
 			return $resp;
 		}
 		}
