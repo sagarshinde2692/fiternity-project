@@ -5000,7 +5000,7 @@ class HomeController extends BaseController {
         								$product_cat_title=(!empty($value['product']['primarycategory']['title'])?$value['product']['primarycategory']['title']:"");
         							array_push($categories, [
                                             'cost'=>(isset($value['slash_price'])&&$value['slash_price']!=="")?$this->utilities->slashPriceFormat($value)." ".$this->utilities->getRupeeForm($value['price']):$this->utilities->getRupeeForm($value['price']),
-                                            'slash_price' => $this->utilities->getRupeeForm($value['slash_price']),
+                                            'slash_price' => isset($value['slash_price']) ? $this->utilities->getRupeeForm($value['slash_price']) : "",
         									'price'=>$value['price'],
         									'product_id'=>$value['product']['_id'],
         									'product_title'=>$value['product']['title'],
