@@ -94,7 +94,7 @@ class CustomerController extends \BaseController {
 		$hour = 60*60;
 		$hour12 = 60*60*12;
 		$hour2 = 60*60*2;
-
+		
 		foreach ($trials as $trial){
 
 			array_set($trial, 'type_text', 'Trial');
@@ -776,7 +776,6 @@ class CustomerController extends \BaseController {
 				if($response['status'] == 200 && isset($response['token']) && $response['token'] != ""){
 
 					$customerTokenDecode = $this->customerTokenDecode($response['token']);
-
 					$data["customer_id"] = (int)$customerTokenDecode->customer->_id;
 
 					$this->addCustomerRegId($data);
@@ -990,6 +989,11 @@ class CustomerController extends \BaseController {
 
 
 		$customer->last_visited = Carbon::now();
+		$cart_id=getCartOfCustomer(intval($customer->_id));
+		if(!empty($cart_id))
+		{
+			$customer->cart_id=$cart_id;
+		}
 		$customer->update();
 
 		
@@ -1308,6 +1312,8 @@ class CustomerController extends \BaseController {
 					),
 					'corporate_login'=>$this->utilities->checkCorporateEmail($customer['email'])
 				);
+		if(!empty($customer['cart_id']))
+			$data['cart_id']=$customer['cart_id'];
 		if(!empty($customer['referral_code']))
 			$data['referral_code'] = $customer['referral_code'];
 		$jwt_claim = array(
@@ -1319,7 +1325,7 @@ class CustomerController extends \BaseController {
 		
 		$jwt_key = Config::get('app.jwt.key');
 		$jwt_alg = Config::get('app.jwt.alg');
-
+		JWT::$leeway = 500;
 		$token = JWT::encode($jwt_claim,$jwt_key,$jwt_alg);
 
 		return array('status' => 200,'message' => 'successfull login', 'token' => $token);
@@ -3011,7 +3017,67 @@ class CustomerController extends \BaseController {
 		}
 		
 	}
-	
+
+	public function addafriendforbooking(){	
+		$jwt_token = Request::header('Authorization');
+		$decoded = $this->customerTokenDecode($jwt_token);
+		$customer_id = $decoded->customer->_id;
+		$rules = [
+		'friend_name' => 'required|string',
+		'friend_email' => 'required|string',
+		'friend_phone' => 'required|string',
+		'friend_gender' => 'required|string'
+		];
+		$data = Input::json()->all();
+		$validator = Validator::make($data,$rules);
+		if ($validator->fails()) {
+			return Response::json(
+				array(
+					'status' => 400,
+					'message' => $this->errorMessage($validator->errors()
+						)),400
+				);
+		}
+		$friend = array(
+			"name" => $data["friend_name"],
+			"email" => $data["friend_email"],
+			"phone" => $data["friend_phone"],
+			"gender" => $data["friend_gender"]
+		);
+		
+		$customer = Customer::where("_id",(int)$customer_id)->where("friends.email","!=", $data["friend_email"])->first();
+		if(!empty($customer)){
+			if(empty($customer["friends"])){
+				$customer["friends"] = array($friend);
+			}else{
+				$friends = $customer["friends"];
+				array_push($friends, $friend);
+				$customer["friends"] = $friends;
+			}
+			$customer->update();
+			return $this->getBookingFriends($customer_id);
+		}else{
+			return Response::json(
+				array(
+					'status' => 400,
+					'message' => "Your friend is already added"
+						),400
+				);
+		}
+	}
+	public function getallBookingfriends(){	
+		$jwt_token = Request::header('Authorization');
+		$decoded = $this->customerTokenDecode($jwt_token);
+		$customer_id = $decoded->customer->_id;	
+		return $this->getBookingFriends($customer_id);
+	}
+	public function getBookingFriends($customer_id){
+		$customer = Customer::find((int)$customer_id);
+		$allBookingFriends = array(array("name" => $customer->name, "email" => $customer->email, "phone" => $customer->contact_no, "gender" => $customer->gender, "default"=> true));
+		$customer_friends = isset($customer["friends"]) ? $customer["friends"] : [];
+		$allBookingFriends  = array_merge($allBookingFriends, $customer["friends"]);
+		return $allBookingFriends;
+	}
 	public function getExistingTrialWithFinder(){
 
 		$jwt_token = Request::header('Authorization');
@@ -3127,6 +3193,9 @@ class CustomerController extends \BaseController {
 
 	public function home($city = 'mumbai',$cache = true){
 
+
+		Log::info('--------customer_home_app--------',$_GET);
+
 		$jwt_token = Request::header('Authorization');
 		Log::info($jwt_token);
 		$upcoming = array();
@@ -3149,12 +3218,12 @@ class CustomerController extends \BaseController {
 				$trials = [];
 				if($this->app_version > '4.4.3'){
 					Log::info("4.4.3");
-					$trials = Booktrial::where('customer_email', '=', $customeremail)->where('going_status_txt','!=','cancel')->where('post_trial_status', '!=', 'no show')->where('booktrial_type','auto')->where(function($query){return $query->where('schedule_date_time','>=',new DateTime())->orWhere('payment_done', false)->orWhere(function($query){	return 	$query->where('schedule_date_time', '>', new DateTime(date('Y-m-d H:i:s', strtotime('-3 days', time()))))->whereIn('post_trial_status', [null, '', 'unavailable']);	});})->orderBy('schedule_date_time', 'asc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code', 'payment_done', 'type', 'order_id', 'post_trial_status', 'amount_finder', 'kiosk_block_shown')->get();
+					$trials = Booktrial::where('customer_email', '=', $customeremail)->where('going_status_txt','!=','cancel')->where('post_trial_status', '!=', 'no show')->where('booktrial_type','auto')->where(function($query){return $query->where('schedule_date_time','>=',new DateTime())->orWhere('payment_done', false)->orWhere(function($query){	return 	$query->where('schedule_date_time', '>', new DateTime(date('Y-m-d H:i:s', strtotime('-3 days', time()))))->whereIn('post_trial_status', [null, '', 'unavailable']);	});})->orderBy('schedule_date_time', 'asc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code', 'payment_done', 'type', 'order_id', 'post_trial_status', 'amount_finder', 'kiosk_block_shown','customer_id')->get();
 
 
 				}else{
 					
-					$trials = Booktrial::where('customer_email', '=', $customeremail)->where('going_status_txt','!=','cancel')->where('booktrial_type','auto')->where('schedule_date_time','>=',new DateTime())->orderBy('schedule_date_time', 'asc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code')->get();
+					$trials = Booktrial::where('customer_email', '=', $customeremail)->where('going_status_txt','!=','cancel')->where('booktrial_type','auto')->where('schedule_date_time','>=',new DateTime())->orderBy('schedule_date_time', 'asc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code','customer_id')->get();
 				}
 				
 				$activate = [];
@@ -3474,14 +3543,14 @@ class CustomerController extends \BaseController {
 
 			$result['campaigns'] =  [];
 
-			$result['campaigns'][] = [
-				'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/AppBanner_Big5.png',
-				'link'=>'ftrnty://ftrnty.com/search/all',
-				'title'=>'Group Membership',
-				'height'=>100,
-				'width'=>375,
-				'ratio'=>(float) number_format(100/375,2)
-			];
+			// $result['campaigns'][] = [
+			// 	'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/AppBanner_Big5.png',
+			// 	'link'=>'ftrnty://ftrnty.com/search/all',
+			// 	'title'=>'Group Membership',
+			// 	'height'=>100,
+			// 	'width'=>375,
+			// 	'ratio'=>(float) number_format(100/375,2)
+			// ];
 
 			if($city != "ahmedabad"){
 
@@ -3496,7 +3565,7 @@ class CustomerController extends \BaseController {
 
 				switch($city){
 					case "pune":
-						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Pune_APP.png";
+						$result['campaigns'][0]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Pune_APP.png";
 						if(intval(date('d', time())) % 2 == 0){
 							$result['campaigns'][] = [
 								'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/Multifit_App.png',
@@ -3518,19 +3587,19 @@ class CustomerController extends \BaseController {
 						}
 					break;
 					case "bangalore":
-						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Bangalore_APP.png";
+						$result['campaigns'][0]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Bangalore_APP.png";
 						break;
 					case "delhi":
-						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Delhi_APP.png";
+						$result['campaigns'][0]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Delhi_APP.png";
 						break;	
 					case "noida":
-						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Noida_APP.png";
+						$result['campaigns'][0]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Noida_APP.png";
 						break;
 					case "hyderabad":
-						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Hyderabad_APP.png";
+						$result['campaigns'][0]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Hyderabad_APP.png";
 						break;					
 					case "gurgaon":
-						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Gurugram_APP.png";
+						$result['campaigns'][0]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Gurugram_APP.png";
 						break;										
 				}
 			}
@@ -3662,14 +3731,14 @@ class CustomerController extends \BaseController {
             $decoded = $this->customerTokenDecode($jwt_token);
             $customer_id = $decoded->customer->_id;
             $data['customer_id'] = $customer_id;
-
+			
         }else{
 
             $customer_id = $data['customer_id'] ;
         }
-
+		
 		$customer = Customer::find((int)$customer_id);
-
+		
 		if(isset($data['customer_address']) && is_array($data['customer_address']) && !empty($data['customer_address'])){
 
 			$customerData['address'] = $data['customer_address'];
@@ -4405,7 +4474,7 @@ class CustomerController extends \BaseController {
 					if(!in_array($emi['bankName'], $bankList)){
 						array_push($bankList, $emi['bankName']);
 					}
-					Log::info("inside1");
+					// Log::info("inside1");
 					$emiData = array();
 						$emiData['total_amount'] =  "";
 						$emiData['emi'] ="";
@@ -4427,7 +4496,7 @@ class CustomerController extends \BaseController {
 			
 			}elseif(isset($data['bankName'])&&isset($data['amount'])){
 					if($emi['bankName'] == $data['bankName'] && $data['amount']>=$emi['minval']){
-						Log::info("inside2");
+						// Log::info("inside2");
 						$emiData = array();
 						if(!in_array($emi['bankName'], $bankList)){
 							array_push($bankList, $emi['bankName']);
@@ -4465,7 +4534,7 @@ class CustomerController extends \BaseController {
 					if(!in_array($emi['bankName'], $bankList)){
 						array_push($bankList, $emi['bankName']);
 					}
-					Log::info("inside3");
+					// Log::info("inside3");
 					$emiData = array();
                     $interest = $emi['rate']/1200.00;
                     $t = pow(1+$interest, $emi['bankTitle']);
@@ -4502,7 +4571,7 @@ class CustomerController extends \BaseController {
 				if(!in_array($emi['bankName'], $bankList)){
 						array_push($bankList, $emi['bankName']);
 					}
-				Log::info("inside4");
+				// Log::info("inside4");
 				$emiData = array();
 						$emiData['total_amount'] =  "";
 						$emiData['emi'] ="";
@@ -5219,6 +5288,7 @@ class CustomerController extends \BaseController {
 				case 'n-10m':
 				
 					$response = array_only($response, ['notification_id', 'transaction_type']);
+					Log::info($data);
 					$response ['block_screen_data']= $this->getBlockScreenData($time, $data);
 		
 					break;
@@ -6409,7 +6479,7 @@ class CustomerController extends \BaseController {
 					if(!in_array($emi['bankName'], $bankList)){
 						array_push($bankList, $emi['bankName']);
 					}
-					Log::info("inside1");
+					// Log::info("inside1");
 					$emiData = array();
 					$emiData['total_amount'] =  "";
 					$emiData['emi'] ="";
@@ -6428,7 +6498,7 @@ class CustomerController extends \BaseController {
 			
 			}elseif(isset($data['bankName'])&&isset($data['amount'])){
 				if($emi['bankName'] == $data['bankName'] && $data['amount']>=$emi['minval']){
-					Log::info("inside2");
+					// Log::info("inside2");
 					$emiData = array();
 					if(!in_array($emi['bankName'], $bankList)){
 						array_push($bankList, $emi['bankName']);
@@ -6465,7 +6535,7 @@ class CustomerController extends \BaseController {
 					if(!in_array($emi['bankName'], $bankList)){
 						array_push($bankList, $emi['bankName']);
 					}
-					Log::info("inside3");
+					// Log::info("inside3");
 					$emiData = array();
 					$interest = $emi['rate']/1200.00;
 					$t = pow(1+$interest, $emi['bankTitle']);
@@ -6501,7 +6571,7 @@ class CustomerController extends \BaseController {
 				if(!in_array($emi['bankName'], $bankList)){
 						array_push($bankList, $emi['bankName']);
 					}
-				Log::info("inside4");
+				// Log::info("inside4");
 				$emiData = array();
 						$emiData['total_amount'] =  "";
 						$emiData['emi'] ="";
@@ -6646,9 +6716,30 @@ class CustomerController extends \BaseController {
 				$response['schedule_date_time'] = strtotime($data['schedule_date_time']);
 				$response['subscription_code'] = implode('  ',str_split($data['code']));
 				$response['button_text'] = [
-					'activate'=>['text'=>'ACTIVATE SESSION','url'=>Config::get('app.url')."/sessionstatuscapture/activate/".$data['_id']],
-					'didnt_get'=>['text'=>'Didn’t get FitCode','url'=>Config::get('app.url')."/sessionstatuscapture/lost/".$data['_id']."?source=activate_session"],
-					'cant_make'=>['text'=>'CAN’T MAKE IT','url'=>Config::get('app.url')."/sessionstatuscapture/didnotattend/".$data['_id']]
+					'activate'=>[
+						'text'=>'ACTIVATE SESSION',
+						'url'=>Config::get('app.url')."/sessionstatuscapture/activate/".$data['_id']
+					],
+					'didnt_get'=>[
+						'text'=>'Didn’t get FitCode',
+						'url'=>Config::get('app.url')."/sessionstatuscapture/lost/".$data['_id']."?source=activate_session", 
+						"header"=> "Didn't get Fitcode?",
+						"subtitle"=> "Let us know the reason to assist you better",
+						"options" => [
+							[
+								"text" => "Don't have/Don't remember fitcode",
+								"url" => Config::get('app.url')."/sessionstatuscapture/lost/".$data['_id']."?reason=2"
+							],
+							[
+								"text" => "Gym/studio did not provide fitcode",
+								"url" => Config::get('app.url')."/sessionstatuscapture/lost/".$data['_id']."?reason=3"
+							]
+						]
+					],
+					'cant_make'=>['text'=>'CAN’T MAKE IT','url'=>Config::get('app.url')."/sessionstatuscapture/didnotattend/".$data['_id']],
+					'qrcode'=>[
+						'text'=> "SCAN YOUR QR CODE"
+					]
 				];
 				$response['block'] = true;
 
@@ -6665,16 +6756,52 @@ class CustomerController extends \BaseController {
 				break;
 			case 'let_us_know':
 			case 'n+2':
-				$response['header'] = "LET US KNOW";
-				$response['sub_header_2'] = "Did you attend your ".$data['service_name']." at ".$data['finder_name']." on ".date('jS M \a\t g:i a', strtotime($data['schedule_date_time']))."? \n\nLet us know and earn Cashback!";
-				$response['subscription_code'] = $data['code'];
-				$response['button_text'] = [
-					'attended'=>['text'=>'ATTENDED','url'=>Config::get('app.url')."/sessionstatuscapture/lost/".$data['_id']."?source=let_us_know"],
-					'did_not_attend'=>['text'=>'DID NOT ATTEND','url'=>Config::get('app.url')."/sessionstatuscapture/didnotattend/".$data['_id']]
-				];
-				$response['image'] = 'https://b.fitn.in/paypersession/happy_face_icon-2.png';
+				$app_version = Request::header('App-Version');
+				$device_type = Request::header('Device-Type');
+				if(($device_type == 'ios' && $app_version > '4.9') || ($device_type == 'android' && $app_version > '4.9')){
+
+					if(isset($_GET['getreasons']) && $_GET['getreasons'] == '1'){
+						$fitcash = "";
+						if(isset($data['type']) && $data['type']=='booktrials'){
+							$fitcash = $this->utilities->getFitcash($data);
+						}else{
+							$fitcash = $this->utilities->getWorkoutSessionFitcash($data)."%";
+						}
+						$response['header'] = "LET US KNOW";
+						$response['sub_header'] = "Did you attend your ".$data['service_name']." at ".$data['finder_name']." on ".date('jS M \a\t g:i a', strtotime($data['schedule_date_time']))."? \n\nEnter your FitCode given by ".$data['finder_name']." and earn ".$fitcash." Cashback!";
+						
+						$response['button_text'] = [
+							'activate'=>[
+								'text'=>'GET MY FITCASH',
+								'url'=>Config::get('app.url')."/sessionstatuscapture/activate/".$data['_id']
+							],
+							'didnt_get'=>[
+								'text'=>'Didn’t get FitCode',
+								"header"=> "Didn't get Fitcode?",
+								"subtitle"=> "Let us know the reason to assist you better",
+								"options" => [
+									[
+										"text" => "Don't have/Don't remember fitcode",
+										"url" => Config::get('app.url')."/sessionstatuscapture/lost/".$data['_id']."?reason=2"
+									],
+									[
+										"text" => "Gym/studio did not provide fitcode",
+										"url" => Config::get('app.url')."/sessionstatuscapture/lost/".$data['_id']."?reason=3"
+									]
+								]
+							],
+						];
+						$response['block'] = true;
+
+					}else{
+						$response = $this->getFirstScreen($data);
+						$response['button_text']['attended']['url'] = Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/let_us_know?getreasons=1';
+					}
+
+				}else{	
+					$response = $this->getFirstScreen($data);
+				}
 				
-				$response['block'] = true;
 				break;
 			case 'n-3':
 			case 'session_reminder':
@@ -7139,6 +7266,21 @@ class CustomerController extends \BaseController {
 		return json_decode($userData, true);
 	}
 	
+	public function getFirstScreen($data){
+		
+		$response['header'] = "LET US KNOW";
+		$response['sub_header_2'] = "Did you attend your ".$data['service_name']." at ".$data['finder_name']." on ".date('jS M \a\t g:i a', strtotime($data['schedule_date_time']))."? \n\nLet us know and earn Cashback!";
+		$response['subscription_code'] = $data['code'];
+		$response['button_text'] = [
+			'attended'=>['text'=>'ATTENDED','url'=>Config::get('app.url')."/sessionstatuscapture/lost/".$data['_id']."?source=let_us_know"],
+			'did_not_attend'=>['text'=>'DID NOT ATTEND','url'=>Config::get('app.url')."/sessionstatuscapture/didnotattend/".$data['_id']]
+		];
+		$response['image'] = 'https://b.fitn.in/paypersession/happy_face_icon-2.png';
+		
+		$response['block'] = true;
+
+		return $response;
+	}
 	public function getCustomerUnmarkedAttendance()
 	{
 		$resp=['status'=>200,'response'=>[]];
@@ -7228,25 +7370,28 @@ class CustomerController extends \BaseController {
 				$invalid_data=array_filter($data['data'],function ($e){return (empty($e['_id'])||!isset($e['mark']));});
 				if(count($invalid_data)>0)return ['status' => 400,'message' =>"Invalid Data"];
 				$total_fitcash=0;
+				
 				foreach ($data['data'] as $value)
-				{
-			
-					$booktrial = Booktrial::where('customer_id',$customer_id)->whereIn('_id',$value['_id'])->first();
-					$post_trial_status_updated_by_fitcode = time();
-					if(empty($booktrial))
+				{	
+					$booktrial = Booktrial::where('customer_id',$customer_id)->where('_id',intval($value['_id']))->first();	
+					$post_trial_status_updated_by_qrcode = time();
+
+					if(!empty($booktrial))
 					{
-						if($booktrial->type == "booktrials" && !isset($booktrial->post_trial_status_updated_by_fitcode)&& !isset($booktrial->post_trial_status_updated_by_lostfitcode))
-						{
+						if($booktrial->type == "booktrials" && !isset($booktrial->post_trial_status_updated_by_fitcode)&& !isset($booktrial->post_trial_status_updated_by_lostfitcode)&& !isset($booktrial->post_trial_status_updated_by_qrcode))
+						{	
 							if(!empty($value['mark']))								
-								 $booktrial_update = Booktrial::where('_id', intval($value['_id']))->where('post_trial_status_updated_by_fitcode', 'exists', false)->update(['post_trial_status_updated_by_fitcode'=>$post_trial_status_updated_by_fitcode]);
-							else $booktrial_update = Booktrial::where('_id', intval($value['_id']))->where('post_trial_status_updated_by_fitcode', 'exists', false)->update(['post_trial_status'=>'no show']);
+								$booktrial_update = Booktrial::where('_id', intval($value['_id']))->update(['post_trial_status_updated_by_qrcode'=>$post_trial_status_updated_by_qrcode]);
+							else $booktrial_update = Booktrial::where('_id', intval($value['_id']))->update(['post_trial_status'=>'no show']);
+							
+							
 							if($booktrial_update&&!empty($value['mark']))
 							{
 								$fitcash = $this->utilities->getFitcash($booktrial->toArray());
 								$req = array(
 										"customer_id"=>$booktrial['customer_id'],"trial_id"=>$booktrial['_id'],"amount"=> $fitcash,"amount_fitcash" => 0,"amount_fitcash_plus" => $fitcash,
 										"type"=>'CREDIT','entry'=>'credit','validity'=>time()+(86400*21),
-										'description'=>"Added FitCash+ on Trial Attendance By Fitcode, Applicable for buying a membership at ".ucwords($booktrial['finder_name'])." Expires On : ".date('d-m-Y',time()+(86400*21)),
+										'description'=>"Added FitCash+ on Trial Attendance By QrCode Scan, Applicable for buying a membership at ".ucwords($booktrial['finder_name'])." Expires On : ".date('d-m-Y',time()+(86400*21)),
 										"valid_finder_id"=>intval($booktrial['finder_id']),"finder_id"=>intval($booktrial['finder_id']),
 								);
 								$add_chck=$this->utilities->walletTransaction($req);
@@ -7255,18 +7400,18 @@ class CustomerController extends \BaseController {
 							}
 							else array_push($un_updated,$value['_id']);
 						}
-						else if($booktrial->type == "workout-session"&&!isset($booktrial->post_trial_status_updated_by_lostfitcode)&&!isset($booktrial->post_trial_status_updated_by_fitcode) && !(isset($booktrial->payment_done) && !$booktrial->payment_done))
+						else if($booktrial->type == "workout-session"&&!isset($booktrial->post_trial_status_updated_by_qrcode)&&!isset($booktrial->post_trial_status_updated_by_lostfitcode)&&!isset($booktrial->post_trial_status_updated_by_fitcode) && !(isset($booktrial->payment_done) && !$booktrial->payment_done))
 						{
 							if(!empty($value['mark']))
-								$booktrial_update = Booktrial::where('_id', intval($value['_id']))->where('post_trial_status_updated_by_fitcode', 'exists', false)->update(['post_trial_status_updated_by_fitcode'=>$post_trial_status_updated_by_fitcode]);
-							else $booktrial_update = Booktrial::where('_id', intval($value['_id']))->where('post_trial_status_updated_by_fitcode', 'exists', false)->update(['post_trial_status'=>'no show']);
+								$booktrial_update = Booktrial::where('_id', intval($value['_id']))->update(['post_trial_status_updated_by_qrcode'=>$post_trial_status_updated_by_qrcode]);
+							else $booktrial_update = Booktrial::where('_id', intval($value['_id']))->update(['post_trial_status'=>'no show']);
 							
 							if($booktrial_update&&!empty($value['mark'])){
 								$fitcash = round($this->utilities->getWorkoutSessionFitcash($booktrial->toArray()) * $booktrial->amount_finder / 100);
 								$req = array(
 										"customer_id"=>$booktrial['customer_id'],"trial_id"=>$booktrial['_id'],
 										"amount"=> $fitcash,"amount_fitcash" => 0,"amount_fitcash_plus" => $fitcash,"type"=>'CREDIT',
-										'entry'=>'credit','validity'=>time()+(86400*21),'description'=>"Added FitCash+ on Workout Session Attendance By Fitcode",
+										'entry'=>'credit','validity'=>time()+(86400*21),'description'=>"Added FitCash+ on Workout Session Attendance By QrCode Scan",
 								);
 								
 								$booktrial->pps_fitcash=$fitcash;$booktrial->pps_cashback=$this->utilities->getWorkoutSessionLevel((int)$booktrial->customer_id)['current_level']['cashback'];
@@ -7281,7 +7426,7 @@ class CustomerController extends \BaseController {
 						{
 							$booktrial->post_trial_status = 'attended';
 							$booktrial->post_trial_initail_status = 'interested';
-							$booktrial->post_trial_status_updated_by_fitcode = time();
+							$booktrial->post_trial_status_updated_by_qrcode= $post_trial_status_updated_by_qrcode;
 							$booktrial->post_trial_status_date = time();							
 						}
 						$booktrial->update();
