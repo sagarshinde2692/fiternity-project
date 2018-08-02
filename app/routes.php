@@ -1233,6 +1233,7 @@ Route::get('cartsummary','HomeController@getFinalCartSummary');
 
 Route::get('customeraddress','HomeController@getCustomerAddress');
 Route::post('customeraddress','HomeController@setCustomerAddress');
+Route::get('sendvendorotpproducts/{order_id}','TransactionController@sendVendorOTPProducts');
 
 
 Route::get('updateCouponUsed','DebugController@updateCouponUsed');

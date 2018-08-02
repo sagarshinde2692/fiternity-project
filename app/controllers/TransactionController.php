@@ -2493,7 +2493,7 @@ class TransactionController extends \BaseController {
     	
     	$order_id   =   (int) $data['order_id'];
     	$order      =   Order::findOrFail($order_id);
-    	
+        
     	if(!isset($data["order_success_flag"]) && isset($order->status) && $order->status == '1' && isset($order->order_action) && $order->order_action == 'bought'){
     		
     		$resp   =   array('status' => 401, 'statustxt' => 'error', "message" => "Already Status Successfull");
@@ -2596,7 +2596,9 @@ class TransactionController extends \BaseController {
     		if (filter_var(trim($order['customer']['customer_email']), FILTER_VALIDATE_EMAIL) === false){
     			$order->update(['email_not_sent'=>'captureOrderStatus']);
     		}else{
-    			$sndPgMail  =   $this->customermailer->sendPgProductOrderMail($order->toArray());
+                $emailData = $order->toArray();
+                $emailData['near_options'] = $this->getNearBySessions($order);
+    			$sndPgMail  =   $this->customermailer->sendPgProductOrderMail($emailData);
     			
     			// 			***************************************************************************************  EMAIL  ****************************************************************************************
     			
@@ -7085,6 +7087,83 @@ class TransactionController extends \BaseController {
     	} catch (Exception $e) {
     		return ['status'=>0,"message"=>$this->utilities->baseFailureStatusMessage($e)];
     	}
+    }
+
+    public function getNearBySessions($order){
+        $nearby_same_category_request = [
+            "offset" => 0,
+            "limit" => 2,
+            "radius" => "3km",
+            "category"=>newcategorymapping($order["finder"]["category_name"]),
+            "lat"=>$order['finder']["finder_lat"],
+            "lon"=>$order['finder']["finder_lon"],
+            "city"=>strtolower($order["finder"]["city_name"]),
+            "keys"=>[
+              "slug",
+              "name",
+              "id",
+              'address',
+              'coverimage'
+            ],
+            "not"=>[
+                "vendor"=>[(int)$order['finder']["finder_id"]]
+            ],
+        ];
+
+        return $nearby_same_category = geoLocationFinder($nearby_same_category_request);
+    }
+
+    public function sendVendorOTPProducts($order_id, $resend = null){
+
+        $order = Order::where('_id',intval($order_id))->first();
+        // return $order;
+        // if(!isset($order['otp_data'])){
+
+            $data_otp = array_merge($order['finder'], $order['customer']);
+    
+            $data_otp = array_only($data_otp,['finder_id','order_id','service_id','ratecard_id','payment_mode','finder_vcc_mobile','finder_vcc_email','customer_name','service_name','service_duration','finder_name', 'customer_source','amount_finder','amount','finder_location','customer_email','customer_phone','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon']);
+                                            
+            $data_otp['action'] = "vendor_otp";
+            
+            $addTemp_flag  = true;
+    
+            if($addTemp_flag){
+    
+                $addTemp = addTemp($data_otp);
+    
+                $otp_data = [
+                    'finder_vcc_mobile'=>$data_otp['finder_vcc_mobile'],
+                    'finder_vcc_email'=>$data_otp['finder_vcc_email'],
+                    'payment_mode'=>'pay at studio',
+                    'temp_id'=>$addTemp['_id'],
+                    'otp'=>$addTemp['otp'],
+                    'created_at'=>time(),
+                    'customer_name'=>$data_otp['customer_name'],
+                    'finder_name'=>$data_otp['finder_name'],
+                ];
+    
+                $order->update(['otp_data'=>$otp_data]);
+    
+                $otp_data['otp'] = $addTemp['otp'];
+            // }
+
+        }else{
+            $otp_data = $order->otp_data;
+        }
+
+
+        $this->findersms->genericOtp($otp_data);
+        $this->findermailer->genericOtp($otp_data);
+        
+
+        $response = [
+            'orderid'=>$order['_id'],
+            'resend_otp_url'=>Config::get('app.url')."/temp/regenerateotp/".$otp_data['temp_id'],
+            'vendor_otp_message'=>'Enter the confirmation code provided by your gym/studio to place your order'
+        ];
+
+        return $response;
+
     }
     
 
