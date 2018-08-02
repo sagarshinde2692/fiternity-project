@@ -4818,7 +4818,7 @@ class HomeController extends BaseController {
         {
         	try {
         		$ratecard_id=intval($ratecard_id);$product_id=intval($product_id);
-        		$productView=Product::active()->where("_id",$product_id)->with(array('ratecard'=>function($query){$query->active()->select('_id','title','info','flags','product_id','price','order','status','properties','extra_info','image');}))->with('primarycategory')->first();
+        		$productView=Product::active()->where("_id",$product_id)->with(array('ratecard'=>function($query){$query->active()->select('_id','title','info','flags','product_id','price','slash_price','order','status','properties','extra_info','image');}))->with('primarycategory')->first();
         		if(empty($productView))return ['status'=>0,"message"=>"Not a valid product Id."];else $productView=$productView->toArray();
         		$selectedRatecard=array_values(array_filter($productView['ratecard'],function ($e) use ($ratecard_id) {return $ratecard_id== $e['_id'];}));
         		if(!empty($selectedRatecard))
@@ -4826,7 +4826,7 @@ class HomeController extends BaseController {
         			$selectedRatecard=$selectedRatecard[0];
         			
         			$selectedRatecard['cost']=(isset($selectedRatecard['slash_price'])&&$selectedRatecard['slash_price']!=="")?'<s>'.$this->utilities->getRupeeForm($selectedRatecard['slash_price']).'</s>'." ".$this->utilities->getRupeeForm($selectedRatecard['price']):$this->utilities->getRupeeForm($selectedRatecard['price']);
-        			
+        			unset($selectedRatecard['slash_price']);
         			(!empty($productView['specification'])&&!empty($productView['specification']['secondary']))?
         			$selectedRatecard['details']=$this->utilities->getProductDetailsCustom($productView['specification']['secondary'],'secondary'):"";
         			
