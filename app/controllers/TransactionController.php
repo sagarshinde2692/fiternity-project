@@ -6843,6 +6843,59 @@ class TransactionController extends \BaseController {
 
         return $nearby_same_category = geoLocationFinder($nearby_same_category_request);
     }
+
+    public function sendVendorOTPProducts($order_id, $resend = null){
+
+        $order = Order::where('_id',intval($order_id))->first();
+        // return $order;
+        // if(!isset($order['otp_data'])){
+
+            $data_otp = array_merge($order['finder'], $order['customer']);
+    
+            $data_otp = array_only($data_otp,['finder_id','order_id','service_id','ratecard_id','payment_mode','finder_vcc_mobile','finder_vcc_email','customer_name','service_name','service_duration','finder_name', 'customer_source','amount_finder','amount','finder_location','customer_email','customer_phone','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon']);
+                                            
+            $data_otp['action'] = "vendor_otp";
+            
+            $addTemp_flag  = true;
+    
+            if($addTemp_flag){
+    
+                $addTemp = addTemp($data_otp);
+    
+                $otp_data = [
+                    'finder_vcc_mobile'=>$data_otp['finder_vcc_mobile'],
+                    'finder_vcc_email'=>$data_otp['finder_vcc_email'],
+                    'payment_mode'=>'pay at studio',
+                    'temp_id'=>$addTemp['_id'],
+                    'otp'=>$addTemp['otp'],
+                    'created_at'=>time(),
+                    'customer_name'=>$data_otp['customer_name'],
+                    'finder_name'=>$data_otp['finder_name'],
+                ];
+    
+                $order->update(['otp_data'=>$otp_data]);
+    
+                $otp_data['otp'] = $addTemp['otp'];
+            // }
+
+        }else{
+            $otp_data = $order->otp_data;
+        }
+
+
+        $this->findersms->genericOtp($otp_data);
+        $this->findermailer->genericOtp($otp_data);
+        
+
+        $response = [
+            'orderid'=>$order['_id'],
+            'resend_otp_url'=>Config::get('app.url')."/temp/regenerateotp/".$otp_data['temp_id'],
+            'vendor_otp_message'=>'Enter the confirmation code provided by your gym/studio to place your order'
+        ];
+
+        return $response;
+
+    }
     
 
 }
