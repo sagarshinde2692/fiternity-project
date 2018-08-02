@@ -2105,8 +2105,8 @@ class HomeController extends BaseController {
     			
     			if(!empty($order['customer_address'])&&empty($order['deliver_to_vendor']))
     			   $shipping_address=$this->utilities->formatShippingAddress($order['customer_address'],$customer['name']);
-    			else if(!empty($order['finder'])&&!empty($order['finder']['finder_address'])&&!empty($order['deliver_to_vendor']))
-    			   $shipping_address=$this->utilities->formatShippingAddress($order['finder']['finder_address'],$customer['name'],true);
+    			else if(!empty($order['finder'])&&!empty($order['finder']['finder_name'])&&!empty($order['deliver_to_vendor']))
+    			   $shipping_address=$this->utilities->formatShippingAddress($order['finder'],$customer['name'],true);
     				
     				// ($payment_mode=='cod')?$finalData['customer_description']=$customer_description:"";
     				$finalData['customer_description']=$customer_description;

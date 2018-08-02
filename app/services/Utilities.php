@@ -5204,13 +5204,15 @@ Class Utilities {
 			if(!empty($data["line1"]))$temp=$temp.$data["line1"].$cur_seperator;
 			if(!empty($data["line2"]))$temp=$temp.$data["line2"].$cur_seperator;
 			if(!empty($data["landmark"]))$temp=$temp.$data["landmark"].$cur_seperator;
-			if(!empty($data["pincode"]))$temp=$temp.$data["pincode"].$cur_seperator;
-			if(!empty($data["city"]))$temp=$temp.$data["city"];
+			if(!empty($data["city"]))$temp=$temp.$data["city"].$cur_seperator;
+			if(!empty($data["pincode"]))$temp=$temp.$data["pincode"];
 			
 		}
 		else {
-			if(!empty($cust_name))$temp=$temp+$cust_name." <br />";
-			if(!empty($data))$temp=$temp+$data;
+            Log::info("shipping");
+			if(!empty($cust_name))$temp=$temp.$cust_name." <br />";
+			if(!empty($data['finder_name']))$temp=$temp.$data['finder_name'];
+			if(!empty($data['finder_location']))$temp=$temp.'-'.$data['finder_location'];
 		}
 		return $temp;
 	}
