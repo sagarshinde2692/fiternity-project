@@ -4490,7 +4490,7 @@ Class Utilities {
 				return $collection->aggregate([
 						['$match'=>$this->getQueryMultiplier($arr,$product_id)],
 						['$sort'=>['properties.'.$intrinsic_data['name']=>-1]],
-						['$group'=>['_id' =>'$properties.'.$intrinsic_data['name'],'details' => ['$push'=>['_id'=>'$_id','properties'=>'$properties','flags'=>'$flags','price'=>'$price','info'=>'$info']]]],
+						['$group'=>['_id' =>'$properties.'.$intrinsic_data['name'],'details' => ['$push'=>['_id'=>'$_id','properties'=>'$properties','flags'=>'$flags','price'=>'$price','slash_price'=>'$slash_price','info'=>'$info']]]],
 						['$match'=>['details.0' => ['$exists'=>true]]]
 				]);
 			});
@@ -4505,7 +4505,7 @@ Class Utilities {
 								"value"=>(!empty($current['properties'])&&!empty($current['properties'][$intrinsic_data['name']]))?$current['properties'][$intrinsic_data['name']]:"",
 								"enabled"=>(!empty($current['flags'])&&!empty($current['flags']['available'])?true:false),
 								"ratecard_id"=>$current['_id'],"product_id"=>$product_id,"price"=>$current['price'],
-								"cost"=>$this->getRupeeForm($current['price'])
+								"cost"=>(isset($current['slash_price'])&&$current['slash_price']!=="")?'<s>'.$this->getRupeeForm($current['slash_price']).'</s>'." ".$this->getRupeeForm($current['price']):$this->getRupeeForm($current['price'])
 						];
 						
 						if(!empty($current['info'])&&!empty($current['info']['long_description']))$tt['long_description']=$current['info']['long_description'];
