@@ -4714,6 +4714,13 @@ Class Utilities {
 				return $value['image']['primary'];
 		return "";
 	}
+	public function getRateCardBaseID($ratecards=[])
+	{
+		foreach ($ratecards as $value)
+			if(!empty($value)&&!empty($value['_id']))
+				return $value['_id'];
+			return "";
+	}
 	
 	public function mapProperties($properties=null)
 	{
