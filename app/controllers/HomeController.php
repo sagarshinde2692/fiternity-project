@@ -4854,8 +4854,9 @@ class HomeController extends BaseController {
         			$selectedRatecard=$selectedRatecard[0];
         			
         			$selectedRatecard['cost']=(isset($selectedRatecard['slash_price'])&&$selectedRatecard['slash_price']!=="")?$this->utilities->slashPriceFormat($selectedRatecard)." ".$this->utilities->getRupeeForm($selectedRatecard['price']):$this->utilities->getRupeeForm($selectedRatecard['price']);
-        			unset($selectedRatecard['slash_price']);
-
+                    if(isset($selectedRatecard['slash_price'])&&$selectedRatecard['slash_price']!==""){
+                        $selectedRatecard['slash_price'] = $this->utilities->getRupeeForm($value['slash_price']);
+                    }
         			(!empty($productView['specification'])&&!empty($productView['specification']['secondary']))?
         			$selectedRatecard['details']=$this->utilities->getProductDetailsCustom($productView['specification']['secondary'],'secondary'):"";
         			
@@ -4925,7 +4926,10 @@ class HomeController extends BaseController {
         										'ratecard_title'=>$value['title'],'ratecard_id'=>$value['_id']
         								];
         								
-        								if(isset($value['slash_price'])&&$value['slash_price']!=="")$ttp['cost']=$this->utilities->slashPriceFormat($value)." ".$this->utilities->getRupeeForm($value['price']);
+        								if(isset($value['slash_price'])&&$value['slash_price']!==""){
+                                            $ttp['cost']=$this->utilities->slashPriceFormat($value)." ".$this->utilities->getRupeeForm($value['price']);
+                                            $ttp['slash_price'] = $this->utilities->getRupeeForm($value['slash_price']);
+                                        }
         								else $ttp['cost']=$this->utilities->getRupeeForm($value['price']);
         								array_push($mainSimilar, $ttp);	
         					}		
@@ -4995,7 +4999,8 @@ class HomeController extends BaseController {
         							if(empty($product_cat_title))
         								$product_cat_title=(!empty($value['product']['primarycategory']['title'])?$value['product']['primarycategory']['title']:"");
         							array_push($categories, [
-        									'cost'=>(isset($value['slash_price'])&&$value['slash_price']!=="")?$this->utilities->slashPriceFormat($value)." ".$this->utilities->getRupeeForm($value['price']):$this->utilities->getRupeeForm($value['price']),
+                                            'cost'=>(isset($value['slash_price'])&&$value['slash_price']!=="")?$this->utilities->slashPriceFormat($value)." ".$this->utilities->getRupeeForm($value['price']):$this->utilities->getRupeeForm($value['price']),
+                                            'slash_price' => $this->utilities->getRupeeForm($value['slash_price']),
         									'price'=>$value['price'],
         									'product_id'=>$value['product']['_id'],
         									'product_title'=>$value['product']['title'],

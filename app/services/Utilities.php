@@ -5363,6 +5363,7 @@ Class Utilities {
 	}
 	public function slashPriceFormat($selectedRatecard)
 	{
+        return "";
 		return (empty($selectedRatecard)||empty($selectedRatecard['slash_price']))?"":'<strike>'.$this->getRupeeForm($selectedRatecard['slash_price']).'</strike>';
 	}
 	
