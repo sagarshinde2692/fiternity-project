@@ -3075,7 +3075,7 @@ class CustomerController extends \BaseController {
 		$customer = Customer::find((int)$customer_id);
 		$allBookingFriends = array(array("name" => $customer->name, "email" => $customer->email, "phone" => $customer->contact_no, "gender" => $customer->gender, "default"=> true));
 		$customer_friends = isset($customer["friends"]) ? $customer["friends"] : [];
-		$allBookingFriends  = array_merge($allBookingFriends, $customer["friends"]);
+		$allBookingFriends  = array_merge($allBookingFriends, $customer_friends);
 		return $allBookingFriends;
 	}
 	public function getExistingTrialWithFinder(){
