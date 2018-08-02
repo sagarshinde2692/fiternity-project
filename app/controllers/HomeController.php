@@ -2074,15 +2074,16 @@ class HomeController extends BaseController {
     			
     			$header=["status_text"=>"Order Successfull","status_icon"=>"https://image.flaticon.com/teams/slug/freepik.jpg"];
     			$customer_description='Hi '.$customer['name'].', your order has been successfully placed with Fitternity.'.
-      			//     			'It will be delivered to you within 7-10 working days.'.
+      			'It will be delivered to you within 7-10 working days.'.
     			'You can track your order online with the information provided via SMS and E-mail';
     			
     			
-    			if(!empty($order['customer_address']))$shipping_address=$this->utilities->formatShippingAddress($order['customer_address'],$customer['name']);
-    			else if(!empty($order['finder'])&&!empty($order['finder']['finder_address']))
-    				$shipping_address=$this->utilities->formatShippingAddress($order['finder']['finder_address'],$customer['name'],true);
+    			if(!empty($order['customer_address'])&&empty($order['deliver_to_vendor']))
+    			   $shipping_address=$this->utilities->formatShippingAddress($order['customer_address'],$customer['name']);
+    			else if(!empty($order['finder'])&&!empty($order['finder']['finder_address'])&&!empty($order['deliver_to_vendor']))
+    			   $shipping_address=$this->utilities->formatShippingAddress($order['finder']['finder_address'],$customer['name'],true);
     				
-    				//     			($payment_mode=='cod')?$finalData['customer_description']=$customer_description:"";
+    				// ($payment_mode=='cod')?$finalData['customer_description']=$customer_description:"";
     				$finalData['customer_description']=$customer_description;
     				if(!empty($shipping_address))
     					$finalData['shipping_address']=$shipping_address;
@@ -4778,6 +4779,12 @@ class HomeController extends BaseController {
         					$ratecard=$ratecard->toArray();
         					$cartData=["product_id"=>$ratecard['product_id'],"ratecard_id"=>$ratecard['_id'],"price"=>$ratecard['price'],"quantity"=>$quantity];
         					$removedOldFromCart=Cart::where('_id', intval($cart_id))->pull('products', ['ratecard_id' => intval($ratecard['_id']), 'product_id' => intval($ratecard['product_id'])]);
+        					
+        					$tmp=['ratecard_id'=>$ratecard_id];
+        					$alreadyQuantity=$this->utilities->attachProductQuantity($tmp,true);
+        					if(!empty($alreadyQuantity))
+        						if($quantity>0&&$quantity==$alreadyQuantity)
+        							return ['status'=>0,"message"=>'Product Already Added'];
         					($quantity>0)?$addedToCart=Cart::where('_id', intval($cart_id))->push('products',$cartData):"";
         					
         					if(!empty($_GET['cart_summary']))
@@ -4836,8 +4843,11 @@ class HomeController extends BaseController {
 //         			(!empty($selectedRatecard['key_details']))?array_unshift($selectedRatecard['key_details'],["name"=>"color","value"=>$selectedRatecard['color']]):"";
         			
         			$props_arr=[];
-        			if(!empty($selectedRatecard['properties']))foreach ($selectedRatecard['properties'] as $k=>$v)(!empty($k)&&!empty($v))?array_push($props_arr,["field"=>$k,"value"=>$v]):"";
-        			(!empty($props_arr))?$selectedRatecard['properties']=$props_arr:"";
+        			if(!empty($selectedRatecard['properties']))
+        			{
+        				$props_arr=$this->utilities->mapProperties($selectedRatecard['properties']);
+        				(!empty($props_arr))?$selectedRatecard['properties']=$props_arr:"";
+        			}
         					
         			if(!empty($productView['selection_view'])&&is_array($productView['selection_view']))
         			{
@@ -4897,7 +4907,7 @@ class HomeController extends BaseController {
         		}
         		else return ['status'=>0,"message"=>"Not a valid Ratecard Id."];
         		$this->utilities->attachProductQuantity($finalData['product']);
-        		(!empty($mainSimilar)&&count($mainSimilar)>0)?$finalData['similar_products']=["title"=>"Other Products","sub_title"=>"Get Fitter","items"=>$mainSimilar]:"";
+        		(!empty($mainSimilar)&&count($mainSimilar)>0)?$finalData['similar_products']=["title"=>"Similar Products","sub_title"=>"Get Fitter","items"=>$mainSimilar]:"";
         		$this->utilities->attachCart($finalData,false);
         		return ["status"=>200,"response"=>$finalData];
         	} catch (Exception $e) {
@@ -4934,7 +4944,7 @@ class HomeController extends BaseController {
         		if(!empty($ratecards))
         			$ratecards=ProductRatecard::active()->whereIn("_id",$ratecards)->with(array('product'=>function($query){$query->active()->with('primarycategory')->orderBy('ordering', 'ASC');}))->get();
         		else return ['status'=>0,"message"=>"Not Ratecards found for productcategoryid : ".$productcategory_id];
-        		
+        		$product_cat_title="";
         		$categories=[];
         		if(!empty($ratecards))
         		{
@@ -4947,6 +4957,8 @@ class HomeController extends BaseController {
         						$url=$value['image']['primary'];
         						else if(!empty($value['product']&&!empty($value['product']['image'])&&!empty($value['product']['image']['primary'])))
         							$url=$value['product']['image']['primary'];
+        							if(empty($product_cat_title))
+        								$product_cat_title=(!empty($value['product']['primarycategory']['title'])?$value['product']['primarycategory']['title']:"");
         							array_push($categories, [
         									'cost'=>$this->utilities->getRupeeForm($value['price']),
         									'price'=>$value['price'],
@@ -4957,14 +4969,15 @@ class HomeController extends BaseController {
         									'type'=>'product',
         									'product_category_slug'=>$value['product']['primarycategory']['slug'],
         									'product_category_id'=>$value['product']['primarycategory']['_id'],
+        									'product_category_title'=>(!empty($value['product']['primarycategory']['title'])?$value['product']['primarycategory']['title']:""),
         									'ratecard_title'=>$value['title'],
         									'ratecard_id'=>$value['_id']
         							]);
         				}
         			
         			}
-        			
-        			
+        			 if(empty($product_cat_title))
+        			  $product_cat_title="Category Based Products";
         			$products=Product::active()->raw(function($collection) use($productcategory_id)
         			{
         				
@@ -5000,15 +5013,17 @@ class HomeController extends BaseController {
 	        							'url'=>$url,
 	        							'type'=>'category',
 	        							'product_category_slug'=>$value['primarycategory']['slug'],
-	        							'product_category_id'=>$value['primarycategory']['_id']
+	        							'product_category_id'=>$value['primarycategory']['_id'],
+	        							'product_category_title'=>(!empty($value['primarycategory']['title'])?$value['primarycategory']['title']:""),
 	        					]);
         					}
         				}
         				
         			}
         			$finalData=[];
-        			(!empty($categories)&&count($categories)>0)?$finalData['categories']=["title"=>(($productcategory_id==10)?"Health Supplements By GNC":"category Based Products"),"sub_title"=>(($productcategory_id==10)?"":"Get Fitter"),"items"=>$categories]:"";
-        			(!empty($productSimilar)&&count($productSimilar)>0)?$finalData['similar_products']=["title"=>"Other Products","sub_title"=>"Get Fitter","items"=>$productSimilar]:"";
+        			if(!empty($categories)&&count($categories)>0)
+        				$finalData['categories']=["title"=>$product_cat_title,/* "sub_title"=>(($productcategory_id==10)?"":"Get Fitter") ,*/"items"=>$categories];
+        			(!empty($productSimilar)&&count($productSimilar)>0)?$finalData['similar_products']=["title"=>"Similar Products","items"=>$productSimilar]:"";
         			$this->utilities->attachCart($finalData,false);
         			return ["status"=>200,"response"=>$finalData];
         		}

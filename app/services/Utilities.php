@@ -4285,6 +4285,13 @@ Class Utilities {
 						$temp['size']=$cart_item['ratecard']['size'];
 						$temp['title']=$cart_item['product']['title'];
 						$temp['sub_title']=$cart_item['ratecard']['color'];
+						
+						if(!empty($cart_item['ratecard']['properties']))
+						{
+							$props_arr=$this->utilities->mapProperties($cart_item['ratecard']['properties']);
+							(!empty($props_arr))?$temp['properties']=$props_arr:"";
+						}
+						
 						$temp['image']=$img_url;
 						array_push($cart_desc,$temp);
 						$amount=$amount+(intval($cart_item['quantity'])*intval($cart_item['price']));
@@ -4366,6 +4373,11 @@ Class Utilities {
 				$resp['data']['cart_details']=$cart_desc;
 // 				$resp['data']['total_cart_amount']=$amount;
 				$resp['data']['total_amount']=$this->getRupeeForm($amount);
+				$resp['data']['delivery_charges']='+ '.$this->getRupeeForm(intval(Config::get('app.product_delivery_charges'))).' delivery charges';
+				$resp['data']['delivery_charges_at_studio']="Free Delivery";
+				
+				
+				
 				$resp['data']['total_count']=$count;
 				return $resp;
 		} catch (Exception $e)
@@ -4596,7 +4608,7 @@ Class Utilities {
 							else $data['quantity']=$tmp_data['quantity'];
 						}
 						else {
-							if($onlyQuantity) return 1;
+							if($onlyQuantity) return null;
 							else $data['quantity']=1;
 						}
 					}
@@ -4700,6 +4712,18 @@ Class Utilities {
 			if(!empty($value)&&!empty($value['image'])&&!empty($value['image']['primary']))
 				return $value['image']['primary'];
 		return "";
+	}
+	
+	public function mapProperties($properties=null)
+	{
+		$props_arr=[];
+		if(!empty($properties))
+		{
+			foreach ($properties as $k=>$v)
+				(!empty($k)&&!empty($v))?array_push($props_arr,["field"=>$k,"value"=>$v]):"";	
+				return  $props_arr;
+		}
+		else return null;
 	}
 }
 
