@@ -2099,7 +2099,7 @@ class HomeController extends BaseController {
     			
     			$header=["status_text"=>"Order Successfull","status_icon"=>"https://image.flaticon.com/teams/slug/freepik.jpg"];
     			$customer_description='Hi '.$customer['name'].', your order has been successfully placed with Fitternity.'.
-      			'It will be delivered to you within 7-10 working days.'.
+      			'<br>It will be delivered to you within 7-10 working days.<br>'.
     			'You can track your order online with the information provided via SMS and E-mail';
     			
     			
