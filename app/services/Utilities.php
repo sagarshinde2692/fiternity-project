@@ -4505,7 +4505,7 @@ Class Utilities {
 								"value"=>(!empty($current['properties'])&&!empty($current['properties'][$intrinsic_data['name']]))?$current['properties'][$intrinsic_data['name']]:"",
 								"enabled"=>(!empty($current['flags'])&&!empty($current['flags']['available'])?true:false),
 								"ratecard_id"=>$current['_id'],"product_id"=>$product_id,"price"=>$current['price'],
-								"cost"=>(isset($current['slash_price'])&&$current['slash_price']!=="")?'<s>'.$this->getRupeeForm($current['slash_price']).'</s>'." ".$this->getRupeeForm($current['price']):$this->getRupeeForm($current['price'])
+								"cost"=>(isset($current['slash_price'])&&$current['slash_price']!=="")?$this->slashPriceFormat($current)." ".$this->getRupeeForm($current['price']):$this->getRupeeForm($current['price'])
 						];
 						
 						if(!empty($current['info'])&&!empty($current['info']['long_description']))$tt['long_description']=$current['info']['long_description'];
@@ -4733,6 +4733,12 @@ Class Utilities {
 		}
 		else return null;
 	}
+	public function slashPriceFormat($selectedRatecard)
+	{
+		return (empty($selectedRatecard)||empty($selectedRatecard['slash_price']))?"":'<strike>'.$this->getRupeeForm($selectedRatecard['slash_price']).'</strike>';
+	}
+	
+	
 }
 
 
