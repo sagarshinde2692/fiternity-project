@@ -6831,7 +6831,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             $booktrial->post_trial_status = 'attended';
 
-            $this->updateOrderStatus($booktrial);
+            $this->utilities->updateOrderStatus($booktrial);
             
             $booktrial->post_trial_initail_status = 'interested';
             $booktrial->post_trial_status_updated_by_kiosk = time();
@@ -7114,7 +7114,7 @@ class SchedulebooktrialsController extends \BaseController {
 
             $booktrial->post_trial_status = 'attended';
 
-            $this->updateOrderStatus($booktrial);
+            $this->utilities->updateOrderStatus($booktrial);
             
             $booktrial->post_trial_initail_status = 'interested';
             $booktrial->post_trial_status_updated_by_fitcode = time();
@@ -7212,23 +7212,7 @@ class SchedulebooktrialsController extends \BaseController {
                 Log::info("not adding fitachs");
             }
             
-            $this->updateOrderStatus($booktrial);
-
-            // $req = array(
-            //     "customer_id"=>$booktrial['customer_id'],
-            //     "trial_id"=>$booktrial['_id'],
-            //     "amount"=> $fitcash_amount,
-            //     "amount_fitcash" => 0,
-            //     "amount_fitcash_plus" => $fitcash_amount,
-            //     "type"=>'CREDIT',
-            //     'entry'=>'credit',
-            //     'validity'=>time()+(86400*21),
-            //     'description'=>"Added FitCash+ on Lost Fitcode, Applicable for buying a membership at ".ucwords($booktrial['finder_name'])." Expires On : ".date('d-m-Y',time()+(86400*21)),
-            //     "valid_finder_id"=>intval($booktrial['finder_id']),
-            //     "finder_id"=>intval($booktrial['finder_id']),
-            // );
-            
-            // $this->utilities->walletTransaction($req);
+            $this->utilities->updateOrderStatus($booktrial);
             
             $booktrial->post_trial_initail_status = 'interested';
             $booktrial->post_trial_status_updated_by_lostfitcode = time();

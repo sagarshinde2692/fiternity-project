@@ -1269,3 +1269,4 @@ Route::get('updateratecardslotsbyid/{order_id}','TransactionController@updateRat
 Route::post('getunmarkedattendance','CustomerController@getCustomerUnmarkedAttendance');
 Route::post('addafriendforbooking','CustomerController@addafriendforbooking');
 Route::get('getbookingfriends','CustomerController@getallBookingfriends');
+Route::post('markcustomerattendance','CustomerController@markCustomerAttendance');
