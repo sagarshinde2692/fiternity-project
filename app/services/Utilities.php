@@ -4593,9 +4593,10 @@ Class Utilities {
 		$jwt=Request::header("Authorization");
 		if(isset($jwt))
 		{
-			$cart=$this->productsTabCartHomeCustomer();
+			 $cart=$this->productsTabCartHomeCustomer();
 			if(!empty($cart))
 			{
+				
 				$cart=$cart->toArray();
 				if(!empty($cart['products']))
 					$tmp_data=array_values(array_filter($cart['products'],function ($e) use ($data) {return (!empty($data['ratecard_id'])&&!empty($e['ratecard_id'])&&$data['ratecard_id']== $e['ratecard_id']);}));

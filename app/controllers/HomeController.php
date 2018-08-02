@@ -4773,18 +4773,18 @@ class HomeController extends BaseController {
         			(!empty($token_decoded)&&!empty($token_decoded->customer))?$cart_id=$token_decoded->customer->cart_id:"";
         			if(!empty($cart_id))
         			{
-        				$ratecard=ProductRatecard::where("_id",$ratecard_id)->first(['price','product_id']);
+        				$ratecard=ProductRatecard::active()->where("_id",$ratecard_id)->first(['price','product_id']);
         				if(!empty($ratecard)&&!empty($ratecard->product_id)&&!empty($ratecard->_id)&&isset($ratecard->price))
         				{
         					$ratecard=$ratecard->toArray();
+        					$tmp=['ratecard_id'=>$ratecard_id];
+        					 $alreadyQuantity=$this->utilities->attachProductQuantity($tmp,true);
+        					if(!empty($alreadyQuantity))
+        					 if($quantity>0&&$quantity==$alreadyQuantity)
+        					 return ['status'=>0,"message"=>'Product Already Added'];
         					$cartData=["product_id"=>$ratecard['product_id'],"ratecard_id"=>$ratecard['_id'],"price"=>$ratecard['price'],"quantity"=>$quantity];
         					$removedOldFromCart=Cart::where('_id', intval($cart_id))->pull('products', ['ratecard_id' => intval($ratecard['_id']), 'product_id' => intval($ratecard['product_id'])]);
         					
-        					$tmp=['ratecard_id'=>$ratecard_id];
-        					$alreadyQuantity=$this->utilities->attachProductQuantity($tmp,true);
-        					if(!empty($alreadyQuantity))
-        						if($quantity>0&&$quantity==$alreadyQuantity)
-        							return ['status'=>0,"message"=>'Product Already Added'];
         					($quantity>0)?$addedToCart=Cart::where('_id', intval($cart_id))->push('products',$cartData):"";
         					
         					if(!empty($_GET['cart_summary']))
