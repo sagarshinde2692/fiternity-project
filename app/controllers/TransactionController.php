@@ -3723,7 +3723,7 @@ class TransactionController extends \BaseController {
         $finder_flags                       =   isset($finder['flags'])  ? $finder['flags'] : new stdClass();
         $data['finder_city'] =  trim($finder_city);
         $data['finder_location'] =  ucwords(trim($finder_location));
-        $data['finder_location_slug'] =  ucwords(trim($finder_location_slug));
+        $data['finder_location_slug'] =  trim($finder_location_slug);
         $data['finder_address'] =  trim($finder_address);
         $data['finder_vcc_email'] =  trim($finder_vcc_email);
         $data['finder_vcc_mobile'] =  trim($finder_vcc_mobile);
