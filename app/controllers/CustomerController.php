@@ -7222,7 +7222,6 @@ class CustomerController extends \BaseController {
 			$validator = Validator::make($data, $rules);
 			
 			$un_updated=[];$updated=[];
-			
 			if ($validator->fails()) return ['status' => 400,'message' =>$this->errorMessage($validator->errors())];
 			else 
 			{
@@ -7231,14 +7230,17 @@ class CustomerController extends \BaseController {
 				$total_fitcash=0;
 				foreach ($data['data'] as $value)
 				{
+			
 					$booktrial = Booktrial::where('customer_id',$customer_id)->whereIn('_id',$value['_id'])->first();
 					$post_trial_status_updated_by_fitcode = time();
 					if(empty($booktrial))
 					{
-						if($booktrial->type == "booktrials" && !isset($booktrial->post_trial_status_updated_by_fitcode))
+						if($booktrial->type == "booktrials" && !isset($booktrial->post_trial_status_updated_by_fitcode)&& !isset($booktrial->post_trial_status_updated_by_lostfitcode))
 						{
-							$booktrial_update = Booktrial::where('_id', intval($value['_id']))->where('post_trial_status_updated_by_fitcode', 'exists', false)->update(['post_trial_status_updated_by_fitcode'=>$post_trial_status_updated_by_fitcode]);
-							if($booktrial_update)
+							if(!empty($value['mark']))								
+								 $booktrial_update = Booktrial::where('_id', intval($value['_id']))->where('post_trial_status_updated_by_fitcode', 'exists', false)->update(['post_trial_status_updated_by_fitcode'=>$post_trial_status_updated_by_fitcode]);
+							else $booktrial_update = Booktrial::where('_id', intval($value['_id']))->where('post_trial_status_updated_by_fitcode', 'exists', false)->update(['post_trial_status'=>'no show']);
+							if($booktrial_update&&!empty($value['mark']))
 							{
 								$fitcash = $this->utilities->getFitcash($booktrial->toArray());
 								$req = array(
@@ -7253,11 +7255,13 @@ class CustomerController extends \BaseController {
 							}
 							else array_push($un_updated,$value['_id']);
 						}
-						else if($booktrial->type == "workout-session" && !isset($booktrial->post_trial_status_updated_by_fitcode) && !(isset($booktrial->payment_done) && !$booktrial->payment_done))
+						else if($booktrial->type == "workout-session"&&!isset($booktrial->post_trial_status_updated_by_lostfitcode)&&!isset($booktrial->post_trial_status_updated_by_fitcode) && !(isset($booktrial->payment_done) && !$booktrial->payment_done))
 						{
+							if(!empty($value['mark']))
+								$booktrial_update = Booktrial::where('_id', intval($value['_id']))->where('post_trial_status_updated_by_fitcode', 'exists', false)->update(['post_trial_status_updated_by_fitcode'=>$post_trial_status_updated_by_fitcode]);
+							else $booktrial_update = Booktrial::where('_id', intval($value['_id']))->where('post_trial_status_updated_by_fitcode', 'exists', false)->update(['post_trial_status'=>'no show']);
 							
-							$booktrial_update = Booktrial::where('_id', intval($value['_id']))->where('post_trial_status_updated_by_fitcode', 'exists', false)->update(['post_trial_status_updated_by_fitcode'=>$post_trial_status_updated_by_fitcode]);
-							if($booktrial_update){
+							if($booktrial_update&&!empty($value['mark'])){
 								$fitcash = round($this->utilities->getWorkoutSessionFitcash($booktrial->toArray()) * $booktrial->amount_finder / 100);
 								$req = array(
 										"customer_id"=>$booktrial['customer_id'],"trial_id"=>$booktrial['_id'],
@@ -7273,10 +7277,13 @@ class CustomerController extends \BaseController {
 							}
 							else array_push($un_updated,$value['_id']);
 						}
-						$booktrial->post_trial_status = 'attended';
-						$booktrial->post_trial_initail_status = 'interested';
-						$booktrial->post_trial_status_updated_by_fitcode = time();
-						$booktrial->post_trial_status_date = time();
+						if(!empty($value['mark']))
+						{
+							$booktrial->post_trial_status = 'attended';
+							$booktrial->post_trial_initail_status = 'interested';
+							$booktrial->post_trial_status_updated_by_fitcode = time();
+							$booktrial->post_trial_status_date = time();							
+						}
 						$booktrial->update();
 					}
 					else array_push($un_updated,$value['_id']);

@@ -1218,3 +1218,4 @@ Route::get('lostFitcode','DebugController@lostFitcode');
 Route::post('getcustomercarddetails','CustomerController@getCustomerCardDetails');
 
 Route::post('getunmarkedattendance','CustomerController@getCustomerUnmarkedAttendance');
+Route::post('markcustomerattendance','CustomerController@markCustomerAttendance');
