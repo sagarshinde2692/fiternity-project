@@ -4288,7 +4288,7 @@ Class Utilities {
 						
 						if(!empty($cart_item['ratecard']['properties']))
 						{
-							$props_arr=$this->utilities->mapProperties($cart_item['ratecard']['properties']);
+							$props_arr=$this->mapProperties($cart_item['ratecard']['properties']);
 							(!empty($props_arr))?$temp['properties']=$props_arr:"";
 						}
 						
