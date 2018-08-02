@@ -1631,7 +1631,12 @@ class TransactionController extends \BaseController {
             $finder_id = (int)$data['finder_id'];
         }
 
-        if($finder_id != $order['finder_id']){
+        if($finder_id != $order['finder_id'] && $order['type'] != 'product'){
+
+            return Response::json(['status' => 400, "message" => "Incorrect Vendor"],$status);
+        }
+
+        if($order['type'] != 'product' && $finder_id != $order['finder']['finder_id']){
 
             return Response::json(['status' => 400, "message" => "Incorrect Vendor"],$status);
         }
@@ -1715,6 +1720,11 @@ class TransactionController extends \BaseController {
 
                 return Response::json(['status' => 400, "message" => "Internal Error Please Report"],$status);
             }
+
+        }else if($order['type'] == 'product'){
+
+            return $this->success(['order_id'=>$order['_id'], 'status'=>'success']);
+
 
         }else{
 
@@ -1836,9 +1846,13 @@ class TransactionController extends \BaseController {
 
     }
 
-    public function success(){
+    public function success($data = null){
 
-        $data = Input::json()->all();
+        if($data){
+            $data['internal_success'] = true;
+        }else{
+            $data = Input::json()->all();
+        }
 
         return $this->successCommon($data);
 
@@ -2511,8 +2525,11 @@ class TransactionController extends \BaseController {
     		return Response::json($resp,401);
     	}
     	
-    	
-    	$hash_verified = $this->utilities->verifyOrderProduct($data,$order);
+        if(!empty($data['internal_success'])){
+            $hash_verified = true;
+        }else{
+            $hash_verified = $this->utilities->verifyOrderProduct($data,$order);
+        }
     	Log::info(" info  hash_verified :: ".print_r($hash_verified,true));
     	if(!empty($data['status'])&&$data['status'] == 'success' && $hash_verified){
     		$orderArr=$order->toArray();
@@ -7119,11 +7136,11 @@ class TransactionController extends \BaseController {
         return $nearby_same_category = geoLocationFinder($nearby_same_category_request);
     }
 
-    public function sendVendorOTPProducts($order_id, $resend = null){
+    public function sendVendorOTPProducts($order_id){
 
         $order = Order::where('_id',intval($order_id))->first();
         // return $order;
-        // if(!isset($order['otp_data'])){
+        if(!isset($order['otp_data'])){
 
             $data_otp = array_merge($order['finder'], $order['customer']);
     
@@ -7131,27 +7148,21 @@ class TransactionController extends \BaseController {
                                             
             $data_otp['action'] = "vendor_otp";
             
-            $addTemp_flag  = true;
-    
-            if($addTemp_flag){
-    
-                $addTemp = addTemp($data_otp);
-    
-                $otp_data = [
-                    'finder_vcc_mobile'=>$data_otp['finder_vcc_mobile'],
-                    'finder_vcc_email'=>$data_otp['finder_vcc_email'],
-                    'payment_mode'=>'pay at studio',
-                    'temp_id'=>$addTemp['_id'],
-                    'otp'=>$addTemp['otp'],
-                    'created_at'=>time(),
-                    'customer_name'=>$data_otp['customer_name'],
-                    'finder_name'=>$data_otp['finder_name'],
-                ];
-    
-                $order->update(['otp_data'=>$otp_data]);
-    
-                $otp_data['otp'] = $addTemp['otp'];
-            // }
+            $addTemp = addTemp($data_otp);
+
+            $otp_data = [
+                'finder_vcc_mobile'=>$data_otp['finder_vcc_mobile'],
+                'finder_vcc_email'=>$data_otp['finder_vcc_email'],
+                'payment_mode'=>'pay at studio',
+                'temp_id'=>$addTemp['_id'],
+                'otp'=>$addTemp['otp'],
+                'created_at'=>time(),
+                'customer_name'=>$data_otp['customer_name'],
+                'finder_name'=>$data_otp['finder_name'],
+                'order_id'=>$order['_id']
+            ];
+
+            $order->update(['otp_data'=>$otp_data, 'payment.payment_mode'=>'pay at studio']);
 
         }else{
             $otp_data = $order->otp_data;
@@ -7171,7 +7182,6 @@ class TransactionController extends \BaseController {
         return $response;
 
     }
-    
 
     public function updateRatecardSlots($job, $data){
         

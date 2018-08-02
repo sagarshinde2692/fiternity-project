@@ -4940,7 +4940,7 @@ class HomeController extends BaseController {
         		}
         		else return ['status'=>0,"message"=>"Not a valid Ratecard Id."];
         		$this->utilities->attachProductQuantity($finalData['product']);
-        		(!empty($mainSimilar)&&count($mainSimilar)>0)?$finalData['similar_products']=["title"=>"Similar Products","sub_title"=>"Get Fitter","items"=>$mainSimilar]:"";
+        		(!empty($mainSimilar)&&count($mainSimilar)>0)?$finalData['similar_products']=["title"=>"Similar Products","sub_title"=>"Checkout other essential products for your workout","items"=>$mainSimilar]:"";
         		$this->utilities->attachCart($finalData,false);
         		return ["status"=>200,"response"=>$finalData];
         	} catch (Exception $e) {
@@ -5036,16 +5036,19 @@ class HomeController extends BaseController {
         					{
         						$url="";
         						$rc_url=$this->utilities->getRateCardBaseImage($value['ratecard']);
+        						$rc_id=$this->utilities->getRateCardBaseID($value['ratecard']);
+        						
         							if(!empty($rc_url))
         								$url=$rc_url;
 									else if(!empty($value['image'])&&!empty($value['image']['primary']))
         									$url=$value['image']['primary'];
 	        					array_push($productSimilar, [
 	        							'product_id'=>$value['_id'],
+	        							'ratecard_id'=>$rc_id,
 	        							'product_title'=>$value['title'],
 	        							'product_slug'=>$value['slug'],
 	        							'url'=>$url,
-	        							'type'=>'category',
+	        							'type'=>'product',
 	        							'product_category_slug'=>$value['primarycategory']['slug'],
 	        							'product_category_id'=>$value['primarycategory']['_id'],
 	        							'product_category_title'=>(!empty($value['primarycategory']['title'])?$value['primarycategory']['title']:""),
@@ -5057,7 +5060,7 @@ class HomeController extends BaseController {
         			$finalData=[];
         			if(!empty($categories)&&count($categories)>0)
         				$finalData['categories']=["title"=>$product_cat_title,/* "sub_title"=>(($productcategory_id==10)?"":"Get Fitter") ,*/"items"=>$categories];
-        			(!empty($productSimilar)&&count($productSimilar)>0)?$finalData['similar_products']=["title"=>"Similar Products","items"=>$productSimilar]:"";
+        				(!empty($productSimilar)&&count($productSimilar)>0)?$finalData['similar_products']=["title"=>"Similar Products","sub_title"=>"Checkout other essential products for your workout","items"=>$productSimilar]:"";
         			$this->utilities->attachCart($finalData,false);
         			return ["status"=>200,"response"=>$finalData];
         		}
