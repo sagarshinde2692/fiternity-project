@@ -4827,7 +4827,7 @@ class HomeController extends BaseController {
         			
         			$selectedRatecard['cost']=(isset($selectedRatecard['slash_price'])&&$selectedRatecard['slash_price']!=="")?$this->utilities->slashPriceFormat($selectedRatecard)." ".$this->utilities->getRupeeForm($selectedRatecard['price']):$this->utilities->getRupeeForm($selectedRatecard['price']);
                     if(isset($selectedRatecard['slash_price'])&&$selectedRatecard['slash_price']!==""){
-                        $selectedRatecard['slash_price'] = $this->utilities->getRupeeForm($value['slash_price']);
+                        $selectedRatecard['slash_price'] = $this->utilities->getRupeeForm($selectedRatecard['slash_price']);
                     }
         			(!empty($productView['specification'])&&!empty($productView['specification']['secondary']))?
         			$selectedRatecard['details']=$this->utilities->getProductDetailsCustom($productView['specification']['secondary'],'secondary'):"";
