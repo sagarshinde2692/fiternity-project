@@ -3703,7 +3703,7 @@ class TransactionController extends \BaseController {
         $finder_city                       =    (isset($finder['city']['name']) && $finder['city']['name'] != '') ? $finder['city']['name'] : "";
         $finder_city_slug                  =    (isset($finder['city']['slug']) && $finder['city']['slug'] != '') ? $finder['city']['slug'] : "";
         $finder_location                   =    (isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
-        $finder_location_slug                  =    (isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
+        $finder_location_slug                  =    (isset($finder['location']['slug']) && $finder['location']['slug'] != '') ? $finder['location']['slug'] : "";
         $finder_address                    =    (isset($finder['contact']['address']) && $finder['contact']['address'] != '') ? $this->stripTags($finder['contact']['address']) : "";
         $finder_vcc_email                  =    (isset($finder['finder_vcc_email']) && $finder['finder_vcc_email'] != '') ? $finder['finder_vcc_email'] : "";
         $finder_vcc_mobile                 =    (isset($finder['finder_vcc_mobile']) && $finder['finder_vcc_mobile'] != '') ? $finder['finder_vcc_mobile'] : "";
@@ -3723,7 +3723,7 @@ class TransactionController extends \BaseController {
         $finder_flags                       =   isset($finder['flags'])  ? $finder['flags'] : new stdClass();
         $data['finder_city'] =  trim($finder_city);
         $data['finder_location'] =  ucwords(trim($finder_location));
-        $data['finder_location_location'] =  ucwords(trim($finder_location));
+        $data['finder_location_slug'] =  ucwords(trim($finder_location_slug));
         $data['finder_address'] =  trim($finder_address);
         $data['finder_vcc_email'] =  trim($finder_vcc_email);
         $data['finder_vcc_mobile'] =  trim($finder_vcc_mobile);
