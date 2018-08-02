@@ -4285,6 +4285,13 @@ Class Utilities {
 						$temp['size']=$cart_item['ratecard']['size'];
 						$temp['title']=$cart_item['product']['title'];
 						$temp['sub_title']=$cart_item['ratecard']['color'];
+						
+						if(!empty($cart_item['ratecard']['properties']))
+						{
+							$props_arr=$this->mapProperties($cart_item['ratecard']['properties']);
+							(!empty($props_arr))?$temp['properties']=$props_arr:"";
+						}
+						
 						$temp['image']=$img_url;
 						array_push($cart_desc,$temp);
 						$amount=$amount+(intval($cart_item['quantity'])*intval($cart_item['price']));
@@ -4366,6 +4373,11 @@ Class Utilities {
 				$resp['data']['cart_details']=$cart_desc;
 // 				$resp['data']['total_cart_amount']=$amount;
 				$resp['data']['total_amount']=$this->getRupeeForm($amount);
+				$resp['data']['delivery_charges']='+ '.$this->getRupeeForm(intval(Config::get('app.product_delivery_charges'))).' delivery charges';
+				$resp['data']['delivery_charges_at_studio']="Free Delivery";
+				
+				
+				
 				$resp['data']['total_count']=$count;
 				return $resp;
 		} catch (Exception $e)
@@ -4478,7 +4490,7 @@ Class Utilities {
 				return $collection->aggregate([
 						['$match'=>$this->getQueryMultiplier($arr,$product_id)],
 						['$sort'=>['properties.'.$intrinsic_data['name']=>-1]],
-						['$group'=>['_id' =>'$properties.'.$intrinsic_data['name'],'details' => ['$push'=>['_id'=>'$_id','properties'=>'$properties','flags'=>'$flags','price'=>'$price','info'=>'$info']]]],
+						['$group'=>['_id' =>'$properties.'.$intrinsic_data['name'],'details' => ['$push'=>['_id'=>'$_id','properties'=>'$properties','flags'=>'$flags','price'=>'$price','slash_price'=>'$slash_price','info'=>'$info']]]],
 						['$match'=>['details.0' => ['$exists'=>true]]]
 				]);
 			});
@@ -4493,7 +4505,7 @@ Class Utilities {
 								"value"=>(!empty($current['properties'])&&!empty($current['properties'][$intrinsic_data['name']]))?$current['properties'][$intrinsic_data['name']]:"",
 								"enabled"=>(!empty($current['flags'])&&!empty($current['flags']['available'])?true:false),
 								"ratecard_id"=>$current['_id'],"product_id"=>$product_id,"price"=>$current['price'],
-								"cost"=>$this->getRupeeForm($current['price'])
+								"cost"=>(isset($current['slash_price'])&&$current['slash_price']!=="")?'<s>'.$this->getRupeeForm($current['slash_price']).'</s>'." ".$this->getRupeeForm($current['price']):$this->getRupeeForm($current['price'])
 						];
 						
 						if(!empty($current['info'])&&!empty($current['info']['long_description']))$tt['long_description']=$current['info']['long_description'];
@@ -4581,9 +4593,10 @@ Class Utilities {
 		$jwt=Request::header("Authorization");
 		if(isset($jwt))
 		{
-			$cart=$this->productsTabCartHomeCustomer();
+			 $cart=$this->productsTabCartHomeCustomer();
 			if(!empty($cart))
 			{
+				
 				$cart=$cart->toArray();
 				if(!empty($cart['products']))
 					$tmp_data=array_values(array_filter($cart['products'],function ($e) use ($data) {return (!empty($data['ratecard_id'])&&!empty($e['ratecard_id'])&&$data['ratecard_id']== $e['ratecard_id']);}));
@@ -4596,7 +4609,7 @@ Class Utilities {
 							else $data['quantity']=$tmp_data['quantity'];
 						}
 						else {
-							if($onlyQuantity) return 1;
+							if($onlyQuantity) return null;
 							else $data['quantity']=1;
 						}
 					}
@@ -4700,6 +4713,25 @@ Class Utilities {
 			if(!empty($value)&&!empty($value['image'])&&!empty($value['image']['primary']))
 				return $value['image']['primary'];
 		return "";
+	}
+	public function getRateCardBaseID($ratecards=[])
+	{
+		foreach ($ratecards as $value)
+			if(!empty($value)&&!empty($value['_id']))
+				return $value['_id'];
+			return "";
+	}
+	
+	public function mapProperties($properties=null)
+	{
+		$props_arr=[];
+		if(!empty($properties))
+		{
+			foreach ($properties as $k=>$v)
+				(!empty($k)&&!empty($v))?array_push($props_arr,["field"=>$k,"value"=>$v]):"";	
+				return  $props_arr;
+		}
+		else return null;
 	}
 }
 

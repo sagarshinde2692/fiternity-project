@@ -2074,15 +2074,16 @@ class HomeController extends BaseController {
     			
     			$header=["status_text"=>"Order Successfull","status_icon"=>"https://image.flaticon.com/teams/slug/freepik.jpg"];
     			$customer_description='Hi '.$customer['name'].', your order has been successfully placed with Fitternity.'.
-      			//     			'It will be delivered to you within 7-10 working days.'.
+      			'It will be delivered to you within 7-10 working days.'.
     			'You can track your order online with the information provided via SMS and E-mail';
     			
     			
-    			if(!empty($order['customer_address']))$shipping_address=$this->utilities->formatShippingAddress($order['customer_address'],$customer['name']);
-    			else if(!empty($order['finder'])&&!empty($order['finder']['finder_address']))
-    				$shipping_address=$this->utilities->formatShippingAddress($order['finder']['finder_address'],$customer['name'],true);
+    			if(!empty($order['customer_address'])&&empty($order['deliver_to_vendor']))
+    			   $shipping_address=$this->utilities->formatShippingAddress($order['customer_address'],$customer['name']);
+    			else if(!empty($order['finder'])&&!empty($order['finder']['finder_address'])&&!empty($order['deliver_to_vendor']))
+    			   $shipping_address=$this->utilities->formatShippingAddress($order['finder']['finder_address'],$customer['name'],true);
     				
-    				//     			($payment_mode=='cod')?$finalData['customer_description']=$customer_description:"";
+    				// ($payment_mode=='cod')?$finalData['customer_description']=$customer_description:"";
     				$finalData['customer_description']=$customer_description;
     				if(!empty($shipping_address))
     					$finalData['shipping_address']=$shipping_address;
@@ -4772,12 +4773,18 @@ class HomeController extends BaseController {
         			(!empty($token_decoded)&&!empty($token_decoded->customer))?$cart_id=$token_decoded->customer->cart_id:"";
         			if(!empty($cart_id))
         			{
-        				$ratecard=ProductRatecard::where("_id",$ratecard_id)->first(['price','product_id']);
+        				$ratecard=ProductRatecard::active()->where("_id",$ratecard_id)->first(['price','product_id']);
         				if(!empty($ratecard)&&!empty($ratecard->product_id)&&!empty($ratecard->_id)&&isset($ratecard->price))
         				{
         					$ratecard=$ratecard->toArray();
+        					$tmp=['ratecard_id'=>$ratecard_id];
+        					 $alreadyQuantity=$this->utilities->attachProductQuantity($tmp,true);
+        					if(!empty($alreadyQuantity))
+        					 if($quantity>0&&$quantity==$alreadyQuantity)
+        					 return ['status'=>0,"message"=>'Product Already Added'];
         					$cartData=["product_id"=>$ratecard['product_id'],"ratecard_id"=>$ratecard['_id'],"price"=>$ratecard['price'],"quantity"=>$quantity];
         					$removedOldFromCart=Cart::where('_id', intval($cart_id))->pull('products', ['ratecard_id' => intval($ratecard['_id']), 'product_id' => intval($ratecard['product_id'])]);
+        					
         					($quantity>0)?$addedToCart=Cart::where('_id', intval($cart_id))->push('products',$cartData):"";
         					
         					if(!empty($_GET['cart_summary']))
@@ -4811,14 +4818,15 @@ class HomeController extends BaseController {
         {
         	try {
         		$ratecard_id=intval($ratecard_id);$product_id=intval($product_id);
-        		$productView=Product::active()->where("_id",$product_id)->with(array('ratecard'=>function($query){$query->active()->select('_id','title','info','flags','product_id','price','order','status','properties','extra_info','image');}))->with('primarycategory')->first();
+        		$productView=Product::active()->where("_id",$product_id)->with(array('ratecard'=>function($query){$query->active()->select('_id','title','info','flags','product_id','price','slash_price','order','status','properties','extra_info','image');}))->with('primarycategory')->first();
         		if(empty($productView))return ['status'=>0,"message"=>"Not a valid product Id."];else $productView=$productView->toArray();
         		$selectedRatecard=array_values(array_filter($productView['ratecard'],function ($e) use ($ratecard_id) {return $ratecard_id== $e['_id'];}));
         		if(!empty($selectedRatecard))
         		{
         			$selectedRatecard=$selectedRatecard[0];
         			
-        			$selectedRatecard['cost']=$this->utilities->getRupeeForm($selectedRatecard['price']);
+        			$selectedRatecard['cost']=(isset($selectedRatecard['slash_price'])&&$selectedRatecard['slash_price']!=="")?'<s>'.$this->utilities->getRupeeForm($selectedRatecard['slash_price']).'</s>'." ".$this->utilities->getRupeeForm($selectedRatecard['price']):$this->utilities->getRupeeForm($selectedRatecard['price']);
+        			unset($selectedRatecard['slash_price']);
         			(!empty($productView['specification'])&&!empty($productView['specification']['secondary']))?
         			$selectedRatecard['details']=$this->utilities->getProductDetailsCustom($productView['specification']['secondary'],'secondary'):"";
         			
@@ -4836,8 +4844,11 @@ class HomeController extends BaseController {
 //         			(!empty($selectedRatecard['key_details']))?array_unshift($selectedRatecard['key_details'],["name"=>"color","value"=>$selectedRatecard['color']]):"";
         			
         			$props_arr=[];
-        			if(!empty($selectedRatecard['properties']))foreach ($selectedRatecard['properties'] as $k=>$v)(!empty($k)&&!empty($v))?array_push($props_arr,["field"=>$k,"value"=>$v]):"";
-        			(!empty($props_arr))?$selectedRatecard['properties']=$props_arr:"";
+        			if(!empty($selectedRatecard['properties']))
+        			{
+        				$props_arr=$this->utilities->mapProperties($selectedRatecard['properties']);
+        				(!empty($props_arr))?$selectedRatecard['properties']=$props_arr:"";
+        			}
         					
         			if(!empty($productView['selection_view'])&&is_array($productView['selection_view']))
         			{
@@ -4876,14 +4887,18 @@ class HomeController extends BaseController {
         							$url=$value['image']['primary'];
         							else if (!empty($value['product']&&!empty($value['product']['image'])&&!empty($value['product']['image']['primary'])))
         								$url=$value['product']['image']['primary'];
-        						array_push($mainSimilar, [
-        								'cost'=>$this->utilities->getRupeeForm($value['price']),'price'=>$value['price'],
-        								'product_id'=>((!empty($value['product']['_id']))?$value['product']['_id']:""),'product_title'=>((!empty($value['product']['title']))?$value['product']['title']:""),
-        								'product_slug'=>((!empty($value['product']['slug']))?$value['product']['slug']:""),'url'=>$url,'type'=>'product',
-        								'product_category_slug'=>$value['product']['primarycategory']['slug'],
-        								'product_category_id'=>$value['product']['primarycategory']['_id'],
-        								'ratecard_title'=>$value['title'],'ratecard_id'=>$value['_id']
-        						]);
+        								$ttp=[
+        										'price'=>$value['price'],
+        										'product_id'=>((!empty($value['product']['_id']))?$value['product']['_id']:""),'product_title'=>((!empty($value['product']['title']))?$value['product']['title']:""),
+        										'product_slug'=>((!empty($value['product']['slug']))?$value['product']['slug']:""),'url'=>$url,'type'=>'product',
+        										'product_category_slug'=>$value['product']['primarycategory']['slug'],
+        										'product_category_id'=>$value['product']['primarycategory']['_id'],
+        										'ratecard_title'=>$value['title'],'ratecard_id'=>$value['_id']
+        								];
+        								
+        								if(isset($value['slash_price'])&&$value['slash_price']!=="")$ttp['cost']='<s>'.$this->utilities->getRupeeForm($value['slash_price']).'</s>'." ".$this->utilities->getRupeeForm($value['price']);
+        								else $ttp['cost']=$this->utilities->getRupeeForm($value['price']);
+        								array_push($mainSimilar, $ttp);	
         					}		
         				}
         			}
@@ -4897,7 +4912,7 @@ class HomeController extends BaseController {
         		}
         		else return ['status'=>0,"message"=>"Not a valid Ratecard Id."];
         		$this->utilities->attachProductQuantity($finalData['product']);
-        		(!empty($mainSimilar)&&count($mainSimilar)>0)?$finalData['similar_products']=["title"=>"Other Products","sub_title"=>"Get Fitter","items"=>$mainSimilar]:"";
+        		(!empty($mainSimilar)&&count($mainSimilar)>0)?$finalData['similar_products']=["title"=>"Similar Products","sub_title"=>"Checkout other essential products for your workout","items"=>$mainSimilar]:"";
         		$this->utilities->attachCart($finalData,false);
         		return ["status"=>200,"response"=>$finalData];
         	} catch (Exception $e) {
@@ -4934,7 +4949,7 @@ class HomeController extends BaseController {
         		if(!empty($ratecards))
         			$ratecards=ProductRatecard::active()->whereIn("_id",$ratecards)->with(array('product'=>function($query){$query->active()->with('primarycategory')->orderBy('ordering', 'ASC');}))->get();
         		else return ['status'=>0,"message"=>"Not Ratecards found for productcategoryid : ".$productcategory_id];
-        		
+        		$product_cat_title="";
         		$categories=[];
         		if(!empty($ratecards))
         		{
@@ -4947,8 +4962,10 @@ class HomeController extends BaseController {
         						$url=$value['image']['primary'];
         						else if(!empty($value['product']&&!empty($value['product']['image'])&&!empty($value['product']['image']['primary'])))
         							$url=$value['product']['image']['primary'];
+        							if(empty($product_cat_title))
+        								$product_cat_title=(!empty($value['product']['primarycategory']['title'])?$value['product']['primarycategory']['title']:"");
         							array_push($categories, [
-        									'cost'=>$this->utilities->getRupeeForm($value['price']),
+        									'cost'=>(isset($value['slash_price'])&&$value['slash_price']!=="")?'<s>'.$this->utilities->getRupeeForm($value['slash_price']).'</s>'." ".$this->utilities->getRupeeForm($value['price']):$this->utilities->getRupeeForm($value['price']),
         									'price'=>$value['price'],
         									'product_id'=>$value['product']['_id'],
         									'product_title'=>$value['product']['title'],
@@ -4957,14 +4974,15 @@ class HomeController extends BaseController {
         									'type'=>'product',
         									'product_category_slug'=>$value['product']['primarycategory']['slug'],
         									'product_category_id'=>$value['product']['primarycategory']['_id'],
+        									'product_category_title'=>(!empty($value['product']['primarycategory']['title'])?$value['product']['primarycategory']['title']:""),
         									'ratecard_title'=>$value['title'],
         									'ratecard_id'=>$value['_id']
         							]);
         				}
         			
         			}
-        			
-        			
+        			 if(empty($product_cat_title))
+        			  $product_cat_title="Category Based Products";
         			$products=Product::active()->raw(function($collection) use($productcategory_id)
         			{
         				
@@ -4989,26 +5007,31 @@ class HomeController extends BaseController {
         					{
         						$url="";
         						$rc_url=$this->utilities->getRateCardBaseImage($value['ratecard']);
+        						$rc_id=$this->utilities->getRateCardBaseID($value['ratecard']);
+        						
         							if(!empty($rc_url))
         								$url=$rc_url;
 									else if(!empty($value['image'])&&!empty($value['image']['primary']))
         									$url=$value['image']['primary'];
 	        					array_push($productSimilar, [
 	        							'product_id'=>$value['_id'],
+	        							'ratecard_id'=>$rc_id,
 	        							'product_title'=>$value['title'],
 	        							'product_slug'=>$value['slug'],
 	        							'url'=>$url,
-	        							'type'=>'category',
+	        							'type'=>'product',
 	        							'product_category_slug'=>$value['primarycategory']['slug'],
-	        							'product_category_id'=>$value['primarycategory']['_id']
+	        							'product_category_id'=>$value['primarycategory']['_id'],
+	        							'product_category_title'=>(!empty($value['primarycategory']['title'])?$value['primarycategory']['title']:""),
 	        					]);
         					}
         				}
         				
         			}
         			$finalData=[];
-        			(!empty($categories)&&count($categories)>0)?$finalData['categories']=["title"=>(($productcategory_id==10)?"Health Supplements By GNC":"category Based Products"),"sub_title"=>(($productcategory_id==10)?"":"Get Fitter"),"items"=>$categories]:"";
-        			(!empty($productSimilar)&&count($productSimilar)>0)?$finalData['similar_products']=["title"=>"Other Products","sub_title"=>"Get Fitter","items"=>$productSimilar]:"";
+        			if(!empty($categories)&&count($categories)>0)
+        				$finalData['categories']=["title"=>$product_cat_title,/* "sub_title"=>(($productcategory_id==10)?"":"Get Fitter") ,*/"items"=>$categories];
+        				(!empty($productSimilar)&&count($productSimilar)>0)?$finalData['similar_products']=["title"=>"Similar Products","sub_title"=>"Checkout other essential products for your workout","items"=>$productSimilar]:"";
         			$this->utilities->attachCart($finalData,false);
         			return ["status"=>200,"response"=>$finalData];
         		}

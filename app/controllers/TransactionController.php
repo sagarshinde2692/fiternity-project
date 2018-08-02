@@ -1246,7 +1246,8 @@ class TransactionController extends \BaseController {
     					$hash = $this->utilities->getProductHash($data);
     					if(!$hash['status'])
     						Response::json($hash);
-    						else $data['payment']=array_merge($data['payment'],$hash['data']);
+    					else $data['payment']=array_merge($data['payment'],$hash['data']);
+    					
     						
     						
     						$data['link']['payment_link'] = Config::get('app.website')."/paymentlink/".$data['order_id']; //$this->utilities->getShortenUrl(Config::get('app.website')."/paymentlink/".$data['order_id']);
@@ -1274,6 +1275,11 @@ class TransactionController extends \BaseController {
     						unset($data['customer_email']);unset($data['customer_identity']);
     						unset($data['customer_source']);unset($data['payment_mode']);
     						
+    						
+    						//************************************************************** setting default payment mode start 
+    						$data['payment']['payment_mode'] = 'paymentgateway';
+    						
+    						//**************************************************************setting default payment mode end
     						
     						
     						if(isset($data['payment_mode']) && $data['payment_mode'] == 'cod'){
