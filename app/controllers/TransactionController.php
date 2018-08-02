@@ -2363,7 +2363,7 @@ class TransactionController extends \BaseController {
     	}
     	
     	$order_id   =   (int) $data['order_id'];
-    	$order      =   Order::findOrFail($order_id);
+        $order      =   Order::findOrFail($order_id);
         
     	if(!isset($data["order_success_flag"]) && isset($order->status) && $order->status == '1' && isset($order->order_action) && $order->order_action == 'bought'){
     		
@@ -3703,6 +3703,7 @@ class TransactionController extends \BaseController {
         $finder_city                       =    (isset($finder['city']['name']) && $finder['city']['name'] != '') ? $finder['city']['name'] : "";
         $finder_city_slug                  =    (isset($finder['city']['slug']) && $finder['city']['slug'] != '') ? $finder['city']['slug'] : "";
         $finder_location                   =    (isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
+        $finder_location_slug                  =    (isset($finder['location']['name']) && $finder['location']['name'] != '') ? $finder['location']['name'] : "";
         $finder_address                    =    (isset($finder['contact']['address']) && $finder['contact']['address'] != '') ? $this->stripTags($finder['contact']['address']) : "";
         $finder_vcc_email                  =    (isset($finder['finder_vcc_email']) && $finder['finder_vcc_email'] != '') ? $finder['finder_vcc_email'] : "";
         $finder_vcc_mobile                 =    (isset($finder['finder_vcc_mobile']) && $finder['finder_vcc_mobile'] != '') ? $finder['finder_vcc_mobile'] : "";
@@ -3722,6 +3723,7 @@ class TransactionController extends \BaseController {
         $finder_flags                       =   isset($finder['flags'])  ? $finder['flags'] : new stdClass();
         $data['finder_city'] =  trim($finder_city);
         $data['finder_location'] =  ucwords(trim($finder_location));
+        $data['finder_location_location'] =  ucwords(trim($finder_location));
         $data['finder_address'] =  trim($finder_address);
         $data['finder_vcc_email'] =  trim($finder_vcc_email);
         $data['finder_vcc_mobile'] =  trim($finder_vcc_mobile);
@@ -6848,7 +6850,7 @@ class TransactionController extends \BaseController {
             "offset" => 0,
             "limit" => 2,
             "radius" => "3km",
-            "category"=>newcategorymapping($order["finder"]["category_name"]),
+            "category"=>'',
             "lat"=>$order['finder']["finder_lat"],
             "lon"=>$order['finder']["finder_lon"],
             "city"=>strtolower($order["finder"]["city_name"]),
@@ -6857,14 +6859,28 @@ class TransactionController extends \BaseController {
               "name",
               "id",
               'address',
-              'coverimage'
+              'coverimage',
+              'location'
             ],
             "not"=>[
                 "vendor"=>[(int)$order['finder']["finder_id"]]
             ],
         ];
 
-        return $nearby_same_category = geoLocationFinder($nearby_same_category_request);
+        $nearby_same_category = geoLocationFinder($nearby_same_category_request);
+        
+        foreach($nearby_same_category as &$finder){
+            // return $finder;
+            if(strlen($finder['title']) > 16){
+                $finder['title'] = substr($finder['title'], 0, 16).' ...';
+            }
+            $finder['address'] = $this->utilities->formatShippingAddress($finder['address']);
+            if(strlen($finder['address']) > 30){
+                $finder['address'] = substr($finder['address'], 0, 30).' ...';
+            }
+        }
+
+        return $nearby_same_category;
     }
 
     public function sendVendorOTPProducts($order_id){
