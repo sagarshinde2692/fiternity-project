@@ -1220,6 +1220,7 @@ class FindersController extends \BaseController {
 							'background-color'=> "",
 							'text_color'=> ""
 						];
+						$response["code_applicable"] = $coupon["code"];
 					}
 				}
 				unset($response['finder']['info']['stripe']);
