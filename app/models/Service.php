@@ -251,8 +251,8 @@ class Service extends \Basemodel{
 
 						}
 
-						if(!empty($value['available_slots']) && is_numeric($value['available_slots'])){
-                            $ratecardoffer['offer_text']    =  $value['available_slots']." slots left";
+						if($value['type'] == 'membership' && $value['direct_payment_enable'] == '1' && $key == count($ratecardsarr) - 1){
+                            $ratecardoffer['offer_text']    =  ($this->available_slots > 1 ? $this->available_slots." slots" : $this->available_slots)." slot"." left";
 						}
 
 						
