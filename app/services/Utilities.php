@@ -5129,7 +5129,7 @@ Class Utilities {
 			if(!empty($customer))
 			{
 				$customer=$customer->toArray();
-                $data['customer_address'] =(!empty($customer['customer_addresses_product'])?$customer['customer_addresses_product']:[]);
+				$data['customer_address'] =(!empty($customer['customer_addresses_product'])?$customer['customer_addresses_product']:[]);
 			}
 		}
 		
