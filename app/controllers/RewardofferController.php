@@ -321,60 +321,60 @@ class RewardofferController extends BaseController {
 
         $city_id = (int)$finder['city_id'];
 
-        if($amount <= 1025){
-            switch ($finder_id) {
-                case 13765 :
-                    if(time() <= strtotime(date('2018-06-14 23:59:59'))){
-                        $min_date = strtotime(date('2018-06-14 00:00:00'));
-                        $max_date = strtotime(date('2018-06-14 23:59:59'));
-                    }
-                    break;
-                case 13761 : 
-                    if(time() <= strtotime(date('2018-06-15 23:59:59'))){
-                        $min_date = strtotime(date('2018-06-15 00:00:00'));
-                        $max_date = strtotime(date('2018-06-15 23:59:59'));
-                    }
-                    break;
-                case 14079 : 
-                    if(time() <= strtotime(date('2018-06-28 23:59:59'))){
-                        $min_date = strtotime(date('2018-06-28 00:00:00'));
-                        $max_date = strtotime(date('2018-06-28 23:59:59'));
-                    }
-                    break;
-                case 14081 : 
-                    if(time() <= strtotime(date('2018-06-25 23:59:59'))){
-                        $min_date = strtotime(date('2018-06-25 00:00:00'));
-                        $max_date = strtotime(date('2018-06-25 23:59:59'));
-                    }
-                    break;
-                case 14082 : 
-                    if(time() <= strtotime(date('2018-06-04 23:59:59'))){
-                        $min_date = strtotime(date('2018-06-04 00:00:00'));
-                        $max_date = strtotime(date('2018-06-04 23:59:59'));
-                    }
-                    break;
-                case 14088 : 
-                    if(time() <= strtotime(date('2018-06-07 23:59:59'))){
-                        $min_date = strtotime(date('2018-06-07 00:00:00'));
-                        $max_date = strtotime(date('2018-06-07 23:59:59'));
-                    }
-                    break;
-                case 14085 : 
-                    if(time() <= strtotime(date('2018-06-30 23:59:59'))){
-                        $min_date = strtotime(date('2018-06-30 00:00:00'));
-                        $max_date = strtotime(date('2018-06-30 23:59:59'));
-                    }
-                    break;
-                case 14078 : 
-                    if(time() <= strtotime(date('2018-06-30 23:59:59'))){
-                        $min_date = strtotime(date('2018-06-30 00:00:00'));
-                        $max_date = strtotime(date('2018-06-30 23:59:59'));
-                    }
-                    break;
+        // if($amount <= 1025){
+        //     switch ($finder_id) {
+        //         case 13765 :
+        //             if(time() <= strtotime(date('2018-06-14 23:59:59'))){
+        //                 $min_date = strtotime(date('2018-06-14 00:00:00'));
+        //                 $max_date = strtotime(date('2018-06-14 23:59:59'));
+        //             }
+        //             break;
+        //         case 13761 : 
+        //             if(time() <= strtotime(date('2018-06-15 23:59:59'))){
+        //                 $min_date = strtotime(date('2018-06-15 00:00:00'));
+        //                 $max_date = strtotime(date('2018-06-15 23:59:59'));
+        //             }
+        //             break;
+        //         case 14079 : 
+        //             if(time() <= strtotime(date('2018-06-28 23:59:59'))){
+        //                 $min_date = strtotime(date('2018-06-28 00:00:00'));
+        //                 $max_date = strtotime(date('2018-06-28 23:59:59'));
+        //             }
+        //             break;
+        //         case 14081 : 
+        //             if(time() <= strtotime(date('2018-06-25 23:59:59'))){
+        //                 $min_date = strtotime(date('2018-06-25 00:00:00'));
+        //                 $max_date = strtotime(date('2018-06-25 23:59:59'));
+        //             }
+        //             break;
+        //         case 14082 : 
+        //             if(time() <= strtotime(date('2018-06-04 23:59:59'))){
+        //                 $min_date = strtotime(date('2018-06-04 00:00:00'));
+        //                 $max_date = strtotime(date('2018-06-04 23:59:59'));
+        //             }
+        //             break;
+        //         case 14088 : 
+        //             if(time() <= strtotime(date('2018-06-07 23:59:59'))){
+        //                 $min_date = strtotime(date('2018-06-07 00:00:00'));
+        //                 $max_date = strtotime(date('2018-06-07 23:59:59'));
+        //             }
+        //             break;
+        //         case 14085 : 
+        //             if(time() <= strtotime(date('2018-06-30 23:59:59'))){
+        //                 $min_date = strtotime(date('2018-06-30 00:00:00'));
+        //                 $max_date = strtotime(date('2018-06-30 23:59:59'));
+        //             }
+        //             break;
+        //         case 14078 : 
+        //             if(time() <= strtotime(date('2018-06-30 23:59:59'))){
+        //                 $min_date = strtotime(date('2018-06-30 00:00:00'));
+        //                 $max_date = strtotime(date('2018-06-30 23:59:59'));
+        //             }
+        //             break;
                 
-                default: break;
-            }     
-        }
+        //         default: break;
+        //     }     
+        // }
 
         $service_name           =   "";
         $service_duration       =   "";
@@ -1066,7 +1066,7 @@ class RewardofferController extends BaseController {
 
                 $rewards_snapfitness_contents = [
                     'Fitness Merchandise (Stylish & waterproof Gym Bag + Trendy Shaker) worth Rs.1,000',
-                    'Swimming session at 5-star hotels for '.$no_of_sessions.' people worth Rs.3,000'
+                    'Swimming session at 5-star hotels for '.$no_of_sessions.' people worth Rs.3,000',
                     'Personalised Online Diet Consultation for 1 month Rs.1299',
                     'Free Vouchers from Amazon, GNC & Faasos worth Rs.700'
                 ];
@@ -1190,6 +1190,9 @@ class RewardofferController extends BaseController {
 
         if(isset($data['ratecard_id']) && gettype($data['ratecard_id']) == 'integer' && in_array($data['ratecard_id'], [103151,103152,103153,103154,103155,103156,103157,103158])){
             $rewards = [];
+            $cashback = null;
+        }
+        if(isset($finder['brand_id']) && $finder['brand_id'] == 66 && $finder['city_id'] == 3 && $duration_day == 360){
             $cashback = null;
         }
 
