@@ -5344,6 +5344,7 @@ Class Utilities {
     	}
     }
 
+
 	public function getRateCardBaseID($ratecards=[])
 	{
 		foreach ($ratecards as $value)
@@ -5370,6 +5371,89 @@ Class Utilities {
 	}
 	
 	
+
+//     public function getRupeeForm($amount){
+//     	return (isset($amount)?'\u20B9'.' '.$amount:"");
+//     }
+    
+    public function getAttendedResponse($status='attended',$booktrial,$customer_level_data,$pending_payment,$payment_done)
+    {
+    	if($status=='attended')
+    	{
+    		$response = [
+    				'status'=>200,
+    				'header'=>'ENJOY YOUR WORKOUT!',
+    				'image'=>'https://b.fitn.in/paypersession/happy_face_icon-2.png',
+    				// 'footer'=>$customer_level_data['current_level']['cashback'].'% Cashback has been added in your Fitternity Wallet. Use it to book more workouts and keep on earning!',
+    				'streak'=>[
+    						'header'=>'STREAK IT OUT',
+    						'data'=>$this->getStreakImages($customer_level_data['current_level']['level'])
+    				]
+    		];
+    		
+    		if($payment_done){
+    			$response['sub_header_1'] = $customer_level_data['current_level']['cashback']."% Cashback";
+    			$response['sub_header_2'] = " has been added in your Fitternity Wallet. Use it to book more workouts and keep on earning!";
+    		}else $response['payment'] = $pending_payment;
+    		
+    		if($booktrial['type'] == 'booktrials'){
+    			$response['sub_header_1'] = $fitcash." Fitcash";
+    			$response['sub_header_2'] = " has been added in your Fitternity Wallet. Use it to buy membership with lowest price";
+    		}
+    		
+    		$this->deleteSelectCommunication(['transaction'=>$booktrial, 'labels'=>["customer_sms_after2hour","customer_email_after2hour","customer_notification_after2hour"]]);
+    		
+    	}
+    	else 
+    	{
+    		$response = [
+    				'status'=>200,
+    				'header'=>'OOPS!',
+    				'image'=>'https://b.fitn.in/paypersession/sad-face-icon.png',
+    				'sub_header_2'=>'Make sure you attend next time to earn Cashback and continue working out!',
+    				'footer'=>'Unlock level '.$customer_level_data['current_level']['level'].' which gets you '.$customer_level_data['current_level']['cashback'].'% cashback upto '.$customer_level_data['current_level']['number'].' sessions! Higher the Level, Higher the Cashback',
+    				'streak'=>[
+    						'header'=>'STREAK IT OUT',
+    						'data'=>$this->getStreakImages($customer_level_data['current_level']['level'])
+    				]
+    		];
+    		
+    		if(isset($customer_level_data['next_level']['level'])){
+    			$response['streak']['footer'] = 'Unlock level '.$customer_level_data['next_level']['level'].' which gets you '.$customer_level_data['next_level']['cashback'].'% cashback upto '.$customer_level_data['next_level']['number'].' sessions! Higher the Level, Higher the Cashback';
+    		}
+    		if($payment_done){
+    			$response['sub_header_2'] = "Make sure you attend next time to earn Cashback and continue working out!\n\nWe will transfer your paid amount in form of Fitcash within 24 hours.";
+    		}
+    		if($booktrial->type=='booktrials'){
+    			
+    			$response['reschedule_button'] = true;
+    			$response['sub_header_2'] = "We'll cancel you from this batch. Do you want to reschedule instead?";
+    			
+    		}
+    		$this->deleteSelectCommunication(['transaction'=>$booktrial, 'labels'=>["customer_sms_after2hour","customer_email_after2hour","customer_notification_after2hour"]]);
+    		
+    	}
+    	
+    	if($booktrial->type == 'booktrials' && isset($response['streak'])){
+    		unset($response['streak']);
+    	}
+    	
+    	$description = "";
+    	
+    	if(isset($response['sub_header_1'])){
+    		$description = "<font color='#f7a81e'>".$response['sub_header_1']."</font>";
+    	}
+    	
+    	if(isset($response['sub_header_2'])){
+    		$description = $description.$response['sub_header_2'];
+    	}
+    	$response['description'] = $description;
+    	$response['trial_id'] = (string)$booktrial->_id;
+    	$response['finder_id'] = $booktrial->finder_id;
+    	$response['service_id'] = $booktrial->service_id;
+    	return $response;
+    }
+    
 }
 
 

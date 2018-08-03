@@ -7237,7 +7237,7 @@ class SchedulebooktrialsController extends \BaseController {
 
     }
 
-    public function sessionStatusCapture($status, $booktrial_id){
+    public function sessionStatusCapture($status, $booktrial_id,$qrcode=false){
         
         $booktrial = Booktrial::find(intval($booktrial_id));
 
@@ -7248,12 +7248,14 @@ class SchedulebooktrialsController extends \BaseController {
         $payment_done = !(isset($booktrial->payment_done) && !$booktrial->payment_done);
 
         $pending_payment = [
-            'header'=>"Pending Amount ₹".$booktrial['amount_finder'],
-            'sub_header'=>"Make sure you pay up, to earn Cashback & continue booking more sessions",
-            'order_id'=>$booktrial['order_id'],
-            'trial_id'=>$booktrial['_id']
+        		'header'=>"Pending Amount ".$this->utilities->getRupeeForm($booktrial['amount_finder']),
+	            'sub_header'=>"Make sure you pay up, to earn Cashback & continue booking more sessions",
+	            'trial_id'=>$booktrial['_id']
         ];
 
+        if(!empty($booktrial['order_id']))
+        	$pending_payment['order_id']=$booktrial['order_id'];
+        	 
         $streak = array_column(Config::get('app.streak_data'), 'number');
 
         switch($status){
@@ -7267,7 +7269,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $verify_fitcode_result = json_decode(json_encode($this->verifyFitCode($booktrial_id, $vendor_code)->getData()));
                 
                 if($verify_fitcode_result->status==400){
-                    return Response::json(array('status'=>400, 'message'=>'Invalid Fitcode entered'), 200);
+                	return Response::json(array('status'=>400, 'message'=>$verify_fitcode_result['message']), 200);
                 }
 
                 $customer_level_data = $this->utilities->getWorkoutSessionLevel($booktrial['customer_id']);                

@@ -2002,8 +2002,7 @@ class ServiceController extends \BaseController {
 							if($trial['finder'] && $trial['service'] && count($trial['service']['ratecards']) && !in_array($trial['service_id'], $rebook_service_ids)){
 								
 								$trial['title'] = ucwords(preg_replace('/membership/i', 'Workout', $trial['service_name'])).' at '.$trial['finder_name'];
-
-								$trial['amount'] = 'â‚¹'.($trial['service']['ratecards'][0]['special_price'] != 0 ? $trial['service']['ratecards'][0]['special_price'] : $trial['service']['ratecards'][0]['price']);
+								$trial['amount'] = '\u20B9'.($trial['service']['ratecards'][0]['special_price'] != 0 ? $trial['service']['ratecards'][0]['special_price'] : $trial['service']['ratecards'][0]['price']);
 								$trial['service_slug'] = $trial['service']['slug'];
 								$trial['finder_slug'] = $trial['finder']['slug'];
 								
