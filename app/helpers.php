@@ -3757,9 +3757,11 @@ if (!function_exists('encodeOrderToken')) {
 if (!function_exists('decodeOrderToken')) {
 
     function getDynamicCouponForTheFinder($finder){
-        $today = date('d-m-Y', strtotime(Carbon::now()));
+        $today = date('d-m-Y', strtotime(Carbon::now()->addDays(1)));
         $lastSixtyDays = date('d-m-Y', strtotime(Carbon::now()->subDays(60)));
-        $numberOfOrders = Order::where("finder_id",$finder['_id'])
+        
+        // Log::info(new DateTime($lastSixtyDays));
+        return $numberOfOrders = Order::where("status","1")->where("finder_id",$finder['_id'])
                                         ->where('created_at', '>=', new DateTime($lastSixtyDays))
                                         ->where('created_at', '<=', new DateTime($today))
                                         ->whereIn("type", array("memberships", "healthytiffinmembership"))
