@@ -3543,14 +3543,14 @@ class CustomerController extends \BaseController {
 
 			$result['campaigns'] =  [];
 
-			// $result['campaigns'][] = [
-			// 	'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/AppBanner_Big5.png',
-			// 	'link'=>'ftrnty://ftrnty.com/search/all',
-			// 	'title'=>'Group Membership',
-			// 	'height'=>100,
-			// 	'width'=>375,
-			// 	'ratio'=>(float) number_format(100/375,2)
-			// ];
+			$result['campaigns'][] = [
+				'image'=>'http://b.fitn.in/global/Homepage-branding-2018/app-banner/monsoon-app.png',
+				'link'=>'ftrnty://ftrnty.com/search/all',
+				'title'=>'Group Membership',
+				'height'=>100,
+				'width'=>375,
+				'ratio'=>(float) number_format(100/375,2)
+			];
 
 			if($city != "ahmedabad"){
 
@@ -3565,7 +3565,7 @@ class CustomerController extends \BaseController {
 
 				switch($city){
 					case "pune":
-						$result['campaigns'][0]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Pune_APP.png";
+						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Pune_APP.png";
 						if(intval(date('d', time())) % 2 == 0){
 							$result['campaigns'][] = [
 								'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/Multifit_App.png',
@@ -3587,19 +3587,19 @@ class CustomerController extends \BaseController {
 						}
 					break;
 					case "bangalore":
-						$result['campaigns'][0]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Bangalore_APP.png";
+						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Bangalore_APP.png";
 						break;
 					case "delhi":
-						$result['campaigns'][0]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Delhi_APP.png";
+						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Delhi_APP.png";
 						break;	
 					case "noida":
-						$result['campaigns'][0]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Noida_APP.png";
+						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Noida_APP.png";
 						break;
 					case "hyderabad":
-						$result['campaigns'][0]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Hyderabad_APP.png";
+						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Hyderabad_APP.png";
 						break;					
 					case "gurgaon":
-						$result['campaigns'][0]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Gurugram_APP.png";
+						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Gurugram_APP.png";
 						break;										
 				}
 			}
@@ -7308,6 +7308,8 @@ class CustomerController extends \BaseController {
 				->whereIn('type',['booktrials','3daystrial', 'workout-session'])
 				->where('finder_id',intval($data['vendor_id']))
 				->where('post_trial_status_updated_by_fitcode', 'exists', false)
+				->where('post_trial_status_updated_by_qrcode', 'exists', false)
+				->where('post_trial_status_updated_by_lostfitcode', 'exists', false)
 				->where('schedule_date_time', '<=',$cur)
 				->where('schedule_date_time', '>=',$twoDays)
 				->orderBy('schedule_date_time','desc')
@@ -7405,20 +7407,20 @@ class CustomerController extends \BaseController {
 											"customer_id"=>$booktrial['customer_id'],"trial_id"=>$booktrial['_id'],"amount"=> $fitcash,"amount_fitcash" => 0,"amount_fitcash_plus" => $fitcash,
 											"type"=>'CREDIT','entry'=>'credit','validity'=>time()+(86400*21),
 											'description'=>"Added FitCash+ on Trial Attendance By QrCode Scan, Applicable for buying a membership at ".ucwords($booktrial['finder_name'])." Expires On : ".date('d-m-Y',time()+(86400*21)),
-											"valid_finder_id"=>intval($booktrial['finder_id']),"finder_id"=>intval($booktrial['finder_id']),
-									);
+											"valid_finder_id"=>intval($booktrial['finder_id']),"finder_id"=>intval($booktrial['finder_id']),"qrcodescan"=>true);
 									$add_chck=$this->utilities->walletTransaction($req);
+									
 									if(!empty($add_chck)&&$add_chck['status']==200) 
 									{
 										$total_fitcash=$total_fitcash+$fitcash;
-										$resp=$this->utilities->getAttendedResponse('attended',$booktrial,$customer_level_data,$pending_payment,$payment_done);		
-										array_push($attended, $resp);
+										$resp1=$this->utilities->getAttendedResponse('attended',$booktrial,$customer_level_data,$pending_payment,$payment_done,$fitcash,$add_chck);		
+										array_push($attended, $resp1);
 									}
 									else array_push($un_updated,$value['_id']);
 								}
 								else  {
-									$resp=$this->utilities->getAttendedResponse('didnotattended',$booktrial,$customer_level_data,$pending_payment,$payment_done);
-									array_push($not_attended,$resp);
+									$resp1=$this->utilities->getAttendedResponse('didnotattended',$booktrial,$customer_level_data,$pending_payment,$payment_done);
+									array_push($not_attended,$resp1);
 								}	
 							}
 							else array_push($already_attended,$value['_id']);	
@@ -7437,7 +7439,7 @@ class CustomerController extends \BaseController {
 								$req = array(
 										"customer_id"=>$booktrial['customer_id'],"trial_id"=>$booktrial['_id'],
 										"amount"=> $fitcash,"amount_fitcash" => 0,"amount_fitcash_plus" => $fitcash,"type"=>'CREDIT',
-										'entry'=>'credit','validity'=>time()+(86400*21),'description'=>"Added FitCash+ on Workout Session Attendance By QrCode Scan",
+										'entry'=>'credit','validity'=>time()+(86400*21),'description'=>"Added FitCash+ on Workout Session Attendance By QrCode Scan","qrcodescan"=>true
 								);
 								
 								$booktrial->pps_fitcash=$fitcash;$booktrial->pps_cashback=$this->utilities->getWorkoutSessionLevel((int)$booktrial->customer_id)['current_level']['cashback'];
@@ -7445,14 +7447,14 @@ class CustomerController extends \BaseController {
 								if(!empty($add_chck)&&$add_chck['status']==200)
 								{
 									$total_fitcash=$total_fitcash+$fitcash;
-									$resp=$this->utilities->getAttendedResponse('attended',$booktrial,$customer_level_data,$pending_payment,$payment_done);	
-									array_push($attended,$resp);
+									$resp1=$this->utilities->getAttendedResponse('attended',$booktrial,$customer_level_data,$pending_payment,$payment_done,$fitcash,$add_chck);	
+									array_push($attended,$resp1);
 								}
 								else array_push($un_updated,$value['_id']);
 							}
 							else  {
-								$resp=$this->utilities->getAttendedResponse('didnotattended',$booktrial,$customer_level_data,$pending_payment,$payment_done);
-								array_push($not_attended,$resp);
+								$resp1=$this->utilities->getAttendedResponse('didnotattended',$booktrial,$customer_level_data,$pending_payment,$payment_done);
+								array_push($not_attended,$resp1);
 								
 							   }
 							}
@@ -7471,8 +7473,17 @@ class CustomerController extends \BaseController {
 					}
 					else array_push($not_located,$value['_id']);
 			}
-			if(count($attended)>0)return $attended[0];
-			else if(count($not_attended)>0)return $not_attended[0];
+			if(count($attended)>0)
+			{
+				$resp['response']=$attended[0];
+				return $resp;
+			}
+			else if(count($not_attended)>0)
+			{
+				$resp['response']=$not_attended[0];
+				return $resp;
+			}
+			
 			else if(count($not_located)>0)
 			{
 // 				$resp['not_located']=$not_located[0];
