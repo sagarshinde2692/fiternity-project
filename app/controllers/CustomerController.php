@@ -7310,6 +7310,7 @@ class CustomerController extends \BaseController {
 				->where('post_trial_status_updated_by_fitcode', 'exists', false)
 				->where('post_trial_status_updated_by_qrcode', 'exists', false)
 				->where('post_trial_status_updated_by_lostfitcode', 'exists', false)
+				->where('post_trial_status', 'exists', false)
 				->where('schedule_date_time', '<=',$cur)
 				->where('schedule_date_time', '>=',$twoDays)
 				->orderBy('schedule_date_time','desc')
@@ -7419,7 +7420,7 @@ class CustomerController extends \BaseController {
 									else array_push($un_updated,$value['_id']);
 								}
 								else  {
-									$resp1=$this->utilities->getAttendedResponse('didnotattended',$booktrial,$customer_level_data,$pending_payment,$payment_done);
+									$resp1=$this->utilities->getAttendedResponse('didnotattended',$booktrial,$customer_level_data,$pending_payment,$payment_done,null,null);
 									array_push($not_attended,$resp1);
 								}	
 							}
@@ -7453,7 +7454,7 @@ class CustomerController extends \BaseController {
 								else array_push($un_updated,$value['_id']);
 							}
 							else  {
-								$resp1=$this->utilities->getAttendedResponse('didnotattended',$booktrial,$customer_level_data,$pending_payment,$payment_done);
+								$resp1=$this->utilities->getAttendedResponse('didnotattended',$booktrial,$customer_level_data,$pending_payment,$payment_done,$fitcash,null,null);
 								array_push($not_attended,$resp1);
 								
 							   }
