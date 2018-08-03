@@ -1,4 +1,4 @@
-\<?PHP
+<?PHP
 
 /** 
  * ControllerName : CustomerController.
@@ -7426,7 +7426,7 @@ class CustomerController extends \BaseController {
 							}
 							else array_push($already_attended,$value['_id']);	
 						}
-						else if($booktrial->type == "workout-session"&&(!empty($booktrial->post_trial_status)&&$booktrial->post_trial_status!='no show')&&!isset($booktrial->post_trial_status_updated_by_qrcode)&&!isset($booktrial->post_trial_status_updated_by_lostfitcode)&&!isset($booktrial->post_trial_status_updated_by_fitcode) && !(isset($booktrial->payment_done) && !$booktrial->payment_done))
+						else if($booktrial->type == "workout-session"&&!isset($booktrial->post_trial_status_updated_by_qrcode)&&!isset($booktrial->post_trial_status_updated_by_lostfitcode)&&!isset($booktrial->post_trial_status_updated_by_fitcode) && !(isset($booktrial->payment_done) && !$booktrial->payment_done))
 						{
 							
 							if(empty($booktrial->post_trial_status)||$booktrial->post_trial_status=='no show')
