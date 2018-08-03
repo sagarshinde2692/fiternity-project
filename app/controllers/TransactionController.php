@@ -554,7 +554,8 @@ class TransactionController extends \BaseController {
 
         if ($data['type'] == 'workout-session'){
             
-            $data['instant_payment_discount'] = round($data['amount_finder'] / 5) ;
+            // $data['instant_payment_discount'] = round($data['amount_finder'] / 5) ;
+            $data['instant_payment_discount'] = 0 ;
 
         }
 
@@ -4358,7 +4359,7 @@ class TransactionController extends \BaseController {
             
             if(isset($_GET['device_type']) && isset($_GET['app_version']) && in_array($_GET['device_type'], ['android', 'ios']) && $_GET['app_version'] > '4.4.3'){
 
-                if(isset($data['type']) && $data['type'] == 'workout-session' && $payment_mode_type != 'pay_later' && !(isset($data['session_payment']) && $data['session_payment'])){
+                if(isset($data['type']) && $data['type'] == 'workout-session' && $payment_mode_type != 'pay_later' && !(isset($data['session_payment']) && $data['session_payment']) && !empty($data['instant_payment_discount'])){
                     
                     $amount_summary[] = array(
                         'field' => 'Instant Pay discount',
