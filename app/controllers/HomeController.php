@@ -5100,7 +5100,6 @@ class HomeController extends BaseController {
         		$cart=$this->utilities->attachCart($t,true);
         		$dataCart=$this->utilities->getCartFinalSummary($cart['products'], $cart['_id']);
         		
-
         		if(!empty($dataCart)&&!empty($dataCart['status']) && $dataCart['status'] != 5)
         			$finalData=['status'=>200,"response"=>$dataCart['data']];
         		else return $dataCart;
