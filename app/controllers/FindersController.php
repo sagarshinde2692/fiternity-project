@@ -1213,7 +1213,7 @@ class FindersController extends \BaseController {
 						'background'=> (!empty($response['finder']['info']['stripe']['background_color']))?$response['finder']['info']['stripe']['background_color']:""
 				];
 				} else{
-					return $coupon = getDynamicCouponForTheFinder($finder);
+					$coupon = getDynamicCouponForTheFinder($finder);
 					if($coupon["text"] != ""){
 						$response['vendor_stripe_data']	=	[
 							'text'=> $coupon["text"],
