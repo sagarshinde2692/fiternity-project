@@ -7426,7 +7426,7 @@ class CustomerController extends \BaseController {
 							}
 							else array_push($already_attended,$value['_id']);	
 						}
-						else if($booktrial->type == "workout-session"&&!isset($booktrial->post_trial_status_updated_by_qrcode)&&!isset($booktrial->post_trial_status_updated_by_lostfitcode)&&!isset($booktrial->post_trial_status_updated_by_fitcode) && !(isset($booktrial->payment_done) && !$booktrial->payment_done))
+						else if($booktrial->type == "workout-session"&&!isset($booktrial->post_trial_status_updated_by_qrcode)&&!isset($booktrial->post_trial_status_updated_by_lostfitcode)&&!isset($booktrial->post_trial_status_updated_by_fitcode))
 						{
 							
 							if(empty($booktrial->post_trial_status)||$booktrial->post_trial_status=='no show')
@@ -7435,7 +7435,9 @@ class CustomerController extends \BaseController {
 								$booktrial_update = Booktrial::where('_id', intval($value['_id']))->update(['post_trial_status_updated_by_qrcode'=>$post_trial_status_updated_by_qrcode]);
 							else $booktrial_update = Booktrial::where('_id', intval($value['_id']))->update(['post_trial_status'=>'no show']);
 							
-							if($booktrial_update&&!empty($value['mark'])){
+							
+							if($booktrial_update&&!empty($value['mark'])&& !empty($booktrial->payment_done)){
+								
 								$fitcash = round($this->utilities->getWorkoutSessionFitcash($booktrial->toArray()) * $booktrial->amount_finder / 100);
 								$req = array(
 										"customer_id"=>$booktrial['customer_id'],"trial_id"=>$booktrial['_id'],
@@ -7443,7 +7445,8 @@ class CustomerController extends \BaseController {
 										'entry'=>'credit','validity'=>time()+(86400*21),'description'=>"Added FitCash+ on Workout Session Attendance By QrCode Scan","qrcodescan"=>true
 								);
 								
-								$booktrial->pps_fitcash=$fitcash;$booktrial->pps_cashback=$this->utilities->getWorkoutSessionLevel((int)$booktrial->customer_id)['current_level']['cashback'];
+								$booktrial->pps_fitcash=$fitcash;
+								$booktrial->pps_cashback=$this->utilities->getWorkoutSessionLevel((int)$booktrial->customer_id)['current_level']['cashback'];
 								$add_chck=$this->utilities->walletTransaction($req);
 								if(!empty($add_chck)&&$add_chck['status']==200)
 								{
@@ -7453,7 +7456,12 @@ class CustomerController extends \BaseController {
 								}
 								else array_push($un_updated,$value['_id']);
 							}
+							if($booktrial_update&&!empty($value['mark'])){
+								$resp1=$this->utilities->getAttendedResponse('attended',$booktrial,$customer_level_data,$pending_payment,$payment_done,null,null);
+								array_push($attended,$resp1);
+							}
 							else  {
+								
 								$resp1=$this->utilities->getAttendedResponse('didnotattended',$booktrial,$customer_level_data,$pending_payment,$payment_done,null,null);
 								array_push($not_attended,$resp1);
 								
