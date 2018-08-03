@@ -7419,7 +7419,7 @@ class CustomerController extends \BaseController {
 									else array_push($un_updated,$value['_id']);
 								}
 								else  {
-									$resp1=$this->utilities->getAttendedResponse('didnotattended',$booktrial,$customer_level_data,$pending_payment,$payment_done);
+									$resp1=$this->utilities->getAttendedResponse('didnotattended',$booktrial,$customer_level_data,$pending_payment,$payment_done,$fitcash,$add_chck);
 									array_push($not_attended,$resp1);
 								}	
 							}
@@ -7453,7 +7453,7 @@ class CustomerController extends \BaseController {
 								else array_push($un_updated,$value['_id']);
 							}
 							else  {
-								$resp1=$this->utilities->getAttendedResponse('didnotattended',$booktrial,$customer_level_data,$pending_payment,$payment_done);
+								$resp1=$this->utilities->getAttendedResponse('didnotattended',$booktrial,$customer_level_data,$pending_payment,$payment_done,$fitcash,$add_chck);
 								array_push($not_attended,$resp1);
 								
 							   }
