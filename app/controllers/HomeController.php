@@ -4787,11 +4787,11 @@ class HomeController extends BaseController {
         					
         					($quantity>0)?$addedToCart=Cart::where('_id', intval($cart_id))->push('products',$cartData):"";
         					
-        					if(!empty($_GET['cart_summary']))
+        					if(!empty($_GET['cart_summary']) && filter_var($_GET['cart_summary'], FILTER_VALIDATE_BOOLEAN))
         					{	
         						$cart=$this->utilities->attachCart($response["response"],true);
         						$dataCart=$this->utilities->getCartFinalSummary($cart['products'], $cart['_id']);
-        						if(!empty($dataCart)&&!empty($dataCart['status']))
+        						if(!empty($dataCart)&&!empty($dataCart['status']) && $dataCart['status'] != 5)
         							$response["response"]['cart_summary']=$dataCart['data'];
         					}
         					else $this->utilities->attachCart($response["response"],false);
@@ -5070,7 +5070,7 @@ class HomeController extends BaseController {
         		$cart=$this->utilities->attachCart($t,true);
         		$dataCart=$this->utilities->getCartFinalSummary($cart['products'], $cart['_id']);
         		
-        		if(!empty($dataCart)&&!empty($dataCart['status']))
+        		if(!empty($dataCart)&&!empty($dataCart['status']) && $dataCart['status'] != 5)
         			$finalData=['status'=>200,"response"=>$dataCart['data']];
         			else return $dataCart;
         			$this->utilities->fetchCustomerAddresses($finalData['response']);
@@ -5097,7 +5097,7 @@ class HomeController extends BaseController {
         public function setCustomerAddress()
         {
         	try {
-        		$resp=["status"=>1,"messge"=>"Success"];
+        		$resp=["status"=>200,"messge"=>"Success"];
         		$data  =  Input::json()->all();
         		$rules = ['customer_address'=>'required'];
         		$validator = Validator::make($data,$rules);

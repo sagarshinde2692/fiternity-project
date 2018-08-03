@@ -4345,7 +4345,7 @@ Class Utilities {
 	{
 		try {
 			if(empty($cart_data))
-				return ["status"=>0,"message"=>"No Cart Data present Or Cart is Empty."];
+				return ["status"=>5,"message"=>"No Cart Data present Or Cart is Empty."];
 				$resp=["status"=>1,"message"=>"success","data"=>[]];
 				
 				$cart_desc=[];
@@ -4576,10 +4576,14 @@ Class Utilities {
 			if(!empty($cart))
 			{
 				$cart=$cart->toArray();
-				$data['cart']=["count"=>$this->getCartTotalCount($cart)];
+				Log::info(" info attachCart cart ::".print_r($cart,true));
 				if($onlyCart)return $cart;
+				$data['cart']=["count"=>$this->getCartTotalCount($cart)];
 			}
-		}	
+			else return null;
+		}
+		
+
 	}
 	
 	
@@ -4626,7 +4630,7 @@ Class Utilities {
 			if(!empty($customer))
 			{
 				$customer=$customer->toArray();
-				$data['customer_address'] =(!empty($customer['$customer_addresses_product'])?$customer['$customer_addresses_product']:[]);
+				$data['customer_address'] =(!empty($customer['customer_addresses_product'])?$customer['customer_addresses_product']:[]);
 			}
 		}
 		
