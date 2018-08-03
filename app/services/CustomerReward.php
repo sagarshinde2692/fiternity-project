@@ -1603,7 +1603,10 @@ Class CustomerReward {
         }
         
         $coupon = $query->first();
-
+        Finder::$withoutAppends = true;
+            
+        $finder = Finder::find($ratecard->finder_id);
+        $finder_city = $finder->city_id;
         // if(!isset($coupon) && (strtolower($couponCode) == "srfit")){
         //     $vendorMOU = Vendormou::where("vendors",$ratecard["finder_id"])->where('contract_start_date', '<=', new \DateTime())->where('contract_end_date', '>=', new \DateTime())->first();
         //     $coupon = array("code" => strtolower($couponCode),"discount_max" => 1000,"discount_amount" => 0,"discount_min" => 200);
@@ -1622,31 +1625,20 @@ Class CustomerReward {
         //         $coupon["discount_percent"] = 5;
         //     }
         // }
-        // if(!isset($coupon) && (strtolower($couponCode) == "whfit")){
-        //     $coupon = array("code" => strtolower($couponCode),"discount_max" => 600,"discount_amount" => 0,"discount_min" => 100);
-        //     if($ratecard["validity_type"] == "days"){
-        //         if($ratecard["validity"] >= 30 && $ratecard["validity"] < 179){
-        //             $coupon["discount_percent"] = 2.5;
-        //         }else if($ratecard["validity"] >= 179){
-        //             $coupon["discount_percent"] = 5;
-        //             $coupon["discount_max"] = 1200;
-        //         }
-        //     }else if($ratecard["validity_type"] == "months"){
-        //         if($ratecard["validity"] >= 1 && $ratecard["validity"] <= 5){
-        //             $coupon["discount_percent"] = 2.3;
-        //         }else if($ratecard["validity"] >= 6){
-        //             $coupon["discount_max"] = 1200;
-        //             $coupon["discount_percent"] = 5;
-        //         }
-        //     }else if($ratecard["validity_type"] == "year"){
-        //             $coupon["discount_max"] = 1200;
-        //             $coupon["discount_percent"] = 5;
-        //     }
-        //     if(!isset($coupon["discount_percent"])){
-        //         $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "error_message"=>"Coupon cannot be applied for this purchase");
-        //         return $resp;
-        //     }
-        // }
+        if(!isset($coupon)){
+            $couponRecieved = getDynamicCouponForTheFinder($finder);
+             Log::info("------------------------");
+                Log::info($couponCode);
+                Log::info(strtolower($couponRecieved["code"]));
+            Log::info("------------------------");
+            if( $couponRecieved["code"]== strtolower($couponCode)){
+                Log::info("******************");
+                Log::info($couponCode);
+                Log::info($couponRecieved);
+            Log::info("******************");
+                $coupon = $couponRecieved;
+            }
+        }
         if(!isset($coupon) && (strtolower($couponCode) == "mad18") && $ratecard && $ratecard["finder_id"] == 6168){
             Log::info("New user code");
             
@@ -1667,9 +1659,7 @@ Class CustomerReward {
             }
             
             
-            Finder::$withoutAppends = true;
             
-            $finder_city = Finder::find($ratecard->finder_id, ['city_id'])->city_id;
             Log::info($finder_city);
             if($prev_order){
                 Log::info('$prev_order');
