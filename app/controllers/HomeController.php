@@ -4811,12 +4811,11 @@ class HomeController extends BaseController {
         					$removedOldFromCart=Cart::where('_id', intval($cart_id))->pull('products', ['ratecard_id' => intval($ratecard['_id']), 'product_id' => intval($ratecard['product_id'])]);
         					
         					($quantity>0)?$addedToCart=Cart::where('_id', intval($cart_id))->push('products',$cartData):"";
-                            
         					if(!empty($_GET['cart_summary']) && filter_var($_GET['cart_summary'], FILTER_VALIDATE_BOOLEAN))
         					{	
         						$cart=$this->utilities->attachCart($response["response"],true);
         						$dataCart=$this->utilities->getCartFinalSummary($cart['products'], $cart['_id']);
-        						if(!empty($dataCart)&&!empty($dataCart['status'])&&!(isset($dataCart['message']) && $dataCart['message'] == 'No Cart Data present Or Cart is Empty.'))
+        						if(!empty($dataCart)&&!empty($dataCart['status']) && $dataCart['status'] != 5)
         							$response["response"]['cart_summary']=$dataCart['data'];
         					}
         					else $this->utilities->attachCart($response["response"],false);
@@ -5101,7 +5100,7 @@ class HomeController extends BaseController {
         		$cart=$this->utilities->attachCart($t,true);
         		$dataCart=$this->utilities->getCartFinalSummary($cart['products'], $cart['_id']);
         		
-        		if(!empty($dataCart)&& !empty($dataCart['status']) && !(isset($dataCart['message']) && $dataCart['message'] == 'No Cart Data present Or Cart is Empty.'))
+        		if(!empty($dataCart)&&!empty($dataCart['status']) && $dataCart['status'] != 5)
         			$finalData=['status'=>200,"response"=>$dataCart['data']];
         			else return $dataCart;
         			$this->utilities->fetchCustomerAddresses($finalData['response']);
