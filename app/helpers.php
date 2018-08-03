@@ -3754,6 +3754,36 @@ if (!function_exists('encodeOrderToken')) {
     }
 
 }
+if (!function_exists('decodeOrderToken')) {
+
+    function getDynamicCouponForTheFinder($finder){
+        $today = date('d-m-Y', strtotime(Carbon::now()->addDays(1)));
+        $lastSixtyDays = date('d-m-Y', strtotime(Carbon::now()->subDays(60)));
+        
+        // Log::info(new DateTime($lastSixtyDays));
+        $numberOfOrders = Order::where("status","1")->where("finder_id",$finder['_id'])
+                                        ->where('created_at', '>=', new DateTime($lastSixtyDays))
+                                        ->where('created_at', '<=', new DateTime($today))
+                                        ->whereIn("type", array("memberships", "healthytiffinmembership"))
+                                        ->where("routed_order","!=","1")->where("customer_source", "!=","kiosk")->count();
+        $coupon = array("code" => "", "text" => "");
+        if($numberOfOrders < 2){
+            $coupon = Config::get('app.static_coupon')[0];
+        }else if($numberOfOrders < 4){
+            $moreDiscountCities = [5,6,9];
+            if(in_array($finder['city_id'], $moreDiscountCities) ){
+                $coupon = Config::get('app.static_coupon')[1];
+            }else{
+                $coupon = Config::get('app.static_coupon')[2];
+            }
+        }
+        if($finder["category_id"] == 47){
+            $coupon = Config::get('app.static_coupon')[3];
+        }
+        return $coupon;
+    }
+}
+
 
 if (!function_exists('decodeOrderToken')) {
 
