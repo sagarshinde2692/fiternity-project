@@ -1795,7 +1795,9 @@ Class Utilities {
             }*/
 
             if($current_wallet_balance >= $wallet_limit){
-                return ['status' => 400,'message' => 'Wallet is overflowing Rs '.$wallet_limit];
+            	if(!empty($request['qrcodescan']))
+            		return ['status' => 200,'message' => 'Your Fitcash limit of '.$wallet_limit." has been reached.","sub_header"=>""];
+                else return ['status' => 400,'message' => 'Wallet is overflowing Rs '.$wallet_limit];
 
             }
 
@@ -1947,6 +1949,11 @@ Class Utilities {
 
             $walletTransaction->update(['group'=>$walletTransaction->_id]);
 
+            if(!empty($request['qrcodescan']))
+            	if($current_wallet_balance==$wallet_limit)
+            		return ['status' => 200,'message' => 'Rs. '.$request['amount'].' has been added to your wallet and your fitcash limit of '.$wallet_limit.' has been reached.','amount'=>$request['amount'],"sub_header"=>$request['amount']];
+            		else return ['status' => 200,'message' =>'Rs. '.$request['amount'].' has been added to your wallet'];
+            	
             return ['status' => 200,'message' => 'Success Added Wallet'];
 
         }
@@ -5376,7 +5383,7 @@ Class Utilities {
 //     	return (isset($amount)?'\u20B9'.' '.$amount:"");
 //     }
     
-    public function getAttendedResponse($status='attended',$booktrial,$customer_level_data,$pending_payment,$payment_done)
+    public function getAttendedResponse($status='attended',$booktrial,$customer_level_data,$pending_payment,$payment_done,$fitcash,$add_chck)
     {
     	if($status=='attended')
     	{
@@ -5397,10 +5404,15 @@ Class Utilities {
     		}else $response['payment'] = $pending_payment;
     		
     		if($booktrial['type'] == 'booktrials'){
-    			$response['sub_header_1'] = $fitcash." Fitcash";
-    			$response['sub_header_2'] = " has been added in your Fitternity Wallet. Use it to buy membership with lowest price";
+    			if (isset($add_chck['sub_header'])){
+    				$response['sub_header_1'] = $add_chck['sub_header'];
+    				$response['sub_header_2'] = $add_chck['message'];
+    			}
+    			else{
+    				$response['sub_header_1'] = $fitcash." Fitcash";
+    				$response['sub_header_2'] = " has been added in your Fitternity Wallet. Use it to buy membership with lowest price";
+    			}
     		}
-    		
     		$this->deleteSelectCommunication(['transaction'=>$booktrial, 'labels'=>["customer_sms_after2hour","customer_email_after2hour","customer_notification_after2hour"]]);
     		
     	}
