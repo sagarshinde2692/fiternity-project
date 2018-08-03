@@ -7310,6 +7310,7 @@ class CustomerController extends \BaseController {
 				->where('post_trial_status_updated_by_fitcode', 'exists', false)
 				->where('post_trial_status_updated_by_qrcode', 'exists', false)
 				->where('post_trial_status_updated_by_lostfitcode', 'exists', false)
+				->where('post_trial_status', 'exists', false)
 				->where('schedule_date_time', '<=',$cur)
 				->where('schedule_date_time', '>=',$twoDays)
 				->orderBy('schedule_date_time','desc')
