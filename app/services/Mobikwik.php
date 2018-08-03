@@ -263,7 +263,7 @@ Class Mobikwik {
 
         if(stripos($data['orderid'],'fit') == 0){
 
-            $data['redirecturl'] = "http://localhost:3000/verifymobikwik";
+            $data['redirecturl'] = "http://apistage.fitn.in:8888/verifymobikwik";
         }
 
         $checksum = $this->createChecksum($data);
