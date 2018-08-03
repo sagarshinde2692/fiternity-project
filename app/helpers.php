@@ -3895,7 +3895,7 @@ if (!function_exists('decodeOrderToken')) {
                                         ->where('created_at', '<=', new DateTime($today))
                                         ->whereIn("type", array("memberships", "healthytiffinmembership"))
                                         ->where("routed_order","!=","1")->where("customer_source", "!=","kiosk")->count();
-        $coupon = array("coupon" => "", "text" => "");
+        $coupon = array("code" => "", "text" => "");
         if($numberOfOrders < 2){
             $coupon = Config::get('app.static_coupon')[0];
         }else if($numberOfOrders < 4){
