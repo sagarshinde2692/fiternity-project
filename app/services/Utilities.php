@@ -5416,7 +5416,7 @@ Class Utilities {
     		$this->deleteSelectCommunication(['transaction'=>$booktrial, 'labels'=>["customer_sms_after2hour","customer_email_after2hour","customer_notification_after2hour"]]);
     		
     	}
-    	else 
+    	else
     	{
     		$response = [
     				'status'=>200,
