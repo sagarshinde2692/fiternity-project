@@ -212,7 +212,7 @@ if(!function_exists('citywise_category')){
                 ["name" => "Dance","slug" => "dance-classes"],
                 ["name" => "Pilates","slug" => "pilates-classes"],
                 ["name" => "MMA And Kick Boxing","slug" => "mma-and-kick-boxing-classes"],
-                // ["name" => "Spinning And Indoor Cycling","slug" => "spinning-classes"],
+                ["name" => "Spinning And Indoor Cycling","slug" => "spinning-classes"],
                 ["name" => "Healthy Tiffins","slug" => "healthy-tiffins"],
                 // ["name" => "Personal Trainers","slug" => "personal-trainers"],
                 // ["name" => "Sport Nutrition Supplement Stores","slug" => "sport-nutrition-supplement-stores"],
@@ -247,7 +247,7 @@ if(!function_exists('citywise_category')){
                 ["name" => "Aerobics","slug" => "aerobics"],
                 ["name" => "Dance","slug" => "dance-classes"],
                 ["name" => "Pilates","slug" => "pilates-classes"]
-                // ["name" => "Spinning And Indoor Cycling","slug" => "spinning-classes"],
+                ["name" => "Spinning And Indoor Cycling","slug" => "spinning-classes"],
                 // ["name" => "Healthy Tiffins","slug" => "healthy-tiffins"],
                 // ["name" => "Personal Trainers","slug" => "personal-trainers"],
                 // ["name" => "Sport Nutrition Supplement Stores","slug" => "sport-nutrition-supplement-stores"],
