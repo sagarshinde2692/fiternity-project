@@ -1221,6 +1221,15 @@ class FindersController extends \BaseController {
 						'text_color'=> (!empty($response['finder']['info']['stripe']['text_color']))?$response['finder']['info']['stripe']['text_color']:"",
 						'background'=> (!empty($response['finder']['info']['stripe']['background_color']))?$response['finder']['info']['stripe']['background_color']:""
 				];
+				} else{
+					$coupon = getDynamicCouponForTheFinder($finder);
+					if($coupon["text"] != ""){
+						$response['vendor_stripe_data']	=	[
+							'text'=> $coupon["text"],
+							'background-color'=> "",
+							'text_color'=> ""
+						];
+					}
 				}
 				unset($response['finder']['info']['stripe']);
 				if(isset($finder['commercial_type']) && $finder['commercial_type'] == 0){

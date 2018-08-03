@@ -96,7 +96,12 @@ return array(
 	'download_app_link' => 'https://go.onelink.me/I0CO?pid=techfitsms',//https://www.fitternity.com/downloadapp?source=fittech',
 
     'business' => 'http://business.fitternity.com',
-
+	'static_coupon' => array(
+		array("code" => "fivefit", "text" => "Get Flat 5% off | Limited Memberships Available | Hurry! Code: FIVEFIT","discount_max" => 10000,"discount_amount" => 0,"discount_min" => 0, "discount_percent"=> 5, "once_per_user"=> true),
+		array("code" => "lucky500", "text" => "3 Lucky Members Get Flat Rs.500 off | Hurry! Use Code: LUCKY500","discount_max" => 500,"discount_amount" => 500,"discount_min" => 500, "once_per_user"=> true),
+		array("code" => "lucky300", "text" => "3 Lucky Members Get Flat Rs.300 off | Hurry! Use Code: LUCKY300","discount_max" => 300,"discount_amount" => 300,"discount_min" => 300, "once_per_user"=> true),
+		array("code" => "starfit", "text" => "Experience Luxury with A Flat 5% off Membership Purchase | NO T&C | Code: STARFIT","discount_max" => 10000,"discount_amount" => 0,"discount_min" => 0, "discount_percent"=> 5, "once_per_user"=> true),
+	),
     'app' =>array(
 		'discount'		=> 			0,
 		'discount_excluded_vendors' => [9459,1484,1458,576,1647,1486,9883,1451,1452,401,1487,1457,2522,1488,1460,4830,4829,4831,4827,4821,4818],
@@ -115,6 +120,7 @@ return array(
 			"url" => "https://test.payu.in/merchant/postservice.php?form=2"
 		)
 		),
+
 
 	/*
 	|--------------------------------------------------------------------------
