@@ -3075,7 +3075,7 @@ class CustomerController extends \BaseController {
 		$customer = Customer::find((int)$customer_id);
 		$allBookingFriends = array(array("name" => $customer->name, "email" => $customer->email, "phone" => $customer->contact_no, "gender" => $customer->gender, "default"=> true));
 		$customer_friends = isset($customer["friends"]) ? $customer["friends"] : [];
-		$allBookingFriends  = array_merge($allBookingFriends, $customer["friends"]);
+		$allBookingFriends  = array_merge($allBookingFriends, $customer_friends);
 		return $allBookingFriends;
 	}
 	public function getExistingTrialWithFinder(){
@@ -7353,7 +7353,7 @@ class CustomerController extends \BaseController {
 	
 	public function markCustomerAttendance()
 	{
-		$resp=['status'=>200,'response'=>[]];
+		$resp=['status'=>200];
 		try {
 			$jwt_token = Request::header('Authorization');
 			if(empty($jwt_token)) return ['status' => 400,'message' =>"Token absent"];
@@ -7363,45 +7363,71 @@ class CustomerController extends \BaseController {
 			$rules = ['data' => 'required'];
 			$validator = Validator::make($data, $rules);
 			
-			$un_updated=[];$updated=[];
 			if ($validator->fails()) return ['status' => 400,'message' =>$this->errorMessage($validator->errors())];
 			else 
 			{
 				$invalid_data=array_filter($data['data'],function ($e){return (empty($e['_id'])||!isset($e['mark']));});
-				if(count($invalid_data)>0)return ['status' => 400,'message' =>"Invalid Data"];
+				if(count($invalid_data)>0) return ['status' => 400,'message' =>"Invalid Data"];
+				$un_updated=[];$not_located=[];$already_attended=[];$attended=[];$not_attended=[];
+			
 				$total_fitcash=0;
-				
 				foreach ($data['data'] as $value)
 				{	
 					$booktrial = Booktrial::where('customer_id',$customer_id)->where('_id',intval($value['_id']))->first();	
 					$post_trial_status_updated_by_qrcode = time();
 
+					
 					if(!empty($booktrial))
 					{
+						$payment_done = !(isset($booktrial->payment_done) && !$booktrial->payment_done);
+						$pending_payment = [
+								'header'=>"Pending Amount ".$this->utilities->getRupeeForm($booktrial['amount_finder']),
+								'sub_header'=>"Make sure you pay up, to earn Cashback & continue booking more sessions",
+								'trial_id'=>$booktrial['_id']
+						];
+						if(!empty($booktrial['order_id']))$pending_payment['order_id']=$booktrial['order_id'];	
+						$customer_level_data = $this->utilities->getWorkoutSessionLevel($booktrial['customer_id']);
+					
+						
 						if($booktrial->type == "booktrials" && !isset($booktrial->post_trial_status_updated_by_fitcode)&& !isset($booktrial->post_trial_status_updated_by_lostfitcode)&& !isset($booktrial->post_trial_status_updated_by_qrcode))
 						{	
-							if(!empty($value['mark']))								
-								$booktrial_update = Booktrial::where('_id', intval($value['_id']))->update(['post_trial_status_updated_by_qrcode'=>$post_trial_status_updated_by_qrcode]);
-							else $booktrial_update = Booktrial::where('_id', intval($value['_id']))->update(['post_trial_status'=>'no show']);
-							
-							
-							if($booktrial_update&&!empty($value['mark']))
+							if(empty($booktrial->post_trial_status)||$booktrial->post_trial_status!='no show')
 							{
-								$fitcash = $this->utilities->getFitcash($booktrial->toArray());
-								$req = array(
-										"customer_id"=>$booktrial['customer_id'],"trial_id"=>$booktrial['_id'],"amount"=> $fitcash,"amount_fitcash" => 0,"amount_fitcash_plus" => $fitcash,
-										"type"=>'CREDIT','entry'=>'credit','validity'=>time()+(86400*21),
-										'description'=>"Added FitCash+ on Trial Attendance By QrCode Scan, Applicable for buying a membership at ".ucwords($booktrial['finder_name'])." Expires On : ".date('d-m-Y',time()+(86400*21)),
-										"valid_finder_id"=>intval($booktrial['finder_id']),"finder_id"=>intval($booktrial['finder_id']),
-								);
-								$add_chck=$this->utilities->walletTransaction($req);
-								if(!empty($add_chck)&&$add_chck['status']==200) {array_push($updated,$value['_id']);$total_fitcash=$total_fitcash+$fitcash;}
-								else array_push($un_updated,$value['_id']);
+								if(!empty($value['mark']))								
+									$booktrial_update = Booktrial::where('_id', intval($value['_id']))->update(['post_trial_status_updated_by_qrcode'=>$post_trial_status_updated_by_qrcode]);
+								else $booktrial_update = Booktrial::where('_id', intval($value['_id']))->update(['post_trial_status'=>'no show']);
+								
+								
+								if($booktrial_update&&!empty($value['mark']))
+								{
+									$fitcash = $this->utilities->getFitcash($booktrial->toArray());
+									$req = array(
+											"customer_id"=>$booktrial['customer_id'],"trial_id"=>$booktrial['_id'],"amount"=> $fitcash,"amount_fitcash" => 0,"amount_fitcash_plus" => $fitcash,
+											"type"=>'CREDIT','entry'=>'credit','validity'=>time()+(86400*21),
+											'description'=>"Added FitCash+ on Trial Attendance By QrCode Scan, Applicable for buying a membership at ".ucwords($booktrial['finder_name'])." Expires On : ".date('d-m-Y',time()+(86400*21)),
+											"valid_finder_id"=>intval($booktrial['finder_id']),"finder_id"=>intval($booktrial['finder_id']),
+									);
+									$add_chck=$this->utilities->walletTransaction($req);
+									if(!empty($add_chck)&&$add_chck['status']==200) 
+									{
+										$total_fitcash=$total_fitcash+$fitcash;
+										$resp=$this->utilities->getAttendedResponse('attended',$booktrial,$customer_level_data,$pending_payment,$payment_done);		
+										array_push($attended, $resp);
+									}
+									else array_push($un_updated,$value['_id']);
+								}
+								else  {
+									$resp=$this->utilities->getAttendedResponse('didnotattended',$booktrial,$customer_level_data,$pending_payment,$payment_done);
+									array_push($not_attended,$resp);
+								}	
 							}
-							else array_push($un_updated,$value['_id']);
+							else array_push($already_attended,$value['_id']);	
 						}
-						else if($booktrial->type == "workout-session"&&!isset($booktrial->post_trial_status_updated_by_qrcode)&&!isset($booktrial->post_trial_status_updated_by_lostfitcode)&&!isset($booktrial->post_trial_status_updated_by_fitcode) && !(isset($booktrial->payment_done) && !$booktrial->payment_done))
+						else if($booktrial->type == "workout-session"&&(!empty($booktrial->post_trial_status)&&$booktrial->post_trial_status!='no show')&&!isset($booktrial->post_trial_status_updated_by_qrcode)&&!isset($booktrial->post_trial_status_updated_by_lostfitcode)&&!isset($booktrial->post_trial_status_updated_by_fitcode) && !(isset($booktrial->payment_done) && !$booktrial->payment_done))
 						{
+							
+							if(empty($booktrial->post_trial_status)||$booktrial->post_trial_status=='no show')
+							{
 							if(!empty($value['mark']))
 								$booktrial_update = Booktrial::where('_id', intval($value['_id']))->update(['post_trial_status_updated_by_qrcode'=>$post_trial_status_updated_by_qrcode]);
 							else $booktrial_update = Booktrial::where('_id', intval($value['_id']))->update(['post_trial_status'=>'no show']);
@@ -7417,11 +7443,23 @@ class CustomerController extends \BaseController {
 								$booktrial->pps_fitcash=$fitcash;$booktrial->pps_cashback=$this->utilities->getWorkoutSessionLevel((int)$booktrial->customer_id)['current_level']['cashback'];
 								$add_chck=$this->utilities->walletTransaction($req);
 								if(!empty($add_chck)&&$add_chck['status']==200)
-								{array_push($updated,$value['_id']);$total_fitcash=$total_fitcash+$fitcash;}
+								{
+									$total_fitcash=$total_fitcash+$fitcash;
+									$resp=$this->utilities->getAttendedResponse('attended',$booktrial,$customer_level_data,$pending_payment,$payment_done);	
+									array_push($attended,$resp);
+								}
 								else array_push($un_updated,$value['_id']);
 							}
-							else array_push($un_updated,$value['_id']);
+							else  {
+								$resp=$this->utilities->getAttendedResponse('didnotattended',$booktrial,$customer_level_data,$pending_payment,$payment_done);
+								array_push($not_attended,$resp);
+								
+							   }
+							}
+							else array_push($already_attended,$value['_id']);
 						}
+						else array_push($already_attended,$value['_id']);
+						
 						if(!empty($value['mark']))
 						{
 							$booktrial->post_trial_status = 'attended';
@@ -7431,13 +7469,35 @@ class CustomerController extends \BaseController {
 						}
 						$booktrial->update();
 					}
-					else array_push($un_updated,$value['_id']);
+					else array_push($not_located,$value['_id']);
 			}
-			if(!empty($updated))$resp['response']['successfully_updated']=$updated;
-			if(!empty($un_updated))$resp['response']['failed']=$un_updated;
-			if(isset($total_fitcash))$resp['response']['total_fitcash_added']=$total_fitcash;
-			$resp['message']="Thank You, we have accepted your response.";
-			return $resp;
+			if(count($attended)>0)return $attended[0];
+			else if(count($not_attended)>0)return $not_attended[0];
+			else if(count($not_located)>0)
+			{
+// 				$resp['not_located']=$not_located[0];
+				$resp['message']="Didn't locate any bookings.";
+				return $resp;
+			}
+			
+			else if(count($already_attended)>0)
+			{
+// 				$resp['already_marked']=$already_attended[0];
+				$resp['message']="Already accepted your response.";
+				return $resp;
+			}
+			else if(count($un_updated)>0)
+			{
+				return ['status'=>400,"message"=>"Failed to update.","ids"=>$un_updated];
+			}
+			
+			return ['status'=>400,'message'=>"No such bookings found"];
+// 			if(!empty($un_updated))
+// 				$resp['response']['failed']=$un_updated;
+// 			if(isset($total_fitcash))
+// 				$resp['response']['total_fitcash_added']=$total_fitcash;
+// 			$resp['message']="Thank You, we have accepted your response.";
+// 			return $resp;
 		}
 		}
 		catch (Exception $e) {
