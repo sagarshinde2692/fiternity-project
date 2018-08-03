@@ -69,7 +69,7 @@ class BrandsController extends \BaseController {
                 
                 $brand['finder_locations'] = $finder_locations;
                 array_shift($finder_locations);
-                $locations = implode(',', $finder_locations);
+                $locations = implode(', ', array_slice($finder_locations, 0, 5));
                 $brand["meta_data"] = array(
                     "title" =>$brand["name"] . " in ". ucwords($city),
                     "description" => "List of branches in ". ucwords($city)." in areas ".$locations.". See membership offers, reviews, location, fees"
