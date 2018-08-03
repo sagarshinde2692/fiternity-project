@@ -3892,7 +3892,7 @@ if (!function_exists('decodeOrderToken')) {
         $lastSixtyDays = date('d-m-Y', strtotime(Carbon::now()->subDays(60)));
         
         // Log::info(new DateTime($lastSixtyDays));
-        return $numberOfOrders = Order::where("status","1")->where("finder_id",$finder['_id'])
+        $numberOfOrders = Order::where("status","1")->where("finder_id",$finder['_id'])
                                         ->where('created_at', '>=', new DateTime($lastSixtyDays))
                                         ->where('created_at', '<=', new DateTime($today))
                                         ->whereIn("type", array("memberships", "healthytiffinmembership"))
