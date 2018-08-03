@@ -7461,10 +7461,8 @@ class CustomerController extends \BaseController {
 								array_push($attended,$resp1);
 							}
 							else  {
-								
 								$resp1=$this->utilities->getAttendedResponse('didnotattended',$booktrial,$customer_level_data,$pending_payment,$payment_done,null,null);
 								array_push($not_attended,$resp1);
-								
 							   }
 							}
 							else array_push($already_attended,$value['_id']);
