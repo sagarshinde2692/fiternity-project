@@ -7419,7 +7419,7 @@ class CustomerController extends \BaseController {
 									else array_push($un_updated,$value['_id']);
 								}
 								else  {
-									$resp1=$this->utilities->getAttendedResponse('didnotattended',$booktrial,$customer_level_data,$pending_payment,$payment_done,$fitcash,$add_chck);
+									$resp1=$this->utilities->getAttendedResponse('didnotattended',$booktrial,$customer_level_data,$pending_payment,$payment_done,null,null);
 									array_push($not_attended,$resp1);
 								}	
 							}
@@ -7447,7 +7447,7 @@ class CustomerController extends \BaseController {
 								if(!empty($add_chck)&&$add_chck['status']==200)
 								{
 									$total_fitcash=$total_fitcash+$fitcash;
-									$resp1=$this->utilities->getAttendedResponse('attended',$booktrial,$customer_level_data,$pending_payment,$payment_done,$fitcash,$add_chck);	
+									$resp1=$this->utilities->getAttendedResponse('attended',$booktrial,$customer_level_data,$pending_payment,$payment_done,null,null);	
 									array_push($attended,$resp1);
 								}
 								else array_push($un_updated,$value['_id']);
