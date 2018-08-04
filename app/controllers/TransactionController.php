@@ -5991,7 +5991,7 @@ class TransactionController extends \BaseController {
         if(!empty($data['delay'])){
             $order = Order::find(intval($data['order_id']));
             if(!isset($order->ratecard_sidekiq_id)){
-                $queue_id = $this->utilities->hitURLAfterDelay(Config::get('app.url').'/updateratecardslotsbyid/'.$data['order_id'], 10);
+                $queue_id = $this->utilities->hitURLAfterDelay(Config::get('app.url').'/updateratecardslotsbyid/'.$data['order_id'], $data['delay']);
                 $order->ratecard_sidekiq_id = $queue_id;
                 $order->save();
             }
