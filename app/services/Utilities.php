@@ -5289,6 +5289,8 @@ Class Utilities {
                     
                     $days_left = abs(intval(date('d', $ordervariable->end_time)) - intval(date('d', time())));
 
+                    $days_left = $days_left == 0 ? 1 : $days_left;
+
                     $service->total_slots_created = isset($service->total_slots_created) ? $service->total_slots_created : $service->available_slots;
                     
                     $new_slots = round($service->total_slots_created / $days_passed * $days_left);
@@ -5354,7 +5356,8 @@ Class Utilities {
         $offer = new \Offer($offer_data);
         $offer->_id = $offer_id;
         $offer->save();
-        Log::info("offer created", $offer);
+        Log::info("offer created");
+        Log::info($offer);
 
     }
 
