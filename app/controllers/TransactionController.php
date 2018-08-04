@@ -4412,7 +4412,7 @@ class TransactionController extends \BaseController {
             
             $payment_modes[] = array(
                 'title' => 'Pay now',
-                'subtitle' => 'Pay 20% less',
+                'subtitle' => 'Pay online through wallet,credit/debit card',
                 'value' => 'paymentgateway',
             );
 
@@ -4468,7 +4468,7 @@ class TransactionController extends \BaseController {
             
             $payment_modes[] = array(
                 'title' => 'Pay Later',
-                'subtitle' => 'Pay full amount online, post session date',
+                'subtitle' => 'Reserve slot & pay online post your workout',
                 'value' => 'pay_later',
             );
         
