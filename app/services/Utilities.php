@@ -5284,6 +5284,8 @@ Class Utilities {
                     $ordervariable = \Ordervariables::where('name', 'expiring-logic')->orderBy('_id', 'desc')->first();
                     
                     $days_passed = intval(date('d', time())) - intval(date('d', $ordervariable->start_time));
+
+                    $days_passed = $days_passed == 0 ? 1 : $days_passed;
                     
                     $days_left = abs(intval(date('d', $ordervariable->end_time)) - intval(date('d', time())));
 
