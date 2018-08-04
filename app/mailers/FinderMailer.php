@@ -77,7 +77,11 @@ Class FinderMailer extends Mailer {
 							'priyankapatel@fitternity.com',
 							'dharatanna@fitternity.com',
 							'pranjalisalvi@fitternity.com',
-							'dharmindersingh@fitternity.com'
+							'dharmindersingh@fitternity.com',
+							"hardikkhamkar@fitternity.com",
+							"prachigupta@fitternity.com",
+							"mitmehta@fitternity.com",
+							"tanilmerchant@fitternity.com",
 						];
 						break;
 					case 6 : 
@@ -85,6 +89,10 @@ Class FinderMailer extends Mailer {
 							"priyankapatel@fitternity.com",
 							'vikramkhanna@fitternity.com',
 							'bhavinjani@fitternity.com',
+							"hardikkhamkar@fitternity.com",
+							"prachigupta@fitternity.com",
+							"mitmehta@fitternity.com",
+							"tanilmerchant@fitternity.com",
 						];
 						break;
 					case 5 : 
@@ -331,7 +339,11 @@ Class FinderMailer extends Mailer {
 						'priyankapatel@fitternity.com',
 						'dharatanna@fitternity.com',
 						'pranjalisalvi@fitternity.com',
-						'dharmindersingh@fitternity.com'
+						'dharmindersingh@fitternity.com',
+						"hardikkhamkar@fitternity.com",
+						"prachigupta@fitternity.com",
+						"mitmehta@fitternity.com",
+						"tanilmerchant@fitternity.com",
 					];
 					break;
 				case 6 : 
@@ -339,6 +351,10 @@ Class FinderMailer extends Mailer {
 						"priyankapatel@fitternity.com",
 						'vikramkhanna@fitternity.com',
 						'bhavinjani@fitternity.com',
+						"hardikkhamkar@fitternity.com",
+						"prachigupta@fitternity.com",
+						"mitmehta@fitternity.com",
+						"tanilmerchant@fitternity.com",
 					];
 					break;
 				case 5 : 
