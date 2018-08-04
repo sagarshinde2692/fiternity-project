@@ -5253,31 +5253,41 @@ Class Utilities {
                 $order->ratecard_sidekiq_id_deleted = true;
             }
 
-
-            $ratecard_id = $order['ratecard_id'];
-            $ratecard = \Ratecard::find($ratecard_id);
-            Log::info($ratecard);
-            if($ratecard && isset($ratecard->available_slots)){
-
-        
-                $available_slots = $ratecard->available_slots = $ratecard->available_slots - 1;
-                Log::info("reducing slots");
-                Log::info("new slots".$available_slots);
-                if($available_slots <= 0){
+            $service_id = $order['service_id'];
+            $service = Service::find($order['service_id']);
+            
+            if($service){
+                
+                
+                $ratecard = \Ratecard::active()
+                ->where('service_id', $service_id)
+                ->where('type','membership')
+                ->orderBy('order', 'desc')
+                ->first();
+                
+                $ratecard_id = $ratecard->_id;
+                
+                $offer = \Offer::active()->where('ratecard_id', $ratecard_id)->where('added_by_script', '!=', true)
+                ->orderBy('order', 'asc')
+                ->first();
+                
+                
+                if(!empty($offer)){
                     
-                    $offer = \Offer::where('ratecard_id', $ratecard_id)->where('added_by_script', '!=', true)->where('hidden', false)
-                    ->where('start_date', '<=', new \DateTime( date("d-m-Y 00:00:00", time()) ))
-                    ->where('end_date', '>=', new \DateTime( date("d-m-Y 00:00:00", time()) ))
-                    ->orderBy('order', 'asc')
-                    ->first();
+                    $service->available_slots = isset($service->available_slots) ? $service->available_slots : 10;
                     
+                    $available_slots = $service->available_slots = $service->available_slots - 1;
                     
-                    if(!empty($offer)){
+                    if($available_slots <= 0){
+                        
+                        Log::info("reducing slots");
+                        Log::info("new slots".$available_slots);
+                        
                         $price = $offer['price'];
                         
-                        $ratecard->price_increased_times = isset($ratecard->price_increased_times) ? $ratecard->price_increased_times + 1 : 1;
+                        $service->price_increased_times = isset($service->price_increased_times) ? $service->price_increased_times + 1 : 1;
                         
-                        $new_price = round($price * (1 + $ratecard->price_increased_times/100));
+                        $new_price = round($price * (1 + $service->price_increased_times/100));
                         
                         $new_price = $price + ($new_price > 50 ? ($new_price < 75 ? $new_price : 75) : 50);
                         
@@ -5289,28 +5299,33 @@ Class Utilities {
                         Log::info("increasing price");
                         Log::info("old price:". $price);
                         Log::info("new price:".$new_price);
-        
+                        
                         $create_offer  = $this->createOffer($offer_data);
-
+                        
+                        $ordervariable = Ordervariables::where('name', 'expiring-logic')->orderBy('_id', 'desc')->first();
+                        
+                        Log::info($days_passed = intval(date('d', time()))) - intval(date('d', $ordervariable->start_time));
+                        
+                        Log::info($days_left = abs(intval(date('d', $ordervariable->end_time)) - $days_passed));
+                        
+                        Log::info($new_slots = round($ratecard->total_slots_created / $days_passed * $days_left));
+    
+                        Log::info($days_passed);
+                        Log::info($days_left);
+                        Log::info($new_slots);
+                        
+                        $service->available_slots = $new_slots;
+                        
+                        $service->total_slots_created = $service->total_slots_created + $new_slots;
                         
                     }
                     
-                    Log::info($days_passed = date('d', time()));
+                    $service->save();
                     
-                    Log::info($days_left = abs(25 - $days_passed));
-                    
-                    Log::info($new_slots = round($ratecard->total_slots_created / $days_passed * $days_left));
-                    
-                    $ratecard->available_slots = $new_slots;
-                    
-                    $ratecard->total_slots_created = $ratecard->total_slots_created + $new_slots;
-                                            
+                    $this->busrtFinderCache($order['finder_slug']);
                     
                 }
                 
-                $ratecard->save();
-                
-                $this->busrtFinderCache($order['finder_slug']);
             }
         }
         
