@@ -4176,8 +4176,12 @@ Class Utilities {
                     $ordervariable = \Ordervariables::where('name', 'expiring-logic')->orderBy('_id', 'desc')->first();
                     
                     $days_passed = intval(date('d', time())) - intval(date('d', $ordervariable->start_time));
+
+                    $days_passed = $days_passed == 0 ? 1 : $days_passed;
                     
                     $days_left = abs(intval(date('d', $ordervariable->end_time)) - intval(date('d', time())));
+
+                    $days_left = $days_left == 0 ? 1 : $days_left;
 
                     $service->total_slots_created = isset($service->total_slots_created) ? $service->total_slots_created : $service->available_slots;
                     
@@ -4244,7 +4248,8 @@ Class Utilities {
         $offer = new \Offer($offer_data);
         $offer->_id = $offer_id;
         $offer->save();
-        Log::info("offer created", $offer);
+        Log::info("offer created");
+        Log::info($offer);
 
     }
 
