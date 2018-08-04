@@ -4040,7 +4040,7 @@ Class Utilities {
 
                             if($customer['pps_referral_credits'] - $credits_used > 0){
 
-                                return ['status'=>200, 'message'=>'Successfully applied referral discount', 'discount'=> 499, 'type'=>'self', 'customer'=>$customer];
+                                return ['status'=>200, 'message'=>'Successfully applied referral discount', 'discount'=> 299, 'type'=>'self', 'customer'=>$customer];
                             
                             }else{
                                     
@@ -4069,7 +4069,7 @@ Class Utilities {
                 
                 }else{
 
-                    return ['status'=>200, 'message'=>'Pay per session referral is successfully applied', 'discount'=>499, 'type'=>'referral', 'customer'=>$customer];
+                    return ['status'=>200, 'message'=>'Pay per session referral is successfully applied', 'discount'=>299, 'type'=>'referral', 'customer'=>$customer];
 
                 }
 

@@ -7082,15 +7082,15 @@ class CustomerController extends \BaseController {
 			'header'=>'How it works', 
 			'data'=>[
 				['text'=>'You share the code with your buddy. He uses it while booking his session…', 'info_text'=>'KNOW MORE', 'type'=>'type1'],
-				['text'=>'5 friends using your code gets you Rs. 499 off on each session', 'type'=>'type2', 'line1'=>'₹499', 'line2'=>'OFF']
+				['text'=>'5 friends using your code gets you Rs. 299 off on each session', 'type'=>'type2', 'line1'=>'₹299', 'line2'=>'OFF']
 			]
 		];
 
 		$data['body']['info'] = [
 			'header'=>'How it works', 
 			'data'=>[
-				'You share the code with your buddy I He uses it while booking his session & gets Rs. 499 off on his first workout session',
-				'As soon as he books you get can get Rs. 499 off on booking your session with the same code',
+				'You share the code with your buddy I He uses it while booking his session & gets Rs. 299 off on his first workout session',
+				'As soon as he books you get can get Rs. 299 off on booking your session with the same code',
 				'This code is only applicable on the Pay-per-session bookings on the Fitternity app',
 				'The validity of the code is 6 months'
 			]
@@ -7099,15 +7099,15 @@ class CustomerController extends \BaseController {
 		$data['info'] = [
 			'header'=>'How it works', 
 			'data'=>[
-				'You share the code with your buddy I He uses it while booking his session & gets Rs. 499 off on his first workout session',
-				'As soon as he books you get can get Rs. 499 off on booking your session with the same code',
+				'You share the code with your buddy I He uses it while booking his session & gets Rs. 299 off on his first workout session',
+				'As soon as he books you get can get Rs. 299 off on booking your session with the same code',
 				'This code is only applicable on the Pay-per-session bookings on the Fitternity app',
 				'The validity of the code is 6 months',
-				// 'You can send unlimited referral invitations, however the discount of Rs. 499 is applicable for first 5 friends I Next 10 friends using your code get you Rs. 299 I 15 friends using your code get you Rs. 299'
+				// 'You can send unlimited referral invitations, however the discount of Rs. 299 is applicable for first 5 friends I Next 10 friends using your code get you Rs. 299 I 15 friends using your code get you Rs. 299'
 			]
 		];
 
-		$data['share_message'] = "Join me to workout with Fitternity's Pay-per-session. Get your first workout free (upto Rs. 499) using my code $pps_referral_code.17+ fitness forms, 7 cities & 75,000 classes every week. Download the app now - ".Config::get('app.download_app_link');
+		$data['share_message'] = "Join me to workout with Fitternity's Pay-per-session. Get your first workout free (upto Rs. 299) using my code $pps_referral_code.17+ fitness forms, 7 cities & 75,000 classes every week. Download the app now - ".Config::get('app.download_app_link');
 
 		return $data;
 
