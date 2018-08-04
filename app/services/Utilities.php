@@ -4179,7 +4179,7 @@ Class Utilities {
 
                     $days_passed = $days_passed == 0 ? 1 : $days_passed;
                     
-                    $days_left = abs(intval(date('d', $ordervariable->end_time)) - intval(date('d', time())));
+                    $days_left = abs(intval(date('d', $ordervariable->available_slots_end_date)) - intval(date('d', time())));
 
                     $days_left = $days_left == 0 ? 1 : $days_left;
 

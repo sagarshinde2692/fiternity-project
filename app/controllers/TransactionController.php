@@ -764,7 +764,7 @@ class TransactionController extends \BaseController {
                 $order = new Order($data);
                 $order->_id = $order_id;
                 $order->save();
-                $redisid = Queue::connection('sync')->push('TransactionController@updateRatecardSlots', array('order_id'=>$order_id, 'delay'=>date('d-m-Y H:i:s',strtotime('+10 minutes'))),Config::get('app.queue'));
+                $redisid = Queue::connection('sync')->push('TransactionController@updateRatecardSlots', array('order_id'=>$order_id, 'delay'=>\Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addHours(4)),Config::get('app.queue'));
             }
 
         }else{
@@ -772,7 +772,7 @@ class TransactionController extends \BaseController {
             $order = new Order($data);
             $order->_id = $order_id;
             $order->save();
-            $redisid = Queue::connection('sync')->push('TransactionController@updateRatecardSlots', array('order_id'=>$order_id, 'delay'=>date('d-m-Y H:i:s',strtotime('+10 minutes'))),Config::get('app.queue'));
+            $redisid = Queue::connection('sync')->push('TransactionController@updateRatecardSlots', array('order_id'=>$order_id, 'delay'=>\Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addHours(4)),Config::get('app.queue'));
         }
 
         if(isset($data['payment_mode']) && $data['payment_mode'] == 'cod'){
