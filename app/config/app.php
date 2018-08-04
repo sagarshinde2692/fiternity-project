@@ -69,17 +69,17 @@ return array(
 
     'business' => 'http://business.fitternity.com',
 	'static_coupon' => array(
-		array("code" => "fivefit", "text" => "Get Flat 5% off | Limited Memberships Available | Hurry! Code: FIVEFIT","discount_max" => 10000,"discount_amount" => 0,"discount_min" => 0, "discount_percent"=> 5, "once_per_user"=> true),
-		array("code" => "lucky500", "text" => "3 Lucky Members Get Flat Rs.500 off | Hurry! Use Code: LUCKY500","discount_max" => 500,"discount_amount" => 500,"discount_min" => 500, "once_per_user"=> true),
-		array("code" => "lucky300", "text" => "3 Lucky Members Get Flat Rs.300 off | Hurry! Use Code: LUCKY300","discount_max" => 300,"discount_amount" => 300,"discount_min" => 300, "once_per_user"=> true),
-		array("code" => "starfit", "text" => "Experience Luxury with A Flat 5% off Membership Purchase | NO T&C | Code: STARFIT","discount_max" => 10000,"discount_amount" => 0,"discount_min" => 0, "discount_percent"=> 5, "once_per_user"=> true),
+		array("code" => "fivefit", "text" => "Get Flat 5% off | Limited Memberships Available | Hurry! Code: FIVEFIT","discount_max" => 10000,"discount_amount" => 0,"discount_min" => 0, "discount_percent"=> 5, "once_per_user"=> true, "type"=> ["memberships","healthytiffinmembership"]),
+		array("code" => "lucky500", "text" => "3 Lucky Members Get Flat Rs.500 off | Hurry! Use Code: LUCKY500","discount_max" => 500,"discount_amount" => 500,"discount_min" => 500, "once_per_user"=> true, "type"=> ["memberships","healthytiffinmembership"]),
+		array("code" => "lucky300", "text" => "3 Lucky Members Get Flat Rs.300 off | Hurry! Use Code: LUCKY300","discount_max" => 300,"discount_amount" => 300,"discount_min" => 300, "once_per_user"=> true, "type"=> ["memberships","healthytiffinmembership"]),
+		array("code" => "starfit", "text" => "Experience Luxury with A Flat 5% off Membership Purchase | NO T&C | Code: STARFIT","discount_max" => 10000,"discount_amount" => 0,"discount_min" => 0, "discount_percent"=> 5, "once_per_user"=> true, "type"=> ["memberships","healthytiffinmembership"]),
 	),
     'app' =>array(
 		'discount'		=> 			0,
 		'discount_excluded_vendors' => [9459,1484,1458,576,1647,1486,9883,1451,1452,401,1487,1457,2522,1488,1460,4830,4829,4831,4827,4821,4818],
 	),
 	'fitternity_vendors' => [11907,9869,9891,11128,12064],
-	'vendors_without_convenience_fee' => [7116,9149,12008,1860,6593,14085,14081,13761,13765,14079],
+	'vendors_without_convenience_fee' => [7116,9149,12008,1860,6593,14085,14081,13761,13765,14079, 2890,3175,3178,3179,3183,3201,3204,3330,3331,3332,3333,3335,3336,3341,3342,3343,3345,3346,3347,5964,7081,7106,7111,7114,7116,8872],
 	'payu' => array(
 		'prod'=>array(
 			"key" => 'l80gyM',
