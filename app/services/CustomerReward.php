@@ -8,6 +8,7 @@ use App\Services\Utilities;
 use Validator;
 use Response;
 use Log;
+use Cache;
 use App\Mailers\CustomerMailer as CustomerMailer;
 use App\Mailers\FinderMailer as FinderMailer;
 use App\Sms\CustomerSms as CustomerSms;
