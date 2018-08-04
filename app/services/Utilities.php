@@ -5240,7 +5240,7 @@ Class Utilities {
 
         $order = \Order::find(intval($data['order_id']));
         
-        if($order && !empty($order['ratecard_id'])){
+        if($order && !empty($order['service_id'])){
 
             if(!empty($order->ratecard_sidekiq_id_deleted)){
                 return;
@@ -5254,9 +5254,15 @@ Class Utilities {
             }
 
             $service_id = $order['service_id'];
-            $service = Service::find($order['service_id']);
+            $service = \Service::find($order['service_id']);
             
             if($service){
+                
+                $service->available_slots = isset($service->available_slots) ? $service->available_slots : 10;
+                
+                $available_slots = $service->available_slots = $service->available_slots - 1;
+                Log::info("reducing slots");
+                Log::info("new slots".$available_slots);
                 
                 
                 $ratecard = \Ratecard::active()
@@ -5267,34 +5273,54 @@ Class Utilities {
                 
                 $ratecard_id = $ratecard->_id;
                 
-                $offer = \Offer::active()->where('ratecard_id', $ratecard_id)->where('added_by_script', '!=', true)
+                $offer = \Offer::active()
+                ->where('ratecard_id', $ratecard_id)
+                ->where('added_by_script', '!=', true)
                 ->orderBy('order', 'asc')
                 ->first();
                 
+                if($available_slots <= 0){
+
+                    $ordervariable = \Ordervariables::where('name', 'expiring-logic')->orderBy('_id', 'desc')->first();
+                    
+                    $days_passed = intval(date('d', time())) - intval(date('d', $ordervariable->start_time));
+                    
+                    $days_left = abs(intval(date('d', $ordervariable->end_time)) - intval(date('d', time())));
+
+                    $service->total_slots_created = isset($service->total_slots_created) ? $service->total_slots_created : $service->available_slots;
+                    
+                    $new_slots = round($service->total_slots_created / $days_passed * $days_left);
+
+                    Log::info($days_passed);
+                    Log::info($days_left);
+                    Log::info($new_slots);
+                    
+                    $service->available_slots = $new_slots;
+                    
+                    $service->total_slots_created = $service->total_slots_created + $new_slots;
                 
-                if(!empty($offer)){
-                    
-                    $service->available_slots = isset($service->available_slots) ? $service->available_slots : 10;
-                    
-                    $available_slots = $service->available_slots = $service->available_slots - 1;
-                    
-                    if($available_slots <= 0){
+                    if(!empty($offer)){
                         
-                        Log::info("reducing slots");
-                        Log::info("new slots".$available_slots);
                         
                         $price = $offer['price'];
                         
-                        $service->price_increased_times = isset($service->price_increased_times) ? $service->price_increased_times + 1 : 1;
+                        $ratecard->price_increased_times = isset($ratecard->price_increased_times) ? $ratecard->price_increased_times + 1 : 1;
                         
-                        $new_price = round($price * (1 + $service->price_increased_times/100));
+                        $new_price = round($price * (1 + $ratecard->price_increased_times/100));
+
+                        
                         
                         $new_price = $price + ($new_price > 50 ? ($new_price < 75 ? $new_price : 75) : 50);
                         
                         $offer_data = $offer->toArray();
                         
                         $offer_data['price'] = $new_price;
-                        $offer_data['end_date'] = \Carbon\Carbon::createFromFormat('d-m-Y H:i:s', date('d-m-Y 00:00:00', strtotime('+24 days', strtotime('first day of this month'))));
+                        $offer_data['order'] = $offer_data['order'] - $ratecard->price_increased_times ;
+                        // $offer_data['end_date'] = \Carbon\Carbon::createFromFormat('d-m-Y H:i:s', date('d-m-Y 00:00:00', strtotime('+24 days', strtotime('first day of this month'))));
+                        $offer_data['start_date'] = \Carbon\Carbon::createFromFormat('d-m-Y H:i:s', date('d-m-Y 00:00:00', time()));
+                        unset($offer_data['created_at']);
+                        unset($offer_data['updated_at']);
+                        
                         
                         Log::info("increasing price");
                         Log::info("old price:". $price);
@@ -5302,29 +5328,15 @@ Class Utilities {
                         
                         $create_offer  = $this->createOffer($offer_data);
                         
-                        $ordervariable = Ordervariables::where('name', 'expiring-logic')->orderBy('_id', 'desc')->first();
-                        
-                        Log::info($days_passed = intval(date('d', time()))) - intval(date('d', $ordervariable->start_time));
-                        
-                        Log::info($days_left = abs(intval(date('d', $ordervariable->end_time)) - $days_passed));
-                        
-                        Log::info($new_slots = round($ratecard->total_slots_created / $days_passed * $days_left));
-    
-                        Log::info($days_passed);
-                        Log::info($days_left);
-                        Log::info($new_slots);
-                        
-                        $service->available_slots = $new_slots;
-                        
-                        $service->total_slots_created = $service->total_slots_created + $new_slots;
-                        
+                        $ratecard->save();
                     }
                     
-                    $service->save();
                     
-                    $this->busrtFinderCache($order['finder_slug']);
                     
                 }
+                $service->save();
+                
+                $this->busrtFinderCache($order['finder_slug']);
                 
             }
         }
@@ -5340,6 +5352,7 @@ Class Utilities {
         $offer = new \Offer($offer_data);
         $offer->_id = $offer_id;
         $offer->save();
+        Log::info("offer created", $offer);
 
     }
 
