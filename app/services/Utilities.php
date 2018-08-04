@@ -5246,11 +5246,12 @@ Class Utilities {
                 return;
             }
             
-            if(!empty($order->ratecard_sidekiq_id) && empty($order->ratecard_sidekiq_id_deleted)){
+            if(!empty($order->ratecard_sidekiq_id)){
                 
                 $sidekiq = new Sidekiq();
                 $sidekiq->delete($order->ratecard_sidekiq_id);
                 $order->ratecard_sidekiq_id_deleted = true;
+                $order->save();
             }
 
             $service_id = $order['service_id'];
