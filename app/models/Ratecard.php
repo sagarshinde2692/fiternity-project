@@ -50,8 +50,7 @@ class Ratecard extends \Basemodel {
 
 	public function scopeActive ($query){
 
-		return 	$query->where('direct_payment_enable', '1')
-						->where(function($query){$query->orWhere('start_date', 'exists', false)->orWhere('start_date', '<', time());})
+		return 	$query->where(function($query){$query->orWhere('start_date', 'exists', false)->orWhere('start_date', '<', time());})
 						->where(function($query){$query->orWhere('expiry_date', 'exists', false)->orWhere('expiry_date', '>', strtotime('-1 days', time()));});
 	}
 	
