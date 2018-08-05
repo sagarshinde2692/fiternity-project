@@ -46,6 +46,14 @@ class Ratecard extends \Basemodel {
 
 	public function service(){
 		return $this->belongsTo('Service');
-	}	
+	}
+
+	public function scopeActive ($query){
+
+		return 	$query->where(function($query){$query->orWhere('start_date', 'exists', false)->orWhere('start_date', '<', time());})
+						->where(function($query){$query->orWhere('expiry_date', 'exists', false)->orWhere('expiry_date', '>', strtotime('-1 days', time()));});
+	}
+	
+	
 
 }

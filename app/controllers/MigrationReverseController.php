@@ -45,6 +45,7 @@ class MigrationReverseController extends \BaseController {
             case 'deletebatchbyservice' : $return = $this->deleteBatchByServiceId($id);break;
             case 'updateschedulebyserviceidv1' : $return = $this->updatescheduleByServiceIdV1($id);break;
             case 'brand' : $return = $this->brand($id);break;
+            case 'offer' : $return = $this->offer($id);break;
 
 
 
@@ -445,7 +446,11 @@ class MigrationReverseController extends \BaseController {
 
         try{
 
+            // $ratecarding = Ratecard::on($this->fitapoffer->ratecard_i)->find(intval($id));
+
+            // if(isset($ratecard->available_slots))
             $offering = Offering::on($this->fitapi)->find(intval($id));
+
 
 //                                var_dump($offering->vendorcategories);exit;
 
@@ -2026,7 +2031,22 @@ class MigrationReverseController extends \BaseController {
             Log::info($this->ratecard($id));
         }
 		
-	}
+    }
 
+    public function offer($id){
+        
+        $offer = Offer::where('_id', $id)->first();
+        $ratecard = Ratecard::where('_id', $offer->ratecard_id)->first();
+
+        if(isset($ratecard->available_slots) && (!isset($ratecard->available_slots_end_date) || strtotime($offer->start_date) > time() || strtotime($offer->end_date) < $ratecard->available_slots_end_date)){
+            $ratecard->unset(["available_slots","total_slots_created","available_slots_update_at","available_slots_default","available_slots_end_date","expiring_end_date"]);
+            $deactivate_offers = Offer::where('added_by_script', true)->where('ratecard_id', $offer->ratecard_id)->where('hidden', false)->update(['hidden'=>true]);
+        }
+
+
+
+
+
+    }
 
 }

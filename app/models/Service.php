@@ -178,7 +178,7 @@ class Service extends \Basemodel{
 		$second_max_validity_ids = [];
 		$ratecardsarr = null;
 		if(!empty($this->_id) && isset($this->_id)){
-			$ratecardsarr 	= 	Ratecard::where('service_id', intval($this->_id))->orderBy('order', 'asc')->get()->toArray();
+			$ratecardsarr 	= 	Ratecard::active()->where('service_id', intval($this->_id))->orderBy('order', 'asc')->get()->toArray();
 		}
 
 		
@@ -195,13 +195,13 @@ class Service extends \Basemodel{
 			$finder = $this->finder;
 			foreach ($ratecardsarr as $key => $value) {
 
-				if((isset($value['expiry_date']) && $value['expiry_date'] != "" && strtotime("+ 1 days", strtotime($value['expiry_date'])) < time()) || (isset($value['start_date']) && $value['start_date'] != "" && strtotime($value['start_date']) > time())){
+				// if((isset($value['expiry_date']) && $value['expiry_date'] != "" && strtotime("+ 1 days", strtotime($value['expiry_date'])) < time()) || (isset($value['start_date']) && $value['start_date'] != "" && strtotime($value['start_date']) > time())){
+				// 	$index--;
+				// 	Log::info("ratecard expired");
+				// 	Log::info($value['_id']);
 
-					Log::info("ratecard expired");
-					Log::info($value['_id']);
-
-					continue;
-				}
+				// 	continue;
+				// }
 				
             	$ratecardoffers 	= 	[];
 									// Log::info($serviceoffers);
@@ -250,6 +250,15 @@ class Service extends \Basemodel{
                             $ratecardoffer['offer_text']    =  ($difference->d == 1) ? "Expires Today" : ($difference->d > 3 ? "Expires soon" : "Expires in ".$difference->days." days");
 
 						}
+
+						if($value['type'] == 'membership' && $value['direct_payment_enable'] == '1' && $key == count($ratecardsarr) - 1){
+
+							Log::info($value['_id']);
+							Log::info("slots left");
+                            $ratecardoffer['offer_text']    =  ($this->available_slots > 1 ? $this->available_slots." slots" : $this->available_slots)." slot"." left";
+						}
+
+
                         array_push($ratecardoffers,$ratecardoffer);
                     }
 					if(isset($value['flags'])){
@@ -287,8 +296,8 @@ class Service extends \Basemodel{
 
                 $value['offers']  = $ratecardoffers;
 
-                // if(count($ratecardoffers) > 0 && isset($ratecardoffers[0]['price'])  && isFinderIntegrated($finder) && isServiceIntegrated($this)){
-                if(count($ratecardoffers) > 0 && isset($ratecardoffers[0]['price'])  ){
+                // if(count($ratecardoffers) > 0 && isset($ratecardoffers[0]['price'])  ){
+                if(count($ratecardoffers) > 0 && isset($ratecardoffers[0]['price'])  && isFinderIntegrated($finder) && isServiceIntegrated($this)){
                 	
                     $value['special_price'] = $ratecardoffers[0]['price'];
 

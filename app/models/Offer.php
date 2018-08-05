@@ -37,5 +37,10 @@ class Offer extends \Basemodel {
         return $this->belongsTo('Service', 'vendorservice_id');
     }
 
+    public function scopeActive ($query){
+
+		return 	$query->where('hidden', false)->where('start_date', '<=', new \DateTime( date("d-m-Y 00:00:00", time()) ))->where('end_date', '>=', new \DateTime( date("d-m-Y 00:00:00", time()) ));
+	}
+
 
 }
