@@ -2687,7 +2687,7 @@ Class Utilities {
 					if(!in_array($emi['bankName'], $bankList)){
 						array_push($bankList, $emi['bankName']);
 					}
-					Log::info("inside1");
+					// Log::info("inside1");
 					$emiData = array();
 						$emiData['total_amount'] =  "";
 						$emiData['emi'] ="";
@@ -2701,7 +2701,7 @@ Class Utilities {
 			
 			}elseif(isset($data['bankName'])&&isset($data['amount'])){
 					if($emi['bankName'] == $data['bankName'] && $data['amount']>=$emi['minval']){
-						Log::info("inside2");
+						// Log::info("inside2");
 						$emiData = array();
 						if(!in_array($emi['bankName'], $bankList)){
 							array_push($bankList, $emi['bankName']);
@@ -2727,7 +2727,7 @@ Class Utilities {
 					if(!in_array($emi['bankName'], $bankList)){
 						array_push($bankList, $emi['bankName']);
 					}
-					Log::info("inside3");
+					// Log::info("inside3");
 					$emiData = array();
 					$emiData['total_amount'] =  (string)round($data['amount']*(100+$emi['rate'])/100, 2);
 					$emiData['emi'] =(string)round($emiData['total_amount']/$emi['bankTitle'], 2);
@@ -2752,7 +2752,7 @@ Class Utilities {
 				if(!in_array($emi['bankName'], $bankList)){
 						array_push($bankList, $emi['bankName']);
 					}
-				Log::info("inside4");
+				// Log::info("inside4");
 				$emiData = array();
 						$emiData['total_amount'] =  "";
 						$emiData['emi'] ="";
@@ -4219,6 +4219,150 @@ Class Utilities {
             return false;
         }
     }
+
+	
+    
+    public function updateRatecardSlots($data){
+        Log::info("inside updateRatecardSlots");
+
+        // if(intval(date('d', time())) >= 25){
+        //     return;
+        // }
+
+        $order = \Order::find(intval($data['order_id']));
+        
+        if($order && !empty($order['service_id'])){
+
+            if(!empty($order->ratecard_sidekiq_id_deleted)){
+                return;
+            }
+            
+            if(!empty($order->ratecard_sidekiq_id)){
+                
+                $sidekiq = new Sidekiq();
+                $sidekiq->delete($order->ratecard_sidekiq_id);
+                $order->ratecard_sidekiq_id_deleted = true;
+                $order->save();
+            }
+
+            $service_id = $order['service_id'];
+            $service = \Service::find($order['service_id']);
+            
+            if($service){
+                
+                $service->available_slots = isset($service->available_slots) ? $service->available_slots : 10;
+                
+                $available_slots = $service->available_slots = $service->available_slots - 1;
+                Log::info("reducing slots");
+                Log::info("new slots".$available_slots);
+                
+                
+                $ratecard = \Ratecard::active()
+                ->where('service_id', $service_id)
+                ->where('type','membership')
+                ->orderBy('order', 'desc')
+                ->first();
+                
+                $ratecard_id = $ratecard->_id;
+                
+                $offer = \Offer::active()
+                ->where('ratecard_id', $ratecard_id)
+                ->where('added_by_script', '!=', true)
+                ->orderBy('order', 'asc')
+                ->first();
+                
+                if($available_slots <= 0){
+
+                    $ordervariable = \Ordervariables::where('name', 'expiring-logic')->orderBy('_id', 'desc')->first();
+                    
+                    $days_passed = intval(date('d', time())) - intval(date('d', $ordervariable->start_time));
+
+                    $days_passed = $days_passed == 0 ? 1 : $days_passed;
+                    
+                    $days_left = abs(intval(date('d', $ordervariable->available_slots_end_date)) - intval(date('d', time())));
+
+                    $days_left = $days_left == 0 ? 1 : $days_left;
+
+                    $service->total_slots_created = isset($service->total_slots_created) ? $service->total_slots_created : $service->available_slots;
+                    
+                    $new_slots = round($service->total_slots_created / $days_passed * $days_left / 2);
+
+                    Log::info($days_passed);
+                    Log::info($days_left);
+                    Log::info($new_slots);
+                    
+                    $service->available_slots = $new_slots;
+                    
+                    $service->total_slots_created = $service->total_slots_created + $new_slots;
+                
+                    if(!empty($offer)){
+                        
+                        
+                        $price = $offer['price'];
+                        
+                        $ratecard->price_increased_times = isset($ratecard->price_increased_times) ? $ratecard->price_increased_times + 1 : 1;
+                        
+                        $new_price = round($price * (1 + $ratecard->price_increased_times/100));
+
+                        
+                        
+                        $new_price = $price + ($new_price > 50 ? ($new_price < 75 ? $new_price : 75) : 50);
+                        
+                        $offer_data = $offer->toArray();
+                        
+                        $offer_data['price'] = $new_price;
+                        $offer_data['order'] = $offer_data['order'] - $ratecard->price_increased_times ;
+                        // $offer_data['end_date'] = \Carbon\Carbon::createFromFormat('d-m-Y H:i:s', date('d-m-Y 00:00:00', strtotime('+24 days', strtotime('first day of this month'))));
+                        $offer_data['start_date'] = \Carbon\Carbon::createFromFormat('d-m-Y H:i:s', date('d-m-Y 00:00:00', time()));
+                        unset($offer_data['created_at']);
+                        unset($offer_data['updated_at']);
+                        
+                        
+                        Log::info("increasing price");
+                        Log::info("old price:". $price);
+                        Log::info("new price:".$new_price);
+                        
+                        $create_offer  = $this->createOffer($offer_data);
+                        
+                        $ratecard->save();
+                    }
+                    
+                    
+                    
+                }
+                $service->save();
+                
+                $this->busrtFinderCache($order['finder_slug']);
+                
+            }
+        }
+        
+    
+    }
+
+    public function createOffer($offer_data){
+        
+        $offer_id = \Offer::max('_id') + 1;
+        $offer_data['added_by_script'] = true;
+        $offer_data['created_from_offer'] = $offer_data['_id'];
+        $offer = new \Offer($offer_data);
+        $offer->_id = $offer_id;
+        $offer->save();
+        Log::info("offer created");
+        Log::info($offer);
+
+    }
+
+    public function busrtFinderCache($slug){
+
+        \Cache::tags('finder_detail')->forget($slug);
+        \Cache::tags('finder_detail_android')->forget($slug);
+        \Cache::tags('finder_detail_ios')->forget($slug);
+        \Cache::tags('finder_detail_ios_4_4_3')->forget($slug);
+        \Cache::tags('finder_detail_android_4_4_3')->forget($slug);
+        
+    }
+
 
 }
 

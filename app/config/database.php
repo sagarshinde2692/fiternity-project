@@ -12,9 +12,9 @@
 // $options = ['db' => 'admin','authMechanism' => 'MONGODB-CR']; // sets the authentication database required by mongo 3]
 
 //production
-$host = "54.179.134.14";
-$username = "";
-$password = "";
+$host = "54.179.134.14"; 
+$username = ""; 
+$password = ""; 
 
 return array(
 
@@ -29,7 +29,7 @@ return array(
 	|
 	*/
 
-	'fetch' => PDO::FETCH_CLASS,
+	'fetch' => PDO::FETCH_CLASS, 
 
 	/*
 	|--------------------------------------------------------------------------
@@ -43,7 +43,7 @@ return array(
 	*/
 
 
-	'default' => 'mongodb',
+	'default' => 'mongodb', 
 
 	/*
 	|--------------------------------------------------------------------------
@@ -64,30 +64,30 @@ return array(
 	'connections' => array(
 
 		'mongodb' => array(
-			'driver'   => 'mongodb',
-            'host'     => $host,
-			'port'     => 27017,
-			'database' => 'fitadmin',
-		    'username' => $username,
-		    'password' => $password,
+			'driver' => 'mongodb', 
+			'host' => $host, 
+			'port' => 27017, 
+			'database' => 'fitadmin', 
+		    'username' => $username, 
+		    'password' => $password, 
 			// 'options' => $options
 			// 'options' => [
 			// 		'db' => 'admin' // sets the authentication database required by mongo 3
 			// 	]
-		),
+		), 
 
 		'mongodb2' => array(
-			'driver'   => 'mongodb',
-            'host'     => $host,
-			'port'     => 27017,
-			'database' => 'fitapi',
-            'username' => $username,
-            'password' => $password,
+			'driver' => 'mongodb', 
+			'host' => $host, 
+			'port' => 27017, 
+			'database' => 'fitapi', 
+			'username' => $username, 
+			'password' => $password, 
 			// 'options' => $options
 			// 'options' => [
 			// 	'db' => 'admin' // sets the authentication database required by mongo 3
 			// ]
-		),
+		), 
 
 
 		// 'mongodb3' => array(
@@ -102,42 +102,42 @@ return array(
 
 		/*'sqlite' => array(
 			'driver'   => 'sqlite',
-			'database' => __DIR__.'/../database/production.sqlite',
-			'prefix'   => '',
-			),
+			'database' => __DIR__.'/../database/production.sqlite', 
+			'prefix' => '', 
+			), 
 
 		'mysql' => array(
-			'driver'    => 'mysql',
-			'host'      => 'localhost',
-			'database'  => 'database',
-			'username'  => 'root',
-			'password'  => '',
-			'charset'   => 'utf8',
-			'collation' => 'utf8_unicode_ci',
-			'prefix'    => '',
-			),
+			'driver' => 'mysql', 
+			'host' => 'localhost', 
+			'database' => 'database', 
+			'username' => 'root', 
+			'password' => '', 
+			'charset' => 'utf8', 
+			'collation' => 'utf8_unicode_ci', 
+			'prefix' => '', 
+			), 
 
 		'pgsql' => array(
-			'driver'   => 'pgsql',
-			'host'     => 'localhost',
-			'database' => 'database',
-			'username' => 'root',
-			'password' => '',
-			'charset'  => 'utf8',
-			'prefix'   => '',
-			'schema'   => 'public',
-			),
+			'driver' => 'pgsql', 
+			'host' => 'localhost', 
+			'database' => 'database', 
+			'username' => 'root', 
+			'password' => '', 
+			'charset' => 'utf8', 
+			'prefix' => '', 
+			'schema' => 'public', 
+			), 
 
 		'sqlsrv' => array(
-			'driver'   => 'sqlsrv',
-			'host'     => 'localhost',
-			'database' => 'database',
-			'username' => 'root',
-			'password' => '',
-			'prefix'   => '',
-			),*/
+			'driver' => 'sqlsrv', 
+			'host' => 'localhost', 
+			'database' => 'database', 
+			'username' => 'root', 
+			'password' => '', 
+			'prefix' => '', 
+			),  */
 
-			),
+			), 
 
 	/*
 	|--------------------------------------------------------------------------
@@ -150,7 +150,7 @@ return array(
 	|
 	*/
 
-	'migrations' => 'migrations',
+	'migrations' => 'migrations', 
 
 	/*
 	|--------------------------------------------------------------------------
@@ -165,17 +165,17 @@ return array(
 
 	'redis' => array(
 
-		'cluster' => false,
+		'cluster' => false, 
 
 		'default' => array(
-			'host'     => '127.0.0.1',
-			'port'     => 6379,
-			'database' => 0,
-			),
+			'host' => '127.0.0.1', 
+			'port' => 6379, 
+			'database' => 0, 
+			), 
 		'newredis' => array(
-			'host'	   => '127.0.0.1',
-			'port'	   => 6379,
-			'database' => 1,
-			),
-		),
-	);
+			'host' => '127.0.0.1', 
+			'port' => 6379, 
+			'database' => 1, 
+			), 
+		), 
+	); 
