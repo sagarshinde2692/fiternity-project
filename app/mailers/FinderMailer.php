@@ -1144,8 +1144,8 @@ Class FinderMailer extends Mailer {
 		$user_name = 'Fitternity Team';
 
 		$message_data 	= array(
-			'user_email' => array($data['customer_email']),
-			'user_name' => $data['customer_name']
+			'user_email' => $user_email,
+			'user_name' => $user_name
 		);
 
 		return $this->common($label,$data,$message_data);
