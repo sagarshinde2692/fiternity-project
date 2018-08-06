@@ -1846,7 +1846,7 @@ class ServiceController extends \BaseController {
 
 			$service_details['single_slot'] = false;
 			$service_details['session_unavailable'] = true;
-			$service_details['next_session'] = "OOPs sessions are currently unavailable. ";
+			$service_details['next_session'] = "All sessions for today are booked out!";
 			$service_details['slots'] = [];
 			$service_details['total_sessions'] = "No sessions availabe";
 			unset($service_details['pass_title']);

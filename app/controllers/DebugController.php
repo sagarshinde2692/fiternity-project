@@ -7448,8 +7448,7 @@ public function yes($msg){
 
 		return "Done";
 	}
-	
-	
+
 	public function tagReviews(){
 		Review::$withoutAppends = true;
 		$reviews = Review::where('customer_id', 149788)->get(['finder_id', 'customer_id']);

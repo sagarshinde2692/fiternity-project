@@ -819,7 +819,7 @@ class TransactionController extends \BaseController {
                 $order = new Order($data);
                 $order->_id = $order_id;
                 $order->save();
-                $redisid = Queue::connection('redis')->push('TransactionController@updateRatecardSlots', array('order_id'=>$order_id, 'delay'=>date('d-m-Y H:i:s',strtotime('+10 minutes'))),Config::get('app.queue'));
+                $redisid = Queue::connection('redis')->push('TransactionController@updateRatecardSlots', array('order_id'=>$order_id, 'delay'=>\Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addMinutes(10)),Config::get('app.queue'));
             }
 
         }else{
@@ -827,7 +827,7 @@ class TransactionController extends \BaseController {
             $order = new Order($data);
             $order->_id = $order_id;
             $order->save();
-            $redisid = Queue::connection('redis')->push('TransactionController@updateRatecardSlots', array('order_id'=>$order_id, 'delay'=>date('d-m-Y H:i:s',strtotime('+10 minutes'))),Config::get('app.queue'));
+            $redisid = Queue::connection('redis')->push('TransactionController@updateRatecardSlots', array('order_id'=>$order_id, 'delay'=>\Carbon\Carbon::createFromFormat('d-m-Y g:i A', date('d-m-Y g:i A'))->addMinutes(10)),Config::get('app.queue'));
         }
 
         if(isset($data['payment_mode']) && $data['payment_mode'] == 'cod'){
@@ -5342,7 +5342,7 @@ class TransactionController extends \BaseController {
             
             $payment_modes[] = array(
                 'title' => 'Pay now',
-                'subtitle' => 'Pay 20% less',
+                'subtitle' => 'Pay online through wallet,credit/debit card',
                 'value' => 'paymentgateway',
                 'payment_options'=>$payment_options
             );
@@ -5399,7 +5399,7 @@ class TransactionController extends \BaseController {
             
             $payment_modes[] = array(
                 'title' => 'Pay Later',
-                'subtitle' => 'Pay full amount online, post session date',
+                'subtitle' => 'Reserve slot & pay online post your workout',
                 'value' => 'pay_later',
             );
         
@@ -7214,7 +7214,7 @@ class TransactionController extends \BaseController {
         if(!empty($data['delay'])){
             $order = Order::find(intval($data['order_id']));
             if(!isset($order->ratecard_sidekiq_id)){
-                $queue_id = $this->utilities->hitURLAfterDelay(Config::get('app.url').'/updateratecardslotsbyid/'.$data['order_id'], 10);
+                $queue_id = $this->hitURLAfterDelay(Config::get('app.url').'/updateratecardslotsbyid/'.$data['order_id'], $data['delay']);
                 $order->ratecard_sidekiq_id = $queue_id;
                 $order->save();
             }

@@ -3209,11 +3209,11 @@ if (!function_exists('decodeKioskVendorToken')) {
         }
 
 
-        if(!empty($decodedToken->vendor->_id) && in_array($decodedToken->vendor->_id, [7116,7081])){
-            Log::info($decodedToken->vendor->_id);
-            Log::info("exiting tab vendor");
-            exit();
-        }
+        // if(!empty($decodedToken->vendor->_id) && in_array($decodedToken->vendor->_id, [7116,7081])){
+        //     Log::info($decodedToken->vendor->_id);
+        //     Log::info("exiting tab vendor");
+        //     exit();
+        // }
 
         return $decodedToken;
     }
@@ -3888,9 +3888,11 @@ if (!function_exists('encodeOrderToken')) {
 if (!function_exists('decodeOrderToken')) {
 
     function getDynamicCouponForTheFinder($finder){
-        $today = date('d-m-Y', strtotime(Carbon::now()));
+        $today = date('d-m-Y', strtotime(Carbon::now()->addDays(1)));
         $lastSixtyDays = date('d-m-Y', strtotime(Carbon::now()->subDays(60)));
-        $numberOfOrders = Order::where("finder_id",$finder['_id'])
+        
+        // Log::info(new DateTime($lastSixtyDays));
+        $numberOfOrders = Order::where("status","1")->where("finder_id",$finder['_id'])
                                         ->where('created_at', '>=', new DateTime($lastSixtyDays))
                                         ->where('created_at', '<=', new DateTime($today))
                                         ->whereIn("type", array("memberships", "healthytiffinmembership"))
