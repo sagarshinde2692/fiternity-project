@@ -2361,7 +2361,7 @@ Class Utilities {
     public function hitURLAfterDelay($url, $delay = 0, $label = 'label', $priority = 0){
 
         Log::info("Scheduling url:$url");
-        Log::info("delay: $delay");
+        // Log::info("delay: $delay");
 
         if($delay !== 0){
             $delay = $this->getSeconds($delay);
