@@ -4362,7 +4362,68 @@ Class Utilities {
         \Cache::tags('finder_detail_android_4_4_3')->forget($slug);
         
     }
-
-
+    public function removeNonMobileCodes($coups=[])
+    {
+    	return array_filter($coups,function ($e) { return !empty($e)&&!empty($e['app_only']);});
+    }
+    
+    public function removeAlreadyUsedCodes($coups=[],$customer_id,$single=false)
+    {
+    	if(!$single)
+    	{
+	    	\Order::$withoutAppends = true;
+	    	$order_codes=\Order::active()->where("customer_id", $customer_id)->whereIn('coupon_code', $temp)->where('coupon_discount_amount', '>', 0)->get(['coupon_code']);
+	    	
+	    	if(!empty($order_codes))
+	    	{
+	    		$order_codes=$order_codes->toArray();
+	    		$already_applied_codes=array_pluck($order_codes, 'coupon_code');
+	    		return array_filter($coups,function ($e) { return !empty($e)&&!in_array($e['code'],$already_applied_codes);});
+	    	}
+	    	else return $coups;    		
+    	}
+    	else {
+    		\Order::$withoutAppends = true;
+    		$order_codes=\Order::active()->where("customer_id", $customer_id)->where('coupon_code',$coups['code'])->where('coupon_discount_amount', '>', 0)->count();
+    		if($order_count >= 1)
+    			return false;
+    		else return true;
+    	}
+    }
+    public function allowSpecificvendors($coups=[],$finder_id=null,$service_id=null,$single=false)
+    {
+    	if(!$single)
+    	{
+    		return array_filter($coups,function ($e) use($finder_id,$service_id) {
+    			
+    			$output=!empty($e)&&!empty($finder_id)&&!empty($service_id)&&!empty($e['finders'])&&!empty($e['services'])&&in_array($finder_id, $e['finders'])&&in_array($finder_id, $e['services']);
+    			
+    			if($output&&(empty($e['finders_exclude'])||!empty($e['finders_exclude'])&&!in_array($finder_id, $e['finders_exclude'])))
+    				return true;
+    				else return false;
+    		});
+    	}
+    	else {
+    		
+    		$output=!empty($finder_id)&&!empty($service_id)&&!empty($coups['finders'])&&!empty($coups['services'])&&in_array($finder_id, $coups['finders'])&&in_array($service_id, $coups['services']);
+    		if($output&&(empty($coups['finders_exclude'])||!empty($coups['finders_exclude'])&&!in_array($finder_id, $e['finders_exclude'])))
+    			return true;
+    		else return false;
+    	}
+    	
+    }
+    
+    public function allowFitternityUsers($coups=[],$customer_id=null,$customer_email=null)
+    {
+    	$customer = \Customer::find((int)$customer_id);
+    	if(!$single)
+    	{
+    		return array_filter($coups,function ($e) use($customer_id,$customer_email) {
+    			return in_array($customer_email, ['utkarshmehrotra@fitternity.com','shahaansyed@fitternity.com','maheshjadhav@fitternity.com']);
+    		});
+    	}
+    	else in_array($customer_email, ['utkarshmehrotra@fitternity.com','shahaansyed@fitternity.com','maheshjadhav@fitternity.com']);
+    }
+    
 }
 
