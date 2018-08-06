@@ -4342,14 +4342,20 @@ Class Utilities {
 
     public function createOffer($offer_data){
         
-        $offer_id = \Offer::max('_id') + 1;
         $offer_data['added_by_script'] = true;
         $offer_data['created_from_offer'] = $offer_data['_id'];
+        $offer_id = \Offer::max('_id') + 1;
+        $update_counter = Identitycounter::where('model', 'Offer')->update(['count'=>$offer_id]);
+        Log::info("update_counter");
+        Log::info($update_counter);
+        
         $offer = new \Offer($offer_data);
         $offer->_id = $offer_id;
         $offer->save();
+
         Log::info("offer created");
         Log::info($offer);
+
 
     }
 
