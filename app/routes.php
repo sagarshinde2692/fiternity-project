@@ -1267,7 +1267,10 @@ Route::get('updateCouponUsed','DebugController@updateCouponUsed');
 Route::get('updateRatecardSlots','DebugController@updateRatecardSlots');
 
 Route::get('updateratecardslotsbyid/{order_id}','TransactionController@updateRatecardSlotsByOrderId');
+
 Route::post('getunmarkedattendance','CustomerController@getCustomerUnmarkedAttendance');
 Route::post('addafriendforbooking','CustomerController@addafriendforbooking');
 Route::get('getbookingfriends','CustomerController@getallBookingfriends');
 Route::post('markcustomerattendance','CustomerController@markCustomerAttendance');
+Route::get('listvalidcoupons','HomeController@listValidCoupons');
+

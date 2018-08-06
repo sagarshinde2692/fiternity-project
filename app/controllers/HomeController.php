@@ -4737,6 +4737,149 @@ class HomeController extends BaseController {
             return $response;
             
         }
+        
+        public function listValidCoupons()
+        {
+        	$resp=['status'=>200,"message"=>"Success","header"=>"Choose from the offers below","options"=>[]];
+        	try {
+        		$data = $_GET;
+//         		$rules= ['ratecard_id'=>'required'];
+        		
+// 	        	$validator = Validator::make($data,$rules);
+// 	        	if ($validator->fails()) return ['status' => 400,'message' => error_message($validator->errors())];
+        		
+	        	$customer_email=null;$customer_id=null;$customer_phone=null;
+	        	
+        		$jwt_token = Request::header('Authorization');
+//         		if(empty($jwt_token)) return ["status"=> 400, "message" => "Token Absent"];
+        		
+        		if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+        			$decoded = customerTokenDecode($jwt_token);
+        			$customer_id = (int)$decoded->customer->_id;
+        			$customer_email=$decoded->customer->email;
+        			$customer_phone = $decoded->customer->contact_no;
+        		}
+        		
+//         		if(empty($customer_id ))return ["status"=> 400, "message" => "Invalid Token"];
+        		
+        		$today_date = date("d-m-Y hh:mm:ss");
+        		$coupons = Coupon::where('start_date', '<=', new \DateTime())->where('end_date', '>=', new \DateTime())->get(["code"]);
+        		if(empty($coupons)) return $resp;
+        		$coupons=$coupons->toArray();
+
+        		$device = Request::header('Device-Type');
+        		if(!(!$device || !in_array($device, ['ios', 'android']))) $coupons=$this->utilities->removeNonMobileCodes($coupons);
+        			
+        		$finder_id =null;$service_id=null;$ratecard_type=null;$finder=null;$service=null;
+        		
+        		if(!empty($data['ratecard_id']))$ratecard = Ratecard::find(intval($data['ratecard_id']));
+        		if(!empty($ratecard)) 
+        		{
+        		  		$ratecard_data = $ratecard->toArray();
+        		  		if(!empty($ratecard_data["flags"]) && !empty($ratecard["flags"]["pay_at_vendor"])) 
+        		  			return $resp;
+        		  		$finder_id = (int)$ratecard['finder_id'];
+        		  		$service_id = (int)$ratecard['service_id'];
+        		  		$ratecard_type=$ratecard_data['type'];
+        		  		$finder = Finder::where('_id', $ratecard['finder_id'])->first(['flags']);
+        		  		$service = Service::where('_id', $ratecard['service_id'])->first(['flags','servicecategory_id']);
+        		}
+        		
+        		$coup=[];
+        		$all=[];
+        		$once_per_user=[];
+        		$fitternity_only=[];
+        		
+        		($finder_id==6168)?array_push($coupons,['code'=>"mad18"]):"";
+        		$single=true;
+        		
+        		if($finder)
+        		{
+        			$couponRecieved = getDynamicCouponForTheFinder($finder);
+        		    array_push($coup, $couponRecieved);
+        		}
+        		
+        		foreach ($coupons as $coupon)
+        		{
+        			if(!empty($coupon)&&!empty($coupon['once_per_user']))
+        				array_push($once_per_user, $coupon);
+        			else array_push($all, $coupon);
+        		}
+        		
+        		if(count($once_per_user)>0&&!$customer_id)
+        			$coupons=array_merge($coupons,$this->utilities->removeAlreadyUsedCodes($once_per_user,$customer_id,$single));
+        		
+        		foreach ($coupons as $coupon)
+        		{
+        		
+        			if(!empty($coupon['vendor_exclusive'])&&$finder_id&&$service_id )
+        		 		if(!$this->utilities->allowSpecificvendors($coupon,$finder_id,$service_id,$single)) continue;
+        		 
+        		 	if(!empty($coupon['fitternity_only'])&&!$customer_id&&!$customer_email)
+        		 		if(!$this->utilities->allowFitternityUsers($coupon,$customer_id,$customer_email,$single)) continue;
+        		 	
+        		 	
+        		 	if(!empty($coupon['ratecard_type'])&&!$ratecard_type&&!in_array($ratecard_type,$coupon['ratecard_type'])) continue;
+        		 	if(!empty($coupon['campaign_only'])&&$coupon['campaign_only']=="1") continue;
+        		 	
+        		 	if(!empty($coupon['service_category_ids']))
+        		 	{
+        		 		if(!in_array($service['servicecategory_id'],$coupon['service_category_ids']))
+        		 			continue;
+        		 		else 
+        		 		{
+        		 			if(empty($customer_id)) continue;
+        		 			\Order::$withoutAppends = true;
+        		 			$order_count = \Order::active()->where('customer_id',$customer_id)->where('coupon_code','like', $coupon['code'])->count();
+        		 			if($order_count >= 4)
+        		 				continue;
+        		 		}
+        		 	}
+        		 	
+        		 	//*****************************************************************************SYNCRON**********************************************************************
+        		 	if(!empty($coupon['type']) && $coupon['type'] == 'syncron'){
+        		 		if($coupon['total_used'] >= $coupon['total_available'])continue;
+        		 		if(!$customer_id||!$customer_email) continue;
+        		 	    if(!empty($coupon['customer_emails']) && is_array($coupon['customer_emails']))
+        		 			if(!in_array(strtolower($customer_email), $coupon['customer_emails']))continue;
+	        		 	\Booktrial::$withoutAppends = true;
+	        		 	$booktrial_count = \Booktrial::where('customer_email',$customer_email)->where('created_at','>=',new \MongoDate(strtotime(date('Y-m-d 00:00:00'))))->where('created_at','<=',new \MongoDate(strtotime(date('Y-m-d 23:59:59'))))->count();
+						if($booktrial_count>0)continue;
+        		 	}
+        		 	//*****************************************************************************SYNCRON**********************************************************************
+        		 	
+        		 	
+        		 	//**************************************************************************CONDITIONS**********************************************************************
+        		 	if((!empty($coupon['conditions']) && is_array($coupon['conditions']) )){
+        		 		if(($customer_phone||$customer_email)&& in_array('once_new_pps', $coupon['conditions']))
+        		 		{
+        		 			$prev_workout_session_count = \Booktrial::where('created_at', '>', new \DateTime('2018-04-22'))->where(function($query) use ($customer_email, $customer_phone){ return $query->orWhere('customer_email', $customer_email);})->where('type', 'workout-session')->count();
+        		 			if($prev_workout_session_count)
+        		 				continue;
+        		 		}
+        		 		else if($customer_email&&in_array('fitternity_employees', $coupon['conditions'])){
+        		 			if(!in_array(strtolower($customer_email),Config::get('fitternityemails')))
+        		 				continue;	
+        		 		}
+        		 		else if(($customer_phone||$customer_email)&&in_array('once_per_month', $coupon['conditions'])){
+        		 			$prev_workout_session_count = \Order::active()->where('success_date', '>', new \DateTime(date('d-m-Y', strtotime('first day of this month'))))->where(function($query) use ($customer_email, $customer_phone){ return $query->orWhere('customer_phone', 'LIKE', '%'.substr($customer_phone, -10).'%')->orWhere('customer_email', $customer_email);})->where('coupon_code', 'Like', $coupon['code'])->where('coupon_discount_amount', '>', 0)->count();
+        		 			if($prev_workout_session_count)
+        		 				continue;
+        		 		}
+        		 	}
+        		 	//**************************************************************************CONDITIONS**********************************************************************
+        		 	
+        		 	array_push($coup, $coupon);
+        		 	$resp['options']=array_map(function ($e){return ['code'=>$e['code'],'description'=>!empty($e['description'])?$e['description']:""];},$coup);
+        		 	return $resp;
+        		}
+        		
+        	} catch (Exception $e) {
+        		
+        		$message="Message :: ".$e->getMessage()."  Code :: ".$e->getCode()."  File :: ".$e->getFile()."  Line :: ".$e->getLine();
+        		return ['status'=>400,"message"=>$message];
+        	}
+        }
 
         public function getProductsHome($cache=true)
         {
