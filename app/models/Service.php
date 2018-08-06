@@ -332,7 +332,7 @@ class Service extends \Basemodel{
 				$offer_price = (!empty($value['special_price'])) ? $value['special_price'] : 0 ;
 				$cost_price = (!empty($value['price'])) ? $value['price'] : 0 ;
 
-                if($offer_price !== 0 && $offer_price < $cost_price && !in_array($value['type'], ['workout session', 'trial'])){
+                if($offer_price !== 0 && $offer_price < $cost_price && !in_array($value['type'], ['workout session', 'trial']) && !(isset($this->membership) && $this->membership == 'disable' || isset($finder['membership']) && $finder['membership'] == 'disable')){
 
                 	$offf_percentage = ceil((($cost_price - $offer_price)/$cost_price)*100);
 
@@ -340,7 +340,7 @@ class Service extends \Basemodel{
 					$value['campaign_color'] = "#43a047";
                 }
 
-				if($ratecard_price >= 5000){
+				if($ratecard_price >= 5000 && !(isset($this->membership) && $this->membership == 'disable' || isset($finder['membership']) && $finder['membership'] == 'disable')){
 
 					$value['campaign_offer'] = !empty($value['campaign_offer']) ?  $value['campaign_offer']." (EMI available)" : "(EMI available)";
 					$value['campaign_color'] = "#43a047";

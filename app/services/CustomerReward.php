@@ -8,6 +8,7 @@ use App\Services\Utilities;
 use Validator;
 use Response;
 use Log;
+use Cache;
 use App\Mailers\CustomerMailer as CustomerMailer;
 use App\Mailers\FinderMailer as FinderMailer;
 use App\Sms\CustomerSms as CustomerSms;
@@ -1632,7 +1633,7 @@ Class CustomerReward {
                 if( $couponRecieved["code"] == strtolower($couponCode)){
                     $coupon = $couponRecieved;
                 }else{
-                    $finder_detail = $cache ? Cache::tags('finder_detail')->has($finder["slug"]) : false;
+                    $finder_detail = Cache::tags('finder_detail')->has($finder["slug"]) ? Cache::tags('finder_detail')->has($finder["slug"]) : false;
                     if($finder_detail && isset($finder_detail["code_applicable"]) && $finder_detail["code_applicable"] == strtolower($couponCode)){
                         $this->cacheapi->flushTagKey('finder_detail',$finder["slug"]);
                         return $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "error_message"=>"Coupon not valid for this transaction. You can use ".$couponRecieved["code"]. " instead");

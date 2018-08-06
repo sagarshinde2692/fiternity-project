@@ -77,7 +77,11 @@ Class FinderMailer extends Mailer {
 							'priyankapatel@fitternity.com',
 							'dharatanna@fitternity.com',
 							'pranjalisalvi@fitternity.com',
-							'dharmindersingh@fitternity.com'
+							'dharmindersingh@fitternity.com',
+							"hardikkhamkar@fitternity.com",
+							"prachigupta@fitternity.com",
+							"mitmehta@fitternity.com",
+							"tanilmerchant@fitternity.com",
 						];
 						break;
 					case 6 : 
@@ -85,6 +89,10 @@ Class FinderMailer extends Mailer {
 							"priyankapatel@fitternity.com",
 							'vikramkhanna@fitternity.com',
 							'bhavinjani@fitternity.com',
+							"hardikkhamkar@fitternity.com",
+							"prachigupta@fitternity.com",
+							"mitmehta@fitternity.com",
+							"tanilmerchant@fitternity.com",
 						];
 						break;
 					case 5 : 
@@ -331,7 +339,11 @@ Class FinderMailer extends Mailer {
 						'priyankapatel@fitternity.com',
 						'dharatanna@fitternity.com',
 						'pranjalisalvi@fitternity.com',
-						'dharmindersingh@fitternity.com'
+						'dharmindersingh@fitternity.com',
+						"hardikkhamkar@fitternity.com",
+						"prachigupta@fitternity.com",
+						"mitmehta@fitternity.com",
+						"tanilmerchant@fitternity.com",
 					];
 					break;
 				case 6 : 
@@ -339,6 +351,10 @@ Class FinderMailer extends Mailer {
 						"priyankapatel@fitternity.com",
 						'vikramkhanna@fitternity.com',
 						'bhavinjani@fitternity.com',
+						"hardikkhamkar@fitternity.com",
+						"prachigupta@fitternity.com",
+						"mitmehta@fitternity.com",
+						"tanilmerchant@fitternity.com",
 					];
 					break;
 				case 5 : 
@@ -1128,8 +1144,8 @@ Class FinderMailer extends Mailer {
 		$user_name = 'Fitternity Team';
 
 		$message_data 	= array(
-			'user_email' => array($data['customer_email']),
-			'user_name' => $data['customer_name']
+			'user_email' => $user_email,
+			'user_name' => $user_name
 		);
 
 		return $this->common($label,$data,$message_data);

@@ -448,9 +448,11 @@ class MigrationReverseController extends \BaseController {
 
         try{
 
-            $ratecarding = Ratecard::on($this->fitapoffer->ratecard_i)->find(intval($id));
+            // $ratecarding = Ratecard::on($this->fitapoffer->ratecard_i)->find(intval($id));
 
-            if(isset($ratecard->available_slots))
+            // if(isset($ratecard->available_slots))
+            $offering = Offering::on($this->fitapi)->find(intval($id));
+
 
 //                                var_dump($offering->vendorcategories);exit;
 

@@ -836,7 +836,7 @@ Class Utilities {
         $finder_lon                        =    (isset($finder['lon']) && $finder['lon'] != '') ? $finder['lon'] : "";
         $finder_lat                        =    (isset($finder['lat']) && $finder['lat'] != '') ? $finder['lat'] : "";
         $finder_category_id                =    (isset($finder['category_id']) && $finder['category_id'] != '') ? $finder['category_id'] : "";
-        $data['finder_slug']                       =    (isset($finder['slug']) && $finder['slug'] != '') ? $finder['slug'] : "";
+        $finder_slug                       =    (isset($finder['slug']) && $finder['slug'] != '') ? $finder['slug'] : "";
         $finder_name                       =    (isset($finder['title']) && $finder['title'] != '') ? ucwords($finder['title']) : "";
 
         $data['finder_city'] =  trim($finder_city);
@@ -2435,7 +2435,7 @@ Class Utilities {
     public function hitURLAfterDelay($url, $delay = 0, $label = 'label', $priority = 0){
 
         Log::info("Scheduling url:$url");
-        Log::info("delay: $delay");
+        // Log::info("delay: $delay");
 
         if($delay !== 0){
             $delay = $this->getSeconds($delay);
@@ -4182,7 +4182,7 @@ Class Utilities {
 
                             if($customer['pps_referral_credits'] - $credits_used > 0){
 
-                                return ['status'=>200, 'message'=>'Successfully applied referral discount', 'discount'=> 499, 'type'=>'self', 'customer'=>$customer];
+                                return ['status'=>200, 'message'=>'Successfully applied referral discount', 'discount'=> 299, 'type'=>'self', 'customer'=>$customer];
                             
                             }else{
                                     
@@ -4211,7 +4211,7 @@ Class Utilities {
                 
                 }else{
 
-                    return ['status'=>200, 'message'=>'Pay per session referral is successfully applied', 'discount'=>499, 'type'=>'referral', 'customer'=>$customer];
+                    return ['status'=>200, 'message'=>'Pay per session referral is successfully applied', 'discount'=>299, 'type'=>'referral', 'customer'=>$customer];
 
                 }
 
@@ -5351,14 +5351,20 @@ Class Utilities {
 
     public function createOffer($offer_data){
         
-        $offer_id = \Offer::max('_id') + 1;
         $offer_data['added_by_script'] = true;
         $offer_data['created_from_offer'] = $offer_data['_id'];
+        $offer_id = \Offer::max('_id') + 1;
+        $update_counter = Identitycounter::where('model', 'Offer')->update(['count'=>$offer_id]);
+        Log::info("update_counter");
+        Log::info($update_counter);
+        
         $offer = new \Offer($offer_data);
         $offer->_id = $offer_id;
         $offer->save();
+
         Log::info("offer created");
         Log::info($offer);
+
 
     }
 
