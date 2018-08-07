@@ -4362,9 +4362,9 @@ Class Utilities {
         \Cache::tags('finder_detail_android_4_4_3')->forget($slug);
         
     }
-    public function removeNonMobileCodes($coups=[])
+    public function removeMobileCodes($coups=[])
     {
-    	return array_filter($coups,function ($e) { return !empty($e)&&!empty($e['app_only']);});
+    	return array_filter($coups,function ($e) { return !empty($e)&&empty($e['app_only']);});
     }
     
     public function removeAlreadyUsedCodes($coups=[],$customer_id,$single=false)
