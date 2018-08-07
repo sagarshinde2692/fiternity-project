@@ -5378,6 +5378,7 @@ Class Utilities {
         
     }
 
+
     
     function decryptQr($encrypted_string, $encryption_key) {	
     	$iv_size = mcrypt_get_iv_size(MCRYPT_BLOWFISH, MCRYPT_MODE_ECB);
@@ -5506,9 +5507,10 @@ Class Utilities {
     	return $response;
     }
     
-    public function removeNonMobileCodes($coups=[])
+
+    public function removeMobileCodes($coups=[])
     {
-    	return array_filter($coups,function ($e) { return !empty($e)&&!empty($e['app_only']);});
+    	return array_filter($coups,function ($e) { return !empty($e)&&empty($e['app_only']);});
     }
     
     public function removeAlreadyUsedCodes($coups=[],$customer_id,$single=false)
