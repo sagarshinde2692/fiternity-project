@@ -4628,36 +4628,28 @@ class HomeController extends BaseController {
         
         public function listValidCoupons()
         {
-        	$resp=['status'=>200,"message"=>"Success","header"=>"Choose from the offers below","options"=>[]];
+        	$resp=['status'=>200,"message"=>"Success","header"=>"Available Coupons","options"=>[]];
         	try {
         		$data = $_GET;
-        		//         		$rules= ['ratecard_id'=>'required'];
-        		
+        		//         		$rules= ['ratecard_id'=>'required'];	
         		// 	        	$validator = Validator::make($data,$rules);
         		// 	        	if ($validator->fails()) return ['status' => 400,'message' => error_message($validator->errors())];
         		
         		$customer_email=null;$customer_id=null;$customer_phone=null;
-        		
         		$jwt_token = Request::header('Authorization');
-        		//         		if(empty($jwt_token)) return ["status"=> 400, "message" => "Token Absent"];
-        		
         		if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
         			$decoded = customerTokenDecode($jwt_token);
         			$customer_id = (int)$decoded->customer->_id;
         			$customer_email=$decoded->customer->email;
         			$customer_phone = $decoded->customer->contact_no;
         		}
-        		
-        		//         		if(empty($customer_id ))return ["status"=> 400, "message" => "Invalid Token"];
-        		
         		$today_date = date("d-m-Y hh:mm:ss");
         		$coupons = Coupon::where('start_date', '<=', new \DateTime())->where('end_date', '>=', new \DateTime())->get();
         		if(empty($coupons)) return $resp;
         		$coupons=$coupons->toArray();
         		$device = Request::header('Device-Type');
         		
-        		if($device &&!in_array($device, ['ios', 'android']))
-        			$coupons=$this->utilities->removeMobileCodes($coupons);
+        		if($device &&!in_array($device, ['ios', 'android'])) $coupons=$this->utilities->removeMobileCodes($coupons);
         		
         		$finder_id =null;$service_id=null;$ratecard_type=null;$finder=null;$service=null;
         		
@@ -4674,10 +4666,7 @@ class HomeController extends BaseController {
         				$service = Service::where('_id', $ratecard['service_id'])->first(['flags','servicecategory_id']);
         		}
         		
-        		$coup=[];
-        		$all=[];
-        		$once_per_user=[];
-        		$fitternity_only=[];
+        		$coup=[];$all=[];$once_per_user=[];$fitternity_only=[];
         		
         		($finder_id==6168)?array_push($coupons,['code'=>"mad18"]):"";
         		$single=true;
@@ -4685,8 +4674,7 @@ class HomeController extends BaseController {
         		if($finder)
         		{
         			$couponRecieved = getDynamicCouponForTheFinder($finder);
-        			if(!empty($couponRecieved)&&!empty($couponRecieved['code']))
-        				array_push($coup, $couponRecieved);
+        			if(!empty($couponRecieved)&&!empty($couponRecieved['code']))array_push($coup, $couponRecieved);
         		}
         		
         		foreach ($coupons as $coupon)
@@ -4698,9 +4686,8 @@ class HomeController extends BaseController {
         		
         		if(count($once_per_user)>0&&$customer_id)
         			$coupons=array_merge($all,$this->utilities->removeAlreadyUsedCodes($once_per_user,$customer_id));
-        			else $coupons=$all;
-        			
-        			
+        		else $coupons=$all;
+        				
         			foreach ($coupons as $coupon)
         			{
         				
@@ -4771,7 +4758,7 @@ class HomeController extends BaseController {
         				if(!empty($e['description']))$desc=$e['description'];
         				else if(!empty($e['text']))$desc=$e['text'];
         				else $desc="";
-        				return ['code'=>$e['code'],'description'=>$desc];
+        				return ['code'=>strtoupper($e['code']),'description'=>$desc];
         				
         			},$coup);
         				return $resp;
