@@ -5516,13 +5516,13 @@ Class Utilities {
     	if(!$single)
     	{
 	    	\Order::$withoutAppends = true;
-	    	$order_codes=\Order::active()->where("customer_id", $customer_id)->whereIn('coupon_code', $temp)->where('coupon_discount_amount', '>', 0)->get(['coupon_code']);
+	    	$order_codes=\Order::active()->where("customer_id", $customer_id)->whereIn('coupon_code', $coups)->where('coupon_discount_amount', '>', 0)->get();
 	    	
 	    	if(!empty($order_codes))
 	    	{
 	    		$order_codes=$order_codes->toArray();
 	    		$already_applied_codes=array_pluck($order_codes, 'coupon_code');
-	    		return array_filter($coups,function ($e) { return !empty($e)&&!in_array($e['code'],$already_applied_codes);});
+	    		return array_filter($coups,function ($e) use ($already_applied_codes){ return !empty($e)&&!empty($e['code'])&&!in_array($e['code'],$already_applied_codes);});
 	    	}
 	    	else return $coups;    		
     	}

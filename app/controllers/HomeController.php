@@ -4763,7 +4763,7 @@ class HomeController extends BaseController {
 //         		if(empty($customer_id ))return ["status"=> 400, "message" => "Invalid Token"];
         		
         		$today_date = date("d-m-Y hh:mm:ss");
-        		$coupons = Coupon::where('start_date', '<=', new \DateTime())->where('end_date', '>=', new \DateTime())->get(["code"]);
+        		$coupons = Coupon::where('start_date', '<=', new \DateTime())->where('end_date', '>=', new \DateTime())->get();
         		if(empty($coupons)) return $resp;
         		$coupons=$coupons->toArray();
 
@@ -4806,8 +4806,9 @@ class HomeController extends BaseController {
         			else array_push($all, $coupon);
         		}
         		
-        		if(count($once_per_user)>0&&!$customer_id)
-        			$coupons=array_merge($coupons,$this->utilities->removeAlreadyUsedCodes($once_per_user,$customer_id,$single));
+        		if(count($once_per_user)>0&&$customer_id)
+        			$coupons=array_merge($all,$this->utilities->removeAlreadyUsedCodes($once_per_user,$customer_id));
+        		else $coupons=$all;
         		
         		foreach ($coupons as $coupon)
         		{
@@ -4815,11 +4816,13 @@ class HomeController extends BaseController {
         			if(!empty($coupon['vendor_exclusive'])&&$finder_id&&$service_id )
         		 		if(!$this->utilities->allowSpecificvendors($coupon,$finder_id,$service_id,$single)) continue;
         		 
-        		 	if(!empty($coupon['fitternity_only'])&&!$customer_id&&!$customer_email)
-        		 		if(!$this->utilities->allowFitternityUsers($coupon,$customer_id,$customer_email,$single)) continue;
+        		 	if(!empty($coupon['fitternity_only']))
+        		 		if(!($customer_id||$customer_email)||!$this->utilities->allowFitternityUsers($coupon,$customer_id,$customer_email,$single)) continue;
         		 	
-        		 	
+        		 	if(!empty($coupon['finders'])&&$finder_id&&!in_array($finder_id."",$coupon['finders'])) continue;
+        		 		
         		 	if(!empty($coupon['ratecard_type'])&&!$ratecard_type&&!in_array($ratecard_type,$coupon['ratecard_type'])) continue;
+        		 	
         		 	if(!empty($coupon['campaign_only'])&&$coupon['campaign_only']=="1") continue;
         		 	
         		 	if(!empty($coupon['service_category_ids']))
@@ -4828,7 +4831,7 @@ class HomeController extends BaseController {
         		 			continue;
         		 		else 
         		 		{
-        		 			if(empty($customer_id)) continue;
+        		 			if(!$customer_id) continue;
         		 			\Order::$withoutAppends = true;
         		 			$order_count = \Order::active()->where('customer_id',$customer_id)->where('coupon_code','like', $coupon['code'])->count();
         		 			if($order_count >= 4)
@@ -4838,8 +4841,8 @@ class HomeController extends BaseController {
         		 	
         		 	//*****************************************************************************SYNCRON**********************************************************************
         		 	if(!empty($coupon['type']) && $coupon['type'] == 'syncron'){
+        		 		if(!($customer_id||$customer_email)) continue;
         		 		if($coupon['total_used'] >= $coupon['total_available'])continue;
-        		 		if(!$customer_id||!$customer_email) continue;
         		 	    if(!empty($coupon['customer_emails']) && is_array($coupon['customer_emails']))
         		 			if(!in_array(strtolower($customer_email), $coupon['customer_emails']))continue;
 	        		 	\Booktrial::$withoutAppends = true;
@@ -4851,17 +4854,19 @@ class HomeController extends BaseController {
         		 	
         		 	//**************************************************************************CONDITIONS**********************************************************************
         		 	if((!empty($coupon['conditions']) && is_array($coupon['conditions']) )){
-        		 		if(($customer_phone||$customer_email)&& in_array('once_new_pps', $coupon['conditions']))
+        		 		if(in_array('once_new_pps', $coupon['conditions']))
         		 		{
+        		 			if(!($customer_phone||$customer_email))continue;
         		 			$prev_workout_session_count = \Booktrial::where('created_at', '>', new \DateTime('2018-04-22'))->where(function($query) use ($customer_email, $customer_phone){ return $query->orWhere('customer_email', $customer_email);})->where('type', 'workout-session')->count();
         		 			if($prev_workout_session_count)
         		 				continue;
         		 		}
-        		 		else if($customer_email&&in_array('fitternity_employees', $coupon['conditions'])){
-        		 			if(!in_array(strtolower($customer_email),Config::get('fitternityemails')))
+        		 		else if(in_array('fitternity_employees', $coupon['conditions'])){
+        		 			if(!in_array(strtolower($customer_email),Config::get('fitternityemails'))||!$customer_email)
         		 				continue;	
         		 		}
-        		 		else if(($customer_phone||$customer_email)&&in_array('once_per_month', $coupon['conditions'])){
+        		 		else if(in_array('once_per_month', $coupon['conditions'])){
+        		 			if(!($customer_phone||$customer_email))continue;
         		 			$prev_workout_session_count = \Order::active()->where('success_date', '>', new \DateTime(date('d-m-Y', strtotime('first day of this month'))))->where(function($query) use ($customer_email, $customer_phone){ return $query->orWhere('customer_phone', 'LIKE', '%'.substr($customer_phone, -10).'%')->orWhere('customer_email', $customer_email);})->where('coupon_code', 'Like', $coupon['code'])->where('coupon_discount_amount', '>', 0)->count();
         		 			if($prev_workout_session_count)
         		 				continue;
@@ -4870,9 +4875,15 @@ class HomeController extends BaseController {
         		 	//**************************************************************************CONDITIONS**********************************************************************
         		 	
         		 	array_push($coup, $coupon);
-        		 	$resp['options']=array_map(function ($e){return ['code'=>$e['code'],'description'=>!empty($e['description'])?$e['description']:""];},$coup);
-        		 	return $resp;
         		}
+        		$resp['options']=array_map(function ($e){
+        			if(!empty($e['description']))$desc=$e['description'];
+        			else if(!empty($e['text']))$desc=$e['text'];
+        			else $desc="";
+        			return ['code'=>$e['code'],'description'=>$desc];
+        			
+        		},$coup);
+        			return $resp;
         		
         	} catch (Exception $e) {
         		
