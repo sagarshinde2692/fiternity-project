@@ -1220,3 +1220,5 @@ Route::post('getcustomercarddetails','CustomerController@getCustomerCardDetails'
 Route::get('updateRatecardSlots','DebugController@updateRatecardSlots');
 
 Route::get('updateratecardslotsbyid/{order_id}','TransactionController@updateRatecardSlotsByOrderId');
+
+Route::post('addcustomersfortrial','SchedulebooktrialsController@addCustomersForTrial');

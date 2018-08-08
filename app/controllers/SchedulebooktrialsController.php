@@ -4396,7 +4396,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         // }else{
 
-        //     $data = ['status_code' => 401, 'message' => ['error' => 'Hash Required']];
+        //     $data = ['status_code' => 401, 'message' => ['error' => 'Hash 'Required'']];
         //     return Response::json($data, 401);
         // }
 
@@ -7617,6 +7617,249 @@ class SchedulebooktrialsController extends \BaseController {
             return true;
         }
         return false;
+    }
+
+    public function addCustomersForTrial(){
+
+        $rules = [
+            'booktrial_id' => 'required|integer|numeric',
+            'invitees' => 'required|array',
+            'source' => 'in:ANDROID,IOS,WEB',
+        ];
+        $validator = Validator::make($req = Input::json()->all(),$rules);
+
+        if($validator->fails()) {
+            $resp = array('status' => 400,'message' =>$this->errorMessage($validator->errors()));
+            return  Response::json($resp, 400);
+        }
+
+        Log::info('inviteForTrial',$req);
+
+        $inviteesData = [];
+
+        foreach ($req['invitees'] as $value){
+
+            $inviteeData = ['name'=>$value['name']];
+
+            $rules = [
+                'name' => 'required|string',
+                'input' => 'required|string',
+            ];
+            $messages = [
+                'name' => 'invitee name is required',
+                'input' => 'invitee email or phone is required'
+            ];
+            $validator = Validator::make($value, $rules, $messages);
+
+            if ($validator->fails()) {
+                return Response::json(
+                    array(
+                        'status' => 400,
+                        'message' => $this->errorMessage($validator->errors()
+                        )),400
+                );
+            }
+
+            if(filter_var($value['input'], FILTER_VALIDATE_EMAIL) != '') {
+                // valid address
+                $inviteeData = array_add($inviteeData, 'email', $value['input']);
+            }
+            else if(filter_var($value['input'], FILTER_VALIDATE_REGEXP, array(
+                    "options" => array("regexp"=>"/^[2-9]{1}[0-9]{9}$/")
+                )) != ''){
+                // valid phone
+                $inviteeData = array_add($inviteeData, 'phone', $value['input']);
+
+            }
+            array_push($inviteesData, $inviteeData);
+
+        }
+        return $inviteesData;
+
+        foreach ($inviteesData as $value){
+
+            $rules = [
+                'name' => 'required|string',
+                'email' => 'required_without:phone|email',
+                'phone' => 'required_without:email',
+            ];
+            $messages = [
+                'email.required_without' => 'invitee email or phone is required',
+                'phone.required_without' => 'invitee email or phone is required'
+            ];
+            $validator = Validator::make($value, $rules, $messages);
+
+            if ($validator->fails()) {
+                return Response::json(
+                    array(
+                        'status' => 400,
+                        'message' => $this->errorMessage($validator->errors()
+                        )),400
+                );
+            }
+        }
+
+        // Get Host Data an validate booktrial ID......
+        $BooktrialData = Booktrial::where('_id', $req['booktrial_id'])
+            ->with('invite')
+            ->get(array(
+                'customer_id', 'customer_name', 'customer_email','customer_phone','service_name',
+                'type', 'finder_name', 'finder_location','finder_address',
+                'schedule_slot_start_time','schedule_date','schedule_date_time','type','root_booktrial_id'
+            ))
+            ->first();
+
+        $errorMessage = !isset($BooktrialData)
+            ? 'Invalid Booktrial ID'
+        //            : count($BooktrialData['invites']) >= 0
+        //                ? 'You have already invited your friends for this trial'
+            : null;
+        if($errorMessage){
+            return Response::json(
+                array(
+                    'status' => 422,
+                    'message' => $errorMessage
+                ),422
+            );
+        }
+
+        // Validate customer is not inviting himself/herself......
+        $emails = array_fetch($inviteesData, 'email');
+        $phones = array_fetch($inviteesData, 'phone');
+
+
+        if(array_where($emails, function ($key, $value) use($BooktrialData)  {
+            if($value == $BooktrialData['customer_email']){
+                return true;
+            }
+        })) {
+            return Response::json(
+                array(
+                    'status' => 422,
+                    'message' => 'You cannot invite yourself'
+                ),422
+            );
+        }
+
+        if(array_where($phones, function ($key, $value) use($BooktrialData)  {
+            if($value == $BooktrialData['customer_phone']){
+                return true;
+            }
+        })) {
+            return Response::json(
+                array(
+                    'status' => 422,
+                    'message' => 'You cannot invite yourself'
+                ),422
+            );
+        }
+
+        // Save Invite info..........
+        foreach ($inviteesData as $invitee){
+            $invite = new Invite();
+            $invite->_id = Invite::max('_id') + 1;
+            $invite->status = 'pending';
+            $invite->host_id = $BooktrialData['customer_id'];
+            $invite->host_email = $BooktrialData['customer_email'];
+            $invite->host_name = $BooktrialData['customer_name'];
+            $invite->host_phone = $BooktrialData['customer_phone'];
+            $invite->root_booktrial_id =
+                isset($BooktrialData['root_booktrial_id'])
+                    ? $BooktrialData['root_booktrial_id']
+                    : $req['booktrial_id'];
+            $invite->referrer_booktrial_id = $req['booktrial_id'];
+            $invite->source = $req['source'];
+            isset($invitee['name']) ? $invite->invitee_name = trim($invitee['name']): null;
+            isset($invitee['email']) ? $invite->invitee_email = trim($invitee['email']): null;
+            isset($invitee['phone']) ? $invite->invitee_phone = trim($invitee['phone']): null;
+            $invite->save();
+
+            // Generate bitly for landing page with invite_id and booktrial_id
+            $url = 'www.fitternity.com/invitedtrial?booktrial_id='.$invite['referrer_booktrial_id'].'&invite_id='.$invite['_id'];
+            $url2 = 'www.fitternity.com/invitedtrial?booktrial_id='.$invite['referrer_booktrial_id'].'&invite_id='.$invite['_id'].'&accompany=false';
+            $shorten_url = new ShortenUrl();
+            $url = $shorten_url->getShortenUrl($url);
+            $url2 = $shorten_url->getShortenUrl($url2);
+            if(!isset($url['status']) ||  $url['status'] != 200){
+                return Response::json(
+                    array(
+                        'status' => 422,
+                        'message' => 'Unable to Generate Shortren URL'
+                    ),422
+                );
+            }
+            if(!isset($url2['status']) ||  $url2['status'] != 200){
+                return Response::json(
+                    array(
+                        'status' => 422,
+                        'message' => 'Unable to Generate Shortren URL'
+                    ),422
+                );
+            }
+            $url = $url['url'];
+            $url2 = $url2['url'];
+
+            // Send email / SMS to invitees...
+            $templateData = array(
+                'invitee_name'=>$invite['invitee_name'],
+                'invitee_email'=>$invite['invitee_email'],
+                'invitee_phone'=>$invite['invitee_phone'],
+                'host_name' => $invite['host_name'],
+                'type'=> $BooktrialData['type'],
+                'finder_name'=> $BooktrialData['finder_name'],
+                'finder_location'=> $BooktrialData['finder_location'],
+                'finder_address'=> $BooktrialData['finder_address'],
+                'schedule_date'=> $BooktrialData['schedule_date'],
+                'schedule_date_time'=> $BooktrialData['schedule_date_time'],
+                'service_name'=> $BooktrialData['service_name'],
+                'schedule_slot_start_time'=> $BooktrialData['schedule_slot_start_time'],
+                'url' => $url,
+                'url2' => $url2
+            );
+
+        //            return $this->customermailer->inviteEmail($BooktrialData['type'], $templateData);
+
+            isset($templateData['invitee_email']) ? $this->customermailer->inviteEmail($BooktrialData['type'], $templateData) : null;
+            isset($templateData['invitee_phone']) ? $this->customersms->inviteSMS($BooktrialData['type'], $templateData) : null;
+        }
+
+
+        //Give 50% more cash back to booktrial customer on invites
+        $cashback_amount = 0;
+        $customer_balance = 0;
+        /*if($BooktrialData){
+
+            $booktrial_id   =   intval($req['booktrial_id']);
+            $order          =   Order::where('booktrial_id', $booktrial_id)->where('status','1')->first();
+
+            if($order && isset($order['customer_id']) && isset($order['amount']) && $order['amount'] > 0 && $order['amount'] != ""){
+
+                $customer_id            =       intval($order['customer_id']);
+                $cashback_amount 	    =	    intval((50/100) * $order['amount']);
+
+                $walletData = array(
+                    "customer_id"=> $customer_id,
+                    "amount"=> $cashback_amount,
+                    "amount_fitcash" => $cashback_amount,
+                    "amount_fitcash_plus" => 0,
+                    "type"=>'CASHBACK',
+                    "description"=>'CASHBACK ON Invite amount - '.$cashback_amount,
+                    "order_id"=>$order->_id,
+                    'entry'=>'credit',
+                );
+
+                $this->utilities->walletTransaction($walletData);
+            }
+        }*/
+
+        return Response::json(
+            array(
+                'status' => 200,
+                'message' => 'Invitation has been sent successfully',
+                'fitcash_added' => $cashback_amount,
+                'wallet_balance' => $customer_balance
+            ),200
+        );
     }
 
 }
