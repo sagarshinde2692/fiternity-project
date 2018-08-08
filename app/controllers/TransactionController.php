@@ -5338,7 +5338,7 @@ class TransactionController extends \BaseController {
             );
         }
 
-        if($data['pay_later']){
+        if(!empty($data['pay_later'])){
             
             $payment_modes[] = array(
                 'title' => 'Pay now',
@@ -5701,7 +5701,7 @@ class TransactionController extends \BaseController {
     }
 
     public function walletOrderCapture(){
-        ini_set('always_populate_raw_post_data', -1);
+        // ini_set('always_populate_raw_post_data', -1);
         $data = Input::all();
 
         Log::info("wallet capture");
@@ -5809,6 +5809,7 @@ class TransactionController extends \BaseController {
             'data' => $result,
             'message' => "Tmp Order Generated Sucessfully"
         );
+        $resp['data']['payment_modes'] = $this->getPaymentModes($resp);
         return Response::json($resp);
 
     }
