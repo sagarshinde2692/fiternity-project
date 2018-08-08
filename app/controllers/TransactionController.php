@@ -5785,6 +5785,10 @@ class TransactionController extends \BaseController {
         $hash = getHash($data);
         
         $data = array_merge($data,$hash);
+
+        if(in_array($data['customer_source'],['android','ios','kiosk'])){
+            $mobilehash = $data['payment_related_details_for_mobile_sdk_hash'];
+        }
         
         $order = new Order($data);
 
