@@ -3758,7 +3758,7 @@ if (!function_exists('decodeOrderToken')) {
 
     function getDynamicCouponForTheFinder($finder){
         $today = date('d-m-Y', strtotime(Carbon::now()->addDays(1)));
-        $lastSixtyDays = date('d-m-Y', strtotime(Carbon::now()->subDays(60)));
+        $lastSixtyDays = date('d-m-Y', strtotime(Carbon::now()->subDays(45)));
         
         // Log::info(new DateTime($lastSixtyDays));
         $numberOfOrders = Order::where("status","1")->where("finder_id",$finder['_id'])
