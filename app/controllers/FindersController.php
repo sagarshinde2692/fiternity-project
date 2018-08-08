@@ -5813,9 +5813,9 @@ class FindersController extends \BaseController {
 			
 		];
 		
-		$session_ratecard = null;
 		
 		foreach($services as $service){
+			$session_ratecard = null;
 
 			foreach($service[$key] as $ratecard){
 				// Log::info($ratecard['type']);
@@ -5849,16 +5849,16 @@ class FindersController extends \BaseController {
 						$return['button_text'] = "Buy";
 					}
 
+					if($session_ratecard && $return['ratecard_id']){
+						$return['book_button_text'] = 'Book Session';
+						$return['book_type'] = 'workout-session';
+						$return['book_service_id'] = $session_ratecard['service_id'];
+					}
 					break;
 				}
 			}	
 		}
 
-		if($session_ratecard && $return['ratecard_id']){
-			$return['book_button_text'] = 'Book Session';
-			$return['book_type'] = 'workout-session';
-			$return['book_service_id'] = $session_ratecard['service_id'];
-		}
 
 		return $return;
 	}
