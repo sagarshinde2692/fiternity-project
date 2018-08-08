@@ -4285,7 +4285,7 @@ Class Utilities {
 
                     $service->total_slots_created = isset($service->total_slots_created) ? $service->total_slots_created : $service->available_slots;
                     
-                    $new_slots = round($service->total_slots_created / $days_passed * $days_left / 2);
+                    $new_slots = ceil($service->total_slots_created / $days_passed * $days_left / 2);
 
                     Log::info($days_passed);
                     Log::info($days_left);
