@@ -2929,7 +2929,8 @@ Class Utilities {
                 return false;
             }
         }else{
-        	$flags = $data['flags'];
+        	if(!empty($data['flags']))
+        		$flags = $data['flags'];
         }
 
         $finder = Finder::find((int) $data["finder_id"]);
