@@ -4756,6 +4756,10 @@ class TransactionController extends \BaseController {
 
         Log::info($data);
 
+        if(in_array($this->device_type, ['ios', 'android'])){
+            $data['customer_source'] = $this->device_type;
+        }
+
         $rules = array(
             'amount'=>'required',
             'customer_source'=>'required',
