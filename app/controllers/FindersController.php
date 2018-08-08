@@ -5682,11 +5682,12 @@ class FindersController extends \BaseController {
 			
 		];
 		
+		$session_ratecard = null;
+		
 		foreach($services as $service){
 
 			foreach($service[$key] as $ratecard){
 				// Log::info($ratecard['type']);
-				$session_ratecard = null;
 
 				if(!$session_ratecard && in_array($ratecard['type'], [ 'workout session'])){
 					$session_ratecard = $ratecard;
