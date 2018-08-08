@@ -891,6 +891,18 @@ class FindersController extends \BaseController {
 					if(!empty($callOutObj['ratecard_id'])){
 						$finder['callout_ratecard_id'] = $callOutObj['ratecard_id'];
 					}						
+					if(!empty($callOutObj['book_type'])){
+						$finder['callout_book_type'] = $callOutObj['book_type'];
+					}						
+					if(!empty($callOutObj['book_button_text'])){
+						$finder['callout_book_button_text'] = $callOutObj['book_button_text'];
+					}						
+					if(!empty($callOutObj['book_button_text'])){
+						$finder['callout_book_button_text'] = $callOutObj['book_button_text'];
+					}						
+					if(!empty($callOutObj['service_id'])){
+						$finder['callout_book_service_id'] = $callOutObj['book_service_id'];
+					}						
 				}
 
 				if(!empty($finder['contact']['address']) && !empty($finder['landmark'])){
@@ -5798,11 +5810,18 @@ class FindersController extends \BaseController {
 			"type"=>"",
 			"button_text"=>"Book",
 			"amount"=>0,
+			
 		];
-
+		
 		foreach($services as $service){
 
 			foreach($service[$key] as $ratecard){
+				// Log::info($ratecard['type']);
+				$session_ratecard = null;
+
+				if(!$session_ratecard && in_array($ratecard['type'], [ 'workout session'])){
+					$session_ratecard = $ratecard;
+				}
 
 				if(!empty($ratecard['offers']) && !empty($ratecard['offers'][0]['offer_type']) && $ratecard['offers'][0]['offer_type'] == 'newyears'){
 
@@ -5832,6 +5851,12 @@ class FindersController extends \BaseController {
 					break;
 				}
 			}	
+		}
+
+		if($session_ratecard && $return['ratecard_id']){
+			$return['book_button_text'] = 'Book Session';
+			$return['book_type'] = 'workout-session';
+			$return['book_service_id'] = $session_ratecard['service_id'];
 		}
 
 		return $return;
