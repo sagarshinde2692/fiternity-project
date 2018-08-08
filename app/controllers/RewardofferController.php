@@ -1065,10 +1065,10 @@ class RewardofferController extends BaseController {
                 $no_of_sessions = (!empty($no_of_sessions) ? $no_of_sessions == 1 ? '1 session' : $no_of_sessions.' sessions' : '1 session');
 
                 $rewards_snapfitness_contents = [
-                    'Fitness Merchandise (Stylish & waterproof Gym Bag + Trendy Shaker) worth Rs.1,000',
-                    'Swimming session at 5-star hotels for '.$no_of_sessions.' people worth Rs.3,000',
-                    'Personalised Online Diet Consultation for 1 month Rs.1299',
-                    'Free Vouchers from Amazon, GNC & Faasos worth Rs.700'
+                    'Fitness Merchandise (Stylish & waterproof Gym Bag + Trendy Shaker) worth Rs. 1,000',
+                    'Swimming session at 5-star hotels for 2 people worth 3,000',
+                    'Personalised Online Diet Consultation for 1 month',
+                    'Free Vouchers from Amazon, GNC & Faasos'
                 ];
 
                 $rewardObjData['title'] = 'Snap Fitness Hamper';
