@@ -896,7 +896,7 @@ class FindersController extends \BaseController {
 					if(!empty($callOutObj['book_button_text'])){
 						$finder['callout_book_button_text'] = $callOutObj['book_button_text'];
 					}						
-					if(!empty($callOutObj['service_id'])){
+					if(!empty($callOutObj['book_service_id'])){
 						$finder['callout_book_service_id'] = $callOutObj['book_service_id'];
 					}						
 				}
