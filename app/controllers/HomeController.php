@@ -4770,7 +4770,12 @@ class HomeController extends BaseController {
         		if(!empty($jwt_token))
         		{
         			$token_decoded=decode_customer_token();
-        			(!empty($token_decoded)&&!empty($token_decoded->customer))?$cart_id=$token_decoded->customer->cart_id:"";
+        			if(!empty($token_decoded)&&!empty($token_decoded->customer))
+        			{
+        				if(!empty($token_decoded->customer->cart_id))
+        					$cart_id=$token_decoded->customer->cart_id;
+        				else $cart_id=getCartOfCustomer(intval($token_decoded->customer->_id));
+        			}
         			if(!empty($cart_id))
         			{
         				$ratecard=ProductRatecard::active()->where("_id",$ratecard_id)->first(['price','product_id']);
