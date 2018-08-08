@@ -361,10 +361,10 @@ Class CustomerReward {
                         
     
                         $snapfitness_contents = [
-                            'Swimming session at 5 star hotels ('.$no_of_sessions.' )',
-                            'Fitness Merchandise Kit (Gym Bag + Shaker)',
-                            'Personalized Online Diet Consultation (for 1 month)',
-                            'Free Vouchers from ( Amazon,GNC & Faasos)'
+                            'Fitness Merchandise (Stylish & waterproof Gym Bag + Trendy Shaker) worth Rs. 1,000',
+                            'Swimming session at 5-star hotels for 2 people worth 3,000',
+                            'Personalised Online Diet Consultation for 1 month',
+                            'Free Vouchers from Amazon, GNC & Faasos'
                         ];
 
                         $reward['title'] = 'Snap Fitness Hamper';
@@ -380,7 +380,7 @@ Class CustomerReward {
                         $reward['new_amount'] = 6000;
                         $reward['payload']['amount'] = 6000;
                         $reward['payload_amount'] = 6000;
-                        $reward['description'] = 'We have curated a perfect Fitness Start Pack for your membership just for you. Now you can strike this off your list and get going.<br>- '.implode('<br>- ',$snapfitness_contents);
+                        $reward['description'] = 'The perfect pack to get your fitness membership started.<br>- '.implode('<br>- ',$snapfitness_contents);
                     }
 
                 }
