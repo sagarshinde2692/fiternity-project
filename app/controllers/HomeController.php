@@ -4837,7 +4837,7 @@ class HomeController extends BaseController {
                     
                     if(isset($selectedRatecard['slash_price'])&&$selectedRatecard['slash_price']!==""){
                         if(isset($selectedRatecard['price'])&&$selectedRatecard['price']!=="")
-                        $selectedRatecard['discounted_price']=" (".intval(((($selectedRatecard['slash_price']-$selectedRatecard['price'])/$selectedRatecard['slash_price'])*100)).") % off";
+                        $selectedRatecard['discounted_price']=" (".intval(((($selectedRatecard['slash_price']-$selectedRatecard['price'])/$selectedRatecard['slash_price'])*100))."% off )";
                         $selectedRatecard['slash_price'] = $this->utilities->getRupeeForm($selectedRatecard['slash_price']);
                     }
                     if(!empty($selectedRatecard['flags'])&&!empty($selectedRatecard['flags']['tax_inclusive']))
@@ -4879,7 +4879,7 @@ class HomeController extends BaseController {
 					
 					
 					if(!empty($selectedRatecard['already_purchased_customers']))
-						($selectedRatecard['already_purchased_customers']==1)?"1 User has already purchased this item.":$selectedRatecard['already_purchased_customers']. " Users have already purchased this item.";
+						$selectedRatecard['already_purchased_customers']=($selectedRatecard['already_purchased_customers']==1)?"1 User has already purchased this item.":$selectedRatecard['already_purchased_customers']. " Users have already purchased this item.";
 					
                     
         			(!empty($productView['specification'])&&!empty($productView['specification']['secondary']))?
