@@ -5005,9 +5005,9 @@ class HomeController extends BaseController {
         			$selectedRatecard['cost']=(isset($selectedRatecard['slash_price'])&&$selectedRatecard['slash_price']!=="")?$this->utilities->slashPriceFormat($selectedRatecard)." ".$this->utilities->getRupeeForm($selectedRatecard['price']):$this->utilities->getRupeeForm($selectedRatecard['price']);
                     
                     if(isset($selectedRatecard['slash_price'])&&$selectedRatecard['slash_price']!==""){
-                        $selectedRatecard['slash_price'] = $this->utilities->getRupeeForm($selectedRatecard['slash_price']);
                         if(isset($selectedRatecard['price'])&&$selectedRatecard['price']!=="")
-                        $selectedRatecard['discounted_price']= intval(((($selectedRatecard['slash_price']-$selectedRatecard['price'])/$selectedRatecard['slash_price'])*100))."% off";
+                        	$selectedRatecard['discounted_price']= intval(((($selectedRatecard['slash_price']-$selectedRatecard['price'])/$selectedRatecard['slash_price'])*100))."% off";
+                        $selectedRatecard['slash_price'] = $this->utilities->getRupeeForm($selectedRatecard['slash_price']);
                     }
                     
                     // new Code  to be implemented later 
