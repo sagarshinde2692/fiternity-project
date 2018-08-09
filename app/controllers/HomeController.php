@@ -2506,17 +2506,19 @@ class HomeController extends BaseController {
     }
 
 
-    public function getCities(){
-
-        $array = array();
-        $app_device = Request::header('Device-Type');
-        if(isset($app_device) && in_array($app_device, ['ios', 'android'])){
-            $cites		= 	City::active()->orderBy('name')->whereNotIn('_id',$array)->orderBy("order")->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
-        }else{
-            $cites		= 	City::orderBy('name')->whereNotIn('_id',$array)->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
-        }
-
-        return Response::json($cites,200);
+    public function getCities($array1=false){
+    	
+    	$array = array();
+    	$app_device = Request::header('Device-Type');
+    	if(isset($app_device) && in_array($app_device, ['ios', 'android'])){
+    		$cites		= 	City::active()->orderBy('name')->whereNotIn('_id',$array)->orderBy("order")->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
+    	}else{
+    		$cites		= 	City::orderBy('name')->whereNotIn('_id',$array)->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
+    	}
+    	
+    	if($array1)
+    		return $cites->toArray();
+    		else return Response::json($cites,200);
     }
 
     public function getCityLocation($city = 'mumbai',$cache = true){
@@ -4834,9 +4836,9 @@ class HomeController extends BaseController {
         			$selectedRatecard['cost']=(isset($selectedRatecard['slash_price'])&&$selectedRatecard['slash_price']!=="")?$this->utilities->slashPriceFormat($selectedRatecard)." ".$this->utilities->getRupeeForm($selectedRatecard['price']):$this->utilities->getRupeeForm($selectedRatecard['price']);
                     
                     if(isset($selectedRatecard['slash_price'])&&$selectedRatecard['slash_price']!==""){
-                        $selectedRatecard['slash_price'] = $this->utilities->getRupeeForm($selectedRatecard['slash_price']);
                         if(isset($selectedRatecard['price'])&&$selectedRatecard['price']!=="")
                         $selectedRatecard['discounted_price']= intval(((($selectedRatecard['slash_price']-$selectedRatecard['price'])/$selectedRatecard['slash_price'])*100))."% off";
+                        $selectedRatecard['slash_price'] = $this->utilities->getRupeeForm($selectedRatecard['slash_price']);
                     }
                     
                     // new Code  to be implemented later 
@@ -5127,19 +5129,28 @@ class HomeController extends BaseController {
         }
         public function getCustomerAddress()
         {
+        	
         	try {
-        		$resp=["status"=>1,"data"=>[]];
-        		$customer=$this->utilities->getCustomerAddress();
-        		if(!empty($customer))
-        		{
-        			$customer=$customer->toArray();
-        			$resp['data']=(!empty($customer['$customer_addresses_product'])?$customer['$customer_addresses_product']:[]);
-        		}
-        		return $resp;
-        	} catch (Exception $e) {
-        		return  ['status'=>0,"message"=>$this->utilities->baseFailureStatusMessage($e)];
-        	}
+        	$t=[];
+        	$tt=Request::header("Authorization");
+        	Log::info(" token  ".print_r($tt,true));
+        	$cart=$this->utilities->attachCart($t,true);
+        	$dataCart=$this->utilities->getCartFinalSummary($cart['products'], $cart['_id']);
+        	
+        	if(!empty($dataCart)&&!empty($dataCart['status']) && $dataCart['status'] != 5)
+        		$finalData=['status'=>200,"response"=>$dataCart['data']];
+        		else return $dataCart;
+        		$this->utilities->fetchCustomerAddresses($finalData['response']);
+        		$cities=['cities'=>array_map(function($e){return $e['name'];},array_values(array_filter($this->getCities(true),function ($e){return !empty($e['_id'])&&$e['_id']!=10000;})))];
+        		$finalData['response']=array_merge($finalData['response'],$cities);
+        		return $finalData;
+        		
+        } catch (Exception $e) {
+        	return  ['status'=>0,"message"=>$this->utilities->baseFailureStatusMessage($e)];
         }
+        }
+        
+        
         public function setCustomerAddress()
         {
         	try {
