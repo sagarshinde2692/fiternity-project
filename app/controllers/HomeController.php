@@ -2530,7 +2530,7 @@ class HomeController extends BaseController {
     }
 
 
-    public function getCities(){
+    public function getCities($array1=false){
 
         $array = array();
         $app_device = Request::header('Device-Type');
@@ -2540,7 +2540,9 @@ class HomeController extends BaseController {
             $cites		= 	City::orderBy('name')->whereNotIn('_id',$array)->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
         }
 
-        return Response::json($cites,200);
+        if($array1)
+        	return $cites->toArray();
+        else return Response::json($cites,200);
     }
 
     public function getCityLocation($city = 'mumbai',$cache = true){
@@ -5293,7 +5295,8 @@ class HomeController extends BaseController {
         			$finalData=['status'=>200,"response"=>$dataCart['data']];
         		else return $dataCart;
         			$this->utilities->fetchCustomerAddresses($finalData['response']);
-        		$finalData['response']=array_merge($finalData['response'],json_decode($this->getCities()));
+        			$cities=['cities'=>array_map(function($e){return $e['name'];},array_values(array_filter($this->getCities(true),function ($e){return !empty($e['_id'])&&$e['_id']!=10000;})))];
+        			$finalData['response']=array_merge($finalData['response'],$cities);
         		return $finalData;
         	} catch (Exception $e) {
         		return  ['status'=>0,"message"=>$this->utilities->baseFailureStatusMessage($e)];
