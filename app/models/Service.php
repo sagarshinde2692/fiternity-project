@@ -256,7 +256,7 @@ class Service extends \Basemodel{
 							Log::info($value['_id']);
 							Log::info("slots left");
 							if($this->available_slots > 0){
-								$ratecardoffer['offer_text']    =  ($this->available_slots > 1 ? $this->available_slots." slots" : $this->available_slots)." slot"." left";
+								$ratecardoffer['offer_text']    =  ($this->available_slots > 1 ? $this->available_slots." slots" : $this->available_slots." slot")." left";
 							}
 						}
 
