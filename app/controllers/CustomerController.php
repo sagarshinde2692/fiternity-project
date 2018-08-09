@@ -3486,7 +3486,7 @@ class CustomerController extends \BaseController {
 			if($city != "ahmedabad"){
 
 				$result['campaigns'][] = [
-					'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Mumbai_APP.png',
+					'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/mumbai-gold.jpg',
 					'link'=>'ftrnty://ftrnty.com/s?brand=golds-gym&city='.strtolower($city),
 					'title'=>'Pledge for Fitness',
 					'height'=>100,
@@ -3496,7 +3496,7 @@ class CustomerController extends \BaseController {
 
 				switch($city){
 					case "pune":
-						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Pune_APP.png";
+						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/pune-gold.jpg";
 						if(intval(date('d', time())) % 2 == 0){
 							$result['campaigns'][] = [
 								'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/Multifit_App.png',
@@ -3518,19 +3518,19 @@ class CustomerController extends \BaseController {
 						}
 					break;
 					case "bangalore":
-						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Bangalore_APP.png";
+						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/bangalore-gold.jpg";
 						break;
 					case "delhi":
-						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Delhi_APP.png";
+						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/delhi-gold.jpg";
 						break;	
 					case "noida":
-						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Noida_APP.png";
+						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/noida-gold.jpg";
 						break;
 					case "hyderabad":
-						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Hyderabad_APP.png";
+						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/hyderabad-gold.jpg";
 						break;					
 					case "gurgaon":
-						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Gurugram_APP.png";
+						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/gurgaon-gold.jpg";
 						break;										
 				}
 			}
@@ -3538,7 +3538,7 @@ class CustomerController extends \BaseController {
 			if($city == "mumbai"){
 
 				$result['campaigns'][] = [
-					'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/YFC_App%20banner.png',
+					'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/yfc-mumbai-app.jpg',
 					'link'=>'ftrnty://ftrnty.com/s?brand=your-fitness-club&city='.strtolower($city),
 					'title'=>'Your Fitness Club (YFC)',
 					'height'=>100,
