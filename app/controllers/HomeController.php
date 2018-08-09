@@ -4837,9 +4837,12 @@ class HomeController extends BaseController {
                     
                     if(isset($selectedRatecard['slash_price'])&&$selectedRatecard['slash_price']!==""){
                         if(isset($selectedRatecard['price'])&&$selectedRatecard['price']!=="")
-                        $selectedRatecard['discounted_price']= intval(((($selectedRatecard['slash_price']-$selectedRatecard['price'])/$selectedRatecard['slash_price'])*100))."% off";
+                        $selectedRatecard['discounted_price']=" (".intval(((($selectedRatecard['slash_price']-$selectedRatecard['price'])/$selectedRatecard['slash_price'])*100)).") % off";
                         $selectedRatecard['slash_price'] = $this->utilities->getRupeeForm($selectedRatecard['slash_price']);
                     }
+                    if(!empty($selectedRatecard['flags'])&&!empty($selectedRatecard['flags']['tax_inclusive']))
+                    		$selectedRatecard['tax_text']="Inclusive of all taxes.";
+                    
                     
                     // new Code  to be implemented later 
                     $alreadyPurchased=Order::where('status',"1")->/* where('payment.success_date',">=",new DateTime(date("Y-m-d H:i:s", mktime(0,0,0))))-> */where("cart_data.ratecard._id",intval($selectedRatecard['_id']))->get();
@@ -4874,6 +4877,9 @@ class HomeController extends BaseController {
 					}
 					// category based addition
 					
+					
+					if(!empty($selectedRatecard['already_purchased_customers']))
+						($selectedRatecard['already_purchased_customers']==1)?"1 User has already purchased this item.":$selectedRatecard['already_purchased_customers']. " Users have already purchased this item.";
 					
                     
         			(!empty($productView['specification'])&&!empty($productView['specification']['secondary']))?
