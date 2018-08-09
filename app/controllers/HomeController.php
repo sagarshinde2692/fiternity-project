@@ -581,7 +581,7 @@ class HomeController extends BaseController {
 
                 $campaigns[] = [
                     'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/yfc-mumbai-web.jpg',
-                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/yfc-mumbai-app.jpg',
+                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/yfc-mumbai-mob.jpg',
                     'link'=>Config::get('app.website').'/your-fitness-club-mumbai',
                     'title'=>'Your Fitness Club (YFC)',
                     'height'=>100,
