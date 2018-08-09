@@ -580,8 +580,8 @@ class HomeController extends BaseController {
             if($city == 'mumbai'){
 
                 $campaigns[] = [
-                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/YFC_Web%20banner.png',
-                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/YFC_MobResponsive_banner.png',
+                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/yfc-mumbai-web.jpg',
+                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/yfc-mumbai-app.jpg',
                     'link'=>Config::get('app.website').'/your-fitness-club-mumbai',
                     'title'=>'Your Fitness Club (YFC)',
                     'height'=>100,
