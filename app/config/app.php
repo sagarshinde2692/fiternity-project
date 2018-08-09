@@ -8,7 +8,7 @@ return array(
 	'url' => 'http://fitapi.com',
 	'admin_url' => 'http://fitadmin.com',
 	'website' => 'https://www.fitternity.com',
-	'sidekiq_url' => 'http://kick.fitn.in/', 
+	// 'sidekiq_url' => 'http://kick.fitn.in/', 
 	'queue' => 'booktrial',
 	'vendor_communication' => false,
 	'env' => 'stage',
