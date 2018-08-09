@@ -1137,9 +1137,7 @@ class TransactionController extends \BaseController {
     				// Cart data added based on cart id or token.
     				if($data['customer']['customer_source']=='kiosk')
     				{
-    					
-    					$addToCartResponse=$this->utilities->addProductsToCart($data['cart_data'],null,false,false);
-    					
+    					$addToCartResponse=$this->utilities->addProductsToCart($data['cart_data'],null,false,false);	
     					if($addToCartResponse['status'])
     						$data['cart_data']=$addToCartResponse['response']['data'];
     						else return Response::json($addToCartResponse);
@@ -6784,7 +6782,7 @@ class TransactionController extends \BaseController {
     	try {
     		$response=["status"=>1,"message"=>"success"];
     		$you_save = 0;
-    		$amount_summary= [['field' => 'Total Amount','value' => $this->utilities->getRupeeForm((isset($data['amount_calculated']['cart_amount']) ? $data['amount_calculated']['cart_amount']: $data['amount_calculated']['cart_amount']))]];
+    		$amount_summary= [['field' => 'Cart Amount','value' => $this->utilities->getRupeeForm((isset($data['amount_calculated']['cart_amount']) ? $data['amount_calculated']['cart_amount']: $data['amount_calculated']['cart_amount']))]];
     		if(empty($data['deliver_to_vendor']))array_push($amount_summary,['field' => 'Delivery charges','value' =>$this->utilities->getRupeeForm(intval(Config::get('app.product_delivery_charges')))]);
     		$amount_payable = ['field' => 'Total Amount Payable', 'value' => $this->utilities->getRupeeForm($data['amount_calculated']['final'])];
     		

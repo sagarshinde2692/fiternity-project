@@ -4776,6 +4776,7 @@ class HomeController extends BaseController {
         					$cart_id=$token_decoded->customer->cart_id;
         				else $cart_id=getCartOfCustomer(intval($token_decoded->customer->_id));
         			}
+        			
         			if(!empty($cart_id))
         			{
         				$ratecard=ProductRatecard::active()->where("_id",$ratecard_id)->first(['price','product_id']);
@@ -4831,9 +4832,48 @@ class HomeController extends BaseController {
         			$selectedRatecard=$selectedRatecard[0];
         			
         			$selectedRatecard['cost']=(isset($selectedRatecard['slash_price'])&&$selectedRatecard['slash_price']!=="")?$this->utilities->slashPriceFormat($selectedRatecard)." ".$this->utilities->getRupeeForm($selectedRatecard['price']):$this->utilities->getRupeeForm($selectedRatecard['price']);
+                    
                     if(isset($selectedRatecard['slash_price'])&&$selectedRatecard['slash_price']!==""){
                         $selectedRatecard['slash_price'] = $this->utilities->getRupeeForm($selectedRatecard['slash_price']);
+                        if(isset($selectedRatecard['price'])&&$selectedRatecard['price']!=="")
+                        $selectedRatecard['discounted_price']= intval(((($selectedRatecard['slash_price']-$selectedRatecard['price'])/$selectedRatecard['slash_price'])*100))."% off";
                     }
+                    
+                    // new Code  to be implemented later 
+                    $alreadyPurchased=Order::where('status',"1")->/* where('payment.success_date',">=",new DateTime(date("Y-m-d H:i:s", mktime(0,0,0))))-> */where("cart_data.ratecard._id",intval($selectedRatecard['_id']))->get();
+                    
+                    if(!empty($alreadyPurchased))
+                    {
+                    	$alreadyPurchased=$alreadyPurchased->toArray();
+                    	$alreadyPurchasedCnt=0;
+                    	$tt=[];
+                    	foreach ($alreadyPurchased as $key=>$value) 
+                    	{
+                    		if(!empty($value['cart_data']))
+                    		{
+                    			$ra=array_filter($value['cart_data'],function ($e) use ($selectedRatecard){return !empty($e['ratecard'])&&$e['ratecard']['_id']==$selectedRatecard['_id'];});
+                    			if(count($ra)>0&&!empty($ra[0]['quantity']))$alreadyPurchasedCnt=$alreadyPurchasedCnt+$ra[0]['quantity'];
+                    		}
+                    	}
+                    	if(!empty($alreadyPurchasedCnt))
+                    		$selectedRatecard['already_purchased_customers']=$alreadyPurchasedCnt;	
+                    }
+                    
+                    // new Code  to be implemented later
+                    
+                    // current code
+
+                    // category based addition
+					if(!empty($productView['primarycategory'])&&!empty($productView['primarycategory']['already_purchased_count']))
+					{
+						if(!empty($selectedRatecard['already_purchased_customers']))
+							$selectedRatecard['already_purchased_customers']=$selectedRatecard['already_purchased_customers']+$productView['primarycategory']['already_purchased_count'];
+						else $selectedRatecard['already_purchased_customers']=$productView['primarycategory']['already_purchased_count'];
+					}
+					// category based addition
+					
+					
+                    
         			(!empty($productView['specification'])&&!empty($productView['specification']['secondary']))?
         			$selectedRatecard['details']=$this->utilities->getProductDetailsCustom($productView['specification']['secondary'],'secondary'):"";
         			
@@ -5077,9 +5117,10 @@ class HomeController extends BaseController {
         		
         		if(!empty($dataCart)&&!empty($dataCart['status']) && $dataCart['status'] != 5)
         			$finalData=['status'=>200,"response"=>$dataCart['data']];
-        			else return $dataCart;
+        		else return $dataCart;
         			$this->utilities->fetchCustomerAddresses($finalData['response']);
-        			return $finalData;
+        		$finalData['response']=array_merge($finalData['response'],json_decode($this->getCities()));
+        		return $finalData;
         	} catch (Exception $e) {
         		return  ['status'=>0,"message"=>$this->utilities->baseFailureStatusMessage($e)];
         	}

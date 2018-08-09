@@ -4236,6 +4236,12 @@ Class Utilities {
 				// GET COUPON CALCULATED AMOUNT FROM DIFF FUNCTION
 				// MAKE DIFFERENT VARIABLE FOR WALLET AMOUNT ADD IT IN RESPONSE IN DATA WITH KEY coupon_amount
 				
+				/* if(!empty($data['coupon']))
+				{
+					$this->getCouponCodeAttach($data['coupon']);
+				} */
+					
+				
 				
 				
 				
@@ -4636,6 +4642,22 @@ Class Utilities {
 		
 	}
 
+	public function fetchProductCities(&$data)
+	{
+		$jwt=Request::header("Authorization");
+		if(isset($jwt))
+		{
+			$customer=$this->getCustomerAddress();
+			if(!empty($customer))
+			{
+				$customer=$customer->toArray();
+				$data['customer_address'] =(!empty($customer['customer_addresses_product'])?$customer['customer_addresses_product']:[]);
+			}
+		}
+		
+	}
+	
+
 
 	public function getAllProductDetails($order)
 	{
@@ -4744,6 +4766,24 @@ Class Utilities {
         return "";
 		return (empty($selectedRatecard)||empty($selectedRatecard['slash_price']))?"":'<strike>'.$this->getRupeeForm($selectedRatecard['slash_price']).'</strike>';
 	}
+	
+	/* public function getCouponCodeAttach($data)
+	{
+		
+		if(isset($data['coupon_code']) && $data['coupon_code'] != "")
+		{
+			$data['coupon_code'] = strtolower($data['coupon_code']);
+			$already_applied_coupon = Customer::where('_id',$data['customer_id'])->whereIn('applied_promotion_codes',[$data['coupon_code']])->count();
+			
+			if($already_applied_coupon>0){
+				return Response::json(array('status'=>400, 'message'=>'Coupon already applied'), $this->error_status);
+			}
+		}
+		
+		
+		return (empty($selectedRatecard)||empty($selectedRatecard['slash_price']))?"":'<strike>'.$this->getRupeeForm($selectedRatecard['slash_price']).'</strike>';
+	} */
+	
 	
 	
 }
