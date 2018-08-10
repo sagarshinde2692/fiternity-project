@@ -1175,6 +1175,7 @@ class TransactionController extends \BaseController {
     							
     					}
     				}
+    				else unset($data['remove_coupon']);
     				// get already generated order stop
     				
     				
