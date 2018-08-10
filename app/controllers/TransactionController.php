@@ -7248,8 +7248,12 @@ class TransactionController extends \BaseController {
                 'finder_name'=>$data_otp['finder_name'],
                 'order_id'=>$order['_id']
             ];
-
-            $order->update(['otp_data'=>$otp_data, 'payment.payment_mode'=>'pay at studio']);
+            $payment = $order->payment;
+            $payment['payment_mode'] = 'pay at studio';
+            $order->otp_data = $otp_data;
+            $order->payment = $payment;
+            $order->save();
+            
 
         }else{
             $otp_data = $order->otp_data;
