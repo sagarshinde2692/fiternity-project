@@ -4837,9 +4837,9 @@ Class Utilities {
 					}
 					if(!empty($coupon['finders']))
 					{
-						if((empty($data['finder'])||mpty($data['finder']['finder_id'])))
+						if((empty($data['finder'])||empty($data['finder']['finder_id'])))
 							return ['status'=>0,"message"=>"Coupon can only be applied on specific vendors"];
-						else if(!in_array($data['finder']['finder_id'], $data['finders']))
+							else if(!in_array($data['finder']['finder_id'], $coupon['finders']))
 							return ['status'=>0,"message"=>"Coupon can't be applied for ".$data['finder']['finder_name']];
 					}
 					return $resp=['status'=>1,"message"=>"Coupon can be applied Found.","coupon"=>$coupon];
