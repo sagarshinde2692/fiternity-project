@@ -2124,14 +2124,14 @@ class HomeController extends BaseController {
     						return $cart_summary;
     						
     						$order_summary=[];
-    						array_push($order_summary, ["key"=>"Total Amount","value"=>$cart_total]);
+    						array_push($order_summary, ["key"=>"Cart Amount","value"=>$cart_total]);
+    						
     						if(empty($order['deliver_to_vendor']))
     							array_push($order_summary, ["key"=>"Delivery Charges","value"=>$this->utilities->getRupeeForm(intval(Config::get('app.product_delivery_charges')))]);
-
     							array_push($order_summary, ["key"=>"Amount Paid","value"=>$this->utilities->getRupeeForm($total_amount)]);
     							
     							(!empty($cart_summary['data']['coupon_discount']))?
-    							array_push($order_summary, ["key"=>"Coupon Discount","value"=>"- Rs. ".$cart_total ,"color"=>"#f7a81e"]):"";
+    							array_push($order_summary, ["key"=>"Coupon Discount","value"=>"-".$this->utilities->getRupeeForm($cart_total),"color"=>"#f7a81e"]):"";
     							
     							$orderDetail=["order_id"=>$order['_id'],"summary"=>$order_summary,"total"=>$this->utilities->getRupeeForm($total_amount)];
     							if($payment_mode)$orderDetail["payment_mode"]=$payment_mode;

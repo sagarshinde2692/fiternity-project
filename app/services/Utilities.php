@@ -4451,7 +4451,7 @@ Class Utilities {
 			foreach ($cart_data as $cart_item)
 				$amount=$amount+(intval($cart_item['quantity'])*intval($cart_item['price']));
 				
-				
+				$resp['amount']['cart_amount']=$amount;
 				// KINDLY ADD WALLET AMOUNT HERE TO BE SUBTRACTED
 				// GET WALLET CALCULATED AMOUNT FROM DIFF FUNCTION
 				// MAKE DIFFERENT VARIABLE FOR WALLET AMOUNT ADD IT IN RESPONSE IN DATA WITH KEY wallet amount
@@ -4461,27 +4461,67 @@ Class Utilities {
 				// GET COUPON CALCULATED AMOUNT FROM DIFF FUNCTION
 				// MAKE DIFFERENT VARIABLE FOR WALLET AMOUNT ADD IT IN RESPONSE IN DATA WITH KEY coupon_amount
 				
-				/* if(!empty($data['coupon']))
+				if(!empty($data['coupon']))
 				{
-					$this->getCouponCodeAttach($data['coupon']);
-				} */
+					 $couponValid=$this->getCouponCodeAttach($data,$amount);
+					if(!empty($couponValid)&&!empty($couponValid['status']))
+					{
+						$couponValid=$couponValid['coupon'];
+						$couponDiscAmnt=0;
+						if(!empty($couponValid['discount_amount']))
+						{
+							if($amount>=$couponValid['discount_amount'])
+							{
+								$amount=$amount-$couponValid['discount_amount'];
+								$couponDiscAmnt=$couponValid['discount_amount'];
+							}
+							else {
+								$couponDiscAmnt=$amount;
+								$amount=0;							
+							}
+							
+						}
+						else if(!empty($couponValid['discount_percent'])&&!empty($couponValid['discount_max']))
+						{
+// 							if($amount>=$couponValid['discount_max'])
+// 							{
+								$disc_perc_amnt=(($couponValid['discount_percent']/100)*$amount);
+								if($disc_perc_amnt>=$couponValid['discount_max'])
+								{
+									$amount=$amount-$couponValid['discount_max'];
+									$couponDiscAmnt=$couponValid['discount_max'];
+								}
+									else {
+										$amount=intval($amount-$disc_perc_amnt);
+										$couponDiscAmnt=intval($disc_perc_amnt);
+									}
+									
+// 							}
+// 							else {
+// 								$couponDiscAmnt=$amount;
+// 								$amount=0;
+// 							}
+						}
+						else return ['status'=>0,"message"=>"Coupon discount not set.Can't be used yet."];
+						if($couponDiscAmnt!=0)
+							$resp['amount']['coupon_discount_amount']=$couponDiscAmnt;	
+					}
+					else return $couponValid;
+				}
 					
-				
-				
-				
-				
+			
 				// AFTER CALCULATION SHOW ONLY DEDUCTION HERE
 				// $amount = $amount - $walletamuount - $couponAmount + $convinience_fee;
 				
 				
 				// DELIVERY CHARGES
-				$resp['amount']['cart_amount']=$amount;
+				
 				if(empty($data['deliver_to_vendor']))
 				{
 					$resp['amount']['delivery']=intval(Config::get('app.product_delivery_charges'));
 					$amount=$amount+$resp['amount']['delivery'];
 				}
-										
+
 					// FINALLY RETURN
 					$resp['amount']['final']=$amount;
 					
@@ -4532,6 +4572,11 @@ Class Utilities {
 			
 			$resp['data']['cart_details']=$cart_desc;
 			$resp['data']['total_cart_amount']=$amount;
+			if(!emptY($order['amount_calculated']['coupon_discount_amount']))
+			{
+				$resp['data']['coupon_discount']=$order['amount_calculated']['coupon_discount_amount'];
+				$amount=$amount-$order['amount_calculated']['coupon_discount_amount'];
+			}
 			if(empty($order['deliver_to_vendor']))$amount=$amount+intval(Config::get('app.product_delivery_charges'));
 			$resp['data']['total_amount']=$amount;
 			// 			$this->getProductCartAmount($order);
@@ -5441,26 +5486,46 @@ Class Utilities {
 		return (empty($selectedRatecard)||empty($selectedRatecard['slash_price']))?"":'<strike>'.$this->getRupeeForm($selectedRatecard['slash_price']).'</strike>';
 	}
 	
-	/* public function getCouponCodeAttach($data)
-	{
-		
-		if(isset($data['coupon_code']) && $data['coupon_code'] != "")
-		{
-			$data['coupon_code'] = strtolower($data['coupon_code']);
-			$already_applied_coupon = Customer::where('_id',$data['customer_id'])->whereIn('applied_promotion_codes',[$data['coupon_code']])->count();
+	public function getCouponCodeAttach($data,$amount)
+	{	
+		try {
+				$resp=['status'=>1,"message"=>"Coupon Successfully applied."];
+				$cur=new \DateTime();
+				$data['coupon'] = strtolower($data['coupon']);
+				$coupon=\Coupon::active()->where("start_date","<=",$cur)->where("end_date",">=",$cur)->whereIn("ratecard_type",['product'])->where("code",$data['coupon'])->first();
+				if(!empty($coupon))
+				{
+					
+					$coupon=$coupon->toArray();
+					if(!empty($coupon['once_per_user']))
+					{
+						$already_applied_coupon = Customer::where('_id',$data['customer']['customer_id'])->whereIn('product_codes',[$data['coupon']])->count();
+						if($already_applied_coupon>0)return ['status'=>0,"message"=>"Coupon can't be used twice by the same user."];
+					}
+					if(!empty($coupon['total_available']))
+					{
+						if(!empty($coupon['total_used']))
+						{
+							if(intval($coupon['total_used'])>=intval($coupon['total_available']))
+								return ['status'=>0,"message"=>"Coupons of this type already exhausted.Better luck next time."];
+						}
+					}
+					if(!empty($coupon['finders']))
+					{
+						if((empty($data['finder'])||empty($data['finder']['finder_id'])))
+							return ['status'=>0,"message"=>"Coupon can only be applied on specific vendors"];
+							else if(!in_array($data['finder']['finder_id'], $coupon['finders']))
+							return ['status'=>0,"message"=>"Coupon can't be applied for ".$data['finder']['finder_name']];
+					}
+					return $resp=['status'=>1,"message"=>"Coupon can be applied Found.","coupon"=>$coupon];
+				}
+				else return ['status'=>0,"message"=>"Invalid Coupon"];
 			
-			if($already_applied_coupon>0){
-				return Response::json(array('status'=>400, 'message'=>'Coupon already applied'), $this->error_status);
-			}
+		} catch (Exception $e) {
+			return  ['status'=>0,"message"=>$this->baseFailureStatusMessage($e)];
 		}
-		
-		
-		return (empty($selectedRatecard)||empty($selectedRatecard['slash_price']))?"":'<strike>'.$this->getRupeeForm($selectedRatecard['slash_price']).'</strike>';
-	} */
-	
-	
-	
 
+	} 
 //     public function getRupeeForm($amount){
 //     	return (isset($amount)?'\u20B9'.' '.$amount:"");
 //     }
@@ -5612,7 +5677,7 @@ Class Utilities {
     	else in_array($customer_email, ['utkarshmehrotra@fitternity.com','shahaansyed@fitternity.com','maheshjadhav@fitternity.com']);
 
     }
-    
+	
 }
 
 
