@@ -1160,6 +1160,23 @@ class TransactionController extends \BaseController {
     				$payment_mode = isset($data['payment_mode']) ? $data['payment_mode'] : "";
     				if($payment_mode=='cod')$data['payment_mode'] = 'cod';
     				
+    				// get already generated order start
+    				
+    				if(!empty($data['order_id']))
+    				{
+    					$mkOrder=Order::where('_id',intval($data['order_id']))->first();
+    					if(!empty($mkOrder))
+    					{
+    						if(!empty($data['remove_coupon']))
+    						{
+    							$mkOrder->unset("amount_calculated.coupon_discount_amount");
+    							unset($data['remove_coupon']);
+    						}
+    							
+    					}
+    				}
+    				// get already generated order stop
+    				
     				
     				
     				// calculated total cart amount.
@@ -2406,6 +2423,21 @@ class TransactionController extends \BaseController {
     		$data['link']['diet_plan_link'] = $this->utilities->getShortenUrl(Config::get('app.website')."/diet-plan");
     		$data['link']["profile_link"] = isset($profile_link) ? $profile_link : $this->utilities->getShortenUrl(Config::get('app.website')."/profile/".$orderArr['customer']['customer_email']);
     		
+    		
+    		
+    		if(!empty($orderArr['coupon']))
+    		{
+    			$coupon=\Coupon::active()->whereIn("ratecard_type",['product'])->where("code",$orderArr['coupon'])->first();
+    			if(!empty($coupon))
+    			{
+    				$coupon=$coupon->toArray();
+    				if(!empty($coupon['once_per_user']))
+    				{
+    					$updated_coupon_customer= Customer::where('_id',$orderArr['customer']['customer_id'])->push('product_codes',$orderArr['coupon']);
+    					Log::info(" info  updated_coupon_customer :: ".print_r($updated_coupon_customer,true));
+    				}
+    		    }
+    		}
     		
     		if(isset($order->payment_mode) && $order->payment_mode == "paymentgateway"){
     			$orderArr['payment']['membership_bought_at']='Fitternity Payu Mode';
@@ -6810,15 +6842,15 @@ class TransactionController extends \BaseController {
     		} */
     		
     		// 	******************************************************************************	COUPON DISCOUNT  ******************************************************************************
-    		/* if(isset($data['coupon_discount_amount']) && $data['coupon_discount_amount'] > 0){
+    		if(!empty($data['amount_calculated']['coupon_discount_amount'])){
     		
     		$amount_summary[] = array(
     		'field' => 'Coupon Discount',
-    		'value' => '-Rs. '.$data['coupon_discount_amount']
+    		'value' => '-'.$this->utilities->getRupeeForm($data['amount_calculated']['coupon_discount_amount'])
     		);
-    		$you_save += $data['coupon_discount_amount'];
+    		$you_save += $data['amount_calculated']['coupon_discount_amount'];
     		
-    		} */
+    		}
     		
     		// 	******************************************************************************	APP DISCOUNT  ******************************************************************************
     		
