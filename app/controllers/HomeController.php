@@ -2097,8 +2097,11 @@ class HomeController extends BaseController {
     			$payment_mode=$order['payment']['payment_mode'];
     			if($payment_mode=='paymentgateway')
     				$payment_mode="Online";
+
+    			else if($payment_mode=='pay at studio')
+    					$payment_mode="At Studio";
     		}
-    		else $payment_mode=null;
+    			else $payment_mode=null;
     			
     			
     			$header=["status_text"=>"Order Successfull","status_icon"=>"https://image.flaticon.com/teams/slug/freepik.jpg"];
@@ -2135,6 +2138,7 @@ class HomeController extends BaseController {
     							(!empty($cart_summary['data']['coupon_discount']))?
     							array_push($order_summary, ["key"=>"Coupon Discount","value"=>"-".$this->utilities->getRupeeForm($cart_summary['data']['coupon_discount']),"color"=>"#f7a81e"]):"";
     							array_push($order_summary, ["key"=>"Amount Paid","value"=>$this->utilities->getRupeeForm($total_amount)]);    							
+
     							$orderDetail=["order_id"=>$order['_id'],"summary"=>$order_summary,"total"=>$this->utilities->getRupeeForm($total_amount)];
     							if($payment_mode)$orderDetail["payment_mode"]=$payment_mode;
     							
