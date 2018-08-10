@@ -477,8 +477,8 @@ class HomeController extends BaseController {
             switch($city){
                 case "bangalore":
                 $campaigns[] = [
-                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Gold%27s%20Gym_Bangalore_Web%20banner.png',
-                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Gold%27s%20Gym_Bangalore_Mobile%20Responsive%20and%20SRP.png',
+                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/bangalore-gold-web.png',
+                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/bangalore-gold-mob.png',
                     'link'=>Config::get('app.website').'/golds-gym-bangalore',
                     'title'=>'Pay Per Session',
                     'height'=>100,
@@ -488,8 +488,8 @@ class HomeController extends BaseController {
                 break;
                 case "delhi":
                 $campaigns[] = [
-                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Gold%27s%20Gym_Delhi_Web%20banner.png',
-                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Gold%27s%20Gym_Delhi_Mobile%20Responsive%20and%20SRP.png',
+                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/delhi-gold-web.png',
+                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/delhi-gold-mob.png',
                     'link'=>Config::get('app.website').'/golds-gym-delhi',
                     'title'=>'Pay Per Session',
                     'height'=>100,
@@ -499,8 +499,8 @@ class HomeController extends BaseController {
                 break;
                 case "gurgaon":
                 $campaigns[] = [
-                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Gold%27s%20Gym_Gurugram_Web%20banner.png',
-                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Gold%27s%20Gym_Gurugram_Mobile%20Responsive%20and%20SRP.png',
+                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/gurgaon-gold-web.png',
+                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/gurgaon-gold-mob.png',
                     'link'=>Config::get('app.website').'/golds-gym-gurgaon',
                     'title'=>'Pay Per Session',
                     'height'=>100,
@@ -510,8 +510,8 @@ class HomeController extends BaseController {
                 break;
                 case "hyderabad":
                 $campaigns[] = [
-                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Gold%27s%20Gym_Hyderabad_Web%20banner.png',
-                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Gold%27s%20Gym_Hyderabad_Mobile%20Responsive%20and%20SRP.png',
+                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/hyderabad-gold-web.png',
+                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/hyderabad-gold-mob.png',
                     'link'=>Config::get('app.website').'/golds-gym-hyderabad',
                     'title'=>'Pay Per Session',
                     'height'=>100,
@@ -521,8 +521,8 @@ class HomeController extends BaseController {
                 break;
                 case "mumbai":
                 $campaigns[] = [
-                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Gold%27s%20Gym_Mumbai_Web%20banner.png',
-                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Gold%27s%20Gym_Mumbai_Mobile%20Responsive%20and%20SRP.png',
+                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/mumbai-gold-web.png',
+                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/mumbai-gold-mob.png',
                     'link'=>Config::get('app.website').'/golds-gym-mumbai',
                     'title'=>'Pay Per Session',
                     'height'=>100,
@@ -532,8 +532,8 @@ class HomeController extends BaseController {
                 break;
                 case "noida":
                 $campaigns[] = [
-                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Gold%27s%20Gym_Noida_Web%20banner.png',
-                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Gold%27s%20Gym_Noida_Mobile%20Responsive%20and%20SRP.png',
+                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/noida-gold-web.png',
+                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/noida-gold-mob.png',
                     'link'=>Config::get('app.website').'/golds-gym-noida',
                     'title'=>'Pay Per Session',
                     'height'=>100,
@@ -543,8 +543,8 @@ class HomeController extends BaseController {
                 break;
                 case "pune":
                 $campaigns[] = [
-                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Gold%27s%20Gym_Pune_Web%20banner.png',
-                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Gold%27s%20Gym_Pune_Mobile%20Responsive%20and%20SRP.png',
+                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/pune-gold-web.png',
+                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/pune-gold-mob.png',
                     'link'=>Config::get('app.website').'/golds-gym-pune',
                     'title'=>'Pay Per Session',
                     'height'=>100,
@@ -580,8 +580,8 @@ class HomeController extends BaseController {
             if($city == 'mumbai'){
 
                 $campaigns[] = [
-                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/YFC_Web%20banner.png',
-                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/YFC_MobResponsive_banner.png',
+                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/yfc-mumbai-web.jpg',
+                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/yfc-mumbai-mob.jpg',
                     'link'=>Config::get('app.website').'/your-fitness-club-mumbai',
                     'title'=>'Your Fitness Club (YFC)',
                     'height'=>100,

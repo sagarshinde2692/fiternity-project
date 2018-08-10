@@ -5257,9 +5257,9 @@ Class Utilities {
     public function updateRatecardSlots($data){
         Log::info("inside updateRatecardSlots");
 
-        // if(intval(date('d', time())) >= 25){
-        //     return;
-        // }
+        if(intval(date('d', time())) >= 9){
+            return;
+        }
 
         $order = \Order::find(intval($data['order_id']));
         
@@ -5317,7 +5317,7 @@ Class Utilities {
 
                     $service->total_slots_created = isset($service->total_slots_created) ? $service->total_slots_created : $service->available_slots;
                     
-                    $new_slots = round($service->total_slots_created / $days_passed * $days_left / 2);
+                    $new_slots = ceil($service->total_slots_created / $days_passed * $days_left / 2);
 
                     Log::info($days_passed);
                     Log::info($days_left);
