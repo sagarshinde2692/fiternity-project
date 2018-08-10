@@ -4225,9 +4225,9 @@ Class Utilities {
     public function updateRatecardSlots($data){
         Log::info("inside updateRatecardSlots");
 
-        // if(intval(date('d', time())) >= 25){
-        //     return;
-        // }
+        if(intval(date('d', time())) >= 9){
+            return;
+        }
 
         $order = \Order::find(intval($data['order_id']));
         

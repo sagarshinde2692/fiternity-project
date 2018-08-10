@@ -190,7 +190,7 @@ class Service extends \Basemodel{
 			$serviceoffers = Offer::where('vendorservice_id', $this->_id)->where('hidden', false)->orderBy('order', 'asc')
 									->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
 									->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()) ))
-									->get(['start_date','end_date','price','type','allowed_qty','remarks','offer_type','ratecard_id','callout'])
+									->get(['start_date','end_date','price','type','allowed_qty','remarks','offer_type','ratecard_id','callout','added_by_script'])
 									->toArray();
 			$finder = $this->finder;
 			foreach ($ratecardsarr as $key => $value) {
@@ -247,18 +247,25 @@ class Service extends \Basemodel{
                         $difference     =   $today_date->diff($end_date);
 
                         if($difference->days <= 15){
-                            $ratecardoffer['offer_text']    =  ($difference->d == 1) ? "Expires Today" : ($difference->d > 3 ? "Expires soon" : "Expires in ".$difference->days." days");
+                            $ratecardoffer['offer_text']    =  ($difference->d == 1) ? "Expires Today" : ($difference->d > 7 ? "Expires soon" : "Expires in ".$difference->days." days");
 
 						}
 
-						if($value['type'] == 'membership' && $value['direct_payment_enable'] == '1' && $key == count($ratecardsarr) - 1){
+						// if($value['type'] == 'membership' && $value['direct_payment_enable'] == '1' && $key == count($ratecardsarr) - 1){
 
-							Log::info($value['_id']);
-							Log::info("slots left");
-							if($this->available_slots > 0){
-								$ratecardoffer['offer_text']    =  ($this->available_slots > 1 ? $this->available_slots." slots" : $this->available_slots." slot")." left";
-							}
-						}
+						// 	Log::info($value['_id']);
+						// 	Log::info("slots left");
+
+						// 	// if($this->available_slots > 0){
+						// 	// 	$ratecardoffer['offer_text']    =  ($this->available_slots > 1 ? $this->available_slots." slots" : $this->available_slots." slot")." left";
+						// 	// }
+
+							// if(!empty($ratecardoffer['added_by_script'])){
+							// 	$ratecardoffer['offer_text']    =  "Expiring in ".(17-intval(date('d', time())))." days";
+							// }
+
+							
+						// }
 
 
                         array_push($ratecardoffers,$ratecardoffer);
