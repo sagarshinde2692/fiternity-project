@@ -4238,7 +4238,7 @@ Class Utilities {
 				
 				if(!empty($data['coupon']))
 				{
-					$couponValid=$this->getCouponCodeAttach($data['coupon'],$amount);
+					 $couponValid=$this->getCouponCodeAttach($data,$amount);
 					if(!empty($couponValid)&&!empty($couponValid['status']))
 					{
 						$couponValid=$couponValid['coupon'];
@@ -4258,8 +4258,8 @@ Class Utilities {
 						}
 						else if(!empty($couponValid['discount_percent'])&&!empty($couponValid['discount_max']))
 						{
-							if($amount>=$couponValid['discount_max'])
-							{
+// 							if($amount>=$couponValid['discount_max'])
+// 							{
 								$disc_perc_amnt=(($couponValid['discount_percent']/100)*$amount);
 								if($disc_perc_amnt>=$couponValid['discount_max'])
 								{
@@ -4271,12 +4271,13 @@ Class Utilities {
 										$couponDiscAmnt=intval($disc_perc_amnt);
 									}
 									
-							}
-							else {
-								$couponDiscAmnt=$amount;
-								$amount=0;
-							}
+// 							}
+// 							else {
+// 								$couponDiscAmnt=$amount;
+// 								$amount=0;
+// 							}
 						}
+						else return ['status'=>0,"message"=>"Coupon discount not set.Can't be used yet."];
 						if($couponDiscAmnt!=0)
 							$resp['amount']['coupon_discount_amount']=$couponDiscAmnt;	
 					}
@@ -4814,11 +4815,12 @@ Class Utilities {
 	{	
 		try {
 				$resp=['status'=>1,"message"=>"Coupon Successfully applied."];
-				$cur=new DateTime();
+				$cur=new \DateTime();
 				$data['coupon'] = strtolower($data['coupon']);
 				$coupon=\Coupon::active()->where("start_date","<=",$cur)->where("end_date",">=",$cur)->whereIn("ratecard_type",['product'])->where("code",$data['coupon'])->first();
 				if(!empty($coupon))
 				{
+					
 					$coupon=$coupon->toArray();
 					if(!empty($coupon['once_per_user']))
 					{
@@ -4840,7 +4842,7 @@ Class Utilities {
 						else if(!in_array($data['finder']['finder_id'], $data['finders']))
 							return ['status'=>0,"message"=>"Coupon can't be applied for ".$data['finder']['finder_name']];
 					}
-					$resp=['status'=>1,"message"=>"Coupon can be applied Found.","coupon"=>$coupon];
+					return $resp=['status'=>1,"message"=>"Coupon can be applied Found.","coupon"=>$coupon];
 				}
 				else return ['status'=>0,"message"=>"Invalid Coupon"];
 			

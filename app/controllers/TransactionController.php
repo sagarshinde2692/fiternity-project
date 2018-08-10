@@ -1180,7 +1180,7 @@ class TransactionController extends \BaseController {
     				
     				
     				// calculated total cart amount.
-    				$amount=$this->utilities->getProductCartAmount($data);
+    				 $amount=$this->utilities->getProductCartAmount($data);
     				if(!$amount['status'])
     					return Response::json($amount);
     					else $data['amount_calculated']=$amount['amount'];
