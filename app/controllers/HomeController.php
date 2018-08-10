@@ -2093,8 +2093,12 @@ class HomeController extends BaseController {
     		$customer= $customer->toArray();
     		
     		if(!empty($order['payment'])&&!empty($order['payment']['payment_mode']))
+    		{
     			$payment_mode=$order['payment']['payment_mode'];
-    			else $payment_mode=null;
+    			if($payment_mode=='paymentgateway')
+    				$payment_mode="Online";
+    		}
+    		else $payment_mode=null;
     			
     			
     			$header=["status_text"=>"Order Successfull","status_icon"=>"https://image.flaticon.com/teams/slug/freepik.jpg"];
@@ -2128,11 +2132,9 @@ class HomeController extends BaseController {
     						
     						if(empty($order['deliver_to_vendor']))
     							array_push($order_summary, ["key"=>"Delivery Charges","value"=>$this->utilities->getRupeeForm(intval(Config::get('app.product_delivery_charges')))]);
-    							array_push($order_summary, ["key"=>"Amount Paid","value"=>$this->utilities->getRupeeForm($total_amount)]);
-    							
     							(!empty($cart_summary['data']['coupon_discount']))?
-    							array_push($order_summary, ["key"=>"Coupon Discount","value"=>"-".$this->utilities->getRupeeForm($cart_total),"color"=>"#f7a81e"]):"";
-    							
+    							array_push($order_summary, ["key"=>"Coupon Discount","value"=>"-".$this->utilities->getRupeeForm($cart_summary['data']['coupon_discount']),"color"=>"#f7a81e"]):"";
+    							array_push($order_summary, ["key"=>"Amount Paid","value"=>$this->utilities->getRupeeForm($total_amount)]);    							
     							$orderDetail=["order_id"=>$order['_id'],"summary"=>$order_summary,"total"=>$this->utilities->getRupeeForm($total_amount)];
     							if($payment_mode)$orderDetail["payment_mode"]=$payment_mode;
     							
