@@ -5245,7 +5245,7 @@ Class Utilities {
 	}
 	public function getProductCities()
 	{
-		$cities = City::active()->orderBy('order')->whereNotIn('_id',[10000])->remember(Config::get('app.cachetime'))->lists("name");
+		$cities = \City::active()->orderBy('order')->whereNotIn('_id',[10000])->remember(Config::get('app.cachetime'))->lists("name");
 		if(!empty($cities))
 			return $cities;
 		else return [];
