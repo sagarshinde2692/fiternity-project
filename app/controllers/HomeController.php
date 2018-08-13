@@ -5090,6 +5090,7 @@ class HomeController extends BaseController {
         			{
         				$selectionViewFiltered=$this->utilities->getFilteredAndOrdered($productView['selection_view'],'level');$trav_idx=[];
 //         					return $this->utilities->getSelectionView($selectionViewFiltered,intval($productView['_id']),$productView,intval($selectedRatecard['_id']),$trav_idx);
+        				$this->utilities->getSelectionView($selectionViewFiltered,intval($productView['_id']),$productView,intval($selectedRatecard['_id']),$trav_idx);
         				(!empty($selectionViewFiltered))?$selectedRatecard=array_merge($selectedRatecard,$this->utilities->getSelectionView($selectionViewFiltered,intval($productView['_id']),$productView,intval($selectedRatecard['_id']),$trav_idx)):"";
 //         				if(!empty($trav_idx))$selectedRatecard['traverse_ind']=array_pluck($trav_idx, 	'ind');
 //         				if(!empty($trav_idx))$selectedRatecard['traverse_ind']=$trav_idx;

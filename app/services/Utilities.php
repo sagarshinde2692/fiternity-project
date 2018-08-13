@@ -1239,6 +1239,18 @@ Class Utilities {
     }
     public function customSort($field, &$array, $direction = 'asc')
     {
+    	
+    	usort($array, create_function('$a, $b', '
+        		$a = $a["' . $field . '"];
+        		$b = $b["' . $field . '"];
+        		if ($a == $b) return 0;
+        		return ($a ' . ($direction == 'desc' ? '>' : '<') .' $b) ? -1 : 1;
+    			'));
+    	return true;
+    }
+    public function sortDeep($field, &$array, $direction = 'asc')
+    {
+    	
     	usort($array, create_function('$a, $b', '
         		$a = $a["' . $field . '"];
         		$b = $b["' . $field . '"];
@@ -4930,17 +4942,26 @@ Class Utilities {
 			{
 				return $collection->aggregate([
 						['$match'=>$this->getQueryMultiplier($arr,$product_id)],
-						['$sort'=>['properties.'.$intrinsic_data['name']=>-1]],
-						['$group'=>['_id' =>'$properties.'.$intrinsic_data['name'],'details' => ['$push'=>['_id'=>'$_id','properties'=>'$properties','flags'=>'$flags','price'=>'$price','slash_price'=>'$slash_price','info'=>'$info']]]],
-						['$match'=>['details.0' => ['$exists'=>true]]]
+						['$group'=>['_id' =>'$properties.'.$intrinsic_data['name'],'details' => ['$push'=>['_id'=>'$_id','order'=>'$order','properties'=>'$properties','flags'=>'$flags','price'=>'$price','slash_price'=>'$slash_price','info'=>'$info']]]],
+						['$sort'=>['order'=>1]],
+						['$match'=>['details.0' => ['$exists'=>true]]],
 				]);
 			});
+			
+			usort($rates['result'],function ($a,$b)
+			{	
+				if (!emptY($b)&&!emptY($a)&&!empty($a['details'])&&!empty($b['details'])&&$a['details'][0]['order']==$b['details'][0]['order']) return 0;
+				return (!emptY($b)&&!emptY($a)&&!empty($a['details'])&&!empty($b['details'])&&$a['details'][0]['order']<$b['details'][0]['order'])?-1:1;
+			});
+// 			return $rates;
 // 			if(count($arr)==1)
 // 				return $rates;
 			if(!empty($rates)&&!empty($rates['result']))
 			{
 				$temp['variants']=["title"=>"Select ".$intrinsic_data['name'],"sub_title"=>$intrinsic_data['name'],'options'=>[]];
-				foreach ($rates['result'] as $key1=>$value) {	
+				foreach ($rates['result'] as $key1=>$value) {
+					
+// 					return $rates;
 					foreach ($value['details'] as $key=>$current) {
 						$tt=[
 								"value"=>(!empty($current['properties'])&&!empty($current['properties'][$intrinsic_data['name']]))?$current['properties'][$intrinsic_data['name']]:"",
@@ -5245,7 +5266,7 @@ Class Utilities {
 	}
 	public function getProductCities()
 	{
-		$cities = \City::active()->orderBy('order')->whereNotIn('_id',[10000])->remember(Config::get('app.cachetime'))->lists("name");
+		$cities = \City::active()->orderBy('product_order')->whereNotIn('_id',[10000])->remember(Config::get('app.cachetime'))->lists("name");
 		if(!empty($cities))
 			return $cities;
 		else return [];
