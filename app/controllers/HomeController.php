@@ -465,8 +465,8 @@ class HomeController extends BaseController {
             // $collections 			= 	Findercollection::active()->where('city_id', '=', intval($citydata['_id']))->orderBy('ordering')->get(array('name', 'slug', 'coverimage', 'ordering' ));
             $campaigns=  [];
             $campaigns[] = [
-                'image'=> 'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/monsoon.png',
-                'mob_image'=> 'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/monsoon-mob.png',
+                'image'=> 'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/independance.png',
+                'mob_image'=> 'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/independance_mob.png',
                 'link'=>Config::get('app.website').'/'.$city.'/fitness?trials=1',
                 'title'=>'Pay Per Session',
                 'height'=>100,
