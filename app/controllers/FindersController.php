@@ -5361,8 +5361,8 @@ class FindersController extends \BaseController {
 							"image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/point4.png"
 						],
 						[
-							"title"=>"Fitsotre",
-							"image"=>"https://b.fitn.in/products/fitstore_header.jpg"
+							"title"=>"Fitstore",
+							"image"=>"https://b.fitn.in/products/home_banner_1.jpg"
 						]
 					]
 				],
@@ -5448,14 +5448,18 @@ class FindersController extends \BaseController {
 					"id"=>7,
 					'type'=>'rewards'
 				],
-				[
-					"title"=>"Fitstore",
-					"description"=>"Buy products",
-					"image"=>"https://b.fitn.in/products/fitstore_header.jpg",
-					"banner_image"=>"https://b.fitn.in/products/fitstore_header.jpg",
-					"id"=>8,
-					'type'=>'fitstore'
-				],
+				
+			];
+		}
+
+		if($this->kiosk_app_version &&  $this->kiosk_app_version > 1.13){
+			$response["response"]["options"][] = [
+				"title"=>"Fitstore",
+				"description"=>"Buy products",
+				"image"=>"https://b.fitn.in/products/home_banner_2.jpg",
+				"banner_image"=>"https://b.fitn.in/products/home_banner_1.jpg",
+				"id"=>8,
+				'type'=>'fitstore'
 			];
 		}
 
