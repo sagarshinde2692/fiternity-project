@@ -178,7 +178,7 @@ class Service extends \Basemodel{
 		$second_max_validity_ids = [];
 		$ratecardsarr = null;
 		if(!empty($this->_id) && isset($this->_id)){
-			$ratecardsarr 	= 	Ratecard::where('service_id', intval($this->_id))->orderBy('order', 'asc')->get()->toArray();
+			$ratecardsarr 	= 	Ratecard::active()->where('service_id', intval($this->_id))->orderBy('order', 'asc')->get()->toArray();
 		}
 
 		
@@ -190,18 +190,18 @@ class Service extends \Basemodel{
 			$serviceoffers = Offer::where('vendorservice_id', $this->_id)->where('hidden', false)->orderBy('order', 'asc')
 									->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
 									->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()) ))
-									->get(['start_date','end_date','price','type','allowed_qty','remarks','offer_type','ratecard_id','callout'])
+									->get(['start_date','end_date','price','type','allowed_qty','remarks','offer_type','ratecard_id','callout','added_by_script'])
 									->toArray();
-			
+			$finder = $this->finder;
 			foreach ($ratecardsarr as $key => $value) {
 
-				if((isset($value['expiry_date']) && $value['expiry_date'] != "" && strtotime("+ 1 days", strtotime($value['expiry_date'])) < time()) || (isset($value['start_date']) && $value['start_date'] != "" && strtotime($value['start_date']) > time())){
+				// if((isset($value['expiry_date']) && $value['expiry_date'] != "" && strtotime("+ 1 days", strtotime($value['expiry_date'])) < time()) || (isset($value['start_date']) && $value['start_date'] != "" && strtotime($value['start_date']) > time())){
+				// 	$index--;
+				// 	Log::info("ratecard expired");
+				// 	Log::info($value['_id']);
 
-					Log::info("ratecard expired");
-					Log::info($value['_id']);
-
-					continue;
-				}
+				// 	continue;
+				// }
 				
             	$ratecardoffers 	= 	[];
 									// Log::info($serviceoffers);
@@ -213,11 +213,14 @@ class Service extends \Basemodel{
 							 return true; 
 							}
 					});
+					if(isset($this->membership) && $this->membership == 'disable' || isset($finder['membership']) && $finder['membership'] == 'disable'){
+						$ratecardoffersRecards = [];
+					}
                     foreach ($ratecardoffersRecards as $ratecardoffersRecard){
             			$offer_exists = true;
                         $ratecardoffer                  =   $ratecardoffersRecard;
                         $ratecardoffer['offer_text']    =   "";
-                        $ratecardoffer['offer_icon']    =   "https://b.fitn.in/iconsv1/fitmania/hot_offer_vendor.png";
+                        $ratecardoffer['offer_icon']    =   "https://b.fitn.in/global/final_monsoon_tag.png";
                         if(!empty($ratecardoffersRecard['callout']))$ratecardoffer['callout']=$ratecardoffersRecard['callout'];
                         // if(isset($value['flags'])){
 
@@ -247,6 +250,24 @@ class Service extends \Basemodel{
                             $ratecardoffer['offer_text']    =  ($difference->d == 1) ? "Expires Today" : ($difference->d > 3 ? "Expires soon" : "Expires in ".$difference->days." days");
 
 						}
+
+						if($value['type'] == 'membership' && $value['direct_payment_enable'] == '1' && $key == count($ratecardsarr) - 1){
+
+							Log::info($value['_id']);
+							Log::info("slots left");
+
+							// if($this->available_slots > 0){
+							// 	$ratecardoffer['offer_text']    =  ($this->available_slots > 1 ? $this->available_slots." slots" : $this->available_slots." slot")." left";
+							// }
+
+							if(!empty($ratecardoffer['added_by_script'])){
+								$ratecardoffer['offer_text']    =  "Expiring in ".(17-intval(date('d', time())))." days";
+							}
+
+							
+						}
+
+
                         array_push($ratecardoffers,$ratecardoffer);
                     }
 					if(isset($value['flags'])){
@@ -256,53 +277,36 @@ class Service extends \Basemodel{
 							switch($value['flags']['offerFor']){
 								case "student": 
 												// $ratecardoffers[0]['offer_text']    =   "";
-												$ratecardoffers[0]['offer_icon']    =   "https://b.fitn.in/iconsv1/fitmania/hot_offer_vendor.png";	
+												$ratecardoffers[0]['offer_icon']    =   "https://b.fitn.in/global/final_monsoon_tag.png";	
 												break;
 								case "women": 
 												// $ratecardoffers[0]['offer_text']    =   "";
-												$ratecardoffers[0]['offer_icon']    =   "https://b.fitn.in/iconsv1/fitmania/hot_offer_vendor.png";	
+												$ratecardoffers[0]['offer_icon']    =   "https://b.fitn.in/global/final_monsoon_tag.png";	
 												break;
 							}
 						}
 					}
+
+					if(count($ratecardoffers) && isset($ratecardoffers[0]['offer_icon'])){
+						if(in_array($value['type'], ['membership', 'packages']) && ((isset($finder['membership']) && $finder['membership'] == 'disable') || (isset($this['membership']) && $this['membership'] == 'disable') || (isset($finder['flags']) && isset($finder['flags']['state']) && in_array($finder['flags']['state'], ['temporarily_shut', 'closed'])) || $finder['commercial_type'] == 0)){
+							$ratecardoffers[0]['offer_icon'] = "";
+						}
+					}
 					
                 }
-//                var_dump($ratecardoffers);exit;
-				// if(isset($this['offer_available']) && $this->offer_available && !$offer_exists && !in_array($this['finder_id'], Config::get('app.hot_offer_excluded_vendors'))){
-				// 	if(isset($value['type']) && ($value['type']=='membership' || $value['type']=='packages')){
-				// 		if(isset($value['validity']) && isset($value['validity_type'])){
-							
-				// 			if($value['validity_type']=='year'){
-				// 				$validity = $value['validity'] * 365;
-				// 			}else if($value['validity_type']=='months'){
-				// 				$validity = $value['validity'] * 30;
-				// 			}else if($value['validity_type']=='days'){
-				// 				$validity = $value['validity'];
-				// 			}
-				// 			if($validity){
-				// 				if($validity > $max_validity){
-				// 					$second_max_validity = $max_validity;
-				// 					$second_max_validity_ids = $max_validity_ids;
-				// 					$max_validity_ids = [$value['_id']];
-				// 					$max_validity = $validity;
-				// 				}else if($validity > $second_max_validity && $validity < $max_validity){
-				// 					$second_max_validity = $validity;
-				// 					$second_max_validity_ids = [$value['_id']];
-				// 				}else if($validity == $max_validity){
-				// 					array_push($max_validity_ids, $value['_id']);
-				// 				}else if($validity == $second_max_validity){
-				// 					array_push($second_max_validity_ids, $value['_id']);
-				// 				}
-				// 			}
-							
-							
-				// 		}
-				// 	}
-				// }
 
-                $value['offers']  = $ratecardoffers;
+				$ratecard_price = $value['price'];
+				$cost_price = $value['price'];
 
-                if(count($ratecardoffers) > 0 && isset($ratecardoffers[0]['price'])){
+				if(isset($value['special_price']) && $value['special_price'] != 0){
+		            $ratecard_price = $value['special_price'];
+		        }
+
+
+				$value['offers']  = $ratecardoffers;
+				
+                // if(count($ratecardoffers) > 0 && isset($ratecardoffers[0]['price'])  ){
+                if(count($ratecardoffers) > 0 && isset($ratecardoffers[0]['price'])  && isFinderIntegrated($finder) && isServiceIntegrated($this)){
                 	
                     $value['special_price'] = $ratecardoffers[0]['price'];
 
@@ -311,8 +315,9 @@ class Service extends \Basemodel{
                     if(isset($ratecardoffers[0]['remarks']) && $ratecardoffers[0]['remarks'] != ""){
                     	$value['remarks'] = $ratecardoffers[0]['remarks'];
                     }
+
 				}
-				
+
 				(isset($value['special_price']) && $value['price'] == $value['special_price']) ? $value['special_price'] = 0 : null;
 
 				if(intval($value['validity'])%360 == 0){
@@ -333,9 +338,20 @@ class Service extends \Basemodel{
 					}
 				}
 
-				if($value['price'] >= 20000){
+				$offer_price = (!empty($value['special_price'])) ? $value['special_price'] : 0 ;
+				$cost_price = (!empty($value['price'])) ? $value['price'] : 0 ;
 
-					$value['campaign_offer'] = "(EMI available)";
+                if($offer_price !== 0 && $offer_price < $cost_price && !in_array($value['type'], ['workout session', 'trial']) && !(isset($this->membership) && $this->membership == 'disable' || isset($finder['membership']) && $finder['membership'] == 'disable')){
+
+                	$offf_percentage = ceil((($cost_price - $offer_price)/$cost_price)*100);
+
+                	$value['campaign_offer'] = "Get ".$offf_percentage."% off - Limited Slots";
+					$value['campaign_color'] = "#43a047";
+                }
+
+				if($ratecard_price >= 5000 && !(isset($this->membership) && $this->membership == 'disable' || isset($finder['membership']) && $finder['membership'] == 'disable')){
+
+					$value['campaign_offer'] = !empty($value['campaign_offer']) ?  $value['campaign_offer']." (EMI available)" : "(EMI available)";
 					$value['campaign_color'] = "#43a047";
 				}
 				
@@ -354,7 +370,7 @@ class Service extends \Basemodel{
 			// 			// Log::info($value);
 			// 			// if($value[])
 			// 			$value['offers'][0]['offer_text'] = '';
-			// 			$value['offers'][0]['offer_icon'] = 'https://b.fitn.in/iconsv1/fitmania/hot_offer_vendor.png';
+			// 			$value['offers'][0]['offer_icon'] = 'https://b.fitn.in/global/final_monsoon_tag.png';
 			// 		}
 			// 	}
 			// }

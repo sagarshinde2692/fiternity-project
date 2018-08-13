@@ -8,11 +8,13 @@
  */
 
 use App\Services\Cacheapi as Cacheapi;
+use App\Services\Utilities as Utilities;
 
 class MigrationReverseController extends \BaseController {
 
     public $fitapi;
     public $fitadmin;
+    public $utilities;
     protected $cacheapi;
 
     public function __construct(Cacheapi $cacheapi) {
@@ -20,7 +22,7 @@ class MigrationReverseController extends \BaseController {
         $this->fitapi = 'mongodb2';
         $this->fitadmin = 'mongodb';
         $this->cacheapi 	=	$cacheapi;
-
+        $this->utilities= new Utilities();
     }
 
     public function byId($collection,$id){
@@ -45,6 +47,7 @@ class MigrationReverseController extends \BaseController {
             case 'deletebatchbyservice' : $return = $this->deleteBatchByServiceId($id);break;
             case 'updateschedulebyserviceidv1' : $return = $this->updatescheduleByServiceIdV1($id);break;
             case 'brand' : $return = $this->brand($id);break;
+            case 'offer' : $return = $this->offer($id);break;
 
 
 
@@ -445,7 +448,11 @@ class MigrationReverseController extends \BaseController {
 
         try{
 
+            // $ratecarding = Ratecard::on($this->fitapoffer->ratecard_i)->find(intval($id));
+
+            // if(isset($ratecard->available_slots))
             $offering = Offering::on($this->fitapi)->find(intval($id));
+
 
 //                                var_dump($offering->vendorcategories);exit;
 
@@ -806,7 +813,10 @@ class MigrationReverseController extends \BaseController {
                 'poc'                                   => $finder_poc
             ];
 
-    
+            if(!empty($Finder['notes'])){
+
+                $insertData['notes'] = $Finder['notes'];
+            }
 
             $insertData['vip_trial']                    = (isset($Finder->vip_trial) &&  $Finder['vip_trial'] == true ) ? '1' : '0';
             $insertData['finder_type']                    = (isset($insertData['commercial_type']) && !empty(($insertData['commercial_type'])) ) ? (( $insertData['commercial_type'] == 1  || $insertData['commercial_type'] == 3 ) ? 1: 0) :0;
@@ -1382,7 +1392,11 @@ class MigrationReverseController extends \BaseController {
         return Response::json($response,$response['status']);
     }
 
-
+    public function tot($vendorservice_id)
+{
+	return $this->updatescheduleByServiceId($vendorservice_id);
+// 	utilities->getPrimaryCategory(null,$vendorservice_id);
+}
 
     /**
      * Migration for schedules
@@ -1392,11 +1406,15 @@ class MigrationReverseController extends \BaseController {
         try{
 
             $vendorservice_id = $vendorservice_id;
-
             $schedules = Schedule::where('vendorservice_id',intval($vendorservice_id))->get();
 
             if(count($schedules) > 0){
-
+            	
+            	
+            	$service_cat=$this->utilities->getPrimaryCategory(null,$vendorservice_id);
+            	if(empty($service_cat))
+            		throw new Exception("Service Category Not found.");
+            	
             //Trial Price From Ratecard
             $trialPrice = 0;
             $trialRatecard_exists_cnt	=	DB::connection($this->fitapi)->table('ratecards')->where('vendorservice_id',intval($vendorservice_id))->where('type', 'trial')->where('hidden', false)->count();
@@ -1424,9 +1442,8 @@ class MigrationReverseController extends \BaseController {
             if($workoutSessionRatecard && isset($workoutSessionRatecard['price'])){
                 $workoutSessionPrice = (isset($workoutSessionRatecard['selling_price']) && intval($workoutSessionRatecard['selling_price']) > 0) ? $workoutSessionRatecard['selling_price'] : $workoutSessionRatecard['price'];
             }
-
-
-
+            
+            
             $trialschedulesdata = [];
 
             $workoutsessionschedules = [];
@@ -1466,15 +1483,20 @@ class MigrationReverseController extends \BaseController {
                         foreach ($schedule['slots'] as $k => $slot) {
                             if(isset($slot['duration'])){
                                 $duration_arr = explode('-', $slot['duration']);
-                                $newslot = [
-                                    'start_time' => $duration_arr[0],
-                                    'end_time' => $duration_arr[1],
-                                    'start_time_24_hour_format' => $slot['start_time']['hours'],
-                                    'end_time_24_hour_format' => $slot['end_time']['hours'],
-                                    'slot_time' => $slot['duration'],
-                                    'limit' => (isset($slot['limit'])) ?  intval($slot['limit']) : 0,
-                                    'price' => intval($workoutSessionPrice)
-                                ];
+                                $workoutSessionPrice_new=$this->utilities->getWSNonPeakPrice(intval($slot['start_time']['hours']),intval($slot['end_time']['hours']),$workoutSessionPrice,$service_cat);
+                                if(!empty($workoutSessionPrice_new)&& isset($workoutSessionPrice_new['wsprice']))
+                                {
+                                	$newslot = [
+                                			'start_time' => $duration_arr[0],
+                                			'end_time' => $duration_arr[1],
+                                			'start_time_24_hour_format' => $slot['start_time']['hours'],
+                                			'end_time_24_hour_format' => $slot['end_time']['hours'],
+                                			'slot_time' => $slot['duration'],
+                                			'limit' => (isset($slot['limit'])) ?  intval($slot['limit']) : 0,
+                                			'price' => intval($workoutSessionPrice_new['wsprice'])
+                                	];
+                                }
+                                else throw new Exception("Data invalid to process.");
                                 array_push($weekdaydata['slots'], $newslot);
                             }
                         }
@@ -1503,9 +1525,6 @@ class MigrationReverseController extends \BaseController {
                 $serivce_ids    =   Service::where('_id',intval($vendorservice_id))->update(['trialschedules'=>[],'workoutsessionschedules'=>[]]);
             }
             
-
-
-
             $response = array('status' => 200, 'message' => 'Success');
 
         }catch(Exception $e){
@@ -2026,7 +2045,22 @@ class MigrationReverseController extends \BaseController {
             Log::info($this->ratecard($id));
         }
 		
-	}
+    }
 
+    public function offer($id){
+        
+        $offer = Offer::where('_id', $id)->first();
+        $ratecard = Ratecard::where('_id', $offer->ratecard_id)->first();
+
+        if(isset($ratecard->available_slots) && (!isset($ratecard->available_slots_end_date) || strtotime($offer->start_date) > time() || strtotime($offer->end_date) < $ratecard->available_slots_end_date)){
+            $ratecard->unset(["available_slots","total_slots_created","available_slots_update_at","available_slots_default","available_slots_end_date","expiring_end_date"]);
+            $deactivate_offers = Offer::where('added_by_script', true)->where('ratecard_id', $offer->ratecard_id)->where('hidden', false)->update(['hidden'=>true]);
+        }
+
+
+
+
+
+    }
 
 }

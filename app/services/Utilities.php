@@ -9,6 +9,7 @@ use Response;
 use Config;
 use JWT;
 use Finder;
+use Service;
 use Request;
 use Log;
 use App\Services\Sidekiq as Sidekiq;
@@ -24,20 +25,31 @@ use App\Notification\CustomerNotification;
 
 Class Utilities {
 
-//    protected $myrewards;
+//    protected $myreward;
 //    protected $customerReward;
 
-
+   
    public function __construct() {
        
     $this->vendor_token = false;
         
     $vendor_token = Request::header('Authorization-Vendor');
+    $this->days=["sunday","monday","tuesday","wednesday","thursday","friday","saturday"];
 
     if($vendor_token){
 
         $this->vendor_token = true;
     }
+
+    $this->kiosk_app_version = false;
+
+    if($vendor_token){
+
+        $this->vendor_token = true;
+
+        $this->kiosk_app_version = (float)Request::header('App-Version');
+    }
+
        
    }
     
@@ -985,9 +997,13 @@ Class Utilities {
 
 
     public function verifyOrder($data,$order){
-
-        if((isset($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin'])) || $order->pg_type == "PAYTM" || $order->pg_type == "AMAZON" || (isset($order['cod_otp_verified']) && $order['cod_otp_verified']) || (isset($order['vendor_otp_verified']) && $order['vendor_otp_verified']) || (isset($order['pay_later']) && $order['pay_later'] && !(isset($order['session_payment']) && $order['session_payment'])) || (isset($order->manual_order_punched) && $order->manual_order_punched)){
-            if(($order->pg_type == "PAYTM"|| $order->pg_type == "AMAZON") && !(isset($data["order_success_flag"]))){
+    	Log::info(" info data".print_r($data,true));
+    	Log::info(" info order ".print_r($order,true));
+    	if(!empty($data['third_party'])&&!empty($order['type'])&&$order['type']=='workout-session')
+    		$hash_verified = true;
+    	
+    	else if((isset($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin'])) || $order->pg_type == "PAYTM" || $order->pg_type == "AMAZON" || $order->pg_type == "MOBIKWIK" ||(isset($order['cod_otp_verified']) && $order['cod_otp_verified']) || (isset($order['vendor_otp_verified']) && $order['vendor_otp_verified']) || (isset($order['pay_later']) && $order['pay_later'] && !(isset($order['session_payment']) && $order['session_payment'])) || (isset($order->manual_order_punched) && $order->manual_order_punched)){
+            if(($order->pg_type == "PAYTM"|| $order->pg_type == "AMAZON" || $order->pg_type == "MOBIKWIK") && !(isset($data["order_success_flag"]))){
                 $hashreverse = getpayTMhash($order);
                 if($data["verify_hash"] == $hashreverse['reverse_hash']){
                     $hash_verified = true;
@@ -1000,7 +1016,8 @@ Class Utilities {
                 $hash_verified = true;
             }
             
-        }else{
+	    	}
+        else {
             // If amount is zero check for wallet amount
             if($data['amount'] == 0 || isset($order->full_payment_wallet) && $order->full_payment_wallet == true){
                 $hash_verified = true;
@@ -1019,6 +1036,66 @@ Class Utilities {
             $order["hash_verified"] = false;
             $order->update();
         }
+
+        if($hash_verified && !empty($order['coupon_code'])){
+
+            $customerCoupn = \CustomerCoupn::where('code', strtolower($order['coupon_code']))->first();
+
+            if($customerCoupn){
+
+                if($customerCoupn['status'] == "0"){
+
+                    $hash_verified = false;
+
+                    $order->update(['customer_coupn_error'=>true]);
+
+                }else{
+
+                    $order->update(['myreward_id'=>$customerCoupn['myreward_id']]);
+
+                    $customerCoupn->claimed = $customerCoupn->claimed + 1;
+
+                    if($customerCoupn->quantity == $customerCoupn->claimed){
+                        $customerCoupn->status = "0";
+                    }
+
+                    $orders = [];
+
+                    if(!empty($customerCoupn->orders)){
+                        $orders = $customerCoupn->orders;
+                    }
+
+                    $orders[] = $order['_id'];
+
+                    $customerCoupn->update();
+
+                    $myreward = \Myreward::find($customerCoupn['myreward_id']);
+
+                    $myrewardData = $myreward->toArray();
+
+                    $coupon_detail = $myrewardData['coupon_detail'];
+
+                    foreach ($coupon_detail as $key => &$value) {
+
+                        if($value['code'] == strtolower($order['coupon_code'])){
+
+                            if(!isset($value['claimed'])){
+                                $value['claimed'] = 0;
+                            }
+
+                            $value['claimed'] += 1;
+                            
+                            $myreward->coupon_detail = $coupon_detail;
+                            $myreward->update();
+                            break;
+                        }
+
+                    }
+
+                }      
+            }
+        }
+
         return $hash_verified;
     }
 
@@ -1050,6 +1127,7 @@ Class Utilities {
     				else
     				{
     					 $hashreverse = getReverseHashProduct($orderArr);
+    					 Log::info(" info hashreverse :: ".print_r($hashreverse ,true));
     					 if($hashreverse['status']&&$data["verify_hash"] == $hashreverse['data']['reverse_hash'])
     						$hash_verified = true;
     						else
@@ -1717,7 +1795,9 @@ Class Utilities {
             }*/
 
             if($current_wallet_balance >= $wallet_limit){
-                return ['status' => 400,'message' => 'Wallet is overflowing Rs '.$wallet_limit];
+            	if(!empty($request['qrcodescan']))
+            		return ['status' => 200,'message' => 'Your Fitcash limit of '.$wallet_limit." has been reached.","sub_header"=>""];
+                else return ['status' => 400,'message' => 'Wallet is overflowing Rs '.$wallet_limit];
 
             }
 
@@ -1869,6 +1949,11 @@ Class Utilities {
 
             $walletTransaction->update(['group'=>$walletTransaction->_id]);
 
+            if(!empty($request['qrcodescan']))
+            	if($current_wallet_balance==$wallet_limit)
+            		return ['status' => 200,'message' => 'Rs. '.$request['amount'].' has been added to your wallet and your fitcash limit of '.$wallet_limit.' has been reached.','amount'=>$request['amount'],"sub_header"=>$request['amount']];
+            		else return ['status' => 200,'message' =>'Rs. '.$request['amount'].' has been added to your wallet'];
+            	
             return ['status' => 200,'message' => 'Success Added Wallet'];
 
         }
@@ -2169,7 +2254,7 @@ Class Utilities {
         $customer_id = (int) $customer_id;
 
         $finder_id = ($data && isset($data['finder_id']) && $data['finder_id'] != "") ? (int)$data['finder_id'] : "";
-        $order_type = ($data && isset($data['order_type']) && $data['order_type'] != "") ? (int)$data['order_type'] : "";
+        $order_type = ($data && isset($data['order_type']) && $data['order_type'] != "") ? $data['order_type'] : "";
 
         $query = Wallet::active()->where('customer_id',$customer_id)->where('balance','>',0);
 
@@ -2276,8 +2361,9 @@ Class Utilities {
                     ];
 
                     $customersms = new CustomerSms();
-
-                    $customersms->referralFitcash($sms_data);
+                    if(!(isset($_GET['source']) && $_GET['source'] == 'admin')){
+                        $customersms->referralFitcash($sms_data);
+                    }
                 }
             }
         }
@@ -2349,7 +2435,7 @@ Class Utilities {
     public function hitURLAfterDelay($url, $delay = 0, $label = 'label', $priority = 0){
 
         Log::info("Scheduling url:$url");
-        Log::info("delay: $delay");
+        // Log::info("delay: $delay");
 
         if($delay !== 0){
             $delay = $this->getSeconds($delay);
@@ -2675,7 +2761,7 @@ Class Utilities {
 					if(!in_array($emi['bankName'], $bankList)){
 						array_push($bankList, $emi['bankName']);
 					}
-					Log::info("inside1");
+					// Log::info("inside1");
 					$emiData = array();
 						$emiData['total_amount'] =  "";
 						$emiData['emi'] ="";
@@ -2689,7 +2775,7 @@ Class Utilities {
 			
 			}elseif(isset($data['bankName'])&&isset($data['amount'])){
 					if($emi['bankName'] == $data['bankName'] && $data['amount']>=$emi['minval']){
-						Log::info("inside2");
+						// Log::info("inside2");
 						$emiData = array();
 						if(!in_array($emi['bankName'], $bankList)){
 							array_push($bankList, $emi['bankName']);
@@ -2715,7 +2801,7 @@ Class Utilities {
 					if(!in_array($emi['bankName'], $bankList)){
 						array_push($bankList, $emi['bankName']);
 					}
-					Log::info("inside3");
+					// Log::info("inside3");
 					$emiData = array();
 					$emiData['total_amount'] =  (string)round($data['amount']*(100+$emi['rate'])/100, 2);
 					$emiData['emi'] =(string)round($emiData['total_amount']/$emi['bankTitle'], 2);
@@ -2740,7 +2826,7 @@ Class Utilities {
 				if(!in_array($emi['bankName'], $bankList)){
 						array_push($bankList, $emi['bankName']);
 					}
-				Log::info("inside4");
+				// Log::info("inside4");
 				$emiData = array();
 						$emiData['total_amount'] =  "";
 						$emiData['emi'] ="";
@@ -2843,7 +2929,8 @@ Class Utilities {
                 return false;
             }
         }else{
-        	$flags = $data['flags'];
+        	if(!empty($data['flags']))
+        		$flags = $data['flags'];
         }
 
         $finder = Finder::find((int) $data["finder_id"]);
@@ -2851,21 +2938,29 @@ Class Utilities {
         if((isset($data['session_payment']) && $data['session_payment'])||
            ($this->vendor_token)||
            (in_array($data['finder_id'],Config::get('app.vendors_without_convenience_fee')))||
-           (isset($flags) && isset($flags["pay_at_vendor"]) && $flags["pay_at_vendor"] === True))
+           (isset($flags) && isset($flags["pay_at_vendor"]) && $flags["pay_at_vendor"] === True)||
+           (!empty($data['type']) && in_array($data['type'], ["workout session", "workout-session", "trial", "booktrials"])))
         {
             return false;
         }
         
-        /* if((!empty($data['type']) && in_array($data['type'], ["memberships", "membership", "package", "packages", "healthytiffinmembership"]))||(isset($finder) && $finder["commercial_type"] != 0)) {
+         if((!empty($data['type']) && in_array($data['type'], ["memberships", "membership", "package", "packages", "healthytiffinmembership"]))||(isset($finder) && $finder["commercial_type"] != 0)) {
             Log::info("returning true");
             return true;
-        } */
+        } 
         
         Log::info("returning true");
         return true;
     }
 
     public function trialBookedLocateScreen($data = false){
+
+        if(isset($data['finder_id'])){
+
+            Finder::$withoutAppends=true;
+
+            $finder = Finder::find((int)$data['finder_id']);
+        }
 
         $fitcash_amount = 150;
 
@@ -2909,10 +3004,23 @@ Class Utilities {
             ]
         ];
 
+        if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && isset($finder['brand_id']) && $finder['brand_id'] == 66 && isset($finder['city_id']) && $finder['city_id'] == 3){
+
+            $response['title'] = "";
+            $response['message'] = "";
+        }
+
         return $response;
     }
 
     public function membershipBookedLocateScreen($data){
+
+        if(isset($data['finder_id'])){
+
+            Finder::$withoutAppends=true;
+
+            $finder = Finder::find((int)$data['finder_id']);
+        }
 
         $response['message_title'] = "DONE!";
 
@@ -2949,6 +3057,12 @@ Class Utilities {
             'description'=>'<b>Don’t    let    your    workout    be    monotonous.</b>    Try    different    workouts    around    you    by    only    paying    per    session!',
             'type'=>'pay_per_session'
         ];
+
+        if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && isset($finder['brand_id']) && $finder['brand_id'] == 66 && isset($finder['city_id']) && $finder['city_id'] == 3){
+
+            $response['features'] = [];
+            $response['message'] = "";
+        }
 
         return $response;
     }
@@ -3278,39 +3392,41 @@ Class Utilities {
     }
 
     public function sendGroupCommunication($data){
-        
-        $customer_id = $data['customer_id'];
+        if(!(isset($_GET['source']) && $_GET['source'] == 'admin')){
 
-        $group = $data['group'];
-
-        $customersms = new CustomerSms();
-        Log::info("sendGroupCommunication");
-        Log::info($data);
-        
-        foreach($group['members'] as $member){
-
-            if($member['customer_id'] == $customer_id){
-             
-                $order = \Order::find($member['order_id']);
-
-                $new_member_name = $order->customer_name;
-
-                $customersms->addGroupNewMember(['customer_phone'=>$order->customer_phone,'customer_name'=>$order->customer_name,'vendor_name'=>$order->finder_name, 'group_id'=>$group['group_id']]);
-
-            }
-
-        }
-
-        foreach($group['members'] as $member){
+            $customer_id = $data['customer_id'];
+    
+            $group = $data['group'];
+    
+            $customersms = new CustomerSms();
+            Log::info("sendGroupCommunication");
+            Log::info($data);
             
-            if($member['customer_id'] != $customer_id){
-                
-                $order = \Order::find($member['order_id'], ['customer_phone', 'customer_name']);
-                
-                $customersms->addGroupOldMembers(['customer_phone'=>$order->customer_phone,'customer_name'=>$order->customer_name, 'new_member_name'=>$new_member_name]);
-
+            foreach($group['members'] as $member){
+    
+                if($member['customer_id'] == $customer_id){
+                 
+                    $order = \Order::find($member['order_id']);
+    
+                    $new_member_name = $order->customer_name;
+    
+                    $customersms->addGroupNewMember(['customer_phone'=>$order->customer_phone,'customer_name'=>$order->customer_name,'vendor_name'=>$order->finder_name, 'group_id'=>$group['group_id']]);
+    
+                }
+    
             }
-
+    
+            foreach($group['members'] as $member){
+                
+                if($member['customer_id'] != $customer_id){
+                    
+                    $order = \Order::find($member['order_id'], ['customer_phone', 'customer_name']);
+                    
+                    $customersms->addGroupOldMembers(['customer_phone'=>$order->customer_phone,'customer_name'=>$order->customer_name, 'new_member_name'=>$new_member_name]);
+    
+                }
+    
+            }
         }
 
     }
@@ -3639,7 +3755,7 @@ Class Utilities {
     			$decoded = decode_customer_token();
     			if(!empty($decoded)&&!empty($decoded->customer))
     				$customer_id = $decoded->customer->_id;
-    				else return null;
+    			else return null;
     		} catch (Exception $e) {
     			return null;
     		}
@@ -3657,9 +3773,11 @@ Class Utilities {
     	{
     		try {
     			$decoded = decode_customer_token();
-    			if(!empty($decoded)&&!empty($decoded->customer))
-    				$customer_id = $decoded->customer->_id;
-    				else return null;
+    			if(!empty($decoded)&&!empty($decoded->customer)){
+                    $customer_id = $decoded->customer->_id;
+                    Log::info($customer_id);
+                }
+                else return null;
     		} catch (Exception $e) {
     			return null;
     		}
@@ -3696,38 +3814,56 @@ Class Utilities {
 
         $finder_id = (int)$data['finder_id'];
 
-        \Ratecard::$withoutAppends = true;
+        $fitcash = 0;
 
-        $ratecards = \Ratecard::where('finder_id',$finder_id)->whereIn('type',['membership','packages'])->get();
+        if(!empty($data['type']) && in_array($data['type'],['booktrials','3daystrial'])){
 
-        $amount = 0;
-        $days = 0;
-        $fitcash = 300;
+            if(!empty($data['is_tab_active']) && $data['is_tab_active'] === true){
 
-        if(!empty($ratecards)){
+                return 250;
+            }
+        
+            \Ratecard::$withoutAppends = true;
 
-            foreach ($ratecards as $ratecard) {
+            $ratecards = \Ratecard::where('finder_id',$finder_id)->whereIn('type',['membership','packages'])->get();
 
-                $new_days = $this->getDurationDay($ratecard);
+            $amount = 0;
+            $days = 0;
+            $fitcash = 300;
 
-                if($new_days >= $days){
+            if(!empty($ratecards)){
 
-                    $days = $new_days;
+                foreach ($ratecards as $ratecard) {
 
-                    $new_amount = $this->getRatecardAmount($ratecard);
+                    $new_days = $this->getDurationDay($ratecard);
 
-                    if($new_amount >= $amount){
-                        $amount = $new_amount;
+                    if($new_days >= $days){
+
+                        $days = $new_days;
+
+                        $new_amount = $this->getRatecardAmount($ratecard);
+
+                        if($new_amount >= $amount){
+                            $amount = $new_amount;
+                        }
                     }
+
                 }
 
+                if($amount >= 10000){
+                    $fitcash = 500;
+                }
             }
 
-            if($amount >= 10000){
-                $fitcash = 500;
-            }
+            return $fitcash;
         }
 
+        if(!empty($data['amount_finder']) && !empty($data['type']) && in_array($data['type'],['workout-session'])){
+
+            $getWorkoutSessionFitcash = $this->getWorkoutSessionFitcash($data);
+
+            $fitcash = round($getWorkoutSessionFitcash * $data['amount_finder'] / 100);
+        }
         return $fitcash;
 
     }
@@ -3812,13 +3948,23 @@ Class Utilities {
 
         $order->gst_applicable = 'yes';
 
-        $order->cos_percentage = $this->getVendorCommision($order->toArray());
+        if(!isset($order->vendor_commission)){
 
-        $order->cos_finder_amount = ceil(($order->amount_finder * $order->cos_percentage) / 100);
+            $order->cos_percentage = $this->getVendorCommision($order->toArray());
+        
+        }else{
+        
+            $order->cos_percentage = $order->vendor_commission;
+        
+        }
+
+        $amount_used = (isset($order->vendor_price)) ? $order->vendor_price : $order->amount_finder;
+
+        $order->cos_finder_amount = ceil(($amount_used * $order->cos_percentage) / 100);
 
         $order->gst_percentage = Config::get('app.gst_on_cos_percentage');
 
-        $order->amount_transferred_to_vendor = $order->amount_finder;
+        $order->amount_transferred_to_vendor = $amount_used;
 
         if($order->payment_mode == "at the studio"){
             $order->amount_transferred_to_vendor = 0;
@@ -3879,7 +4025,11 @@ Class Utilities {
     }
 
     public function getWorkoutSessionFitcash($booktrialData){
-        Log::info($this->getWorkoutSessionLevel($booktrialData['customer_id']));
+        // Log::info($this->getWorkoutSessionLevel($booktrialData['customer_id']));
+        Log::info(__FUNCTION__." called from ".debug_backtrace()[1]['function']);
+
+        Log::info("booktrialData");
+        Log::info($booktrialData);
         $fitcash =  $this->getWorkoutSessionLevel($booktrialData['customer_id'])['current_level']['cashback'];
         return $fitcash;
         
@@ -4033,7 +4183,7 @@ Class Utilities {
 
                             if($customer['pps_referral_credits'] - $credits_used > 0){
 
-                                return ['status'=>200, 'message'=>'Successfully applied referral discount', 'discount'=> 499, 'type'=>'self', 'customer'=>$customer];
+                                return ['status'=>200, 'message'=>'Successfully applied referral discount', 'discount'=> 299, 'type'=>'self', 'customer'=>$customer];
                             
                             }else{
                                     
@@ -4062,7 +4212,7 @@ Class Utilities {
                 
                 }else{
 
-                    return ['status'=>200, 'message'=>'Pay per session referral is successfully applied', 'discount'=>499, 'type'=>'referral', 'customer'=>$customer];
+                    return ['status'=>200, 'message'=>'Pay per session referral is successfully applied', 'discount'=>299, 'type'=>'referral', 'customer'=>$customer];
 
                 }
 
@@ -4130,6 +4280,81 @@ Class Utilities {
         // }else{
         //     return 5;
         // }
+    }
+
+    public function getContactOptions($finderarr){
+		$knowlarity_no = [];
+				
+		if(isset($finderarr['knowlarityno']) && count($finderarr['knowlarityno'])){
+			// return $finderarr['knowlarityno'];
+			if(count($finderarr['knowlarityno']) == 1){
+				$finderarr['knowlarityno'] = $finderarr['knowlarityno'][0];
+				$finderarr['knowlarityno']['extension'] = strlen($finderarr['knowlarityno']['extension']) < 2 && $finderarr['knowlarityno']['extension'] >= 1  ?  str_pad($finderarr['knowlarityno']['extension'], 2, '0', STR_PAD_LEFT) : $finderarr['knowlarityno']['extension'];
+				if($finderarr['knowlarityno']['extension']){
+
+					$knowlarity_no[] = ['decription'=>'Already a member & have a query', 'phone_number'=>'+91'.$finderarr['knowlarityno']['phone_number'], 'extension'=>'1'.$finderarr['knowlarityno']['extension'], 'popup'=>true];
+					$knowlarity_no[] = ['decription'=>'Want to join & need assistance', 'phone_number'=>'+91'.$finderarr['knowlarityno']['phone_number'], 'extension'=>'2'.$finderarr['knowlarityno']['extension'], 'popup'=>false];
+					$knowlarity_no[] = ['decription'=>'For collaborations & other matters', 'phone_number'=>'+91'.$finderarr['knowlarityno']['phone_number'], 'extension'=>'3'.$finderarr['knowlarityno']['extension'], 'popup'=>true];
+				
+				}
+			
+			}else{
+				foreach($finderarr['knowlarityno'] as $number){
+					// return $finderarr['knowlarityno'];
+					if(!(isset($number['extension']) && $number['extension'])){
+						
+						$knowlarity_no[] = ['decription'=>'Want to join & need assistance', 'phone_number'=>'+91'.$number['phone_number'], 'extension'=>null, 'popup'=>false];
+						
+					}else{
+						$extension = str_pad($number['extension'], 2, '0', STR_PAD_LEFT);
+					
+						array_unshift($knowlarity_no, ['decription'=>'Already a member & have a query', 'phone_number'=>'+91'.$number['phone_number'], 'extension'=>'1'.$extension, 'popup'=>true]);
+						array_push($knowlarity_no, ['decription'=>'For collaborations & other matters', 'phone_number'=>'+91'.$number['phone_number'], 'extension'=>'3'.$extension, 'popup'=>true]);
+					}
+				}
+			}
+		}
+		
+		return $knowlarity_no;
+
+	}
+    
+
+    public function isIntegratedVendor($finderdata){
+        if($finderdata['commercial_type'] == 0 || (isset($finderdata['membership']) && $finderdata['membership'] == 'disable' && isset($finderdata['trial']) && $finderdata['trial'] == 'disable') || (!empty($finderdata['flags']['state']) && in_array($finderdata['flags']['state'], ['temporarily_shut', 'closed']))){
+            return false;
+        }
+        return true;
+
+    }
+    
+    
+    public function isFinderIntegrated($finder){
+        try{
+            if((!empty($finder['commercial_type']) && $finder['commercial_type'] == 0) || (!empty($finder['membership']) && $finder['membership'] == 'disable') || (!empty($finder['trial']) && $finder['trial'] == 'disable') || (!empty($finder['flags']['state']) && in_array($finder['flags']['state'], ['temporarily_shut', 'closed']))){
+                return false;
+            }else{
+                return true;
+            }
+        }catch(Exception $e){
+            Log::info($e);
+            return true;
+        }
+    }
+    
+    
+    
+    public function isServiceIntegrated($service){
+        try{
+            if((!empty($service['membership']) && $service['membership'] == 'disable') || (!empty($service['trial']) && $service['trial'] == 'disable')){
+                return false;
+            }else{
+                return true;
+            }
+        }catch(Exception $e){
+            Log::info($e);
+            return true;
+        }
     }
     
     
@@ -4296,12 +4521,13 @@ Class Utilities {
 					$resp['amount']['delivery']=intval(Config::get('app.product_delivery_charges'));
 					$amount=$amount+$resp['amount']['delivery'];
 				}
-					
+
 					// FINALLY RETURN
 					$resp['amount']['final']=$amount;
 					
 					return $resp;
 		} catch (Exception $e)
+
 		{
 			return  ['status'=>0,"message"=>$this->baseFailureStatusMessage($e)];
 		}
@@ -4324,6 +4550,7 @@ Class Utilities {
 					$img_url=$cart_item['ratecard']['image']['primary'];
 					else if (!empty($cart_item['product']&&!empty($cart_item['product']['image'])&&!empty($cart_item['product']['image']['primary'])))
 						$img_url=$cart_item['product']['image']['primary'];
+					
 						$temp=[];
 						$temp['quantity']=$cart_item['quantity'];
 						$temp['price']=(intval($cart_item['quantity'])*intval($cart_item['price']));
@@ -4340,6 +4567,7 @@ Class Utilities {
 						$temp['image']=$img_url;
 						array_push($cart_desc,$temp);
 						$amount=$amount+(intval($cart_item['quantity'])*intval($cart_item['price']));
+
 			}
 			
 			$resp['data']['cart_details']=$cart_desc;
@@ -4359,44 +4587,82 @@ Class Utilities {
 		}
 	}
 	
-	// 	public function  getProductImages($cart_data)
-	// 	{
+// 		public function  getProductImages($cart_data)
+// 		{
 	
-		// 		$data=array_map(function($e){return [ratecard_id=>intval($e['ratecard']['_id']),product_id=>intval($e['product']['_id'])];},$cart_data);
+// 				$data=array_map(function($e){return [ratecard_id=>intval($e['ratecard']['_id']),product_id=>intval($e['product']['_id'])];},$cart_data);
 		
-		// 		$products=array_column(array_column($cart_data,'product'),'_id');
-		// 		$ratecards=array_column(array_column($cart_data,'ratecard'),'_id');
-		// 		\Product::$withoutAppends=true;
-		// 		$productView=Product::whereIn("_id",$products)->with(array('ratecard'=>function($query) use ($ratecards) {$query->whereIn("_id",$ratecards)->select('_id','product_id','image');}))->get(['image']);
-		// 		$map=[];
-		// 		if(!empty($productView))
-			// 		{
-		// 			$productView=$productView->toArray();
-		// 			foreach ($productView as $product) {
-		// 				foreach ($ratecards as $value) {
-		// 					$selectedRatecard=array_values(array_filter($productView['ratecard'],function ($e) use ($value) {return $value==$e['_id'];}));
-		// 					if(!empty($selectedRatecard))
-			// 					{
-		// 						$selectedRatecard=$selectedRatecard[0];
-		// 						if(!empty($selectedRatecard['image'])&&!empty($selectedRatecard['primary'])/* &&count($selectedRatecard['image']['secondary'])>0 */)
-			// 							$img=$selectedRatecard['image']['primary'];
-			// 					}
-			// 					else if(!empty($value['image'])&&!empty($value['image']['primary'])/* &&count($productView['image']['secondary'])>0 */)
-				// 						$img=$value['image']['primary'];
-			// 						$map[intval($value['ratecard']['_id'])]=$img;
-			// 				}
-			// 			}
-			// 		}
+// 				$products=array_column(array_column($cart_data,'product'),'_id');
+// 				$ratecards=array_column(array_column($cart_data,'ratecard'),'_id');
+// // 				\Product::$withoutAppends=true;
+// // 				$productView=Product::whereIn("_id",$products)->with(array('ratecard'=>function($query) use ($ratecards) {$query->whereIn("_id",$ratecards)->select('_id','product_id','image');}))->get(['image']);
+// // 				$map=[];
+// // 				if(!empty($productView))
+// // 					{
+// // 					$productView=$productView->toArray();
+// // 					foreach ($productView as $product) {
+// // 						foreach ($ratecards as $value) {
+// // 							$selectedRatecard=array_values(array_filter($productView['ratecard'],function ($e) use ($value) {return $value==$e['_id'];}));
+// // 							if(!empty($selectedRatecard))
+// // 								{
+// // 								$selectedRatecard=$selectedRatecard[0];
+// // 								if(!empty($selectedRatecard['image'])&&!empty($selectedRatecard['primary'])/* &&count($selectedRatecard['image']['secondary'])>0 */)
+// // 										$img=$selectedRatecard['image']['primary'];
+// // 								}
+// // 								else if(!empty($value['image'])&&!empty($value['image']['primary'])/* &&count($productView['image']['secondary'])>0 */)
+// // 										$img=$value['image']['primary'];
+// // 									$map[intval($value['ratecard']['_id'])]=$img;
+// // 							}
+// // 						}
+// // 					}
+					
+// 					$rc=array_column($home, "ratecard_id");
+// 					$pro=array_column($home, "product_id");
+					
+// 					$products=array_column(array_column($cart_data,'product'),'_id');
+// 					$ratecards=array_column(array_column($cart_data,'ratecard'),'_id');
+					
+// 					Product::$withoutAppends=true;
+// 					/* $rates=ProductRatecard::raw(function($collection)
+// 					 {
+// 					 return $collection->aggregate(
+// 					 [
+// 					 ['$group' => ['_id' => ["p_id"=>'$product_id','color'=>'$color'],'details' => ['$push'=>['ratecards'=>'$_id']]]],
+// 					 ['$match' => ['details.0' => ['$exists'=>true]]],
+// 					 ['$project' => ["rcs"=>['$arrayElemAt' => ['$details',0]]]]
+// 					 ]);
+// 					 });
+// 					 (!empty($rates)&&!empty($rates['result']))?
+// 					 $rc=array_values(array_intersect(array_column(array_column($rates['result'], 'rcs'), 'ratecards'),$rc)):""; */
+// 					$combined=["rc"=>ProductRatecard::active()->whereIn("_id",$rc)->get(["title","price"]),"pc"=>Product::active()->whereIn("_id",$pro)->with('primarycategory')->get(["title",'productcategory','slug'])];
+					
+					
+// 				$rateMain=[];
+// 				$productMain=[];
+// 				foreach ($combined['rc'] as &$value)
+// 					$rateMain[$value->_id]=$value;
+// 					foreach ($combined['pc'] as &$value)
+// 						$productMain[$value->_id]=$value;
+					
+// 				$tpa=[];
+// 				foreach ($home as $key => &$value)
+// 				{
+// 					$rc1=(!empty($value)&&!empty($rateMain)&&!empty($value['ratecard_id'])&&!empty($rateMain[$value['ratecard_id']]))?$rateMain[$value['ratecard_id']]:"";
+// 					$pc1=(!empty($value)&&!empty($productMain)&&!empty($value['product_id'])&&!empty($productMain[$value['product_id']]))?$productMain[$value['product_id']]:"";
+// 					if(!empty($rc1)&&!empty($pc1))
+// 						array_push($tpa,["ratecard"=>$rateMain[$value['ratecard_id']],"product"=>$productMain[$value['product_id']]]);
+// 				}
+					
 			
-			// 		return $map;
-			// 	}
+// 					return $map;
+// 		}
 			
 	public function getCartFinalSummary($cart_data,$cart_id)
 	{
 		try {
 			if(empty($cart_data))
 				return ["status"=>5,"message"=>"No Cart Data present Or Cart is Empty."];
-				$resp=["status"=>1,"message"=>"success","data"=>[]];
+			   $resp=["status"=>1,"message"=>"success","data"=>[]];
 				
 				$cart_desc=[];
 				$cart_details=[];
@@ -4471,6 +4737,7 @@ Class Utilities {
 				array_push($tmp,$value['ratecard']['_id']);
 			}
 			$productinfo=$createdData['productinfo'] =implode("_",array_map('strtolower', $tmp));
+			// $productinfo=$createdData['productinfo'] ="asdasda-asdasdas";
 			
 			$firstname = strtolower($data['customer']['customer_name']);
 			$email = strtolower($data['customer']['customer_email']);
@@ -4502,6 +4769,130 @@ Class Utilities {
 		
 		
 	}
+
+    
+    public function compressImage($file, $src, $dir='tmp-images'){
+        $mime_type = $file->getClientMimeType();
+        $file_extension = $file->getClientOriginalExtension();
+        $local_directory = public_path().'/'.$dir;
+        $dst = $src."-c";
+        
+        $local_path_original =  join('/', [$local_directory, $src.".".$file_extension]);
+        $local_path_compressed =  join('/', [$local_directory, $dst.".".$file_extension]);
+        $resp = $file->move($local_directory,$src.".".$file_extension);
+        
+        if ($mime_type == 'image/jpeg'){
+            $image = imagecreatefromjpeg($local_path_original);
+        }elseif ($mime_type == 'image/png'){
+            $image = imagecreatefrompng($local_path_original);
+        }
+
+        imagejpeg($image, $local_path_compressed, 30);
+
+        unlink($local_path_original);
+        
+        return $local_path_compressed;
+    }
+
+    public function uploadFileToS3($local_path, $s3_path){
+        try{
+            $s3 = \AWS::get('s3');
+					
+            $result = $s3->putObject(array(
+                'Bucket'     => Config::get('app.aws.bucket'),
+                'Key'        => $s3_path,
+                'SourceFile' => $local_path
+            ));
+            return true;
+        }catch(Exception $e){
+            Log::info($e);
+            return false;
+        }
+    }
+    
+
+    public function getDayWs($date=null)
+    {
+    	return $this->days[date("w",strtotime($date))];
+    	
+    }
+    public function getSlotReqdField($start=null,$end=null,$service_id=null,$start_date=null,$required='limited_seat',$buy_type='workoutsessionschedules') {
+    	
+    	try {
+    		if(!isset($service_id))throw new Exception("Service id Not Defined.");
+    		else if(!isset($start_date))throw new Exception("Start Date not present.");
+    		else if(!isset($start)||!isset($end))throw new Exception("Start/End Not Defined.");
+    		else {
+    			$week_days=["sunday","monday","tuesday","wednesday","thursday","friday","saturday"];
+    			$day=$week_days[date("w",strtotime($start_date))];
+    			if(empty($day))throw new Exception("Day Not present in the schedules.");
+    			$start=(str_contains($start, "pm"))?doubleval($start)+12:doubleval($start);$end=(str_contains($end, "pm"))?doubleval($end)+12:doubleval($end);
+    			\Service::$withoutAppends=true;
+    			$service=\Service::where("_id",intval($service_id))->first([$buy_type]);
+    			if(isset($service)&&!empty($service[$buy_type]))
+    			{
+    				$r=array_values(array_filter($service[$buy_type], function($a) use ($day){return !empty($a['weekday'])&&$a['weekday']==$day;}));
+    				if(!empty($r[0])&&!empty($r[0]['slots']))
+    				{
+    					$r=$r[0]['slots'];
+    					$r=array_values(array_filter($r, function($a) use ($start,$end){return isset($a['start_time_24_hour_format'])&&isset($a['end_time_24_hour_format'])&&$a['start_time_24_hour_format'] >=$start&&$a['end_time_24_hour_format'] <=$end;}));
+    					return (!empty($r[0])&&isset($r[0][$required]))?$r[0][$required]:null;
+    				}else return null;
+    			}else return null;
+    		}
+    	} catch (Exception $e) {
+    		Log::error(" Error Message ::  ".print_r($e->getMessage(),true));
+    		return null;
+    	}
+    	return null;
+    }
+    
+    public function getSlotBookedCount($slot=null,$service_id=null,$date=null,$allowed_qty=10000,$serv_type=['workout-session','booktrials']) {
+    	
+    	$data=["count"=>0,"allowed"=>false];
+    	try {
+    		
+    		if(!isset($service_id))throw new Exception("Service id Not Defined.");
+    		else if(!isset($slot))throw new Exception("Slot not present.");
+    		else if(!isset($date))throw new Exception("Date not present.");
+    		else {
+    			$slot_times=explode('-',$slot);
+    			$slot=trim($slot_times[0]).'-'.trim($slot_times[1]);
+    			$orders=\Order::active()->where("service_id",intval($service_id))
+    			->whereIn("type",$serv_type)
+    			->where("status","1")
+    			->where("schedule_slot",$slot)
+    			->where("schedule_date",$date)->lists("_id");
+    			if(empty($orders))
+    			{
+    				$data['allowed']=true;
+    				return $data;
+    			}
+    			else {
+//     				$orders=$orders->toArray();
+    				if(count($orders)<$allowed_qty)
+    				{
+    					$data['count']=count($orders);
+    					$data['allowed']=true;
+    					return $data;
+    				}
+    				else {
+    					$data['count']=count($orders);
+    					$data['allowed']=false;
+    					return $data;
+    				};
+    			}
+    			return $data;
+    		}
+    	} catch (Exception $e) {
+    		Log::error(" Error Message ::  ".print_r($e->getMessage(),true));
+    		return $data;
+    	}
+    	return $data;
+    }
+
+
+
 	public function getRupeeForm($number) {
 		return json_decode('"'."\u20b9".'"')." ".(isset($number)?$number:"");
 	}
@@ -4635,11 +5026,127 @@ Class Utilities {
 		
 
 	}
+
+
+
+
+	public function getPrimaryCategory($finder_id=null,$service_id=null) {
+		
+		try {
+			if(!empty($finder_id))
+			{
+				Finder::$withoutAppends=true;$finder=Finder::find(intval($finder_id))->with('category')->first(['category_id']);
+				return (!empty($finder)&&!empty($finder->category))?$finder->toArray()['category']['name']:null;
+			}
+			else if(!empty($service_id))
+			{
+				Service::$withoutAppends=true;$service=Service::find(intval($service_id))->with('category')->first(['servicecategory_id']);
+				return (!empty($service)&&!empty($service->category))?$service->toArray()['category']['name']:null;
+			}
+			else return null;
+		} catch (Exception $e) {
+			Log::error(" Error Message ::  ".print_r($e->getMessage(),true));
+			return null;
+		}
+		return null;
+	}
+	public function getWSNonPeakPrice($start=null,$end=null,$workoutSessionPrice=null,$service_cat=null,$just_tag=false) {
+		
+		try {
+			$peak=true;
+			if(!empty($workoutSessionPrice)&&!empty($start)&&!empty($end)&&!empty($service_cat))
+			{   
+				if($service_cat=='gym')
+				{
+					if(intval($start)>=Config::get('app.non_peak_hours.gym.start')&&intval($end)<=Config::get('app.non_peak_hours.gym.end'))
+					{
+						(!$just_tag)?$workoutSessionPrice=Config::get('app.non_peak_hours.gym.off')*intval($workoutSessionPrice):"";$peak=false;
+					}
+				}
+				else if(intval($start)>=Config::get('app.non_peak_hours.studios.start')&&intval($end)<=Config::get('app.non_peak_hours.studios.end'))
+				{
+					(!$just_tag)?$workoutSessionPrice=Config::get('app.non_peak_hours.studios.off')*intval($workoutSessionPrice):"";$peak=false;
+				}			
+			}
+			return ['wsprice'=>$workoutSessionPrice,'peak'=>$peak];
+		} catch (Exception $e) {
+			Log::error(" Error Message ::  ".print_r($e->getMessage(),true));
+			return null;
+		}
+		return null;
+	}
+	public function getPeakAndNonPeakPrice($slots=[],$service_cat=null) {
 	
+		try {
+			if(empty($service_cat))throw new Exception("No Service Category Exists.");
+			$resp=[];
+			foreach ($slots as $value) 
+			{
+				if(!isset($resp['peak'])||!isset($resp['non_peak']))
+				{
+					$temp=$this->getWSNonPeakPrice($value['start_time_24_hour_format'],$value['end_time_24_hour_format'],$value['price'],$service_cat,true);
+					if(!empty($temp)&&isset($temp['wsprice']))
+						(!empty($temp['peak']))?$resp['peak']=$temp['wsprice']:$resp['non_peak']=$temp['wsprice'];
+				}
+				else return $resp;
+			}
+		} catch (Exception $e) {
+			Log::error(" Error Message ::  ".print_r($e->getMessage(),true));
+			throw $e;
+		}
+		return null;
+	}
 	
-	public function getCartTotalCount($cart=null)
-	{
-		return (!empty($cart))?array_reduce((!empty($cart['products'])?array_map(function($e){return (!empty($e['quantity'])?intval($e['quantity']):0);},$cart['products']):[]),function($carry,$item){$carry+=$item;return $carry;}):null;
+	public function getWsSlotPrice($start=null,$end=null,$service_id=null,$start_date=null) {
+		
+		try {
+				if(!isset($service_id))throw new Exception("Service id Not Defined.");
+				else if(!isset($start_date))throw new Exception("Start Date not present.");
+				else if(!isset($start)||!isset($end))throw new Exception("Start/End Not Defined.");
+				else {
+						$day=$this->days[date("w",strtotime($start_date))];
+						if(empty($day))throw new Exception("Day Not present in the schedules.");	
+							$start=(str_contains($start, "pm"))?doubleval($start)+12:doubleval($start);$end=(str_contains($end, "pm"))?doubleval($end)+12:doubleval($end);
+						Service::$withoutAppends=true;
+						$service=Service::where("_id",intval($service_id))->first(['workoutsessionschedules']);
+						if(isset($service)&&!empty($service->workoutsessionschedules))
+						{
+							$r=array_values(array_filter($service->workoutsessionschedules, function($a) use ($day){return !empty($a['weekday'])&&$a['weekday']==$day;}));
+							if(!empty($r[0])&&!empty($r[0]['slots']))
+									{
+										$r=$r[0]['slots'];
+										$r=array_values(array_filter($r, function($a) use ($start,$end){return isset($a['start_time_24_hour_format'])&&isset($a['end_time_24_hour_format'])&&$a['start_time_24_hour_format'] >=$start&&$a['end_time_24_hour_format'] <=$end;}));
+										return (!empty($r[0])&&isset($r[0]['price']))?$r[0]['price']:null;
+									}else return null;
+						}else return null;
+					}
+		} catch (Exception $e) {
+			Log::error(" Error Message ::  ".print_r($e->getMessage(),true));
+			throw $e;
+		}
+		return null;
+	}
+	
+	public function getAnySlotAvailablePNp($requested_date,$service_details) {
+		$closeDate=date('Y-m-d', strtotime($requested_date.' + 7 days'));
+		$iterDate=date('Y-m-d', strtotime($requested_date));
+		$p_np=null;
+		while($closeDate!==$iterDate)
+		{
+			$day=$this->getDayWs($requested_date);
+			if(!empty($day))
+			{
+				$tmp=array_values(array_filter($service_details['workoutsessionschedules'],function ($e) use($day){if($e['weekday']==$day)return $e;}));
+				if(!empty($tmp))
+				{
+					$p_np=$this->getPeakAndNonPeakPrice($tmp[0]['slots'],$this->getPrimaryCategory(null,$service_details['_id']));
+					return $p_np;
+				}
+			}
+			else $iterDate=date('Y-m-d', strtotime($requested_date. ' + 1 days'));
+		}
+		return $p_np;
+		
 	}
 	
 	public function attachProductQuantity(&$data,$onlyQuantity=false)
@@ -4677,6 +5184,7 @@ Class Utilities {
 		if(isset($jwt))
 		{
 			$customer=$this->getCustomerAddress();
+            Log::info($customer);
 			if(!empty($customer))
 			{
 				$customer=$customer->toArray();
@@ -4684,6 +5192,11 @@ Class Utilities {
 			}
 		}
 		
+
+	}
+	public function getCartTotalCount($cart=null)
+	{
+		return (!empty($cart))?array_reduce((!empty($cart['products'])?array_map(function($e){return (!empty($e['quantity'])?intval($e['quantity']):0);},$cart['products']):[]),function($carry,$item){$carry+=$item;return $carry;}):null;
 	}
 
 	public function fetchProductCities(&$data)
@@ -4710,7 +5223,7 @@ Class Utilities {
 			if(empty($order))
 				return ["status"=>0,"message"=>"No data present."];
 			if(empty($order['cart_data']))
-					return ["status"=>0,"message"=>"No Cart Data present."];
+					return ["status"=>5,"message"=>"No Cart Data present."];
 				$resp=["status"=>1,"message"=>"success","data"=>[]];
 				$cart_data =$order['cart_data'];
 				$cart_desc=[];
@@ -4762,7 +5275,6 @@ Class Utilities {
 		$cur_seperator=", ";
 		if(!$finder)
 		{
-			
 			if(!empty($data["name"]))$temp=$temp.$data["name"]." <br />";
 			if(!empty($data["line1"]))$temp=$temp.$data["line1"].$cur_seperator;
 			if(!empty($data["line2"]))$temp=$temp.$data["line2"].$cur_seperator;
@@ -4786,6 +5298,169 @@ Class Utilities {
 				return $value['image']['primary'];
 		return "";
 	}
+
+    public function updateRatecardSlots($data){
+        Log::info("inside updateRatecardSlots");
+
+        if(intval(date('d', time())) >= 9){
+            return;
+        }
+
+        $order = \Order::find(intval($data['order_id']));
+        
+        if($order && !empty($order['service_id'])){
+
+            if(!empty($order->ratecard_sidekiq_id_deleted)){
+                return;
+            }
+            
+            if(!empty($order->ratecard_sidekiq_id)){
+                
+                $sidekiq = new Sidekiq();
+                $sidekiq->delete($order->ratecard_sidekiq_id);
+                $order->ratecard_sidekiq_id_deleted = true;
+                $order->save();
+            }
+
+            $service_id = $order['service_id'];
+            $service = \Service::find($order['service_id']);
+            
+            if($service){
+                
+                $service->available_slots = isset($service->available_slots) ? $service->available_slots : 10;
+                
+                $available_slots = $service->available_slots = $service->available_slots - 1;
+                Log::info("reducing slots");
+                Log::info("new slots".$available_slots);
+                
+                
+                $ratecard = \Ratecard::active()
+                ->where('service_id', $service_id)
+                ->where('type','membership')
+                ->orderBy('order', 'desc')
+                ->first();
+                
+                $ratecard_id = $ratecard->_id;
+                
+                $offer = \Offer::active()
+                ->where('ratecard_id', $ratecard_id)
+                ->where('added_by_script', '!=', true)
+                ->orderBy('order', 'asc')
+                ->first();
+                
+                if($available_slots <= 0){
+
+                    $ordervariable = \Ordervariables::where('name', 'expiring-logic')->orderBy('_id', 'desc')->first();
+                    
+                    $days_passed = intval(date('d', time())) - intval(date('d', $ordervariable->start_time));
+
+                    $days_passed = $days_passed == 0 ? 1 : $days_passed;
+                    
+                    $days_left = abs(intval(date('d', $ordervariable->available_slots_end_date)) - intval(date('d', time())));
+
+                    $days_left = $days_left == 0 ? 1 : $days_left;
+
+                    $service->total_slots_created = isset($service->total_slots_created) ? $service->total_slots_created : $service->available_slots;
+                    
+                    $new_slots = ceil($service->total_slots_created / $days_passed * $days_left / 2);
+
+                    Log::info($days_passed);
+                    Log::info($days_left);
+                    Log::info($new_slots);
+                    
+                    $service->available_slots = $new_slots;
+                    
+                    $service->total_slots_created = $service->total_slots_created + $new_slots;
+                
+                    if(!empty($offer)){
+                        
+                        
+                        $price = $offer['price'];
+                        
+                        $ratecard->price_increased_times = isset($ratecard->price_increased_times) ? $ratecard->price_increased_times + 1 : 1;
+                        
+                        $new_price = round($price * (1 + $ratecard->price_increased_times/100));
+
+                        
+                        
+                        $new_price = $price + ($new_price > 50 ? ($new_price < 75 ? $new_price : 75) : 50);
+                        
+                        $offer_data = $offer->toArray();
+                        
+                        $offer_data['price'] = $new_price;
+                        $offer_data['order'] = $offer_data['order'] - $ratecard->price_increased_times ;
+                        // $offer_data['end_date'] = \Carbon\Carbon::createFromFormat('d-m-Y H:i:s', date('d-m-Y 00:00:00', strtotime('+24 days', strtotime('first day of this month'))));
+                        $offer_data['start_date'] = \Carbon\Carbon::createFromFormat('d-m-Y H:i:s', date('d-m-Y 00:00:00', time()));
+                        unset($offer_data['created_at']);
+                        unset($offer_data['updated_at']);
+                        
+                        
+                        Log::info("increasing price");
+                        Log::info("old price:". $price);
+                        Log::info("new price:".$new_price);
+                        
+                        $create_offer  = $this->createOffer($offer_data);
+                        
+                        $ratecard->save();
+                    }
+                    
+                    
+                    
+                }
+                $service->save();
+                
+                $this->busrtFinderCache($order['finder_slug']);
+                
+            }
+        }
+        
+    
+    }
+
+    public function createOffer($offer_data){
+        
+        $offer_data['added_by_script'] = true;
+        $offer_data['created_from_offer'] = $offer_data['_id'];
+        $offer_id = \Offer::max('_id') + 1;
+        $update_counter = \Identitycounter::where('model', 'Offer')->update(['count'=>$offer_id]);
+        Log::info("update_counter");
+        Log::info($update_counter);
+        
+        $offer = new \Offer($offer_data);
+        $offer->_id = $offer_id;
+        $offer->save();
+
+        Log::info("offer created");
+        Log::info($offer);
+
+
+    }
+
+    public function busrtFinderCache($slug){
+
+        \Cache::tags('finder_detail')->forget($slug);
+        \Cache::tags('finder_detail_android')->forget($slug);
+        \Cache::tags('finder_detail_ios')->forget($slug);
+        \Cache::tags('finder_detail_ios_4_4_3')->forget($slug);
+        \Cache::tags('finder_detail_android_4_4_3')->forget($slug);
+        
+    }
+
+
+    
+    function decryptQr($encrypted_string, $encryption_key) {	
+    	$iv_size = mcrypt_get_iv_size(MCRYPT_BLOWFISH, MCRYPT_MODE_ECB);
+    	$iv = mcrypt_create_iv($iv_size, MCRYPT_RAND);
+    	$decrypted_string = mcrypt_decrypt(MCRYPT_BLOWFISH, $encryption_key, hex2bin($encrypted_string), MCRYPT_MODE_ECB, $iv);
+    	return $decrypted_string;
+    }
+    public function updateOrderStatus($booktrial){
+    	if(isset($booktrial->pay_later) && $booktrial->pay_later && isset($booktrial->payment_done) && !$booktrial->payment_done){
+    		Order::where('_id', $booktrial->order_id)->where('status', '0')->update(['status'=>'4']);
+    	}
+    }
+
+
 	public function getRateCardBaseID($ratecards=[])
 	{
 		foreach ($ratecards as $value)
@@ -4849,11 +5524,160 @@ Class Utilities {
 		} catch (Exception $e) {
 			return  ['status'=>0,"message"=>$this->baseFailureStatusMessage($e)];
 		}
-		
-		
-		
-		return (empty($selectedRatecard)||empty($selectedRatecard['slash_price']))?"":'<strike>'.$this->getRupeeForm($selectedRatecard['slash_price']).'</strike>';
-	}
+
+	} 
+//     public function getRupeeForm($amount){
+//     	return (isset($amount)?'\u20B9'.' '.$amount:"");
+//     }
+    
+    public function getAttendedResponse($status='attended',$booktrial,$customer_level_data,$pending_payment,$payment_done,$fitcash,$add_chck)
+    {
+    	if($status=='attended')
+    	{
+    		$response = [
+    				'status'=>200,
+    				'header'=>'ENJOY YOUR WORKOUT!',
+    				'image'=>'https://b.fitn.in/paypersession/happy_face_icon-2.png',
+    				// 'footer'=>$customer_level_data['current_level']['cashback'].'% Cashback has been added in your Fitternity Wallet. Use it to book more workouts and keep on earning!',
+    				'streak'=>[
+    						'header'=>'STREAK IT OUT',
+    						'data'=>$this->getStreakImages($customer_level_data['current_level']['level'])
+    				]
+    		];
+    		
+    		if($payment_done){
+    			$response['sub_header_1'] = $customer_level_data['current_level']['cashback']."% Cashback";
+    			$response['sub_header_2'] = " has been added in your Fitternity Wallet. Use it to book more workouts and keep on earning!";
+    		}else $response['payment'] = $pending_payment;
+    		
+    		if($booktrial['type'] == 'booktrials'){
+    			if (isset($add_chck['sub_header'])){
+    				$response['sub_header_1'] = $add_chck['sub_header'];
+    				$response['sub_header_2'] = $add_chck['message'];
+    			}
+    			else{
+    				$response['sub_header_1'] = $fitcash." Fitcash";
+    				$response['sub_header_2'] = " has been added in your Fitternity Wallet. Use it to buy membership with lowest price";
+    			}
+    		}
+    		$this->deleteSelectCommunication(['transaction'=>$booktrial, 'labels'=>["customer_sms_after2hour","customer_email_after2hour","customer_notification_after2hour"]]);
+    		
+    	}
+    	else
+    	{
+    		$response = [
+    				'status'=>200,
+    				'header'=>'OOPS!',
+    				'image'=>'https://b.fitn.in/paypersession/sad-face-icon.png',
+    				'sub_header_2'=>'Make sure you attend next time to earn Cashback and continue working out!',
+    				'footer'=>'Unlock level '.$customer_level_data['current_level']['level'].' which gets you '.$customer_level_data['current_level']['cashback'].'% cashback upto '.$customer_level_data['current_level']['number'].' sessions! Higher the Level, Higher the Cashback',
+    				'streak'=>[
+    						'header'=>'STREAK IT OUT',
+    						'data'=>$this->getStreakImages($customer_level_data['current_level']['level'])
+    				]
+    		];
+    		
+    		if(isset($customer_level_data['next_level']['level'])){
+    			$response['streak']['footer'] = 'Unlock level '.$customer_level_data['next_level']['level'].' which gets you '.$customer_level_data['next_level']['cashback'].'% cashback upto '.$customer_level_data['next_level']['number'].' sessions! Higher the Level, Higher the Cashback';
+    		}
+    		if($payment_done){
+    			$response['sub_header_2'] = "Make sure you attend next time to earn Cashback and continue working out!\n\nWe will transfer your paid amount in form of Fitcash within 24 hours.";
+    		}
+    		if($booktrial->type=='booktrials'){
+    			
+    			$response['reschedule_button'] = true;
+    			$response['sub_header_2'] = "We'll cancel you from this batch. Do you want to reschedule instead?";
+    			
+    		}
+    		$this->deleteSelectCommunication(['transaction'=>$booktrial, 'labels'=>["customer_sms_after2hour","customer_email_after2hour","customer_notification_after2hour"]]);
+    		
+    	}
+    	
+    	if($booktrial->type == 'booktrials' && isset($response['streak'])){
+    		unset($response['streak']);
+    	}
+    	
+    	$description = "";
+    	
+    	if(isset($response['sub_header_1'])){
+    		$description = "<font color='#f7a81e'>".$response['sub_header_1']."</font>";
+    	}
+    	
+    	if(isset($response['sub_header_2'])){
+    		$description = $description.$response['sub_header_2'];
+    	}
+    	$response['description'] = $description;
+    	$response['trial_id'] = (string)$booktrial->_id;
+    	$response['finder_id'] = $booktrial->finder_id;
+    	$response['service_id'] = $booktrial->service_id;
+    	return $response;
+    }
+    
+
+    public function removeMobileCodes($coups=[])
+    {
+    	return array_filter($coups,function ($e) { return !empty($e)&&empty($e['app_only']);});
+    }
+    
+    public function removeAlreadyUsedCodes($coups=[],$customer_id,$single=false)
+    {
+    	if(!$single)
+    	{
+	    	\Order::$withoutAppends = true;
+	    	$order_codes=\Order::active()->where("customer_id", $customer_id)->whereIn('coupon_code', $coups)->where('coupon_discount_amount', '>', 0)->get();
+	    	
+	    	if(!empty($order_codes))
+	    	{
+	    		$order_codes=$order_codes->toArray();
+	    		$already_applied_codes=array_pluck($order_codes, 'coupon_code');
+	    		return array_filter($coups,function ($e) use ($already_applied_codes){ return !empty($e)&&!empty($e['code'])&&!in_array($e['code'],$already_applied_codes);});
+	    	}
+	    	else return $coups;    		
+    	}
+    	else {
+    		\Order::$withoutAppends = true;
+    		$order_codes=\Order::active()->where("customer_id", $customer_id)->where('coupon_code',$coups['code'])->where('coupon_discount_amount', '>', 0)->count();
+    		if($order_count >= 1)
+    			return false;
+    		else return true;
+    	}
+    }
+    public function allowSpecificvendors($coups=[],$finder_id=null,$service_id=null,$single=false)
+    {
+    	if(!$single)
+    	{
+    		return array_filter($coups,function ($e) use($finder_id,$service_id) {
+    			
+    			$output=!empty($e)&&!empty($finder_id)&&!empty($service_id)&&!empty($e['finders'])&&!empty($e['services'])&&in_array($finder_id, $e['finders'])&&in_array($finder_id, $e['services']);
+    			
+    			if($output&&(empty($e['finders_exclude'])||!empty($e['finders_exclude'])&&!in_array($finder_id, $e['finders_exclude'])))
+    				return true;
+    				else return false;
+    		});
+    	}
+    	else {
+    		
+    		$output=!empty($finder_id)&&!empty($service_id)&&!empty($coups['finders'])&&!empty($coups['services'])&&in_array($finder_id, $coups['finders'])&&in_array($service_id, $coups['services']);
+    		if($output&&(empty($coups['finders_exclude'])||!empty($coups['finders_exclude'])&&!in_array($finder_id, $e['finders_exclude'])))
+    			return true;
+    		else return false;
+    	}
+    	
+    }
+    
+    public function allowFitternityUsers($coups=[],$customer_id=null,$customer_email=null)
+    {
+    	$customer = \Customer::find((int)$customer_id);
+    	if(!$single)
+    	{
+    		return array_filter($coups,function ($e) use($customer_id,$customer_email) {
+    			return in_array($customer_email, ['utkarshmehrotra@fitternity.com','shahaansyed@fitternity.com','maheshjadhav@fitternity.com']);
+    		});
+    	}
+    	else in_array($customer_email, ['utkarshmehrotra@fitternity.com','shahaansyed@fitternity.com','maheshjadhav@fitternity.com']);
+
+    }
+	
 }
 
 

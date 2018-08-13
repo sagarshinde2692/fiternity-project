@@ -7398,5 +7398,462 @@ public function yes($msg){
 
 	}
 
+	public function updateCouponUsed(){
+
+		Order::$withoutAppends = true;
+
+		$order = Order::raw(function($collection){
+
+			$aggregate = [];
+
+			$match['$match']['status'] = "1";
+			$match['$match']['coupon_code']['$exists'] = true;
+
+			$aggregate[] = $match;
+
+			$group = array(
+				'$group' => array(
+					'_id' => '$coupon_code',
+					'count' => array(
+						'$sum' => 1
+						)
+					)
+				);
+				$aggregate[] = $group;
+
+			return $collection->aggregate($aggregate);
+
+		});
+		$request = [];
+
+		foreach ($order['result'] as $key => $value) {
+
+			if(is_string($value['_id'])){
+
+				$request[strtolower($value['_id'])] = $value['count'];
+			}
+		}
+
+		foreach ($request as $key => $value) {
+
+			$coupon = Coupon::where('code',$key)->first();
+
+			if($coupon){
+
+				$coupon->total_used = (int)$value;
+				$coupon->update();
+			}
+
+		}
+
+		return "Done";
+	}
+
+	public function tagReviews(){
+		Review::$withoutAppends = true;
+		$reviews = Review::where('customer_id', 149788)->get(['finder_id', 'customer_id']);
+		
+		$customer_ids = array_pluck($reviews->toArray(), 'customer_id');
+		
+		$transactions = Transaction::raw(function($collection) use ($customer_ids){
+
+			$match['$match']['$and'] = [
+					// ['customer_id'=>['$in'=>$customer_ids]],
+					['$or'=>[['transaction_type'=>['$ne'=>'Order']], ['status'=>'1', 'type'=>['$nin'=>['booktrials','workout-session']]]]],
+					['transaction_type'=>['$ne'=>'Capture']],
+					['customer_id'=> ['$in'=>[44704,149788]]]
+			];
+
+			$aggregate[] = $match;
+
+			$project['$project'] = [
+				'customer_id'=>1,
+				'finder_id'=>1,
+				'transaction_type'=>1,
+				'type'=>1,
+				'created_at'=>1,
+				'start_date'=>1,
+				'data'=>['$cond'=>['if'=>['']]]
+			];
+
+			$aggregate[] = $project;
+
+			$sort['$sort'] = [
+				'date'=>-1
+			];
+			$aggregate[] = $sort;
+
+			$group['$group'] = [
+				'_id'=>['customer_id'=>'$customer_id', 'finder_id'=>'$finder_id'],
+				'transactions'=>['$push'=>'$$ROOT']
+			];
+			$aggregate[] = $group;
+
+			return $collection->aggregate($aggregate);
+
+		});
+
+		$transactions_data = [];
+		
+		foreach($transactions['result'] as $x){
+			$transactions_data[$x['_id']['finder_id']."-".$x['_id']['customer_id']] = $x['transactions'];
+		}
+
+		return $transactions_data;
+
+	}
+
+
+	public function addProducts(){
+		
+		// return Log::info(str_getcsv(implode(file("a.csv"), "\n")));
+		// return ProductRatecard::max('_id');
+		// return Product::max('_id');
+		$rows = array_map('str_getcsv', file('a.csv'));
+		$header = array_shift($rows);
+		$csv = array();
+		foreach ($rows as $row) {
+			$csv[] = array_combine($header, $row);
+		}
+		// Log::info($csv);
+		$specifications_arry = ["Manufacturer","Supplier","Primary Product Category","Secondary Category","HSN Code","Vegetarian/Non-Vegetarian","Manufactured in","Form"];
+		// return $csv;
+		foreach($csv as $data){
+			// return array_keys($data);
+			$product = Product::where('ref_id', $data['id'])->first();
+			
+			if(!$product){
+				// return array_keys($data);
+
+				$product['title'] = $data['Product Name '];
+				$product['alias'] = $data['Product Name '];
+		
+				$specs = [];
+				foreach($specifications_arry as $key =>$value){
+					if(!empty($data[$key])){
+						array_push($specs, ['name'=>$key, 'value'=>$value, 'order'=>0, 'status'=>1]);
+					}
+				}
+				$product['specification'] = ['primary'=>[],'secondary'=>$specs];
+				$product['productcategory'] = ['primary'=>10,'secondary'=>[10]];
+				$product['slug'] = strtolower(preg_replace('/[^A-Za-z0-9-]+/', '-', $product['title']));
+				$product['sub_title'] = $product['title'];
+				$product['image'] = 
+				array (
+					'primary' => 'http://b.fitn.in/products/details/tshirtcfm.png',
+					'secondary' => 
+					array (
+						0 => 'http://b.fitn.in/products/details/tshirtcfm.png',
+					),
+				);
+				
+				$product['selection_view'] = array (
+					0 => 
+					array (
+					  'name' => 'flavour',
+					  'level' => 1,
+					  'status' => 1,
+					),
+					1 => 
+					array (
+					  'name' => 'mass',
+					  'level' => 2,
+					  'status' => 1,
+					),
+				);
+				$product['ref_id'] = $data['id'];
+	
+				$product_id = $product['_id'] = Product::max('_id') + 1;
+				
+				$product = new Product($product);
+				$product->_id = $product_id;
+				
+				$product->save();
+				
+				// Log::info($result);
+	
+			}
+			$ratecard = [];
+			$ratecard1 = ProductRatecard::where('sku', $data['Merchant Sku'])->count();
+			// $ratecard
+			// return $ratecard['_id'];
+			if(!$ratecard1){
+
+				$ratecard = array (
+					// '_id'  => ProductRatecard::max('_id') + 1,
+					'title'=>$product['title'],
+					'product_id' => $product['_id'],
+					'servicecategory_id' => 
+					array (
+					  0 => 1,
+					),
+					'productcategory_id' => 
+					array (
+					  0 => 10,
+					),
+					'price' => intval($data['MRP']),
+					'order' => 2,
+					'status' => '1',
+					'flags' => 
+					array (
+					  'available' => true,
+					),
+					'sku'=>$data['Merchant Sku']
+				);
+		
+				if(!empty($data['Flavour'])){
+					$ratecard['flavour'] = $data['Flavour'];
+				}
+				
+				if(!empty($data['Mass'])){
+					$ratecard['mass'] = $data['Mass'];
+				}
+				
+				$ratecard = new ProductRatecard($ratecard);
+				$ratecard->_id = ProductRatecard::max('_id') + 1;
+				$ratecard->save();
+				Log::info($ratecard);
+			}
+		}
+		
+		return $csv;
+
+	}
+
+	public function productSpecifications(){
+		Log::info("asdasd");
+		$products = Product::where('_id', '>', 2)->get();
+		foreach($products as $product){
+			$specifications = $product->specifications;
+			$specifications_new =[];
+			
+			$i =0;
+			foreach($specifications as $key => $value){
+				array_push($specifications_new, ['name'=>$key, 'value'=>$value, 'order'=>$i, 'status'=>1]);
+				$i++;
+			}
+			$product->specification = ['primary' =>['features'=>[]], 'secondary'=>$specifications_new];
+			$product->update();
+		}
+		
+		return $products;
+		return "doe";
+	}
+
+	public function addRatecards(){
+		$products = Product::where('ref_id', 'exists', false)->get();
+
+		foreach($products as $product){
+			// return $product;
+			$ratecard = array (
+				// '_id'  => ProductRatecard::max('_id') + 1,
+				'title'=>$product['title'],
+				'product_id' => $product['_id'],
+				'servicecategory_id' => $product['servicecategory']['secondary'],
+				'productcategory_id' => $product['productcategory']['secondary'],
+				'price' => intval($product['price']),
+				'order' => 2,
+				'status' => '1',
+				'flags' => 
+				array (
+				  'available' => true,
+				),
+				// 'sku'=>$data['Merchant Sku']
+			);
+
+			$ratecard = new ProductRatecard($ratecard);
+			$ratecard->_id = ProductRatecard::max('_id') + 1;
+			$ratecard->save();
+		}
+		return "done";
+	}
+
+	public function addPriceToProduct(){
+		$prices = array (
+			0 => 
+			array (
+			  'name' => 'FitsSip : Cool Shaker',
+			  'cp' => 80,
+			  'sp' => 300,
+			),
+			1 => 
+			array (
+			  'name' => 'FitBag : Waterproof Gym Bag',
+			  'cp' => 185,
+			  'sp' => 650,
+			),
+			2 => 
+			array (
+			  'name' => 'FitTote : Casual Tote Bag',
+			  'cp' => 70,
+			  'sp' => 250,
+			),
+			3 => 
+			array (
+			  'name' => 'FitShoe: Drawstring Shoe Bag',
+			  'cp' => 33,
+			  'sp' => 150,
+			),
+			4 => 
+			array (
+			  'name' => 'FitDetangler',
+			  'cp' => 79,
+			  'sp' => 250,
+			),
+			5 => 
+			array (
+			  'name' => 'FitArm: Workout Friendly Armband',
+			  'cp' => 70,
+			  'sp' => 300,
+			),
+			6 => 
+			array (
+			  'name' => 'FitTowel :  Compact Hand Towel',
+			  'cp' => 125,
+			  'sp' => 350,
+			),
+			7 => 
+			array (
+			  'name' => 'FitBottle :  Cool-Water Bottle',
+			  'cp' => 150,
+			  'sp' => 400,
+			),
+			8 => 
+			array (
+			  'name' => 'FitMat : Yoga Mat',
+			  'cp' => 260,
+			  'sp' => 800,
+			),
+			9 => 
+			array (
+			  'name' => 'FitYogaBag: Yoga Mat Bag',
+			  'cp' => 120,
+			  'sp' => 500,
+			),
+			10 => 
+			array (
+			  'name' => 'FitShirt: Breather T-Shirt : Fit is the New Sexy',
+			  'cp' => 200,
+			  'sp' => 550,
+			),
+			11 => 
+			array (
+			  'name' => 'FitShirt: Breather T-Shirt : Love Live Lift',
+			  'cp' => 200,
+			  'sp' => 550,
+			),
+			12 => 
+			array (
+			  'name' => 'FitShirt: Breather T-Shirt : Fit is the New Sexy',
+			  'cp' => 200,
+			  'sp' => 550,
+			),
+			13 => 
+			array (
+			  'name' => 'FitShirt: Breather T-Shirt : Unleash the Beast',
+			  'cp' => 200,
+			  'sp' => 550,
+			),
+		);
+
+		foreach($prices as $price){
+			Product::where('alias', $price['name'])->update(['cost_price'=>intval($price['cp']), 'price'=>intval($price['sp'])]);
+		}
+
+		return "done";
+	}
+
+	public function updateProductHomePage(){
+		$homepage = Homepage::where('type', 'product_tab')->first();
+		// retu
+		$home = $homepage['home'];
+		foreach($home as &$x){
+			$product_id = $x['product_id'];
+			$ratecard = Productratecard::where('product_id', $product_id)->first();
+			$x['ratecard_id'] = $ratecard['_id'];
+		}
+		$homepage->home = $home;
+		$homepage->save();
+		return "dne";
+
+	}
+
+
+	public function lostFitcode(){
+
+		ini_set('memory_limit','512M');
+        ini_set('max_execution_time', 300);
+
+		$utilities = new Utilities();
+		$customersms = new CustomerSms();
+
+		Booktrial::$withoutAppends = true;
+
+		Wallet::$withoutAppends = true;
+
+		$booktrial_ids = Booktrial::where('post_trial_status_updated_by_lostfitcode','exists',true)->lists('_id');
+
+		$booktrial_ids = array_map('intval',$booktrial_ids);
+
+		$trial_ids = Wallet::where('entry','credit')
+				->where('for','locate_trial')
+			    ->whereIn('trial_id',$booktrial_ids)
+			    ->lists('trial_id');
+
+		$trial_ids = array_map('intval',$trial_ids);
+
+		$final_trial_ids = array_values(array_diff($booktrial_ids,$trial_ids));
+
+		if(!empty($final_trial_ids)){
+
+			$booktrials = Booktrial::whereIn('_id',$final_trial_ids)->get(['_id','customer_id','type','amount_finder','amount','customer_phone','customer_name','customer_email','vendor_link','finder_name','finder_id']);
+
+			foreach ($booktrials as $booktrial){
+
+				$fitcash = $utilities->getFitcash($booktrial);
+
+				if($fitcash > 0){
+
+					$req = array(
+							"customer_id"=>$booktrial['customer_id'],
+							"trial_id"=>$booktrial['_id'],
+							"amount"=> $fitcash,
+							"amount_fitcash" => 0,
+							"amount_fitcash_plus" => $fitcash,
+							"type"=>'CREDIT',
+							'entry'=>'credit',
+			                'for'=>'locate_trial',
+							'validity'=>time()+(86400*7),
+							'description'=>"Added FitCash+ on Trial Attendance, Expires On : ".date('d-m-Y',time()+(86400*7))
+					);
+			                		
+			        $utilities->walletTransaction($req);
+
+			        $sms_data = [];
+
+			        $sms_data['customer_phone'] = $booktrial['customer_phone'];
+
+			        $sms_data['message'] = "Hi ".ucwords($customer['name']).", Rs. ".$fitcash." has been added in your Fitternity wallet on attending trial at ".$data['finder_name'].". Use this to buy your membership at lowest price with assured rewards - Buy now - ".$data['vendor_link'].". Limited Slots. Quick assistance, Call - ".Config::get('app.contact_us_customer_number');
+
+			        if($data['type'] == 'workout-session'){
+
+						$sms_data['message'] = "Hi ".ucwords($customer['name']).", Rs. ".$fitcash." has been added in your Fitternity wallet on attending session at ".$data['finder_name'].". Use this to book your next session for free. Available on Pay Per Session. Book Now - ".Config::get('app.download_app_link')." Quick assistance, Call - ".Config::get('app.contact_us_customer_number');
+					}
+
+			        $customersms->custom($sms_data);
+			    }
+
+		    }
+
+		}
+
+	    return 'success';
+	}
+
+	public function updateRatecardSlots(){
+		$utilities = new Utilities();
+		return $utilities->updateRatecardSlots();
+	}
+
 }
 

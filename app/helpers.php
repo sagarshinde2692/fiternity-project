@@ -212,7 +212,7 @@ if(!function_exists('citywise_category')){
                 ["name" => "Dance","slug" => "dance-classes"],
                 ["name" => "Pilates","slug" => "pilates-classes"],
                 ["name" => "MMA And Kick Boxing","slug" => "mma-and-kick-boxing-classes"],
-                // ["name" => "Spinning And Indoor Cycling","slug" => "spinning-classes"],
+                ["name" => "Spinning And Indoor Cycling","slug" => "spinning-classes"],
                 ["name" => "Healthy Tiffins","slug" => "healthy-tiffins"],
                 // ["name" => "Personal Trainers","slug" => "personal-trainers"],
                 // ["name" => "Sport Nutrition Supplement Stores","slug" => "sport-nutrition-supplement-stores"],
@@ -246,8 +246,8 @@ if(!function_exists('citywise_category')){
                 ["name" => "Cross Functional Training","slug" => "functional-training"],
                 ["name" => "Aerobics","slug" => "aerobics"],
                 ["name" => "Dance","slug" => "dance-classes"],
-                ["name" => "Pilates","slug" => "pilates-classes"]
-                // ["name" => "Spinning And Indoor Cycling","slug" => "spinning-classes"],
+                ["name" => "Pilates","slug" => "pilates-classes"],
+                ["name" => "Spinning And Indoor Cycling","slug" => "spinning-classes"],
                 // ["name" => "Healthy Tiffins","slug" => "healthy-tiffins"],
                 // ["name" => "Personal Trainers","slug" => "personal-trainers"],
                 // ["name" => "Sport Nutrition Supplement Stores","slug" => "sport-nutrition-supplement-stores"],
@@ -712,6 +712,22 @@ if (!function_exists('es_curl_request')) {
         }
 
         return $response = curl_exec($ci);
+    }
+}
+
+if (!function_exists('curl_call')) {
+    function curl_call($qs, $wsUrl)
+    {
+        $c = curl_init();
+        curl_setopt($c, CURLOPT_URL, $wsUrl);
+        curl_setopt($c, CURLOPT_POST, 1);
+        curl_setopt($c, CURLOPT_POSTFIELDS, $qs);
+        curl_setopt($c, CURLOPT_CONNECTTIMEOUT, 30);
+        curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
+        curl_setopt($c, CURLOPT_SSL_VERIFYHOST, 0);
+        curl_setopt($c, CURLOPT_SSL_VERIFYPEER, 0);
+        return curl_exec($c);
+        
     }
 }
 
@@ -1870,7 +1886,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         'inputcat' => $catname,
                         'inputcat1' => strtolower($cat['name']),
                         'city' => $city,
-                        'location' => (isset($loc['name']) && $loc['name'] != '') ? $loc['name'] : "",
+                        'location' => (isset($loc['slug']) && $loc['slug'] != '') ? $loc['slug'] : "",
                         'type' => 'categorylocation',
                         'slug' => "",
                         'geolocation' => array('lat' => $lat, 'lon' => $lon),
@@ -2293,7 +2309,10 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
             if (!function_exists(('autoRegisterCustomer'))) {
 
                 function autoRegisterCustomer($data)
-                {
+                {   
+                    Log::info("autoRegisterCustomer");
+					Log::info(print_r($data,true));
+
                 	$customer= Customer::active()->where('email', $data['customer_email'])->first();
                     
                     if (!$customer) {
@@ -2303,6 +2322,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         $customer = new Customer();
                         $customer->_id = $inserted_id;
                         $customer->rx_user = (isset($data['rx_user'])&& $data['rx_user'] !="")? true : false;
+                        
                         if(isset($data['rx_user'])&& $data['rx_user'] !="")
                         {
                         	$customer->rx_latest_date = new DateTime();
@@ -2317,7 +2337,6 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         $customer->fitness_goal = isset($data['fitness_goal']) ? $data['fitness_goal'] : "";
                         $customer->picture = "https://www.gravatar.com/avatar/" . md5($data['customer_email']) . "?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png";
                         $customer->password = md5(time());
-                        
 
                         if (isset($data['customer_phone']) && $data['customer_phone'] != '') {
                             $customer->contact_no = $data['customer_phone'];
@@ -2343,6 +2362,19 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         $customer->ishulluser = 1;
                         $customer->old_customer = false;
                         $customer->demonetisation = time();
+                        
+                        if(!empty($data['third_party'])&&!empty($data['third_party_id'])&&!empty($data['third_party_token_id'])&&isset($data['third_party_used_sessions']))
+                        {
+                        	$customer->third_party_registered = time();
+                        	$customer->third_party_last_transacted_time = time();
+                        	if(!empty($data['third_party_total_sessions']))
+                        		$customer->total_sessions=$data['third_party_total_sessions'];
+                        	$customer->total_sessions_used=$data['third_party_used_sessions'];
+                        	$customer->third_party_token_id=$data['third_party_token_id'];
+                        	$customer->third_party_id=$data['third_party_id'];
+                        }
+
+                        
                         $customer->save();
                         $cart_id=getCartOfCustomer(intval($inserted_id));
                         if(!empty($cart_id))
@@ -2371,7 +2403,17 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                                 }
 
                             }
-
+                            if(!empty($data['third_party'])&&!empty($data['third_party_id'])&&!empty($data['third_party_token_id'])&&isset($data['third_party_used_sessions']))
+                            {
+                            	$customerData['third_party_last_transacted_time']= time();
+                            	if(!empty($data['third_party_total_sessions']))
+                            		$customerData['total_sessions']=$data['third_party_total_sessions'];
+                            	$customerData['total_sessions_used']=$data['third_party_used_sessions'];
+                            	$customerData['third_party_token_id']=$data['third_party_token_id'];	
+                            	$customerData['third_party_id']=$data['third_party_id'];
+                            }
+                            	
+                            
                             if (isset($data['rx_user']) ) {
                             	if(isset($data['rx_user'])&& $data['rx_user'] !="")
                             	{
@@ -2482,7 +2524,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                     
                     $jwt_key = Config::get('app.jwt.key');
                     $jwt_alg = Config::get('app.jwt.alg');
-
+                    JWT::$leeway = 500;
                     $token = JWT::encode($jwt_claim,$jwt_key,$jwt_alg);
 
                     return $token;
@@ -2624,7 +2666,7 @@ if (!function_exists(('time_passed_check'))){
 
     function time_passed_check($servicecategory_id)
     {      
-        $service_category_id = array(2,19,65);
+        $service_category_id = array(2,19,65, 123);
 
         return (in_array((int)$servicecategory_id,$service_category_id)) ? 15*60 : 90*60 ;
     }
@@ -2785,10 +2827,11 @@ if (!function_exists(('getHash'))){
         $data['verify_hash'] = hash('sha512', $verify_str);
 
         $cmnPaymentRelatedDetailsForMobileSdk1              =   'payment_related_details_for_mobile_sdk';
-        $detailsForMobileSdk_str1                           =   $key  . '|' . $cmnPaymentRelatedDetailsForMobileSdk1 . '|default|' . $salt ;
+        $customer_referId                                   =   $key. ":". $data["logged_in_customer_id"];
+        $detailsForMobileSdk_str1                           =   $key  . '|' . $cmnPaymentRelatedDetailsForMobileSdk1 . '|'. $customer_referId .'|' . $salt ;
         $detailsForMobileSdk1                               =   hash('sha512', $detailsForMobileSdk_str1);
         $data['payment_related_details_for_mobile_sdk_hash'] =   $detailsForMobileSdk1;
-        
+        Log::info($detailsForMobileSdk_str1);
         return $data;
     }
 }
@@ -2984,7 +3027,7 @@ if (!function_exists(('getRegId'))){
 if (!function_exists(('isNotInoperationalDate'))){
     function isNotInoperationalDate($date, $city_id=null, $slot=null, $findercategory_id=null){
 
-        $inoperational_dates = ['2018-05-01'];
+        $inoperational_dates = ['2018-05-01', '2018-08-15'];
         if(in_array($date, $inoperational_dates)){
             return false;
         }
@@ -3155,10 +3198,22 @@ if (!function_exists('decodeKioskVendorToken')) {
         $jwt_key                =   Config::get('jwt.kiosk.key');
         $jwt_alg                =   Config::get('jwt.kiosk.alg');
         $decodedToken           =   JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
-
+        
         Log::info("Vendor Token : ".$jwt_token);
-
+        
         Log::info("decodeKioskVendorToken : ",json_decode(json_encode($decodedToken),true));
+        Log::info($decodedToken->vendor->_id);
+        if(!empty($decodedToken->vendor->_id) && in_array($decodedToken->vendor->_id, [9932])){
+            Log::info("exiting tab vendor");
+            exit();
+        }
+
+
+        // if(!empty($decodedToken->vendor->_id) && in_array($decodedToken->vendor->_id, [7116,7081])){
+        //     Log::info($decodedToken->vendor->_id);
+        //     Log::info("exiting tab vendor");
+        //     exit();
+        // }
 
         return $decodedToken;
     }
@@ -3693,10 +3748,10 @@ if (!function_exists(('citywiseServiceCategoryIds'))){
                 $ids = [65, 19, 5, 3, 1, 123, 114, 4, 2, 86];
                 break;
             case 'bangalore':
-                $ids = [65, 19, 5, 3, 1, 4, 2, 86];
+                $ids = [65, 19, 5, 3, 1, 123, 4, 2, 86];
                 break;
             case 'delhi':
-                $ids = [65, 19, 5, 3, 1, 4, 2, 86];
+                $ids = [65, 19, 5, 3, 1, 123, 4, 2, 86];
                 break;
             case 'gurgaon':
                 $ids = [65, 19, 5, 3, 1, 4, 2, 86];
@@ -3722,5 +3777,175 @@ if (!function_exists(('citywiseServiceCategoryIds'))){
 }
 
 
+if (!function_exists(('isFinderIntegrated'))){
+	
+	 function isFinderIntegrated($finder){
+        try{
+            if((!empty($finder['commercial_type']) && $finder['commercial_type'] == 0) || (!empty($finder['membership']) && $finder['membership'] == 'disable') || (!empty($finder['trial']) && $finder['trial'] == 'disable') || (!empty($finder['flags']['state']) && in_array($finder['flags']['state'], ['temporarily_shut', 'closed']))){
+                return false;
+            }else{
+                return true;
+            }
+        }catch(Exception $e){
+            Log::info($e);
+            return true;
+        }
+    }
+}
+if (!function_exists(('isServiceIntegrated'))){
+	
+    function isServiceIntegrated($service){
+        try{
+            if((!empty($service['membership']) && $service['membership'] == 'disable') || (!empty($service['trial']) && $service['trial'] == 'disable')){
+                return false;
+            }else{
+                return true;
+            }
+        }catch(Exception $e){
+            Log::info($e);
+            return true;
+        }
+    }
+}
+if (!function_exists(('geoLocationFinderMeta'))){
+
+    function geoLocationFinderMeta($request){
+
+        $client = new Client( ['debug' => false, 'base_uri' => Config::get("app.url")."/"] );
+        $offset  = $request['offset'];
+        $limit   = $request['limit'];
+        $radius  = $request['radius'];
+        $lat    =  $request['lat'];
+        $lon    =  $request['lon'];
+        $category = $request['category'];
+        $keys = $request['keys'];
+        $city = $request['city'];
+        $not = isset($request['not']) ? $request['not'] : new \stdClass();
+        $region = isset($request['region']) ? $request['region'] : [];
+
+        $payload = [
+            "category"=>$category,
+            "sort"=>[
+              "order"=>"desc",
+              "sortfield"=>"popularity"
+          ],
+          "offset"=>[
+              "from"=>$offset,
+              "number_of_records"=>$limit
+          ],
+          "location"=>[
+              "geo"=>[
+                  "lat"=>$lat,
+                  "lon"=>$lon,
+                  "radius"=>$radius
+              ],
+              "regions"=>$region,
+              "city"=>$city
+          ],
+          "keys"=>$keys,
+          "not"=>$not
+      ];
+
+        $url = Config::get('app.new_search_url')."/search/vendor";
+
+        $metadata = [];
+
+        try {
+
+            $response  =   json_decode($client->post($url,['json'=>$payload])->getBody()->getContents(),true);
+
+            return $response['metadata'];
+
+        }catch (Exception $e) {
+
+            return $metadata;
+        }
+
+    }
+    
+}
+
+if (!function_exists('encodeOrderToken')) {
+
+    function encodeOrderToken($data){
+
+        $jwt_claim = array(
+            "iat" => Config::get('jwt.order.iat'),
+            "nbf" => Config::get('jwt.order.nbf'),
+            "exp" => Config::get('jwt.order.exp'),
+            "data" => $data
+        );
+        
+        $jwt_key = Config::get('jwt.order.key');
+        $jwt_alg = Config::get('jwt.order.alg');
+
+        $token = JWT::encode($jwt_claim,$jwt_key,$jwt_alg);
+
+        return $token;
+    }
+
+}
+if (!function_exists('decodeOrderToken')) {
+
+    function getDynamicCouponForTheFinder($finder){
+        $today = date('d-m-Y', strtotime(Carbon::now()->addDays(1)));
+        $lastSixtyDays = date('d-m-Y', strtotime(Carbon::now()->subDays(45)));
+        
+        // Log::info(new DateTime($lastSixtyDays));
+        $numberOfOrders = Order::where("status","1")->where("finder_id",$finder['_id'])
+                                        ->where('created_at', '>=', new DateTime($lastSixtyDays))
+                                        ->where('created_at', '<=', new DateTime($today))
+                                        ->whereIn("type", array("memberships", "healthytiffinmembership"))
+                                        ->where("routed_order","!=","1")->where("customer_source", "!=","kiosk")->count();
+        $coupon = array("code" => "", "text" => "");
+        if($numberOfOrders < 2){
+            $coupon = Config::get('app.static_coupon')[0];
+        }else if($numberOfOrders < 4){
+            $moreDiscountCities = [5,6,9];
+            if(in_array($finder['city_id'], $moreDiscountCities) ){
+                $coupon = Config::get('app.static_coupon')[1];
+            }else{
+                $coupon = Config::get('app.static_coupon')[2];
+            }
+        }
+        if($finder["category_id"] == 47){
+            $coupon = Config::get('app.static_coupon')[3];
+        }
+        return $coupon;
+    }
+}
+
+
+if (!function_exists('decodeOrderToken')) {
+
+    function decodeOrderToken($jwt_token){
+
+        $jwt_key                =   Config::get('jwt.order.key');
+        $jwt_alg                =   Config::get('jwt.order.alg');
+
+        try{
+
+            $decodedToken = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+
+            $decodedToken = json_decode(json_encode($decodedToken), true);
+
+            return ['status' => 200,'message' => 'Token incorrect','data'=>$decodedToken['data']];
+
+        }catch(DomainException $e){
+
+            return ['status' => 400,'message' => 'Error','error_message' => 'Error',];
+        }catch(ExpiredException $e){
+
+            return ['status' => 400,'message' => 'Token Expired','error_message' => 'Token has been expired']; 
+        }catch(SignatureInvalidException $e){
+
+            return ['status' => 400,'message' => 'Signature verification failed','error_message' => 'Token Incorrect'];
+        }catch(Exception $e){
+
+            return ['status' => 400,'message' => 'Error, please try later','error_message' => 'Error, please try later'];
+        }
+    }
+
+}
 
 ?>

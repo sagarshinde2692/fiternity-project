@@ -70,6 +70,8 @@ class OrderController extends \BaseController {
 
     public function couponCode(){
         $data = Input::json()->all();
+        Log::info("couponCode");
+        Log::info($data);
         if(!isset($data['coupon'])){
             $resp = array("status"=> 400, "message" => "Coupon code missing", "error_message" => "Please enter a valid coupon");
             return Response::json($resp,400);
@@ -2449,6 +2451,7 @@ class OrderController extends \BaseController {
                                 'type'=>'DEBIT',
                                 'entry'=>'debit',
                                 'description'=> $this->utilities->getDescription($data),
+                                'order_type'=>$order['type'],
                             );
                             $walletTransactionResponse = $this->utilities->walletTransactionNew($req);
                             
@@ -2489,6 +2492,7 @@ class OrderController extends \BaseController {
                                 'amount_fitcash_plus' => $fitcash_plus,
                                 'type'=>'DEBIT',
                                 'entry'=>'debit',
+                                'order_type'=>$order['type'],
                                 'description'=>$this->utilities->getDescription($data),
                             );
                             $walletTransactionResponse = $this->utilities->walletTransactionOld($req,$data);

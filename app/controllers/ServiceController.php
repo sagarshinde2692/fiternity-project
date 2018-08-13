@@ -11,6 +11,7 @@ use App\Services\Utilities as Utilities;
 
 class ServiceController extends \BaseController {
 
+	protected $utilities;
 	public function __construct(Utilities $utilities) {
 
 		parent::__construct();
@@ -25,6 +26,15 @@ class ServiceController extends \BaseController {
 
             $this->vendor_token = true;
 		}
+
+		$this->kiosk_app_version = false;
+
+        if($vendor_token){
+
+            $this->vendor_token = true;
+
+            $this->kiosk_app_version = (float)Request::header('App-Version');
+        }
 		
 		$this->error_status = ($this->vendor_token) ? 200 : 400;
 	}
@@ -657,7 +667,7 @@ class ServiceController extends \BaseController {
         $type 					= 	(isset($request['type']) && $request['type'] != "") ? $request['type'] : "trial" ;
         $recursive 				= 	(isset($request['recursive']) && $request['recursive'] != "" && $request['recursive'] == "true") ? true : false ;
 
-		$selectedFieldsForService = array('_id','name','finder_id','servicecategory_id','vip_trial','three_day_trial','address','trial', 'city_id');
+		$selectedFieldsForService = array('_id','name','finder_id','servicecategory_id','vip_trial','three_day_trial','address','trial', 'city_id', 'flags');
 		Service::$withoutAppends=true;
 		Service::$setAppends=['trial_active_weekdays', 'workoutsession_active_weekdays'];
 		
@@ -677,6 +687,8 @@ class ServiceController extends \BaseController {
         }
      	 $items = $query->with(array('serviceratecards'=> function($query) use ($ratecard_type){
 			 $query->where('type',$ratecard_type);
+		 }))->with(array('category'=>function($query){
+			 $query->select('name');
 		 }))->get($selectedFieldsForService)->toArray();
 
 		//  $items = $query->get()->toArray();
@@ -738,6 +750,11 @@ class ServiceController extends \BaseController {
 				$time_in_seconds = $request['time_interval'];
 			}
 
+			if(!empty($item['flags']['session_time_interval']) && is_numeric($item['flags']['session_time_interval'])){
+				$time_in_seconds = $item['flags']['session_time_interval'] * 3600;
+				Log::info("increasing time");
+			}
+
             $service = array(
             	'service_id' => $item['_id'],
             	'finder_id' => $item['finder_id'],
@@ -758,8 +775,15 @@ class ServiceController extends \BaseController {
 				'workoutsession_active_weekdays' => $item["workoutsession_active_weekdays"],
 				'trial_active_weekdays' => $item["trial_active_weekdays"],
 				'inoperational_dates_array' => $finder['inoperational_dates_array'],
-				'cost'=>'Free Via Fitternity'
+				'cost'=>'Free Via Fitternity',
+				'servicecategory_id'=>!empty($item['servicecategory_id']) ? $item['servicecategory_id'] : 0,
+				'category'=>!empty($item['category']['name']) ? $item['category']['name'] : ""
 			);
+
+			if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && isset($finder['brand_id']) && $finder['brand_id'] == 66 && $finder['city_id'] == 3){
+
+				$service['cost'] = 'Free';
+			}
 			
 			$slots = array();
 
@@ -797,19 +821,32 @@ class ServiceController extends \BaseController {
                 }else{
 					$ratecard_price = $ratecard['price'];
                 }
-				
-                if($type == "workoutsessionschedules"){
-	            	$service["workout_session"] = [
-		    			"available" => true,
-		    			"amount" => $ratecard_price
-		    		];
+//******************************************************************************************************DYNAMIC PRICING START*****************************************************************************************
+                /* if($type == "workoutsessionschedules"){
+                	$temp=$this->utilities->getPeakAndNonPeakPrice($weekdayslots['slots'],$this->utilities->getPrimaryCategory(null,$service['service_id']));
+
+                	$service["workout_session"] = [];
+                	$service['cost']=[];
+                	if(!empty($temp))
+                	{
+                		if(isset($temp['peak']))
+                		{
+                				$service["workout_session"]['available']=true;
+                				$service["workout_session"]["peak_amount"]=$temp['peak'];
+                				$service['cost']['peak'] = "₹ ".$temp['peak'];
+                		}
+                		if(isset($temp['non_peak']))
+                		{
+	                			$service["workout_session"]["non_peak_amount"]=$temp['non_peak'];
+	                			$service['cost']['non_peak'] = "₹ ".$temp['non_peak'];
+                		}
+                	}
+		    	} */
+//******************************************************************************************************DYNAMIC PRICING END*****************************************************************************************
+		    	if($ratecard_price > 0&&$type !== "workoutsessionschedules"){
+		    		$service['cost'] = "₹. ".$ratecard_price;
 		    	}
-
-		    	if($ratecard_price > 0){
-
-		    		$service['cost'] = "₹ ".$ratecard_price;
-		    	}
-
+// 		    	array_push($slots,["title"=>"RUSH HOUR","price"=>"","data"=>[]]);array_push($slots,["title"=>"NON RUSH HOUR","price"=>"","data"=>[]]);
 				foreach ($weekdayslots['slots'] as $slot) {
 
 					if(!empty($finder)&&!empty($finder['flags'])&&!empty($finder['flags']['newly_launched_date']))
@@ -846,12 +883,11 @@ class ServiceController extends \BaseController {
                         }
 
                     }*/
-					
 
                     array_set($slot, 'vip_trial_amount', $vip_trial_amount);
 
                     try{
-
+						
                     	$scheduleDateTimeUnix               =  strtotime(strtoupper($date." ".$slot['start_time']));
 						$slot_datetime_pass_status      =   (($scheduleDateTimeUnix - $currentDateTime) > $time_in_seconds) ? false : true;
 						
@@ -862,20 +898,38 @@ class ServiceController extends \BaseController {
 						if(isset($request['show_all']) && $request['show_all']){
 							$slot_datetime_pass_status = false;
 						}
-
-						($slot_datetime_pass_status == false) ? $slot_passed_flag = false : null;
-
+					
+						
+						$slot_booked_allowance=true;
+						// ********************************************************************************** slot allowance check start
+						
+						if(in_array(intval($service['finder_id']),Config::get('app.slotAllowance.vendors'))&&in_array(intval($service['service_id']),Config::get('app.slotAllowance.services')))
+						{
+							$otpt=$this->utilities->getSlotBookedCount($slot["slot_time"],$service['service_id'],date('d-m-Y',strtotime($date)),(isset($slot['limited_seat'])?$slot['limited_seat']:10000));
+							$slot_booked_allowance=$otpt['allowed'];
+						}
+						
+						//********************************************************************************** slot allowance check end
+						
+						
+						(($slot_datetime_pass_status == false)&&$slot_booked_allowance) ? $slot_passed_flag = false : null;
                         array_set($slot, 'price', $ratecard_price);
-                        array_set($slot, 'passed', $slot_datetime_pass_status);
+                        array_set($slot, 'passed', $slot_datetime_pass_status||!$slot_booked_allowance);
+//                         array_set($slot, 'slot_datetime_pass_status', $slot_datetime_pass_status);
+//                         array_set($slot, 'slot_passed_flag', $slot_passed_flag);
+                        
+//                         array_set($slot, 'slot_booked_allowance', $slot_booked_allowance);
                         array_set($slot, 'service_id', $item['_id']);
                         array_set($slot, 'finder_id', $item['finder_id']);
                         array_set($slot, 'ratecard_id', $ratecard['_id']);
                         array_set($slot,'epoch_start_time',strtotime(strtoupper($date." ".$slot['start_time'])));
 						array_set($slot,'epoch_end_time',strtotime(strtoupper($date." ".$slot['end_time'])));
 						$total_slots_count +=1;
+// 						$ck=$this->utilities->getWSNonPeakPrice($slot['start_time_24_hour_format'],$slot['end_time_24_hour_format'],null,$this->utilities->getPrimaryCategory(null,$service['service_id'],true));
 						if(!$slot['passed']){
 							$total_slots_available_count +=1;
-							array_push($slots, $slot);
+							 							
+							array_push($slots,$slot);
 							
 							if(intval($slot['start_time_24_hour_format']) < 12){
 								array_push($slots_timewise['morning'], $slot);
@@ -884,20 +938,22 @@ class ServiceController extends \BaseController {
 							}else{
 								array_push($slots_timewise['evening'], $slot);
 							}
+							/* if(isset($_GET['source']) && $_GET['source'] == 'pps')
+								(!empty($ck)&&!empty($ck['peak']))?array_push($slots[0]['data'], $slot):array_push($slots[1]['data'], $slot);
+							else array_push($slots,$slot); */
 						}
-
                     }catch(Exception $e){
 
                         Log::info("getTrialSchedule Error : ".$date." ".$slot['start_time']);
                     }
                      
                 }
-                
             }
 			
+            
 			
             $service['slot_passed_flag'] = $slot_passed_flag;
-
+//             if(count($slots[0]['data'])==0)unset($slots[0]);if(count($slots[1]['data'])==0)unset($slots[1]);
 			$service['slots'] = $slots;
 			$service['slots_timewise'] = $slots_timewise;
 			$service['total_slots_count'] = $total_slots_count;
@@ -911,7 +967,7 @@ class ServiceController extends \BaseController {
             		'date' => $date
             	];
 
-            	// $service['available_date'] = $this->getAvailableDateByService($avaliable_request);
+            //  $service['available_date'] = $this->getAvailableDateByService($avaliable_request);
             	$service['available_date'] = $this->getAvailableDateByServiceV1($service,$request, $type);
             	if($service['available_date'] != ""){
             		$service['current_available_date_diff'] = $this->getDateDiff($service['available_date']);
@@ -930,13 +986,11 @@ class ServiceController extends \BaseController {
             		array_push($schedules, $service);
             	}
 
-            }else{
-
-            	array_push($schedules, $service);
-            }
-            
+            }else array_push($schedules, $service);
         }
 
+        
+//         return $service;
 
 		// return $schedules;
 
@@ -955,14 +1009,16 @@ class ServiceController extends \BaseController {
         $schedules_sort = array();
         $schedules_slots_empty = array();
 
-        foreach ($schedules as $key => $value) {
-
-        	if(count($value['slots']) > 0){
+        foreach ($schedules as $key => $value) 
+        {
+        	if(count($value['slots']) >0)
+        	{
         		$schedules_sort[] = $value;
-        	}else{
+        	}
+        	else
+        	{
         		$schedules_slots_empty[] = $value;
         	}
-
         }
 
         $schedules_sort_passed_true = array();
@@ -980,10 +1036,11 @@ class ServiceController extends \BaseController {
         }
 		
 		$flag = count($schedules_sort_passed_false)>0?true:false;
-
+		
         $schedules = array();
 
         $schedules = array_merge($schedules_sort_passed_false,$schedules_sort_passed_true,$schedules_slots_empty);
+        
         if(!$flag && $count < 7 && $recursive){
 
         	$count += 1;
@@ -1017,17 +1074,14 @@ class ServiceController extends \BaseController {
 				
 				$slots = [];
 				
-				if(isset($data['schedules']) && count($data['schedules']) > 0 && !(isset($finder['trial']) && $finder['trial'] == 'disable')){
-
+				if(isset($data['schedules']) && count($data['schedules']) > 0 && !(isset($finder['trial']) && $finder['trial'] == 'disable'))
+				{
 					$schedule = $data['schedules'][0];
-
-					if(isset($schedule['slots']) && count($schedule['slots']) > 0){
-
+					if(isset($schedule['slots'])&&count($schedule['slots'])>0)
+					{
 						$slots = pluck($schedule['slots'], ['slot_time', 'price', 'service_id', 'finder_id', 'ratecard_id', 'epoch_start_time', 'epoch_end_time']);
-
 					}
-
-
+// 					$slots=$schedule['slots']; 
 				}
 
 				$message = "";
@@ -1457,14 +1511,25 @@ class ServiceController extends \BaseController {
 			// return $service_details;
 			if(!$service_details){
 				
+				
+// 				workoutsessionschedules
 				return Response::json(array('status'=>400, 'error_message'=>'Service not active'), $this->error_status);
 			
 			};
+			$service_details['finder_slug'] = $finder['slug'];
 			$service_details['lat'] = (string)$service_details['lat'];
 			$service_details['lon'] = (string)$service_details['lon'];
+			
+			
 
 			// return $service_details;
 			$service_details = $service_details->toArray();
+
+			/* $service_details['dynamic_pricing'] = ["title"=>"RUSH HOUR","sub_title"=>"RUSH HOUR","rush"=>["title"=>"RUSH HOUR","sub_title"=>"RUSH HOUR"],"non_rush"=>["title"=>"NON RUSH HOUR","sub_title"=>"NON RUSH HOUR"]];
+			
+			$this->utilities->getDayWs()
+			array_values(array_filter([],function ($e) use()))
+			$this->utilities->getPeakAndNonPeakPrice($service_details,$this->utilities->getPrimaryCategory(null,$service_details['_id'])); */
 
 			// $service_details['title'] = $service_details['name'].' at '.$finder['title'];
 			$service_details['title'] = preg_replace('/membership/i', 'Workout', $service_details['name']).' at '.$finder['title'];
@@ -1501,7 +1566,7 @@ class ServiceController extends \BaseController {
 			
 			$service_details['amount'] = (($workout_session_ratecard['special_price']!=0) ? $workout_session_ratecard['special_price'] : $workout_session_ratecard['price']);
 
-			$service_details['price'] = "₹".$service_details['amount']." PER SESSION";
+			$service_details['price'] = "â‚¹".$service_details['amount']." PER SESSION";
 
 			$service_details['contact'] = [
 				'address'=>''
@@ -1677,7 +1742,21 @@ class ServiceController extends \BaseController {
 					break;
 			}
 		}
-
+		$service_details['dynamic_pricing'] = ["title"=>"RUSH HOUR","sub_title"=>"RUSH HOUR","rush"=>["data"=>[],"title"=>"RUSH HOUR","sub_title"=>"RUSH HOUR"],"non_rush"=>["data"=>[],"title"=>"NON RUSH HOUR","sub_title"=>"NON RUSH HOUR"]];
+		$p_np=$this->utilities->getAnySlotAvailablePNp($requested_date,$service_details);		
+// 		return $service_details;
+		if(!empty($p_np))
+		{
+			$service_details['dynamic_pricing']['rush']['sub_title']=$this->utilities->getRupeeForm($p_np['peak']);
+			$service_details['dynamic_pricing']['non_rush']['sub_title']=$this->utilities->getRupeeForm($p_np['non_peak']);
+		}
+		
+		array_push($service_details['dynamic_pricing']['rush']['data'], ["name"=>"Moring","value"=>"6am -10am"]);
+		array_push($service_details['dynamic_pricing']['rush']['data'], ["name"=>"Evening","value"=>"6pm -10pm"]);
+		array_push($service_details['dynamic_pricing']['non_rush']['data'], ["name"=>"Moring","value"=>"10am -6pm"]);
+		array_push($service_details['dynamic_pricing']['non_rush']['data'], ["name"=>"Evening","value"=>"10pm -12am"]);
+		
+						
 		$schedule_data = [
 			'service_id'=>$service_details['_id'],
 			'requested_date'=>$requested_date,
@@ -1767,7 +1846,7 @@ class ServiceController extends \BaseController {
 
 			$service_details['single_slot'] = false;
 			$service_details['session_unavailable'] = true;
-			$service_details['next_session'] = "OOPs sessions are currently unavailable. ";
+			$service_details['next_session'] = "All sessions for today are booked out!";
 			$service_details['slots'] = [];
 			$service_details['total_sessions'] = "No sessions availabe";
 			unset($service_details['pass_title']);
@@ -1877,9 +1956,25 @@ class ServiceController extends \BaseController {
 			'base_url'=>"http://b.fitn.in/iconsv1/",
 			'rebook_trials'=>[]
 		];
-
+		$cityId=City::where("slug",$city)->first(['_id']);
+		if(!empty($cityId))
+		{
+			$cityId=$cityId->_id;
+			$servicesGym=Service::where("city_id",$cityId)->whereIn("servicecategory_id",[65,82])->lists('_id');
+			
+			$servicesZumba=Service::where("city_id",$cityId)->whereIn("servicecategory_id",[19,20,21,132,133,189])->lists('_id');
+			
+			$servicesCrossfit=Service::where("city_id",$cityId)->whereIn("servicecategory_id",[5,111,112,10])->lists('_id');
+			
+			$gymCount= Order::where("type","workout-session")->whereIn("service_id",$servicesGym)->count();
+			$zumbaCount= Order::where("type","workout-session")->whereIn("service_id",$servicesZumba)->count();
+			$cfCount= Order::where("type","workout-session")->whereIn("service_id",$servicesCrossfit)->count();
+			$total= Order::where("type","workout-session")->where("city_id",$cityId)->count();
+			
+			$data["stats_count"]=["crossfit"=>$cfCount,"zumba"=>$zumbaCount,"gym"=>$gymCount,"total"=>$total,"categories"=>count($included_ids)];
+		}
 		try{
-
+			
 			if($this->authorization){
 				Log::info($this->authorization);
 				$decoded = decode_customer_token();
@@ -1907,8 +2002,7 @@ class ServiceController extends \BaseController {
 							if($trial['finder'] && $trial['service'] && count($trial['service']['ratecards']) && !in_array($trial['service_id'], $rebook_service_ids)){
 								
 								$trial['title'] = ucwords(preg_replace('/membership/i', 'Workout', $trial['service_name'])).' at '.$trial['finder_name'];
-
-								$trial['amount'] = '₹'.($trial['service']['ratecards'][0]['special_price'] != 0 ? $trial['service']['ratecards'][0]['special_price'] : $trial['service']['ratecards'][0]['price']);
+								$trial['amount'] = 'Rs '.($trial['service']['ratecards'][0]['special_price'] != 0 ? $trial['service']['ratecards'][0]['special_price'] : $trial['service']['ratecards'][0]['price']);
 								$trial['service_slug'] = $trial['service']['slug'];
 								$trial['finder_slug'] = $trial['finder']['slug'];
 								
@@ -1925,7 +2019,6 @@ class ServiceController extends \BaseController {
 				}
 
 				$data['rebook_trials'] = $rebook_trials;
-
 			}			
 
 

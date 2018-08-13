@@ -2216,7 +2216,7 @@ class OzonetelsController extends \BaseController {
 
 		Log::info("pubNub array : ",$array);
 
-		$pubnub = new \Pubnub\Pubnub('pub-c-df66f0bb-9e6f-488d-a205-38862765609d', 'sub-c-d9cf3842-cf1f-11e6-90ff-0619f8945a4f');
+		$pubnub = new \Pubnub\Pubnub(Config::get('app.pubnub_publish'), Config::get('app.pubnub_sub'));
  
         $pubnub->publish('fitternity_ozonetel',$array);
 

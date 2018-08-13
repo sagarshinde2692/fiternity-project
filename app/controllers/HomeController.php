@@ -34,6 +34,15 @@ class HomeController extends BaseController {
 
             $this->vendor_token = true;
         }
+
+        $this->kiosk_app_version = false;
+
+        if($vendor_token){
+
+            $this->vendor_token = true;
+
+            $this->kiosk_app_version = (float)Request::header('App-Version');
+        }
     }
 
 
@@ -456,8 +465,8 @@ class HomeController extends BaseController {
             // $collections 			= 	Findercollection::active()->where('city_id', '=', intval($citydata['_id']))->orderBy('ordering')->get(array('name', 'slug', 'coverimage', 'ordering' ));
             $campaigns=  [];
             $campaigns[] = [
-                'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/monsoon.png',
-                'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/monsoon-mob.png',
+                'image'=> 'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/monsoon.png',
+                'mob_image'=> 'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/monsoon-mob.png',
                 'link'=>Config::get('app.website').'/'.$city.'/fitness?trials=1',
                 'title'=>'Pay Per Session',
                 'height'=>100,
@@ -468,8 +477,8 @@ class HomeController extends BaseController {
             switch($city){
                 case "bangalore":
                 $campaigns[] = [
-                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Gold%27s%20Gym_Bangalore_Web%20banner.png',
-                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Gold%27s%20Gym_Bangalore_Mobile%20Responsive%20and%20SRP.png',
+                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/bangalore-gold-web.png',
+                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/bangalore-gold-mob.png',
                     'link'=>Config::get('app.website').'/golds-gym-bangalore',
                     'title'=>'Pay Per Session',
                     'height'=>100,
@@ -479,8 +488,8 @@ class HomeController extends BaseController {
                 break;
                 case "delhi":
                 $campaigns[] = [
-                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Gold%27s%20Gym_Delhi_Web%20banner.png',
-                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Gold%27s%20Gym_Delhi_Mobile%20Responsive%20and%20SRP.png',
+                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/delhi-gold-web.png',
+                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/delhi-gold-mob.png',
                     'link'=>Config::get('app.website').'/golds-gym-delhi',
                     'title'=>'Pay Per Session',
                     'height'=>100,
@@ -490,8 +499,8 @@ class HomeController extends BaseController {
                 break;
                 case "gurgaon":
                 $campaigns[] = [
-                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Gold%27s%20Gym_Gurugram_Web%20banner.png',
-                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Gold%27s%20Gym_Gurugram_Mobile%20Responsive%20and%20SRP.png',
+                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/gurgaon-gold-web.png',
+                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/gurgaon-gold-mob.png',
                     'link'=>Config::get('app.website').'/golds-gym-gurgaon',
                     'title'=>'Pay Per Session',
                     'height'=>100,
@@ -501,8 +510,8 @@ class HomeController extends BaseController {
                 break;
                 case "hyderabad":
                 $campaigns[] = [
-                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Gold%27s%20Gym_Hyderabad_Web%20banner.png',
-                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Gold%27s%20Gym_Hyderabad_Mobile%20Responsive%20and%20SRP.png',
+                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/hyderabad-gold-web.png',
+                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/hyderabad-gold-mob.png',
                     'link'=>Config::get('app.website').'/golds-gym-hyderabad',
                     'title'=>'Pay Per Session',
                     'height'=>100,
@@ -512,8 +521,8 @@ class HomeController extends BaseController {
                 break;
                 case "mumbai":
                 $campaigns[] = [
-                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Gold%27s%20Gym_Mumbai_Web%20banner.png',
-                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Gold%27s%20Gym_Mumbai_Mobile%20Responsive%20and%20SRP.png',
+                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/mumbai-gold-web.png',
+                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/mumbai-gold-mob.png',
                     'link'=>Config::get('app.website').'/golds-gym-mumbai',
                     'title'=>'Pay Per Session',
                     'height'=>100,
@@ -523,8 +532,8 @@ class HomeController extends BaseController {
                 break;
                 case "noida":
                 $campaigns[] = [
-                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Gold%27s%20Gym_Noida_Web%20banner.png',
-                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Gold%27s%20Gym_Noida_Mobile%20Responsive%20and%20SRP.png',
+                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/noida-gold-web.png',
+                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/noida-gold-mob.png',
                     'link'=>Config::get('app.website').'/golds-gym-noida',
                     'title'=>'Pay Per Session',
                     'height'=>100,
@@ -534,8 +543,8 @@ class HomeController extends BaseController {
                 break;
                 case "pune":
                 $campaigns[] = [
-                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/Gold%27s%20Gym_Pune_Web%20banner.png',
-                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/Gold%27s%20Gym_Pune_Mobile%20Responsive%20and%20SRP.png',
+                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/pune-gold-web.png',
+                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/pune-gold-mob.png',
                     'link'=>Config::get('app.website').'/golds-gym-pune',
                     'title'=>'Pay Per Session',
                     'height'=>100,
@@ -571,8 +580,8 @@ class HomeController extends BaseController {
             if($city == 'mumbai'){
 
                 $campaigns[] = [
-                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/YFC_Web%20banner.png',
-                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/YFC_MobResponsive_banner.png',
+                    'image'=>'https://b.fitn.in/global/Homepage-branding-2018/Web-banners/yfc-mumbai-web.jpg',
+                    'mob_image'=>'https://b.fitn.in/global/Homepage-branding-2018/Mob-banners/yfc-mumbai-mob.jpg',
                     'link'=>Config::get('app.website').'/your-fitness-club-mumbai',
                     'title'=>'Your Fitness Club (YFC)',
                     'height'=>100,
@@ -968,7 +977,7 @@ class HomeController extends BaseController {
 
             if(isset($itemData['finder_id']) && $itemData['finder_id'] != ""){
 
-                $finder = Finder::with(array('city'=>function($query){$query->select('name','slug');}))->with(array('location'=>function($query){$query->select('name','slug');}))->find((int)$itemData['finder_id'],array('_id','title','location_id','contact','lat','lon','manual_trial_auto','city_id'));
+                $finder = Finder::with(array('city'=>function($query){$query->select('name','slug');}))->with(array('location'=>function($query){$query->select('name','slug');}))->find((int)$itemData['finder_id'],array('_id','title','location_id','contact','lat','lon','manual_trial_auto','city_id','brand_id'));
 
                 if(isset($finder['title']) && $finder['title'] != ""){
                     $finder_name = ucwords($finder['title']);
@@ -1450,7 +1459,14 @@ class HomeController extends BaseController {
 
             $booking_details_data["start_time"] = ['field'=>'START TIME','value'=>'-','position'=>$position++];
 
-            $booking_details_data["price"] = ['field'=>'AMOUNT','value'=>'Free Via Fitternity','position'=>$position++];
+            if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && isset($finder['brand_id']) && $finder['brand_id'] == 66 && $finder['city_id'] == 3){
+
+                 $booking_details_data["price"] = ['field'=>'AMOUNT','value'=>'Free','position'=>$position++];
+
+            }else{
+
+                $booking_details_data["price"] = ['field'=>'AMOUNT','value'=>'Free Via Fitternity','position'=>$position++];
+            }
 
             $booking_details_data["address"] = ['field'=>'ADDRESS','value'=>'','position'=>$position++];
 
@@ -1937,6 +1953,15 @@ class HomeController extends BaseController {
                         }
                     }
 
+                    if($reward->reward_type == 'mixed'){
+
+                        $reward_details = null;
+
+                        if(!empty($booking_details_data["reward"]) && !empty($booking_details_data["reward"]["value"])){
+
+                            $booking_details_data["reward"]["value"] = "Snap Fitenss Hamper (We will get in touch with you shortly to assist with your reward claiming)";
+                        }
+                    }
                 }
             }
 
@@ -2072,6 +2097,7 @@ class HomeController extends BaseController {
     			$payment_mode=$order['payment']['payment_mode'];
     			if($payment_mode=='paymentgateway')
     				$payment_mode="Online";
+
     			else if($payment_mode=='pay at studio')
     					$payment_mode="At Studio";
     		}
@@ -2094,7 +2120,6 @@ class HomeController extends BaseController {
     				if(!empty($shipping_address))
     					$finalData['shipping_address']=$shipping_address;
     					
-    					
     					$cart_summary=$this->utilities->getCartSummary($order);
     					if($cart_summary['status'])
     					{
@@ -2113,7 +2138,7 @@ class HomeController extends BaseController {
     							(!empty($cart_summary['data']['coupon_discount']))?
     							array_push($order_summary, ["key"=>"Coupon Discount","value"=>"-".$this->utilities->getRupeeForm($cart_summary['data']['coupon_discount']),"color"=>"#47bd55"]):"";
     							array_push($order_summary, ["key"=>"Amount Paid","value"=>$this->utilities->getRupeeForm($total_amount)]);    							
-    							
+
     							$orderDetail=["order_id"=>$order['_id'],"summary"=>$order_summary,"total"=>$this->utilities->getRupeeForm($total_amount)];
     							if($payment_mode)$orderDetail["payment_mode"]=$payment_mode;
     							
@@ -2125,8 +2150,7 @@ class HomeController extends BaseController {
     							
     							$resp['data']=$finalData;
     							return $resp;
-    							
-    							
+
     	} catch (Exception $e)
     	{
     		Log::error(" Error [getProductSuccessMsg] ".print_r($this->utilities->baseFailureStatusMessage($e),true));
@@ -2512,18 +2536,17 @@ class HomeController extends BaseController {
 
 
     public function getCities($array1=false){
-    	
-    	$array = array();
-    	$app_device = Request::header('Device-Type');
-    	if(isset($app_device) && in_array($app_device, ['ios', 'android'])){
-    		$cites		= 	City::active()->orderBy('name')->whereNotIn('_id',$array)->orderBy("order")->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
-    	}else{
-    		$cites		= 	City::orderBy('name')->whereNotIn('_id',$array)->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
-    	}
-    	
-    	if($array1)
-    		return $cites->toArray();
-    		else return Response::json($cites,200);
+        $array = array();
+        $app_device = Request::header('Device-Type');
+        if(isset($app_device) && in_array($app_device, ['ios', 'android'])){
+            $cites		= 	City::active()->orderBy('name')->whereNotIn('_id',$array)->orderBy("order")->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
+        }else{
+            $cites		= 	City::orderBy('name')->whereNotIn('_id',$array)->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
+        }
+
+        if($array1)
+        	return $cites->toArray();
+        else return Response::json($cites,200);
     }
 
     public function getCityLocation($city = 'mumbai',$cache = true){
@@ -3546,13 +3569,13 @@ class HomeController extends BaseController {
         if(!empty($data['addOns']))
         $addOns = $data['addOns'];
         if($device_type == "android"){
-            $notification_object = array("notif_id" => 2005,"notif_type" => "promotion", "notif_object" => array("promo_id"=>739423,"promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> "593a9380820095bf3e8b4568","title"=> $data["title"],"text"=> $data["body"]));
+        	$notification_object = array("notif_id" => 2005,"notif_type" => "promotion", "notif_object" => array("promo_id"=>739423,"label"=>(!empty($data['label'])?$data['label']:""),"promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> "593a9380820095bf3e8b4568","title"=> $data["title"],"text"=> $data["body"]));
             if(!empty($addOns))
             	foreach ($addOns as $key => $value) 
             		$notification_object['notif_object'][$key]=$value;
             
         }else{
-        	$notification_object = array("aps"=>array("alert"=> array("body" => $data["body"],"title" => $data["title"]), "sound" => "default", "badge" => 1), "notif_object" => array("promo_id"=>739423,"notif_type" => "promotion","promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> "593a9380820095bf3e8b4568","title"=> $data["title"],"text"=> $data["body"]));
+        	$notification_object = array("aps"=>array("alert"=> array("body" => $data["body"],"title" => $data["title"]), "sound" => "default", "badge" => 1), "notif_object" => array("promo_id"=>739423,"label"=>(!empty($data['label'])?$data['label']:""),"notif_type" => "promotion","promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> "593a9380820095bf3e8b4568","title"=> $data["title"],"text"=> $data["body"]));
         	if(!empty($addOns))
         		foreach ($addOns as $key => $value)
         			$notification_object['notif_object'][$key]=$value;
@@ -4720,6 +4743,150 @@ class HomeController extends BaseController {
             return $response;
             
         }
+        
+        public function listValidCoupons()
+        {
+        	$resp=['status'=>200,"message"=>"Success","header"=>"Available Coupons","options"=>[]];
+        	try {
+        		$data = $_GET;
+        		//         		$rules= ['ratecard_id'=>'required'];	
+        		// 	        	$validator = Validator::make($data,$rules);
+        		// 	        	if ($validator->fails()) return ['status' => 400,'message' => error_message($validator->errors())];
+        		
+        		$customer_email=null;$customer_id=null;$customer_phone=null;
+        		$jwt_token = Request::header('Authorization');
+        		if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+        			$decoded = customerTokenDecode($jwt_token);
+        			$customer_id = (int)$decoded->customer->_id;
+        			$customer_email=$decoded->customer->email;
+        			$customer_phone = $decoded->customer->contact_no;
+        		}
+        		$today_date = date("d-m-Y hh:mm:ss");
+        		$coupons = Coupon::where('start_date', '<=', new \DateTime())->where('end_date', '>=', new \DateTime())->get();
+        		if(empty($coupons)) return $resp;
+        		$coupons=$coupons->toArray();
+        		$device = Request::header('Device-Type');
+        		
+        		if($device &&!in_array($device, ['ios', 'android'])) $coupons=$this->utilities->removeMobileCodes($coupons);
+        		
+        		$finder_id =null;$service_id=null;$ratecard_type=null;$finder=null;$service=null;
+        		
+        		if(!empty($data['ratecard_id']))$ratecard = Ratecard::find(intval($data['ratecard_id']));
+        		if(!empty($ratecard))
+        		{
+        			$ratecard_data = $ratecard->toArray();
+        			if(!empty($ratecard_data["flags"]) && !empty($ratecard["flags"]["pay_at_vendor"]))
+        				return $resp;
+        				$finder_id = (int)$ratecard['finder_id'];
+        				$service_id = (int)$ratecard['service_id'];
+        				$ratecard_type=$ratecard_data['type'];
+        				$finder = Finder::where('_id', $ratecard['finder_id'])->first(['flags']);
+        				$service = Service::where('_id', $ratecard['service_id'])->first(['flags','servicecategory_id']);
+        		}
+        		
+        		$coup=[];$all=[];$once_per_user=[];$fitternity_only=[];
+        		
+        		($finder_id==6168)?array_push($coupons,['code'=>"mad18"]):"";
+        		$single=true;
+        		
+        		if($finder)
+        		{
+        			$couponRecieved = getDynamicCouponForTheFinder($finder);
+        			if(!empty($couponRecieved)&&!empty($couponRecieved['code']))array_push($coup, $couponRecieved);
+        		}
+        		
+        		foreach ($coupons as $coupon)
+        		{
+        			if(!empty($coupon)&&!empty($coupon['once_per_user']))
+        				array_push($once_per_user, $coupon);
+        				else array_push($all, $coupon);
+        		}
+        		
+        		if(count($once_per_user)>0&&$customer_id)
+        			$coupons=array_merge($all,$this->utilities->removeAlreadyUsedCodes($once_per_user,$customer_id));
+        		else $coupons=$all;
+        				
+        			foreach ($coupons as $coupon)
+        			{
+        				
+        				if(!empty($coupon['vendor_exclusive'])&&$finder_id&&$service_id )
+        					if(!$this->utilities->allowSpecificvendors($coupon,$finder_id,$service_id,$single)) continue;
+        					
+        					if(!empty($coupon['fitternity_only']))
+        						if(!($customer_id||$customer_email)||!$this->utilities->allowFitternityUsers($coupon,$customer_id,$customer_email,$single)) continue;
+        						
+        						if(!empty($coupon['finders'])&&$finder_id&&!in_array($finder_id."",$coupon['finders'])) continue;
+        						
+        						if((!empty($coupon['ratecard_type'])&&$ratecard_type&&!in_array($ratecard_type,$coupon['ratecard_type']))||!$ratecard_type)continue;
+        						
+        						if(!empty($coupon['campaign_only'])&&$coupon['campaign_only']=="1") continue;
+        						
+        						if(!empty($coupon['service_category_ids']))
+        						{
+        							if(!in_array($service['servicecategory_id'],$coupon['service_category_ids']))
+        								continue;
+        								else
+        								{
+        									if(!$customer_id) continue;
+        									\Order::$withoutAppends = true;
+        									$order_count = \Order::active()->where('customer_id',$customer_id)->where('coupon_code','like', $coupon['code'])->count();
+        									if($order_count >= 4)
+        										continue;
+        								}
+        						}
+        						
+        						//*****************************************************************************SYNCRON**********************************************************************
+        						if(!empty($coupon['type']) && $coupon['type'] == 'syncron'){
+        							if(!($customer_id||$customer_email)) continue;
+        							if($coupon['total_used'] >= $coupon['total_available'])continue;
+        							if(!empty($coupon['customer_emails']) && is_array($coupon['customer_emails']))
+        								if(!in_array(strtolower($customer_email), $coupon['customer_emails']))continue;
+        								\Booktrial::$withoutAppends = true;
+        								$booktrial_count = \Booktrial::where('customer_email',$customer_email)->where('created_at','>=',new \MongoDate(strtotime(date('Y-m-d 00:00:00'))))->where('created_at','<=',new \MongoDate(strtotime(date('Y-m-d 23:59:59'))))->count();
+        								if($booktrial_count>0)continue;
+        						}
+        						//*****************************************************************************SYNCRON**********************************************************************
+        						
+        						
+        						//**************************************************************************CONDITIONS**********************************************************************
+        						if((!empty($coupon['conditions']) && is_array($coupon['conditions']) )){
+        							if(in_array('once_new_pps', $coupon['conditions']))
+        							{
+        								if(!($customer_phone||$customer_email))continue;
+        								$prev_workout_session_count = \Booktrial::where('created_at', '>', new \DateTime('2018-04-22'))->where(function($query) use ($customer_email, $customer_phone){ return $query->orWhere('customer_email', $customer_email);})->where('type', 'workout-session')->count();
+        								if($prev_workout_session_count)
+        									continue;
+        							}
+        							else if(in_array('fitternity_employees', $coupon['conditions'])){
+        								if(!in_array(strtolower($customer_email),Config::get('fitternityemails'))||!$customer_email)
+        									continue;
+        							}
+        							else if(in_array('once_per_month', $coupon['conditions'])){
+        								if(!($customer_phone||$customer_email))continue;
+        								$prev_workout_session_count = \Order::active()->where('success_date', '>', new \DateTime(date('d-m-Y', strtotime('first day of this month'))))->where(function($query) use ($customer_email, $customer_phone){ return $query->orWhere('customer_phone', 'LIKE', '%'.substr($customer_phone, -10).'%')->orWhere('customer_email', $customer_email);})->where('coupon_code', 'Like', $coupon['code'])->where('coupon_discount_amount', '>', 0)->count();
+        								if($prev_workout_session_count)
+        									continue;
+        							}
+        						}
+        						//**************************************************************************CONDITIONS**********************************************************************
+        						
+        						array_push($coup, $coupon);
+        			}
+        			$resp['options']=array_map(function ($e){
+        				if(!empty($e['description']))$desc=$e['description'];
+        				else if(!empty($e['text']))$desc=$e['text'];
+        				else $desc="";
+        				return ['code'=>strtoupper($e['code']),'description'=>$desc];
+        				
+        			},$coup);
+        				return $resp;
+        				
+        	} catch (Exception $e) {
+        		
+        		$message="Message :: ".$e->getMessage()."  Code :: ".$e->getCode()."  File :: ".$e->getFile()."  Line :: ".$e->getLine();
+        		return ['status'=>400,"message"=>$message];
+        	}
+        }
 
         public function getProductsHome($cache=true)
         {
@@ -4734,6 +4901,7 @@ class HomeController extends BaseController {
         		foreach($tp as &$val) $this->utilities->customSort('index',$val);
         		foreach($tp as &$val) {
         			foreach($val as &$vala) {
+
         				unset($vala["index"]);unset($vala["base"]);
         				(isset($vala['product_id']))?$vala['product_id']=$vala['product_id']:"";
         				$tmp_data=array_values(array_filter($homeData['rc'],function ($e) use ($vala) {return $vala['ratecard_id']== $e['ratecard']['_id'];}));
@@ -4760,7 +4928,7 @@ class HomeController extends BaseController {
         		$this->utilities->attachCart($home["response"],false);
         		return $home;
         	} catch (Exception $e) {
-        		
+        		Log::error($e);
         		return ['status'=>400,"message"=>$this->utilities->baseFailureStatusMessage($e)];
         	}
         	
@@ -4799,7 +4967,6 @@ class HomeController extends BaseController {
         					$removedOldFromCart=Cart::where('_id', intval($cart_id))->pull('products', ['ratecard_id' => intval($ratecard['_id']), 'product_id' => intval($ratecard['product_id'])]);
         					
         					($quantity>0)?$addedToCart=Cart::where('_id', intval($cart_id))->push('products',$cartData):"";
-        					
         					if(!empty($_GET['cart_summary']) && filter_var($_GET['cart_summary'], FILTER_VALIDATE_BOOLEAN))
         					{	
         						$cart=$this->utilities->attachCart($response["response"],true);
@@ -4814,6 +4981,7 @@ class HomeController extends BaseController {
         			}
         		}
         		else return Response::json(['status'=>400,"message"=>"Token Not Present"]);
+
         		return $response;
         	} catch (Exception $e)
         	{
@@ -4829,6 +4997,8 @@ class HomeController extends BaseController {
         
         public function getProductDetail($ratecard_id,$product_id,$getProductInternal=false,$cache=false)
         {
+    		Log::info($_SERVER['REQUEST_URI']);
+
         	try {
         		$ratecard_id=intval($ratecard_id);$product_id=intval($product_id);
         		$productView=Product::active()->where("_id",$product_id)->with(array('ratecard'=>function($query){$query->active()->select('_id','title','info','flags','product_id','price','slash_price','order','status','properties','extra_info','image');}))->with('primarycategory')->first();
@@ -4996,6 +5166,7 @@ class HomeController extends BaseController {
         		
         		$productIds=array_column($productView, "_id");
         	
+        		/* $productView['selection_view'] */
         		$rates=ProductRatecard::active()->raw(function($collection) use($productIds)
         		 {
         		 return $collection->aggregate(
@@ -5125,6 +5296,8 @@ class HomeController extends BaseController {
         {
         	try {
         		$t=[];
+        		$tt=Request::header("Authorization");
+        		Log::info(" token  ".print_r($tt,true));
         		$cart=$this->utilities->attachCart($t,true);
         		$dataCart=$this->utilities->getCartFinalSummary($cart['products'], $cart['_id']);
         		
@@ -5132,7 +5305,8 @@ class HomeController extends BaseController {
         			$finalData=['status'=>200,"response"=>$dataCart['data']];
         		else return $dataCart;
         			$this->utilities->fetchCustomerAddresses($finalData['response']);
-        		$finalData['response']=array_merge($finalData['response'],json_decode($this->getCities()));
+        			$cities=['cities'=>array_map(function($e){return $e['name'];},array_values(array_filter($this->getCities(true),function ($e){return !empty($e['_id'])&&$e['_id']!=10000;})))];
+        			$finalData['response']=array_merge($finalData['response'],$cities);
         		return $finalData;
         	} catch (Exception $e) {
         		return  ['status'=>0,"message"=>$this->utilities->baseFailureStatusMessage($e)];

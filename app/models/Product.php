@@ -27,7 +27,10 @@ class Product extends \Basemodel {
 	}
 	
 	protected $appends = array('secondarycategory');
-	
+	public function setIdAttribute($value){
+		
+		$this->attributes['_id'] = intval($value);
+	}
 
 	public function primarycategory() {
 		return $this->belongsTo('ProductCategory', "productcategory.primary" );
@@ -68,7 +71,6 @@ class Product extends \Basemodel {
 			$opts=["authMechanism"=>config::get ( "database.connections.mongodb2.options.authMechanism"),"db"=>config::get ( "database.connections.mongodb2.options.db")];
 			$usr=config::get ( "database.connections.mongodb2.username" ).":".config::get ( "database.connections.mongodb2.password" )."@";
 		}
-// 		return config::get ( "database.connections.mongodb2.driver" ) . "://".$usr. config::get ( "database.connections.mongodb2.host" ) . ":" . config::get ( "database.connections.mongodb2.port" ).'/'. config::get ( "database.connections.mongodb2.database");
 		if(!empty($opts)&&!empty($opts['authMechanism'])&&!empty($opts['db']))
 			 $mongoclient = new MongoClient(config::get ( "database.connections.mongodb2.driver" ) . "://".$usr. config::get ( "database.connections.mongodb2.host" ) . ":" . config::get ( "database.connections.mongodb2.port").'/'. config::get ( "database.connections.mongodb2.database"),$opts);
 		else $mongoclient = new MongoClient(config::get ( "database.connections.mongodb2.driver" ) . "://".$usr. config::get ( "database.connections.mongodb2.host" ) . ":" . config::get ( "database.connections.mongodb2.port"));

@@ -8,6 +8,7 @@ Use App\Mailers\CustomerMailer as CustomerMailer;
 use App\Sms\CustomerSms as CustomerSms;
 use App\Services\Utilities as Utilities;
 Use App\Mailers\FinderMailer as FinderMailer;
+Use App\Sms\FinderSms as FinderSms;
 use Illuminate\Support\Facades\Config;
 
 class EmailSmsApiController extends \BaseController {
@@ -22,6 +23,7 @@ class EmailSmsApiController extends \BaseController {
     protected $customersms;
     protected $utilities;
     protected $findermailer;
+    protected $findersms;
 
     public function __construct(
         Cloudagent $cloudagent,
@@ -31,6 +33,8 @@ class EmailSmsApiController extends \BaseController {
     	CustomerController $customerController,
         TransactionController $transactionController,
         Utilities $utilities,
+        FinderMailer $findermailer,
+        FinderSms $findersms,
         FinderMailer $findermailer
     ){
         $this->cloudagent       =   $cloudagent;
@@ -39,7 +43,7 @@ class EmailSmsApiController extends \BaseController {
         $this->customersms              =   $customersms;
         $this->utilities            =   $utilities;
         $this->findermailer             =   $findermailer;
-
+        $this->findersms             =   $findersms;
         $this->vendor_token = false;
         
         $vendor_token = Request::header('Authorization-Vendor');
@@ -587,6 +591,17 @@ class EmailSmsApiController extends \BaseController {
             }
         }
 
+        if(!empty($data['order_token'])){
+
+            $decodeOrderToken = decodeOrderToken($data['order_token']);
+
+            if($decodeOrderToken['status'] != 200){
+                return Response::json($decodeOrderToken,$decodeOrderToken['status']);
+            }
+
+            $data = array_merge($data,$decodeOrderToken['data']);
+        }
+
         if($data['capture_type'] == 'sale_pre_register_2018'){
 
             $rules = [
@@ -921,6 +936,27 @@ class EmailSmsApiController extends \BaseController {
                     $sms_data['message'] = "Hi ".ucwords($storecapture['customer_name'])." your walkin request at ".ucwords($storecapture['finder_name'])." has been confirmed. Address - ".ucwords($storecapture['finder_address'])." . Google pin - ".$storecapture['google_pin'].". Contact person - ". $storecapture['finder_poc_for_customer_name']." If you wish to purchase - make sure you buy through Fitternity with lowest price and assured rewards.";
 
                     $this->customersms->custom($sms_data);
+
+                    if(!$this->vendor_token){
+
+                        $finder = Finder::where('_id', $data['finder_id'])->with('location')->first();
+                        $data['finder_address'] = $finder['contact']['address'];
+                        $data['google_pin'] = $finder['lat'].", ".$finder['lon'];
+                        // Log::info('finder_info');
+                        $data['finder_vcc_mobile'] = $finder['finder_vcc_mobile'];
+                        $data['finder_vcc_email'] = $finder['finder_vcc_email'];
+                        $data['finder_name'] = $finder['title'].", ".$finder['location']['name'];
+                        $data['finder_poc_for_customer_name'] = $finder['finder_poc_for_customer_name'];
+                        $data['finder_poc_for_customer_no'] = $finder['finder_poc_for_customer_no'];
+                        $data['finder_lat'] = $finder['lat'];
+			            $data['finder_lon'] = $finder['lon'];
+                        
+                        $data['appointment'] = false;
+                        
+                        $this->customermailer->captureCustomerWalkthrough($data);
+                        $this->findersms->captureVendorWalkthrough($data);
+			            $this->findermailer->captureVendorWalkthrough($data);
+                    }
                     break;
                 default:
                     $this->customermailer->landingPageCallback($data);
@@ -944,6 +980,8 @@ class EmailSmsApiController extends \BaseController {
             case 'walkthrough': $message = "Walkin Captured Successfully";break;
             case 'starter_pack': $message = "Thank you for signing up. Amount of Rs.500 has been credited to your wallet.";break;
             case 'exit_intent': $message = "Successfully stored exit intent of the user.";break;
+            case 'membership_invoice_request': $message = "Thank you for membership invoice request, We will get back to you";break;
+            case 'membership_cancel_request': $message = "Thank you for membership cancellation request, We will get back to you";break;
             default:$message = "Received the Request";break;
         }
 

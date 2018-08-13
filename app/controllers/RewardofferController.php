@@ -11,6 +11,9 @@ class RewardofferController extends BaseController {
     public function __construct(
         Utilities $utilities
     ) {
+
+        parent::__construct();
+
         $this->utilities = $utilities;
         
         $this->vendor_token = false;
@@ -23,6 +26,8 @@ class RewardofferController extends BaseController {
         }
 
         $this->error_status = ($this->vendor_token) ? 200 : 400;
+
+
     }
 
 
@@ -149,7 +154,10 @@ class RewardofferController extends BaseController {
                 'percentage'    =>  $calculation['algo']['cashback'].'%',
                 'commision'     =>  $calculation['algo']['cashback'],
                 'calculation'   =>  $calculation,
-                'info'          =>  ""//"You can only pay upto 10% of the booking amount through FitCash. \nIt is calculated basis the amount, type and duration of the purchase.  \nYour total FitCash balance is Rs. ".$calculation['current_wallet_balance_only_fitcash']." FitCash applicable for this transaction is Rs. ".$calculation['amount_deducted_from_wallet']
+                'info'          =>  "",//"You can only pay upto 10% of the booking amount through FitCash. \nIt is calculated basis the amount, type and duration of the purchase.  \nYour total FitCash balance is Rs. ".$calculation['current_wallet_balance_only_fitcash']." FitCash applicable for this transaction is Rs. ".$calculation['amount_deducted_from_wallet'],
+                'payload'=>[
+                    'amount'=>!empty($calculation['wallet_amount']) ? $calculation['wallet_amount'] : 0
+                ]
             ];
             /*if($calculation["current_wallet_balance_only_fitcash_plus"] > 0){
                 $cashback["info"] = "You can only pay upto 10% of the booking amount through FitCash. \n\nIt is calculated basis the amount, type and duration of the purchase.  \n\nYour total FitCash balance is Rs. ".$calculation['current_wallet_balance_only_fitcash_plus']."\n\nYour total FitCash+ balance is Rs. ".$calculation['current_wallet_balance_only_fitcash']." FitCash applicable for this transaction is Rs. ".$calculation['amount_deducted_from_wallet'];
@@ -171,6 +179,8 @@ class RewardofferController extends BaseController {
             return  Response::json($data, 200);
 
         }
+
+        Finder::$withoutAppends = true;
 
         if($this->vendor_token){
 
@@ -311,60 +321,62 @@ class RewardofferController extends BaseController {
             $cutl_vendor = true;
         }
 
-        if($amount <= 1025){
-            switch ($finder_id) {
-                case 13765 :
-                    if(time() <= strtotime(date('2018-06-14 23:59:59'))){
-                        $min_date = strtotime(date('2018-06-14 00:00:00'));
-                        $max_date = strtotime(date('2018-06-14 23:59:59'));
-                    }
-                    break;
-                case 13761 : 
-                    if(time() <= strtotime(date('2018-06-15 23:59:59'))){
-                        $min_date = strtotime(date('2018-06-15 00:00:00'));
-                        $max_date = strtotime(date('2018-06-15 23:59:59'));
-                    }
-                    break;
-                case 14079 : 
-                    if(time() <= strtotime(date('2018-06-28 23:59:59'))){
-                        $min_date = strtotime(date('2018-06-28 00:00:00'));
-                        $max_date = strtotime(date('2018-06-28 23:59:59'));
-                    }
-                    break;
-                case 14081 : 
-                    if(time() <= strtotime(date('2018-06-25 23:59:59'))){
-                        $min_date = strtotime(date('2018-06-25 00:00:00'));
-                        $max_date = strtotime(date('2018-06-25 23:59:59'));
-                    }
-                    break;
-                case 14082 : 
-                    if(time() <= strtotime(date('2018-06-04 23:59:59'))){
-                        $min_date = strtotime(date('2018-06-04 00:00:00'));
-                        $max_date = strtotime(date('2018-06-04 23:59:59'));
-                    }
-                    break;
-                case 14088 : 
-                    if(time() <= strtotime(date('2018-06-07 23:59:59'))){
-                        $min_date = strtotime(date('2018-06-07 00:00:00'));
-                        $max_date = strtotime(date('2018-06-07 23:59:59'));
-                    }
-                    break;
-                case 14085 : 
-                    if(time() <= strtotime(date('2018-06-30 23:59:59'))){
-                        $min_date = strtotime(date('2018-06-30 00:00:00'));
-                        $max_date = strtotime(date('2018-06-30 23:59:59'));
-                    }
-                    break;
-                case 14078 : 
-                    if(time() <= strtotime(date('2018-06-30 23:59:59'))){
-                        $min_date = strtotime(date('2018-06-30 00:00:00'));
-                        $max_date = strtotime(date('2018-06-30 23:59:59'));
-                    }
-                    break;
+        $city_id = (int)$finder['city_id'];
+
+        // if($amount <= 1025){
+        //     switch ($finder_id) {
+        //         case 13765 :
+        //             if(time() <= strtotime(date('2018-06-14 23:59:59'))){
+        //                 $min_date = strtotime(date('2018-06-14 00:00:00'));
+        //                 $max_date = strtotime(date('2018-06-14 23:59:59'));
+        //             }
+        //             break;
+        //         case 13761 : 
+        //             if(time() <= strtotime(date('2018-06-15 23:59:59'))){
+        //                 $min_date = strtotime(date('2018-06-15 00:00:00'));
+        //                 $max_date = strtotime(date('2018-06-15 23:59:59'));
+        //             }
+        //             break;
+        //         case 14079 : 
+        //             if(time() <= strtotime(date('2018-06-28 23:59:59'))){
+        //                 $min_date = strtotime(date('2018-06-28 00:00:00'));
+        //                 $max_date = strtotime(date('2018-06-28 23:59:59'));
+        //             }
+        //             break;
+        //         case 14081 : 
+        //             if(time() <= strtotime(date('2018-06-25 23:59:59'))){
+        //                 $min_date = strtotime(date('2018-06-25 00:00:00'));
+        //                 $max_date = strtotime(date('2018-06-25 23:59:59'));
+        //             }
+        //             break;
+        //         case 14082 : 
+        //             if(time() <= strtotime(date('2018-06-04 23:59:59'))){
+        //                 $min_date = strtotime(date('2018-06-04 00:00:00'));
+        //                 $max_date = strtotime(date('2018-06-04 23:59:59'));
+        //             }
+        //             break;
+        //         case 14088 : 
+        //             if(time() <= strtotime(date('2018-06-07 23:59:59'))){
+        //                 $min_date = strtotime(date('2018-06-07 00:00:00'));
+        //                 $max_date = strtotime(date('2018-06-07 23:59:59'));
+        //             }
+        //             break;
+        //         case 14085 : 
+        //             if(time() <= strtotime(date('2018-06-30 23:59:59'))){
+        //                 $min_date = strtotime(date('2018-06-30 00:00:00'));
+        //                 $max_date = strtotime(date('2018-06-30 23:59:59'));
+        //             }
+        //             break;
+        //         case 14078 : 
+        //             if(time() <= strtotime(date('2018-06-30 23:59:59'))){
+        //                 $min_date = strtotime(date('2018-06-30 00:00:00'));
+        //                 $max_date = strtotime(date('2018-06-30 23:59:59'));
+        //             }
+        //             break;
                 
-                default: break;
-            }     
-        }
+        //         default: break;
+        //     }     
+        // }
 
         $service_name           =   "";
         $service_duration       =   "";
@@ -506,7 +518,8 @@ class RewardofferController extends BaseController {
                         'personal_trainer_at_home',
                         'healthy_tiffin',
                         'nutrition_store',
-                        'fitternity_voucher'
+                        'fitternity_voucher',
+                        'swimming_sessions'
                     );
 
 
@@ -518,7 +531,8 @@ class RewardofferController extends BaseController {
                             'personal_trainer_at_home',
                             'healthy_tiffin',
                             'nutrition_store',
-                            'fitternity_voucher'
+                            'fitternity_voucher',
+                            'swimming_sessions'
                         );
                     }
 
@@ -529,7 +543,7 @@ class RewardofferController extends BaseController {
                         // if($amount < 2000){
                         //     $rewards = [];        
                         // }
-                        foreach ($rewards as $rewards_value){
+                        foreach ($rewards as &$rewards_value){
 
                             if(in_array($rewards_value['reward_type'],["fitness_kit","healthy_snacks"]) && $service_category_id != null){
 
@@ -860,6 +874,87 @@ class RewardofferController extends BaseController {
 
                                 // break;
                             }
+
+                            if($rewards_value['reward_type'] == "sessions"){
+
+                                $reward_type_info = 'sessions';
+
+                                $workout_session_array = Config::get('fitness_kit.workout_session');
+
+                                rsort($workout_session_array);
+
+                                foreach ($workout_session_array as $data_key => $data_value) {
+
+                                    if($amount >= $data_value['min'] ){
+
+                                        $session_content = "Get access to FREE workouts - Anytime, Anywhere <br>- Across 12,000+ fitness centres & 7 cities <br>- 75,000 classes every week: Crossfit, Zumba, Yoga, Kickboxing & 13 more fitness forms <br>- Book real-time & get instant confirmation";
+
+                                        $rewards_value['payload_amount'] = $data_value['amount'];
+                                        $rewards_value['new_amount'] = $data_value['amount'];
+                                        $rewards_value['title'] = "Workout Session Pack (".$data_value['total']." Sessions)";
+                                        $rewards_value['contents'] = ['Workout Session Pack'];
+                                        $rewards_value['gallery'] = [];
+                                        $rewards_value['description'] = $session_content;
+                                        $rewards_value['quantity'] = $data_value['total'];
+                                        $rewards_value['payload']['amount'] = $data_value['amount'];
+
+                                        break;
+                                    }
+                                }
+                            }
+
+                            if($rewards_value['reward_type'] == "swimming_sessions"){
+
+                                $reward_type_info = 'swimming_sessions';
+
+                                $swimming_session_array = Config::get('fitness_kit.swimming_session');
+
+                                rsort($swimming_session_array);
+
+                                foreach ($swimming_session_array as $data_key => $data_value) {
+
+                                    if($amount >= $data_value['min'] ){
+
+                                        $session_content = "Get a luxury experience like never before - VIP swimming session in city's best 5-star hotels <br>- Book across 50 hotels in 7 cities <br>- Hotels including JW Marriott, Hyatt, Sofitel, Lalit & many more <br>- Book real-time & get instant confirmation";
+
+                                        $rewards_value['payload_amount'] = $data_value['amount'];
+                                        $rewards_value['new_amount'] = $data_value['amount'];
+                                        $rewards_value['title'] = "Swimming at 5-star Hotels (".$data_value['total']." Sessions)";
+                                        $rewards_value['contents'] = ['Swimming at 5-star Hotels'];
+                                        $rewards_value['gallery'] = [];
+                                        $rewards_value['description'] = $session_content;
+                                        $rewards_value['quantity'] = $data_value['total'];
+                                        $rewards_value['payload']['amount'] = $data_value['amount'];
+                                        $rewards_value['list'] = [];
+
+                                        break;
+                                    }
+                                }
+
+                                $swimming_service_ids = Service::where('city_id',$service['city_id'])->where('location_id',$service['location_id'])->where('servicecategory_id',123)->lists('_id');
+
+                                if(!empty($swimming_service_ids)){
+
+                                    $swimming_service_ids = array_map('intval',$swimming_service_ids);
+
+                                    $swimming_finder_ids = Ratecard::whereIn('service_id',$swimming_service_ids)->where('type','workout session')->lists('finder_id');
+
+                                    if(!empty($swimming_finder_ids)){
+
+                                        $swimming_finder_ids = array_map('intval',$swimming_finder_ids);
+
+                                        $swimming_finders = Finder::whereIn('_id',$swimming_finder_ids)->get(['title','slug','_id']);
+
+                                        if($swimming_finders){
+
+                                           $rewards_value['list'] = $swimming_finders->toArray();
+
+                                        }
+                                    }
+                                }
+
+                            }
+
                         }
                     }
 
@@ -910,7 +1005,7 @@ class RewardofferController extends BaseController {
 
                         if($fitness_kit_count == 0){
 
-                            $rewards_value['title'] = "Fitness Merchandis";
+                            $rewards_value['title'] = "Fitness Merchandise";
                             $rewards_value['contents'] = ['Waterproof Gym Bag'];
                             $rewards_value['image'] = 'https://b.fitn.in/gamification/reward_new/new/GymBag_1.png';
                             $rewards_value['gallery'] = [];
@@ -931,6 +1026,71 @@ class RewardofferController extends BaseController {
 
         }
 
+        $duration_day = 0;
+
+        if(isset($ratecard['validity']) && $ratecard['validity'] != ""){
+
+            switch ($ratecard['validity_type']){
+                case 'days': 
+                    $duration_day = (int)$ratecard['validity'];break;
+                case 'months': 
+                    $duration_day = (int)($ratecard['validity'] * 30) ; break;
+                case 'year': 
+                    $duration_day = (int)($ratecard['validity'] * 30 * 12); break;
+                default : $duration_day =  $ratecard['validity']; break;
+            }
+        }
+
+        if(isset($finder['brand_id']) && $finder['brand_id'] == 66 && $finder['city_id'] == 3 && $duration_day == 360){
+
+            $rewardObj = Reward::where('quantity_type','mixed')->first();
+
+            if($rewardObj){
+
+                $rewards = [];
+
+                $rewardObjData = $rewardObj->toArray();
+
+                unset($rewardObjData['rewrardoffers']);
+                unset($rewardObjData['updated_at']);
+                unset($rewardObjData['created_at']);
+
+                foreach ($swimming_session_array as $data_key => $data_value) {
+
+                    if($amount >= $data_value['min'] ){
+
+                        $no_of_sessions = $data_value['total'];
+                        break;
+                    }
+                }
+
+                $no_of_sessions = (!empty($no_of_sessions) ? $no_of_sessions == 1 ? '1 session' : $no_of_sessions.' sessions' : '1 session');
+
+                $rewards_snapfitness_contents = [
+                    'Fitness Merchandise (Stylish & waterproof Gym Bag + Trendy Shaker) worth Rs. 1,000',
+                    'Swimming session at 5-star hotels for 2 people worth 3,000',
+                    'Personalised Online Diet Consultation for 1 month',
+                    'Free Vouchers from Amazon, GNC & Faasos'
+                ];
+
+                $rewardObjData['title'] = 'Snap Fitness Hamper';
+                $rewardObjData['contents'] = $rewards_snapfitness_contents;
+                $rewardObjData['image'] = 'https://b.fitn.in/gamification/reward/mixed.jpg';
+                $rewardObjData['gallery'] = [
+                    'https://b.fitn.in/gamification/reward/mixed.jpg',
+                    'https://b.fitn.in/gamification/reward/snap_fitness/swimming.jpg',
+                    'https://b.fitn.in/gamification/reward/snap_fitness/kit.jpg',
+                    'https://b.fitn.in/gamification/reward/snap_fitness/diet.jpg',
+                    'https://b.fitn.in/gamification/reward/snap_fitness/voucher.jpg',
+                ];
+                $rewardObjData['new_amount'] = 6000;
+                $rewardObjData['payload']['amount'] = 6000;
+                $rewardObjData['description'] = 'The perfect pack to get your fitness membership started: <br>- '.implode('<br>- ',$rewards_snapfitness_contents);
+
+                $rewards[] = $rewardObjData;
+            }
+        }
+
         if(!empty($rewards)){
 
             foreach ($rewards as $reward_key => $reward_value) {
@@ -940,6 +1100,14 @@ class RewardofferController extends BaseController {
                 }
 
                 if(in_array($finder_id,$multifit_qym) & $reward_value['reward_type'] == 'diet_plan'){
+                    unset($rewards[$reward_key]);
+                }
+
+                if($reward_value['reward_type'] == 'swimming_sessions' && in_array($city_id,[5,6])){
+                    unset($rewards[$reward_key]);
+                }
+
+                if(in_array($reward_value['reward_type'],['swimming_sessions','sessions']) && !empty($this->app_version) && floatval($this->app_version) < 4.9){
                     unset($rewards[$reward_key]);
                 }
             }
@@ -981,7 +1149,10 @@ class RewardofferController extends BaseController {
                 'commision'=>$calculation['algo']['cashback'],
                 'calculation'=>$calculation,
                 'info'          =>  "",//"You can only pay upto 10% of the booking amount through FitCash. \n\nIt is calculated basis the amount, type and duration of the purchase.  \n\nYour total FitCash balance is Rs. ".$calculation['current_wallet_balance_only_fitcash']." FitCash applicable for this transaction is Rs. ".$calculation['amount_deducted_from_wallet'],
-                'description'=>$calculation['description']
+                'description'=>$calculation['description'],
+                'payload'=>[
+                    'amount'=>!empty($calculation['wallet_amount']) ? $calculation['wallet_amount'] : 0
+                ]
             );
             /*if($calculation["current_wallet_balance_only_fitcash_plus"] > 0){
                 $cashback["info"] = "You can only pay upto 10% of the booking amount through FitCash. \n\nIt is calculated basis the amount, type and duration of the purchase.  \n\nYour total FitCash balance is Rs. ".$calculation['current_wallet_balance_only_fitcash_plus']."\n\nYour total FitCash+ balance is Rs. ".$calculation['current_wallet_balance_only_fitcash']." FitCash applicable for this transaction is Rs. ".$calculation['amount_deducted_from_wallet'];
@@ -1021,6 +1192,9 @@ class RewardofferController extends BaseController {
 
         if(isset($data['ratecard_id']) && gettype($data['ratecard_id']) == 'integer' && in_array($data['ratecard_id'], [103151,103152,103153,103154,103155,103156,103157,103158])){
             $rewards = [];
+            $cashback = null;
+        }
+        if(isset($finder['brand_id']) && $finder['brand_id'] == 66 && $finder['city_id'] == 3 && $duration_day == 360){
             $cashback = null;
         }
 

@@ -1104,13 +1104,13 @@ Route::group(array('before' => 'validatetoken'), function() {
 	
 	Route::post('walletordercapture', array('as' => 'transaction.walletOrderCapture','uses' => 'TransactionController@walletOrderCapture'));
 	
-	Route::post('walletordersuccess', array('as' => 'transaction.walletOrderSuccess','uses' => 'TransactionController@walletOrderSuccess'));
-
+	
 	Route::post('codotpsuccess', array('as' => 'transaction.codotpsuccess','uses' => 'TransactionController@codOtpSuccess'));
 	
 	Route::get('getcodorders','CustomerController@getCodOrders');
 	
 });
+Route::post('walletordersuccess', array('as' => 'transaction.walletOrderSuccess','uses' => 'TransactionController@walletOrderSuccess'));
 
 Route::post('customer/sendvendornumber','CustomerController@sendVendorNumberToCustomer');
 Route::get('customerexists/{email}','CustomerController@customerExists');
@@ -1200,27 +1200,77 @@ Route::get('promoNotification','DebugController@promoNotification');
 Route::post('getPageViewsForVendors','FindersController@getPageViewsForVendors');
 
 Route::get('PayPerSessionWallet','DebugController@PayPerSessionWallet');
+Route::post('autoregister','CustomerController@autoRegister');
+
 
 Route::get('manualTrialCommunication','SchedulebooktrialsController@manualTrialCommunication');
 
 Route::get('getreferralscreendata','CustomerController@getReferralScreenData');
 Route::get('addWallet','DebugController@addWallet');
+Route::get('tagReviews','DebugController@tagReviews');
 
 Route::get('getbrandvendors/{brand_id}/{city_id}', array('as' => 'finders.getbrandvendors','uses' => 'FindersController@getBrandVendors'));
-
+Route::get('addProducts','DebugController@addProducts');
 Route::get('productshome','HomeController@getProductsHome');
 Route::get('productdetail/{ratecard_id}/{product_id}','HomeController@getProductDetail');
 Route::get('catproducts/{productcategory_id}','HomeController@getCategoryBasedProducts');
+
 
 Route::get('addproducttocart/{ratecard_id}/{quantity}','HomeController@addProductToCart');
 Route::post('addproductstocart','HomeController@addProductsToCart');
 
 Route::post('transaction/capture/product','TransactionController@productCapture');
 Route::post('productscats','HomeController@productsCats');
+
+
+
+Route::get('productSpecifications','DebugController@productSpecifications');
+Route::get('addPriceToProduct','DebugController@addPriceToProduct');
+Route::get('addRatecards','DebugController@addRatecards');
+Route::get('updateProductHomePage','DebugController@updateProductHomePage');
+
 Route::get('cartsummary','HomeController@getFinalCartSummary');
 
 Route::get('customeraddress','HomeController@getCustomerAddress');
 Route::post('customeraddress','HomeController@setCustomerAddress');
 Route::get('sendvendorotpproducts/{order_id}','TransactionController@sendVendorOTPProducts');
 
+
+Route::get('updateCouponUsed','DebugController@updateCouponUsed');
+
+
+Route::get('sendcommvendorthirdparty/{booktrial_id}', 'SchedulebooktrialsController@sendCommunicationToVendorThirdParty');
+
+Route::get('getbrandvendors/{brand_id}/{city_id}', array('as' => 'finders.getbrandvendors','uses' => 'FindersController@getBrandVendors'));
+
+
+Route::get('lostFitcode','DebugController@lostFitcode');
+
+
+Route::post('getcustomercarddetails','CustomerController@getCustomerCardDetails');
+
+Route::get('toto/{vendorservice_id}', 'MigrationReverseController@tot');
+
+Route::get('checkexistinguser/mobikwik/{cell}','PaymentGatewayController@checkExistingUserMobikwik');
+Route::post('generateotp/{type}','PaymentGatewayController@generateOtp');\
+Route::post('generatetoken/{type}','PaymentGatewayController@generateToken');
+Route::post('regeneratetoken/mobikwik','PaymentGatewayController@regenerateTokenMobikwik');
+Route::post('createuser/mobikwik','PaymentGatewayController@createUserMobikwik');
+Route::post('checkbalance/{type}','PaymentGatewayController@checkBalance');
+Route::post('addmoney/mobikwik','PaymentGatewayController@addMoneyMobikwik');
+Route::post('debitmoney/mobikwik','PaymentGatewayController@debitMoneyMobikwik');
+Route::match(array('GET', 'POST'),'verifyaddmoney/mobikwik', 'PaymentGatewayController@verifyAddMoneyMobikwik');
+Route::post('checkstatus/mobikwik','PaymentGatewayController@checkStatusMobikwik');
+Route::get('verifypayment/{status}','PaymentGatewayController@verifyPayment');
+
+Route::get('updateCouponUsed','DebugController@updateCouponUsed');
+Route::get('updateRatecardSlots','DebugController@updateRatecardSlots');
+
+Route::get('updateratecardslotsbyid/{order_id}','TransactionController@updateRatecardSlotsByOrderId');
+
+Route::post('getunmarkedattendance','CustomerController@getCustomerUnmarkedAttendance');
+Route::post('addafriendforbooking','CustomerController@addafriendforbooking');
+Route::get('getbookingfriends','CustomerController@getallBookingfriends');
+Route::post('markcustomerattendance','CustomerController@markCustomerAttendance');
+Route::get('listvalidcoupons','HomeController@listValidCoupons');
 
