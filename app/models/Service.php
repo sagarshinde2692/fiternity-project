@@ -252,7 +252,7 @@ class Service extends \Basemodel{
 						// }
 
 
-						$ratecardoffer['offer_text']    =  ($difference->d == 1) ? "Expires Today" : ($difference->d > 7 ? "Expires in ".((17-intval(date('d', time())))%30)." days1" : "Expires in ".$difference->days." days");
+						$ratecardoffer['offer_text']    =  ($difference->d == 1) ? "Expires Today" : ($difference->d > 7 ? "Expires in ".((17-intval(date('d', time())))%7)." days" : "Expires in ".(intval($difference->days)%7)." days");
 
 
 						// if($value['type'] == 'membership' && $value['direct_payment_enable'] == '1' && $key == count($ratecardsarr) - 1){
