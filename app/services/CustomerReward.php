@@ -1113,6 +1113,10 @@ Class CustomerReward {
             $setAlgo = array('cashback'=>0,'fitcash'=>0,'discount'=>0);
         }
 
+        if(in_array($finder_id, Config::get('app.mixed_reward_finders'))){
+            $setAlgo = array('cashback'=>10,'fitcash'=>10,'discount'=>0);
+        }
+
         $power_world_gym_vendor_ids = Config::get('app.power_world_gym_vendor_ids');
 
         if($finder_id && $finder_id != "" && $finder_id != null && in_array($finder_id,$power_world_gym_vendor_ids)){
