@@ -359,7 +359,7 @@ Class CustomerReward {
                         
                         $no_of_sessions = (!empty($no_of_sessions) ? ($no_of_sessions == 1 ? '1 person' : $no_of_sessions.' people') : '1 person');
 
-                        $mixedreward_content = MixedRewardContent::where('finder_id', $finder['_id'])->first();
+                        $mixedreward_content = \MixedRewardContent::where('finder_id', $finder['_id'])->first();
                         
                         $rewards_snapfitness_contents = $mixedreward_content->reward_contents;
 
