@@ -1039,12 +1039,17 @@ class RewardofferController extends BaseController {
             }
         }
 
-        if(isset($finder['brand_id']) && $finder['brand_id'] == 66 && $finder['city_id'] == 3 && $duration_day == 360){
+        // if(isset($finder['brand_id']) && $finder['brand_id'] == 66 && $finder['city_id'] == 3 && $duration_day == 360){
 
+            
+        if(in_array($finder['_id'], Config::get('app.mixed_reward_finders')) && $duration_day == 360){
+                
             $rewardObj = Reward::where('quantity_type','mixed')->first();
-
-            if($rewardObj){
-
+                
+            $mixedreward_content = MixedRewardContent::where('finder_id', $finder['_id'])->first();
+            
+            if($rewardObj && $mixedreward_content){
+                    
                 $rewards = [];
 
                 $rewardObjData = $rewardObj->toArray();
@@ -1064,12 +1069,11 @@ class RewardofferController extends BaseController {
 
                 $no_of_sessions = (!empty($no_of_sessions) ? $no_of_sessions == 1 ? '1 session' : $no_of_sessions.' sessions' : '1 session');
 
-                $rewards_snapfitness_contents = [
-                    'Fitness Merchandise (Stylish & waterproof Gym Bag + Trendy Shaker) worth Rs.1,000',
-                    'Swimming session at 5-star hotels for '.$no_of_sessions.' people worth Rs.3,000',
-                    'Personalised Online Diet Consultation for 1 month Rs.1299',
-                    'Free Vouchers from Amazon, GNC & Faasos worth Rs.700'
-                ];
+                $rewards_snapfitness_contents = $mixedreward_content->reward_contents;
+
+                foreach()
+
+                
 
                 $rewardObjData['title'] = 'Snap Fitness Hamper';
                 $rewardObjData['contents'] = $rewards_snapfitness_contents;
