@@ -357,30 +357,25 @@ Class CustomerReward {
                             }
                         }
                         
-                        $no_of_sessions = (!empty($no_of_sessions) ? $no_of_sessions == 1 ? '1 session' : $no_of_sessions.' sessions' : '1 session');
-                        
-    
-                        $snapfitness_contents = [
-                            'Swimming session at 5 star hotels ('.$no_of_sessions.' )',
-                            'Fitness Merchandise Kit (Gym Bag + Shaker)',
-                            'Personalized Online Diet Consultation (for 1 month)',
-                            'Free Vouchers from ( Amazon,GNC & Faasos)'
-                        ];
+                        $no_of_sessions = (!empty($no_of_sessions) ? ($no_of_sessions == 1 ? '1 person' : $no_of_sessions.' people') : '1 person');
 
-                        $reward['title'] = 'Snap Fitness Hamper';
-                        $reward['content'] = $snapfitness_contents;
-                        $reward['image'] = 'https://b.fitn.in/gamification/reward/mixed.jpg';
-                        $reward['gallery'] = [
-                            'https://b.fitn.in/gamification/reward/mixed.jpg',
-                            'https://b.fitn.in/gamification/reward/snap_fitness/swimming.jpg',
-                            'https://b.fitn.in/gamification/reward/snap_fitness/kit.jpg',
-                            'https://b.fitn.in/gamification/reward/snap_fitness/diet.jpg',
-                            'https://b.fitn.in/gamification/reward/snap_fitness/voucher.jpg',
-                        ];
-                        $reward['new_amount'] = 6000;
-                        $reward['payload']['amount'] = 6000;
+                        $mixedreward_content = MixedRewardContent::where('finder_id', $finder['_id'])->first();
+                        
+                        $rewards_snapfitness_contents = $mixedreward_content->reward_contents;
+
+                        foreach($rewards_snapfitness_contents as &$content){
+                            $content = bladeCompile($content, ['no_of_sessions'=>$no_of_sessions]);
+                        }
+
+                        $reward['title'] = $mixedreward_content['title'];
+                        $reward['contents'] = $rewards_snapfitness_contents;
+                        $reward['image'] = $mixedreward_content['images'][0];
+                        $images = $mixedreward_content['images'];
+                        $reward['gallery'] = $mixedreward_content['images'];
+                        $reward['new_amount'] = $mixedreward_content['total_amount'];
+                        $reward['payload']['amount'] = $mixedreward_content['total_amount'];
                         $reward['payload_amount'] = 6000;
-                        $reward['description'] = 'We have curated a perfect Fitness Start Pack for your membership just for you. Now you can strike this off your list and get going.<br>- '.implode('<br>- ',$snapfitness_contents);
+                        $reward['description'] = $mixedreward_content['rewards_header'].': <br>- '.implode('<br>- ',$rewards_snapfitness_contents);
                     }
 
                 }
