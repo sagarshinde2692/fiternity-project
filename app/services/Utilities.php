@@ -5195,8 +5195,8 @@ Class Utilities {
 
 	}
 	public function getCartTotalCount($cart=null)
-	{
-		return (!empty($cart))?array_reduce((!empty($cart['products'])?array_map(function($e){return (!empty($e['quantity'])?intval($e['quantity']):0);},$cart['products']):[]),function($carry,$item){$carry+=$item;return $carry;}):null;
+	{	if(empty($cart)||empty($cart['products']))return 0;
+		else return (!empty($cart))?array_reduce((!empty($cart['products'])?array_map(function($e){return (!empty($e['quantity'])?intval($e['quantity']):0);},$cart['products']):[]),function($carry,$item){$carry+=$item;return $carry;}):0;
 	}
 
 	public function fetchProductCities(&$data)
@@ -5232,7 +5232,8 @@ Class Utilities {
 					$temp=[];
 					$detail=$this->productProperties($cart_item['ratecard']);
 					$temp['field']=(!empty($cart_item['product'])&&!empty($cart_item['product']['title']))?$cart_item['product']['title']:(!empty($cart_item['ratecard'])&&!empty($cart_item['ratecard']['title'])?$cart_item['ratecard']['title']:"");
-					$temp['value']=(intval($cart_item['quantity'])).(!empty($detail)&&!empty($detail['status'])&&!empty($detail['data'])?$detail['data']:" items");
+					$temp['value']=("Qty : ".intval($cart_item['quantity']));
+					if(!empty($detail)&&!empty($detail['status'])&&!empty($detail['data']))$temp['value']=$temp['value']."<br />".$detail['data'];
 					array_push($cart_desc,$temp);
 				}
 				$resp['data']['cart_details']=$cart_desc;
@@ -5240,10 +5241,14 @@ Class Utilities {
 		} catch (Exception $e)
 		{
 			return  ['status'=>0,"message"=>$this->baseFailureStatusMessage($e)];
-		}
-		
-		
-		
+		}	
+	}
+	public function getProductCities()
+	{
+		$cities = City::active()->orderBy('order')->whereNotIn('_id',[10000])->remember(Config::get('app.cachetime'))->lists("name");
+		if(!empty($cities))
+			return $cities;
+		else return [];
 	}
 	
 	public function productProperties($ratecard)
@@ -5252,13 +5257,10 @@ Class Utilities {
 		try {
 			if(empty($ratecard))
 				return ["status"=>0,"message"=>"No Ratecards present."];
-				
-				$resp=["status"=>1,"message"=>"success","data"=>""];
+				$resp=["status"=>1,"message"=>"success","data"=>""];$tmp=[];
 				$rc =(!empty($ratecard['properties'])?$ratecard['properties']:[]);
-				
-				foreach ($rc as $key => $value) 
-					$resp['data']=$resp['data'].$value." ";
-
+				foreach ($rc as $key => $value)array_push($tmp, $key." : ".$value);
+				(!empty($tmp)&&count($tmp)>0)?$resp['data']=implode("<br />",$tmp):"";
 				return $resp;
 		} catch (Exception $e)
 		{

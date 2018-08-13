@@ -1273,4 +1273,3 @@ Route::post('addafriendforbooking','CustomerController@addafriendforbooking');
 Route::get('getbookingfriends','CustomerController@getallBookingfriends');
 Route::post('markcustomerattendance','CustomerController@markCustomerAttendance');
 Route::get('listvalidcoupons','HomeController@listValidCoupons');
-

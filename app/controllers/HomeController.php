@@ -2543,7 +2543,6 @@ class HomeController extends BaseController {
         }else{
             $cites		= 	City::orderBy('name')->whereNotIn('_id',$array)->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
         }
-
         if($array1)
         	return $cites->toArray();
         else return Response::json($cites,200);
@@ -4961,12 +4960,19 @@ class HomeController extends BaseController {
         					$tmp=['ratecard_id'=>$ratecard_id];
         					 $alreadyQuantity=$this->utilities->attachProductQuantity($tmp,true);
         					if(!empty($alreadyQuantity))
-        					 if($quantity>0&&$quantity==$alreadyQuantity)
-        					 return ['status'=>0,"message"=>'Product Already Added'];
+        					  if($quantity>0&&$quantity==$alreadyQuantity)
+        					    return ['status'=>0,"message"=>'Product Already Added'];
         					$cartData=["product_id"=>$ratecard['product_id'],"ratecard_id"=>$ratecard['_id'],"price"=>$ratecard['price'],"quantity"=>$quantity];
-        					$removedOldFromCart=Cart::where('_id', intval($cart_id))->pull('products', ['ratecard_id' => intval($ratecard['_id']), 'product_id' => intval($ratecard['product_id'])]);
         					
-        					($quantity>0)?$addedToCart=Cart::where('_id', intval($cart_id))->push('products',$cartData):"";
+        					if(empty($alreadyQuantity))
+        					{
+        						if($quantity>0)$addedToCart=Cart::where('_id', intval($cart_id))->push('products',$cartData);
+        						else return ['status'=>0,"message"=>"Product doesn't exists. Can't remove item."];
+        					}
+        					else {
+        						if($quantity>0)$addedToCart=Cart::raw(function($collection) use ($cart_id,$ratecard_id,$quantity){return $collection->update(['_id'=>intval($cart_id),"products.ratecard_id"=>$ratecard_id],['$set'=>['products.$.quantity'=>$quantity]]);});
+        						else $removedOldFromCart=Cart::where('_id', intval($cart_id))->pull('products', ['ratecard_id' => intval($ratecard['_id']), 'product_id' => intval($ratecard['product_id'])]);
+        					}
         					if(!empty($_GET['cart_summary']) && filter_var($_GET['cart_summary'], FILTER_VALIDATE_BOOLEAN))
         					{	
         						$cart=$this->utilities->attachCart($response["response"],true);
@@ -5054,7 +5060,7 @@ class HomeController extends BaseController {
 					
 					
 					if(!empty($selectedRatecard['already_purchased_customers']))
-						$selectedRatecard['already_purchased_customers']=($selectedRatecard['already_purchased_customers']==1)?"1 User has already purchased this item.":$selectedRatecard['already_purchased_customers']. " Users have already purchased this item.";
+						$selectedRatecard['already_purchased_customers']=($selectedRatecard['already_purchased_customers']==1)?"1 person already bought this product.":$selectedRatecard['already_purchased_customers']. " People already bought this product.";
 					
                     
         			(!empty($productView['specification'])&&!empty($productView['specification']['secondary']))?
@@ -5305,13 +5311,14 @@ class HomeController extends BaseController {
         			$finalData=['status'=>200,"response"=>$dataCart['data']];
         		else return $dataCart;
         			$this->utilities->fetchCustomerAddresses($finalData['response']);
-        			$cities=['cities'=>array_map(function($e){return $e['name'];},array_values(array_filter($this->getCities(true),function ($e){return !empty($e['_id'])&&$e['_id']!=10000;})))];
-        			$finalData['response']=array_merge($finalData['response'],$cities);
+        			$cities=$this->utilities->getProductCities();
+        			if(count($cities))$finalData['response']['cities']=$cities;
         		return $finalData;
         	} catch (Exception $e) {
         		return  ['status'=>0,"message"=>$this->utilities->baseFailureStatusMessage($e)];
         	}
         }
+        
         public function getCustomerAddress()
         {
         	
@@ -5326,8 +5333,8 @@ class HomeController extends BaseController {
         		$finalData=['status'=>200,"response"=>$dataCart['data']];
         		else return $dataCart;
         		$this->utilities->fetchCustomerAddresses($finalData['response']);
-        		$cities=['cities'=>array_map(function($e){return $e['name'];},array_values(array_filter($this->getCities(true),function ($e){return !empty($e['_id'])&&$e['_id']!=10000;})))];
-        		$finalData['response']=array_merge($finalData['response'],$cities);
+        		$cities=$this->utilities->getProductCities();
+        		if(count($cities))$finalData['response']['cities']=$cities;
         		return $finalData;
         		
         } catch (Exception $e) {
