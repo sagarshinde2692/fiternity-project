@@ -1058,6 +1058,8 @@ class RewardofferController extends BaseController {
                 unset($rewardObjData['updated_at']);
                 unset($rewardObjData['created_at']);
 
+                $swimming_session_array = Config::get('fitness_kit.swimming_session');
+
                 foreach ($swimming_session_array as $data_key => $data_value) {
 
                     if($amount >= $data_value['min'] ){
