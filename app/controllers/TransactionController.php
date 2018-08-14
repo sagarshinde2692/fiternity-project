@@ -6835,10 +6835,18 @@ class TransactionController extends \BaseController {
             if($order){
             	if($order->type=='product')
             	{
-            		$order->payment->pg_type="AMAZON";
+            		$paymentDet=$order->payment;
+            		$paymentDet['pg_type']="AMAZON";
+            		$order->payment=$paymentDet;
             		$revereseHash=getReverseHashProduct($order->toArray());
             		if($revereseHash['status'])
-            			 $order->payment->amazon_hash = $val["hash"] = $revereseHash['data']['reverse_hash'];
+            		{
+            			$paymentDet1=$order->payment;
+            			$paymentDet1['amazon_hash']=$val["hash"] = $revereseHash['data']['reverse_hash'];
+            			$order->payment=$paymentDet1;
+            		}
+            		
+            			
             		else $val['isSignatureValid'] = "false";
             		return Response::json($val);
             	}
