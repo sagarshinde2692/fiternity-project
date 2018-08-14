@@ -4950,8 +4950,8 @@ Class Utilities {
 			
 			usort($rates['result'],function ($a,$b)
 			{	
-				if (!emptY($b)&&!emptY($a)&&!empty($a['details'])&&!empty($b['details'])&&$a['details'][0]['order']==$b['details'][0]['order']) return 0;
-				return (!emptY($b)&&!emptY($a)&&!empty($a['details'])&&!empty($b['details'])&&$a['details'][0]['order']<$b['details'][0]['order'])?-1:1;
+				if (!emptY($b)&&!emptY($a)&&!empty($a['details'])&&!empty($a['details'][0])&&!empty($a['details'][0]['order'])&&!empty($b['details'])&&!empty($b['details'][0])&&!empty($b['details'][0]['order'])&&$a['details'][0]['order']==$b['details'][0]['order']) return 0;
+				return (!emptY($b)&&!emptY($a)&&!empty($a['details'])&&!empty($a['details'][0])&&!empty($a['details'][0]['order'])&&!empty($b['details'])&&!empty($b['details'][0])&&!empty($b['details'][0]['order'])&&$a['details'][0]['order']<$b['details'][0]['order'])?-1:1;
 			});
 // 			return $rates;
 // 			if(count($arr)==1)

@@ -6828,7 +6828,7 @@ class TransactionController extends \BaseController {
         if($val['isSignatureValid'] == 'true'){
 
         	
-        	$order = Order::where(function($query)
+        	$order = Order::where(function($query) use($val)
         	{$query->orWhere('txnid', $val['sellerOrderId'])->orWhere('payment.txnid',$val['sellerOrderId']);
         	})->first();
 
