@@ -2529,8 +2529,8 @@ class TransactionController extends \BaseController {
     	}
     	
     	$order_id   =   (int) $data['order_id'];
-        $order      =   Order::findOrFail($order_id);
-        
+    	$order      =   Order::findOrFail($order_id);
+    	
     	if(!isset($data["order_success_flag"]) && isset($order->status) && $order->status == '1' && isset($order->order_action) && $order->order_action == 'bought'){
     		
     		$resp   =   array('status' => 401, 'statustxt' => 'error', "message" => "Already Status Successfull");
@@ -2542,11 +2542,11 @@ class TransactionController extends \BaseController {
     		return Response::json($resp,401);
     	}
     	
-        if(!empty($data['internal_success'])){
-            $hash_verified = true;
-        }else{
-            $hash_verified = $this->utilities->verifyOrderProduct($data,$order);
-        }
+    	if(!empty($data['internal_success'])){
+    		$hash_verified = true;
+    	}else{
+    		$hash_verified = $this->utilities->verifyOrderProduct($data,$order);
+    	}
     	Log::info(" info  hash_verified :: ".print_r($hash_verified,true));
     	if(!empty($data['status'])&&$data['status'] == 'success' && $hash_verified){
     		$orderArr=$order->toArray();
@@ -2554,18 +2554,18 @@ class TransactionController extends \BaseController {
     		// $this->utilities->demonetisation($order);
     		
     		$orderArr['status']="1";
-    		$orderArr['order_action']="bought";
-    		$orderArr['followup_status']="catch_up";
-    		$orderArr['followup_status_count']=1;
+    		//     		$orderArr['order_action']="bought";
+    		//     		$orderArr['followup_status']="catch_up";
+    		//     		$orderArr['followup_status_count']=1;
     		
     		
     		/* if((!isset($data['order_success_flag']) || $data['order_success_flag'] != 'admin')){
-    			$orderArr['status']="3";
-    		} */
+    		 $orderArr['status']="3";
+    		 } */
     		
     		
     		if(((!isset($data['order_success_flag']) || $data['order_success_flag'] != 'admin') && !isset($order['success_date'])) || (isset($order['update_success_date']) && $order['update_success_date'] == "1" && isset($data['order_success_flag']) && $data['order_success_flag'] == 'admin')){
-    			$orderArr['payment']['success_date']=date('Y-m-d H:i:s',time());
+    			$orderArr['payment']['success_date']=new MongoDate();
     		}
     		
     		
@@ -2587,7 +2587,7 @@ class TransactionController extends \BaseController {
     					$updated_coupon_customer= Customer::where('_id',$orderArr['customer']['customer_id'])->push('product_codes',$orderArr['coupon']);
     					Log::info(" info  updated_coupon_customer :: ".print_r($updated_coupon_customer,true));
     				}
-    		    }
+    			}
     		}
     		
     		if(isset($order->payment_mode) && $order->payment_mode == "paymentgateway"){
@@ -2610,7 +2610,7 @@ class TransactionController extends \BaseController {
     		
     		$cart_data=(!empty($order['cart_data'])?$order['cart_data']:[]);
     		$cart=$this->utilities->attachCart($cart,true,$orderArr['customer']['logged_in_customer_id']);
-
+    		
     		$cart_new=[];
     		
     		if(!empty($cart))
@@ -2639,7 +2639,7 @@ class TransactionController extends \BaseController {
     					
     				}
     				Log::info(" info  cart_new :: ".print_r($cart_new,true));
-    			  Cart::where("_id",intval($cart['_id']))->update(['products'=>$cart_new]);
+    				Cart::where("_id",intval($cart['_id']))->update(['products'=>$cart_new]);
     			}
     		}
     		$order->update($orderArr);
@@ -2651,8 +2651,8 @@ class TransactionController extends \BaseController {
     		if (filter_var(trim($order['customer']['customer_email']), FILTER_VALIDATE_EMAIL) === false){
     			$order->update(['email_not_sent'=>'captureOrderStatus']);
     		}else{
-                $emailData = $order->toArray();
-                $emailData['near_options'] = $this->getNearBySessions($order);
+    			$emailData = $order->toArray();
+    			$emailData['near_options'] = $this->getNearBySessions($order);
     			$sndPgMail  =   $this->customermailer->sendPgProductOrderMail($emailData);
     			
     			// 			***************************************************************************************  EMAIL  ****************************************************************************************
@@ -2722,19 +2722,19 @@ class TransactionController extends \BaseController {
     		 $emailData['ticket'] = Ticket::find(intval($emailData['ticket_id']))->toArray();
     		 }
     		 }
-    		
+    		 
     		 if($this->utilities->checkCorporateLogin()){
     		 Log::info("outside checkCorporateLogin ");
     		 $emailData['customer_email'] =   $emailData['customer_email'].',vg@fitmein.in';
     		 }
-    		
+    		 
     		 //print_pretty($emailData);exit;
     		 if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin" && $order->type != 'diet_plan'){
     		 if(isset($data["send_communication_customer"]) && $data["send_communication_customer"] != ""){
-    		
+    		 
     		 $sndPgSms   =   $this->customersms->sendPgOrderSms($emailData);
     		 }
-    		
+    		 
     		 }else{
     		 $sndPgSms   =   $this->customersms->sendPgOrderSms($emailData);
     		 }
@@ -2810,13 +2810,13 @@ class TransactionController extends \BaseController {
     			 $sndMail  =   $this->findermailer->sendNoPrevSalesMail($mailData);
     			 } */
     			
-    		// 		$this->utilities->deleteCommunication($order);
+    			// 		$this->utilities->deleteCommunication($order);
     			
     			/* if(isset($order->redundant_order)){
     			 $order->unset('redundant_order');
     			 } */
     			
-    		// 		$this->utilities->sendDemonetisationCustomerSms($order);
+    			// 		$this->utilities->sendDemonetisationCustomerSms($order);
     			
     			// if(isset($order->customer_id)){
     			//     setDefaultAccount($order->toArray(), $order->customer_id);
@@ -2834,7 +2834,10 @@ class TransactionController extends \BaseController {
     	}else{
     		if($hash_verified == false){
     			$Oldorder 		= 	Order::findOrFail($order_id);
-    			$Oldorder['payment']["hash_verified"] = false;
+    			
+    			$payment=$Oldorder['payment'];
+    			$payment["hash_verified"]=false;
+    			$Oldorder['payment']=$payment;
     			$Oldorder->update();
     			$resp 	= 	array('status' => 200, 'statustxt' => 'failed', 'order' => $order, 'message' => "Transaction Failed :)");
     			return Response::json($resp);
@@ -6805,130 +6808,135 @@ class TransactionController extends \BaseController {
     	return $val['isSignatureValid'];
     }
 
-    public function verifyAmazonChecksum($website = false){ 
-
-
-        $config = Config::get('amazonpay.config');
-
-        $client = new PWAINBackendSDKNon($config);
-
-        // Request can be either GET or POST
-        Log::info(Input::all());
-
-        $val = Input::all();
-        Log::info("verifyAmazonChecksum post data ---------------------------------------------------------",$val);
-        unset($val['sellerId']);
-        $response = $client->verifySignature($val);
-        $val['isSignatureValid'] = $response ? 'true' : 'false';
-
-        $val['order_id'] = null;
-        
-        // $val['isSignatureValid'] = 'true';
-        
-        if($val['isSignatureValid'] == 'true'){
-
-        	
-        	$order = Order::where(function($query) use($val)
-        	{$query->orWhere('txnid', $val['sellerOrderId'])->orWhere('payment.txnid',$val['sellerOrderId']);
-        	})->first();
-
-            if($order){
-            	if($order->type=='product')
-            	{
-            		$paymentDet=$order->payment;
-            		$paymentDet['pg_type']="AMAZON";
-            		$order->payment=$paymentDet;
-            		$revereseHash=getReverseHashProduct($order->toArray());
-            		if($revereseHash['status'])
-            		{
-            			$paymentDet1=$order->payment;
-            			$paymentDet1['amazon_hash']=$val["hash"] = $revereseHash['data']['reverse_hash'];
-            			$order->payment=$paymentDet1;
-            		}
-            		
-            			
-            		else $val['isSignatureValid'] = "false";
-            		return Response::json($val);
-            	}
-                else 
-                {
-                		
-                		$order->pg_type = "AMAZON";
-                		$order->amazon_hash = $val["hash"] = getpayTMhash($order->toArray())['reverse_hash'];
-                }
-                
-                
-                $order->update();
-
-                $val['order_id'] = $order->_id;
-
-                $success_data = [
-                	'txnid'=>$val['sellerOrderId'],
-                    'amount'=>(int)$val["orderTotalAmount"],
-                    'status' => 'success',
-                    'hash'=> $val["hash"]
-                ];
-                if($website == "1"){
-                    $url = Config::get('app.website')."/paymentsuccess?". http_build_query($success_data, '', '&');
-                    if($order['type'] == "booktrials" || $order['type'] == "workout-session"){
-                        $url = Config::get('app.website')."/paymentsuccesstrial?". http_build_query($success_data, '', '&');
-                    }
-                    Log::info(http_build_query($success_data, '', '&'));
-                    Log::info($url);
-                    return Redirect::to($url);
-                }else{
-                    $paymentSuccess = $this->fitweb->paymentSuccess($success_data);
-                }
-            }
-
-           /* $order->pg_type = "AMAZON";
-            $order->amazon_hash = $val["hash"] = getpayTMhash($order->toArray())['reverse_hash'];
-            $order->update();
-            
-            
-
-            Log::info("success_data--------------------------------------------------------------------",$success_data);
-            
-            $ch = curl_init();
-            
-            curl_setopt($ch, CURLOPT_URL,Config::get('app.website')."/paymentsuccessandroid");
-            curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST"); 
-            curl_setopt($ch, CURLOPT_POSTFIELDS,json_encode($success_data));
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-            curl_setopt($ch, CURLOPT_HTTPHEADER, array(                                                                          
-                'Content-Type: application/json',                                                                                
-                'Content-Length: ' . strlen(json_encode($success_data)))                                                                       
-            );
-            $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-            curl_close($ch);
-
-
-            Log::info("httpcode--------------------------------------------------------------------".$httpcode);
-
-
-
-            if($httpcode == 200){
-                $val['isSignatureValid'] = 'true';
-            }else{
-                $val['isSignatureValid'] = 'false';  
-            }*/
-            
-            //$resp = curl_exec ($ch);
-
-            //Log::info("Success api response--------------------------------------------------------------------");
-            //Log::info($resp);
-
-
-            if(isset($paymentSuccess['status']) && $paymentSuccess['status'] == 200){
-                $val['isSignatureValid'] = "true";
-            }else{
-                $val['isSignatureValid'] = "false";
-                
-            }
-        }
-
-        return Response::json($val);
+    public function verifyAmazonChecksum($website = false){
+    	
+    	
+    	$config = Config::get('amazonpay.config');
+    	
+    	$client = new PWAINBackendSDKNon($config);
+    	
+    	// Request can be either GET or POST
+    	Log::info(Input::all());
+    	
+    	$val = Input::all();
+    	Log::info("verifyAmazonChecksum post data ---------------------------------------------------------",$val);
+    	unset($val['sellerId']);
+    	$response = $client->verifySignature($val);
+    	
+    	//         Log::info("response  post data ---------------------------------------------------------",$response);
+    	$val['isSignatureValid'] = $response ? 'true' : 'false';
+    	
+    	$val['order_id'] = null;
+    	
+    	// $val['isSignatureValid'] = 'true';
+    	
+    	if($val['isSignatureValid'] == 'true'){
+    		
+    		
+    		$order = Order::where(function($query) use($val)
+    		{$query->orWhere('txnid', $val['sellerOrderId'])->orWhere('payment.txnid',$val['sellerOrderId']);
+    		})->first();
+    		
+    		if($order){
+    			if($order->type=='product')
+    			{
+    				$paymentDet=$order->payment;
+    				$paymentDet['pg_type']="AMAZON";
+    				$order->payment=$paymentDet;
+    				$revereseHash=getReverseHashProduct($order->toArray());
+    				
+    				Log::info("revereseHash data ---------------------------------------------------------",$revereseHash);
+    				if($revereseHash['status'])
+    				{
+    					$paymentDet1=$order->payment;
+    					$paymentDet1['amazon_hash']=$val["hash"] = $revereseHash['data']['reverse_hash'];
+    					$order->payment=$paymentDet1;
+    				}
+    				else {
+    					$val['isSignatureValid'] = "false";
+    					return Response::json($val);
+    				}
+    				
+    			}
+    			else
+    			{
+    				
+    				$order->pg_type = "AMAZON";
+    				$order->amazon_hash = $val["hash"] = getpayTMhash($order->toArray())['reverse_hash'];
+    			}
+    			
+    			
+    			$order->update();
+    			
+    			$val['order_id'] = $order->_id;
+    			
+    			$success_data = [
+    					'txnid'=>$val['sellerOrderId'],
+    					'amount'=>(int)$val["orderTotalAmount"],
+    					'status' => 'success',
+    					'hash'=> $val["hash"]
+    			];
+    			if($website == "1"){
+    				$url = Config::get('app.website')."/paymentsuccess?". http_build_query($success_data, '', '&');
+    				if($order['type'] == "booktrials" || $order['type'] == "workout-session"){
+    					$url = Config::get('app.website')."/paymentsuccesstrial?". http_build_query($success_data, '', '&');
+    				}
+    				Log::info(http_build_query($success_data, '', '&'));
+    				Log::info($url);
+    				return Redirect::to($url);
+    			}else{
+    				$paymentSuccess = $this->fitweb->paymentSuccess($success_data);
+    			}
+    		}
+    		
+    		/* $order->pg_type = "AMAZON";
+    		 $order->amazon_hash = $val["hash"] = getpayTMhash($order->toArray())['reverse_hash'];
+    		 $order->update();
+    		 
+    		 
+    		 
+    		 Log::info("success_data--------------------------------------------------------------------",$success_data);
+    		 
+    		 $ch = curl_init();
+    		 
+    		 curl_setopt($ch, CURLOPT_URL,Config::get('app.website')."/paymentsuccessandroid");
+    		 curl_setopt($ch, CURLOPT_POST, 1);
+    		 curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "POST");
+    		 curl_setopt($ch, CURLOPT_POSTFIELDS,json_encode($success_data));
+    		 curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    		 curl_setopt($ch, CURLOPT_HTTPHEADER, array(
+    		 'Content-Type: application/json',
+    		 'Content-Length: ' . strlen(json_encode($success_data)))
+    		 );
+    		 $httpcode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+    		 curl_close($ch);
+    		 
+    		 
+    		 Log::info("httpcode--------------------------------------------------------------------".$httpcode);
+    		 
+    		 
+    		 
+    		 if($httpcode == 200){
+    		 $val['isSignatureValid'] = 'true';
+    		 }else{
+    		 $val['isSignatureValid'] = 'false';
+    		 }*/
+    		
+    		//$resp = curl_exec ($ch);
+    		
+    		//Log::info("Success api response--------------------------------------------------------------------");
+    		//Log::info($resp);
+    		
+    		
+    		if(isset($paymentSuccess['status']) && $paymentSuccess['status'] == 200){
+    			$val['isSignatureValid'] = "true";
+    		}else{
+    			$val['isSignatureValid'] = "false";
+    			
+    		}
+    	}
+    	
+    	return Response::json($val);
     }
 
     public function getServiceData(){

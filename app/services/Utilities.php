@@ -1106,18 +1106,11 @@ Class Utilities {
     		Log::info(" info [verifyOrderProduct] data".print_r($data,true));
     		$orderArr=$order->toArray();
     		$hash_verified = false;
-    		if((isset($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin'])) || (!empty($orderArr['payment'])&&!empty($orderArr['payment']['pg_type'])&&in_array($orderArr['payment']['pg_type'],['PAYTM','AMAZON']))|| !empty($orderArr['cod_otp_verified']) || !empty($orderArr['vendor_otp_verified'])){
-    			if((in_array($orderArr['payment']['pg_type'],['PAYTM','AMAZON'])) && !(empty($data["order_success_flag"])))
-    			{
-    				$hashreverse = getReverseHashProduct($orderArr);
-    				if($hashreverse['status']&&$hashreverse['data']['reverse_hash']==$data["verify_hash"] )
-    					$hash_verified = true;
-    					else
-    						$hash_verified = false;
-    			}
-    			if((!empty($data["order_success_flag"]) && in_array($data["order_success_flag"],['kiosk','admin'])) || !empty($orderArr['cod_otp_verified'])||!empty($orderArr['vendor_otp_verified']))
+    		if((!empty($orderArr['payment'])&&!empty($orderArr['payment']['pg_type'])&&in_array($orderArr['payment']['pg_type'],['PAYTM','AMAZON'])))
+    		{
+    			$hashreverse = getReverseHashProduct($orderArr);
+    			if($hashreverse['status']&&$hashreverse['data']['reverse_hash']==$data["verify_hash"] )
     				$hash_verified = true;
-    				
     		}
     		else
     		{
@@ -1126,17 +1119,17 @@ Class Utilities {
     				$hash_verified = true;
     				else
     				{
-    					 $hashreverse = getReverseHashProduct($orderArr);
-    					 Log::info(" info hashreverse :: ".print_r($hashreverse ,true));
-    					 if($hashreverse['status']&&$data["verify_hash"] == $hashreverse['data']['reverse_hash'])
+    					$hashreverse = getReverseHashProduct($orderArr);
+    					Log::info(" info hashreverse :: ".print_r($hashreverse ,true));
+    					if($hashreverse['status']&&$data["verify_hash"] == $hashreverse['data']['reverse_hash'])
     						$hash_verified = true;
-    						else
-    						$hash_verified = false;
     				}
     		}
     		if(!$hash_verified){
     			
-    			$orderArr['payment']["hash_verified"]=false; 
+    			$paymentq=$orderArr['payment'];
+    			$paymentq["hash_verified"]=false;
+    			$orderArr['payment']=$paymentq;
     			$order->update($orderArr);
     		}
     		return $hash_verified;
