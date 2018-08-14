@@ -4992,7 +4992,7 @@ Class Utilities {
 					$temp=[];
 					$detail=$this->productProperties($cart_item['ratecard']);
 					$temp['field']=(!empty($cart_item['product'])&&!empty($cart_item['product']['title']))?$cart_item['product']['title']:(!empty($cart_item['ratecard'])&&!empty($cart_item['ratecard']['title'])?$cart_item['ratecard']['title']:"");
-					$temp['value']=("Qty : ".intval($cart_item['quantity']));
+					$temp['value']=("qty : ".intval($cart_item['quantity']));
 					if(!empty($detail)&&!empty($detail['status'])&&!empty($detail['data']))$temp['value']=$temp['value']."<br />".$detail['data'];
 					array_push($cart_desc,$temp);
 				}
@@ -5019,7 +5019,7 @@ Class Utilities {
 				return ["status"=>0,"message"=>"No Ratecards present."];
 				$resp=["status"=>1,"message"=>"success","data"=>""];$tmp=[];
 				$rc =(!empty($ratecard['properties'])?$ratecard['properties']:[]);
-				foreach ($rc as $key => $value)array_push($tmp, $key." : ".$value);
+				foreach ($rc as $key => $value)array_push($tmp, strtolower($key)." : ".$value);
 				(!empty($tmp)&&count($tmp)>0)?$resp['data']=implode("<br />",$tmp):"";
 				return $resp;
 		} catch (Exception $e)

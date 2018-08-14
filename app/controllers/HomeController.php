@@ -4836,6 +4836,7 @@ class HomeController extends BaseController {
         							$response["response"]['cart_summary']=$dataCart['data'];
         					}
         					else $this->utilities->attachCart($response["response"],false);
+        					$response['cities']=$this->utilities->getProductCities();
         					return $response;
         				}
         				return Response::json(['status'=>400,"message"=>"Not a valid ratecard or ratecard doesn't exist."]);
@@ -4915,7 +4916,7 @@ class HomeController extends BaseController {
 					
 					
 					if(!empty($selectedRatecard['already_purchased_customers']))
-						$selectedRatecard['already_purchased_customers']=($selectedRatecard['already_purchased_customers']==1)?"1 person already bought this product.":$selectedRatecard['already_purchased_customers']. " People already bought this product.";
+						$selectedRatecard['already_purchased_customers']=($selectedRatecard['already_purchased_customers']==1)?"1 person already bought this product.":$selectedRatecard['already_purchased_customers']. " people already bought this product.";
 					
                     
         			(!empty($productView['specification'])&&!empty($productView['specification']['secondary']))?
