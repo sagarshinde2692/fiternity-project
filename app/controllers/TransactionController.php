@@ -2539,7 +2539,10 @@ class TransactionController extends \BaseController {
     		}else{
     			$emailData = $order->toArray();
     			$emailData['near_options'] = $this->getNearBySessions($order);
-    			$sndPgMail  =   $this->customermailer->sendPgProductOrderMail($emailData);
+                $sndPgMail  =   $this->customermailer->sendPgProductOrderMail($emailData);
+                $products_string = implode(', ', array_pluck($order['cart_data'], 'title'));
+                $emailData['products_string'] = $products_string;
+                $sndPgSms  =   $this->customersms->sendPgProductOrderSms($emailData);
     			
     			
     		}
