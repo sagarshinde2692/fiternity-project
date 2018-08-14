@@ -2432,9 +2432,11 @@ class HomeController extends BaseController {
         $array = array();
         $app_device = Request::header('Device-Type');
         if(isset($app_device) && in_array($app_device, ['ios', 'android'])){
-            $cites		= 	City::active()->orderBy('name')->whereNotIn('_id',$array)->orderBy("order")->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
+            // $cites		= 	City::active()->orderBy('name')->whereNotIn('_id',$array)->orderBy("order")->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
+            $cites		= 	City::active()->orderBy('name')->whereNotIn('_id',$array)->orderBy("order")->get(array('name','_id','slug'));
         }else{
-            $cites		= 	City::orderBy('name')->whereNotIn('_id',$array)->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
+            // $cites		= 	City::orderBy('name')->whereNotIn('_id',$array)->remember(Config::get('app.cachetime'))->get(array('name','_id','slug'));
+            $cites		= 	City::orderBy('name')->whereNotIn('_id',$array)->get(array('name','_id','slug'));
         }
 
         return Response::json($cites,200);
