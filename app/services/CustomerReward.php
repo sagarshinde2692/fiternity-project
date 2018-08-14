@@ -368,7 +368,7 @@ Class CustomerReward {
                         }
 
                         $reward['title'] = $mixedreward_content['title'];
-                        $reward['contents'] = $rewards_snapfitness_contents;
+                        $reward['content'] = $rewards_snapfitness_contents;
                         $reward['image'] = $mixedreward_content['images'][0];
                         $images = $mixedreward_content['images'];
                         $reward['gallery'] = $mixedreward_content['images'];
