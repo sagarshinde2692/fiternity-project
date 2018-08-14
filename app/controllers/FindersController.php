@@ -2986,6 +2986,8 @@ class FindersController extends \BaseController {
 		];
 		$device_id = Request::header('Device-Id');
 		Log::info($device_id);
+		Log::info(Request::header('Device-Serial'));
+		Log::info($finder_id);
 		$getTrialSchedule = $this->getTrialSchedule($finder_id);
 
 		if(empty($getTrialSchedule)){
