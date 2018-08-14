@@ -888,7 +888,7 @@ class FindersController extends \BaseController {
 						$finder['callout_ratecard_id'] = $callOutObj['ratecard_id'];
 					}						
 				}
-
+				
 // 				}
 				// 	$callout_offer = Offer::where('vendor_id', $finder['_id'])->where('hidden', false)->orderBy('order', 'asc')
 				// 					->where('offer_type', 'newyears')
@@ -1258,7 +1258,7 @@ class FindersController extends \BaseController {
 			$response = Cache::tags('finder_detail')->get($cache_key);
 
 		}
-
+		
 		if(Request::header('Authorization')){
 			// $decoded                            =       decode_customer_token();
 			$customer_email                     =       $decoded->customer->email;
@@ -2016,7 +2016,7 @@ class FindersController extends \BaseController {
 		if(!$data){
 			$data = Input::json()->all();
 		}
-		
+
 
 		// return $images = Input::file('images') ;
 		
@@ -4199,7 +4199,7 @@ class FindersController extends \BaseController {
 						$data['finder']['overlayimage'] = 'https://b.fitn.in/global/finder/temp-shut.png';
 					}
 
-				}
+                }
 
 				$data['finder']['other_offers'] = null;
 
@@ -4262,7 +4262,7 @@ class FindersController extends \BaseController {
 		}
 
 		$finderData = Cache::tags($cache_name)->get($cache_key);
-		
+	
 		if(count($finderData) > 0 && isset($finderData['status']) && $finderData['status'] == 200){
 
 			$finder = Finder::active()->where('slug','=',$tslug)->first();
@@ -5231,6 +5231,10 @@ class FindersController extends \BaseController {
 						[
 							"title"=>"Book healthy, calorie counted yet tasty tiffin subscription.",
 							"image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/point4.png"
+						],
+						[
+							"title"=>"Fitstore",
+							"image"=>"https://b.fitn.in/products/home_banner_1.jpg"
 						]
 					]
 				],
@@ -5317,6 +5321,18 @@ class FindersController extends \BaseController {
 					"id"=>7,
 					'type'=>'rewards'
 				],
+				
+			];
+		}
+
+		if($this->kiosk_app_version &&  $this->kiosk_app_version > 1.13 && !(isset($finder['brand_id']) && $finder['brand_id'] == 66)){
+			$response["response"]["options"][] = [
+				"title"=>"Fitstore",
+				"description"=>"Buy products",
+				"image"=>"https://b.fitn.in/products/home_banner_2.jpg",
+				"banner_image"=>"https://b.fitn.in/products/home_banner_1.jpg",
+				"id"=>8,
+				'type'=>'fitstore'
 			];
 		}
 
@@ -5672,7 +5688,7 @@ class FindersController extends \BaseController {
 			"button_text"=>"Book",
 			"amount"=>0,
 		];
-
+		
 		foreach($services as $service){
 
 			foreach($service[$key] as $ratecard){

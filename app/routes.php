@@ -1105,7 +1105,7 @@ Route::group(array('before' => 'validatetoken'), function() {
 	Route::post('walletordercapture', array('as' => 'transaction.walletOrderCapture','uses' => 'TransactionController@walletOrderCapture'));
 	
 	Route::post('walletordersuccess', array('as' => 'transaction.walletOrderSuccess','uses' => 'TransactionController@walletOrderSuccess'));
-
+	
 	Route::post('codotpsuccess', array('as' => 'transaction.codotpsuccess','uses' => 'TransactionController@codOtpSuccess'));
 	
 	Route::get('getcodorders','CustomerController@getCodOrders');
@@ -1210,6 +1210,31 @@ Route::get('addWallet','DebugController@addWallet');
 Route::get('tagReviews','DebugController@tagReviews');
 
 Route::get('getbrandvendors/{brand_id}/{city_id}', array('as' => 'finders.getbrandvendors','uses' => 'FindersController@getBrandVendors'));
+Route::get('addProducts','DebugController@addProducts');
+Route::get('productshome','HomeController@getProductsHome');
+Route::get('productdetail/{ratecard_id}/{product_id}','HomeController@getProductDetail');
+Route::get('catproducts/{productcategory_id}','HomeController@getCategoryBasedProducts');
+
+
+Route::get('addproducttocart/{ratecard_id}/{quantity}','HomeController@addProductToCart');
+Route::post('addproductstocart','HomeController@addProductsToCart');
+
+Route::post('transaction/capture/product','TransactionController@productCapture');
+Route::post('productscats','HomeController@productsCats');
+
+
+
+Route::get('productSpecifications','DebugController@productSpecifications');
+Route::get('addPriceToProduct','DebugController@addPriceToProduct');
+Route::get('addRatecards','DebugController@addRatecards');
+Route::get('updateProductHomePage','DebugController@updateProductHomePage');
+
+Route::get('cartsummary','HomeController@getFinalCartSummary');
+
+Route::get('customeraddress','HomeController@getCustomerAddress');
+Route::post('customeraddress','HomeController@setCustomerAddress');
+Route::get('sendvendorotpproducts/{order_id}','TransactionController@sendVendorOTPProducts');
+
 
 Route::get('updateCouponUsed','DebugController@updateCouponUsed');
 

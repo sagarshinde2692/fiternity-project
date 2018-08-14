@@ -659,6 +659,9 @@ class HomeController extends BaseController {
 
         if($type != "" && $id != ""){
 
+        	if($type=='product') 
+        		return $this->getProductSuccessMsg($id);
+        	
             $booktrialItemArr   =   ["personaltrainertrial","manualtrial","manualautotrial","booktrialfree"];
             $orderItemArr       =   ["healthytiffintrail","healthytiffintrial","membershipwithpg","membershipwithoutpg","healthytiffinmembership","personaltrainermembership","booktrial","workoutsession","workout-session","booktrials"];
             $captureItemArr     =   ["manualmembership"];
@@ -671,7 +674,6 @@ class HomeController extends BaseController {
                 
                 
                 //reliance section 
-                
                 
                 
                 if(isset($itemData['source'])&&$itemData['source']=='website'&&isset($itemData['rx_user'])&&$itemData['rx_user']==true)
@@ -2049,6 +2051,111 @@ class HomeController extends BaseController {
 
             return Response::json($resp);
         }
+    }
+    
+    public function getProductSuccessMsg($id,$type=null){
+    	
+    	try {
+    		
+    		$jwt_token = Request::header('Authorization');
+    		if(!empty($jwt_token )&& $jwt_token != 'null'){
+    			$decoded = customerTokenDecode($jwt_token);
+    			$customer_id = (int)$decoded->customer->_id;
+    		}
+    		
+    		$resp=["status"=>200,"message"=>"success"];
+    		$finalData=[];
+    		$order =Order::where("_id",intval($id))->where("type",'product')->first();
+    		if(!empty($order))
+    		{
+    			$order =  $order->toArray();
+    			if($order['status']!="1")
+    				return ['status'=>0,"message"=>"Order not succesful."];
+    		}
+    		else return ['status'=>0,"message"=>"Failed to get Order."];
+    		
+    		
+    		// KINDLY PUT ALL DEFAULTS HERE SO IT WILL BE MERGED FINALLY.
+    		
+    		$defaults=["showDeliveryAddress"=>false];
+    		
+    		if(empty($customer_id))
+    		{
+    			$customer_id=$order['customer']['logged_in_customer_id'];
+    			if(empty($customer_id))
+    				return ['status'=>0,"message"=>"Failed to get Customer."];
+    		}
+    		
+    		
+    		
+    		$customer=Customer::find(intval($customer_id));
+    		$customer= $customer->toArray();
+    		
+    		if(!empty($order['payment'])&&!empty($order['payment']['payment_mode']))
+    		{
+    			$payment_mode=$order['payment']['payment_mode'];
+    			if($payment_mode=='paymentgateway')
+    				$payment_mode="Online";
+
+    			else if($payment_mode=='pay at studio')
+    					$payment_mode="At Studio";
+    		}
+    			else $payment_mode=null;
+    			
+    			
+    			$header=["status_text"=>"Order Successfull","status_icon"=>"https://image.flaticon.com/teams/slug/freepik.jpg"];
+    			$customer_description='Hi '.$customer['name'].', your order has been successfully placed with Fitternity.'.
+      			'<br>It will be delivered to you within 7-10 working days.<br>'.
+    			'You can track your order online with the information provided via SMS and E-mail';
+    			
+    			
+    			if(!empty($order['customer_address'])&&empty($order['deliver_to_vendor']))
+    			   $shipping_address=$this->utilities->formatShippingAddress($order['customer_address'],$customer['name']);
+    			else if(!empty($order['finder'])&&!empty($order['finder']['finder_name'])&&!empty($order['deliver_to_vendor']))
+    			   $shipping_address=$this->utilities->formatShippingAddress($order['finder'],$customer['name'],true);
+    				
+    				// ($payment_mode=='cod')?$finalData['customer_description']=$customer_description:"";
+    				$finalData['customer_description']=$customer_description;
+    				if(!empty($shipping_address))
+    					$finalData['shipping_address']=$shipping_address;
+    					
+    					$cart_summary=$this->utilities->getCartSummary($order);
+    					if($cart_summary['status'])
+    					{
+    						$cart_details=$cart_summary['data']['cart_details'];
+    						$cart_total=$cart_summary['data']['total_cart_amount'];
+    						$total_amount=$cart_summary['data']['total_amount'];
+    					}
+    					else
+    						return $cart_summary;
+    						
+    						$order_summary=[];
+    						array_push($order_summary, ["key"=>"Cart Amount","value"=>$cart_total]);
+    						
+    						if(empty($order['deliver_to_vendor']))
+    							array_push($order_summary, ["key"=>"Delivery Charges","value"=>$this->utilities->getRupeeForm(intval(Config::get('app.product_delivery_charges')))]);
+    							(!empty($cart_summary['data']['coupon_discount']))?
+    							array_push($order_summary, ["key"=>"Coupon Discount","value"=>"-".$this->utilities->getRupeeForm($cart_summary['data']['coupon_discount']),"color"=>"#47bd55"]):"";
+    							array_push($order_summary, ["key"=>"Amount Paid","value"=>$this->utilities->getRupeeForm($total_amount)]);    							
+
+    							$orderDetail=["order_id"=>$order['_id'],"summary"=>$order_summary,"total"=>$this->utilities->getRupeeForm($total_amount)];
+    							if($payment_mode)$orderDetail["payment_mode"]=$payment_mode;
+    							
+    							$finalData["header"]=$header;
+    							
+    							$finalData["cart_summary"]=$cart_details;
+    							$finalData["order_detail"]=$orderDetail;
+    							//     				$finalData=array_merge($finalData,$defaults);
+    							
+    							$resp['data']=$finalData;
+    							return $resp;
+
+    	} catch (Exception $e)
+    	{
+    		Log::error(" Error [getProductSuccessMsg] ".print_r($this->utilities->baseFailureStatusMessage($e),true));
+    		return  ['status'=>0,"message"=>$this->utilities->baseFailureStatusMessage($e)];
+    	}
+    	
     }
     
     public function geoLocationFinder($request){
@@ -4627,5 +4734,482 @@ class HomeController extends BaseController {
             return $response;
             
         }
+        
+        public function getProductsHome($cache=true)
+        {
+        	try {
+        		
+        		$home=["status"=>200,"response"=>["products"=>[]]];
+        		$homeData=Homepage::active()->where("type","product_tab")->first();
+        		if(!empty($homeData))$homeData=$homeData->toArray();
+        		else return ['status'=>400,"message"=>"No home data found."];
+        		$t=&$homeData['home'];$this->utilities->customSort('base',$t);
+        		$tp=$this->utilities->groupBy($t,'base');
+        		foreach($tp as &$val) $this->utilities->customSort('index',$val);
+        		foreach($tp as &$val) {
+        			foreach($val as &$vala) {
 
+        				unset($vala["index"]);unset($vala["base"]);
+        				(isset($vala['product_id']))?$vala['product_id']=$vala['product_id']:"";
+        				$tmp_data=array_values(array_filter($homeData['rc'],function ($e) use ($vala) {return $vala['ratecard_id']== $e['ratecard']['_id'];}));
+        				if(!empty($tmp_data))
+        				{
+        					$tmp_data=$tmp_data[0];
+        					$vala['product_title']=$tmp_data['product']['title'];
+        					$vala['product_slug']=$tmp_data['product']['slug'];
+        					if(!empty($tmp_data['product'])&&!empty($tmp_data['product']['primarycategory'])&&!empty($tmp_data['product']['primarycategory']['slug']))
+        					{
+        						$vala['product_category_slug']=$tmp_data['product']['primarycategory']['slug'];
+        						$vala['product_category_id']=$tmp_data['product']['primarycategory']['_id'];
+        					}
+        					
+        					$vala['product_title']=$tmp_data['product']['title'];
+        					$vala['ratecard_title']=$tmp_data['ratecard']['title'];
+        					$vala['price']=$tmp_data['ratecard']['price'];
+        				}
+        			}
+        		}
+        		
+        		$home["response"]['products']=array_values($tp);
+        		(isset($homeData['header_image']))?array_unshift($home["response"]['products'], [['type'=>'header', 'url'=>$homeData['header_image']]]):"";
+        		$this->utilities->attachCart($home["response"],false);
+        		return $home;
+        	} catch (Exception $e) {
+        		Log::error($e);
+        		return ['status'=>400,"message"=>$this->utilities->baseFailureStatusMessage($e)];
+        	}
+        	
+        }
+    
+        public function addProductToCart($ratecard_id,$quantity=0)
+        {
+        	try {
+        		$ratecard_id=intval($ratecard_id);
+        		$quantity=intval($quantity);
+        		$response=["status"=>200,"response"=>["message"=>"Success"]];
+        		
+        		$jwt_token = Request::header("Authorization");
+        		if(!empty($jwt_token))
+        		{
+        			$token_decoded=decode_customer_token();
+        			if(!empty($token_decoded)&&!empty($token_decoded->customer))
+        			{
+        				if(!empty($token_decoded->customer->cart_id))
+        					$cart_id=$token_decoded->customer->cart_id;
+        				else $cart_id=getCartOfCustomer(intval($token_decoded->customer->_id));
+        			}
+        			
+        			if(!empty($cart_id))
+        			{
+        				$ratecard=ProductRatecard::active()->where("_id",$ratecard_id)->first(['price','product_id']);
+        				if(!empty($ratecard)&&!empty($ratecard->product_id)&&!empty($ratecard->_id)&&isset($ratecard->price))
+        				{
+        					$ratecard=$ratecard->toArray();
+        					$tmp=['ratecard_id'=>$ratecard_id];
+        					 $alreadyQuantity=$this->utilities->attachProductQuantity($tmp,true);
+        					if(!empty($alreadyQuantity))
+        					  if($quantity>0&&$quantity==$alreadyQuantity)
+        					    return ['status'=>0,"message"=>'Product Already Added'];
+        					$cartData=["product_id"=>$ratecard['product_id'],"ratecard_id"=>$ratecard['_id'],"price"=>$ratecard['price'],"quantity"=>$quantity];
+        					
+        					if(empty($alreadyQuantity))
+        					{
+        						if($quantity>0)$addedToCart=Cart::where('_id', intval($cart_id))->push('products',$cartData);
+        						else return ['status'=>0,"message"=>"Product doesn't exists. Can't remove item."];
+        					}
+        					else {
+        						if($quantity>0)$addedToCart=Cart::raw(function($collection) use ($cart_id,$ratecard_id,$quantity){return $collection->update(['_id'=>intval($cart_id),"products.ratecard_id"=>$ratecard_id],['$set'=>['products.$.quantity'=>$quantity]]);});
+        						else $removedOldFromCart=Cart::where('_id', intval($cart_id))->pull('products', ['ratecard_id' => intval($ratecard['_id']), 'product_id' => intval($ratecard['product_id'])]);
+        					}
+        					if(!empty($_GET['product_detail']) && filter_var($_GET['product_detail'], FILTER_VALIDATE_BOOLEAN))
+        					{
+        						$hc=new \HomeController(new CustomerNotification(), new Sidekiq(),$this->utilities);
+        						$dataProd=$hc->getProductDetail($ratecard_id,$ratecard['product_id'],true);
+        						if(!empty($dataProd)&&!empty($dataProd['status']))
+        							$response["response"]['product']=$dataProd['data'];
+        					}
+        					if(!empty($_GET['cart_summary']) && filter_var($_GET['cart_summary'], FILTER_VALIDATE_BOOLEAN))
+        					{	
+        						$cart=$this->utilities->attachCart($response["response"],true);
+        						$dataCart=$this->utilities->getCartFinalSummary($cart['products'], $cart['_id']);
+        						if(!empty($dataCart)&&!empty($dataCart['status']) && $dataCart['status'] != 5)
+        							$response["response"]['cart_summary']=$dataCart['data'];
+        					}
+        					else $this->utilities->attachCart($response["response"],false);
+        					return $response;
+        				}
+        				return Response::json(['status'=>400,"message"=>"Not a valid ratecard or ratecard doesn't exist."]);
+        			}
+        		}
+        		else return Response::json(['status'=>400,"message"=>"Token Not Present"]);
+
+        		return $response;
+        	} catch (Exception $e)
+        	{
+        		return  Response::json(['status'=>400,"message"=>$this->utilities->baseFailureStatusMessage($e)]);
+        	}
+        }
+        
+        
+        public function addProductsToCart($cartDataInput=[])
+        {
+        	return Response::json($this->utilities->addProductsToCart($cartDataInput));
+        }
+        
+        public function getProductDetail($ratecard_id,$product_id,$getProductInternal=false,$cache=false)
+        {
+    		Log::info($_SERVER['REQUEST_URI']);
+
+        	try {
+        		$ratecard_id=intval($ratecard_id);$product_id=intval($product_id);
+        		$productView=Product::active()->where("_id",$product_id)->with(array('ratecard'=>function($query){$query->active()->select('_id','title','info','flags','product_id','price','slash_price','order','status','properties','extra_info','image');}))->with('primarycategory')->first();
+        		if(empty($productView))return ['status'=>0,"message"=>"Not a valid product Id."];else $productView=$productView->toArray();
+        		$selectedRatecard=array_values(array_filter($productView['ratecard'],function ($e) use ($ratecard_id) {return $ratecard_id== $e['_id'];}));
+        		if(!empty($selectedRatecard))
+        		{
+        			$selectedRatecard=$selectedRatecard[0];
+        			
+        			$selectedRatecard['cost']=(isset($selectedRatecard['slash_price'])&&$selectedRatecard['slash_price']!=="")?$this->utilities->slashPriceFormat($selectedRatecard)." ".$this->utilities->getRupeeForm($selectedRatecard['price']):$this->utilities->getRupeeForm($selectedRatecard['price']);
+                    
+                    if(isset($selectedRatecard['slash_price'])&&$selectedRatecard['slash_price']!==""){
+                        if(isset($selectedRatecard['price'])&&$selectedRatecard['price']!=="")
+                        $selectedRatecard['discounted_price']=" (".intval(((($selectedRatecard['slash_price']-$selectedRatecard['price'])/$selectedRatecard['slash_price'])*100))."% off )";
+                        $selectedRatecard['slash_price'] = $this->utilities->getRupeeForm($selectedRatecard['slash_price']);
+                    }
+                    if(!empty($selectedRatecard['flags'])&&!empty($selectedRatecard['flags']['tax_inclusive']))
+                    		$selectedRatecard['tax_text']="Inclusive of all taxes.";
+                    
+                    
+                    // new Code  to be implemented later 
+                    $alreadyPurchased=Order::where('status',"1")->/* where('payment.success_date',">=",new DateTime(date("Y-m-d H:i:s", mktime(0,0,0))))-> */where("cart_data.ratecard._id",intval($selectedRatecard['_id']))->get();
+                    
+                    if(!empty($alreadyPurchased))
+                    {
+                    	$alreadyPurchased=$alreadyPurchased->toArray();
+                    	$alreadyPurchasedCnt=0;
+                    	$tt=[];
+                    	foreach ($alreadyPurchased as $key=>$value) 
+                    	{
+                    		if(!empty($value['cart_data']))
+                    		{
+                    			$ra=array_filter($value['cart_data'],function ($e) use ($selectedRatecard){return !empty($e['ratecard'])&&$e['ratecard']['_id']==$selectedRatecard['_id'];});
+                    			if(count($ra)>0&&!empty($ra[0]['quantity']))$alreadyPurchasedCnt=$alreadyPurchasedCnt+$ra[0]['quantity'];
+                    		}
+                    	}
+                    	if(!empty($alreadyPurchasedCnt))
+                    		$selectedRatecard['already_purchased_customers']=$alreadyPurchasedCnt;	
+                    }
+                    
+                    // new Code  to be implemented later
+                    
+                    // current code
+
+                    // category based addition
+					if(!empty($productView['primarycategory'])&&!empty($productView['primarycategory']['already_purchased_count']))
+					{
+						if(!empty($selectedRatecard['already_purchased_customers']))
+							$selectedRatecard['already_purchased_customers']=$selectedRatecard['already_purchased_customers']+$productView['primarycategory']['already_purchased_count'];
+						else $selectedRatecard['already_purchased_customers']=$productView['primarycategory']['already_purchased_count'];
+					}
+					// category based addition
+					
+					
+					if(!empty($selectedRatecard['already_purchased_customers']))
+						$selectedRatecard['already_purchased_customers']=($selectedRatecard['already_purchased_customers']==1)?"1 person already bought this product.":$selectedRatecard['already_purchased_customers']. " People already bought this product.";
+					
+                    
+        			(!empty($productView['specification'])&&!empty($productView['specification']['secondary']))?
+        			$selectedRatecard['details']=$this->utilities->getProductDetailsCustom($productView['specification']['secondary'],'secondary'):"";
+        			
+        			if(!empty($selectedRatecard['info'])&&!empty($selectedRatecard['info']['long_description']))$selectedRatecard['long_description']=$selectedRatecard['info']['long_description'];
+        			else if(!empty($productView['info'])&&!empty($productView['info']['long_description']))$selectedRatecard['long_description']=$productView['info']['long_description'];
+        			
+        			if(!empty($selectedRatecard['info'])&&!empty($selectedRatecard['info']['short_description'])&&count($selectedRatecard['info']['short_description'])>0)$selectedRatecard['short_description']=$this->utilities->getProductDetailsCustom($selectedRatecard['info']['short_description'],'secondary');
+        			else if(!empty($productView['info'])&&!empty($productView['info']['short_description'])&&count($productView['info']['short_description'])>0)$selectedRatecard['short_description']=$this->utilities->getProductDetailsCustom($productView['info']['short_description'],'secondary');
+        			unset($selectedRatecard['info']);
+        			
+        			if(!empty($selectedRatecard['image'])&&!empty($selectedRatecard['image']['secondary'])&&count($selectedRatecard['image']['secondary'])>0)$selectedRatecard['images']=$selectedRatecard['image']['secondary'];
+        			else if(!empty($productView['image'])&&!empty($productView['image']['secondary'])&&count($productView['image']['secondary'])>0)$selectedRatecard['images']=$productView['image']['secondary'];
+        			unset($selectedRatecard['image']);
+        			(!empty($productView['specification'])&&!empty($productView['specification']['primary'])&&!empty($productView['specification']['primary']['features']))?$selectedRatecard['key_details']=$this->utilities->getProductDetailsCustom($productView['specification']['primary']['features']):"";
+//         			(!empty($selectedRatecard['key_details']))?array_unshift($selectedRatecard['key_details'],["name"=>"color","value"=>$selectedRatecard['color']]):"";
+        			
+        			$props_arr=[];
+        			if(!empty($selectedRatecard['properties']))
+        			{
+        				$props_arr=$this->utilities->mapProperties($selectedRatecard['properties']);
+        				(!empty($props_arr))?$selectedRatecard['properties']=$props_arr:"";
+        			}
+        					
+        			if(!empty($productView['selection_view'])&&is_array($productView['selection_view']))
+        			{
+        				$selectionViewFiltered=$this->utilities->getFilteredAndOrdered($productView['selection_view'],'level');$trav_idx=[];
+//         					return $this->utilities->getSelectionView($selectionViewFiltered,intval($productView['_id']),$productView,intval($selectedRatecard['_id']),$trav_idx);
+        				$this->utilities->getSelectionView($selectionViewFiltered,intval($productView['_id']),$productView,intval($selectedRatecard['_id']),$trav_idx);
+        				(!empty($selectionViewFiltered))?$selectedRatecard=array_merge($selectedRatecard,$this->utilities->getSelectionView($selectionViewFiltered,intval($productView['_id']),$productView,intval($selectedRatecard['_id']),$trav_idx)):"";
+//         				if(!empty($trav_idx))$selectedRatecard['traverse_ind']=array_pluck($trav_idx, 	'ind');
+//         				if(!empty($trav_idx))$selectedRatecard['traverse_ind']=$trav_idx;
+//         				return $selectedRatecard;
+        				unset($selectedRatecard['extra_info']);
+        				if(empty($getProductInternal))unset($selectedRatecard['properties']);
+        			}
+        		
+        			if(!empty($productView['primarycategory'])&&!empty($productView['primarycategory']['slug'])){$selectedRatecard['product_category_slug']=$productView['primarycategory']['slug'];$selectedRatecard['product_category_id']=$productView['primarycategory']['_id'];}
+        			$mainSimilar=[];
+        			$selectedRatecard['ratecard_id']=$selectedRatecard['_id'];
+        			
+        			if($getProductInternal)
+        			{
+        				unset($selectedRatecard['_id']);unset($selectedRatecard['productcategory_id']);
+        				unset($selectedRatecard['order']);unset($selectedRatecard['status']);
+        				unset($selectedRatecard['servicecategory_id']);unset($selectedRatecard['flags']);
+        				return ["status"=>1,"data"=>$selectedRatecard];
+        			}
+        			
+        			(!empty($productView['servicecategory'])&&!empty($productView['servicecategory']['primary']))?$sameCatProducts=Product::active()->where("_id","!=",$product_id)->where("servicecategory.primary",$productView['servicecategory']['primary'])->lists('_id'):"";
+        			(!empty($sameCatProducts))?$productSimilar=ProductRatecard::active()->with(array('product'=>function($query){$query->active()->with('primarycategory')->get();}))->where("product_id","!=",$product_id)->whereIn("product_id",$sameCatProducts)->take(4)->get(['_id','title','product_id','price','image']):"";
+        			if(!empty($productSimilar))
+        			{
+        				$productSimilar=$productSimilar->toArray();
+        				foreach ($productSimilar as $value) {
+        					if(!empty($value['product']))
+        					{
+        						$url="";
+        						if(!empty($value['image'])&&!empty($value['image']['primary']))
+        							$url=$value['image']['primary'];
+        							else if (!empty($value['product']&&!empty($value['product']['image'])&&!empty($value['product']['image']['primary'])))
+        								$url=$value['product']['image']['primary'];
+        								$ttp=[
+        										'price'=>$value['price'],
+        										'product_id'=>((!empty($value['product']['_id']))?$value['product']['_id']:""),'product_title'=>((!empty($value['product']['title']))?$value['product']['title']:""),
+        										'product_slug'=>((!empty($value['product']['slug']))?$value['product']['slug']:""),'url'=>$url,'type'=>'product',
+        										'product_category_slug'=>$value['product']['primarycategory']['slug'],
+        										'product_category_id'=>$value['product']['primarycategory']['_id'],
+        										'ratecard_title'=>$value['title'],'ratecard_id'=>$value['_id']
+        								];
+        								
+        								if(isset($value['slash_price'])&&$value['slash_price']!==""){
+                                            $ttp['cost']=$this->utilities->slashPriceFormat($value)." ".$this->utilities->getRupeeForm($value['price']);
+                                            $ttp['slash_price'] = $this->utilities->getRupeeForm($value['slash_price']);
+                                        }
+        								else $ttp['cost']=$this->utilities->getRupeeForm($value['price']);
+        								array_push($mainSimilar, $ttp);	
+        					}		
+        				}
+        			}
+        			if(!$getProductInternal)
+        			{
+        				unset($selectedRatecard['_id']);unset($selectedRatecard['productcategory_id']);
+        				unset($selectedRatecard['order']);unset($selectedRatecard['status']);
+        				unset($selectedRatecard['servicecategory_id']);unset($selectedRatecard['flags']);
+        				$finalData['product']=$selectedRatecard;
+        			}	
+        		}
+        		else return ['status'=>0,"message"=>"Not a valid Ratecard Id."];
+        		$this->utilities->attachProductQuantity($finalData['product']);
+        		(!empty($mainSimilar)&&count($mainSimilar)>0)?$finalData['similar_products']=["title"=>"Similar Products","sub_title"=>"Checkout other essential products for your workout","items"=>$mainSimilar]:"";
+        		$this->utilities->attachCart($finalData,false);
+        		return ["status"=>200,"response"=>$finalData];
+        	} catch (Exception $e) {
+        		return ['status'=>0,"message"=>$this->utilities->baseFailureStatusMessage($e)];
+        	}
+        }
+ 
+        
+        public function getCategoryBasedProducts($productcategory_id)
+        {
+        
+        	try {
+        		$productcategory_id=intval($productcategory_id);
+        		$productView=Product::active()->where("productcategory.primary",$productcategory_id)->with(array('ratecard'=>function($query){$query->active()->get();}))->with('primarycategory')->get();
+        		
+        		if(empty($productView))return ['status'=>0,"message"=>"Not a valid Product Category Id."];
+        		else $productView=$productView->toArray();
+        		
+        		$productIds=array_column($productView, "_id");
+        	
+        		/* $productView['selection_view'] */
+        		$rates=ProductRatecard::active()->raw(function($collection) use($productIds)
+        		 {
+        		 return $collection->aggregate(
+        		 [
+        		 ['$match' => ['product_id' => ['$in'=>$productIds]]],
+        		 ['$group' => ['_id' => ["p_id"=>'$product_id','color'=>'$color'],'details' => ['$push'=>['ratecards'=>'$_id']]]],
+        		 ['$match' => ['details.0' => ['$exists'=>true]]],
+        		 ['$project' => ["rcs"=>['$arrayElemAt' => ['$details',0]]]]
+        		 ]);
+        		 });
+        		 
+        		(!empty($rates)&&!empty($rates['result']))?
+        		$ratecards=array_values(array_column(array_column($rates['result'], 'rcs'), 'ratecards')):"";
+        		if(!empty($ratecards))
+        			$ratecards=ProductRatecard::active()->whereIn("_id",$ratecards)->with(array('product'=>function($query){$query->active()->with('primarycategory')->orderBy('ordering', 'ASC');}))->get();
+        		else return ['status'=>0,"message"=>"Not Ratecards found for productcategoryid : ".$productcategory_id];
+        		$product_cat_title="";
+        		$categories=[];
+        		if(!empty($ratecards))
+        		{
+        			$ratecards=$ratecards->toArray();
+        			foreach ($ratecards as $value) {
+        				if(!empty($value['product']))
+        				{
+        					$url="";
+        					if(!empty($value['image'])&&!empty($value['image']['primary']))
+        						$url=$value['image']['primary'];
+        						else if(!empty($value['product']&&!empty($value['product']['image'])&&!empty($value['product']['image']['primary'])))
+        							$url=$value['product']['image']['primary'];
+        							if(empty($product_cat_title))
+        								$product_cat_title=(!empty($value['product']['primarycategory']['title'])?$value['product']['primarycategory']['title']:"");
+        							array_push($categories, [
+                                            'cost'=>(isset($value['slash_price'])&&$value['slash_price']!=="")?$this->utilities->slashPriceFormat($value)." ".$this->utilities->getRupeeForm($value['price']):$this->utilities->getRupeeForm($value['price']),
+                                            'slash_price' => isset($value['slash_price']) ? $this->utilities->getRupeeForm($value['slash_price']) : "",
+        									'price'=>$value['price'],
+        									'product_id'=>$value['product']['_id'],
+        									'product_title'=>$value['product']['title'],
+        									'product_slug'=>$value['product']['slug'],
+        									'url'=>$url,
+        									'type'=>'product',
+        									'product_category_slug'=>$value['product']['primarycategory']['slug'],
+        									'product_category_id'=>$value['product']['primarycategory']['_id'],
+        									'product_category_title'=>(!empty($value['product']['primarycategory']['title'])?$value['product']['primarycategory']['title']:""),
+        									'ratecard_title'=>$value['title'],
+        									'ratecard_id'=>$value['_id']
+        							]);
+        				}
+        			
+        			}
+        			 if(empty($product_cat_title))
+        			  $product_cat_title="Category Based Products";
+        			$products=Product::active()->raw(function($collection) use($productcategory_id)
+        			{
+        				
+        				return $collection->aggregate(
+        						[
+        								['$match' => ['status'=>'1','productcategory.primary' => ['$nin'=>[$productcategory_id]]]],
+        								['$group' => ['_id' => ["p_id"=>'$productcategory.primary'],'details' => ['$push'=>['products'=>'$_id']]]],
+        								['$match' => ['details.0' => ['$exists'=>true]]],
+        								['$project' => ["prods"=>['$arrayElemAt' => ['$details',0]]]]
+        						]);
+        			});
+        
+        			(!empty($products)&&!empty($products['result']))?
+        			$products=array_values(array_column(array_column($products['result'], 'prods'), 'products')):"";
+        			$products=Product::active()->whereIn("_id",$products)->with(array('ratecard'=>function($query){$query->active()->get();}))->with('primarycategory')->take(4)->get();
+        			$productSimilar=[];
+        			if(!empty($products))
+        			{
+        				$products=$products->toArray();
+        				foreach ($products as $value) {
+        					if(!empty($value['ratecard']))
+        					{
+        						$url="";
+        						$rc_url=$this->utilities->getRateCardBaseImage($value['ratecard']);
+        						$rc_id=$this->utilities->getRateCardBaseID($value['ratecard']);
+        						
+        							if(!empty($rc_url))
+        								$url=$rc_url;
+									else if(!empty($value['image'])&&!empty($value['image']['primary']))
+        									$url=$value['image']['primary'];
+	        					array_push($productSimilar, [
+	        							'product_id'=>$value['_id'],
+	        							'ratecard_id'=>$rc_id,
+	        							'product_title'=>$value['title'],
+	        							'product_slug'=>$value['slug'],
+	        							'url'=>$url,
+	        							'type'=>'product',
+	        							'product_category_slug'=>$value['primarycategory']['slug'],
+	        							'product_category_id'=>$value['primarycategory']['_id'],
+	        							'product_category_title'=>(!empty($value['primarycategory']['title'])?$value['primarycategory']['title']:""),
+	        					]);
+        					}
+        				}
+        				
+        			}
+        			$finalData=[];
+        			if(!empty($categories)&&count($categories)>0)
+        				$finalData['categories']=["title"=>$product_cat_title,/* "sub_title"=>(($productcategory_id==10)?"":"Get Fitter") ,*/"items"=>$categories];
+        				(!empty($productSimilar)&&count($productSimilar)>0)?$finalData['similar_products']=["title"=>"Similar Products","sub_title"=>"Checkout other essential products for your workout","items"=>$productSimilar]:"";
+        			$this->utilities->attachCart($finalData,false);
+        			return ["status"=>200,"response"=>$finalData];
+        		}
+        		else return ['status'=>0,"message"=>"Not Ratecards found for productcategoryid : ".$productcategory_id];
+        		
+        			/* $productInfo=(!empty($productView['info'])?$productView['info']:"");
+        			 $productFeatures=((!empty($productView['specification'])&&!empty($productView['specification']['primary'])&&!empty($productView['specification']['primary']['features']))?$productView['specification']['primary']['features']:[]);
+        			 $productSpecsSecondary=((!empty($productView['specification'])&&!empty($productView['specification']['secondary']))?$productView['specification']['secondary']:[]);
+        			 
+        			 $this->utilities->customSort('order',$productSpecsSecondary);
+        			 foreach ($productSpecsSecondary as &$value) {
+        			 unset($value['order']);
+        			 } */
+        			
+        	} catch (Exception $e) {
+        		return ['status'=>0,"message"=>$this->utilities->baseFailureStatusMessage($e)];
+        	}
+        }
+        
+        public function getFinalCartSummary()
+        {
+        	try {
+        		$t=[];
+        		$tt=Request::header("Authorization");
+        		Log::info(" token  ".print_r($tt,true));
+        		$cart=$this->utilities->attachCart($t,true);
+        		$dataCart=$this->utilities->getCartFinalSummary($cart['products'], $cart['_id']);
+        		
+        		if(!empty($dataCart)&&!empty($dataCart['status']) && $dataCart['status'] != 5)
+        			$finalData=['status'=>200,"response"=>$dataCart['data']];
+        		else return $dataCart;
+        			$this->utilities->fetchCustomerAddresses($finalData['response']);
+        			$cities=$this->utilities->getProductCities();
+        			if(count($cities))$finalData['response']['cities']=$cities;
+        		return $finalData;
+        	} catch (Exception $e) {
+        		return  ['status'=>0,"message"=>$this->utilities->baseFailureStatusMessage($e)];
+        	}
+        }
+        
+        public function getCustomerAddress()
+        {
+        	
+        	try {
+        	$t=[];
+        	$tt=Request::header("Authorization");
+        	Log::info(" token  ".print_r($tt,true));
+        	$cart=$this->utilities->attachCart($t,true);
+        	$dataCart=$this->utilities->getCartFinalSummary($cart['products'], $cart['_id']);
+        	
+        	if(!empty($dataCart)&&!empty($dataCart['status']) && $dataCart['status'] != 5)
+        		$finalData=['status'=>200,"response"=>$dataCart['data']];
+        		else return $dataCart;
+        		$this->utilities->fetchCustomerAddresses($finalData['response']);
+        		$cities=$this->utilities->getProductCities();
+        		if(count($cities))$finalData['response']['cities']=$cities;
+        		return $finalData;
+        		
+        } catch (Exception $e) {
+        	return  ['status'=>0,"message"=>$this->utilities->baseFailureStatusMessage($e)];
+        }
+        }
+        
+        
+        public function setCustomerAddress()
+        {
+        	try {
+        		$resp=["status"=>200,"messge"=>"Success"];
+        		$data  =  Input::json()->all();
+        		$rules = ['customer_address'=>'required'];
+        		$validator = Validator::make($data,$rules);
+        		
+        		if ($validator->fails()) {
+        			return ['status'=> 0,'message' => error_message($validator->errors())];
+        		}
+        		$added=$this->utilities->addCustomerAddress(null,$data['customer_address']);
+        		return (!empty($added))?$resp:['status'=>0,"message"=>"Couldn't add address"];
+        		
+        	} catch (Exception $e) {
+        		return  ['status'=>0,"message"=>$this->utilities->baseFailureStatusMessage($e)];
+        	}
+        }
+        
 }
