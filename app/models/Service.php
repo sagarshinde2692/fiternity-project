@@ -219,7 +219,8 @@ class Service extends \Basemodel{
                     foreach ($ratecardoffersRecards as $ratecardoffersRecard){
             			$offer_exists = true;
                         $ratecardoffer                  =   $ratecardoffersRecard;
-						if($ratecardoffer["price"] == $this->price){
+						Log::info("lsdjflsjd ===".$ratecardoffer["price"]." ----- ".$value["price"]);
+						if($ratecardoffer["price"] == $value['price']){
 							unset($ratecardoffer["price"]);
 						}
                         $ratecardoffer['offer_text']    =   "";
