@@ -2985,6 +2985,7 @@ class FindersController extends \BaseController {
 			'status'=>200,
 			'message'=>'Success'
 		];
+		Log::info("tabtabtabtabt");
 		$device_id = Request::header('Device-Id');
 		Log::info($device_id);
 		Log::info(Request::header('Device-Serial'));
