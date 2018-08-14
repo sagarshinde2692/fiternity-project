@@ -4973,6 +4973,13 @@ class HomeController extends BaseController {
         						if($quantity>0)$addedToCart=Cart::raw(function($collection) use ($cart_id,$ratecard_id,$quantity){return $collection->update(['_id'=>intval($cart_id),"products.ratecard_id"=>$ratecard_id],['$set'=>['products.$.quantity'=>$quantity]]);});
         						else $removedOldFromCart=Cart::where('_id', intval($cart_id))->pull('products', ['ratecard_id' => intval($ratecard['_id']), 'product_id' => intval($ratecard['product_id'])]);
         					}
+        					if(!empty($_GET['product_detail']) && filter_var($_GET['product_detail'], FILTER_VALIDATE_BOOLEAN))
+        					{
+        						$hc=new \HomeController(new CustomerNotification(), new Sidekiq(),$this->utilities);
+        						$dataProd=$hc->getProductDetail($ratecard_id,$ratecard['product_id'],true);
+        						if(!empty($dataProd)&&!empty($dataProd['status']))
+        							$response["response"]['product']=$dataProd['data'];
+        					}
         					if(!empty($_GET['cart_summary']) && filter_var($_GET['cart_summary'], FILTER_VALIDATE_BOOLEAN))
         					{	
         						$cart=$this->utilities->attachCart($response["response"],true);
