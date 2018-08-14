@@ -2543,8 +2543,11 @@ class TransactionController extends \BaseController {
                 
                 $products_string = '';
 
-                foreach($order['cart_data'] as $item){
-                    $products_string = $products_string.', '.$item['product']['title'];
+                foreach($order['cart_data'] as $key => $item){
+                    if($key){
+                        $products_string = $products_string.', ';
+                    }
+                    $products_string = $item['product']['title'];
                 }
                 
                 $emailData['products_string'] = $products_string;
