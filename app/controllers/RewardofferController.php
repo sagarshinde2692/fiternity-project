@@ -578,7 +578,7 @@ class RewardofferController extends BaseController {
                                         if($amount >= $data_value['min'] ){
 
                                             $content_data = $data_value['content'];
-
+                    
                                             foreach ($content_data as $content_key => $content_value) {
 
                                                 if(in_array($service_category_id,$content_value['category_id'])){
@@ -1039,12 +1039,17 @@ class RewardofferController extends BaseController {
             }
         }
 
-        if(isset($finder['brand_id']) && $finder['brand_id'] == 66 && $finder['city_id'] == 3 && $duration_day == 360){
+        // if(isset($finder['brand_id']) && $finder['brand_id'] == 66 && $finder['city_id'] == 3 && $duration_day == 360){
 
+        
+        if(in_array($finder['_id'], Config::get('app.mixed_reward_finders')) && $duration_day == 360){
+                
             $rewardObj = Reward::where('quantity_type','mixed')->first();
-
-            if($rewardObj){
-
+                
+            $mixedreward_content = MixedRewardContent::where('finder_id', $finder['_id'])->first();
+            
+            if($rewardObj && $mixedreward_content){
+                    
                 $rewards = [];
 
                 $rewardObjData = $rewardObj->toArray();
@@ -1062,28 +1067,22 @@ class RewardofferController extends BaseController {
                     }
                 }
 
-                $no_of_sessions = (!empty($no_of_sessions) ? $no_of_sessions == 1 ? '1 session' : $no_of_sessions.' sessions' : '1 session');
+                $no_of_sessions = (!empty($no_of_sessions) ? ($no_of_sessions == 1 ? '1 person' : $no_of_sessions.' people') : '1 person');
 
-                $rewards_snapfitness_contents = [
-                    'Fitness Merchandise (Stylish & waterproof Gym Bag + Trendy Shaker) worth Rs.1,000',
-                    'Swimming session at 5-star hotels for '.$no_of_sessions.' people worth Rs.3,000',
-                    'Personalised Online Diet Consultation for 1 month Rs.1299',
-                    'Free Vouchers from Amazon, GNC & Faasos worth Rs.700'
-                ];
+                $rewards_snapfitness_contents = $mixedreward_content->reward_contents;
 
-                $rewardObjData['title'] = 'Snap Fitness Hamper';
+                foreach($rewards_snapfitness_contents as &$content){
+                    $content = bladeCompile($content, ['no_of_sessions'=>$no_of_sessions]);
+                }
+
+                $rewardObjData['title'] = $mixedreward_content['title'];
                 $rewardObjData['contents'] = $rewards_snapfitness_contents;
-                $rewardObjData['image'] = 'https://b.fitn.in/gamification/reward/mixed.jpg';
-                $rewardObjData['gallery'] = [
-                    'https://b.fitn.in/gamification/reward/mixed.jpg',
-                    'https://b.fitn.in/gamification/reward/snap_fitness/swimming.jpg',
-                    'https://b.fitn.in/gamification/reward/snap_fitness/kit.jpg',
-                    'https://b.fitn.in/gamification/reward/snap_fitness/diet.jpg',
-                    'https://b.fitn.in/gamification/reward/snap_fitness/voucher.jpg',
-                ];
-                $rewardObjData['new_amount'] = 6000;
-                $rewardObjData['payload']['amount'] = 6000;
-                $rewardObjData['description'] = 'The perfect pack to get your fitness membership started: <br>- '.implode('<br>- ',$rewards_snapfitness_contents);
+                $rewardObjData['image'] = $mixedreward_content['images'][0];
+                $images = $mixedreward_content['images'];
+                $rewardObjData['gallery'] = $mixedreward_content['images'];
+                $rewardObjData['new_amount'] = $mixedreward_content['total_amount'];
+                $rewardObjData['payload']['amount'] = $mixedreward_content['total_amount'];
+                $rewardObjData['description'] = $mixedreward_content['rewards_header'].': <br>- '.implode('<br>- ',$rewards_snapfitness_contents);
 
                 $rewards[] = $rewardObjData;
             }
@@ -1240,6 +1239,6 @@ class RewardofferController extends BaseController {
         return  Response::json($data, 200);
 
     }
-    
-    
+
+        
 }
