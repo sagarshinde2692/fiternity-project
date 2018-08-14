@@ -219,10 +219,10 @@ class Service extends \Basemodel{
                     foreach ($ratecardoffersRecards as $ratecardoffersRecard){
             			$offer_exists = true;
                         $ratecardoffer                  =   $ratecardoffersRecard;
-						Log::info("lsdjflsjd ===".$ratecardoffer["price"]." ----- ".$value["price"]);
-						if($ratecardoffer["price"] == $value['price']){
-							unset($ratecardoffer["price"]);
-						}
+						// Log::info("lsdjflsjd ===".$ratecardoffer["price"]." ----- ".$value["price"]);
+						// if($ratecardoffer["price"] == $value['price']){
+						// 	unset($ratecardoffer["price"]);
+						// }
                         $ratecardoffer['offer_text']    =   "";
                         $ratecardoffer['offer_icon']    =   "https://b.fitn.in/global/final_monsoon_tag.png";
                         if(!empty($ratecardoffersRecard['callout']))$ratecardoffer['callout']=$ratecardoffersRecard['callout'];
