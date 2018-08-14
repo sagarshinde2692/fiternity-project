@@ -876,6 +876,8 @@ class CustomerController extends \BaseController {
 		    $data['serialNumber'] = $header_array['Device-Serial'];
 		    $data['device_id'] = $header_array['Device-Id'];
 		    $data['vendor_id'] = (int)$kiosk_user['finder_id'];
+			Log::info("header_array");
+			Log::info($header_array);
 
 		    Finder::$withoutAppends=true;
 
