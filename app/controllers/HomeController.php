@@ -4836,7 +4836,7 @@ class HomeController extends BaseController {
         							$response["response"]['cart_summary']=$dataCart['data'];
         					}
         					else $this->utilities->attachCart($response["response"],false);
-        					$response['cities']=$this->utilities->getProductCities();
+        					$cities=$this->utilities->getProductCities();if(!empty($cities))$response['cities']=$cities;
         					return $response;
         				}
         				return Response::json(['status'=>400,"message"=>"Not a valid ratecard or ratecard doesn't exist."]);
