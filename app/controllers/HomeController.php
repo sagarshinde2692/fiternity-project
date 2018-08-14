@@ -4833,10 +4833,13 @@ class HomeController extends BaseController {
         						$cart=$this->utilities->attachCart($response["response"],true);
         						$dataCart=$this->utilities->getCartFinalSummary($cart['products'], $cart['_id']);
         						if(!empty($dataCart)&&!empty($dataCart['status']) && $dataCart['status'] != 5)
+        						{
         							$response["response"]['cart_summary']=$dataCart['data'];
+        							$cities=$this->utilities->getProductCities();
+        							if(!empty($cities))$response["response"]['cart_summary']['cities']=$cities;
+        						}
         					}
         					else $this->utilities->attachCart($response["response"],false);
-        					$cities=$this->utilities->getProductCities();if(!empty($cities))$response["response"]['cities']=$cities;
         					return $response;
         				}
         				return Response::json(['status'=>400,"message"=>"Not a valid ratecard or ratecard doesn't exist."]);
