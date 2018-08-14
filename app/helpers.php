@@ -3767,19 +3767,19 @@ if (!function_exists('decodeOrderToken')) {
                                         ->whereIn("type", array("memberships", "healthytiffinmembership"))
                                         ->where("routed_order","!=","1")->where("customer_source", "!=","kiosk")->count();
         $coupon = array("code" => "", "text" => "");
-        if($numberOfOrders < 2){
-            $coupon = Config::get('app.static_coupon')[0];
-        }else if($numberOfOrders < 4){
-            $moreDiscountCities = [5,6,9];
-            if(in_array($finder['city_id'], $moreDiscountCities) ){
-                $coupon = Config::get('app.static_coupon')[1];
-            }else{
-                $coupon = Config::get('app.static_coupon')[2];
-            }
-        }
-        if($finder["category_id"] == 47){
-            $coupon = Config::get('app.static_coupon')[3];
-        }
+        // if($numberOfOrders < 2){
+        //     $coupon = Config::get('app.static_coupon')[0];
+        // }else if($numberOfOrders < 4){
+        //     $moreDiscountCities = [5,6,9];
+        //     if(in_array($finder['city_id'], $moreDiscountCities) ){
+        //         $coupon = Config::get('app.static_coupon')[1];
+        //     }else{
+        //         $coupon = Config::get('app.static_coupon')[2];
+        //     }
+        // }
+        // if($finder["category_id"] == 47){
+        //     $coupon = Config::get('app.static_coupon')[3];
+        // }
         return $coupon;
     }
 }
