@@ -262,7 +262,7 @@ Class FinderSms extends VersionNextSms{
 
 		$label = 'TrialAlert-Fitternity';
 
-		$to = array('9930206022');
+		$to = array('9004556289','9833201020','8976457756','9833023772');
 
         return $this->common($label,$to,$data);
 	}
