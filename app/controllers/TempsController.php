@@ -249,6 +249,8 @@ class TempsController extends \BaseController {
 
                     $temp->finder_id = (int)$vendor->_id;
 
+                    $temp->serial_number = Request::header('Device-Serial');
+
                     $temp->source = "kiosk";
                 }
                 
