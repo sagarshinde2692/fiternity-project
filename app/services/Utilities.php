@@ -4395,5 +4395,43 @@ Class Utilities {
     						else return $count;
     		}
     }
+
+    public function attachExternalVoucher($data){
+        
+        $sessions_attended = $this->getSessionAttended($data['customer_id']);
+        
+        $voucherType = $this->getVoucherType($sessions_attended);
+        
+        $voucherAttached = $this->attachVoucher($voucherType, $data['customer_id']);
+
+        return $voucherAttached;
+    }
+
+    public function getSessionAttended($customer_id){
+        \Booktrial::where('customer_id', $customer_id)->where('post_trial_status', 'attended')->count();
+    }
+
+    public function getVoucherType($sessions_attended){
+        $voucher_grid = Config::get('app.voucher_grid');
+        foreach($voucher_grid as $value){
+            if(empty($value['max']) || $sessions_attended >= $value['min'] && $sessions_attended >= $value['min']){
+                return $type;
+            }
+        }
+    }
+
+    public function attachVoucher($type, $customer_id){
+        
+        $voucher = \Externalvoucher::active()->where('type', $type)->where('customer_id', 'exists', false)->orderBy('_id')->first();
+
+        if($voucher){
+            $voucher->customer_id = $customer_id;
+            $voucher->save();
+            return $voucher;
+        }else{
+            return null;
+        }
+    
+    }
 }
 
