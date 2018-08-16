@@ -912,14 +912,15 @@ class TransactionController extends \BaseController {
         if(!empty($order['customer_quantity'])){
             $resp["quantity_details"] = [
                 "field" => "No of Person",
-                "value" => "Qty ".$order['customer_quantity']
+                "description" => "Qty ".(!empty($order['customer_quantity']) ? $order['customer_quantity'] : 1)
             ];
         }
 
         // if(!empty($order['customer_quantity'])){
             $resp["pt_details"] = [
-                "title" => "No of Person",
-                "description" => "Qty ".$order['customer_quantity']
+                "title" => "Add on",
+                "description" => "Personal Training - Rs.300",
+                "applied" => !empty($data['pt_applied']) ? $data['pt_applied'] : false
             ];
         // }
 
