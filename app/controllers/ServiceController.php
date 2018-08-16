@@ -1852,7 +1852,7 @@ class ServiceController extends \BaseController {
 		return $facility_images;
 	}
 
-	public function workoutServiceCategorys($city='mumbai'){
+	public function workoutServiceCategorys($city='mumbai',$slotsCountCache=true){
 
 		$not_included_ids = [161, 120, 170, 163, 168, 180, 184];
 
@@ -1893,21 +1893,28 @@ class ServiceController extends \BaseController {
 			'rebook_trials'=>[]
 		];
 		$cityId=City::where("slug",$city)->first(['_id']);
+		$cityCached=strtolower($city);
 		if(!empty($cityId))
 		{
 			$cityId=$cityId->_id;
-			$servicesGym=Service::where("city_id",$cityId)->whereIn("servicecategory_id",[65,82])->lists('_id');
+			if(!empty($slotsCountCache))
+			{
+				$gymCacheKey=$cityCached.'-'.'gym';
+				$zumbaCacheKey=$cityCached.'-'.'zumba';
+				$cfCacheKey=$cityCached.'-'.'crossfit';
+				$totCacheKey=$cityCached.'-'.'total';
+				$cche=true;
+			}
+			else {
+				$cfCacheKey=null;$totCacheKey=null;$zumbaCacheKey=null;$gymCacheKey=null;$cche=false;
+			}
 			
-			$servicesZumba=Service::where("city_id",$cityId)->whereIn("servicecategory_id",[19,20,21,132,133,189])->lists('_id');
-			
-			$servicesCrossfit=Service::where("city_id",$cityId)->whereIn("servicecategory_id",[5,111,112,10])->lists('_id');
-			
-			$gymCount= Order::where("type","workout-session")->whereIn("service_id",$servicesGym)->count();
-			$zumbaCount= Order::where("type","workout-session")->whereIn("service_id",$servicesZumba)->count();
-			$cfCount= Order::where("type","workout-session")->whereIn("service_id",$servicesCrossfit)->count();
-			$total= Order::where("type","workout-session")->where("city_id",$cityId)->count();
-			
+			$gymCount=$this->utilities->getSessionSlotsService($cityId,[65,82],$cche,$gymCacheKey);
+			$zumbaCount=$this->utilities->getSessionSlotsService($cityId,[19,20,21,132,133,189],$cche,$zumbaCacheKey);
+			$cfCount=$this->utilities->getSessionSlotsService($cityId,[5,111,112,10],$cche,$cfCacheKey);
+			$total=$this->utilities->getSessionSlotsService($cityId,[],$cche,$totCacheKey);
 			$data["stats_count"]=["crossfit"=>$cfCount,"zumba"=>$zumbaCount,"gym"=>$gymCount,"total"=>$total,"categories"=>count($included_ids)];
+			
 		}
 		try{
 
