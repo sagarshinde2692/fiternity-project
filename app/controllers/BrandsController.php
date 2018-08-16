@@ -134,7 +134,7 @@ class BrandsController extends \BaseController {
                 }
 
                 if(in_array("$slug-$city", Config::get('app.no_patti_brands_slugs'))){
-                    $data['brand']['stripe_data'] = "no-patti";
+                    $data['stripe_data'] = "no-patti";
                 }
                 
                 if(empty($finders) || empty($finders['metadata']['total_records'])){
