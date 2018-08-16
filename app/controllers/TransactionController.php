@@ -898,6 +898,32 @@ class TransactionController extends \BaseController {
            $resp['ratecard_pay_at_vendor'] = true;
         }
 
+        
+        if(!empty($order['coupon']) && !empty($order['coupon_discount_amount'])){
+            $resp["coupon_details"] = [
+                "title" => "APPLY PROMOCODE",
+                "description" => "",
+                "applied" => true,
+                "remove_title" => strtoupper($order['coupon'])." appllied",
+                "remove_msg" => "Are you sure you want to remove this coupon code?"
+            ];
+        }
+
+        if(!empty($order['customer_quantity'])){
+            $resp["quantity_details"] = [
+                "field" => "No of Person",
+                "value" => "Qty ".$order['customer_quantity']
+            ];
+        }
+
+        // if(!empty($order['customer_quantity'])){
+            $resp["pt_details"] = [
+                "title" => "No of Person",
+                "description" => "Qty ".$order['customer_quantity']
+            ];
+        // }
+
+        
         // $resp['payment_offers'] = [
         //     'amazon_pay'=>'25% instant cashback'
         // ];
