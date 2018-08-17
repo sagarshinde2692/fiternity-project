@@ -6982,7 +6982,7 @@ class TransactionController extends \BaseController {
             $otp_data = [
                 'finder_vcc_mobile'=>$data_otp['finder_vcc_mobile'],
                 'finder_vcc_email'=>$data_otp['finder_vcc_email'],
-                'payment_mode'=>'pay at studio',
+                'payment_mode'=>'at the studio',
                 'temp_id'=>$addTemp['_id'],
                 'otp'=>$addTemp['otp'],
                 'created_at'=>time(),
@@ -6991,7 +6991,7 @@ class TransactionController extends \BaseController {
                 'order_id'=>$order['_id']
             ];
             $payment = $order->payment;
-            $payment['payment_mode'] = 'pay at studio';
+            $payment['payment_mode'] = 'at the studio';
             $order->otp_data = $otp_data;
             $order->payment = $payment;
             $order->save();

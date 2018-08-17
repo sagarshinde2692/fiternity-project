@@ -2097,7 +2097,7 @@ class HomeController extends BaseController {
     			if($payment_mode=='paymentgateway')
     				$payment_mode="Online";
 
-    			else if($payment_mode=='pay at studio')
+    			else if($payment_mode=='at the studio')
     					$payment_mode="At Studio";
     		}
     			else $payment_mode=null;
