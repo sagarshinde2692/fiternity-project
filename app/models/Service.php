@@ -256,24 +256,20 @@ class Service extends \Basemodel{
 						// }
 
 
-						$ratecardoffer['offer_text']    =  ($difference->d == 1) ? "Expires Today" : ($difference->d > 7 ? "Expires in ".((17-intval(date('d', time())))%7)." days" : "Expires in ".(intval($difference->days)%7)." days");
+						$ratecardoffer['offer_text']    =  ($difference->d == 1) ? "Expires Today" : ($difference->d > 7 ? "Expires in ".((24-intval(date('d', time())))%7)." days" : "Expires in ".(intval($difference->days)%7)." days");
 
 
-						// if($value['type'] == 'membership' && $value['direct_payment_enable'] == '1' && $key == count($ratecardsarr) - 1){
+						if($value['type'] == 'membership' && $value['direct_payment_enable'] == '1' && $key == count($ratecardsarr) - 1){
 
 						// 	Log::info($value['_id']);
 						// 	Log::info("slots left");
 
-						// 	// if($this->available_slots > 0){
-						// 	// 	$ratecardoffer['offer_text']    =  ($this->available_slots > 1 ? $this->available_slots." slots" : $this->available_slots." slot")." left";
-						// 	// }
-
-							// if(!empty($ratecardoffer['added_by_script'])){
-							// 	$ratecardoffer['offer_text']    =  "Expiring in ".(17-intval(date('d', time())))." days";
-							// }
+							if($this->available_slots > 0){
+								$ratecardoffer['offer_text']    =  ($this->available_slots > 1 ? $this->available_slots." slots" : $this->available_slots." slot")." left";
+							}
 
 							
-						// }
+						}
 
 
                         array_push($ratecardoffers,$ratecardoffer);
