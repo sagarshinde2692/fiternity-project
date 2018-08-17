@@ -822,7 +822,19 @@ class ServiceController extends \BaseController {
 		    	if($ratecard_price > 0&&$type !== "workoutsessionschedules"){
 		    		$service['cost'] = "₹. ".$ratecard_price;
 		    	}
-		    	array_push($slots,["title"=>"RUSH HOUR","price"=>"","data"=>[]]);array_push($slots,["title"=>"NON RUSH HOUR","price"=>"","data"=>[]]);
+		    	if(!empty($weekdayslots)&&!empty($weekdayslots['slots'])&&count($weekdayslots['slots'])>0&&(isset($_GET['source']) && $_GET['source'] == 'pps'))
+		    	{
+		    		$rsh=["title"=>"RUSH HOUR","price"=>"","data"=>[]];$nrsh=["title"=>"NON RUSH HOUR","price"=>"","data"=>[]];
+		    		
+		    		$p_np=$this->utilities->getPeakAndNonPeakPrice($weekdayslots['slots'],$this->utilities->getPrimaryCategory(null,$service['service_id']));
+		    		if(!empty($p_np))
+		    		{
+		    			$rsh['price']=(isset($p_np['peak']))?$this->utilities->getRupeeForm($p_np['peak']):"";
+		    			$nrsh['price']=(isset($p_np['non_peak']))?$this->utilities->getRupeeForm($p_np['non_peak']):"";
+		    		}
+		    		array_push($slots,$rsh);array_push($slots,$nrsh);
+		    	}
+		    	
 				foreach ($weekdayslots['slots'] as $slot) {
 
 					if(!empty($finder)&&!empty($finder['flags'])&&!empty($finder['flags']['newly_launched_date']))
@@ -885,10 +897,13 @@ class ServiceController extends \BaseController {
                         array_set($slot,'epoch_start_time',strtotime(strtoupper($date." ".$slot['start_time'])));
 						array_set($slot,'epoch_end_time',strtotime(strtoupper($date." ".$slot['end_time'])));
 						$total_slots_count +=1;
+						
+						if(isset($_GET['source']) && $_GET['source'] == 'pps')
 						$ck=$this->utilities->getWSNonPeakPrice($slot['start_time_24_hour_format'],$slot['end_time_24_hour_format'],null,$this->utilities->getPrimaryCategory(null,$service['service_id'],true));
+						
 						if(!$slot['passed']){
 							$total_slots_available_count +=1;
-							 							
+// 							return $ck;
 							if(intval($slot['start_time_24_hour_format']) < 12){
 								array_push($slots_timewise['morning'], $slot);
 							}elseif(intval($slot['start_time_24_hour_format']) < 16){
@@ -909,14 +924,17 @@ class ServiceController extends \BaseController {
             }
 			
             
-			
             $service['slot_passed_flag'] = $slot_passed_flag;
-            if(count($slots[0]['data'])==0)unset($slots[0]);if(count($slots[1]['data'])==0)unset($slots[1]);
-			$service['slots'] = $slots;
+            if(!empty($slots)&&count($slots)>0&&!empty($slots[0])&&!empty($slots[0])&&!empty($slots[0]['data'])&&count($slots[0]['data'])==0)
+            	unset($slots[0]);
+            if(!empty($slots)&&count($slots)>0&&!empty($slots[1])&&!empty($slots[1])&&!empty($slots[1]['data'])&&count($slots[1]['data'])==0)
+            	unset($slots[1]);
+            $service['slots'] = array_values($slots);
 			$service['slots_timewise'] = $slots_timewise;
 			$service['total_slots_count'] = $total_slots_count;
 			$service['total_slots_available_count'] = $total_slots_available_count;
 
+// 			return $service;
             if(count($slots) <= 0){
 
             	$avaliable_request = [
@@ -946,7 +964,7 @@ class ServiceController extends \BaseController {
 
             }else array_push($schedules, $service);
         }
-
+        
         
 //         return $service;
 
@@ -1043,7 +1061,7 @@ class ServiceController extends \BaseController {
 				}
 
 				$message = "";
-
+				
 				if(count($slots) == 0){
 					$message = "No slots available";
 				}
@@ -1699,18 +1717,33 @@ class ServiceController extends \BaseController {
 					break;
 			}
 		}
-		$service_details['dynamic_pricing'] = ["title"=>"RUSH HOUR","sub_title"=>"RUSH HOUR","rush"=>["data"=>[],"title"=>"RUSH HOUR","sub_title"=>"RUSH HOUR"],"non_rush"=>["data"=>[],"title"=>"NON RUSH HOUR","sub_title"=>"NON RUSH HOUR"]];
-		$p_np=$this->utilities->getAnySlotAvailablePNp($requested_date,$service_details);		
-		if(!empty($p_np))
+		if((isset($_GET['source']) && $_GET['source'] == 'pps'))
 		{
-			$service_details['dynamic_pricing']['rush']['sub_title']=$this->utilities->getRupeeForm($p_np['peak']);
-			$service_details['dynamic_pricing']['non_rush']['sub_title']=$this->utilities->getRupeeForm($p_np['non_peak']);
+				$service_details['dynamic_pricing'] = ["title"=>"RUSH HOUR","sub_title"=>"RUSH HOUR","rush"=>["data"=>[],"title"=>"RUSH HOUR","sub_title"=>"RUSH HOUR"],"non_rush"=>["data"=>[],"title"=>"NON RUSH HOUR","sub_title"=>"NON RUSH HOUR"]];
+				
+				 $p_np=$this->utilities->getAnySlotAvailablePNp($requested_date,$service_details);
+				 $service_cat=$this->utilities->getPrimaryCategory(null,$service_details['_id']);
+				if(!empty($p_np))
+				{
+					if(isset($p_np['peak']))
+						$service_details['dynamic_pricing']['rush']['sub_title']=$this->utilities->getRupeeForm($p_np['peak']);
+					else $service_details['dynamic_pricing']['rush']['sub_title']="";
+					if(isset($p_np['non_peak'])&&!empty($service_cat))
+					{
+						if($service_cat=='gym')
+							$service_details['dynamic_pricing']['non_rush']['sub_title']=$this->utilities->getRupeeForm($p_np['non_peak'])." ".((1-Config::get('app.non_peak_hours.studios.off'))*100)."% Off";
+						else
+							$service_details['dynamic_pricing']['non_rush']['sub_title']=$this->utilities->getRupeeForm($p_np['non_peak'])." ".((1-Config::get('app.non_peak_hours.studios.off'))*100)."% Off";
+						
+					}
+					else $service_details['dynamic_pricing']['non_rush']['sub_title']="";
+				}
+				
+				array_push($service_details['dynamic_pricing']['rush']['data'], ["name"=>"Moring","value"=>"6am -10am"]);
+				array_push($service_details['dynamic_pricing']['rush']['data'], ["name"=>"Evening","value"=>"6pm -10pm"]);
+				array_push($service_details['dynamic_pricing']['non_rush']['data'], ["name"=>"Moring","value"=>"10am -6pm"]);
+				array_push($service_details['dynamic_pricing']['non_rush']['data'], ["name"=>"Evening","value"=>"10pm -12am"]);			
 		}
-		
-		array_push($service_details['dynamic_pricing']['rush']['data'], ["name"=>"Moring","value"=>"6am -10am"]);
-		array_push($service_details['dynamic_pricing']['rush']['data'], ["name"=>"Evening","value"=>"6pm -10pm"]);
-		array_push($service_details['dynamic_pricing']['non_rush']['data'], ["name"=>"Moring","value"=>"10am -6pm"]);
-		array_push($service_details['dynamic_pricing']['non_rush']['data'], ["name"=>"Evening","value"=>"10pm -12am"]);
 		
 						
 		$schedule_data = [
@@ -1739,9 +1772,9 @@ class ServiceController extends \BaseController {
 		}
 		
 		$service_details['single_slot'] = false;
-		
 		if(isset($schedule->schedules) && count($schedule->schedules) > 0 && count(head($schedule->schedules)->slots)>0 && !(isset($service_details['finder']['trial']) && $service_details['finder']['trial'] == 'disable') && !(isset($service_details['trial']) && $service_details['trial'] == 'disable') && !(isset($service_details['workout_session_ratecard']['direct_payment_enable']) && $service_details['workout_session_ratecard']['direct_payment_enable'] == '0')){
 
+			
 			$service_details['next_session'] = "Next session at ".strtoupper(head($schedule->schedules)->slots[0]->start_time);
 			$service_details['slots'] = (head($schedule->schedules)->slots);
 			$service_details['total_sessions'] = count($service_details['slots'])." sessions";
@@ -1800,14 +1833,24 @@ class ServiceController extends \BaseController {
 			}
 		}else{
 
-			$service_details['single_slot'] = false;
-			$service_details['session_unavailable'] = true;
-			$service_details['next_session'] = "OOPs sessions are currently unavailable. ";
-			$service_details['slots'] = [];
-			$service_details['total_sessions'] = "No sessions availabe";
-			unset($service_details['pass_title']);
-			unset($service_details['pass_description']);
-			$service_details['page_index'] = 0;
+			$pps_slots=(array)$schedule;
+			if(!empty($pps_slots)&&!empty($pps_slots['slots']))
+			{
+				$service_details['slots']=$pps_slots['slots'];
+				$service_details['single_slot'] = false;
+				$service_details['session_unavailable'] = false;
+				$service_details['next_session'] = "";
+			}
+			else {				
+				$service_details['single_slot'] = false;
+				$service_details['session_unavailable'] = true;
+				$service_details['next_session'] = "OOPs sessions are currently unavailable. ";
+				$service_details['slots'] = [];
+				$service_details['total_sessions'] = "No sessions availabe";
+				unset($service_details['pass_title']);
+				unset($service_details['pass_description']);
+				$service_details['page_index'] = 0;
+			}
 			// $service_details['next_session'] = "No sessions available";
 		}
 		unset($service_details['finder']);

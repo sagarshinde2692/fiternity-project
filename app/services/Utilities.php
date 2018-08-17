@@ -4150,7 +4150,7 @@ Class Utilities {
 		
 		try {
 			$peak=true;
-			if(!empty($workoutSessionPrice)&&!empty($start)&&!empty($end)&&!empty($service_cat))
+			if(!empty($start)&&!empty($end)&&!empty($service_cat))
 			{   
 				if($service_cat=='gym')
 				{
@@ -4180,9 +4180,12 @@ Class Utilities {
 			{
 				if(!isset($resp['peak'])||!isset($resp['non_peak']))
 				{
-					$temp=$this->getWSNonPeakPrice($value['start_time_24_hour_format'],$value['end_time_24_hour_format'],$value['price'],$service_cat,true);
+				    $temp=$this->getWSNonPeakPrice($value['start_time_24_hour_format'],$value['end_time_24_hour_format'],$value['price'],$service_cat,false);
 					if(!empty($temp)&&isset($temp['wsprice']))
-						(!empty($temp['peak']))?$resp['peak']=$temp['wsprice']:$resp['non_peak']=$temp['wsprice'];
+					{
+						if(!empty($temp['peak']))$resp['peak']=intval($temp['wsprice']);
+						else $resp['non_peak']=intval($temp['wsprice']);
+					}
 				}
 				else return $resp;
 			}
