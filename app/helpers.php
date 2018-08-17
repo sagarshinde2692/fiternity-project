@@ -214,6 +214,8 @@ if(!function_exists('citywise_category')){
                 ["name" => "MMA And Kick Boxing","slug" => "mma-and-kick-boxing-classes"],
                 ["name" => "Spinning And Indoor Cycling","slug" => "spinning-classes"],
                 ["name" => "Healthy Tiffins","slug" => "healthy-tiffins"],
+                ["name" => "Swimming","slug" => "swimming-pools"],
+                ["name" => "Luxury Hotels","slug" => "luxury-hotels"],
                 // ["name" => "Personal Trainers","slug" => "personal-trainers"],
                 // ["name" => "Sport Nutrition Supplement Stores","slug" => "sport-nutrition-supplement-stores"],
                 // ["name" => "Aerial Fitness","slug" => "aerial-fitness"],
@@ -230,6 +232,7 @@ if(!function_exists('citywise_category')){
                 ["name" => "Yoga","slug" => "yoga-classes"],
                 ["name" => "MMA And Kick Boxing","slug" => "mma-and-kick-boxing-classes"],
                 ["name" => "Cross Functional Training","slug" => "functional-training"],
+                ["name" => "Swimming","slug" => "swimming-pools"],
                 // ["name" => "Pre-natal Classes","slug" => "pre-natal-classes"],
                 // ["name" => "Kids Fitness","slug" => "kids-fitness-classes"]
             ];
