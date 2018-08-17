@@ -418,14 +418,17 @@ class TransactionController extends \BaseController {
     
             if(isset($data['service_id'])){
                 $service_id = (int) $data['service_id'];
-    
+                
                 $serviceDetail = $this->getServiceDetail($service_id);
-    
+
                 if($serviceDetail['status'] != 200){
                     return Response::json($serviceDetail,$this->error_status);
                 }
-    
+                
                 $data = array_merge($data,$serviceDetail['data']);
+                if(isset($data['type']) && $data['type'] == 'workout-session' && $data['servicecategory_id'] == 65){
+                    $data['service_name'] = $this->utilities->getGymServiceNamePPS();
+                }
             }
 
         }else{
@@ -3049,10 +3052,8 @@ class TransactionController extends \BaseController {
         $data['meal_contents'] = $this->stripTags($service['short_description']);
         (isset($service['diet_inclusive'])) ? $data['diet_inclusive'] = $service['diet_inclusive'] : null;
         $data['finder_address'] = (isset($service['address']) && $service['address'] != "") ? $service['address'] : "-";
+        $data['servicecategory_id'] = (isset($service['servicecategory_id'])) ? $service['servicecategory_id'] : 0;
         
-        if(isset($data['type']) && $data['type'] == 'workout-session' && $service['servicecategory_id'] == 65){
-            $data['service_name'] = $this->utilities->getGymServiceNamePPS();
-        }
         
         return array('status' => 200,'data' =>$data);
 
