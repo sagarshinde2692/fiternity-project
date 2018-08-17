@@ -922,7 +922,8 @@ class TransactionController extends \BaseController {
             $resp['data']["quantity_details"] = [
                 "field" => "No of Person",
                 "description" => "Qty ".(!empty($order['customer_quantity']) ? $order['customer_quantity'] : 1),
-                'max'=>5
+                'max'=>5,
+                'selected_quantity'=>(!empty($order['customer_quantity']) ? $order['customer_quantity'] : 1)
             ];
         }
 
