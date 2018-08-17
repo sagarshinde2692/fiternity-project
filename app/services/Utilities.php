@@ -4369,6 +4369,10 @@ Class Utilities {
         
     }
 
+    public function getGymServiceNamePPS(){
+        return "Gym Workout";
+    }
+
 
 }
 

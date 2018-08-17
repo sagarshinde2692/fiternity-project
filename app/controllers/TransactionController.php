@@ -3050,6 +3050,9 @@ class TransactionController extends \BaseController {
         (isset($service['diet_inclusive'])) ? $data['diet_inclusive'] = $service['diet_inclusive'] : null;
         $data['finder_address'] = (isset($service['address']) && $service['address'] != "") ? $service['address'] : "-";
         
+        if(isset($data['type']) && $data['type'] == 'workout-session' && $service['servicecategory_id'] == 65){
+            $data['service_name'] = $this->utilities->getGymServiceNamePPS();
+        }
         
         return array('status' => 200,'data' =>$data);
 

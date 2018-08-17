@@ -1467,8 +1467,19 @@ class ServiceController extends \BaseController {
 			// 	$service_details = json_decode(json_encode($service_details_response['data']), true);
 			// }
 			
-			$service_details = Service::active()->where('finder_id', $finder['_id'])->where('slug', $service_slug)->with('location')->with(array('ratecards'))->first(['name', 'contact', 'photos', 'lat', 'lon', 'calorie_burn', 'address', 'servicecategory_id', 'finder_id', 'location_id','trial','workoutsessionschedules']);
-			// return $service_details;
+			$service_details = Service::active()->where('finder_id', $finder['_id'])->where('slug', $service_slug)->with('location')->with(array('ratecards'))->first(['name', 'contact', 'photos', 'lat', 'lon', 'calorie_burn', 'address', 'servicecategory_id', 'finder_id', 'location_id','trial','workoutsessionschedules', 'short_description']);
+			
+			if(!empty($service_details['short_description'])){
+				
+				$service_category = Servicecategory::find($service_details["servicecategory_id"]);
+				
+				if($service_category['description'] == $service_details['short_description']){
+					unset($service_details['short_description']);
+				}
+			}else{
+				unset($service_details['short_description']);
+			}
+			
 			if(!$service_details){
 				
 				return Response::json(array('status'=>400, 'error_message'=>'Service not active'), $this->error_status);
@@ -1492,6 +1503,7 @@ class ServiceController extends \BaseController {
 				$service_details['type'] = 'gym';
 				$service_details['pass_title'] = 'All Day Pass';
 				$service_details['pass_description'] = 'Choose to workout at a suitable time between 6 am to 11 pm';
+				$service_details['name'] = $this->utilities->getGymServiceNamePPS();
 
 
 			}else{
@@ -1583,10 +1595,11 @@ class ServiceController extends \BaseController {
 			
 			foreach($finder['photos'] as $photo){
 				if(isset($photo['servicetags']) && in_array($service_details['_id'], $photo['servicetags'])){
-					array_unshift($service_details['photos'], 'https://b.fitn.in/f/g/full/'.$photo['url']);
-				}else{
 					array_push($service_details['photos'], 'https://b.fitn.in/f/g/full/'.$photo['url']);
 				}
+				// else{
+				// 	array_push($service_details['photos'], 'https://b.fitn.in/f/g/full/'.$photo['url']);
+				// }
 			}
 			
 			array_push($service_details['photos'], 'https://b.fitn.in/f/c/'.$finder['coverimage']);
