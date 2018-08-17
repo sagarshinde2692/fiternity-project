@@ -1493,25 +1493,25 @@ class ServiceController extends \BaseController {
 			$service_details = $service_details->toArray();
 
 			// $service_details['title'] = $service_details['name'].' at '.$finder['title'];
-			$service_details['title'] = preg_replace('/membership/i', 'Workout', $service_details['name']).' at '.$finder['title'];
 			
-			$service_details['finder_name'] = $finder['title'];
 			
-
 			if($service_details['servicecategory_id'] == 65){
-
+				
 				$service_details['type'] = 'gym';
 				$service_details['pass_title'] = 'All Day Pass';
 				$service_details['pass_description'] = 'Choose to workout at a suitable time between 6 am to 11 pm';
 				$service_details['name'] = $this->utilities->getGymServiceNamePPS();
-
-
+				
+				
 			}else{
-
+				
 				$service_details['type'] = 'studio';
 				$service_details['pass_title'] = 'Quick Book';
-
+				
 			}
+			$service_details['title'] = preg_replace('/membership/i', 'Workout', $service_details['name']).' at '.$finder['title'];
+			
+			$service_details['finder_name'] = $finder['title'];
 			
 			$workout_session_ratecard = head(array_where($service_details['ratecards'], function($key, $value){
 				if($value['type'] == 'workout session'){
