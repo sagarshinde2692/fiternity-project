@@ -250,13 +250,13 @@ class Service extends \Basemodel{
 
                         $difference     =   $today_date->diff($end_date);
 
-                        // if($difference->days <= 15){
-                        //     $ratecardoffer['offer_text']    =  ($difference->d == 1) ? "Expires Today" : ($difference->d > 7 ? "Expires soon" : "Expires in ".$difference->days." days");
+                        if($difference->days <= 15){
+                            $ratecardoffer['offer_text']    =  ($difference->d == 1) ? "Expires Today" : ($difference->d > 7 ? "Expires soon" : "Expires in ".$difference->days." days");
 
-						// }
+						}
 
 
-						$ratecardoffer['offer_text']    =  ($difference->d == 1) ? "Expires Today" : ($difference->d > 7 ? "Expires in ".((24-intval(date('d', time()))))." days" : "Expires in ".(intval($difference->days))." days");
+						// $ratecardoffer['offer_text']    =  ($difference->d == 1) ? "Expires Today" : ($difference->d > 7 ? "Expires in ".((24-intval(date('d', time()))))." days" : "Expires in ".(intval($difference->days))." days");
 
 
 						if($value['type'] == 'membership' && $value['direct_payment_enable'] == '1' && $key == count($ratecardsarr) - 1){
