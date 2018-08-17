@@ -2059,6 +2059,9 @@ Class CustomerReward {
             if(isset($coupon['vendor_commission']) && is_numeric($coupon['vendor_commission'])){
                 $resp['vendor_commission'] = $coupon['vendor_commission'];
             }
+            if(isset($coupon['description'])){
+                $resp['description'] = $coupon['description'];
+            }
             
         }else{
 

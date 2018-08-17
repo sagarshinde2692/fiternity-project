@@ -899,20 +899,26 @@ class TransactionController extends \BaseController {
         }
 
         
-        if(!empty($order['coupon']) && !empty($order['coupon_discount_amount'])){
-            $resp["coupon_details"] = [
-                "title" => "APPLY PROMOCODE",
-                "description" => "",
-                "applied" => true,
-                "remove_title" => strtoupper($order['coupon'])." appllied",
-                "remove_msg" => "Are you sure you want to remove this coupon code?"
-            ];
+        $resp["coupon_details"] = [
+            "title" => "APPLY PROMOCODE",
+            "description" => "",
+            "applied" => false,
+            "remove_title" => "",
+            "remove_msg" => "Are you sure you want to remove this coupon code?"
+        ];
+        if(!empty($data['coupon_code']) && !empty($data['coupon_discount_amount'])){
+            $resp['coupon_details']['title'] = strtoupper($data['coupon_code']);
+            $resp['coupon_details']['remove_title'] =  strtoupper($data['coupon_code'])." applied";
+            if(isset($data['coupon_description'])){
+                $resp['coupon_details']['description'] = $data['coupon_description'];
+            }
         }
 
-        if(!empty($order['customer_quantity'])){
+        if(in_array($order['type'], ['booktrials', 'workout-session'])){
             $resp["quantity_details"] = [
                 "field" => "No of Person",
-                "description" => "Qty ".(!empty($order['customer_quantity']) ? $order['customer_quantity'] : 1)
+                "description" => "Qty ".(!empty($order['customer_quantity']) ? $order['customer_quantity'] : 1),
+                'max'=>5
             ];
         }
 
@@ -2263,6 +2269,9 @@ class TransactionController extends \BaseController {
                 if(isset($couponCheck['vendor_commission'])){
                     $data['vendor_commission'] = $couponCheck['vendor_commission'];
                 }
+                if(isset($couponCheck['description'])){
+                    $data['coupon_description'] = $couponCheck['description'];
+                }
 
                 $data["coupon_discount_amount"] = $amount > $couponCheck["data"]["discount"] ? $couponCheck["data"]["discount"] : $amount;
 
@@ -2282,7 +2291,7 @@ class TransactionController extends \BaseController {
 
             if($order && isset($order['coupon_code'])){
 
-                $order->unset('coupon_code', 'coupon_discount_amount');
+                $order->unset(['coupon_code', 'coupon_discount_amount']);
                 // $order->unset('coupon_discount_amount');
             }
 
