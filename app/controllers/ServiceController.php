@@ -1055,7 +1055,8 @@ class ServiceController extends \BaseController {
 					$schedule = $data['schedules'][0];
 					if(isset($schedule['slots'])&&count($schedule['slots'])>0)
 					{
-						$slots = pluck($schedule['slots'], ['slot_time', 'price', 'service_id', 'finder_id', 'ratecard_id', 'epoch_start_time', 'epoch_end_time']);
+						$slots =$schedule['slots'];
+						//$slots = pluck($schedule['slots'], ['slot_time', 'price', 'service_id', 'finder_id', 'ratecard_id', 'epoch_start_time', 'epoch_end_time']);
 					}
 					$slots=$schedule['slots']; 
 				}
