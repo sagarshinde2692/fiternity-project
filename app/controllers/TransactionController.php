@@ -899,7 +899,7 @@ class TransactionController extends \BaseController {
         }
 
         
-        $resp["coupon_details"] = [
+        $resp['data']["coupon_details"] = [
             "title" => "APPLY PROMOCODE",
             "description" => "",
             "applied" => false,
@@ -907,15 +907,15 @@ class TransactionController extends \BaseController {
             "remove_msg" => "Are you sure you want to remove this coupon code?"
         ];
         if(!empty($data['coupon_code']) && !empty($data['coupon_discount_amount'])){
-            $resp['coupon_details']['title'] = strtoupper($data['coupon_code']);
-            $resp['coupon_details']['remove_title'] =  strtoupper($data['coupon_code'])." applied";
+            $resp['data']['coupon_details']['title'] = strtoupper($data['coupon_code']);
+            $resp['data']['coupon_details']['remove_title'] =  strtoupper($data['coupon_code'])." applied";
             if(isset($data['coupon_description'])){
-                $resp['coupon_details']['description'] = $data['coupon_description'];
+                $resp['data']['coupon_details']['description'] = $data['coupon_description'];
             }
         }
 
         if(in_array($order['type'], ['booktrials', 'workout-session'])){
-            $resp["quantity_details"] = [
+            $resp['data']["quantity_details"] = [
                 "field" => "No of Person",
                 "description" => "Qty ".(!empty($order['customer_quantity']) ? $order['customer_quantity'] : 1),
                 'max'=>5
@@ -923,7 +923,7 @@ class TransactionController extends \BaseController {
         }
 
         // if(!empty($order['customer_quantity'])){
-            $resp["pt_details"] = [
+            $resp['data']["pt_details"] = [
                 "title" => "Add on",
                 "description" => "Personal Training - Rs.300",
                 "applied" => !empty($data['pt_applied']) ? $data['pt_applied'] : false
