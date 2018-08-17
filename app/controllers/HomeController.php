@@ -615,7 +615,7 @@ class HomeController extends BaseController {
 
             function cmp($a, $b)
             {
-                return strcmp($a['order'], $b['order']);
+                return $a['order'] - $b['order'];
             }
 
             usort($campaigns, "cmp");
