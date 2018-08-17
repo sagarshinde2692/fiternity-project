@@ -909,6 +909,7 @@ class TransactionController extends \BaseController {
         if(!empty($data['coupon_code']) && !empty($data['coupon_discount_amount'])){
             $resp['data']['coupon_details']['title'] = strtoupper($data['coupon_code']);
             $resp['data']['coupon_details']['remove_title'] =  strtoupper($data['coupon_code'])." applied";
+            $resp['data']['coupon_details']['applied'] =  true;
             if(isset($data['coupon_description'])){
                 $resp['data']['coupon_details']['description'] = $data['coupon_description'];
             }
@@ -925,7 +926,8 @@ class TransactionController extends \BaseController {
         // if(!empty($order['customer_quantity'])){
             $resp['data']["pt_details"] = [
                 "title" => "Add on",
-                "description" => "Personal Training - Rs.300",
+                "description" => "Personal Training",
+                "cost"=>"Rs.300",
                 "applied" => !empty($data['pt_applied']) ? $data['pt_applied'] : false
             ];
         // }
