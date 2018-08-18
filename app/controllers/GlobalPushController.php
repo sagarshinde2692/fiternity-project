@@ -506,7 +506,7 @@ class GlobalPushController extends \BaseController
 
     $brands = $brands['result'];
     // return $cityData = Brand::lists('name','_id');
-    $brandsD = Brand::select(["name","_id","slug"])->get();
+    $brandsD = Brand::where("status","1")->select(["name","_id","slug"])->get();
     // $brandsData = new stdClass();
     foreach($brandsD as $item){
       $brandsData[$item["id"]] =  array("name" => $item['name'], "slug"=>$item['slug']);
