@@ -517,7 +517,7 @@ class GlobalPushController extends \BaseController
 
     // Get similar outlets in city.........
     foreach ($brands as $brand){
-      if(isset($brand['_id']['brand_id']) && $brand['_id']['brand_id'] != '' && $brand['count'] > 1){
+      if(isset($brand['_id']['brand_id']) && isset($brandsData[$brand['_id']['brand_id']]) && $brand['_id']['brand_id'] != '' && $brand['count'] > 1){
         $data = [
             'brand_id'    =>$brand['_id']['brand_id'],
             'brand_name'  =>$brandsData[$brand['_id']['brand_id']]["name"],
