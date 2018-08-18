@@ -3149,7 +3149,32 @@ class CustomerController extends \BaseController {
 				Log::info('device_type'.$this->device_type);
 				Log::info('app_version'.$this->app_version);
 				$trials = [];
-				if($this->app_version > '4.4.3'){
+				if($this->app_version >= 5){
+
+					Log::info("Asdasdasdsss=======");
+					$trials = Booktrial
+						::where('customer_email', '=', $customeremail)
+						->where('going_status_txt','!=','cancel')
+						->where('post_trial_status', '!=', 'no show')
+						->where('booktrial_type','auto')
+						->where(function($query){
+							$query->orWhere('schedule_date_time','>=',new DateTime())
+							->orWhere('payment_done', false)
+							->orWhere(function($query){
+									$query	->where('schedule_date_time', '>', new DateTime(date('Y-m-d H:i:s', strtotime('-3 days', time()))))
+											->whereIn('post_trial_status', [null, '', 'unavailable']);	
+							})
+							->orWhere(function($query){
+								$query	->where('schedule_date_time', '>', new DateTime(date('Y-m-d H:i:s', strtotime('17-08-2018'))))
+										->whereIn('post_trial_status', ['attended'])
+										->where('post_trial_review', '!=', true);	
+							});
+						})
+						->orderBy('schedule_date_time', 'asc')
+						->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code', 'payment_done', 'type', 'order_id', 'post_trial_status', 'amount_finder', 'kiosk_block_shown')
+						->get();
+				
+				}else if($this->app_version > '4.4.3'){
 					Log::info("4.4.3");
 					$trials = Booktrial::where('customer_email', '=', $customeremail)->where('going_status_txt','!=','cancel')->where('post_trial_status', '!=', 'no show')->where('booktrial_type','auto')->where(function($query){return $query->where('schedule_date_time','>=',new DateTime())->orWhere('payment_done', false)->orWhere(function($query){	return 	$query->where('schedule_date_time', '>', new DateTime(date('Y-m-d H:i:s', strtotime('-3 days', time()))))->whereIn('post_trial_status', [null, '', 'unavailable']);	});})->orderBy('schedule_date_time', 'asc')->select('finder','finder_name','service_name', 'schedule_date', 'schedule_slot_start_time','finder_address','finder_poc_for_customer_name','finder_poc_for_customer_no','finder_lat','finder_lon','finder_id','schedule_date_time','what_i_should_carry','what_i_should_expect','code', 'payment_done', 'type', 'order_id', 'post_trial_status', 'amount_finder', 'kiosk_block_shown')->get();
 
@@ -3163,6 +3188,7 @@ class CustomerController extends \BaseController {
 				$let_us_know = [];
 				$no_block = [];
 				$future = [];
+				$review = [];
 
 				if(count($trials) > 0){
 					$workout_session_level_data = $this->utilities->getWorkoutSessionLevel($customer_id);
@@ -3273,6 +3299,11 @@ class CustomerController extends \BaseController {
 								
 
 								
+							}else{
+								$data['block_screen'] = [
+									'type'=>'review',
+									'url'=>Config::get('app.url').'/getreviewdata/'.$data['_id']
+								];	
 							}
 
 							$data['current_time'] = date('Y-m-d H:i:s', time());
@@ -3310,6 +3341,8 @@ class CustomerController extends \BaseController {
 
 								if( (isset($x['block_screen']) && $x['block_screen']['type'] == 'activate_session')){
 									array_push($activate, $x);
+								}else if(isset($x['block_screen']) && $x['block_screen']['type'] == 'review'){
+									array_push($review, $x);
 								}else{
 									array_push($let_us_know, $x);
 								}
@@ -3320,7 +3353,7 @@ class CustomerController extends \BaseController {
 							}
 						}
 
-						$upcoming = array_merge($activate, $let_us_know, $future, $no_block);
+						$upcoming = array_merge($activate, $let_us_know, $review, $future, $no_block);
 					}
 
 				}
