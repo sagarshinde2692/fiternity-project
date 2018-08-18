@@ -94,7 +94,7 @@ class CustomerController extends \BaseController {
 		$hour = 60*60;
 		$hour12 = 60*60*12;
 		$hour2 = 60*60*2;
-
+		
 		foreach ($trials as $trial){
 
 			array_set($trial, 'type_text', 'Trial');
@@ -992,6 +992,11 @@ class CustomerController extends \BaseController {
 
 
 		$customer->last_visited = Carbon::now();
+		$cart_id=getCartOfCustomer(intval($customer->_id));
+		if(!empty($cart_id))
+		{
+			$customer->cart_id=$cart_id;
+		}
 		$customer->update();
 
 		
@@ -1310,6 +1315,8 @@ class CustomerController extends \BaseController {
 					),
 					'corporate_login'=>$this->utilities->checkCorporateEmail($customer['email'])
 				);
+		if(!empty($customer['cart_id']))
+			$data['cart_id']=$customer['cart_id'];
 		if(!empty($customer['referral_code']))
 			$data['referral_code'] = $customer['referral_code'];
 		$jwt_claim = array(
@@ -1321,7 +1328,7 @@ class CustomerController extends \BaseController {
 		
 		$jwt_key = Config::get('app.jwt.key');
 		$jwt_alg = Config::get('app.jwt.alg');
-
+		
 		$token = JWT::encode($jwt_claim,$jwt_key,$jwt_alg);
 
 		return array('status' => 200,'message' => 'successfull login', 'token' => $token);
@@ -3013,7 +3020,7 @@ class CustomerController extends \BaseController {
 		}
 		
 	}
-	
+
 	public function getExistingTrialWithFinder(){
 
 		$jwt_token = Request::header('Authorization');
@@ -3128,6 +3135,9 @@ class CustomerController extends \BaseController {
 	}
 
 	public function home($city = 'mumbai',$cache = true){
+
+
+		Log::info('--------customer_home_app--------',$_GET);
 
 		$jwt_token = Request::header('Authorization');
 		Log::info($jwt_token);
@@ -3696,14 +3706,14 @@ class CustomerController extends \BaseController {
             $decoded = $this->customerTokenDecode($jwt_token);
             $customer_id = $decoded->customer->_id;
             $data['customer_id'] = $customer_id;
-
+			
         }else{
 
             $customer_id = $data['customer_id'] ;
         }
-
+		
 		$customer = Customer::find((int)$customer_id);
-
+		
 		if(isset($data['customer_address']) && is_array($data['customer_address']) && !empty($data['customer_address'])){
 
 			$customerData['address'] = $data['customer_address'];
@@ -5253,6 +5263,7 @@ class CustomerController extends \BaseController {
 				case 'n-10m':
 				
 					$response = array_only($response, ['notification_id', 'transaction_type']);
+					Log::info($data);
 					$response ['block_screen_data']= $this->getBlockScreenData($time, $data);
 		
 					break;
@@ -7172,5 +7183,5 @@ class CustomerController extends \BaseController {
 		$userData = curl_call($qs, $wsUrl);
 		return json_decode($userData, true);
 	}
-
+	
 }
