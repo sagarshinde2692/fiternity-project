@@ -5318,14 +5318,14 @@ class FindersController extends \BaseController {
 		}
 
 		if($this->kiosk_app_version &&  $this->kiosk_app_version > 1.13){
-			$response["response"]["options"][] = [
-				"title"=>"Fitstore",
-				"description"=>"Buy products",
-				"image"=>"https://b.fitn.in/products/fitsotr_banner_small.png",
-				"banner_image"=>"https://b.fitn.in/products/fitstore_banner_large.png",
-				"id"=>8,
-				'type'=>'fitstore'
-			];
+			// $response["response"]["options"][] = [
+			// 	"title"=>"Fitstore",
+			// 	"description"=>"Buy products",
+			// 	"image"=>"https://b.fitn.in/products/fitsotr_banner_small.png",
+			// 	"banner_image"=>"https://b.fitn.in/products/fitstore_banner_large.png",
+			// 	"id"=>8,
+			// 	'type'=>'fitstore'
+			// ];
 		}
 		$response["response"]["options"][] =[
 			"title"=>"Fitternity Advantage",
