@@ -1,12 +1,15 @@
 <?PHP namespace App\Services;
 use Carbon\Carbon;
 use Customer;
+use Cart;
 use Customerwallet;
+use ProductRatecard;
 use Validator;
 use Response;
 use Config;
 use JWT;
 use Finder;
+use Service;
 use Request;
 use Log;
 use App\Services\Sidekiq as Sidekiq;
@@ -18,13 +21,14 @@ use App\Sms\CustomerSms as CustomerSms;
 use App\Mailers\FinderMailer as FinderMailer;
 use App\Services\Fitapi as Fitapi;
 use App\Mailers\CustomerMailer as CustomerMailer;
+use App\Notification\CustomerNotification;
 
 Class Utilities {
 
-//    protected $myrewards;
+//    protected $myreward;
 //    protected $customerReward;
 
-
+   
    public function __construct() {
        
     $this->vendor_token = false;
@@ -1074,7 +1078,7 @@ Class Utilities {
                             }
 
                             $value['claimed'] += 1;
-
+                            
                             $myreward->coupon_detail = $coupon_detail;
                             $myreward->update();
 
@@ -1090,6 +1094,47 @@ Class Utilities {
         return $hash_verified;
     }
 
+    
+    public function verifyOrderProduct($data,$order)
+    {
+    	try {
+    		Log::info(" info [verifyOrderProduct] data".print_r($data,true));
+    		$orderArr=$order->toArray();
+    		$hash_verified = false;
+    		if((!empty($orderArr['payment'])&&!empty($orderArr['payment']['pg_type'])&&in_array($orderArr['payment']['pg_type'],['PAYTM','AMAZON'])))
+    		{
+    			$hashreverse = getReverseHashProduct($orderArr);
+    			if($hashreverse['status']&&$hashreverse['data']['reverse_hash']==$data["verify_hash"] )
+    				$hash_verified = true;
+    		}
+    		else
+    		{
+    			// If amount is zero check for wallet amount
+    			if($orderArr['amount_calculated']['final']== 0)
+    				$hash_verified = true;
+    				else
+    				{
+    					$hashreverse = getReverseHashProduct($orderArr);
+    					Log::info(" info hashreverse :: ".print_r($hashreverse ,true));
+    					if($hashreverse['status']&&$data["verify_hash"] == $hashreverse['data']['reverse_hash'])
+    						$hash_verified = true;
+    				}
+    		}
+    		if(!$hash_verified){
+    			
+    			$paymentq=$orderArr['payment'];
+    			$paymentq["hash_verified"]=false;
+    			$orderArr['payment']=$paymentq;
+    			$order->update($orderArr);
+    		}
+    		return $hash_verified;
+    		
+    	} catch (Exception $e) {
+    		Log::error(" Error [verifyOrderProduct] ".print_r($this->baseFailureStatusMessage($e),true));
+    		return false;
+    	}
+    }
+    
 
     public function deleteCommunication($order){
 
@@ -1180,7 +1225,28 @@ Class Utilities {
         }
 
     }
-
+    public function customSort($field, &$array, $direction = 'asc')
+    {
+    	
+    	usort($array, create_function('$a, $b', '
+        		$a = $a["' . $field . '"];
+        		$b = $b["' . $field . '"];
+        		if ($a == $b) return 0;
+        		return ($a ' . ($direction == 'desc' ? '>' : '<') .' $b) ? -1 : 1;
+    			'));
+    	return true;
+    }
+    public function sortDeep($field, &$array, $direction = 'asc')
+    {
+    	
+    	usort($array, create_function('$a, $b', '
+        		$a = $a["' . $field . '"];
+        		$b = $b["' . $field . '"];
+        		if ($a == $b) return 0;
+        		return ($a ' . ($direction == 'desc' ? '>' : '<') .' $b) ? -1 : 1;
+    			'));
+    	return true;
+    }
     public function deleteTrialCommunication($booktrial){
 
         $queue_id = [];
@@ -1729,7 +1795,7 @@ Class Utilities {
             }*/
 
             if($current_wallet_balance >= $wallet_limit){
-                return ['status' => 400,'message' => 'Wallet is overflowing Rs '.$wallet_limit];
+            	return ['status' => 400,'message' => 'Wallet is overflowing Rs '.$wallet_limit];
 
             }
 
@@ -2288,7 +2354,7 @@ Class Utilities {
                     ];
 
                     $customersms = new CustomerSms();
-
+                    
                     $customersms->referralFitcash($sms_data);
                 }
             }
@@ -2855,7 +2921,7 @@ Class Utilities {
                 return false;
             }
         }else{
-        	$flags = $data['flags'];
+        		$flags = $data['flags'];
         }
 
         $finder = Finder::find((int) $data["finder_id"]);
@@ -2869,7 +2935,7 @@ Class Utilities {
             return false;
         }
         
-        /* if((!empty($data['type']) && in_array($data['type'], ["memberships", "membership", "package", "packages", "healthytiffinmembership"]))||(isset($finder) && $finder["commercial_type"] != 0)) {
+          /* if((!empty($data['type']) && in_array($data['type'], ["memberships", "membership", "package", "packages", "healthytiffinmembership"]))||(isset($finder) && $finder["commercial_type"] != 0)) {
             Log::info("returning true");
             return true;
         } */
@@ -3317,40 +3383,40 @@ Class Utilities {
     }
 
     public function sendGroupCommunication($data){
-        
-        $customer_id = $data['customer_id'];
 
-        $group = $data['group'];
-
-        $customersms = new CustomerSms();
-        Log::info("sendGroupCommunication");
-        Log::info($data);
-        
-        foreach($group['members'] as $member){
-
-            if($member['customer_id'] == $customer_id){
-             
-                $order = \Order::find($member['order_id']);
-
-                $new_member_name = $order->customer_name;
-
-                $customersms->addGroupNewMember(['customer_phone'=>$order->customer_phone,'customer_name'=>$order->customer_name,'vendor_name'=>$order->finder_name, 'group_id'=>$group['group_id']]);
-
-            }
-
-        }
-
-        foreach($group['members'] as $member){
+            $customer_id = $data['customer_id'];
+    
+            $group = $data['group'];
+    
+            $customersms = new CustomerSms();
+            Log::info("sendGroupCommunication");
+            Log::info($data);
             
-            if($member['customer_id'] != $customer_id){
-                
-                $order = \Order::find($member['order_id'], ['customer_phone', 'customer_name']);
-                
-                $customersms->addGroupOldMembers(['customer_phone'=>$order->customer_phone,'customer_name'=>$order->customer_name, 'new_member_name'=>$new_member_name]);
-
+            foreach($group['members'] as $member){
+    
+                if($member['customer_id'] == $customer_id){
+                 
+                    $order = \Order::find($member['order_id']);
+    
+                    $new_member_name = $order->customer_name;
+    
+                    $customersms->addGroupNewMember(['customer_phone'=>$order->customer_phone,'customer_name'=>$order->customer_name,'vendor_name'=>$order->finder_name, 'group_id'=>$group['group_id']]);
+    
+                }
+    
             }
-
-        }
+    
+            foreach($group['members'] as $member){
+                
+                if($member['customer_id'] != $customer_id){
+                    
+                    $order = \Order::find($member['order_id'], ['customer_phone', 'customer_name']);
+                    
+                    $customersms->addGroupOldMembers(['customer_phone'=>$order->customer_phone,'customer_name'=>$order->customer_name, 'new_member_name'=>$new_member_name]);
+    
+                }
+    
+            }
 
     }
     public function checkFitternityCustomer($customer_email, $customer_phone){
@@ -3670,6 +3736,69 @@ Class Utilities {
 
     }
 
+    public function productsTabCartHomeCustomer($customer_id=null){
+    	
+    	if(empty($customer_id))
+    	{
+    		try {
+    			$decoded = decode_customer_token();
+    			if(!empty($decoded)&&!empty($decoded->customer))
+    				$customer_id = $decoded->customer->_id;
+    			else return null;
+    		} catch (Exception $e) {
+    			return null;
+    		}
+    	}
+    	if(!empty($customer_id))
+    	{
+    		Cart::$withoutAppends=true;
+    		return Cart::where("customer_id",intval($customer_id))->with("customer")->first();
+    	}
+    	else return null;	
+    }
+    public function getCustomerAddress($customer_id=null){
+    	
+    	if(empty($customer_id))
+    	{
+    		try {
+    			$decoded = decode_customer_token();
+    			if(!empty($decoded)&&!empty($decoded->customer)){
+                    $customer_id = $decoded->customer->_id;
+                    Log::info($customer_id);
+                }
+                else return null;
+    		} catch (Exception $e) {
+    			return null;
+    		}
+    	}
+    	if(!empty($customer_id))
+    	{
+    		Customer::$withoutAppends=true;
+    		return Customer::where("_id",intval($customer_id))->first(['customer_addresses_product']);
+    	}
+    	else return null;
+    }
+    public function addCustomerAddress($customer_id=null,$customer_address){
+    	
+    	if(empty($customer_id))
+    	{
+    		try {
+    			$decoded = decode_customer_token();
+    			if(!empty($decoded)&&!empty($decoded->customer))
+    				$customer_id = $decoded->customer->_id;
+    				else return null;
+    		} catch (Exception $e) {
+    			return null;
+    		}
+    	}
+    	if(!empty($customer_id))
+    	{
+    		$added=Customer::where("_id",intval($customer_id))->push('customer_addresses_product',$customer_address);
+    		return (!empty($added))?true:false;
+    	}
+    	else return null;
+    }
+    
     public function getFitcash($data){
 
         $finder_id = (int)$data['finder_id'];
@@ -4138,14 +4267,14 @@ Class Utilities {
         //     return 5;
         // }
     }
-
+    
     public function isIntegratedVendor($finderdata){
         if($finderdata['commercial_type'] == 0 || (isset($finderdata['membership']) && $finderdata['membership'] == 'disable' && isset($finderdata['trial']) && $finderdata['trial'] == 'disable') || (!empty($finderdata['flags']['state']) && in_array($finderdata['flags']['state'], ['temporarily_shut', 'closed']))){
             return false;
         }
         return true;
     }
-    
+
     public function getContactOptions($finderarr){
 		$knowlarity_no = [];
 				
@@ -4179,7 +4308,422 @@ Class Utilities {
 		}
 		
 		return $knowlarity_no;
-    }
+
+	}
+    
+
+	public function baseFailureStatusMessage($e)
+	{
+		$message = ['type'    => get_class($e),'message' => $e->getMessage(),'file'=> $e->getFile(),'line'=> $e->getLine()];
+		return  $message['type'].' : '.$message['message'].' in '.$message['file'].' on '.$message['line'];
+	}
+	
+	
+	public function addProductsToCart($cartDataInput=[],$cart_id=null,$cart_summary=false,$update=true)
+	{
+		try {
+			if(empty($cartDataInput))
+			{
+				$data = Input::json()->all();
+				$cartDataInput=(!empty($data['cart_data'])?$data['cart_data']:[]);
+			}
+			$response=["status"=>1,"response"=>["message"=>"Success"]];
+			$jwt_token = Request::header("Authorization");
+			if(!empty($jwt_token)||!empty($cart_id))
+			{
+				if(!empty($cart_id))
+					$cart_id=intval($cart_id);
+					else
+					{
+						$token_decoded=decode_customer_token();
+						$cart_id=((!empty($token_decoded->customer)&&!empty($token_decoded->customer->cart_id))?$token_decoded->customer->cart_id:null);
+					}
+					if(!empty($cart_id)&&!empty($cartDataInput))
+					{
+						$cartData=[];
+						$cartDataExtended=[];
+						$cartDataRatecards=array_column($cartDataInput, 'ratecard_id');
+						$cartDataUnique=count(array_unique($cartDataRatecards));
+						$cartQuantityCount=count(array_column($cartDataInput, 'quantity'));
+						$cartRatecardsCount=count($cartDataRatecards);
+						// 					return $cartDataInput;
+						if($cartRatecardsCount>0&&$cartQuantityCount>0&&$cartQuantityCount==$cartRatecardsCount)
+						{
+							$ratecards=ProductRatecard::active()->whereIn("_id",array_map('intval',$cartDataRatecards))->with(array('product'=>function($query){$query->active()->select('_id','slug','title','slug','info','specification','image');}))->get(['price','properties','product_id','title','color','size','image']);
+							if(!empty($ratecards))
+							{
+								$ratecards=$ratecards->toArray();
+								if($cartDataUnique!=count($ratecards))return ['status'=>0,"message"=>"Invalid Ratecard Found."];
+								foreach ($ratecards as &$ratecard)
+								{
+									if(!empty($ratecard['product']))
+									{
+										$neededObject = array_values(array_filter($cartDataInput,function ($e) use ($ratecard) {return $e['ratecard_id']== $ratecard['_id'];}));
+										if(!empty($neededObject)&&count($neededObject)>0)
+											$neededObject=$neededObject[0];
+											if(!empty($ratecard)&&!empty($neededObject)&&!empty($neededObject['quantity'])&&!empty($ratecard['product_id'])&&!empty($ratecard['_id'])&&isset($ratecard['price']))
+											{
+												array_push($cartData, ["product_id"=>$ratecard['product_id'],"ratecard_id"=>$ratecard['_id'],"price"=>$ratecard['price'],"quantity"=>intval($neededObject['quantity'])]);
+												$tmpRatecardinfo=['_id'=>!empty($ratecard['_id'])?$ratecard['_id']:"",'title'=>!empty($ratecard['title'])?$ratecard['title']:"",'color'=>(!empty($ratecard['properties'])&&!empty($ratecard['properties']['color']))?$ratecard['properties']['color']:"",
+														'size'=>(!empty($ratecard['properties'])&&!empty($ratecard['properties']['size']))?$ratecard['properties']['size']:"",'slug'=>!empty($ratecard['slug'])?$ratecard['slug']:"",'properties'=>!empty($ratecard['properties'])?$ratecard['properties']:"",'image'=>!empty($ratecard['image'])?$ratecard['image']:""];
+												array_push($cartDataExtended, ["product"=>$ratecard['product'],"ratecard"=>$tmpRatecardinfo,"price"=>$ratecard['price'],"quantity"=>intval($neededObject['quantity'])]);
+											}
+											else return ['status'=>0,"message"=>"Not a valid ratecard or ratecard doesn't exist."];
+									}
+									else return ['status'=>0,"message"=>"Not a valid product id."];
+								}
+								if($cart_summary)return ['status'=>1,"data"=>$cartDataExtended];
+								if($update) {
+									$addedToCart=Cart::where('_id', intval($cart_id))->first();
+									$addedToCart=$addedToCart->update(['products'=>$cartData]);
+								}
+								$response['response']['data']=$cartDataExtended;
+								return $response;
+							}
+							else return ['status'=>0,"message"=>"No product Ratecards Found."];
+						}
+						else return ['status'=>0,"message"=>"Invalid Cart Input data."];
+					}
+					else return ['status'=>0,"message"=>"No Data To insert or cart Id is invalid/absent."];
+			}
+			else return ['status'=>0,"message"=>"Token Not Present"];
+			
+			return $response;
+		} catch (Exception $e)
+		{
+			return  ['status'=>0,"message"=>$this->baseFailureStatusMessage($e)];
+		}
+		
+	}
+	
+	public function getProductCartAmount($data)
+	{
+		try {
+			$resp=["status"=>1,"message"=>"success",'amount'=>[]];
+			$cart_data =$data['cart_data'];
+			$amount=0;
+			foreach ($cart_data as $cart_item)
+				$amount=$amount+(intval($cart_item['quantity'])*intval($cart_item['price']));
+				
+				$resp['amount']['cart_amount']=$amount;
+				// KINDLY ADD WALLET AMOUNT HERE TO BE SUBTRACTED
+				// GET WALLET CALCULATED AMOUNT FROM DIFF FUNCTION
+				// MAKE DIFFERENT VARIABLE FOR WALLET AMOUNT ADD IT IN RESPONSE IN DATA WITH KEY wallet amount
+				
+				
+				// KINDLY ADD COUPON OFF AMOUNT HERE TO BE SUBTRACTED
+				// GET COUPON CALCULATED AMOUNT FROM DIFF FUNCTION
+				// MAKE DIFFERENT VARIABLE FOR WALLET AMOUNT ADD IT IN RESPONSE IN DATA WITH KEY coupon_amount
+				
+				if(!empty($data['coupon']))
+				{
+					 $couponValid=$this->getCouponCodeAttach($data,$amount);
+					if(!empty($couponValid)&&!empty($couponValid['status']))
+					{
+						$couponValid=$couponValid['coupon'];
+						$couponDiscAmnt=0;
+						if(!empty($couponValid['discount_amount']))
+						{
+							if($amount>=$couponValid['discount_amount'])
+							{
+								$amount=$amount-$couponValid['discount_amount'];
+								$couponDiscAmnt=$couponValid['discount_amount'];
+							}
+							else {
+								$couponDiscAmnt=$amount;
+								$amount=0;							
+							}
+							
+						}
+						else if(!empty($couponValid['discount_percent'])&&!empty($couponValid['discount_max']))
+						{
+// 							if($amount>=$couponValid['discount_max'])
+// 							{
+								$disc_perc_amnt=(($couponValid['discount_percent']/100)*$amount);
+								if($disc_perc_amnt>=$couponValid['discount_max'])
+								{
+									$amount=$amount-$couponValid['discount_max'];
+									$couponDiscAmnt=$couponValid['discount_max'];
+								}
+									else {
+										$amount=intval($amount-$disc_perc_amnt);
+										$couponDiscAmnt=intval($disc_perc_amnt);
+									}
+									
+// 							}
+// 							else {
+// 								$couponDiscAmnt=$amount;
+// 								$amount=0;
+// 							}
+						}
+						else return ['status'=>0,"message"=>"Coupon discount not set.Can't be used yet."];
+						if($couponDiscAmnt!=0)
+							$resp['amount']['coupon_discount_amount']=$couponDiscAmnt;	
+					}
+					else return $couponValid;
+				}
+					
+			
+				// AFTER CALCULATION SHOW ONLY DEDUCTION HERE
+				// $amount = $amount - $walletamuount - $couponAmount + $convinience_fee;
+				
+				
+				// DELIVERY CHARGES
+				
+				if(empty($data['deliver_to_vendor']))
+				{
+					$resp['amount']['delivery']=intval(Config::get('app.product_delivery_charges'));
+					$amount=$amount+$resp['amount']['delivery'];
+				}
+
+					// FINALLY RETURN
+					$resp['amount']['final']=$amount;
+					
+					return $resp;
+		} catch (Exception $e)
+
+		{
+			return  ['status'=>0,"message"=>$this->baseFailureStatusMessage($e)];
+		}
+		
+	}
+	
+	public function getCartSummary($order)
+	{
+		try {
+			if(empty($order))return ["status"=>0,"message"=>"No order present."];
+			$resp=["status"=>1,"message"=>"success","data"=>[]];
+			
+			$cart_data =$order['cart_data'];
+			$cart_desc=[];
+			$amount=0;
+			foreach ($cart_data as $cart_item)
+			{
+				$img_url="";
+				if(!empty($cart_item['ratecard'])&&!empty($cart_item['ratecard']['image'])&&!empty($cart_item['ratecard']['image']['primary']))
+					$img_url=$cart_item['ratecard']['image']['primary'];
+					else if (!empty($cart_item['product']&&!empty($cart_item['product']['image'])&&!empty($cart_item['product']['image']['primary'])))
+						$img_url=$cart_item['product']['image']['primary'];
+					
+						$temp=[];
+						$temp['quantity']=$cart_item['quantity'];
+						$temp['price']=(intval($cart_item['quantity'])*intval($cart_item['price']));
+						$temp['size']=$cart_item['ratecard']['size'];
+						$temp['title']=$cart_item['product']['title'];
+						$temp['sub_title']=$cart_item['ratecard']['color'];
+						
+						if(!empty($cart_item['ratecard']['properties']))
+						{
+							$props_arr=$this->mapProperties($cart_item['ratecard']['properties']);
+							(!empty($props_arr))?$temp['properties']=$props_arr:"";
+						}
+						
+						$temp['image']=$img_url;
+						array_push($cart_desc,$temp);
+						$amount=$amount+(intval($cart_item['quantity'])*intval($cart_item['price']));
+
+			}
+			
+			$resp['data']['cart_details']=$cart_desc;
+			$resp['data']['total_cart_amount']=$amount;
+			if(!emptY($order['amount_calculated']['coupon_discount_amount']))
+			{
+				$resp['data']['coupon_discount']=$order['amount_calculated']['coupon_discount_amount'];
+				$amount=$amount-$order['amount_calculated']['coupon_discount_amount'];
+			}
+			if(empty($order['deliver_to_vendor']))$amount=$amount+intval(Config::get('app.product_delivery_charges'));
+			$resp['data']['total_amount']=$amount;
+			// 			$this->getProductCartAmount($order);
+			return $resp;
+		} catch (Exception $e)
+		{
+			return  ['status'=>0,"message"=>$this->baseFailureStatusMessage($e)];
+		}
+	}
+	
+// 		public function  getProductImages($cart_data)
+// 		{
+	
+// 				$data=array_map(function($e){return [ratecard_id=>intval($e['ratecard']['_id']),product_id=>intval($e['product']['_id'])];},$cart_data);
+		
+// 				$products=array_column(array_column($cart_data,'product'),'_id');
+// 				$ratecards=array_column(array_column($cart_data,'ratecard'),'_id');
+// // 				\Product::$withoutAppends=true;
+// // 				$productView=Product::whereIn("_id",$products)->with(array('ratecard'=>function($query) use ($ratecards) {$query->whereIn("_id",$ratecards)->select('_id','product_id','image');}))->get(['image']);
+// // 				$map=[];
+// // 				if(!empty($productView))
+// // 					{
+// // 					$productView=$productView->toArray();
+// // 					foreach ($productView as $product) {
+// // 						foreach ($ratecards as $value) {
+// // 							$selectedRatecard=array_values(array_filter($productView['ratecard'],function ($e) use ($value) {return $value==$e['_id'];}));
+// // 							if(!empty($selectedRatecard))
+// // 								{
+// // 								$selectedRatecard=$selectedRatecard[0];
+// // 								if(!empty($selectedRatecard['image'])&&!empty($selectedRatecard['primary'])/* &&count($selectedRatecard['image']['secondary'])>0 */)
+// // 										$img=$selectedRatecard['image']['primary'];
+// // 								}
+// // 								else if(!empty($value['image'])&&!empty($value['image']['primary'])/* &&count($productView['image']['secondary'])>0 */)
+// // 										$img=$value['image']['primary'];
+// // 									$map[intval($value['ratecard']['_id'])]=$img;
+// // 							}
+// // 						}
+// // 					}
+					
+// 					$rc=array_column($home, "ratecard_id");
+// 					$pro=array_column($home, "product_id");
+					
+// 					$products=array_column(array_column($cart_data,'product'),'_id');
+// 					$ratecards=array_column(array_column($cart_data,'ratecard'),'_id');
+					
+// 					Product::$withoutAppends=true;
+// 					/* $rates=ProductRatecard::raw(function($collection)
+// 					 {
+// 					 return $collection->aggregate(
+// 					 [
+// 					 ['$group' => ['_id' => ["p_id"=>'$product_id','color'=>'$color'],'details' => ['$push'=>['ratecards'=>'$_id']]]],
+// 					 ['$match' => ['details.0' => ['$exists'=>true]]],
+// 					 ['$project' => ["rcs"=>['$arrayElemAt' => ['$details',0]]]]
+// 					 ]);
+// 					 });
+// 					 (!empty($rates)&&!empty($rates['result']))?
+// 					 $rc=array_values(array_intersect(array_column(array_column($rates['result'], 'rcs'), 'ratecards'),$rc)):""; */
+// 					$combined=["rc"=>ProductRatecard::active()->whereIn("_id",$rc)->get(["title","price"]),"pc"=>Product::active()->whereIn("_id",$pro)->with('primarycategory')->get(["title",'productcategory','slug'])];
+					
+					
+// 				$rateMain=[];
+// 				$productMain=[];
+// 				foreach ($combined['rc'] as &$value)
+// 					$rateMain[$value->_id]=$value;
+// 					foreach ($combined['pc'] as &$value)
+// 						$productMain[$value->_id]=$value;
+					
+// 				$tpa=[];
+// 				foreach ($home as $key => &$value)
+// 				{
+// 					$rc1=(!empty($value)&&!empty($rateMain)&&!empty($value['ratecard_id'])&&!empty($rateMain[$value['ratecard_id']]))?$rateMain[$value['ratecard_id']]:"";
+// 					$pc1=(!empty($value)&&!empty($productMain)&&!empty($value['product_id'])&&!empty($productMain[$value['product_id']]))?$productMain[$value['product_id']]:"";
+// 					if(!empty($rc1)&&!empty($pc1))
+// 						array_push($tpa,["ratecard"=>$rateMain[$value['ratecard_id']],"product"=>$productMain[$value['product_id']]]);
+// 				}
+					
+			
+// 					return $map;
+// 		}
+			
+	public function getCartFinalSummary($cart_data,$cart_id)
+	{
+		try {
+			if(empty($cart_data))
+				return ["status"=>5,"message"=>"No Cart Data present Or Cart is Empty."];
+			   $resp=["status"=>1,"message"=>"success","data"=>[]];
+				
+				$cart_desc=[];
+				$cart_details=[];
+				/* $cart_data=$this->addProductsToCart($cart_data,$cart_id,true);
+				if(!empty($cart_data)&&!empty($cart_data['status']))$cart_data=$cart_data['data'];
+				else return ["status"=>0,"message"=>(!empty($cart_data['message'])?$cart_data['message']:"couldn't get cart data.")]; */
+				$amount=0;
+				$count=0;
+				$hc=new \HomeController(new CustomerNotification(), new Sidekiq(),$this);
+				foreach ($cart_data as $cart_item)
+				{
+					$temp=[];
+					$dataProd=$hc->getProductDetail($cart_item['ratecard_id'], $cart_item['product_id'],true);
+					if(!empty($dataProd['status']))
+						$temp['product']=$dataProd['data'];
+					else return $dataProd;
+					$temp['quantity']=$cart_item['quantity'];
+					$count=$count+$temp['quantity'];
+					$temp['price']=$this->getRupeeForm((intval($cart_item['quantity'])*intval($cart_item['price'])));
+					array_push($cart_desc,$temp);
+					$amount=$amount+(intval($cart_item['quantity'])*intval($cart_item['price']));
+				}
+				
+				$resp['data']['cart_details']=$cart_desc;
+// 				$resp['data']['total_cart_amount']=$amount;
+				$resp['data']['total_amount']=$this->getRupeeForm($amount);
+				$resp['data']['delivery_charges']='+ '.$this->getRupeeForm(intval(Config::get('app.product_delivery_charges'))).' delivery charges';
+				$resp['data']['delivery_charges_at_studio']="Free Delivery";
+				
+				
+				
+				$resp['data']['total_count']=$count;
+				return $resp;
+		} catch (Exception $e)
+		{
+			return  ['status'=>0,"message"=>$this->baseFailureStatusMessage($e)];
+		}
+		
+	}
+	public function groupBy($array,$key) {
+		$return = array();
+		foreach($array as $val) {
+			$return[$val[$key]][] = $val;
+		}
+		return $return;
+	}
+	
+	public function getProductHash($data)
+	{
+		
+		try {
+			
+			$resp=["status"=>1,"message"=>"success"];
+			$createdData=[];
+			
+			// defaulters
+			(!empty($data['payment_mode']))?
+				$createdData['payment_mode']=$data['payment_mode']:"";
+			$env = (!empty($data['env']) && $data['env'] == 1) ? "stage" : "production";
+			
+			$key = 'gtKFFx';
+			$salt = 'eCwWELxi';
+			
+			if($env == "production"){
+				$key = 'l80gyM';$salt = 'QBl78dtK';
+			}
+			
+			$txnid = $data['payment']['txnid'];
+			$amount = $data['amount_calculated']['final'];
+			$tmp=[];
+			foreach ($data['cart_data'] as $value) {
+				array_push($tmp,$value['ratecard']['_id']);
+			}
+			$productinfo=$createdData['productinfo'] =implode("_",array_map('strtolower', $tmp));
+			// $productinfo=$createdData['productinfo'] ="asdasda-asdasdas";
+			
+			$firstname = strtolower($data['customer']['customer_name']);
+			$email = strtolower($data['customer']['customer_email']);
+			$udf1 = "";
+			$udf2 = "";
+			$udf3 = "";
+			$udf4 = "";
+			$udf5 = "";
+			
+			$payhash_str = $key.'|'.$txnid.'|'.$amount.'|'.$productinfo.'|'.$firstname.'|'.$email.'|'.$udf1.'|'.$udf2.'|'.$udf3.'|'.$udf4.'|'.$udf5.'||||||'.$salt;
+			
+			$createdData['payment_hash'] = hash('sha512', $payhash_str);
+			
+			$verify_str = $salt.'|success||||||'.$udf5.'|'.$udf4.'|'.$udf3.'|'.$udf2.'|'.$udf1.'|'.$email.'|'.$firstname.'|'.$productinfo.'|'.$amount.'|'.$txnid.'|'.$key;
+			
+			 $createdData['verify_hash'] = hash('sha512', $verify_str);
+			
+			$cmnPaymentRelatedDetailsForMobileSdk1              =   'payment_related_details_for_mobile_sdk';
+			$detailsForMobileSdk_str1                           =   $key  . '|' . $cmnPaymentRelatedDetailsForMobileSdk1 . '|default|' . $salt ;
+			$detailsForMobileSdk1                               =   hash('sha512', $detailsForMobileSdk_str1);
+			$createdData['payment_related_details_for_mobile_sdk_hash'] =   $detailsForMobileSdk1;
+			$resp['data']=$createdData;
+			
+			return $resp;
+		} catch (Exception $e)
+		{
+			return  ['status'=>0,"message"=>$this->baseFailureStatusMessage($e)];
+		}
+		
+		
+	}
+
     
     public function compressImage($file, $src, $dir='tmp-images'){
         $mime_type = $file->getClientMimeType();
@@ -4219,9 +4763,304 @@ Class Utilities {
             return false;
         }
     }
-
-	
     
+
+    
+	public function getRupeeForm($number) {
+		return json_decode('"'."\u20b9".'"')." ".(isset($number)?$number:"");
+	}
+	
+	public function getProductDetailsCustom($t,$type="primary",$base=[])
+	{
+		try {
+			$temp=array_values(array_filter($t,function($e) {return isset($e['status'])&&$e['status']== 1;}));
+			$this->customSort('order', $temp);
+			return ($type=='primary')?array_map(function($e){return ["name"=>$e['name'],"value"=>$e['value']];},$temp):implode("",$this->decorateKeyValueDesc($temp,$base));
+		} catch (Exception $e) {
+			Log::error(" [ getProductDetailsCustom ]".print_r($this->baseFailureStatusMessage($e),true));
+			return "";
+		}
+	}
+	
+	public function getQueryMultiplier($arr=[],$product_id)
+	{
+		$t=[];
+		foreach ($arr as $current)
+			if(!empty($current['value']))
+				$t['properties.'.$current['type']]=$current['value'];
+				$t['product_id'] =$product_id;
+				$t['status']="1";
+
+	  return $t;
+	}
+	public function getSelectionView($data,$product_id=null,$productView="",$ratecard_id=null,&$trav_idx=[],$arr=[])
+	{
+		$intrinsic_data=array_shift($data);
+		if(!empty($intrinsic_data)&&!empty($product_id))
+		{
+			array_push($arr,['type'=>$intrinsic_data['name']]);
+			$rates=ProductRatecard::active()->raw(function($collection) use($product_id,$intrinsic_data,$arr)
+			{
+				return $collection->aggregate([
+						['$match'=>$this->getQueryMultiplier($arr,$product_id)],
+						['$group'=>['_id' =>'$properties.'.$intrinsic_data['name'],'details' => ['$push'=>['_id'=>'$_id','order'=>'$order','properties'=>'$properties','flags'=>'$flags','price'=>'$price','slash_price'=>'$slash_price','info'=>'$info']]]],
+						['$sort'=>['order'=>1]],
+						['$match'=>['details.0' => ['$exists'=>true]]],
+				]);
+			});
+			
+			usort($rates['result'],function ($a,$b)
+			{	
+				if (!emptY($b)&&!emptY($a)&&!empty($a['details'])&&!empty($a['details'][0])&&!empty($a['details'][0]['order'])&&!empty($b['details'])&&!empty($b['details'][0])&&!empty($b['details'][0]['order'])&&$a['details'][0]['order']==$b['details'][0]['order']) return 0;
+				return (!emptY($b)&&!emptY($a)&&!empty($a['details'])&&!empty($a['details'][0])&&!empty($a['details'][0]['order'])&&!empty($b['details'])&&!empty($b['details'][0])&&!empty($b['details'][0]['order'])&&$a['details'][0]['order']<$b['details'][0]['order'])?-1:1;
+			});
+// 			return $rates;
+// 			if(count($arr)==1)
+// 				return $rates;
+			if(!empty($rates)&&!empty($rates['result']))
+			{
+				$temp['variants']=["title"=>"Select ".$intrinsic_data['name'],"sub_title"=>$intrinsic_data['name'],'options'=>[]];
+				foreach ($rates['result'] as $key1=>$value) {
+					
+// 					return $rates;
+					foreach ($value['details'] as $key=>$current) {
+						$tt=[
+								"value"=>(!empty($current['properties'])&&!empty($current['properties'][$intrinsic_data['name']]))?$current['properties'][$intrinsic_data['name']]:"",
+								"enabled"=>(!empty($current['flags'])&&!empty($current['flags']['available'])?true:false),
+								"ratecard_id"=>$current['_id'],"product_id"=>$product_id,"price"=>$current['price'],
+								"cost"=>(isset($current['slash_price'])&&$current['slash_price']!=="")?$this->slashPriceFormat($current)." ".$this->getRupeeForm($current['price']):$this->getRupeeForm($current['price'])
+						];
+						
+						if(!empty($current['info'])&&!empty($current['info']['long_description']))$tt['long_description']=$current['info']['long_description'];
+						else if(!empty($productView['info'])&&!empty($productView['info']['long_description']))$tt['long_description']=$productView['info']['long_description'];
+						
+						if(!empty($current['info'])&&!empty($current['info']['short_description'])&&count($current['info']['short_description'])>0)$tt['short_description']=$this->getProductDetailsCustom($current['info']['short_description'],'secondary');
+						else if(!empty($productView['info'])&&!empty($productView['info']['short_description'])&&count($productView['info']['short_description'])>0)$tt['short_description']=$this->getProductDetailsCustom($productView['info']['short_description'],'secondary');
+						
+						
+						if(!empty($tt['value']))
+						{
+							$arr[count($arr)-1]['value']=$tt['value'];$this->attachProductQuantity($tt);
+							/* if(($tt['ratecard_id']==$ratecard_id)&&count($value['details'])==1){
+								array_unshift($trav_idx,['ind'=>$key1,'inserted'=>true,'ratecard_id'=>$current['_id']]);
+							}
+							if(($tt['ratecard_id']==$ratecard_id)&&count($value['details'])>1){
+								$wqw=array_values(array_filter($trav_idx,function ($e) use ($current) {return $current['_id']== $e['ratecard_id']&&$e['inserted']==true;}));
+								if(!empty($wqw))
+								{
+									$wqw=$wqw[0];
+									array_unshift($trav_idx,['ind'=>$key,'inserted'=>false,'ratecard_id'=>$current['_id']]);
+								}
+							} */
+// 							return $el=$this->getSelectionView($data,$product_id,$productView,$ratecard_id,$trav_idx,$arr);
+							
+							$el=$this->getSelectionView($data,$product_id,$productView,$ratecard_id,$trav_idx,$arr);
+						
+							(!empty($el)&&!empty($el['variants']))?$tt['more']=$el['variants']:"";
+							if(count($arr)<=1)($key==0)?array_push($temp['variants']['options'], $tt):"";
+							else array_push($temp['variants']['options'], $tt);
+						}
+					}	
+				}
+				return (count($temp['variants']['options'])>0)?$temp:[];
+			}
+			return [];
+		}
+		return [];
+	}
+	public function getFilteredAndOrdered($data=[],$sort_key="order",$filter_key="status",$filter_value=1,$sort="asc",$tmp_data=[])
+	{
+		try {
+			$tmp_data=array_values(array_filter($data,function ($e) use ($filter_value,$filter_key) {return $filter_value== $e[$filter_key];}));
+			if(!empty($tmp_data))
+				$this->customSort($sort_key, $tmp_data);
+		} catch (Exception $e) {
+			Log::error(" [ getFilteredAndOrdered ]".print_r($this->baseFailureStatusMessage($e),true));
+		}
+		return $tmp_data;
+	}
+	
+	private function decorateKeyValueDesc(&$temp,&$base)
+	{
+		foreach ($temp as $value)
+		{
+			array_push($base,"<b>".$value['name']." : </b>");
+			array_push($base,$value['value']."<br />");
+		}
+		return $base;
+	}
+	
+	public function attachCart(&$data,$onlyCart=false,$customer_id=null)
+	{
+		$jwt=Request::header("Authorization");
+		if(isset($jwt))
+		{
+			$cart=$this->productsTabCartHomeCustomer($customer_id);
+			if(!empty($cart))
+			{
+				$cart=$cart->toArray();
+				Log::info(" info attachCart cart ::".print_r($cart,true));
+				if($onlyCart)return $cart;
+				$data['cart']=["count"=>$this->getCartTotalCount($cart)];
+			}
+			else return null;
+		}
+		
+
+	}
+
+	public function attachProductQuantity(&$data,$onlyQuantity=false)
+	{
+		$jwt=Request::header("Authorization");
+		if(isset($jwt))
+		{
+			 $cart=$this->productsTabCartHomeCustomer();
+			if(!empty($cart))
+			{
+				
+				$cart=$cart->toArray();
+				if(!empty($cart['products']))
+					$tmp_data=array_values(array_filter($cart['products'],function ($e) use ($data) {return (!empty($data['ratecard_id'])&&!empty($e['ratecard_id'])&&$data['ratecard_id']== $e['ratecard_id']);}));
+					if(!empty($tmp_data))
+					{
+						$tmp_data=$tmp_data[0];
+						if(!empty($tmp_data['quantity']))
+						{
+							if($onlyQuantity)return $tmp_data['quantity'];
+							else $data['quantity']=$tmp_data['quantity'];
+						}
+						else {
+							if($onlyQuantity) return null;
+							else $data['quantity']=1;
+						}
+					}
+			}
+		}
+	}
+	
+	public function fetchCustomerAddresses(&$data)
+	{
+		$jwt=Request::header("Authorization");
+		if(isset($jwt))
+		{
+			$customer=$this->getCustomerAddress();
+            Log::info($customer);
+			if(!empty($customer))
+			{
+				$customer=$customer->toArray();
+				$data['customer_address'] =(!empty($customer['customer_addresses_product'])?$customer['customer_addresses_product']:[]);
+			}
+		}
+		
+
+	}
+	public function getCartTotalCount($cart=null)
+	{	if(empty($cart)||empty($cart['products']))return 0;
+		else return (!empty($cart))?array_reduce((!empty($cart['products'])?array_map(function($e){return (!empty($e['quantity'])?intval($e['quantity']):0);},$cart['products']):[]),function($carry,$item){$carry+=$item;return $carry;}):0;
+	}
+
+	public function fetchProductCities(&$data)
+	{
+		$jwt=Request::header("Authorization");
+		if(isset($jwt))
+		{
+			$customer=$this->getCustomerAddress();
+			if(!empty($customer))
+			{
+				$customer=$customer->toArray();
+				$data['customer_address'] =(!empty($customer['customer_addresses_product'])?$customer['customer_addresses_product']:[]);
+			}
+		}
+		
+	}
+	
+
+
+	public function getAllProductDetails($order)
+	{
+		
+		try {
+			if(empty($order))
+				return ["status"=>0,"message"=>"No data present."];
+			if(empty($order['cart_data']))
+					return ["status"=>5,"message"=>"No Cart Data present."];
+				$resp=["status"=>1,"message"=>"success","data"=>[]];
+				$cart_data =$order['cart_data'];
+				$cart_desc=[];
+				foreach ($cart_data as $cart_item)
+				{
+					$temp=[];
+					$detail=$this->productProperties($cart_item['ratecard']);
+					$temp['field']=(!empty($cart_item['product'])&&!empty($cart_item['product']['title']))?$cart_item['product']['title']:(!empty($cart_item['ratecard'])&&!empty($cart_item['ratecard']['title'])?$cart_item['ratecard']['title']:"");
+					$temp['value']=("qty : ".intval($cart_item['quantity']));
+					if(!empty($detail)&&!empty($detail['status'])&&!empty($detail['data']))$temp['value']=$temp['value']."<br />".$detail['data'];
+					array_push($cart_desc,$temp);
+				}
+				$resp['data']['cart_details']=$cart_desc;
+				return $resp;
+		} catch (Exception $e)
+		{
+			return  ['status'=>0,"message"=>$this->baseFailureStatusMessage($e)];
+		}	
+	}
+	public function getProductCities()
+	{
+		$cities = \City::active()->orderBy('product_order')->whereNotIn('_id',[10000])->remember(Config::get('app.cachetime'))->lists("name");
+		if(!empty($cities))
+			return $cities;
+		else return [];
+	}
+	
+	public function productProperties($ratecard)
+	{
+		
+		try {
+			if(empty($ratecard))
+				return ["status"=>0,"message"=>"No Ratecards present."];
+				$resp=["status"=>1,"message"=>"success","data"=>""];$tmp=[];
+				$rc =(!empty($ratecard['properties'])?$ratecard['properties']:[]);
+				foreach ($rc as $key => $value)array_push($tmp, strtolower($key)." : ".$value);
+				(!empty($tmp)&&count($tmp)>0)?$resp['data']=implode("<br />",$tmp):"";
+				return $resp;
+		} catch (Exception $e)
+		{
+			return  ['status'=>0,"message"=>$this->baseFailureStatusMessage($e)];
+		}
+		
+		
+		
+	}
+	public function formatShippingAddress($data=[],$cust_name="",$finder=false)
+	{
+		
+		$temp="";
+		$cur_seperator=", ";
+		if(!$finder)
+		{
+			if(!empty($data["name"]))$temp=$temp.$data["name"]." <br />";
+			if(!empty($data["line1"]))$temp=$temp.$data["line1"].$cur_seperator;
+			if(!empty($data["line2"]))$temp=$temp.$data["line2"].$cur_seperator;
+			if(!empty($data["landmark"]))$temp=$temp.$data["landmark"].$cur_seperator;
+			if(!empty($data["city"]))$temp=$temp.$data["city"].$cur_seperator;
+			if(!empty($data["pincode"]))$temp=$temp.$data["pincode"];
+			
+		}
+		else {
+            Log::info("shipping");
+			if(!empty($cust_name))$temp=$temp.$cust_name." <br />";
+			if(!empty($data['finder_name']))$temp=$temp.$data['finder_name'];
+			if(!empty($data['finder_location']))$temp=$temp.'-'.$data['finder_location'];
+		}
+		return $temp;
+	}
+	public function getRateCardBaseImage($ratecards=[])
+	{
+		foreach ($ratecards as $value) 
+			if(!empty($value)&&!empty($value['image'])&&!empty($value['image']['primary']))
+				return $value['image']['primary'];
+		return "";
+	}
+
     public function updateRatecardSlots($data){
         Log::info("inside updateRatecardSlots");
 
@@ -4395,5 +5234,74 @@ Class Utilities {
     						else return $count;
     		}
     }
+
+
+	public function getRateCardBaseID($ratecards=[])
+	{
+		foreach ($ratecards as $value)
+			if(!empty($value)&&!empty($value['_id']))
+				return $value['_id'];
+			return "";
+	}
+	
+	public function mapProperties($properties=null)
+	{
+		$props_arr=[];
+		if(!empty($properties))
+		{
+			foreach ($properties as $k=>$v)
+				(!empty($k)&&!empty($v))?array_push($props_arr,["field"=>$k,"value"=>$v]):"";	
+				return  $props_arr;
+		}
+		else return null;
+	}
+	public function slashPriceFormat($selectedRatecard)
+	{
+        return "";
+		return (empty($selectedRatecard)||empty($selectedRatecard['slash_price']))?"":'<strike>'.$this->getRupeeForm($selectedRatecard['slash_price']).'</strike>';
+	}
+	
+	public function getCouponCodeAttach($data,$amount)
+	{	
+		try {
+				$resp=['status'=>1,"message"=>"Coupon Successfully applied."];
+				$cur=new \DateTime();
+				$data['coupon'] = strtolower($data['coupon']);
+				$coupon=\Coupon::active()->where("start_date","<=",$cur)->where("end_date",">=",$cur)->whereIn("ratecard_type",['product'])->where("code",$data['coupon'])->first();
+				if(!empty($coupon))
+				{
+					
+					$coupon=$coupon->toArray();
+					if(!empty($coupon['once_per_user']))
+					{
+						$already_applied_coupon = Customer::where('_id',$data['customer']['customer_id'])->whereIn('product_codes',[$data['coupon']])->count();
+						if($already_applied_coupon>0)return ['status'=>0,"message"=>"Coupon can't be used twice by the same user."];
+					}
+					if(!empty($coupon['total_available']))
+					{
+						if(!empty($coupon['total_used']))
+						{
+							if(intval($coupon['total_used'])>=intval($coupon['total_available']))
+								return ['status'=>0,"message"=>"Coupons of this type already exhausted.Better luck next time."];
+						}
+					}
+					if(!empty($coupon['finders']))
+					{
+						if((empty($data['finder'])||empty($data['finder']['finder_id'])))
+							return ['status'=>0,"message"=>"Coupon can only be applied on specific vendors"];
+							else if(!in_array($data['finder']['finder_id'], $coupon['finders']))
+							return ['status'=>0,"message"=>"Coupon can't be applied for ".$data['finder']['finder_name']];
+					}
+					return $resp=['status'=>1,"message"=>"Coupon can be applied Found.","coupon"=>$coupon];
+				}
+				else return ['status'=>0,"message"=>"Invalid Coupon"];
+			
+		} catch (Exception $e) {
+			return  ['status'=>0,"message"=>$this->baseFailureStatusMessage($e)];
+		}
+
+	} 
+	
 }
+
 

@@ -32,12 +32,12 @@ return array(
 	// 'amazonpay_isSandbox' => 'true',
 	// 'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
 	// 'website_deeplink' =>'https://ftrnty.com',
-
+	
 	//beta
 	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
 	// 'url' => 'http://apistage.fitn.in',
 	// 'admin_url' => 'http://adminstage.fitn.in',
-	// 'website' => 'http://apistage.fitn.in:1122',
+	// 'website' => 'http://apistage.fitn.in:8888',
 	// 'sidekiq_url' => 'http://kick.fitn.in/',
 	// 'queue' => 'booktrial',
 	// 'vendor_communication' => false,
@@ -47,7 +47,7 @@ return array(
 	// 'amazonpay_isSandbox' => 'true',
 	// 'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
 	// 'website_deeplink' =>'https://ftrnty.com',
-
+	
 	//live
 	'new_search_url' =>'http://c1.fitternity.com/',
 	'url' => 'https://a1.fitternity.com',
@@ -62,15 +62,19 @@ return array(
 	'amazonpay_isSandbox' => 'false',
 	'reliance_url' =>'https://rhealthcircle.reliancegeneral.co.in/fitternity/callback',
 	'website_deeplink' =>'https://ftrnty.com',
-
+	
+	
+	
+	'product_delivery_charges' => 50,
+	
 	'pubnub_publish' => 'pub-c-d9aafff8-bb9e-42a0-a24b-17ab5500036f',
 	'pubnub_sub' => 'sub-c-05ef3130-d0e6-11e6-bbe2-02ee2ddab7fe',
 	'download_app_link' => 'https://go.onelink.me/I0CO?pid=techfitsms',//https://www.fitternity.com/downloadapp?source=fittech',
-
+	
     'business' => 'http://business.fitternity.com',
 	'static_coupon' => array(
 		array("code" => "fivefit", "text" => "Get Flat 5% off | Limited Memberships Available | Hurry! Code: FIVEFIT","discount_max" => 10000,"discount_amount" => 0,"discount_min" => 0, "discount_percent"=> 5, "once_per_user"=> true, "ratecard_type"=> ["membership","healthytiffinmembership"]),
-		array("code" => "lucky500", "text" => "3 Lucky Members Get Flat Rs.500 off | Hurry! Use Code: LUCKY500","discount_max" => 500,"discount_amount" => 500,"discount_min" => 500, "once_per_user"=> true, "ratecard_type"=> ["membership","healthytiffinmembership"]),
+		array("code" => "lucky300", "text" => "3 Lucky Members Get Flat Rs.300 off | Hurry! Use Code: LUCKY300","discount_max" => 300,"discount_amount" => 300,"discount_min" => 300, "once_per_user"=> true, "ratecard_type"=> ["membership","healthytiffinmembership"]),
 		array("code" => "lucky300", "text" => "3 Lucky Members Get Flat Rs.300 off | Hurry! Use Code: LUCKY300","discount_max" => 300,"discount_amount" => 300,"discount_min" => 300, "once_per_user"=> true, "ratecard_type"=> ["membership","healthytiffinmembership"]),
 		array("code" => "starfit", "text" => "Experience Luxury with A Flat 5% off Membership Purchase | NO T&C | Code: STARFIT","discount_max" => 10000,"discount_amount" => 0,"discount_min" => 0, "discount_percent"=> 5, "once_per_user"=> true, "ratecard_type"=> ["membership","healthytiffinmembership"]),
 	),
