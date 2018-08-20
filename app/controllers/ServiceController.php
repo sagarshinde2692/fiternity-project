@@ -1723,7 +1723,7 @@ class ServiceController extends \BaseController {
 			$schedule_data['recursive'] = true;
 			// $service_details['gym_date_data'] = $this->getPPSAvailableDateTime($service_details, 3);
 		}
-		$service_details['gym_date_data'] = $this->getPPSAvailableDateTime($service_details, 3);
+		$service_details['gym_date_data'] = $this->getPPSAvailableDateTime($service_details, 7);
 		unset($service_details['workoutsessionschedules']);
 		$schedule = json_decode(json_encode($this->getScheduleByFinderService($schedule_data)->getData()));
 
