@@ -465,6 +465,17 @@ class TempsController extends \BaseController {
                 
                 if($customer) {
 
+                    if($temp['source'] == 'kiosk' && $this->kiosk_app_version &&  $this->kiosk_app_version > 1.13){
+
+                        $cart  = Cart::active()->where('customer_id', $customer['_id'])->first();
+                        if(!$cart){
+                            $cart = new Cart();
+                            $cart_id = Cart::max('_id')+1;
+
+                        }
+    
+                    }
+
                     $customer->verified = true;
 
                     $customer->update();
