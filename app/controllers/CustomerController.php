@@ -6725,7 +6725,7 @@ class CustomerController extends \BaseController {
 				$response['block'] = false;
 			break;
 			case 'review':
-				$response['header'] = "SESSION REMINDER";
+				$response['header'] = "Share your experience for <bold>".$data['service_name']."</bold> at<br>".$data['finder_name'].", ".$data['finder_location'];
 				
 				$response['image'] = "https://b.fitn.in/paypersession/timer.png";
 				
