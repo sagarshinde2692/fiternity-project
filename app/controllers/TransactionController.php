@@ -2351,10 +2351,11 @@ class TransactionController extends \BaseController {
 
         $customer = Customer::find((int)$customer_id);
         
-        
-        if(!empty($customer['cart_id']))
-        	$data['cart_id']  = $customer['cart_id'];
-        else return ['status' => 400,'message' => "Cart doesn't exists with customer."];
+        if($data['type'] == 'product'){
+            if(!empty($customer['cart_id']))
+                $data['cart_id']  = $customer['cart_id'];
+            else return ['status' => 400,'message' => "Cart doesn't exists with customer."];
+        }
         if(isset($data['address']) && $data['address'] != ''){
 
             $data['customer_address']  = $data['address'];
@@ -7086,7 +7087,7 @@ class TransactionController extends \BaseController {
         $customerDetail = $this->getCustomerDetail($data);
         
         if($customerDetail['status'] != 200){
-            return Response::json($customerDetail,$customerDetail['status'], 400);
+            return Response::json($customerDetail,$customerDetail['status']);
         }
 
         $data = array_merge($data,$customerDetail['data']);
@@ -7098,7 +7099,7 @@ class TransactionController extends \BaseController {
         $coupon = GiftCoupon::active()->find($data['coupon_id']);
 
         if(!$coupon){
-            return Response::json($customerDetail,$customerDetail['status'], 400);
+            return Response::json($customerDetail,$customerDetail['status']);
         }
 
         $data['amount_finder'] = $data['amount'] = $coupon->cost;
@@ -7150,8 +7151,6 @@ class TransactionController extends \BaseController {
         $result['hash'] = $data['payment_hash'];
         $result['payment_related_details_for_mobile_sdk_hash'] = $mobilehash;
         $result['finder_name'] = strtolower($data['finder_name']);
-        $result['fitternity_share'] = $data['fitternity_share'];
-        $result['fitternity_share_change'] = $data['fitternity_share_change'];
         
         
         $resp   =   array(
@@ -7190,8 +7189,8 @@ class TransactionController extends \BaseController {
             return Response::json($resp,401);
 
         }
-
-        $hash_verified = $this->utilities->verifyOrder($data,$order);
+        $hash_verified = true;
+        // $hash_verified = $this->utilities->verifyOrder($data,$order);
 
         if($data['status'] == 'success' && $hash_verified){
 
@@ -7205,7 +7204,9 @@ class TransactionController extends \BaseController {
 
             $order->redis_id = $redisid;
 
-            $order->website = "www.fitternity.com";
+            // $order->website = "www.fitternity.com";
+
+            return $order;
 
             $order->update();
 

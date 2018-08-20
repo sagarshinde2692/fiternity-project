@@ -5321,7 +5321,7 @@ Class Utilities {
         }
         
         $fitcash_coupon_data = [
-            'validity' => strtotime('+1 month', time()),
+            'valid_till' => strtotime('+1 month', time()),
             'expiry' => strtotime('+1 month', time()),
             'amount' => $order['fitcash_coupon_amount'],
             'expiry' => strtotime('+1 month', time()),
@@ -5347,14 +5347,16 @@ Class Utilities {
         $validator = Validator::make($data,$rules);
         
         if ($validator->fails()) {
-            return Response::json(array('status' => 404,'message' => error_message($validator->errors())),$this->error_status);
+            return Response::json(array('status' => 404,'message' => error_message($validator->errors())),400);
         }
         
-        $coupon_data = array_only($data, ['valid_till', 'expiry', 'amount', 'conditions', 'quantity']);
+        $coupon_data = array_only($data, ['valid_till', 'expiry', 'amount', 'conditions', 'quantity', 'code']);
 
         $coupon_data['type'] = 'fitcashplus';
 
-        $fitcash_coupon = new FitcashCoupon($coupon_data);
+        $fitcash_coupon = new \FitcashCoupon($coupon_data);
+
+        $fitcash_coupon->save();
 
         return $fitcash_coupon;
 
