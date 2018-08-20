@@ -4337,7 +4337,13 @@ Class Utilities {
 					{
 						$token_decoded=decode_customer_token();
 						$cart_id=((!empty($token_decoded->customer)&&!empty($token_decoded->customer->cart_id))?$token_decoded->customer->cart_id:null);
-					}
+                    }
+                    if(empty($cart_id) && !empty($token_decoded->customer->_id)){
+                        $user_cart = Cart::where('customer_id', intval($token_decoded->customer->_id))->first();
+                        if($user_cart){
+                            $cart_id = $user_cart->_id;
+                        }
+                    }
 					if(!empty($cart_id)&&!empty($cartDataInput))
 					{
 						$cartData=[];
