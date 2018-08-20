@@ -7045,4 +7045,181 @@ class TransactionController extends \BaseController {
         $this->utilities->updateRatecardSlots(['order_id'=>$order_id]);
     }
 
+    public function giftCouponCapture(){
+        
+        $data = Input::all();
+
+        Log::info("giftCouponCapture capture");
+
+        Log::info($data);
+
+        $rules = array(
+            'customer_source'=>'required',
+            'coupon_id'=>'required',
+            'customer_email'=>'required|email',
+            'customer_name'=>'required',
+            'customer_phone'=>'required',
+            'customer_address'=>'required',
+            'receiver_email'=>'required',
+            'receiver_phone'=>'required',
+            'receiver_name'=>'required',
+            'type'=>'required',
+        );
+
+        $validator = Validator::make($data,$rules);
+
+        if ($validator->fails()) {
+            return Response::json(array('status' => 404,'message' => error_message($validator->errors())),404);
+        }
+
+        if($data['type'] != 'giftcoupon'){
+            return Response::json(array('message'=>'Invalid parameters'), 400);
+        }
+        
+        $customerDetail = $this->getCustomerDetail($data);
+        
+        if($customerDetail['status'] != 200){
+            return Response::json($customerDetail,$customerDetail['status'], 400);
+        }
+
+        $data = array_merge($data,$customerDetail['data']);
+
+        Log::info("before pledge");
+
+        Log::info($data);
+
+        $coupon = GiftCoupon::active()->find($data['coupon_id']);
+
+        if(!$coupon){
+            return Response::json($customerDetail,$customerDetail['status'], 400);
+        }
+
+        $data['amount_finder'] = $data['amount'] = $coupon->cost;
+        
+        $data['fitcash_coupon_amount'] = $coupon->fitcash;
+
+        $data['payment_mode'] = 'paymentgateway';
+        
+        $data['status'] = "0";
+        
+        $order_id = $data['_id'] = $data['order_id'] = Order::max('_id') + 1;
+
+        $txnid = "";
+        $successurl = "";
+        $mobilehash = "";
+        if($data['customer_source'] == "android" || $data['customer_source'] == "ios"){
+            $txnid = "MFIT".$data['_id'];
+            $successurl = $data['customer_source'] == "android" ? Config::get('app.website')."/paymentsuccessandroid" : Config::get('app.website')."/paymentsuccessios";
+        }else{
+            $txnid = "FIT".$data['_id'];
+            $successurl = Config::get('app.website')."/paymentsuccessproduct";
+        }
+        $data['txnid'] = $txnid;
+        $data['finder_name'] = 'Fitternity';
+        $data['finder_slug'] = 'fitternity';
+        
+        $data['service_name'] = 'Fitternity Gift Coupons';
+        $data['service_id'] = 100000;
+        
+        $hash = getHash($data);
+        $data = array_merge($data,$hash);
+        
+        $order = new Order($data);
+
+        $order->_id = $order_id;
+        
+        $order->save();
+        
+        $result['firstname'] = strtolower($data['customer_name']);
+        $result['lastname'] = "";
+        $result['phone'] = $data['customer_phone'];
+        $result['email'] = strtolower($data['customer_email']);
+        $result['orderid'] = $data['_id'];
+        $result['txnid'] = $txnid;
+        $result['amount'] = $data['amount'];
+        $result['productinfo'] = strtolower($data['productinfo']);
+        $result['service_name'] = preg_replace("/^'|[^A-Za-z0-9 \'-]|'$/", '', strtolower($data['service_name']));
+        $result['successurl'] = $successurl;
+        $result['hash'] = $data['payment_hash'];
+        $result['payment_related_details_for_mobile_sdk_hash'] = $mobilehash;
+        $result['finder_name'] = strtolower($data['finder_name']);
+        $result['fitternity_share'] = $data['fitternity_share'];
+        $result['fitternity_share_change'] = $data['fitternity_share_change'];
+        
+        
+        $resp   =   array(
+            'status' => 200,
+            'data' => $result,
+            'message' => "Tmp Order Generated Sucessfully"
+        );
+        return Response::json($resp);
+
+    }
+
+    public function giftCouponSuccess(){
+
+        $data = Input::json()->all();
+
+        Log::info("giftCouponSuccess success");
+        
+        Log::info($data);
+        
+        $rules = array(
+            'order_id'=>'required'
+        );
+
+        $validator = Validator::make($data,$rules);
+
+        if ($validator->fails()) {
+            return Response::json(array('status' => 404,'message' => error_message($validator->errors())),404);
+        }
+        
+        $order_id   =   (int) $data['order_id'];
+        $order      =   Order::findOrFail($order_id);
+
+        if(isset($order->status) && $order->status == '1'){
+
+            $resp   =   array('status' => 401, 'statustxt' => 'error', "message" => "Already Status Successfull");
+            return Response::json($resp,401);
+
+        }
+
+        $hash_verified = $this->utilities->verifyOrder($data,$order);
+
+        if($data['status'] == 'success' && $hash_verified){
+
+            $order->status = "1";
+
+            $fitcash_coupon_code = $this->utilities->createGiftFitcashCoupon($order);
+
+            $order->fitcash_coupon_code = $fitcash_coupon_code;
+
+            $redisid = Queue::connection('redis')->push('TransactionController@sendCommunication', array('order_id'=>$order_id),Config::get('app.queue'));
+
+            $order->redis_id = $redisid;
+
+            $order->website = "www.fitternity.com";
+
+            $order->update();
+
+            $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
+            
+        } else {
+           
+            if($hash_verified == false){
+             
+                $order->hash_verified = false;
+                $order->update();
+                
+            }
+           
+            $resp 	= 	array('status' => 200, 'statustxt' => 'failed', 'message' => "Transaction Failed :)");
+            
+        }
+        
+        return Response::json($resp);
+            
+    }
+
+
 }
