@@ -7195,9 +7195,12 @@ class TransactionController extends \BaseController {
         if($data['status'] == 'success' && $hash_verified){
 
             $order->status = "1";
+            $order->success_date = date('Y-m-d H:i:s',time());
 
             $fitcash_coupon_code = $this->utilities->createGiftFitcashCoupon($order->toArray());
 
+            $fitcash_coupon_code = $fitcash_coupon_code['_id'];
+            
             $order->fitcash_coupon_code = $fitcash_coupon_code;
 
             $redisid = Queue::connection('redis')->push('TransactionController@sendCommunication', array('order_id'=>$order_id),Config::get('app.queue'));
@@ -7206,7 +7209,7 @@ class TransactionController extends \BaseController {
 
             // $order->website = "www.fitternity.com";
 
-            return $order;
+            // return $order;
 
             $order->update();
 

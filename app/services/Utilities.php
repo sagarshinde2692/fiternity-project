@@ -5314,10 +5314,10 @@ Class Utilities {
 	
     public function createGiftFitcashCoupon($order){
         
-        $constant_code = "rakhi-";
-        $coupon_code = $constant_code.$order['receiver_name'];
+        $constant_code = "rakhi-".strtolower($order['receiver_name']);
+        $coupon_code = $constant_code;
         while($coupon = \Fitcashcoupon::where('code', $coupon_code)->first()){
-            $coupon_code = $constant_code.$this->generateRandomString(3);
+            $coupon_code = $constant_code.'-'.$this->generateRandomString(3);
         }
         
         $fitcash_coupon_data = [
