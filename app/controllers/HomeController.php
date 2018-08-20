@@ -5224,5 +5224,9 @@ class HomeController extends BaseController {
         		return  ['status'=>0,"message"=>$this->utilities->baseFailureStatusMessage($e)];
         	}
         }
+
+        public function getCouponPackages(){
+            return GiftCoupon::active()->get();
+        }
         
 }
