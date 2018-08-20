@@ -106,6 +106,10 @@ class TransactionController extends \BaseController {
             }
         }
 
+        if($data['type'] == 'giftcoupon'){
+            return $this->giftCouponCapture();
+        }
+
         Log::info('------------transactionCapture---------------',$data);
 
         if(!isset($data['type'])){
@@ -1790,6 +1794,9 @@ class TransactionController extends \BaseController {
         Log::info(" info order_type _____________________".print_r($order['type'],true));
         if(!empty($order)&&!empty($order['type'])&&$order['type']=='product')
         	return $this->productSuccess($data);
+        
+        if(!empty($order)&&!empty($order['type'])&&$order['type']=='giftcoupon')
+        	return $this->giftCouponSuccess();
 
         //If Already Status Successfull Just Send Response
         if(!isset($data["order_success_flag"]) && isset($order->status) && $order->status == '1' && isset($order->order_action) && $order->order_action == 'bought'){
@@ -7190,7 +7197,7 @@ class TransactionController extends \BaseController {
 
             $order->status = "1";
 
-            $fitcash_coupon_code = $this->utilities->createGiftFitcashCoupon($order);
+            $fitcash_coupon_code = $this->utilities->createGiftFitcashCoupon($order->toArray());
 
             $order->fitcash_coupon_code = $fitcash_coupon_code;
 

@@ -2611,6 +2611,10 @@ Class Utilities {
             $query->where('valid_finder_id','exists',false);
         }
 
+        if(!empty($request['order_type'])){
+            $query->where(function($query){$query->orwhere('order_type', 'exists', false)->orWhere('order_type', $requet['order_type']);});
+        }
+
         return $query;
 
     }
@@ -5305,6 +5309,54 @@ Class Utilities {
 		} catch (Exception $e) {
 			return  ['status'=>0,"message"=>$this->baseFailureStatusMessage($e)];
 		}
+
+	} 
+	
+    public function createGiftFitcashCoupon($order){
+        
+        $constant_code = "rakhi-";
+        $coupon_code = $constant_code.$order['receiver_name'];
+        while($coupon = \Fitcashcoupon::where('code', $coupon_code)->first()){
+            $coupon_code = $constant_code.$this->generateRandomString(3);
+        }
+        
+        $fitcash_coupon_data = [
+            'validity' => strtotime('+1 month', time()),
+            'expiry' => strtotime('+1 month', time()),
+            'amount' => $order['fitcash_coupon_amount'],
+            'expiry' => strtotime('+1 month', time()),
+            'conditions'=>['type'=>['workout-session']],
+            'quantity'=>1,
+            'code'=>strtolower($coupon_code)
+        ];
+        $fitcash_coupon = $this->createFitcashCoupn($fitcash_coupon_data);
+
+        return $fitcash_coupon;
+
+    }
+
+    public function createFitcashCoupn($data){
+        
+        $rules = array(
+            'valid_till'=>'required | numeric',
+            'expiry'=>'required | numeric',
+            'amount'=>'required | numeric',
+            'code'=>'required',
+        );
+        
+        $validator = Validator::make($data,$rules);
+        
+        if ($validator->fails()) {
+            return Response::json(array('status' => 404,'message' => error_message($validator->errors())),$this->error_status);
+        }
+        
+        $coupon_data = array_only($data, ['valid_till', 'expiry', 'amount', 'conditions', 'quantity']);
+
+        $coupon_data['type'] = 'fitcashplus';
+
+        $fitcash_coupon = new FitcashCoupon($coupon_data);
+
+        return $fitcash_coupon;
 
 	} 
 	
