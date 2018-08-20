@@ -5317,7 +5317,7 @@ class FindersController extends \BaseController {
 			];
 		}
 
-		if($this->kiosk_app_version &&  $this->kiosk_app_version > 1.13 && $finder_id == 7146){
+		if($this->kiosk_app_version &&  $this->kiosk_app_version > 1.13){
 			$response["response"]["options"][] = [
 				"title"=>"Fitstore",
 				"description"=>"Buy products",
