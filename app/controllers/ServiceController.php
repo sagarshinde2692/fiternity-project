@@ -824,7 +824,7 @@ class ServiceController extends \BaseController {
 		    	}
 		    	if(!empty($weekdayslots)&&!empty($weekdayslots['slots'])&&count($weekdayslots['slots'])>0&&(isset($_GET['source']) && $_GET['source'] == 'pps'))
 		    	{
-		    		$rsh=["title"=>"RUSH HOUR","price"=>"","data"=>[], 'image'=>'https://b.fitn.in/paypersession/non_rush_hour@3x1.png'];$nrsh=["title"=>"NON RUSH HOUR","price"=>"","data"=>[], 'image'=>'https://b.fitn.in/paypersession/rush_hour_icon@3x1.png'];
+		    		$rsh=["title"=>"RUSH HOUR","price"=>"","data"=>[], 'image'=>'https://b.fitn.in/paypersession/non_rush_hour@3x1.png', 'slot_type'=>1];$nrsh=["title"=>"NON RUSH HOUR","price"=>"","data"=>[], 'image'=>'https://b.fitn.in/paypersession/rush_hour_icon@3x1.png', 'slot_type'=>1];
 		    		
 		    		$p_np=$this->utilities->getPeakAndNonPeakPrice($weekdayslots['slots'],$this->utilities->getPrimaryCategory(null,$service['service_id']));
 		    		if(!empty($p_np))
@@ -924,12 +924,15 @@ class ServiceController extends \BaseController {
 			}
 			if((isset($_GET['source']) && $_GET['source'] == 'pps')){
 				
+				if(isset($_GET['slot_type']) && $_GET['slot_type'] == '0'){
+					$slots = array_reverse($slots);
+				}
+
 				foreach($slots as $key => $slot){
 					if(empty($slot['data'])){
 						unset($slots[$key]);
 					}
 				}
-				
 			}
             
             $service['slot_passed_flag'] = $slot_passed_flag;
@@ -1852,8 +1855,8 @@ class ServiceController extends \BaseController {
 				foreach($pps_slots['slots'] as $slot){
 					foreach($slot['data'] as $x){
 						if($x['epoch_start_time'] < $next_session_epoch){
-							$next_session_epoch = $x['data'][0]['epoch_start_time'];
-							$next_session_slot = $x['data'][0]['start_time'];
+							$next_session_epoch = $x['epoch_start_time'];
+							$next_session_slot = $x['start_time'];
 						}else{
 							break;
 						}

@@ -4175,20 +4175,25 @@ Class Utilities {
 	
 		try {
 			if(empty($service_cat))throw new Exception("No Service Category Exists.");
-			$resp=[];
+            $resp=[];
 			foreach ($slots as $value) 
 			{
 				if(!isset($resp['peak'])||!isset($resp['non_peak']))
 				{
-				    $temp=$this->getWSNonPeakPrice($value['start_time_24_hour_format'],$value['end_time_24_hour_format'],$value['price'],$service_cat,false);
+                    $temp=$this->getWSNonPeakPrice($value['start_time_24_hour_format'],$value['end_time_24_hour_format'],$value['price'],$service_cat,false);
 					if(!empty($temp)&&isset($temp['wsprice']))
 					{
-						if(!empty($temp['peak']))$resp['peak']=intval($temp['wsprice']);
-						else $resp['non_peak']=intval($temp['wsprice']);
+                        if(!empty($temp['peak'])){
+                            $resp['peak']=intval($temp['wsprice']);
+                        }
+						else{
+                            $resp['non_peak']=intval($temp['wsprice']);
+                        } 
 					}
 				}
 				else return $resp;
-			}
+            }
+            return $resp;
 		} catch (Exception $e) {
 			Log::error(" Error Message ::  ".print_r($e->getMessage(),true));
 			throw $e;
