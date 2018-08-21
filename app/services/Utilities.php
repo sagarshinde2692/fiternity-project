@@ -5325,7 +5325,7 @@ Class Utilities {
             'expiry' => strtotime('+1 month', time()),
             'amount' => $order['fitcash_coupon_amount'],
             'expiry' => strtotime('+1 month', time()),
-            'conditions'=>['type'=>['workout-session']],
+            'order_type'=>['workout-session'],
             'quantity'=>1,
             'code'=>strtolower($coupon_code)
         ];
