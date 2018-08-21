@@ -921,13 +921,16 @@ class ServiceController extends \BaseController {
                     }
 					
                 }
-            }
-			foreach($slots as $key => $slot){
-				if(empty($slot['data'])){
-					unset($slots[$key]);
-				}
 			}
-			
+			if((isset($_GET['source']) && $_GET['source'] == 'pps')){
+				
+				foreach($slots as $key => $slot){
+					if(empty($slot['data'])){
+						unset($slots[$key]);
+					}
+				}
+				
+			}
             
             $service['slot_passed_flag'] = $slot_passed_flag;
             if(!empty($slots)&&count($slots)>0&&!empty($slots[0])&&!empty($slots[0])&&!empty($slots[0]['data'])&&count($slots[0]['data'])==0)
