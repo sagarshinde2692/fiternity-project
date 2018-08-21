@@ -4303,6 +4303,9 @@ class CustomerController extends \BaseController {
 				if(!empty($fitcashcode['order_type'])){
 					$walletData["order_type"] = $fitcashcode['order_type'];
 				}
+				if(!empty($fitcashcode['remove_wallet_limit'])){
+					$walletData["remove_wallet_limit"] = $fitcashcode['remove_wallet_limit'];
+				}
 
 				if($fitcashcode['type'] == "fitcashplus"){
 

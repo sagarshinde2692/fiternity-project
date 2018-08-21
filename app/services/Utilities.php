@@ -1601,7 +1601,8 @@ Class Utilities {
             $wallet_limit = 100000;
         
         }
-        if($data && isset($data['order_type']) && in_array($data['order_type'], ['giftcoupon'])){
+        
+        if(!empty($request['remove_wallet_limit'])){
             Log::info("increasing wallet limit for pledge");
             $wallet_limit = 100000;
         
@@ -1911,6 +1912,11 @@ Class Utilities {
             if(isset($request['valid_service_id']) && $request['valid_service_id'] != ""){
 
                 $wallet->valid_service_id = $request['valid_service_id'];
+            }
+            
+            if(!empty($request['order_type'])){
+
+                $wallet->order_type = $request['order_type'];
             }
 
             $wallet->save();
@@ -2616,8 +2622,11 @@ Class Utilities {
             $query->where('valid_finder_id','exists',false);
         }
 
+        Log::info("wallet debit query");
+        Log::info($request);
+
         if(!empty($request['order_type'])){
-            $query->where(function($query){$query->orwhere('order_type', 'exists', false)->orWhere('order_type', $requet['order_type']);});
+            $query->where(function($query) use ($request){$query->orwhere('order_type', 'exists', false)->orWhere('order_type', $request['order_type']);});
         }
 
         return $query;
@@ -5332,7 +5341,8 @@ Class Utilities {
             'expiry' => strtotime('+1 month', time()),
             'order_type'=>['workout-session'],
             'quantity'=>1,
-            'code'=>strtolower($coupon_code)
+            'code'=>strtolower($coupon_code),
+            'remove_wallet_limit'=>true
         ];
         $fitcash_coupon = $this->createFitcashCoupn($fitcash_coupon_data);
 
@@ -5355,7 +5365,7 @@ Class Utilities {
             return Response::json(array('status' => 404,'message' => error_message($validator->errors())),400);
         }
         
-        $coupon_data = array_only($data, ['valid_till', 'expiry', 'amount', 'conditions', 'quantity', 'code','order_type']);
+        $coupon_data = array_only($data, ['valid_till', 'expiry', 'amount', 'conditions', 'quantity', 'code', 'order_type', 'remove_wallet_limit']);
 
         $coupon_data['type'] = 'fitcashplus';
 
