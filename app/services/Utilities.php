@@ -1528,7 +1528,7 @@ Class Utilities {
 
     public function walletTransactionNew($request, $data=false){
 
-        $wallet_limit = 100000;
+        $wallet_limit = 1000000;
 
         if($data && isset($data['type']) && $data['type'] == 'wallet'){
             Log::info("increasing wallet limit for pledge");
