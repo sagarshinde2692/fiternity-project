@@ -1593,10 +1593,15 @@ Class Utilities {
     }
 
     public function walletTransactionNew($request, $data=false){
-
+        Log::info("asdasdas");
         $wallet_limit = 2500;
 
-        if($data && isset($data['type']) && $data['type'] == 'wallet'){
+        if($data && isset($data['type']) && in_array($data['type'], ['wallet'])){
+            Log::info("increasing wallet limit for pledge");
+            $wallet_limit = 100000;
+        
+        }
+        if($data && isset($data['order_type']) && in_array($data['order_type'], ['giftcoupon'])){
             Log::info("increasing wallet limit for pledge");
             $wallet_limit = 100000;
         
@@ -5350,7 +5355,7 @@ Class Utilities {
             return Response::json(array('status' => 404,'message' => error_message($validator->errors())),400);
         }
         
-        $coupon_data = array_only($data, ['valid_till', 'expiry', 'amount', 'conditions', 'quantity', 'code']);
+        $coupon_data = array_only($data, ['valid_till', 'expiry', 'amount', 'conditions', 'quantity', 'code','order_type']);
 
         $coupon_data['type'] = 'fitcashplus';
 
