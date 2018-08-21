@@ -1585,7 +1585,7 @@ class ServiceController extends \BaseController {
 				if(isset($photo['servicetags']) && in_array($service_details['_id'], $photo['servicetags'])){
 					array_unshift($service_details['photos'], 'https://b.fitn.in/f/g/full/'.$photo['url']);
 				}else{
-					array_push($service_details['photos'], 'https://b.fitn.in/f/g/full/'.$photo['url']);
+					// array_push($service_details['photos'], 'https://b.fitn.in/f/g/full/'.$photo['url']);
 				}
 			}
 			
