@@ -916,12 +916,17 @@ class ServiceController extends \BaseController {
 							else array_push($slots,$slot);
 						}
                     }catch(Exception $e){
-
-                        Log::info("getTrialSchedule Error : ".$date." ".$slot['start_time']);
+						
+						Log::info("getTrialSchedule Error : ".$date." ".$slot['start_time']);
                     }
-                     
+					
                 }
             }
+			foreach($slots as $key => $slot){
+				if(empty($slot['data'])){
+					unset($slots[$key]);
+				}
+			}
 			
             
             $service['slot_passed_flag'] = $slot_passed_flag;
