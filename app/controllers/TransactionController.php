@@ -106,6 +106,10 @@ class TransactionController extends \BaseController {
             }
         }
 
+        if($data['type'] == 'giftcoupon'){
+            return $this->giftCouponCapture();
+        }
+
         Log::info('------------transactionCapture---------------',$data);
 
         if(!isset($data['type'])){
@@ -1790,6 +1794,9 @@ class TransactionController extends \BaseController {
         Log::info(" info order_type _____________________".print_r($order['type'],true));
         if(!empty($order)&&!empty($order['type'])&&$order['type']=='product')
         	return $this->productSuccess($data);
+        
+        if(!empty($order)&&!empty($order['type'])&&$order['type']=='giftcoupon')
+        	return $this->giftCouponSuccess();
 
         //If Already Status Successfull Just Send Response
         if(!isset($data["order_success_flag"]) && isset($order->status) && $order->status == '1' && isset($order->order_action) && $order->order_action == 'bought'){
@@ -2344,10 +2351,11 @@ class TransactionController extends \BaseController {
 
         $customer = Customer::find((int)$customer_id);
         
-        
-        if(!empty($customer['cart_id']))
-        	$data['cart_id']  = $customer['cart_id'];
-        else return ['status' => 400,'message' => "Cart doesn't exists with customer."];
+        if($data['type'] == 'product'){
+            if(!empty($customer['cart_id']))
+                $data['cart_id']  = $customer['cart_id'];
+            else return ['status' => 400,'message' => "Cart doesn't exists with customer."];
+        }
         if(isset($data['address']) && $data['address'] != ''){
 
             $data['customer_address']  = $data['address'];
@@ -7044,5 +7052,190 @@ class TransactionController extends \BaseController {
         Log::info('updateRatecardSlotsByOrderId');
         $this->utilities->updateRatecardSlots(['order_id'=>$order_id]);
     }
+
+    public function giftCouponCapture(){
+        
+        $data = Input::json()->all();
+
+        Log::info("giftCouponCapture capture");
+
+        Log::info($data);
+
+        $rules = array(
+            'customer_source'=>'required',
+            'coupon_id'=>'required',
+            'customer_email'=>'required|email',
+            'customer_name'=>'required',
+            'customer_phone'=>'required',
+            'receiver_address'=>'required',
+            'receiver_email'=>'required',
+            'receiver_phone'=>'required',
+            'receiver_name'=>'required',
+            'type'=>'required',
+        );
+
+        $validator = Validator::make($data,$rules);
+
+        if ($validator->fails()) {
+            return Response::json(array('status' => 404,'message' => error_message($validator->errors())),404);
+        }
+
+        if($data['type'] != 'giftcoupon'){
+            return Response::json(array('message'=>'Invalid parameters'), 400);
+        }
+        
+        $customerDetail = $this->getCustomerDetail($data);
+        
+        if($customerDetail['status'] != 200){
+            return Response::json($customerDetail,$customerDetail['status']);
+        }
+
+        $data = array_merge($data,$customerDetail['data']);
+
+        Log::info("before pledge");
+
+        Log::info($data);
+
+        $coupon = GiftCoupon::active()->find($data['coupon_id']);
+
+        if(!$coupon){
+            return Response::json($customerDetail,$customerDetail['status']);
+        }
+
+        $data['amount_finder'] = $data['amount'] = $coupon->cost;
+        
+        $data['fitcash_coupon_amount'] = $coupon->fitcash;
+        
+        $data['coupon_name'] = $coupon->package_name;
+
+        $data['payment_mode'] = 'paymentgateway';
+        
+        $data['status'] = "0";
+        
+        $order_id = $data['_id'] = $data['order_id'] = Order::max('_id') + 1;
+
+        $txnid = "";
+        $successurl = "";
+        $mobilehash = "";
+        if($data['customer_source'] == "android" || $data['customer_source'] == "ios"){
+            $txnid = "MFIT".$data['_id'];
+            $successurl = $data['customer_source'] == "android" ? Config::get('app.website')."/paymentsuccessandroid" : Config::get('app.website')."/paymentsuccessios";
+        }else{
+            $txnid = "FIT".$data['_id'];
+            $successurl = Config::get('app.website')."/paymentsuccess";
+        }
+        $data['txnid'] = $txnid;
+        $data['finder_name'] = 'Fitternity';
+        $data['finder_slug'] = 'fitternity';
+        
+        $data['service_name'] = 'Fitternity Gift Coupons';
+        $data['service_id'] = 100000;
+        
+        $hash = getHash($data);
+        $data = array_merge($data,$hash);
+        
+        $order = new Order($data);
+
+        $order->_id = $order_id;
+        
+        $order->save();
+        
+        $result['firstname'] = strtolower($data['customer_name']);
+        $result['lastname'] = "";
+        $result['phone'] = $data['customer_phone'];
+        $result['email'] = strtolower($data['customer_email']);
+        $result['orderid'] = $data['_id'];
+        $result['txnid'] = $txnid;
+        $result['amount'] = $data['amount'];
+        $result['productinfo'] = strtolower($data['productinfo']);
+        $result['service_name'] = preg_replace("/^'|[^A-Za-z0-9 \'-]|'$/", '', strtolower($data['service_name']));
+        $result['successurl'] = $successurl;
+        $result['hash'] = $data['payment_hash'];
+        $result['payment_related_details_for_mobile_sdk_hash'] = $mobilehash;
+        $result['finder_name'] = strtolower($data['finder_name']);
+        
+        
+        $resp   =   array(
+            'status' => 200,
+            'data' => $result,
+            'message' => "Tmp Order Generated Sucessfully"
+        );
+        return Response::json($resp);
+
+    }
+
+    public function giftCouponSuccess(){
+
+        $data = Input::json()->all();
+
+        Log::info("giftCouponSuccess success");
+        
+        Log::info($data);
+        
+        $rules = array(
+            'order_id'=>'required'
+        );
+
+        $validator = Validator::make($data,$rules);
+
+        if ($validator->fails()) {
+            return Response::json(array('status' => 404,'message' => error_message($validator->errors())),404);
+        }
+        
+        $order_id   =   (int) $data['order_id'];
+        $order      =   Order::findOrFail($order_id);
+
+        if(isset($order->status) && $order->status == '1'){
+
+            $resp   =   array('status' => 401, 'statustxt' => 'error', "message" => "Already Status Successfull");
+            return Response::json($resp,401);
+
+        }
+        // $hash_verified = true;
+        $hash_verified = $this->utilities->verifyOrder($data,$order);
+
+        if($data['status'] == 'success' && $hash_verified){
+
+            $order->status = "1";
+            $order->success_date = date('Y-m-d H:i:s',time());
+
+            $fitcash_coupon= $this->utilities->createGiftFitcashCoupon($order->toArray());
+
+            
+            
+            $order->fitcash_coupon_id = $fitcash_coupon['_id'];
+            $order->fitcash_coupon_code = $fitcash_coupon['code'];
+            
+            // $redisid = Queue::connection('redis')->push('TransactionController@sendCommunication', array('order_id'=>$order_id),Config::get('app.queue'));
+
+            // $order->redis_id = $redisid;
+
+            // $order->website = "www.fitternity.com";
+
+            // return $order;
+
+            $order->update();
+
+            $this->customersms->giftCoupon($order->toArray());
+
+            $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
+            
+        } else {
+           
+            if($hash_verified == false){
+             
+                $order->hash_verified = false;
+                $order->update();
+                
+            }
+           
+            $resp 	= 	array('status' => 200, 'statustxt' => 'failed', 'message' => "Transaction Failed :)");
+            
+        }
+        
+        return Response::json($resp);
+            
+    }
+
 
 }

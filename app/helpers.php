@@ -2303,7 +2303,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
             			}
             			else return null;
             		} catch (Exception $e) {
-            			Log::error(print_r($e,true));
+            			// Log::error(print_r($e,true));
             			return null;
             		}
             	}

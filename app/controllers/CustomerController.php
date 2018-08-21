@@ -4300,6 +4300,12 @@ class CustomerController extends \BaseController {
 					$vb = array("vendor_id"=>$fitcashcode['vendor_id'],"balance"=>$cashback_amount);
 					$customer_update = Customer::where('_id', $customer_id)->push('vendor_balance', $vb, true);
 				}
+				if(!empty($fitcashcode['order_type'])){
+					$walletData["order_type"] = $fitcashcode['order_type'];
+				}
+				if(!empty($fitcashcode['remove_wallet_limit'])){
+					$walletData["remove_wallet_limit"] = $fitcashcode['remove_wallet_limit'];
+				}
 
 				if($fitcashcode['type'] == "fitcashplus"){
 
