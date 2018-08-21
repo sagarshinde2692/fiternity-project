@@ -7105,6 +7105,8 @@ class TransactionController extends \BaseController {
         $data['amount_finder'] = $data['amount'] = $coupon->cost;
         
         $data['fitcash_coupon_amount'] = $coupon->fitcash;
+        
+        $data['coupon_name'] = $coupon->package_name;
 
         $data['payment_mode'] = 'paymentgateway';
         
@@ -7203,8 +7205,8 @@ class TransactionController extends \BaseController {
             
             $order->fitcash_coupon_id = $fitcash_coupon['_id'];
             $order->fitcash_coupon_code = $fitcash_coupon['code'];
-
-            $redisid = Queue::connection('redis')->push('TransactionController@sendCommunication', array('order_id'=>$order_id),Config::get('app.queue'));
+            
+            // $redisid = Queue::connection('redis')->push('TransactionController@sendCommunication', array('order_id'=>$order_id),Config::get('app.queue'));
 
             $order->redis_id = $redisid;
 
@@ -7213,6 +7215,8 @@ class TransactionController extends \BaseController {
             // return $order;
 
             $order->update();
+
+            $this->customersms->giftCoupon($order->toArray());
 
             $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
             
