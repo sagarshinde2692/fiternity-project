@@ -1772,7 +1772,7 @@ class ServiceController extends \BaseController {
 		$service_details['gym_date_data'] = $this->getPPSAvailableDateTime($service_details, 3);
 		unset($service_details['workoutsessionschedules']);
 		$schedule = json_decode(json_encode($this->getScheduleByFinderService($schedule_data)->getData()));
-
+		
 		if($schedule->status != 200){
 			return Response::json(array('status'=>400, 'error_message'=>'Booking not available'), $this->error_status);
 		}
@@ -1801,7 +1801,7 @@ class ServiceController extends \BaseController {
 					$service_details['page_index'] = 0;
 				}
 			}
-
+			
 			if(count($service_details['slots']) == 1){
 
 				$service_details['single_slot'] = true;
@@ -1839,13 +1839,25 @@ class ServiceController extends \BaseController {
 			}
 		}else{
 
-			$pps_slots=(array)$schedule;
+			$pps_slots=json_decode(json_encode($schedule), true);
 			if(!empty($pps_slots)&&!empty($pps_slots['slots']))
 			{
 				$service_details['slots']=$pps_slots['slots'];
-				$service_details['single_slot'] = false;
+				$service_details['single_slot'] = (count($pps_slots['slots']) == 1) && count($pps_slots['slots'][0]['data']) == 1;
+				$next_session_epoch = $pps_slots['slots'][0]['data'][0]['epoch_start_time'];
+				$next_session_slot = $pps_slots['slots'][0]['data'][0]['start_time'];
+				foreach($pps_slots['slots'] as $slot){
+					foreach($slot['data'] as $x){
+						if($x['epoch_start_time'] < $next_session_epoch){
+							$next_session_epoch = $x['data'][0]['epoch_start_time'];
+							$next_session_slot = $x['data'][0]['start_time'];
+						}else{
+							break;
+						}
+					}
+				}
 				$service_details['session_unavailable'] = false;
-				$service_details['next_session'] = "";
+				$service_details['next_session'] = "Next session at $next_session_slot";
 			}
 			else {				
 				$service_details['single_slot'] = false;
