@@ -5328,7 +5328,7 @@ Class Utilities {
 	
     public function createGiftFitcashCoupon($order){
         
-        $constant_code = "rakhi-".strtolower($order['receiver_name']);
+        $constant_code = "rakhi-".strtolower(substr($order['receiver_name'], 0, 4));
         $coupon_code = $constant_code;
         while($coupon = \Fitcashcoupon::where('code', $coupon_code)->first()){
             $coupon_code = $constant_code.'-'.$this->generateRandomString(3);
