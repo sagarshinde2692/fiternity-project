@@ -7055,7 +7055,7 @@ class TransactionController extends \BaseController {
 
     public function giftCouponCapture(){
         
-        $data = Input::all();
+        $data = Input::json()->all();
 
         Log::info("giftCouponCapture capture");
 
@@ -7067,7 +7067,7 @@ class TransactionController extends \BaseController {
             'customer_email'=>'required|email',
             'customer_name'=>'required',
             'customer_phone'=>'required',
-            'customer_address'=>'required',
+            'receiver_address'=>'required',
             'receiver_email'=>'required',
             'receiver_phone'=>'required',
             'receiver_name'=>'required',
