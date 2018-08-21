@@ -2027,7 +2027,7 @@ class HomeController extends BaseController {
             ];
 
             if(isset($itemData['coupon_id'])){
-                $resp['coupon'] = Giftcoupon::find($itemData['coupon_id']);
+                $resp['coupon'] = \Giftcoupon::find($itemData['coupon_id']);
             }
             if(isset($itemData['fitcash_coupon_code'])){
                 $resp['fitcash_coupon_code'] = $itemData['fitcash_coupon_code'];
