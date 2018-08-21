@@ -2026,6 +2026,13 @@ class HomeController extends BaseController {
                 'why_buy'=>$why_buy
             ];
 
+            if(isset($itemData['coupon_id'])){
+                $resp['coupon'] = Giftcoupon::find($itemData['coupon_id']);
+            }
+            if(isset($itemData['fitcash_coupon_code'])){
+                $resp['fitcash_coupon_code'] = $itemData['fitcash_coupon_code'];
+            }
+
             Log::info(" RX USER ".print_r($itemData,true));
             if(isset($itemData['rx_user'])&&$itemData['rx_user']&&isSet($itemData['rx_success_url'])&&$itemData['rx_success_url']!="")
             	$resp['rx_success_url'] =	$itemData['rx_success_url'];
