@@ -7208,7 +7208,7 @@ class TransactionController extends \BaseController {
             
             // $redisid = Queue::connection('redis')->push('TransactionController@sendCommunication', array('order_id'=>$order_id),Config::get('app.queue'));
 
-            $order->redis_id = $redisid;
+            // $order->redis_id = $redisid;
 
             // $order->website = "www.fitternity.com";
 
