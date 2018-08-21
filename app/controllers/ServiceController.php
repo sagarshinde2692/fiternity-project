@@ -824,7 +824,7 @@ class ServiceController extends \BaseController {
 		    	}
 		    	if(!empty($weekdayslots)&&!empty($weekdayslots['slots'])&&count($weekdayslots['slots'])>0&&(isset($_GET['source']) && $_GET['source'] == 'pps'))
 		    	{
-		    		$rsh=["title"=>"RUSH HOUR","price"=>"","data"=>[]];$nrsh=["title"=>"NON RUSH HOUR","price"=>"","data"=>[]];
+		    		$rsh=["title"=>"RUSH HOUR","price"=>"","data"=>[], 'image'=>'https://b.fitn.in/paypersession/non_rush_hour@3x1.png'];$nrsh=["title"=>"NON RUSH HOUR","price"=>"","data"=>[], 'image'=>'https://b.fitn.in/paypersession/rush_hour_icon@3x1.png'];
 		    		
 		    		$p_np=$this->utilities->getPeakAndNonPeakPrice($weekdayslots['slots'],$this->utilities->getPrimaryCategory(null,$service['service_id']));
 		    		if(!empty($p_np))
