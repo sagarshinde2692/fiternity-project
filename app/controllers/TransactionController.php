@@ -7120,7 +7120,7 @@ class TransactionController extends \BaseController {
             $successurl = $data['customer_source'] == "android" ? Config::get('app.website')."/paymentsuccessandroid" : Config::get('app.website')."/paymentsuccessios";
         }else{
             $txnid = "FIT".$data['_id'];
-            $successurl = Config::get('app.website')."/paymentsuccessproduct";
+            $successurl = Config::get('app.website')."/paymentsuccess";
         }
         $data['txnid'] = $txnid;
         $data['finder_name'] = 'Fitternity';
@@ -7189,8 +7189,8 @@ class TransactionController extends \BaseController {
             return Response::json($resp,401);
 
         }
-        $hash_verified = true;
-        // $hash_verified = $this->utilities->verifyOrder($data,$order);
+        // $hash_verified = true;
+        $hash_verified = $this->utilities->verifyOrder($data,$order);
 
         if($data['status'] == 'success' && $hash_verified){
 
