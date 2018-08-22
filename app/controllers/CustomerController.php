@@ -3303,7 +3303,7 @@ class CustomerController extends \BaseController {
 
 								$data['block_screen'] = [
 									'type'=>'review',
-									'url'=>Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/review'
+									'url'=>$this->notificationDataByTrialId($data['_id'], 'review')
 								];	
 							}
 
@@ -6726,7 +6726,7 @@ class CustomerController extends \BaseController {
 				$response['block'] = false;
 			break;
 			case 'review':
-				$response['header'] = "Share your experience for <bold>".ucwords($data['service_name'])."</bold> at<br>".$data['finder_name'].", ".$data['finder_location']."<br>".date('jS M', strtotime($data['schedule_date_time']))." | ".date('D', strtotime($data['schedule_date_time']))." | ".date('h:i a', strtotime($data['schedule_date_time']));
+				$response['header'] = "Share your experience for <b>".ucwords($data['service_name'])."</b> at<br/>".$data['finder_name'].", ".$data['finder_location']."<br>".date('jS M', strtotime($data['schedule_date_time']))." | ".date('D', strtotime($data['schedule_date_time']))." | ".date('h:i a', strtotime($data['schedule_date_time']));
 				$response['section_1'] = [
 					'header'=>"How was your experience?"
 				];
@@ -6744,6 +6744,8 @@ class CustomerController extends \BaseController {
 				$response['rating_text'] = Config::get('app.rating_text');
 
 				$response['block'] = true;
+				$response['service_id'] = $data['service_id'];
+				$response['trial_id'] = $data['_id'];
 
 		}
 		$time_diff = strtotime($data['schedule_date_time']) - time();
