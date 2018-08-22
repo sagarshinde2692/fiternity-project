@@ -6762,6 +6762,7 @@ class CustomerController extends \BaseController {
 				$response = array_merge($response, $this->utilities->reviewScreenData($data));
 				$response['service_id'] = $data['service_id'];
 				$response['booktrialid'] = $data['_id'];
+				$response['finder_id'] = $data['finder_id'];
 				
 
 		}
