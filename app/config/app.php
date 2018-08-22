@@ -816,6 +816,31 @@ return array(
 	
 	'no_patti_brands_slugs'=>['anytime-fitness-gurgaon'],
 
+
 	'rating_text'=>["Bad","OK","Average","Good","Excellent",],
+
+	'voucher_grid'=>[
+		[
+			'min'=>1,
+			'max'=>2,
+			'type'=>'ola'
+		],
+		[
+			'min'=>2,
+			'max'=>3,
+			'type'=>'zomato'
+		],
+		[
+			'min'=>4,
+			'max'=>5,
+			'type'=>'bms'
+		],
+		[
+			'min'=>6,
+			'max'=>7,
+			'type'=>'amazon'
+		],
+		
+	]
 
 );
