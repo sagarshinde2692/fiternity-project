@@ -7239,6 +7239,12 @@ class SchedulebooktrialsController extends \BaseController {
                     ]
                 ];
 
+                $voucher_response = $this->utilities->attachExternalVoucher($booktrial);
+
+                if($voucher_response){
+                    $response['voucher_data'] = $voucher_response;
+                }
+
                 // if(!$customer_level_data['maxed_out']){
                 //     $response['streak']['footer'] = 'You have unlocked level '.$customer_level_data['current_level']['level'].' which gets you '.$customer_level_data['current_level']['cashback'].'% cashback upto '.$customer_level_data['current_level']['number'].' sessions!';
                 // }

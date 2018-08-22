@@ -4397,25 +4397,56 @@ Class Utilities {
     }
 
     public function attachExternalVoucher($data){
-        
+    
+        $voucherAttached = \Externalvoucher::where('booktrial_id', $data['_id'])->first();
+
+        if($voucherAttached){
+            return [
+                'header'=>"VOUCHER UNLOCKED",
+                'sub_header'=>"You have unlocked ".$voucherAttached['type']." voucher on attending you session at ".$data['finder_name'],
+                'coupon_title'=>$voucherAttached['description'],
+                'coupon_text'=>"USE CODE : ".$voucherAttached['code'],
+                'coupon_image'=>$voucherAttached['image'],
+                'coupon_code'=>$voucherAttached['code'],
+            ];
+        }
+
         $sessions_attended = $this->getSessionAttended($data['customer_id']);
+        Log::info('$sessions_attended');
+        Log::info($sessions_attended);
+
         
         $voucherType = $this->getVoucherType($sessions_attended);
-        
-        $voucherAttached = $this->attachVoucher($voucherType, $data['customer_id']);
 
-        return $voucherAttached;
+        Log::info('$voucherType');
+        Log::info($voucherType);
+        
+        $voucherAttached = $this->attachVoucher($voucherType, $data);
+
+        if(!$voucherAttached){
+            return;
+        }
+
+        return [
+            'header'=>"VOUCHER UNLOCKED",
+            'sub_header'=>"You have unlocked ".$voucherAttached['type']." voucher on attending you session at ".$data['finder_name'],
+            'coupon_title'=>$voucherAttached['description'],
+            'coupon_text'=>"USE CODE : ".$voucherAttached['code'],
+            'coupon_image'=>$voucherAttached['image'],
+            'coupon_code'=>$voucherAttached['code'],
+        ];
+
     }
 
     public function getSessionAttended($customer_id){
-        \Booktrial::where('customer_id', $customer_id)->where('post_trial_status', 'attended')->count();
+        return \Booktrial::where('customer_id', $customer_id)->where('post_trial_status', 'attended')->count();
     }
 
     public function getVoucherType($sessions_attended){
         $voucher_grid = Config::get('app.voucher_grid');
         foreach($voucher_grid as $value){
             if(empty($value['max']) || $sessions_attended >= $value['min'] && $sessions_attended >= $value['min']){
-                return $type;
+                return $value['type'];
             }
         }
     }
@@ -4453,12 +4484,17 @@ Class Utilities {
         return $response;
     }
 
-    public function attachVoucher($type, $customer_id){
-        
+    public function attachVoucher($type, $data){
+        Log::info($type);
+        Log::info($type);
         $voucher = \Externalvoucher::active()->where('type', $type)->where('customer_id', 'exists', false)->orderBy('_id')->first();
 
+        Log::info('$voucher');
+        Log::info($voucher);
+
         if($voucher){
-            $voucher->customer_id = $customer_id;
+            $voucher->customer_id = $data['customer_id'];
+            $voucher->booktrial_id = $data['_id'];
             $voucher->save();
             return $voucher;
         }else{
