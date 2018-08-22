@@ -1942,7 +1942,8 @@ class FindersController extends \BaseController {
 		$decoded = $this->customerTokenDecode($jwt_token);
 
 		$rules = [
-		    'finder_id' => 'required|integer|numeric',
+			'finder_id' => 'required_without:service_id|integer|numeric',
+			'service_id'=> 'required_without:finder_id|integer|numeric',
 		    'rating' => 'required|numeric',
 		    //'description' => 'required'
 		];

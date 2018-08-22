@@ -4409,6 +4409,7 @@ Class Utilities {
                 'coupon_image'=>$voucherAttached['image'],
                 'coupon_code'=>$voucherAttached['code'],
                 'coupon_subtext'=>'(also sent via email/sms)',
+                'unlock'=>'UNLOCK VOUCHER',
             ];
         }
 
@@ -4436,6 +4437,7 @@ Class Utilities {
             'coupon_image'=>$voucherAttached['image'],
             'coupon_code'=>$voucherAttached['code'],
             'coupon_subtext'=>'(also sent via email/sms)',
+            'unlock'=>'UNLOCK VOUCHER',
         ];
 
     }
@@ -4477,7 +4479,7 @@ Class Utilities {
         $detail_ratings_array = $data['category']['detail_rating'];
 
         foreach($detail_ratings_array as $text){
-            array_push($response['section_2']['detail_ratings'], ['image'=>"https://b.fitn.in/paypersession/Vendor%20Icon@3x.png", 'text'=>$text]);
+            array_push($response['section_2']['detail_ratings'], ['image'=>"https://b.fitn.in/paypersession/Gyms_2x_Equipment@2x.png", 'text'=>$text]);
         }
 
         $response['block'] = true;

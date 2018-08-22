@@ -7625,4 +7625,9 @@ class SchedulebooktrialsController extends \BaseController {
         return false;
     }
 
+    public function skipreview($booktrial_id){
+        Booktrial::where('_id', intval($booktrial_id))->update(['skip_review'=>true]);
+        return ['status'=>200];
+    }   
+
 }
