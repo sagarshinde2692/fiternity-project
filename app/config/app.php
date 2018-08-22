@@ -831,14 +831,13 @@ return array(
 			'type'=>'zomato'
 		],
 		[
-			'min'=>4,
-			'max'=>5,
+			'min'=>3,
+			'max'=>4,
 			'type'=>'bms'
 		],
 		[
-			'min'=>6,
-			'max'=>7,
-			'type'=>'amazon'
+			'min'=>4,
+			'type'=>'bms'
 		],
 		
 	]

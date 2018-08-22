@@ -4408,6 +4408,7 @@ Class Utilities {
                 'coupon_text'=>"USE CODE : ".$voucherAttached['code'],
                 'coupon_image'=>$voucherAttached['image'],
                 'coupon_code'=>$voucherAttached['code'],
+                'coupon_subtext'=>'(also sent via email/sms)',
             ];
         }
 
@@ -4434,6 +4435,7 @@ Class Utilities {
             'coupon_text'=>"USE CODE : ".$voucherAttached['code'],
             'coupon_image'=>$voucherAttached['image'],
             'coupon_code'=>$voucherAttached['code'],
+            'coupon_subtext'=>'(also sent via email/sms)',
         ];
 
     }
@@ -4445,7 +4447,7 @@ Class Utilities {
     public function getVoucherType($sessions_attended){
         $voucher_grid = Config::get('app.voucher_grid');
         foreach($voucher_grid as $value){
-            if(empty($value['max']) || $sessions_attended >= $value['min'] && $sessions_attended >= $value['min']){
+            if(empty($value['max']) || ($sessions_attended >= $value['min'] && $sessions_attended < $value['max'])){
                 return $value['type'];
             }
         }

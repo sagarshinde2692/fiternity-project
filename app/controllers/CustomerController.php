@@ -3303,7 +3303,7 @@ class CustomerController extends \BaseController {
 
 								$data['block_screen'] = [
 									'type'=>'review',
-									'url'=>$this->notificationDataByTrialId($data['_id'], 'review')
+									'review_data'=>$this->notificationDataByTrialId($data['_id'], 'review')
 								];	
 							}
 
