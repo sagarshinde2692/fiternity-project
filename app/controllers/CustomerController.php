@@ -6726,26 +6726,10 @@ class CustomerController extends \BaseController {
 				$response['block'] = false;
 			break;
 			case 'review':
-				$response['header'] = "Share your experience for <b>".ucwords($data['service_name'])."</b> at<br/>".$data['finder_name'].", ".$data['finder_location']."<br>".date('jS M', strtotime($data['schedule_date_time']))." | ".date('D', strtotime($data['schedule_date_time']))." | ".date('h:i a', strtotime($data['schedule_date_time']));
-				$response['section_1'] = [
-					'header'=>"How was your experience?"
-				];
-				$response['section_2'] = [
-					'header'=>"Rate tour experience basis following arameters (optional)",
-					'detail_ratings' =>[]
-				];
-				
-				$detail_ratings_array = $data['category']['detail_rating'];
-
-				foreach($detail_ratings_array as $text){
-					array_push($response['section_2']['detail_ratings'], ['image'=>'', 'text'=>$text]);
-				}
-
-				$response['rating_text'] = Config::get('app.rating_text');
-
-				$response['block'] = true;
+				$response = array_merge($response, $this->utilities->reviewScreenData($data));
 				$response['service_id'] = $data['service_id'];
-				$response['trial_id'] = $data['_id'];
+				$response['booktrialid'] = $data['_id'];
+				
 
 		}
 		$time_diff = strtotime($data['schedule_date_time']) - time();

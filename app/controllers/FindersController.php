@@ -2091,6 +2091,10 @@ class FindersController extends \BaseController {
 		if(isset($data['agent_name'])){
 			$reviewdata['agent_name'] = $data['agent_name'];
 		}
+		
+		if(!empty($data['service_id'])){
+			$reviewdata['service_id'] = $data['service_id'];
+		}
 
 		if(isset($data['agent_email'])){
 			$reviewdata['agent_email'] = $data['agent_email'];
@@ -2164,12 +2168,18 @@ class FindersController extends \BaseController {
 			$txn = null;
 			switch($data['tag']){
 				case 'trial':
+				case 'Trial':
+					$data['tag'] = 'trial_verified';
 					$txn = Booktrial::where('customer_id', $reviewdata['customer_id'])->where('finder_id', $reviewdata['finder_id'])->where('type', 'booktrials')->first();
 				break;
 				case 'workout-session':
+				case 'Workout-session':
+					$data['tag'] = 'workout-session';
 					$txn = Booktrial::where('customer_id', $reviewdata['customer_id'])->where('finder_id', $reviewdata['finder_id'])->where('type', 'workout-session')->first();
 				break;
 				case 'membership':
+				case 'Membership':
+					$data['tag'] = 'membership';
 					$txn = Booktrial::where('customer_id', $reviewdata['customer_id'])->where('finder_id', $reviewdata['finder_id'])->whereNotIn('type', ['workout-session', 'booktrial'])->first();
 				break;
 			}
@@ -2216,6 +2226,10 @@ class FindersController extends \BaseController {
 			$review->save();
 
 			$message = 'Thank You. Your review has been posted successfully';
+		}
+
+		if(!empty($reviewdata['booktrial_id'])){
+			Booktrial::where('_id', intval($reviewdata['booktrial_id']))->update(['post_tril_review'=>true]);
 		}
 
 		$this->updateFinderRatingV2($finder);
@@ -4254,6 +4268,11 @@ class FindersController extends \BaseController {
                 $data['recommended_vendor']['title'] = "Other popular options in ".$finderarr["location"]["name"];
                 $data['recommended_vendor']['description'] = "Checkout fitness services near you";
 				$data['recommended_vendor']['near_by_vendor'] = $nearby_other_category;
+
+				$data['finder']['review_data'] = $this->utilities->reviewScreenData($finder);
+
+				$data['finder']['review_data']['finder_id'] = $data['finder']['_id'];
+				$data['finder']['review_data']['tag'] = ['Membership', 'Trial', 'Workout-session'];
 				
 				$data = Cache::tags($cache_name)->put($cache_key, $data, Config::get('cache.cache_time'));
 
@@ -4300,7 +4319,7 @@ class FindersController extends \BaseController {
 					if($customer_phone != ""){
 
 						$customer_trials_with_vendors       =       Booktrial::where(function ($query) use($customer_email, $customer_phone) { $query->orWhere('customer_email', $customer_email)->orWhere('customer_phone','LIKE','%'.substr($customer_phone, -9).'%');})
-						->where('finder_id', '=', (int) $finder->_id)
+						->where('tag', ['Membership', 'Trial', 'Workout-session'])
 						->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
 						->get(array('id'));
 
