@@ -4482,7 +4482,7 @@ Class Utilities {
             array_push($response['section_2']['detail_ratings'], ['image'=>"https://b.fitn.in/paypersession/Gyms_2x_Equipment@2x.png", 'text'=>$text]);
         }
 
-        $response['block'] = true;
+        $response['block'] = false;
         
 
         return $response;
