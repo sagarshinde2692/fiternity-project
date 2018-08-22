@@ -3189,7 +3189,7 @@ class CustomerController extends \BaseController {
 				$no_block = [];
 				$future = [];
 				$review = [];
-
+				
 				if(count($trials) > 0){
 					$workout_session_level_data = $this->utilities->getWorkoutSessionLevel($customer_id);
 
@@ -3300,6 +3300,7 @@ class CustomerController extends \BaseController {
 
 								
 							}else{
+
 								$data['block_screen'] = [
 									'type'=>'review',
 									'url'=>Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/review'
@@ -3324,7 +3325,7 @@ class CustomerController extends \BaseController {
 								$data['amount'] = "₹".$data['amount_finder'];
 							}
 							
-							$data = array_only($data, ['title', 'schedule_date_time', 'subscription_code', 'subscription_text', 'body1', 'streak', 'payment_done', 'order_id', 'trial_id', 'unlock', 'image', 'block_screen','activation_url', 'current_time' ,'time_diff', 'schedule_date_time_text', 'subscription_text_number', 'amount', 'checklist']);
+							$data = array_only($data, ['title', 'schedule_date_time', 'subscription_code', 'subscription_text', 'body1', 'streak', 'payment_done', 'order_id', 'trial_id', 'unlock', 'image', 'block_screen','activation_url', 'current_time' ,'time_diff', 'schedule_date_time_text', 'subscription_text_number', 'amount', 'checklist','findercategory']);
 
 						
 							
@@ -6646,7 +6647,7 @@ class CustomerController extends \BaseController {
 			
 		}
 
-		$transaction = Booktrial::find(intval($booktrial_id));
+		$transaction = Booktrial::with(['category'=>function($query){$query->select('detail_rating');}])->find(intval($booktrial_id));
 
 		$dates = array('start_date', 'start_date_starttime', 'schedule_date', 'schedule_date_time', 'followup_date', 'followup_date_time','missedcall_date','customofferorder_expiry_date','auto_followup_date');
 		$unset_keys = [];
@@ -6725,16 +6726,24 @@ class CustomerController extends \BaseController {
 				$response['block'] = false;
 			break;
 			case 'review':
-				$response['header'] = "Share your experience for <bold>".$data['service_name']."</bold> at<br>".$data['finder_name'].", ".$data['finder_location'];
-				
-				$response['image'] = "https://b.fitn.in/paypersession/timer.png";
-				
-				$response['sub_header_2'] = "Your ".$data['service_name']." at ".$data['finder_name']." is scheduled for today at ".date('g:i a', strtotime($data['schedule_date_time']))."\n\nAre you ready to kill your workout?" ;
-				$response['button_text'] = [
-					'attended'=>['text'=>'YES I’LL BE THERE','url'=>Config::get('app.url')."/sessionstatuscapture/confirm/".$data['_id']],
-					'did_not_attend'=>['text'=>'NO, I’M NOT GOING','url'=>Config::get('app.url')."/sessionstatuscapture/cantmake/".$data['_id']]
+				$response['header'] = "Share your experience for <bold>".ucwords($data['service_name'])."</bold> at<br>".$data['finder_name'].", ".$data['finder_location']."<br>".date('jS M', strtotime($data['schedule_date_time']))." | ".date('D', strtotime($data['schedule_date_time']))." | ".date('h:i a', strtotime($data['schedule_date_time']));
+				$response['section_1'] = [
+					'header'=>"How was your experience?"
 				];
-				$response['block'] = false;
+				$response['section_2'] = [
+					'header'=>"Rate tour experience basis following arameters (optional)",
+					'detail_ratings' =>[]
+				];
+				
+				$detail_ratings_array = $data['category']['detail_rating'];
+
+				foreach($detail_ratings_array as $text){
+					array_push($response['section_2']['detail_ratings'], ['image'=>'', 'text'=>$text]);
+				}
+
+				$response['rating_text'] = Config::get('app.rating_text');
+
+				$response['block'] = true;
 
 		}
 		$time_diff = strtotime($data['schedule_date_time']) - time();

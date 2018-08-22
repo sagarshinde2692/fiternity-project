@@ -6263,7 +6263,7 @@ class SchedulebooktrialsController extends \BaseController {
         // Log::info("before call");
         // return $this->customersms->bookTrial($booktrialdata, "2017-07-07 7pm");
 
-        $this->sendCommunication1(array('booktrial_id'=>intval($id)));
+        $this->sendCommunication(null, array('booktrial_id'=>intval($id)));
         return "done";
     }
  
