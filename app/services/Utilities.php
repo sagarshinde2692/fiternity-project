@@ -4465,7 +4465,7 @@ Class Utilities {
         ];
         if(!empty($data['service_name'])){
             $response['header'] = "Share your experience for <b>".ucwords($data['service_name'])."</b> at<br/>".$data['finder_name'].", ".$data['finder_location']."<br>".date('jS M', strtotime($data['schedule_date_time']))." | ".date('D', strtotime($data['schedule_date_time']))." | ".date('h:i a', strtotime($data['schedule_date_time']));
-            $response['image'] = "";
+            $response['image'] = "https://b.fitn.in/paypersession/Vendor%20Icon@3x.png";
         }else{
             $response['section_1']['header']  = "Rate your overall experience at ".$data['title'];
         }
@@ -4477,7 +4477,7 @@ Class Utilities {
         $detail_ratings_array = $data['category']['detail_rating'];
 
         foreach($detail_ratings_array as $text){
-            array_push($response['section_2']['detail_ratings'], ['image'=>'', 'text'=>$text]);
+            array_push($response['section_2']['detail_ratings'], ['image'=>"https://b.fitn.in/paypersession/Vendor%20Icon@3x.png", 'text'=>$text]);
         }
 
         $response['block'] = true;
