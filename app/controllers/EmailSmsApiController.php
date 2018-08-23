@@ -578,7 +578,9 @@ class EmailSmsApiController extends \BaseController {
         				$response['status']
         				);
         		
-        	}
+            }
+            
+            $data['coupon'] = 'exitipps';
         	
         }
 
