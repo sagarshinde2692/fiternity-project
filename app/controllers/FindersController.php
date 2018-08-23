@@ -1959,6 +1959,7 @@ class FindersController extends \BaseController {
 		$rating = $data['rating'];
 		$data["customer_id"] = $decoded->customer->_id;
 		$data['description'] = (isset($data['description'])) ? $data['description'] : '';
+		$data['detail_rating'] = (isset($data['detail_rating'])) ? $data['detail_rating'] : [];
 
 		if(!isset($data['detail_rating'])){
 			$data['detail_rating'] = [$rating,$rating,$rating,$rating,$rating];
@@ -3578,7 +3579,7 @@ class FindersController extends \BaseController {
 			Service::$setAppends=['active_weekdays','serviceratecard'];
 			Finder::$setAppends=['finder_coverimage'];
 			$finderarr = Finder::active()->where('slug','=',$tslug)
-				->with(array('category'=>function($query){$query->select('_id','name','slug','detail_rating');}))
+				->with(array('category'=>function($query){$query->select('_id','name','slug','detail_rating','detail_ratings_images');}))
 				->with(array('city'=>function($query){$query->select('_id','name','slug');}))
 				->with(array('location'=>function($query){$query->select('_id','name','slug');}))
 				->with('categorytags')
