@@ -6055,7 +6055,10 @@ class FindersController extends \BaseController {
 
 		$review_data['finder_id'] = $finder['_id'];
 		$review_data['optional'] = false;
-		$review_data['tag'] = ['Membership', 'Trial', 'Workout-session'];
+		$review_data['section_3'] = [
+			'tag' => ['Membership', 'Trial', 'Workout-session'],
+			'header' => 'What is your review based on',
+		];
 
 		return $review_data;
 	}
