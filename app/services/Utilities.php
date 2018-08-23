@@ -5087,8 +5087,9 @@ Class Utilities {
 
     public function updateRatecardSlots($data){
         Log::info("inside updateRatecardSlots");
-
-        if(intval(date('d', time())) >= 9){
+        $orderVariable = \Ordervariables::where("name","expiring-logic")->orderBy("_id", "desc")->first();
+        // if(intval(date('d', time())) >= 25){
+        if(isset($orderVariable["available_slots_end_date"]) && time() >= $orderVariable["available_slots_end_date"]){
             return;
         }
 
