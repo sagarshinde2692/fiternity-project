@@ -371,6 +371,10 @@ return array(
 			'path'							=> 'review-images/',
 			'url'							=> 'https://d3oorwrq3wx4ad.cloudfront.net/review-images/',
 		),
+		'detail_ratings_images'=>array(
+			'path'							=> 'paypersession/ratings/',
+			'url'							=> 'http://d3oorwrq3wx4ad.cloudfront.net/paypersession/ratings/',
+		),
 	),
 
 	'customer_care_number' => '+919699998838',

@@ -1222,3 +1222,5 @@ Route::get('updateRatecardSlots','DebugController@updateRatecardSlots');
 Route::get('updateratecardslotsbyid/{order_id}','TransactionController@updateRatecardSlotsByOrderId');
 
 Route::get('customer/skipreview/{booktrial_id}','SchedulebooktrialsController@skipreview');
+
+Route::get('addpicturestoratingparams','DebugController@addPicturesToRatingParams');

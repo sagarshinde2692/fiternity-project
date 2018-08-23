@@ -4478,8 +4478,8 @@ Class Utilities {
         
         $detail_ratings_array = $data['category']['detail_rating'];
 
-        foreach($detail_ratings_array as $text){
-            array_push($response['section_2']['detail_ratings'], ['image'=>"https://b.fitn.in/paypersession/Gyms_2x_Equipment@2x.png", 'text'=>$text]);
+        foreach($detail_ratings_array as $key => $text){
+            array_push($response['section_2']['detail_ratings'], ['image'=>Config::get('app.aws.detail_ratings_images.url').$data['category']['detail_ratings_images'][$key], 'text'=>$text]);
         }
 
         $response['block'] = false;

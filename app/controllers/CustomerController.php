@@ -6681,7 +6681,7 @@ class CustomerController extends \BaseController {
 			
 		}
 
-		$transaction = Booktrial::with(['category'=>function($query){$query->select('detail_rating');}])->find(intval($booktrial_id));
+		$transaction = Booktrial::with(['category'=>function($query){$query->select('detail_rating','detail_ratings_images');}])->find(intval($booktrial_id));
 
 		$dates = array('start_date', 'start_date_starttime', 'schedule_date', 'schedule_date_time', 'followup_date', 'followup_date_time','missedcall_date','customofferorder_expiry_date','auto_followup_date');
 		$unset_keys = [];
