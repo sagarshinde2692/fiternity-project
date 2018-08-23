@@ -2031,7 +2031,11 @@ class FindersController extends \BaseController {
 	    }
 
 		// return Input::json()->all();
-		$validator = Validator::make($data, Review::$rules);
+		if(!empty($data['service_id'])){
+			$validator = Validator::make($data, Review::$rulesService);
+		}else{
+			$validator = Validator::make($data, Review::$rules);
+		}
 		Log::info("Review".$jwt_token);
 		if ($validator->fails()) {
 			$response = array('status' => 400, 'message' => 'Could not create a review.', 'errors' => $validator->errors());
