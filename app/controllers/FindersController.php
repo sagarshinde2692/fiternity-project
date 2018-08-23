@@ -2239,9 +2239,9 @@ class FindersController extends \BaseController {
 			$message = 'Thank You. Your review has been posted successfully';
 		}
 
-		if(!empty($reviewdata['booktrial_id'])){
-			Booktrial::where('_id', intval($reviewdata['booktrial_id']))->update(['post_tril_review'=>true]);
-		}
+		// if(!empty($reviewdata['booktrial_id'])){
+		// 	Booktrial::where('_id', intval($reviewdata['booktrial_id']))->update(['post_tril_review'=>true]);
+		// }
 
 		$this->updateFinderRatingV2($finder);
 

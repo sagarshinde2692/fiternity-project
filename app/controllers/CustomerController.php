@@ -3167,7 +3167,7 @@ class CustomerController extends \BaseController {
 							->orWhere(function($query){
 								$query	->where('schedule_date_time', '>', new DateTime(date('Y-m-d H:i:s', strtotime('17-08-2018'))))
 										->whereIn('post_trial_status', ['attended'])
-										->where('post_trial_review', '!=', true)
+										->where('has_reviewed', '!=', '1')
 										->where('skip_review', '!=', true);	
 							});
 						})
