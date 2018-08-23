@@ -4280,7 +4280,7 @@ class FindersController extends \BaseController {
 				// $data['finder']['review_data']['finder_id'] = $data['finder']['_id'];
 				// $data['finder']['review_data']['tag'] = ['Membership', 'Trial', 'Workout-session'];
 
-				$data['review_url'] = Config::get('app.url').'/finderreviewdata/'.$data['finder']['_id'];
+				$data['finder']['review_url'] = Config::get('app.url').'/finderreviewdata/'.$data['finder']['_id'];
 				
 				$data = Cache::tags($cache_name)->put($cache_key, $data, Config::get('cache.cache_time'));
 
