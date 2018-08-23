@@ -1224,3 +1224,6 @@ Route::get('updateratecardslotsbyid/{order_id}','TransactionController@updateRat
 Route::get('customer/skipreview/{booktrial_id}','SchedulebooktrialsController@skipreview');
 
 Route::get('addpicturestoratingparams','DebugController@addPicturesToRatingParams');
+
+Route::get('finderreviewdata/{finder_id}','FindersController@finderReviewData');
+

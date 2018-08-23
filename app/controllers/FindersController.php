@@ -4275,10 +4275,12 @@ class FindersController extends \BaseController {
                 $data['recommended_vendor']['description'] = "Checkout fitness services near you";
 				$data['recommended_vendor']['near_by_vendor'] = $nearby_other_category;
 
-				$data['finder']['review_data'] = $this->utilities->reviewScreenData($finder);
+				// $data['finder']['review_data'] = $this->utilities->reviewScreenData($finder);
 
-				$data['finder']['review_data']['finder_id'] = $data['finder']['_id'];
-				$data['finder']['review_data']['tag'] = ['Membership', 'Trial', 'Workout-session'];
+				// $data['finder']['review_data']['finder_id'] = $data['finder']['_id'];
+				// $data['finder']['review_data']['tag'] = ['Membership', 'Trial', 'Workout-session'];
+
+				$data['review_url'] = Config::get('app.url').'/finderreviewdata/'.$data['finder']['_id'];
 				
 				$data = Cache::tags($cache_name)->put($cache_key, $data, Config::get('cache.cache_time'));
 
@@ -6035,6 +6037,22 @@ class FindersController extends \BaseController {
 
 
 
+	}
+
+	public function finderReviewData($finder_id){
+		Finder::$setAppends=['finder_coverimage'];
+		$finder = Finder::active()->where('_id', intval($finder_id))
+				->with(array('category'=>function($query){$query->select('_id','name','slug','detail_rating','detail_ratings_images');}))
+				->first(array('title','category_id', 'category'));
+
+
+		$review_data = $this->utilities->reviewScreenData($finder);
+
+		$review_data['finder_id'] = $finder['_id'];
+		$review_data['optional'] = false;
+		$review_data['tag'] = ['Membership', 'Trial', 'Workout-session'];
+
+		return $review_data;
 	}
 
 }

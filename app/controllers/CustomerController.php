@@ -3304,7 +3304,7 @@ class CustomerController extends \BaseController {
 
 								$data['block_screen'] = [
 									'type'=>'review',
-									'review_data'=>$this->notificationDataByTrialId($data['_id'], 'review'),
+									// 'review_data'=>$this->notificationDataByTrialId($data['_id'], 'review'),
 									'url'=>Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/review'
 								];	
 							}
@@ -6765,6 +6765,7 @@ class CustomerController extends \BaseController {
 				$response['booktrialid'] = $data['_id'];
 				$response['finder_id'] = $data['finder_id'];
 				$response['skip'] = Config::get('app.url')."/customer/skipreview/".$data['_id'];
+				$response['optional'] = true;
 
 		}
 		$time_diff = strtotime($data['schedule_date_time']) - time();
