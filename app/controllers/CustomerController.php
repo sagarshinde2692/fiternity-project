@@ -3300,7 +3300,7 @@ class CustomerController extends \BaseController {
 								
 
 								
-							}else{
+							}else if(!((isset($data['has_reviewed']) && $data['has_reviewed']) || (isset($data['skip_review']) && $data['skip_review']))){
 
 								$data['block_screen'] = [
 									'type'=>'review',
