@@ -1959,9 +1959,8 @@ class FindersController extends \BaseController {
 		$rating = $data['rating'];
 		$data["customer_id"] = $decoded->customer->_id;
 		$data['description'] = (isset($data['description'])) ? $data['description'] : '';
-		$data['detail_rating'] = (isset($data['detail_rating'])) ? $data['detail_rating'] : [];
 
-		if(!isset($data['detail_rating'])){
+		if(!isset($data['detail_rating']) || array_sum($data['detail_rating']) == 0){
 			$data['detail_rating'] = [$rating,$rating,$rating,$rating,$rating];
 		}
 
@@ -2036,6 +2035,12 @@ class FindersController extends \BaseController {
 			$validator = Validator::make($data, Review::$rulesService);
 		}else{
 			$validator = Validator::make($data, Review::$rules);
+		}
+		
+		$rating = $data['rating'];
+		
+		if(!isset($data['detail_rating']) || array_sum($data['detail_rating']) == 0){
+			$data['detail_rating'] = [$rating,$rating,$rating,$rating,$rating];
 		}
 		Log::info("Review".$jwt_token);
 		if ($validator->fails()) {
