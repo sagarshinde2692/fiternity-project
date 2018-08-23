@@ -2195,7 +2195,7 @@ class CustomerController extends \BaseController {
 				}
 
 			}
-
+			$customer[0]['qrcode'] = true;
 			$response 	= 	array('status' => 200,'customer' => $customer[0],'message' => 'Customer Details');
 
 			$customer_level_data = $this->utilities->getWorkoutSessionLevel($customer_id);                
