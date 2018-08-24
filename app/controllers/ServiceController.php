@@ -1553,7 +1553,7 @@ class ServiceController extends \BaseController {
 			
 			$service_details['amount'] = (($workout_session_ratecard['special_price']!=0) ? $workout_session_ratecard['special_price'] : $workout_session_ratecard['price']);
 
-			$service_details['price'] = "â‚¹".$service_details['amount']." PER SESSION";
+			$service_details['price'] = "₹".$service_details['amount']." PER SESSION";
 
 			$service_details['contact'] = [
 				'address'=>''
@@ -1729,33 +1729,33 @@ class ServiceController extends \BaseController {
 					break;
 			}
 		}
-		if((isset($_GET['source']) && $_GET['source'] == 'pps'))
-		{
-				$service_details['dynamic_pricing'] = ["title"=>"RUSH HOUR","sub_title"=>"RUSH HOUR","rush"=>["data"=>[],"title"=>"RUSH HOUR","sub_title"=>"RUSH HOUR"],"non_rush"=>["data"=>[],"title"=>"NON RUSH HOUR","sub_title"=>"NON RUSH HOUR"]];
+		// if((isset($_GET['source']) && $_GET['source'] == 'pps'))
+		// {
+		// 		$service_details['dynamic_pricing'] = ["title"=>"RUSH HOUR","sub_title"=>"RUSH HOUR","rush"=>["data"=>[],"title"=>"RUSH HOUR","sub_title"=>"RUSH HOUR"],"non_rush"=>["data"=>[],"title"=>"NON RUSH HOUR","sub_title"=>"NON RUSH HOUR"]];
 				
-				 $p_np=$this->utilities->getAnySlotAvailablePNp($requested_date,$service_details);
-				 $service_cat=$this->utilities->getPrimaryCategory(null,$service_details['_id']);
-				if(!empty($p_np))
-				{
-					if(isset($p_np['peak']))
-						$service_details['dynamic_pricing']['rush']['sub_title']=$this->utilities->getRupeeForm($p_np['peak']);
-					else $service_details['dynamic_pricing']['rush']['sub_title']="";
-					if(isset($p_np['non_peak'])&&!empty($service_cat))
-					{
-						if($service_cat=='gym')
-							$service_details['dynamic_pricing']['non_rush']['sub_title']=$this->utilities->getRupeeForm($p_np['non_peak'])." ".((1-Config::get('app.non_peak_hours.studios.off'))*100)."% Off";
-						else
-							$service_details['dynamic_pricing']['non_rush']['sub_title']=$this->utilities->getRupeeForm($p_np['non_peak'])." ".((1-Config::get('app.non_peak_hours.studios.off'))*100)."% Off";
+		// 		 $p_np=$this->utilities->getAnySlotAvailablePNp($requested_date,$service_details);
+		// 		 $service_cat=$this->utilities->getPrimaryCategory(null,$service_details['_id']);
+		// 		if(!empty($p_np))
+		// 		{
+		// 			if(isset($p_np['peak']))
+		// 				$service_details['dynamic_pricing']['rush']['sub_title']=$this->utilities->getRupeeForm($p_np['peak']);
+		// 			else $service_details['dynamic_pricing']['rush']['sub_title']="";
+		// 			if(isset($p_np['non_peak'])&&!empty($service_cat))
+		// 			{
+		// 				if($service_cat=='gym')
+		// 					$service_details['dynamic_pricing']['non_rush']['sub_title']=$this->utilities->getRupeeForm($p_np['non_peak'])." ".((1-Config::get('app.non_peak_hours.studios.off'))*100)."% Off";
+		// 				else
+		// 					$service_details['dynamic_pricing']['non_rush']['sub_title']=$this->utilities->getRupeeForm($p_np['non_peak'])." ".((1-Config::get('app.non_peak_hours.studios.off'))*100)."% Off";
 						
-					}
-					else $service_details['dynamic_pricing']['non_rush']['sub_title']="";
-				}
+		// 			}
+		// 			else $service_details['dynamic_pricing']['non_rush']['sub_title']="";
+		// 		}
 				
-				array_push($service_details['dynamic_pricing']['rush']['data'], ["name"=>"Moring","value"=>"6am -10am"]);
-				array_push($service_details['dynamic_pricing']['rush']['data'], ["name"=>"Evening","value"=>"6pm -10pm"]);
-				array_push($service_details['dynamic_pricing']['non_rush']['data'], ["name"=>"Moring","value"=>"10am -6pm"]);
-				array_push($service_details['dynamic_pricing']['non_rush']['data'], ["name"=>"Evening","value"=>"10pm -12am"]);			
-		}
+		// 		array_push($service_details['dynamic_pricing']['rush']['data'], ["name"=>"Moring","value"=>"6am -10am"]);
+		// 		array_push($service_details['dynamic_pricing']['rush']['data'], ["name"=>"Evening","value"=>"6pm -10pm"]);
+		// 		array_push($service_details['dynamic_pricing']['non_rush']['data'], ["name"=>"Moring","value"=>"10am -6pm"]);
+		// 		array_push($service_details['dynamic_pricing']['non_rush']['data'], ["name"=>"Evening","value"=>"10pm -12am"]);			
+		// }
 		
 						
 		$schedule_data = [
