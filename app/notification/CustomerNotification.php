@@ -320,7 +320,7 @@ Class CustomerNotification extends Notification{
 
 		$notif_type = 'open_trial';
 		
-		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"n-10m", "url"=>Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/activate_session?notif_id=');
+		$notif_object = array('trial_id'=>(int)$data['_id'],"time"=>"review", "url"=>Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/review?notif_id=');
 		
 		return $this->common($label,$data,$notif_type,$notif_object,$delay);
 
