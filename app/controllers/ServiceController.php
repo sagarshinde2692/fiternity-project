@@ -1498,7 +1498,7 @@ class ServiceController extends \BaseController {
 			
 			if($service_details['servicecategory_id'] == 65){
 				
-				$service_details['type'] = 'gym';
+				// $service_details['type'] = 'gym';
 				$service_details['pass_title'] = 'All Day Pass';
 				$service_details['pass_description'] = 'Choose to workout at a suitable time between 6 am to 11 pm';
 				$service_details['name'] = $this->utilities->getGymServiceNamePPS();
