@@ -6764,7 +6764,7 @@ class CustomerController extends \BaseController {
 				$response['service_id'] = $data['service_id'];
 				$response['booktrialid'] = $data['_id'];
 				$response['finder_id'] = $data['finder_id'];
-				$response['skip'] = Config::get('app.url')."/customer/skipreview/".$data['_id'];
+				// $response['skip'] = Config::get('app.url')."/customer/skipreview/".$data['_id'];
 				$response['optional'] = true;
 
 		}

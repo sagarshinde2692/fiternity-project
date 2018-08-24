@@ -902,39 +902,42 @@ class TransactionController extends \BaseController {
         }
 
         
-        $resp['data']["coupon_details"] = [
-            "title" => "APPLY PROMOCODE",
-            "description" => "",
-            "applied" => false,
-            "remove_title" => "",
-            "remove_msg" => "Are you sure you want to remove this coupon code?"
-        ];
-        if(!empty($data['coupon_code']) && !empty($data['coupon_discount_amount'])){
-            $resp['data']['coupon_details']['title'] = strtoupper($data['coupon_code']);
-            $resp['data']['coupon_details']['remove_title'] =  strtoupper($data['coupon_code'])." applied";
-            $resp['data']['coupon_details']['applied'] =  true;
-            if(isset($data['coupon_description'])){
-                $resp['data']['coupon_details']['description'] = $data['coupon_description'];
+        if(empty($order['pay_later'])){
+            
+            $resp['data']["coupon_details"] = [
+                "title" => "APPLY PROMOCODE",
+                "description" => "",
+                "applied" => false,
+                "remove_title" => "",
+                "remove_msg" => "Are you sure you want to remove this coupon code?"
+            ];
+            if(!empty($data['coupon_code']) && !empty($data['coupon_discount_amount'])){
+                $resp['data']['coupon_details']['title'] = strtoupper($data['coupon_code']);
+                $resp['data']['coupon_details']['remove_title'] =  strtoupper($data['coupon_code'])." applied";
+                $resp['data']['coupon_details']['applied'] =  true;
+                if(isset($data['coupon_description'])){
+                    $resp['data']['coupon_details']['description'] = $data['coupon_description'];
+                }
             }
+    
+            if(in_array($order['type'], ['booktrials', 'workout-session'])){
+                $resp['data']["quantity_details"] = [
+                    "field" => "No of Person",
+                    "description" => "Qty ".(!empty($order['customer_quantity']) ? $order['customer_quantity'] : 1),
+                    'max'=>5,
+                    'selected_quantity'=>(!empty($order['customer_quantity']) ? $order['customer_quantity'] : 1)
+                ];
+            }
+    
+            // if(!empty($order['customer_quantity'])){
+                $resp['data']["pt_details"] = [
+                    "title" => "Add on",
+                    "description" => "Personal Training",
+                    "cost"=>"Rs.300",
+                    "applied" => !empty($data['pt_applied']) ? $data['pt_applied'] : false
+                ];
+            // }
         }
-
-        if(in_array($order['type'], ['booktrials', 'workout-session'])){
-            $resp['data']["quantity_details"] = [
-                "field" => "No of Person",
-                "description" => "Qty ".(!empty($order['customer_quantity']) ? $order['customer_quantity'] : 1),
-                'max'=>5,
-                'selected_quantity'=>(!empty($order['customer_quantity']) ? $order['customer_quantity'] : 1)
-            ];
-        }
-
-        // if(!empty($order['customer_quantity'])){
-            $resp['data']["pt_details"] = [
-                "title" => "Add on",
-                "description" => "Personal Training",
-                "cost"=>"Rs.300",
-                "applied" => !empty($data['pt_applied']) ? $data['pt_applied'] : false
-            ];
-        // }
 
         
         // $resp['payment_offers'] = [
