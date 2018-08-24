@@ -7290,6 +7290,12 @@ class SchedulebooktrialsController extends \BaseController {
                     ]
                 ];
 
+                $voucher_response = $this->utilities->attachExternalVoucher($booktrial);
+
+                if($voucher_response){
+                    $response['voucher_data'] = $voucher_response;
+                }
+
                 if(isset($_GET['source']) && $_GET['source'] == 'let_us_know'){
                     $response['header'] = 'GREAT';
                 }
