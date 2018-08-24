@@ -3842,7 +3842,9 @@ Class Utilities {
 
     public function getWorkoutSessionLevel($customer_id){
 
-        $trials_attended = \Booktrial::where('customer_id', $customer_id)->where('post_trial_status', 'attended')->count();
+        $trials_attended = \Booktrial::where('customer_id', $customer_id)->where('post_trial_status', 'attended')->get([]);
+
+        $trials_attended = count($trials_attended);
         
         $streak_data = Config::get('app.streak_data');
         $maxed_out = false;
