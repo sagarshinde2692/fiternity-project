@@ -4465,8 +4465,11 @@ Class Utilities {
             'header'=>"How was your experience?",
             'rating_text'=>Config::get('app.rating_text')
         ];
-        if(!empty($data['service_name'])){
+        if(!empty($data['service_name']) && !empty($data['schedule_date_time'])){
             $response['header'] = "Share your experience for <b>".ucwords($data['service_name'])."</b> at<br/>".$data['finder_name'].", ".$data['finder_location']."<br>".date('jS M', strtotime($data['schedule_date_time']))." | ".date('D', strtotime($data['schedule_date_time']))." | ".date('h:i a', strtotime($data['schedule_date_time']));
+            $response['image'] = "https://b.fitn.in/paypersession/Vendor%20Icon@3x.png";
+        }else if(!empty($data['service_name'])){
+            $response['header'] = "Share your experience for <b>".ucwords($data['service_name'])."</b> at<br/>".$data['title'].", ".$data['service_location'];
             $response['image'] = "https://b.fitn.in/paypersession/Vendor%20Icon@3x.png";
         }else{
             $response['section_1']['header']  = "Rate your overall experience at ".$data['title'];

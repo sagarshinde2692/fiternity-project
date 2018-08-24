@@ -6045,11 +6045,21 @@ class FindersController extends \BaseController {
 	}
 
 	public function finderReviewData($finder_id){
-		Finder::$setAppends=['finder_coverimage'];
+		
+		Finder::$withoutAppends = true;		
+		
 		$finder = Finder::active()->where('_id', intval($finder_id))
-				->with(array('category'=>function($query){$query->select('_id','name','slug','detail_rating','detail_ratings_images');}))
-				->first(array('title','category_id', 'category'));
+				->with(array('category'=>function($query){$query->select('_id', 'detail_rating','detail_ratings_images');}))
+				->with(array('location'=>function($query){$query->select('_id','name');}))
+				->first(array('title','category_id', 'category','location_id'));
 
+		if(!empty($_GET['service_name'])){
+			$finder['service_name'] = ucwords(trim(urldecode($_GET['service_name'])));
+		}
+
+		if(!empty($_GET['service_location'])){
+			$finder['service_location'] = ucwords(trim(urldecode($_GET['service_location'])));
+		}
 
 		$review_data = $this->utilities->reviewScreenData($finder);
 
