@@ -1196,6 +1196,10 @@ class RewardofferController extends BaseController {
         if(isset($finder['brand_id']) && $finder['brand_id'] == 66 && $finder['city_id'] == 3 && $duration_day == 360){
             $cashback = null;
         }
+        
+        if(!empty($finder['_id']) && $finder['_id'] == 11230 && $duration_day == 360){
+            $cashback = null;
+        }
 
         $data = array(
             'renewal_cashback'          =>   $renewal_cashback,
