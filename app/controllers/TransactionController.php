@@ -4267,6 +4267,21 @@ class TransactionController extends \BaseController {
             $amount_summary[0]['value'] = 'Rs. '.$data['amount_customer'];
         }
 
+        if(!empty($data['ratecard_amount'])){
+            $amount_summary[0] = array(
+                'field' => 'Session Amount',
+                'value' => 'Rs. '.$data['ratecard_amount']
+            );
+            $amount_summary[1] = array(
+                'field' => 'Quantity',
+                'value' => !empty($data['customer_quantity']) ? (string)$data['customer_quantity'] : '1'
+            );
+            $amount_summary[1] = array(
+                'field' => 'Total Amount',
+                'value' => 'Rs. '.(isset($data['original_amount_finder']) ? $data['original_amount_finder'] : $data['amount_finder'])
+            );
+        }
+
         $amount_payable = [];
 
         $amount_payable= array(
