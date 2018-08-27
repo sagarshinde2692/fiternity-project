@@ -933,6 +933,10 @@ class ServiceController extends \BaseController {
 						unset($slots[$key]);
 					}
 				}
+
+				if(count($slots) == 1){
+					$slots[0]['title'] = 'BOOK A SLOT';
+				}
 			}
             
             $service['slot_passed_flag'] = $slot_passed_flag;
@@ -1526,7 +1530,9 @@ class ServiceController extends \BaseController {
 
 			if($service_details['servicecategory_id'] == 65){
 
-				$service_details['type'] = 'gym';
+				if($this->app_version < 5){
+					$service_details['type'] = 'gym';
+				}
 				$service_details['pass_title'] = 'All Day Pass';
 				$service_details['pass_description'] = 'Choose to workout at a suitable time between 6 am to 11 pm';
 
