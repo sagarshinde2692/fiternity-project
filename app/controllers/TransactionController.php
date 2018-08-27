@@ -369,13 +369,13 @@ class TransactionController extends \BaseController {
     
                 $data = array_merge($data,$ratecardDetail['data']);
     
-                if(isset($data['customer_quantity'])){
+                // if(isset($data['customer_quantity'])){
                     
-                    $data['ratecard_amount'] = $data['amount'];
-                    $data['amount'] = $data['customer_quantity'] * $data['amount'];
-                    $data['amount_finder'] = $data['customer_quantity'] * $data['amount_finder'];
+                //     $data['ratecard_amount'] = $data['amount'];
+                //     $data['amount'] = $data['customer_quantity'] * $data['amount'];
+                //     $data['amount_finder'] = $data['customer_quantity'] * $data['amount_finder'];
                     
-                }
+                // }
     
             }
     
@@ -2078,6 +2078,13 @@ class TransactionController extends \BaseController {
         if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
             $decoded = customerTokenDecode($jwt_token);
             $customer_id = $decoded->customer->_id;
+        }
+
+        if(!empty($data['customer_quantity'])){
+            
+            $data['ratecard_amount'] = $data['amount'];
+
+            $data['amount'] = $data['amount_customer'] = $data['amount_finder'] = $data['amount_final'] = $data['amount'] * $data['customer_quantity'];
         }
 
         $amount = $data['amount_customer'] = $data['amount'];
