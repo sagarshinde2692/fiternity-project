@@ -910,7 +910,7 @@ class TransactionController extends \BaseController {
             
             if(!empty($order['amount'])){
                 $resp['data']["coupon_details"] = [
-                    "title" => "APPLY PROMOCODE",
+                    "title" => "Apply Coupon Code",
                     "description" => "",
                     "applied" => false,
                     "remove_title" => "",
@@ -929,7 +929,7 @@ class TransactionController extends \BaseController {
     
             if(in_array($order['type'], ['booktrials', 'workout-session'])){
                 $resp['data']["quantity_details"] = [
-                    "field" => "No of Person",
+                    "field" => "No of People",
                     "description" => "Qty ".(!empty($order['customer_quantity']) ? $order['customer_quantity'] : 1),
                     'max'=>5,
                     'selected_quantity'=>(!empty($order['customer_quantity']) ? $order['customer_quantity'] : 1)
