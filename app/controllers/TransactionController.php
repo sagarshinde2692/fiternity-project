@@ -553,7 +553,7 @@ class TransactionController extends \BaseController {
         if(!$updating_part_payment && !isset($data['myreward_id']) && (!(isset($data['pay_later']) && $data['pay_later']) || !(isset($data['wallet']) && $data['wallet']))) {
 	
             $cashbackRewardWallet =$this->getCashbackRewardWallet($data,$order);
-            Log::info("cashbackRewardWallet",$cashbackRewardWallet);
+            // Log::info("cashbackRewardWallet",$cashbackRewardWallet);
 
             if($cashbackRewardWallet['status'] != 200){
                 return Response::json($cashbackRewardWallet,$this->error_status);
@@ -1970,9 +1970,20 @@ class TransactionController extends \BaseController {
         if($data['type'] == 'workout-session')
          {
          try {
+             Log::info("dynamic price");
          (isset($data['start_time'])&&isset($data['start_date'])&&isset($data['service_id'])&&isset($data['end_time']))?
          $am_calc=$this->utilities->getWsSlotPrice($data['start_time'],$data['end_time'],$data['service_id'],$data['start_date']):"";
-         (isset($am_calc))?$data['amount']=$am_calc:"";
+         if(isset($am_calc['peak'])){
+            $data['amount']  = $am_calc['peak'];
+            $data['peak'] = true;
+         }else if(isset($am_calc['non_peak'])){
+            $data['amount']  = $am_calc['non_peak'];
+            $data['non_peak'] = true;
+            $data['non_peak_discount']  = $am_calc['non_peak_discount'];
+
+         }
+        //  (isset($am_calc))?$data['amount']=$am_calc:"";
+         
          } catch (Exception $e) {Log::error(" Error :: ".print_r($e,true));}
          } 
         //********************************************************************************** DYANMIC PRICING END****************************************************************************************************

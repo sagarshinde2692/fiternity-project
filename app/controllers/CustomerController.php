@@ -4426,7 +4426,7 @@ class CustomerController extends \BaseController {
 					if(!in_array($emi['bankName'], $bankList)){
 						array_push($bankList, $emi['bankName']);
 					}
-					Log::info("inside3");
+					// Log::info("inside3");
 					$emiData = array();
                     $interest = $emi['rate']/1200.00;
                     $t = pow(1+$interest, $emi['bankTitle']);
@@ -6426,7 +6426,7 @@ class CustomerController extends \BaseController {
 					if(!in_array($emi['bankName'], $bankList)){
 						array_push($bankList, $emi['bankName']);
 					}
-					Log::info("inside3");
+					// Log::info("inside3");
 					$emiData = array();
 					$interest = $emi['rate']/1200.00;
 					$t = pow(1+$interest, $emi['bankTitle']);

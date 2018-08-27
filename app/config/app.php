@@ -71,7 +71,7 @@ return array(
 	'pubnub_sub' => 'sub-c-05ef3130-d0e6-11e6-bbe2-02ee2ddab7fe',
 	
 	'download_app_link' => 'https://go.onelink.me/I0CO?pid=techfitsms',//https://www.fitternity.com/downloadapp?source=fittech',
-
+	
     'business' => 'http://business.fitternity.com',
 
     'app' =>array(
@@ -90,51 +90,51 @@ return array(
 			"key" => 'gtKFFx',
 			"salt" => 'eCwWELxi',
 			"url" => "https://test.payu.in/merchant/postservice.php?form=2"
-		)
+			)
 		),
-
-	/*
-	|--------------------------------------------------------------------------
-	| Application Timezone
-	|--------------------------------------------------------------------------
-	|
-	| Here you may specify the default timezone for your application, which
-	| will be used by the PHP date and date-time functions. We have gone
-	| ahead and set this to a sensible default for you out of the box.
-	|
-	*/
-
-	//'timezone' => 'UTC',
-	//'timezone' => 'America/New_York',
-	'timezone' => 'Asia/Kolkata',
-
-	/*
-	|--------------------------------------------------------------------------
-	| Application Locale Configuration
-	|--------------------------------------------------------------------------
-	|
-	| The application locale determines the default locale that will be used
-	| by the translation service provider. You are free to set this value
-	| to any of the locales which will be supported by the application.
-	|
-	*/
-
-	'locale' => 'en',
-
-	/*
-	|--------------------------------------------------------------------------
-	| Application Fallback Locale
-	|--------------------------------------------------------------------------
-	|
-	| The fallback locale determines the locale to use when the current one
-	| is not available. You may change the value to correspond to any of
-	| the language folders that are provided through your application.
-	|
-	*/
-
-	'fallback_locale' => 'en',
-
-	/*
+		
+		/*
+		|--------------------------------------------------------------------------
+		| Application Timezone
+		|--------------------------------------------------------------------------
+		|
+		| Here you may specify the default timezone for your application, which
+		| will be used by the PHP date and date-time functions. We have gone
+		| ahead and set this to a sensible default for you out of the box.
+		|
+		*/
+		
+		//'timezone' => 'UTC',
+		//'timezone' => 'America/New_York',
+		'timezone' => 'Asia/Kolkata',
+		
+		/*
+		|--------------------------------------------------------------------------
+		| Application Locale Configuration
+		|--------------------------------------------------------------------------
+		|
+		| The application locale determines the default locale that will be used
+		| by the translation service provider. You are free to set this value
+		| to any of the locales which will be supported by the application.
+		|
+		*/
+		
+		'locale' => 'en',
+		
+		/*
+		|--------------------------------------------------------------------------
+		| Application Fallback Locale
+		|--------------------------------------------------------------------------
+		|
+		| The fallback locale determines the locale to use when the current one
+		| is not available. You may change the value to correspond to any of
+		| the language folders that are provided through your application.
+		|
+		*/
+		
+		'fallback_locale' => 'en',
+		
+		/*
 	|--------------------------------------------------------------------------
 	| Encryption Key
 	|--------------------------------------------------------------------------
@@ -807,6 +807,8 @@ return array(
 		'full_day_weekend'=>['Sunday','Thursday'],
 		'begin_weekend'=>['Saturday'],
 		'end_weekend'=>['Monday'],
-	]
+	],
+
+	'slotAllowance' =>['vendors'=>[1584],'services'=>[17626],'types'=>['workout-session','booktrials']],
 
 );

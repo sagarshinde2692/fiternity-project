@@ -1108,7 +1108,7 @@ Class CustomerReward {
 
         $data['description'] = "Enjoy instant cashback (FitCash) of Rs. ".$wallet_amount." on this purchase. FitCash can be used for any booking / purchase on Fitternity ranging from workout sessions, memberships and healthy tiffin subscription with a validity of 12 months.";
         
-        Log::info('reward_calculation : ',$data);
+        // Log::info('reward_calculation : ',$data);
 
         return $data;
 
@@ -1277,7 +1277,7 @@ Class CustomerReward {
             
             $data['description'] = "Enjoy instant cashback (FitCash) of Rs. ".$wallet_amount." on this purchase. FitCash can be used for any booking / purchase on Fitternity ranging from workout sessions, memberships and healthy tiffin subscription with a validity of 12 months.";
             
-            Log::info('reward_calculation : ',$data);
+            // Log::info('reward_calculation : ',$data);
 
             return $data;
 
@@ -1342,7 +1342,7 @@ Class CustomerReward {
 
             $data['description'] = "Enjoy instant cashback (FitCash) of Rs. ".$wallet_amount." on this purchase. FitCash can be used for any booking / purchase on Fitternity ranging from workout sessions, memberships and healthy tiffin subscription with a validity of 12 months.";
             
-            Log::info('reward_calculation : ',$data);
+            // Log::info('reward_calculation : ',$data);
 
             return $data;
         }

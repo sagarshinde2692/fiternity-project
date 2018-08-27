@@ -19,6 +19,7 @@ use App\Sms\CustomerSms as CustomerSms;
 use App\Mailers\FinderMailer as FinderMailer;
 use App\Services\Fitapi as Fitapi;
 use App\Mailers\CustomerMailer as CustomerMailer;
+use Exception;
 
 Class Utilities {
 
@@ -2717,7 +2718,7 @@ Class Utilities {
 					if(!in_array($emi['bankName'], $bankList)){
 						array_push($bankList, $emi['bankName']);
 					}
-					Log::info("inside3");
+					// Log::info("inside3");
 					$emiData = array();
 					$emiData['total_amount'] =  (string)round($data['amount']*(100+$emi['rate'])/100, 2);
 					$emiData['emi'] =(string)round($emiData['total_amount']/$emi['bankTitle'], 2);
@@ -2836,8 +2837,8 @@ Class Utilities {
 
      public function isConvinienceFeeApplicable($data, $type="order"){
         Log::info(debug_backtrace()[1]['function']);
-        Log::info("Data for isConvinienceFeeApplicable");
-        Log::info($data);
+        // Log::info("Data for isConvinienceFeeApplicable");
+        // Log::info($data);
         
         if($type == "order"){
             $flags = isset($data['ratecard_flags']) ? $data['ratecard_flags'] : array();
@@ -4147,7 +4148,7 @@ Class Utilities {
 		return null;
 	}
 	public function getWSNonPeakPrice($start=null,$end=null,$workoutSessionPrice=null,$service_cat=null,$just_tag=false) {
-		
+		Log::info(func_get_args());
 		try {
 			$peak=true;
 			if(!empty($start)&&!empty($end)&&!empty($service_cat))
@@ -4188,6 +4189,7 @@ Class Utilities {
                         }
 						else{
                             $resp['non_peak']=intval($temp['wsprice']);
+                            $resp['non_peak_discount'] = $value['price'] - $resp['non_peak'];
                         } 
 					}
 				}
@@ -4205,8 +4207,8 @@ Class Utilities {
 		return $this->days[date("w",strtotime($date))];
 		
 	}
-	public function getWsSlotPrice($start=null,$end=null,$service_id=null,$start_date=null) {
-		
+	public function getWsSlotPrice($start=null,$end=null,$service_id=null,$start_date=null ) {
+		Log::info(func_get_args());
 		try {
 				if(!isset($service_id))throw new Exception("Service id Not Defined.");
 				else if(!isset($start_date))throw new Exception("Start Date not present.");
@@ -4220,11 +4222,16 @@ Class Utilities {
 						if(isset($service)&&!empty($service->workoutsessionschedules))
 						{
 							$r=array_values(array_filter($service->workoutsessionschedules, function($a) use ($day){return !empty($a['weekday'])&&$a['weekday']==$day;}));
+                            Log::info($r);
 							if(!empty($r[0])&&!empty($r[0]['slots']))
 									{
+                                        Log::info('$rzdcsc');
+
 										$r=$r[0]['slots'];
-										$r=array_values(array_filter($r, function($a) use ($start,$end){return isset($a['start_time_24_hour_format'])&&isset($a['end_time_24_hour_format'])&&$a['start_time_24_hour_format'] >=$start&&$a['end_time_24_hour_format'] <=$end;}));
-										return (!empty($r[0])&&isset($r[0]['price']))?$r[0]['price']:null;
+                                        $r=array_values(array_filter($r, function($a) use ($start,$end){return isset($a['start_time_24_hour_format'])&&isset($a['end_time_24_hour_format'])&&$a['start_time_24_hour_format'] >=$start&&$a['end_time_24_hour_format'] <=$end;}));
+                                        Log::info($r);
+                                        return $price = $this->getPeakAndNonPeakPrice($r, $this->getPrimaryCategory(null,$service['_id']));
+										// return (!empty($r[0])&&isset($r[0]['price']))?$r[0]['price']:null;
 									}else return null;
 						}else return null;
 					}
