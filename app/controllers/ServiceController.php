@@ -923,8 +923,8 @@ class ServiceController extends \BaseController {
                 }
 			}
 			if((isset($_GET['source']) && $_GET['source'] == 'pps')){
-				
-				if(isset($_GET['slot_type']) && $_GET['slot_type'] == '0'){
+				// $slots = array_reverse($slots);
+				if(!(isset($_GET['slot_type']) && $_GET['slot_type'] == '1')){
 					$slots = array_reverse($slots);
 				}
 
@@ -937,7 +937,7 @@ class ServiceController extends \BaseController {
 				$slots = array_values($slots);
 
 				if(count($slots) == 1){
-					$slots[0]['title'] = 'BOOK A SLOT';
+					$slots[0]['title'] = 'SELECT A SLOT';
 				}
 			}
             
@@ -1872,6 +1872,10 @@ class ServiceController extends \BaseController {
 				}
 				$service_details['session_unavailable'] = false;
 				$service_details['next_session'] = "Next session at $next_session_slot";
+				if(count($pps_slots['slots']) == 1){
+					$service_details['price'] = $pps_slots['slots'][0]['price'];
+					unset($service_details['slots'][0]['price']);
+				}
 			}
 			else {				
 				$service_details['single_slot'] = false;
