@@ -506,7 +506,7 @@ class GlobalPushController extends \BaseController
 
     $brands = $brands['result'];
     // return $cityData = Brand::lists('name','_id');
-    $brandsD = Brand::select(["name","_id","slug"])->get();
+    $brandsD = Brand::where("status","1")->select(["name","_id","slug"])->get();
     // $brandsData = new stdClass();
     foreach($brandsD as $item){
       $brandsData[$item["id"]] =  array("name" => $item['name'], "slug"=>$item['slug']);
@@ -517,7 +517,7 @@ class GlobalPushController extends \BaseController
 
     // Get similar outlets in city.........
     foreach ($brands as $brand){
-      if(isset($brand['_id']['brand_id']) && $brand['_id']['brand_id'] != '' && $brand['count'] > 1){
+      if(isset($brand['_id']['brand_id']) && isset($brandsData[$brand['_id']['brand_id']]) && $brand['_id']['brand_id'] != '' && $brand['count'] > 1){
         $data = [
             'brand_id'    =>$brand['_id']['brand_id'],
             'brand_name'  =>$brandsData[$brand['_id']['brand_id']]["name"],

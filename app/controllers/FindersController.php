@@ -888,7 +888,7 @@ class FindersController extends \BaseController {
 						$finder['callout_ratecard_id'] = $callOutObj['ratecard_id'];
 					}						
 				}
-
+				
 // 				}
 				// 	$callout_offer = Offer::where('vendor_id', $finder['_id'])->where('hidden', false)->orderBy('order', 'asc')
 				// 					->where('offer_type', 'newyears')
@@ -1198,7 +1198,8 @@ class FindersController extends \BaseController {
 
 				if(in_array($finder["_id"], Config::get('app.remove_patti_from_brands')) ){
 					$response['vendor_stripe_data'] = "no-patti";
-				}else if(isset($response['finder']['stripe_text'])){
+				}
+				if(isset($response['finder']['stripe_text'])){
 					$response['vendor_stripe_data']	=	[
 						'text'=> $response['finder']['stripe_text'],
 						'text_color'=> '#ffffff',
@@ -1213,15 +1214,15 @@ class FindersController extends \BaseController {
 						'background'=> (!empty($response['finder']['info']['stripe']['background_color']))?$response['finder']['info']['stripe']['background_color']:""
 				];
 				} else{
-					$coupon = getDynamicCouponForTheFinder($finder);
-					if($coupon["text"] != ""){
-						$response['vendor_stripe_data']	=	[
-							'text'=> $coupon["text"],
-							'background-color'=> "",
-							'text_color'=> ""
-						];
-						$response["code_applicable"] = $coupon["code"];
-					}
+					// $coupon = getDynamicCouponForTheFinder($finder);
+					// if($coupon["text"] != ""){
+					// 	$response['vendor_stripe_data']	=	[
+					// 		'text'=> $coupon["text"],
+					// 		'background-color'=> "",
+					// 		'text_color'=> ""
+					// 	];
+					// 	$response["code_applicable"] = $coupon["code"];
+					// }
 				}
 				unset($response['finder']['info']['stripe']);
 				if(isset($finder['commercial_type']) && $finder['commercial_type'] == 0){
@@ -1257,7 +1258,7 @@ class FindersController extends \BaseController {
 			$response = Cache::tags('finder_detail')->get($cache_key);
 
 		}
-
+		
 		if(Request::header('Authorization')){
 			// $decoded                            =       decode_customer_token();
 			$customer_email                     =       $decoded->customer->email;
@@ -2015,7 +2016,7 @@ class FindersController extends \BaseController {
 		if(!$data){
 			$data = Input::json()->all();
 		}
-		
+
 
 		// return $images = Input::file('images') ;
 		
@@ -2984,8 +2985,11 @@ class FindersController extends \BaseController {
 			'status'=>200,
 			'message'=>'Success'
 		];
+		Log::info("tabtabtabtabt");
 		$device_id = Request::header('Device-Id');
 		Log::info($device_id);
+		Log::info(Request::header('Device-Serial'));
+		Log::info($finder_id);
 		$getTrialSchedule = $this->getTrialSchedule($finder_id);
 
 		if(empty($getTrialSchedule)){
@@ -4195,7 +4199,7 @@ class FindersController extends \BaseController {
 						$data['finder']['overlayimage'] = 'https://b.fitn.in/global/finder/temp-shut.png';
 					}
 
-				}
+                }
 
 				$data['finder']['other_offers'] = null;
 
@@ -4258,7 +4262,7 @@ class FindersController extends \BaseController {
 		}
 
 		$finderData = Cache::tags($cache_name)->get($cache_key);
-		
+	
 		if(count($finderData) > 0 && isset($finderData['status']) && $finderData['status'] == 200){
 
 			$finder = Finder::active()->where('slug','=',$tslug)->first();
@@ -5225,6 +5229,10 @@ class FindersController extends \BaseController {
 							"image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/point3.png"
 						],
 						[
+							"title"=>"Fitstore",
+							"image"=>"https://b.fitn.in/products/home_banner_1.jpg"
+						],
+						[
 							"title"=>"Book healthy, calorie counted yet tasty tiffin subscription.",
 							"image"=>"https://b.fitn.in/global/toi/mfp/mfpmum-26th/point4.png"
 						]
@@ -5305,17 +5313,28 @@ class FindersController extends \BaseController {
 					"id"=>3,
 					'type'=>'post_review'
 				],				
-				[
-					"title"=>"Fitternity Advantage",
-					"description"=>"Buy through Fitterntiy & get access to these amazing rewards",
-					"image"=>"https://b.fitn.in/global/tabapp-homescreen/reward-small.jpg",
-					"banner_image"=>"https://b.fitn.in/global/tabapp-homescreen/rewards-big-picture-1.jpg",
-					"id"=>7,
-					'type'=>'rewards'
-				],
+				
 			];
 		}
 
+		if($this->kiosk_app_version &&  $this->kiosk_app_version > 1.13){
+			$response["response"]["options"][] = [
+				"title"=>"Fitstore",
+				"description"=>"Buy products",
+				"image"=>"https://b.fitn.in/products/fitsotr_banner_small.png",
+				"banner_image"=>"https://b.fitn.in/products/fitstore_banner_large.png",
+				"id"=>8,
+				'type'=>'fitstore'
+			];
+		}
+		$response["response"]["options"][] =[
+			"title"=>"Fitternity Advantage",
+			"description"=>"Buy through Fitterntiy & get access to these amazing rewards",
+			"image"=>"https://b.fitn.in/global/tabapp-homescreen/reward-small.jpg",
+			"banner_image"=>"https://b.fitn.in/global/tabapp-homescreen/rewards-big-picture-1.jpg",
+			"id"=>7,
+			'type'=>'rewards'
+		];
 		if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && isset($finder['brand_id']) && $finder['brand_id'] == 66 && $finder['city_id'] == 3){
 
 			$response["response"]["powered"] = "Powered by ";//.ucwords($finder['title']);
@@ -5668,7 +5687,7 @@ class FindersController extends \BaseController {
 			"button_text"=>"Book",
 			"amount"=>0,
 		];
-
+		
 		foreach($services as $service){
 
 			foreach($service[$key] as $ratecard){

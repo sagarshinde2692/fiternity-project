@@ -214,6 +214,8 @@ if(!function_exists('citywise_category')){
                 ["name" => "MMA And Kick Boxing","slug" => "mma-and-kick-boxing-classes"],
                 ["name" => "Spinning And Indoor Cycling","slug" => "spinning-classes"],
                 ["name" => "Healthy Tiffins","slug" => "healthy-tiffins"],
+                ["name" => "Swimming","slug" => "swimming-pools"],
+                ["name" => "Luxury Hotels","slug" => "luxury-hotels"],
                 // ["name" => "Personal Trainers","slug" => "personal-trainers"],
                 // ["name" => "Sport Nutrition Supplement Stores","slug" => "sport-nutrition-supplement-stores"],
                 // ["name" => "Aerial Fitness","slug" => "aerial-fitness"],
@@ -230,6 +232,7 @@ if(!function_exists('citywise_category')){
                 ["name" => "Yoga","slug" => "yoga-classes"],
                 ["name" => "MMA And Kick Boxing","slug" => "mma-and-kick-boxing-classes"],
                 ["name" => "Cross Functional Training","slug" => "functional-training"],
+                ["name" => "Swimming","slug" => "swimming-pools"],
                 // ["name" => "Pre-natal Classes","slug" => "pre-natal-classes"],
                 // ["name" => "Kids Fitness","slug" => "kids-fitness-classes"]
             ];
@@ -2276,20 +2279,53 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
             	}
               }
             }
+            
+            if (!function_exists(('getCartOfCustomer'))) {            	
+            	function getCartOfCustomer($customer_id)
+            	{
+            		try {
+            			if(!empty($customer_id))
+            			{
+            				Cart::$withoutAppends=true;
+            				$cart=Cart::where("customer_id",intval($customer_id))->first(['_id']);
+            				if(!empty($cart))
+            					return $cart->_id;
+            					else {
+            						$inserted_id = Cart::max('_id') + 1;
+            						$cartNew = new Cart();
+            						$cartNew->_id=$inserted_id;
+            						$cartNew->customer_id=$customer_id;
+            						$cartNew->products=[];
+            						$cartNew->status="1";
+            						$cartNew->save();
+            						return $inserted_id;
+            					};
+            			}
+            			else return null;
+            		} catch (Exception $e) {
+            			// Log::error(print_r($e,true));
+            			return null;
+            		}
+            	}
+            }
+
             if (!function_exists(('autoRegisterCustomer'))) {
 
                 function autoRegisterCustomer($data)
                 {   
                     Log::info("autoRegisterCustomer");
 					Log::info(print_r($data,true));
+
                 	$customer= Customer::active()->where('email', $data['customer_email'])->first();
                     
                     if (!$customer) {
 
                         $inserted_id = Customer::max('_id') + 1;
+                        
                         $customer = new Customer();
                         $customer->_id = $inserted_id;
                         $customer->rx_user = (isset($data['rx_user'])&& $data['rx_user'] !="")? true : false;
+                        
                         if(isset($data['rx_user'])&& $data['rx_user'] !="")
                         {
                         	$customer->rx_latest_date = new DateTime();
@@ -2304,7 +2340,6 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         $customer->fitness_goal = isset($data['fitness_goal']) ? $data['fitness_goal'] : "";
                         $customer->picture = "https://www.gravatar.com/avatar/" . md5($data['customer_email']) . "?s=200&d=https%3A%2F%2Fb.fitn.in%2Favatar.png";
                         $customer->password = md5(time());
-                        
 
                         if (isset($data['customer_phone']) && $data['customer_phone'] != '') {
                             $customer->contact_no = $data['customer_phone'];
@@ -2331,6 +2366,12 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                         $customer->old_customer = false;
                         $customer->demonetisation = time();
                         $customer->save();
+                        $cart_id=getCartOfCustomer(intval($inserted_id));
+                        if(!empty($cart_id))
+                        {
+                        	$customer->cart_id=$cart_id;
+                        	$customer->update();
+                        }
                         registerMail($customer->_id);
 
                         // invalidateDuplicatePhones($data, $customer->toArray());
@@ -2352,7 +2393,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                                 }
 
                             }
-
+                            
                             if (isset($data['rx_user']) ) {
                             	if(isset($data['rx_user'])&& $data['rx_user'] !="")
                             	{
@@ -2385,7 +2426,9 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                                 }
 
                             }
-
+                            	$cart_id=getCartOfCustomer(intval($customer->_id));
+                            	if(!empty($cart_id))
+                            		$customer->cart_id=$cart_id;
                             if (count($customerData) > 0) {
                                 $customer->update($customerData);
                             }
@@ -2410,7 +2453,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                     
                     $customer = Customer::find($customer_id);
                     $customer = array_except($customer->toArray(), array('password'));
-
+                    
                     $customer['name'] = (isset($customer['name'])) ? $customer['name'] : "";
                     $customer['email'] = (isset($customer['email'])) ? $customer['email'] : "";
                     $customer['picture'] = (isset($customer['picture'])) ? $customer['picture'] : "";
@@ -2445,7 +2488,10 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                             ); 
 
                     if(!empty($customer['referral_code']))
-                    	$data['referral_code'] = $customer['referral_code'];
+                    	$data['referral_code'] = $customer['referral_code'];	
+                    if(!empty($customer['cart_id']))
+                    	$data['cart_id']=$customer['cart_id'];
+                    		
                     $jwt_claim = array(
                         "iat" => Config::get('app.jwt.iat'),
                         "nbf" => Config::get('app.jwt.nbf'),
@@ -2455,7 +2501,7 @@ if (!function_exists('get_elastic_service_sale_ratecards')) {
                     
                     $jwt_key = Config::get('app.jwt.key');
                     $jwt_alg = Config::get('app.jwt.alg');
-
+                    
                     $token = JWT::encode($jwt_claim,$jwt_key,$jwt_alg);
 
                     return $token;
@@ -2801,6 +2847,60 @@ if (!function_exists(('getpayTMhash'))){
         return $data;
     }
 }
+if (!function_exists(('getBaseSuccessObject'))){
+	function getBaseSuccessObject(){
+		return ['status'=>1,'message'=>'success'];
+	}
+}
+if (!function_exists(('getReverseHashProduct'))){
+	function getReverseHashProduct($data){
+	
+		try {
+			
+			$resp=getBaseSuccessObject();
+			$createdData=[];
+			$tmp=[];
+			foreach ($data['cart_data'] as $value) {
+				array_push($tmp,$value['ratecard']['_id']);
+			}
+			
+			$productinfo = $createdData['productinfo'] = implode("_",array_map('strtolower', $tmp));
+			
+			$env = (!empty($data['env']) && $data['env'] == 1) ? "stage" : "production";
+			/* if(Config::get('app.env') == 'stage'){
+				$env= 1;
+			} */
+			
+			$key = 'gtKFFx';
+			$salt = 'eCwWELxi';
+			
+			if($env == "production"){
+				$key = 'l80gyM';$salt = 'QBl78dtK';
+			}
+			
+			$txnid = $data['payment']['txnid'];
+			$amount = $data['amount_calculated']['final'].".00";
+			$firstname = strtolower($data['customer']['customer_name']);
+			$email = strtolower($data['customer']['customer_email']);
+			$udf1 = "";
+			$udf2 = "";
+			$udf3 = "";
+			$udf4 = "";
+			$udf5 = "";
+			
+			 $payhash_str = $salt.'|success||||||'.$udf5.'|'.$udf4.'|'.$udf3.'|'.$udf2.'|'.$udf1.'|'.$email.'|'.$firstname.'|'.$productinfo.'|'.$amount.'|'.$txnid.'|'.$key;
+			
+			 $createdData['reverse_hash'] = hash('sha512', $payhash_str);
+			$resp['data']=$createdData;
+			return $resp;
+			
+		} catch (Exception $e) {
+			$message = ['type'    => get_class($e),'message' => $e->getMessage(),'file'=> $e->getFile(),'line'=> $e->getLine()];
+			return ['status'=>0,"message"=>$message['type'].' : '.$message['message'].' in '.$message['file'].' on '.$message['line']];
+		}
+		
+	}
+}
 
 if (!function_exists(('customerTokenDecode'))){
     function customerTokenDecode($token){
@@ -2903,7 +3003,7 @@ if (!function_exists(('getRegId'))){
 if (!function_exists(('isNotInoperationalDate'))){
     function isNotInoperationalDate($date, $city_id=null, $slot=null, $findercategory_id=null){
 
-        $inoperational_dates = ['2018-05-01'];
+        $inoperational_dates = ['2018-05-01', '2018-08-15'];
         if(in_array($date, $inoperational_dates)){
             return false;
         }
@@ -3074,11 +3174,11 @@ if (!function_exists('decodeKioskVendorToken')) {
         $jwt_key                =   Config::get('jwt.kiosk.key');
         $jwt_alg                =   Config::get('jwt.kiosk.alg');
         $decodedToken           =   JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
-
+        
         Log::info("Vendor Token : ".$jwt_token);
-
+        
         Log::info("decodeKioskVendorToken : ",json_decode(json_encode($decodedToken),true));
-
+       
         // if(!empty($decodedToken->vendor->_id) && in_array($decodedToken->vendor->_id, [7116,7081])){
         //     Log::info($decodedToken->vendor->_id);
         //     Log::info("exiting tab vendor");
@@ -3758,7 +3858,7 @@ if (!function_exists('decodeOrderToken')) {
 
     function getDynamicCouponForTheFinder($finder){
         $today = date('d-m-Y', strtotime(Carbon::now()->addDays(1)));
-        $lastSixtyDays = date('d-m-Y', strtotime(Carbon::now()->subDays(60)));
+        $lastSixtyDays = date('d-m-Y', strtotime(Carbon::now()->subDays(45)));
         
         // Log::info(new DateTime($lastSixtyDays));
         $numberOfOrders = Order::where("status","1")->where("finder_id",$finder['_id'])
@@ -3814,6 +3914,37 @@ if (!function_exists('decodeOrderToken')) {
             return ['status' => 400,'message' => 'Error, please try later','error_message' => 'Error, please try later'];
         }
     }
+
+}
+
+if (!function_exists('bladeCompile')) {
+
+    function bladeCompile($value, array $args = array())
+	{
+	    $generated = \Blade::compileString($value);
+
+	    ob_start() and extract($args, EXTR_SKIP);
+
+	    // We'll include the view contents for parsing within a catcher
+	    // so we can avoid any WSOD errors. If an exception occurs we
+	    // will throw it out to the exception handler.
+	    try
+	    {
+			eval('?>'.$generated);
+	    }
+
+	    // If we caught an exception, we'll silently flush the output
+	    // buffer so that no partially rendered views get thrown out
+	    // to the client and confuse the user with junk.
+	    catch (\Exception $e)
+	    {
+	        ob_get_clean(); throw $e;
+	    }
+
+	    $content = ob_get_clean();
+
+	    return $content;
+	}
 
 }
 

@@ -94,7 +94,7 @@ class CustomerController extends \BaseController {
 		$hour = 60*60;
 		$hour12 = 60*60*12;
 		$hour2 = 60*60*2;
-
+		
 		foreach ($trials as $trial){
 
 			array_set($trial, 'type_text', 'Trial');
@@ -876,6 +876,8 @@ class CustomerController extends \BaseController {
 		    $data['serialNumber'] = $header_array['Device-Serial'];
 		    $data['device_id'] = $header_array['Device-Id'];
 		    $data['vendor_id'] = (int)$kiosk_user['finder_id'];
+			Log::info("header_array");
+			Log::info($header_array);
 
 		    Finder::$withoutAppends=true;
 
@@ -990,6 +992,11 @@ class CustomerController extends \BaseController {
 
 
 		$customer->last_visited = Carbon::now();
+		$cart_id=getCartOfCustomer(intval($customer->_id));
+		if(!empty($cart_id))
+		{
+			$customer->cart_id=$cart_id;
+		}
 		$customer->update();
 
 		
@@ -1308,6 +1315,8 @@ class CustomerController extends \BaseController {
 					),
 					'corporate_login'=>$this->utilities->checkCorporateEmail($customer['email'])
 				);
+		if(!empty($customer['cart_id']))
+			$data['cart_id']=$customer['cart_id'];
 		if(!empty($customer['referral_code']))
 			$data['referral_code'] = $customer['referral_code'];
 		$jwt_claim = array(
@@ -1319,7 +1328,7 @@ class CustomerController extends \BaseController {
 		
 		$jwt_key = Config::get('app.jwt.key');
 		$jwt_alg = Config::get('app.jwt.alg');
-
+		
 		$token = JWT::encode($jwt_claim,$jwt_key,$jwt_alg);
 
 		return array('status' => 200,'message' => 'successfull login', 'token' => $token);
@@ -3011,7 +3020,7 @@ class CustomerController extends \BaseController {
 		}
 		
 	}
-	
+
 	public function getExistingTrialWithFinder(){
 
 		$jwt_token = Request::header('Authorization');
@@ -3126,6 +3135,9 @@ class CustomerController extends \BaseController {
 	}
 
 	public function home($city = 'mumbai',$cache = true){
+
+
+		Log::info('--------customer_home_app--------',$_GET);
 
 		$jwt_token = Request::header('Authorization');
 		Log::info($jwt_token);
@@ -3471,132 +3483,164 @@ class CustomerController extends \BaseController {
 		// }
 
 		if(isset($_REQUEST['device_type']) && in_array($_REQUEST['device_type'],['ios','android']) && isset($_REQUEST['app_version']) && ((float)$_GET['app_version'] >= 4.4)){
-
-			$result['campaigns'] =  [];
-
-			$result['campaigns'][] = [
-				'image'=>'http://b.fitn.in/global/Homepage-branding-2018/app-banner/monsoon-app.png',
-				'link'=>'ftrnty://ftrnty.com/search/all',
-				'title'=>'Group Membership',
-				'height'=>100,
-				'width'=>375,
-				'ratio'=>(float) number_format(100/375,2)
-			];
-
-			if($city != "ahmedabad"){
-
-				$result['campaigns'][] = [
-					'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Mumbai_APP.png',
-					'link'=>'ftrnty://ftrnty.com/s?brand=golds-gym&city='.strtolower($city),
-					'title'=>'Pledge for Fitness',
-					'height'=>100,
-					'width'=>375,
-					'ratio'=>(float) number_format(100/375,2)
-				];
-
-				switch($city){
-					case "pune":
-						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Pune_APP.png";
-						if(intval(date('d', time())) % 2 == 0){
-							$result['campaigns'][] = [
-								'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/Multifit_App.png',
-								'link'=>'ftrnty://ftrnty.com/s?brand=multifit&city='.strtolower($city),
-								'title'=>'Pledge for Fitness',
-								'height'=>100,
-								'width'=>375,
-								'ratio'=>(float) number_format(100/375,2)
-							];
-						}else{
-							array_splice($result['campaigns'], count($result['campaigns'])-1, 0, [[
-								'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/Multifit_App.png',
-								'link'=>'ftrnty://ftrnty.com/s?brand=multifit&city='.strtolower($city),
-								'title'=>'Pledge for Fitness',
-								'height'=>100,
-								'width'=>375,
-								'ratio'=>(float) number_format(100/375,2)
-							]]);
-						}
-					break;
-					case "bangalore":
-						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Bangalore_APP.png";
-						break;
-					case "delhi":
-						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Delhi_APP.png";
-						break;	
-					case "noida":
-						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Noida_APP.png";
-						break;
-					case "hyderabad":
-						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Hyderabad_APP.png";
-						break;					
-					case "gurgaon":
-						$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/Gold%27s%20Gym_Gurugram_APP.png";
-						break;										
-				}
-			}
-
-			if($city == "mumbai"){
-
-				$result['campaigns'][] = [
-					'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/YFC_App%20banner.png',
-					'link'=>'ftrnty://ftrnty.com/s?brand=your-fitness-club&city='.strtolower($city),
-					'title'=>'Your Fitness Club (YFC)',
-					'height'=>100,
-					'width'=>375,
-					'ratio'=>(float) number_format(100/375,2)
-				];
-
-			}
-
-
-			if(!$this->app_version || $this->app_version < '4.9'){
-				foreach($result['campaigns'] as &$campaign){
-					if(isset($campaign['title']) && $campaign['title'] == 'Pledge for Fitness'){
-						$campaign['link'] = '';
-					}
-				}
-			}
 			
-			if($_REQUEST['device_type'] == 'ios'){
+			$city_id = City::where('slug', $city)->first(['_id']);
 
-				if($this->app_version > '4.4.3'){
+			// return $city_id;
+			
+			if($city){
+				
+				$homepage = Homepage::where('city_id', $city_id['_id'])->first();
+				
+				$app_banners = $homepage['app_banners'];
 
-					$result['campaigns'][] = [
-						'image'=>'https://b.fitn.in/global/paypersession_branding/app_banners/App-pps%402x.png',
-						'link'=>'ftrnty://ftrnty.com/pps?',
-						'title'=>'Pay Per Session',
-						'height'=>100,
-						'width'=>375,
-						'ratio'=>(float) number_format(100/375,2)
-					];
+				$campaigns = [];
+
+				foreach($app_banners as $banner){
+
+					if(isset($banner['app_version']) && (float)$_GET['app_version'] < 4.4){
+						continue;
+					}	
+
+					array_push($campaigns, $banner);
 
 				}
-
-			}else{
-
-				if($this->app_version > '4.4.3'){
-
-					$result['campaigns'][] = [
-						'image'=>'https://b.fitn.in/global/paypersession_branding/app_banners/App-pps%402x.png',
-						'link'=>'ftrnty://ftrnty.com/pps',
-						'title'=>'Pay Per Session',
-						'height'=>100,
-						'width'=>375,
-						'ratio'=>(float) number_format(100/375,2)
-					];
-					
+	
+				function cmp($a, $b)
+				{
+					return $a['order'] - $b['order'];
 				}
+	
+				usort($campaigns, "cmp");
+
 
 			}
+			$result['campaigns'] =  $campaigns;
+			// $result['campaigns'] =  [];
 
-			$result['campaigns'][] = [
-				'image'=>'https://b.fitn.in/global/ios_homescreen_banner/complimentary-rewards-appbanner.png',
-				'link'=>'https://www.fitternity.com/rewards?mobile_app=true',
-				'title'=>'Complimentary Rewards',
-				'height'=>100,
-				'width'=>375,
-				'ratio'=>(float) number_format(100/375,2)
-			];
+			// $result['campaigns'][] = [
+			// 	'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/independance_app.png',
+			// 	'link'=>'ftrnty://ftrnty.com/search/all',
+			// 	'title'=>'Group Membership',
+			// 	'height'=>100,
+			// 	'width'=>375,
+			// 	'ratio'=>(float) number_format(100/375,2)
+			// ];
+
+			// if($city != "ahmedabad"){
+
+			// 	$result['campaigns'][] = [
+			// 		'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/mumbai-gold.jpg',
+			// 		'link'=>'ftrnty://ftrnty.com/s?brand=golds-gym&city='.strtolower($city),
+			// 		'title'=>'Pledge for Fitness',
+			// 		'height'=>100,
+			// 		'width'=>375,
+			// 		'ratio'=>(float) number_format(100/375,2)
+			// 	];
+
+			// 	switch($city){
+			// 		case "pune":
+			// 			$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/pune-gold.jpg";
+			// 			if(intval(date('d', time())) % 2 == 0){
+			// 				$result['campaigns'][] = [
+			// 					'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/Multifit_App.png',
+			// 					'link'=>'ftrnty://ftrnty.com/s?brand=multifit&city='.strtolower($city),
+			// 					'title'=>'Pledge for Fitness',
+			// 					'height'=>100,
+			// 					'width'=>375,
+			// 					'ratio'=>(float) number_format(100/375,2)
+			// 				];
+			// 			}else{
+			// 				array_splice($result['campaigns'], count($result['campaigns'])-1, 0, [[
+			// 					'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/Multifit_App.png',
+			// 					'link'=>'ftrnty://ftrnty.com/s?brand=multifit&city='.strtolower($city),
+			// 					'title'=>'Pledge for Fitness',
+			// 					'height'=>100,
+			// 					'width'=>375,
+			// 					'ratio'=>(float) number_format(100/375,2)
+			// 				]]);
+			// 			}
+			// 		break;
+			// 		case "bangalore":
+			// 			$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/bangalore-gold.jpg";
+			// 			break;
+			// 		case "delhi":
+			// 			$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/delhi-gold.jpg";
+			// 			break;	
+			// 		case "noida":
+			// 			$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/noida-gold.jpg";
+			// 			break;
+			// 		case "hyderabad":
+			// 			$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/hyderabad-gold.jpg";
+			// 			break;					
+			// 		case "gurgaon":
+			// 			$result['campaigns'][1]["image"] = "https://b.fitn.in/global/Homepage-branding-2018/app-banner/gurgaon-gold.jpg";
+			// 			break;										
+			// 	}
+			// }
+
+			// if($city == "mumbai"){
+
+			// 	$result['campaigns'][] = [
+			// 		'image'=>'https://b.fitn.in/global/Homepage-branding-2018/app-banner/yfc-mumbai-app.jpg',
+			// 		'link'=>'ftrnty://ftrnty.com/s?brand=your-fitness-club&city='.strtolower($city),
+			// 		'title'=>'Your Fitness Club (YFC)',
+			// 		'height'=>100,
+			// 		'width'=>375,
+			// 		'ratio'=>(float) number_format(100/375,2)
+			// 	];
+
+			// }
+
+
+			// if(!$this->app_version || $this->app_version < '4.9'){
+			// 	foreach($result['campaigns'] as &$campaign){
+			// 		if(isset($campaign['title']) && $campaign['title'] == 'Pledge for Fitness'){
+			// 			$campaign['link'] = '';
+			// 		}
+			// 	}
+			// }
+			
+			// if($_REQUEST['device_type'] == 'ios'){
+
+				// if($this->app_version > '4.4.3'){
+
+					// $result['campaigns'][] = [
+					// 	'image'=>'https://b.fitn.in/global/paypersession_branding/app_banners/App-pps%402x.png',
+					// 	'link'=>'ftrnty://ftrnty.com/pps?',
+					// 	'title'=>'Pay Per Session',
+					// 	'height'=>100,
+					// 	'width'=>375,
+					// 	'ratio'=>(float) number_format(100/375,2)
+					// ];
+
+				// }
+
+			// }else{
+
+			// 	if($this->app_version > '4.4.3'){
+
+			// 		$result['campaigns'][] = [
+			// 			'image'=>'https://b.fitn.in/global/paypersession_branding/app_banners/App-pps%402x.png',
+			// 			'link'=>'ftrnty://ftrnty.com/pps',
+			// 			'title'=>'Pay Per Session',
+			// 			'height'=>100,
+			// 			'width'=>375,
+			// 			'ratio'=>(float) number_format(100/375,2)
+			// 		];
+					
+			// 	}
+
+			// }
+
+			// $result['campaigns'][] = [
+			// 	'image'=>'https://b.fitn.in/global/ios_homescreen_banner/complimentary-rewards-appbanner.png',
+			// 	'link'=>'https://www.fitternity.com/rewards?mobile_app=true',
+			// 	'title'=>'Complimentary Rewards',
+			// 	'height'=>100,
+			// 	'width'=>375,
+			// 	'ratio'=>(float) number_format(100/375,2)
+			// ];
 
 			$lat = isset($_REQUEST['lat']) && $_REQUEST['lat'] != "" ? $_REQUEST['lat'] : "";
 	        $lon = isset($_REQUEST['lon']) && $_REQUEST['lon'] != "" ? $_REQUEST['lon'] : "";
@@ -3662,14 +3706,14 @@ class CustomerController extends \BaseController {
             $decoded = $this->customerTokenDecode($jwt_token);
             $customer_id = $decoded->customer->_id;
             $data['customer_id'] = $customer_id;
-
+			
         }else{
 
             $customer_id = $data['customer_id'] ;
         }
-
+		
 		$customer = Customer::find((int)$customer_id);
-
+		
 		if(isset($data['customer_address']) && is_array($data['customer_address']) && !empty($data['customer_address'])){
 
 			$customerData['address'] = $data['customer_address'];
@@ -4255,6 +4299,12 @@ class CustomerController extends \BaseController {
 					$walletData["vendor_id"] = $fitcashcode['vendor_id'];
 					$vb = array("vendor_id"=>$fitcashcode['vendor_id'],"balance"=>$cashback_amount);
 					$customer_update = Customer::where('_id', $customer_id)->push('vendor_balance', $vb, true);
+				}
+				if(!empty($fitcashcode['order_type'])){
+					$walletData["order_type"] = $fitcashcode['order_type'];
+				}
+				if(!empty($fitcashcode['remove_wallet_limit'])){
+					$walletData["remove_wallet_limit"] = $fitcashcode['remove_wallet_limit'];
 				}
 
 				if($fitcashcode['type'] == "fitcashplus"){
@@ -5219,6 +5269,7 @@ class CustomerController extends \BaseController {
 				case 'n-10m':
 				
 					$response = array_only($response, ['notification_id', 'transaction_type']);
+					Log::info($data);
 					$response ['block_screen_data']= $this->getBlockScreenData($time, $data);
 		
 					break;
@@ -7138,5 +7189,5 @@ class CustomerController extends \BaseController {
 		$userData = curl_call($qs, $wsUrl);
 		return json_decode($userData, true);
 	}
-
+	
 }

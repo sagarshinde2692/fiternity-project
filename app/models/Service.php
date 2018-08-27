@@ -190,7 +190,7 @@ class Service extends \Basemodel{
 			$serviceoffers = Offer::where('vendorservice_id', $this->_id)->where('hidden', false)->orderBy('order', 'asc')
 									->where('start_date', '<=', new DateTime( date("d-m-Y 00:00:00", time()) ))
 									->where('end_date', '>=', new DateTime( date("d-m-Y 00:00:00", time()) ))
-									->get(['start_date','end_date','price','type','allowed_qty','remarks','offer_type','ratecard_id','callout'])
+									->get(['start_date','end_date','price','type','allowed_qty','remarks','offer_type','ratecard_id','callout','added_by_script'])
 									->toArray();
 			$finder = $this->finder;
 			foreach ($ratecardsarr as $key => $value) {
@@ -219,6 +219,10 @@ class Service extends \Basemodel{
                     foreach ($ratecardoffersRecards as $ratecardoffersRecard){
             			$offer_exists = true;
                         $ratecardoffer                  =   $ratecardoffersRecard;
+						Log::info("lsdjflsjd ===".$ratecardoffer["price"]." ----- ".$value["price"]);
+						if($ratecardoffer["price"] == $value['price']){
+							$ratecardoffer["price"] = 0;
+						}
                         $ratecardoffer['offer_text']    =   "";
                         $ratecardoffer['offer_icon']    =   "https://b.fitn.in/global/final_monsoon_tag.png";
                         if(!empty($ratecardoffersRecard['callout']))$ratecardoffer['callout']=$ratecardoffersRecard['callout'];
@@ -247,15 +251,27 @@ class Service extends \Basemodel{
                         $difference     =   $today_date->diff($end_date);
 
                         if($difference->days <= 15){
-                            $ratecardoffer['offer_text']    =  ($difference->d == 1) ? "Expires Today" : ($difference->d > 3 ? "Expires soon" : "Expires in ".$difference->days." days");
-
+                            $ratecardoffer['offer_text']    =  ($difference->days == 1) ? "Expires Today" : ($difference->days > 7 ? "Expires soon" : "Expires in ".$difference->days." days");
 						}
+						
+						$orderVariable = \Ordervariables::where("name","expiring-logic")->orderBy("_id", "desc")->first();
+						if(isset($orderVariable["available_slots_end_date"]) && time() >= $orderVariable["available_slots_end_date"]){
+							$ratecardoffer['offer_text']    =  ($difference->days == 1) ? "Expires Today" : ($difference->days > 7 ? "Expires in ".((date('d',$orderVariable["end_time"])-intval(date('d', time()))))." days" : "Expires in ".(intval($difference->days))." days");
+						}else{
+							if($this->available_slots > 0){
+								$ratecardoffer['offer_text']    =  ($this->available_slots > 1 ? $this->available_slots." slots" : $this->available_slots." slot")." left";
+							}
+						}
+
 
 						if($value['type'] == 'membership' && $value['direct_payment_enable'] == '1' && $key == count($ratecardsarr) - 1){
 
-							Log::info($value['_id']);
-							Log::info("slots left");
-                            $ratecardoffer['offer_text']    =  ($this->available_slots > 1 ? $this->available_slots." slots" : $this->available_slots)." slot"." left";
+						// 	Log::info($value['_id']);
+						// 	Log::info("slots left");
+
+							
+
+							
 						}
 
 

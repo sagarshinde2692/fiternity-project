@@ -357,30 +357,25 @@ Class CustomerReward {
                             }
                         }
                         
-                        $no_of_sessions = (!empty($no_of_sessions) ? $no_of_sessions == 1 ? '1 session' : $no_of_sessions.' sessions' : '1 session');
-                        
-    
-                        $snapfitness_contents = [
-                            'Swimming session at 5 star hotels ('.$no_of_sessions.' )',
-                            'Fitness Merchandise Kit (Gym Bag + Shaker)',
-                            'Personalized Online Diet Consultation (for 1 month)',
-                            'Free Vouchers from ( Amazon,GNC & Faasos)'
-                        ];
+                        $no_of_sessions = (!empty($no_of_sessions) ? ($no_of_sessions == 1 ? '1 person' : $no_of_sessions.' people') : '1 person');
 
-                        $reward['title'] = 'Snap Fitness Hamper';
-                        $reward['content'] = $snapfitness_contents;
-                        $reward['image'] = 'https://b.fitn.in/gamification/reward/mixed.jpg';
-                        $reward['gallery'] = [
-                            'https://b.fitn.in/gamification/reward/mixed.jpg',
-                            'https://b.fitn.in/gamification/reward/snap_fitness/swimming.jpg',
-                            'https://b.fitn.in/gamification/reward/snap_fitness/kit.jpg',
-                            'https://b.fitn.in/gamification/reward/snap_fitness/diet.jpg',
-                            'https://b.fitn.in/gamification/reward/snap_fitness/voucher.jpg',
-                        ];
-                        $reward['new_amount'] = 6000;
-                        $reward['payload']['amount'] = 6000;
+                        $mixedreward_content = \MixedRewardContent::where('finder_id', $data['finder_id'])->first();
+                        
+                        $rewards_snapfitness_contents = $mixedreward_content->reward_contents;
+
+                        foreach($rewards_snapfitness_contents as &$content){
+                            $content = bladeCompile($content, ['no_of_sessions'=>$no_of_sessions]);
+                        }
+
+                        $reward['title'] = $mixedreward_content['title'];
+                        $reward['content'] = $rewards_snapfitness_contents;
+                        $reward['image'] = $mixedreward_content['images'][0];
+                        $images = $mixedreward_content['images'];
+                        $reward['gallery'] = $mixedreward_content['images'];
+                        $reward['new_amount'] = $mixedreward_content['total_amount'];
+                        $reward['payload']['amount'] = $mixedreward_content['total_amount'];
                         $reward['payload_amount'] = 6000;
-                        $reward['description'] = 'We have curated a perfect Fitness Start Pack for your membership just for you. Now you can strike this off your list and get going.<br>- '.implode('<br>- ',$snapfitness_contents);
+                        $reward['description'] = $mixedreward_content['rewards_header'].': <br>- '.implode('<br>- ',$rewards_snapfitness_contents);
                     }
 
                 }
@@ -1113,6 +1108,10 @@ Class CustomerReward {
             $setAlgo = array('cashback'=>0,'fitcash'=>0,'discount'=>0);
         }
 
+        if(in_array($finder_id, Config::get('app.mixed_reward_finders'))){
+            $setAlgo = array('cashback'=>10,'fitcash'=>10,'discount'=>0);
+        }
+
         $power_world_gym_vendor_ids = Config::get('app.power_world_gym_vendor_ids');
 
         if($finder_id && $finder_id != "" && $finder_id != null && in_array($finder_id,$power_world_gym_vendor_ids)){
@@ -1627,18 +1626,18 @@ Class CustomerReward {
         //     }
         // }
         if(!isset($coupon)){
-            $couponRecieved = getDynamicCouponForTheFinder($finder);
-            if($couponRecieved["code"] != ""){
-                if( $couponRecieved["code"] == strtolower($couponCode)){
-                    $coupon = $couponRecieved;
-                }else{
-                    $finder_detail = Cache::tags('finder_detail')->has($finder["slug"]) ? Cache::tags('finder_detail')->has($finder["slug"]) : false;
-                    if($finder_detail && isset($finder_detail["code_applicable"]) && $finder_detail["code_applicable"] == strtolower($couponCode)){
-                        $this->cacheapi->flushTagKey('finder_detail',$finder["slug"]);
-                        return $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "error_message"=>"Coupon not valid for this transaction. You can use ".$couponRecieved["code"]. " instead");
-                    }
-                }
-            }
+            // $couponRecieved = getDynamicCouponForTheFinder($finder);
+            // if($couponRecieved["code"] != ""){
+            //     if( $couponRecieved["code"] == strtolower($couponCode)){
+            //         $coupon = $couponRecieved;
+            //     }else{
+            //         $finder_detail = Cache::tags('finder_detail')->has($finder["slug"]) ? Cache::tags('finder_detail')->has($finder["slug"]) : false;
+            //         if($finder_detail && isset($finder_detail["code_applicable"]) && $finder_detail["code_applicable"] == strtolower($couponCode)){
+            //             $this->cacheapi->flushTagKey('finder_detail',$finder["slug"]);
+            //             return $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "error_message"=>"Coupon not valid for this transaction. You can use ".$couponRecieved["code"]. " instead");
+            //         }
+            //     }
+            // }
         }
         if(!isset($coupon) && (strtolower($couponCode) == "mad18") && $ratecard && $ratecard["finder_id"] == 6168){
             Log::info("New user code");
@@ -2027,6 +2026,13 @@ Class CustomerReward {
                     return $resp;    
                 }
                 
+            }
+
+            if(isset($coupon['total_used']) && isset($coupon['total_available']) && $coupon['total_used'] >= $coupon['total_available']){
+                    
+                $resp = array("data"=>array("discount" => 0, "final_amount" => $price, "wallet_balance" => $wallet_balance, "only_discount" => $price), "coupon_applied" => false, "vendor_coupon"=>false, "error_message"=>"This coupon has exhausted");
+
+                return $resp;
             }
 
             if(isset($coupon['min_price']) && is_numeric($coupon['min_price']) &&  $price < $coupon['min_price']){

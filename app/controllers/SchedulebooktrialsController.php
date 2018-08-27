@@ -1819,12 +1819,12 @@ class SchedulebooktrialsController extends \BaseController {
                 }
                 
                 if(isset($order['session_payment']) && $order['session_payment']){
-                	Log::info(" info ".print_r("AAAYA 112",true));
-                	
+                    Log::info(" info ".print_r("AAAYA 112",true));
+
                     return $this->payLaterPaymentSuccess($order['_id']);
                     
                 }
-    
+                
             }
 
             $count  = Order::where("status","1")->where('customer_email',$order->customer_email)->where('customer_phone','LIKE','%'.substr($order->customer_phone, -8).'%')->where('customer_source','exists',true)->orderBy('_id','asc')->where('_id','<',$order->_id)->where('finder_id',$order->finder_id)->count();
@@ -1861,7 +1861,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $schedule_date_starttime 	       =	strtoupper($slot_date ." ".$schedule_slot_start_time);
 
             }
-
+            
             if(isset($order->booktrial_id)){
                 $booktrialid = (int)$order->booktrial_id;
             }else{
@@ -2416,7 +2416,7 @@ class SchedulebooktrialsController extends \BaseController {
            
             array_set($orderData, 'booktrial_id', (int)$booktrialid);
             $order->update($orderData);
-
+            
             if(isset($order->vendor_price) && $order->vendor_price != ''){
                 $order->original_amount_finder = $order->amount_finder;
                 $order->amount_finder = $order->vendor_price;
@@ -6386,7 +6386,7 @@ class SchedulebooktrialsController extends \BaseController {
         $booking_details_data["address"] = ['field'=>'ADDRESS','value'=>'','position'=>$position++];
 
         if($this->kiosk_app_version &&  $this->kiosk_app_version >= 1.13 && isset($finder['brand_id']) && $finder['brand_id'] == 66 && $finder['city_id'] == 3){
-
+            
             $booking_details_data["price"] = ['field'=>'AMOUNT','value'=>'Free','position'=>$position++,'image'=>'https://b.fitn.in/global/tabapp-homescreen/freetrail-summary/amount.png'];
 
         }else{
@@ -6968,10 +6968,10 @@ class SchedulebooktrialsController extends \BaseController {
 
         $customer_id = (int)$decoded->customer->_id;
         
-        
-        
-        
-        
+
+
+
+
 
         $booktrial = Booktrial::where('vendor_code',$vendor_code)
            ->where('customer_id',$customer_id)
@@ -7191,7 +7191,7 @@ class SchedulebooktrialsController extends \BaseController {
     }
 
     public function sessionStatusCapture($status, $booktrial_id){
-        
+    
         $booktrial = Booktrial::find(intval($booktrial_id));
 
         if(!$booktrial){
@@ -7201,10 +7201,10 @@ class SchedulebooktrialsController extends \BaseController {
         $payment_done = !(isset($booktrial->payment_done) && !$booktrial->payment_done);
 
         $pending_payment = [
-            'header'=>"Pending Amount ₹".$booktrial['amount_finder'],
-            'sub_header'=>"Make sure you pay up, to earn Cashback & continue booking more sessions",
-            'order_id'=>$booktrial['order_id'],
-            'trial_id'=>$booktrial['_id']
+                'header'=>"Pending Amount ₹".$booktrial['amount_finder'],
+                'sub_header'=>"Make sure you pay up, to earn Cashback & continue booking more sessions",
+                'order_id'=>$booktrial['order_id'],
+	            'trial_id'=>$booktrial['_id']
         ];
 
         $streak = array_column(Config::get('app.streak_data'), 'number');
@@ -7303,6 +7303,7 @@ class SchedulebooktrialsController extends \BaseController {
             break;
             case 'didnotattend':
                 $booktrial->post_trial_status = 'no show';
+                $booktrial->post_trial_status_date = time();
                 $booktrial->update();
                 
                 $customer_level_data = $this->utilities->getWorkoutSessionLevel($booktrial['customer_id']);     
@@ -7366,6 +7367,7 @@ class SchedulebooktrialsController extends \BaseController {
             break;
             case 'confirm':
                 $booktrial->pre_trial_status = 'confirm';
+                $booktrial->post_trial_status_date = time();
                 $booktrial->update();
                 $customer_level_data = $this->utilities->getWorkoutSessionLevel($booktrial['customer_id']);                
                 
