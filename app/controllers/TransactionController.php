@@ -685,6 +685,10 @@ class TransactionController extends \BaseController {
 
             $data['convinience_fee'] = $convinience_fee;
 
+            if(!empty($data['customer_quantity'])){
+                $data['convinience_fee'] = $data['convinience_fee'] * $data['customer_quantity'];
+            }
+
         }
 
         if(isset($data['pay_later']) && $data['pay_later'] && isset($data['wallet']) && $data['wallet']){
@@ -904,14 +908,17 @@ class TransactionController extends \BaseController {
         
         if(empty($order['pay_later'])){
             
-            $resp['data']["coupon_details"] = [
-                "title" => "APPLY PROMOCODE",
-                "description" => "",
-                "applied" => false,
-                "remove_title" => "",
-                "remove_msg" => "Are you sure you want to remove this coupon code?"
-            ];
+            if(!empty($order['amount'])){
+                $resp['data']["coupon_details"] = [
+                    "title" => "APPLY PROMOCODE",
+                    "description" => "",
+                    "applied" => false,
+                    "remove_title" => "",
+                    "remove_msg" => ""
+                ];
+            }
             if(!empty($data['coupon_code']) && !empty($data['coupon_discount_amount'])){
+                $resp['data']["coupon_details"] = [];
                 $resp['data']['coupon_details']['title'] = strtoupper($data['coupon_code']);
                 $resp['data']['coupon_details']['remove_title'] =  strtoupper($data['coupon_code'])." applied";
                 $resp['data']['coupon_details']['applied'] =  true;
