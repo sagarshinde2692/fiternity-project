@@ -251,12 +251,12 @@ class Service extends \Basemodel{
                         $difference     =   $today_date->diff($end_date);
 
                         if($difference->days <= 15){
-                            $ratecardoffer['offer_text']    =  ($difference->d == 1) ? "Expires Today" : ($difference->d > 7 ? "Expires soon" : "Expires in ".$difference->days." days");
-
+                            $ratecardoffer['offer_text']    =  ($difference->days == 1) ? "Expires Today" : ($difference->days > 7 ? "Expires soon" : "Expires in ".$difference->days." days");
 						}
+						
 						$orderVariable = \Ordervariables::where("name","expiring-logic")->orderBy("_id", "desc")->first();
 						if(isset($orderVariable["available_slots_end_date"]) && time() >= $orderVariable["available_slots_end_date"]){
-							$ratecardoffer['offer_text']    =  ($difference->d == 1) ? "Expires Today" : ($difference->d > 7 ? "Expires in ".((date('d',$orderVariable["end_time"])-intval(date('d', time()))))." days" : "Expires in ".(intval($difference->days))." days");
+							$ratecardoffer['offer_text']    =  ($difference->days == 1) ? "Expires Today" : ($difference->days > 7 ? "Expires in ".((date('d',$orderVariable["end_time"])-intval(date('d', time()))))." days" : "Expires in ".(intval($difference->days))." days");
 						}else{
 							if($this->available_slots > 0){
 								$ratecardoffer['offer_text']    =  ($this->available_slots > 1 ? $this->available_slots." slots" : $this->available_slots." slot")." left";
