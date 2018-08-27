@@ -4362,6 +4362,9 @@ class TransactionController extends \BaseController {
 
             $cashback_detail = $this->customerreward->purchaseGame($data['amount'],$data['finder_id'],'paymentgateway',$data['offer_id'],false,$data["part_payment_calculation"]["part_payment_and_convinience_fee_amount"],$data['type']);
 
+            // Log::info("asdasdasdasasd============adadasdasdas=");
+            // Log::info($cashback_detail);
+
             if($cashback_detail['amount_deducted_from_wallet'] > 0){
 
                 $amount_summary[] = array(
