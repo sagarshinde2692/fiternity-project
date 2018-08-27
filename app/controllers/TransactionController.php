@@ -4276,7 +4276,7 @@ class TransactionController extends \BaseController {
                 'field' => 'Quantity',
                 'value' => !empty($data['customer_quantity']) ? (string)$data['customer_quantity'] : '1'
             );
-            $amount_summary[1] = array(
+            $amount_summary[2] = array(
                 'field' => 'Total Amount',
                 'value' => 'Rs. '.(isset($data['original_amount_finder']) ? $data['original_amount_finder'] : $data['amount_finder'])
             );
