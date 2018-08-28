@@ -890,6 +890,10 @@ class TransactionController extends \BaseController {
             $data['pps_new'] = true;
         }
 
+        if(!empty($data['customer_quantity']) && $data['customer_quantity'] > 1){
+            $pay_later = false;
+        }
+
         $resp   =   array(
             'status' => 200,
             'data' => $result,
@@ -982,7 +986,7 @@ class TransactionController extends \BaseController {
                     $payment_mode_type_array[] = 'pay_at_vendor';
                 }
             }
-            if(isset($_GET['device_type']) && isset($_GET['app_version']) && in_array($_GET['device_type'], ['android', 'ios']) && $_GET['app_version'] > '4.4.3'){
+            if($pay_later){
                 
                 if($data['type'] == 'workout-session'){
                     $payment_mode_type_array[] = 'pay_later';
