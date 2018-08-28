@@ -4155,19 +4155,20 @@ class TransactionController extends \BaseController {
         }
 
         if(isset($data['start_date']) && $data['start_date'] != ""){
-            $booking_details_data['start_date']['value'] = date('d-m-Y (l)',strtotime($data['start_date']));
+            $booking_details_data['start_date']['value'] = date('l, j M Y',strtotime($data['start_date']));
         }
 
         if(isset($data['schedule_date']) && $data['schedule_date'] != ""){
-            $booking_details_data['start_date']['value'] = date('d-m-Y (l)',strtotime($data['schedule_date']));
+            $booking_details_data['start_date']['value'] = date('l, j M Y',strtotime($data['schedule_date']));
         }
-        if(!empty($booking_details_data['start_date']['value'])){
-            $booking_details_data['start_date']['value'] = date('l, j M Y',strtotime($booking_details_data['start_date']['value']));
-        }
-
+        
         if(isset($data['preferred_starting_date']) && $data['preferred_starting_date'] != ""){
-            $booking_details_data['start_date']['value'] = date('d-m-Y (l)',strtotime($data['preferred_starting_date']));
+            $booking_details_data['start_date']['value'] = date('l, j M Y',strtotime($data['preferred_starting_date']));
         }
+        
+        // if(!empty($booking_details_data['start_date']['value'])){
+        //     $booking_details_data['start_date']['value'] = date('l, j M Y',strtotime($booking_details_data['start_date']['value']));
+        // }
 
         if(isset($data['start_time']) && $data['start_time'] != ""){
             $booking_details_data['start_time']['value'] = strtoupper($data['start_time']);
@@ -4222,7 +4223,7 @@ class TransactionController extends \BaseController {
         }
 
         if(!empty($booking_details_data['service_name']['value']) && !empty($booking_details_data['service_duration']['value'])){
-            $booking_details_data['service_name']['value'] = $booking_details_data['service_name']['value'].'('.$booking_details_data['service_duration']['value'].')';
+            $booking_details_data['service_name']['value'] = $booking_details_data['service_name']['value'].' ('.$booking_details_data['service_duration']['value'].')';
         }
 
 
