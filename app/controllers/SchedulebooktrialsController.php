@@ -7248,10 +7248,13 @@ class SchedulebooktrialsController extends \BaseController {
                     ]
                 ];
 
-                $voucher_response = $this->utilities->attachExternalVoucher($booktrial);
+                if($booktrial->type == 'workout-session'){
 
-                if($voucher_response){
-                    $response['voucher_data'] = $voucher_response;
+                    $voucher_response = $this->utilities->attachExternalVoucher($booktrial);
+    
+                    if($voucher_response){
+                        $response['voucher_data'] = $voucher_response;
+                    }
                 }
 
                 // if(!$customer_level_data['maxed_out']){
