@@ -7161,6 +7161,11 @@ class SchedulebooktrialsController extends \BaseController {
                             "valid_finder_id"=>intval($booktrial['finder_id']),
                             "finder_id"=>intval($booktrial['finder_id']),
                         );
+
+                    if($booktrial->type == 'workout-session'){
+                        unset($req['finder_id']);
+                        $req['description'] = "Added FitCash+ on Workout Session Attendance";
+                    }
                     Log::info("adding fitachs");
                     $this->utilities->walletTransaction($req);
                 }
