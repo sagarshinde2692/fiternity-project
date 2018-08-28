@@ -4578,12 +4578,19 @@ class TransactionController extends \BaseController {
 
         $payment_modes = [];
 
+        $payment_options['payment_options_order'] = ["wallet", "cards", "netbanking", "emi"];
+
+        if(!empty($order['type']) && $order['type'] == 'memberships'){
+            $payment_options['payment_options_order'] = ["cards", "wallet", "netbanking", "emi"];
+        }
+
         if($data['pay_later']){
             
             $payment_modes[] = array(
                 'title' => 'Pay now',
                 'subtitle' => 'Pay online through wallet,credit/debit card',
                 'value' => 'paymentgateway',
+                'payment_options'=>$payment_options
             );
 
         }else{
@@ -4591,6 +4598,7 @@ class TransactionController extends \BaseController {
                 'title' => 'Online Payment',
                 'subtitle' => 'Transact online with netbanking, card and wallet',
                 'value' => 'paymentgateway',
+                'payment_options'=>$payment_options
             );
         }
 
