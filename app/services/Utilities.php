@@ -4405,45 +4405,52 @@ Class Utilities {
     
         $voucherAttached = \Externalvoucher::where('booktrial_id', $data['_id'])->first();
 
-        if($voucherAttached){
-            return [
-                'header'=>"VOUCHER UNLOCKED",
-                'sub_header'=>"You have unlocked ".$voucherAttached['type']." voucher on attending you session at ".$data['finder_name'],
-                'coupon_title'=>$voucherAttached['description'],
-                'coupon_text'=>"USE CODE : ".$voucherAttached['code'],
-                'coupon_image'=>$voucherAttached['image'],
-                'coupon_code'=>$voucherAttached['code'],
-                'coupon_subtext'=>'(also sent via email/sms)',
-                'unlock'=>'UNLOCK VOUCHER',
-            ];
-        }
-
-        $sessions_attended = $this->getSessionAttended($data['customer_id']);
-        Log::info('$sessions_attended');
-        Log::info($sessions_attended);
-
-        
-        $voucherType = $this->getVoucherType($sessions_attended);
-
-        Log::info('$voucherType');
-        Log::info($voucherType);
-        
-        $voucherAttached = $this->attachVoucher($voucherType, $data);
+        Log::info($voucherAttached);
 
         if(!$voucherAttached){
-            return;
+           
+            $sessions_attended = $this->getSessionAttended($data['customer_id']);
+            Log::info('$sessions_attended');
+            Log::info($sessions_attended);
+    
+            
+            $voucherType = $this->getVoucherType($sessions_attended);
+    
+            Log::info('$voucherType');
+            Log::info($voucherType);
+            
+            $voucherAttached = $this->attachVoucher($voucherType, $data);
+    
+            if(!$voucherAttached){
+                return;
+            }
         }
 
-        return [
+
+
+        $resp =  [
             'header'=>"VOUCHER UNLOCKED",
-            'sub_header'=>"You have unlocked ".$voucherAttached['type']." voucher on attending you session at ".$data['finder_name'],
+            'sub_header'=>"You have unlocked ".$voucherAttached['type']." voucher on attending your session at ".$data['finder_name'],
             'coupon_title'=>$voucherAttached['description'],
             'coupon_text'=>"USE CODE : ".$voucherAttached['code'],
             'coupon_image'=>$voucherAttached['image'],
             'coupon_code'=>$voucherAttached['code'],
             'coupon_subtext'=>'(also sent via email/sms)',
             'unlock'=>'UNLOCK VOUCHER',
+            'terms_text'=>'T & C applied.'
         ];
+
+        if(!empty($voucherAttached['tnc'])){
+            $tnc = "<p>Terms and Conditions:</p>";
+            foreach($voucherAttached['tnc'] as $t){
+                $tnc = $tnc."<p>".$t."</p>";
+            }
+
+            $resp['terms_detailed_text'] = $tnc;
+        }
+
+        return $resp;
+        
 
     }
 

@@ -828,21 +828,21 @@ return array(
 		[
 			'min'=>1,
 			'max'=>2,
-			'type'=>'ola'
+			'type'=>'faasos'
 		],
 		[
 			'min'=>2,
 			'max'=>3,
-			'type'=>'zomato'
+			'type'=>'faasos'
 		],
 		[
 			'min'=>3,
 			'max'=>4,
-			'type'=>'bms'
+			'type'=>'faasos'
 		],
 		[
 			'min'=>4,
-			'type'=>'bms'
+			'type'=>'faasos'
 		],
 		
 	],
