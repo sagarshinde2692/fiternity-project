@@ -890,9 +890,9 @@ class TransactionController extends \BaseController {
             $data['pps_new'] = true;
         }
 
-        if(!empty($data['customer_quantity']) && $data['customer_quantity'] > 1){
-            $pay_later = false;
-        }
+        // if(!empty($data['customer_quantity']) && $data['customer_quantity'] > 1){
+        //     $pay_later = false;
+        // }
 
         $resp   =   array(
             'status' => 200,
@@ -1005,7 +1005,7 @@ class TransactionController extends \BaseController {
             $resp['data']['payment_modes'] = [];
 
             if(isset($order->amount_final) && $order->amount_final ){
-                $resp['data']['payment_modes'] = $this->getPaymentModes($resp);
+                $resp['data']['payment_modes'] = $this->getPaymentModes($resp, $order->toArray());
             }
         // }
 
@@ -4515,7 +4515,7 @@ class TransactionController extends \BaseController {
 
     }
 
-    function getPaymentModes($data){
+    function getPaymentModes($data, $order){
 
         $payment_modes = [];
 
@@ -4575,7 +4575,7 @@ class TransactionController extends \BaseController {
         
         }
 
-        if(isset($data['pay_later']) && $data['pay_later']){
+        if(isset($data['pay_later']) && $data['pay_later'] && !(!empty($order['customer_quantity']) && $order['customer_quantity'] > 1 )){
             
             $payment_modes[] = array(
                 'title' => 'Pay Later',
