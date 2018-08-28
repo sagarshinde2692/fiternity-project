@@ -2629,9 +2629,9 @@ class SchedulebooktrialsController extends \BaseController {
             $trailBefore10min = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->subMinutes(10);
             $send_communication["customer_notification_before10min"] = $this->customernotification->bookTrialReminderBefore10Min($booktrialdata, $trailBefore10min);
 
-            $afterTwoDays = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->subDays(2);
+            // $afterTwoDays = \Carbon\Carbon::createFromFormat('Y-m-d H:i:s', date('Y-m-d H:i:s',strtotime($booktrial->schedule_date_time)))->addDays(2);
             
-            $send_communication["customer_notification_after2days"] = $this->customernotification->reviewReminder($booktrialdata, $afterTwoDays);
+            // $send_communication["customer_notification_after2days"] = $this->customernotification->reviewReminder($booktrialdata, $afterTwoDays);
 
             // }
 
@@ -7248,13 +7248,10 @@ class SchedulebooktrialsController extends \BaseController {
                     ]
                 ];
 
-                if($booktrial->type == 'workout-session'){
+                $voucher_response = $this->utilities->attachExternalVoucher($booktrial);
 
-                    $voucher_response = $this->utilities->attachExternalVoucher($booktrial);
-    
-                    if($voucher_response){
-                        $response['voucher_data'] = $voucher_response;
-                    }
+                if($voucher_response){
+                    $response['voucher_data'] = $voucher_response;
                 }
 
                 // if(!$customer_level_data['maxed_out']){
@@ -7294,8 +7291,8 @@ class SchedulebooktrialsController extends \BaseController {
                     'status'=>200,
                     'header'=>'DON’T WORRY',
                     'image'=>'https://b.fitn.in/paypersession/happy_face_icon-2.png',
-                    'sub_header_1'=>$customer_level_data['next_session']['cashback'].'% Cashback',
-                    'sub_header_2'=>' will be added in your wallet once we verify your attendance with '.ucwords($booktrial['finder_name']),
+                    'sub_header_1'=>$customer_level_data['current_level']['cashback'].'% Cashback',
+                    'sub_header_2'=>' is added in your wallet. Use this to book your next session with lowest price.',
                     'streak'=>[
                         'header'=>'STREAK IT OUT',
                         'data'=>$this->utilities->getStreakImages($customer_level_data['current_level']['level'])

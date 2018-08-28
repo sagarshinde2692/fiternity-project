@@ -4402,6 +4402,10 @@ Class Utilities {
     }
 
     public function attachExternalVoucher($data){
+
+        if($data['type'] != 'workout-session'){
+            return;
+        }
     
         $voucherAttached = \Externalvoucher::where('booktrial_id', $data['_id'])->first();
 
