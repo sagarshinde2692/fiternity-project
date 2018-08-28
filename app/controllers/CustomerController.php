@@ -2852,6 +2852,7 @@ class CustomerController extends \BaseController {
 							'short_description' => "refer"."\n"."a friend"."\n"."and earn FitCash+"
 						]
 					],
+					'add_fitcash_text'=> "Add 10% Extra"
 					),
 				200
 			);
@@ -2961,6 +2962,7 @@ class CustomerController extends \BaseController {
 							'short_description' => "refer"."\n"."a friend"."\n"."and earn FitCash+"
 						]
 					],
+					'add_fitcash_text'=> "Add 10% Extra"
 					),
 				200
 			);
