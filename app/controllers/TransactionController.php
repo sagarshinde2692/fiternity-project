@@ -356,13 +356,13 @@ class TransactionController extends \BaseController {
             
               
             $payment_mode = isset($data['payment_mode']) ? $data['payment_mode'] : "";
-    
+            
             if(isset($data['ratecard_id'])){
                 
                 $ratecard_id = (int) $data['ratecard_id'];
     
                 $ratecardDetail = $this->getRatecardDetail($data);
-    
+                
                 if($ratecardDetail['status'] != 200){
                     return Response::json($ratecardDetail,$this->error_status);
                 }
@@ -460,7 +460,7 @@ class TransactionController extends \BaseController {
             $order = Order::find((int)$old_order_id);
 
             $data['repetition'] = 1;
-
+            
             if($order){
 
                 if(isset($order->repetition)){
@@ -483,7 +483,7 @@ class TransactionController extends \BaseController {
             $order_id = $data['_id'] = $data['order_id'] = Order::max('_id') + 1;
             $order = new Order(['_id'=>$order_id]);
         }
-
+        
         $data['code'] = (string) random_numbers(5); //(string)$data['order_id'];
 
         if(isset($data['referal_trial_id'])){
@@ -567,9 +567,9 @@ class TransactionController extends \BaseController {
         $data['amount_final'] = $data["amount_finder"];
 
         if(!$updating_part_payment && !isset($data['myreward_id']) && (!(isset($data['pay_later']) && $data['pay_later']) || !(isset($data['wallet']) && $data['wallet']))) {
-
+	
             $cashbackRewardWallet =$this->getCashbackRewardWallet($data,$order);
-            Log::info("cashbackRewardWallet",$cashbackRewardWallet);
+            // Log::info("cashbackRewardWallet",$cashbackRewardWallet);
 
             if($cashbackRewardWallet['status'] != 200){
                 return Response::json($cashbackRewardWallet,$this->error_status);
@@ -2060,8 +2060,32 @@ class TransactionController extends \BaseController {
 
         $customer = \Customer::find($customer_id);
 
-        if(isset($customer->demonetisation)){
+        //************************************************************************************ IF ONLY AMOUNT CUSTOMER*******************************************************************************************
+        //********************************************************************************** DYANMIC PRICING START**************************************************************************************************
+        
+        if($data['type'] == 'workout-session')
+         {
+         try {
+             Log::info("dynamic price");
+         (isset($data['start_time'])&&isset($data['start_date'])&&isset($data['service_id'])&&isset($data['end_time']))?
+         $am_calc=$this->utilities->getWsSlotPrice($data['start_time'],$data['end_time'],$data['service_id'],$data['start_date']):"";
+         if(isset($am_calc['peak'])){
+            $data['amount']  = $am_calc['peak'];
+            $data['peak'] = true;
+         }else if(isset($am_calc['non_peak'])){
+            $data['amount']  = $am_calc['non_peak'];
+            $data['non_peak'] = true;
+            $data['non_peak_discount']  = $am_calc['non_peak_discount'];
 
+         }
+        //  (isset($am_calc))?$data['amount']=$am_calc:"";
+         
+         } catch (Exception $e) {Log::error(" Error :: ".print_r($e,true));}
+         } 
+        //********************************************************************************** DYANMIC PRICING END****************************************************************************************************
+        
+        if(isset($customer->demonetisation)){
+			
             return $this->getCashbackRewardWalletNew($data,$order);
 
         }
@@ -2917,6 +2941,41 @@ class TransactionController extends \BaseController {
             $data['amount_finder'] = $data['amount'];
         }
 
+        if(isset($data['schedule_date']) && $data['schedule_date'] != ""){
+        	
+        	$schedule_date = date('Y-m-d 00:00:00', strtotime($data['schedule_date']));
+        	array_set($data, 'start_date', $schedule_date);
+        	
+        	array_set($data, 'end_date', $schedule_date);
+        	
+        	$data['membership_duration_type'] = 'workout_session';
+        }
+        
+        if(isset($data['schedule_slot']) && $data['schedule_slot'] != ""){
+        	
+        	$schedule_slot = explode("-", $data['schedule_slot']);
+        	
+        	$data['start_time'] = trim($schedule_slot[0]);
+        	if(count($schedule_slot) == 1){
+        		$data['end_time'] = date('g:i a', strtotime('+1 hour', strtotime($schedule_slot[0])));
+        		$data['schedule_slot'] = $schedule_slot[0].'-'.$data['end_time'];
+        	}else{
+        		$data['end_time']= trim($schedule_slot[1]);
+        	}
+        }
+        
+        
+        //********************************************************************************** DYANMIC PRICING START**************************************************************************************************
+        /* if($data['type'] == 'workout-session')
+        {
+        	try {
+        		(isset($data['start_time'])&&isset($data['start_date'])&&isset($data['service_id'])&&isset($data['end_time']))?
+        			$am_calc=$this->utilities->getWsSlotPrice($data['start_time'],$data['end_time'],$data['service_id'],$data['start_date']):"";
+        		(isset($am_calc))?$data['amount_finder']=$am_calc:"";
+        	} catch (Exception $e) {Log::error(" Error :: ".print_r($e,true));}
+        } */
+        //********************************************************************************** DYANMIC PRICING END****************************************************************************************************
+        
         $data['amount'] = $data['amount_finder'];
 
        /* $corporate_discount_percent = $this->utilities->getCustomerDiscount();
@@ -2938,7 +2997,7 @@ class TransactionController extends \BaseController {
             array_set($data, 'start_date', $schedule_date);
 
             array_set($data, 'end_date', $schedule_date);
-
+            
             $data['membership_duration_type'] = 'workout_session';
         }
 
@@ -2961,20 +3020,20 @@ class TransactionController extends \BaseController {
         }
 
         $batch = array();
-
+        
         $data['batch_time'] = "";
-
+        
         if(isset($data['batch']) && $data['batch'] != ""){
-            
-            if(is_array($data['batch'])){
-                $data['batch'] = $data['batch'];
-            }else{
-                $data['batch'] = json_decode($data['batch'],true);
-            }
-
-            foreach ($data['batch'] as $key => $value) {
-
-                if(isset($value['slots']['start_time']) && $value['slots']['start_time'] != ""){
+                
+                if(is_array($data['batch'])){
+                    $data['batch'] = $data['batch'];
+                }else{
+                    $data['batch'] = json_decode($data['batch'],true);
+                }
+        
+                foreach ($data['batch'] as $key => $value) {
+        
+                    if(isset($value['slots']['start_time']) && $value['slots']['start_time'] != ""){
 
                     $batch[$key]['weekday'] = $value['weekday'];
                     $batch[$key]['slots'][0] = $value['slots'];

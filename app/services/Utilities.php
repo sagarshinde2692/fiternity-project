@@ -7,6 +7,7 @@ use Response;
 use Config;
 use JWT;
 use Finder;
+use Service;
 use Request;
 use Log;
 use App\Services\Sidekiq as Sidekiq;
@@ -18,6 +19,7 @@ use App\Sms\CustomerSms as CustomerSms;
 use App\Mailers\FinderMailer as FinderMailer;
 use App\Services\Fitapi as Fitapi;
 use App\Mailers\CustomerMailer as CustomerMailer;
+use Exception;
 
 Class Utilities {
 
@@ -30,6 +32,7 @@ Class Utilities {
     $this->vendor_token = false;
         
     $vendor_token = Request::header('Authorization-Vendor');
+    $this->days=["sunday","monday","tuesday","wednesday","thursday","friday","saturday"];
 
     if($vendor_token){
 
@@ -2846,8 +2849,8 @@ Class Utilities {
 
      public function isConvinienceFeeApplicable($data, $type="order"){
         Log::info(debug_backtrace()[1]['function']);
-        Log::info("Data for isConvinienceFeeApplicable");
-        Log::info($data);
+        // Log::info("Data for isConvinienceFeeApplicable");
+        // Log::info($data);
         
         if($type == "order"){
             $flags = isset($data['ratecard_flags']) ? $data['ratecard_flags'] : array();
@@ -4511,5 +4514,144 @@ Class Utilities {
         }
     
     }
+	public function getPrimaryCategory($finder_id=null,$service_id=null) {
+		
+		try {
+			if(!empty($finder_id))
+			{
+				Finder::$withoutAppends=true;$finder=Finder::find(intval($finder_id))->with('category')->first(['category_id']);
+				return (!empty($finder)&&!empty($finder->category))?$finder->toArray()['category']['name']:null;
+			}
+			else if(!empty($service_id))
+			{
+				Service::$withoutAppends=true;$service=Service::find(intval($service_id))->with('category')->first(['servicecategory_id']);
+				return (!empty($service)&&!empty($service->category))?$service->toArray()['category']['name']:null;
+			}
+			else return null;
+		} catch (Exception $e) {
+			Log::error(" Error Message ::  ".print_r($e->getMessage(),true));
+			return null;
+		}
+		return null;
+	}
+	public function getWSNonPeakPrice($start=null,$end=null,$workoutSessionPrice=null,$service_cat=null,$just_tag=false) {
+		Log::info(func_get_args());
+		try {
+			$peak=true;
+			if(!empty($start)&&!empty($end)&&!empty($service_cat))
+			{   
+				if($service_cat=='gym')
+				{
+					if(intval($start)>=Config::get('app.non_peak_hours.gym.start')&&intval($end)<=Config::get('app.non_peak_hours.gym.end'))
+					{
+						(!$just_tag)?$workoutSessionPrice=Config::get('app.non_peak_hours.gym.off')*intval($workoutSessionPrice):"";$peak=false;
+					}
+				}
+				else if(intval($start)>=Config::get('app.non_peak_hours.studios.start')&&intval($end)<=Config::get('app.non_peak_hours.studios.end'))
+				{
+					(!$just_tag)?$workoutSessionPrice=Config::get('app.non_peak_hours.studios.off')*intval($workoutSessionPrice):"";$peak=false;
+				}			
+			}
+			return ['wsprice'=>$workoutSessionPrice,'peak'=>$peak];
+		} catch (Exception $e) {
+			Log::error(" Error Message ::  ".print_r($e->getMessage(),true));
+			return null;
+		}
+		return null;
+	}
+	public function getPeakAndNonPeakPrice($slots=[],$service_cat=null) {
+	
+		try {
+			if(empty($service_cat))throw new Exception("No Service Category Exists.");
+            $resp=[];
+			foreach ($slots as $value) 
+			{
+				if(!isset($resp['peak'])||!isset($resp['non_peak']))
+				{
+                    $temp=$this->getWSNonPeakPrice($value['start_time_24_hour_format'],$value['end_time_24_hour_format'],$value['price'],$service_cat,false);
+					if(!empty($temp)&&isset($temp['wsprice']))
+					{
+                        if(!empty($temp['peak'])){
+                            $resp['peak']=intval($temp['wsprice']);
+                        }
+						else{
+                            $resp['non_peak']=intval($temp['wsprice']);
+                            $resp['non_peak_discount'] = $value['price'] - $resp['non_peak'];
+                        } 
+					}
+				}
+				else return $resp;
+            }
+            return $resp;
+		} catch (Exception $e) {
+			Log::error(" Error Message ::  ".print_r($e->getMessage(),true));
+			throw $e;
+		}
+		return null;
+	}
+	public function getDayWs($date=null)
+	{
+		return $this->days[date("w",strtotime($date))];
+		
+	}
+	public function getWsSlotPrice($start=null,$end=null,$service_id=null,$start_date=null ) {
+		Log::info(func_get_args());
+		try {
+				if(!isset($service_id))throw new Exception("Service id Not Defined.");
+				else if(!isset($start_date))throw new Exception("Start Date not present.");
+				else if(!isset($start)||!isset($end))throw new Exception("Start/End Not Defined.");
+				else {
+						$day=$this->days[date("w",strtotime($start_date))];
+						if(empty($day))throw new Exception("Day Not present in the schedules.");	
+							$start=(str_contains($start, "pm"))?doubleval($start)+12:doubleval($start);$end=(str_contains($end, "pm"))?doubleval($end)+12:doubleval($end);
+						Service::$withoutAppends=true;
+						$service=Service::where("_id",intval($service_id))->first(['workoutsessionschedules']);
+						if(isset($service)&&!empty($service->workoutsessionschedules))
+						{
+							$r=array_values(array_filter($service->workoutsessionschedules, function($a) use ($day){return !empty($a['weekday'])&&$a['weekday']==$day;}));
+                            Log::info($r);
+							if(!empty($r[0])&&!empty($r[0]['slots']))
+									{
+                                        Log::info('$rzdcsc');
+
+										$r=$r[0]['slots'];
+                                        $r=array_values(array_filter($r, function($a) use ($start,$end){return isset($a['start_time_24_hour_format'])&&isset($a['end_time_24_hour_format'])&&$a['start_time_24_hour_format'] >=$start&&$a['end_time_24_hour_format'] <=$end;}));
+                                        Log::info($r);
+                                        return $price = $this->getPeakAndNonPeakPrice($r, $this->getPrimaryCategory(null,$service['_id']));
+										// return (!empty($r[0])&&isset($r[0]['price']))?$r[0]['price']:null;
+									}else return null;
+						}else return null;
+					}
+		} catch (Exception $e) {
+			Log::error(" Error Message ::  ".print_r($e->getMessage(),true));
+			throw $e;
+		}
+		return null;
+	}
+	
+	public function getRupeeForm($number) {
+		return json_decode('"'."\u20b9".'"')." ".(isset($number)?$number:"");
+	}
+	public function getAnySlotAvailablePNp($requested_date,$service_details) {
+		$closeDate=date('Y-m-d', strtotime($requested_date.' + 7 days'));
+		$iterDate=date('Y-m-d', strtotime($requested_date));
+		$p_np=null;
+		while($closeDate!==$iterDate)
+		{
+			$day=$this->getDayWs($requested_date);
+			if(!empty($day))
+			{
+				$tmp=array_values(array_filter($service_details['workoutsessionschedules'],function ($e) use($day){if($e['weekday']==$day)return $e;}));
+				if(!empty($tmp))
+				{
+					$p_np=$this->getPeakAndNonPeakPrice($tmp[0]['slots'],$this->getPrimaryCategory(null,$service_details['_id']));
+					return $p_np;
+				}
+			}
+			else $iterDate=date('Y-m-d', strtotime($requested_date. ' + 1 days'));
+		}
+		return $p_np;
+	}
+	
 }
 

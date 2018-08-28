@@ -63,10 +63,12 @@ return array(
 	// 'reliance_url' =>'https://rhealthcircle.reliancegeneral.co.in/fitternity/callback',
 	// 'website_deeplink' =>'https://ftrnty.com',
 
+	'non_peak_hours' => ["off"=>0.8,"gym"=>["off"=>0.8,"start"=>10,"end"=>18],"studios"=>["start"=>11,"end"=>17,"off"=>0.8]],
 	'pubnub_publish' => 'pub-c-d9aafff8-bb9e-42a0-a24b-17ab5500036f',
 	'pubnub_sub' => 'sub-c-05ef3130-d0e6-11e6-bbe2-02ee2ddab7fe',
+	
 	'download_app_link' => 'https://go.onelink.me/I0CO?pid=techfitsms',//https://www.fitternity.com/downloadapp?source=fittech',
-
+	
     'business' => 'http://business.fitternity.com',
 	'static_coupon' => array(
 		array("code" => "fivefit", "text" => "Get Flat 5% off | Limited Memberships Available | Hurry! Code: FIVEFIT","discount_max" => 10000,"discount_amount" => 0,"discount_min" => 0, "discount_percent"=> 5, "once_per_user"=> true, "ratecard_type"=> ["membership","healthytiffinmembership"]),
@@ -79,7 +81,7 @@ return array(
 		'discount_excluded_vendors' => [9459,1484,1458,576,1647,1486,9883,1451,1452,401,1487,1457,2522,1488,1460,4830,4829,4831,4827,4821,4818],
 	),
 	'fitternity_vendors' => [11907,9869,9891,11128,12064],
-	'vendors_without_convenience_fee' => [7116,9149,12008,1860,6593,14085,14081,13761,13765,14079, 2890,3175,3178,3179,3183,3201,3204,3330,3331,3332,3333,3335,3336,3341,3342,3343,3345,3346,3347,5964,7081,7106,7111,7114,7116,8872],
+	'vendors_without_convenience_fee' => [7116,9149,12008,1860,6593,14085,14081,13761,13765,14079],
 	'payu' => array(
 		'prod'=>array(
 			"key" => 'l80gyM',
@@ -90,52 +92,51 @@ return array(
 			"key" => 'gtKFFx',
 			"salt" => 'eCwWELxi',
 			"url" => "https://test.payu.in/merchant/postservice.php?form=2"
-		)
+			)
 		),
-
-
-	/*
-	|--------------------------------------------------------------------------
-	| Application Timezone
-	|--------------------------------------------------------------------------
-	|
-	| Here you may specify the default timezone for your application, which
-	| will be used by the PHP date and date-time functions. We have gone
-	| ahead and set this to a sensible default for you out of the box.
-	|
-	*/
-
-	//'timezone' => 'UTC',
-	//'timezone' => 'America/New_York',
-	'timezone' => 'Asia/Kolkata',
-
-	/*
-	|--------------------------------------------------------------------------
-	| Application Locale Configuration
-	|--------------------------------------------------------------------------
-	|
-	| The application locale determines the default locale that will be used
-	| by the translation service provider. You are free to set this value
-	| to any of the locales which will be supported by the application.
-	|
-	*/
-
-	'locale' => 'en',
-
-	/*
-	|--------------------------------------------------------------------------
-	| Application Fallback Locale
-	|--------------------------------------------------------------------------
-	|
-	| The fallback locale determines the locale to use when the current one
-	| is not available. You may change the value to correspond to any of
-	| the language folders that are provided through your application.
-	|
-	*/
-
-	'fallback_locale' => 'en',
-
-	/*
+		
+		/*
+		|--------------------------------------------------------------------------
+		| Application Timezone
+		|--------------------------------------------------------------------------
+		|
+		| Here you may specify the default timezone for your application, which
+		| will be used by the PHP date and date-time functions. We have gone
+		| ahead and set this to a sensible default for you out of the box.
+		|
+		*/
+		
+		//'timezone' => 'UTC',
+		//'timezone' => 'America/New_York',
+		'timezone' => 'Asia/Kolkata',
+		
+		/*
+		|--------------------------------------------------------------------------
+		| Application Locale Configuration
+		|--------------------------------------------------------------------------
+		|
+		| The application locale determines the default locale that will be used
+		| by the translation service provider. You are free to set this value
+		| to any of the locales which will be supported by the application.
+		|
+		*/
+		
+		'locale' => 'en',
+		
+		/*
+		|--------------------------------------------------------------------------
+		| Application Fallback Locale
+		|--------------------------------------------------------------------------
+		|
+		| The fallback locale determines the locale to use when the current one
+		| is not available. You may change the value to correspond to any of
+		| the language folders that are provided through your application.
+		|
+		*/
+		
+		'fallback_locale' => 'en',
+		
+		/*
 	|--------------------------------------------------------------------------
 	| Encryption Key
 	|--------------------------------------------------------------------------
@@ -299,21 +300,21 @@ return array(
 	//will be implemented everywhere in future when other api will be changed
 	/*************************************************************************/
 	//Production
-	'es' =>array(
-		'url'		=> 			'ESAdmin:fitternity2020@54.169.120.141:8050',
-		'host'		=> 			'ESAdmin:fitternity2020@54.169.120.141',
-		'port'		=>			8050,
-		'default_index' => 	'fitternity',
-		'default_type' 	=> 	'finder',
-	),
-	//stage
 	// 'es' =>array(
-	//  	'url'		=> 			'139.59.16.74:1243',
-	//  	'host'		=> 			'139.59.16.74',
-	//  	'port'		=>			1243,
-	//  	'default_index' => 	'fitternity',
-	//  	'default_type' 	=> 	'finder',
+	// 	'url'		=> 			'ESAdmin:fitternity2020@54.169.120.141:8050',
+	// 	'host'		=> 			'ESAdmin:fitternity2020@54.169.120.141',
+	// 	'port'		=>			8050,
+	// 	'default_index' => 	'fitternity',
+	// 	'default_type' 	=> 	'finder',
 	// ),
+	//stage
+	'es' =>array(
+	 	'url'		=> 			'139.59.16.74:1243',
+	 	'host'		=> 			'139.59.16.74',
+	 	'port'		=>			1243,
+	 	'default_index' => 	'fitternity',
+	 	'default_type' 	=> 	'finder',
+	),
 	//local
 	// 'es' =>array(
 	// 	'url'		=> 			'localhost:9200',
@@ -844,6 +845,7 @@ return array(
 			'type'=>'bms'
 		],
 		
-	]
+	],
+	'slotAllowance' =>['vendors'=>[1584],'services'=>[17626],'types'=>['workout-session','booktrials']],
 
 );

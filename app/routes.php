@@ -1226,3 +1226,5 @@ Route::get('customer/skipreview/{booktrial_id}','SchedulebooktrialsController@sk
 Route::get('addpicturestoratingparams','DebugController@addPicturesToRatingParams');
 
 Route::get('finderreviewdata/{finder_id}','FindersController@finderReviewData');
+
+Route::get('toto/{vendorservice_id}', 'MigrationReverseController@tot');
