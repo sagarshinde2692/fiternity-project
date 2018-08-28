@@ -4426,28 +4426,34 @@ Class Utilities {
             }
         }
 
-
-
+        
         $resp =  [
             'header'=>"VOUCHER UNLOCKED",
-            'sub_header'=>"You have unlocked ".$voucherAttached['type']." voucher on attending your session at ".$data['finder_name'],
+            'sub_header'=>"You have unlocked ".strtoupper($voucherAttached['type'])." voucher on attending your session at ".$data['finder_name'],
             'coupon_title'=>$voucherAttached['description'],
-            'coupon_text'=>"USE CODE : ".$voucherAttached['code'],
+            'coupon_text'=>"USE CODE : ".strtoupper($voucherAttached['code']),
             'coupon_image'=>$voucherAttached['image'],
-            'coupon_code'=>$voucherAttached['code'],
+            'coupon_code'=>strtoupper($voucherAttached['code']),
             'coupon_subtext'=>'(also sent via email/sms)',
             'unlock'=>'UNLOCK VOUCHER',
             'terms_text'=>'T & C applied.'
         ];
-
+        
         if(!empty($voucherAttached['tnc'])){
             $tnc = "<p>Terms and Conditions:</p>";
             foreach($voucherAttached['tnc'] as $t){
                 $tnc = $tnc."<p>".$t."</p>";
             }
-
+            
             $resp['terms_detailed_text'] = $tnc;
         }
+        $customermailer = new CustomerMailer();
+
+        $email_data['finder_name'] = $data['finder_name'];
+        $email_data['customer_name'] = $data['customer_name'];
+        $email_data['customer_email'] = $data['customer_email'];
+        $email_data['resp'] = $resp;
+        $customermailer->externalVoucher($email_data);
 
         return $resp;
         
