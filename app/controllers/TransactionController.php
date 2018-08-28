@@ -4075,7 +4075,7 @@ class TransactionController extends \BaseController {
         $booking_details_data["finder_name_location"] = ['field'=>'STUDIO NAME','value'=>$data['finder_name'].", ".$data['finder_location'],'position'=>$position++];
 
         if(in_array($data['type'],["booktrials","workout-session","manualautotrial"])){
-            $booking_details_data["finder_name_location"] = ['field'=>'SESSION BOOKED AT','value'=>$data['finder_name'].", ".$data['finder_location'],'position'=>$position++];
+            $booking_details_data["finder_name_location"] = ['field'=>'BOOKED AT','value'=>$data['finder_name'].", ".$data['finder_location'],'position'=>$position++];
         }
 
         $booking_details_data["service_name"] = ['field'=>'SERVICE','value'=>$data['service_name'],'position'=>$position++];
@@ -4161,6 +4161,9 @@ class TransactionController extends \BaseController {
         if(isset($data['schedule_date']) && $data['schedule_date'] != ""){
             $booking_details_data['start_date']['value'] = date('d-m-Y (l)',strtotime($data['schedule_date']));
         }
+        if(!empty($booking_details_data['start_date']['value'])){
+            $booking_details_data['start_date']['value'] = date('l, j M Y',strtotime($booking_details_data['start_date']['value']));
+        }
 
         if(isset($data['preferred_starting_date']) && $data['preferred_starting_date'] != ""){
             $booking_details_data['start_date']['value'] = date('d-m-Y (l)',strtotime($data['preferred_starting_date']));
@@ -4207,16 +4210,22 @@ class TransactionController extends \BaseController {
 
         if(in_array($data['type'], ['booktrial','workout-session'])){
 
-            $booking_details_data["start_date"]["field"] = "SESSION DATE";
+            $booking_details_data["start_date"]["field"] = "DATE & TIME";
             $booking_details_data["start_time"]["field"] = "SESSION TIME";
             $booking_details_data['service_name']['field'] = 'WORKOUT FORM';
 
             if($data['type'] == 'workout-session'){
-
+                
                 $booking_details_data['service_duration']['value'] = '1 Session';
             }
             
         }
+
+        if(!empty($booking_details_data['service_name']['value']) && !empty($booking_details_data['service_duration']['value'])){
+            $booking_details_data['service_name']['value'] = $booking_details_data['service_name']['value'].'('.$booking_details_data['service_duration']['value'].')';
+        }
+
+
 
         if(isset($data['preferred_day']) && $data['preferred_day'] != ""){
             $booking_details_data['start_date']['field'] = 'PREFERRED DAY';
@@ -4227,7 +4236,12 @@ class TransactionController extends \BaseController {
             $booking_details_data['start_time']['field'] = 'PREFERRED TIME';
             $booking_details_data['start_time']['value'] = $data['preferred_time'];
         }
+        
+        if(!empty($booking_details_data['start_date']['value']) && !empty($booking_details_data['start_time']['value'])){
+            $booking_details_data["start_date"]["value"] = $booking_details_data["start_date"]["value"].' at '.$booking_details_data['start_time']['value'];
+        }
 
+        
         if(isset($data['"preferred_service']) && $data['"preferred_service'] != "" && $data['"preferred_service'] != null){
             $booking_details_data['service_name']['field'] = 'PREFERRED SERVICE';
             $booking_details_data['service_name']['value'] = $data['preferred_service'];
@@ -4241,7 +4255,15 @@ class TransactionController extends \BaseController {
             $booking_details_data['finder_name_location']['field'] = 'BOUGHT AT';
             $booking_details_data['finder_name_location']['value'] = $data['finder_name'];
         }
-
+        
+        if(!empty($booking_details_data['start_time'])) {
+            unset($booking_details_data['start_time']);
+        }
+        
+        if(!empty($booking_details_data['service_duration'])) {
+            unset($booking_details_data['service_duration']);  
+        } 
+        
         $booking_details_all = [];
         foreach ($booking_details_data as $key => $value) {
 
