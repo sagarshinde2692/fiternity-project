@@ -7324,6 +7324,7 @@ class SchedulebooktrialsController extends \BaseController {
             break;
             case 'didnotattend':
                 $booktrial->post_trial_status = 'no show';
+                $booktrial->post_trial_status_date = time();
                 $booktrial->update();
                 
                 $customer_level_data = $this->utilities->getWorkoutSessionLevel($booktrial['customer_id']);     
@@ -7387,6 +7388,7 @@ class SchedulebooktrialsController extends \BaseController {
             break;
             case 'confirm':
                 $booktrial->pre_trial_status = 'confirm';
+                $booktrial->post_trial_status_date = time();
                 $booktrial->update();
                 $customer_level_data = $this->utilities->getWorkoutSessionLevel($booktrial['customer_id']);                
                 
