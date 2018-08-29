@@ -708,12 +708,6 @@ Class CustomerMailer extends Mailer {
 			'user_name' => $data['customer_name']
 		);
 
-		$message_data 	= array(
-			'user_email' => ["dhruvsarawagi@fitternity.com"],
-			'user_name' => $data['customer_name']
-		);
-
-
 		return $this->common($label,$data,$message_data);
 	}
 	
