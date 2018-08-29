@@ -6775,7 +6775,7 @@ class CustomerController extends \BaseController {
 						$response['button_text'] = [
 							'activate'=>[
 								'text'=>'GET MY FITCASH',
-								'url'=>Config::get('app.url')."/sessionstatuscapture/activate/".$data['_id']
+								'url'=>Config::get('app.url')."/sessionstatuscapture/activate/".$data['_id']."?source=let_us_know"
 							],
 							'didnt_get'=>[
 								'text'=>'Didn’t get FitCode',

@@ -5111,7 +5111,7 @@ class TransactionController extends \BaseController {
                 "amount_fitcash_plus" => $order['fitcash_amount'],
                 "type"=>'CREDIT',
                 'entry'=>'credit',
-                'description'=>"Manually added to wallet",
+                'description'=>"Amount added to Wallet",
             );
 
             Log::info($req);
@@ -5124,7 +5124,7 @@ class TransactionController extends \BaseController {
 
             Log::info($wallet);
             
-            $redisid = Queue::connection('redis')->push('TransactionController@sendCommunication', array('order_id'=>$order_id),Config::get('app.queue'));
+            // $redisid = Queue::connection('redis')->push('TransactionController@sendCommunication', array('order_id'=>$order_id),Config::get('app.queue'));
 
             $order->redis_id = $redisid;
 
@@ -5134,7 +5134,7 @@ class TransactionController extends \BaseController {
 
             $order->update();
 
-            $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
+            $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful. ".$order['fitcash_amount']." fitcash has been added into your wallet");
             
         } else {
            

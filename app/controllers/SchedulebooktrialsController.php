@@ -7105,7 +7105,7 @@ class SchedulebooktrialsController extends \BaseController {
         $decoded = customerTokenDecode($jwt_token);
 
         $customer_id = (int)$decoded->customer->_id;
-
+        
         $booktrial = Booktrial::where('_id',$booktrial_id)
            ->where('customer_id',$customer_id)
            ->whereIn('type',['booktrials','3daystrial','workout-session'])
@@ -7272,6 +7272,10 @@ class SchedulebooktrialsController extends \BaseController {
                 if($booktrial['type'] == 'booktrials'){
                     $response['sub_header_1'] = $verify_fitcode_result->fitcash." Fitcash";
                     $response['sub_header_2'] = " has been added in your Fitternity Wallet. Use it to buy membership with lowest price";
+                }
+
+                if(isset($_GET['source']) && $_GET['source'] == 'let_us_know'){
+                    $response['header'] = 'GREAT';
                 }
 
                 Log::info("removing n+2 communication");
