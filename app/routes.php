@@ -1247,3 +1247,5 @@ Route::get('updateRatecardSlots','DebugController@updateRatecardSlots');
 Route::get('updateratecardslotsbyid/{order_id}','TransactionController@updateRatecardSlotsByOrderId');
 
 Route::get('getcouponpackages','HomeController@getCouponPackages');
+
+Route::get('brandlistcity/{city}','BrandsController@brandlistcity');

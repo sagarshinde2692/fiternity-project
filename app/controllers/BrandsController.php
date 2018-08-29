@@ -187,4 +187,20 @@ class BrandsController extends \BaseController {
 
     }
 
+    public function brandlistcity($city){
+
+        $city = City::where('slug', strtolower($city))->first();
+
+        if(!$city){
+            return;
+        }
+
+        $brand_ids = Finder::active()->where('city_id', $city['_id'])->where('brand_id', 'exists', true)->lists('brand_id');
+        
+        $brands = Brand::active()->whereIn('_id', $brand_ids)->get(['name', 'slug']);
+
+        return $brands;
+
+    }
+
 }
