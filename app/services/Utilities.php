@@ -4445,8 +4445,8 @@ Class Utilities {
         
         if(!empty($voucherAttached['tnc'])){
             $tnc = "<p>Terms and Conditions:</p>";
-            foreach($voucherAttached['tnc'] as $t){
-                $tnc = $tnc."<p>".$t."</p>";
+            foreach($voucherAttached['tnc'] as $key => $t){
+                $tnc = $tnc."<p>".($key+1).". ".$t."</p>";
             }
             
             $resp['terms_detailed_text'] = $tnc;
