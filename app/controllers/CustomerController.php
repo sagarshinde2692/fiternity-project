@@ -6798,6 +6798,11 @@ class CustomerController extends \BaseController {
 					}else{
 						$response = $this->getFirstScreen($data);
 						$response['button_text']['attended']['url'] = Config::get('app.url').'/notificationdatabytrialid/'.$data['_id'].'/let_us_know?getreasons=1';
+
+						if(isTabActive($data['finder_id'])){
+							$response['button_text']['attended']['type'] = 'SUCCESS';
+							$response['button_text']['attended']['url'] = Config::get('app.url')."/sessionstatuscapture/lost/".$data['_id'];
+						}
 					}
 
 				}else{	
@@ -7288,7 +7293,7 @@ class CustomerController extends \BaseController {
 		$response['image'] = 'https://b.fitn.in/paypersession/happy_face_icon-2.png';
 		
 		$response['block'] = true;
-
+		
 		return $response;
 	
 	}
