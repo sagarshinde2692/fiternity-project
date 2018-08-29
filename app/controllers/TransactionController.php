@@ -4574,7 +4574,7 @@ class TransactionController extends \BaseController {
 
     }
 
-    function getPaymentModes($data, $order){
+    function getPaymentModes($data, $order=null){
 
         $payment_modes = [];
 
