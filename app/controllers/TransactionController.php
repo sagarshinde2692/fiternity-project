@@ -256,7 +256,11 @@ class TransactionController extends \BaseController {
             $data['paymentmode_selected'] = 'paymentgateway';
         }*/
 
+        
         if(isset($data['paymentmode_selected']) && $data['paymentmode_selected'] != ""){
+            if(!empty($data['customer_quantity']) && $data['customer_quantity'] > 1 ){
+                $data['paymentmode_selected'] = 'paymentgateway';
+            }
 
             $data['part_payment'] = false;
 
@@ -910,7 +914,7 @@ class TransactionController extends \BaseController {
         }
 
         
-        if(empty($order['pay_later'])){
+        if(empty($data['session_payment'])){
             
             if(!empty($order['amount'])){
                 $resp['data']["coupon_details"] = [
@@ -2112,7 +2116,9 @@ class TransactionController extends \BaseController {
             
             $data['ratecard_amount'] = $data['amount'];
 
-            $data['amount'] = $data['amount_customer'] = $data['amount_finder'] = $data['amount_final'] = $data['amount'] * $data['customer_quantity'];
+            $data['amount_finder'] = $data['amount_finder'] * $data['customer_quantity'];
+
+            $data['amount'] = $data['amount_customer'] = $data['amount_final'] = $data['amount'] * $data['customer_quantity'];
         }
 
         $amount = $data['amount_customer'] = $data['amount'];
