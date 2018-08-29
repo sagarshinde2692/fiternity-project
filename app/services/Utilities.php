@@ -3401,21 +3401,22 @@ Class Utilities {
 
         $fit_code = false;
 
-        if(isset($data['vendor_code']) && $data['type'] != 'workout-session'){
+        // if(isset($data['vendor_code']) && $data['type'] != 'workout-session'){
+        if(isset($data['vendor_code']) ){
 
             $fit_code = true;
 
-            if(isset($data['post_trial_status']) && $data['post_trial_status'] != ""){
+            if(isset($data['post_trial_status_updated_by_fitcode']) && $data['post_trial_status_updated_by_qrcode'] != ""){
                 $fit_code = false;
             }
 
-            if(!isset($data['post_trial_status_updated_by_fitcode']) && !isset($data['post_trial_status_updated_by_lostfitcode'])){
+            // if(!isset($data['post_trial_status_updated_by_fitcode']) && !isset($data['post_trial_status_updated_by_lostfitcode'])){
 
-                if(isset($data['schedule_date_time']) && $data['schedule_date_time'] != "" && time() <= strtotime('+48 hours', strtotime($data['schedule_date_time']))){
+            //     if(isset($data['schedule_date_time']) && $data['schedule_date_time'] != "" && time() <= strtotime('+48 hours', strtotime($data['schedule_date_time']))){
 
-                    $fit_code = true;
-                }
-            }
+            //         $fit_code = true;
+            //     }
+            // }
 
             if(isset($data['manual_order']) && $data['manual_order']){
                 $fit_code = false;
