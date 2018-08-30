@@ -629,35 +629,38 @@ class ServiceController extends \BaseController {
 
         $currentDateTime        =   time();
 
-        if($this->vendor_token){
-
-        	$decodeKioskVendorToken = decodeKioskVendorToken();
-
-            $vendor = $decodeKioskVendorToken->vendor;
-
-            $finder_id = (int)$vendor->_id;
-
+        if($this->vendor_token||(!empty($request)&&!empty($request['finder_id'])&&!empty($request['show_all_price_qr']))){
+        	
+        	if($this->vendor_token)
+        	{
+        		$decodeKioskVendorToken = decodeKioskVendorToken();
+        		$vendor = $decodeKioskVendorToken->vendor;
+        		$finder_id = (int)$vendor->_id;
+        	}
+        	else $finder_id = (int)$request['finder_id'];
+        	
+        	
         	$currentDateTime = time() - 7200;
-
+        	
         	$jwt_token = Request::header('Authorization');
-
-			if($jwt_token == true && $jwt_token != 'null' && $jwt_token != null){
-
-	            $decoded = decode_customer_token();
-
-	            $customer_id = intval($decoded->customer->_id);
-
-	            $booktrial_count = Booktrial::where('customer_id', $customer_id)
-                        ->where('finder_id', '=',$finder_id)
-                        ->where('type','booktrials')
-                        ->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
-                        ->count();
-
- 				if($booktrial_count > 0){
-
- 					$request['type'] = 'workout_session';
-	        	}
-	        }
+        	
+        	if($jwt_token == true && $jwt_token != 'null' && $jwt_token != null){
+        		
+        		$decoded = decode_customer_token();
+        		
+        		$customer_id = intval($decoded->customer->_id);
+        		
+        		$booktrial_count = Booktrial::where('customer_id', $customer_id)
+        		->where('finder_id', '=',$finder_id)
+        		->where('type','booktrials')
+        		->whereNotIn('going_status_txt', ["cancel","not fixed","dead"])
+        		->count();
+        		
+        		if($booktrial_count > 0){
+        			
+        			$request['type'] = 'workout_session';
+        		}
+        	}
         }
 
         $date         			=   (isset($request['date']) && $request['date'] != "") ? date('Y-m-d',strtotime($request['date'])) : date("Y-m-d");
@@ -833,6 +836,16 @@ class ServiceController extends \BaseController {
                 	}
 		    	} */
 //******************************************************************************************************DYNAMIC PRICING END*****************************************************************************************
+
+				if($type == "workoutsessionschedules"){
+					$service["workout_session"] = [
+							"available" => true,
+							"amount" => $ratecard_price
+					];
+				}
+				if($ratecard_price > 0){
+					$service['cost'] = "Rs. ".$ratecard_price;
+				}
 		    	if($ratecard_price > 0&&$type !== "workoutsessionschedules"){
 		    		$service['cost'] = "₹. ".$ratecard_price;
 		    	}
@@ -846,7 +859,30 @@ class ServiceController extends \BaseController {
 		    			$rsh['price']=(isset($p_np['peak']))?$this->utilities->getRupeeForm($p_np['peak']):"";
 		    			$nrsh['price']=(isset($p_np['non_peak']))?$this->utilities->getRupeeForm($p_np['non_peak']):"";
 		    		}
-		    		array_push($slots,$rsh);array_push($slots,$nrsh);
+					array_push($slots,$rsh);array_push($slots,$nrsh);
+				}
+				
+                
+		    	if(!empty($request)&&!empty($request['show_all_price_qr']))
+		    	{
+		    		
+		    		if(isset($ratecard['special_price']) && $ratecard['special_price'] != 0)
+		    			$service['price_qr_special']=$ratecard['special_price'];
+		    		if(isset($ratecard['price']) && $ratecard['price'] != 0)
+		    			$service['price_qr']=$ratecard['price'];
+		    		if(isset($ratecard['direct_payment_enable']) && $ratecard['direct_payment_enable'] != "0")
+		    			$service['direct_payment_enable']=true;
+		    		else $service['direct_payment_enable']=false;
+		    		
+		    		\Finder::$withoutAppends=true;
+		    		$finderQr=\Finder::active()->where("_id",intval($service['finder_id']))->first();
+		    		if(!empty($finderQr))
+		    		{
+		    			$finderQr=$finderQr->toArray();
+		    			if(!empty($finderQr['city_id']))
+		    				$service['city_id']=$finderQr['city_id'];
+		    		}
+		    		
 		    	}
 		    	
 				foreach ($weekdayslots['slots'] as $slot) {
@@ -2069,7 +2105,7 @@ class ServiceController extends \BaseController {
 								
 								$trial['title'] = ucwords(preg_replace('/membership/i', 'Workout', $trial['service_name'])).' at '.$trial['finder_name'];
 
-								$trial['amount'] = '₹'.($trial['service']['ratecards'][0]['special_price'] != 0 ? $trial['service']['ratecards'][0]['special_price'] : $trial['service']['ratecards'][0]['price']);
+								$trial['amount'] = '\u20B9'.($trial['service']['ratecards'][0]['special_price'] != 0 ? $trial['service']['ratecards'][0]['special_price'] : $trial['service']['ratecards'][0]['price']);
 								$trial['service_slug'] = $trial['service']['slug'];
 								$trial['finder_slug'] = $trial['finder']['slug'];
 								

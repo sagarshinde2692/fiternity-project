@@ -1229,3 +1229,5 @@ Route::get('finderreviewdata/{finder_id}','FindersController@finderReviewData');
 
 Route::get('toto/{vendorservice_id}', 'MigrationReverseController@tot');
 Route::get('listvalidcoupons','HomeController@listValidCoupons');
+Route::post('getunmarkedattendance','CustomerController@getCustomerUnmarkedAttendance');
+Route::post('markcustomerattendance','CustomerController@markCustomerAttendance');

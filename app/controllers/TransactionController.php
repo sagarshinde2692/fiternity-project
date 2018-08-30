@@ -915,6 +915,9 @@ class TransactionController extends \BaseController {
         if(!empty($data['ratecard_pay_at_vendor'])){
            $resp['ratecard_pay_at_vendor'] = true;
         }
+        if(!empty($data['qrcodepayment'])){
+           $resp['qrcodepayment'] = true;
+        }
 
         
         
@@ -4656,13 +4659,17 @@ class TransactionController extends \BaseController {
         }
 
         if(isset($data['pay_later']) && $data['pay_later'] && !(!empty($order['customer_quantity']) && $order['customer_quantity'] > 1 )){
+
+            // if(empty($data['qrcodepayment'])||(!empty($data['qrcodepayment'])&&!empty($data['paymentmode_selected'])))
+        	if(empty($data['qrcodepayment']))
+        	{
+        		$payment_modes[] = array(
+        				'title' => 'Pay Later',
+        				'subtitle' => 'Pay full amount online, post session date',
+        				'value' => 'pay_later',
+        		);
+        	}
             
-            $payment_modes[] = array(
-                'title' => 'Pay Later',
-                'subtitle' => 'Reserve slot & pay online post your workout',
-                'value' => 'pay_later',
-            );
-        
         }
 
         return $payment_modes;
