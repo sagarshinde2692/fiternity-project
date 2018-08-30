@@ -4835,6 +4835,9 @@ class TransactionController extends \BaseController {
         Log::info("REsponse from CustomerReward", $resp);
         if($resp["coupon_applied"]){
 
+        	if(!empty($resp['data']['discount']))
+        		$resp['coupon_description']="Rs. ".$resp['data']['discount']. " off Applied.";
+        	
             if(isset($data['event_id']) && isset($data['customer_email'])){
                                 
                 $already_applied_coupon = Customer::where('email', 'like', '%'.$data['customer_email'].'%')->whereIn('applied_promotion_codes',[strtolower($data['coupon'])])->count();

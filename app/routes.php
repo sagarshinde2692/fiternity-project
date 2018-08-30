@@ -1228,3 +1228,4 @@ Route::get('addpicturestoratingparams','DebugController@addPicturesToRatingParam
 Route::get('finderreviewdata/{finder_id}','FindersController@finderReviewData');
 
 Route::get('toto/{vendorservice_id}', 'MigrationReverseController@tot');
+Route::get('listvalidcoupons','HomeController@listValidCoupons');
