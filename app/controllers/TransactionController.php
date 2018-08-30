@@ -151,7 +151,12 @@ class TransactionController extends \BaseController {
             }
         }
 
-        
+        if(empty($data['service_id']))
+        {
+        	Ratecard::$withoutAppends=true;
+        	$servId=Ratecard::find(intval($data['ratecard_id']))->first(['service_id']);
+        	(!empty($servId))?$data['service_id']=$servId->service_id:"";
+        }
 
         $workout = array('vip_booktrials','3daystrial','booktrials','workout-session');
         if(in_array($data['type'],$workout)){
@@ -2325,7 +2330,13 @@ class TransactionController extends \BaseController {
 
             $service_id = isset($data['service_id']) ? $data['service_id'] : null;
 
-            $couponCheck = $this->customerreward->couponCodeDiscountCheck($ratecard,$data["coupon_code"],$customer_id, $ticket, $ticket_quantity, $service_id);
+            $total_amount = null;
+
+            if(!empty($data['customer_quantity'])){
+                $total_amount = $data['amount'];
+            }
+
+            $couponCheck = $this->customerreward->couponCodeDiscountCheck($ratecard,$data["coupon_code"],$customer_id, $ticket, $ticket_quantity, $service_id, $total_amount);
 
             Log::info("couponCheck");
             Log::info($couponCheck);

@@ -1534,7 +1534,7 @@ Class CustomerReward {
     }
 
 
-    public function couponCodeDiscountCheck($ratecard,$couponCode,$customer_id = false, $ticket = null, $ticket_quantity = 1, $service_id = null){
+    public function couponCodeDiscountCheck($ratecard,$couponCode,$customer_id = false, $ticket = null, $ticket_quantity = 1, $service_id = null, $amount=null){
         // Log::info("dfjkhsdfkhskdjfhksdhfkjshdfkjhsdkjfhks",$ratecard["flags"]);
         if($ticket){
 
@@ -2041,7 +2041,11 @@ Class CustomerReward {
 
                 return $resp;
             }
-
+            if($amount){
+                $price = $amount;
+                Log::info("changing price");
+                Log::info($price);
+            }
             $discount_amount = $coupon["discount_amount"];
             $discount_amount = $discount_amount == 0 ? $coupon["discount_percent"]/100 * $price : $discount_amount;
             $discount_amount = intval($discount_amount);
