@@ -916,7 +916,7 @@ class TransactionController extends \BaseController {
         
         if(empty($data['session_payment'])){
             
-            if(!empty($order['amount'])){
+            if(!empty($order['amount_final'])){
                 $resp['data']["coupon_details"] = [
                     "title" => "Apply Coupon Code",
                     "description" => "",
