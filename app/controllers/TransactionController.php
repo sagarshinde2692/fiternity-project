@@ -5075,6 +5075,7 @@ class TransactionController extends \BaseController {
         $result['payment_related_details_for_mobile_sdk_hash'] = $mobilehash;
         $result['finder_name'] = strtolower($data['finder_name']);
         $result['fitcash_amount'] = $data['fitcash_amount'];
+        $result['success_message'] = $data['fitcash_amount']." fitcash has been added into your wallet";
         
         
         $resp   =   array(
