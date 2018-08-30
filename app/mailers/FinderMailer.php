@@ -63,7 +63,8 @@ Class FinderMailer extends Mailer {
 							'dharatanna@fitternity.com',
 							'pranjalisalvi@fitternity.com',
 							'hardikkhamkar@fitternity.com',
-							'ismailbaig@fitternity.com'
+							'ismailbaig@fitternity.com',
+							'ashishburade@fitternity.com'
 						];
 						break;
 					case 4 : 
@@ -102,7 +103,8 @@ Class FinderMailer extends Mailer {
 							'hardikkhamkar@fitternity.com',
 							'virenmehta@fitternity.com',
 							'nishantullal@fitternity.com',
-							'zeeshanshaikh@fitternity.com'
+							'zeeshanshaikh@fitternity.com',
+							'ashishburade@fitternity.com'
 						];
 						break;
 					default:
@@ -325,7 +327,8 @@ Class FinderMailer extends Mailer {
 						'dharatanna@fitternity.com',
 						'pranjalisalvi@fitternity.com',
 						'hardikkhamkar@fitternity.com',
-						'ismailbaig@fitternity.com'
+						'ismailbaig@fitternity.com',
+						'ashishburade@fitternity.com'
 					];
 					break;
 				case 4 : 
@@ -364,7 +367,8 @@ Class FinderMailer extends Mailer {
 						'hardikkhamkar@fitternity.com',
 						'virenmehta@fitternity.com',
 						'nishantullal@fitternity.com',
-						'zeeshanshaikh@fitternity.com'
+						'zeeshanshaikh@fitternity.com',
+						'ashishburade@fitternity.com'
 					];
 					break;
 				default:
