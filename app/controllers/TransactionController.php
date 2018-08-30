@@ -855,6 +855,9 @@ class TransactionController extends \BaseController {
         if(isset($data['cashback_detail']) && isset($data['cashback_detail']['amount_deducted_from_wallet'])){
             $result['wallet_amount'] = $data['cashback_detail']['amount_deducted_from_wallet'];
         }
+        if(!empty($data['ratecard_id'])){
+            $result['ratecard_id'] = $data['ratecard_id'];
+        }
         /*if(isset($data["part_payment_calculation"])){
             $result['part_payment_calculation'] = $data["part_payment_calculation"];
         }*/
