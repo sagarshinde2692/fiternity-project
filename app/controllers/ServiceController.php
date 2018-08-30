@@ -848,6 +848,11 @@ class ServiceController extends \BaseController {
 				}
 		    	if($ratecard_price > 0&&$type !== "workoutsessionschedules"){
 		    		$service['cost'] = "₹. ".$ratecard_price;
+				}
+				
+				if($ratecard_price > 0){
+		    		$service['peak_text'] = "RUSH HOURS ₹. ".$ratecard_price;
+		    		$service['non_peak_text'] = "NON RUSH HOURS ₹. ".$ratecard_price*Config::get('app.non_peak_hours.off');
 		    	}
 		    	if(!empty($weekdayslots)&&!empty($weekdayslots['slots'])&&count($weekdayslots['slots'])>0&&(isset($_GET['source']) && $_GET['source'] == 'pps'))
 		    	{
@@ -948,8 +953,13 @@ class ServiceController extends \BaseController {
 						array_set($slot,'epoch_end_time',strtotime(strtoupper($date." ".$slot['end_time'])));
 						$total_slots_count +=1;
 						
-						if(isset($_GET['source']) && $_GET['source'] == 'pps')
+						// if(isset($_GET['source']) && $_GET['source'] == 'pps')
 						$ck=$this->utilities->getWSNonPeakPrice($slot['start_time_24_hour_format'],$slot['end_time_24_hour_format'],null,$this->utilities->getPrimaryCategory(null,$service['service_id'],true));
+						
+						
+						$slot['non_peak'] = empty($ck['peak']);
+						
+
 						
 						if(!$slot['passed']){
 							$total_slots_available_count +=1;
