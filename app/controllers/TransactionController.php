@@ -2066,7 +2066,7 @@ class TransactionController extends \BaseController {
 
         //************************************************************************************ IF ONLY AMOUNT CUSTOMER*******************************************************************************************
         //********************************************************************************** DYANMIC PRICING START**************************************************************************************************
-        
+        if((isset($_GET['device_type']) && isset($_GET['app_version']) && in_array($_GET['device_type'], ['android', 'ios']) && $_GET['app_version'] > '5') || isset($data['qrcodepayment'])){
         if($data['type'] == 'workout-session')
          {
          try {
@@ -2086,6 +2086,7 @@ class TransactionController extends \BaseController {
          
          } catch (Exception $e) {Log::error(" Error :: ".print_r($e,true));}
          } 
+        }
         //********************************************************************************** DYANMIC PRICING END****************************************************************************************************
         
         if(isset($customer->demonetisation)){
