@@ -66,7 +66,7 @@ return array(
 
 
 	"core_key"=> "FITITRNTY",
-	'non_peak_hours' => ["off"=>0.8,"gym"=>["off"=>0.8,"start"=>10,"end"=>18],"studios"=>["start"=>11,"end"=>17,"off"=>0.8]],
+	'non_peak_hours' => ["off"=>0.8,"gym"=>["off"=>0.8,"start"=>10,"end"=>23],"studios"=>["start"=>11,"end"=>23,"off"=>0.8]],
 	'pubnub_publish' => 'pub-c-d9aafff8-bb9e-42a0-a24b-17ab5500036f',
 	'pubnub_sub' => 'sub-c-05ef3130-d0e6-11e6-bbe2-02ee2ddab7fe',
 	

@@ -4388,7 +4388,7 @@ class TransactionController extends \BaseController {
 
                 $amount_summary[] = array(
                     'field' => 'Total Amount',
-                    'value' => 'Rs. '.(isset($data['original_amount_finder']) ? $data['original_amount_finder'] : $data['amount_finder'])
+                    'value' => 'Rs. '.$data['amount_customer']
                 );
             }
         }
