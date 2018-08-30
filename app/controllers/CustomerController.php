@@ -6902,6 +6902,7 @@ class CustomerController extends \BaseController {
 				$response['finder_id'] = $data['finder_id'];
 				// $response['skip'] = Config::get('app.url')."/customer/skipreview/".$data['_id'];
 				$response['optional'] = true;
+				$response['show_rtc'] = true;
 
 		}
 		$time_diff = strtotime($data['schedule_date_time']) - time();
