@@ -4621,7 +4621,10 @@ Class Utilities {
 				else {
 						$day=$this->days[date("w",strtotime($start_date))];
 						if(empty($day))throw new Exception("Day Not present in the schedules.");	
-							$start=(str_contains($start, "pm"))?doubleval($start)+12:doubleval($start);$end=(str_contains($end, "pm"))?doubleval($end)+12:doubleval($end);
+                        
+                        $start=(int)date('G', strtotime($start));
+                        $end=(int)date('G', strtotime($end));
+                        
 						Service::$withoutAppends=true;
 						$service=Service::where("_id",intval($service_id))->first(['workoutsessionschedules']);
 						if(isset($service)&&!empty($service->workoutsessionschedules))
