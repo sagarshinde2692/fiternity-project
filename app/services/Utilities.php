@@ -5745,12 +5745,12 @@ Class Utilities {
     			if($type!= 'booktrials')
     				$baseData=array_merge($baseData,$wallet_pass,$paymentmode_selected,['premium_session'=>true]);
     			else $baseData=array_merge($baseData,['premium_session'=>false]);
-    			if(!empty($sp))$baseData['special_price']=$sp;
+                if(!empty($sp))$baseData['special_price']=$sp;
     			if(!empty($rp))$baseData['price']=$rp;
-    			   $cur=time();
-    				if(!empty($slots))
-    				{
-    					$mainSlots=[];
+                $cur=time();
+                if(!empty($slots))
+                {
+                    $mainSlots=[];
     					if(in_array(intval($cat_id),[65]))
     					{
     						if(!empty($slots[0]))
@@ -5789,7 +5789,18 @@ Class Utilities {
     							array_push($mainSlots, $this->mergeCustomerToSlot(['schedule_slot'=>$slots[0]['slot_time']],$baseData,$cust));
     						
     					}
-    					
+    					if(!empty($mainSlots)){
+                            foreach($mainSlots as &$slot1){
+                                $time_array = explode('-', $slot1['schedule_slot']);
+                                $start = $time_array[0];
+                                if(empty($time_array[1])){
+                                    $time_array[1] = date('g:i a',strtotime('+1 hour', strtotime($start)));
+                                }
+                                $end = $time_array[1];
+                                $dynamic_price = $this->getWsSlotPrice($start, $end, $slot1['service_id'], date('d-m-Y', time()));
+                                isset($dynamic_price['non_peak']) ? ($slot1['special_price'] = $dynamic_price['non_peak']) : (isset($dynamic_price['peak']) ? ($slot1['special_price'] = $dynamic_price['peak']) : null);
+                            }
+                        }
     					return $mainSlots;
     				}else return [];
     		} catch (Exception $e) {
