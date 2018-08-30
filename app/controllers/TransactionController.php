@@ -917,17 +917,19 @@ class TransactionController extends \BaseController {
         }
 
         
+        
+        if(!empty($order['amount_final'])){
+            $resp['data']["coupon_details"] = [
+                "title" => "Apply Coupon Code",
+                "description" => "",
+                "applied" => false,
+                "remove_title" => "",
+                "remove_msg" => ""
+            ];
+        }
+        
         if(empty($data['session_payment'])){
-            
-            if(!empty($order['amount_final'])){
-                $resp['data']["coupon_details"] = [
-                    "title" => "Apply Coupon Code",
-                    "description" => "",
-                    "applied" => false,
-                    "remove_title" => "",
-                    "remove_msg" => ""
-                ];
-            }
+           
             if(!empty($data['coupon_code']) && !empty($data['coupon_discount_amount'])){
                 $resp['data']["coupon_details"] = [];
                 $resp['data']['coupon_details']['title'] = strtoupper($data['coupon_code']);
