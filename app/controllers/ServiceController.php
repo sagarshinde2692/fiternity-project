@@ -971,13 +971,12 @@ class ServiceController extends \BaseController {
 							if(isset($_GET['source']) && $_GET['source'] == 'pps')
 								(!empty($ck)&&!empty($ck['peak']))?array_push($slots[0]['data'], $slot):array_push($slots[1]['data'], $slot);
 							else {
-								if(empty($ck['peak'])){
-									$slot['non_peak'] = true;
-									$non_peak_exists = true;
-								}else{
-									// return $slot;
-									$slot['non_peak'] = false;
-									$peak_exists = true;
+								if(!empty($slot['price'])){
+
+									if(empty($ck['peak'])){
+										$slot['image'] = "https://b.fitn.in/paypersession/non_rush_hour@3x1.png";
+										$non_peak_exists = true;
+									}
 								}
 								array_push($slots,$slot);
 							}
@@ -1036,11 +1035,11 @@ class ServiceController extends \BaseController {
 			}
 			
 			
-			if(!empty($ratecard_price) && !empty($peak_exists)){
-				$service['peak_text'] = "RUSH HOURS ₹. <b style=\"color:#4fa3a4;\">".$ratecard_price."</b>";
-			}
+			// if(!empty($ratecard_price) && !empty($peak_exists)){
+			// 	$service['peak_text'] = "RUSH HOURS ₹. <b style=\"color:#4fa3a4;\">".$ratecard_price."</b>";
+			// }
 			if(!empty($ratecard_price) && !empty($non_peak_exists)){
-				$service['non_peak_text'] = "NON RUSH HOURS ₹. <b style=\"color:#4fa3a4;\">".round($ratecard_price*Config::get('app.non_peak_hours.off'))."</b>";
+				$service['non_peak'] = ['text'=>"NON RUSH HOURS:  ", 'price'=>$this->utilities->getRupeeForm(round($ratecard_price*Config::get('app.non_peak_hours.off'))), 'image'=>'https://b.fitn.in/paypersession/non_rush_hour@3x1.png'];
 			}
 			
 			$peak_exists = false;
