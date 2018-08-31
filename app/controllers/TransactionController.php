@@ -4391,6 +4391,13 @@ class TransactionController extends \BaseController {
                 'field' => 'Session Amount',
                 'value' => 'Rs. '.$data['ratecard_amount']
             );
+
+            if(!empty($data['type']) && in_array($data['type'], ['memberships', 'membership'])){
+                $amount_summary[0] = array(
+                    'field' => 'Membership Amount',
+                    'value' => 'Rs. '.$data['ratecard_amount']
+                );  
+            }
             // $amount_summary[] = array(
             //     'field' => 'Quantity',
             //     'value' => !empty($data['customer_quantity']) ? (string)$data['customer_quantity'] : '1'
