@@ -6991,7 +6991,7 @@ class SchedulebooktrialsController extends \BaseController {
         $fitcash = 0;
         if(isset($booktrial)){
 
-            if($booktrial->type == "booktrials" && !isset($booktrial->post_trial_status_updated_by_fitcode)){
+            if($booktrial->type == "booktrials" && !isset($booktrial->post_trial_status_updated_by_fitcode) && !isset($booktrial->post_trial_status_updated_by_lostfitcode)){
 
                 $post_trial_status_updated_by_fitcode = time();
                 $booktrial_update = Booktrial::where('_id', intval($booktrial_id))->where('post_trial_status_updated_by_fitcode', 'exists', false)->update(['post_trial_status_updated_by_fitcode'=>$post_trial_status_updated_by_fitcode]);
@@ -7020,7 +7020,7 @@ class SchedulebooktrialsController extends \BaseController {
                 
                 $message = "Hi ".ucwords($booktrial['customer_name']).", Rs.".$fitcash." Fitcash is added in your wallet on your attendace . Use it to buy ".ucwords($booktrial['finder_name'])."'s membership at lowest price. Valid for 21 days";
 
-            }else if($booktrial->type == "workout-session" && !isset($booktrial->post_trial_status_updated_by_fitcode) && !(isset($booktrial->payment_done) && !$booktrial->payment_done)){
+            }else if($booktrial->type == "workout-session" && !isset($booktrial->post_trial_status_updated_by_fitcode) && !(isset($booktrial->payment_done) && !$booktrial->payment_done) && !isset($booktrial->post_trial_status_updated_by_lostfitcode)){
 
                 $post_trial_status_updated_by_fitcode = time();
                 $booktrial_update = Booktrial::where('_id', intval($booktrial_id))->where('post_trial_status_updated_by_fitcode', 'exists', false)->update(['post_trial_status_updated_by_fitcode'=>$post_trial_status_updated_by_fitcode]);
