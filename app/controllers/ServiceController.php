@@ -854,7 +854,7 @@ class ServiceController extends \BaseController {
 				
 		    	if(!empty($weekdayslots)&&!empty($weekdayslots['slots'])&&count($weekdayslots['slots'])>0&&(isset($_GET['source']) && $_GET['source'] == 'pps'))
 		    	{
-		    		$rsh=["title"=>"RUSH HOUR","price"=>"","data"=>[], 'image'=>'https://b.fitn.in/paypersession/rush_hour_icon@3x1.png', 'slot_type'=>1];$nrsh=["title"=>"NON RUSH HOUR","price"=>"","data"=>[], 'image'=>'https://b.fitn.in/paypersession/non_rush_hour@3x1.png', 'slot_type'=>0];
+		    		$rsh=["title"=>"RUSH HOUR","price"=>"","data"=>[], 'image'=>'https://b.fitn.in/paypersession/rush_hour_icon@2x.png', 'slot_type'=>1];$nrsh=["title"=>"NON RUSH HOUR","price"=>"","data"=>[], 'image'=>'https://b.fitn.in/paypersession/non_rush_hour_icon@2x.png', 'slot_type'=>0];
 		    		
 		    		$p_np=$this->utilities->getPeakAndNonPeakPrice($weekdayslots['slots'],$this->utilities->getPrimaryCategory(null,$service['service_id']));
 		    		if(!empty($p_np))
@@ -974,7 +974,7 @@ class ServiceController extends \BaseController {
 								if(!empty($slot['price'])){
 
 									if(empty($ck['peak'])){
-										$slot['image'] = "https://b.fitn.in/paypersession/non_rush_hour@3x1.png";
+										$slot['image'] = "https://b.fitn.in/paypersession/non_rush_hour_icon@2x.png";
 										$non_peak_exists = true;
 									}
 								}
@@ -1039,7 +1039,7 @@ class ServiceController extends \BaseController {
 			// 	$service['peak_text'] = "RUSH HOURS ₹. <b style=\"color:#4fa3a4;\">".$ratecard_price."</b>";
 			// }
 			if(!empty($ratecard_price) && !empty($non_peak_exists)){
-				$service['non_peak'] = ['text'=>"NON RUSH HOURS:  ", 'price'=>$this->utilities->getRupeeForm(round($ratecard_price*Config::get('app.non_peak_hours.off'))), 'image'=>'https://b.fitn.in/paypersession/non_rush_hour@3x1.png'];
+				$service['non_peak'] = ['text'=>"NON RUSH HOURS:  ", 'price'=>$this->utilities->getRupeeForm(round($ratecard_price*Config::get('app.non_peak_hours.off'))), 'image'=>'https://b.fitn.in/paypersession/non_rush_hour_icon@2x.png'];
 			}
 			
 			$peak_exists = false;
