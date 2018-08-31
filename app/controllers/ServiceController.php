@@ -850,10 +850,8 @@ class ServiceController extends \BaseController {
 		    		$service['cost'] = "₹. ".$ratecard_price;
 				}
 				
-				if($ratecard_price > 0){
-		    		$service['peak_text'] = "RUSH HOURS ₹. ".$ratecard_price;
-		    		$service['non_peak_text'] = "NON RUSH HOURS ₹. ".$ratecard_price*Config::get('app.non_peak_hours.off');
-		    	}
+				
+				
 		    	if(!empty($weekdayslots)&&!empty($weekdayslots['slots'])&&count($weekdayslots['slots'])>0&&(isset($_GET['source']) && $_GET['source'] == 'pps'))
 		    	{
 		    		$rsh=["title"=>"RUSH HOUR","price"=>"","data"=>[], 'image'=>'https://b.fitn.in/paypersession/rush_hour_icon@3x1.png', 'slot_type'=>1];$nrsh=["title"=>"NON RUSH HOUR","price"=>"","data"=>[], 'image'=>'https://b.fitn.in/paypersession/non_rush_hour@3x1.png', 'slot_type'=>0];
@@ -957,7 +955,6 @@ class ServiceController extends \BaseController {
 						$ck=$this->utilities->getWSNonPeakPrice($slot['start_time_24_hour_format'],$slot['end_time_24_hour_format'],null,$this->utilities->getPrimaryCategory(null,$service['service_id'],true));
 						
 						
-						$slot['non_peak'] = empty($ck['peak']);
 						
 
 						
@@ -973,7 +970,17 @@ class ServiceController extends \BaseController {
 							}
 							if(isset($_GET['source']) && $_GET['source'] == 'pps')
 								(!empty($ck)&&!empty($ck['peak']))?array_push($slots[0]['data'], $slot):array_push($slots[1]['data'], $slot);
-							else array_push($slots,$slot);
+							else {
+								if(empty($ck['peak'])){
+									$slot['non_peak'] = true;
+									$non_peak_exists = true;
+								}else{
+									// return $slot;
+									$slot['non_peak'] = false;
+									$peak_exists = true;
+								}
+								array_push($slots,$slot);
+							}
 						}
                     }catch(Exception $e){
 						
@@ -1026,12 +1033,21 @@ class ServiceController extends \BaseController {
             		$service['current_available_date_diff'] = $this->getDateDiff($service['available_date']);
             		$service['available_message'] = "Next Slot is available on ".date("jS F, Y",strtotime($service['available_date']));
             	}
-            }
+			}
 			
-
+			
+			if(!empty($ratecard_price) && !empty($peak_exists)){
+				$service['peak_text'] = "RUSH HOURS ₹. <b style=\"color:#4fa3a4;\">".$ratecard_price."</b>";
+			}
+			if(!empty($ratecard_price) && !empty($non_peak_exists)){
+				$service['non_peak_text'] = "NON RUSH HOURS ₹. <b style=\"color:#4fa3a4;\">".round($ratecard_price*Config::get('app.non_peak_hours.off'))."</b>";
+			}
+			
+			$peak_exists = false;
+			$non_peak_exists = false;
             // $service['trials_booked'] = $this->checkTrialAlreadyBooked($item['finder_id'],$item['_id']);
-            // $all_trials_booked = $all_trials_booked && $service['trials_booked'];
-
+			// $all_trials_booked = $all_trials_booked && $service['trials_booked'];
+			
             if($this->vendor_token){
 
             	if(!empty($slots)){
