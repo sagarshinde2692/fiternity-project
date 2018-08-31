@@ -17,7 +17,8 @@ return array(
 	'amazonpay_isSandbox' => 'true',
 	'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
 	'website_deeplink' =>'https://ftrnty.com',
-	
+	'mobikwik_sandbox'=>true,
+	'paytm_sandbox'=>true,
 
 	//stage
 	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
@@ -33,6 +34,8 @@ return array(
 	// 'amazonpay_isSandbox' => 'true',
 	// 'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
 	// 'website_deeplink' =>'https://ftrnty.com',
+	// 'mobikwik_sandbox'=>true,
+	// 'paytm_sandbox'=>true,
 
 	//beta
 	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
@@ -48,6 +51,8 @@ return array(
 	// 'amazonpay_isSandbox' => 'true',
 	// 'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
 	// 'website_deeplink' =>'https://ftrnty.com',
+	// 'mobikwik_sandbox'=>true,
+	// 'paytm_sandbox'=>true,
 
 	//live
 	// 'new_search_url' =>'http://c1.fitternity.com/',
@@ -63,7 +68,8 @@ return array(
 	// 'amazonpay_isSandbox' => 'false',
 	// 'reliance_url' =>'https://rhealthcircle.reliancegeneral.co.in/fitternity/callback',
 	// 'website_deeplink' =>'https://ftrnty.com',
-
+	// 'mobikwik_sandbox'=>false,
+	// 'paytm_sandbox'=>false,
 
 	"core_key"=> "FITITRNTY",
 	'non_peak_hours' => ["off"=>0.8,"gym"=>["off"=>0.8,"start"=>10,"end"=>18],"studios"=>["start"=>11,"end"=>17,"off"=>0.8]],
