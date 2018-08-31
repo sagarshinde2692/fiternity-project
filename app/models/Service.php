@@ -224,7 +224,7 @@ class Service extends \Basemodel{
 							$ratecardoffer["price"] = 0;
 						}
                         $ratecardoffer['offer_text']    =   "";
-                        $ratecardoffer['offer_icon']    =   "https://b.fitn.in/global/final_monsoon_tag.png";
+                        $ratecardoffer['offer_icon']    =   "https://b.fitn.in/iconsv1/fitmania/hot_offer_vendor.png";
                         if(!empty($ratecardoffersRecard['callout']))$ratecardoffer['callout']=$ratecardoffersRecard['callout'];
                         // if(isset($value['flags'])){
 
@@ -285,11 +285,11 @@ class Service extends \Basemodel{
 							switch($value['flags']['offerFor']){
 								case "student": 
 												// $ratecardoffers[0]['offer_text']    =   "";
-												$ratecardoffers[0]['offer_icon']    =   "https://b.fitn.in/global/final_monsoon_tag.png";	
+												$ratecardoffers[0]['offer_icon']    =   "https://b.fitn.in/iconsv1/fitmania/hot_offer_vendor.png";	
 												break;
 								case "women": 
 												// $ratecardoffers[0]['offer_text']    =   "";
-												$ratecardoffers[0]['offer_icon']    =   "https://b.fitn.in/global/final_monsoon_tag.png";	
+												$ratecardoffers[0]['offer_icon']    =   "https://b.fitn.in/iconsv1/fitmania/hot_offer_vendor.png";	
 												break;
 							}
 						}
@@ -378,7 +378,7 @@ class Service extends \Basemodel{
 			// 			// Log::info($value);
 			// 			// if($value[])
 			// 			$value['offers'][0]['offer_text'] = '';
-			// 			$value['offers'][0]['offer_icon'] = 'https://b.fitn.in/global/final_monsoon_tag.png';
+			// 			$value['offers'][0]['offer_icon'] = 'https://b.fitn.in/iconsv1/fitmania/hot_offer_vendor.png';
 			// 		}
 			// 	}
 			// }
