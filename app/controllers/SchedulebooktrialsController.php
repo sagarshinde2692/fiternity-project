@@ -6923,7 +6923,7 @@ class SchedulebooktrialsController extends \BaseController {
                 "type"=>'CREDIT',
                 'entry'=>'credit',
                 'validity'=>time()+(86400*21),
-                'description'=>"Added FitCash+ on Workout Session Attendance",
+                'description'=>"Added FitCash+ on Session Attendance at ".ucwords($booktrial['finder_name'])." Expires On : ".date('d-m-Y',time()+(86400*21)),
             );
     
             $this->utilities->walletTransaction($req);
@@ -7040,7 +7040,7 @@ class SchedulebooktrialsController extends \BaseController {
                         "type"=>'CREDIT',
                         'entry'=>'credit',
                         'validity'=>time()+(86400*21),
-                        'description'=>"Added FitCash+ on Workout Session Attendance By Fitcode",
+                        'description'=>"Added FitCash+ on Session Attendance at ".ucwords($booktrial['finder_name'])." Expires On : ".date('d-m-Y',time()+(86400*21)),
                     );
                     
                     //added check and message
@@ -7157,15 +7157,9 @@ class SchedulebooktrialsController extends \BaseController {
                             "type"=>'CREDIT',
                             'entry'=>'credit',
                             'validity'=>time()+(86400*21),
-                            'description'=>"Added FitCash+ on Lost Fitcode, Applicable for buying a membership at ".ucwords($booktrial['finder_name'])." Expires On : ".date('d-m-Y',time()+(86400*21)),
-                            "valid_finder_id"=>intval($booktrial['finder_id']),
-                            "finder_id"=>intval($booktrial['finder_id']),
+                            'description'=>"Added FitCash+ on Session Attendance at ".ucwords($booktrial['finder_name'])." Expires On : ".date('d-m-Y',time()+(86400*21)),
                         );
 
-                    if($booktrial->type == 'workout-session'){
-                        unset($req['finder_id']);
-                        $req['description'] = "Added FitCash+ on Workout Session Attendance";
-                    }
                     Log::info("adding fitachs");
                     $this->utilities->walletTransaction($req);
                 }
