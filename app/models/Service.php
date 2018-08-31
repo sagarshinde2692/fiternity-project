@@ -256,7 +256,7 @@ class Service extends \Basemodel{
 						
 						$orderVariable = \Ordervariables::where("name","expiring-logic")->orderBy("_id", "desc")->first();
 						if(isset($orderVariable["available_slots_end_date"]) && time() >= $orderVariable["available_slots_end_date"]){
-							$ratecardoffer['offer_text']    =  ($difference->days == 1) ? "Expires Today" : ($difference->days > 7 ? "Expires in ".((date('d',$orderVariable["end_time"])-intval(date('d', time()))))." days" : "Expires in ".(intval($difference->days))." days");
+							$ratecardoffer['offer_text']    =  ($difference->days == 1 || $difference->days == 0) ? "Expires Today" : ($difference->days > 7 ? "Expires in ".((date('d',$orderVariable["end_time"])-intval(date('d', time()))))." days" : "Expires in ".(intval($difference->days))." days");
 						}else{
 							if($this->available_slots > 0){
 								$ratecardoffer['offer_text']    =  ($this->available_slots > 1 ? $this->available_slots." slots" : $this->available_slots." slot")." left";
