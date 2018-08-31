@@ -4617,7 +4617,35 @@ class TransactionController extends \BaseController {
         if(!empty($order['type']) && $order['type'] == 'memberships'){
             $payment_options['payment_options_order'] = ["cards", "wallet", "netbanking", "emi"];
         }
-
+        
+        $payment_options['wallet'] = [
+            'title' => 'Wallet',
+            'subtitle' => 'Transact online with Wallets',
+            'value'=>'wallet',
+            'options'=>[
+                    [
+                            'title' => 'Paytm',
+                            'subtitle' => 'Paytm',
+                            'value' => 'paytm'
+                    ],
+                    [
+                            'title' => 'AmazonPay',
+                            'subtitle' => 'AmazonPay',
+                            'value' => 'amazonpay'
+                    ],
+                    [
+                            'title' => 'Mobikwik',
+                            'subtitle' => 'Mobikwik',
+                            'value' => 'mobikwik'
+                    ],
+                    [
+                            'title' => 'PayU',
+                            'subtitle' => 'PayU',
+                            'value' => 'payu'
+                    ]
+            ]
+        ];
+        
         if(!empty($data['pay_later'])){
             
             $payment_modes[] = array(
