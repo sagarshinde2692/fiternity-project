@@ -7399,8 +7399,8 @@ class CustomerController extends \BaseController {
 				$data=json_decode(preg_replace('/[\x00-\x1F\x7F]/', '', $dcd),true);
 				
 				if(empty($data['vendor_id'])||empty($data['owner'])||$data['owner']!='fitternity') return ['status' => 400,'message' =>"Invalid Qr Code"];
-				$cur=new DateTime();
-				$twoDays=new DateTime(date('Y-m-d',strtotime("-2 days")));
+				$cur=new DateTime(date('Y-m-d H:i:s',strtotime("+2 hours")));
+				$twoHours=new DateTime(date('Y-m-d H:i:s',strtotime("-2 hours")));
 				$booktrial = Booktrial::where('customer_id',$customer_id)
 				->whereIn('type',['booktrials','3daystrial', 'workout-session'])
 				->where('finder_id',intval($data['vendor_id']))
@@ -7409,7 +7409,7 @@ class CustomerController extends \BaseController {
 				->where('post_trial_status_updated_by_lostfitcode', 'exists', false)
 				->where('post_trial_status', 'exists', false)
 				->where('schedule_date_time', '<=',$cur)
-				->where('schedule_date_time', '>=',$twoDays)
+				->where('schedule_date_time', '>=',$twoHours)
 				->orderBy('schedule_date_time','desc')
 				->get();
 				
