@@ -6677,7 +6677,24 @@ class TransactionController extends \BaseController {
     			$val['isSignatureValid'] = "false";
     			
     		}
-    	}
+    	}else{
+            if($website == "1"){
+                $success_data = [
+    					'txnid'=>$val['sellerOrderId'],
+    					'amount'=>(int)$val["orderTotalAmount"],
+    					'status' => 'failure',
+    					'hash'=> $val["hash"]
+    			];
+                $url = Config::get('app.website')."/paymentfailure?". http_build_query($success_data, '', '&');
+                if($order['type'] == "booktrials" || $order['type'] == "workout-session"){
+                    $url = Config::get('app.website')."/paymentfailuretrial?". http_build_query($success_data, '', '&');
+                }
+                Log::info(http_build_query($success_data, '', '&'));
+                Log::info($url);
+                return Redirect::to($url);
+            }
+        }
+        
     	
     	return Response::json($val);
     }
