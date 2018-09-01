@@ -6557,8 +6557,13 @@ class TransactionController extends \BaseController {
     	$val = Input::all();
     	Log::info("verifyAmazonChecksum post data ---------------------------------------------------------",$val);
     	unset($val['sellerId']);
-    	$response = $client->verifySignature($val);
-    	$val['isSignatureValid'] = $response ? 'true' : 'false';
+        if($val["status"] != "FAILURE"){
+            $response = $client->verifySignature($val);
+    	    $val['isSignatureValid'] = $response ? 'true' : 'false';
+        }else{
+            $val['isSignatureValid'] = 'false';
+        }
+    	
     	
     	$val['order_id'] = null;
     	
