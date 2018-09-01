@@ -6683,7 +6683,7 @@ class TransactionController extends \BaseController {
     					'txnid'=>$val['sellerOrderId'],
     					'amount'=>(int)$val["orderTotalAmount"],
     					'status' => 'failure',
-    					'hash'=> $val["hash"]
+    					'hash'=> ""
     			];
                 $url = Config::get('app.website')."/paymentfailure?". http_build_query($success_data, '', '&');
                 if($order['type'] == "booktrials" || $order['type'] == "workout-session"){
