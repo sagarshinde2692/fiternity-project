@@ -2037,7 +2037,7 @@ class ServiceController extends \BaseController {
 	}
 
 	public function workoutServiceCategorys($city='mumbai',$slotsCountCache=true){
-
+		Log::info($_GET);
 		$not_included_ids = [161, 120, 170, 163, 168, 180, 184];
 
 		$order = [65, 5, 19, 1, 123, 3, 4, 2, 114, 86];
