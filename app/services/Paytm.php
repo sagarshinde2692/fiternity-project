@@ -288,7 +288,7 @@ Class Paytm {
 
     }
 
-    https://pguat.paytm.com/oltp-web/processTransaction?orderid=<Order_ID>
+    // https://pguat.paytm.com/oltp-web/processTransaction?orderid=<Order_ID>
 
     public function encrypt_e($input, $ky) {
         $key = $ky;
