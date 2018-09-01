@@ -6492,7 +6492,11 @@ class TransactionController extends \BaseController {
     	unset($val['sellerId']);
     	$response = $client->verifySignature($val);
     	Log::info(" info response  ".print_r($response,true));
-    	$val['isSignatureValid'] = $response ? 'true' : 'false';
+        if($val["status"] != "FAILURE"){
+    	    $val['isSignatureValid'] = $response ? 'true' : 'false';
+        }else{
+            $val['isSignatureValid'] = 'false';
+        }
     	
     	$val['order_id'] = null;
     	
