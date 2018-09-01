@@ -861,7 +861,7 @@ class EmailSmsApiController extends \BaseController {
 
             $this->utilities->walletTransaction($wallet_data);
 
-            $this->transactionController->generateFreeDietPlanOrder($data,'starter_pack');
+            // $this->transactionController->generateFreeDietPlanOrder($data,'starter_pack');
         	
         	if(!empty($data['code'])){
         		
