@@ -3849,4 +3849,33 @@ if (!function_exists('bladeCompile')) {
 
 }
 
+if (!function_exists(('getCartOfCustomer'))) {            	
+    function getCartOfCustomer($customer_id)
+    {
+        try {
+            if(!empty($customer_id))
+            {
+                Cart::$withoutAppends=true;
+                $cart=Cart::where("customer_id",intval($customer_id))->first(['_id']);
+                if(!empty($cart))
+                    return $cart->_id;
+                    else {
+                        $inserted_id = Cart::max('_id') + 1;
+                        $cartNew = new Cart();
+                        $cartNew->_id=$inserted_id;
+                        $cartNew->customer_id=$customer_id;
+                        $cartNew->products=[];
+                        $cartNew->status="1";
+                        $cartNew->save();
+                        return $inserted_id;
+                    };
+            }
+            else return null;
+        } catch (Exception $e) {
+            // Log::error(print_r($e,true));
+            return null;
+        }
+    }
+}
+
 ?>
