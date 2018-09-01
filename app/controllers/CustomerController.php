@@ -3372,7 +3372,7 @@ class CustomerController extends \BaseController {
 								
 
 								
-							}else if(!((isset($data['has_reviewed']) && $data['has_reviewed']) || (isset($data['skip_review']) && $data['skip_review']))){
+							}else if(!((isset($data['has_reviewed']) && $data['has_reviewed']) || (isset($data['skip_review']) && $data['skip_review'])) && strtotime($data['schedule_date_time']) < strtotime('-1 hour')){
 
 								$data['block_screen'] = [
 									'type'=>'review',
