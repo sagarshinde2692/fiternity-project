@@ -6932,7 +6932,7 @@ class SchedulebooktrialsController extends \BaseController {
 
         $booktrial->payment_done = true;
         
-        if(time() > strtotime($booktrial->schedule_date_time) ){
+        if(time() > strtotime($booktrial->schedule_date_time) || !empty($order['qrcodepayment'])){
 
             $booktrial->post_trial_status = 'attended';
 
