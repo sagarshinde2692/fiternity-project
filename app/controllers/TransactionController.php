@@ -6679,6 +6679,9 @@ class TransactionController extends \BaseController {
     		}
     	}else{
             if($website == "1"){
+                $order = Order::where(function($query) use($val)
+                    {$query->orWhere('txnid', $val['sellerOrderId'])->orWhere('payment.txnid',$val['sellerOrderId']);
+                    })->first();
                 $success_data = [
     					'txnid'=>$val['sellerOrderId'],
     					'amount'=>(int)$val["orderTotalAmount"],
