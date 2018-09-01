@@ -2968,7 +2968,7 @@ class CustomerController extends \BaseController {
 							'short_description' => "refer"."\n"."a friend"."\n"."and earn FitCash+"
 						]
 					],
-					'add_fitcash_text'=> "Add 10% Extra"
+					'add_fitcash_text'=> "You get 10% extra on the amount you add into your wallet."
 					),
 				200
 			);
