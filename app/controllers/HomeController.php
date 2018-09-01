@@ -4641,7 +4641,8 @@ class HomeController extends BaseController {
         {
         	$resp=['status'=>200,"message"=>"Success","header"=>"Available Coupons","options"=>[]];
         	try {
-        		$data = $_GET;
+                $data = $_GET;
+                Log::info($_GET);
         		//         		$rules= ['ratecard_id'=>'required'];	
         		// 	        	$validator = Validator::make($data,$rules);
         		// 	        	if ($validator->fails()) return ['status' => 400,'message' => error_message($validator->errors())];
