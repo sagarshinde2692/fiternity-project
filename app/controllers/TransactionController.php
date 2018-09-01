@@ -709,7 +709,7 @@ class TransactionController extends \BaseController {
         }
 
         $data['base_amount'] = $order['amount_customer'] - $data['convinience_fee'] ;
-
+        Log::info($data);
         $hash = getHash($data);
         $data = array_merge($data,$hash);
 
