@@ -7531,12 +7531,11 @@ class CustomerController extends \BaseController {
 									$pop_up["negativebtn"]="No";
 									$pop_up["options"]=$optionsBuy[0];
 									Log::info($optionsBuy[0]);
+									$pop_up['message']="Do you want to book a ".$optionsBuy[0]['schedule_slot']." slot for ".preg_replace('/membership/i', 'Workout', $optionsBuy[0]['service_name'])." at ".$optionsBuy[0]['finder_name']."?";
 									// if(!empty($optionsBuy[0]['cost']) && (strpos($optionsBuy[0]['cost'], "Free") !== false))
 									// 	$pop_up['message']="Would you like to book a slot from ".$optionsBuy[0]['schedule_slot']."?";
 									// 	else $pop_up['message']="Would you like to buy a slot ".$optionsBuy[0]['schedule_slot']."?";
-									if(!empty($optionsBuy[0]['cost']) && (strpos($optionsBuy[0]['cost'], "Free") !== false))
-										$pop_up['message']="Do you want to book a slot for ".$optionsBuy[0]['service_name'].' at '.$optionsBuy[0]['schedule_slot']."?";
-										else $pop_up['message']="Do you want to book a slot for ".$optionsBuy[0]['service_name'].' at '.$optionsBuy[0]['schedule_slot']."?";
+										
 								}
 								else 
 								{
