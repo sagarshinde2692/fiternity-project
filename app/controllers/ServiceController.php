@@ -1577,11 +1577,11 @@ class ServiceController extends \BaseController {
 			// 	$service_details = json_decode(json_encode($service_details_response['data']), true);
 			// }
 			
-			$service_details = Service::active()->where('finder_id', $finder['_id'])->where('slug', $service_slug)->with('location')->with(array('ratecards'))->first(['name', 'contact', 'photos', 'lat', 'lon', 'calorie_burn', 'address', 'servicecategory_id', 'finder_id', 'location_id','trial','workoutsessionschedules', 'short_description']);
+			$service_details = Service::active()->where('finder_id', $finder['_id'])->where('slug', $service_slug)->with('location')->with(array('ratecards'))->first(['name', 'contact', 'photos', 'lat', 'lon', 'calorie_burn', 'address', 'servicecategory_id', 'finder_id', 'location_id','trial','workoutsessionschedules', 'short_description','servicesubcategory_id']);
 			
 			if(!empty($service_details['short_description'])){
 				
-				$service_category = Servicecategory::find($service_details["servicecategory_id"]);
+				$service_category = Servicecategory::find($service_details["servicesubcategory_id"]);
 				
 				if($service_category['description'] == $service_details['short_description']){
 					unset($service_details['short_description']);
