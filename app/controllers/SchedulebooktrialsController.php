@@ -2403,19 +2403,22 @@ class SchedulebooktrialsController extends \BaseController {
                 $booktrial['post_trial_status_updated_by_qrcode'] = time();
                 $booktrial['post_trial_status_date'] = time();
                 
-                $fitcash = $this->utilities->getFitcash($booktrial->toArray());
-                $req = array(
-                    "customer_id"=>$booktrial['customer_id'],
-                    "trial_id"=>$booktrial['_id'],
-                    "amount"=> $fitcash,
-                    "amount_fitcash" => 0,
-                    "amount_fitcash_plus" => $fitcash,
-                    "type"=>'CREDIT',
-                    'entry'=>'credit',
-                    'validity'=>time()+(86400*21),
-                    'description'=>"Added FitCash+ on Session Attendance at ".ucwords($booktrial['finder_name'])." Expires On : ".date('d-m-Y',time()+(86400*21)),
-                );
-                $this->utilities->walletTransaction($req);
+                if(empty($order['pay_later'])){
+
+                    $fitcash = $this->utilities->getFitcash($booktrial->toArray());
+                    $req = array(
+                        "customer_id"=>$booktrial['customer_id'],
+                        "trial_id"=>$booktrial['_id'],
+                        "amount"=> $fitcash,
+                        "amount_fitcash" => 0,
+                        "amount_fitcash_plus" => $fitcash,
+                        "type"=>'CREDIT',
+                        'entry'=>'credit',
+                        'validity'=>time()+(86400*21),
+                        'description'=>"Added FitCash+ on Session Attendance at ".ucwords($booktrial['finder_name'])." Expires On : ".date('d-m-Y',time()+(86400*21)),
+                    );
+                    $this->utilities->walletTransaction($req);
+                }
 
             }
             
