@@ -259,7 +259,7 @@ class Service extends \Basemodel{
 							$futureExpiry = (date('d',$orderVariable["end_time"])-intval(date('d', time())));
 							$ratecardoffer['offer_text']    =  ($difference->days == 1 || $futureExpiry == 0) ? "Expires Today" : ($difference->days > 7 ? "Expires in ".((date('d',$orderVariable["end_time"])-intval(date('d', time()))))." days" : "Expires in ".(intval($difference->days))." days");
 						}else{
-							if($this->available_slots > 0 && time() >= $orderVariable["start_time"]){
+							if($this->available_slots > 0 && time() >= $orderVariable["start_time"] && $key == count($ratecardsarr)-1){
 								$ratecardoffer['offer_text']    =  ($this->available_slots > 1 ? $this->available_slots." slots" : $this->available_slots." slot")." left";
 							}
 						}
