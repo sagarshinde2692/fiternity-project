@@ -4580,10 +4580,10 @@ class TransactionController extends \BaseController {
                 }
             }
 
-            if(isset($data['type']) && $data['type'] == 'workout-session' && $payment_mode_type == 'pay_later'){
+            // if(isset($data['type']) && $data['type'] == 'workout-session' && $payment_mode_type == 'pay_later'){
                 
-                $amount_payable['value'] = "Rs. ".($data['amount_finder']+$data['convinience_fee']);
-            }
+            //     $amount_payable['value'] = "Rs. ".($data['amount_finder']+$data['convinience_fee']);
+            // }
         }
 
         if(!empty($reward)){
