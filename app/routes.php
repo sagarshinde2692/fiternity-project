@@ -1219,3 +1219,4 @@ Route::post('getcustomercarddetails','CustomerController@getCustomerCardDetails'
 
 Route::post('addafriendforbooking','CustomerController@addafriendforbooking');
 Route::get('getbookingfriends','CustomerController@getallBookingfriends');
+Route::post('webcheckout','TransactionController@webcheckout');
