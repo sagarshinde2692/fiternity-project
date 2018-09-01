@@ -2078,28 +2078,28 @@ class ServiceController extends \BaseController {
 		];
 		$cityId=City::where("slug",$city)->first(['_id']);
 		$cityCached=strtolower($city);
-		if(!empty($cityId))
-		{
-			$cityId=$cityId->_id;
-			if(!empty($slotsCountCache))
-			{
-				$gymCacheKey=$cityCached.'-'.'gym';
-				$zumbaCacheKey=$cityCached.'-'.'zumba';
-				$cfCacheKey=$cityCached.'-'.'crossfit';
-				$totCacheKey=$cityCached.'-'.'total';
-				$cche=true;
-			}
-			else {
-				$cfCacheKey=null;$totCacheKey=null;$zumbaCacheKey=null;$gymCacheKey=null;$cche=false;
-			}
+		// if(!empty($cityId))
+		// {
+		// 	$cityId=$cityId->_id;
+		// 	if(!empty($slotsCountCache))
+		// 	{
+		// 		$gymCacheKey=$cityCached.'-'.'gym';
+		// 		$zumbaCacheKey=$cityCached.'-'.'zumba';
+		// 		$cfCacheKey=$cityCached.'-'.'crossfit';
+		// 		$totCacheKey=$cityCached.'-'.'total';
+		// 		$cche=true;
+		// 	}
+		// 	else {
+		// 		$cfCacheKey=null;$totCacheKey=null;$zumbaCacheKey=null;$gymCacheKey=null;$cche=false;
+		// 	}
 			
-			$gymCount=$this->utilities->getSessionSlotsService($cityId,[65,82],$cche,$gymCacheKey);
-			$zumbaCount=$this->utilities->getSessionSlotsService($cityId,[19,20,21,132,133,189],$cche,$zumbaCacheKey);
-			$cfCount=$this->utilities->getSessionSlotsService($cityId,[5,111,112,10],$cche,$cfCacheKey);
-			$total=$this->utilities->getSessionSlotsService($cityId,[],$cche,$totCacheKey);
-			$data["stats_count"]=["crossfit"=>$cfCount,"zumba"=>$zumbaCount,"gym"=>$gymCount,"total"=>$total,"categories"=>count($included_ids)];
+		// 	$gymCount=$this->utilities->getSessionSlotsService($cityId,[65,82],$cche,$gymCacheKey);
+		// 	$zumbaCount=$this->utilities->getSessionSlotsService($cityId,[19,20,21,132,133,189],$cche,$zumbaCacheKey);
+		// 	$cfCount=$this->utilities->getSessionSlotsService($cityId,[5,111,112,10],$cche,$cfCacheKey);
+		// 	$total=$this->utilities->getSessionSlotsService($cityId,[],$cche,$totCacheKey);
+		// 	$data["stats_count"]=["crossfit"=>$cfCount,"zumba"=>$zumbaCount,"gym"=>$gymCount,"total"=>$total,"categories"=>count($included_ids)];
 			
-		}
+		// }
 		try{
 
 			if($this->authorization){
