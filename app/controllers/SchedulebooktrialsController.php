@@ -2216,7 +2216,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'workout_article_link'          =>      $workout_article_link,
                 'download_app_link'             =>      $download_app_link,
                 'diet_plan_link'                =>      $diet_plan_link,
-                'pre_trial_status'              =>      'yet_to_connect'
+                'pre_trial_status'              =>      'yet_to_connect',
+                'ask_review'                    =>      true,
             );
 
             $session_count = Booktrial::where('customer_id',$customer_id)->count();
@@ -2394,6 +2395,29 @@ class SchedulebooktrialsController extends \BaseController {
 
 
             }
+
+            if(!empty($order['qrcodepayment'])){
+                $booktrial['qrcodepayment'] = true;
+                $booktrial['abort_delay_comm'] = true;
+                $booktrial['post_trial_status'] = 'attended';
+                $booktrial['post_trial_status_updated_by_qrcode'] = time();
+                $booktrial['post_trial_status_date'] = time();
+                
+                $fitcash = $this->utilities->getFitcash($booktrial->toArray());
+                $req = array(
+                    "customer_id"=>$booktrial['customer_id'],
+                    "trial_id"=>$booktrial['_id'],
+                    "amount"=> $fitcash,
+                    "amount_fitcash" => 0,
+                    "amount_fitcash_plus" => $fitcash,
+                    "type"=>'CREDIT',
+                    'entry'=>'credit',
+                    'validity'=>time()+(86400*21),
+                    'description'=>"Added FitCash+ on Session Attendance at ".ucwords($booktrial['finder_name'])." Expires On : ".date('d-m-Y',time()+(86400*21)),
+                );
+                $this->utilities->walletTransaction($req);
+
+            }
             
             if(!(isset($order['pay_later']) && $order['pay_later'])){
                 array_set($orderData, 'status', '1');
@@ -2423,9 +2447,9 @@ class SchedulebooktrialsController extends \BaseController {
                 $booktrial->amount_finder = $order->vendor_price;
 
                 $order->update();
-                $booktrial->update();
             }
-
+            
+            $booktrial->update();
 
 
             // Give Rewards / Cashback to customer based on selection, on purchase success......
@@ -3345,7 +3369,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'workout_article_link'          =>      $workout_article_link,
                 'download_app_link'             =>      $download_app_link,
                 'diet_plan_link'                =>      $diet_plan_link,
-                'pre_trial_status'              =>      'yet_to_connect'
+                'pre_trial_status'              =>      'yet_to_connect',
+                'ask_review'                    =>      true
             );
 
             if(!empty($data['assisted_by'])){
@@ -7157,8 +7182,16 @@ class SchedulebooktrialsController extends \BaseController {
                             "type"=>'CREDIT',
                             'entry'=>'credit',
                             'validity'=>time()+(86400*21),
-                            'description'=>"Added FitCash+ on Session Attendance at ".ucwords($booktrial['finder_name'])." Expires On : ".date('d-m-Y',time()+(86400*21)),
+                            'description'=>"Added FitCash+ on Lost Fitcode, Applicable for buying a membership at ".ucwords($booktrial['finder_name'])." Expires On : ".date('d-m-Y',time()+(86400*21)),
+                            "valid_finder_id"=>intval($booktrial['finder_id']),
+                            "finder_id"=>intval($booktrial['finder_id']),
                         );
+
+                    if($booktrial->type == 'workout-session'){
+                        unset($req['valid_finder_id']);
+                        unset($req['finder_id']);
+                        $req['description'] = "Added FitCash+ on Session Attendance at ".ucwords($booktrial['finder_name'])." Expires On : ".date('d-m-Y',time()+(86400*21));
+                    }
 
                     Log::info("adding fitachs");
                     $this->utilities->walletTransaction($req);

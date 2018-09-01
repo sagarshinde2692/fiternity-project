@@ -102,7 +102,7 @@ class CommunicationsController extends \BaseController {
 			
 			$data = $this->prepareData($data, $label);
 
-			if(!empty($data['abort_comm'])){
+			if(!empty($data['abort_delay_comm'])){
 				Log::info('aborting_comm');
 				return "no communication sent";
 			}
@@ -266,7 +266,7 @@ class CommunicationsController extends \BaseController {
 					{	
 						$booktrial = Booktrial::find($data['_id']);
 						if(!empty($booktrial->skip_review) || !empty($booktrial->has_reviewed)){
-							$data['abort_comm'] = true;
+							$data['abort_delay_comm'] = true;
 						}
 						break;
 					}

@@ -5356,7 +5356,7 @@ Class Utilities {
             $response['section_1']['header']  = "Rate your overall experience at ".$data['title'];
         }
         $response['section_2'] = [
-            'header'=>"Rate tour experience basis following arameters (optional)",
+            'header'=>"Rate your experience basis following parameters (optional)",
             'detail_ratings' =>[]
         ];
         

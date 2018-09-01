@@ -2854,11 +2854,11 @@ class CustomerController extends \BaseController {
 						'balance'=>$wallet_balance,
 						'info'=>[
 							'title'=>'What is FitCash+?',
-							'description' => 'With FitCash+ there is no restriction on redeeming - you can use the entire amount in your transaction! FitCash can be used for any booking or purchase on Fitternity ranging from workout sessions, memberships and healthy tiffin subscriptions.',
+							'description' => "With FitCash+ you can redeem the wallet amount on your transaction/booking on Fitternity ranging from workout sessions, memberships, and healthy tiffin subscription basis the term of use through the amount availed. The term of use is mentioned in your Fitternity profile under 'Wallet' - transaction summary.\nIf you have Fitcash+ wallet balance & are attempting to transact - the wallet amount will be used on the primary basis on your transaction & the discount code will be applicable over & above that. For more info click here",
 							'short_description' => "refer"."\n"."a friend"."\n"."and earn FitCash+"
 						]
 					],
-					'add_fitcash_text'=> "Add 10% Extra"
+					'add_fitcash_text'=> "You get 10% extra on the amount you add into your wallet."
 					),
 				200
 			);
@@ -3236,7 +3236,8 @@ class CustomerController extends \BaseController {
 											->whereIn('post_trial_status', [null, '', 'unavailable']);	
 							})
 							->orWhere(function($query){
-								$query	->where('schedule_date_time', '>', new DateTime(date('Y-m-d H:i:s', strtotime('17-08-2018'))))
+                                $query	->where('ask_review', true)
+                                        ->where('schedule_date_time', '<', new DateTime(date('Y-m-d H:i:s', strtotime('-1 hour'))))
 										->whereIn('post_trial_status', ['attended'])
 										->where('has_reviewed', '!=', '1')
 										->where('skip_review', '!=', true);	
