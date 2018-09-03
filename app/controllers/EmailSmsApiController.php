@@ -564,7 +564,7 @@ class EmailSmsApiController extends \BaseController {
         			'customer_phone'=>'required',
         			'finder_id'=>'required',
         			'city_id'=>'required',
-        			'exit_type'=>'required'
+                    'exit_type'=>'required',
         	];
         	
         	$validator = Validator::make($data, $rules);
@@ -858,7 +858,7 @@ class EmailSmsApiController extends \BaseController {
             
             $storecapture['pps_link'] = Config::get('app.website').'/pay-per-session';
             
-            $storecapture['customer_email'] = $this->customermailer->exitIntent($storecapture);
+            $storecapture['emial_instant_customer'] = $this->customermailer->exitIntent($storecapture);
             
         }
 
