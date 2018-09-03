@@ -2243,13 +2243,14 @@ class FindersController extends \BaseController {
 		// 	Booktrial::where('_id', intval($reviewdata['booktrial_id']))->update(['post_tril_review'=>true]);
 		// }
 
-		$this->updateFinderRatingV2($finder);
+		Queue::connection('redis')->push('FindersController@asyncUpdateFinderRating', array('finder'=>$finder, 'reviewdata'=>$reviewdata),Config::get('app.queue'));
+		// $this->updateFinderRatingV2($finder);
 
-		$review_detail = $this->updateFinderRatingV1($reviewdata);
+		// $review_detail = $this->updateFinderRatingV1($reviewdata);
 		
-		$review_detail['reviews'] = Review::active()->where('finder_id',intval($data['finder_id']))->orderBy('_id', 'DESC')->limit(5)->get();
+		// $review_detail['reviews'] = Review::active()->where('finder_id',intval($data['finder_id']))->orderBy('_id', 'DESC')->limit(5)->get();
 
-		$response = array('status' => 200, 'message' => $message,'id'=>$review_id,'review_detail'=>$review_detail);
+		$response = array('status' => 200, 'message' => $message,'id'=>$review_id,'review_detail'=>null);
 
 		if(isset($data['booktrialid']) &&  $data['booktrialid'] != '' && isset($review_id) &&  $review_id != ''){
 			$booktrial_id   =   (int) $data['booktrialid'];
@@ -2268,55 +2269,60 @@ class FindersController extends \BaseController {
 		
 
 
-		$order_count = Order::active()->where('type','memberships')->where('finder_id',(int)$data["finder_id"])->where('customer_id',(int)$data["customer_id"])->count();
+		
+		if($this->vendor_token){
+			
+			$order_count = Order::active()->where('type','memberships')->where('finder_id',(int)$data["finder_id"])->where('customer_id',(int)$data["customer_id"])->count();
+	
+			$booktrial_count = Booktrial::where('type','booktrials')->where('finder_id',(int)$data["finder_id"])->where('customer_id',(int)$data["customer_id"])->count();
 
-		$booktrial_count = Booktrial::where('type','booktrials')->where('finder_id',(int)$data["finder_id"])->where('customer_id',(int)$data["customer_id"])->count();
+			if($fresh_review && $booktrial_count > 0 && $order_count == 0){
 
-		if($this->vendor_token && $fresh_review && $booktrial_count > 0 && $order_count == 0){
+				$fitcash_amount = 150;
+	
+				$req = array(
+					"customer_id"=>$data['customer_id'],
+					"review_id"=>$review_id,
+					"finder_id"=>$data['finder_id'],
+					"amount"=>$fitcash_amount,
+					"amount_fitcash" => 0,
+					"amount_fitcash_plus" => $fitcash_amount,
+					"type"=>'CREDIT',
+					'entry'=>'credit',
+					'description'=>"Fitcash+ Added for reviewing ".ucwords($finder['title']),
+				);
+	
+				$this->utilities->walletTransaction($req);
+	
+				$response['fitcash'] = [
+					'image'=>'https://b.fitn.in/gamification/reward/cashback.jpg',
+					'amount'=>(string)$fitcash_amount,
+					'title1'=>strtoupper('<b>₹'.$fitcash_amount.'</b> FITCASH+'),
+					'title2'=>strtoupper('Has  been  added'),
+					'description'=>'Find  this  on  <b>Fitternity  Wallet</b>  &  use  it  to  purchase  your  membership',
+				];
+	
+				$response['membership'] = [
+					'image'=>'https://b.fitn.in/gamification/reward/cashback.jpg',
+					'amount'=>(string)$fitcash_amount,
+					'title1'=>strtoupper('Membership  On'),
+					'title2'=>strtoupper('Lowest  prices'),
+					'description'=>'Use  this  <b>₹'.$fitcash_amount.'  off</b>  before  it  gets  expired  to  buy  membership  on  this  tab  at  lowest  price  with  complimentary  rewards'
+				];		
+	
+				$response['message'] = "Thanks for your valuable feedback!";
+				$response['message_title'] = "Done!";
+	
+				$response['review_detail'] = null;
+			}
 
-			$fitcash_amount = 150;
-
-			$req = array(
-                "customer_id"=>$data['customer_id'],
-                "review_id"=>$review_id,
-                "finder_id"=>$data['finder_id'],
-                "amount"=>$fitcash_amount,
-                "amount_fitcash" => 0,
-                "amount_fitcash_plus" => $fitcash_amount,
-                "type"=>'CREDIT',
-                'entry'=>'credit',
-                'description'=>"Fitcash+ Added for reviewing ".ucwords($finder['title']),
-            );
-
-			$this->utilities->walletTransaction($req);
-
-			$response['fitcash'] = [
-				'image'=>'https://b.fitn.in/gamification/reward/cashback.jpg',
-				'amount'=>(string)$fitcash_amount,
-				'title1'=>strtoupper('<b>₹'.$fitcash_amount.'</b> FITCASH+'),
-				'title2'=>strtoupper('Has  been  added'),
-				'description'=>'Find  this  on  <b>Fitternity  Wallet</b>  &  use  it  to  purchase  your  membership',
-			];
-
-			$response['membership'] = [
-				'image'=>'https://b.fitn.in/gamification/reward/cashback.jpg',
-				'amount'=>(string)$fitcash_amount,
-				'title1'=>strtoupper('Membership  On'),
-				'title2'=>strtoupper('Lowest  prices'),
-				'description'=>'Use  this  <b>₹'.$fitcash_amount.'  off</b>  before  it  gets  expired  to  buy  membership  on  this  tab  at  lowest  price  with  complimentary  rewards'
-			];		
-
-			$response['message'] = "Thanks for your valuable feedback!";
-			$response['message_title'] = "Done!";
-
-			$response['review_detail'] = null;
 		}
 
 		return Response::json($response, 200);
 	}
 
 	public function updateFinderRatingV2($finder){
-
+		Log::info("updating updateFinderRatingV2");
 		$review = Review::where('finder_id',$finder->_id)->get();
 
 		$detail_rating = array(array('count'=>0,'rating'=>0),array('count'=>0,'rating'=>0),array('count'=>0,'rating'=>0),array('count'=>0,'rating'=>0),array('count'=>0,'rating'=>0));
@@ -2374,7 +2380,7 @@ class FindersController extends \BaseController {
 	}
 
 	public function updateFinderRatingV1 ($review, $oldreview = NULL ){
-
+		Log::info('updateFinderRatingV1');
 		$data                   =   $review;
 		$total_rating_count     =   round(floatval(Input::json()->get('total_rating_count')),1);
 		$average_rating         =   round(floatval(Input::json()->get('average_rating')),1);
@@ -6074,6 +6080,17 @@ class FindersController extends \BaseController {
 		}
 
 		return $review_data;
+	}
+
+	public function asyncUpdateFinderRating($job, $data){
+		
+		if($job){
+			$job->delete();
+		}
+
+		$this->updateFinderRatingV2($data['finder']);
+		$this->updateFinderRatingV1($data['reviewdata']);
+
 	}
 
 }
