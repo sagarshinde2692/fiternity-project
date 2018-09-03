@@ -4418,97 +4418,97 @@ class TransactionController extends \BaseController {
             'value' => 'Rs. '.$data['amount_final']
         );
 
-        if($payment_mode_type == 'part_payment' && isset($data['part_payment_calculation'])){
+        // if($payment_mode_type == 'part_payment' && isset($data['part_payment_calculation'])){
 
-            $remaining_amount = $data['amount_customer'];
+        //     $remaining_amount = $data['amount_customer'];
 
-            if(isset($data["part_payment_calculation"]["part_payment_amount"]) && $data["part_payment_calculation"]["part_payment_amount"] > 0){
+        //     if(isset($data["part_payment_calculation"]["part_payment_amount"]) && $data["part_payment_calculation"]["part_payment_amount"] > 0){
 
-                $remaining_amount -= $data["part_payment_calculation"]["part_payment_amount"];
-            }
+        //         $remaining_amount -= $data["part_payment_calculation"]["part_payment_amount"];
+        //     }
 
-            if(isset($data["part_payment_calculation"]["convinience_fee"]) && $data["part_payment_calculation"]["convinience_fee"] > 0){
+        //     if(isset($data["part_payment_calculation"]["convinience_fee"]) && $data["part_payment_calculation"]["convinience_fee"] > 0){
 
-                $remaining_amount -= $data["part_payment_calculation"]["convinience_fee"];
-            }
+        //         $remaining_amount -= $data["part_payment_calculation"]["convinience_fee"];
+        //     }
 
-            if(isset($data['coupon_discount_amount']) && $data['coupon_discount_amount'] > 0){
+        //     if(isset($data['coupon_discount_amount']) && $data['coupon_discount_amount'] > 0){
 
-                $remaining_amount -= $data['coupon_discount_amount'];
+        //         $remaining_amount -= $data['coupon_discount_amount'];
 
-                $amount_summary[] = array(
-                    'field' => 'Coupon Discount',
-                    'value' => '-Rs. '.$data['coupon_discount_amount']
-                );
+        //         $amount_summary[] = array(
+        //             'field' => 'Coupon Discount',
+        //             'value' => '-Rs. '.$data['coupon_discount_amount']
+        //         );
 
-                $you_save += intval($data['coupon_discount_amount']);
+        //         $you_save += intval($data['coupon_discount_amount']);
                 
-            }
+        //     }
 
-            if(isset($data['customer_discount_amount']) && $data['customer_discount_amount'] > 0){
+        //     if(isset($data['customer_discount_amount']) && $data['customer_discount_amount'] > 0){
 
-                $remaining_amount -= $data['customer_discount_amount'];
+        //         $remaining_amount -= $data['customer_discount_amount'];
 
-                $amount_summary[] = array(
-                    'field' => 'Corporate Discount',
-                    'value' => '-Rs. '.$data['customer_discount_amount']
-                );
+        //         $amount_summary[] = array(
+        //             'field' => 'Corporate Discount',
+        //             'value' => '-Rs. '.$data['customer_discount_amount']
+        //         );
 
-                $you_save += intval($data['customer_discount_amount']);
-            }
+        //         $you_save += intval($data['customer_discount_amount']);
+        //     }
 
-            if(isset($data['app_discount_amount']) && $data['app_discount_amount'] > 0){
+        //     if(isset($data['app_discount_amount']) && $data['app_discount_amount'] > 0){
 
-                $remaining_amount -= $data['app_discount_amount'];
+        //         $remaining_amount -= $data['app_discount_amount'];
 
-                $amount_summary[] = array(
-                    'field' => 'App Discount',
-                    'value' => '-Rs. '.$data['app_discount_amount']
-                );
+        //         $amount_summary[] = array(
+        //             'field' => 'App Discount',
+        //             'value' => '-Rs. '.$data['app_discount_amount']
+        //         );
 
-                $you_save += intval($data['app_discount_amount']);
+        //         $you_save += intval($data['app_discount_amount']);
                 
-            }
+        //     }
 
-            $amount_summary[] = array(
-                'field' => 'Remaining Amount Payable',
-                'value' => 'Rs. '.$remaining_amount
-            );
+        //     $amount_summary[] = array(
+        //         'field' => 'Remaining Amount Payable',
+        //         'value' => 'Rs. '.$remaining_amount
+        //     );
 
-            $amount_summary[] = array(
-                'field' => 'Booking Amount (20%)',
-                'value' => 'Rs. '.$data['part_payment_calculation']['part_payment_amount']
-            );
+        //     $amount_summary[] = array(
+        //         'field' => 'Booking Amount (20%)',
+        //         'value' => 'Rs. '.$data['part_payment_calculation']['part_payment_amount']
+        //     );
 
-            if(isset($data['convinience_fee']) && $data['convinience_fee'] > 0){
+        //     if(isset($data['convinience_fee']) && $data['convinience_fee'] > 0){
 
-                $amount_summary[] = array(
-                    'field' => 'Convenience Fee',
-                    'value' => '+Rs. '.$data['convinience_fee']
-                );
+        //         $amount_summary[] = array(
+        //             'field' => 'Convenience Fee',
+        //             'value' => '+Rs. '.$data['convinience_fee']
+        //         );
 
-            }
+        //     }
 
-            $cashback_detail = $this->customerreward->purchaseGame($data['amount'],$data['finder_id'],'paymentgateway',$data['offer_id'],false,$data["part_payment_calculation"]["part_payment_and_convinience_fee_amount"],$data['type']);
+        //     $cashback_detail = $this->customerreward->purchaseGame($data['amount'],$data['finder_id'],'paymentgateway',$data['offer_id'],false,$data["part_payment_calculation"]["part_payment_and_convinience_fee_amount"],$data['type']);
 
-            // Log::info("asdasdasdasasd============adadasdasdas=");
-            // Log::info($cashback_detail);
+        //     // Log::info("asdasdasdasasd============adadasdasdas=");
+        //     // Log::info($cashback_detail);
 
-            if($cashback_detail['amount_deducted_from_wallet'] > 0){
+        //     if($cashback_detail['amount_deducted_from_wallet'] > 0){
 
-                $amount_summary[] = array(
-                    'field' => 'Fitcash Applied',
-                    'value' => '-Rs. '.$cashback_detail['amount_deducted_from_wallet']
-                );
+        //         $amount_summary[] = array(
+        //             'field' => 'Fitcash Applied',
+        //             'value' => '-Rs. '.$cashback_detail['amount_deducted_from_wallet']
+        //         );
 
-            }
+        //     }
 
-            $amount_payable = array(
-                'field' => 'Total Amount Payable (20%)',
-                'value' => 'Rs. '.$data['part_payment_calculation']['amount']
-            );
+        //     $amount_payable = array(
+        //         'field' => 'Total Amount Payable (20%)',
+        //         'value' => 'Rs. '.$data['part_payment_calculation']['amount']
+        //     );
 
-        }else{
+        // }else{
 
             if(isset($data['convinience_fee']) && $data['convinience_fee'] > 0){
 
@@ -4528,13 +4528,18 @@ class TransactionController extends \BaseController {
                 
             }
 
-            if(isset($data['coupon_discount_amount']) && $data['coupon_discount_amount'] > 0 && $payment_mode_type != 'pay_later'){
+            if(isset($data['coupon_discount_amount']) && $data['coupon_discount_amount'] > 0){
 
-                $amount_summary[] = array(
-                    'field' => 'Coupon Discount',
-                    'value' => '-Rs. '.$data['coupon_discount_amount']
-                );
-                $you_save += $data['coupon_discount_amount'];
+                if($payment_mode_type != 'pay_later'){
+
+                    $amount_summary[] = array(
+                        'field' => 'Coupon Discount',
+                        'value' => '-Rs. '.$data['coupon_discount_amount']
+                    );
+                    $you_save += $data['coupon_discount_amount'];
+                }else{
+                    $amount_payable['value'] = "Rs. ".($data['amount_final'] - $data['coupon_discount_amount']);   
+                }
                 
             }
 
@@ -4584,7 +4589,7 @@ class TransactionController extends \BaseController {
                 
             //     $amount_payable['value'] = "Rs. ".($data['amount_finder']+$data['convinience_fee']);
             // }
-        }
+        // }
 
         if(!empty($reward)){
             $amount_summary[] = $reward;
