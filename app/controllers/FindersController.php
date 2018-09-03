@@ -2323,6 +2323,10 @@ class FindersController extends \BaseController {
 
 	public function updateFinderRatingV2($finder){
 		Log::info("updating updateFinderRatingV2");
+		Log::info(gettype($finder));
+		Log::info($finder);
+		$finder = Finder::find($finder['_id']);
+		
 		$review = Review::where('finder_id',$finder->_id)->get();
 
 		$detail_rating = array(array('count'=>0,'rating'=>0),array('count'=>0,'rating'=>0),array('count'=>0,'rating'=>0),array('count'=>0,'rating'=>0),array('count'=>0,'rating'=>0));
@@ -2381,6 +2385,8 @@ class FindersController extends \BaseController {
 
 	public function updateFinderRatingV1 ($review, $oldreview = NULL ){
 		Log::info('updateFinderRatingV1');
+		Log::info(gettype($review));
+		Log::info($review);
 		$data                   =   $review;
 		$total_rating_count     =   round(floatval(Input::json()->get('total_rating_count')),1);
 		$average_rating         =   round(floatval(Input::json()->get('average_rating')),1);
