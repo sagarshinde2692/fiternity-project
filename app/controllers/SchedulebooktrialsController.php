@@ -7253,7 +7253,7 @@ class SchedulebooktrialsController extends \BaseController {
         switch($status){
 
             case 'activate':
-
+                Log::info($_SERVER['REQUEST_URI']);
                 if(!isset($_GET['vendor_code'])){
                     return Response::json(array('status'=>400, 'message'=>'Fitcode not attached'), 200);
                 }
