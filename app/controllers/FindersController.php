@@ -2020,6 +2020,9 @@ class FindersController extends \BaseController {
 		
 
 		// return $images = Input::file('images') ;
+
+		Log::info("addReview");
+		Log::info($data);
 		
 		
 		$jwt_token = Request::header('Authorization');
