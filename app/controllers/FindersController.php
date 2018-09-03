@@ -2100,7 +2100,8 @@ class FindersController extends \BaseController {
 			$booktrial->update();
 		}
 		
-		$reviewdata['booktrial_id'] = (isset($data['booktrial_id']) && $data['booktrial_id'] != "") ? intval($data['booktrial_id']) : '';
+
+		$reviewdata['booktrial_id'] = (isset($data['booktrial_id']) && $data['booktrial_id'] != "") ? intval($data['booktrial_id']) : null;
 
 		if(isset($data['agent_name'])){
 			$reviewdata['agent_name'] = $data['agent_name'];
