@@ -7351,7 +7351,7 @@ class SchedulebooktrialsController extends \BaseController {
 
                 if($booktrial['type'] == 'booktrials'){
                     unset($response['sub_header_1']);
-                    $response['sub_header_2'] = "Surprise discount will be given to you in form of fitcash post we verify your attendance with ".ucwords($booktrial['finder_name']);
+                    $response['sub_header_2'] = " Fitcash is added in your wallet. Use it to buy ".ucwords($booktrial['finder_name'])."'s membership at lowest price.";;
                 }
 
                 Log::info("removing n+2 communication");
