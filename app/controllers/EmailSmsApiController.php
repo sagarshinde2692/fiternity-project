@@ -857,7 +857,7 @@ class EmailSmsApiController extends \BaseController {
             }
         }
 
-        return $storecapture   = Capture::create($data);
+        $storecapture   = Capture::create($data);
 
         if(isset($data['capture_type']) && $data['capture_type'] == 'exit_intent'){
             
