@@ -1566,13 +1566,13 @@ class ServiceController extends \BaseController {
 				->first(['title', 'contact', 'average_rating', 'total_rating_count', 'photos', 'coverimage', 'slug', 'trial','videos','playOverVideo']);
 
 
-			if(count($finderarr['reviews']) < 3){
-				$initial_review_count = count($finderarr['reviews']);
-				$reviews = Review::where('finder_id', $finderarr['_id'])->where('desctiption', "")->orderBy('updated_at', 'DESC')->limit(3-$initial_review_count)->get();
+			if(count($finder['reviews']) < 3){
+				$initial_review_count = count($finder['reviews']);
+				$reviews = Review::where('finder_id', $finder['_id'])->select('finder_id', 'customer', 'customer_id', 'rating', 'updated_at', 'description')->where('desctiption', "")->orderBy('updated_at', 'DESC')->limit(3-$initial_review_count)->get();
 				if(count($reviews)){
-					$initial_reviews = $finderarr['reviews'];
+					$initial_reviews = $finder['reviews'];
 					$initial_reviews = array_merge($initial_reviews, $reviews);
-					$finderarr['reviews'] = $initial_reviews;
+					$finder['reviews'] = $initial_reviews;
 				}
 			}
 
