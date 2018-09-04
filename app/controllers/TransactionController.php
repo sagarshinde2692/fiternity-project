@@ -135,6 +135,8 @@ class TransactionController extends \BaseController {
                 return Response::json($transform_response, 404);
             }
 
+            $data = $transform_response['data'];
+
         }
 
         $rules = array(

@@ -5382,8 +5382,9 @@ Class Utilities {
 
     } 
     
-    public function eventDataValidation($data){
-        
+
+    public function tranformEventData($data){
+
         $rules = [
             'customer_data'=>'required',
         ];
@@ -5392,20 +5393,8 @@ Class Utilities {
 
         if ($validator->fails()) {
             return array('status' => 404,'message' => error_message($validator->errors()));
-        }else{
-            return array('status' => 200);
         }
 
-    }
-
-    public function tranformEventData($data){
-
-        $validation = $this->eventDataValidation($data);
-
-        if($validation['status'] != 200){
-            return $validation;
-        }
-        
         $customer = $data['customer_data']['0'];
 
         $rules = [
