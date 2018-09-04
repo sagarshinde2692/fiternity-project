@@ -127,7 +127,7 @@ class TransactionController extends \BaseController {
             $data['finder_id'] = (int)$vendor['_id'];
         }
 
-        if(!empty($data['type']) && $data['type'] == 'events' && !empty($data['event_id']) && $data['event_id'] == Config::get('app.music_run_event_id')){
+        if(!empty($data['type']) && $data['type'] == 'events' && !empty($data['sub_type']) && $data['sub_type'] == Config::get('app.music_run_event_type')){
 
             $transform_response = $this->utilities->tranformEventData($data);
 

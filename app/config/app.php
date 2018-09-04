@@ -820,6 +820,6 @@ return array(
 	
 	'no_patti_brands_slugs'=>['anytime-fitness-gurgaon'],
 
-	'music_run_event_id'=>1
+	'music_run_event_type'=>'music-run'
 
 );
