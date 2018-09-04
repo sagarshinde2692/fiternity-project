@@ -601,6 +601,12 @@ class TransactionController extends \BaseController {
             $data = array_merge($data,$cashbackRewardWallet['data']);
             
         }
+
+        if(!empty($data['donation_amount']) && is_numeric($data['donation_amount'])){
+            
+            $data['amount'] = $data['amount'] + $data['donation_amount'];
+        
+        }
         
         $txnid = "";
         $successurl = "";
@@ -3007,7 +3013,7 @@ class TransactionController extends \BaseController {
 
             if($order && isset($order['coupon_code'])){
 
-                $order->unset('coupon_code', 'coupon_discount_amount');
+                $order->unset(['coupon_code', 'coupon_discount_amount']);
                 // $order->unset('coupon_discount_amount');
             }
 
