@@ -35,7 +35,7 @@ return array(
 	
 	//beta
 	'new_search_url' =>'http://apistage.fitn.in:5000/',
-	'url' => 'http://apistage.fitn.in',
+	'url' => 'http://beta.fitn.in',
 	'admin_url' => 'http://adminstage.fitn.in',
 	'website' => 'http://apistage.fitn.in:8888',
 	'sidekiq_url' => 'http://kick.fitn.in/',
