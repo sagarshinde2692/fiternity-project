@@ -680,7 +680,7 @@ class HomeController extends BaseController {
             if (in_array($type, $booktrialItemArr)){
 
                 $itemData       =   Booktrial::find(intval($id));
-                
+
                 
                 //reliance section 
                 
@@ -767,12 +767,14 @@ class HomeController extends BaseController {
 
                 $order_type = "booktrial_id";
             }
-
+            
             if (in_array($type, $orderItemArr)) {
 
                 $itemData = Order::find(intval($id));
                 
-                
+                if($itemData['type'] == 'workout-session'){
+                    $type = "workout-session";
+                }
                 
                 // order section 
                 
