@@ -1562,16 +1562,16 @@ class ServiceController extends \BaseController {
 			$finder = Finder::active()->where('slug','=',$finder_slug)->whereNotIn('flags.state', ['closed', 'temporarily_shut'])
 				->with(array('facilities'=>function($query){$query->select( 'name', 'finders');}))
 				->with('category')
-				->with(array('reviews'=>function($query){$query->select('finder_id', 'customer', 'customer_id', 'rating', 'updated_at', 'description')->where('status','=','1')->orderBy('updated_at', 'DESC')->limit(3);}))
+				->with(array('reviews'=>function($query){$query->select('finder_id', 'customer', 'customer_id', 'rating', 'updated_at', 'description')->where('status','=','1')->where("description", "!=", "")->orderBy('updated_at', 'DESC')->limit(3);}))
 				->first(['title', 'contact', 'average_rating', 'total_rating_count', 'photos', 'coverimage', 'slug', 'trial','videos','playOverVideo']);
 
-
+			
 			if(count($finder['reviews']) < 3){
 				$initial_review_count = count($finder['reviews']);
-				$reviews = Review::where('finder_id', $finder['_id'])->select('finder_id', 'customer', 'customer_id', 'rating', 'updated_at', 'description')->where('desctiption', "")->orderBy('updated_at', 'DESC')->limit(3-$initial_review_count)->get();
+				$reviews = Review::where('finder_id', $finder['_id'])->select('finder_id', 'customer', 'customer_id', 'rating', 'updated_at', 'description')->where('description', "")->orderBy('updated_at', 'DESC')->limit(3-$initial_review_count)->get();
 				if(count($reviews)){
 					$initial_reviews = $finder['reviews'];
-					$initial_reviews = array_merge($initial_reviews, $reviews);
+					$initial_reviews = array_merge($initial_reviews, $reviews->toArray());
 					$finder['reviews'] = $initial_reviews;
 				}
 			}
