@@ -184,13 +184,13 @@ class TransactionController extends \BaseController {
             $membership[] = 'memberships';
         }
 
-        if(in_array($data['type'],$membership)){
-            $membership_rules = array(
-                'preferred_starting_date'=>'required'
-            );
+        // if(in_array($data['type'],$membership)){
+        //     $membership_rules = array(
+        //         'preferred_starting_date'=>'required'
+        //     );
 
-            $rules = array_merge($rules,$membership_rules);
-        }
+        //     $rules = array_merge($rules,$membership_rules);
+        // }
 
         // if($data['type'] == 'diet_plan'){
         //     $diet_plan_rules = array(

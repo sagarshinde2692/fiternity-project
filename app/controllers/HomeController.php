@@ -5200,14 +5200,18 @@ class HomeController extends BaseController {
         	Log::info(" token  ".print_r($tt,true));
         	$cart=$this->utilities->attachCart($t,true);
         	$dataCart=$this->utilities->getCartFinalSummary($cart['products'], $cart['_id']);
-        	
-        	if(!empty($dataCart)&&!empty($dataCart['status']) && $dataCart['status'] != 5)
-        		$finalData=['status'=>200,"response"=>$dataCart['data']];
-        		else return $dataCart;
-        		$this->utilities->fetchCustomerAddresses($finalData['response']);
-        		$cities=$this->utilities->getProductCities();
-        		if(count($cities))$finalData['response']['cities']=$cities;
-        		return $finalData;
+            $finalData=['status'=>200,"response"=>[]];
+            
+            if($this->vendor_token){
+                if(!empty($dataCart)&&!empty($dataCart['status']) && $dataCart['status'] != 5)
+                    $finalData=['status'=>200,"response"=>$dataCart['data']];
+                else return $dataCart;
+                $cities=$this->utilities->getProductCities();
+                if(count($cities))$finalData['response']['cities']=$cities;
+            }
+            
+            $this->utilities->fetchCustomerAddresses($finalData['response']);
+            return $finalData;
         		
         } catch (Exception $e) {
         	return  ['status'=>0,"message"=>$this->utilities->baseFailureStatusMessage($e)];
