@@ -1178,7 +1178,7 @@ class RewardofferController extends BaseController {
                 $duration_month = ceil($duration_day/30) + 2;
             }
 
-            $cashback['description'] = "Get Rs ".$calculation['wallet_amount'].". Fitcash+ in your wallet as cashback which is fully redeemable against any Memberships/Session & Diet Plan purchase on Fitternity. Earned cashback is valid for ".$duration_month." months. Cashback chosen as reward can be availed for renewal";
+            $cashback['description'] = "Get Rs ".$calculation['wallet_amount'].". Fitcash+ in your wallet as cashback which is fully redeemable against any Memberships/Session purchase on Fitternity. Earned cashback is valid for ".$duration_month." months. Cashback chosen as reward can be availed for renewal";
         }
 
         $renewal_cashback  = array('title'=>'Discount on Renewal');
