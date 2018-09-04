@@ -127,6 +127,16 @@ class TransactionController extends \BaseController {
             $data['finder_id'] = (int)$vendor['_id'];
         }
 
+        if(!empty($data['type']) && $data['type'] == 'events' && !empty($data['event_id']) && $data['event_id'] == Config::get('app.music_run_event_id')){
+
+            $transform_response = $this->utilities->tranformEventData($data);
+
+            if($transform_response['status']!=200){
+                return Response::json($transform_response, 404);
+            }
+
+        }
+
         $rules = array(
             'customer_name'=>'required',
             'customer_email'=>'required|email',
@@ -190,6 +200,16 @@ class TransactionController extends \BaseController {
             );
 
             $rules = array_merge($rules,$membership_rules);
+        }
+
+        if(in_array($data['type'] == 'events',$membership)){
+
+            $event_rules = [
+                'event_id'=>'required | integer',
+                'ticket_id'=>'required | integer'
+            ];
+
+            $rules = array_merge($rules,$event_rules);
         }
 
         // if($data['type'] == 'diet_plan'){
