@@ -3506,6 +3506,10 @@ class TransactionController extends \BaseController {
 
         $ratecard = $ratecard->toArray();
 
+        if(!empty($data['type']) &&$data['type']=='booktrials' && $ratecard['type'] == 'workout session'){
+            $data['type'] = 'workout-session';
+        }
+
         if(isset($ratecard['flags']) && empty($this->device_type)){
 
             if(isset($ratecard['flags']['pay_at_vendor']) && $ratecard['flags']['pay_at_vendor']){
