@@ -1565,6 +1565,17 @@ class ServiceController extends \BaseController {
 				->with(array('reviews'=>function($query){$query->select('finder_id', 'customer', 'customer_id', 'rating', 'updated_at', 'description')->where('status','=','1')->orderBy('updated_at', 'DESC')->limit(3);}))
 				->first(['title', 'contact', 'average_rating', 'total_rating_count', 'photos', 'coverimage', 'slug', 'trial','videos','playOverVideo']);
 
+
+			if(count($finderarr['reviews']) < 3){
+				$initial_review_count = count($finderarr['reviews']);
+				$reviews = Review::where('finder_id', $finderarr['_id'])->where('desctiption', "")->orderBy('updated_at', 'DESC')->limit(3-$initial_review_count)->get();
+				if(count($reviews)){
+					$initial_reviews = $finderarr['reviews'];
+					$initial_reviews = array_merge($initial_reviews, $reviews);
+					$finderarr['reviews'] = $initial_reviews;
+				}
+			}
+
 			if(!$finder){
 				return Response::json(array('status'=>400, 'error_message'=>'Facility not active'), $this->error_status);
 			}

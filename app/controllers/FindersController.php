@@ -169,11 +169,21 @@ class FindersController extends \BaseController {
 
 				->with(array('services'=>function($query){$query->where('status','=','1')->select('*')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('location'=>function($query){$query->select('_id','name');}))->orderBy('ordering', 'ASC');}))
 
-				->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1')->orderBy('updated_at', 'DESC')->limit(5);}))
+				->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1')->where('desctiption', '!=', "")->orderBy('updated_at', 'DESC')->limit(5);}))
 				// ->with(array('reviews'=>function($query){$query->select('*')->where('status','=','1')->orderBy('_id', 'DESC');}))
 				->first();
 
-				unset($finderarr['ratecards']);
+                unset($finderarr['ratecards']);
+                
+            if(count($finderarr['reviews']) < 5){
+                $initial_review_count = count($finderarr['reviews']);
+                $reviews = Review::where('finder_id', $finderarr['_id'])->where('desctiption', "")->orderBy('updated_at', 'DESC')->limit(5-$initial_review_count)->get();
+                if(count($reviews)){
+                    $initial_reviews = $finderarr['reviews'];
+                    $initial_reviews = array_merge($initial_reviews, $reviews);
+                    $finderarr['reviews'] = $initial_reviews;
+                }
+            }
 
 			$finder = null;	
 			
@@ -3613,7 +3623,19 @@ class FindersController extends \BaseController {
 				->with(array('services'=>function($query){$query->select('*')->where('status','=','1')->with(array('category'=>function($query){$query->select('_id','name','slug');}))->with(array('subcategory'=>function($query){$query->select('_id','name','slug');}))->with(array('location'=>function($query){$query->select('_id','name');}))->orderBy('ordering', 'ASC');}))
 
 				->with(array('reviews'=>function($query){$query->where('status','=','1')->select('_id','finder_id','customer_id','rating','description','updated_at')->with(array('customer'=>function($query){$query->select('_id','name','picture')->where('status','=','1');}))->orderBy('updated_at', 'DESC')->limit(1);}))
-				->first(array('_id','slug','title','lat','lon','category_id','category','location_id','location','city_id','city','categorytags','locationtags','offerings','facilities','coverimage','finder_coverimage','contact','average_rating','photos','info','manual_trial_enable','manual_trial_auto','trial','commercial_type','multiaddress','membership','flags','custom_link','videos','total_rating_count','playOverVideo','pageviews'));
+                ->first(array('_id','slug','title','lat','lon','category_id','category','location_id','location','city_id','city','categorytags','locationtags','offerings','facilities','coverimage','finder_coverimage','contact','average_rating','photos','info','manual_trial_enable','manual_trial_auto','trial','commercial_type','multiaddress','membership','flags','custom_link','videos','total_rating_count','playOverVideo','pageviews'));
+                
+
+            if(count($finderarr['reviews']) < 1){
+                $initial_review_count = count($finderarr['reviews']);
+                $reviews = Review::where('finder_id', $finderarr['_id'])->where('desctiption', "")->orderBy('updated_at', 'DESC')->limit(1-$initial_review_count)->get();
+                if(count($reviews)){
+                    $initial_reviews = $finderarr['reviews'];
+                    $initial_reviews = array_merge($initial_reviews, $reviews);
+                    $finderarr['reviews'] = $initial_reviews;
+                }
+            }
+    
 			
 			$finder = false;
 			
