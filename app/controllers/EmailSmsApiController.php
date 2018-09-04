@@ -589,7 +589,8 @@ class EmailSmsApiController extends \BaseController {
             $exit_intent_capture = Capture::find($data['order_token']);
             Log::info($exit_intent_capture);
             $data = $exit_intent_capture->toArray();
-        	unset($data['_id']);
+            $data['referrer_id'] = $data['_id'];
+            unset($data['_id']);
         	$data['capture_type'] == 'exit_intent_rtcb';
         }
 
