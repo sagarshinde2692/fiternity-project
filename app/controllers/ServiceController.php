@@ -666,7 +666,7 @@ class ServiceController extends \BaseController {
         $type 					= 	(isset($request['type']) && $request['type'] != "") ? $request['type'] : "trial" ;
         $recursive 				= 	(isset($request['recursive']) && $request['recursive'] != "" && $request['recursive'] == "true") ? true : false ;
 
-		$selectedFieldsForService = array('_id','name','finder_id','servicecategory_id','vip_trial','three_day_trial','address','trial', 'city_id');
+		$defaultSelectedFieldsForService = $selectedFieldsForService = array('_id','name','finder_id','servicecategory_id','vip_trial','three_day_trial','address','trial', 'city_id');
 		Service::$withoutAppends=true;
 		Service::$setAppends=['trial_active_weekdays', 'workoutsession_active_weekdays'];
 		
@@ -689,10 +689,24 @@ class ServiceController extends \BaseController {
 		 }))->get($selectedFieldsForService)->toArray();
 
 		//  $items = $query->get()->toArray();
+		array_push($defaultSelectedFieldsForService,'workoutsessionschedules');
+		if($ratecard_type == 'trial'){
+			foreach($items as $key => &$value){
+				if(!empty($value['serviceratecards'][0]['price'])){
+					$workout_schedules = Service::where('_id', $value['_id'])->with(array('serviceratecards'=> function($query){$query->where('type','workout session');}))->first($defaultSelectedFieldsForService);
+					if($workout_schedules){
+						$value = $workout_schedules->toArray();
+						$value['type'] = 'workout-session';
+					}else{
+						unset($items[$key]);
+					}
+				}
+			}
+		}
+
 
 
 		
-
         if(count($items) == 0){
         	return Response::json(array('status'=>401,'message'=>'data is empty'),401);
         }
@@ -710,18 +724,19 @@ class ServiceController extends \BaseController {
 
         $schedules = array();
 
-        switch ($type) {
-			case 'workout-session':
-        	case 'workout_session': $type = 'workoutsessionschedules'; break;
-        	case 'trial': $type = 'trialschedules'; break;
-        	default: $type = 'trialschedules'; break;
-        }
-
-		// $all_trials_booked = true;
-
 		
-
-        foreach ($items as $k => $item) {
+		$original_type  = $type ;
+		
+		foreach ($items as $k => $item) {
+			
+			!empty($item['type']) ? $type = $item['type'] : $type = $original_type;
+			
+			switch ($type) {
+				case 'workout-session':
+				case 'workout_session': $type = 'workoutsessionschedules'; break;
+				case 'trial': $type = 'trialschedules'; break;
+				default: $type = 'trialschedules'; break;
+			}
 
         	$item['three_day_trial'] = isset($item['three_day_trial']) ? $item['three_day_trial'] : "";
             $item['vip_trial'] = "";//isset($item['vip_trial']) ? $item['vip_trial'] : "";
