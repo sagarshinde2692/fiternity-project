@@ -4218,7 +4218,8 @@ class CustomerController extends \BaseController {
 
 			$decoded          				=       decode_customer_token();
 			$customer_id 					= 		intval($decoded->customer->_id);
-
+			$customer_email 				= 		$decoded->customer->email;
+			
 			$already_applied_promotion 		= 		Customer::where('_id',$customer_id)->whereIn('applied_promotion_codes',[$code])->count();
 
 			if($code == 'gwdfit'){
@@ -4249,9 +4250,7 @@ class CustomerController extends \BaseController {
 
 			if (!empty($fitcashcode->customer_emails) && is_array($fitcashcode->customer_emails)) {
 				
-				$customer = Customer::find($customer_id);
-				
-				if(!in_array(strtolower($customer['email']), $fitcashcode->customer_emails)){
+				if(!in_array(strtolower($customer_email), $fitcashcode->customer_emails)){
 					$resp 	= 	array('status' => 404,'message' => "Invalid Promotion Code");
 					return Response::json($resp,404);
 				}
