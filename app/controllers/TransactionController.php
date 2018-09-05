@@ -4418,6 +4418,8 @@ class TransactionController extends \BaseController {
             'value' => 'Rs. '.$data['amount_final']
         );
 
+        $amount_final = $data['amount_final'];
+
         // if($payment_mode_type == 'part_payment' && isset($data['part_payment_calculation'])){
 
         //     $remaining_amount = $data['amount_customer'];
@@ -4518,13 +4520,18 @@ class TransactionController extends \BaseController {
                 );
             }
 
-            if(isset($data['cashback_detail']) && isset($data['cashback_detail']['amount_deducted_from_wallet']) && $data['cashback_detail']['amount_deducted_from_wallet'] > 0 &&  $payment_mode_type != 'pay_later'){
+            if(isset($data['cashback_detail']) && isset($data['cashback_detail']['amount_deducted_from_wallet']) && $data['cashback_detail']['amount_deducted_from_wallet'] > 0 ){
+                if($payment_mode_type != 'pay_later'){
 
-                $amount_summary[] = array(
-                    'field' => 'Fitcash Applied',
-                    'value' => '-Rs. '.$data['cashback_detail']['amount_deducted_from_wallet']
-                );
-                $you_save += $data['cashback_detail']['amount_deducted_from_wallet'];
+                    $amount_summary[] = array(
+                        'field' => 'Fitcash Applied',
+                        'value' => '-Rs. '.$data['cashback_detail']['amount_deducted_from_wallet']
+                    );
+                    $you_save += $data['cashback_detail']['amount_deducted_from_wallet'];
+                }else{
+                    $amount_final = $amount_final + $data['cashback_detail']['amount_deducted_from_wallet'];
+                    $amount_payable['value'] = "Rs. ".$amount_final;   
+                }
                 
             }
 
@@ -4538,7 +4545,8 @@ class TransactionController extends \BaseController {
                     );
                     $you_save += $data['coupon_discount_amount'];
                 }else{
-                    $amount_payable['value'] = "Rs. ".($data['amount_final'] - $data['coupon_discount_amount']);   
+                    $amount_final = $amount_final + $data['coupon_discount_amount'];
+                    $amount_payable['value'] = "Rs. ".$amount_final;   
                 }
                 
             }
