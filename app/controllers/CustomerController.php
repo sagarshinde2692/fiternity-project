@@ -4251,7 +4251,7 @@ class CustomerController extends \BaseController {
 				
 				$customer = Customer::find($customer_id);
 				
-				if(in_array(strtolower($customer['email']), $fitcashcode->customer_emails)){
+				if(!in_array(strtolower($customer['email']), $fitcashcode->customer_emails)){
 					$resp 	= 	array('status' => 404,'message' => "Invalid Promotion Code");
 					return Response::json($resp,404);
 				}
