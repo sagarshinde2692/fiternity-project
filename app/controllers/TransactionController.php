@@ -144,7 +144,7 @@ class TransactionController extends \BaseController {
 
         $asshole_emails = ["vasuk573@gmail.com","vasukatara01@gmail.com"];
         
-        if(in_array(strtolower($data["customer_email"]),$asshole_emails)){
+        if(!empty($data["customer_email"]) && in_array(strtolower($data["customer_email"]),$asshole_emails)){
             return Response::json("Can't book anything for you.", $this->error_status);
         }
 
