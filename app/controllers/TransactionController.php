@@ -136,7 +136,7 @@ class TransactionController extends \BaseController {
             }
 
             $data = $transform_response['data'];
-
+         
         }
 
         $rules = array(
