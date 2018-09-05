@@ -2638,8 +2638,8 @@ class FindersController extends \BaseController {
 		$finder_id          =   (int) $finder_id;
 		$from               =   ($from != '') ? intval($from) : 0;
 		$size               =   ($size != '') ? intval($size) : 10;
-		$total_review = Review::active()->where('finder_id','=',$finder_id)->count(); 
-		$non_empty_review_count = Review::active()->where('finder_id','=',$finder_id)->where('description', '')->count(); 
+		// $total_review = Review::active()->where('finder_id','=',$finder_id)->count(); 
+		// $non_empty_review_count = Review::active()->where('finder_id','=',$finder_id)->where('description', '')->count(); 
 		$reviews            =   Review::with(array('finder'=>function($query){$query->select('_id','title','slug','coverimage');}))->active()->where('finder_id','=',$finder_id)->where('description', '!=', '')->take($size)->skip($from)->orderBy('updated_at', 'desc')->get();
 
 		// return $reviews;

@@ -1565,13 +1565,14 @@ class ServiceController extends \BaseController {
 				->with(array('reviews'=>function($query){$query->select('finder_id', 'customer', 'customer_id', 'rating', 'updated_at', 'description')->where('status','=','1')->where("description", "!=", "")->orderBy('updated_at', 'DESC')->limit(3);}))
 				->first(['title', 'contact', 'average_rating', 'total_rating_count', 'photos', 'coverimage', 'slug', 'trial','videos','playOverVideo']);
 
-			
+			$finder['reviews'] = $finder['reviews']->toArray();
 			if(count($finder['reviews']) < 3){
 				$initial_review_count = count($finder['reviews']);
-				$reviews = Review::where('finder_id', $finder['_id'])->select('finder_id', 'customer', 'customer_id', 'rating', 'updated_at', 'description')->where('description', "")->orderBy('updated_at', 'DESC')->limit(3-$initial_review_count)->get();
-				if(count($reviews)){
+				$empty_reviews = Review::where('finder_id', $finder['_id'])->select('finder_id', 'customer', 'customer_id', 'rating', 'updated_at', 'description')->where('description', "")->orderBy('updated_at', 'DESC')->limit(3-$initial_review_count)->get();
+				
+				if(count($empty_reviews)){
 					$initial_reviews = $finder['reviews'];
-					$initial_reviews = array_merge($initial_reviews, $reviews->toArray());
+					$initial_reviews = array_merge($initial_reviews, $empty_reviews->toArray());
 					$finder['reviews'] = $initial_reviews;
 				}
 			}
@@ -1694,7 +1695,7 @@ class ServiceController extends \BaseController {
 			$reviews = [];
 
 			foreach($finder['reviews'] as $review){
-
+				
 				$review['posted_on'] = "Posted on ".date("jS M Y", strtotime($review['updated_at']));
 
 				if(isset($review['customer']) && isset($review['customer']['name']) && isset($review['customer']['name'])!= ""){
@@ -1709,7 +1710,7 @@ class ServiceController extends \BaseController {
 
 				$review['rating'] = round($review['rating'], 1);		
 
-				$review_data = array_only($review->toArray(), ['rating', 'description', 'posted_on', 'reviewer']);
+				$review_data = array_only($review, ['rating', 'description', 'posted_on', 'reviewer']);
 
 				array_push($reviews, $review_data);
 
