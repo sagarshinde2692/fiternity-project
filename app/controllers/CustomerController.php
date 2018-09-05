@@ -4247,7 +4247,7 @@ class CustomerController extends \BaseController {
 					return Response::json($resp,404);
 				}
 			}
-			Log::info(is_array($fitcashcode->customer_emails) ? "true":"false");
+			
 			if (is_array($fitcashcode->customer_emails)) {
 				
 				if(!in_array(strtolower($customer_email), $fitcashcode->customer_emails)){
@@ -4324,6 +4324,7 @@ class CustomerController extends \BaseController {
 					$walletData["description"] = "Added FitCash+ on PROMOTION Rs - ".$cashback_amount;
 					if(isset($fitcashcode["valid_till"])){
 						$walletData["validity"] = $fitcashcode["valid_till"];
+						$walletData["description"] = "Added FitCash+ on PROMOTION Rs - ".$cashback_amount.". Expires On : ".date('d-m-Y', $walletData["validity"]);
 					}
 				}
 
