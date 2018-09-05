@@ -1880,31 +1880,31 @@ class ServiceController extends \BaseController {
 			$schedule_data['recursive'] = true;
 			// $service_details['gym_date_data'] = $this->getPPSAvailableDateTime($service_details, 3);
 		}
-		$service_details['gym_date_data'] = $this->getPPSAvailableDateTime($service_details, 7);
+		// $service_details['gym_date_data'] = $this->getPPSAvailableDateTime($service_details, 7);
 		unset($service_details['workoutsessionschedules']);
-		$schedule = json_decode(json_encode($this->getScheduleByFinderService($schedule_data)->getData()));
+		$schedule = json_decode(json_encode($this->getScheduleByFinderService($schedule_data)->getData()), true);
 		
-		if($schedule->status != 200){
+		if($schedule['status'] != 200){
 			return Response::json(array('status'=>400, 'error_message'=>'Booking not available'), $this->error_status);
 		}
 		
 		$service_details['single_slot'] = false;
-		if(isset($schedule->schedules) && count($schedule->schedules) > 0 && count(head($schedule->schedules)->slots)>0 && !(isset($service_details['finder']['trial']) && $service_details['finder']['trial'] == 'disable') && !(isset($service_details['trial']) && $service_details['trial'] == 'disable') && !(isset($service_details['workout_session_ratecard']['direct_payment_enable']) && $service_details['workout_session_ratecard']['direct_payment_enable'] == '0')){
+		if(isset($schedule['schedules']) && count($schedule['schedules']) > 0 && count(head($schedule['schedules'])['slots'])>0 && !(isset($service_details['finder']['trial']) && $service_details['finder']['trial'] == 'disable') && !(isset($service_details['trial']) && $service_details['trial'] == 'disable') && !(isset($service_details['workout_session_ratecard']['direct_payment_enable']) && $service_details['workout_session_ratecard']['direct_payment_enable'] == '0')){
 
 			
-			$service_details['next_session'] = "Next session at ".strtoupper(head($schedule->schedules)->slots[0]->start_time);
-			$service_details['slots'] = (head($schedule->schedules)->slots);
+			$service_details['next_session'] = "Next session at ".strtoupper(head($schedule['schedules'])['slots'][0]['start_time']);
+			$service_details['slots'] = (head($schedule['schedules'])['slots']);
 			$service_details['total_sessions'] = count($service_details['slots'])." sessions";
-			$service_details['schedule_date'] = date('d-m-Y', strtotime($schedule->available_date));
+			$service_details['schedule_date'] = date('d-m-Y', strtotime($schedule['available_date']));
 
 			if(isset($_GET['keyword']) && $_GET['keyword']){
-				$service_details['page_index'] = $schedule->count -1;
-				$service_details['schedule_date'] = date('d-m-Y', strtotime($schedule->available_date));
-				$service_details['pass_title'] = $service_details['pass_title'].' ('.date('jS M', strtotime($schedule->available_date)).')';
-				if($schedule->count > 3){
+				$service_details['page_index'] = $schedule['count'] -1;
+				$service_details['schedule_date'] = date('d-m-Y', strtotime($schedule['available_date']));
+				$service_details['pass_title'] = $service_details['pass_title'].' ('.date('jS M', strtotime($schedule['available_date'])).')';
+				if($schedule['count'] > 7){
 					$service_details['single_slot'] = false;
 					$service_details['session_unavailable'] = true;
-					$service_details['next_session'] = "Booking opens on".date('d-m-Y', strtotime($schedule->available_date));
+					$service_details['next_session'] = "Booking opens on".date('d-m-Y', strtotime($schedule['available_date']));
 					$service_details['slots'] = [];
 					$service_details['total_sessions'] = "No sessions availabe";
 					unset($service_details['pass_title']);
@@ -1916,20 +1916,20 @@ class ServiceController extends \BaseController {
 			if(count($service_details['slots']) == 1){
 
 				$service_details['single_slot'] = true;
-				$service_details['slot_text'] = "Session Time ".strtoupper(head($schedule->schedules)->slots[0]->start_time);
+				$service_details['slot_text'] = "Session Time ".strtoupper(head($schedule['schedules'])['slots'][0]['start_time']);
 
 			}
 
-			$service_details['ratecard_id'] = head($schedule->schedules)->slots[0]->ratecard_id;
+			$service_details['ratecard_id'] = head($schedule['schedules'])['slots'][0]['ratecard_id'];
 
 			$gym_start_time = [
-				'hour'=>intval(date('G', strtotime(head($schedule->schedules)->slots[0]->start_time))),
-				'min'=>intval(date('i', strtotime(head($schedule->schedules)->slots[0]->start_time))),
+				'hour'=>intval(date('G', strtotime(head($schedule['schedules'])['slots'][0]['start_time']))),
+				'min'=>intval(date('i', strtotime(head($schedule['schedules'])['slots'][0]['start_time']))),
 			];
 	
 			$gym_end_time = [
-				'hour'=>intval(date('G', strtotime(head($schedule->schedules)->slots[count(head($schedule->schedules)->slots)-1]->start_time))),
-				'min'=>intval(date('i', strtotime(head($schedule->schedules)->slots[count(head($schedule->schedules)->slots)-1]->start_time))),
+				'hour'=>intval(date('G', strtotime(head($schedule['schedules'])['slots'][count(head($schedule['schedules'])['slots'])-1]['start_time']))),
+				'min'=>intval(date('i', strtotime(head($schedule['schedules'])['slots'][count(head($schedule['schedules'])['slots'])-1]['start_time']))),
 			];
 
 			if($service_details['servicecategory_id'] == 65){
@@ -1950,11 +1950,14 @@ class ServiceController extends \BaseController {
 			}
 		}else{
 
-			$pps_slots=json_decode(json_encode($schedule), true);
+			$pps_slots = $schedule;
 			if(!empty($pps_slots)&&!empty($pps_slots['slots']))
-			{
+			{	
+				
+				
+				$service_details['page_index'] = intval(date('d',$pps_slots['slots'][0]['data'][0]['epoch_start_time'])) - intval(date('d', time()));
 				$service_details['slots']=$pps_slots['slots'];
-				$service_details['single_slot'] = (count($pps_slots['slots']) == 1) && count($pps_slots['slots'][0]['data']) == 1;
+				$service_details['single_slot'] = !$service_details['page_index'] && count($pps_slots['slots']) == 1 && count($pps_slots['slots'][0]['data']) == 1;
 				$next_session_epoch = $pps_slots['slots'][0]['data'][0]['epoch_start_time'];
 				$next_session_slot = $pps_slots['slots'][0]['data'][0]['start_time'];
 				foreach($pps_slots['slots'] as $slot){
