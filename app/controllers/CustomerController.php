@@ -4324,6 +4324,7 @@ class CustomerController extends \BaseController {
 					$walletData["description"] = "Added FitCash+ on PROMOTION Rs - ".$cashback_amount;
 					if(isset($fitcashcode["valid_till"])){
 						$walletData["validity"] = $fitcashcode["valid_till"];
+						$walletData["description"] = "Added FitCash+ on PROMOTION Rs - ".$cashback_amount.". Expires On : ".date('d-m-Y', $walletData["validity"]);
 					}
 				}
 
