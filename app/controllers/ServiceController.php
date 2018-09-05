@@ -615,7 +615,7 @@ class ServiceController extends \BaseController {
 
   
     public function getScheduleByFinderService($request = false,$count = 1){
-
+		Log::info($_SERVER['REQUEST_URI']);
     	if(!$request){
 
     		$request = $_REQUEST;
