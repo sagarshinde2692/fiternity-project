@@ -1629,7 +1629,9 @@ class ServiceController extends \BaseController {
 			$service_details['pass_title'] = 'Quick Book';
 			
 			if($service_details['servicecategory_id'] == 65){
-
+				Log::info('$this->app_version');
+				
+				Log::info($this->app_version);
 				if($this->app_version < 5){
 					$service_details['type'] = 'gym';
 					$service_details['pass_title'] = 'All Day Pass';
@@ -1953,7 +1955,7 @@ class ServiceController extends \BaseController {
 			$pps_slots = $schedule;
 			if(!empty($pps_slots)&&!empty($pps_slots['slots']))
 			{	
-				
+				$service_details['pass_title'] = $service_details['pass_title'].date(' - jS M', $pps_slots['slots'][0]['data'][0]['epoch_start_time']);
 				
 				$service_details['page_index'] = intval(date('d',$pps_slots['slots'][0]['data'][0]['epoch_start_time'])) - intval(date('d', time()));
 				$service_details['slots']=$pps_slots['slots'];
