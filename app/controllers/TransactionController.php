@@ -138,7 +138,7 @@ class TransactionController extends \BaseController {
 
         $asshole_numbers = ["7838038094","7982850036","8220720704","8510829603","9990099996","8368952443"];
         
-        if(in_array(substr($data["customer_phone"], -10), $asshole_numbers)){
+        if(!empty($data["customer_phone"]) && in_array(substr($data["customer_phone"], -10), $asshole_numbers)){
             return Response::json("Can't book anything for you.", $this->error_status);
         }
 
