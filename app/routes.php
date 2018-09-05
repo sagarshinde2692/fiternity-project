@@ -1250,3 +1250,5 @@ Route::post('addcustomersfortrial','SchedulebooktrialsController@addCustomersFor
 Route::get('getcouponpackages','HomeController@getCouponPackages');
 
 Route::get('brandlistcity/{city}','BrandsController@brandlistcity');
+
+Route::get('getPendingPayment/{customer_id}','DebugController@getPendingPayment');

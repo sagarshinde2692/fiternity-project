@@ -3209,28 +3209,35 @@ Class Utilities {
         }
     }
 
-    public function hasPendingPayments(){
+    public function hasPendingPayments($customer_id = null){
 
-        if(Request::header('Authorization')){
+        if($customer_id){
+            $customer = Customer::find($customer_id);
+            $customer_email                     =       $customer->email;
+            $customer_id                        =       $customer->_id;
+        }else if(Request::header('Authorization')){
 			$decoded                            =       decode_customer_token();
             $customer_email                     =       $decoded->customer->email;
             $customer_id                        =       $decoded->customer->_id;
-            // $customer_phone                     =       isset($decoded->customer->contact_no) ? $decoded->customer->contact_no : "";
-            $pending_payment = \Booktrial::where('type', 'workout-session')->where('post_trial_verified_status', '!=', 'no')->where(function ($query) use($customer_email, $customer_id) { $query->orWhere('customer_email', $customer_email)->orWhere("logged_in_customer_id", $customer_id);})->where('going_status_txt','!=','cancel')->where('payment_done', false)->where(function($query){return $query->orWhere('post_trial_status', '!=', 'no show')->orWhere('post_trial_verified_status','!=', 'yes');})->first(['_id', 'amount']);
-
-			if(count($pending_payment) > 0){
-				return [
+        }
+        
+        if($customer_id){
+            $pending_payment = \Booktrial::where('type', 'workout-session')->where('post_trial_verified_status', '!=', 'no')->where(function ($query) use($customer_email, $customer_id) { $query->orWhere('customer_email', $customer_email)->orWhere("logged_in_customer_id", $customer_id);})->where('going_status_txt','!=','cancel')->where('payment_done', false)->first(['_id', 'amount']);
+    
+            if(count($pending_payment) > 0){
+                return [
                     'header'=>'Pending Payment',
                     'text'=>'Please complete your pending payment',
                     'trial_id'=>$pending_payment['_id'],
                     'amount'=>$pending_payment['amount']
                 ];
-			}else{
-				return false;
-			}
-		}else{
-			return false;
-		}
+            }else{
+                return false;
+            }
+        }
+            
+        return false;
+		
 
     }
 
