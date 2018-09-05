@@ -1626,6 +1626,7 @@ class ServiceController extends \BaseController {
 
 			// $service_details['title'] = $service_details['name'].' at '.$finder['title'];
 			
+			$service_details['pass_title'] = 'Quick Book';
 			
 			if($service_details['servicecategory_id'] == 65){
 
@@ -1640,7 +1641,6 @@ class ServiceController extends \BaseController {
 			}else{
 				
 				$service_details['type'] = 'studio';
-				$service_details['pass_title'] = 'Quick Book';
 				
 			}
 			$service_details['title'] = preg_replace('/membership/i', 'Workout', $service_details['name']).' at '.$finder['title'];
