@@ -4218,7 +4218,8 @@ class CustomerController extends \BaseController {
 
 			$decoded          				=       decode_customer_token();
 			$customer_id 					= 		intval($decoded->customer->_id);
-
+			$customer_email 				= 		$decoded->customer->email;
+			
 			$already_applied_promotion 		= 		Customer::where('_id',$customer_id)->whereIn('applied_promotion_codes',[$code])->count();
 
 			if($code == 'gwdfit'){
@@ -4243,6 +4244,14 @@ class CustomerController extends \BaseController {
 				$already_applied_promotion 		= 		Customer::whereIn('applied_promotion_codes',[$code])->count();
 				if($already_applied_promotion >= $fitcashcode->quantity){
 					$resp 	= 	array('status' => 404,'message' => "Promotion code already used by other customers");
+					return Response::json($resp,404);
+				}
+			}
+
+			if (is_array($fitcashcode->customer_emails)) {
+				
+				if(!in_array(strtolower($customer_email), $fitcashcode->customer_emails)){
+					$resp 	= 	array('status' => 404,'message' => "Invalid Promotion Code");
 					return Response::json($resp,404);
 				}
 			}
@@ -4315,6 +4324,7 @@ class CustomerController extends \BaseController {
 					$walletData["description"] = "Added FitCash+ on PROMOTION Rs - ".$cashback_amount;
 					if(isset($fitcashcode["valid_till"])){
 						$walletData["validity"] = $fitcashcode["valid_till"];
+						$walletData["description"] = "Added FitCash+ on PROMOTION Rs - ".$cashback_amount.". Expires On : ".date('d-m-Y', strtotime('-1 day',$walletData["validity"]));
 					}
 				}
 
