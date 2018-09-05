@@ -1249,3 +1249,5 @@ Route::get('updateratecardslotsbyid/{order_id}','TransactionController@updateRat
 Route::get('getcouponpackages','HomeController@getCouponPackages');
 
 Route::get('brandlistcity/{city}','BrandsController@brandlistcity');
+
+Route::get('getPendingPayment/{customer_id}','DebugController@getPendingPayment');
