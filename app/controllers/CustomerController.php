@@ -4248,7 +4248,7 @@ class CustomerController extends \BaseController {
 				}
 			}
 
-			if (!empty($fitcashcode->customer_emails) && is_array($fitcashcode->customer_emails)) {
+			if (is_array($fitcashcode->customer_emails)) {
 				
 				if(!in_array(strtolower($customer_email), $fitcashcode->customer_emails)){
 					$resp 	= 	array('status' => 404,'message' => "Invalid Promotion Code");
