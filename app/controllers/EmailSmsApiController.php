@@ -523,6 +523,8 @@ class EmailSmsApiController extends \BaseController {
     public function landingpagecallback(){
 
         $data = Input::json()->all();
+        Log::info("landingpagecallback");
+        Log::info($data);
 
         if($this->vendor_token){
 
