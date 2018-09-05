@@ -4247,6 +4247,16 @@ class CustomerController extends \BaseController {
 				}
 			}
 
+			if (!empty($fitcashcode->customer_emails) && is_array($fitcashcode->customer_emails)) {
+				
+				$customer = Customer::find($customer_id);
+				
+				if(in_array(strotlower($customer['email']), $fitcashcode->customer_emails)){
+					$resp 	= 	array('status' => 404,'message' => "Invalid Promotion Code");
+					return Response::json($resp,404);
+				}
+			}
+
 			$customer_update 	=	Customer::where('_id', $customer_id)->push('applied_promotion_codes', $code, true);
 			$cashback_amount = 0;
 
