@@ -1874,9 +1874,9 @@ class ServiceController extends \BaseController {
 			'within_time'=>$within_time
 		];
 		
-		if($service_details['servicecategory_id'] == 65){
-			$schedule_data['show_all'] = true;
-		}
+		// if($service_details['servicecategory_id'] == 65){
+		// 	$schedule_data['show_all'] = true;
+		// }
 		
 		if(isset($_GET['keyword']) && $_GET['keyword']){
 			$schedule_data['recursive'] = true;
