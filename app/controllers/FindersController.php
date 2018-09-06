@@ -2281,7 +2281,10 @@ class FindersController extends \BaseController {
 		$this->cacheapi->flushTagKey('finder_detail_ios_4_4_3',$finder->slug);
 		$this->cacheapi->flushTagKey('finder_detail_android_4_4_3',$finder->slug);
 		
-
+		if(!empty($reviewdata['service_id'])){
+			$service = Service::find($reviewdata['service_id'], ['slug']);
+			$this->cacheapi->flushTagKey('service_detail',$finder->slug.'-'.$service_slug);
+		}
 
 		
 		if($this->vendor_token){
