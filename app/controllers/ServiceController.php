@@ -974,7 +974,7 @@ class ServiceController extends \BaseController {
 								if(!empty($slot['price'])){
 
 									if(empty($ck['peak'])){
-										$slot['image'] = "https://b.fitn.in/paypersession/non_rush_hour_icon@2x%20%281%29.png";
+										$slot['image'] = "https://b.fitn.in/paypersession/non_rush_hour_icon_18px.png";
 										$non_peak_exists = true;
 									}
 								}
