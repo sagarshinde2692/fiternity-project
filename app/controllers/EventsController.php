@@ -137,8 +137,7 @@ class EventsController extends \BaseController {
             }
         }
         // Get Host Data an validate booktrial ID......
-        $order = Order::where('_id', $req['booktrial_id'])
-            ->with('invite')
+        $order = Order::where('_id', $req['order_id'])
             ->get(array(
                 'customer_id', 'customer_name', 'customer_email','customer_phone','service_name',
                 'type', 'finder_name', 'finder_location','finder_address',
