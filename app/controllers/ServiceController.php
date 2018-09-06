@@ -1789,7 +1789,7 @@ class ServiceController extends \BaseController {
 						else unset($service_details['playOverVideo']);
 			
 			// return $service_details;
-			$service_details['review_url'] = Config::get('app.url').'/finderreviewdata/'.$service_details['finder_id'].'?service_name='.urlencode($service_details['name']).'&service_location='.urlencode($service_details['location']['name']);
+			$service_details['review_url'] = Config::get('app.url').'/finderreviewdata/'.$service_details['finder_id'].'?service_id='.$service_details['_id'].'&service_name='.urlencode($service_details['name']).'&service_location='.urlencode($service_details['location']['name']);
 			
 			// return $service_details;
 			// $service_details = array_except($service_details, array('gallery','videos','vendor_id','location_id','city_id','service','schedules','updated_at','created_at','traction','timings','trainers','offer_available','showOnFront','flags','remarks','trial_discount','rockbottom_price','threedays_trial','vip_trial','seo','batches','workout_tags','category', 'geometry', 'info', 'what_i_should_expect', 'what_i_should_carry', 'custom_location', 'name', 'workout_intensity', 'session_type', 'latlon_change', 'membership_end_date', 'membership_start_date', 'workout_results', 'vendor_name', 'location_name'));

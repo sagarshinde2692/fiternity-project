@@ -6107,6 +6107,10 @@ class FindersController extends \BaseController {
 
 		$review_data = $this->utilities->reviewScreenData($finder);
 
+		if(!empty($_GET['service_id'])){
+			$review_data['service_id'] = intval($_GET['service_id']);
+		}
+
 		$review_data['finder_id'] = $finder['_id'];
 		$review_data['optional'] = false;
 		$review_data['show_rtc'] = false;
