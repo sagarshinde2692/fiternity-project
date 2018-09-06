@@ -6087,6 +6087,8 @@ class FindersController extends \BaseController {
 	}
 
 	public function finderReviewData($finder_id){
+
+		Log::info($_SERVER['REQUEST_URI']);
 		
 		Finder::$withoutAppends = true;		
 		
