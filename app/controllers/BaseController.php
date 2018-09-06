@@ -94,5 +94,18 @@ class BaseController extends Controller {
         return time();
     }
 
+    public function errorMessage($errors){
+
+        $errors = json_decode(json_encode($errors));
+        $message = array();
+        foreach ($errors as $key => $value) {
+            $message[$key] = $value[0];
+        }
+
+        $message = implode(',', array_values($message));
+
+        return $message;
+    }
+
 
 }
