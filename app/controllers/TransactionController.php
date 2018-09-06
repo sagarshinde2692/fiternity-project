@@ -936,18 +936,19 @@ class TransactionController extends \BaseController {
             ];
         }
         
-        if(empty($data['session_payment'])){
-           
-            if(!empty($data['coupon_code']) && !empty($data['coupon_discount_amount'])){
-                $resp['data']["coupon_details"] = [];
-                $resp['data']['coupon_details']['title'] = strtoupper($data['coupon_code']);
-                $resp['data']['coupon_details']['remove_title'] =  strtoupper($data['coupon_code'])." applied";
-                $resp['data']['coupon_details']['applied'] =  true;
-                if(isset($data['coupon_description'])){
-                    $resp['data']['coupon_details']['description'] = $data['coupon_description'];
-                }
+        
+        if(!empty($data['coupon_code']) && !empty($data['coupon_discount_amount'])){
+            $resp['data']["coupon_details"] = [];
+            $resp['data']['coupon_details']['title'] = strtoupper($data['coupon_code']);
+            $resp['data']['coupon_details']['remove_title'] =  strtoupper($data['coupon_code'])." applied";
+            $resp['data']['coupon_details']['applied'] =  true;
+            if(isset($data['coupon_description'])){
+                $resp['data']['coupon_details']['description'] = $data['coupon_description'];
             }
-    
+        }
+        
+        if(empty($data['session_payment'])){
+            
             if(in_array($order['type'], ['booktrials', 'workout-session'])){
                 $resp['data']["quantity_details"] = [
                     "field" => "No of People",
