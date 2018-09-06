@@ -2283,7 +2283,7 @@ class FindersController extends \BaseController {
 		
 		if(!empty($reviewdata['service_id'])){
 			$service = Service::find($reviewdata['service_id'], ['slug']);
-			$this->cacheapi->flushTagKey('service_detail',$finder->slug.'-'.$service_slug);
+			$this->cacheapi->flushTagKey('service_detail',$finder->slug.'-'.$service->slug);
 		}
 
 		
