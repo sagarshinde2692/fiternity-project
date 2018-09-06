@@ -251,6 +251,8 @@ if(!function_exists('citywise_category')){
                 ["name" => "Dance","slug" => "dance-classes"],
                 ["name" => "Pilates","slug" => "pilates-classes"],
                 ["name" => "Spinning And Indoor Cycling","slug" => "spinning-classes"],
+                ["name" => "Luxury Hotels","slug" => "luxury-hotels"],
+                ["name" => "Swimming","slug" => "swimming-pools"],
                 // ["name" => "Healthy Tiffins","slug" => "healthy-tiffins"],
                 // ["name" => "Personal Trainers","slug" => "personal-trainers"],
                 // ["name" => "Sport Nutrition Supplement Stores","slug" => "sport-nutrition-supplement-stores"],
@@ -270,6 +272,8 @@ if(!function_exists('citywise_category')){
                 ["name" => "MMA And Kick Boxing","slug" => "mma-and-kick-boxing-classes"],
                 ["name" => "Cross Functional Training","slug" => "functional-training"],
                 ["name" => "Dance","slug" => "dance-classes"],
+                ["name" => "Swimming","slug" => "swimming-pools"],
+                ["name" => "Aqua Fitness","slug" => "aqua-fitness"]
                 // ["name" => "Pilates","slug" => "pilates-classes"]
                 // ["name" => "Spinning And Indoor Cycling","slug" => "spinning-classes"],
                 // ["name" => "Healthy Tiffins","slug" => "healthy-tiffins"],
@@ -3730,10 +3734,10 @@ if (!function_exists(('citywiseServiceCategoryIds'))){
                 $ids = [65, 19, 2, 1, 3];
                 break;
             case 'hyderabad':
-                $ids = [65, 19, 5, 3, 1, 4, 2, 86];
+                $ids = [65, 19, 5, 3, 1, 4, 2, 86, 123];
                 break;
             case 'ahmedabad':
-                $ids = [65, 19, 1, 3, 5];
+                $ids = [65, 19, 1, 3, 5, 123];
                 break;
             case 'all':
                 $ids = [65, 19, 5, 3, 1, 123, 114, 4, 2, 86];
