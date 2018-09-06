@@ -1135,6 +1135,14 @@ Class CustomerSms extends VersionNextSms{
 		
 		return $this->common($label,$to,$data);	
 	}
+	public function inviteEvent($data){
+		
+		$label = 'InviteEvent-Customer';
+		
+		$to = $data['invitee']['invitee_phone'];
+		
+		return $this->common($label,$to,$data);	
+	}
 	
 	public function common($label,$to,$data,$delay = 0){
 
