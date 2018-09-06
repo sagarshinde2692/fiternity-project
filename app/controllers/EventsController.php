@@ -65,4 +65,133 @@ class EventsController extends \BaseController {
 
 		return Response::json(["message"=>"Data Not Found"],404);
 	}
+
+	public function inviteForEvent(){
+        
+        $req = Input::json()->all();
+        
+        $rules = [
+            'order_id' => 'required|integer|numeric',
+            'invitees' => 'required|array',
+        ];
+        $validator = Validator::make($req, $rules);
+        if($validator->fails()) {
+            $resp = array('status' => 400,'message' =>$this->errorMessage($validator->errors()));
+            return  Response::json($resp, 400);
+        }
+        Log::info('inviteForEvent',$req);
+        $inviteesData = [];
+        foreach ($req['invitees'] as $value){
+            
+            $rules = [
+                'name' => 'required|string',
+                'input' => 'required|string',
+            ];
+            $messages = [
+                'name' => 'invitee name is required',
+                'input' => 'invitee email or phone is required'
+            ];
+            $validator = Validator::make($value, $rules, $messages);
+            
+            if ($validator->fails()) {
+                return Response::json(
+                    array(
+                        'status' => 400,
+                        'message' => $this->errorMessage($validator->errors()
+                    )),400
+                );
+            }
+            
+            $inviteeData = ['name'=>$value['name']];
+            if(filter_var($value['input'], FILTER_VALIDATE_EMAIL) != '') {
+                // valid address
+                $inviteeData = array_add($inviteeData, 'email', $value['input']);
+            }
+            else if(filter_var($value['input'], FILTER_VALIDATE_REGEXP, array(
+                    "options" => array("regexp"=>"/^[2-9]{1}[0-9]{9}$/")
+                )) != ''){
+                // valid phone
+                $inviteeData = array_add($inviteeData, 'phone', $value['input']);
+            }
+            array_push($inviteesData, $inviteeData);
+        }
+        // return $inviteesData;
+        foreach ($inviteesData as $value){
+            $rules = [
+                'name' => 'required|string',
+                'email' => 'required_without:phone|email',
+                'phone' => 'required_without:email',
+            ];
+            $messages = [
+                'email.required_without' => 'invitee email or phone is required',
+                'phone.required_without' => 'invitee email or phone is required'
+            ];
+            $validator = Validator::make($value, $rules, $messages);
+            if ($validator->fails()) {
+                return Response::json(
+                    array(
+                        'status' => 400,
+                        'message' => $this->errorMessage($validator->errors()
+                        )),400
+                );
+            }
+        }
+        // Get Host Data an validate booktrial ID......
+        $order = Order::where('_id', $req['booktrial_id'])
+            ->with('invite')
+            ->get(array(
+                'customer_id', 'customer_name', 'customer_email','customer_phone','service_name',
+                'type', 'finder_name', 'finder_location','finder_address',
+                'schedule_slot_start_time','schedule_date','schedule_date_time','type','root_booktrial_id'
+            ))
+            ->first();
+        if(!$order){
+            return Response::json(
+                array(
+                    'status' => 422,
+                    'message' => "Invalid trial id"
+                ),422
+            );
+        }
+        // return $order = $order->toArray();
+        
+        // $emails = array_fetch($inviteesData, 'email');
+        // $phones = array_fetch($inviteesData, 'phone');
+        // if(array_where($emails, function ($key, $value) use($order)  {
+        //     if($value == $order['customer_email']){
+        //         return true;
+        //     }
+        // })) {
+        //     return Response::json(
+        //         array(
+        //             'status' => 422,
+        //             'message' => 'You cannot invite yourself'
+        //         ),422
+        //     );
+        // }
+        // if(array_where($phones, function ($key, $value) use($order)  {
+        //     if($value == $order['customer_phone']){
+        //         return true;
+        //     }
+        // })) {
+        //     return Response::json(
+        //         array(
+        //             'status' => 422,
+        //             'message' => 'You cannot invite yourself'
+        //         ),422
+        //     );
+        // }
+        // // Save Invite info..........
+        // foreach ($inviteesData as $invitee){
+            
+        //     isset($templateData['invitee_email']) ? $this->customermailer->inviteEmail($order['type'], $templateData) : null;
+        //     isset($templateData['invitee_phone']) ? $this->customersms->inviteSMS($order['type'], $templateData) : null;
+        // }
+        return Response::json(
+            array(
+                'status' => 200,
+                'message' => 'Invitation has been sent successfully'
+            ),200
+        );
+    }
 }
