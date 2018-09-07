@@ -1109,7 +1109,17 @@ Class CustomerReward {
         }
 
         if(in_array($finder_id, Config::get('app.mixed_reward_finders'))){
-            $setAlgo = array('cashback'=>10,'fitcash'=>10,'discount'=>0);
+            
+            $mixedreward_content = \MixedRewardContent::where('finder_id', $finder_id)->first();
+            
+            $custom_cashback = intval($mixedreward_content->cashback);
+            
+            if(!empty($custom_cashback)){
+                
+                $setAlgo = array('cashback'=>$custom_cashback,'fitcash'=>$custom_cashback,'discount'=>0);
+
+            }
+            
         }
 
         $power_world_gym_vendor_ids = Config::get('app.power_world_gym_vendor_ids');
