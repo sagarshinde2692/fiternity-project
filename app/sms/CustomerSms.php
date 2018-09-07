@@ -184,6 +184,11 @@ Class CustomerSms extends VersionNextSms{
 		if($data['type'] == "diet_plan"){
 			$label = 'Diet-PG-Customer';
 		}
+		
+		if(!empty($data['sub_type']) && $data['sub_type'] ==  "music-run"){
+			$label = 'MusicRun-Customer';
+		}
+		
 		$to = $data['customer_phone'];
 
 		return $this->common($label,$to,$data);
