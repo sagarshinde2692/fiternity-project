@@ -2753,7 +2753,7 @@ class CustomerController extends \BaseController {
 		$decoded = $this->customerTokenDecode($jwt_token);
 		$customer_id = $decoded->customer->_id;
 
-
+		Log::info($customer_id);
 		$customer = Customer::find((int)$customer_id);
 
 		if(isset($customer->demonetisation)){
@@ -2761,6 +2761,18 @@ class CustomerController extends \BaseController {
 			$wallet_summary = [];
 
 			$wallet_balance = Wallet::active()->where('customer_id',$customer_id)->where('balance','>',0)->sum('balance');
+
+			$restricted_wallet_balance = Wallet::active()->where('customer_id',$customer_id)->where('balance','>',0)->where('valid_finder_id', 'exists', true)->sum('balance');
+			
+			$non_restricted_wallet_balance = 0;
+			
+			if($restricted_wallet_balance){
+	
+				$non_restricted_wallet_balance = Wallet::active()->where('customer_id',$customer_id)->where('balance','>',0)->where('valid_finder_id', 'exists', false)->sum('balance');
+
+			}
+			
+			$restricted_wallet_balance = Wallet::active()->where('customer_id',$customer_id)->where('balance','>',0)->where('valid_finder_id', 'exists', true)->sum('balance');
 
 			$walletTransaction = WalletTransaction::where('customer_id',$customer_id)->orderBy('updated_at','DESC')->get()->groupBy('group');
 
@@ -2843,25 +2855,34 @@ class CustomerController extends \BaseController {
 				$wallet_summary[0]['balance'] = $wallet_balance;
 			}
 
-			return Response::json(
-				array(
-					'status' => 200,
-					'data' => $wallet_summary,
-					'wallet_balance'=>$wallet_balance,
-					'fitcash' => null,
-					'fitcash_plus' => [
-						'title' => 'FITCASH+',
-						'balance'=>$wallet_balance,
-						'info'=>[
-							'title'=>'What is FitCash+?',
-							'description' => "With FitCash+ you can redeem the wallet amount on your transaction/booking on Fitternity ranging from workout sessions, memberships, and healthy tiffin subscription basis the term of use through the amount availed. The term of use is mentioned in your Fitternity profile under 'Wallet' - transaction summary.\nIf you have Fitcash+ wallet balance & are attempting to transact - the wallet amount will be used on the primary basis on your transaction & the discount code will be applicable over & above that. For more info click here",
-							'short_description' => "refer"."\n"."a friend"."\n"."and earn FitCash+"
-						]
-					],
-					'add_fitcash_text'=> "You get 10% extra on the amount you add into your wallet."
-					),
-				200
-			);
+			$resp = [
+				'status' => 200,
+				'data' => $wallet_summary,
+				'wallet_balance'=>$wallet_balance,
+				'fitcash' => null,
+				'fitcash_plus' => [
+					'title' => 'FITCASH+',
+					'balance'=>$wallet_balance,
+					'info'=>[
+						'title'=>'What is FitCash+?',
+						'description' => "With FitCash+ you can redeem the wallet amount on your transaction/booking on Fitternity ranging from workout sessions, memberships, and healthy tiffin subscription basis the term of use through the amount availed. The term of use is mentioned in your Fitternity profile under 'Wallet' - transaction summary.\nIf you have Fitcash+ wallet balance & are attempting to transact - the wallet amount will be used on the primary basis on your transaction & the discount code will be applicable over & above that. For more info click here",
+						'short_description' => "refer"."\n"."a friend"."\n"."and earn FitCash+"
+					]
+				],
+				'add_fitcash_text'=> "You get 10% extra on the amount you add into your wallet."
+			];
+
+			if($restricted_wallet_balance){
+				
+				$resp['restricted']	= $restricted_wallet_balance;
+				
+				if($non_restricted_wallet_balance){
+					$resp['non_restricted']	= $non_restricted_wallet_balance;
+				}
+			
+			}
+
+			return Response::json($resp);
 
 		}else{
 
