@@ -1242,7 +1242,6 @@ Route::get('lostFitcode','DebugController@lostFitcode');
 
 Route::post('getcustomercarddetails','CustomerController@getCustomerCardDetails');
 
-<<<<<<< HEAD
 Route::get('updateRatecardSlots','DebugController@updateRatecardSlots');
 
 Route::get('updateratecardslotsbyid/{order_id}','TransactionController@updateRatecardSlotsByOrderId');
@@ -1254,8 +1253,6 @@ Route::get('brandlistcity/{city}','BrandsController@brandlistcity');
 
 Route::get('getPendingPayment/{customer_id}','DebugController@getPendingPayment');
 Route::post('inviteforevent','EventsController@inviteForEvent');
-=======
 Route::post('addafriendforbooking','CustomerController@addafriendforbooking');
 Route::get('getbookingfriends','CustomerController@getallBookingfriends');
 Route::post('webcheckout','TransactionController@webcheckout');
->>>>>>> purchaseFlowAPI
