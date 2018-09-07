@@ -137,8 +137,7 @@ class EventsController extends \BaseController {
             }
         }
         // Get Host Data an validate booktrial ID......
-        $order = Order::where('_id', $req['booktrial_id'])
-            ->with('invite')
+        $order = Order::where('_id', $req['order_id'])
             ->get(array(
                 'customer_id', 'customer_name', 'customer_email','customer_phone','service_name',
                 'type', 'finder_name', 'finder_location','finder_address',
@@ -153,40 +152,44 @@ class EventsController extends \BaseController {
                 ),422
             );
         }
-        // return $order = $order->toArray();
         
-        // $emails = array_fetch($inviteesData, 'email');
-        // $phones = array_fetch($inviteesData, 'phone');
-        // if(array_where($emails, function ($key, $value) use($order)  {
-        //     if($value == $order['customer_email']){
-        //         return true;
-        //     }
-        // })) {
-        //     return Response::json(
-        //         array(
-        //             'status' => 422,
-        //             'message' => 'You cannot invite yourself'
-        //         ),422
-        //     );
-        // }
-        // if(array_where($phones, function ($key, $value) use($order)  {
-        //     if($value == $order['customer_phone']){
-        //         return true;
-        //     }
-        // })) {
-        //     return Response::json(
-        //         array(
-        //             'status' => 422,
-        //             'message' => 'You cannot invite yourself'
-        //         ),422
-        //     );
-        // }
-        // // Save Invite info..........
-        // foreach ($inviteesData as $invitee){
+        $order = $order->toArray();
+        
+        $emails = array_fetch($inviteesData, 'email');
+        $phones = array_fetch($inviteesData, 'phone');
+        if(array_where($emails, function ($key, $value) use($order)  {
+            if($value == $order['customer_email']){
+                return true;
+            }
+        })) {
+            return Response::json(
+                array(
+                    'status' => 422,
+                    'message' => 'You cannot invite yourself'
+                ),422
+            );
+        }
+        if(array_where($phones, function ($key, $value) use($order)  {
+            if($value == $order['customer_phone']){
+                return true;
+            }
+        })) {
+            return Response::json(
+                array(
+                    'status' => 422,
+                    'message' => 'You cannot invite yourself'
+                ),422
+            );
+        }
+        // Save Invite info..........
+        // return $inviteesData; 
+        $customersms = new \App\Sms\CustomerSms;
+        foreach ($inviteesData as $invitee){
+            $order['invitee'] = $invitee;
             
-        //     isset($templateData['invitee_email']) ? $this->customermailer->inviteEmail($order['type'], $templateData) : null;
-        //     isset($templateData['invitee_phone']) ? $this->customersms->inviteSMS($order['type'], $templateData) : null;
-        // }
+            // isset($templateData['invitee_email']) ? $this->customermailer->inviteEmail($order['type'], $templateData) : null;
+            isset($invitee['phone']) ? $customersms->inviteEvent($order) : null;
+        }
         return Response::json(
             array(
                 'status' => 200,
