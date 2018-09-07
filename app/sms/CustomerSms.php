@@ -1139,7 +1139,7 @@ Class CustomerSms extends VersionNextSms{
 		
 		$label = 'InviteEvent-Customer';
 		
-		$to = $data['invitee']['invitee_phone'];
+		$to = $data['invitee']['phone'];
 		
 		return $this->common($label,$to,$data);	
 	}

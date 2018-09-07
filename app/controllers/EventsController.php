@@ -182,10 +182,13 @@ class EventsController extends \BaseController {
             );
         }
         // Save Invite info..........
+        // return $inviteesData; 
+        $customersms = new \App\Sms\CustomerSms;
         foreach ($inviteesData as $invitee){
             $order['invitee'] = $invitee;
+            
             // isset($templateData['invitee_email']) ? $this->customermailer->inviteEmail($order['type'], $templateData) : null;
-            isset($invitee['invitee_phone']) ? $this->customersms->inviteEvent($order) : null;
+            isset($invitee['phone']) ? $customersms->inviteEvent($order) : null;
         }
         return Response::json(
             array(
