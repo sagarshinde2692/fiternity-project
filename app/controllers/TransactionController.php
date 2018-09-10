@@ -542,6 +542,8 @@ class TransactionController extends \BaseController {
                         $data['combo_discount'] = 400;
                         $data['combo_discount_remark'] = "Buy 4 tickets, get 400 off";
                         $data['amount'] = $data['amount'] - $data['combo_discount'];
+                        $data['amount_customer'] = $data['amount_customer'] - $data['combo_discount'];
+                        $data['amount_finder'] = $data['amount_finder'] - $data['combo_discount'];
                     }
 
                 }else{
@@ -612,7 +614,9 @@ class TransactionController extends \BaseController {
 
         if(!empty($data['donation_amount']) && is_numeric($data['donation_amount'])){
             
-            $data['amount'] = $data['amount'] + $data['donation_amount'];
+            $data['amount_final'] = $data['amount'] = $data['amount'] + $data['donation_amount'];
+            $data['amount_customer'] = $data['amount_customer'] + $data['donation_amount'];
+            $data['amount_finder'] = $data['amount_finder'] + $data['donation_amount'];
         
         }
         
