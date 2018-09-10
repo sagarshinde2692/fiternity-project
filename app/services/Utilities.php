@@ -5406,7 +5406,7 @@ Class Utilities {
 
         $rules = [
             'firstname'=>'required | string',
-            'lastname'=>'required | string',
+            // 'lastname'=>'required | string',
             'customer_email'=>'required | email',
             'customer_phone'=>'required|regex:/[0-9]{10}/',
         ];
@@ -5417,7 +5417,11 @@ Class Utilities {
             return array('status' => 404,'message' => error_message($validator->errors()));
         }
 
-        $data['customer_name'] = $customer['firstname'].''.$customer['lastname'];
+        $data['customer_name'] = $customer['firstname'];
+
+        if(!empty($customer['lastname'])){
+            $data['customer_name'] = $data['customer_name'].' '.$customer['lastname'];
+        }
 
         $data = array_merge($data, array_only($customer, ['customer_email', 'customer_phone']));
 

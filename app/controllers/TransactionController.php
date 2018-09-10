@@ -521,7 +521,7 @@ class TransactionController extends \BaseController {
             $data['vertical_type'] = 'event';
             $data['membership_duration_type'] = 'event';
             
-            $data['ticket_quantity'] = isset($data['ticket_quantity']) ? $data['ticket_quantity'] : 1;
+            $data['ticket_quantity'] = isset($data['ticket_quantity']) ? intval($data['ticket_quantity']) : 1;
             
             if(isset($data['ticket_id'])){
                 
@@ -538,6 +538,12 @@ class TransactionController extends \BaseController {
 
                     $data['amount_customer'] = $data['amount'] = $data['amount_finder'] = $data['ticket_quantity'] * $ticket->price;
 
+                    if($data['ticket_quantity'] == 4){
+                        $data['combo_discount'] = 400;
+                        $data['combo_discount_remark'] = "Buy 4 tickets, get 400 off";
+                        $data['amount'] = $data['amount'] - $data['combo_discount'];
+                    }
+
                 }else{
 
                     $resp   =   array('status' => 400,'message' => "Ticket not found");
@@ -551,6 +557,8 @@ class TransactionController extends \BaseController {
                 return Response::json($resp,$this->error_status);
                 
             }
+
+            
 
             $finder = Finder::where('_id', $data['finder_id'])->first(['title']);
             if($finder){
