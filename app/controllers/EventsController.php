@@ -138,12 +138,17 @@ class EventsController extends \BaseController {
         }
         // Get Host Data an validate booktrial ID......
         $order = Order::where('_id', $req['order_id'])
-            ->get(array(
-                'customer_id', 'customer_name', 'customer_email','customer_phone','service_name',
-                'type', 'finder_name', 'finder_location','finder_address',
-                'schedule_slot_start_time','schedule_date','schedule_date_time','type','root_booktrial_id'
-            ))
+            ->get()
             ->first();
+
+        if($order['type'] == 'events'){
+            if(isset($order['event_id']) && $order['event_id'] != ''){
+                $order['event'] = DbEvent::find(intval($order['event_id']))->toArray();
+            }
+            if(isset($order['ticket_id']) && $order['ticket_id'] != ''){
+                $order['ticket'] = Ticket::find(intval($order['ticket_id']))->toArray();
+            }
+        }
         if(!$order){
             return Response::json(
                 array(
@@ -188,6 +193,7 @@ class EventsController extends \BaseController {
             $order['invitee'] = $invitee;
             
             // isset($templateData['invitee_email']) ? $this->customermailer->inviteEmail($order['type'], $templateData) : null;
+            // return $order;
             isset($invitee['phone']) ? $customersms->inviteEvent($order) : null;
         }
         return Response::json(
