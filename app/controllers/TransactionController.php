@@ -614,7 +614,7 @@ class TransactionController extends \BaseController {
 
         if(!empty($data['donation_amount']) && is_numeric($data['donation_amount'])){
             
-            $data['amount'] = $data['amount'] + $data['donation_amount'];
+            $data['amount_final'] = $data['amount'] = $data['amount'] + $data['donation_amount'];
             $data['amount_customer'] = $data['amount_customer'] + $data['donation_amount'];
             $data['amount_finder'] = $data['amount_finder'] + $data['donation_amount'];
         
