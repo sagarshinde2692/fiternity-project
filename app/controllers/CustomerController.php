@@ -3067,6 +3067,9 @@ class CustomerController extends \BaseController {
 	}
 	public function getBookingFriends($customer_id){
 		$customer = Customer::find((int)$customer_id);
+		if(!isset($customer["friends"])){
+			$customer["friends"] = [];
+		}
 		$allBookingFriends = array(array("name" => $customer->name, "email" => $customer->email, "phone" => $customer->contact_no, "gender" => $customer->gender, "default"=> true));
 		$allBookingFriends  = array_merge($allBookingFriends, $customer["friends"]);
 		return $allBookingFriends;
