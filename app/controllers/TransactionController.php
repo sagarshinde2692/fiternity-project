@@ -6297,5 +6297,22 @@ class TransactionController extends \BaseController {
         Log::info('updateRatecardSlotsByOrderId');
         $this->utilities->updateRatecardSlots(['order_id'=>$order_id]);
     }
+    public function webcheckout(){
+        $data = Input::json()->all();
+        $rules = array(
+            'txnId'=>'required',
+        );
+        $validator = Validator::make($data,$rules);
+        $jwt_token = Request::header('Authorization');
+
+        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+            $decoded = customerTokenDecode($jwt_token);
+            // $data['logged_in_customer_id'] = (int)$decoded->customer->_id;
+        }
+        $order = Order::where("txnid",$data["txnId"])->get();
+        return $order; 
+
+        
+    }
 
 }

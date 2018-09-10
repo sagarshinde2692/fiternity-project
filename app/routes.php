@@ -1244,3 +1244,8 @@ Route::post('debitmoney/mobikwik','PaymentGatewayController@debitMoneyMobikwik')
 Route::match(array('GET', 'POST'),'verifyaddmoney/mobikwik', 'PaymentGatewayController@verifyAddMoneyMobikwik');
 Route::post('checkstatus/mobikwik','PaymentGatewayController@checkStatusMobikwik');
 Route::get('verifypayment/{status}','PaymentGatewayController@verifyPayment');
+
+Route::post('addafriendforbooking','CustomerController@addafriendforbooking');
+Route::get('getbookingfriends','CustomerController@getallBookingfriends');
+Route::post('webcheckout','TransactionController@webcheckout');
+
