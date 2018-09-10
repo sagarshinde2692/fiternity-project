@@ -273,13 +273,13 @@ if(!function_exists('citywise_category')){
                 ["name" => "Cross Functional Training","slug" => "functional-training"],
                 ["name" => "Dance","slug" => "dance-classes"],
                 ["name" => "Swimming","slug" => "swimming-pools"],
-                ["name" => "Aqua Fitness","slug" => "aqua-fitness"]
+                // ["name" => "Aqua Fitness","slug" => "aqua-fitness"]
                 // ["name" => "Pilates","slug" => "pilates-classes"]
                 // ["name" => "Spinning And Indoor Cycling","slug" => "spinning-classes"],
                 // ["name" => "Healthy Tiffins","slug" => "healthy-tiffins"],
                 // ["name" => "Personal Trainers","slug" => "personal-trainers"],
                 // ["name" => "Sport Nutrition Supplement Stores","slug" => "sport-nutrition-supplement-stores"],
-                // ["name" => "Aerial Fitness","slug" => "aerial-fitness"],
+                ["name" => "Aerial Fitness","slug" => "aerial-fitness"],
                 // ["name" => "Pre-natal Classes","slug" => "pre-natal-classes"],
                 // ["name" => "Kids Fitness","slug" => "kids-fitness-classes"]
             ];
