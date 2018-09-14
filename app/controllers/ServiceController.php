@@ -846,7 +846,8 @@ class ServiceController extends \BaseController {
 						if($finder['flags']['newly_launched_date']->sec>$timestamp)
 							$dontShow=true;
 					}
-					if(!isNotInoperationalDate($date, $city_id, $slot, $findercategory_id)||(isset($dontShow)&&$dontShow)){
+
+					if(!isNotInoperationalDate($date, $city_id, $slot, $findercategory_id, empty($ratecard_price) ? true : false)||(isset($dontShow)&&$dontShow)){
 						continue;
 					}
 

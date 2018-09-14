@@ -2617,6 +2617,8 @@ Class Utilities {
                 $query->where('valid_finder_id','exists',false);
             }
 
+            $query->where(function($query) use($finder_id) {$query->orWhere('invalid_finder_id','exists',false)->orWhereNot('invalid_finder_id',$finder_id);});
+
         }else{
 
             $query->where('valid_finder_id','exists',false);

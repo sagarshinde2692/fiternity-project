@@ -152,7 +152,7 @@ if(!function_exists('citywise_category')){
                 ["name" => "Healthy Tiffins","slug" => "healthy-tiffins"],
                 // ["name" => "Personal Trainers","slug" => "personal-trainers"],
                 // ["name" => "Sport Nutrition Supplement Stores","slug" => "sport-nutrition-supplement-stores"],
-                // ["name" => "Luxury Hotels","slug" => "luxury-hotels"],
+                ["name" => "Luxury Hotels","slug" => "luxury-hotels"],
             	["name" => "Swimming","slug" => "swimming-pools"],
                 ["name" => "Aerial Fitness","slug" => "aerial-fitness"],
                 ["name" => "Pre-natal Classes","slug" => "pre-natal-classes"],
@@ -251,6 +251,8 @@ if(!function_exists('citywise_category')){
                 ["name" => "Dance","slug" => "dance-classes"],
                 ["name" => "Pilates","slug" => "pilates-classes"],
                 ["name" => "Spinning And Indoor Cycling","slug" => "spinning-classes"],
+                ["name" => "Luxury Hotels","slug" => "luxury-hotels"],
+                ["name" => "Swimming","slug" => "swimming-pools"],
                 // ["name" => "Healthy Tiffins","slug" => "healthy-tiffins"],
                 // ["name" => "Personal Trainers","slug" => "personal-trainers"],
                 // ["name" => "Sport Nutrition Supplement Stores","slug" => "sport-nutrition-supplement-stores"],
@@ -270,12 +272,14 @@ if(!function_exists('citywise_category')){
                 ["name" => "MMA And Kick Boxing","slug" => "mma-and-kick-boxing-classes"],
                 ["name" => "Cross Functional Training","slug" => "functional-training"],
                 ["name" => "Dance","slug" => "dance-classes"],
+                ["name" => "Swimming","slug" => "swimming-pools"],
+                // ["name" => "Aqua Fitness","slug" => "aqua-fitness"]
                 // ["name" => "Pilates","slug" => "pilates-classes"]
                 // ["name" => "Spinning And Indoor Cycling","slug" => "spinning-classes"],
                 // ["name" => "Healthy Tiffins","slug" => "healthy-tiffins"],
                 // ["name" => "Personal Trainers","slug" => "personal-trainers"],
                 // ["name" => "Sport Nutrition Supplement Stores","slug" => "sport-nutrition-supplement-stores"],
-                // ["name" => "Aerial Fitness","slug" => "aerial-fitness"],
+                ["name" => "Aerial Fitness","slug" => "aerial-fitness"],
                 // ["name" => "Pre-natal Classes","slug" => "pre-natal-classes"],
                 // ["name" => "Kids Fitness","slug" => "kids-fitness-classes"]
             ];
@@ -3001,7 +3005,7 @@ if (!function_exists(('getRegId'))){
 }
 
 if (!function_exists(('isNotInoperationalDate'))){
-    function isNotInoperationalDate($date, $city_id=null, $slot=null, $findercategory_id=null){
+    function isNotInoperationalDate($date, $city_id=null, $slot=null, $findercategory_id=null, $free=false){
 
         $inoperational_dates = ['2018-05-01', '2018-08-15'];
         if(in_array($date, $inoperational_dates)){
@@ -3011,6 +3015,12 @@ if (!function_exists(('isNotInoperationalDate'))){
         $inoperational_dates = ['2018-01-01'];
 
         if($findercategory_id && !in_array($findercategory_id, [5]) && in_array($date, $inoperational_dates)){
+            return false;
+        }
+
+        $inoperational_dates = ['2018-09-13'];
+
+        if(!empty($free) && in_array($date, $inoperational_dates)){
             return false;
         }
         
@@ -3730,10 +3740,10 @@ if (!function_exists(('citywiseServiceCategoryIds'))){
                 $ids = [65, 19, 2, 1, 3];
                 break;
             case 'hyderabad':
-                $ids = [65, 19, 5, 3, 1, 4, 2, 86];
+                $ids = [65, 19, 5, 3, 1, 4, 2, 86, 123];
                 break;
             case 'ahmedabad':
-                $ids = [65, 19, 1, 3, 5];
+                $ids = [65, 19, 1, 3, 5, 123];
                 break;
             case 'all':
                 $ids = [65, 19, 5, 3, 1, 123, 114, 4, 2, 86];

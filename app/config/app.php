@@ -83,7 +83,7 @@ return array(
 		'discount_excluded_vendors' => [9459,1484,1458,576,1647,1486,9883,1451,1452,401,1487,1457,2522,1488,1460,4830,4829,4831,4827,4821,4818],
 	),
 	'fitternity_vendors' => [11907,9869,9891,11128,12064],
-	'vendors_without_convenience_fee' => [7116,9149,12008,1860,6593,14085,14081,13761,13765,14079, 2890,3175,3178,3179,3183,3201,3204,3330,3331,3332,3333,3335,3336,3341,3342,3343,3345,3346,3347,5964,7081,7106,7111,7114,7116,8872],
+	'vendors_without_convenience_fee' => [15082,13965,7116,9149,12008,1860,6593,14085,14081,13761,13765,14079, 2890,3175,3178,3179,3183,3201,3204,3330,3331,3332,3333,3335,3336,3341,3342,3343,3345,3346,3347,5964,7081,7106,7111,7114,7116,8872],
 	'payu' => array(
 		'prod'=>array(
 			"key" => 'l80gyM',
@@ -729,7 +729,7 @@ return array(
     'test_page_users' => ['dhruvsarawagi@fitternity.com', 'utkarshmehrotra@fitternity.com', 'sailismart@fitternity.com', 'neha@fitternity.com', 'pranjalisalvi@fitternity.com', 'maheshjadhav@fitternity.com', 'gauravravi@fitternity.com', 'nishankjain@fitternity.com', 'laxanshadesara@fitternity.com','mjmjadhav@gmail.com','gauravraviji@gmail.com','kushagra@webbutterjam.com','beltezzarthong@fitternity.com'],
 	
 	'test_vendors' => ['fitternity-test-page-bandra-west', 'test-healthy-vendor', 'fitternity-test-dharminder', 'gaurav-test-page-gym'],
-	'hide_from_search' => [11128, 6332, 6865, 7146, 9309, 9329, 9379, 9381, 9403, 9623, 9863, 9869, 9891, 10037, 11128, 12110, 576, 1451, 1460, 1647, 9883, 2522, 401, 1486, 1488, 1458, 1487, 1452, 1878, 4830, 4827, 4831, 4829, 13138, 13135, 13137, 13136, 11836, 11828, 11829, 11838, 13680, 11830, 11451, 1457],
+	'hide_from_search' => [11128, 6332, 6865, 7146, 9309, 9329, 9379, 9381, 9403, 9623, 9863, 9869, 9891, 10037, 11128, 12110],
 
 	// 'delay_methods' =>["bookTrialReminderAfter2Hour","bookTrialReminderAfter2HourRegular","bookTrialReminderBefore12Hour","bookTrialReminderBefore1Hour","bookTrialReminderBefore20Min","bookTrialReminderBefore3Hour","bookTrialReminderBefore6Hour", "manualBookTrial", "reminderToConfirmManualTrial", "manual2ndBookTrial", "before3HourSlotBooking", "orderRenewalMissedcall", "sendPaymentLinkAfter3Days", "sendPaymentLinkAfter7Days", "sendPaymentLinkAfter45Days", "purchaseAfter10Days", "purchaseAfter30Days"]
 
@@ -816,8 +816,8 @@ return array(
 		'end_weekend'=>['Monday'],
 	],
 
-	// 'mixed_reward_finders'=>[579,1233,1257,1259,1260,1261,1262,1263,1266,1860,1874,1875,1876,2105,2194,2545,4817,4818,4819,4821,4822,4823,4824,4825,4826,5502,5681,5741,5742,5743,5744,5750,5967,6029,6525,6530,6593,7355,7651,9171,9178,9198,9216,10675,11381,12077,12198,12226,12565,12566,12569,13396,13549,13965,1581,1582,1583,1584,1602,1604,1606,1607,2235,2236,6893,7064,1029,1030,1034,1705,1706,9872,12768,3239,10624,10964,12223,14141,14142,3175,3178,3179,3183,3201,3204,3330,3331,3332,3333,3335,3336,3341,3342,3343,3345,3346,3347,5964,7081,7106,7111,7114,8872,9446,13670,13671,7116,11230],
-	'mixed_reward_finders'=>[],
+	// 'mixed_reward_finders'=>[579,1233,1257,1259,1260,1261,1262,1263,1266,1860,1874,1875,1876,2105,2194,2545,4817,4818,4819,4821,4822,4823,4824,4825,4826,5502,5681,5741,5742,5743,5744,5750,5967,6029,6525,6530,6593,7355,7651,9171,9178,9198,9216,10675,11381,12077,12198,12226,12565,12566,12569,13396,13549,13965,1581,1582,1583,1584,1602,1604,1606,1607,2235,2236,6893,7064,1029,1030,1034,1705,1706,9872,12768,3239,10624,10964,12223,14141,14142,3175,3178,3179,3183,3201,3204,3330,3331,3332,3333,3335,3336,3341,3342,3343,3345,3346,3347,5964,7081,7106,7111,7114,8872,9446,13670,13671,7116,11230,3193,7037,9968,10120,14362,15056],
+	'mixed_reward_finders'=>[3193,7037,9968,10120,14362,15056],
 	
 	'no_patti_brands_slugs'=>['anytime-fitness-gurgaon'],
 
