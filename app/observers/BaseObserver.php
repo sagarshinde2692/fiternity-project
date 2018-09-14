@@ -52,6 +52,12 @@ class BaseObserver {
                 $transaction = new \Transaction();
             }
 
+            $model_copy = clone $model;
+
+            unset($model_copy->_id);
+
+            $transaction = $model_copy;
+
             $transaction->transaction_type = $class;
             
             $fields = array(
