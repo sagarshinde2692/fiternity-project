@@ -5467,7 +5467,7 @@ class TransactionController extends \BaseController {
                  if(isset($data['slot'])){
                     $result['order_details']['date'] = [
                         "field"=>"Date",
-                        "value"=>date('dS M Y', $data['slot']['epoch_start_time'])
+                        "value"=>date('dS M Y', strtotime($data['slot']['date']))
                     ];
                      $result['order_details']['time'] = [
                         "field"=>"Time",
