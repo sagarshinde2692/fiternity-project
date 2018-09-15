@@ -7202,6 +7202,8 @@ class CustomerController extends \BaseController {
 
 	public function loyaltyProfile(){
 
+
+
 		$response = [];
 
 		$response['image'] = 'https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/break-up-quotes-stars-cant-shine-without-darkness-1494325857.jpg?crop=1xw:1xh;center,top&resize=480:*';
@@ -7210,16 +7212,16 @@ class CustomerController extends \BaseController {
 			[
 				'title'=>'CHECK-IN FOR YOUR WORKOUT',
 				'description'=>'Check-in at the gym/studio by scanning the QR code through the app',
-				'image'=>'https://b.fitn.in/loyalty/Group%2049@3x.png'
+				'image'=>'https://b.fitn.in/loyalty/Group%2049.png'
 			],
 			[
 				'title'=>'WORKOUT MORE AND LEVEL UP',
 				'description'=>'Level up on your streak to reach different milestones',
-				'image'=>'https://b.fitn.in/loyalty/Group%20127@3x.png'
+				'image'=>'https://b.fitn.in/loyalty/Group%20127.png'
 			],[
 				'title'=>'EARN REWARDS',
 				'description'=>'Earn exciting rewards on every milestone you achieve ',
-				'image'=>'https://b.fitn.in/loyalty/Group%20128@3x.png'
+				'image'=>'https://b.fitn.in/loyalty/Group%20128.png'
 			],
 		];
 
@@ -7272,6 +7274,14 @@ class CustomerController extends \BaseController {
 		];
 
 		return $response;
+
+	}
+
+	public function registerLoyalty(){
+
+
+
+
 
 	}
 	
