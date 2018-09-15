@@ -7212,16 +7212,17 @@ class CustomerController extends \BaseController {
 			[
 				'title'=>'CHECK-IN FOR YOUR WORKOUT',
 				'description'=>'Check-in at the gym/studio by scanning the QR code through the app',
-				'image'=>'https://b.fitn.in/loyalty/Group%2049.png'
+				'image'=>'https://b.fitn.in/loyalty/Group%20147%281%29.png'
 			],
 			[
 				'title'=>'WORKOUT MORE AND LEVEL UP',
 				'description'=>'Level up on your streak to reach different milestones',
-				'image'=>'https://b.fitn.in/loyalty/Group%20127.png'
-			],[
+				'image'=>'https://b.fitn.in/loyalty/Group%20128.png'
+			],
+			[
 				'title'=>'EARN REWARDS',
 				'description'=>'Earn exciting rewards on every milestone you achieve ',
-				'image'=>'https://b.fitn.in/loyalty/Group%20128.png'
+				'image'=>'https://b.fitn.in/loyalty/Group%2049.png'
 			],
 		];
 
