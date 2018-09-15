@@ -2694,3 +2694,5 @@ Route::post('manualtractionupdate/{type}/{increase_no}','DebugController@manualt
 Route::get('addFacilityImages','DebugController@addFacilityImages');
 
 Route::post('createFitcashCoupons','DebugController@createFitcashCoupons');
+
+
