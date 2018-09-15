@@ -7230,7 +7230,7 @@ class CustomerController extends \BaseController {
 				[	
 					'title'=>'Milestone 1',
 					'milestone'=>'No of sessions - 10',
-					'amount'=> '"₹ 300',
+					'amount'=> '₹ 300',
 					'images'=>[
 						'https://b.fitn.in/paypersession/level-1.png',
 						'https://b.fitn.in/paypersession/level-1.png',
@@ -7240,7 +7240,7 @@ class CustomerController extends \BaseController {
 				[	
 					'title'=>'Milestone 1',
 					'milestone'=>'No of sessions - 10',
-					'amount'=> '"₹ 300',
+					'amount'=> '₹ 300',
 					'images'=>[
 						'https://b.fitn.in/paypersession/level-1.png',
 						'https://b.fitn.in/paypersession/level-1.png',
@@ -7250,7 +7250,7 @@ class CustomerController extends \BaseController {
 				[	
 					'title'=>'Milestone 1',
 					'milestone'=>'No of sessions - 10',
-					'amount'=> '"₹ 300',
+					'amount'=> '₹ 300',
 					'images'=>[
 						'https://b.fitn.in/paypersession/level-1.png',
 						'https://b.fitn.in/paypersession/level-1.png',
@@ -7260,7 +7260,7 @@ class CustomerController extends \BaseController {
 				[	
 					'title'=>'Milestone 1',
 					'milestone'=>'No of sessions - 10',
-					'amount'=> '"₹ 300',
+					'amount'=> '₹ 300',
 					'images'=>[
 						'https://b.fitn.in/paypersession/level-1.png',
 						'https://b.fitn.in/paypersession/level-1.png',
