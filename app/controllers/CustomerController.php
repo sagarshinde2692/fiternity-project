@@ -7199,5 +7199,80 @@ class CustomerController extends \BaseController {
 		$userData = curl_call($qs, $wsUrl);
 		return json_decode($userData, true);
 	}
+
+	public function loyaltyProfile(){
+
+		$response = [];
+
+		$response['image'] = 'https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/break-up-quotes-stars-cant-shine-without-darkness-1494325857.jpg?crop=1xw:1xh;center,top&resize=480:*';
+
+		$response['steps'] = [
+			[
+				'title'=>'CHECK-IN FOR YOUR WORKOUT',
+				'description'=>'Check-in at the gym/studio by scanning the QR code through the app',
+				'image'=>'https://b.fitn.in/loyalty/Group%2049@3x.png'
+			],
+			[
+				'title'=>'WORKOUT MORE AND LEVEL UP',
+				'description'=>'Level up on your streak to reach different milestones',
+				'image'=>'https://b.fitn.in/loyalty/Group%20127@3x.png'
+			],[
+				'title'=>'EARN REWARDS',
+				'description'=>'Earn exciting rewards on every milestone you achieve ',
+				'image'=>'https://b.fitn.in/loyalty/Group%20128@3x.png'
+			],
+		];
+
+
+		$response['check_ins'] = [
+			'header'=>'GET CRAZY REWARDS ON COMPLETING EACH MILESTONE',
+			'data'=>[
+				[	
+					'title'=>'Milestone 1',
+					'milestone'=>'No of sessions - 10',
+					'amount'=> '"₹ 300',
+					'images'=>[
+						'https://b.fitn.in/paypersession/level-1.png',
+						'https://b.fitn.in/paypersession/level-1.png',
+						'https://b.fitn.in/paypersession/level-1.png'
+					]
+				],
+				[	
+					'title'=>'Milestone 1',
+					'milestone'=>'No of sessions - 10',
+					'amount'=> '"₹ 300',
+					'images'=>[
+						'https://b.fitn.in/paypersession/level-1.png',
+						'https://b.fitn.in/paypersession/level-1.png',
+						'https://b.fitn.in/paypersession/level-1.png'
+					]
+				],
+				[	
+					'title'=>'Milestone 1',
+					'milestone'=>'No of sessions - 10',
+					'amount'=> '"₹ 300',
+					'images'=>[
+						'https://b.fitn.in/paypersession/level-1.png',
+						'https://b.fitn.in/paypersession/level-1.png',
+						'https://b.fitn.in/paypersession/level-1.png'
+					]
+				],
+				[	
+					'title'=>'Milestone 1',
+					'milestone'=>'No of sessions - 10',
+					'amount'=> '"₹ 300',
+					'images'=>[
+						'https://b.fitn.in/paypersession/level-1.png',
+						'https://b.fitn.in/paypersession/level-1.png',
+						'https://b.fitn.in/paypersession/level-1.png'
+					]
+				],
+				
+			]
+		];
+
+		return $response;
+
+	}
 	
 }

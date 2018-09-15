@@ -1249,3 +1249,11 @@ Route::get('updateratecardslotsbyid/{order_id}','TransactionController@updateRat
 Route::get('getcouponpackages','HomeController@getCouponPackages');
 
 Route::get('brandlistcity/{city}','BrandsController@brandlistcity');
+
+
+##################################################################################################
+/*******************  Loyalty API ************************************************/
+
+Route::get('loyaltyprofile', 'CustomerController@loyaltyProfile');
+/******************  Loyalty API END HERE************************************************/
+#####################################################################################################
