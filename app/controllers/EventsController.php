@@ -67,46 +67,135 @@ class EventsController extends \BaseController {
 	}
 
 	public function getOrderDetails($orderid) {
-		$orderdata = Order::where('sub_type','music-run')->with(['ticket'=>function($query){$query->select('name', 'price');}])->find(intval($orderid));
-       	unset($orderdata['ticket']['_id']);
-        if(empty($orderdata)){
-			$responsedata = ['message' => 'Order does not exists.', 'status' => 400];
-			return Response::json($responsedata, 400);
-		}
-		$first_customer = $orderdata['customer_data'][0];
-		$eventdatadetails = array(
-			'date_time' => $orderdata['success_date']->toDateTimeString(),
-			'timezone' => $orderdata['success_date']->format('T'),
-			'event_id' => $orderdata['event_id'],
-			'customer_id'=> $orderdata['customer_id'],
-			'customer_email'=> $orderdata['customer_email'],
-			'customer_phone1' => $orderdata['customer_phone'],
-			'customer_first_name' => $first_customer['firstname'],
-			'customer_last_name' => $first_customer['lastname'],
-			'customer_dob'=> $first_customer['dob'],
-			'customer_gender'=> $first_customer['gender'],
-			'billing_address'=> $first_customer['address'],
-			'billing_city'=> $first_customer['city'],
-			'billing_state'=> $first_customer['state'],
-			'billing_postal_code' => $first_customer['postalcode'],
-			'billing_country' => $first_customer['country'],
-			'shipping_address'=> $first_customer['address'],
-			'shipping_city' => $first_customer['city'],
-			'shipping_state'=> $first_customer['state'],
-			'shipping_postal_code' => $first_customer['postalcode'],
-			'shipping_country' => $first_customer['country'],
-			'language' => 'English',
-			'currency' => 'INR.',
-			'order_total' => $orderdata['amount'],
-			'discount' => $orderdata['combo_discount'],
-			'discount_description' => $orderdata['combo_discount_remark'],
-			'date_updated' => $orderdata['updated_at']->toDateTimeString(),
-			'customer_booking_data' => $orderdata['customer_data'],
-			'ticket_quantity' => $orderdata['ticket_quantity'],
-			'ticket_info' => $orderdata['ticket'],
-			'event_name' => $orderdata['event_name']
-		);
-        return Response::json($eventdatadetails, 200);
+		try {
+			$orderdata = Order::where('sub_type','music-run')->with(['ticket'=>function($query){$query->select('name', 'price');}])->find(intval($orderid));
+			unset($orderdata['ticket']['_id']);
+			if(empty($orderdata)){
+				$responsedata = ['message' => 'Order does not exists.', 'status' => 400];
+				return Response::json($responsedata, 400);
+			}
+			$first_customer = $orderdata['customer_data'][0];
+			$eventdatadetails = array(
+				'date_time' => $orderdata['created_at']->toDateTimeString(),
+				'timezone' => $orderdata['created_at']->format('T'),
+				'event_id' => $orderdata['event_id'],
+				'customer_id'=> $orderdata['customer_id'],
+				'customer_email'=> $orderdata['customer_email'],
+				'customer_phone1' => $orderdata['customer_phone'],
+				'customer_first_name' => $first_customer['firstname'],
+				'customer_last_name' => $first_customer['lastname'],
+				'customer_dob'=> $first_customer['dob'],
+				'customer_gender'=> $first_customer['gender'],
+				'billing_address'=> $first_customer['address'],
+				'billing_city'=> $first_customer['city'],
+				'billing_state'=> $first_customer['state'],
+				'billing_postal_code' => $first_customer['postalcode'],
+				'billing_country' => $first_customer['country'],
+				'shipping_address'=> $first_customer['address'],
+				'shipping_city' => $first_customer['city'],
+				'shipping_state'=> $first_customer['state'],
+				'shipping_postal_code' => $first_customer['postalcode'],
+				'shipping_country' => $first_customer['country'],
+				'language' => 'English',
+				'currency' => 'INR.',
+				'order_total' => $orderdata['amount'],
+				'discount' => $orderdata['combo_discount'],
+				'discount_description' => $orderdata['combo_discount_remark'],
+				'date_updated' => $orderdata['updated_at']->toDateTimeString(),
+				'customer_booking_data' => $orderdata['customer_data'],
+				'ticket_quantity' => $orderdata['ticket_quantity'],
+				'ticket_info' => $orderdata['ticket'],
+				'event_name' => $orderdata['event_name']
+			);
+			return Response::json($eventdatadetails, 200);
+		} catch (Exception $e) {
+			$message = array(
+				'type'    => get_class($e),
+				'message' => $e->getMessage(),
+				'file'    => $e->getFile(),
+				'line'    => $e->getLine(),
+			);
+			$response = array('status'=>400,'reason'=>$message['type'].' : '.$message['message'].' in '.$message['file'].' on '.$message['line']);
+			Log::info('Event getOrderDetails Error : '.json_encode($response));
+			return Response::json(array('status' => 400,'message' => 'Something went wrong.'),400);
+		}	
+	}
+
+	public function getOrderList($event_slug) {
+		try {
+			if($event_slug != 'music-run') {
+				return Response::json(array('status' => 404,'message' => 'Event name is not valid.'),404);
+			}
+			$orderList = Order::where('sub_type',$event_slug);
+			$status = '1';
+			if(isset($_GET['status']) && $_GET['status'] != "") {
+				if(strtolower($_GET['status']) === 'booked') {
+					$status = '1';
+				} else if(strtolower($_GET['status']) === 'pending') {
+					$status = '0';
+				} 
+			}
+			$orderList->where('status',$status);
+			if(isset($_GET['timestamp']) && $_GET['timestamp'] != "") {
+				$timestamp = $_GET['timestamp'];
+				$from_date = new MongoDate(strtotime(date('Y-m-d H:i:s',$timestamp)));
+				$orderList->where('created_at','>=',$from_date);
+			}
+			// $orderList = $orderList->get(['order_id','amount','cutomer_name','ticket_quantity','event_address','ticket_name','event_name','event_venue','created_at','updated_at']);
+			$orderList = $orderList->get();
+			$returnOrder = array();
+			foreach($orderList as $key => $orderdata) {
+				if(isset($orderdata['customer_data'])) {
+					$first_customer = $orderdata['customer_data'][0];
+				} 
+				$eventdatadetails = array(
+					'order_id' => $orderdata['order_id'],
+					'created_at' => $orderdata['created_at']->toDateTimeString(),
+					'updated_at' => $orderdata['updated_at']->toDateTimeString(),
+					'timezone' => $orderdata['created_at']->format('T'),
+					'event_id' => $orderdata['event_id'],
+					'customer_id'=> $orderdata['customer_id'],
+					'customer_email'=> $orderdata['customer_email'],
+					'customer_phone1' => $orderdata['customer_phone'],
+					'customer_first_name' => $first_customer['firstname'],
+					'customer_last_name' => $first_customer['lastname'],
+					'customer_dob'=> $first_customer['dob'],
+					'customer_gender'=> $first_customer['gender'],
+					'billing_address'=> $first_customer['address'],
+					'billing_city'=> $first_customer['city'],
+					'billing_state'=> $first_customer['state'],
+					'billing_postal_code' => $first_customer['postalcode'],
+					'billing_country' => $first_customer['country'],
+					'shipping_address'=> $first_customer['address'],
+					'shipping_city' => $first_customer['city'],
+					'shipping_state'=> $first_customer['state'],
+					'shipping_postal_code' => $first_customer['postalcode'],
+					'shipping_country' => $first_customer['country'],
+					'language' => 'English',
+					'currency' => 'INR.',
+					'order_total' => $orderdata['amount'],
+					'discount' => $orderdata['combo_discount'],
+					'discount_description' => $orderdata['combo_discount_remark'],
+					'date_updated' => $orderdata['updated_at']->toDateTimeString(),
+					'customer_booking_data' => $orderdata['customer_data'],
+					'ticket_quantity' => $orderdata['ticket_quantity'],
+					// 'ticket_info' => $orderdata['ticket'],
+					'event_name' => $orderdata['event_name'],
+				);
+				array_push($returnOrder, $eventdatadetails);
+			}
+			return Response::json(array('status' => 200,'orderlist'=>$returnOrder),200);
+		} catch (Exception $e) {
+			$message = array(
+				'type'    => get_class($e),
+				'message' => $e->getMessage(),
+				'file'    => $e->getFile(),
+				'line'    => $e->getLine(),
+			);
+			$response = array('status'=>400,'reason'=>$message['type'].' : '.$message['message'].' in '.$message['file'].' on '.$message['line']);
+			Log::info('Event getOrderDetails Error : '.json_encode($response));
+			return Response::json(array('status' => 400,'message' => 'Something went wrong.'),400);
+		}	
 	}
 }
 

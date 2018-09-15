@@ -1253,3 +1253,4 @@ Route::get('brandlistcity/{city}','BrandsController@brandlistcity');
 
 //Music run
 Route::get('eventorderdetails/{orderid}','EventsController@getOrderDetails');
+Route::get('geteventorders/{event_slug}','EventsController@getOrderList');
