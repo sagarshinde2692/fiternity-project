@@ -2761,7 +2761,9 @@ if (!function_exists(('getHash'))){
         $detailsForMobileSdk_str1                           =   $key  . '|' . $cmnPaymentRelatedDetailsForMobileSdk1 . '|default|' . $salt ;
         $detailsForMobileSdk1                               =   hash('sha512', $detailsForMobileSdk_str1);
         $data['payment_related_details_for_mobile_sdk_hash'] =   $detailsForMobileSdk1;
-        
+        if(isset($data["with_hash_params"]) && $data["with_hash_params"] == "checkout"){
+            $data["hash_params"] = array("email"=>$email, "firstname"=>$firstname, "email"=>$email, "profuctinfo"=>$profuctinfo, "amount" => $amount, "txnid"=>$txnid, "hash"=>$hash);
+        }
         return $data;
     }
 }

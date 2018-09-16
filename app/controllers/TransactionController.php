@@ -5988,6 +5988,7 @@ class TransactionController extends \BaseController {
             // $data['logged_in_customer_id'] = (int)$decoded->customer->_id;
         }
         $order = Order::where("txnid",$data["txnId"])->first();
+        $order["with_hash_params"] = "checkout";
         $orderWithHash = getHash($order);
         return $orderWithHash; 
 
