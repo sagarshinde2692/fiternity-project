@@ -1257,3 +1257,12 @@ Route::post('inviteforevent','EventsController@inviteForEvent');
 Route::post('addafriendforbooking','CustomerController@addafriendforbooking');
 Route::get('getbookingfriends','CustomerController@getallBookingfriends');
 Route::post('webcheckout','TransactionController@webcheckout');
+
+##################################################################################################
+/*******************  Loyalty API ************************************************/
+
+Route::get('loyaltyprofile', 'CustomerController@loyaltyProfile');
+
+Route::post('registerloyalty', 'CustomerController@registerLoyalty');
+/******************  Loyalty API END HERE************************************************/
+#####################################################################################################

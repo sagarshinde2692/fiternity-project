@@ -7262,5 +7262,27 @@ class CustomerController extends \BaseController {
 		$userData = curl_call($qs, $wsUrl);
 		return json_decode($userData, true);
 	}
-	
+
+	public function loyaltyProfile(){
+
+		$post_register = Config::get('loyalty.post_register');
+
+		$jwt_token = Request::header('Authorization');
+
+		if(!empty($jwt_token)){
+
+			$decoded = $this->customerTokenDecode($jwt_token);
+			$customer_id = $decoded->customer->_id;
+			$customer = Customer::active()->where('_id', $customer_id)->where('loyalty', true)->first();
+
+			if($customer){
+
+			}
+
+		}
+		$pre_register = Config::get('loyalty.pre_register');
+		return ['pre_register'=>$pre_register, 'post_register'=> $post_register];
+
+	}
+			
 }
