@@ -7202,117 +7202,10 @@ class CustomerController extends \BaseController {
 
 	public function loyaltyProfile(){
 
-		// $jwt_token = Request::header('Authorization');
-
-		if(!empty($jwt_token)){
-
-			$decoded = $this->customerTokenDecode($jwt_token);
-			$customer_id = $decoded->customer->_id;
-			$customer = Customer::active()->where('_id', $customer_id)->where('loyalty', true)->first();
-
-			if($customer){
-				
-				$post_register = [
-					'header' => 
-					[
-					  'logo' => 'https://b.fitn.in/paypersession/level-1.png',
-					  'text' =>  "Hi <b>Laxansh</b>,<br/><br/>20/225 check-ins completed<br/><br/>You are on milestone 1",
-					],
-					'milestones' => 
-					[
-					  'header' => 'Your Workout Journey',
-					  'subheader' => 'You are 10 check-ins away from milestone 2',
-					  'data' => 
-					  [
-						[
-						  'title' => '',
-						  'count' => 0,
-						  'description' => 'Check-ins',
-						],
-						[
-						  'title' => 'Milestone 1',
-						  'count' => 10,
-						  'description' => 'Check-ins',
-						],
-						[
-						  'title' => 'Milestone 2',
-						  'count' => 30,
-						  'description' => 'Check-ins',
-						],
-						[
-						  'title' => 'Milestone 3',
-						  'count' => 75,
-						  'description' => 'Check-ins',
-						],
-					  ],
-					  'footer' => 'Your workout counter will reset on 21 Sept 2018',
-					],
-					'rewards' => 
-					[
-					  'header' => 'Claim exciting rewards',
-					  'data' => 
-					  [
-						0 => 
-						[
-						  'title' => 'Milestone 1',
-						  'description' => 'Select any reward',
-						  'data' => 
-						  [
-							0 => 
-							[
-							  'logo' => 'https://b.fitn.in/paypersession/level-1.png',
-							  'price' => '$300',
-							  'price_header' => 'Worth',
-							  'claim_enabled' => true,
-							  'button_title' => 'Claim',
-							  'Terms' => 'HTMl text',
-							],
-							1 => 
-							[
-							  'logo' => 'https://b.fitn.in/paypersession/level-1.png',
-							  'price' => '$300',
-							  'price_header' => 'Worth',
-							  'claim_enabled' => true,
-							  'button_title' => 'Claim',
-							  'Terms' => 'HTMl text',
-							],
-							2 => 
-							[
-							  'logo' => 'https://b.fitn.in/paypersession/level-1.png',
-							  'price' => '$300',
-							  'price_header' => 'Worth',
-							  'claim_enabled' => true,
-							  'button_title' => 'Claim',
-							  'Terms' => 'HTMl text',
-							],
-						  ],
-						],
-					  ],
-					],
-					'past_check_in' => 'View all past check-ins',
-					'Contact' => 
-					[
-					  'title' => 'Want further Assistance? Call us',
-					  'ph_no' => '999999999',
-					],
-					'Terms' => 
-					[
-					  'Title' => 'FitSquad - Terms and conditions',
-					  'text' => 'HTML Text',
-					],
-				];
-
-
-
-			
-			}
-
-		}
-		
-		return ['pre_register'=>Config::get('loyalty'), 'post_register'=> [
+		$post_register = [
 			'header' => 
 			[
-			  'logo' => 'https://b.fitn.in/paypersession/level-1.png',
+			  'logo' => 'https://b.fitn.in/loyalty/LOGO1.png',
 			  'text' =>  "Hi <b>Laxansh</b>,<br/><br/>20/225 check-ins completed<br/><br/>You are on milestone 1",
 			],
 			'milestones' => 
@@ -7321,25 +7214,21 @@ class CustomerController extends \BaseController {
 			  'subheader' => 'You are 10 check-ins away from milestone 2',
 			  'data' => 
 			  [
-				0 => 
 				[
 				  'title' => '',
 				  'count' => 0,
 				  'description' => 'Check-ins',
 				],
-				1 => 
 				[
 				  'title' => 'Milestone 1',
 				  'count' => 10,
 				  'description' => 'Check-ins',
 				],
-				2 => 
 				[
 				  'title' => 'Milestone 2',
 				  'count' => 30,
 				  'description' => 'Check-ins',
 				],
-				3 => 
 				[
 				  'title' => 'Milestone 3',
 				  'count' => 75,
@@ -7353,13 +7242,11 @@ class CustomerController extends \BaseController {
 			  'header' => 'Claim exciting rewards',
 			  'data' => 
 			  [
-				0 => 
 				[
 				  'title' => 'Milestone 1',
 				  'description' => 'Select any reward',
 				  'data' => 
 				  [
-					0 => 
 					[
 					  'logo' => 'https://b.fitn.in/paypersession/level-1.png',
 					  'price' => '$300',
@@ -7368,7 +7255,7 @@ class CustomerController extends \BaseController {
 					  'button_title' => 'Claim',
 					  'Terms' => 'HTMl text',
 					],
-					1 => 
+					
 					[
 					  'logo' => 'https://b.fitn.in/paypersession/level-1.png',
 					  'price' => '$300',
@@ -7377,7 +7264,7 @@ class CustomerController extends \BaseController {
 					  'button_title' => 'Claim',
 					  'Terms' => 'HTMl text',
 					],
-					2 => 
+					
 					[
 					  'logo' => 'https://b.fitn.in/paypersession/level-1.png',
 					  'price' => '$300',
@@ -7401,8 +7288,24 @@ class CustomerController extends \BaseController {
 			  'Title' => 'FitSquad - Terms and conditions',
 			  'text' => 'HTML Text',
 			],
-		]
-];
+		];
+
+
+		$jwt_token = Request::header('Authorization');
+
+		if(!empty($jwt_token)){
+
+			$decoded = $this->customerTokenDecode($jwt_token);
+			$customer_id = $decoded->customer->_id;
+			$customer = Customer::active()->where('_id', $customer_id)->where('loyalty', true)->first();
+
+			if($customer){
+
+			}
+
+		}
+		$pre_register = Config::get('loyalty');
+		return ['pre_register'=>$pre_register, 'post_register'=> $post_register];
 
 	}
 			
