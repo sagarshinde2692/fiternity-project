@@ -7202,20 +7202,26 @@ class CustomerController extends \BaseController {
 
 	public function loyaltyProfile(){
 
-		$jwt_token = Request::header('Authorization');
+		// $jwt_token = Request::header('Authorization');
 
-		// if(!empty($jwt_token)){
+		if(!empty($jwt_token)){
 
-		// 	$decoded = $this->customerTokenDecode($jwt_token);
-		// 	$customer_id = $decoded->customer->_id;
-		// 	$customer = Customer::active()->where('_id', $customer_id)->where()
+			$decoded = $this->customerTokenDecode($jwt_token);
+			$customer_id = $decoded->customer->_id;
+			$customer = Customer::active()->where('_id', $customer_id)->where('loyalty', true)->first();
 
-		// }
+			if($customer){
+				
+
+			
+			}
+
+		}
 		
 		$response = [];
 
 		$response['header'] = [
-			'image'=>'https://hips.hearstapps.com/hmg-prod.s3.amazonaws.com/images/break-up-quotes-stars-cant-shine-without-darkness-1494325857.jpg?crop=1xw:1xh;center,top&resize=480:*',
+			'image'=>'https://b.fitn.in/loyalty/HeaderImagetext.png',
 			'ratio'=> 1.61
 		];
 
@@ -7285,16 +7291,8 @@ class CustomerController extends \BaseController {
 			]
 		];
 
-		return $response;
+		return ['pre_register'=>$response];
 
 	}
-
-	public function registerLoyalty(){
-
-
-
-
-
-	}
-	
+			
 }
