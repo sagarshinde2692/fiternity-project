@@ -1613,10 +1613,13 @@ Class CustomerReward {
         }
         
         $coupon = $query->first();
-        Finder::$withoutAppends = true;
-            
-        $finder = Finder::find($ratecard->finder_id);
-        $finder_city = $finder->city_id;
+
+        if(!empty($ratecard)){
+            Finder::$withoutAppends = true;
+                
+            $finder = Finder::find($ratecard->finder_id);
+            $finder_city = $finder->city_id;
+        }
         // if(!isset($coupon) && (strtolower($couponCode) == "srfit")){
         //     $vendorMOU = Vendormou::where("vendors",$ratecard["finder_id"])->where('contract_start_date', '<=', new \DateTime())->where('contract_end_date', '>=', new \DateTime())->first();
         //     $coupon = array("code" => strtolower($couponCode),"discount_max" => 1000,"discount_amount" => 0,"discount_min" => 200);

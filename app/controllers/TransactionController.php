@@ -2136,7 +2136,7 @@ class TransactionController extends \BaseController {
                     }
 
                     //no email to Healthy Snacks Beverages and Healthy Tiffins
-                    if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" && $order->type != 'diet_plan'){
+                    if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" && $order->type != 'diet_plan' && !(!empty($order->duration_day) && $order->duration_day == 30)){
                         
                         if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
                             if(isset($data["send_communication_vendor"]) && $data["send_communication_vendor"] != ""){
@@ -2182,7 +2182,7 @@ class TransactionController extends \BaseController {
                 }
 
                 //no sms to Healthy Snacks Beverages and Healthy Tiffins
-                if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" && $order->type != 'diet_plan'){
+                if(!in_array($finder->category_id, $abundant_category) && $order->type != "wonderise" && $order->type != "lyfe" && $order->type != "mickeymehtaevent" && $order->type != "events" && $order->type != 'diet_plan' && !(!empty($order->duration_day) && $order->duration_day == 30)){
                     
                     if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
                         if(isset($data["send_communication_vendor"]) && $data["send_communication_vendor"] != ""){
