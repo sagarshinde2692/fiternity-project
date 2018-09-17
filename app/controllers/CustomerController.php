@@ -7212,6 +7212,101 @@ class CustomerController extends \BaseController {
 
 			if($customer){
 				
+				$post_register = [
+					'header' => 
+					[
+					  'logo' => 'https://b.fitn.in/paypersession/level-1.png',
+					  'text' =>  "Hi <b>Laxansh</b>,<br/><br/>20/225 check-ins completed<br/><br/>You are on milestone 1",
+					],
+					'milestones' => 
+					[
+					  'header' => 'Your Workout Journey',
+					  'subheader' => 'You are 10 check-ins away from milestone 2',
+					  'data' => 
+					  [
+						0 => 
+						[
+						  'title' => '',
+						  'count' => 0,
+						  'description' => 'Check-ins',
+						],
+						1 => 
+						[
+						  'title' => 'Milestone 1',
+						  'count' => 10,
+						  'description' => 'Check-ins',
+						],
+						2 => 
+						[
+						  'title' => 'Milestone 2',
+						  'count' => 30,
+						  'description' => 'Check-ins',
+						],
+						3 => 
+						[
+						  'title' => 'Milestone 3',
+						  'count' => 75,
+						  'description' => 'Check-ins',
+						],
+					  ],
+					  'footer' => 'Your workout counter will reset on 21 Sept 2018',
+					],
+					'rewards' => 
+					[
+					  'header' => 'Claim exciting rewards',
+					  'data' => 
+					  [
+						0 => 
+						[
+						  'title' => 'Milestone 1',
+						  'description' => 'Select any reward',
+						  'data' => 
+						  [
+							0 => 
+							[
+							  'logo' => 'https://b.fitn.in/paypersession/level-1.png',
+							  'price' => '$300',
+							  'price_header' => 'Worth',
+							  'claim_enabled' => true,
+							  'button_title' => 'Claim',
+							  'Terms' => 'HTMl text',
+							],
+							1 => 
+							[
+							  'logo' => 'https://b.fitn.in/paypersession/level-1.png',
+							  'price' => '$300',
+							  'price_header' => 'Worth',
+							  'claim_enabled' => true,
+							  'button_title' => 'Claim',
+							  'Terms' => 'HTMl text',
+							],
+							2 => 
+							[
+							  'logo' => 'https://b.fitn.in/paypersession/level-1.png',
+							  'price' => '$300',
+							  'price_header' => 'Worth',
+							  'claim_enabled' => true,
+							  'button_title' => 'Claim',
+							  'Terms' => 'HTMl text',
+							],
+						  ],
+						],
+					  ],
+					],
+					'past_check_in' => 'View all past check-ins',
+					'Contact' => 
+					[
+					  'title' => 'Want further Assistance? Call us',
+					  'ph_no' => '999999999',
+					],
+					'Terms' => 
+					[
+					  'Title' => 'FitSquad - Terms and conditions',
+					  'text' => 'HTML Text',
+					],
+				];
+
+
 
 			
 			}
@@ -7291,7 +7386,100 @@ class CustomerController extends \BaseController {
 			]
 		];
 
-		return ['pre_register'=>$response];
+		return ['pre_register'=>$response, 'post_register'=> [
+			'header' => 
+			[
+			  'logo' => 'https://b.fitn.in/paypersession/level-1.png',
+			  'text' =>  "Hi <b>Laxansh</b>,<br/><br/>20/225 check-ins completed<br/><br/>You are on milestone 1",
+			],
+			'milestones' => 
+			[
+			  'header' => 'Your Workout Journey',
+			  'subheader' => 'You are 10 check-ins away from milestone 2',
+			  'data' => 
+			  [
+				0 => 
+				[
+				  'title' => '',
+				  'count' => 0,
+				  'description' => 'Check-ins',
+				],
+				1 => 
+				[
+				  'title' => 'Milestone 1',
+				  'count' => 10,
+				  'description' => 'Check-ins',
+				],
+				2 => 
+				[
+				  'title' => 'Milestone 2',
+				  'count' => 30,
+				  'description' => 'Check-ins',
+				],
+				3 => 
+				[
+				  'title' => 'Milestone 3',
+				  'count' => 75,
+				  'description' => 'Check-ins',
+				],
+			  ],
+			  'footer' => 'Your workout counter will reset on 21 Sept 2018',
+			],
+			'rewards' => 
+			[
+			  'header' => 'Claim exciting rewards',
+			  'data' => 
+			  [
+				0 => 
+				[
+				  'title' => 'Milestone 1',
+				  'description' => 'Select any reward',
+				  'data' => 
+				  [
+					0 => 
+					[
+					  'logo' => 'https://b.fitn.in/paypersession/level-1.png',
+					  'price' => '$300',
+					  'price_header' => 'Worth',
+					  'claim_enabled' => true,
+					  'button_title' => 'Claim',
+					  'Terms' => 'HTMl text',
+					],
+					1 => 
+					[
+					  'logo' => 'https://b.fitn.in/paypersession/level-1.png',
+					  'price' => '$300',
+					  'price_header' => 'Worth',
+					  'claim_enabled' => true,
+					  'button_title' => 'Claim',
+					  'Terms' => 'HTMl text',
+					],
+					2 => 
+					[
+					  'logo' => 'https://b.fitn.in/paypersession/level-1.png',
+					  'price' => '$300',
+					  'price_header' => 'Worth',
+					  'claim_enabled' => true,
+					  'button_title' => 'Claim',
+					  'Terms' => 'HTMl text',
+					],
+				  ],
+				],
+			  ],
+			],
+			'past_check_in' => 'View all past check-ins',
+			'Contact' => 
+			[
+			  'title' => 'Want further Assistance? Call us',
+			  'ph_no' => '999999999',
+			],
+			'Terms' => 
+			[
+			  'Title' => 'FitSquad - Terms and conditions',
+			  'text' => 'HTML Text',
+			],
+		]
+];
 
 	}
 			
