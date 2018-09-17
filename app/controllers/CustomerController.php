@@ -7320,10 +7320,14 @@ class CustomerController extends \BaseController {
 			'ratio'=> 1.23
 		];
 
-		$response['parteners'] = [
-			'https://b.fitn.in/paypersession/level-1.png',
-			'https://b.fitn.in/paypersession/level-1.png',
-			'https://b.fitn.in/paypersession/level-1.png'
+		$response['partners'] = [
+			'header'=>'Proud Partners',
+			'data'=>[
+				'https://b.fitn.in/paypersession/level-1.png',
+				'https://b.fitn.in/paypersession/level-1.png',
+				'https://b.fitn.in/paypersession/level-1.png'
+			]
+			
 		];
 
 		$response['steps'] = [
