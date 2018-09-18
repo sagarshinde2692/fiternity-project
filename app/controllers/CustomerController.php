@@ -7202,7 +7202,7 @@ class CustomerController extends \BaseController {
 
 	public function loyaltyProfile(){
 
-		$post_register = Config::get('loyalty.post_register');
+		$post_register = Config::get('loyalty_screens.post_register');
 
 		$jwt_token = Request::header('Authorization');
 
@@ -7229,16 +7229,19 @@ class CustomerController extends \BaseController {
 						}else{
 							$milestone['enabled'] = true;
 							$milestone_no = $milestone['milestone'];
+							$milestone_next_count = $milestone['next_count'];
 							$milestone['filled'] = round(($check_ins-$milestone['count'])/($milestone['next_count']-$milestone['count']) * 100);
 							break;
 						}
-						
 					}
 				}
-				return $post_register['header']['text'] = strtr($post_register['header']['text'], ['$customer_name'=>$customer->name, '$check_ins'=>$customer->check_ins, '$milestone'=>3, '$checkin_limit'=>Config::get('loyalty.checkin_limit')]);
+
+				// return $milestone_next_count-$check_ins;
+				$post_register['header']['text'] = strtr($post_register['header']['text'], ['$customer_name'=>$customer->name, '$check_ins'=>$customer->check_ins, '$milestone'=>3, '$checkin_limit'=>Config::get('loyalty_screens.checkin_limit')]);
+				$post_register['milestones']['subheader'] = strtr($post_register['milestones']['subheader'], ['$next_milestone_check_ins'=>$milestone_next_count-$check_ins, '$next_milestone'=>$milestone_no+1]);
 			}
 		}
-		$pre_register = Config::get('loyalty.pre_register');
+		$pre_register = Config::get('loyalty_screens.pre_register');
 		return ['pre_register'=>$pre_register, 'post_register'=> $post_register];
 
 	}
