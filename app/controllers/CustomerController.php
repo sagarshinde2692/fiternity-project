@@ -7214,8 +7214,25 @@ class CustomerController extends \BaseController {
 
 			if($customer){
 				
-			}
+				$check_ins = !empty($customer->check_ins) ? $customer->check_ins : 0;
+				// $check_ins = 52;
 
+				foreach($post_register['milestones']['data'] as &$milestone){
+
+					if(!empty($milestone['next_count'])){
+						
+						if($milestone['next_count'] < $check_ins){
+							$milestone['enabled'] = true;
+							$milestone['filled'] = 100;
+						}else{
+							$milestone['enabled'] = true;
+							$milestone['filled'] = round(($check_ins-$milestone['count'])/($milestone['next_count']-$milestone['count']) * 100);
+							break;
+						}
+					
+					}
+				}
+			}
 		}
 		$pre_register = Config::get('loyalty.pre_register');
 		return ['pre_register'=>$pre_register, 'post_register'=> $post_register];
@@ -7223,6 +7240,7 @@ class CustomerController extends \BaseController {
 	}
 
 	public function registerLoyalty(){
+
 
 		
 		

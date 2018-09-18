@@ -97,37 +97,51 @@ return array(
     'post_register'=>[
         'header' => [
           'logo' => 'https://b.fitn.in/loyalty/LOGO1.png',
-          'text' =>  "Hi <b>Laxansh</b>,<br/><br/>20/225 check-ins completed<br/><br/>You are on milestone 1",
+          'text' =>  "Hi <b>$customer_name</b>,<br/><br/>20/225 check-ins completed<br/><br/>You are on milestone 1",
         ],
         'milestones' => [
           'header' => 'Your Workout Journey',
           'subheader' => 'You are 10 check-ins away from milestone 2',
-          'description' => 'Start working out and level up on your streak.<br/> Achieve milestones and earn crazy rewards',
+          'description' => "Start working out and level up on your streak.\n Achieve milestones and earn crazy rewards",
           'data' => 
           [
             [
                 'title' => '',
                 'count' => 0,
                 'description' => 'Check-ins',
-                'enabled'=>true
+                'enabled'=>true,
+                'next_count'=>10
+                
             ],
             [
                 'title' => 'Milestone 1',
                 'count' => 10,
                 'description' => 'Check-ins',
-                'enabled'=>false
+                'enabled'=>false,
+                'next_count'=>30
+
             ],
             [
                 'title' => 'Milestone 2',
                 'count' => 30,
                 'description' => 'Check-ins',
-                'enabled'=>false
+                'enabled'=>false,
+                'next_count'=>75
+
             ],
             [
                 'title' => 'Milestone 3',
                 'count' => 75,
                 'description' => 'Check-ins',
-                'enabled'=>false
+                'enabled'=>false,
+                'next_count'=>225
+
+            ],
+            [
+                'title' => 'Milestone 3',
+                'count' => 225,
+                'description' => 'Check-ins',
+                'enabled'=>false,
             ],
           ],
           'footer' => 'Your workout counter will reset on 21 Sept 2018',
@@ -169,6 +183,39 @@ return array(
                 ],
               ],
             ],
+            [
+                'title' => 'Milestone 1',
+                'description' => 'Select any reward',
+                'data' => 
+                [
+                  [
+                    'logo' => 'https://b.fitn.in/paypersession/level-1.png',
+                    'price' => '$300',
+                    'price_header' => 'Worth',
+                    'claim_enabled' => true,
+                    'button_title' => 'Claim',
+                    'Terms' => 'HTMl text',
+                  ],
+                  
+                  [
+                    'logo' => 'https://b.fitn.in/paypersession/level-1.png',
+                    'price' => '$300',
+                    'price_header' => 'Worth',
+                    'claim_enabled' => true,
+                    'button_title' => 'Claim',
+                    'Terms' => 'HTMl text',
+                  ],
+                  
+                  [
+                    'logo' => 'https://b.fitn.in/paypersession/level-1.png',
+                    'price' => '$300',
+                    'price_header' => 'Worth',
+                    'claim_enabled' => true,
+                    'button_title' => 'Claim',
+                    'Terms' => 'HTMl text',
+                  ],
+                ],
+              ],
           ],
         ],
         'past_check_in' => 'View all past check-ins',
