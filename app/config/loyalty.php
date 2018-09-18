@@ -102,7 +102,7 @@ return array(
         'milestones' => [
           'header' => 'Your Workout Journey',
           'subheader' => 'You are 10 check-ins away from milestone 2',
-          'decription' => 'Start working out and level up on your streak.<br/> Achieve milestones and earn crazy rewards',
+          'description' => 'Start working out and level up on your streak.<br/> Achieve milestones and earn crazy rewards',
           'data' => 
           [
             [
