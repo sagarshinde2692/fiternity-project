@@ -7212,7 +7212,7 @@ class CustomerController extends \BaseController {
 
 			$decoded = decode_customer_token($jwt_token);
 			$customer_id = $decoded->customer->_id;
-			$customer = Customer::active()->where('_id', $customer_id)->where('loyalty', true)->first();
+			$customer = Customer::active()->where('_id', $customer_id)->where('loyalty', 'exists', true)->first();
 
 			if($customer){
 				
@@ -7258,14 +7258,14 @@ class CustomerController extends \BaseController {
 
 			$decoded = decode_customer_token($jwt_token);
 			$customer_id = $decoded->customer->_id;
-			$customer = Customer::active()->whereNot('ishulluser', 1)->where('_id', $customer_id)->first();
+			$customer = Customer::active()->where('ishulluser', '!=', 1)->where('_id', $customer_id)->first();
 
 			if($customer){
 
 				if(!empty($customer->loyalty)){
 					return Response::json(['message'=>'Already registered for Fitsquad'], 400);
 				}else{
-					$customer->loyalty = true;
+					$customer->loyalty = time();
 				}
 	
 				if(!empty($data['customer_phone'])){
@@ -7285,28 +7285,52 @@ class CustomerController extends \BaseController {
 				$customer->update();
 	
 				return Response::json(['message'=>'Registration succesfull']);
+			
 			}else{
 
 				$customer = Customer::active()->where('ishulluser', 1)->where('_id', $customer_id)->first();
+
+				
 
 				if(!empty($data['password'])){
 					$customer_update = [
 						'name'=>$customer->name,
 						'email'=>$customer->email,
-						'contact_no'=>$customer->email,
+						'contact_no'=>$customer->contact_no,
 						'password'=>$data['password'],
 						'password_confirmation'=>$data['password_confirmation'],
-						'identity'=>'email'
-					]
-					$this->register($customer_update);
+						'identity'=>'email',
+					];
+				
+					return $this->register($customer_update);
+				
+				}else{
+					if(!empty($customer->loyalty)){
+						return Response::json(['message'=>'Already registered for Fitsquad'], 400);
+					}
+
+					if(!empty($data['customer_phone'])){
+						$customer->contact_no = substr($data['contact_no'], -10);
+					}
+					
+					$fields_to_update = ['city_id', 'gender'];
+		
+					foreach($fields_to_update as $field){
+					
+						if(!empty($data[$field])){
+							$customer->$field = $data[$field];
+						}
+					
+					}
+					$customer->loyalty = time();
+					$customer->update();
+
+					$token = $this->createToken($customer);
+
+					return Response::json(['message'=>'Registration succesfull', 'token'=>$token['token']]);
+
 				}
-
-
-
-
-				if($customer){
-					$this->register()
-				}
+				
 			}
 
 		
@@ -7321,27 +7345,30 @@ class CustomerController extends \BaseController {
 	
 			$validator = Validator::make($data,$rules);
 	
-			$data['customer_email'] = strtolower($data['customer_email']);
-	
 			if ($validator->fails()) {
 				return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),$this->error_status);
+			}
+			$data['customer_email'] = strtolower($data['customer_email']);
+			
+			$customer = Customer::where('email',$data['customer_email'])->where('loyalty', 'exists', true)->first();
+
+			if($customer){
+				return Response::json(['message'=>'Already registered for Fitsquad'], 400);
 			}
 
 			$customer_id = autoRegisterCustomer($data);
 
 			$customer = Customer::find($customer_id);
 
+			$customer->loyalty = true;
 
-			
+			$customer->update();
 
+			$token = $this->createToken($customer);
 
-
+			return Response::json(['message'=>'Registration succesfull', 'token'=>$token['token'], 'password'=>true]);
 		
 		}
-
-		
-		
-
 
 	}
 			
