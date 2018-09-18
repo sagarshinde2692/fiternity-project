@@ -111,7 +111,8 @@ return array(
                 'count' => 0,
                 'description' => 'Check-ins',
                 'enabled'=>true,
-                'next_count'=>10
+                'next_count'=>10,
+                'progress'=>0
                 
             ],
             [
@@ -120,7 +121,8 @@ return array(
                 'count' => 10,
                 'description' => 'Check-ins',
                 'enabled'=>false,
-                'next_count'=>30
+                'next_count'=>30,
+                'progress'=>0
 
             ],
             [
@@ -129,7 +131,8 @@ return array(
                 'count' => 30,
                 'description' => 'Check-ins',
                 'enabled'=>false,
-                'next_count'=>75
+                'next_count'=>75,
+                'progress'=>0
 
             ],
             [
@@ -138,7 +141,8 @@ return array(
                 'count' => 75,
                 'description' => 'Check-ins',
                 'enabled'=>false,
-                'next_count'=>225
+                'next_count'=>225,
+                'progress'=>0
 
             ],
             [
@@ -147,6 +151,7 @@ return array(
                 'count' => 225,
                 'description' => 'Check-ins',
                 'enabled'=>false,
+                'progress'=>0
             ],
           ],
           'footer' => 'Your workout counter will reset on 21 Sept 2018',

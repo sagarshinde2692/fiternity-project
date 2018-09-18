@@ -7225,12 +7225,12 @@ class CustomerController extends \BaseController {
 						
 						if($milestone['next_count'] < $check_ins){
 							$milestone['enabled'] = true;
-							$milestone['filled'] = 100;
+							$milestone['progress'] = 100;
 						}else{
 							$milestone['enabled'] = true;
 							$milestone_no = $milestone['milestone'];
 							$milestone_next_count = $milestone['next_count'];
-							$milestone['filled'] = round(($check_ins-$milestone['count'])/($milestone['next_count']-$milestone['count']) * 100);
+							$milestone['progress'] = round(($check_ins-$milestone['count'])/($milestone['next_count']-$milestone['count']) * 100);
 							break;
 						}
 					}
