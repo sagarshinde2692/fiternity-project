@@ -523,6 +523,8 @@ class EmailSmsApiController extends \BaseController {
     public function landingpagecallback(){
 
         $data = Input::json()->all();
+        Log::info("landingpagecallback");
+        Log::info($data);
 
         if($this->vendor_token){
 
@@ -564,7 +566,7 @@ class EmailSmsApiController extends \BaseController {
         			'customer_phone'=>'required',
         			'finder_id'=>'required',
         			'city_id'=>'required',
-        			'exit_type'=>'required'
+                    'exit_type'=>'required',
         	];
         	
         	$validator = Validator::make($data, $rules);
@@ -578,8 +580,28 @@ class EmailSmsApiController extends \BaseController {
         				$response['status']
         				);
         		
-        	}
+            }
+            
+            $data['coupon'] = 'exitipps';
         	
+        }
+
+        if(!empty($data['order_token']) && isset($data['capture_type']) && $data['capture_type'] == 'exit_intent_rtcb'){
+            Log::info("exit_intent_rtcb11");
+
+            $already_added = Capture::where("referrer_id", $data['order_token'])->count();
+
+            if($already_added){
+                return ['status'=>200];
+            }
+            
+            $exit_intent_capture = Capture::find($data['order_token']);
+            
+            Log::info($exit_intent_capture);
+            $data = $exit_intent_capture->toArray();
+            $data['referrer_id'] = $data['_id'];
+            unset($data['_id']);
+            $data['capture_type'] = 'exit_intent_rtcb';
         }
 
         if($data['capture_type'] == 'fitness_canvas'){
@@ -591,7 +613,7 @@ class EmailSmsApiController extends \BaseController {
             }
         }
 
-        if(!empty($data['order_token'])){
+        if(!empty($data['order_token']) && $data['capture_type']!= 'exit_intent'){
 
             $decodeOrderToken = decodeOrderToken($data['order_token']);
 
@@ -838,6 +860,20 @@ class EmailSmsApiController extends \BaseController {
         }
 
         $storecapture   = Capture::create($data);
+
+        if(isset($data['capture_type']) && $data['capture_type'] == 'exit_intent'){
+            
+            $finder = Finder::with('location')->with('city')->find($data['finder_id'], ['location_id', 'city_id']);
+
+            $storecapture['nearby_options_link'] = Config::get('app.website').'/'.$finder['city']['slug'].'/'.$finder['location']['slug'].'/fitness';
+            
+            $storecapture['rtcb_link'] = Config::get('app.website').'/membership?order_token='.$storecapture['_id'].'&capture_type=exit_intent_rtcb';
+            
+            $storecapture['pps_link'] = Config::get('app.website').'/pay-per-session';
+            
+            $storecapture['emial_instant_customer'] = $this->customermailer->exitIntent($storecapture->toArray());
+            
+        }
 
         if(isset($data['capture_type']) && $data['capture_type']=='my-home-fitness-trial'){
 

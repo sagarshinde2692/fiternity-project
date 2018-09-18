@@ -2811,7 +2811,9 @@ if (!function_exists(('getHash'))){
         $detailsForMobileSdk_str1                           =   $key  . '|' . $cmnPaymentRelatedDetailsForMobileSdk1 . '|default|' . $salt ;
         $detailsForMobileSdk1                               =   hash('sha512', $detailsForMobileSdk_str1);
         $data['payment_related_details_for_mobile_sdk_hash'] =   $detailsForMobileSdk1;
-        
+        if(isset($data["with_hash_params"]) && $data["with_hash_params"] == "checkout"){
+            $data["hash_params"] = array("email"=>$email, "firstname"=>$firstname, "email"=>$email, "productinfo"=>$productinfo, "amount" => $amount, "txnid"=>$txnid, "hash"=>$data['verify_hash']);
+        }
         return $data;
     }
 }
@@ -3005,7 +3007,7 @@ if (!function_exists(('getRegId'))){
 }
 
 if (!function_exists(('isNotInoperationalDate'))){
-    function isNotInoperationalDate($date, $city_id=null, $slot=null, $findercategory_id=null){
+    function isNotInoperationalDate($date, $city_id=null, $slot=null, $findercategory_id=null, $free=false){
 
         $inoperational_dates = ['2018-05-01', '2018-08-15'];
         if(in_array($date, $inoperational_dates)){
@@ -3015,6 +3017,12 @@ if (!function_exists(('isNotInoperationalDate'))){
         $inoperational_dates = ['2018-01-01'];
 
         if($findercategory_id && !in_array($findercategory_id, [5]) && in_array($date, $inoperational_dates)){
+            return false;
+        }
+
+        $inoperational_dates = ['2018-09-13'];
+
+        if(!empty($free) && in_array($date, $inoperational_dates)){
             return false;
         }
         

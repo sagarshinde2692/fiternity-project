@@ -3021,6 +3021,69 @@ class CustomerController extends \BaseController {
 		
 	}
 
+	public function addafriendforbooking(){	
+		$jwt_token = Request::header('Authorization');
+		$decoded = $this->customerTokenDecode($jwt_token);
+		$customer_id = $decoded->customer->_id;
+		$rules = [
+		'friend_name' => 'required|string',
+		'friend_email' => 'required|string',
+		'friend_phone' => 'required|string',
+		'friend_gender' => 'required|string'
+		];
+		$data = Input::all();
+		$validator = Validator::make($data,$rules);
+		if ($validator->fails()) {
+			return Response::json(
+				array(
+					'status' => 400,
+					'message' => $this->errorMessage($validator->errors()
+						)),400
+				);
+		}
+		$friend = array(
+			"name" => $data["friend_name"],
+			"email" => $data["friend_email"],
+			"phone" => $data["friend_phone"],
+			"gender" => $data["friend_gender"]
+		);
+		
+		$customer = Customer::where("_id",(int)$customer_id)->where("friends.email","!=", $data["friend_email"])->first();
+		if(!empty($customer)){
+			if(empty($customer["friends"])){
+				$customer["friends"] = array($friend);
+			}else{
+				$friends = $customer["friends"];
+				array_push($friends, $friend);
+				$customer["friends"] = $friends;
+			}
+			$customer->update();
+			return $this->getBookingFriends($customer_id);
+		}else{
+			return Response::json(
+				array(
+					'status' => 400,
+					'message' => "Your friend is already added"
+						),400
+				);
+		}
+	}
+	public function getallBookingfriends(){	
+		$jwt_token = Request::header('Authorization');
+		$decoded = $this->customerTokenDecode($jwt_token);
+		$customer_id = $decoded->customer->_id;	
+		return $this->getBookingFriends($customer_id);
+	}
+	public function getBookingFriends($customer_id){
+		$customer = Customer::find((int)$customer_id);
+		if(!isset($customer["friends"])){
+			$customer["friends"] = [];
+		}
+		$allBookingFriends = array(array("name" => $customer->name, "email" => $customer->email, "phone" => $customer->contact_no, "gender" => $customer->gender, "default"=> true));
+		$allBookingFriends  = array_merge($allBookingFriends, $customer["friends"]);
+		return $allBookingFriends;
+	}
+
 	public function getExistingTrialWithFinder(){
 
 		$jwt_token = Request::header('Authorization');
@@ -4247,7 +4310,7 @@ class CustomerController extends \BaseController {
 					return Response::json($resp,404);
 				}
 			}
-
+			
 			if (is_array($fitcashcode->customer_emails)) {
 				
 				if(!in_array(strtolower($customer_email), $fitcashcode->customer_emails)){
@@ -7199,5 +7262,35 @@ class CustomerController extends \BaseController {
 		$userData = curl_call($qs, $wsUrl);
 		return json_decode($userData, true);
 	}
-	
+
+	public function loyaltyProfile(){
+
+		$post_register = Config::get('loyalty.post_register');
+
+		$jwt_token = Request::header('Authorization');
+
+		if(!empty($jwt_token)){
+
+			$decoded = $this->customerTokenDecode($jwt_token);
+			$customer_id = $decoded->customer->_id;
+			$customer = Customer::active()->where('_id', $customer_id)->where('loyalty', true)->first();
+
+			if($customer){
+				
+			}
+
+		}
+		$pre_register = Config::get('loyalty.pre_register');
+		return ['pre_register'=>$pre_register, 'post_register'=> $post_register];
+
+	}
+
+	public function registerLoyalty(){
+
+		
+		
+
+
+	}
+			
 }

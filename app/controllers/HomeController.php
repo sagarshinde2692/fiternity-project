@@ -680,7 +680,7 @@ class HomeController extends BaseController {
             if (in_array($type, $booktrialItemArr)){
 
                 $itemData       =   Booktrial::find(intval($id));
-                
+
                 
                 //reliance section 
                 
@@ -767,12 +767,14 @@ class HomeController extends BaseController {
 
                 $order_type = "booktrial_id";
             }
-
+            
             if (in_array($type, $orderItemArr)) {
 
                 $itemData = Order::find(intval($id));
                 
-                
+                if($itemData['type'] == 'workout-session'){
+                    $type = "workout-session";
+                }
                 
                 // order section 
                 
@@ -3582,10 +3584,19 @@ class HomeController extends BaseController {
         $data = Input::json()->all();
         $device_type = $data['device_type'];
         $to = $data['to'];
+        if(!empty($data['addOns']))
+        $addOns = $data['addOns'];
         if($device_type == "android"){
-            $notification_object = array("notif_id" => 2005,"notif_type" => "promotion", "notif_object" => array("promo_id"=>739423,"promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> "593a9380820095bf3e8b4568","title"=> $data["title"],"text"=> ""));
+        	$notification_object = array("notif_id" => 2005,"notif_type" => "promotion", "notif_object" => array("promo_id"=>739423,"label"=>(!empty($data['label'])?$data['label']:""),"promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> "593a9380820095bf3e8b4568","title"=> $data["title"],"text"=> $data["body"]));
+            if(!empty($addOns))
+            	foreach ($addOns as $key => $value) 
+            		$notification_object['notif_object'][$key]=$value;
+            
         }else{
-            $notification_object = array("aps"=>array("alert"=> array("body" => $data["title"]), "sound" => "default", "badge" => 1), "notif_object" => array("promo_id"=>739423,"notif_type" => "promotion","promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> "593a9380820095bf3e8b4568","title"=> $data["title"],"text"=> ""));
+        	$notification_object = array("aps"=>array("alert"=> array("body" => $data["body"],"title" => $data["title"]), "sound" => "default", "badge" => 1), "notif_object" => array("promo_id"=>739423,"label"=>(!empty($data['label'])?$data['label']:""),"notif_type" => "promotion","promo_code"=>$data['couponcode'],"deep_link_url"=>"ftrnty://ftrnty.com".$data['deeplink'], "unique_id"=> "593a9380820095bf3e8b4568","title"=> $data["title"],"text"=> $data["body"]));
+        	if(!empty($addOns))
+        		foreach ($addOns as $key => $value)
+        			$notification_object['notif_object'][$key]=$value;
         }
         $notificationData = array("to" =>$data['to'],"delay" => 0,"label"=>$data['label'],"app_payload"=>$notification_object);
         $route  = $device_type;
@@ -5198,14 +5209,18 @@ class HomeController extends BaseController {
         	Log::info(" token  ".print_r($tt,true));
         	$cart=$this->utilities->attachCart($t,true);
         	$dataCart=$this->utilities->getCartFinalSummary($cart['products'], $cart['_id']);
-        	
-        	if(!empty($dataCart)&&!empty($dataCart['status']) && $dataCart['status'] != 5)
-        		$finalData=['status'=>200,"response"=>$dataCart['data']];
-        		else return $dataCart;
-        		$this->utilities->fetchCustomerAddresses($finalData['response']);
-        		$cities=$this->utilities->getProductCities();
-        		if(count($cities))$finalData['response']['cities']=$cities;
-        		return $finalData;
+            $finalData=['status'=>200,"response"=>[]];
+            
+            if($this->vendor_token){
+                if(!empty($dataCart)&&!empty($dataCart['status']) && $dataCart['status'] != 5)
+                    $finalData=['status'=>200,"response"=>$dataCart['data']];
+                else return $dataCart;
+                $cities=$this->utilities->getProductCities();
+                if(count($cities))$finalData['response']['cities']=$cities;
+            }
+            
+            $this->utilities->fetchCustomerAddresses($finalData['response']);
+            return $finalData;
         		
         } catch (Exception $e) {
         	return  ['status'=>0,"message"=>$this->utilities->baseFailureStatusMessage($e)];

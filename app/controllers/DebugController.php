@@ -7902,5 +7902,10 @@ public function yes($msg){
 		return $utilities->updateRatecardSlots();
 	}
 
+	public function getPendingPayment($customer_id){
+		$utilities = new Utilities();
+		return $utilities->hasPendingPayments(intval($customer_id));
+	}
+
 }
 

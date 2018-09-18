@@ -19,6 +19,7 @@ App::error(function(Illuminate\Database\Eloquent\ModelNotFoundException $e){
 
 // require __DIR__.'/debug_routes.php';
 require __DIR__.'/analytics_routes.php';
+require __DIR__.'/testing_routes.php';
 
 
 
@@ -1246,6 +1247,7 @@ Route::get('updateRatecardSlots','DebugController@updateRatecardSlots');
 
 Route::get('updateratecardslotsbyid/{order_id}','TransactionController@updateRatecardSlotsByOrderId');
 
+Route::post('addcustomersfortrial','SchedulebooktrialsController@addCustomersForTrial');
 Route::get('getcouponpackages','HomeController@getCouponPackages');
 
 Route::get('brandlistcity/{city}','BrandsController@brandlistcity');
@@ -1254,3 +1256,18 @@ Route::get('brandlistcity/{city}','BrandsController@brandlistcity');
 //Music run
 Route::get('eventorderdetails/{orderid}','EventsController@getOrderDetails');
 Route::get('geteventorders/{event_slug}','EventsController@getOrderList');
+
+Route::get('getPendingPayment/{customer_id}','DebugController@getPendingPayment');
+Route::post('inviteforevent','EventsController@inviteForEvent');
+Route::post('addafriendforbooking','CustomerController@addafriendforbooking');
+Route::get('getbookingfriends','CustomerController@getallBookingfriends');
+Route::post('webcheckout','TransactionController@webcheckout');
+
+##################################################################################################
+/*******************  Loyalty API ************************************************/
+
+Route::get('loyaltyprofile', 'CustomerController@loyaltyProfile');
+
+Route::post('registerloyalty', 'CustomerController@registerLoyalty');
+/******************  Loyalty API END HERE************************************************/
+#####################################################################################################

@@ -2273,6 +2273,8 @@ Class Utilities {
                 $query->where('valid_finder_id','exists',false);
             }
 
+            $query->where(function($query) use($finder_id) {$query->orWhere('invalid_finder_ids','exists',false)->orWhere('invalid_finder_ids','!=',$finder_id);});
+
         }else{
 
             $query->where('valid_finder_id','exists',false);
@@ -2617,6 +2619,8 @@ Class Utilities {
                 $query->where('valid_finder_id','exists',false);
             }
 
+            $query->where(function($query) use($finder_id) {$query->orWhere('invalid_finder_ids','exists',false)->orWhere('invalid_finder_ids','!=',$finder_id);});
+
         }else{
 
             $query->where('valid_finder_id','exists',false);
@@ -2948,8 +2952,12 @@ Class Utilities {
            ($this->vendor_token)||
            (in_array($data['finder_id'],Config::get('app.vendors_without_convenience_fee')))||
            (isset($flags) && isset($flags["pay_at_vendor"]) && $flags["pay_at_vendor"] === True)||
-           (!empty($data['type']) && in_array($data['type'], ["workout session", "workout-session", "trial", "booktrials"])))
+           (!empty($data['type']) && in_array($data['type'], ["workout session", "workout-session", "trial", "booktrials","events"])))
         {
+            return false;
+        }
+
+        if(!empty($data['type']) && $data['type'] == 'events'){
             return false;
         }
         
@@ -3205,28 +3213,35 @@ Class Utilities {
         }
     }
 
-    public function hasPendingPayments(){
+    public function hasPendingPayments($customer_id = null){
 
-        if(Request::header('Authorization')){
+        if($customer_id){
+            $customer = Customer::find($customer_id);
+            $customer_email                     =       $customer->email;
+            $customer_id                        =       $customer->_id;
+        }else if(Request::header('Authorization')){
 			$decoded                            =       decode_customer_token();
             $customer_email                     =       $decoded->customer->email;
             $customer_id                        =       $decoded->customer->_id;
-            // $customer_phone                     =       isset($decoded->customer->contact_no) ? $decoded->customer->contact_no : "";
-            $pending_payment = \Booktrial::where('type', 'workout-session')->where('post_trial_verified_status', '!=', 'no')->where(function ($query) use($customer_email, $customer_id) { $query->orWhere('customer_email', $customer_email)->orWhere("logged_in_customer_id", $customer_id);})->where('going_status_txt','!=','cancel')->where('payment_done', false)->where(function($query){return $query->orWhere('post_trial_status', '!=', 'no show')->orWhere('post_trial_verified_status','!=', 'yes');})->first(['_id', 'amount']);
-
-			if(count($pending_payment) > 0){
-				return [
+        }
+        
+        if($customer_id){
+            $pending_payment = \Booktrial::where('type', 'workout-session')->where('post_trial_verified_status', '!=', 'no')->where(function ($query) use($customer_email, $customer_id) { $query->orWhere('customer_email', $customer_email)->orWhere("logged_in_customer_id", $customer_id);})->where('going_status_txt','!=','cancel')->where('payment_done', false)->first(['_id', 'amount']);
+    
+            if(count($pending_payment) > 0){
+                return [
                     'header'=>'Pending Payment',
                     'text'=>'Please complete your pending payment',
                     'trial_id'=>$pending_payment['_id'],
                     'amount'=>$pending_payment['amount']
                 ];
-			}else{
-				return false;
-			}
-		}else{
-			return false;
-		}
+            }else{
+                return false;
+            }
+        }
+            
+        return false;
+		
 
     }
 
@@ -5376,7 +5391,47 @@ Class Utilities {
 
         return $fitcash_coupon;
 
-	} 
+    } 
+    
+
+    public function tranformEventData($data){
+
+        $rules = [
+            'customer_data'=>'required',
+        ];
+
+        $validator = Validator::make($data,$rules);
+
+        if ($validator->fails()) {
+            return array('status' => 404,'message' => error_message($validator->errors()));
+        }
+
+        $customer = $data['customer_data']['0'];
+
+        $rules = [
+            'firstname'=>'required | string',
+            // 'lastname'=>'required | string',
+            'customer_email'=>'required | email',
+            'customer_phone'=>'required|regex:/[0-9]{10}/',
+        ];
+        
+        $validator = Validator::make($customer,$rules);
+
+        if ($validator->fails()) {
+            return array('status' => 404,'message' => error_message($validator->errors()));
+        }
+
+        $data['customer_name'] = $customer['firstname'];
+
+        if(!empty($customer['lastname'])){
+            $data['customer_name'] = $data['customer_name'].' '.$customer['lastname'];
+        }
+
+        $data = array_merge($data, array_only($customer, ['customer_email', 'customer_phone']));
+
+        return ['status'=>200, 'data'=>$data];
+
+    }
 	
 }
 
