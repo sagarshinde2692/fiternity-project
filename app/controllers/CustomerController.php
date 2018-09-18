@@ -7368,5 +7368,15 @@ class CustomerController extends \BaseController {
 		}
 
 	}
+
+
+	public function listCheckins(){
+		
+		$finders = Finder::orderBy('_id', 'desc')->limit(10)->get(['title', 'created_at']);
+
+		
+
+		
+	}
 			
 }

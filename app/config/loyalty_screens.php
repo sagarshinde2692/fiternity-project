@@ -163,6 +163,7 @@ return array(
             [
               'title' => 'Milestone 1',
               'description' => 'Select any reward',
+              '_id'=>1,
               'data' => 
               [
                 [
@@ -196,6 +197,7 @@ return array(
             [
                 'title' => 'Milestone 1',
                 'description' => 'Select any reward',
+                '_id'=>2,
                 'data' => 
                 [
                   [

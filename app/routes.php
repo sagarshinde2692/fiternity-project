@@ -1257,5 +1257,7 @@ Route::get('brandlistcity/{city}','BrandsController@brandlistcity');
 Route::get('loyaltyprofile', 'CustomerController@loyaltyProfile');
 
 Route::post('registerloyalty', 'CustomerController@registerLoyalty');
+
+Route::post('listcheckins', 'CustomerController@listCheckins');
 /******************  Loyalty API END HERE************************************************/
 #####################################################################################################
