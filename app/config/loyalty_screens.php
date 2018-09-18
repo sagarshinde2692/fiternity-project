@@ -96,7 +96,7 @@ return array(
     ],
     'post_register'=>[
         'header' => [
-          'logo' => 'https://b.fitn.in/loyalty/LOGO1.pnglara',
+          'logo' => 'https://b.fitn.in/loyalty/LOGO1.png',
         'text' =>  'Hi <b>$customer_name</b>,<br/><br/>$check_ins/'.Config::get('loyalty_constants.checkin_limit').' check-ins completed<br/><br/>You are on milestone $milestone',
         ],
         'milestones' => [

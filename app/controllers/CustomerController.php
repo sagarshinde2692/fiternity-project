@@ -7203,7 +7203,7 @@ class CustomerController extends \BaseController {
 	public function loyaltyProfile(){
 
 		$post_register = Config::get('loyalty_screens.post_register');
-
+		$pre_register = Config::get('loyalty_screens.pre_register');
 		$jwt_token = Request::header('Authorization');
 
 		if(!empty($jwt_token)){
@@ -7235,19 +7235,45 @@ class CustomerController extends \BaseController {
 						}
 					}
 				}
-
+				
 				// return $milestone_next_count-$check_ins;
 				$post_register['header']['text'] = strtr($post_register['header']['text'], ['$customer_name'=>$customer->name, '$check_ins'=>$customer->check_ins, '$milestone'=>3, '$checkin_limit'=>Config::get('loyalty_screens.checkin_limit')]);
 				$post_register['milestones']['subheader'] = strtr($post_register['milestones']['subheader'], ['$next_milestone_check_ins'=>$milestone_next_count-$check_ins, '$next_milestone'=>$milestone_no+1]);
 			}
 		}
-		$pre_register = Config::get('loyalty_screens.pre_register');
+		
 		return ['pre_register'=>$pre_register, 'post_register'=> $post_register];
 
 	}
 
 	public function registerLoyalty(){
 
+		$jwt_token = Request::header('Authorization');
+
+		$data = Input::json()->all();
+
+		if(!empty($jwt_token)){
+
+			$decoded = decode_customer_token($jwt_token);
+			$customer_id = $decoded->customer->_id;
+			$customer = Customer::active()->where('_id', $customer_id)->first();
+
+			if(!empty($customer->loyalty)){
+				return Response::json(['message'=>'Already registered for Fitsquad'], 400);
+			}else{
+				$customer->loyalty = true;
+			}
+
+			$customer_update = [];
+
+
+			if(!empty($data['contact_no'])){
+				$customer->contact_no = substr($data['contact_no'], -10);
+			}
+
+			$customer->update();
+		
+		}
 
 		
 		
