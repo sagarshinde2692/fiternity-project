@@ -7213,12 +7213,20 @@ class CustomerController extends \BaseController {
 			$customer = Customer::active()->where('_id', $customer_id)->where('loyalty', true)->first();
 
 			if($customer){
-
+				
 			}
 
 		}
 		$pre_register = Config::get('loyalty.pre_register');
 		return ['pre_register'=>$pre_register, 'post_register'=> $post_register];
+
+	}
+
+	public function registerLoyalty(){
+
+		
+		
+
 
 	}
 			
