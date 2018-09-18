@@ -7290,8 +7290,6 @@ class CustomerController extends \BaseController {
 
 				$customer = Customer::active()->where('ishulluser', 1)->where('_id', $customer_id)->first();
 
-				
-
 				if(!empty($data['password'])){
 					$customer_update = [
 						'name'=>$customer->name,
@@ -7339,8 +7337,7 @@ class CustomerController extends \BaseController {
 			$rules = [
 				'customer_name' => 'required|max:255',
 				'customer_email' => 'required|email|max:255',
-				'customer_phone' => 'max:15',
-				'customer_source' => 'required'
+				'customer_phone' => 'max:15'
 			];
 	
 			$validator = Validator::make($data,$rules);
