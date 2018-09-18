@@ -7208,17 +7208,19 @@ class CustomerController extends \BaseController {
 
 		if(!empty($jwt_token)){
 
-			$decoded = $this->customerTokenDecode($jwt_token);
+			$decoded = decode_customer_token($jwt_token);
 			$customer_id = $decoded->customer->_id;
 			$customer = Customer::active()->where('_id', $customer_id)->where('loyalty', true)->first();
 
 			if($customer){
 				
+				
+				
 				$check_ins = !empty($customer->check_ins) ? $customer->check_ins : 0;
 				// $check_ins = 52;
-
+				
 				foreach($post_register['milestones']['data'] as &$milestone){
-
+					
 					if(!empty($milestone['next_count'])){
 						
 						if($milestone['next_count'] < $check_ins){
@@ -7226,12 +7228,14 @@ class CustomerController extends \BaseController {
 							$milestone['filled'] = 100;
 						}else{
 							$milestone['enabled'] = true;
+							$milestone_no = $milestone['milestone'];
 							$milestone['filled'] = round(($check_ins-$milestone['count'])/($milestone['next_count']-$milestone['count']) * 100);
 							break;
 						}
-					
+						
 					}
 				}
+				return $post_register['header']['text'] = strtr($post_register['header']['text'], ['$customer_name'=>$customer->name, '$check_ins'=>$customer->check_ins, '$milestone'=>3, '$checkin_limit'=>Config::get('loyalty.checkin_limit')]);
 			}
 		}
 		$pre_register = Config::get('loyalty.pre_register');

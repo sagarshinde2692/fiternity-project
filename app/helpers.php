@@ -42,6 +42,10 @@ if (!function_exists('decode_customer_token')) {
             }
 
             $decodedToken = JWT::decode($jwt_token, $jwt_key,array($jwt_alg));
+
+            if(!empty($decodedToken->customer->email)){
+                \Log::info($decodedToken->customer->email);
+            }
             return $decodedToken;
 
         }catch(DomainException $e){

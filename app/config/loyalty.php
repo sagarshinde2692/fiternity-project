@@ -96,17 +96,18 @@ return array(
     ],
     'post_register'=>[
         'header' => [
-          'logo' => 'https://b.fitn.in/loyalty/LOGO1.png',
-          'text' =>  "Hi <b>$customer_name</b>,<br/><br/>20/225 check-ins completed<br/><br/>You are on milestone 1",
+          'logo' => 'https://b.fitn.in/loyalty/LOGO1.pnglara',
+        'text' =>  'Hi <b>$customer_name</b>,<br/><br/>$check_ins/'.Config::get('app.contact_us_customer_number').' check-ins completed<br/><br/>You are on milestone $milestone',
         ],
         'milestones' => [
           'header' => 'Your Workout Journey',
-          'subheader' => 'You are 10 check-ins away from milestone 2',
+          'subheader' => 'You are $next_milestone_check_ins check-ins away from milestone $next_milestone',
           'description' => "Start working out and level up on your streak.\n Achieve milestones and earn crazy rewards",
           'data' => 
           [
             [
                 'title' => '',
+                'milestone' => 0,
                 'count' => 0,
                 'description' => 'Check-ins',
                 'enabled'=>true,
@@ -115,6 +116,7 @@ return array(
             ],
             [
                 'title' => 'Milestone 1',
+                'milestone' => 1,
                 'count' => 10,
                 'description' => 'Check-ins',
                 'enabled'=>false,
@@ -123,6 +125,7 @@ return array(
             ],
             [
                 'title' => 'Milestone 2',
+                'milestone' => 2,
                 'count' => 30,
                 'description' => 'Check-ins',
                 'enabled'=>false,
@@ -131,6 +134,7 @@ return array(
             ],
             [
                 'title' => 'Milestone 3',
+                'milestone' => 3,
                 'count' => 75,
                 'description' => 'Check-ins',
                 'enabled'=>false,
@@ -138,7 +142,8 @@ return array(
 
             ],
             [
-                'title' => 'Milestone 3',
+                'title' => 'Milestone 4',
+                'milestone' => 4,
                 'count' => 225,
                 'description' => 'Check-ins',
                 'enabled'=>false,
@@ -157,7 +162,7 @@ return array(
               [
                 [
                   'logo' => 'https://b.fitn.in/paypersession/level-1.png',
-                  'price' => '$300',
+                  'price' => '₹300',
                   'price_header' => 'Worth',
                   'claim_enabled' => true,
                   'button_title' => 'Claim',
@@ -166,7 +171,7 @@ return array(
                 
                 [
                   'logo' => 'https://b.fitn.in/paypersession/level-1.png',
-                  'price' => '$300',
+                  'price' => '₹300',
                   'price_header' => 'Worth',
                   'claim_enabled' => true,
                   'button_title' => 'Claim',
@@ -175,7 +180,7 @@ return array(
                 
                 [
                   'logo' => 'https://b.fitn.in/paypersession/level-1.png',
-                  'price' => '$300',
+                  'price' => '₹300',
                   'price_header' => 'Worth',
                   'claim_enabled' => true,
                   'button_title' => 'Claim',
@@ -221,12 +226,13 @@ return array(
         'past_check_in' => 'View all past check-ins',
         'Contact' => [
           'title' => 'Want further Assistance? Call us',
-          'ph_no' => '999999999',
+          'ph_no' => Config::get('app.contact_us_customer_number'),
         ],
         'Terms' => [
           'Title' => 'FitSquad - Terms and conditions',
           'text' => 'HTML Text',
         ],
-    ]
+    ],
+    'checkin_limit'=>225
 );
 ?>
