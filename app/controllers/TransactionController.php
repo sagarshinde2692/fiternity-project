@@ -1967,23 +1967,26 @@ class TransactionController extends \BaseController {
                     }
                 }
 
+                if(!(!empty($order->duration_day) && $order->duration_day == 30)){
 
-                if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
-                    if(isset($data["send_communication_vendor"]) && $data["send_communication_vendor"] != ""){
-
+                    if(isset($data["order_success_flag"]) && $data["order_success_flag"] == "admin"){
+                        if(isset($data["send_communication_vendor"]) && $data["send_communication_vendor"] != ""){
+    
+                            if(isset($order->instantPurchaseFinderTiggerCount) && $order->instantPurchaseFinderTiggerCount != ""){
+                                $data['instantPurchaseFinderTiggerCount']       =  intval($order->instantPurchaseFinderTiggerCount) + 1;
+                            }else{
+                                $data['instantPurchaseFinderTiggerCount']       =   1;
+                            }
+                        }
+    
+                    }else{
                         if(isset($order->instantPurchaseFinderTiggerCount) && $order->instantPurchaseFinderTiggerCount != ""){
                             $data['instantPurchaseFinderTiggerCount']       =  intval($order->instantPurchaseFinderTiggerCount) + 1;
                         }else{
                             $data['instantPurchaseFinderTiggerCount']       =   1;
                         }
                     }
-
-                }else{
-                    if(isset($order->instantPurchaseFinderTiggerCount) && $order->instantPurchaseFinderTiggerCount != ""){
-                        $data['instantPurchaseFinderTiggerCount']       =  intval($order->instantPurchaseFinderTiggerCount) + 1;
-                    }else{
-                        $data['instantPurchaseFinderTiggerCount']       =   1;
-                    }
+                
                 }
                 
             }
