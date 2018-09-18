@@ -21,27 +21,10 @@ return array(
 	// 'paytm_sandbox'=>true,
 
 	//stage
-	'new_search_url' =>'http://apistage.fitn.in:5000/',
-	'url' => 'http://apistage.fitn.in',
-	'admin_url' => 'http://adminstage.fitn.in',
-	'website' => 'http://apistage.fitn.in:8903',
-	'sidekiq_url' => 'http://kick.fitn.in/',
-	'queue' => 'booktrial',
-	'vendor_communication' => false,
-	'env' => 'stage',
-	'debug' => TRUE,
-	'metropolis' => 'http://apisatge.fitn.in:8989',
-	'amazonpay_isSandbox' => 'true',
-	'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
-	'website_deeplink' =>'https://ftrnty.com',
-	'mobikwik_sandbox'=>true,
-	'paytm_sandbox'=>true,
-
-	//beta
 	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
-	// 'url' => 'http://beta.fitn.in',
+	// 'url' => 'http://apistage.fitn.in',
 	// 'admin_url' => 'http://adminstage.fitn.in',
-	// 'website' => 'http://apistage.fitn.in:1122',
+	// 'website' => 'http://apistage.fitn.in:8903',
 	// 'sidekiq_url' => 'http://kick.fitn.in/',
 	// 'queue' => 'booktrial',
 	// 'vendor_communication' => false,
@@ -53,6 +36,23 @@ return array(
 	// 'website_deeplink' =>'https://ftrnty.com',
 	// 'mobikwik_sandbox'=>true,
 	// 'paytm_sandbox'=>true,
+
+	//beta
+	'new_search_url' =>'http://apistage.fitn.in:5000/',
+	'url' => 'http://beta.fitn.in',
+	'admin_url' => 'http://adminstage.fitn.in',
+	'website' => 'http://apistage.fitn.in:1122',
+	'sidekiq_url' => 'http://kick.fitn.in/',
+	'queue' => 'booktrial',
+	'vendor_communication' => false,
+	'env' => 'stage',
+	'debug' => TRUE,
+	'metropolis' => 'http://apisatge.fitn.in:8989',
+	'amazonpay_isSandbox' => 'true',
+	'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
+	'website_deeplink' =>'https://ftrnty.com',
+	'mobikwik_sandbox'=>true,
+	'paytm_sandbox'=>true,
 
 	//live
 	// 'new_search_url' =>'http://c1.fitternity.com/',
