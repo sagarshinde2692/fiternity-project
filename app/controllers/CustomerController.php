@@ -7215,7 +7215,7 @@ class CustomerController extends \BaseController {
 			if($customer){
 				
 				
-				
+				$milestone_no = 1;
 				$check_ins = !empty($customer->check_ins) ? $customer->check_ins : 0;
 				// $check_ins = 52;
 				
@@ -7237,7 +7237,7 @@ class CustomerController extends \BaseController {
 				}
 				
 				// return $milestone_next_count-$check_ins;
-				$post_register['header']['text'] = strtr($post_register['header']['text'], ['$customer_name'=>$customer->name, '$check_ins'=>$customer->check_ins, '$milestone'=>3, '$checkin_limit'=>Config::get('loyalty_screens.checkin_limit')]);
+				$post_register['header']['text'] = strtr($post_register['header']['text'], ['$customer_name'=>$customer->name, '$check_ins'=>$check_ins, '$milestone'=>$milestone_no, '$checkin_limit'=>Config::get('loyalty_screens.checkin_limit')]);
 				$post_register['milestones']['subheader'] = strtr($post_register['milestones']['subheader'], ['$next_milestone_check_ins'=>$milestone_next_count-$check_ins, '$next_milestone'=>$milestone_no+1]);
 			}
 		}
