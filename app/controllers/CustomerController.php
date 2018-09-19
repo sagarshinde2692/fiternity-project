@@ -7377,21 +7377,22 @@ class CustomerController extends \BaseController {
 
 	public function listCheckins(){
 
-		// $jwt_token = Request::header('Authorization');
-
+		
 		// $data = Input::json()->all();
+		$check_ins = 76;
+		$jwt_token = Request::header('Authorization');
+		if(!empty($jwt_token)){
 
-		// if(!empty($jwt_token)){
-
-		// 	$decoded = decode_customer_token($jwt_token);
-		// 	$customer_id = $decoded->customer->_id;
-		// 	$customer = Customer::find($customer_id);
-		// 	$check_ins = !empty($customer->check_ins) ? $customer->check_ins : 0;
+			$decoded = decode_customer_token($jwt_token);
+			$customer_id = $decoded->customer->_id;
+			$customer = Customer::find($customer_id);
+			$check_ins = !empty($customer->check_ins) ? $customer->check_ins : 0;
+		}
 
 
 
 			Finder::$withoutAppends = true;
-			$finders = Finder::orderBy('_id', 'desc')->limit(75)->get(['title', 'created_at']);
+			$finders = Finder::orderBy('_id', 'desc')->limit($check_ins)->get(['title', 'created_at']);
 			
 
 			if(!empty($finders)){
