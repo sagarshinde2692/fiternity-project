@@ -36,7 +36,7 @@ if (!function_exists('decode_customer_token')) {
         $jwt_alg                =   Config::get('app.jwt.alg');
 
         try{
-
+            \Log::info($jwt_token);
             if(Cache::tags('blacklist_customer_token')->has($jwt_token)){
                 return Response::json(array('status' => 400,'message' => 'User logged out'),400);
             }

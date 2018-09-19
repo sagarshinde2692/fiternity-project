@@ -8008,5 +8008,15 @@ class CustomerController extends \BaseController {
 		return Response::json(['data'=>$finders]);
 		
 	}
+
+	public function claimExternalCoupon(){
+
+		
+
+
+
+
+
+	}
 			
 }
