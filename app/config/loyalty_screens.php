@@ -13,9 +13,9 @@ return array(
         'partners' => [
             'header'=>'Proud Partners',
             'data'=>[
-                'https://b.fitn.in/paypersession/level-1.png',
-                'https://b.fitn.in/paypersession/level-1.png',
-                'https://b.fitn.in/paypersession/level-1.png'
+                'https://b.fitn.in/external-vouchers/BMS.png',
+                'https://b.fitn.in/external-vouchers/OLA.png',
+                'https://b.fitn.in/external-vouchers/ZOMATO.png',
             ]
             
             ],
@@ -50,9 +50,9 @@ return array(
                     'milestone'=>'No of sessions - 10',
                     'amount'=> '₹ 300',
                     'images'=>[
-                        'https://b.fitn.in/paypersession/level-1.png',
-                        'https://b.fitn.in/paypersession/level-1.png',
-                        'https://b.fitn.in/paypersession/level-1.png'
+                        'https://b.fitn.in/external-vouchers/BMS.png',
+                        'https://b.fitn.in/external-vouchers/OLA.png',
+                        'https://b.fitn.in/external-vouchers/ZOMATO.png',
                     ]
                 ],
                 [	
@@ -60,9 +60,9 @@ return array(
                     'milestone'=>'No of sessions - 10',
                     'amount'=> '₹ 300',
                     'images'=>[
-                        'https://b.fitn.in/paypersession/level-1.png',
-                        'https://b.fitn.in/paypersession/level-1.png',
-                        'https://b.fitn.in/paypersession/level-1.png'
+                        'https://b.fitn.in/external-vouchers/BMS.png',
+                        'https://b.fitn.in/external-vouchers/OLA.png',
+                        'https://b.fitn.in/external-vouchers/ZOMATO.png',
                     ]
                 ],
                 [	
@@ -70,9 +70,9 @@ return array(
                     'milestone'=>'No of sessions - 10',
                     'amount'=> '₹ 300',
                     'images'=>[
-                        'https://b.fitn.in/paypersession/level-1.png',
-                        'https://b.fitn.in/paypersession/level-1.png',
-                        'https://b.fitn.in/paypersession/level-1.png'
+                        'https://b.fitn.in/external-vouchers/BMS.png',
+                        'https://b.fitn.in/external-vouchers/OLA.png',
+                        'https://b.fitn.in/external-vouchers/ZOMATO.png',
                     ]
                 ],
                 [	
@@ -80,9 +80,9 @@ return array(
                     'milestone'=>'No of sessions - 10',
                     'amount'=> '₹ 300',
                     'images'=>[
-                        'https://b.fitn.in/paypersession/level-1.png',
-                        'https://b.fitn.in/paypersession/level-1.png',
-                        'https://b.fitn.in/paypersession/level-1.png'
+                        'https://b.fitn.in/external-vouchers/BMS.png',
+                        'https://b.fitn.in/external-vouchers/OLA.png',
+                        'https://b.fitn.in/external-vouchers/ZOMATO.png',
                     ]
                 ],
                 
@@ -117,7 +117,7 @@ return array(
               'data' => 
               [
                 [
-                  'logo' => 'https://b.fitn.in/paypersession/level-1.png',
+                  'logo' => 'https://b.fitn.in/external-vouchers/BMS.png',
                   'price' => '₹300',
                   'price_header' => 'Worth',
                   'claim_enabled' => true,
@@ -126,7 +126,7 @@ return array(
                 ],
                 
                 [
-                  'logo' => 'https://b.fitn.in/paypersession/level-1.png',
+                  'logo' => 'https://b.fitn.in/external-vouchers/OLA.png',
                   'price' => '₹300',
                   'price_header' => 'Worth',
                   'claim_enabled' => true,
@@ -135,7 +135,7 @@ return array(
                 ],
                 
                 [
-                  'logo' => 'https://b.fitn.in/paypersession/level-1.png',
+                  'logo' => 'https://b.fitn.in/external-vouchers/ZOMATO.png',
                   'price' => '₹300',
                   'price_header' => 'Worth',
                   'claim_enabled' => true,
@@ -150,32 +150,32 @@ return array(
                 '_id'=>2,
                 'data' => 
                 [
-                  [
-                    'logo' => 'https://b.fitn.in/paypersession/level-1.png',
-                    'price' => '$300',
-                    'price_header' => 'Worth',
-                    'claim_enabled' => true,
-                    'button_title' => 'Claim',
-                    'Terms' => 'HTMl text',
-                  ],
-                  
-                  [
-                    'logo' => 'https://b.fitn.in/paypersession/level-1.png',
-                    'price' => '$300',
-                    'price_header' => 'Worth',
-                    'claim_enabled' => true,
-                    'button_title' => 'Claim',
-                    'Terms' => 'HTMl text',
-                  ],
-                  
-                  [
-                    'logo' => 'https://b.fitn.in/paypersession/level-1.png',
-                    'price' => '$300',
-                    'price_header' => 'Worth',
-                    'claim_enabled' => true,
-                    'button_title' => 'Claim',
-                    'Terms' => 'HTMl text',
-                  ],
+                    [
+                      'logo' => 'https://b.fitn.in/external-vouchers/BMS.png',
+                      'price' => '₹300',
+                      'price_header' => 'Worth',
+                      'claim_enabled' => true,
+                      'button_title' => 'Claim',
+                      'Terms' => 'HTMl text',
+                    ],
+                    
+                    [
+                      'logo' => 'https://b.fitn.in/external-vouchers/OLA.png',
+                      'price' => '₹300',
+                      'price_header' => 'Worth',
+                      'claim_enabled' => true,
+                      'button_title' => 'Claim',
+                      'Terms' => 'HTMl text',
+                    ],
+                    
+                    [
+                      'logo' => 'https://b.fitn.in/external-vouchers/ZOMATO.png',
+                      'price' => '₹300',
+                      'price_header' => 'Worth',
+                      'claim_enabled' => true,
+                      'button_title' => 'Claim',
+                      'Terms' => 'HTMl text',
+                    ],
                 ],
               ],
           ],
