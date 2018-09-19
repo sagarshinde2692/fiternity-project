@@ -7956,7 +7956,7 @@ class CustomerController extends \BaseController {
 
 	public function listCheckins(){
 
-		$check_ins = 76;
+		$check_ins = 225;
 		$jwt_token = Request::header('Authorization');
 		if(!empty($jwt_token)){
 
@@ -7983,15 +7983,19 @@ class CustomerController extends \BaseController {
 		}
 		
 		array_walk($finders, 'format_date');
-		
-		// $milestones = array_column(Config::get('loyalty_constants.milestones'), 'count');
+
 		$milestones = Config::get('loyalty_constants.milestones');
 		foreach($milestones as $key => $milestone_data){
 			if($milestone_data['milestone']){
-				if(!empty($finders[$milestone_data['count']+($key-2)])){
-					array_splice($finders, $milestone_data['count']+($key-1), 0, [['milestone'=>$milestone_data['milestone']]]);
+
+				if(!empty($finders[$milestone_data['count']-1])){
+
+					$finders[$milestone_data['count']-1]['milestone'] = $milestone_data['milestone'];
+
 				}else{
+
 					break;
+
 				}
 
 			}
