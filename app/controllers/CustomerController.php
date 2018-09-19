@@ -7377,8 +7377,6 @@ class CustomerController extends \BaseController {
 
 	public function listCheckins(){
 
-		
-		// $data = Input::json()->all();
 		$check_ins = 76;
 		$jwt_token = Request::header('Authorization');
 		if(!empty($jwt_token)){
@@ -7391,41 +7389,41 @@ class CustomerController extends \BaseController {
 
 
 
-			Finder::$withoutAppends = true;
-			$finders = Finder::orderBy('_id', 'desc')->limit($check_ins)->get(['title', 'created_at']);
-			
+		Finder::$withoutAppends = true;
+		$finders = Finder::orderBy('_id', 'desc')->limit($check_ins)->get(['title', 'created_at']);
+		
 
-			if(!empty($finders)){
-				$finders = $finders->toArray();
-			}
-			
-			$finders = array_reverse($finders);
-			function format_date(&$value,$key){
-				$value['date'] = date('d M, Y | g:i A ', strtotime($value['created_at']));
-				unset($value['created_at'], $value['_id']);
-			}
-			
-			array_walk($finders, 'format_date');
-			
-			// $milestones = array_column(Config::get('loyalty_constants.milestones'), 'count');
-			$milestones = Config::get('loyalty_constants.milestones');
-			foreach($milestones as $key => $milestone_data){
-				if($milestone_data['milestone']){
-					if(!empty($finders[$milestone_data['count']+($key-2)])){
-						array_splice($finders, $milestone_data['count']+($key-1), 0, [['milestone'=>$milestone_data['milestone']]]);
-					}else{
-						break;
-					}
-
+		if(!empty($finders)){
+			$finders = $finders->toArray();
+		}
+		
+		$finders = array_reverse($finders);
+		function format_date(&$value,$key){
+			$value['date'] = date('d M, Y | g:i A ', strtotime($value['created_at']));
+			unset($value['created_at'], $value['_id']);
+		}
+		
+		array_walk($finders, 'format_date');
+		
+		// $milestones = array_column(Config::get('loyalty_constants.milestones'), 'count');
+		$milestones = Config::get('loyalty_constants.milestones');
+		foreach($milestones as $key => $milestone_data){
+			if($milestone_data['milestone']){
+				if(!empty($finders[$milestone_data['count']+($key-2)])){
+					array_splice($finders, $milestone_data['count']+($key-1), 0, [['milestone'=>$milestone_data['milestone']]]);
+				}else{
+					break;
 				}
-			}
-			$finders = array_reverse($finders);
-			
-			array_push($finders, ['start'=>date('d M, Y | g:i A ', strtotime('-2 month'))]);
 
-			
-			return Response::json(['data'=>$finders]);
-		// }
+			}
+		}
+		$finders = array_reverse($finders);
+		
+		array_push($finders, ['start'=>date('d M, Y | g:i A ', strtotime('-2 month'))]);
+
+		
+		return Response::json(['data'=>$finders]);
+		
 	}
 			
 }
