@@ -2966,7 +2966,7 @@ Class Utilities {
             return false;
         }
         
-          /* if((!empty($data['type']) && in_array($data['type'], ["memberships", "membership", "package", "packages", "healthytiffinmembership"]))||(isset($finder) && $finder["commercial_type"] != 0)) {
+        // if((!empty($data['type']) && in_array($data['type'], ["memberships", "membership", "package", "packages", "healthytiffinmembership"]))||(isset($finder) && $finder["commercial_type"] != 0)) {
         //     Log::info("returning true");
         //     return true;
         // } 
