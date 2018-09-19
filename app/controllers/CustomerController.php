@@ -7963,11 +7963,11 @@ class CustomerController extends \BaseController {
 			$decoded = decode_customer_token($jwt_token);
 			$customer_id = $decoded->customer->_id;
 			$customer = Customer::find($customer_id);
-			$check_ins = !empty($customer->check_ins) ? $customer->check_ins : 0;
+			$check_ins = !empty($customer->check_ins) ? $customer->check_ins : $check_ins;
 		}
 
 
-
+		
 		Finder::$withoutAppends = true;
 		$finders = Finder::orderBy('_id', 'desc')->limit($check_ins)->get(['title', 'created_at']);
 		
@@ -8011,7 +8011,7 @@ class CustomerController extends \BaseController {
 
 	public function claimExternalCoupon(){
 
-		
+
 
 
 
