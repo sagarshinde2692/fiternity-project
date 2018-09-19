@@ -346,7 +346,7 @@ if(!function_exists('getmy_city')){
                 break;
             case "noida":
             case "greater noida":
-                return "noida"
+                return "noida";
                 break;
             case "pimpri":
             case "chinchwad":
