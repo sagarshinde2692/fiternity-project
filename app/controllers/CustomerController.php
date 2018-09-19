@@ -7241,6 +7241,11 @@ class CustomerController extends \BaseController {
 				// return $milestone_next_count-$check_ins;
 				$post_register['header']['text'] = strtr($post_register['header']['text'], ['$customer_name'=>$customer->name, '$check_ins'=>$check_ins, '$milestone'=>$milestone_no, '$checkin_limit'=>Config::get('loyalty_screens.checkin_limit')]);
 				$post_register['milestones']['subheader'] = strtr($post_register['milestones']['subheader'], ['$next_milestone_check_ins'=>$milestone_next_count-$check_ins, '$next_milestone'=>$milestone_no+1]);
+
+				if($check_ins){
+					unset($post_register['past_check_in']['subheader']);
+					$post_register['past_check_in']['header'] = Config::get('loyalty_screens.past_check_in_header_text');
+				}
 			}
 		}
 		

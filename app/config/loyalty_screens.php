@@ -230,7 +230,10 @@ return array(
               ],
           ],
         ],
-        'past_check_in' => 'View all past check-ins',
+        'past_check_in' => [
+            'header'=>'View all past check-ins',
+            'subheader'=>'You haven\'t checked in yet.'
+        ],
         'Contact' => [
           'title' => 'Want further Assistance? Call us',
           'ph_no' => Config::get('app.contact_us_customer_number'),
@@ -240,6 +243,6 @@ return array(
           'text' => 'HTML Text',
         ],
     ],
-    'checkin_limit'=>225
+    'past_check_in_header_text'=>'View Past Check Ins'
 );
 ?>
