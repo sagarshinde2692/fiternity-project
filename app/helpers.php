@@ -344,6 +344,10 @@ if(!function_exists('getmy_city')){
             case "gurugram":
                 return "gurgaon";
                 break;
+            case "noida":
+            case "greater noida":
+                return "noida"
+                break;
             case "pimpri":
             case "chinchwad":
             case "poona":
