@@ -7376,12 +7376,36 @@ class CustomerController extends \BaseController {
 
 
 	public function listCheckins(){
-		
-		$finders = Finder::orderBy('_id', 'desc')->limit(10)->get(['title', 'created_at']);
 
-		
+		$jwt_token = Request::header('Authorization');
 
-		
+		$data = Input::json()->all();
+
+		if(!empty($jwt_token)){
+
+			$decoded = decode_customer_token($jwt_token);
+			$customer_id = $decoded->customer->_id;
+			$customer = Customer::find($customer_id);
+			$check_ins = !empty($customer->check_ins) ? $customer->check_ins : 0;
+
+
+
+			Finder::$withoutAppends = true;
+			$finders = Finder::orderBy('_id', 'desc')->limit($check_ins)->get(['title', 'created_at']);
+
+			if(!empty($finders)){
+				$finders = $finders->toArray();
+			}
+
+			function format_date(&$value,$key){
+				$value['date'] = date('d M, Y | g:i A ');
+				unset($value['created_at'], $value['_id']);
+			}
+
+			array_walk($finders, 'format_date');
+			
+			return $finders;
+		}
 	}
 			
 }

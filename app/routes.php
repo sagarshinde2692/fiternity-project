@@ -1258,6 +1258,6 @@ Route::get('loyaltyprofile', 'CustomerController@loyaltyProfile');
 
 Route::post('registerloyalty', 'CustomerController@registerLoyalty');
 
-Route::post('listcheckins', 'CustomerController@listCheckins');
+Route::get('listcheckins', 'CustomerController@listCheckins');
 /******************  Loyalty API END HERE************************************************/
 #####################################################################################################
