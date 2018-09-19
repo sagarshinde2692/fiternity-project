@@ -2812,10 +2812,11 @@ if (!function_exists(('getHash'))){
         $data['verify_hash'] = hash('sha512', $verify_str);
 
         $cmnPaymentRelatedDetailsForMobileSdk1              =   'payment_related_details_for_mobile_sdk';
-        $detailsForMobileSdk_str1                           =   $key  . '|' . $cmnPaymentRelatedDetailsForMobileSdk1 . '|default|' . $salt ;
+        $customer_referId                                   =   $key. ":". $data["logged_in_customer_id"];
+        $detailsForMobileSdk_str1                           =   $key  . '|' . $cmnPaymentRelatedDetailsForMobileSdk1 . '|'. $customer_referId .'|' . $salt ;
         $detailsForMobileSdk1                               =   hash('sha512', $detailsForMobileSdk_str1);
         $data['payment_related_details_for_mobile_sdk_hash'] =   $detailsForMobileSdk1;
-        
+        Log::info($detailsForMobileSdk_str1);
         return $data;
     }
 }
@@ -3960,6 +3961,35 @@ if (!function_exists('bladeCompile')) {
 	    return $content;
 	}
 
+}
+
+if (!function_exists(('getCartOfCustomer'))) {            	
+    function getCartOfCustomer($customer_id)
+    {
+        try {
+            if(!empty($customer_id))
+            {
+                Cart::$withoutAppends=true;
+                $cart=Cart::where("customer_id",intval($customer_id))->first(['_id']);
+                if(!empty($cart))
+                    return $cart->_id;
+                    else {
+                        $inserted_id = Cart::max('_id') + 1;
+                        $cartNew = new Cart();
+                        $cartNew->_id=$inserted_id;
+                        $cartNew->customer_id=$customer_id;
+                        $cartNew->products=[];
+                        $cartNew->status="1";
+                        $cartNew->save();
+                        return $inserted_id;
+                    };
+            }
+            else return null;
+        } catch (Exception $e) {
+            // Log::error(print_r($e,true));
+            return null;
+        }
+    }
 }
 
 ?>

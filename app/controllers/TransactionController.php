@@ -116,6 +116,10 @@ class TransactionController extends \BaseController {
             return Response::json(array('status' => 404,'message' =>'type field is required'), $this->error_status);
         }
 
+        if(!empty($data['type']) && $data['type'] == 'membershipwithpg'){
+            $data['type'] = 'memberships';
+        }
+
         if($this->vendor_token){
 
             $data['customer_source'] = 'kiosk';
@@ -154,7 +158,13 @@ class TransactionController extends \BaseController {
                 return Response::json(array('status'=>400, 'message'=>'Ratecard Id or ticket Id is required'), $this->error_status);
             }
         }
-        
+
+        if(empty($data['service_id']))
+        {
+        	Ratecard::$withoutAppends=true;
+        	$servId=Ratecard::find(intval($data['ratecard_id']))->first(['service_id']);
+        	(!empty($servId))?$data['service_id']=$servId->service_id:"";
+        }
 
         
         $workout = array('vip_booktrials','3daystrial','booktrials','workout-session');
@@ -184,13 +194,13 @@ class TransactionController extends \BaseController {
             $membership[] = 'memberships';
         }
 
-        if(in_array($data['type'],$membership)){
-            $membership_rules = array(
-                'preferred_starting_date'=>'required'
-            );
+        // if(in_array($data['type'],$membership)){
+        //     $membership_rules = array(
+        //         'preferred_starting_date'=>'required'
+        //     );
 
-            $rules = array_merge($rules,$membership_rules);
-        }
+        //     $rules = array_merge($rules,$membership_rules);
+        // }
 
         // if($data['type'] == 'diet_plan'){
         //     $diet_plan_rules = array(
@@ -260,7 +270,11 @@ class TransactionController extends \BaseController {
             $data['paymentmode_selected'] = 'paymentgateway';
         }*/
 
+        
         if(isset($data['paymentmode_selected']) && $data['paymentmode_selected'] != ""){
+            if(!empty($data['customer_quantity']) && $data['customer_quantity'] > 1 ){
+                $data['paymentmode_selected'] = 'paymentgateway';
+            }
 
             $data['part_payment'] = false;
 
@@ -372,14 +386,14 @@ class TransactionController extends \BaseController {
                 }
     
                 $data = array_merge($data,$ratecardDetail['data']);
-                
-                if(isset($data['customer_quantity'])){
+    
+                // if(isset($data['customer_quantity'])){
                     
-                    $data['ratecard_amount'] = $data['amount'];
-                    $data['amount'] = $data['customer_quantity'] * $data['amount'];
-                    $data['amount_finder'] = $data['customer_quantity'] * $data['amount_finder'];
+                //     $data['ratecard_amount'] = $data['amount'];
+                //     $data['amount'] = $data['customer_quantity'] * $data['amount'];
+                //     $data['amount_finder'] = $data['customer_quantity'] * $data['amount_finder'];
                     
-                }
+                // }
     
             }
 
@@ -422,14 +436,17 @@ class TransactionController extends \BaseController {
     
             if(isset($data['service_id'])){
                 $service_id = (int) $data['service_id'];
-    
+                
                 $serviceDetail = $this->getServiceDetail($service_id);
-    
+
                 if($serviceDetail['status'] != 200){
                     return Response::json($serviceDetail,$this->error_status);
                 }
-    
+                
                 $data = array_merge($data,$serviceDetail['data']);
+                if(isset($data['type']) && $data['type'] == 'workout-session' && $data['servicecategory_id'] == 65){
+                    $data['service_name'] = $this->utilities->getGymServiceNamePPS();
+                }
             }
 
         }else{
@@ -457,7 +474,6 @@ class TransactionController extends \BaseController {
         if(isset($data['order_id']) && $data['order_id'] != ""){
 
             $old_order_id = $order_id = $data['_id'] = intval($data['order_id']);
-            
             $order = Order::find((int)$old_order_id);
 
             $data['repetition'] = 1;
@@ -567,10 +583,34 @@ class TransactionController extends \BaseController {
 
         $data['amount_final'] = $data["amount_finder"];
 
+        //********************************************************************************** DYANMIC PRICING START**************************************************************************************************
+        if((isset($_GET['device_type']) && isset($_GET['app_version']) && in_array($_GET['device_type'], ['android', 'ios']) && $_GET['app_version'] >= '5') || isset($data['qrcodepayment'])){
+            if($data['type'] == 'workout-session')
+             {
+             try {
+                 Log::info("dynamic price");
+             (isset($data['start_time'])&&isset($data['start_date'])&&isset($data['service_id'])&&isset($data['end_time']))?
+             $am_calc=$this->utilities->getWsSlotPrice($data['start_time'],$data['end_time'],$data['service_id'],$data['start_date']):"";
+             if(isset($am_calc['peak'])){
+                $data['amount']  = $am_calc['peak'];
+                $data['peak'] = true;
+             }else if(isset($am_calc['non_peak'])){
+                $data['amount']  = $am_calc['non_peak'];
+                $data['non_peak'] = true;
+                $data['non_peak_discount']  = $am_calc['non_peak_discount'];
+    
+             }
+            //  (isset($am_calc))?$data['amount']=$am_calc:"";
+             
+             } catch (Exception $e) {Log::error(" Error :: ".print_r($e,true));}
+             } 
+        }
+            //********************************************************************************** DYANMIC PRICING END****************************************************************************************************
+
         if(!$updating_part_payment && !isset($data['myreward_id']) && (!(isset($data['pay_later']) && $data['pay_later']) || !(isset($data['wallet']) && $data['wallet']))) {
 	
             $cashbackRewardWallet =$this->getCashbackRewardWallet($data,$order);
-            Log::info("cashbackRewardWallet",$cashbackRewardWallet);
+            // Log::info("cashbackRewardWallet",$cashbackRewardWallet);
 
             if($cashbackRewardWallet['status'] != 200){
                 return Response::json($cashbackRewardWallet,$this->error_status);
@@ -627,11 +667,11 @@ class TransactionController extends \BaseController {
 
 
             if($finderDetail["data"]["finder_flags"]["part_payment"]){
-            
+
                 if($this->utilities->isConvinienceFeeApplicable($data)){
                     
                     $convinience_fee_percent = Config::get('app.convinience_fee');
-            
+
                     $convinience_fee = round($part_payment_data['amount_finder']*$convinience_fee_percent/100);
 
                     $convinience_fee = $convinience_fee <= 199 ? $convinience_fee : 199;
@@ -686,6 +726,10 @@ class TransactionController extends \BaseController {
 
             $data['convinience_fee'] = $convinience_fee;
 
+            if(!empty($data['customer_quantity'])){
+                $data['convinience_fee'] = $data['convinience_fee'] * $data['customer_quantity'];
+            }
+
         }
 
         if(isset($data['pay_later']) && $data['pay_later'] && isset($data['wallet']) && $data['wallet']){
@@ -697,7 +741,7 @@ class TransactionController extends \BaseController {
         }
 
         $data['base_amount'] = $order['amount_customer'] - $data['convinience_fee'] ;
-
+        Log::info($data);
         $hash = getHash($data);
         $data = array_merge($data,$hash);
 
@@ -848,6 +892,9 @@ class TransactionController extends \BaseController {
         if(isset($data['cashback_detail']) && isset($data['cashback_detail']['amount_deducted_from_wallet'])){
             $result['wallet_amount'] = $data['cashback_detail']['amount_deducted_from_wallet'];
         }
+        if(!empty($data['ratecard_id'])){
+            $result['ratecard_id'] = $data['ratecard_id'];
+        }
         /*if(isset($data["part_payment_calculation"])){
             $result['part_payment_calculation'] = $data["part_payment_calculation"];
         }*/
@@ -887,6 +934,10 @@ class TransactionController extends \BaseController {
             $data['pps_new'] = true;
         }
 
+        // if(!empty($data['customer_quantity']) && $data['customer_quantity'] > 1){
+        //     $pay_later = false;
+        // }
+
         $resp   =   array(
             'status' => 200,
             'data' => $result,
@@ -901,7 +952,55 @@ class TransactionController extends \BaseController {
         if(!empty($data['ratecard_pay_at_vendor'])){
            $resp['ratecard_pay_at_vendor'] = true;
         }
+        if(!empty($data['qrcodepayment'])){
+           $resp['qrcodepayment'] = true;
+        }
 
+        
+        
+        if(!empty($order['amount_final'])){
+            $resp['data']["coupon_details"] = [
+                "title" => "Apply Coupon Code",
+                "description" => "",
+                "applied" => false,
+                "remove_title" => "",
+                "remove_msg" => ""
+            ];
+        }
+        
+        
+        if(!empty($data['coupon_code']) && !empty($data['coupon_discount_amount'])){
+            $resp['data']["coupon_details"] = [];
+            $resp['data']['coupon_details']['title'] = strtoupper($data['coupon_code']);
+            $resp['data']['coupon_details']['remove_title'] =  strtoupper($data['coupon_code'])." applied";
+            $resp['data']['coupon_details']['applied'] =  true;
+            if(isset($data['coupon_description'])){
+                $resp['data']['coupon_details']['description'] = $data['coupon_description'];
+            }
+        }
+        
+        if(empty($data['session_payment'])){
+            
+            if(in_array($order['type'], ['booktrials', 'workout-session'])){
+                $resp['data']["quantity_details"] = [
+                    "field" => "No of People",
+                    "description" => "Qty ".(!empty($order['customer_quantity']) ? $order['customer_quantity'] : 1),
+                    'max'=>5,
+                    'selected_quantity'=>(!empty($order['customer_quantity']) ? $order['customer_quantity'] : 1)
+                ];
+            }
+    
+            // if(!empty($order['customer_quantity'])){
+                $resp['data']["pt_details"] = [
+                    "title" => "Add on",
+                    "description" => "Personal Training",
+                    "cost"=>"Rs.300",
+                    "applied" => !empty($data['pt_applied']) ? $data['pt_applied'] : false
+                ];
+            // }
+        }
+
+        
         // $resp['payment_offers'] = [
         //     'amazon_pay'=>'25% instant cashback'
         // ];
@@ -937,7 +1036,7 @@ class TransactionController extends \BaseController {
                     $payment_mode_type_array[] = 'pay_at_vendor';
                 }
             }
-            if(isset($_GET['device_type']) && isset($_GET['app_version']) && in_array($_GET['device_type'], ['android', 'ios']) && $_GET['app_version'] > '4.4.3'){
+            if($pay_later){
                 
                 if($data['type'] == 'workout-session'){
                     $payment_mode_type_array[] = 'pay_later';
@@ -956,7 +1055,7 @@ class TransactionController extends \BaseController {
             $resp['data']['payment_modes'] = [];
 
             if(isset($order->amount_final) && $order->amount_final ){
-                $resp['data']['payment_modes'] = $this->getPaymentModes($resp);
+                $resp['data']['payment_modes'] = $this->getPaymentModes($resp, $order->toArray());
             }
         // }
 
@@ -2725,17 +2824,7 @@ class TransactionController extends \BaseController {
         $customer = \Customer::find($customer_id);
 
         //************************************************************************************ IF ONLY AMOUNT CUSTOMER*******************************************************************************************
-        //********************************************************************************** DYANMIC PRICING START**************************************************************************************************
         
-        /* if($data['type'] == 'workout-session')
-         {
-         try {
-         (isset($data['start_time'])&&isset($data['start_date'])&&isset($data['service_id'])&&isset($data['end_time']))?
-         $am_calc=$this->utilities->getWsSlotPrice($data['start_time'],$data['end_time'],$data['service_id'],$data['start_date']):"";
-         (isset($am_calc))?$data['amount']=$am_calc:"";
-         } catch (Exception $e) {Log::error(" Error :: ".print_r($e,true));}
-         } */
-        //********************************************************************************** DYANMIC PRICING END****************************************************************************************************
         
         if(isset($customer->demonetisation)){
 			
@@ -2760,7 +2849,16 @@ class TransactionController extends \BaseController {
             $decoded = customerTokenDecode($jwt_token);
             $customer_id = $decoded->customer->_id;
         }
-	
+
+        if(!empty($data['customer_quantity'])){
+            
+            $data['ratecard_amount'] = $data['amount'];
+
+            $data['amount_finder'] = $data['amount_finder'] * $data['customer_quantity'];
+
+            $data['amount'] = $data['amount_customer'] = $data['amount_final'] = $data['amount'] * $data['customer_quantity'];
+        }
+
         $amount = $data['amount_customer'] = $data['amount'];
 
         $convinience_fee = 0;
@@ -2956,7 +3054,13 @@ class TransactionController extends \BaseController {
 
             $service_id = isset($data['service_id']) ? $data['service_id'] : null;
 
-            $couponCheck = $this->customerreward->couponCodeDiscountCheck($ratecard,$data["coupon_code"],$customer_id, $ticket, $ticket_quantity, $service_id);
+            $total_amount = null;
+
+            if(!empty($data['customer_quantity'])){
+                $total_amount = $data['amount'];
+            }
+
+            $couponCheck = $this->customerreward->couponCodeDiscountCheck($ratecard,$data["coupon_code"],$customer_id, $ticket, $ticket_quantity, $service_id, $total_amount);
 
             Log::info("couponCheck");
             Log::info($couponCheck);
@@ -2965,6 +3069,9 @@ class TransactionController extends \BaseController {
 
                 if(isset($couponCheck['vendor_commission'])){
                     $data['vendor_commission'] = $couponCheck['vendor_commission'];
+                }
+                if(isset($couponCheck['description'])){
+                    $data['coupon_description'] = $couponCheck['description'];
                 }
 
                 $data["coupon_discount_amount"] = $amount > $couponCheck["data"]["discount"] ? $couponCheck["data"]["discount"] : $amount;
@@ -2985,7 +3092,7 @@ class TransactionController extends \BaseController {
 
             if($order && isset($order['coupon_code'])){
 
-                $order->unset('coupon_code', 'coupon_discount_amount');
+                $order->unset(['coupon_code', 'coupon_discount_amount']);
                 // $order->unset('coupon_discount_amount');
             }
 
@@ -3595,6 +3702,41 @@ class TransactionController extends \BaseController {
             $data['amount_finder'] = $data['amount'];
         }
 
+        if(isset($data['schedule_date']) && $data['schedule_date'] != ""){
+        	
+        	$schedule_date = date('Y-m-d 00:00:00', strtotime($data['schedule_date']));
+        	array_set($data, 'start_date', $schedule_date);
+        	
+        	array_set($data, 'end_date', $schedule_date);
+        	
+        	$data['membership_duration_type'] = 'workout_session';
+        }
+        
+        if(isset($data['schedule_slot']) && $data['schedule_slot'] != ""){
+        	
+        	$schedule_slot = explode("-", $data['schedule_slot']);
+        	
+        	$data['start_time'] = trim($schedule_slot[0]);
+        	if(count($schedule_slot) == 1){
+        		$data['end_time'] = date('g:i a', strtotime('+1 hour', strtotime($schedule_slot[0])));
+        		$data['schedule_slot'] = $schedule_slot[0].'-'.$data['end_time'];
+        	}else{
+        		$data['end_time']= trim($schedule_slot[1]);
+        	}
+        }
+        
+        
+        //********************************************************************************** DYANMIC PRICING START**************************************************************************************************
+        /* if($data['type'] == 'workout-session')
+        {
+        	try {
+        		(isset($data['start_time'])&&isset($data['start_date'])&&isset($data['service_id'])&&isset($data['end_time']))?
+        			$am_calc=$this->utilities->getWsSlotPrice($data['start_time'],$data['end_time'],$data['service_id'],$data['start_date']):"";
+        		(isset($am_calc))?$data['amount_finder']=$am_calc:"";
+        	} catch (Exception $e) {Log::error(" Error :: ".print_r($e,true));}
+        } */
+        //********************************************************************************** DYANMIC PRICING END****************************************************************************************************
+        
         $data['amount'] = $data['amount_finder'];
 
        /* $corporate_discount_percent = $this->utilities->getCustomerDiscount();
@@ -3616,7 +3758,7 @@ class TransactionController extends \BaseController {
             array_set($data, 'start_date', $schedule_date);
 
             array_set($data, 'end_date', $schedule_date);
-
+            
             $data['membership_duration_type'] = 'workout_session';
         }
 
@@ -3639,20 +3781,20 @@ class TransactionController extends \BaseController {
         }
 
         $batch = array();
-
+        
         $data['batch_time'] = "";
-
+        
         if(isset($data['batch']) && $data['batch'] != ""){
-            
-            if(is_array($data['batch'])){
-                $data['batch'] = $data['batch'];
-            }else{
-                $data['batch'] = json_decode($data['batch'],true);
-            }
-
-            foreach ($data['batch'] as $key => $value) {
-
-                if(isset($value['slots']['start_time']) && $value['slots']['start_time'] != ""){
+                
+                if(is_array($data['batch'])){
+                    $data['batch'] = $data['batch'];
+                }else{
+                    $data['batch'] = json_decode($data['batch'],true);
+                }
+        
+                foreach ($data['batch'] as $key => $value) {
+        
+                    if(isset($value['slots']['start_time']) && $value['slots']['start_time'] != ""){
 
                     $batch[$key]['weekday'] = $value['weekday'];
                     $batch[$key]['slots'][0] = $value['slots'];
@@ -3752,6 +3894,7 @@ class TransactionController extends \BaseController {
         $data['meal_contents'] = $this->stripTags($service['short_description']);
         (isset($service['diet_inclusive'])) ? $data['diet_inclusive'] = $service['diet_inclusive'] : null;
         $data['finder_address'] = (isset($service['address']) && $service['address'] != "") ? $service['address'] : "-";
+        $data['servicecategory_id'] = (isset($service['servicecategory_id'])) ? $service['servicecategory_id'] : 0;
         
         
         return array('status' => 200,'data' =>$data);
@@ -4758,7 +4901,7 @@ class TransactionController extends \BaseController {
         $booking_details_data["finder_name_location"] = ['field'=>'STUDIO NAME','value'=>$data['finder_name'].", ".$data['finder_location'],'position'=>$position++];
 
         if(in_array($data['type'],["booktrials","workout-session","manualautotrial"])){
-            $booking_details_data["finder_name_location"] = ['field'=>'SESSION BOOKED AT','value'=>$data['finder_name'].", ".$data['finder_location'],'position'=>$position++];
+            $booking_details_data["finder_name_location"] = ['field'=>'BOOKED AT','value'=>$data['finder_name'].", ".$data['finder_location'],'position'=>$position++];
         }
 
         $booking_details_data["service_name"] = ['field'=>'SERVICE','value'=>$data['service_name'],'position'=>$position++];
@@ -4838,16 +4981,20 @@ class TransactionController extends \BaseController {
         }
 
         if(isset($data['start_date']) && $data['start_date'] != ""){
-            $booking_details_data['start_date']['value'] = date('d-m-Y (l)',strtotime($data['start_date']));
+            $booking_details_data['start_date']['value'] = date('l, j M Y',strtotime($data['start_date']));
         }
 
         if(isset($data['schedule_date']) && $data['schedule_date'] != ""){
-            $booking_details_data['start_date']['value'] = date('d-m-Y (l)',strtotime($data['schedule_date']));
+            $booking_details_data['start_date']['value'] = date('l, j M Y',strtotime($data['schedule_date']));
         }
-
+        
         if(isset($data['preferred_starting_date']) && $data['preferred_starting_date'] != ""){
-            $booking_details_data['start_date']['value'] = date('d-m-Y (l)',strtotime($data['preferred_starting_date']));
+            $booking_details_data['start_date']['value'] = date('l, j M Y',strtotime($data['preferred_starting_date']));
         }
+        
+        // if(!empty($booking_details_data['start_date']['value'])){
+        //     $booking_details_data['start_date']['value'] = date('l, j M Y',strtotime($booking_details_data['start_date']['value']));
+        // }
 
         if(isset($data['start_time']) && $data['start_time'] != ""){
             $booking_details_data['start_time']['value'] = strtoupper($data['start_time']);
@@ -4890,16 +5037,22 @@ class TransactionController extends \BaseController {
 
         if(in_array($data['type'], ['booktrial','workout-session'])){
 
-            $booking_details_data["start_date"]["field"] = "SESSION DATE";
+            $booking_details_data["start_date"]["field"] = "DATE & TIME";
             $booking_details_data["start_time"]["field"] = "SESSION TIME";
             $booking_details_data['service_name']['field'] = 'WORKOUT FORM';
 
             if($data['type'] == 'workout-session'){
-
+                
                 $booking_details_data['service_duration']['value'] = '1 Session';
             }
             
         }
+
+        if(!empty($booking_details_data['service_name']['value']) && !empty($booking_details_data['service_duration']['value'])){
+            $booking_details_data['service_name']['value'] = $booking_details_data['service_name']['value'].' ('.$booking_details_data['service_duration']['value'].')';
+        }
+
+
 
         if(isset($data['preferred_day']) && $data['preferred_day'] != ""){
             $booking_details_data['start_date']['field'] = 'PREFERRED DAY';
@@ -4910,7 +5063,12 @@ class TransactionController extends \BaseController {
             $booking_details_data['start_time']['field'] = 'PREFERRED TIME';
             $booking_details_data['start_time']['value'] = $data['preferred_time'];
         }
+        
+        if(!empty($booking_details_data['start_date']['value']) && !empty($booking_details_data['start_time']['value'])){
+            $booking_details_data["start_date"]["value"] = $booking_details_data["start_date"]["value"].' at '.$booking_details_data['start_time']['value'];
+        }
 
+        
         if(isset($data['"preferred_service']) && $data['"preferred_service'] != "" && $data['"preferred_service'] != null){
             $booking_details_data['service_name']['field'] = 'PREFERRED SERVICE';
             $booking_details_data['service_name']['value'] = $data['preferred_service'];
@@ -4924,7 +5082,15 @@ class TransactionController extends \BaseController {
             $booking_details_data['finder_name_location']['field'] = 'BOUGHT AT';
             $booking_details_data['finder_name_location']['value'] = $data['finder_name'];
         }
-
+        
+        if(!empty($booking_details_data['start_time'])) {
+            unset($booking_details_data['start_time']);
+        }
+        
+        if(!empty($booking_details_data['service_duration'])) {
+            unset($booking_details_data['service_duration']);  
+        } 
+        
         $booking_details_all = [];
         foreach ($booking_details_data as $key => $value) {
 
@@ -4950,11 +5116,36 @@ class TransactionController extends \BaseController {
         
         $amount_summary[0] = array(
             'field' => 'Total Amount',
-            'value' => 'Rs. '.(isset($data['original_amount_finder']) ? $data['original_amount_finder'] : $data['amount_finder'])
+            'value' => 'Rs. '.(isset($data['original_amount_finder']) ? $data['original_amount_finder'] : $data['amount_customer'])
         );
         
         if(isset($data['session_payment']) && $data['session_payment']){
             $amount_summary[0]['value'] = 'Rs. '.$data['amount_customer'];
+        }
+
+        if(!empty($data['ratecard_amount'])){
+            $amount_summary[0] = array(
+                'field' => 'Session Amount',
+                'value' => 'Rs. '.$data['ratecard_amount']
+            );
+
+            if(!empty($data['type']) && in_array($data['type'], ['memberships', 'membership'])){
+                $amount_summary[0] = array(
+                    'field' => 'Membership Amount',
+                    'value' => 'Rs. '.$data['ratecard_amount']
+                );  
+            }
+            // $amount_summary[] = array(
+            //     'field' => 'Quantity',
+            //     'value' => !empty($data['customer_quantity']) ? (string)$data['customer_quantity'] : '1'
+            // );
+            if(!empty($data['customer_quantity']) && $data['customer_quantity'] > 1){
+
+                $amount_summary[] = array(
+                    'field' => 'Total Amount',
+                    'value' => 'Rs. '.$data['amount_customer']
+                );
+            }
         }
 
         $amount_payable = [];
@@ -4964,120 +5155,136 @@ class TransactionController extends \BaseController {
             'value' => 'Rs. '.$data['amount_final']
         );
 
-        if($payment_mode_type == 'part_payment' && isset($data['part_payment_calculation'])){
+        $amount_final = $data['amount_final'];
 
-            $remaining_amount = $data['amount_customer'];
+        // if($payment_mode_type == 'part_payment' && isset($data['part_payment_calculation'])){
 
-            if(isset($data["part_payment_calculation"]["part_payment_amount"]) && $data["part_payment_calculation"]["part_payment_amount"] > 0){
+        //     $remaining_amount = $data['amount_customer'];
 
-                $remaining_amount -= $data["part_payment_calculation"]["part_payment_amount"];
+        //     if(isset($data["part_payment_calculation"]["part_payment_amount"]) && $data["part_payment_calculation"]["part_payment_amount"] > 0){
+
+        //         $remaining_amount -= $data["part_payment_calculation"]["part_payment_amount"];
+        //     }
+
+        //     if(isset($data["part_payment_calculation"]["convinience_fee"]) && $data["part_payment_calculation"]["convinience_fee"] > 0){
+
+        //         $remaining_amount -= $data["part_payment_calculation"]["convinience_fee"];
+        //     }
+
+        //     if(isset($data['coupon_discount_amount']) && $data['coupon_discount_amount'] > 0){
+
+        //         $remaining_amount -= $data['coupon_discount_amount'];
+
+        //         $amount_summary[] = array(
+        //             'field' => 'Coupon Discount',
+        //             'value' => '-Rs. '.$data['coupon_discount_amount']
+        //         );
+
+        //         $you_save += intval($data['coupon_discount_amount']);
+                
+        //     }
+
+        //     if(isset($data['customer_discount_amount']) && $data['customer_discount_amount'] > 0){
+
+        //         $remaining_amount -= $data['customer_discount_amount'];
+
+        //         $amount_summary[] = array(
+        //             'field' => 'Corporate Discount',
+        //             'value' => '-Rs. '.$data['customer_discount_amount']
+        //         );
+
+        //         $you_save += intval($data['customer_discount_amount']);
+        //     }
+
+        //     if(isset($data['app_discount_amount']) && $data['app_discount_amount'] > 0){
+
+        //         $remaining_amount -= $data['app_discount_amount'];
+
+        //         $amount_summary[] = array(
+        //             'field' => 'App Discount',
+        //             'value' => '-Rs. '.$data['app_discount_amount']
+        //         );
+
+        //         $you_save += intval($data['app_discount_amount']);
+                
+        //     }
+
+        //     $amount_summary[] = array(
+        //         'field' => 'Remaining Amount Payable',
+        //         'value' => 'Rs. '.$remaining_amount
+        //     );
+
+        //     $amount_summary[] = array(
+        //         'field' => 'Booking Amount (20%)',
+        //         'value' => 'Rs. '.$data['part_payment_calculation']['part_payment_amount']
+        //     );
+
+        //     if(isset($data['convinience_fee']) && $data['convinience_fee'] > 0){
+
+        //         $amount_summary[] = array(
+        //             'field' => 'Convenience Fee',
+        //             'value' => '+Rs. '.$data['convinience_fee']
+        //         );
+
+        //     }
+
+        //     $cashback_detail = $this->customerreward->purchaseGame($data['amount'],$data['finder_id'],'paymentgateway',$data['offer_id'],false,$data["part_payment_calculation"]["part_payment_and_convinience_fee_amount"],$data['type']);
+
+        //     // Log::info("asdasdasdasasd============adadasdasdas=");
+        //     // Log::info($cashback_detail);
+
+        //     if($cashback_detail['amount_deducted_from_wallet'] > 0){
+
+        //         $amount_summary[] = array(
+        //             'field' => 'Fitcash Applied',
+        //             'value' => '-Rs. '.$cashback_detail['amount_deducted_from_wallet']
+        //         );
+
+        //     }
+
+        //     $amount_payable = array(
+        //         'field' => 'Total Amount Payable (20%)',
+        //         'value' => 'Rs. '.$data['part_payment_calculation']['amount']
+        //     );
+
+        // }else{
+
+            if(isset($data['convinience_fee']) && $data['convinience_fee'] > 0){
+
+                $amount_summary[] = array(
+                    'field' => 'Convenience Fee',
+                    'value' => '+Rs. '.$data['convinience_fee']
+                );
             }
 
-            if(isset($data["part_payment_calculation"]["convinience_fee"]) && $data["part_payment_calculation"]["convinience_fee"] > 0){
+            if(isset($data['cashback_detail']) && isset($data['cashback_detail']['amount_deducted_from_wallet']) && $data['cashback_detail']['amount_deducted_from_wallet'] > 0 ){
+                if($payment_mode_type != 'pay_later'){
 
-                $remaining_amount -= $data["part_payment_calculation"]["convinience_fee"];
+                    $amount_summary[] = array(
+                        'field' => 'Fitcash Applied',
+                        'value' => '-Rs. '.$data['cashback_detail']['amount_deducted_from_wallet']
+                    );
+                    $you_save += $data['cashback_detail']['amount_deducted_from_wallet'];
+                }else{
+                    $amount_final = $amount_final + $data['cashback_detail']['amount_deducted_from_wallet'];
+                    $amount_payable['value'] = "Rs. ".$amount_final;   
+                }
+                
             }
 
             if(isset($data['coupon_discount_amount']) && $data['coupon_discount_amount'] > 0){
 
-                $remaining_amount -= $data['coupon_discount_amount'];
+                if($payment_mode_type != 'pay_later'){
 
-                $amount_summary[] = array(
-                    'field' => 'Coupon Discount',
-                    'value' => '-Rs. '.$data['coupon_discount_amount']
-                );
-
-                $you_save += intval($data['coupon_discount_amount']);
-                
-            }
-
-            if(isset($data['customer_discount_amount']) && $data['customer_discount_amount'] > 0){
-
-                $remaining_amount -= $data['customer_discount_amount'];
-
-                $amount_summary[] = array(
-                    'field' => 'Corporate Discount',
-                    'value' => '-Rs. '.$data['customer_discount_amount']
-                );
-
-                $you_save += intval($data['customer_discount_amount']);
-            }
-
-            if(isset($data['app_discount_amount']) && $data['app_discount_amount'] > 0){
-
-                $remaining_amount -= $data['app_discount_amount'];
-
-                $amount_summary[] = array(
-                    'field' => 'App Discount',
-                    'value' => '-Rs. '.$data['app_discount_amount']
-                );
-
-                $you_save += intval($data['app_discount_amount']);
-                
-            }
-
-            $amount_summary[] = array(
-                'field' => 'Remaining Amount Payable',
-                'value' => 'Rs. '.$remaining_amount
-            );
-
-            $amount_summary[] = array(
-                'field' => 'Booking Amount (20%)',
-                'value' => 'Rs. '.$data['part_payment_calculation']['part_payment_amount']
-            );
-
-            if(isset($data['convinience_fee']) && $data['convinience_fee'] > 0){
-
-                $amount_summary[] = array(
-                    'field' => 'Convenience Fee',
-                    'value' => '+Rs. '.$data['convinience_fee']
-                );
-
-            }
-
-            $cashback_detail = $this->customerreward->purchaseGame($data['amount'],$data['finder_id'],'paymentgateway',$data['offer_id'],false,$data["part_payment_calculation"]["part_payment_and_convinience_fee_amount"],$data['type']);
-
-            if($cashback_detail['amount_deducted_from_wallet'] > 0){
-
-                $amount_summary[] = array(
-                    'field' => 'Fitcash Applied',
-                    'value' => '-Rs. '.$cashback_detail['amount_deducted_from_wallet']
-                );
-
-            }
-
-            $amount_payable = array(
-                'field' => 'Total Amount Payable (20%)',
-                'value' => 'Rs. '.$data['part_payment_calculation']['amount']
-            );
-
-        }else{
-
-            if(isset($data['convinience_fee']) && $data['convinience_fee'] > 0){
-
-                $amount_summary[] = array(
-                    'field' => 'Convenience Fee',
-                    'value' => '+Rs. '.$data['convinience_fee']
-                );
-            }
-
-            if(isset($data['cashback_detail']) && isset($data['cashback_detail']['amount_deducted_from_wallet']) && $data['cashback_detail']['amount_deducted_from_wallet'] > 0 &&  $payment_mode_type != 'pay_later'){
-
-                $amount_summary[] = array(
-                    'field' => 'Fitcash Applied',
-                    'value' => '-Rs. '.$data['cashback_detail']['amount_deducted_from_wallet']
-                );
-                $you_save += $data['cashback_detail']['amount_deducted_from_wallet'];
-                
-            }
-
-            if(isset($data['coupon_discount_amount']) && $data['coupon_discount_amount'] > 0 && $payment_mode_type != 'pay_later'){
-
-                $amount_summary[] = array(
-                    'field' => 'Coupon Discount',
-                    'value' => '-Rs. '.$data['coupon_discount_amount']
-                );
-                $you_save += $data['coupon_discount_amount'];
+                    $amount_summary[] = array(
+                        'field' => 'Coupon Discount',
+                        'value' => '-Rs. '.$data['coupon_discount_amount']
+                    );
+                    $you_save += $data['coupon_discount_amount'];
+                }else{
+                    $amount_final = $amount_final + $data['coupon_discount_amount'];
+                    $amount_payable['value'] = "Rs. ".$amount_final;   
+                }
                 
             }
 
@@ -5123,11 +5330,11 @@ class TransactionController extends \BaseController {
                 }
             }
 
-            if(isset($data['type']) && $data['type'] == 'workout-session' && $payment_mode_type == 'pay_later'){
+            // if(isset($data['type']) && $data['type'] == 'workout-session' && $payment_mode_type == 'pay_later'){
                 
-                $amount_payable['value'] = "Rs. ".($data['amount_finder']+$data['convinience_fee']);
-            }
-        }
+            //     $amount_payable['value'] = "Rs. ".($data['amount_finder']+$data['convinience_fee']);
+            // }
+        // }
 
         if(!empty($reward)){
             $amount_summary[] = $reward;
@@ -5150,16 +5357,52 @@ class TransactionController extends \BaseController {
 
     }
 
-    function getPaymentModes($data){
+    function getPaymentModes($data, $order=null){
 
         $payment_modes = [];
 
-        if($data['pay_later']){
+
+        $payment_options['payment_options_order'] = ["wallet", "cards", "netbanking", "emi"];
+
+        if(!empty($order['type']) && $order['type'] == 'memberships'){
+            $payment_options['payment_options_order'] = ["cards", "wallet", "netbanking", "emi"];
+        }
+        
+        $payment_options['wallet'] = [
+            'title' => 'Wallet',
+            'subtitle' => 'Transact online with Wallets',
+            'value'=>'wallet',
+            'options'=>[
+                    [
+                            'title' => 'Paytm',
+                            'subtitle' => 'Paytm',
+                            'value' => 'paytm'
+                    ],
+                    [
+                            'title' => 'AmazonPay',
+                            'subtitle' => 'AmazonPay',
+                            'value' => 'amazonpay'
+                    ],
+                    [
+                            'title' => 'Mobikwik',
+                            'subtitle' => 'Mobikwik',
+                            'value' => 'mobikwik'
+                    ],
+                    [
+                            'title' => 'PayU',
+                            'subtitle' => 'PayU',
+                            'value' => 'payu'
+                    ]
+            ]
+        ];
+        
+        if(!empty($data['pay_later'])){
             
             $payment_modes[] = array(
                 'title' => 'Pay now',
                 'subtitle' => 'Pay online through wallet,credit/debit card',
                 'value' => 'paymentgateway',
+                'payment_options'=>$payment_options
             );
 
         }else{
@@ -5167,6 +5410,7 @@ class TransactionController extends \BaseController {
                 'title' => 'Online Payment',
                 'subtitle' => 'Transact online with netbanking, card and wallet',
                 'value' => 'paymentgateway',
+                'payment_options'=>$payment_options
             );
         }
 
@@ -5210,14 +5454,18 @@ class TransactionController extends \BaseController {
 
         }
 
-        if(isset($data['pay_later']) && $data['pay_later']){
+        if(isset($data['pay_later']) && $data['pay_later'] && !(!empty($order['customer_quantity']) && $order['customer_quantity'] > 1 )){
+
+            // if(empty($data['qrcodepayment'])||(!empty($data['qrcodepayment'])&&!empty($data['paymentmode_selected'])))
+        	if(empty($data['qrcodepayment']))
+        	{
+        		$payment_modes[] = array(
+        				'title' => 'Pay Later',
+        				'subtitle' => 'Pay full amount online, post session date',
+        				'value' => 'pay_later',
+        		);
+        	}
             
-            $payment_modes[] = array(
-                'title' => 'Pay Later',
-                'subtitle' => 'Reserve slot & pay online post your workout',
-                'value' => 'pay_later',
-            );
-        
         }
 
         return $payment_modes;
@@ -5390,6 +5638,9 @@ class TransactionController extends \BaseController {
         Log::info("REsponse from CustomerReward", $resp);
         if($resp["coupon_applied"]){
 
+            if(!empty($resp['data']['discount']))
+        		$resp['coupon_description']="Rs. ".$resp['data']['discount']. " off Applied.";
+
             if(isset($data['event_id']) && isset($data['customer_email'])){
                                 
                 $already_applied_coupon = Customer::where('email', 'like', '%'.$data['customer_email'].'%')->whereIn('applied_promotion_codes',[strtolower($data['coupon'])])->count();
@@ -5511,51 +5762,62 @@ class TransactionController extends \BaseController {
     }
 
     public function walletOrderCapture(){
-        
+        // ini_set('always_populate_raw_post_data', -1);
         $data = Input::all();
 
         Log::info("wallet capture");
 
         Log::info($data);
 
+        if(in_array($this->device_type, ['ios', 'android'])){
+            $data['customer_source'] = $this->device_type;
+        }
+
         $rules = array(
             'amount'=>'required',
-            'customer_email'=>'required|email',
-            'customer_phone'=>'required',
             'customer_source'=>'required',
-            'type'=>'required'
         );
 
         $validator = Validator::make($data,$rules);
 
+        if ($validator->fails()) {
+            Log::info($validator->errors());
+
+            if(Config::get('app.debug')){
+                return Response::json(array('status' => 404,'message' => error_message($validator->errors())),404);
+            }else{
+                return Response::json(array('status' => 404,'message' => 'Invalid request'),404);
+            }
+        }
+
+        $jwt_token = Request::header('Authorization');
+
+        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+            $decoded = customerTokenDecode($jwt_token);
+            $data['customer_email'] = $decoded->customer->email;
+            $data['customer_name'] = $decoded->customer->name;
+            $data['customer_phone'] = $decoded->customer->contact_no;
+        }else{
+            return Response::json(array("message"=>"Empty token or token should be string","status"=>401));
+        }
+        
+        $data['type'] = 'wallet';
+        
         $customerDetail = $this->getCustomerDetail($data);
         
         if($customerDetail['status'] != 200){
             return Response::json($customerDetail,$customerDetail['status']);
         }
         
-        if($data['type'] != 'wallet'){
-            return Response::json(array('message'=>'Invalid parameters'), 400);
-        }
-
         $data = array_merge($data,$customerDetail['data']);
 
         Log::info("before pledge");
 
         Log::info($data);
 
-        $fitternity_share = $this->getFitternityShareAmount($data);
-
-        Log::info("prev pledge");
-        Log::info($fitternity_share);
-
-        $data['fitternity_share_change'] = ((int)$data['fitternity_share']) != $fitternity_share ? true : false;
-
-        $data["fitternity_share"] = $fitternity_share;
+        $data["fitcash_amount"] = round($data['amount'] * (1 + Config::get('app.add_wallet_extra')/100));
         
-        $data["fitcash_amount"] = $data['amount'] + $data["fitternity_share"];
-        
-        $data['amount_finder'] = $data['amount'];
+        $data['amount_finder'] = 0;
 
         $data['payment_mode'] = 'paymentgateway';
         
@@ -5577,11 +5839,17 @@ class TransactionController extends \BaseController {
         $data['finder_name'] = 'Fitternity';
         $data['finder_slug'] = 'fitternity';
         
-        $data['service_name'] = 'Fitternity Pledge';
-        $data['service_id'] = 100000;
+        $data['service_name'] = 'Wallet';
+        
+        $data['service_id'] = 100001;
         
         $hash = getHash($data);
+        
         $data = array_merge($data,$hash);
+
+        if(in_array($data['customer_source'],['android','ios','kiosk'])){
+            $mobilehash = $data['payment_related_details_for_mobile_sdk_hash'];
+        }
         
         $order = new Order($data);
 
@@ -5602,8 +5870,8 @@ class TransactionController extends \BaseController {
         $result['hash'] = $data['payment_hash'];
         $result['payment_related_details_for_mobile_sdk_hash'] = $mobilehash;
         $result['finder_name'] = strtolower($data['finder_name']);
-        $result['fitternity_share'] = $data['fitternity_share'];
-        $result['fitternity_share_change'] = $data['fitternity_share_change'];
+        $result['fitcash_amount'] = $data['fitcash_amount'];
+        $result['success_msg'] = $data['fitcash_amount']." fitcash has been added into your wallet";
         
         
         $resp   =   array(
@@ -5611,6 +5879,7 @@ class TransactionController extends \BaseController {
             'data' => $result,
             'message' => "Tmp Order Generated Sucessfully"
         );
+        $resp['data']['payment_modes'] = $this->getPaymentModes($resp);
         return Response::json($resp);
 
     }
@@ -5624,7 +5893,8 @@ class TransactionController extends \BaseController {
         Log::info($data);
         
         $rules = array(
-            'order_id'=>'required'
+            'order_id'=>'required',
+            'status'=>'required'
         );
 
         $validator = Validator::make($data,$rules);
@@ -5652,14 +5922,6 @@ class TransactionController extends \BaseController {
 
             $order->status = "1";
 
-            $fitternity_share = $this->getFitternityShareAmount($order->toArray());
-
-            $order->fitternity_share_change_success = $order->fitternity_share != $fitternity_share ? true : false;
-            
-            $order->fitternity_share = $fitternity_share;
-
-            $order->fitcash_amount = $order->amount + $fitternity_share;
-
             $req = array(
                 "customer_id"=>$order['customer_id'],
                 "order_id"=>$order['_id'],
@@ -5668,7 +5930,7 @@ class TransactionController extends \BaseController {
                 "amount_fitcash_plus" => $order['fitcash_amount'],
                 "type"=>'CREDIT',
                 'entry'=>'credit',
-                'description'=>"Fitcash credited for PLEDGE",
+                'description'=>"Amount added to Wallet",
             );
 
             Log::info($req);
@@ -5681,9 +5943,9 @@ class TransactionController extends \BaseController {
 
             Log::info($wallet);
             
-            $redisid = Queue::connection('redis')->push('TransactionController@sendCommunication', array('order_id'=>$order_id),Config::get('app.queue'));
+            // $redisid = Queue::connection('redis')->push('TransactionController@sendCommunication', array('order_id'=>$order_id),Config::get('app.queue'));
 
-            $order->redis_id = $redisid;
+            // $order->redis_id = $redisid;
 
             $order->wallet_balance = $this->utilities->getWalletBalance($order['customer_id']);
 
@@ -5691,7 +5953,7 @@ class TransactionController extends \BaseController {
 
             $order->update();
 
-            $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful :)");
+            $resp 	= 	array('status' => 200, 'statustxt' => 'success', 'order' => $order, "message" => "Transaction Successful. ".$order['fitcash_amount']." fitcash has been added into your wallet");
             
         } else {
            
@@ -5727,9 +5989,6 @@ class TransactionController extends \BaseController {
     public function checkoutSummary(){
 
         $data = Input::json()->all();
-
-        Log::info("checkoutSummary");
-        Log::info($data);
 
         $result = [
 
@@ -5782,6 +6041,11 @@ class TransactionController extends \BaseController {
             $data = array_merge($data,$ratecardDetail['data']);
             
             $data['amount_payable'] = $data['amount'];
+
+            if(!empty($data['customer_quantity'])){
+                $data['amount_payable'] = $data['amount'] = $data['amount_payable'] * $data['customer_quantity'];
+                $result['customer_quantity'] = $data['customer_quantity'];
+            }
 
             $ratecard = Ratecard::find(intval($data['ratecard_id']));
 
@@ -5923,6 +6187,27 @@ class TransactionController extends \BaseController {
                 //     "value"=> $data['finder_address']
                 // ]
             ];
+
+            // if(in_array($ratecard['type'], ['trial', 'workout session'])){
+                $result['order_details'] = [
+                    "session"=>[
+                        "field"=> $data['service_name'],
+                        "value"=> "₹ ".number_format($data['amount'])
+                    ]
+                ];
+                 if(isset($data['slot'])){
+                    $result['order_details']['date'] = [
+                        "field"=>"Date",
+                        "value"=>date('dS M Y', strtotime($data['slot']['date']))
+                    ];
+                     $result['order_details']['time'] = [
+                        "field"=>"Time",
+                        "value"=>$data['slot']['slot_time']
+                    ];
+                }
+                $result['finder_name'] = $data['finder_name'];
+                $result['finder_location'] = $data['finder_location'];
+            // }
 
             if(isset($data['reward_ids'])){
                 
@@ -7080,6 +7365,23 @@ class TransactionController extends \BaseController {
     public function updateRatecardSlotsByOrderId($order_id){
         Log::info('updateRatecardSlotsByOrderId');
         $this->utilities->updateRatecardSlots(['order_id'=>$order_id]);
+    }
+    public function webcheckout(){
+        $data = Input::json()->all();
+        $rules = array(
+            'txnId'=>'required',
+        );
+        $validator = Validator::make($data,$rules);
+        $jwt_token = Request::header('Authorization');
+
+        if($jwt_token != "" && $jwt_token != null && $jwt_token != 'null'){
+            $decoded = customerTokenDecode($jwt_token);
+            // $data['logged_in_customer_id'] = (int)$decoded->customer->_id;
+        }
+        $order = Order::where("txnid",$data["txnId"])->get();
+        return $order; 
+
+        
     }
 
     public function giftCouponCapture(){

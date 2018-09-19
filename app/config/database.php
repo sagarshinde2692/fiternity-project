@@ -1,7 +1,7 @@
 <?php
 
 //local
-// $host = "localhost";
+$host = "localhost";
 // $username = "";
 // $password = "";
 
@@ -12,6 +12,7 @@ $password = "fit123";
 $options = ['db' => 'admin','authMechanism' => 'MONGODB-CR']; // sets the authentication database required by mongo 3]
 
 //production
+
 // $host = "54.179.134.14"; 
 // $username = ""; 
 // $password = ""; 
@@ -108,7 +109,7 @@ return array(
 
 		'mysql' => array(
 			'driver' => 'mysql', 
-			'host' => 'localhost', 
+			'host' => 'apistage.fitn.in', 
 			'database' => 'database', 
 			'username' => 'root', 
 			'password' => '', 

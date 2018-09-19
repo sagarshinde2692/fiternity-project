@@ -17,27 +17,14 @@ return array(
 	// 'amazonpay_isSandbox' => 'true',
 	// 'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
 	// 'website_deeplink' =>'https://ftrnty.com',
+	// 'mobikwik_sandbox'=>true,
+	// 'paytm_sandbox'=>true,
 
 	//stage
-	'new_search_url' =>'http://apistage.fitn.in:5000/',
-	'url' => 'http://apistage.fitn.in',
-	'admin_url' => 'http://adminstage.fitn.in',
-	'website' => 'http://apistage.fitn.in:8903',
-	'sidekiq_url' => 'http://kick.fitn.in/',
-	'queue' => 'booktrial',
-	'vendor_communication' => false,
-	'env' => 'stage',
-	'debug' => TRUE,
-	'metropolis' => 'http://apisatge.fitn.in:8989',
-	'amazonpay_isSandbox' => 'true',
-	'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
-	'website_deeplink' =>'https://ftrnty.com',
-	
-	//beta
 	// 'new_search_url' =>'http://apistage.fitn.in:5000/',
 	// 'url' => 'http://apistage.fitn.in',
 	// 'admin_url' => 'http://adminstage.fitn.in',
-	// 'website' => 'http://apistage.fitn.in:8888',
+	// 'website' => 'http://apistage.fitn.in:8903',
 	// 'sidekiq_url' => 'http://kick.fitn.in/',
 	// 'queue' => 'booktrial',
 	// 'vendor_communication' => false,
@@ -47,7 +34,26 @@ return array(
 	// 'amazonpay_isSandbox' => 'true',
 	// 'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
 	// 'website_deeplink' =>'https://ftrnty.com',
-	
+	// 'mobikwik_sandbox'=>true,
+	// 'paytm_sandbox'=>true,
+
+	//beta
+	'new_search_url' =>'http://apistage.fitn.in:5000/',
+	'url' => 'http://beta.fitn.in',
+	'admin_url' => 'http://adminstage.fitn.in',
+	'website' => 'http://apistage.fitn.in:1122',
+	'sidekiq_url' => 'http://kick.fitn.in/',
+	'queue' => 'booktrial',
+	'vendor_communication' => false,
+	'env' => 'stage',
+	'debug' => TRUE,
+	'metropolis' => 'http://apisatge.fitn.in:8989',
+	'amazonpay_isSandbox' => 'true',
+	'reliance_url' =>'http://rhc-portal.agileloyalty.net/fitternity/callback',
+	'website_deeplink' =>'https://ftrnty.com',
+	'mobikwik_sandbox'=>true,
+	'paytm_sandbox'=>true,
+
 	//live
 	// 'new_search_url' =>'http://c1.fitternity.com/',
 	// 'url' => 'https://a1.fitternity.com',
@@ -62,6 +68,11 @@ return array(
 	// 'amazonpay_isSandbox' => 'false',
 	// 'reliance_url' =>'https://rhealthcircle.reliancegeneral.co.in/fitternity/callback',
 	// 'website_deeplink' =>'https://ftrnty.com',
+	// 'mobikwik_sandbox'=>false,
+	// 'paytm_sandbox'=>false,
+
+	"core_key"=> "FITITRNTY",
+	'non_peak_hours' => ["off"=>0.8,"gym"=>["off"=>0.8,"start"=>10,"end"=>18],"studios"=>["start"=>11,"end"=>17,"off"=>0.8]],
 	
 	
 	
@@ -94,52 +105,51 @@ return array(
 			"key" => 'gtKFFx',
 			"salt" => 'eCwWELxi',
 			"url" => "https://test.payu.in/merchant/postservice.php?form=2"
-		)
+			)
 		),
-
-
-	/*
-	|--------------------------------------------------------------------------
-	| Application Timezone
-	|--------------------------------------------------------------------------
-	|
-	| Here you may specify the default timezone for your application, which
-	| will be used by the PHP date and date-time functions. We have gone
-	| ahead and set this to a sensible default for you out of the box.
-	|
-	*/
-
-	//'timezone' => 'UTC',
-	//'timezone' => 'America/New_York',
-	'timezone' => 'Asia/Kolkata',
-
-	/*
-	|--------------------------------------------------------------------------
-	| Application Locale Configuration
-	|--------------------------------------------------------------------------
-	|
-	| The application locale determines the default locale that will be used
-	| by the translation service provider. You are free to set this value
-	| to any of the locales which will be supported by the application.
-	|
-	*/
-
-	'locale' => 'en',
-
-	/*
-	|--------------------------------------------------------------------------
-	| Application Fallback Locale
-	|--------------------------------------------------------------------------
-	|
-	| The fallback locale determines the locale to use when the current one
-	| is not available. You may change the value to correspond to any of
-	| the language folders that are provided through your application.
-	|
-	*/
-
-	'fallback_locale' => 'en',
-
-	/*
+		
+		/*
+		|--------------------------------------------------------------------------
+		| Application Timezone
+		|--------------------------------------------------------------------------
+		|
+		| Here you may specify the default timezone for your application, which
+		| will be used by the PHP date and date-time functions. We have gone
+		| ahead and set this to a sensible default for you out of the box.
+		|
+		*/
+		
+		//'timezone' => 'UTC',
+		//'timezone' => 'America/New_York',
+		'timezone' => 'Asia/Kolkata',
+		
+		/*
+		|--------------------------------------------------------------------------
+		| Application Locale Configuration
+		|--------------------------------------------------------------------------
+		|
+		| The application locale determines the default locale that will be used
+		| by the translation service provider. You are free to set this value
+		| to any of the locales which will be supported by the application.
+		|
+		*/
+		
+		'locale' => 'en',
+		
+		/*
+		|--------------------------------------------------------------------------
+		| Application Fallback Locale
+		|--------------------------------------------------------------------------
+		|
+		| The fallback locale determines the locale to use when the current one
+		| is not available. You may change the value to correspond to any of
+		| the language folders that are provided through your application.
+		|
+		*/
+		
+		'fallback_locale' => 'en',
+		
+		/*
 	|--------------------------------------------------------------------------
 	| Encryption Key
 	|--------------------------------------------------------------------------
@@ -374,6 +384,10 @@ return array(
 		'review_images'=>array(
 			'path'							=> 'review-images/',
 			'url'							=> 'https://d3oorwrq3wx4ad.cloudfront.net/review-images/',
+		),
+		'detail_ratings_images'=>array(
+			'path'							=> 'paypersession/ratings/',
+			'url'							=> 'http://d3oorwrq3wx4ad.cloudfront.net/paypersession/ratings/',
 		),
 	),
 
@@ -816,9 +830,36 @@ return array(
 		'end_weekend'=>['Monday'],
 	],
 
+	'no_patti_brands_slugs'=>['anytime-fitness-gurgaon'],
+
+
+	'rating_text'=>["Bad","OK","Average","Good","Excellent",],
+
+	'voucher_grid'=>[
+		[
+			'min'=>1,
+			'max'=>2,
+			'type'=>'faasos'
+		],
+		[
+			'min'=>2,
+			'max'=>3,
+			'type'=>'faasos'
+		],
+		[
+			'min'=>3,
+			'max'=>4,
+			'type'=>'faasos'
+		],
+		[
+			'min'=>4,
+			'type'=>'faasos'
+		],
+		
+	],
+	'slotAllowance' =>['vendors'=>[1584],'services'=>[17626],'types'=>['workout-session','booktrials']],
+	'add_wallet_extra'=>10,
 	// 'mixed_reward_finders'=>[579,1233,1257,1259,1260,1261,1262,1263,1266,1860,1874,1875,1876,2105,2194,2545,4817,4818,4819,4821,4822,4823,4824,4825,4826,5502,5681,5741,5742,5743,5744,5750,5967,6029,6525,6530,6593,7355,7651,9171,9178,9198,9216,10675,11381,12077,12198,12226,12565,12566,12569,13396,13549,13965,1581,1582,1583,1584,1602,1604,1606,1607,2235,2236,6893,7064,1029,1030,1034,1705,1706,9872,12768,3239,10624,10964,12223,14141,14142,3175,3178,3179,3183,3201,3204,3330,3331,3332,3333,3335,3336,3341,3342,3343,3345,3346,3347,5964,7081,7106,7111,7114,8872,9446,13670,13671,7116,11230,3193,7037,9968,10120,14362,15056],
 	'mixed_reward_finders'=>[3193,7037,9968,10120,14362,15056],
-	
-	'no_patti_brands_slugs'=>['anytime-fitness-gurgaon']
 
 );

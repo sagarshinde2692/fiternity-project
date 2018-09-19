@@ -20,6 +20,15 @@ class Review extends  \Basemodel {
 	    //'description' => 'required'
 	];
 
+	public static $rulesService = [
+	    'finder_id' => 'required|integer|numeric',
+	    'service_id' => 'required|integer|numeric',
+	    'customer_id' => 'required|integer|numeric',
+	    'rating' => 'required|numeric',
+	    // 'detail_rating' => 'required',
+	    //'description' => 'required'
+	];
+
 	public static $withoutAppends = false;
 
 	public static $setAppends = [];
