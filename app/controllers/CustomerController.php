@@ -7391,7 +7391,7 @@ class CustomerController extends \BaseController {
 
 
 			Finder::$withoutAppends = true;
-			$finders = Finder::orderBy('_id', 'desc')->limit(13)->get(['title', 'created_at']);
+			$finders = Finder::orderBy('_id', 'desc')->limit(75)->get(['title', 'created_at']);
 			
 
 			if(!empty($finders)){
@@ -7408,11 +7408,12 @@ class CustomerController extends \BaseController {
 			
 			// $milestones = array_column(Config::get('loyalty_constants.milestones'), 'count');
 			$milestones = Config::get('loyalty_constants.milestones');
-			foreach($milestones as $milestone_data){
+			foreach($milestones as $key => $milestone_data){
 				if($milestone_data['milestone']){
-
-					if(!empty($finders[$milestone_data['count']])){
-						array_splice($finders, $milestone_data['count'], 0, [['milestone'=>$milestone_data['milestone']]]);
+					if(!empty($finders[$milestone_data['count']+($key-2)])){
+						array_splice($finders, $milestone_data['count']+($key-1), 0, [['milestone'=>$milestone_data['milestone']]]);
+					}else{
+						break;
 					}
 
 				}
