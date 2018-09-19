@@ -397,7 +397,7 @@ if(!function_exists('ifCityPresent')){
                 break;
             case "noida":
             case "greater noida":
-                $send_city = "gurgaon";
+                $send_city = "noida";
                 $ifcity = true;
                 break;
             case "hyderabad":
