@@ -2952,6 +2952,10 @@ Class Utilities {
         {
             return false;
         }
+
+        if(!empty($data['type']) && $data['type'] == 'events'){
+            return false;
+        }
         
           /* if((!empty($data['type']) && in_array($data['type'], ["memberships", "membership", "package", "packages", "healthytiffinmembership"]))||(isset($finder) && $finder["commercial_type"] != 0)) {
             Log::info("returning true");
@@ -5376,7 +5380,47 @@ Class Utilities {
 
         return $fitcash_coupon;
 
-	} 
+    } 
+    
+
+    public function tranformEventData($data){
+
+        $rules = [
+            'customer_data'=>'required',
+        ];
+
+        $validator = Validator::make($data,$rules);
+
+        if ($validator->fails()) {
+            return array('status' => 404,'message' => error_message($validator->errors()));
+        }
+
+        $customer = $data['customer_data']['0'];
+
+        $rules = [
+            'firstname'=>'required | string',
+            // 'lastname'=>'required | string',
+            'customer_email'=>'required | email',
+            'customer_phone'=>'required|regex:/[0-9]{10}/',
+        ];
+        
+        $validator = Validator::make($customer,$rules);
+
+        if ($validator->fails()) {
+            return array('status' => 404,'message' => error_message($validator->errors()));
+        }
+
+        $data['customer_name'] = $customer['firstname'];
+
+        if(!empty($customer['lastname'])){
+            $data['customer_name'] = $data['customer_name'].' '.$customer['lastname'];
+        }
+
+        $data = array_merge($data, array_only($customer, ['customer_email', 'customer_phone']));
+
+        return ['status'=>200, 'data'=>$data];
+
+    }
 	
 }
 

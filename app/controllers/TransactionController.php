@@ -127,6 +127,18 @@ class TransactionController extends \BaseController {
             $data['finder_id'] = (int)$vendor['_id'];
         }
 
+        if(!empty($data['type']) && $data['type'] == 'events' && !empty($data['sub_type']) && $data['sub_type'] == Config::get('app.music_run_event_type')){
+
+            $transform_response = $this->utilities->tranformEventData($data);
+
+            if($transform_response['status']!=200){
+                return Response::json($transform_response, 404);
+            }
+
+            $data = $transform_response['data'];
+
+        }
+
         $rules = array(
             'customer_name'=>'required',
             'customer_email'=>'required|email',
@@ -190,6 +202,16 @@ class TransactionController extends \BaseController {
             );
 
             $rules = array_merge($rules,$membership_rules);
+        }
+
+        if(in_array($data['type'] == 'events',$membership)){
+
+            $event_rules = [
+                'event_id'=>'required | integer',
+                'ticket_id'=>'required | integer'
+            ];
+
+            $rules = array_merge($rules,$event_rules);
         }
 
         // if($data['type'] == 'diet_plan'){
@@ -499,7 +521,7 @@ class TransactionController extends \BaseController {
             $data['vertical_type'] = 'event';
             $data['membership_duration_type'] = 'event';
             
-            $data['ticket_quantity'] = isset($data['ticket_quantity']) ? $data['ticket_quantity'] : 1;
+            $data['ticket_quantity'] = isset($data['ticket_quantity']) ? intval($data['ticket_quantity']) : 1;
             
             if(isset($data['ticket_id'])){
                 
@@ -516,6 +538,14 @@ class TransactionController extends \BaseController {
 
                     $data['amount_customer'] = $data['amount'] = $data['amount_finder'] = $data['ticket_quantity'] * $ticket->price;
 
+                    if($data['ticket_quantity'] == 4){
+                        $data['combo_discount'] = 400;
+                        $data['combo_discount_remark'] = "Buy 4 tickets, get 400 off";
+                        $data['amount'] = $data['amount'] - $data['combo_discount'];
+                        $data['amount_customer'] = $data['amount_customer'] - $data['combo_discount'];
+                        $data['amount_finder'] = $data['amount_finder'] - $data['combo_discount'];
+                    }
+
                 }else{
 
                     $resp   =   array('status' => 400,'message' => "Ticket not found");
@@ -529,6 +559,8 @@ class TransactionController extends \BaseController {
                 return Response::json($resp,$this->error_status);
                 
             }
+
+            
 
             $finder = Finder::where('_id', $data['finder_id'])->first(['title']);
             if($finder){
@@ -578,6 +610,14 @@ class TransactionController extends \BaseController {
 
             $data = array_merge($data,$cashbackRewardWallet['data']);
             
+        }
+
+        if(!empty($data['donation_amount']) && is_numeric($data['donation_amount'])){
+            
+            $data['amount_final'] = $data['amount'] = $data['amount'] + $data['donation_amount'];
+            $data['amount_customer'] = $data['amount_customer'] + $data['donation_amount'];
+            $data['amount_finder'] = $data['amount_finder'] + $data['donation_amount'];
+        
         }
         
         $txnid = "";
@@ -2988,7 +3028,7 @@ class TransactionController extends \BaseController {
 
             if($order && isset($order['coupon_code'])){
 
-                $order->unset('coupon_code', 'coupon_discount_amount');
+                $order->unset(['coupon_code', 'coupon_discount_amount']);
                 // $order->unset('coupon_discount_amount');
             }
 
