@@ -17,8 +17,7 @@ return array(
                 'https://b.fitn.in/external-vouchers/OLA.png',
                 'https://b.fitn.in/external-vouchers/ZOMATO.png',
             ]
-            
-            ],
+        ],
 
         'steps' => [
             'header'=>'NO MATTER WHERE YOU WORKOUT | GET REWARDED IN 3 EASY STEPS',
@@ -45,46 +44,6 @@ return array(
         'check_ins' => [
             'header'=>'GET CRAZY REWARDS ON COMPLETING EACH MILESTONE',
             'data'=>[
-                [	
-                    'title'=>'Milestone 1',
-                    'milestone'=>'No of sessions - 10',
-                    'amount'=> '₹ 300',
-                    'images'=>[
-                        'https://b.fitn.in/external-vouchers/BMS.png',
-                        'https://b.fitn.in/external-vouchers/OLA.png',
-                        'https://b.fitn.in/external-vouchers/ZOMATO.png',
-                    ]
-                ],
-                [	
-                    'title'=>'Milestone 1',
-                    'milestone'=>'No of sessions - 10',
-                    'amount'=> '₹ 300',
-                    'images'=>[
-                        'https://b.fitn.in/external-vouchers/BMS.png',
-                        'https://b.fitn.in/external-vouchers/OLA.png',
-                        'https://b.fitn.in/external-vouchers/ZOMATO.png',
-                    ]
-                ],
-                [	
-                    'title'=>'Milestone 1',
-                    'milestone'=>'No of sessions - 10',
-                    'amount'=> '₹ 300',
-                    'images'=>[
-                        'https://b.fitn.in/external-vouchers/BMS.png',
-                        'https://b.fitn.in/external-vouchers/OLA.png',
-                        'https://b.fitn.in/external-vouchers/ZOMATO.png',
-                    ]
-                ],
-                [	
-                    'title'=>'Milestone 1',
-                    'milestone'=>'No of sessions - 10',
-                    'amount'=> '₹ 300',
-                    'images'=>[
-                        'https://b.fitn.in/external-vouchers/BMS.png',
-                        'https://b.fitn.in/external-vouchers/OLA.png',
-                        'https://b.fitn.in/external-vouchers/ZOMATO.png',
-                    ]
-                ],
                 
             ]
         ],
@@ -108,77 +67,7 @@ return array(
         ],
         'rewards' => [
           'header' => 'Claim exciting rewards',
-          'data' => 
-          [
-            [
-              'title' => 'Milestone 1',
-              'description' => 'Select any reward',
-              '_id'=>1,
-              'data' => 
-              [
-                [
-                  'logo' => 'https://b.fitn.in/external-vouchers/BMS.png',
-                  'price' => '₹300',
-                  'price_header' => 'Worth',
-                  'claim_enabled' => true,
-                  'button_title' => 'Claim',
-                  'Terms' => 'HTMl text',
-                ],
-                
-                [
-                  'logo' => 'https://b.fitn.in/external-vouchers/OLA.png',
-                  'price' => '₹300',
-                  'price_header' => 'Worth',
-                  'claim_enabled' => true,
-                  'button_title' => 'Claim',
-                  'Terms' => 'HTMl text',
-                ],
-                
-                [
-                  'logo' => 'https://b.fitn.in/external-vouchers/ZOMATO.png',
-                  'price' => '₹300',
-                  'price_header' => 'Worth',
-                  'claim_enabled' => true,
-                  'button_title' => 'Claim',
-                  'Terms' => 'HTMl text',
-                ],
-              ],
-            ],
-            [
-                'title' => 'Milestone 1',
-                'description' => 'Select any reward',
-                '_id'=>2,
-                'data' => 
-                [
-                    [
-                      'logo' => 'https://b.fitn.in/external-vouchers/BMS.png',
-                      'price' => '₹300',
-                      'price_header' => 'Worth',
-                      'claim_enabled' => true,
-                      'button_title' => 'Claim',
-                      'Terms' => 'HTMl text',
-                    ],
-                    
-                    [
-                      'logo' => 'https://b.fitn.in/external-vouchers/OLA.png',
-                      'price' => '₹300',
-                      'price_header' => 'Worth',
-                      'claim_enabled' => true,
-                      'button_title' => 'Claim',
-                      'Terms' => 'HTMl text',
-                    ],
-                    
-                    [
-                      'logo' => 'https://b.fitn.in/external-vouchers/ZOMATO.png',
-                      'price' => '₹300',
-                      'price_header' => 'Worth',
-                      'claim_enabled' => true,
-                      'button_title' => 'Claim',
-                      'Terms' => 'HTMl text',
-                    ],
-                ],
-              ],
-          ],
+          'data' => [],
         ],
         'past_check_in' => [
             'header'=>'View all past check-ins',
@@ -193,6 +82,30 @@ return array(
           'text' => 'HTML Text',
         ],
     ],
-    'past_check_in_header_text'=>'View Past Check Ins'
+    'past_check_in_header_text'=>'View Past Check Ins',
+
+    'pre_register_check_ins_data_template'=>[	
+        'title'=>'Milestone milestone',
+        'milestone'=>'No of sessions - count',
+        'amount'=> '₹ amount',
+        'images'=>[]
+    ],
+
+    'post_register_rewards_data_outer_template'=>  [
+        'title' => 'Milestone milestone',
+        'description' => 'Select any reward',
+        '_id'=>1,
+        'data' => []
+      ],
+      
+    'post_register_rewards_data_inner_template' => [
+        'logo' => 'image',
+        '_id'=>'_id',
+        'price' => 'amount',
+        'price_header' => 'Worth',
+        'claim_enabled' => false,
+        'button_title' => 'Claim',
+        'Terms' => 'HTMl text',
+      ],
 );
 ?>

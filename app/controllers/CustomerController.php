@@ -7787,6 +7787,64 @@ class CustomerController extends \BaseController {
 		$pre_register = Config::get('loyalty_screens.pre_register');
 		$jwt_token = Request::header('Authorization');
 
+
+		
+		Log::info("asda");
+		$voucher_categories = VoucherCategory::raw(function($collection){
+			$match = [
+				'$match'=>[
+					'status'=>'1',
+				]
+				
+			];
+
+			$sort =[
+				'$sort'=>[
+					'order'=>1
+				]
+			];
+
+			$group = [
+				'$group'=>[
+					'_id'=>'$milestone',
+					'vouchers'=>['$push'=>'$$ROOT']
+				]
+			];
+
+			$sort1 = [
+				'$sort'=>[
+					'_id'=>1
+				]
+			];
+
+			$aggregate = [$match, $sort, $group, $sort1];
+			return $collection->aggregate($aggregate);
+		});
+
+		$voucher_categories_map = [];
+
+		foreach($voucher_categories['result'] as $vc){
+			$voucher_categories_map[$vc['_id']] = $vc['vouchers'];
+		}
+
+		$pre_register_check_ins_data = [];
+		$milestones = Config::get('loyalty_constants.milestones');
+		
+		foreach($milestones as $milestone){
+			if(!$milestone['milestone']){
+				continue;
+			}
+			$pre_reward_template = Config::get('loyalty_screens.pre_register_check_ins_data_template');
+			$pre_reward_template['title'] = strtr($pre_reward_template['title'], $milestone);
+			$pre_reward_template['milestone'] = strtr($pre_reward_template['milestone'], $milestone);
+			$pre_reward_template['amount'] = strtr($pre_reward_template['amount'], $milestone);
+			$pre_reward_template['images'] = array_column($voucher_categories_map[$milestone['milestone']], 'image');
+			$pre_register_check_ins_data[] = $pre_reward_template;
+		}
+
+		$pre_register['check_ins']['data'] = $pre_register_check_ins_data;
+		
+
 		if(!empty($jwt_token)){
 
 			$decoded = decode_customer_token($jwt_token);
@@ -7825,6 +7883,38 @@ class CustomerController extends \BaseController {
 					unset($post_register['past_check_in']['subheader']);
 					$post_register['past_check_in']['header'] = Config::get('loyalty_screens.past_check_in_header_text');
 				}
+
+				$post_register_rewards_data = [];
+				$milestones = Config::get('loyalty_constants.milestones');
+		
+				foreach($milestones as $key => $milestone){
+					if(!$milestone['milestone']){
+						continue;
+					}
+					$pre_reward_template = Config::get('loyalty_screens.post_register_rewards_data_outer_template');
+					$pre_reward_template['title'] = strtr($pre_reward_template['title'], $milestone);
+					$pre_reward_template['_id'] = $key;
+					
+					foreach($voucher_categories_map[$milestone['milestone']] as $vc){
+						$pre_reward_data_template = Config::get('loyalty_screens.post_register_rewards_data_inner_template');
+						$pre_reward_data_template['logo'] = strtr($pre_reward_data_template['logo'], $vc);
+						$pre_reward_data_template['_id'] = strtr($pre_reward_data_template['_id'], $vc);
+						$pre_reward_data_template['price'] = strtr($pre_reward_data_template['price'], $vc);
+							if($milestone_no >= $milestone['milestone']){
+								$pre_reward_data_template['claim_enabled'] = true;
+							}else{
+								$pre_reward_data_template['claim_enabled'] = false;
+							}
+						$pre_reward_template['data'][] = $pre_reward_data_template;
+						// return $milestone_no;
+					}
+
+					$post_register_rewards_data[] = $pre_reward_template;
+
+				}
+
+				$post_register['rewards']['data'] = $post_register_rewards_data;
+		
 			}
 		}
 		
@@ -7967,7 +8057,7 @@ class CustomerController extends \BaseController {
 		}
 
 
-		
+
 		Finder::$withoutAppends = true;
 		$finders = Finder::orderBy('_id', 'desc')->limit($check_ins)->get(['title', 'created_at']);
 		
@@ -7985,6 +8075,7 @@ class CustomerController extends \BaseController {
 		array_walk($finders, 'format_date');
 
 		$milestones = Config::get('loyalty_constants.milestones');
+		
 		foreach($milestones as $key => $milestone_data){
 			if($milestone_data['milestone']){
 
