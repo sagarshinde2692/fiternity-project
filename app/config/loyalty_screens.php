@@ -103,57 +103,7 @@ return array(
           'header' => 'Your Workout Journey',
           'subheader' => 'You are $next_milestone_check_ins check-ins away from milestone $next_milestone',
           'description' => "Start working out and level up on your streak.\n Achieve milestones and earn crazy rewards",
-          'data' => 
-          [
-            [
-                'title' => '',
-                'milestone' => 0,
-                'count' => 0,
-                'description' => 'Check-ins',
-                'enabled'=>true,
-                'next_count'=>10,
-                'progress'=>0
-                
-            ],
-            [
-                'title' => 'Milestone 1',
-                'milestone' => 1,
-                'count' => 10,
-                'description' => 'Check-ins',
-                'enabled'=>false,
-                'next_count'=>30,
-                'progress'=>0
-
-            ],
-            [
-                'title' => 'Milestone 2',
-                'milestone' => 2,
-                'count' => 30,
-                'description' => 'Check-ins',
-                'enabled'=>false,
-                'next_count'=>75,
-                'progress'=>0
-
-            ],
-            [
-                'title' => 'Milestone 3',
-                'milestone' => 3,
-                'count' => 75,
-                'description' => 'Check-ins',
-                'enabled'=>false,
-                'next_count'=>225,
-                'progress'=>0
-
-            ],
-            [
-                'title' => 'Milestone 4',
-                'milestone' => 4,
-                'count' => 225,
-                'description' => 'Check-ins',
-                'enabled'=>false,
-                'progress'=>0
-            ],
-          ],
+          'data' => Config::get('loyalty_constants.milestones'),
           'footer' => 'Your workout counter will reset on 21 Sept 2018',
         ],
         'rewards' => [
