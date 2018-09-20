@@ -71,7 +71,8 @@ return array(
         ],
         'past_check_in' => [
             'header'=>'View all past check-ins',
-            'subheader'=>'You haven\'t checked in yet.'
+            'subheader'=>'You haven\'t checked in yet.',
+            'clickable'=>false
         ],
         'Contact' => [
           'title' => 'Want further Assistance? Call us',
