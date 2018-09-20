@@ -8112,7 +8112,7 @@ class CustomerController extends \BaseController {
 		$data = Input::json()->all();
 		
 		if(!$_id){
-			return Response::json(array('status' => 400,'message' => 'Cannot claim reward. Please contact customer support1.'),400);
+			return Response::json(array('status' => 400,'message' => 'Cannot claim reward. Please contact customer support1.'));
 		}
 		
 		$jwt_token = Request::header('Authorization');
@@ -8130,7 +8130,7 @@ class CustomerController extends \BaseController {
 				
 				if(!empty($milestones[$voucher_category['milestone']-1]['claimed'])){
 				
-					return Response::json(array('status' => 400,'message' => 'Reward already claimed for this milestone'),400);
+					return Response::json(array('status' => 400,'message' => 'Reward already claimed for this milestone'));
 				
 				}
 
@@ -8139,7 +8139,7 @@ class CustomerController extends \BaseController {
 
 
 				if(!$voucherAttached){
-					return Response::json(array('status' => 400,'message' => 'Cannot claim reward. Please contact customer support2.'),400);
+					return Response::json(array('status' => 400,'message' => 'Cannot claim reward. Please contact customer support2.'));
 				}
 				// return 
 				$milestones[$voucher_category['milestone']-1]['claimed'] = true;
@@ -8149,22 +8149,24 @@ class CustomerController extends \BaseController {
 				$customer->update();
 
 				return $resp =  [
-					'header'=>"VOUCHER UNLOCKED",
-					'sub_header'=>"You have unlocked ".strtoupper($voucher_category['name']),
-					'coupon_title'=>$voucherAttached['description'],
-					'coupon_text'=>"USE CODE : ".strtoupper($voucherAttached['code']),
-					'coupon_image'=>$voucher_category['image'],
-					'coupon_code'=>strtoupper($voucherAttached['code']),
-					'coupon_subtext'=>'(also sent via email/sms)',
-					'unlock'=>'UNLOCK VOUCHER',
-					'terms_text'=>'T & C applied.'
+					'voucher_data'=>[
+						'header'=>"VOUCHER UNLOCKED",
+						'sub_header'=>"You have unlocked ".strtoupper($voucher_category['name']),
+						'coupon_title'=>$voucherAttached['description'],
+						'coupon_text'=>"USE CODE : ".strtoupper($voucherAttached['code']),
+						'coupon_image'=>$voucher_category['image'],
+						'coupon_code'=>strtoupper($voucherAttached['code']),
+						'coupon_subtext'=>'(also sent via email/sms)',
+						'unlock'=>'UNLOCK VOUCHER',
+						'terms_text'=>'T & C applied.'
+					]
 				];
 
 
 				
 			}else{
 				
-				return Response::json(array('status' => 400,'message' => 'Cannot claim reward. Please contact customer support3.'),400);
+				return Response::json(array('status' => 400,'message' => 'Cannot claim reward. Please contact customer support3.'));
 			
 			}
 
