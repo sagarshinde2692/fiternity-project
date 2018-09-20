@@ -7906,8 +7906,8 @@ class CustomerController extends \BaseController {
 						$post_reward_data_template['price'] = strtr($post_reward_data_template['price'], $vc);
 							if($milestone_no >= $milestone['milestone'] && empty($customer_milestones[$milestone['milestone']-1]['claimed'])){
 								$post_reward_data_template['claim_enabled'] = true;
-								empty($reward_open_index) ? $reward_open_index = $milestone['milestone'] - 1 : null;
-								
+								!isset($reward_open_index) ? $reward_open_index = $milestone['milestone'] - 1 : null;
+
 							}else{
 								$post_reward_data_template['claim_enabled'] = false;
 							}
@@ -7917,7 +7917,7 @@ class CustomerController extends \BaseController {
 					$post_register_rewards_data[] = $post_reward_template;
 					
 				}
-				empty($reward_open_index) ? $reward_open_index = ($milestone_no < count($milestones) ? $milestone_no : $milestone_no-1) : null;
+				!isset($reward_open_index) ? $reward_open_index = ($milestone_no < count($milestones) ? $milestone_no : $milestone_no-1) : null;
 				$post_register['rewards']['open_index'] = $reward_open_index;
 
 				$post_register['rewards']['data'] = $post_register_rewards_data;
