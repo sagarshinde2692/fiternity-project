@@ -35,6 +35,8 @@ Class Utilities {
     $this->vendor_token = false;
         
     $vendor_token = Request::header('Authorization-Vendor');
+    $this->days=["sunday","monday","tuesday","wednesday","thursday","friday","saturday"];
+
 
     if($vendor_token){
 
