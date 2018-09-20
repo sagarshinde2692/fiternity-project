@@ -5545,6 +5545,7 @@ class TransactionController extends \BaseController {
             $order_id = $data['order_id'];
     
             $order = Order::find(intval($order_id));
+            $result['customer_quantity'] = 1;
 
             $result['order_details'] = [
                 "studio_name"=>[
@@ -5564,6 +5565,25 @@ class TransactionController extends \BaseController {
                 //     "value"=> $data['finder_address']
                 // ]
             ];
+
+            $result['order_details'] = [
+                "session"=>[
+                    "field"=> $data['service_name'],
+                    "value"=> "₹ ".number_format($data['amount'])
+                ]
+            ];
+             if(isset($data['slot'])){
+                $result['order_details']['date'] = [
+                    "field"=>"Date",
+                    "value"=>date('dS M Y', strtotime($data['slot']['date']))
+                ];
+                 $result['order_details']['time'] = [
+                    "field"=>"Time",
+                    "value"=>$data['slot']['slot_time']
+                ];
+            }
+            $result['finder_name'] = $data['finder_name'];
+            $result['finder_location'] = $data['finder_location'];
 
 
             $data['you_save'] = 0;
