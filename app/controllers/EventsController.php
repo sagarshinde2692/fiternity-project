@@ -19,9 +19,12 @@ class EventsController extends \BaseController {
 		if($eventInfo){
 
 			$eventInfo = $eventInfo->toArray();
-
-			$tickets = Ticket::where('event_id',(int)$eventInfo['_id'])->where('start_date', '<=', new DateTime(date('Y-m-d H:i:s', time())))->where('end_date', '>', new DateTime(date('Y-m-d H:i:s', time())))->get();
-
+            if($slug == "the-music-run"){
+                $tickets = Ticket::where('event_id',(int)$eventInfo['_id'])->where('start_date', '<=', new DateTime(date('Y-m-d H:i:s', time())))->where('end_date', '>', new DateTime(date('Y-m-d H:i:s', time())))->get();
+            }else{
+                $tickets = Ticket::where('event_id',(int)$eventInfo['_id'])->get();
+            }
+                
 			if(!empty($tickets)){
 
 				$tickets = $tickets->toArray();
