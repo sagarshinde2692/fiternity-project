@@ -8146,7 +8146,7 @@ class CustomerController extends \BaseController {
 
 				$customer->milestones = $milestones;
 
-				$customer->update();
+				// $customer->update();
 
 				return $resp =  [
 					'voucher_data'=>[
