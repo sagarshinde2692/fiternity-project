@@ -110,6 +110,7 @@ return array(
         'claim_enabled' => false,
         'button_title' => 'Claim',
         'terms' => 'HTMl text',
+        'coupon_description'=>'description'
       ],
 );
 ?>

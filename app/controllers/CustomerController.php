@@ -7901,6 +7901,7 @@ class CustomerController extends \BaseController {
 						$post_reward_data_template = Config::get('loyalty_screens.post_register_rewards_data_inner_template');
 						$post_reward_data_template['logo'] = strtr($post_reward_data_template['logo'], $vc);
 						$post_reward_data_template['_id'] = strtr($post_reward_data_template['_id'], $vc);
+						$post_reward_data_template['coupon_description'] = strtr($post_reward_data_template['coupon_description'], $vc);
 						$post_reward_data_template['price'] = strtr($post_reward_data_template['price'], $vc);
 							if($milestone_no >= $milestone['milestone']){
 								$post_reward_data_template['claim_enabled'] = true;
