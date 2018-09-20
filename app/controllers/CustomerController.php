@@ -8104,19 +8104,19 @@ class CustomerController extends \BaseController {
 
 	public function claimExternalCoupon(){
 
-		$jwt_token = Request::header('Authorization');
-
+		$data = Input::json()->all();
+		
 		$rules = [
 			'_id' => 'required',
 		];
-
+		
 		$validator = Validator::make($data,$rules);
-
+		
 		if ($validator->fails()) {
 			return Response::json(array('status' => 400,'message' => $this->errorMessage($validator->errors())),$this->error_status);
 		}
-
-		$data = Input::json()->all();
+		
+		$jwt_token = Request::header('Authorization');
 
 		if(!empty($jwt_token)){
 
@@ -8127,26 +8127,26 @@ class CustomerController extends \BaseController {
 
 			$voucher_category = VoucherCategory::find($data['_id']);
 
-			if(!empty($milestone[$voucher_category-1])){
+			if(!empty($milestones[$voucher_category['milestone']-1])){
 				
-				if(!empty($milestone[$voucher_category-1]['claimed'])){
+				if(!empty($milestone[$voucher_category['milestone']-1]['claimed'])){
 				
 					return Response::json(array('status' => 400,'message' => 'Reward already claimed for this milestone'),400);
 				
 				}
 
 
-				$voucherAttached = $this->utiliies->assignVoucher($customer, $voucher_category);
+				$voucherAttached = $this->utilities->assignVoucher($customer, $voucher_category);
+
 
 				if(!$voucherAttached){
-				
 					return Response::json(array('status' => 400,'message' => 'Cannot claim reward. Please contact customer support.'),400);
 			
 				}
-				
-				$resp =  [
+
+				return $resp =  [
 					'header'=>"VOUCHER UNLOCKED",
-					'sub_header'=>"You have unlocked ".strtoupper($voucherAttached['type'])." voucher on attending your session at ".$data['finder_name'],
+					'sub_header'=>"You have unlocked ".strtoupper($voucher_category['name']),
 					'coupon_title'=>$voucherAttached['description'],
 					'coupon_text'=>"USE CODE : ".strtoupper($voucherAttached['code']),
 					'coupon_image'=>$voucher_category['image'],
@@ -8155,6 +8155,8 @@ class CustomerController extends \BaseController {
 					'unlock'=>'UNLOCK VOUCHER',
 					'terms_text'=>'T & C applied.'
 				];
+
+
 				
 			}else{
 				
