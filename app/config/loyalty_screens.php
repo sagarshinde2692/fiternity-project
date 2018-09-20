@@ -109,7 +109,7 @@ return array(
         'price_header' => 'Worth',
         'claim_enabled' => false,
         'button_title' => 'Claim',
-        'Terms' => 'HTMl text',
+        'terms' => 'HTMl text',
       ],
 );
 ?>

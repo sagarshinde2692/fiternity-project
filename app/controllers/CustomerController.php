@@ -7858,7 +7858,7 @@ class CustomerController extends \BaseController {
 				$check_ins = !empty($customer->check_ins) ? $customer->check_ins : 0;
 				$milestone_no = !empty($customer->milestones) ? count($customer->milestones) : 0;
 				// $check_ins = 52;
-				
+
 				foreach($post_register['milestones']['data'] as &$milestone){
 					
 					if(!empty($milestone['next_count'])){
@@ -7888,7 +7888,7 @@ class CustomerController extends \BaseController {
 				$post_register['rewards']['open_index'] = !($milestone_no) ? $milestone_no : $milestone_no - 1;
 				$post_register_rewards_data = [];
 				$milestones = Config::get('loyalty_constants.milestones');
-				
+
 				foreach($milestones as $key => $milestone){
 					if(!$milestone['milestone']){
 						continue;
@@ -8141,8 +8141,13 @@ class CustomerController extends \BaseController {
 
 				if(!$voucherAttached){
 					return Response::json(array('status' => 400,'message' => 'Cannot claim reward. Please contact customer support.'),400);
-			
 				}
+
+				$milestones[$milestones[$voucher_category['milestone']-1]]['claimed'] = true;
+
+				$customer->milestones = $milestones;
+
+				$customer->update();
 
 				return $resp =  [
 					'header'=>"VOUCHER UNLOCKED",
