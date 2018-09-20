@@ -7885,7 +7885,7 @@ class CustomerController extends \BaseController {
 					$post_register['past_check_in']['header'] = Config::get('loyalty_screens.past_check_in_header_text');
 					$post_register['past_check_in']['clickable'] = true;
 				}
-
+				$post_register['rewards']['open_index'] = !($milestone_no) ? $milestone_no : $milestone_no - 1;
 				$post_register_rewards_data = [];
 				$milestones = Config::get('loyalty_constants.milestones');
 				

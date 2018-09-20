@@ -67,6 +67,7 @@ return array(
         ],
         'rewards' => [
           'header' => 'Claim exciting rewards',
+          'open_index'=> 0,
           'data' => [],
         ],
         'past_check_in' => [
