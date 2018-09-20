@@ -1289,7 +1289,7 @@ Route::post('registerloyalty', 'CustomerController@registerLoyalty');
 
 Route::get('listcheckins', 'CustomerController@listCheckins');
 
-Route::post('claimexternalcoupon', 'CustomerController@claimExternalCoupon');
+Route::get('claimexternalcoupon/{_id}', 'CustomerController@claimExternalCoupon');
 
 /******************  Loyalty API END HERE************************************************/
 #####################################################################################################

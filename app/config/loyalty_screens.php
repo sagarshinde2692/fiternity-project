@@ -70,6 +70,7 @@ return array(
         'rewards' => [
           'header' => 'Claim exciting rewards',
           'open_index'=> 0,
+          'claim_message'=> "Are you sure you want to claim this reward as you won't be able to claim other rewards for this milestone?",
           'data' => [],
         ],
         'past_check_in' => [
