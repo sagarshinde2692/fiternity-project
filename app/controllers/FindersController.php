@@ -5706,7 +5706,7 @@ class FindersController extends \BaseController {
 					}
 
 					if(!empty($ratecard['offers'][0]['callout'])){
-						$return['callout'] .= $ratecard['offers'][0]['callout'];
+						$return['callout'] = $ratecard['offers'][0]['callout'];
 					}
 
 					$return['ratecard_id'] = (int)$ratecard['_id'];
