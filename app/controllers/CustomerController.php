@@ -7586,20 +7586,49 @@ class CustomerController extends \BaseController {
 							}
 							else {
 								unset($resp['response']);
-								$resp['message']="No bookings found.";
+								$resp['message']="No services available right now.";
 							}
 						}
 						else {
 							unset($resp['response']);
-							$resp['message']="No bookings found.";
+							$resp['message']="No services available.";
 						}
+
+						if(!empty($resp['response'])){
+							$resp['response']['bookings'] = $resp['response'];
+							unset($resp['response']);
+						}else{
+							$resp['response']['bookings'] = $resp;
+						}
+
+
+						// return $resp;
+						// $booking_details = $
+						$resp['response']['fitsquad'] = [
+							'logo' => 'https://b.fitn.in/loyalty/logo%20mobile%20new.png',
+							'header1' => 'REGISTER TO FITSQUAD',
+							'header2' => 'INDIA\'S LARGEST FITENSS CLUB',
+							'header3' => 'GET REWARDED FOR EVERY WORKOUT',
+							'button_text' => 'REGISTER',
+							'url' => 'https://www.fitternity.com',
+						];
+
+						
+
 				}
 				
 				if(!empty($pop_up))$resp['response']['pop_up']=$pop_up;
 				if(!empty($header))$resp['response']['header']=$header;
 				if(!empty($options))$resp['response']['options']=$options;
 				
-				if(empty($pop_up)&&empty($options)&&empty($optionsBuy))unset($resp['response']);
+				// if(empty($pop_up)&&empty($options)&&empty($optionsBuy))unset($resp['response']);
+
+
+
+
+
+
+
 				return $resp;
 			}
 		} 
