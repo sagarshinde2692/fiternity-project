@@ -7562,26 +7562,26 @@ class CustomerController extends \BaseController {
 							}
 							if(count($optionsBuy)>0)
 							{
-								if(count($optionsBuy)==1)
-								{
-									$pop_up=[];
-									$pop_up['title']="Confirmation";
-									$pop_up["positivebtn"]="yes";
-									$pop_up["negativebtn"]="No";
-									$pop_up["options"]=$optionsBuy[0];
-									Log::info($optionsBuy[0]);
-									$pop_up['message']="Do you want to book a ".$optionsBuy[0]['schedule_slot']." slot for ".preg_replace('/membership/i', 'Workout', $optionsBuy[0]['service_name'])." at ".$finderarr['title']."?";
-									// if(!empty($optionsBuy[0]['cost']) && (strpos($optionsBuy[0]['cost'], "Free") !== false))
-									// 	$pop_up['message']="Would you like to book a slot from ".$optionsBuy[0]['schedule_slot']."?";
-									// 	else $pop_up['message']="Would you like to buy a slot ".$optionsBuy[0]['schedule_slot']."?";
+								// if(count($optionsBuy)==1)
+								// {
+								// 	$pop_up=[];
+								// 	$pop_up['title']="Confirmation";
+								// 	$pop_up["positivebtn"]="yes";
+								// 	$pop_up["negativebtn"]="No";
+								// 	$pop_up["options"]=$optionsBuy[0];
+								// 	Log::info($optionsBuy[0]);
+								// 	$pop_up['message']="Do you want to book a ".$optionsBuy[0]['schedule_slot']." slot for ".preg_replace('/membership/i', 'Workout', $optionsBuy[0]['service_name'])." at ".$finderarr['title']."?";
+								// 	// if(!empty($optionsBuy[0]['cost']) && (strpos($optionsBuy[0]['cost'], "Free") !== false))
+								// 	// 	$pop_up['message']="Would you like to book a slot from ".$optionsBuy[0]['schedule_slot']."?";
+								// 	// 	else $pop_up['message']="Would you like to buy a slot ".$optionsBuy[0]['schedule_slot']."?";
 										
-								}
-								else 
-								{
+								// }
+								// else 
+								// {
 									$resp['response']['header']="Showing all available services of ".$finderarr['title']." happening today (".date('jS, M', time()).")";
 									$resp['response']['title']="BOOK A SLOT";
 									$resp['response']['options']=$optionsBuy;
-								}
+								// }
 								$resp['response']['new_booking']=true;
 							}
 							else {
