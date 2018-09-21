@@ -7398,8 +7398,10 @@ class TransactionController extends \BaseController {
             $decoded = customerTokenDecode($jwt_token);
             // $data['logged_in_customer_id'] = (int)$decoded->customer->_id;
         }
-        $order = Order::where("txnid",$data["txnId"])->get();
-        return $order; 
+        $order = Order::where("txnid",$data["txnId"])->first();
+        $order["with_hash_params"] = "checkout";
+        $orderWithHash = getHash($order);
+        return $orderWithHash; 
 
         
     }
