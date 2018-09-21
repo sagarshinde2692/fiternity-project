@@ -7483,7 +7483,7 @@ class CustomerController extends \BaseController {
 					$finderarr = Finder::active()->where('_id',intval($data['vendor_id']))
 					->with(array('services'=>function($query){$query->active()->where('trial','!=','disable')->where('status','=','1')->select('*')->orderBy('ordering', 'ASC');}))
 					->first(['inoperational_dates','services', 'title']);
-					
+					$customer = Customer::find($customer_id);
 					$pnd_pymnt=$this->utilities->hasPendingPayments();
 					
 					$getWalletBalanceData = [
@@ -7580,6 +7580,10 @@ class CustomerController extends \BaseController {
 								// {
 									$resp['response']['header']="Showing all available services of ".$finderarr['title']." happening today (".date('jS, M', time()).")";
 									$resp['response']['title']="BOOK A SLOT";
+									if(empty($customer['loyalty'])){
+										$resp['response']['subtitle']="(Gets you auto-registered for FitSquad)";
+									}
+
 									$resp['response']['options']=$optionsBuy;
 								// }
 								$resp['response']['new_booking']=true;
@@ -7606,7 +7610,7 @@ class CustomerController extends \BaseController {
 
 						// return $resp;
 						// $booking_details = $
-						$customer = Customer::find($customer_id);
+						
 
 						if(empty($customer['loyalty'])){
 							$resp['response']['fitsquad'] = [
@@ -7616,24 +7620,18 @@ class CustomerController extends \BaseController {
 								'header3' => 'GET REWARDED FOR EVERY WORKOUT',
 								'button_text' => 'REGISTER',
 								'url' => 'https://www.fitternity.com',
+								'type' => 'register',
 							];
 						}else{
-
-
-
-
+							$resp['response']['fitsquad'] = [
+								'logo' => 'https://b.fitn.in/loyalty/logo%20mobile%20new.png',
+								'header1' => 'CHECK-IN FOR YOUR WORKOUT',
+								'header2' => 'MARK YOUR ATTENDANCE AND LEVEL UP TO REACH YOUR MILESTONE',
+								'button_text' => 'CHECK_IN',
+								'url' => Config::get('app.url').'/markcheckin/'.$finderarr['_id'],
+								'type' => 'checkin',	
+							];
 						}
-						$resp['response']['fitsquad'] = [
-							'logo' => 'https://b.fitn.in/loyalty/logo%20mobile%20new.png',
-							'header1' => 'REGISTER TO FITSQUAD',
-							'header2' => 'INDIA\'S LARGEST FITENSS CLUB',
-							'header3' => 'GET REWARDED FOR EVERY WORKOUT',
-							'button_text' => 'REGISTER',
-							'url' => 'https://www.fitternity.com',
-						];
-
-						
-
 				}
 				
 				if(!empty($pop_up))$resp['response']['bookings']['pop_up']=$pop_up;
