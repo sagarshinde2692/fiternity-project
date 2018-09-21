@@ -1291,5 +1291,7 @@ Route::get('listcheckins', 'CustomerController@listCheckins');
 
 Route::get('claimexternalcoupon/{_id}', 'CustomerController@claimExternalCoupon');
 
+Route::get('markcheckin/{finder_id}', 'CustomerController@markCheckin');
+
 /******************  Loyalty API END HERE************************************************/
 #####################################################################################################

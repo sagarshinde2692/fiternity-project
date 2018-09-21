@@ -7580,6 +7580,7 @@ class CustomerController extends \BaseController {
 								// {
 									$resp['response']['header']="Showing all available services of ".$finderarr['title']." happening today (".date('jS, M', time()).")";
 									$resp['response']['title']="BOOK A SLOT";
+									
 									if(empty($customer['loyalty'])){
 										$resp['response']['subtitle']="(Gets you auto-registered for FitSquad)";
 									}
@@ -7627,7 +7628,7 @@ class CustomerController extends \BaseController {
 								'logo' => 'https://b.fitn.in/loyalty/logo%20mobile%20new.png',
 								'header1' => 'CHECK-IN FOR YOUR WORKOUT',
 								'header2' => 'MARK YOUR ATTENDANCE AND LEVEL UP TO REACH YOUR MILESTONE',
-								'button_text' => 'CHECK_IN',
+								'button_text' => 'CHECK-IN',
 								'url' => Config::get('app.url').'/markcheckin/'.$finderarr['_id'],
 								'type' => 'checkin',	
 							];
@@ -8213,14 +8214,54 @@ class CustomerController extends \BaseController {
 		}
 	}
 
-	public function addCheckin($customer_id, $finder_id){
+	public function markCheckin($customer_id, $finder_id){
+		
+		$customer = Customer::find($customer_id, ['loyalty']);
 
+		$addedCheckin = null;
+
+		if(!empty($customer['loyalty']['finder_id'])  && $customer['loyalty']['finder_id'] == $finder_id && empty($customer['loyalty']['end_date']) || time() < strtotime($customer['loyalty']['end_date'])){
+
+			$addedCheckin = $this->addCheckin($customer_id, $finder_id);
+		
+		}else{
+			$current_membership = Order::active()->where('customer_id', $customer_id)->where('finder_id', $finder_id)->where('type', 'memberships')->where('start_date', '<', new DateTime())->where('end_date', '>=', new DateTime())->first();
+
+			if($current_membership){
+
+				$addedCheckin = $this->addCheckin($customer_id, $finder_id);
+			
+			}else{
+				Finder::$withoutAppends = true;
+				
+				$finder = Finder::find($finder_id, ['title']);	
+
+				$response = [
+					'text'=>'CHECK-IN',
+					"header"=> "What are you checking-in for?",
+					"subtitle"=> "Let us know the reason to assist you better",
+					"options" => [
+						[
+							"text" => "Currently hasve a membership at ".$finder['title'],
+							"url" => Config::get('app.url')."/markcheckin/".$customer_id."?type=membership",
+						],
+						[
+							"text" => "Have booked a session at ".$finder['title'],
+							"url" => Config::get('app.url')."/markcheckin/".$customer_id."?type=workout-session",
+						]
+					]
+				];
+			}
+		}
+	
+	}
+
+	public function addCheckin($customer_id, $finder_id){
 		$checkin = new Checkin();
 		$checkin->finder_id = $finder_id;
 		$checkin->customer_id = $customer_id;
 		$checkin->save();
 		return $checkin;
-	
 	}
 
 	
