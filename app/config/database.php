@@ -90,6 +90,19 @@ return array(
 			// ]
 		), 
 
+		'fitcheckins' => array(
+			'driver' => 'mongodb', 
+			'host' => $host, 
+			'port' => 27017, 
+			'database' => 'fitcheckins', 
+			'username' => $username, 
+			'password' => $password, 
+			'options' => $options
+			// 'options' => [
+			// 	'db' => 'admin' // sets the authentication database required by mongo 3
+			// ]
+		), 
+
 
 		// 'mongodb3' => array(
 		// 	'driver'   => 'mongodb',

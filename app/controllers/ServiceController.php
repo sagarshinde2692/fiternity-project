@@ -1561,6 +1561,10 @@ class ServiceController extends \BaseController {
 		Log::info($_SERVER['REQUEST_URI']);
 		$cache_key = "$finder_slug-$service_slug";
 
+		if($this->app_version < 5){
+			$cache_key = $cache_key.'-5';
+		}
+
 		$service_details = $cache ? Cache::tags('service_detail')->has($cache_key) : false;
 
 		if(!$service_details){
