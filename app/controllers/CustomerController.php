@@ -7595,10 +7595,12 @@ class CustomerController extends \BaseController {
 						}
 
 						if(!empty($resp['response'])){
-							$resp['response']['bookings'] = $resp['response'];
+							$booking_response =$resp['response'];
 							unset($resp['response']);
-						}else{
+							$resp['response']['bookings'] = $booking_response;
+						}if(!empty($resp['message'])){
 							$resp['response']['bookings'] = $resp;
+							unset($resp['message']);
 						}
 
 
@@ -7621,13 +7623,7 @@ class CustomerController extends \BaseController {
 				if(!empty($header))$resp['response']['header']=$header;
 				if(!empty($options))$resp['response']['options']=$options;
 				
-				// if(empty($pop_up)&&empty($options)&&empty($optionsBuy))unset($resp['response']);
-
-
-
-
-
-
+				// if(empty($pop_up)&&empty($options)&&empty($optionsBuy))unset($resp['response']['bookings']);
 
 				return $resp;
 			}
