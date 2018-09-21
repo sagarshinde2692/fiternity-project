@@ -68,6 +68,11 @@ class EventsController extends \BaseController {
 
 	public function getOrderDetails($orderid) {
 		try {
+			$authorization_token = Request::header('Authorization');
+			if($authorization_token !== 'FCgvnAPEpncLGTRxgfNE') {
+				$responsedata = ['message' => 'Unauthorized access.', 'status' => 401];
+				return Response::json($responsedata, 401);
+			}
 			$orderdata = Order::where('sub_type','music-run')->with(['ticket'=>function($query){$query->select('name', 'price');}])->find(intval($orderid));
 			unset($orderdata['ticket']['_id']);
 			if(empty($orderdata)){
@@ -123,6 +128,11 @@ class EventsController extends \BaseController {
 
 	public function getOrderList($event_slug) {
 		try {
+			$authorization_token = Request::header('Authorization');
+			if($authorization_token !== 'FCgvnAPEpncLGTRxgfNE') {
+				$responsedata = ['message' => 'Unauthorized access.', 'status' => 401];
+				return Response::json($responsedata, 401);
+			}
 			if($event_slug != 'music-run') {
 				return Response::json(array('status' => 404,'message' => 'Event name is not valid.'),404);
 			}
