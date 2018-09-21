@@ -7627,11 +7627,13 @@ class CustomerController extends \BaseController {
 							$resp['response']['fitsquad'] = [
 								'logo' => 'https://b.fitn.in/loyalty/logo%20mobile%20new.png',
 								'header1' => 'CHECK-IN FOR YOUR WORKOUT',
-								'header2' => 'MARK YOUR ATTENDANCE AND LEVEL UP TO REACH YOUR MILESTONE',
+								'header3' => 'MARK YOUR ATTENDANCE AND LEVEL UP TO REACH YOUR MILESTONE',
 								'button_text' => 'CHECK-IN',
 								'url' => Config::get('app.url').'/markcheckin/'.$finderarr['_id'],
-								'type' => 'checkin',	
+								'type' => 'checkin',
 							];
+
+							
 						}
 				}
 				
@@ -8253,6 +8255,42 @@ class CustomerController extends \BaseController {
 				];
 			}
 		}
+
+		$addedCheckin = null;
+
+							if(!empty($customer['loyalty']['finder_id'])  && $customer['loyalty']['finder_id'] == $finder_id && empty($customer['loyalty']['end_date']) || time() < strtotime($customer['loyalty']['end_date'])){
+
+								$addedCheckin = $this->addCheckin($customer_id, $finder_id);
+							
+							}else{
+								$current_membership = Order::active()->where('customer_id', $customer_id)->where('finder_id', $finder_id)->where('type', 'memberships')->where('start_date', '<', new DateTime())->where('end_date', '>=', new DateTime())->first();
+
+								if($current_membership){
+
+									$addedCheckin = $this->addCheckin($customer_id, $finder_id);
+								
+								}else{
+									Finder::$withoutAppends = true;
+									
+									$finder = Finder::find($finder_id, ['title']);	
+
+									$response = [
+										'text'=>'CHECK-IN',
+										"header"=> "What are you checking-in for?",
+										"subtitle"=> "Let us know the reason to assist you better",
+										"options" => [
+											[
+												"text" => "Currently hasve a membership at ".$finder['title'],
+												"url" => Config::get('app.url')."/markcheckin/".$customer_id."?type=membership",
+											],
+											[
+												"text" => "Have booked a session at ".$finder['title'],
+												"url" => Config::get('app.url')."/markcheckin/".$customer_id."?type=workout-session",
+											]
+										]
+									];
+								}
+							}
 	
 	}
 
