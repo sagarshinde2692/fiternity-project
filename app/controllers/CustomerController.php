@@ -7632,8 +7632,44 @@ class CustomerController extends \BaseController {
 								'url' => Config::get('app.url').'/markcheckin/'.$finderarr['_id'],
 								'type' => 'checkin',
 							];
+							$direct_checkin = false;
+							if(!empty($customer['loyalty']['finder_id'])  && $customer['loyalty']['finder_id'] == $finderarr['_id'] && (empty($customer['loyalty']['end_date']) || time() < strtotime($customer['loyalty']['end_date']))){
+								$direct_checkin = true;
+								
+							}else{
+								$current_membership = Order::active()->where('customer_id', $customer_id)->where('finder_id', $finderarr['_id'])->where('type', 'memberships')->where('start_date', '<', new DateTime())->where('end_date', '>=', new DateTime())->first();
+								
+								
+								if($current_membership){
+								
+									$direct_checkin = true;
+								
+								}else{
+									$direct_checkin = false;
 
+								}
+							}
 							
+							if(empty($direct_checkin)){
+								
+								$resp['response']['fitsquad']['url'] = "";
+								$resp['response']['fitsquad']['data'] = [
+									"header"=> "What are you checking-in for?",
+									"subtitle"=> "Let us know the reason to assist you better",
+									"options" => [
+										[
+											"text" => "Currently hasve a membership at ".$finderarr['title'],
+											"url" => Config::get('app.url')."/markcheckin/".$customer_id."?type=membership",
+										],
+										[
+											"text" => "Have booked a session at ".$finderarr['title'],
+											"url" => Config::get('app.url')."/markcheckin/".$customer_id."?type=workout-session",
+										]
+									]
+								];
+							}else{
+								$resp['response']['fitsquad']['url'] = Config::get('app.url').'/markcheckin/'.$finderarr['_id'];
+							}
 						}
 				}
 				
