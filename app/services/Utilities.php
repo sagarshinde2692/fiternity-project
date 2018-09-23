@@ -6007,6 +6007,49 @@ Class Utilities {
         return $voucher;
 
     }
+
+
+    public function getMilestoneSection($customer){
+        
+        $post_register_milestones = Config::get('loyalty_screens.post_register.milestones');
+        $milestone_no = 1;
+        $check_ins = !empty($customer->loyalty['checkins']) ? $customer->loyalty['checkins'] : 0;
+        $customer_milestones = !empty($customer->loyalty['milestones']) ? $customer->loyalty['milestones'] : [];
+        $milestone_no = count($customer_milestones);
+        // $check_ins = 52;
+
+        foreach($post_register_milestones['data'] as &$milestone){
+            
+            if(!empty($milestone['next_count'])){
+                
+                if($milestone['milestone'] < $milestone_no){
+                    $milestone['enabled'] = true;
+                    $milestone['progress'] = 100;
+                }else{
+                    $milestone['enabled'] = true;
+                    $milestone_next_count = $milestone['next_count'];
+                    $milestone['progress'] = round(($check_ins-$milestone['count'])/($milestone['next_count']-$milestone['count']) * 100);
+                    break;
+                }
+            }
+        }
+        unset($milestone);
+        $post_register_milestones['subheader'] = strtr($post_register_milestones['subheader'], ['$next_milestone_check_ins'=>$milestone_next_count-$check_ins, '$next_milestone'=>$milestone_no+1]);  
+
+        return $post_register_milestones;
+    }
+
+    public function getLoyaltyHeader($customer){
+        $post_register_header = Config::get('loyalty_screens.post_register.header');
+        
+        $post_register_header['text'] = strtr($post_register_header['text'], ['$customer_name'=>$customer->name, '$check_ins'=>$check_ins, '$milestone'=>$milestone_no, '$checkin_limit'=>Config::get('loyalty_screens.checkin_limit')]);
+
+        return $post_register_header;
+    }
+    
+
+    
+
 	
 }
 

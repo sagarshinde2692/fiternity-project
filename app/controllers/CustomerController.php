@@ -7866,8 +7866,6 @@ class CustomerController extends \BaseController {
 		$pre_register = Config::get('loyalty_screens.pre_register');
 		$jwt_token = Request::header('Authorization');
 
-
-		
 		Log::info("asda");
 		$voucher_categories = VoucherCategory::raw(function($collection){
 			$match = [
@@ -7932,12 +7930,11 @@ class CustomerController extends \BaseController {
 
 			if($customer){
 				
-				
 				$milestone_no = 1;
-				$check_ins = !empty($customer->check_ins) ? $customer->check_ins : 0;
-				$customer_milestones = !empty($customer->milestones) ? $customer->milestones : [];
+				$checkins = !empty($customer->loyalty['checkins']) ? $customer->loyalty['checkins'] : 0;
+				$customer_milestones = !empty($customer->loyalty['milestones']) ? $customer->loyalty['milestones'] : [];
 				$milestone_no = count($customer_milestones);
-				// $check_ins = 52;
+				// $checkins = 52;
 
 				foreach($post_register['milestones']['data'] as &$milestone){
 					
@@ -7949,7 +7946,7 @@ class CustomerController extends \BaseController {
 						}else{
 							$milestone['enabled'] = true;
 							$milestone_next_count = $milestone['next_count'];
-							$milestone['progress'] = round(($check_ins-$milestone['count'])/($milestone['next_count']-$milestone['count']) * 100);
+							$milestone['progress'] = round(($checkins-$milestone['count'])/($milestone['next_count']-$milestone['count']) * 100);
 							break;
 						}
 					}
@@ -7957,10 +7954,10 @@ class CustomerController extends \BaseController {
 				unset($milestone);
 				// return $post_register['milestones']['data'];
 				// return $milestone_next_count-$check_ins;
-				$post_register['header']['text'] = strtr($post_register['header']['text'], ['$customer_name'=>$customer->name, '$check_ins'=>$check_ins, '$milestone'=>$milestone_no, '$checkin_limit'=>Config::get('loyalty_screens.checkin_limit')]);
-				$post_register['milestones']['subheader'] = strtr($post_register['milestones']['subheader'], ['$next_milestone_check_ins'=>$milestone_next_count-$check_ins, '$next_milestone'=>$milestone_no+1]);
+				$post_register['header']['text'] = strtr($post_register['header']['text'], ['$customer_name'=>$customer->name, '$check_ins'=>$checkins, '$milestone'=>$milestone_no, '$checkin_limit'=>Config::get('loyalty_screens.checkin_limit')]);
+				$post_register['milestones']['subheader'] = strtr($post_register['milestones']['subheader'], ['$next_milestone_check_ins'=>$milestone_next_count-$checkins, '$next_milestone'=>$milestone_no+1]);
 
-				if($check_ins){
+				if($checkins){
 					unset($post_register['past_check_in']['subheader']);
 					$post_register['past_check_in']['header'] = Config::get('loyalty_screens.past_check_in_header_text');
 					$post_register['past_check_in']['clickable'] = true;
@@ -8134,40 +8131,33 @@ class CustomerController extends \BaseController {
 
 		$check_ins = 225;
 		$jwt_token = Request::header('Authorization');
+		
 		if(!empty($jwt_token)){
-
 			$decoded = decode_customer_token($jwt_token);
 			$customer_id = $decoded->customer->_id;
-			$customer = Customer::find($customer_id);
-			$check_ins = !empty($customer->check_ins) ? $customer->check_ins : $check_ins;
-		}
-
-
-
-		Finder::$withoutAppends = true;
-		$finders = Finder::orderBy('_id', 'desc')->limit($check_ins)->get(['title', 'created_at']);
-		
-
-		if(!empty($finders)){
-			$finders = $finders->toArray();
+		 	$checkins = Checkin::where('customer_id', $customer_id)
+			->orderBy('_id', 'asc')
+			->get()
+			->toArray();
 		}
 		
-		$finders = array_reverse($finders);
 		function format_date(&$value,$key){
 			$value['date'] = date('d M, Y | g:i A ', strtotime($value['created_at']));
-			unset($value['created_at'], $value['_id']);
+			$value['title'] = $value['finder']['title'];
+
+			unset($value['created_at'], $value['_id'], $value['finder'], $value['finder_id'], $value['customer_id'], $value['updated_at']);
 		}
 		
-		array_walk($finders, 'format_date');
-
+		array_walk($checkins, 'format_date');
+		
 		$milestones = Config::get('loyalty_constants.milestones');
 		
 		foreach($milestones as $key => $milestone_data){
 			if($milestone_data['milestone']){
 
-				if(!empty($finders[$milestone_data['count']-1])){
+				if(!empty($checkins[$milestone_data['count']-1])){
 
-					$finders[$milestone_data['count']-1]['milestone'] = $milestone_data['milestone'];
+					$checkins[$milestone_data['count']-1]['milestone'] = $milestone_data['milestone'];
 
 				}else{
 
@@ -8177,12 +8167,17 @@ class CustomerController extends \BaseController {
 
 			}
 		}
-		$finders = array_reverse($finders);
-		
-		array_push($finders, ['start'=>date('d M, Y | g:i A ', strtotime('-2 month'))]);
+		$checkins = array_reverse($checkins);
 
+		$customer = Customer::find($customer_id);
 		
-		return Response::json(['data'=>$finders]);
+		if(!empty($customer->loyalty['start_date'])){
+			
+			array_push($checkins, ['title'=>'Registered for FitSquad', 'date'=>date('d M, Y | g:i A ', $customer->loyalty['start_date']->sec)]);
+
+		}
+		
+		return Response::json(['data'=>$checkins]);
 		
 	}
 
@@ -8252,90 +8247,53 @@ class CustomerController extends \BaseController {
 		}
 	}
 
-	public function markCheckin($customer_id, $finder_id){
+	public function markCheckin($finder_id){
 		
-		$customer = Customer::find($customer_id, ['loyalty']);
-
-		$addedCheckin = null;
-
-		if(!empty($customer['loyalty']['finder_id'])  && $customer['loyalty']['finder_id'] == $finder_id && empty($customer['loyalty']['end_date']) || time() < strtotime($customer['loyalty']['end_date'])){
-
-			$addedCheckin = $this->addCheckin($customer_id, $finder_id);
+		$jwt_token = Request::header('Authorization');
 		
+		$decoded = decode_customer_token($jwt_token);
+		$customer_id = $decoded->customer->_id;
+		
+		$checkin_data = [
+			'customer_id'=>$customer_id,
+			'finder_id'=>intval($finder_id),
+			'type'=>!empty($_GET['type']) ? $_GET['type'] : null
+		];
+		
+		$addedCheckin = $this->addCheckin($checkin_data);
+		
+		$customer = Customer::find($customer_id);
+		
+		if(!empty($addedCheckin['status']) && $addedCheckin['status'] == 200){
+			return $this->utilities->getMilestoneSection($customer);
 		}else{
-			$current_membership = Order::active()->where('customer_id', $customer_id)->where('finder_id', $finder_id)->where('type', 'memberships')->where('start_date', '<', new DateTime())->where('end_date', '>=', new DateTime())->first();
-
-			if($current_membership){
-
-				$addedCheckin = $this->addCheckin($customer_id, $finder_id);
-			
-			}else{
-				Finder::$withoutAppends = true;
-				
-				$finder = Finder::find($finder_id, ['title']);	
-
-				$response = [
-					'text'=>'CHECK-IN',
-					"header"=> "What are you checking-in for?",
-					"subtitle"=> "Let us know the reason to assist you better",
-					"options" => [
-						[
-							"text" => "Currently hasve a membership at ".$finder['title'],
-							"url" => Config::get('app.url')."/markcheckin/".$customer_id."?type=membership",
-						],
-						[
-							"text" => "Have booked a session at ".$finder['title'],
-							"url" => Config::get('app.url')."/markcheckin/".$customer_id."?type=workout-session",
-						]
-					]
-				];
-			}
+			return $addedCheckin;
 		}
 
-		$addedCheckin = null;
-
-							if(!empty($customer['loyalty']['finder_id'])  && $customer['loyalty']['finder_id'] == $finder_id && empty($customer['loyalty']['end_date']) || time() < strtotime($customer['loyalty']['end_date'])){
-
-								$addedCheckin = $this->addCheckin($customer_id, $finder_id);
-							
-							}else{
-								$current_membership = Order::active()->where('customer_id', $customer_id)->where('finder_id', $finder_id)->where('type', 'memberships')->where('start_date', '<', new DateTime())->where('end_date', '>=', new DateTime())->first();
-
-								if($current_membership){
-
-									$addedCheckin = $this->addCheckin($customer_id, $finder_id);
-								
-								}else{
-									Finder::$withoutAppends = true;
-									
-									$finder = Finder::find($finder_id, ['title']);	
-
-									$response = [
-										'text'=>'CHECK-IN',
-										"header"=> "What are you checking-in for?",
-										"subtitle"=> "Let us know the reason to assist you better",
-										"options" => [
-											[
-												"text" => "Currently hasve a membership at ".$finder['title'],
-												"url" => Config::get('app.url')."/markcheckin/".$customer_id."?type=membership",
-											],
-											[
-												"text" => "Have booked a session at ".$finder['title'],
-												"url" => Config::get('app.url')."/markcheckin/".$customer_id."?type=workout-session",
-											]
-										]
-									];
-								}
-							}
-	
 	}
+	
+	public function addCheckin($data){
 
-	public function addCheckin($customer_id, $finder_id){
-		$checkin = new Checkin();
-		$checkin->finder_id = $finder_id;
-		$checkin->customer_id = $customer_id;
-		$checkin->save();
-		return $checkin;
+		try{
+			// $already_checkedin = Checkin::where('customer_id', $data['customer_id'])->where('date', new DateTime(date('d-m-Y', time())))->first();
+			if(!empty($already_checkedin)){
+				return ['status'=>400, 'message'=>'Already checked-in for today'];
+			}
+			$checkin = new Checkin();
+			$checkin->finder_id = $data['finder_id'];
+			$checkin->customer_id = $data['customer_id'];
+			$checkin->date = new DateTime(date('d-m-Y', time()));
+			if (!empty($data['type'])) {
+				$checkin->type = $data['type'];
+			}
+			$checkin->save();
+			$customer_update = Customer::where('_id', $data['customer_id'])->increment('loyalty.checkins');
+
+			return ['status'=>200, 'checkin'=>$checkin];
+		}catch(Exception $e){
+			Log::info($e);
+			return ['status'=>500, 'message'=>'Please try after some time'];
+		}
 	}
 
 	

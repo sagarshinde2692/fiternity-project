@@ -1287,11 +1287,15 @@ Route::get('loyaltyprofile', 'CustomerController@loyaltyProfile');
 
 Route::post('registerloyalty', 'CustomerController@registerLoyalty');
 
-Route::get('listcheckins', 'CustomerController@listCheckins');
+Route::group(array('before' => 'validatetoken'), function() {
 
-Route::get('claimexternalcoupon/{_id}', 'CustomerController@claimExternalCoupon');
+	Route::get('listcheckins', 'CustomerController@listCheckins');
 
-Route::get('markcheckin/{finder_id}', 'CustomerController@markCheckin');
+	Route::get('claimexternalcoupon/{_id}', 'CustomerController@claimExternalCoupon');
+
+	Route::get('markcheckin/{finder_id}', 'CustomerController@markCheckin');
+
+});
 
 /******************  Loyalty API END HERE************************************************/
 #####################################################################################################
