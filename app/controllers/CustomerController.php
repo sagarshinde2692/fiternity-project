@@ -8155,10 +8155,10 @@ class CustomerController extends \BaseController {
 		foreach($milestones as $key => $milestone_data){
 			if($milestone_data['milestone']){
 
-				if(!empty($checkins[$milestone_data['count']-1])){
-
-					$checkins[$milestone_data['count']-1]['milestone'] = $milestone_data['milestone'];
-
+				if(!empty($checkins[$milestone_data['count']+($key-2)])){
+					
+					array_splice($checkins, $milestone_data['count']+($key-1), 0, [['milestone'=>$milestone_data['milestone']]]);
+				
 				}else{
 
 					break;
