@@ -113,5 +113,8 @@ return array(
         'terms' => 'HTMl text',
         'coupon_description'=>'description'
       ],
+    'success_loyalty_header'=>[
+        
+    ]
 );
 ?>
