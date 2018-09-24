@@ -6014,7 +6014,16 @@ Class Utilities {
     }
 
 
-    public function getMilestoneSection($customer){
+    public function getMilestoneSection($customer=null){
+
+        if(!$customer){
+
+            $jwt_token = Request::header('Authorization');
+		    $decoded = decode_customer_token($jwt_token);
+		    $customer_id = $decoded->customer->_id;
+		    $customer = Customer::find($customer_id);
+
+        }
         
         $post_register_milestones = Config::get('loyalty_screens.milestones');
         $milestone_no = 1;
@@ -6048,6 +6057,37 @@ Class Utilities {
     public function successLoyaltyHeader($customer){
        return Config::get('loyalty_screens.success_loyalty_header');
     }
+
+    public function addCheckin($data){
+
+		try{
+		// $already_checkedin = Checkin::where('customer_id', $data['customer_id'])->where('date', new DateTime(date('d-m-Y', time())))->first();
+			if(!empty($already_checkedin)){
+				return ['status'=>400, 'message'=>'Already checked-in for today'];
+			}
+			$checkin = new \Checkin();
+			$checkin->finder_id = $data['finder_id'];
+			$checkin->customer_id = $data['customer_id'];
+            $checkin->date = new \DateTime(date('d-m-Y', time()));
+            
+            $fields = ['sub_type', 'tansaction_id', 'type', 'fitternity_customer'];
+
+            foreach($fields as $field){
+                if(isset($data[$field])){
+                    $checkin->$field = $data[$field];
+                }
+            }
+
+			$checkin->save();
+			$customer_update = \Customer::where('_id', $data['customer_id'])->increment('loyalty.checkins');
+
+			return ['status'=>200, 'checkin'=>$checkin];
+		}catch(Exception $e){
+			Log::info($e);
+			return ['status'=>500, 'message'=>'Please try after some time'];
+		}
+	}
+
 }
 
 

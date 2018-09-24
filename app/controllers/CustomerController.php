@@ -7724,7 +7724,9 @@ class CustomerController extends \BaseController {
 					];
 					if(!empty($booktrial['order_id']))$pending_payment['order_id']=$booktrial['order_id'];
 					$customer_level_data = $this->utilities->getWorkoutSessionLevel($booktrial['customer_id']);
-					
+					if(!empty($value['mark'])){
+						$this->utilities->addCheckin(['customer_id'=>$customer_id, 'finder_id'=>$booktrial['finder_id'], 'type'=>'workout-session', 'sub_type'=>$booktrial->type, 'fitternity_customer'=>true, 'tansaction_id'=>$booktrial['_id']]);
+					}
 					
 					if($booktrial->type == "booktrials" && !isset($booktrial->post_trial_status_updated_by_fitcode)&& !isset($booktrial->post_trial_status_updated_by_lostfitcode)&& !isset($booktrial->post_trial_status_updated_by_qrcode))
 					{
@@ -7782,6 +7784,7 @@ class CustomerController extends \BaseController {
 									$booktrial->pps_fitcash=$fitcash;
 									$booktrial->pps_cashback=$this->utilities->getWorkoutSessionLevel((int)$booktrial->customer_id)['current_level']['cashback'];
 									$add_chck=$this->utilities->walletTransaction($req);
+									
 									if(!empty($add_chck)&&$add_chck['status']==200)
 									{
 										$total_fitcash=$total_fitcash+$fitcash;
@@ -8145,7 +8148,7 @@ class CustomerController extends \BaseController {
 			$value['date'] = date('d M, Y | g:i A ', strtotime($value['created_at']));
 			$value['title'] = $value['finder']['title'];
 
-			unset($value['created_at'], $value['_id'], $value['finder'], $value['finder_id'], $value['customer_id'], $value['updated_at']);
+			$value = array_only($value, ['date', 'title']);
 		}
 		
 		array_walk($checkins, 'format_date');
@@ -8262,7 +8265,7 @@ class CustomerController extends \BaseController {
 			'type'=>!empty($_GET['type']) ? $_GET['type'] : null
 		];
 		
-		$addedCheckin = $this->addCheckin($checkin_data);
+		$addedCheckin = $this->utilities->addCheckin($checkin_data);
 		
 		$customer = Customer::find($customer_id);
 		
@@ -8285,30 +8288,7 @@ class CustomerController extends \BaseController {
 
 	}
 	
-	public function addCheckin($data){
-
-		try{
-		// $already_checkedin = Checkin::where('customer_id', $data['customer_id'])->where('date', new DateTime(date('d-m-Y', time())))->first();
-			if(!empty($already_checkedin)){
-				return ['status'=>400, 'message'=>'Already checked-in for today'];
-			}
-			$checkin = new Checkin();
-			$checkin->finder_id = $data['finder_id'];
-			$checkin->customer_id = $data['customer_id'];
-			$checkin->date = new DateTime(date('d-m-Y', time()));
-			if (!empty($data['type'])) {
-				$checkin->type = $data['type'];
-			}
-			$checkin->save();
-			$customer_update = Customer::where('_id', $data['customer_id'])->increment('loyalty.checkins');
-
-			return ['status'=>200, 'checkin'=>$checkin];
-		}catch(Exception $e){
-			Log::info($e);
-			return ['status'=>500, 'message'=>'Please try after some time'];
-		}
-	}
-
+	
 	
 			
 }
