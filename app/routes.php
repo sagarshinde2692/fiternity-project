@@ -1218,5 +1218,6 @@ Route::get('lostFitcode','DebugController@lostFitcode');
 Route::post('getcustomercarddetails','CustomerController@getCustomerCardDetails');
 
 Route::post('addafriendforbooking','CustomerController@addafriendforbooking');
+Route::post('editfriendforbooking','CustomerController@editfriendforbooking');
 Route::get('getbookingfriends','CustomerController@getallBookingfriends');
 Route::post('webcheckout','TransactionController@webcheckout');
