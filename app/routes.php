@@ -1270,6 +1270,7 @@ Route::post('checkstatus/mobikwik','PaymentGatewayController@checkStatusMobikwik
 Route::get('verifypayment/{status}','PaymentGatewayController@verifyPayment');
 
 Route::post('addafriendforbooking','CustomerController@addafriendforbooking');
+Route::post('editfriendforbooking','CustomerController@editfriendforbooking');
 Route::get('getbookingfriends','CustomerController@getallBookingfriends');
 Route::post('webcheckout','TransactionController@webcheckout');
 Route::post('addcustomersfortrial','SchedulebooktrialsController@addCustomersForTrial');
