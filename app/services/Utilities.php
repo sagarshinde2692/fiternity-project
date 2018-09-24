@@ -6054,7 +6054,7 @@ Class Utilities {
         return $post_register_milestones;
     }
 
-    public function getLoyaltyRegHeader($customer){
+    public function getLoyaltyRegHeader(){
        return Config::get('loyalty_screens.success_loyalty_header');
     }
 
