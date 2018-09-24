@@ -7501,7 +7501,7 @@ class SchedulebooktrialsController extends \BaseController {
         $response['service_id'] = $booktrial->service_id;
         $response['milestones'] = $this->utilities->getMilestoneSection();
         
-        $loyalty_registration = $this->utlities->autoRegisterCustomerLoyalty($booktrial);
+        $loyalty_registration = $this->utilities->autoRegisterCustomerLoyalty($booktrial);
         
         if(!empty($loyalty_registration)){
             $booktrial_update = Booktrial::where('_id', $booktrial['_id'])->update(['loyalty_registration'=>true]);
