@@ -5704,7 +5704,7 @@ Class Utilities {
     	{
     		$response = [
     				'status'=>200,
-    				'header'=>'ENJOY YOUR WORKOUT!',
+    				'header'=>'CHCEK-IN SUCCESSFUL',
     				'image'=>'https://b.fitn.in/paypersession/happy_face_icon-2.png',
     				// 'footer'=>$customer_level_data['current_level']['cashback'].'% Cashback has been added in your Fitternity Wallet. Use it to book more workouts and keep on earning!',
     				'streak'=>[
@@ -5727,8 +5727,11 @@ Class Utilities {
     				$response['sub_header_1'] = $fitcash." Fitcash";
     				$response['sub_header_2'] = " has been added in your Fitternity Wallet. Use it to buy membership with lowest price";
     			}
-    		}
-    		$this->deleteSelectCommunication(['transaction'=>$booktrial, 'labels'=>["customer_sms_after2hour","customer_email_after2hour","customer_notification_after2hour"]]);
+            }
+            
+            
+            
+            $this->deleteSelectCommunication(['transaction'=>$booktrial, 'labels'=>["customer_sms_after2hour","customer_email_after2hour","customer_notification_after2hour"]]);
     		
     	}
     	else
@@ -5764,7 +5767,9 @@ Class Utilities {
     	if($booktrial->type == 'booktrials' && isset($response['streak'])){
     		unset($response['streak']);
     	}
-    	
+    	if($booktrial->type == 'workout-session'){
+            $response['milestones'] = $this->utilities->getMilestoneSection();
+        }
     	$description = "";
     	
     	if(isset($response['sub_header_1'])){

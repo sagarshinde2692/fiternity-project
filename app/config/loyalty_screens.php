@@ -113,7 +113,8 @@ return array(
     ],
     'success_loyalty_header' => [
         'logo' => 'https://b.fitn.in/loyalty/logo%20mobile%20new.png',
-        'text' => 'You have succesfully registered to<br/><b>FITSQUAD</b><br/> India\'s lagest fitness rewards club',
+        'header1' => 'You have successfully registeredto FITSQUAD',
+        'header2' => 'India\'s largest fitness rewards club',
     ],
     
     'milestones' => [
