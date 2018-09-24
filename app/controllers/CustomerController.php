@@ -7708,7 +7708,7 @@ class CustomerController extends \BaseController {
 			$un_updated=[];$not_located=[];$already_attended=[];$attended=[];$not_attended=[];
 			
 			$total_fitcash=0;
-			foreach ($data['data'] as $value)
+			foreach ($data['data'] as $key => $value)
 			{
 				$booktrial = Booktrial::where('customer_id',$customer_id)->where('_id',intval($value['_id']))->first();
 				$post_trial_status_updated_by_qrcode = time();
@@ -7727,6 +7727,10 @@ class CustomerController extends \BaseController {
 					if(!empty($value['mark'])){
 						$this->utilities->addCheckin(['customer_id'=>$customer_id, 'finder_id'=>$booktrial['finder_id'], 'type'=>'workout-session', 'sub_type'=>$booktrial->type, 'fitternity_customer'=>true, 'tansaction_id'=>$booktrial['_id']]);
 					}
+
+					if(!$key){
+					    $this->utilities->autoRegisterCustomerLoyalty($booktrial);
+                    }
 					
 					if($booktrial->type == "booktrials" && !isset($booktrial->post_trial_status_updated_by_fitcode)&& !isset($booktrial->post_trial_status_updated_by_lostfitcode)&& !isset($booktrial->post_trial_status_updated_by_qrcode))
 					{
