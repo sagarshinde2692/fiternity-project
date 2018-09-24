@@ -5768,7 +5768,7 @@ Class Utilities {
     		unset($response['streak']);
     	}
     	if($booktrial->type == 'workout-session'){
-            $response['milestones'] = $this->utilities->getMilestoneSection();
+            $response['milestones'] = $this->getMilestoneSection();
         }
     	$description = "";
     	
