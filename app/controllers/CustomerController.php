@@ -7703,6 +7703,8 @@ class CustomerController extends \BaseController {
 		if ($validator->fails()) return ['status' => 400,'message' =>$this->errorMessage($validator->errors())];
 		else
 		{
+		    Log::info("markCustomerAttendance");
+		    Log::info($data);
 			$invalid_data=array_filter($data['data'],function ($e){return (empty($e['_id'])||!isset($e['mark']));});
 			if(count($invalid_data)>0) return ['status' => 400,'message' =>"Invalid Data"];
 			$un_updated=[];$not_located=[];$already_attended=[];$attended=[];$not_attended=[];
