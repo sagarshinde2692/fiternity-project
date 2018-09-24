@@ -6054,7 +6054,7 @@ Class Utilities {
         return $post_register_milestones;
     }
 
-    public function successLoyaltyHeader($customer){
+    public function getLoyaltyRegHeader($customer){
        return Config::get('loyalty_screens.success_loyalty_header');
     }
 
@@ -6088,7 +6088,19 @@ Class Utilities {
 		}
 	}
 
-    public function successFullBooking
+    public function afterTranSuccess($data){
+        $loyalty_registration = $this->autoRegisterCustomerLoyalty($data);
+        return ['loyalty_registration'=>$loyalty_registration];
+    }
+
+    public function autoRegisterCustomerLoyalty($data){
+        try{
+            return $customer_update = Customer::where('_id', $data['customer_id'])->where('loyalty', 'exists', false)->update(['loyalty'=>['start_date'=>new \MongoDate(strtotime('midnight')), 'transaction_id'=>$data['_id'], 'type'=>$data['type']], 'start_date_time'=>new \MongoDate(strtotime()), 'finder_id'=>$data['finder_id']]);
+        }catch(Exception $e){
+            Log::info(['status'=>400,'message'=>$e->getMessage().' - Line :'.$e->getLine().' - Code :'.$e->getCode().' - File :'.$e->getFile()]);
+        }
+    
+    }
 
 }
 

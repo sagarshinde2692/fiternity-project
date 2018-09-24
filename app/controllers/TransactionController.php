@@ -1986,6 +1986,10 @@ class TransactionController extends \BaseController {
 
                     $reward_type = 'cashback';
                 }
+
+                if($order->type == "memberships"){
+                    $this->utilities->afterTranSuccess($order);
+                }
             }
 
             if(isset($order['previous_booktrial_id']) && $order['previous_booktrial_id'] != ""){

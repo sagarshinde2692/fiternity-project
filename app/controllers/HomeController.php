@@ -1082,6 +1082,10 @@ class HomeController extends BaseController {
 
                 $response['milestones'] = $this->utilities->getMilestoneSection();
 
+                if(!empty($item['loyalty_registration'])){
+                    $response['fitsquad'] = $this->utilities->getLoyaltyRegHeader();
+                }
+
                 return $response;
             }
 

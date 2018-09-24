@@ -2452,6 +2452,12 @@ class SchedulebooktrialsController extends \BaseController {
                 $order->update();
             }
             
+            $after_booking_response = $this->utilities->afterTranSuccess($booktrial);
+            
+            if(!empty($after_booking_response['loyalty'])){
+                $booktrial->loyalty_registration = true;
+            }
+            
             $booktrial->update();
 
 
@@ -2506,7 +2512,7 @@ class SchedulebooktrialsController extends \BaseController {
             $delete = Tempbooktrial::where('_id', $data['temp_id'])->delete();
         }
 
-        $resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'message' => "Session Booked Sucessfully", 'code' => $code);
+        $resp 	= 	array('status' => 200, 'booktrialid' => $booktrialid, 'message' => "Session Booked Sucessfully", 'code' => $code);        
         Log::info(" info ".print_r("AAAYA",true));
         return Response::json($resp,200);
     }
@@ -3499,6 +3505,13 @@ class SchedulebooktrialsController extends \BaseController {
 
                 $response = array('status'=>400,'reason'=>$message['type'].' : '.$message['message'].' in '.$message['file'].' on '.$message['line']);
                 Log::info('addReminderMessage Error : '.json_encode($response));
+            }
+
+            
+            $after_booking_response = $this->utilities->afterTranSuccess($booktrial);
+            
+            if(!empty($after_booking_response['loyalty'])){
+                $booktrial->loyalty_registration = true;
             }
 
             //if vendor type is free special dont send communication
@@ -7486,6 +7499,14 @@ class SchedulebooktrialsController extends \BaseController {
         $response['finder_id'] = $booktrial->finder_id;
         $response['service_id'] = $booktrial->service_id;
         $response['milestones'] = $this->utilities->getMilestoneSection();
+        
+        $loyalty_registration = $this->utlities->autoRegisterCustomerLoyalty($booktrial);
+        
+        if(!empty($loyalty_registration)){
+            $booktrial_update = Booktrial::where('_id', $booktrial['_id'])->update(['loyalty_registration'=>true]);
+            $response['fitsquad'] = $this->utilities->getLoyaltyRegHeader();
+        }
+
         return Response::json($response);
 
     }
