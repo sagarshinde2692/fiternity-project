@@ -2440,10 +2440,16 @@ class SchedulebooktrialsController extends \BaseController {
                 }
                 
             }
-           
+            $after_booking_response = $this->utilities->afterTranSuccess($booktrial);
+
+            if(!empty($after_booking_response['loyalty'])){
+                $booktrial->loyalty_registration = true;
+                $orderData['loyalty_registration'] = true;
+            }
+
             array_set($orderData, 'booktrial_id', (int)$booktrialid);
             $order->update($orderData);
-            
+
             if(isset($order->vendor_price) && $order->vendor_price != ''){
                 $order->original_amount_finder = $order->amount_finder;
                 $order->amount_finder = $order->vendor_price;
@@ -2451,13 +2457,8 @@ class SchedulebooktrialsController extends \BaseController {
 
                 $order->update();
             }
-            
-            $after_booking_response = $this->utilities->afterTranSuccess($booktrial);
-            
-            if(!empty($after_booking_response['loyalty'])){
-                $booktrial->loyalty_registration = true;
-            }
-            
+
+
             $booktrial->update();
 
 
