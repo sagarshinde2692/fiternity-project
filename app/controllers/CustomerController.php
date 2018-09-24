@@ -7659,11 +7659,11 @@ class CustomerController extends \BaseController {
 									"options" => [
 										[
 											"text" => "Currently hasve a membership at ".$finderarr['title'],
-											"url" => Config::get('app.url')."/markcheckin/".$customer_id."?type=membership",
+											"url" => Config::get('app.url')."/markcheckin/".$finderarr['_id']."?type=membership",
 										],
 										[
 											"text" => "Have booked a session at ".$finderarr['title'],
-											"url" => Config::get('app.url')."/markcheckin/".$customer_id."?type=workout-session",
+											"url" => Config::get('app.url')."/markcheckin/".$finderarr['_id']."?type=workout-session",
 										]
 									]
 								];
@@ -8248,6 +8248,8 @@ class CustomerController extends \BaseController {
 	}
 
 	public function markCheckin($finder_id){
+
+		$finder_id = intval($finder_id);
 		
 		$jwt_token = Request::header('Authorization');
 		
@@ -8264,10 +8266,21 @@ class CustomerController extends \BaseController {
 		
 		$customer = Customer::find($customer_id);
 		
+		Finder::$withoutAppends = true;
+		
+		$finder = Finder::find($finder_id, ['title']);
+		
 		if(!empty($addedCheckin['status']) && $addedCheckin['status'] == 200){
-			return $this->utilities->getMilestoneSection($customer);
+			return [
+				'header'=>'CHECK-IN SUCCESSFUL!',
+				'sub_header_2'=> "Enjoy your workout at ".$finder['title'].". Make sure you continue with your workouts and achieve the milestones quicker",
+				'milestones'=>$this->utilities->getMilestoneSection($customer),
+				'fitsquad'=>$this->utilities->successLoyaltyHeader($customer)
+			];
 		}else{
+			
 			return $addedCheckin;
+		
 		}
 
 	}
@@ -8275,7 +8288,7 @@ class CustomerController extends \BaseController {
 	public function addCheckin($data){
 
 		try{
-			// $already_checkedin = Checkin::where('customer_id', $data['customer_id'])->where('date', new DateTime(date('d-m-Y', time())))->first();
+		// $already_checkedin = Checkin::where('customer_id', $data['customer_id'])->where('date', new DateTime(date('d-m-Y', time())))->first();
 			if(!empty($already_checkedin)){
 				return ['status'=>400, 'message'=>'Already checked-in for today'];
 			}

@@ -6011,7 +6011,7 @@ Class Utilities {
 
     public function getMilestoneSection($customer){
         
-        $post_register_milestones = Config::get('loyalty_screens.post_register.milestones');
+        $post_register_milestones = Config::get('loyalty_screens.milestones');
         $milestone_no = 1;
         $check_ins = !empty($customer->loyalty['checkins']) ? $customer->loyalty['checkins'] : 0;
         $customer_milestones = !empty($customer->loyalty['milestones']) ? $customer->loyalty['milestones'] : [];
@@ -6034,23 +6034,15 @@ Class Utilities {
             }
         }
         unset($milestone);
-        $post_register_milestones['subheader'] = strtr($post_register_milestones['subheader'], ['$next_milestone_check_ins'=>$milestone_next_count-$check_ins, '$next_milestone'=>$milestone_no+1]);  
+        $post_register_milestones['subheader'] = strtr($post_register_milestones['subheader'], ['$next_milestone_check_ins'=>$milestone_next_count-$check_ins, '$next_milestone'=>$milestone_no+1]);
+        $post_register_milestones['description'] = strtr($post_register_milestones['description'], ['$check_ins'=>$check_ins]);
 
         return $post_register_milestones;
     }
 
-    public function getLoyaltyHeader($customer){
-        $post_register_header = Config::get('loyalty_screens.post_register.header');
-        
-        $post_register_header['text'] = strtr($post_register_header['text'], ['$customer_name'=>$customer->name, '$check_ins'=>$check_ins, '$milestone'=>$milestone_no, '$checkin_limit'=>Config::get('loyalty_screens.checkin_limit')]);
-
-        return $post_register_header;
+    public function successLoyaltyHeader($customer){
+       return Config::get('loyalty_screens.success_loyalty_header');
     }
-    
-
-    
-
-	
 }
 
 
