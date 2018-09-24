@@ -1251,3 +1251,7 @@ Route::get('getcouponpackages','HomeController@getCouponPackages');
 Route::get('brandlistcity/{city}','BrandsController@brandlistcity');
 
 Route::post('inviteforevent','EventsController@inviteForEvent');
+
+// Music Run
+Route::get('eventorderdetails/{orderid}','EventsController@getOrderDetails');
+Route::get('geteventorders/{event_slug}','EventsController@getOrderList');
