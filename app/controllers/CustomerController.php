@@ -7862,6 +7862,7 @@ class CustomerController extends \BaseController {
 		}
 	}
 	catch (Exception $e) {
+	    Log::info(['status'=>400,'message'=>$e->getMessage().' - Line :'.$e->getLine().' - Code :'.$e->getCode().' - File :'.$e->getFile()]);
 		return ['status'=>400,'message'=>$e->getMessage().' - Line :'.$e->getLine().' - Code :'.$e->getCode().' - File :'.$e->getFile()];
 	}
 	return $resp;
