@@ -5705,7 +5705,7 @@ Class Utilities {
     		$response = [
     				'status'=>200,
     				'header'=>'CHCEK-IN SUCCESSFUL',
-    				'image'=>'https://b.fitn.in/paypersession/happy_face_icon-2.png',
+    				'image'=>'https://b.fitn.in/paypersession/cashback.png',
     				// 'footer'=>$customer_level_data['current_level']['cashback'].'% Cashback has been added in your Fitternity Wallet. Use it to book more workouts and keep on earning!',
     				'streak'=>[
     						'header'=>'STREAK IT OUT',
@@ -6087,6 +6087,8 @@ Class Utilities {
 			return ['status'=>500, 'message'=>'Please try after some time'];
 		}
 	}
+
+    public function successFullBooking
 
 }
 

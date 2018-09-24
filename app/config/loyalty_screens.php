@@ -121,8 +121,7 @@ return array(
         'header' => 'Your Workout Journey',
         'subheader' => 'You are $next_milestone_check_ins check-ins away from milestone $next_milestone',
         'description' => '$check_ins/' . Config::get('loyalty_constants.checkin_limit') . ' check-ins done',
-        'data' => Config::get('loyalty_constants.milestones'),
-        'footer' => 'Your workout counter will reset on 21 Sept 2018',
+        'data' => Config::get('loyalty_constants.milestones')
     ],
 );
 ?>

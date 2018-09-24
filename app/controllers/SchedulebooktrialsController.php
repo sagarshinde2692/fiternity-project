@@ -7116,6 +7116,8 @@ class SchedulebooktrialsController extends \BaseController {
                 'booktrial_id'=> (int)$booktrial['_id'],
                 'fitcash'=>$fitcash
             ];
+
+            $this->utilities->addCheckin(['customer_id'=>$booktrial['customer_id'], 'finder_id'=>$booktrial['finder_id'], 'type'=>'workout-session', 'sub_type'=>$booktrial['type'], 'fitternity_customer'=>true, 'tansaction_id'=>$booktrial['_id']]);
         }
 
         return Response::json($response,200);
@@ -7312,7 +7314,7 @@ class SchedulebooktrialsController extends \BaseController {
                 if(isset($_GET['source']) && $_GET['source'] == 'let_us_know'){
                     $response['header'] = 'GREAT';
                 }
-
+	
                 Log::info("removing n+2 communication");
                 $this->utilities->deleteSelectCommunication(['transaction'=>$booktrial, 'labels'=>["customer_sms_after2hour","customer_email_after2hour","customer_notification_after2hour"]]);
 
@@ -7329,7 +7331,7 @@ class SchedulebooktrialsController extends \BaseController {
                 $response = [
                     'status'=>200,
                     'header'=>'DON’T WORRY',
-                    'image'=>'https://b.fitn.in/paypersession/happy_face_icon-2.png',
+                    'image'=>'https://b.fitn.in/paypersession/cashback.png',
                     'sub_header_1'=>$customer_level_data['current_level']['cashback'].'% Cashback',
                     'sub_header_2'=>' is added in your wallet. Use this to book your next session with lowest price.',
                     'streak'=>[
@@ -7483,6 +7485,7 @@ class SchedulebooktrialsController extends \BaseController {
         $response['trial_id'] = (string)$booktrial->_id;
         $response['finder_id'] = $booktrial->finder_id;
         $response['service_id'] = $booktrial->service_id;
+        $response['milestones'] = $this->utilities->getMilestoneSection();
         return Response::json($response);
 
     }

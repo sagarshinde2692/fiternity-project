@@ -1080,6 +1080,8 @@ class HomeController extends BaseController {
                     $response['subline'] = 'Your payment for'.$service_name.' session at '.$finder_name.' is successful';
                 }
 
+                $response['milestones'] = $this->utilities->getMilestoneSection();
+
                 return $response;
             }
 
