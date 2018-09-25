@@ -7968,7 +7968,7 @@ class CustomerController extends \BaseController {
 		$milestones = Config::get('loyalty_constants.milestones');
 		
 		foreach($milestones as $milestone){
-			if(!$milestone['milestone']){
+			if(!$milestone['milestone'] || empty($voucher_categories_map[$milestone['milestone']])){
 				continue;
 			}
 			$pre_reward_template = Config::get('loyalty_screens.pre_register_check_ins_data_template');
@@ -8034,23 +8034,25 @@ class CustomerController extends \BaseController {
 					$post_reward_template['title'] = strtr($post_reward_template['title'], $milestone);
 					$post_reward_template['_id'] = $key;
 					// return $milestone_no;
-					foreach($voucher_categories_map[$milestone['milestone']] as $vc){
-						$post_reward_data_template = Config::get('loyalty_screens.post_register_rewards_data_inner_template');
-						$post_reward_data_template['logo'] = strtr($post_reward_data_template['logo'], $vc);
-						$post_reward_data_template['_id'] = strtr($post_reward_data_template['_id'], $vc);
-						$post_reward_data_template['claim_url'] = Config::get('app.url').'/claimexternalcoupon/'.$post_reward_data_template['_id'];
-						$post_reward_data_template['coupon_description'] = strtr($post_reward_data_template['coupon_description'], $vc);
-						$post_reward_data_template['price'] = strtr($post_reward_data_template['price'], $vc);
-							if($milestone_no >= $milestone['milestone'] && empty($customer_milestones[$milestone['milestone']-1]['claimed'])){
-								$post_reward_data_template['claim_enabled'] = true;
-								!isset($reward_open_index) ? $reward_open_index = $milestone['milestone'] - 1 : null;
+                    if(!empty($voucher_categories_map[$milestone['milestone']])){
+                        foreach($voucher_categories_map[$milestone['milestone']] as $vc){
+                            $post_reward_data_template = Config::get('loyalty_screens.post_register_rewards_data_inner_template');
+                            $post_reward_data_template['logo'] = strtr($post_reward_data_template['logo'], $vc);
+                            $post_reward_data_template['_id'] = strtr($post_reward_data_template['_id'], $vc);
+                            $post_reward_data_template['claim_url'] = Config::get('app.url').'/claimexternalcoupon/'.$post_reward_data_template['_id'];
+                            $post_reward_data_template['coupon_description'] = strtr($post_reward_data_template['coupon_description'], $vc);
+                            $post_reward_data_template['price'] = strtr($post_reward_data_template['price'], $vc);
+                                if($milestone_no >= $milestone['milestone'] && empty($customer_milestones[$milestone['milestone']-1]['claimed'])){
+                                    $post_reward_data_template['claim_enabled'] = true;
+                                    !isset($reward_open_index) ? $reward_open_index = $milestone['milestone'] - 1 : null;
 
-							}else{
-								$post_reward_data_template['claim_enabled'] = false;
-							}
-						$post_reward_template['data'][] = $post_reward_data_template;
-						// return $milestone_no;
-					}
+                                }else{
+                                    $post_reward_data_template['claim_enabled'] = false;
+                                }
+                            $post_reward_template['data'][] = $post_reward_data_template;
+                            // return $milestone_no;
+                        }
+                    }
 					$post_register_rewards_data[] = $post_reward_template;
 					
 				}
