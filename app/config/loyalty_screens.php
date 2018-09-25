@@ -92,6 +92,7 @@ return array(
     'pre_register_check_ins_data_template' => [
         'title' => 'Milestone milestone',
         'milestone' => 'No of sessions - count',
+        'count'=> 'count',
         'amount' => '₹ amount',
         'images' => []
     ],
