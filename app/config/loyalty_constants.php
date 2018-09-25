@@ -42,13 +42,24 @@ return array(
             'count' => 75,
             'description' => 'Check-ins',
             'enabled'=>false,
-            'next_count'=>225,
+            'next_count'=>150,
             'progress'=>0,
             'amount'=>2000
 
         ],
         [
             'title' => 'Milestone 4',
+            'milestone' => 3,
+            'count' => 150,
+            'description' => 'Check-ins',
+            'enabled'=>false,
+            'next_count'=>225,
+            'progress'=>0,
+            'amount'=>3000
+
+        ],
+        [
+            'title' => 'Milestone 5',
             'milestone' => 4,
             'count' => 225,
             'description' => 'Check-ins',
