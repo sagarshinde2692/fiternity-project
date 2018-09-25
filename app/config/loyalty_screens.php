@@ -7,7 +7,8 @@ return array(
     'pre_register' => [
         'header' => [
             'image' => 'https://b.fitn.in/loyalty/Header%20Final11.png',
-            'ratio' => 1.23
+            'ratio' => 1.23,
+            'url'=> Config::get('app.website', 'https://www.fitternity.com').'/loyalty-registration'
         ],
 
         'partners' => [
@@ -48,7 +49,8 @@ return array(
 
         'footer' => [
             'image' => 'https://b.fitn.in/loyalty/Footer11.png',
-            'ratio' => 1.38
+            'ratio' => 1.38,
+            'url'=> Config::get('app.website', 'https://www.fitternity.com').'/loyalty-registration'
         ],
     ],
     'post_register' => [
