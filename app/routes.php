@@ -1296,6 +1296,8 @@ Route::group(array('before' => 'validatetoken'), function() {
 
 	Route::get('markcheckin/{finder_id}', 'CustomerController@markCheckin');
 
+	Route::post('uploadreceiptloyalty', 'CustomerController@uploadReceiptLoyalty');
+
 });
 
 /******************  Loyalty API END HERE************************************************/
