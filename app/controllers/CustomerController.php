@@ -8352,10 +8352,16 @@ class CustomerController extends \BaseController {
 	public function uploadReceiptLoyalty(){
 		
 		$data = Input::all();
+
+		if(empty($data)){
+		   
+			$data = Input::json()->all();
+
+		}
 	    $jwt_token = Request::header('Authorization');
 
 		$decoded = decode_customer_token($jwt_token);
-
+		Log::info($_POST);
 		$customer_id = $decoded->customer->_id;
 		Log::info("===========================================");
 		Log::info(get_class($data['image']));
