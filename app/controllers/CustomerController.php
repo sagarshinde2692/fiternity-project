@@ -8357,7 +8357,8 @@ class CustomerController extends \BaseController {
 		$decoded = decode_customer_token($jwt_token);
 
 		$customer_id = $decoded->customer->_id;
-
+		Log::info("===========================================");
+		Log::info(get_class($data['image']));
 
 		$image = Input::file('image') ;
 		
@@ -8385,13 +8386,17 @@ class CustomerController extends \BaseController {
 
 			$resp = $this->utilities->uploadFileToS3Kraken($data);
 
+			Log::info($resp);
+
 			if(!$resp){
 				return Response::json(['status'=>200, 'message'=>'Error']);	
 			}
-
+			
+			return ['status'=>200, 'message'=>'Receipt has been upload successfully. You will receive the coupon via email / sms upon successful validations'];
+	   }else{
+				return Response::json(['status'=>400, 'message'=>'Image not found']);	
 	   }
 	   
-	   return ['status'=>200, 'message'=>'Receipt has been upload successfully. You will receive the coupon via email / sms upon successful validations'];
 
 
 	}
