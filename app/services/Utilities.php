@@ -6102,6 +6102,50 @@ Class Utilities {
     
     }
 
+     public function uploadFileToS3Kraken($params){
+        try{
+            Log::info($params);
+
+            $headersparms                       =   array("Cache-Control" => "max-age=2592000000");
+            $input_object                       =   $params['input'];
+            $local_directory                    =   $params['local_directory'];
+            // $resize                               =   $params['resize'];
+            $input_realname                     =   $input_object->getClientOriginalName();
+            $upload_path                        =   $params['upload_path'].$params['file_name'];
+
+		    $resp = $input_object->move($local_directory,$input_realname);
+            $local_path = $local_directory.'/'.$input_realname;
+
+            $original_upload_params = array(
+                "file"      => $local_path,
+                "wait"      => true,
+                "lossy"     => false,
+                // 'resize'    => $resize,
+                "s3_store"  => array(
+                    "key"   => Config::get('app.aws.key'),
+                    "secret" => Config::get('app.aws.secret'),
+                    "bucket" => Config::get('app.aws.bucket'),
+                    "region" => Config::get('app.aws.region'),
+                    "headers" => $headersparms,
+                    'path'  =>$upload_path
+                    )
+                );
+
+                Log::info($original_upload_params);
+                // return;
+                $kraken = new Kraken();
+                $original_response = $kraken->upload($original_upload_params);
+                Log::info($original_response);
+                // return;
+                unlink($local_path);
+                return $original_response;
+        }catch(Exception $e){
+            Log::info($e);
+            unlink($local_path);
+            return false;
+        }
+    }
+
 }
 
 

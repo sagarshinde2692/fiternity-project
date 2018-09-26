@@ -2155,7 +2155,7 @@ class FindersController extends \BaseController {
 				// return get_class($value);
 				if($value->getError()){
 					
-					return Response::json(['status'=>400, 'message'=>'Please upload jpg/jpeg/png imgage formats with max. size of 4 MB']);
+					return Response::json(['status'=>400, 'message'=>'Please upload jpg/jpeg/png image formats with max. size of 4 MB']);
 				
 				}
 

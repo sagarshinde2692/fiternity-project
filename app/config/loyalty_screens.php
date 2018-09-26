@@ -112,7 +112,8 @@ return array(
         'claim_enabled' => false,
         'button_title' => 'Claim',
         'terms' => 'HTMl text',
-        'coupon_description' => 'description'
+        'coupon_description' => 'description',
+        'receipt_message'=>'Please upload reciept'
     ],
     'success_loyalty_header' => [
         'logo' => 'https://b.fitn.in/loyalty/logo%20mobile%20new.png',

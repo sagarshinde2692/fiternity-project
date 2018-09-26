@@ -8348,6 +8348,47 @@ class CustomerController extends \BaseController {
 		}
 
 	}
+
+	public function uploadReceiptLoyalty(){
+		
+		$data = Input::all();
+	    $jwt_token = Request::header('Authorization');
+
+		$decoded = decode_customer_token($jwt_token);
+
+		$customer_id = $decoded->customer->_id;
+
+
+        $image = Input::file('image') ;
+        
+        Log::info("Asdsaddasdasd1111122221");
+
+       if($image) {
+
+            
+            if ($image->getError()) {
+
+                return Response::json(['status' => 400, 'message' => 'Please upload jpg/jpeg/png image formats with max. size of 4 MB']);
+
+            }
+			Log::info("Asdsaddasdasd111111");
+			
+			$data = [
+				"input"=>$image,
+				"upload_path"=>Config::get('app.aws.membershipt_receipt.path'),
+				"local_directory"=>public_path().'/membershipt_receipt',
+				"file_name"=>$customer_id.'-'.time()
+				// "resize"=>["height" => 200,"strategy" => "portrait"],
+			];
+
+			$resp = $this->utilities->uploadFileToS3Kraken($data);
+
+	   }
+	   
+	   return ['status'=>200, 'message'=>'Receipt has been upload successfully. You will receive the coupon via email / sms upon successful validations'];
+
+
+	}
 	
 	
 	

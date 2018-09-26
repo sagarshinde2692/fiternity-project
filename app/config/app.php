@@ -389,6 +389,10 @@ return array(
 			'path'							=> 'paypersession/ratings/',
 			'url'							=> 'http://d3oorwrq3wx4ad.cloudfront.net/paypersession/ratings/',
 		),
+        'membership_receipt'=>array(
+            'path'							=> 'membership-receipts/',
+            'url'							=> 'http://d3oorwrq3wx4ad.cloudfront.net/membership-receipts/',
+        ),
 	),
 
 	'customer_care_number' => '+919699998838',
