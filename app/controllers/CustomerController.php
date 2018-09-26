@@ -8361,14 +8361,16 @@ class CustomerController extends \BaseController {
 	    $jwt_token = Request::header('Authorization');
 
 		$decoded = decode_customer_token($jwt_token);
-		Log::info($_POST);
 		$customer_id = $decoded->customer->_id;
+		Log::info("===========================================");
+		Log::info($_FILES);
+		Log::info($_POST);
+		Log::info($data);
 		Log::info("===========================================");
 		// Log::info(get_class($data['image']));
 
 		$image = Input::file('image') ;
 		
-		Log::info($data);
         
         Log::info("Asdsaddasdasd1111122221");
 
