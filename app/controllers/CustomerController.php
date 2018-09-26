@@ -8364,7 +8364,7 @@ class CustomerController extends \BaseController {
 		Log::info($_POST);
 		$customer_id = $decoded->customer->_id;
 		Log::info("===========================================");
-		Log::info(get_class($data['image']));
+		// Log::info(get_class($data['image']));
 
 		$image = Input::file('image') ;
 		
